@@ -8,4 +8,14 @@ class Composer extends PianoLit
     {
         return $this->belongsTo(Admin::class);
     }
+
+    public function pieces()
+    {
+    	return $this->hasMany(Piece::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 }

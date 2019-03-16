@@ -2,16 +2,26 @@
 
 namespace Tests\Unit;
 
-use App\{Composer, Admin};
+use App\{Composer, Admin, Country, Piece};
 use Tests\AppTest;
 
 class ComposerTest extends AppTest
 {
 	/** @test */
-	public function it_knows_who_added_it_to_the_database()
+	public function it_belongs_to_an_admin()
 	{
-		$composer = create(Composer::class);
+		$this->assertInstanceOf(Admin::class, $this->composer->creator);
+	}
 
-		$this->assertInstanceOf(Admin::class, $composer->creator);
+	/** @test */
+	public function it_knows_its_nationality()
+	{
+		$this->assertInstanceOf(Country::class, $this->composer->country);
+	}
+
+	/** @test */
+	public function it_has_many_pieces()
+	{
+		$this->assertInstanceOf(Piece::class, $this->composer->pieces()->first());
 	}
 }

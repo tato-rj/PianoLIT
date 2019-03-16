@@ -1,6 +1,6 @@
 <?php
 
-use App\{User, Composer, Country, Admin};
+use App\{User, Composer, Country, Admin, Piece, Tag};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -53,9 +53,48 @@ $factory->define(Composer::class, function(Faker $faker) {
     ];
 });
 
+$factory->define(Piece::class, function (Faker $faker) {
+    return [
+            'name' => $faker->name,
+            'nickname' => $faker->name,
+            'catalogue_name' => randval(catalogues()),
+            'catalogue_number' => rand(1,100),
+            'collection_name' => $faker->name,
+            'collection_number' => rand(1,10),
+            'movement_number' => rand(1,4),
+            'key' => randval(keys()),
+            'curiosity' => '',
+            'audio_path' => '',
+            'audio_path_rh' => '',
+            'audio_path_lh' => '',
+            'itunes' => '',
+            'youtube' => '',
+            'score_path' => '',
+            'score_editor' => '',
+            'score_publisher' => '',
+            'score_copyright' => '',
+            'composer_id' => function() {
+                return create(Composer::class)->id;
+            },
+            'creator_id' => function() {
+                return create(Admin::class)->id;
+            }
+    ];
+});
 
 $factory->define(Country::class, function (Faker $faker) {
     return [
-    	//
+        'name' => $faker->word,
+        'nationality' => $faker->word
+    ];
+});
+
+$factory->define(Tag::class, function (Faker $faker) {
+    return [
+        'type' => $faker->word,
+        'name' => $faker->word,
+        'creator_id' => function() {
+            return create(Admin::class)->id;
+        },
     ];
 });
