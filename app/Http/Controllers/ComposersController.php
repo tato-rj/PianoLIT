@@ -6,7 +6,7 @@ use App\Composer;
 use App\Http\Requests\ComposerForm;
 use Illuminate\Http\Request;
 
-class ComposerController extends Controller
+class ComposersController extends Controller
 {
     /**
      * Display a listing of the resource.

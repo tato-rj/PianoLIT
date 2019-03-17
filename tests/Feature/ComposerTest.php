@@ -44,7 +44,7 @@ class ComposerTest extends AppTest
     }
 
     /** @test */
-    public function unauthorized_admins_cannot_delete_composers()
+    public function unauthorized_admins_cannot_delete_a_composer()
     {
         $this->expectException('Illuminate\Auth\Access\AuthorizationException');
 
