@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\{Composer, Piece, Admin, Country, Tag};
+use App\{Composer, Piece, Admin, Country, Tag, User, Membership};
 
 class AppTest extends TestCase
 {
@@ -11,6 +11,10 @@ class AppTest extends TestCase
 		parent::setUp();
 
         $this->admin = create(Admin::class);
+
+        $this->user = create(User::class);
+
+        $this->user->membership()->save(create(Membership::class));
 
         $this->country = create(Country::class);
 

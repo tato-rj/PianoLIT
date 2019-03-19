@@ -35,7 +35,19 @@ class TagsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create');
+
+        $request->validate([
+            'name' => 'required|unique:tags|max:255',
+        ]);
+
+        Tag::create([
+            'name' => $request->name,
+            'creator_id' => auth()->guard('admin')->user()->id,
+            'type' => $request->type
+        ]);
+
+        return redirect()->back()->with('success', "The tag has been successfully added!");
     }
 
     /**
@@ -69,7 +81,18 @@ class TagsController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
-        //
+        $this->authorize('create');
+
+        $request->validate([
+            'name' => 'required|max:255',
+        ]);
+
+        $tag->update([
+            'name' => $request->name,
+            'type' => $request->type,
+        ]);
+
+        return redirect()->back()->with('success', "The tag has been successfully updated!");
     }
 
     /**
@@ -80,6 +103,10 @@ class TagsController extends Controller
      */
     public function destroy(Tag $tag)
     {
-        //
+        $this->authorize('create');
+
+        $tag->delete();
+
+        return redirect()->back()->with('success', "The tag has been successfully deleted!");
     }
 }

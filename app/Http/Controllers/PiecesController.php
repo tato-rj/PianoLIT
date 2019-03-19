@@ -63,7 +63,7 @@ class PiecesController extends Controller
             'score_copyright' => $request->score_copyright,
             'composer_id' => $request->composer_id,
             'audio_path' => $request->hasFile('audio_path') ? $request->file('audio_path')->store('app/audio_path', 'public') : null,
-            'audio_path_rh' => $request->hasFile('audio__path_rh') ? $request->file('audio_path_rh')->store('app/audio_path_rh', 'public') : null,
+            'audio_path_rh' => $request->hasFile('audio_path_rh') ? $request->file('audio_path_rh')->store('app/audio_path_rh', 'public') : null,
             'audio_path_lh' => $request->hasFile('audio_path_lh') ? $request->file('audio_path_lh')->store('app/audio_path_lh', 'public') : null,
             'score_path' => $request->hasFile('score_path') ? $request->file('score_path')->store('app/score_path', 'public') : null,
             'creator_id' => auth()->user()->id,
