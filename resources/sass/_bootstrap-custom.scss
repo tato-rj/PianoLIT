@@ -1,0 +1,94 @@
+.elipsis {
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.hover-bg-light:hover {
+	background: rgba(0,0,0,0.025);
+}
+
+.link-none {
+	color: inherit !important;
+}
+
+.link-none:hover {
+	text-decoration: none !important;
+}
+
+.clamp-1 {
+	overflow: hidden !important;
+	max-height: 80px !important;
+	text-overflow: ellipsis !important;
+	display: -webkit-box !important;
+	-webkit-line-clamp: 1 !important;
+	-webkit-box-orient: vertical;
+}
+
+.clamp-2 {
+	overflow: hidden !important;
+	max-height: 80px !important;
+	text-overflow: ellipsis !important;
+	display: -webkit-box !important;
+	-webkit-line-clamp: 2 !important;
+	-webkit-box-orient: vertical;
+}
+
+.color-inherit {
+	color: inherit;
+}
+
+a.color-inherit:hover {
+	color: inherit !important;
+}
+
+.w-100 {
+	width: 100%;
+}
+
+.full-height {
+	height: 100vh;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.t-2 {
+	-webkit-transition: 0.2s;
+	   -moz-transition: 0.2s;
+	    -ms-transition: 0.2s;
+	     -o-transition: 0.2s;
+	        transition: 0.2s;
+}
+
+.shadow-light {
+	-webkit-box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+	-moz-box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+	box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+}
+
+.shadow-dark {
+	-webkit-box-shadow: 0 5px 30px rgba(0,0,0,0.25);
+	-moz-box-shadow: 0 5px 30px rgba(0,0,0,0.25);
+	box-shadow: 0 5px 30px rgba(0,0,0,0.25);
+}
+
+.hover-shadow-dark:hover {
+	@extend .shadow-dark;
+}
+
+.hover-shadow-light:hover {
+	@extend .shadow-light;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rounded-pill {
+	border-radius: 100px;
+}

@@ -15,6 +15,13 @@ function randval($array)
 	return $array[rand(0, count($array) - 1)];
 }
 
+function splitname($name)
+{
+	$array = explode(' ', $name);
+	
+	return ['first' => current($array), 'last' => end($array)];
+}
+
 function removeAccents($string) {
     return strtolower(trim(preg_replace('~[^0-9a-z]+~i', ' ', preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($string, ENT_QUOTES, 'UTF-8'))), ' '));
 }

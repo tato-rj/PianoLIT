@@ -14,7 +14,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        //
+        return view('admin.home.pages.index');
     }
 
     /**

@@ -1,0 +1,89 @@
+@import "~bootstrap/scss/bootstrap";
+@import "~font-awesome/scss/font-awesome";
+@import "~jquery-ui-bundle/jquery-ui.min";
+
+@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+
+@import "variables";
+
+// Custom Variables
+$body-bg: #e9ecef;
+$brand-primary: #2e5ab9;
+
+@import "bootstrap-custom";
+@import "theme-custom";
+@import "global";
+@import "swiper";
+
+footer.sticky-footer, #mainNav.fixed-top.navbar-light .sidenav-toggler, .breadcrumb, .navbar {
+    background-color: #F8F9FF;
+}
+
+.bg-pastel {
+	background: #fffbf1 !important;
+	color: #997723;
+}
+
+.bg-elementary {
+	background: lighten($elementary, 35) !important;
+	color: darken($elementary, 12);
+}
+
+.bg-beginner {
+	background: lighten($beginner, 25) !important;
+	color: darken($beginner, 15);
+}
+
+.bg-intermediate {
+	background: lighten($intermediate, 25) !important;
+	color: darken($intermediate, 5);
+}
+
+.bg-advanced {
+	background: lighten($advanced, 40) !important;
+	color: lighten($advanced, 10);
+}
+
+.text-elementary {
+	color: darken($elementary, 40);
+}
+
+.text-beginner {
+	color: darken($beginner, 40);
+}
+
+.text-intermediate {
+	color: darken($intermediate, 40);
+}
+
+.text-advanced {
+	color: darken($advanced, 40);
+}
+.random-pill-1 {
+	background: #fdf1f1 !important;
+	color: darken(#fdf1f1, 40);
+}
+
+.random-pill-2 {
+	background: #E6F4F1 !important;
+	color: darken(#E6F4F1, 40);
+}
+
+.random-pill-3 {
+	background: #fdf7e8 !important;
+	color: darken(#fdf7e8, 40);
+}
+
+.random-pill-4 {
+	background: #eaeaff !important;
+	color: darken(#eaeaff, 40);
+}
+
+.page-item.active .page-link {
+    background-color: $brand-primary;
+    border-color: $brand-primary;
+}
+
+.page-link {
+	color: $brand-primary;
+}

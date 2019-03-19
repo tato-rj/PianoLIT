@@ -1,0 +1,75 @@
+textarea {
+	overflow-x: hidden;
+}
+
+a {
+	color: $brand-primary;
+}
+
+.no-underline:hover {
+	text-decoration: none;
+}
+
+a:hover {
+	color: darken($brand-primary, 5);
+}
+
+.navbar-brand {
+	img {
+		width: 26px;
+		border-radius: 50%;
+		vertical-align: sub;
+	}
+}
+
+.btn:focus,.btn:active, a:focus, a:active, button:focus, button:active {
+   outline: none!important;
+}
+
+.btn-default {
+	background: $brand-primary;
+	color: white;
+}
+
+.btn-default:hover, .btn-default:active, .btn-default:focus {
+	color: white;
+	background: darken($brand-primary, 3);
+}
+
+.alert-container {
+	z-index: 10000;
+	position: fixed;
+	top: 1em;
+	left: 0;
+}
+
+.text-brand {
+	color: $brand-primary;
+}
+
+/* width */
+.custom-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+/* Track */
+.custom-scroll::-webkit-scrollbar-track {
+    background: transparent; 
+}
+ 
+/* Handle */
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #e5e7e9;
+    border-radius: 2px;
+}
+
+/* Handle on hover */
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #e0dfdf; 
+}
+
+.list-style-none {
+	li {
+		list-style-type: none;
+	}
+}

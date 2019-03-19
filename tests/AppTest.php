@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\{Composer, Piece, Admin, Country, Tag, User, Membership};
+use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist};
 
 class AppTest extends TestCase
 {
@@ -14,9 +14,13 @@ class AppTest extends TestCase
 
         $this->user = create(User::class);
 
-        $this->user->membership()->save(create(Membership::class));
+        $this->membership = create(Membership::class);
+
+        $this->user->membership()->save($this->membership);
 
         $this->country = create(Country::class);
+
+        $this->playlist = create(Playlist::class);
 
         $this->tag = create(Tag::class, ['creator_id' => $this->admin->id]);
 
@@ -30,7 +34,11 @@ class AppTest extends TestCase
             'composer_id' => $this->composer->id
         ]);
         
+        $this->user->favorites()->attach($this->piece);
+
         $this->piece->tags()->attach($this->tag);
+
+        $this->playlist->pieces()->attach($this->piece);
 	}
 
     protected function signIn($admin = null, $guard = 'admin')

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Membership;
+use App\{Membership, Piece};
 use Tests\AppTest;
 
 class UserTest extends AppTest
@@ -11,5 +11,11 @@ class UserTest extends AppTest
 	public function it_has_a_membership()
 	{
 		$this->assertInstanceOf(Membership::class, $this->user->membership);
+	}
+
+	/** @test */
+	public function it_has_many_favorites()
+	{
+		$this->assertInstanceOf(Piece::class, $this->user->favorites->first());
 	}
 }

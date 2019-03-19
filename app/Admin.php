@@ -26,4 +26,14 @@ class Admin extends Authenticatable
     {
         return $this->hasMany(Tag::class, 'creator_id');
     }
+
+    public function scopeEditors($query)
+    {
+        return $query->where('role', 'editor');
+    }
+
+    public function scopeManagers($query)
+    {
+        return $query->where('role', 'manager');
+    }
 }

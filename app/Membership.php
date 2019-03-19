@@ -10,6 +10,11 @@ class Membership extends PianoLit
 	
 	protected $dates = ['renews_at', 'validated_at'];
 
+	public function user()
+	{
+		return $this->belongsTo(User::class);
+	}
+	
 	public function reactivate($receipt)
 	{
 		return $this->update([
