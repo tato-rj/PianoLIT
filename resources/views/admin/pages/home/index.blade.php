@@ -1,10 +1,10 @@
-@extends('admin/layouts/app')
+@extends('admin.layouts.app')
 
 @section('content')
 
   <div class="content-wrapper">
     <div class="container-fluid">
-      @include('admin/components/breadcrumb', [
+      @include('admin.components.breadcrumb', [
         'title' => 'Dashboard',
         'description' => 'PianoLIT Admin page '])
         
@@ -31,7 +31,7 @@
           <div class="card bg-beginner o-hidden h-100">
             <div class="card-body">
               <div class="card-body-icon">
-                <i class="fa fa-fw fa-vcard"></i>
+                <i class="fas fa-fw fa-address-card"></i>
               </div>
               <div class="mr-5">{{$composers_count}} Composers</div>
             </div>

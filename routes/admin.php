@@ -5,7 +5,8 @@ Route::get('', 'AdminsController@home')->name('home');
 Route::resources([
     'pieces' => 'PiecesController',
     'composers' => 'ComposersController',
-    'tags' => 'TagsController'
+    'tags' => 'TagsController',
+    'editors' => 'EditorsController'
 ]);
 
 Route::prefix('users')->name('users.')->group(function() {

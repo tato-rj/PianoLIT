@@ -12,6 +12,15 @@ class Admin extends Authenticatable
     protected $guarded = [];
     protected $hidden = ['password', 'remember_token'];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function($admin) {
+            $admin->pieces->each->update(['creator_id' => null]);
+        });
+    }
+
     public function pieces()
     {
         return $this->hasMany(Piece::class, 'creator_id');
@@ -35,5 +44,10 @@ class Admin extends Authenticatable
     public function scopeManagers($query)
     {
         return $query->where('role', 'manager');
+    }
+
+    public function isManager()
+    {
+        return $this->role == 'manager';
     }
 }

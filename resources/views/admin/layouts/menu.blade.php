@@ -6,7 +6,7 @@
   <div class="collapse navbar-collapse" id="navbarResponsive">
     <ul class="navbar-nav navbar-sidenav">
       <li class="nav-item">
-        <a class="nav-link" href="/piano-lit">
+        <a class="nav-link" href="{{route('admin.home')}}">
           <i class="fas fa-lightbulb fa-fw fa-tachometer-alt"></i>
           <span class="nav-link-text">Dashboard</span>
         </a>
@@ -54,7 +54,7 @@
         </ul>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/piano-lit/editors">
+        <a class="nav-link" href="{{route('admin.editors.index')}}">
           <i class="fas fa-pencil-alt fa-fw"></i>
           <span class="nav-link-text">Editors</span>
         </a>
@@ -80,7 +80,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/piano-lit/composers/">
-          <i class="fa fa-fw fa-vcard"></i>
+          <i class="fas fa-fw fa-address-card"></i>
           <span class="nav-link-text">Composers</span>
         </a>
       </li>
