@@ -14,7 +14,7 @@ class EditorsController extends Controller
      */
     public function index()
     {
-        $this->authorize('create');
+        $this->authorize('create', Admin::class);
 
         $editors = Admin::editors()->paginate(10);
 

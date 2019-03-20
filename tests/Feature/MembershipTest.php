@@ -37,4 +37,18 @@ class MembershipTest extends AppTest
 
         $this->assertEquals('trial', $user->fresh()->getStatus());   
     }
+
+    /** @test */
+    public function an_admin_can_verify_the_status_of_all_memberships()
+    {
+        $this->signIn();
+
+        $this->user->membership->update(['renews_at' => now()->copy()->subWeek()]);
+        
+        $this->assertNull($this->user->membership->validated_at);
+
+        $this->get(route('admin.memberships.validate.all'));
+
+        $this->assertNotNull($this->user->membership->fresh()->validated_at);
+    }
 }
