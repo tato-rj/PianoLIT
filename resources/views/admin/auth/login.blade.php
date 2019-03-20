@@ -18,8 +18,8 @@
                 <form class="form-horizontal" method="POST" action="{{ route('admin.login.submit') }}">
                     @csrf
                     <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6 mx-auto mb-4 text-center">
-                        {{-- <img class="w-100 mb-2" src="{{asset('images/app-icon.svg')}}" style="border-radius: 50%; vertical-align: sub;"> --}}
-                        <h4 class="text-brand">PIANO<strong>LIT</strong></h4>
+                        <img class="w-100 mb-2" src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 50%; vertical-align: sub;">
+                        <h4 class="text-brand">ADMIN</h4>
                     </div>
                     
                     <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">

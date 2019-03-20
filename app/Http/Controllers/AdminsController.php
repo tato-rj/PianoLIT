@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Admin;
+use App\{Admin, User, Piece, Tag, Composer};
 use Illuminate\Http\Request;
 
 class AdminsController extends Controller
@@ -14,7 +14,12 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return view('admin.home.pages.index');
+        $pieces_count = Piece::count();
+        $tags_count = Tag::count();
+        $composers_count = Composer::count();
+        $users_count = User::count();
+
+        return view('admin.pages.home.index', compact('pieces_count', 'tags_count', 'composers_count', 'users_count'));
     }
 
     /**

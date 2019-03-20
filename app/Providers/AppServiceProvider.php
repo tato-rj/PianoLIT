@@ -23,6 +23,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        \Blade::if('manager', function () {
+            return auth()->guard('admin')->user()->role == 'manager';
+        });
+
+        \Blade::if('editor', function () {
+            return auth()->guard('admin')->user()->role == 'editor';
+        });
+
+        \Blade::if('created', function ($model) {
+            return auth()->guard('admin')->user()->id == $model->creator_id || auth()->guard('admin')->user()->role == 'manager';
+        });
+
+        \Blade::if('env', function ($environment) {
+            return app()->environment($environment);
+        });
     }
 }

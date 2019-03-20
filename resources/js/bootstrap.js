@@ -1,12 +1,19 @@
 window._ = require('lodash');
-import Popper from 'popper.js/dist/umd/popper.min.js';
-import jQueryUI from 'jquery-ui-bundle/jquery-ui.min.js';
+window.Popper = require('popper.js').default;
+window.jQueryUI = require('jquery-ui-bundle');
+window.moment = require('moment');
+window.Calendar = require('fullcalendar');
+window.Trix = require('trix');
+window.Cropper = require('cropperjs');
+
+/**
+ * We'll load jQuery and the Bootstrap jQuery plugin which provides support
+ * for JavaScript based Bootstrap features such as modals and tabs. This
+ * code may be modified to fit the specific needs of your application.
+ */
 
 try {
     window.$ = window.jQuery = require('jquery');
-    window.Popper = Popper;
-    window.jQueryUI = jQueryUI;
-	require('bootstrap');
-} catch (e) {
-	console.log(e.message);
-}
+
+    require('bootstrap');
+} catch (e) {}
