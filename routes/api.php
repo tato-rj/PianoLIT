@@ -23,4 +23,12 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::post('/views', 'PiecesController@incrementViews')->name('increment-views');
 
+	Route::post('/find', 'ApiController@piece')->name('find');
+
 });
+
+Route::get('/discover', 'ApiController@discover')->name('discover');
+
+Route::get('/search', 'ApiController@search')->name('search');
+
+Route::get('/tour', 'ApiController@tour')->name('tour');

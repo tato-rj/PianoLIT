@@ -20,7 +20,7 @@ class Api
         $collection = $user->suggestions(12);
         $this->withAttributes($collection, [
             'type' => 'piece',
-            'source' => \URL::to('/api/pieces/find'),
+            'source' => route('api.pieces.find'),
             'color' => 'blue']);
 
         return $this->createPlaylist($collection, ['title' => "For {$user->first_name}"]);
@@ -31,7 +31,7 @@ class Api
         $collection = Piece::orderBy('views', 'DESC')->take(10)->get();
         $this->withAttributes($collection, [
             'type' => 'piece',
-            'source' => \URL::to('/api/pieces/find'),
+            'source' => route('api.pieces.find'),
             'color' => 'green']);
 
         return $this->createPlaylist($collection, ['title' => 'Trending']);
@@ -42,7 +42,7 @@ class Api
         $collection = Piece::latest()->take(15)->get();
         $this->withAttributes($collection, [
             'type' => 'piece',
-            'source' => \URL::to('/api/pieces/find'),
+            'source' => route('api.pieces.find'),
             'color' => 'teal']);
 
         return $this->createPlaylist($collection, ['title' => 'Latest']);
@@ -98,7 +98,7 @@ class Api
         $collection = Piece::famous()->take(10);
         $this->withAttributes($collection, [
             'type' => 'piece',
-            'source' => \URL::to('/api/pieces/find'),
+            'source' => route('api.pieces.find'),
             'color' => 'orange']);
 
         return $this->createPlaylist($collection, ['title' => 'Most famous']);
@@ -109,7 +109,7 @@ class Api
         $collection = Piece::flashy()->take(10);
         $this->withAttributes($collection, [
             'type' => 'piece',
-            'source' => \URL::to('/api/pieces/find'),
+            'source' => route('api.pieces.find'),
             'color' => 'red']);
 
         return $this->createPlaylist($collection, ['title' => 'Flashy']);
@@ -152,10 +152,9 @@ class Api
         $classname = get_class($model);
 
         if ($classname == 'App\Piece') {
-            $model->setAttribute('tips_array', $model->tips);
             $model->setAttribute('youtube_array', $model->youtube);
             $model->setAttribute('level', $model->level_name);
-            $model->setAttribute('period', $model->period() ? $model->period()->name : null);
+            $model->setAttribute('period', $model->period ? $model->period->name : null);
             $model->setAttribute('itunes_array', $model->itunes);
             $model->setAttribute('catalogue', $model->catalogue);
             $model->setAttribute('collection', $model->collection);

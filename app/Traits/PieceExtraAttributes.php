@@ -6,7 +6,7 @@ trait PieceExtraAttributes
 {
     public function getLevelNameAttribute()
     {
-        return $this->level()->name;
+        return $this->level->name;
     }
 
     public function getPeriodAttribute($period)
@@ -97,10 +97,5 @@ trait PieceExtraAttributes
     public function getTagsArrayAttribute()
     {
         return $this->tags->pluck('name');
-    }
-
-    public function getTipsCountAttribute()
-    {
-        return $this->tips_array ? count($this->tips_array) : 0;
     }
 }

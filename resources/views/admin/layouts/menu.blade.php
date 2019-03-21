@@ -43,13 +43,13 @@
         </a>
         <ul class="sidenav-second-level collapse" id="api">
           <li>
-            <a class="py-2" href="">Discover</a>
+            <a class="py-2" href="{{route('admin.api.discover')}}">Discover</a>
           </li>
           <li>
-            <a class="py-2" href="">Search</a>
+            <a class="py-2" href="{{route('admin.api.search')}}">Search</a>
           </li>
           <li>
-            <a class="py-2" href="">Tour</a>
+            <a class="py-2" href="{{route('admin.api.tour')}}">Tour</a>
           </li>
         </ul>
       </li>
