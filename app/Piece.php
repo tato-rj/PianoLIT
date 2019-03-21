@@ -157,4 +157,18 @@ class Piece extends PianoLit
                     $query->whereIn('id', $tagsArray);
                 })->pluck('tips');
     }
+
+    public function lookup($attribute)
+    {
+        return $this->$attribute ? 'text-success' : 'text-muted';
+    }
+
+    public function file_path($filename)
+    {
+        if (! $this->$filename)
+            return null;
+
+        $path = str_replace('public', 'storage', $this->$filename);
+        return secure_asset($path);
+    }
 }

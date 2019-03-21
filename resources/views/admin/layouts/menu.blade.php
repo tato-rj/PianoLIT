@@ -73,13 +73,13 @@
       </li>
       @endmanager
       <li class="nav-item">
-        <a class="nav-link" href="/piano-lit/pieces/">
+        <a class="nav-link" href="{{route('admin.pieces.index')}}">
           <i class="fa fa-fw fa-music"></i>
           <span class="nav-link-text">Pieces</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/piano-lit/composers/">
+        <a class="nav-link" href="{{route('admin.composers.index')}}">
           <i class="fas fa-fw fa-address-card"></i>
           <span class="nav-link-text">Composers</span>
         </a>
@@ -94,7 +94,7 @@
     </ul>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
+        <a class="nav-link" data-toggle="modal" data-target="#logoutModal">
           <i class="fas fa-fw fa-sign-out-alt"></i>Logout</a>
         </li>
       </ul>

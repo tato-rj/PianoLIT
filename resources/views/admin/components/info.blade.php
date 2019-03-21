@@ -1,0 +1,1 @@
+<i class="ml-1 fas fa-info-circle cursor-pointer" data-toggle="popover" data-trigger="hover" data-html="true" data-content="{{$message}}"></i>

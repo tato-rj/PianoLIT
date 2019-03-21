@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Composer;
+use App\{Composer, Country};
 use App\Http\Requests\ComposerForm;
 use Illuminate\Http\Request;
 
@@ -15,7 +15,20 @@ class ComposersController extends Controller
      */
     public function index()
     {
-        //
+        $filters = ['name', 'date_of_birth', 'pieces_count'];
+        
+        $sort = ['name', 'asc'];
+
+        if (request()->has('sort') && in_array(request('sort'), $filters))
+            $sort[0] = request('sort');
+
+        if (request()->has('order') && in_array(request('order'), ['asc', 'desc']))
+            $sort[1] = request('order');
+
+        $countries = Country::all();
+        $composers = Composer::orderBy($sort[0], $sort[1])->paginate(20);
+
+        return view('admin.pages.composers.index', compact(['composers', 'countries']));
     }
 
     /**
@@ -69,7 +82,9 @@ class ComposersController extends Controller
      */
     public function edit(Composer $composer)
     {
-        //
+        $countries = Country::all();
+        
+        return view('admin.pages.composers.edit', compact(['composer', 'countries']));
     }
 
     /**

@@ -18,3 +18,9 @@ Route::prefix('users')->name('users.')->group(function() {
 	Route::post('', 'UsersController@store')->name('store');
 
 });
+
+Route::prefix('pieces')->name('pieces.')->group(function() {
+
+	Route::post('/views', 'PiecesController@incrementViews')->name('increment-views');
+
+});

@@ -28,5 +28,6 @@ mix.js('resources/js/app.js', 'public/js')
    		'resources/js/vendor/tables.min.js',
    		'resources/js/vendor/theme.min.js'
    	], 'public/js/admin.js')
+   .copyDirectory('resources/js/vendor', 'public/js/vendor')
    .copyDirectory('resources/images', 'public/images')
    .version();

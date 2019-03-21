@@ -27,3 +27,13 @@ Route::prefix('memberships')->name('memberships.')->group(function() {
 	});
 
 });
+
+Route::prefix('pieces')->name('pieces.')->group(function() {
+
+		Route::post('/single-lookup', 'PiecesController@singleLookup')->name('single-lookup');
+		
+		Route::post('/multi-lookup', 'PiecesController@multiLookup')->name('multi-lookup');
+		
+		Route::post('/validate-name', 'PiecesController@validateName')->name('validate-name');
+
+});

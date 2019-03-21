@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Piece;
+use App\{Piece, Composer, Tag};
 use Illuminate\Http\Request;
 
 class PiecesController extends Controller
@@ -14,7 +14,33 @@ class PiecesController extends Controller
      */
     public function index()
     {
-        //
+        $filtersArray = ['level', 'period', 'length'];
+        $sortArray = ['asc', 'desc'];
+
+        $request = array_keys(request()->toArray());
+
+        if (request()->has('order') && in_array(request('order'), $sortArray))
+            $sort = request('order');
+
+        $pieces = new Piece;
+
+        foreach ($request as $filter) {
+            if ($filter == 'composer')
+                $pieces = $pieces->where('composer_id', request($filter));
+
+            if ($filter == 'creator_id')
+                $pieces = $pieces->where('creator_id', request($filter));
+
+            if (in_array($filter, $filtersArray)) {
+                $pieces = $pieces->whereHas('tags', function($piece) use ($filter) {
+                    $piece->where('name', request($filter));
+                });
+            }
+        }
+
+        $pieces = $pieces->orderBy('updated_at', $sort ?? 'desc')->paginate(20);
+
+        return view('admin.pages.pieces.index', compact('pieces'));
     }
 
     /**
@@ -24,7 +50,44 @@ class PiecesController extends Controller
      */
     public function create()
     {
-        //
+        $composers = Composer::orderBy('name')->get();
+
+        $types = Tag::byTypes($except = ['levels', 'periods', 'lengths']);
+
+        return view('admin.pages.pieces.create', compact(['composers', 'types']));
+    }
+
+    public function singleLookup(Request $request)
+    {
+        $field = $request->field;
+
+        $results = Piece::selectRaw("$field, $field as output")
+                        ->where($field, 'like', "%$request->input%")
+                        ->groupBy($field)
+                        ->get();
+
+        return $results;
+    }
+   
+    public function multiLookup(Request $request)
+    {
+        $results = Piece::selectRaw('collection_name, catalogue_name, catalogue_number, composer_id, 
+            CONCAT_WS(" ", collection_name, catalogue_name, catalogue_number) as output')
+                        ->where('collection_name', 'like', "%$request->input%")
+                        ->groupBy('collection_name', 'catalogue_name', 'catalogue_number', 'composer_id')
+                        ->get();
+
+        return $results;
+    }
+
+    public function validateName(Request $request)
+    {
+        $request->validate(['name' => 'required']);
+        $results = Piece::where('name', 'LIKE', "%$request->name%")
+                        ->where('catalogue_number', 'like', $request->catalogue_number ?? '%')
+                        ->where('collection_name', 'like', $request->collection_name ?? '%')->get();
+
+        return view('admin.pages.pieces.validation', compact('results'))->render();        
     }
 
     /**
@@ -94,7 +157,11 @@ class PiecesController extends Controller
      */
     public function edit(Piece $piece)
     {
-        //
+        $composers = Composer::orderBy('name')->get();
+
+        $types = Tag::byTypes($except = ['levels', 'periods', 'lengths']);
+
+        return view('admin.pages.pieces.edit', compact(['composers', 'piece', 'types']));
     }
 
     /**
@@ -152,6 +219,16 @@ class PiecesController extends Controller
         }
 
         return redirect()->back()->with('success', "The piece has been successfully updated!");
+    }
+
+    public function incrementViews(Request $request)
+    {
+        Piece::findOrFail($request->piece_id)->increment('views');
+        
+        if (request()->wantsJson())
+            return response(200);
+
+        return redirect()->back()->with('success', "The number of views has been incremented!");
     }
 
     /**
