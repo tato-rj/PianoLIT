@@ -6,7 +6,8 @@ Route::resources([
     'pieces' => 'PiecesController',
     'composers' => 'ComposersController',
     'tags' => 'TagsController',
-    'editors' => 'EditorsController'
+    'editors' => 'EditorsController',
+    'users' => 'UsersController'
 ]);
 
 Route::prefix('users')->name('users.')->group(function() {

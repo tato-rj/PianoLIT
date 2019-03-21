@@ -14,7 +14,11 @@ class TagsController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorize('create', Tag::class);
+
+        $types = Tag::byTypes();
+
+        return view('admin.pages.tags.index', compact('types'));
     }
 
     /**

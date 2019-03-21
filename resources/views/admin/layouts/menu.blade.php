@@ -60,13 +60,13 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/piano-lit/users/">
+        <a class="nav-link" href="{{route('admin.users.index')}}">
           <i class="fa fa-fw fa-users"></i>
           <span class="nav-link-text">Users</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/piano-lit/tags/">
+        <a class="nav-link" href="{{route('admin.tags.index')}}">
           <i class="fas fa-fw fa-tags"></i>
           <span class="nav-link-text">Tags</span>
         </a>

@@ -10,10 +10,7 @@
 
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-          <button type="button" class="btn btn-sm btn-default mr-3" data-toggle="modal" data-target="#add-modal">
-            <i class="fas fa-plus mr-2"></i>Create a new user
-          </button>
+        <div>
     
           <form method="GET" action="{{route('admin.memberships.validate.all')}}">
             @csrf
@@ -36,7 +33,7 @@
         <a href="{{route('admin.users.show', $user->id)}}" class="link-none">
           <div class="d-flex align-items-center bg-light text-muted px-3 py-2 badge-pill hover-shadow-light t-2">
             
-            @include('admin.users.status-icon/'.$user->getStatus())
+            @include('admin.pages.users.status-icon/'.$user->getStatus())
 
             <div class="px-3" style="flex-grow: 2">
               <span>
@@ -45,9 +42,9 @@
             </div>
 
             <div>
-              @if($user->subscription()->exists())
-                @if($user->subscription->expired())
-                <span class="text-muted"><i><small>validated {{$user->subscription->validated_at->diffForHumans()}}</small></i></span>
+              @if($user->membership()->exists())
+                @if($user->membership->expired())
+                <span class="text-muted"><i><small>validated {{$user->membership->validated_at->diffForHumans()}}</small></i></span>
                 @else
                 <div><i class="fas fa-credit-card"></i></div>
                 @endif

@@ -23,12 +23,13 @@ class CreatePiecesTable extends Migration
             $table->string('collection_number')->nullable();
             $table->string('movement_number')->nullable();
             $table->string('key');
+            $table->text('tips')->nullable();
             $table->text('curiosity')->nullable();
             $table->string('audio_path')->nullable();
             $table->string('audio_path_rh')->nullable();
             $table->string('audio_path_lh')->nullable();
-            $table->json('itunes')->nullable();
-            $table->json('youtube')->nullable();
+            $table->text('itunes')->nullable();
+            $table->text('youtube')->nullable();
             $table->string('score_url')->nullable();
             $table->string('score_path')->nullable();
             $table->string('score_editor')->nullable();

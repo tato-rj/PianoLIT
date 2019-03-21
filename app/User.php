@@ -13,11 +13,8 @@ class User extends Authenticatable
 
     protected $guarded = [];
     protected $hidden = ['password', 'remember_token'];
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'trial_ends_at' => 'datetime',
-        'is_active' => 'boolean'
-    ];
+    protected $casts = ['is_active' => 'boolean'];
+    protected $dates = ['trial_ends_at', 'email_verified_at'];
 
     public function membership()
     {
