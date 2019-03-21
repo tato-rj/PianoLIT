@@ -27,10 +27,10 @@
         </a>
         <ul class="sidenav-second-level collapse" id="statistics">
           <li>
-            <a class="py-2" href="/piano-lit/users/statistics">Users</a>
+            <a class="py-2" href="{{route('admin.stats.users')}}">Users</a>
           </li>
           <li>
-            <a class="py-2" href="/piano-lit/pieces/statistics">Pieces</a>
+            <a class="py-2" href="{{route('admin.stats.pieces')}}">Pieces</a>
           </li>
         </ul>
       </li>      

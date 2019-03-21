@@ -10,6 +10,15 @@ Route::resources([
     'users' => 'UsersController'
 ]);
 
+Route::prefix('statistics')->name('stats.')->group(function() {
+
+	Route::get('users', 'StatsController@users')->name('users');
+
+	Route::get('pieces', 'StatsController@pieces')->name('pieces');
+
+});
+
+
 Route::prefix('users')->name('users.')->group(function() {
 
 	Route::patch('{user}', 'MembershipsController@updateTrial')->name('update-trial');
