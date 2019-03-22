@@ -56,7 +56,20 @@ class ApiController extends Controller
 
     public function tour(Request $request)
     {
-    	
+        $inputArray = $this->api->prepareInput($request);
+
+        $pieces = Piece::search($inputArray, $request)->get();
+
+        $this->api->prepare($request, $pieces, $inputArray);
+
+        if ($request->wantsJson() || $request->has('api'))
+            return $pieces;
+
+        $levels = Tag::levels()->get();
+        $lengths = Tag::lengths()->get();
+        $moods = Tag::special()->get();
+                
+        return view('admin.pages.tour.index', compact(['pieces', 'inputArray', 'levels', 'lengths', 'moods']));
     }
 
     public function piece(Request $request)

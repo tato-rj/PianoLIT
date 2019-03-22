@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-between px-3 py-2 
   {{is_null($piece->creator_id) ? 'bg-white text-muted border' : 'bg-'.strtolower($piece->level->name)}} rounded">
     <div class="truncate">
-      {{-- @include('admin.pages.pieces.play') --}}
+      @include('admin.pages.pieces.play')
       <strong>{{$piece->long_name}}</strong> by {{$piece->composer->short_name}}
     </div>
     <div class="text-right ml-2 d-flex" style="white-space: nowrap;">

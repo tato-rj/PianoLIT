@@ -169,6 +169,7 @@ class Piece extends PianoLit
             return null;
 
         $path = str_replace('public', 'storage', $this->$filename);
+        
         return secure_asset($path);
     }
 }

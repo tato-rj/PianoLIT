@@ -1,7 +1,6 @@
 <div class="d-flex justify-content-between">
   <p class="text-center btn-sm">We found {{$pieces->count()}} {{str_plural('result', $pieces->count())}} out of {{\App\Piece::count()}} pieces</p>
-  <form method="POST" action="{{route('admin.api.search')}}" target="_blank">
-    @csrf
+  <form method="GET" action="{{route('admin.api.search')}}" target="_blank">
   	{{-- The api field tells the server to return a json --}}
     <input type="hidden" name="api">
     {{-- The global field indicates a search using the text input --}}
