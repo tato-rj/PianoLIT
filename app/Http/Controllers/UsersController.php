@@ -77,6 +77,7 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
+        dd(get_class(new \Locale));
         if (request('format') == 'json')
             return $user->membership;
 
