@@ -30,7 +30,7 @@
           @elseif($user->getStatus() == 'active')
             <span class="text-success">Active</span>
           @elseif($user->getStatus() == 'inactive')
-            <span class="text-danger">Subscription expired (validated {{$user->subscription->validated_at->diffForHumans()}})</span>
+            <span class="text-danger">Membership expired (validated {{$user->membership->validated_at->diffForHumans()}})</span>
           @endif
         </p>
       </div>

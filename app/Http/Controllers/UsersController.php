@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\{User, Piece, Api};
 use Illuminate\Http\Request;
 
 class UsersController extends Controller
@@ -77,7 +77,16 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        //
+        if (request('format') == 'json')
+            return $user->membership;
+
+        $pieces = Piece::orderBy('name')->get();
+
+        $pieces->each(function($piece) use ($user) {
+            (new Api)->setCustomAttributes($piece, $user->id);
+        });
+
+        return view('admin.pages.users.show.index', compact(['user', 'pieces']));
     }
 
     /**

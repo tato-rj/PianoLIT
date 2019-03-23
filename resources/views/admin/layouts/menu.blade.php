@@ -32,6 +32,9 @@
           <li>
             <a class="py-2" href="{{route('admin.stats.pieces')}}">Pieces</a>
           </li>
+          <li>
+            <a class="py-2" href="{{route('admin.stats.blog')}}">Blog</a>
+          </li>
         </ul>
       </li>      
      
@@ -82,6 +85,12 @@
         <a class="nav-link" href="{{route('admin.composers.index')}}">
           <i class="fas fa-fw fa-address-card"></i>
           <span class="nav-link-text">Composers</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{route('admin.posts.index')}}">
+          <i class="fas fa-fw fa-newspaper"></i>
+          <span class="nav-link-text">Blog</span>
         </a>
       </li>
     </ul>

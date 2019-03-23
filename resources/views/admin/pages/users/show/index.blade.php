@@ -1,25 +1,25 @@
-@extends('projects/pianolit/layouts/app')
+@extends('admin.layouts.app')
 
 @section('content')
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('projects/pianolit/components/breadcrumb', [
+  @include('admin.components.breadcrumb', [
     'title' => 'Users',
     'description' => "$user->first_name's profile"])
 
     <div class="text-center">
-      <a href="{{route('piano-lit.api.user', $user->id)}}" target="_blank" class="link-default"><small>See JSON response</small></a>
+      <a href="{{route('api.users.show', ['user_id' => $user->id])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
     </div>  
    
-    @include('projects/pianolit/users/show/basic')
+    @include('admin.pages.users.show.basic')
 
     <ul class="nav nav-tabs mb-2" id="user-menu" role="tablist">
       <li class="nav-item">
         <a class="nav-link {{request('section') == 'profile' || ! request()->has('section') ? 'active show' : null}}" name="profile" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Profile</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link {{request('section') == 'subscription' ? 'active show' : null}}" name="subscription" id="subscription-tab" data-toggle="tab" href="#subscription" role="tab" aria-controls="subscription" aria-selected="false">Subscription</a>
+        <a class="nav-link {{request('section') == 'membership' ? 'active show' : null}}" name="membership" id="membership-tab" data-toggle="tab" href="#membership" role="tab" aria-controls="membership" aria-selected="false">Membership</a>
       </li>
       <li class="nav-item">
         <a class="nav-link {{request('section') == 'behavior' ? 'active show' : null}}" name="behavior" id="behavior-tab" data-toggle="tab" href="#behavior" role="tab" aria-controls="behavior" aria-selected="false">Behavior</a>
@@ -35,25 +35,25 @@
     </ul>
 
     <div class="tab-content">
-      @include('projects/pianolit/users/show/profile')
+      @include('admin.pages.users.show.profile')
 
-      @include('projects/pianolit/users/show/subscription/section')
+      @include('admin.pages.users.show.membership.section')
 
-      @include('projects/pianolit/users/show/behavior')
+      @include('admin.pages.users.show.behavior')
 
-      @include('projects/pianolit/users/show/manage')
+      @include('admin.pages.users.show.manage')
 
       @if(app()->environment() == 'local')
-      @include('projects/pianolit/users/show/sandbox')
+      @include('admin.pages.users.show.sandbox')
       @endif
   </div>
   </div>
 </div>
 
-@include('projects/pianolit/components/modals/delete', ['model' => 'user'])
-@include('projects/pianolit/components/modals/trial', ['model' => 'user'])
-@include('projects/pianolit/components/modals/favorites')
-@include('projects/pianolit/components/modals/history')
+@include('admin.components.modals.delete', ['model' => 'user'])
+@include('admin.components.modals.trial', ['model' => 'user'])
+@include('admin.components.modals.favorites')
+@include('admin.components.modals.history')
 
 @endsection
 
@@ -110,7 +110,7 @@ $('.sandbox-button').on('click', function() {
 </script>
 
 <script type="text/javascript">
-$('#subscription-history').on('shown.bs.modal', function (e) {
+$('#membership-history').on('shown.bs.modal', function (e) {
   $user_id = $(this).attr('data-user_id');
   $url = $(this).attr('data-url');
   $loading = $(this).find('#history-loading');
@@ -124,7 +124,7 @@ $('#subscription-history').on('shown.bs.modal', function (e) {
   });
 });
 
-$('#subscription-history').on('hidden.bs.modal', function (e) {
+$('#membership-history').on('hidden.bs.modal', function (e) {
   $(this).find('#history-data').html('').hide();
   $(this).find('#history-loading').show();
 });

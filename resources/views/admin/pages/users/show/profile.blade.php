@@ -15,7 +15,7 @@
     <div class="col-lg-6 col-md-6 col-sm-12 col-12 p-3">
       <div class="text-center rounded bg-light px-3 py-2">
         <p class="text-muted mb-2 pb-2 border-bottom"><strong>The piece I like the most is...</strong></p>
-        <p class="m-0 clamp-1">{{\App\Projects\PianoLit\Piece::find($user->preferred_piece_id)->medium_name}}</p>          
+        <p class="m-0 clamp-1">{{$user->preferred_piece->medium_name}}</p>          
       </div>        
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-12 p-3">

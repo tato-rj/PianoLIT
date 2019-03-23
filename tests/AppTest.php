@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Blog\Post;
 use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist};
 
 class AppTest extends TestCase
@@ -13,6 +14,8 @@ class AppTest extends TestCase
         $this->admin = create(Admin::class);
 
         $this->user = create(User::class);
+
+        $this->post = create(Post::class, ['creator_id' => $this->admin->id]);
 
         $this->membership = create(Membership::class);
 

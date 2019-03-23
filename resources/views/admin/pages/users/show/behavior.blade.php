@@ -9,7 +9,7 @@
       <ul class="list-style-none pl-2">
         @foreach($user->favorites as $piece)
         <li class="mb-2">
-          <a href="{{route('piano-lit.pieces.edit', $piece)}}">
+          <a href="{{route('admin.pieces.edit', $piece)}}">
             <i class="fas fa-caret-right mr-2"></i>{{$piece->long_name}}
           </a>
         </li>
@@ -21,7 +21,7 @@
       <div class="d-flex align-items-center">
         <p class="text-muted m-0">
           <strong>Suggested pieces</strong> | </p>  
-          <form method="POST" action="{{route('piano-lit.api.suggestions')}}" target="_blank">
+          <form method="POST" action="{{route('api.users.suggestions')}}" target="_blank">
             <input type="hidden" name="user_id" value="{{$user->id}}">
             <button type="submit" class="text-brand ml-1 btn btn-link p-0 cursor-pointer"><small>See JSON response</small></button>
           </form>
@@ -37,7 +37,7 @@
       <ul class="list-style-none pl-2">
         @foreach($user->suggestions(10) as $piece)
         <li class="mb-2">
-          <a href="{{route('piano-lit.pieces.edit', $piece)}}">
+          <a href="{{route('admin.pieces.edit', $piece->id)}}">
             <i class="fas fa-caret-right mr-2"></i>{{$piece->long_name}}
           </a>
         </li>

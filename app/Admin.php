@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Blog\Post;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -24,6 +25,11 @@ class Admin extends Authenticatable
     public function pieces()
     {
         return $this->hasMany(Piece::class, 'creator_id');
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'creator_id');
     }
 
     public function composers()

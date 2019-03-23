@@ -3,10 +3,10 @@
 	<div class="p-3 alert alert-danger" role="alert">
 		<div>
 			<i class="fas fa-ban mr-2"></i>
-			{{$user->first_name}}'s subscription expired on <strong>{{$user->subscription->renews_at->toFormattedDateString()}}</strong> and it was last validated on {{$user->subscription->validated_at->toDayDateTimeString()}}.
+			{{$user->first_name}}'s membership expired on <strong>{{$user->membership->renews_at->toFormattedDateString()}}</strong> and it was last validated on {{$user->membership->validated_at->toDayDateTimeString()}}.
 		</div>
 	</div>	
 
 </div>
 
-@include('projects/pianolit/users/show/subscription/info')
+@include('admin.pages.users.show.membership.info')

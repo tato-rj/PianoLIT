@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Api, Piece, Tag};
+use App\{Api, Piece, Tag, User};
 use Illuminate\Http\Request;
 
 class ApiController extends Controller
@@ -81,5 +81,26 @@ class ApiController extends Controller
         $result[0] = $piece;
 
         return $result;
+    }
+
+    public function user(Request $request)
+    {
+        return $request->all();
+    }
+
+    public function suggestions(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (! $user)
+            return response()->json(['User not found']);
+
+        $suggestions = $user->suggestions(10);
+        
+        $suggestions->each(function($piece) use ($user) {
+            $this->api->setCustomAttributes($piece, $user->id);
+        });
+
+        return $suggestions;
     }
 }

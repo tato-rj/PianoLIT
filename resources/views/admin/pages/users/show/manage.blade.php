@@ -24,7 +24,7 @@
     </div>
 
     <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
-      <a href="" data-name="{{$user->full_name}}" data-url="/piano-lit/users/{{$user->id}}" data-toggle="modal" data-target="#delete-modal" class="link-none">
+      <a href="" data-name="{{$user->full_name}}" data-url="{{route('admin.users.destroy', $user->id)}}" data-toggle="modal" data-target="#delete-modal" class="link-none">
         <div class="bg-advanced p-4 rounded">
           <p class="mb-2">
             <strong><i class="fas fa-trash-alt mr-2"></i>Delete account</strong>

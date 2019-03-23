@@ -7,7 +7,8 @@ Route::resources([
     'composers' => 'ComposersController',
     'tags' => 'TagsController',
     'editors' => 'EditorsController',
-    'users' => 'UsersController'
+    'users' => 'UsersController',
+    'posts' => 'PostsController'
 ]);
 
 Route::prefix('api')->name('api.')->group(function() {
@@ -25,6 +26,8 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 	Route::get('users', 'StatsController@users')->name('users');
 
 	Route::get('pieces', 'StatsController@pieces')->name('pieces');
+
+	Route::get('blog', 'StatsController@blog')->name('blog');
 
 });
 
@@ -44,6 +47,8 @@ Route::prefix('memberships')->name('memberships.')->group(function() {
 		Route::post('{user}', 'MembershipsController@validate')->name('user');
 	
 	});
+
+	Route::delete('{user}', 'MembershipsController@destroy')->name('destroy');
 
 });
 
