@@ -2701,7 +2701,7 @@ textarea {
     top: 0;
     width: 100%;
     z-index: 998;
-    background-color: #5c1ef9;
+    background-color: #4464EB;
 }
 
 .menu-area {
@@ -3001,7 +3001,7 @@ END Service Area
     bottom: 0;
     height: 2px;
     width: 130px;
-    background-color: #5a10fb;
+    background-color: #4464EB;
     left: calc(50% - 65px);
 }
 
@@ -3016,7 +3016,7 @@ END Service Area
     bottom: -3px;
     height: 8px;
     width: 8px;
-    background-color: #5a10fb;
+    background-color: #4464EB;
     left: calc(50% - 4px);
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
@@ -3195,7 +3195,7 @@ END Achivement Area
 .screen-slider .owl-dots .owl-dot {
     height: 15px;
     width: 15px;
-    border: 1px solid #5a10fb;
+    border: 1px solid #4464EB;
     border-radius: 50%;
     display: inline-block;
     margin: 0px 2px;
@@ -3205,7 +3205,7 @@ END Achivement Area
 }
 
 .screen-slider .owl-dots .active {
-    background-color: #5a10fb;
+    background-color: #4464EB;
 }
 
 
@@ -3224,7 +3224,7 @@ END Screen Area
 
 .single-tst {
         text-align: center;
-    border: 2px solid #5a10fb;
+    border: 2px solid #4464EB;
     border-radius: 10px;
     margin-top: 109px;
     padding: 0px 8%;
@@ -3282,7 +3282,7 @@ END Screen Area
 .testimonial-slider .owl-dots .owl-dot {
     height: 15px;
     width: 15px;
-    border: 1px solid #5a10fb;
+    border: 1px solid #4464EB;
     border-radius: 50%;
     display: inline-block;
     margin: 0px 2px;
@@ -3292,7 +3292,7 @@ END Screen Area
 }
 
 .testimonial-slider .owl-dots .active {
-    background-color: #5a10fb;
+    background-color: #4464EB;
 }
 
 
@@ -3412,7 +3412,7 @@ END Video Area
     box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
 }
 .prc-head{
-        background: #5a10fb;
+        background: #4464EB;
     text-align: center;
     padding: 40px;
 }
@@ -3548,7 +3548,7 @@ END Pricing Area
 }
 .download-btns a:hover{
     background-color: #fff;
-    color: #5c1ef9;
+    color: #4464EB;
 }
 .download-btns a i {
     font-size: 19px;
@@ -3597,7 +3597,7 @@ END Call To Action
     letter-spacing: 0;
 }
 .single-post h2 a:hover{
-    color: #5a10fb;
+    color: #4464EB;
 }
 .single-post p{
     color: #555;
@@ -3647,7 +3647,7 @@ END Contact Area
 .contact-form #send{
     height: 45px;
     width: 150px;
-    background: #5a10fb;
+    background: #4464EB;
     color: #fff;
     text-align: center;
     line-height: 45px;
@@ -3692,7 +3692,7 @@ END Contact Area
     height: 50px;
     width: 50px;
     border-radius: 50%;
-    background-color: #5a10fb;
+    background-color: #4464EB;
     color: #fff;
     text-align: center;
     line-height: 50px;
@@ -3712,7 +3712,7 @@ END Contact Area
 .footer-area{
     height: 80px;
     text-align: center;
-    background-color: #5a10fb;
+    background-color: #4464EB;
     display: flex;
     align-items: center;
 }

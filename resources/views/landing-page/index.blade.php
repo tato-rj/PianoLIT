@@ -12,12 +12,16 @@
     <link rel="stylesheet" href="{{mix('landing-page/css/theme.css')}}">
     <!-- Favicon -->
     {{-- <link rel="shortcut icon" type="image/png" href="assets/img/icon/favicon.ico"> --}}
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,800" rel="stylesheet">
+    <style type="text/css">
+        body, p, h1, h2, h3, h4, h5, h6, a, li {
+            font-family: 'Poppins', sans-serif !important;
+        }
+        .main-menu nav ul li a {
+            font-size: 16px;
+        }
+    </style>
 </head>
 
 <body>
@@ -34,21 +38,21 @@
                     <div class="menu-area">
                         <div class="col-md-3 col-sm-12 col-xs-12">
                             <div class="logo">
-                                <a href="index.html"><img src="{{asset('landing-page/img/icon/logo.png')}}" alt="Zeedapp - App Landing Template"></a>
+                                <a href="index.html"><h3 style="line-height: 2; color: white; font-weight: 800">PianoLIT</h3></a>
                             </div>
                         </div>
                         <div class="col-md-9 hidden-xs hidden-sm">
                             <div class="main-menu">
                                 <nav class="nav-menu">
                                     <ul>
-                                        <li class="active"><a href="#home">Home</a></li>
-                                        <li><a href="#feature">Features</a></li>
-                                        <li><a href="#screenshot">Screenshot</a></li>
-                                        <li><a href="#pricing">Pricing</a></li>
-                                        <li><a href="#team">Team</a></li>
-                                        <li><a href="#download">Download</a></li>
+                                        <li class="active"><a href="#home">App</a></li>
+                                        {{-- <li><a href="#feature">Features</a></li> --}}
+                                        {{-- <li><a href="#screenshot">Screenshot</a></li> --}}
+                                        {{-- <li><a href="#pricing">Pricing</a></li> --}}
+                                        {{-- <li><a href="#team">Team</a></li> --}}
                                         <li><a href="#blog">Blog</a></li>
-                                        <li><a href="#contact">Contact</a></li>
+                                        <li><a href="#download">Download</a></li>
+                                        {{-- <li><a href="#contact">Contact</a></li> --}}
                                     </ul>
                                 </nav>
                             </div>
@@ -65,19 +69,23 @@
     <!-- slider area start -->
     <section id="home" class="slider-area image-background parallax" data-speed="3" data-bg-image="{{asset('landing-page/img/bg/slider-bg.jpg')}}">
         <div class="container">
-            <div class="col-md-6 col-sm-6 hidden-xs">
+            <div class="col-md-6 col-sm-6 hidden-xs" style="max-height: 50vh">
                 <div class="row">
                     <div class="slider-img">
-                        <img src="{{asset('landing-page/img/mobile/slider-left-img.png')}}" alt="slider image">
+                        <img src="{{asset('landing-page/img/mobile/slider-left-img.png')}}" style="width: 60%" alt="slider image">
                     </div>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div class="row">
                     <div class="slider-inner text-right">
-                        <h2>Who Else Wants To User</h2>
-                        <h5>And Use Our Zeed App !</h5>
-                        <a class="expand-video" href="https://www.youtube.com/watch?v=8qs2dZO6wcc"><i class="fa fa-play"></i>Watch the video</a>
+                        <h2 style="font-weight: 800">PianoLIT</h2>
+                        <h5 style="font-size: 26px">Where pianists discover new pieces and find inspiration to play only what they love.</h5>
+                        <a style="    border: 0;
+    padding: 0;
+    margin: 0;
+    width: auto;
+    height: auto;" href="https://www.youtube.com/watch?v=8qs2dZO6wcc"><img src="{{asset('landing-page/app-store.svg')}}" style="width: 200px"></a>
                     </div>
                 </div>
             </div>
@@ -85,7 +93,7 @@
     </section>
     <!-- slider area end -->
     <!-- service area start -->
-    <div class="service-area">
+{{--     <div class="service-area">
         <div class="container">
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-xs-12">
@@ -111,7 +119,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- service area end -->
     <!-- about area start -->
     <div class="about-area ptb--100">
