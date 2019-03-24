@@ -1,34 +1,17 @@
 <section class="container">
 	<div class="row">
-		<div class="col-9 mx-auto">
-			<div class="row align-items-center mb-5 border-bottom">
-				<div class="col-6 pr-4">
-					<h3 class="accent-bottom mb-4">Search by mood, style or technique.</h3>
-					<p class="text-muted">Practice exercises to improve your breathing, pitch, ear, range and vocal consistency.</p>
-				</div>
-				<div class="col-6 text-center">
-					<img src="https://vanido.io/img/phone-1@2x.png" style="width: 90%">
-				</div>
-			</div>
-
-			<div class="row align-items-center mb-5 border-bottom">
-				<div class="col-6 pr-4 order-2">
-					<h3 class="accent-bottom mb-4">Search by mood, style or technique.</h3>
-					<p class="text-muted">Practice exercises to improve your breathing, pitch, ear, range and vocal consistency.</p>
-				</div>
-				<div class="col-6 text-center order-1">
-					<img src="https://vanido.io/img/phone-1@2x.png" style="width: 90%">
-				</div>
-			</div>
-
-			<div class="row align-items-center mb-5 border-bottom">
-				<div class="col-6 pr-4">
-					<h3 class="accent-bottom mb-4">Search by mood, style or technique.</h3>
-					<p class="text-muted">Practice exercises to improve your breathing, pitch, ear, range and vocal consistency.</p>
-				</div>
-				<div class="col-6 text-center">
-					<img src="https://vanido.io/img/phone-1@2x.png" style="width: 90%">
-				</div>
+		<div class="col-6 mx-auto">
+			<p class="text-muted"><small>PIANOLIT APP</small></p>
+			<h3 class="accent-bottom mb-4">The app that'll change the way we find piano literature</h3>
+			<p class="text-muted">PianoLIT is where pianists discover new pieces and find inspiration to play only what they love. Find new pieces based on your mood, style or specific technique.</p>
+		</div>
+		<div class="col-12 text-center">
+			<div class="position-relative text-center mx-auto" style="height: 592px;">
+				<img src="{{asset('images/mockup/composition/piece.png')}}" class="absolute-center" style="height: 100%; z-index: 3;">
+				<img src="{{asset('images/mockup/composition/videos.jpg')}}" class="absolute-center shadow-light" style="height: 62%; z-index: 2; margin-left: 192px;">
+				<img src="{{asset('images/mockup/composition/tags.jpg')}}" class="absolute-center shadow-light" style="height: 62%; z-index: 2; margin-left: -192px">
+				<img src="{{asset('images/mockup/composition/user.jpg')}}" class="absolute-center shadow-light" style="height: 48%; z-index: 1; margin-left: 328px;">
+				<img src="{{asset('images/mockup/composition/matches.jpg')}}" class="absolute-center shadow-light" style="height: 48%; z-index: 1; margin-left: -328px;">				
 			</div>
 		</div>
 	</div>
