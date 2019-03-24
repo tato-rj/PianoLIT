@@ -1,7 +1,5 @@
 <?php
 
 Route::get('/', function () {
-    return view('landing-page.index');
-});
-
-Route::get('/home', 'HomeController@index')->name('home');
+    return view('welcome.index');
+})->name('home');
