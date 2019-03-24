@@ -32,6 +32,7 @@
             height: 7px;
             margin-top: 1.5rem;
         }
+
     </style>
 
     @stack('header')
@@ -44,10 +45,26 @@
         <main>
             @yield('content')
         </main>
+        @include('layouts.footer')
     </div>
 
-    <script src="{{ mix('js/app.js') }}" defer></script>
+    <script src="{{ mix('js/app.js') }}"></script>
 
+    <script type="text/javascript">
+    $('#tags-search .tag').on('click', function() {
+      $tag = $(this);
+
+      $tag.toggleClass('bg-grey-lightest selected-tag');  
+    });
+
+    $('#close-results').on('click', function() {
+        $('#results-overlay').fadeOut();
+    });
+
+    $('#find-results').on('click', function() {
+        $('#results-overlay').fadeIn();
+    });
+    </script>
     @stack('scripts')
 
 </body>

@@ -21,6 +21,10 @@ mix.js('resources/js/app.js', 'public/js')
       'public/css/admin.css',
       ], 'public/css/admin.css')
     .scripts([
+      'public/js/app.js',
+      'node_modules/swiper/dist/js/swiper.min.js',
+      ], 'public/js/app.js')
+    .scripts([
       'public/js/admin.js',
       'resources/js/vendor/Chart.min.js',
       'resources/js/vendor/jquery.dataTables.js',
@@ -32,3 +36,4 @@ mix.js('resources/js/app.js', 'public/js')
     .copyDirectory('resources/js/vendor', 'public/js/vendor')
     .copyDirectory('resources/images', 'public/images')
     .version();
+

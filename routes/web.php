@@ -1,5 +1,7 @@
 <?php
 
 Route::get('/', function () {
-    return view('welcome.index');
+	$tags = \App\Tag::inRandomOrder()->get();
+
+    return view('welcome.index', compact('tags'));
 })->name('home');

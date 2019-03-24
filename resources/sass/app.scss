@@ -1,5 +1,35 @@
 @import "~bootstrap/scss/bootstrap";
 @import "~@fortawesome/fontawesome-free/css/all.min";
 @import "~jquery-ui-bundle/jquery-ui.min";
+@import '~swiper/dist/css/swiper.min';
 
+@import "components/swiper";
 @import "variables";
+
+button:focus {outline:0;}
+
+.selected-tag {
+	background: #70cfa7 !important;
+	color: white;
+}
+
+.text-primary {
+	color: $brand-primary;
+}
+
+.btn-primary {
+	color: white !important;
+	background-color: $brand-primary;
+	border-color: $brand-primary;
+
+	&:hover {
+		color: white !important;
+		background-color: darken($brand-primary, 4%);
+		border-color: darken($brand-primary, 4%);
+	}
+
+	&:active {
+		background-color: darken($brand-primary, 4%);
+		border-color: darken($brand-primary, 4%);
+	}
+}
