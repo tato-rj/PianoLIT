@@ -2,5 +2,7 @@
     "/js/app.js": "/js/app.js?id=ba70f31c49029a981e4e",
     "/css/app.css": "/css/app.css?id=9a3a0538ad85faff06e7",
     "/css/admin.css": "/css/admin.css?id=62429a032e0a795f3818",
-    "/js/admin.js": "/js/admin.js?id=feb85c7cd4be32ec76e2"
+    "/js/admin.js": "/js/admin.js?id=feb85c7cd4be32ec76e2",
+    "/landing-page/css/theme.css": "/landing-page/css/theme.css?id=610a969ea10692799c62",
+    "/landing-page/js/theme.js": "/landing-page/js/theme.js?id=15832a6f698b62e1eba9"
 }
