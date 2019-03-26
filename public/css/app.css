@@ -20175,6 +20175,26 @@ button.swiper-pagination-bullet {
   footer .social-icons {
     font-size: 1.25em;
   }
+
+  footer .mb-5 {
+    margin-bottom: 1.5rem !important;
+  }
+
+  footer.py-6 {
+    padding-bottom: 3rem !important;
+    padding-top: 3rem !important;
+  }
+
+  #tags-search-container {
+    overflow-x: scroll;
+  }
+
+  #tags-search-container #tags-search {
+    width: 1500px;
+    -webkit-box-pack: left !important;
+        -ms-flex-pack: left !important;
+            justify-content: left !important;
+  }
 }
 
 button:focus {

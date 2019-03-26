@@ -20,6 +20,24 @@
 		.social-icons {
 			font-size: 1.25em;
 		}
+
+		.mb-5 {
+			margin-bottom: 1.5rem !important;
+		}
+	}
+
+	footer.py-6 {
+		padding-bottom: 3rem !important;
+		padding-top: 3rem !important;
+	}
+
+	#tags-search-container {
+		overflow-x: scroll;
+
+		#tags-search {
+			width: 1500px;
+			justify-content: left !important;
+		}
 	}
 }
 @include media-breakpoint-down(md) {
