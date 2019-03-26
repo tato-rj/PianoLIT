@@ -62,14 +62,16 @@ class PostsController extends Controller
      */
     public function show(Post $post)
     {
+        $suggestions = Post::inRandomOrder()->take(4)->get();
+
         if (! $post->is_published) {
             if (auth()->guard('admin')->check())
-                return view('blog.show', compact('post'))->with('preview', true);
+                return view('blog.show', compact(['post', 'suggestions']))->with('preview', true);
 
             abort(404);
         }
 
-        return view('blog.show', compact('post'));
+        return view('blog.show', compact(['post', 'suggestions']));
     }
 
     /**

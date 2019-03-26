@@ -33,7 +33,7 @@ p img {
 			</div>
 			@endif
 			<div class="mb-4">
-				<h1 class="font-serif">{{$post->title}}</h1>
+				<h1 class="font-serif mb-4">{{$post->title}}</h1>
 				<p class="text-muted font-serif font-lg">{{$post->description}}</p>
 				<p class="text-muted"><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
 				<figure class="figure">
@@ -47,9 +47,7 @@ p img {
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-4">
-			{{-- @include('components.blog.card') --}}
-		</div>
+		@each('components.blog.suggestion', $suggestions, 'suggestion')
 	</div>
 </section>
 @endsection
