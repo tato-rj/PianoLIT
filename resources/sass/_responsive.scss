@@ -1,6 +1,6 @@
 @include media-breakpoint-down(sm) {
 	.suggestion-card {
-		img {
+		.card-img-top {
 			height: 160px;
 		}
 	}
