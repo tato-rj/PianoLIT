@@ -7,6 +7,8 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="{{route('posts.show', $post->slug)}}" />
 <meta property="og:image" content="{{$post->thumbnail_image()}}" />
+<meta property="og:image:width" content="400" />
+<meta property="og:image:height" content="225" />
 <meta property="og:description" content="{{$post->description}}" />
 <meta property="article:published_time" content="{{$post->created_at->format(DateTime::ISO8601)}}">
 <meta property="article:modified_time" content="{{$post->updated_at->format(DateTime::ISO8601)}}">
