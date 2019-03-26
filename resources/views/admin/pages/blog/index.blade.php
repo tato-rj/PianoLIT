@@ -59,7 +59,7 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
               <td>{{$post->created_at->toFormattedDateString()}}</td>
               <td>{{$post->title}}</td>
               <td>{{$post->reading_time}} min</td>
-              <td class="status-text text-{{$post->is_published ? 'success' : 'warning'}}">{{ucfirst($post->status)}}</td>
+              <td id="status-{{$post->slug}}" class="status-text text-{{$post->is_published ? 'success' : 'warning'}}">{{ucfirst($post->status)}}</td>
               <td class="text-right">
                 <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
                 <a href="{{route('admin.posts.edit', $post->slug)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>
@@ -87,7 +87,7 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
 <script type="text/javascript">
 $('input.status-toggle').on('change', function() {
   let $input = $(this);
-  let $label = $('.status-text');
+  let $label = $($input.attr('data-target'));
 
   $label.text('Just a sec...').addClass('text-muted').removeClass('text-warning text-success');
   $.ajax({
