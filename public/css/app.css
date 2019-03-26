@@ -20158,7 +20158,7 @@ button.swiper-pagination-bullet {
 
 @media (max-width: 767.98px) {
   .suggestion-card .card-img-top {
-    height: 160px;
+    height: 160px !important;
   }
 
   .navbar-nav {
