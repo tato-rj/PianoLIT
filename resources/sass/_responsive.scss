@@ -1,0 +1,33 @@
+@include media-breakpoint-down(sm) {
+	.navbar-nav {
+		margin-top: 0.5rem !important;
+		margin-bottom: 0.5rem !important;
+
+		.nav-item {
+			border-bottom: 1px solid #dee2e6 !important;
+			padding-top: 0.5rem !important;
+			padding-bottom: 0.5rem !important;
+		}
+	}
+
+	#phone-display {
+		img {
+		    margin-left: -100px;
+		}
+	}
+
+	footer {
+		.social-icons {
+			font-size: 1.25em;
+		}
+	}
+}
+@include media-breakpoint-down(md) {
+
+}
+@include media-breakpoint-down(lg) {
+
+}
+@include media-breakpoint-down(xl) {
+
+}

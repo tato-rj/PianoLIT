@@ -23,6 +23,10 @@
             font-weight: 600;
         }
 
+        .navbar-light .navbar-toggler {
+            border: 0;
+        }
+
         .navbar-brand h2 {
             font-weight: 800;
         }
@@ -57,7 +61,7 @@
         <header class="container">
             @include('layouts.menu')
         </header>
-        <main>
+        <main style="overflow-x: hidden">
             @yield('content')
         </main>
         @include('layouts.footer')

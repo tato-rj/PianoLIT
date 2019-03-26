@@ -20156,6 +20156,27 @@ button.swiper-pagination-bullet {
   cursor: pointer;
 }
 
+@media (max-width: 767.98px) {
+  .navbar-nav {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .navbar-nav .nav-item {
+    border-bottom: 1px solid #dee2e6 !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  #phone-display img {
+    margin-left: -100px;
+  }
+
+  footer .social-icons {
+    font-size: 1.25em;
+  }
+}
+
 button:focus {
   outline: 0;
 }
