@@ -7,12 +7,19 @@
 <meta property="og:url" content="{{route('posts.show', $post->slug)}}" />
 <meta property="og:image" content="{{$post->cover_image()}}" />
 <meta property="og:description" content="{{$post->description}}" />
+
+<style type="text/css">
+p img {
+	max-width: 100%;
+	height: auto;
+}
+</style>
 @endpush
 
 @section('content')
 <section class="container mb-5">
 	<div class="row border-bottom pb-5 mb-5">
-		<div class="col-8 mx-auto">
+		<div class="col-lg-8 col-12 mx-auto">
 			@if(! empty($preview))
 			<div class="alert alert-warning" role="alert">
 			  <i class="fas fa-exclamation-triangle mr-2"></i>This post is <u>not published</u>. Only admins can see this page.

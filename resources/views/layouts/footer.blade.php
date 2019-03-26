@@ -1,10 +1,10 @@
 <section class="bg-light py-6">
 	<div class="container">
-		<div class="col-8 mx-auto text-center">
+		<div class="col-lg-8 col-md-10 col-12 mx-auto text-center">
 			<h2 class="mb-5">Subscribe for updates</h2>
 			<form method="POST">
 				<div class="form-row mb-5">
-					<div class="col-6 mx-auto">
+					<div class="col-lg-6 col-md-8 col-10 mx-auto">
 						<div class="form-group">
 							<input type="email" name="email" placeholder="EMAIL ADDRESS" class="text-center form-control w-100 border-0 bg-grey-lighter">
 						</div>
