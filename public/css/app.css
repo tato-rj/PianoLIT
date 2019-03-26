@@ -20186,3 +20186,21 @@ button:focus {
   border-color: #096bf0;
 }
 
+footer input::-webkit-input-placeholder {
+  text-align: center;
+}
+
+footer input:-moz-placeholder {
+  /* Firefox 18- */
+  text-align: center;
+}
+
+footer input::-moz-placeholder {
+  /* Firefox 19+ */
+  text-align: center;
+}
+
+footer input:-ms-input-placeholder {
+  text-align: center;
+}
+

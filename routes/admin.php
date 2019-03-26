@@ -1,15 +1,37 @@
 <?php
 
 Route::get('', 'AdminsController@home')->name('home');
+Route::get('blog', 'AdminsController@blog')->name('blog');
 
 Route::resources([
     'pieces' => 'PiecesController',
     'composers' => 'ComposersController',
     'tags' => 'TagsController',
     'editors' => 'EditorsController',
-    'users' => 'UsersController',
-    'posts' => 'PostsController'
+    'users' => 'UsersController'
 ]);
+
+Route::prefix('blog')->name('posts.')->group(function() {
+
+	Route::get('', 'AdminsController@blog')->name('index');
+
+	Route::get('create', 'PostsController@create')->name('create');
+
+	Route::post('', 'PostsController@store')->name('store');
+
+	Route::post('images/upload', 'PostsController@uploadImage')->name('upload-image');
+
+	Route::post('images/remove', 'PostsController@removeImage')->name('remove-image');
+
+	Route::get('{post}', 'PostsController@edit')->name('edit');
+
+	Route::patch('{post}', 'PostsController@update')->name('update');
+
+	Route::patch('{post}/status', 'PostsController@updateStatus')->name('update-status');
+
+	Route::delete('{post}', 'PostsController@destroy')->name('destroy');
+
+});
 
 Route::prefix('api')->name('api.')->group(function() {
 

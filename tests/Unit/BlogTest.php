@@ -13,4 +13,18 @@ class BlogTest extends AppTest
 	{
 		$this->assertInstanceOf(Admin::class, $this->post->creator);
 	}
+
+	/** @test */
+	public function it_knows_how_to_publish_or_unpublish_itself()
+	{
+		$this->assertFalse($this->post->is_published);
+
+		$this->post->updateStatus();
+
+		$this->assertTrue($this->post->fresh()->is_published);
+
+		$this->post->updateStatus();
+
+		$this->assertFalse($this->post->fresh()->is_published);
+	}
 }

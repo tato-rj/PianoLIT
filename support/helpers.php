@@ -10,6 +10,11 @@ function carbon($string)
 	return \Carbon\Carbon::parse($string);
 }
 
+function validate($errors, $input)
+{
+    return $errors->has($input) ? 'is-invalid' : null;
+}
+
 function randval($array)
 {
 	return $array[rand(0, count($array) - 1)];

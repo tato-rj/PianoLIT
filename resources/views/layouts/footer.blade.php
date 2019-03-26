@@ -1,4 +1,4 @@
-<section class="bg-grey-lightest py-6">
+<section class="bg-light py-6">
 	<div class="container">
 		<div class="col-8 mx-auto text-center">
 			<h2 class="mb-5">Subscribe for updates</h2>

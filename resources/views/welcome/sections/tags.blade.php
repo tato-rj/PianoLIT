@@ -9,7 +9,7 @@
 			<div id="tags-search" class="d-flex flex-wrap justify-content-center mb-5">
 				@foreach($tags as $tag)
 			    <span 
-			      class="tag bg-grey-lightest m-2 px-3 py-1 cursor-pointer"
+			      class="tag bg-light m-2 px-3 py-1 cursor-pointer"
 			      style="-moz-user-select: none; 
 			          -webkit-user-select: none; 
 			               -ms-user-select:none; 

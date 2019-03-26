@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\{Admin, User, Piece, Tag, Composer};
+use App\Blog\Post;
 use Illuminate\Http\Request;
 
 class AdminsController extends Controller
@@ -23,13 +24,15 @@ class AdminsController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display the blog page.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function blog()
     {
-        //
+        $posts = Post::all();
+
+        return view('admin.pages.blog.index', compact('posts'));
     }
 
     /**

@@ -93657,6 +93657,10 @@ module.exports = function(module) {
 
 __webpack_require__("./resources/js/bootstrap.js");
 __webpack_require__("./node_modules/inputmask/dist/jquery.inputmask.bundle.js");
+__webpack_require__("./resources/js/helpers/cookie.js");
+__webpack_require__("./resources/js/helpers/string.js");
+__webpack_require__("./resources/js/helpers/extensions.js");
+__webpack_require__("./resources/js/cropper/SimpleCropper.js");
 
 $.ajaxSetup({
     headers: {
@@ -93688,6 +93692,219 @@ try {
 
   __webpack_require__("./node_modules/bootstrap/dist/js/bootstrap.js");
 } catch (e) {}
+
+/***/ }),
+
+/***/ "./resources/js/cropper/SimpleCropper.js":
+/***/ (function(module, exports) {
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SimpleCropper = function () {
+	function SimpleCropper(params) {
+		_classCallCheck(this, SimpleCropper);
+
+		this.$imageInput = $(params.imageInput);
+		this.$image = $(this.$imageInput.attr('data-target'));
+		this.$uploadButton = $(params.uploadButton);
+		this.$confirmButton = $(params.confirmButton);
+		this.$cancelButton = $(params.cancelButton);
+		this.$submitButton = $(params.submitButton);
+		this.defaultImage = this.$image.attr('src');
+
+		this._createInputs();
+	}
+
+	_createClass(SimpleCropper, [{
+		key: 'create',
+		value: function create() {
+			var obj = this;
+
+			obj.$uploadButton.on('click', function () {
+				obj.$imageInput.click();
+			});
+
+			obj.$cancelButton.on('click', function () {
+				obj._resetAll();
+			});
+
+			obj.$confirmButton.on('click', function () {
+				obj._confirmImage();
+			});
+
+			obj.$imageInput.on('change', function (event) {
+				var target = $(this).attr('data-target');
+				var file = event.target.files[0];
+				var maxSize = 1048576;
+
+				if (file.name.match(/\.(jpg|jpeg|png)$/i)) {
+					if (file.size < maxSize) {
+
+						obj._selectImage(this, target);
+
+						obj.$image.next('canvas').remove();
+						obj.$image.show();
+
+						obj._toggleButtons();
+					} else {
+						alert('This image is too large (' + formatBytes(file.size) + '). You can\'t upload images larger than ' + formatBytes(maxSize) + '.');
+					}
+				} else {
+					alert('This is not a valid image format. Only jpg, jpeg or png will be accepted.');
+				}
+			});
+		}
+	}, {
+		key: '_toggleButtons',
+		value: function _toggleButtons() {
+			var obj = this;
+
+			obj.$uploadButton.toggle();
+			obj.$cancelButton.toggle();
+			obj.$confirmButton.toggle();
+			obj.$submitButton.toggleAttr('disabled');
+		}
+	}, {
+		key: '_selectImage',
+		value: function _selectImage(input, element) {
+			var obj = this;
+
+			if (input.files && input.files[0]) {
+				var reader = new FileReader();
+
+				reader.onload = function (e) {
+					$(element).attr('src', e.target.result);
+					obj.$image.css('visibility', 'hidden');
+					obj._enableCropper();
+				};
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+	}, {
+		key: '_confirmImage',
+		value: function _confirmImage() {
+			var obj = this;
+			var $canvas = $(obj.cropper.getCroppedCanvas());
+			$canvas.insertAfter(obj.$image);
+			obj.cropper.destroy();
+			obj.$image.hide();
+			obj._toggleButtons();
+		}
+	}, {
+		key: '_resetAll',
+		value: function _resetAll() {
+			var obj = this;
+
+			obj.$image.attr('src', obj.defaultImage);
+			obj.$image.css('visibility', 'visible');
+			obj.cropper.destroy();
+			obj._toggleButtons();
+			$('.cropper-dimensions').val('');
+		}
+	}, {
+		key: '_enableCropper',
+		value: function _enableCropper() {
+			var image = document.getElementById('image');
+
+			this.cropper = new Cropper(image, {
+				aspectRatio: 16 / 9,
+				viewMode: 1,
+				movable: false,
+				scalable: false,
+				rotatable: false,
+				zoomOnTouch: false,
+				zoomOnWheel: false,
+				crop: function crop(event) {
+					$('input[name="cropped_width"]').val(event.detail.width);
+					$('input[name="cropped_height"]').val(event.detail.height);
+					$('input[name="cropped_x"]').val(event.detail.x);
+					$('input[name="cropped_y"]').val(event.detail.y);
+				}
+			});
+		}
+	}, {
+		key: '_createInputs',
+		value: function _createInputs() {
+			this.$imageInput.after('<input type="hidden" class="cropper-dimensions" name="cropped_width">', '<input type="hidden" class="cropper-dimensions" name="cropped_height">', '<input type="hidden" class="cropper-dimensions" name="cropped_x">', '<input type="hidden" class="cropper-dimensions" name="cropped_y">');
+		}
+	}]);
+
+	return SimpleCropper;
+}();
+
+window.SimpleCropper = SimpleCropper;
+
+/***/ }),
+
+/***/ "./resources/js/helpers/cookie.js":
+/***/ (function(module, exports) {
+
+getCookie = function getCookie(name) {
+    var dc = document.cookie;
+    var prefix = name + "=";
+    var begin = dc.indexOf("; " + prefix);
+    if (begin == -1) {
+        begin = dc.indexOf(prefix);
+        if (begin != 0) return null;
+    } else {
+        begin += 2;
+        var end = document.cookie.indexOf(";", begin);
+        if (end == -1) {
+            end = dc.length;
+        }
+    }
+    // because unescape has been deprecated, replaced with decodeURI
+    //return unescape(dc.substring(begin + prefix.length, end));
+    return decodeURI(dc.substring(begin + prefix.length, end));
+};
+
+setCookie = function setCookie(cname, cvalue, exdays) {
+    var expires;
+
+    if (exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+        expires = "expires=" + d.toUTCString();
+    }
+
+    document.cookie = cname + "=" + cvalue + ";" + expires;
+};
+
+/***/ }),
+
+/***/ "./resources/js/helpers/extensions.js":
+/***/ (function(module, exports) {
+
+jQuery.fn.toggleAttr = function (attr) {
+	return this.each(function () {
+		var $this = $(this);
+		$this.attr(attr) ? $this.removeAttr(attr) : $this.attr(attr, attr);
+	});
+};
+
+/***/ }),
+
+/***/ "./resources/js/helpers/string.js":
+/***/ (function(module, exports) {
+
+fullDatePT = function fullDatePT($element) {
+  $element.text(moment($element.attr('data-date')).locale('pt').format("D [de] MMMM [de] YYYY"));
+};
+
+formatBytes = function formatBytes(bytes, decimals) {
+  if (bytes == 0) return '0 Bytes';
+  var k = 1024,
+      dm = decimals || 2,
+      sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+      i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+};
+
+jQuery.fn.cleanVal = function () {
+  return this.val().replace(/\D/g, '');
+};
 
 /***/ }),
 

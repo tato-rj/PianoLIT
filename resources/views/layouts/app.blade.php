@@ -11,15 +11,19 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Poppins:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,800" rel="stylesheet">
 
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/primer.css') }}" rel="stylesheet">
 
     <style type="text/css">
-        h1, h2, h3, h4, h5, h6 {
+        h1,h2, h3, h4, h5, h6 {
             font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .navbar-brand h2 {
             font-weight: 800;
         }
 
@@ -33,11 +37,22 @@
             margin-top: 1.5rem;
         }
 
+        .font-serif {
+            font-family: Georgia,Cambria,"Times New Roman",Times,serif;
+            font-weight: normal;
+            letter-spacing: .003em;
+        }
+
+        .font-lg {
+            font-size: 1.15em;
+            letter-spacing: .0175em;
+        }
+
     </style>
 
     @stack('header')
 </head>
-<body class="bg-light">
+<body>
     <div id="app">
         <header class="container">
             @include('layouts.menu')
@@ -54,7 +69,7 @@
     $('#tags-search .tag').on('click', function() {
       $tag = $(this);
 
-      $tag.toggleClass('bg-grey-lightest selected-tag');  
+      $tag.toggleClass('bg-light selected-tag');  
     });
 
     $('#close-results').on('click', function() {

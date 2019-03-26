@@ -25,7 +25,7 @@
   @include('admin/layouts/footer')
   @include('admin/components/modals/logout')
 
-  @if($message = session('success'))
+  @if($message = session('status'))
     @include('components/alerts/success')
   @endif
 
