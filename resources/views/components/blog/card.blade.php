@@ -1,4 +1,4 @@
-<div class="col-3 p-2">
+<div class="col-4 p-2">
 	<div class="card w-100 hover-shadow t-2">
 		<a class="link-none" href="{{route('posts.show', $post->slug)}}">
 			<div class="card-img-top bg-align-center" style="background-image: url({{$post->cover_image()}}); height: 200px"></div>
