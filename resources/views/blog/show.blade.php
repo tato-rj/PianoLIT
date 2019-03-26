@@ -1,13 +1,18 @@
-@extends('layouts.app')
+@extends('layouts.app', ['title' => $post->title . ' | PianoLIT Blog'])
 
 @push('header')
 <meta name="twitter:card" value="{{$post->description}}">
+<meta property="og:site_name" content="PianoLIT Blog" />
 <meta property="og:title" content="{{$post->title}}" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="{{route('posts.show', $post->slug)}}" />
 <meta property="og:image" content="{{$post->cover_image()}}" />
 <meta property="og:description" content="{{$post->description}}" />
+<meta property="article:published_time" content="{{$post->created_at->format(DateTime::ISO8601)}}">
+<meta property="article:modified_time" content="{{$post->updated_at->format(DateTime::ISO8601)}}">
+<meta property="og:updated_time" content="{{$post->updated_at->format(DateTime::ISO8601)}}">
 
+<link rel="canonical" href="{{url()->current()}}" />
 <style type="text/css">
 p img {
 	max-width: 100%;

@@ -16,7 +16,7 @@ class BlogTest extends AppTest
     {
         $this->signIn();
         
-        $post = $this->postBlogPost();
+        $post = $this->storeBlogPost();
 
         $this->assertDatabaseHas('posts', ['title' => $post->title]);
 
@@ -24,11 +24,25 @@ class BlogTest extends AppTest
     }
 
     /** @test */
+    public function a_thumbnail_is_automatically_generated_when_a_cover_image_is_saved()
+    {
+        $this->signIn();
+
+        $post = $this->storeBlogPost();
+
+        $this->assertNotEquals($post->thumbnail_path, $post->cover_path);
+        
+        $this->assertTrue(Storage::disk('public')->exists($post->cover_path));
+
+        $this->assertTrue(Storage::disk('public')->exists($post->thumbnail_path));
+    }
+
+    /** @test */
     public function an_admin_can_publish_a_blog_post()
     {
     	$this->signIn();
 
-        $post = $this->postBlogPost();
+        $post = $this->storeBlogPost();
     	 
     	$this->assertFalse($post->is_published);
 
@@ -42,7 +56,7 @@ class BlogTest extends AppTest
     {
     	$this->signIn();
 
-        $post = $this->postBlogPost();
+        $post = $this->storeBlogPost();
 
         $title = $post->title;
 
@@ -56,7 +70,7 @@ class BlogTest extends AppTest
     {
     	$this->signIn();
 
-        $post = $this->postBlogPost();
+        $post = $this->storeBlogPost();
 
         $this->delete(route('admin.posts.destroy', $post->slug));
 

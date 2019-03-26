@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['title' => 'PianoLIT Blog'])
 
 @push('header')
 <meta name="twitter:card" value="A blog about all piano related topics">

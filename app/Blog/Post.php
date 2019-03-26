@@ -11,6 +11,7 @@ class Post extends PianoLit
 {
 	use FindBySlug;
 	
+    protected $thumbnailFolder = 'thumbnails';
 	protected $casts = ['is_published' => 'boolean'];
 
     protected static function boot()
@@ -36,11 +37,6 @@ class Post extends PianoLit
     	$this->update(['is_published' => ! $this->is_published]);
     }
 
-    public function cover_image()
-    {
-        return asset('storage/' . $this->cover_path);
-    }
-
     public function getStatusAttribute()
     {
         return $this->is_published ? 'published' : 'unpublished';
@@ -60,11 +56,26 @@ class Post extends PianoLit
     {
         if ($request->hasFile('cover_image')) {
             if ($this->cover_path)
-                \Storage::disk('public')->delete($this->cover_path);
+                \Storage::disk('public')->delete([$this->cover_path, $this->thumbnail_path]);
 
             $this->update([
-                'cover_path' => (new Cropper($request))->make('cover_image')->saveTo('blog/cover_images/')->getPath()
+                'cover_path' => (new Cropper($request))->withThumbnail()->make('cover_image')->saveTo('blog/cover_images/')->getPath()
             ]);
         }
+    }
+
+    public function cover_image()
+    {
+        return asset('storage/' . $this->cover_path);
+    }
+
+    public function getThumbnailPathAttribute()
+    {
+        return dirname($this->cover_path) . '/thumbnails/' . basename($this->cover_path);
+    }
+
+    public function thumbnail_image()
+    {
+        return asset('storage/' . $this->thumbnail_path);
     }
 }

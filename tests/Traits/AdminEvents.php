@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 trait AdminEvents
 {
 
-    public function postBlogPost()
+    public function storeBlogPost()
     {
 		Storage::fake('public');
 
