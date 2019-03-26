@@ -47,6 +47,9 @@ p img {
 		</div>
 	</div>
 	<div class="row">
+		<div class="col-12 mb-4">
+			<div><strong>READ NEXT</strong></div>
+		</div>
 		@each('components.blog.suggestion', $suggestions, 'suggestion')
 	</div>
 </section>
