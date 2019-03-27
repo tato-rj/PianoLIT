@@ -107,6 +107,10 @@
                     $searching.hide();
                     $feedback.text('We found ' + $resulsContainer.children().length + ' result(s)').show();
                 });
+            } else {
+                $searching.hide();
+                $feedback.hide();
+                $resulsContainer.html('');
             }
         });
     </script>
