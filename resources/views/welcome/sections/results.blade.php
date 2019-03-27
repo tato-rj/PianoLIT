@@ -1,4 +1,4 @@
-@component('components.overlay', ['name' => 'results'])
+@component('layouts.overlay', ['name' => 'results'])
 <div class="d-flex flex-center w-100 h-100">
 	<div class="text-center">
 		<img src="{{asset('images/icons/smiling.svg')}}" width="80" class="mb-4">

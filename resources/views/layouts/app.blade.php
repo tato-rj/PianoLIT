@@ -64,7 +64,7 @@
         <main style="overflow-x: hidden">
             @yield('content')
         </main>
-        @include('layouts.search')
+        @include('components.search.overlay')
         @include('layouts.footer')
     </div>
 
@@ -88,6 +88,27 @@
 
         $(overlayId).fadeOut();
     });
+    </script>
+
+    <script type="text/javascript">
+        $('input[name="search"]').on('keyup', function() {
+            let $input = $(this);
+            let $resulsContainer = $('#search-results');
+            let $searching = $('#search-feedback div:first');
+            let $feedback = $('#search-feedback div:last');
+            let url = $input.attr('data-url');
+
+            if ($input.val().length > 2 && ! $searching.is(':visible')) {
+                $searching.show();
+                $feedback.hide();
+
+                $.get(url, {'input': $input.val()}, function(data) {
+                    $resulsContainer.html(data);
+                    $searching.hide();
+                    $feedback.text('We found ' + $resulsContainer.length + ' result(s)').show();
+                });
+            }
+        });
     </script>
     @stack('scripts')
 

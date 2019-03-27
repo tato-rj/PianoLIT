@@ -78,4 +78,16 @@ class BlogTest extends AppTest
 
         Storage::disk('public')->assertMissing($post->cover_path);
     }
+
+    /** @test */
+    public function a_user_can_search_the_blog_database()
+    {
+        $response = $this->json('get', route('api.blog.search'), ['input' => 'xxx']);
+
+        $this->assertCount(0, $response->baseResponse->original['results']);
+
+        $response = $this->json('get', route('api.blog.search'), ['input' => substr($this->post->title, 0, 2)]);
+
+        $this->assertCount(1, $response->baseResponse->original['results']);
+    }
 }

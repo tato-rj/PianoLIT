@@ -74,6 +74,17 @@ class PostsController extends Controller
         return view('blog.show', compact(['post', 'suggestions']));
     }
 
+    public function search(Request $request)
+    {
+        $posts = Post::where('title', 'LIKE', '%'.$request->input.'%')
+            ->orWhere('content', 'LIKE', '%'.$request->input.'%')->get();
+
+        if ($request->wantsJson())
+            return response()->json(['results' => $posts]);
+
+        return view('components.search.results', compact('posts'))->render();
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

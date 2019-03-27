@@ -13,19 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::prefix('users')->name('users.')->group(function() {
-
-	Route::post('', 'UsersController@store')->name('store');
-
-	Route::get('{user}', 'ApiController@user')->name('show');
-
-});
-
 Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::post('/views', 'PiecesController@incrementViews')->name('increment-views');
 
 	Route::post('/find', 'ApiController@piece')->name('find');
+
+});
+
+Route::prefix('blog')->name('blog.')->group(function() {
+
+	Route::get('/search', 'PostsController@search')->name('search');
 
 });
 
@@ -38,6 +36,10 @@ Route::prefix('users')->name('users.')->group(function() {
 		Route::post('/show', 'FavoritesController@show')->name('show');
 
 	});
+
+	Route::post('', 'UsersController@store')->name('store');
+
+	Route::get('{user}', 'ApiController@user')->name('show');
 
 	Route::post('/suggestions', 'ApiController@suggestions')->name('suggestions');
 
