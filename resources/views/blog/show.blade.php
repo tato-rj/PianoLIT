@@ -22,6 +22,14 @@
 <meta name="twitter:app:name:iphone" content="PianoLIT">
 <meta name="twitter:app:id:iphone" content="00000000">
 
+<meta itemprop="name" content="{{$post->title}}"/>
+<meta itemprop="headline" content="{{$post->title}}"/>
+<meta itemprop="description" content="{{$post->description}}"/>
+<meta itemprop="image" content="{{$post->cover_image()}}"/>
+<meta itemprop="datePublished" content="{{$post->created_at->format(DateTime::ISO8601)}}"/>
+<meta itemprop="dateModified" content="{{$post->updated_at->format(DateTime::ISO8601)}}" />
+<meta itemprop="author" content="PianoLIT"/>
+
 <link rel="canonical" href="{{url()->current()}}" />
 <style type="text/css">
 p img {
