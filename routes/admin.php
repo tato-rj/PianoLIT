@@ -1,6 +1,7 @@
 <?php
 
 Route::get('', 'AdminsController@home')->name('home');
+
 Route::get('blog', 'AdminsController@blog')->name('blog');
 
 Route::resources([

@@ -58,6 +58,13 @@ class Post extends PianoLit
         return $query->where('is_published', true);
     }
 
+    public function scopeByTopic($query, Topic $topic)
+    {
+        return $query->whereHas('topics', function($q) use ($topic) {
+            $q->where('slug', $topic->slug);
+        });
+    }
+
     public function uploadCoverImage(Request $request)
     {
         if ($request->hasFile('cover_image')) {

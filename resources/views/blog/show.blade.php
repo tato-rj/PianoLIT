@@ -14,6 +14,14 @@
 <meta property="article:modified_time" content="{{$post->updated_at->format(DateTime::ISO8601)}}">
 <meta property="og:updated_time" content="{{$post->updated_at->format(DateTime::ISO8601)}}">
 
+<meta name="twitter:card" content="article">
+<meta name="twitter:site" content="@pianolit">
+<meta name="twitter:title" content="{{$post->title}}">
+<meta name="twitter:description" content="{{$post->description}}">
+<meta name="twitter:app:country" content="US">
+<meta name="twitter:app:name:iphone" content="PianoLIT">
+<meta name="twitter:app:id:iphone" content="00000000">
+
 <link rel="canonical" href="{{url()->current()}}" />
 <style type="text/css">
 p img {
@@ -45,7 +53,7 @@ p img {
 				{!! $post->content !!}
 			</div>
 			<div class="d-flex flex-wrap">
-				@each('components.blog.tag', $post->topics, 'topic')
+				@each('components.blog.topic', $post->topics, 'topic')
 			</div>
 		</div>
 	</div>

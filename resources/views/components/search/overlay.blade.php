@@ -7,7 +7,6 @@
 		</div>
 		<div class="col-12 text-center" id="search-feedback">
 			<div class="text-muted" style="display: none;"><i>Searching...</i></div>
-			<div></div>
 		</div>
 		<div class="col-lg-10 col-12 mx-auto" id="search-results">
 			

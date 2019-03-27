@@ -7,6 +7,8 @@ use App\{PianoLit, Admin};
 
 class Topic extends PianoLit
 {
+	use FindBySlug;
+	
     public function creator()
     {
         return $this->belongsTo(Admin::class);
@@ -15,5 +17,10 @@ class Topic extends PianoLit
     public function posts()
     {
         return $this->belongsToMany(Post::class);
+    }
+
+    public function scopeExclude($query, $exclude)
+    {
+    	return $query->whereNotIn('id', $exclude);
     }
 }

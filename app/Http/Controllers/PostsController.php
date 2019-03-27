@@ -20,6 +20,14 @@ class PostsController extends Controller
         return view('blog.index', compact('posts'));
     }
 
+    public function topic(Topic $topic)
+    {
+        $topics = Topic::exclude([$topic->id])->get();
+        $posts = Post::published()->byTopic($topic)->paginate(12);
+
+        return view('blog.topic', compact(['posts', 'topics', 'topic']));
+    }
+
     /**
      * Show the form for creating a new resource.
      *

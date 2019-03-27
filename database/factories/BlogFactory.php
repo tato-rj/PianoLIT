@@ -24,6 +24,7 @@ $factory->define(Post::class, function (Faker $faker) {
 $factory->define(Topic::class, function (Faker $faker) {
     return [
         'type' => $faker->word,
+        'slug' => str_slug($faker->word),
         'name' => $faker->word,
         'creator_id' => function() {
             return create(Admin::class)->id;

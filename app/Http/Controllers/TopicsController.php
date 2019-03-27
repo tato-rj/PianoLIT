@@ -46,6 +46,7 @@ class TopicsController extends Controller
         ]);
 
         Topic::create([
+            'slug' => str_slug($request->name),
             'name' => $request->name,
             'creator_id' => auth()->guard('admin')->user()->id,
             'type' => $request->type
@@ -92,6 +93,7 @@ class TopicsController extends Controller
         ]);
 
         $topic->update([
+            'slug' => str_slug($request->name),
             'name' => $request->name,
             'type' => $request->type,
         ]);
