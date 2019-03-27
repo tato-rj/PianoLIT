@@ -20161,6 +20161,18 @@ button.swiper-pagination-bullet {
     height: 160px !important;
   }
 
+  input[name="search"] {
+    font-size: 1.6em !important;
+  }
+
+  #blog-post h1 {
+    font-size: 2.25rem !important;
+  }
+
+  #blog-post .font-lg {
+    font-size: 1.32em !important;
+  }
+
   .navbar-nav {
     margin-top: 0.5rem !important;
     margin-bottom: 0.5rem !important;

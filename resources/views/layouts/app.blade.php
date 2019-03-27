@@ -64,6 +64,7 @@
         <main style="overflow-x: hidden">
             @yield('content')
         </main>
+        @include('layouts.search')
         @include('layouts.footer')
     </div>
 
@@ -76,12 +77,16 @@
       $tag.toggleClass('bg-light selected-tag');  
     });
 
-    $('#close-results').on('click', function() {
-        $('#results-overlay').fadeOut();
+    $('.show-overlay').on('click', function() {
+        let overlayId = $(this).attr('data-target');
+
+        $(overlayId).fadeIn();
     });
 
-    $('#find-results').on('click', function() {
-        $('#results-overlay').fadeIn();
+    $('.close-overlay').on('click', function() {
+        let overlayId = $(this).attr('data-target');
+
+        $(overlayId).fadeOut();
     });
     </script>
     @stack('scripts')

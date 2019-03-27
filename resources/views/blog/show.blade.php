@@ -24,7 +24,7 @@ p img {
 @endpush
 
 @section('content')
-<section class="container mb-5">
+<section id="blog-post" class="container mb-5">
 	<div class="row border-bottom pb-5 mb-5">
 		<div class="col-lg-8 col-12 mx-auto">
 			@if(! empty($preview))
@@ -34,7 +34,7 @@ p img {
 			@endif
 			<div class="mb-4">
 				<h1 class="font-serif mb-4">{{$post->title}}</h1>
-				<p class="text-muted font-serif font-lg">{{$post->description}}</p>
+				<p class="text-muted font-lg">{{$post->description}}</p>
 				<p class="text-muted"><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
 				<figure class="figure">
 					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded">
@@ -50,7 +50,7 @@ p img {
 		<div class="col-12 mb-4">
 			<div><strong>READ NEXT</strong></div>
 		</div>
-		@each('components.blog.suggestion', $suggestions, 'suggestion')
+		@each('components.blog.cards.small', $suggestions, 'suggestion')
 	</div>
 </section>
 @endsection

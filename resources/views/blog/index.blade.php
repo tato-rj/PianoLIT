@@ -13,7 +13,7 @@
 <section class="container mb-5">
 	<div class="row">
 		
-		@each('components.blog.card', $posts, 'post')
+		@each('components.blog.cards.large', $posts, 'post')
 
 	</div>
 </section>

@@ -22,7 +22,7 @@
 					@endforeach
 				</div>
 			</div>
-			<button id="find-results" class="btn btn-primary btn-wide shadow"><i class="fas fa-lightbulb mr-3"></i>Find my pieces</button>
+			<button data-target="#results-overlay" class="btn btn-primary btn-wide shadow show-overlay"><i class="fas fa-lightbulb mr-3"></i>Find my pieces</button>
 		</div>
 	</div>
 </section>

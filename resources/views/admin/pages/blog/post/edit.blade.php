@@ -69,7 +69,7 @@ $('input.status-toggle').on('change', function() {
   let $input = $(this);
   let $label = $('.status-text');
 
-  $label.text('Just a sec...').addClass('text-muted').removeClass('text-warning text-success');
+  $label.addClass('text-muted').removeClass('text-warning text-success');
   $.ajax({
     url: $input.attr('data-url'),
     type: 'PATCH',
