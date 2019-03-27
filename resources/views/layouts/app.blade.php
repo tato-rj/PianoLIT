@@ -105,7 +105,7 @@
                 $.get(url, {'input': $input.val()}, function(data) {
                     $resulsContainer.html(data);
                     $searching.hide();
-                    $feedback.text('We found ' + $resulsContainer.length + ' result(s)').show();
+                    $feedback.text('We found ' + $resulsContainer.children().length + ' result(s)').show();
                 });
             }
         });
