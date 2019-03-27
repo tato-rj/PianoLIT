@@ -37,7 +37,22 @@
           </li>
         </ul>
       </li>      
-     
+
+      <li class="nav-item">
+        <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#blog">
+          <i class="fas fa-newspaper fa-fw"></i>
+          <span class="nav-link-text">Blog</span>
+        </a>
+        <ul class="sidenav-second-level collapse" id="blog">
+          <li>
+            <a class="py-2" href="{{route('admin.posts.index')}}">Posts</a>
+          </li>
+          <li>
+            <a class="py-2" href="{{route('admin.topics.index')}}">Topics</a>
+          </li>
+        </ul>
+      </li>
+
       @manager
       <li class="nav-item">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#api">
@@ -87,12 +102,7 @@
           <span class="nav-link-text">Composers</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{route('admin.posts.index')}}">
-          <i class="fas fa-fw fa-newspaper"></i>
-          <span class="nav-link-text">Blog</span>
-        </a>
-      </li>
+
     </ul>
     <ul class="navbar-nav sidenav-toggler">
       <li class="nav-item">

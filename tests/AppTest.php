@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use App\Blog\Post;
+use App\Blog\{Post, Topic};
 use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist};
 
 class AppTest extends TestCase
@@ -16,6 +16,8 @@ class AppTest extends TestCase
         $this->user = create(User::class);
 
         $this->post = create(Post::class, ['creator_id' => $this->admin->id]);
+
+        $this->topic = create(Topic::class, ['creator_id' => $this->admin->id]);
 
         $this->membership = create(Membership::class);
 
@@ -40,6 +42,8 @@ class AppTest extends TestCase
         $this->user->favorites()->attach($this->piece);
 
         $this->piece->tags()->attach($this->tag);
+
+        $this->post->topics()->attach($this->topic);
 
         $this->playlist->pieces()->attach($this->piece);
 	}

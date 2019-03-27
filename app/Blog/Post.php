@@ -18,8 +18,9 @@ class Post extends PianoLit
     {
         parent::boot();
 
-        self::deleting(function($blog) {
-            \Storage::disk('public')->delete($blog->cover_path);
+        self::deleting(function($post) {
+            $post->topics()->detach();
+            \Storage::disk('public')->delete($post->cover_path);
 
             // $blog->files->each(function($file) {
             //     $file->delete();
@@ -30,6 +31,11 @@ class Post extends PianoLit
     public function creator()
     {
         return $this->belongsTo(Admin::class);
+    }
+
+    public function topics()
+    {
+        return $this->belongsToMany(Topic::class);
     }
 
     public function updateStatus()

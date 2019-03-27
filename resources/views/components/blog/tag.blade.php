@@ -1,0 +1,1 @@
+<a href="#" class="btn btn-light m-1 btn-sm text-muted">{{ucfirst($topic->name)}}</a>

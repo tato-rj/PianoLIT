@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Blog\Post;
+use App\Blog\{Post, Topic};
 use App\Admin;
 use Tests\AppTest;
 
@@ -12,6 +12,12 @@ class BlogTest extends AppTest
 	public function a_post_belongs_to_an_admin()
 	{
 		$this->assertInstanceOf(Admin::class, $this->post->creator);
+	}
+
+	/** @test */
+	public function it_has_many_topics()
+	{
+		$this->assertInstanceOf(Topic::class, $this->post->topics->first());
 	}
 
 	/** @test */

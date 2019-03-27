@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Tag;
+use App\Blog\Topic;
 use Illuminate\Http\Request;
 
-class TagsController extends Controller
+class TopicsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,11 +14,11 @@ class TagsController extends Controller
      */
     public function index()
     {
-        $this->authorize('create', Tag::class);
+        $this->authorize('create', Topic::class);
 
-        $types = Tag::byTypes();
+        $topics = Topic::all();
 
-        return view('admin.pages.tags.index', compact('types'));
+        return view('admin.pages.blog.topics.index', compact('topics'));
     }
 
     /**
@@ -39,28 +39,28 @@ class TagsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', Tag::class);
+        $this->authorize('create', Topic::class);
 
         $request->validate([
-            'name' => 'required|unique:tags|max:255',
+            'name' => 'required|unique:topics|max:255',
         ]);
 
-        Tag::create([
+        Topic::create([
             'name' => $request->name,
             'creator_id' => auth()->guard('admin')->user()->id,
             'type' => $request->type
         ]);
 
-        return redirect()->back()->with('success', "The tag has been successfully added!");
+        return redirect()->back()->with('success', "The topic has been successfully added!");
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Tag  $tag
+     * @param  \App\Blog\Topic  $topic
      * @return \Illuminate\Http\Response
      */
-    public function show(Tag $tag)
+    public function show(Topic $topic)
     {
         //
     }
@@ -68,10 +68,10 @@ class TagsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Tag  $tag
+     * @param  \App\Blog\Topic  $topic
      * @return \Illuminate\Http\Response
      */
-    public function edit(Tag $tag)
+    public function edit(Topic $topic)
     {
         //
     }
@@ -80,37 +80,37 @@ class TagsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Tag  $tag
+     * @param  \App\Blog\Topic  $topic
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Tag $tag)
+    public function update(Request $request, Topic $topic)
     {
-        $this->authorize('create', Tag::class);
+        $this->authorize('create', Topic::class);
 
         $request->validate([
             'name' => 'required|max:255',
         ]);
 
-        $tag->update([
+        $topic->update([
             'name' => $request->name,
             'type' => $request->type,
         ]);
 
-        return redirect()->back()->with('success', "The tag has been successfully updated!");
+        return redirect()->back()->with('success', "The topic has been successfully updated!");
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Tag  $tag
+     * @param  \App\Blog\Topic  $topic
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Tag $tag)
+    public function destroy(Topic $topic)
     {
-        $this->authorize('create', Tag::class);
+        $this->authorize('create', Topic::class);
 
-        $tag->delete();
+        $topic->delete();
 
-        return redirect()->back()->with('success', "The tag has been successfully deleted!");
+        return redirect()->back()->with('success', "The topic has been successfully deleted!");
     }
 }

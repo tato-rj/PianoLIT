@@ -41,8 +41,11 @@ p img {
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
 			</div>
-			<div class="font-serif font-lg">
+			<div class="font-serif font-lg mb-4">
 				{!! $post->content !!}
+			</div>
+			<div class="d-flex flex-wrap">
+				@each('components.blog.tag', $post->topics, 'topic')
 			</div>
 		</div>
 	</div>

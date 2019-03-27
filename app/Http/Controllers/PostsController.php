@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Blog\Post;
+use App\Blog\{Post, Topic};
 use App\Http\Requests\PostForm;
 use Illuminate\Http\Request;
 
@@ -27,7 +27,9 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view('admin.pages.blog.post.create');
+        $topics = Topic::all();
+
+        return view('admin.pages.blog.post.create', compact('topics'));
     }
 
     /**
@@ -49,9 +51,11 @@ class PostsController extends Controller
             'reading_time' => $form->reading_time
         ]);
 
+        $post->topics()->attach($request->topics);
+
         $post->uploadCoverImage($request);
 
-        return redirect(route('admin.posts.edit', $post->slug))->with('status', 'The post has been successfuly created!');
+        return redirect(route('admin.posts.index'))->with('status', 'The post has been successfuly created!');
     }
 
     /**
@@ -93,7 +97,9 @@ class PostsController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('admin.pages.blog.post.edit', compact('post'));
+        $topics = Topic::all();
+
+        return view('admin.pages.blog.post.edit', compact(['post', 'topics']));
     }
 
     /**
@@ -113,6 +119,8 @@ class PostsController extends Controller
             'reading_time' => $form->reading_time,
             'cover_credits' => $form->cover_credits
         ]);
+
+        $post->topics()->sync($request->topics);
 
         $post->uploadCoverImage($request);
 

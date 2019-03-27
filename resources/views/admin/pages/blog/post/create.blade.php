@@ -20,6 +20,22 @@
     
       <form class="row my-3" method="POST" action="{{route('admin.posts.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
+        <div class="col-12">
+          <div class="rounded bg-light px-3 py-2 mb-3">
+            <p class="text-brand border-bottom pb-1 mb-1"><strong>TOPICS</strong></p>
+            <div class="d-flex flex-wrap">
+
+                @foreach($topics as $topic)
+                <div class="custom-control custom-checkbox mx-2 mb-2">
+                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}">
+                  <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
+                </div>
+                @endforeach
+
+            </div>
+          </div>
+        </div>
+
         <div class="col-lg-4 col-md-6 col-12 mb-4">
           @image(['name' => 'cover_image', 'image' => asset('images/misc/placeholder-image.png'), 'empty' => true])
         </div>
@@ -29,6 +45,7 @@
           @input(['bag' => 'default', 'name' => 'reading_time', 'placeholder' => 'Reading time', 'type' => 'number'])
           @input(['bag' => 'default', 'name' => 'cover_credits', 'placeholder' => 'Cover image credits', 'limit' => 120, 'required' => false])
         </div>
+
         <div class="col-12 mb-4">
           @tinyeditor(['bag' => 'default', 'name' => 'content'])
         </div>

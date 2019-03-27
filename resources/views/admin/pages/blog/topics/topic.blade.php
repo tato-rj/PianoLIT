@@ -1,0 +1,10 @@
+<div class="t-2 hover-shadow-light bg-light topic cursor-pointer text-muted d-flex align-items-clenter border rounded px-3 py-2 m-2" 
+	 style="border-color: lightgrey"
+	 data-name="{{$topic->name}}"
+	 data-creator="{{$topic->creator->name}}"
+	 data-edit-url="{{route('admin.topics.update', $topic->id)}}" 
+	 data-delete-url="{{route('admin.topics.destroy', $topic->id)}}" 
+	 data-toggle="modal" 
+	 data-target="#topic-modal">
+  <p class="m-0">{{$topic->name}}</p>
+</div>
