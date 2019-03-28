@@ -1,6 +1,6 @@
-@component('layouts.overlay', ['name' => 'subscribe'])
-<div class="row align-items-center h-100">
-	<div class="col-lg-4 col-md-8 col-md-8 col-11 mx-auto rounded text-center p-6 bg-white shadow-light">
+@component('layouts.overlay', ['name' => 'subscribe', 'position' => 'center'])
+<div class="mx-2">
+	<div class="rounded text-center p-6 bg-white shadow-light">
 		<img src="{{asset('images/misc/subscribe-flow.svg')}}" width="200" class="mb-4">
 		<div class="mb-4">
 			<div>Enjoy our latest posts directly in your inbox</div>

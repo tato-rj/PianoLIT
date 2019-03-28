@@ -54,7 +54,7 @@
 	@include('welcome.sections._lead')
 	@include('welcome.sections.composition')
 	@include('welcome.sections.tags')
-	@include('welcome.sections.results')
+	@include('components.overlays.tags')
 	@include('welcome.sections.testimonials')
 	
 @endsection

@@ -96,7 +96,7 @@ class PostsController extends Controller
         if ($request->wantsJson())
             return response()->json(['results' => $posts]);
 
-        return view('components.search.results', compact('posts'))->render();
+        return view('components.overlays.search.results', compact('posts'))->render();
     }
 
     /**

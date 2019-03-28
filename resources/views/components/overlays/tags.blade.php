@@ -1,5 +1,5 @@
-@component('layouts.overlay', ['name' => 'results'])
-<div class="d-flex flex-center w-100 h-100">
+@component('layouts.overlay', ['name' => 'results', 'position' => 'center'])
+<div class="text-center">
 	<div class="text-center searching">
 		@include('components.animations.searching')
 	</div>

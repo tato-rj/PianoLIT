@@ -6,12 +6,12 @@ use Faker\Generator as Faker;
 
 $factory->define(Post::class, function (Faker $faker) {
     return [
-        'slug' => str_slug($faker->sentence),
+        'slug' => str_slug($faker->sentence(8)),
         'creator_id' => function() {
             return create(Admin::class)->id;
         },
-        'title' => $faker->sentence,
-        'description' => $faker->paragraph,
+        'title' => $faker->sentence(8),
+        'description' => $faker->paragraph(2),
         'content' => $faker->paragraph,
         'cover_path' => $faker->image(),
         'cover_credits' => $faker->sentence,

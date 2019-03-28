@@ -27,7 +27,7 @@
 	</div>
 </section>
 
-@include('components.popups.subscribe-1')
+@include('components.overlays.subscribe.model-1')
 @endsection
 
 @push('scripts')

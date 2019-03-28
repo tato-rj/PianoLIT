@@ -64,6 +64,10 @@
             letter-spacing: .0175em;
         }
 
+        .card:hover .card-overlay {
+            opacity: 1;
+        }
+
     </style>
 
     @stack('header')
@@ -76,7 +80,7 @@
         <main style="overflow-x: hidden">
             @yield('content')
         </main>
-        @include('components.search.overlay')
+        @include('components.overlays.search.form')
         @include('layouts.footer')
 
         @if($message = session('status'))
@@ -107,6 +111,8 @@
         let overlayId = $(this).attr('data-target');
         $('body').css('overflow-y', 'scroll');
         $(overlayId).fadeOut();
+    }).children().on('click', function(e) {
+        return false;
     });
     </script>
 
