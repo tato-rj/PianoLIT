@@ -1,5 +1,9 @@
 <?php
 
+Route::resources([
+    'subscriptions' => 'SubscriptionsController'
+]);
+
 Route::get('/', function () {
 	$tags = \App\Tag::inRandomOrder()->get();
 

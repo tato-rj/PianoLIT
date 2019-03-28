@@ -38,21 +38,6 @@
         </ul>
       </li>      
 
-      <li class="nav-item">
-        <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#blog">
-          <i class="fas fa-newspaper fa-fw"></i>
-          <span class="nav-link-text">Blog</span>
-        </a>
-        <ul class="sidenav-second-level collapse" id="blog">
-          <li>
-            <a class="py-2" href="{{route('admin.posts.index')}}">Posts</a>
-          </li>
-          <li>
-            <a class="py-2" href="{{route('admin.topics.index')}}">Topics</a>
-          </li>
-        </ul>
-      </li>
-
       @manager
       <li class="nav-item">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#api">
@@ -71,6 +56,40 @@
           </li>
         </ul>
       </li>
+
+      <li class="nav-item">
+        <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#repertoire">
+          <i class="fas fa-music fa-fw"></i>
+          <span class="nav-link-text">Repertoire</span>
+        </a>
+        <ul class="sidenav-second-level collapse" id="repertoire">
+          <li>
+            <a class="py-2" href="{{route('admin.pieces.index')}}">Pieces</a>
+          </li>
+          <li>
+            <a class="py-2" href="{{route('admin.composers.index')}}">Composers</a>
+          </li>
+          <li>
+            <a class="py-2" href="{{route('admin.tags.index')}}">Tags</a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#blog">
+          <i class="fas fa-newspaper fa-fw"></i>
+          <span class="nav-link-text">Blog</span>
+        </a>
+        <ul class="sidenav-second-level collapse" id="blog">
+          <li>
+            <a class="py-2" href="{{route('admin.posts.index')}}">Posts</a>
+          </li>
+          <li>
+            <a class="py-2" href="{{route('admin.topics.index')}}">Topics</a>
+          </li>
+        </ul>
+      </li>
+
       <li class="nav-item">
         <a class="nav-link" href="{{route('admin.editors.index')}}">
           <i class="fas fa-pencil-alt fa-fw"></i>
@@ -83,23 +102,11 @@
           <span class="nav-link-text">Users</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{route('admin.tags.index')}}">
-          <i class="fas fa-fw fa-tags"></i>
-          <span class="nav-link-text">Tags</span>
-        </a>
-      </li>
       @endmanager
       <li class="nav-item">
-        <a class="nav-link" href="{{route('admin.pieces.index')}}">
-          <i class="fa fa-fw fa-music"></i>
-          <span class="nav-link-text">Pieces</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{route('admin.composers.index')}}">
-          <i class="fas fa-fw fa-address-card"></i>
-          <span class="nav-link-text">Composers</span>
+        <a class="nav-link" href="{{route('admin.subscriptions.index')}}">
+          <i class="fas fa-fw fa-at"></i>
+          <span class="nav-link-text">Subscriptions</span>
         </a>
       </li>
 

@@ -78,6 +78,14 @@
         </main>
         @include('components.search.overlay')
         @include('layouts.footer')
+
+        @if($message = session('status'))
+        @include('components/alerts/success')
+        @endif
+
+        @if($message = session('error') ?? $errors->first())
+        @include('components/alerts/error')
+        @endif
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>

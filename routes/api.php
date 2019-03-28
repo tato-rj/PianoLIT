@@ -27,6 +27,12 @@ Route::prefix('blog')->name('blog.')->group(function() {
 
 });
 
+Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
+
+	Route::post('/unsubscribe', 'SubscriptionsController@unsubscribe')->name('unsubscribe');
+
+});
+
 Route::prefix('users')->name('users.')->group(function() {
 
 	Route::prefix('favorites')->name('favorites.')->group(function() {

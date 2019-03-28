@@ -34,7 +34,7 @@ class TopicTest extends AppTest
     {
         $this->signIn();
 
-        $this->patch(route('admin.topics.update', $this->topic->id), ['name' => 'new name']);
+        $this->patch(route('admin.topics.update', $this->topic->slug), ['name' => 'new name']);
 
         $this->assertEquals($this->topic->fresh()->name, 'new name');
     }
@@ -48,19 +48,19 @@ class TopicTest extends AppTest
             create(Admin::class, ['role' => 'unauthorized'])
         );
 
-        $this->patch(route('admin.topics.update', $this->topic->id), ['name' => 'new topic']);
+        $this->patch(route('admin.topics.update', $this->topic->slug), ['name' => 'new topic']);
     }
 
     /** @test */
     public function admins_can_delete_topics()
     {
-        $topicId = $this->topic->id;
+        $topicSlug = $this->topic->slug;
 
         $this->signIn();
 
-        $this->delete(route('admin.topics.destroy', $this->topic->id));
+        $this->delete(route('admin.topics.destroy', $this->topic->slug));
 
-        $this->assertDatabaseMissing('topics', ['id' => $topicId]);
+        $this->assertDatabaseMissing('topics', ['slug' => $topicSlug]);
     }
 
     /** @test */
@@ -72,6 +72,6 @@ class TopicTest extends AppTest
             create(Admin::class, ['role' => 'unauthorized'])
         );
 
-        $this->delete(route('admin.topics.destroy', $this->topic->id));
+        $this->delete(route('admin.topics.destroy', $this->topic->slug));
     }
 }

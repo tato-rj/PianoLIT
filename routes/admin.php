@@ -2,8 +2,6 @@
 
 Route::get('', 'AdminsController@home')->name('home');
 
-Route::get('blog', 'AdminsController@blog')->name('blog');
-
 Route::resources([
     'pieces' => 'PiecesController',
     'composers' => 'ComposersController',
@@ -42,6 +40,14 @@ Route::prefix('api')->name('api.')->group(function() {
 	Route::get('search', 'ApiController@search')->name('search');
 
 	Route::get('tour', 'ApiController@tour')->name('tour');
+
+});
+
+Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
+
+	Route::get('', 'AdminsController@subscriptions')->name('index');
+
+	Route::patch('{subscription}/status', 'SubscriptionsController@updateStatus')->name('update-status');
 
 });
 

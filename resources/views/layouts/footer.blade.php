@@ -2,12 +2,14 @@
 	<div class="container">
 		<div class="col-lg-8 col-md-10 col-12 mx-auto text-center">
 			<h2 class="mb-5">Subscribe for updates</h2>
-			<form method="POST">
+			<form method="POST" action="{{route('subscriptions.store')}}">
+				@csrf
 				<div class="form-row mb-5">
 					<div class="col-lg-6 col-md-8 col-10 mx-auto">
 						<div class="form-group">
-							<input type="email" name="email" placeholder="EMAIL ADDRESS" class="text-center form-control w-100 border-0 bg-grey-lighter">
+							<input required type="email" name="email" placeholder="EMAIL ADDRESS" class="text-center form-control w-100 border-0 bg-grey-lighter">
 						</div>
+						@include('components/form/error', ['field' => 'email'])
 						<button type="submit" class="btn btn-primary shadow btn-block">SIGN UP</button>
 					</div>
 				</div>

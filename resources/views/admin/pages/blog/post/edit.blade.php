@@ -20,7 +20,7 @@
     
     <div class="d-flex justify-content-end">
       <div class="text-{{$post->is_published ? 'success' : 'warning'}} mr-3 status-text">{{ucfirst($post->status)}}</div>
-      @include('components.blog.toggle')
+      @include('admin.components.toggle.blog')
     </div>
 
       <form class="row my-3" method="POST" action="{{route('admin.posts.update', $post->slug)}}" autocomplete="off" enctype="multipart/form-data">

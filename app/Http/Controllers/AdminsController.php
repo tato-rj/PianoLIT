@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Admin, User, Piece, Tag, Composer};
+use App\{Admin, User, Piece, Tag, Composer, Subscription};
 use App\Blog\Post;
 use Illuminate\Http\Request;
 
@@ -33,6 +33,18 @@ class AdminsController extends Controller
         $posts = Post::all();
 
         return view('admin.pages.blog.index', compact('posts'));
+    }
+
+    /**
+     * Display the subscriptions page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function subscriptions()
+    {
+        $subscriptions = Subscription::all();
+
+        return view('admin.pages.subscriptions.index', compact('subscriptions'));
     }
 
     /**

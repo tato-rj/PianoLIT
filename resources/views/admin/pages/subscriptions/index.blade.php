@@ -24,18 +24,21 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
 <div class="content-wrapper">
   <div class="container-fluid">
   @include('admin.components.breadcrumb', [
-    'title' => 'Blog',
-    'description' => 'Manage the blog posts'])
+    'title' => 'Subscriptions',
+    'description' => 'Manage the subscription list'])
 
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center">
         <div>
-          <a href="{{route('admin.posts.create')}}" class="btn btn-sm btn-default">
-            <i class="fas fa-plus mr-2"></i>Create a new post
-          </a>
+        <form method="POST" action="{{route('subscriptions.store')}}" class="form-inline">
+          @csrf
+          <input type="email" required name="email" placeholder="Add a new email here" class="form-control mr-2">
+          <button type="submit" class="btn btn-default">Subscribe</button>
+        </form>
+        @include('admin.components.feedback', ['field' => 'name'])
         </div>
         <div>
-          @include('admin.components.filters', ['filters' => []])
+          {{-- @include('admin.components.filters', ['filters' => []]) --}}
         </div>
       </div>
     </div>
@@ -46,27 +49,24 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
           <thead>
             <tr>
               <th class="border-0" scope="col">Date</th>
-              <th class="border-0" scope="col">Title</th>
-              <th class="border-0" scope="col">Reading Time</th>
+              <th class="border-0" scope="col">Email</th>
               <th class="border-0" scope="col">Status</th>
               <th class="border-0" scope="col"></th>
               <th class="border-0" scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            @foreach($posts as $post)
+            @foreach($subscriptions as $subscription)
             <tr>
-              <td>{{$post->created_at->toFormattedDateString()}}</td>
-              <td>{{$post->title}}</td>
-              <td>{{$post->reading_time}} min</td>
-              <td id="status-{{$post->slug}}" class="status-text text-{{$post->is_published ? 'success' : 'warning'}}">{{ucfirst($post->status)}}</td>
+              <td>{{$subscription->created_at->toFormattedDateString()}}</td>
+              <td>{{$subscription->email}}</td>
+              <td id="status-{{$subscription->id}}" class="status-text text-{{$subscription->is_active ? 'success' : 'warning'}}">{{ucfirst($subscription->status)}}</td>
               <td class="text-right">
-                <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
-                <a href="{{route('admin.posts.edit', $post->slug)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>
-                <a href="#" data-name="{{$post->title}}" data-url="{{route('admin.posts.destroy', $post->slug)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
+                <a href="mailto:{{$subscription->email}}" target="_blank" class="text-muted mr-2"><i class="far fa-envelope align-middle"></i></a>
+                <a href="#" data-name="{{$subscription->email}}" data-url="{{route('subscriptions.destroy', $subscription->email)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
               </td>
               <td class="text-right">
-                @include('admin.components.toggle.blog')
+                @include('admin.components.toggle.subscription')
               </td>
             </tr>
             @endforeach
@@ -78,7 +78,7 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
   </div>
 </div>
 
-@include('admin.components.modals.delete', ['model' => 'post'])
+@include('admin.components.modals.delete', ['model' => 'subscription'])
 
 @endsection
 
@@ -95,9 +95,9 @@ $('input.status-toggle').on('change', function() {
     type: 'PATCH',
     success: function(res) {
       if ($input.is(':checked')) {
-        $label.text('Published').toggleClass('text-muted text-success');
+        $label.text('Subscribed').toggleClass('text-muted text-success');
       } else {
-        $label.text('Unpublished').toggleClass('text-muted text-warning');
+        $label.text('Unsubscribed').toggleClass('text-muted text-warning');
       }
     }
   });
