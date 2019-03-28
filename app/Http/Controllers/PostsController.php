@@ -83,6 +83,8 @@ class PostsController extends Controller
             abort(404);
         }
 
+        $post->increment('views');
+
         return view('blog.show', compact(['post', 'suggestions']));
     }
 

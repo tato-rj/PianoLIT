@@ -54,7 +54,10 @@ p img {
 				</div>
 				<h1 class="font-serif mb-4">{{$post->title}}</h1>
 				<p class="text-muted font-lg">{{$post->description}}</p>
-				<p class="text-muted"><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
+				<div class="d-apart text-muted">
+					<p><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
+					<p><small><i class="fas fa-eye mr-2"></i>{{$post->views}}</small></p>
+				</div>
 				<figure class="figure">
 					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded">
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>

@@ -18,6 +18,18 @@ class SubscriptionTest extends AppTest
     }
 
     /** @test */
+    public function the_same_guest_cannot_subscribe_more_than_once_twice_minute()
+    {
+        $this->expectException('Illuminate\Http\Exceptions\ThrottleRequestsException');
+        
+        $this->post(route('subscriptions.store'), ['email' => 'bart@email.com']);
+        
+        $this->post(route('subscriptions.store'), ['email' => 'homer@email.com']);
+
+        $this->post(route('subscriptions.store'), ['email' => 'lisa@email.com']); 
+    }
+
+    /** @test */
     public function upon_subscription_an_email_is_automatically_reactivated_if_it_exists_or_created_new_if_it_doesnt()
     {
         $unsubscribedSubscription = create(Subscription::class, ['is_active' => false]);
@@ -61,15 +73,5 @@ class SubscriptionTest extends AppTest
         $this->delete(route('subscriptions.destroy', $email));
 
         $this->assertDatabaseMissing('subscriptions', ['email' => $email]);
-    }
-
-    /** @test */
-    public function unauthorized_users_cannot_delete_an_email_from_the_susbcription_list()
-    {
-        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
-
-        $email = create(Subscription::class)->email;
-
-        $this->delete(route('subscriptions.destroy', $email));
     }
 }

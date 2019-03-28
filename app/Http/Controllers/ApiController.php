@@ -38,8 +38,13 @@ class ApiController extends Controller
     public function search(Request $request)
     {
         $inputArray = $this->api->prepareInput($request);
-        
-        $pieces = Piece::search($inputArray, $request)->get();
+
+        $results = Piece::search($inputArray, $request);
+
+        if ($request->has('count'))
+            return response()->json(['count' => $results->count()]);
+
+        $pieces = $results->get();
 
         $this->api->prepare($request, $pieces, $inputArray);
 

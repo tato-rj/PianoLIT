@@ -90,4 +90,16 @@ class BlogTest extends AppTest
 
         $this->assertCount(1, $response->baseResponse->original['results']);
     }
+
+    /** @test */
+    public function a_post_automatically_increments_its_view_each_time_it_is_viewed()
+    {
+        $post = create(Post::class, ['is_published' => true]);
+
+        $views = $post->views;
+
+        $this->get(route('posts.show', $post->slug));
+
+        $this->assertNotEquals($views, $post->fresh()->views);
+    }
 }
