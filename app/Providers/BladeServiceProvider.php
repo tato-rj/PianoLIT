@@ -29,5 +29,9 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.form.textarea');
         \Blade::include('components.form.error');
         \Blade::include('components.form.tinyeditor');
+
+        \Blade::directive('popup', function ($card) {
+            return view('components.overlays.subscribe.model-2');
+        });
     }
 }

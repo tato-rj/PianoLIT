@@ -27,7 +27,8 @@
 	</div>
 </section>
 
-@include('components.overlays.subscribe.model-1')
+@include('components.overlays.subscribe.model-2')
+{{-- @popup(1) --}}
 @endsection
 
 @push('scripts')
@@ -37,7 +38,15 @@
 $(function() {
     setTimeout(function() {
         $("#subscribe-overlay").fadeIn('fast');
-    }, 2000);
+    }, 3000);
+});
+
+$('.card-title').each(function() {
+  $clamp(this, {clamp: 2});
+});
+
+$('.card-text').each(function() {
+  $clamp(this, {clamp: 5});
 });
 </script>
 @endpush

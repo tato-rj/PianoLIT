@@ -1,4 +1,5 @@
 require('./bootstrap');
+require('./vendor/clamp');
 
 $.ajaxSetup({
     headers: {
