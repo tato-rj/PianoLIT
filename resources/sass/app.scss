@@ -35,18 +35,18 @@ button:focus {outline:0;}
 	}
 }
 
-footer input::-webkit-input-placeholder {
+input.input-center::-webkit-input-placeholder {
     text-align: center;
   }
 
-  footer input:-moz-placeholder { /* Firefox 18- */
+  input.input-center:-moz-placeholder { /* Firefox 18- */
     text-align: center;  
   }
 
-  footer input::-moz-placeholder {  /* Firefox 19+ */
+  input.input-center::-moz-placeholder {  /* Firefox 19+ */
     text-align: center;  
   }
 
-  footer input:-ms-input-placeholder {  
+  input.input-center:-ms-input-placeholder {  
     text-align: center; 
   }
