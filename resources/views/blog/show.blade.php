@@ -41,7 +41,7 @@ p img {
 
 @section('content')
 <section id="blog-post" class="container mb-5">
-	<div class="row border-bottom pb-5 mb-5">
+	<div class="row border-bottom pb-4 mb-4">
 		<div class="col-lg-8 col-12 mx-auto">
 			@if(! empty($preview))
 			<div class="alert alert-warning" role="alert">
@@ -49,6 +49,9 @@ p img {
 			</div>
 			@endif
 			<div class="mb-4">
+				<div class="d-flex flex-wrap mb-2">
+					@each('components.blog.topic', $post->topics, 'topic')
+				</div>
 				<h1 class="font-serif mb-4">{{$post->title}}</h1>
 				<p class="text-muted font-lg">{{$post->description}}</p>
 				<p class="text-muted"><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
@@ -60,11 +63,9 @@ p img {
 			<div class="font-serif font-lg mb-4">
 				{!! $post->content !!}
 			</div>
-			<div class="d-flex flex-wrap">
-				@each('components.blog.topic', $post->topics, 'topic')
-			</div>
 		</div>
 	</div>
+
 	<div class="row">
 		<div class="col-12 mb-4">
 			<div><strong>READ NEXT</strong></div>
