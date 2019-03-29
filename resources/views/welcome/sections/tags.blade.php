@@ -22,7 +22,7 @@
 					@endforeach
 				</div>
 			</div>
-			<button id="tags-search-button" data-url="{{route('api.search')}}?count&global" data-target="#results-overlay" class="btn btn-primary btn-wide shadow show-overlay"><i class="fas fa-lightbulb mr-3"></i>Find my pieces</button>
+			<button id="tags-search-button" data-url="{{route('api.search')}}?count" data-target="#results-overlay" class="btn btn-primary btn-wide shadow show-overlay"><i class="fas fa-lightbulb mr-3"></i>Find my pieces</button>
 		</div>
 	</div>
 </section>

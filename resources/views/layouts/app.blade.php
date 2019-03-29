@@ -65,7 +65,7 @@
         }
 
         .card:hover .card-overlay {
-            opacity: 1 !important;
+            opacity: .6 !important;
         }
 
     </style>
