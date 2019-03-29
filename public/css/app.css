@@ -20213,6 +20213,10 @@ button.swiper-pagination-bullet {
   }
 }
 
+iframe {
+  border: 0;
+}
+
 button:focus {
   outline: 0;
 }
