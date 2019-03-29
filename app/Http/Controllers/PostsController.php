@@ -74,7 +74,7 @@ class PostsController extends Controller
      */
     public function show(Post $post)
     {
-        $suggestions = Post::inRandomOrder()->take(4)->get();
+        $suggestions = Post::published()->inRandomOrder()->take(4)->get();
 
         if (! $post->is_published) {
             if (auth()->guard('admin')->check())
