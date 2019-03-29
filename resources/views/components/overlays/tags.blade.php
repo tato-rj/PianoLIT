@@ -10,7 +10,7 @@
 	</div>
 	<div class="text-center empty-results" style="display: none;">
 		<img src="{{asset('images/icons/sad.svg')}}" width="80" class="mb-4">
-		<p class="text-muted">We couldn't find any pieces matching your selection...</p>
+		<p class="text-muted mx-5">We couldn't find any pieces matching your selection...</p>
 		<p><strong>Please try again!</strong></p>
 	</div>
 </div>
