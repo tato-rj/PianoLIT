@@ -46,13 +46,12 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
-        dd($request->all());
-        // if (Subscription::active()->byEmail($form->email)->exists())
-        //     return redirect()->back()->with('error', 'We already have this email in our subscription list.');
+        if (Subscription::active()->byEmail($form->email)->exists())
+            return redirect()->back()->with('error', 'We already have this email in our subscription list.');
 
-        // Subscription::createOrActivate($form->email);
+        Subscription::createOrActivate($form->email);
 
-        // return redirect()->back()->with('status', 'Thanks for subscribing!');
+        return redirect()->back()->with('status', 'Thanks for subscribing!');
     }
 
     /**
