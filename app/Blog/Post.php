@@ -55,7 +55,7 @@ class Post extends PianoLit
 
     public function scopePublished($query)
     {
-        return $query->where('is_published', true);
+        return $query->where('is_published', true)->latest();
     }
 
     public function scopeByTopic($query, Topic $topic)
