@@ -37,6 +37,14 @@ p img {
 	height: auto;
 }
 </style>
+
+<script>
+    window.app = <?php echo json_encode([
+        'csrfToken' => csrf_token(),
+        'page_url' => url()->current(),
+        'page_id' => $post->slug
+    ]); ?>
+</script>
 @endpush
 
 @section('content')
@@ -69,11 +77,17 @@ p img {
 		</div>
 	</div>
 
-	<div class="row">
+	<div class="row mb-5">
 		<div class="col-12 mb-4">
 			<div><strong>READ NEXT</strong></div>
 		</div>
 		@each('components.blog.cards.small', $suggestions, 'suggestion')
+	</div>
+
+	<div class="row">
+		<div class="col-12 mb-4">
+			<div id="disqus_thread"></div>
+		</div>
 	</div>
 </section>
 @endsection
@@ -84,5 +98,19 @@ p img {
 $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
 });
+</script>
+
+<script type="text/javascript">
+var disqus_config = function () {
+this.page.url = app.page_url;
+this.page.identifier = app.page_id;
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://pianolit.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
 </script>
 @endpush
