@@ -55,7 +55,6 @@ class Subscription extends PianoLit
     	if ($record->exists())
     		return $record->first()->reactivate();
 
-        dd($email);
         \Mail::to($email)->send(new Welcome);
 
     	return $this->create(['email' => $email]);
