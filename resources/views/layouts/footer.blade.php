@@ -26,6 +26,7 @@
 					<li class="m-2"><a href="#" class="link-inherit"><i class="fab fa-youtube"></i></a></li>
 					<li class="m-2"><a href="#" class="link-inherit"><i class="fab fa-twitter"></i></a></li>
 					<li class="m-2"><a href="#" class="link-inherit"><i class="fab fa-pinterest"></i></a></li>
+					<li class="m-2"><a href="#" class="link-inherit"><i class="fab fa-instagram"></i></a></li>
 				</ul>
 			</div>
 			<p class="text-muted m-0"><small>MADE WITH ❤ BY LEFTLANE</small></p>

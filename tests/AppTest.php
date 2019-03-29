@@ -3,7 +3,7 @@
 namespace Tests;
 
 use App\Blog\{Post, Topic};
-use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist};
+use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist, Subscription};
 
 class AppTest extends TestCase
 {
@@ -52,5 +52,15 @@ class AppTest extends TestCase
     {
         $admin = ($admin) ?: $this->admin;
         return $this->actingAs($admin, $guard);
+    }
+
+    public function subscribe($email = null)
+    {
+        return $this->post(route('subscriptions.store'), ['email' => $email ?? make(Subscription::class)->email]);
+    }
+
+    public function unsubscribe($email)
+    {
+        return $this->post(route('api.subscriptions.unsubscribe', ['email' => $email]));
     }
 }

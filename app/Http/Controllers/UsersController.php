@@ -19,6 +19,14 @@ class UsersController extends Controller
         return view('admin.pages.users.index', compact('users'));
     }
 
+    public function gift($gift)
+    {
+        if (! \Storage::disk('public')->exists('gifts/' . $gift))
+            abort(404);
+
+        return \Storage::disk('public')->download('gifts/' . $gift);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

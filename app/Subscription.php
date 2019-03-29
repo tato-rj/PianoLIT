@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Mail\Newsletter\Welcome;
+
 class Subscription extends PianoLit
 {
 	protected $casts = ['is_active' => 'boolean'];
@@ -52,6 +54,8 @@ class Subscription extends PianoLit
 
     	if ($record->exists())
     		return $record->first()->reactivate();
+
+        \Mail::to($email)->send(new Welcome);
 
     	return $this->create(['email' => $email]);
     }

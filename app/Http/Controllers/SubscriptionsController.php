@@ -15,7 +15,7 @@ class SubscriptionsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('throttle:2')->only('store');
+        // $this->middleware('throttle:2')->only('store');
     }
 
     /**
@@ -46,7 +46,6 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
-
         if (Subscription::active()->byEmail($form->email)->exists())
             return redirect()->back()->with('error', 'We already have this email in our subscription list.');
 

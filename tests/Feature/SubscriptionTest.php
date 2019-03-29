@@ -10,11 +10,11 @@ class SubscriptionTest extends AppTest
     /** @test */
     public function a_guest_can_subscribe_to_the_newsletter()
     {
-        $subscription = make(Subscription::class);
+        $email = make(Subscription::class)->email;
 
-        $this->post(route('subscriptions.store'), ['email' => $subscription->email]);
+        $this->subscribe($email);
 
-        $this->assertDatabaseHas('subscriptions', ['email' => $subscription->email]);
+        $this->assertDatabaseHas('subscriptions', ['email' => $email]);
     }
 
     /** @test */
@@ -22,11 +22,9 @@ class SubscriptionTest extends AppTest
     {
         $this->expectException('Illuminate\Http\Exceptions\ThrottleRequestsException');
         
-        $this->post(route('subscriptions.store'), ['email' => 'bart@email.com']);
-        
-        $this->post(route('subscriptions.store'), ['email' => 'homer@email.com']);
-
-        $this->post(route('subscriptions.store'), ['email' => 'lisa@email.com']); 
+        $this->subscribe();
+        $this->subscribe();
+        $this->subscribe();
     }
 
     /** @test */
@@ -36,13 +34,13 @@ class SubscriptionTest extends AppTest
 
         $this->assertFalse($unsubscribedSubscription->is_active);
 
-        $this->post(route('subscriptions.store'), ['email' => $unsubscribedSubscription->email]);
+        $this->subscribe($unsubscribedSubscription->email);
 
         $this->assertTrue($unsubscribedSubscription->fresh()->is_active);
 
         $this->assertCount(1, Subscription::all());
 
-        $this->post(route('subscriptions.store'), ['email' => 'new@email.com']);
+        $this->subscribe();
 
         $this->assertCount(2, Subscription::all());
     }
@@ -54,7 +52,7 @@ class SubscriptionTest extends AppTest
 
         $this->assertTrue($subscription->is_active);
 
-        $this->post(route('api.subscriptions.unsubscribe', ['email' => $subscription->email]));
+        $this->unsubscribe($subscription->email);
 
         $this->assertDatabaseHas('subscriptions', ['email' => $subscription->email]);
 
