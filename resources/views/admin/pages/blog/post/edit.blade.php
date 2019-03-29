@@ -52,7 +52,14 @@
         <div class="col-12 mb-4">
           @tinyeditor(['bag' => 'default', 'name' => 'content', 'value' => $post->content])
         </div>
-        <div class="col-12 text-right">
+        <div class="col-12 d-flex justify-content-end">
+          <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="btn btn-outline-dark mr-2">
+            @if($post->is_published)
+            <i class="fas fa-globe mr-2"></i>Visit
+            @else
+            <i class="far fa-eye mr-2"></i>Preview
+            @endif
+          </a>
           <button type="submit" id="submit-button" class="btn btn-default">Update post</button>
         </div>
       </form>
