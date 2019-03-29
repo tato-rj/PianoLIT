@@ -1,5 +1,5 @@
-@component('layouts.overlay', ['name' => 'subscribe', 'position' => 'center'])
-<div class="mx-2">
+@component('layouts.overlay', ['name' => 'subscribe', 'position' => 'center', 'background' => '0,0,0,0.8'])
+<div class="mx-3">
 	<div class="rounded text-center p-6 bg-white shadow-light">
 		<img src="{{asset('images/misc/subscribe-flow.svg')}}" width="200" class="mb-4">
 		<div class="mb-4">

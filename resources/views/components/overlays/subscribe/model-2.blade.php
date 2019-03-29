@@ -1,8 +1,8 @@
-@component('layouts.overlay', ['name' => 'subscribe', 'position' => 'center'])
-<div class="mx-2" style="max-width: 512px">
+@component('layouts.overlay', ['name' => 'subscribe', 'position' => 'center', 'background' => '0,0,0,0.8'])
+<div class="mx-3" style="max-width: 512px">
 	<div class="rounded text-center shadow-light">
-		<img src="{{asset('images/gifts/circle-of-fifths-wall.jpg')}}" class="w-100">
-		<div class="px-4 py-3 bg-white">
+		<img src="{{asset('images/gifts/circle-of-fifths-brick-wall.jpg')}}" class="w-100 rounded-top">
+		<div class="px-4 py-3 bg-white rounded-bottom">
 			<div class="mb-4">
 				<div>Subscribe today and get a <strong><u>FREE</u></strong> poster in your inbox!</div>
 			</div>
