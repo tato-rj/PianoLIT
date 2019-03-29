@@ -1,4 +1,4 @@
-@component('layouts.overlay', ['name' => 'results', 'position' => 'center'])
+@component('layouts.overlay', ['name' => 'results', 'light' => true, 'position' => 'center'])
 <div class="text-center">
 	<div class="text-center searching">
 		@include('components.animations.searching')

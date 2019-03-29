@@ -112,7 +112,7 @@
         $('body').css('overflow-y', 'scroll');
         $(overlayId).fadeOut();
     }).children().on('click', function(e) {
-        return false;
+        e.stopPropagation();
     });
     </script>
 

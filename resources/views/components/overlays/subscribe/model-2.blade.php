@@ -1,4 +1,4 @@
-@component('layouts.overlay', ['name' => 'subscribe', 'position' => 'center', 'background' => '0,0,0,0.8'])
+@component('layouts.overlay', ['name' => 'subscribe', 'light' => false, 'position' => 'center', 'background' => '0,0,0,0.8'])
 <div class="mx-3" style="max-width: 512px">
 	<div class="rounded text-center shadow-light">
 		<img src="{{asset('images/gifts/circle-of-fifths-brick-wall.jpg')}}" class="w-100 rounded-top">
@@ -9,7 +9,7 @@
 			<form method="POST" action="{{route('subscriptions.store')}}">
 				@csrf
 				<div class="form-group">
-					<input type="email" name="email" class="form-control input-center" placeholder="Your email address">
+					<input required type="email" name="email" class="form-control input-center" placeholder="Your email address">
 				</div>
 
 				<button type="submit" class="btn btn-primary btn-block mb-2">Sign up</button>
