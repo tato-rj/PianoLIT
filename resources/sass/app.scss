@@ -35,6 +35,10 @@ button:focus {outline:0;}
 	}
 }
 
+input.input-center {
+	text-align: center;
+}
+
 input.input-center::-webkit-input-placeholder {
     text-align: center;
   }

@@ -20243,6 +20243,10 @@ button:focus {
   border-color: #096bf0;
 }
 
+input.input-center {
+  text-align: center;
+}
+
 input.input-center::-webkit-input-placeholder {
   text-align: center;
 }
