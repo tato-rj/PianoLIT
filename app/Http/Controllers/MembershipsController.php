@@ -75,6 +75,22 @@ class MembershipsController extends Controller
     }
 
     /**
+     * Checks the status of a user (app only)
+     * @return string
+     */
+    public function status(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (! $user)
+            return response()->json(false);
+
+        $status = $user->getStatus($callApple = true);
+
+        return response()->json($status);
+    }
+    
+    /**
      * Remove a user's membership record (local environment only)
      * @param  User   $user 
      * @return redirect

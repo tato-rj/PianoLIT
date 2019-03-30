@@ -57,6 +57,8 @@ Route::prefix('memberships')->name('memberships.')->group(function() {
 
 	Route::post('history', 'MembershipsController@history')->name('history');
 
+	Route::post('status', 'MembershipsController@status')->name('status');
+
 });
 
 Route::get('/discover', 'ApiController@discover')->name('discover');
