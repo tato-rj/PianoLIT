@@ -58,11 +58,6 @@ class Post extends PianoLit
         return $query->where('is_published', true)->latest();
     }
 
-    public function scopeExclude($query, $ids)
-    {
-        return $query->whereNotIn('id', $ids);
-    }
-
     public function scopeSuggestions($query, $number)
     {
         return $query->published()->take(4);

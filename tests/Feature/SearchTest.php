@@ -10,6 +10,7 @@ class SearchTest extends AppTest
     /** @test */
     public function users_can_perform_searches_by_keywords()
     {
+    	Tag::truncate();
         $this->piece->tags()->detach();
 
         $this->piece->tags()->attach(create(Tag::class, ['name' => 'foo']));

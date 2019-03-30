@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Storage;
 
 trait AdminEvents
 {
-
     public function storeBlogPost()
     {
 		Storage::fake('public');

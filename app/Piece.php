@@ -95,7 +95,7 @@ class Piece extends PianoLit
             $group['count'] = $group->count();
         });
     }
-
+    
     public function isFavorited($user_id)
     {
         $result = \DB::table('favorites')->where([

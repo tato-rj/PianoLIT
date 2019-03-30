@@ -35,6 +35,7 @@ class CreatePiecesTable extends Migration
             $table->string('score_publisher')->nullable();
             $table->string('score_copyright')->nullable();
             $table->unsignedInteger('composer_id');
+            $table->unsignedInteger('composed_in')->nullable();
             $table->unsignedInteger('creator_id')->nullable();
             $table->unsignedInteger('performer_id')->nullable();
             $table->unsignedInteger('views')->default(0);

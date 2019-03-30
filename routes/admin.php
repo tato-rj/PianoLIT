@@ -8,7 +8,8 @@ Route::resources([
     'tags' => 'TagsController',
     'topics' => 'TopicsController',
     'editors' => 'EditorsController',
-    'users' => 'UsersController'
+    'users' => 'UsersController',
+    'timelines' => 'TimelinesController'
 ]);
 
 Route::prefix('blog')->name('posts.')->group(function() {

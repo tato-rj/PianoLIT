@@ -1,6 +1,6 @@
 <?php
 
-use App\{Composer, Country, Piece, Tag, Playlist, Admin};
+use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -60,12 +60,23 @@ $factory->define(Piece::class, function (Faker $faker) {
             'score_editor' => '',
             'score_publisher' => '',
             'score_copyright' => '',
+            'composed_in' => $faker->year,
             'composer_id' => function() {
                 return create(Composer::class)->id;
             },
             'creator_id' => function() {
                 return create(Admin::class)->id;
             }
+    ];
+});
+
+$factory->define(Timeline::class, function (Faker $faker) {
+    return [
+        'year' => $faker->year,
+        'event' => $faker->sentence,
+        'creator_id' => function() {
+            return create(Admin::class)->id;
+        },
     ];
 });
 

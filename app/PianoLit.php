@@ -10,4 +10,9 @@ class PianoLit extends Model
 	use BelongsToThrough;
 	
 	protected $guarded = [];
+
+    public function scopeExclude($query, $ids)
+    {
+        return $query->whereNotIn('id', $ids);
+    }
 }
