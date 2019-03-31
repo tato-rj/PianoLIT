@@ -53,7 +53,7 @@ class LoginController extends Controller
      */
     protected function sendFailedLoginResponse(Request $request)
     {
-        return redirect()->to(route('admin.login'))
+        return redirect()->to(route('admin.login.show'))
             ->withInput($request->only('email', 'remember'))
             ->withErrors([
                 'email' => \Lang::get('auth.failed'),
