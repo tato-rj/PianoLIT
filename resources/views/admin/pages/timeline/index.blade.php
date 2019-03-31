@@ -48,7 +48,7 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
     <div class="row my-3">
       <div class="col-12 text-center mb-4">
         <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-          @foreach($timelines->groupBy('century') as $century => $array)
+          @foreach($centuries as $century => $array)
           <a href="{{route('admin.timelines.index', ['century' => $century])}}" class="btn btn-{{$century == request('century') ? 'default' : 'light'}}">{{$century}}s <span class="badge badge-light">{{count($array)}}</span></a>
           @endforeach
         </div>
