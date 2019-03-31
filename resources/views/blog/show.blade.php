@@ -71,7 +71,7 @@ p img {
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
 			</div>
-			<div class="font-serif font-lg mb-4">
+			<div class="font-lg mb-4">
 				{!! $post->content !!}
 			</div>
 		</div>
@@ -85,7 +85,7 @@ p img {
 	</div>
 
 	<div class="row">
-		<div class="col-12 mb-4">
+		<div class="col-12 mb-2">
 			<div id="disqus_thread"></div>
 		</div>
 	</div>
