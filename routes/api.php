@@ -45,6 +45,8 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::post('', 'UsersController@store')->name('store');
 
+	Route::post('/login', 'UsersController@appLogin')->name('login');
+
 	Route::get('{user}', 'ApiController@user')->name('show');
 
 	Route::post('/suggestions', 'ApiController@suggestions')->name('suggestions');

@@ -77,6 +77,26 @@ class UsersController extends Controller
         return $user;
     }
 
+    public function appLogin(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            if (\Hash::check($request->password, $user->password))
+                return response()->json($user);
+
+            $error = ['Sorry, the password is not valid.'];
+
+        } else {
+            $error = ['This email is not registered.'];
+        }
+
+        $response = new \stdClass;
+        $response->error = $error;
+
+        return response()->json($response);
+    }
+    
     /**
      * Display the specified resource.
      *
