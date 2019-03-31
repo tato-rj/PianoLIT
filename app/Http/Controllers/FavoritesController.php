@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\{User, Piece};
+use App\{User, Piece, Api};
 use Illuminate\Http\Request;
 
 class FavoritesController extends Controller
 {
+    protected $api;
+
+    public function __construct()
+    {
+        $this->api = new Api;        
+    }
+
     public function show(Request $request)
     {
         $user = User::find($request->user_id);
