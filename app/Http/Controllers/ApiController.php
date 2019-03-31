@@ -108,4 +108,9 @@ class ApiController extends Controller
 
         return $suggestions;
     }
+
+    public function tags()
+    {
+        return Tag::all();
+    }
 }
