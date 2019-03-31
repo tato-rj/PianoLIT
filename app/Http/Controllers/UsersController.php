@@ -61,7 +61,7 @@ class UsersController extends Controller
             'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => \Hash::make($request->password),
-            'locale' => $request->locale,
+            'locale' => 'unknown',
             'age_range' => strtolower($request->age_range),
             'experience' => strtolower($request->experience),
             'preferred_piece_id' => $request->preferred_piece_id,
