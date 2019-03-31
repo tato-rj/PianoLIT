@@ -9,7 +9,7 @@ class Piece extends PianoLit
     use PieceExtraAttributes;
     
     protected $with = ['composer', 'tags'];
-    protected $appends = ['medium_name', 'recordingsAvailable', 'is_public_domain', 'level'];
+    protected $appends = ['medium_name', 'recordingsAvailable', 'is_public_domain'];
 
     public static function boot()
     {

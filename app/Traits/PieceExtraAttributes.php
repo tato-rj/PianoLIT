@@ -9,15 +9,15 @@ trait PieceExtraAttributes
         return $this->level->name;
     }
 
-    public function getPeriodAttribute($period)
-    {
-        return ucfirst($period);
-    }
+    // public function getPeriodAttribute($period)
+    // {
+    //     return ucfirst($period);
+    // }
 
-    public function getLevelAttribute($level)
-    {
-        return ucfirst($level);
-    }
+    // public function getLevelAttribute($level)
+    // {
+    //     return ucfirst($level);
+    // }
 
     public function getShortNameAttribute()
     {
