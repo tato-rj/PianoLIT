@@ -48,7 +48,7 @@ class Piece extends PianoLit
 
     public function getLevelAttribute()
     {
-        return $this->tags()->where('type', 'level')->first();
+        return $this->tags()->where('type', 'level')->first()->name;
     }
 
     public function getLengthAttribute()
