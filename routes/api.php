@@ -19,6 +19,8 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::post('/find', 'ApiController@piece')->name('find');
 
+	Route::get('{piece}/timeline', 'ApiController@timeline')->name('timeline');
+
 });
 
 Route::prefix('blog')->name('blog.')->group(function() {

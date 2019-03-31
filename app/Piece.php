@@ -9,7 +9,7 @@ class Piece extends PianoLit
     use PieceExtraAttributes;
     
     protected $with = ['composer', 'tags'];
-    protected $appends = ['medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name'];
+    protected $appends = ['medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name', 'timeline_url'];
 
     public static function boot()
     {
@@ -44,6 +44,11 @@ class Piece extends PianoLit
     public function playlists()
     {
         return $this->belongsToMany(Playlist::class);
+    }
+
+    public function getTimelineUrlAttribute()
+    {
+        return route('api.pieces.timeline', $this->id);
     }
 
     public function getLevelAttribute()

@@ -2,6 +2,7 @@
   <div class="d-flex justify-content-between px-3 py-2 
   {{is_null($piece->creator_id) ? 'bg-white text-muted border' : 'bg-'.strtolower($piece->level->name)}} rounded">
     <div class="truncate">
+      <a href="{{$piece->timeline_url}}" target="_blank" class="text-brand mr-1"><i class="fas fa-list-ul"></i></a>
       @include('admin.pages.pieces.play')
       <strong>{{$piece->long_name}}</strong> by {{$piece->composer->short_name}}
     </div>
