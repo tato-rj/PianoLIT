@@ -223,7 +223,7 @@ class PiecesController extends Controller
 
     public function incrementViews(Request $request)
     {
-        Piece::findOrFail($request->piece_id)->increment('views');
+        Piece::find($request->piece_id)->increment('views');
         
         if (request()->wantsJson())
             return response(200);

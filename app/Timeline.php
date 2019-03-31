@@ -6,9 +6,16 @@ class Timeline extends PianoLit
 {
 	protected $range = 10;
 
+    protected $appends = ['century'];
+
     public function creator()
     {
         return $this->belongsTo(Admin::class);
+    }
+
+    public function getCenturyAttribute()
+    {
+        return substr($this->year, 0, 2) . '00s';
     }
 
     public function scopeGenerate($query, $pieceId)
