@@ -225,11 +225,7 @@ class PiecesController extends Controller
     {
         Piece::find($request->piece_id)->increment('views');
      
-        return response()->json(['this' => 'works?']);   
-        // if (request()->wantsJson())
-        //     return response(200);
-
-        // return redirect()->back()->with('success', "The number of views has been incremented!");
+        return response(200);
     }
 
     /**
