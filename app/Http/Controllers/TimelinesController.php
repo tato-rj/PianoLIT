@@ -14,7 +14,7 @@ class TimelinesController extends Controller
      */
     public function index()
     {
-        $timelines = Timeline::all();
+        $timelines = Timeline::orderBy('year')->get();
 
         return view('admin.pages.timeline.index', compact('timelines'));
     }
