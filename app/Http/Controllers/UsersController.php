@@ -56,20 +56,20 @@ class UsersController extends Controller
             return response()->json($validator->messages(), 403);
         }
 
-        return response()->json(['validation' => 'works']);
-        // $user = User::create([
-        //     'first_name' => $request->first_name,
-        //     'last_name' => $request->last_name,
-        //     'email' => $request->email,
-        //     'password' => \Hash::make($request->password),
-        //     'locale' => $request->locale,
-        //     'age_range' => strtolower($request->age_range),
-        //     'experience' => strtolower($request->experience),
-        //     'preferred_piece_id' => $request->preferred_piece_id,
-        //     'occupation' => strtolower($request->occupation),
-        //     'trial_ends_at' => now()->addWeek()
-        // ]);
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => \Hash::make($request->password),
+            'locale' => $request->locale,
+            'age_range' => strtolower($request->age_range),
+            'experience' => strtolower($request->experience),
+            'preferred_piece_id' => $request->preferred_piece_id,
+            'occupation' => strtolower($request->occupation),
+            'trial_ends_at' => now()->addWeek()
+        ]);
 
+        return response()->json(['user' => 'created']);
         // // \Mail::to($user->email)->send(new \App\Mail\PianoLit\WelcomeEmail($user));
 
         // if ($request->has('from_backend'))
