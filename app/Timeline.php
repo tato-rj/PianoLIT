@@ -15,7 +15,7 @@ class Timeline extends PianoLit
 
     public function getCenturyAttribute()
     {
-        return substr($this->year, 0, 2) . '00s';
+        return substr($this->year, 0, 2) . '00';
     }
 
     public function scopeGenerate($query, $pieceId)
