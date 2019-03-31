@@ -69,9 +69,16 @@
             letter-spacing: .003em;
         }
 
-        .font-lg {
+        .blog-post {
             font-size: 1.15em;
-            letter-spacing: .0175em;
+            letter-spacing: .03em;
+        }
+
+        .blog-post h1, .blog-post h2 .blog-post h3, .blog-post h4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .font-lg {
         }
 
         .card:hover .card-overlay {

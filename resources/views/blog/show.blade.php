@@ -60,7 +60,7 @@ p img {
 				<div class="d-flex flex-wrap mb-2">
 					@each('components.blog.topic', $post->topics, 'topic')
 				</div>
-				<h1 class="font-serif mb-4">{{$post->title}}</h1>
+				<h1 class="mb-4">{{$post->title}}</h1>
 				<p class="text-muted font-lg">{{$post->description}}</p>
 				<div class="d-apart text-muted">
 					<p><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
@@ -71,7 +71,7 @@ p img {
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
 			</div>
-			<div class="font-lg mb-4">
+			<div class="blog-post mb-4">
 				{!! $post->content !!}
 			</div>
 		</div>
