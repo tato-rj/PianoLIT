@@ -14,10 +14,15 @@ class TimelinesController extends Controller
      */
     public function index()
     {
-        // $century
-        $timelines = Timeline::orderBy('year')->get();
+        $centuries = Timeline::orderBy('year')->get()->groupBy('century');
 
-        return view('admin.pages.timeline.index', compact('timelines'));
+        $start = request('century') ?? $centuries->first()->first()->century;
+
+        $end = $start + 99;
+
+        $timelines = Timeline::whereBetween('year', [$start, $end])->orderBy('year')->get();
+
+        return view('admin.pages.timeline.index', compact(['timelines', 'centuries']));
     }
 
     /**
