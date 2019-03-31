@@ -66,16 +66,16 @@ class UsersController extends Controller
             'experience' => strtolower($request->experience),
             'preferred_piece_id' => $request->preferred_piece_id,
             'occupation' => strtolower($request->occupation),
+            'email_verified_at' => now(),
             'trial_ends_at' => now()->addWeek()
         ]);
 
-        return response()->json(['user' => 'created']);
         // // \Mail::to($user->email)->send(new \App\Mail\PianoLit\WelcomeEmail($user));
 
-        // if ($request->has('from_backend'))
-        //     return redirect()->back()->with('success', "The user has been successfully created!");
+        if ($request->has('from_backend'))
+            return redirect()->back()->with('success', "The user has been successfully created!");
 
-        // return $user;
+        return $user;
     }
 
     public function appLogin(Request $request)
