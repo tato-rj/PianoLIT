@@ -223,12 +223,13 @@ class PiecesController extends Controller
 
     public function incrementViews(Request $request)
     {
-        Piece::find($request->piece_id)->increment('views');
+        return response()->json(['this' => 'works?']);
+        // Piece::find($request->piece_id)->increment('views');
         
-        if (request()->wantsJson())
-            return response(200);
+        // if (request()->wantsJson())
+        //     return response(200);
 
-        return redirect()->back()->with('success', "The number of views has been incremented!");
+        // return redirect()->back()->with('success', "The number of views has been incremented!");
     }
 
     /**
