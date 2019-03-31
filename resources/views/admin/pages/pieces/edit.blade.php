@@ -10,15 +10,8 @@
     
     <div class="row my-5 mx-2">
       <div class="col-lg-6 col-sm-10 col-12 mx-auto">
-        <div class="px-3 py-2 rounded mb-4 bg-light d-flex justify-content-between align-items-center">
-          <div>
-            <i class="fas fa-eye text-brand mr-2"></i><small class="text-muted">{{$piece->views}} {{str_plural('view', $piece->views) }}</small>
-          </div>
-          <form method="POST" action="{{route('api.pieces.increment-views')}}">
-            @csrf
-            <input type="hidden" name="piece_id" value="{{$piece->id}}">
-            <button type="submit" class="btn btn-link btn-sm text-brand m-0 p-0"><i class="fas fa-plus"></i></button>
-          </form>
+        <div class="px-3 py-2 rounded mb-4 bg-light">
+          <i class="fas fa-eye text-brand mr-2"></i><small class="text-muted">{{$piece->views}} {{str_plural('view', $piece->views) }}</small>
         </div>
         <form id="edit-form" method="POST" action="{{route('admin.pieces.update', $piece->id)}}" enctype="multipart/form-data">
           @csrf
@@ -89,6 +82,10 @@
                 <option value="{{$composer->id}}" {{($piece->composer_id == $composer->id) ? 'selected' : ''}}>{{$composer->short_name}}</option>
                 @endforeach
               </select>
+            </div>
+            <div class="col">
+              <label class="text-brand"><small>Written in</small></label>
+              <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Written in" value="{{$piece->composed_in}}">
             </div>
             <div class="col">
               <label class="text-brand"><small>Key</small></label>

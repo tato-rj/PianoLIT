@@ -125,6 +125,7 @@ class PiecesController extends Controller
             'score_publisher' => $request->score_publisher,
             'score_copyright' => $request->score_copyright,
             'composer_id' => $request->composer_id,
+            'composed_in' => $request->composed_in,
             'audio_path' => $request->hasFile('audio_path') ? $request->file('audio_path')->store('app/audio_path', 'public') : null,
             'audio_path_rh' => $request->hasFile('audio_path_rh') ? $request->file('audio_path_rh')->store('app/audio_path_rh', 'public') : null,
             'audio_path_lh' => $request->hasFile('audio_path_lh') ? $request->file('audio_path_lh')->store('app/audio_path_lh', 'public') : null,
@@ -201,7 +202,8 @@ class PiecesController extends Controller
             'score_editor' => $request->score_editor,
             'score_publisher' => $request->score_publisher,
             'score_copyright' => $request->score_copyright,
-            'composer_id' => $request->composer_id
+            'composer_id' => $request->composer_id,
+            'composed_in' => $request->composed_in,
         ]);
 
         $piece->tags()->sync(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));

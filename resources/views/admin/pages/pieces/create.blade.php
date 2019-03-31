@@ -71,6 +71,10 @@
               @include('admin.components.feedback', ['field' => 'composer_id'])
             </div>
             <div class="col">
+              <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Written in" value="{{old('composed_in')}}">
+              @include('admin.components.feedback', ['field' => 'composed_in'])
+            </div>
+            <div class="col">
               <select class="form-control required {{$errors->has('key') ? 'is-invalid' : ''}}" name="key" >
                 <option class="default" selected disabled>Key</option>
                 <optgroup label="Tonal">
