@@ -45,36 +45,37 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = \Validator::make($request->all(), [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        return response()->json(['got' => 'this?']);
+        // $validator = \Validator::make($request->all(), [
+        //     'first_name' => 'required',
+        //     'last_name' => 'required',
+        //     'email' => 'required|email|unique:users',
+        //     'password' => 'required|string|min:6|confirmed',
+        // ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->messages(), 403);
-        }
+        // if ($validator->fails()) {
+        //     return response()->json($validator->messages(), 403);
+        // }
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => \Hash::make($request->password),
-            'locale' => $request->locale,
-            'age_range' => strtolower($request->age_range),
-            'experience' => strtolower($request->experience),
-            'preferred_piece_id' => $request->preferred_piece_id,
-            'occupation' => strtolower($request->occupation),
-            'trial_ends_at' => now()->addWeek()
-        ]);
+        // $user = User::create([
+        //     'first_name' => $request->first_name,
+        //     'last_name' => $request->last_name,
+        //     'email' => $request->email,
+        //     'password' => \Hash::make($request->password),
+        //     'locale' => $request->locale,
+        //     'age_range' => strtolower($request->age_range),
+        //     'experience' => strtolower($request->experience),
+        //     'preferred_piece_id' => $request->preferred_piece_id,
+        //     'occupation' => strtolower($request->occupation),
+        //     'trial_ends_at' => now()->addWeek()
+        // ]);
 
-        // \Mail::to($user->email)->send(new \App\Mail\PianoLit\WelcomeEmail($user));
+        // // \Mail::to($user->email)->send(new \App\Mail\PianoLit\WelcomeEmail($user));
 
-        if ($request->has('from_backend'))
-            return redirect()->back()->with('success', "The user has been successfully created!");
+        // if ($request->has('from_backend'))
+        //     return redirect()->back()->with('success', "The user has been successfully created!");
 
-        return $user;
+        // return $user;
     }
 
     public function appLogin(Request $request)
