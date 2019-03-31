@@ -36,15 +36,18 @@
                         <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/pinterest.png')}}">
                     </a>
                     <a href="#" class="link-none">
+                        <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/reddit.png')}}">
+                    </a>
+                    <a href="#" class="link-none">
                         <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/instagram.png')}}">
                     </a>
                 </div>
 
                 <div style="margin-bottom: 32px">
-                    <a href="{{route('home')}}" style="margin: 0 18px" class="link-none">home</a>|
-                    <a href="{{route('home')}}" style="margin: 0 18px" class="link-none">app</a>|
-                    <a href="{{route('home')}}" style="margin: 0 18px" class="link-none">blog</a>|
-                    <a href="{{route('home')}}" style="margin: 0 18px" class="link-none">contact</a>
+                    <a href="{{route('home')}}" style="margin: 0 10px" class="link-none">home</a>|
+                    <a href="{{route('home')}}" style="margin: 0 10px" class="link-none">app</a>|
+                    <a href="{{route('home')}}" style="margin: 0 10px" class="link-none">blog</a>|
+                    <a href="{{route('home')}}" style="margin: 0 10px" class="link-none">contact</a>
                 </div>
                 
                 <div>

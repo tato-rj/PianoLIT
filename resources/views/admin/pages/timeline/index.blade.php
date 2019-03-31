@@ -29,13 +29,15 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
 
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-        <div>
-        <form method="POST" action="{{route('subscriptions.store')}}" class="form-inline">
+        <div class="w-100">
+        <form method="POST" action="{{route('admin.timelines.store')}}" class="d-flex">
           @csrf
-          <input type="email" required name="email" placeholder="Add a new email here" class="form-control mr-2">
-          <button type="submit" class="btn btn-default">Subscribe</button>
+          <input type="number" required name="year" placeholder="Year" min="1600" max="{{now()->year}}" class="form-control mr-2" style="max-width: 100px">
+          <input type="text" required name="event" placeholder="New event here..." class="form-control flex-grow-1 mr-2">
+          <button type="submit" class="btn btn-default" style="white-space: nowrap;">Create event</button>
         </form>
-        @include('admin.components.feedback', ['field' => 'name'])
+        @include('admin.components.feedback', ['field' => 'year'])
+        @include('admin.components.feedback', ['field' => 'event'])
         </div>
         <div>
           {{-- @include('admin.components.filters', ['filters' => []]) --}}
@@ -48,25 +50,21 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
         <table class="table table-hover" id="blog-table">
           <thead>
             <tr>
-              <th class="border-0" scope="col">Date</th>
-              <th class="border-0" scope="col">Email</th>
-              <th class="border-0" scope="col">Status</th>
-              <th class="border-0" scope="col"></th>
+              <th class="border-0" scope="col">Year</th>
+              <th class="border-0" scope="col">Event</th>
+              <th class="border-0" scope="col">Creator</th>
               <th class="border-0" scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            @foreach($subscriptions as $subscription)
+            @foreach($timelines as $timeline)
             <tr>
-              <td>{{$subscription->created_at->toFormattedDateString()}}</td>
-              <td>{{$subscription->email}}</td>
-              <td id="status-{{$subscription->id}}" class="status-text text-{{$subscription->is_active ? 'success' : 'warning'}}">{{ucfirst($subscription->status)}}</td>
+              <td>{{$timeline->year}}</td>
+              <td>{{$timeline->event}}</td>
+              <td class="text-muted"><i>Created by {{$timeline->creator->name}}</i></td>
               <td class="text-right">
-                <a href="mailto:{{$subscription->email}}" target="_blank" class="text-muted mr-2"><i class="far fa-envelope align-middle"></i></a>
-                <a href="#" data-name="{{$subscription->email}}" data-url="{{route('subscriptions.destroy', $subscription->email)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
-              </td>
-              <td class="text-right">
-                @include('admin.components.toggle.subscription')
+                <a href="#" data-toggle="modal" data-target="#event-modal" class="text-muted cursor-pointer mr-2 event" data-year="{{$timeline->year}}" data-event="{{$timeline->event}}" data-edit-url="{{route('admin.timelines.update', $timeline->id)}}"><i class="far fa-edit align-middle"></i></a>
+                <a href="#" data-name="{{$timeline->event}}" data-url="{{route('admin.timelines.destroy', $timeline->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
               </td>
             </tr>
             @endforeach
@@ -78,37 +76,32 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
   </div>
 </div>
 
-@include('admin.components.modals.delete', ['model' => 'subscription'])
-
+@include('admin.components.modals.delete', ['model' => 'timeline'])
+@include('admin.components.modals.timeline')
 @endsection
 
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-$('input.status-toggle').on('change', function() {
-  let $input = $(this);
-  let $label = $($input.attr('data-target'));
-
-  $label.addClass('text-muted').removeClass('text-warning text-success');
-  $.ajax({
-    url: $input.attr('data-url'),
-    type: 'PATCH',
-    success: function(res) {
-      if ($input.is(':checked')) {
-        $label.text('Subscribed').toggleClass('text-muted text-success');
-      } else {
-        $label.text('Unsubscribed').toggleClass('text-muted text-warning');
-      }
-    }
-  });
-});
 
 $('.delete').on('click', function (e) {
-  $post = $(this);
-  name = $post.attr('data-name');
-  url = $post.attr('data-url');
+  let $post = $(this);
+  let name = $post.attr('data-name');
+  let url = $post.attr('data-url');
+
   $('#delete-modal').find('form').attr('action', url);
 });
+
+$('.event').on('click', function (e) {
+  let $event = $(this);
+  let year = $event.attr('data-year');
+  let event = $event.attr('data-event');
+  let edit_url = $event.attr('data-edit-url');
+
+  $('#event-modal').find('form#edit-event').attr('action', edit_url);
+  $('#event-modal').find('input#year').val(year);
+  $('#event-modal').find('textarea#event').val(event);
+})
 
 $(document).ready( function () {
     $('#blog-table').DataTable({

@@ -91,6 +91,13 @@
       </li>
 
       <li class="nav-item">
+        <a class="nav-link" href="{{route('admin.timelines.index')}}">
+          <i class="fas fa-list-ul"></i>
+          <span class="nav-link-text">Timeline</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
         <a class="nav-link" href="{{route('admin.editors.index')}}">
           <i class="fas fa-pencil-alt fa-fw"></i>
           <span class="nav-link-text">Editors</span>

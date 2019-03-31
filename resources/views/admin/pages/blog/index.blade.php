@@ -28,7 +28,7 @@ table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before
     'description' => 'Manage the blog posts'])
 
     <div class="row">
-      <div class="col-12 d-flex justify-content-between align-items-center">
+      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
         <div>
           <a href="{{route('admin.posts.create')}}" class="btn btn-sm btn-default">
             <i class="fas fa-plus mr-2"></i>Create a new post

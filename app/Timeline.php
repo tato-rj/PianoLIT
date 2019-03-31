@@ -6,6 +6,11 @@ class Timeline extends PianoLit
 {
 	protected $range = 20;
 
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class);
+    }
+
     public function scopeGenerate($query, $pieceId)
     {
     	$mainPiece = Piece::findOrFail($pieceId);
