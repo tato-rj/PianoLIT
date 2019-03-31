@@ -9,7 +9,18 @@ class FavoritesController extends Controller
 {
     public function show(Request $request)
     {
-    	
+        $user = User::find($request->user_id);
+
+        if (! $user)
+            return response()->json(['User not found']);
+
+        $favorites = $user->favorites;
+        
+        $favorites->each(function($piece) use ($user) {
+            $this->api->setCustomAttributes($piece, $user->id);
+        });
+
+        return $favorites;
     }
 
     public function update(Request $request)
