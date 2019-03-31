@@ -71,10 +71,10 @@
 
         .blog-post {
             font-size: 1.15em;
-            letter-spacing: .03em;
+            letter-spacing: .025em;
         }
 
-        .blog-post h1, .blog-post h2 .blog-post h3, .blog-post h4 {
+        .blog-post h1, .blog-post h2, .blog-post h3, .blog-post h4 {
             margin-bottom: 1.5rem;
         }
 
