@@ -52,11 +52,11 @@ class UsersController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        return response()->json(['got' => 'this?']);
-        // if ($validator->fails()) {
-        //     return response()->json($validator->messages(), 403);
-        // }
+        if ($validator->fails()) {
+            return response()->json($validator->messages(), 403);
+        }
 
+        return response()->json(['validation' => 'works']);
         // $user = User::create([
         //     'first_name' => $request->first_name,
         //     'last_name' => $request->last_name,
