@@ -22,7 +22,7 @@ class Timeline extends PianoLit
         $extraPiece = Piece::whereBetween('composed_in', [$minYear, $maxYear])->inRandomOrder()->first();
 
         $events = collect();
-        
+
         $events->push(['year' => $mainPiece->composed_in, 'event' => $mainPiece->shortName . ' was composed', 'highlight' => true]);
 
    		$events->push(['year' => $extraPiece->composed_in, 'event' => $extraPiece->shortName . ' was composed', 'highlight' => false]);
@@ -31,6 +31,6 @@ class Timeline extends PianoLit
     		$events->push(['year' => $event->year, 'event' => $event->event, 'highlight' => false]);
     	}
 
-    	return $events->sortBy('year');
+    	return $events->sortBy('year')->values();
     }
 }
