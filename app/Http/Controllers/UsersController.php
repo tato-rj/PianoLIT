@@ -45,14 +45,14 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json(['got' => 'this?']);
-        // $validator = \Validator::make($request->all(), [
-        //     'first_name' => 'required',
-        //     'last_name' => 'required',
-        //     'email' => 'required|email|unique:users',
-        //     'password' => 'required|string|min:6|confirmed',
-        // ]);
+        $validator = \Validator::make($request->all(), [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
 
+        return response()->json(['got' => 'this?']);
         // if ($validator->fails()) {
         //     return response()->json($validator->messages(), 403);
         // }
