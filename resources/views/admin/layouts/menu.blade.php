@@ -58,11 +58,11 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#repertoire">
+        <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#menu-repertoire">
           <i class="fas fa-music fa-fw"></i>
           <span class="nav-link-text">Repertoire</span>
         </a>
-        <ul class="sidenav-second-level collapse" id="repertoire">
+        <ul class="sidenav-second-level collapse" id="menu-repertoire">
           <li>
             <a class="py-2" href="{{route('admin.pieces.index')}}">Pieces</a>
           </li>
