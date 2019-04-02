@@ -60,7 +60,7 @@ class Composer extends PianoLit
             $initials .= $name[0].'.';
         }
 
-        return "$initials$lastName";
+        return "$initials $lastName";
     }
 
     public function getLastNameAttribute()

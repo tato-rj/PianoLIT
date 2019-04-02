@@ -8,5 +8,5 @@
 	@endif
 </div>
 @elseif($piece->youtube_array)
-<a href="https://www.youtube.com/watch?v={{$piece->youtube_array[0]}}" target="_blank" class="text-brand mr-1" title="This piece has no recording"><i class="fab fa-youtube"></i></a>
+	<a href="#" title="This piece has no recordings" class="text-muted mr-1"><i class="fas fa-microphone"></i></a>
 @endif

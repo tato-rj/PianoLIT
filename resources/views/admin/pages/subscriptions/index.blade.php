@@ -3,20 +3,6 @@
 @section('head')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
-<style type="text/css">
-div.dataTables_paginate li.first a:before, div.dataTables_paginate li.previous a:before {
-    top: 8.5;
-}
-
-div.dataTables_paginate li.next a:after, div.dataTables_paginate li.last a:after {
-    top: 8.5px;
-}
-
-table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before, table.dataTable thead .sorting_desc:before, table.dataTable thead .sorting_asc_disabled:before, table.dataTable thead .sorting_desc_disabled:before {
-    content: none;
-}
-
-</style>
 @endsection
 
 @section('content')

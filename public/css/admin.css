@@ -19569,6 +19569,24 @@ a.ui-button:active,
   box-shadow: 0 0 5px #666;
 }
 
+div.dataTables_paginate li.first a:before,
+div.dataTables_paginate li.previous a:before {
+  top: 8.5 !important;
+}
+
+div.dataTables_paginate li.next a:after,
+div.dataTables_paginate li.last a:after {
+  top: 8.5px !important;
+}
+
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc_disabled:before {
+  content: none !important;
+}
+
 /* The switch - the box around the slider */
 
 .switch {

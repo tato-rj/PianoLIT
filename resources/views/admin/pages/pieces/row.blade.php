@@ -1,23 +1,22 @@
-<div class="col-12 mb-2">
-  <div class="d-flex justify-content-between px-3 py-2 
-  {{is_null($piece->creator_id) ? 'bg-white text-muted border' : 'bg-'.strtolower($piece->level->name)}} rounded">
-    <div class="truncate">
-      <a href="{{$piece->timeline_url}}" target="_blank" class="text-brand mr-1"><i class="fas fa-list-ul"></i></a>
-      @include('admin.pages.pieces.play')
-      <strong>{{$piece->long_name}}</strong> by {{$piece->composer->short_name}}
+<tr>
+  <td style="font-size: .8rem; white-space: nowrap; vertical-align: middle;">
+    <a href="{{$piece->timeline_url}}" title="JSON response to timeline" target="_blank" class="text-brand mr-1"><i class="fas fa-list-ul"></i></a>
+    @include('admin.pages.pieces.play-icon')
+    <span class="mx-1 {{$piece->youtube_count > 0 ? 'text-brand' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$piece->youtube_count}}</span>
+    <span class="{{$piece->itunes_count > 0 ? 'text-brand' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$piece->itunes_count}}</span>
     </div>
-    <div class="text-right ml-2 d-flex" style="white-space: nowrap;">
-      <div class="mr-2">
-        <span class="mr-1"><small><i class="fab fa-youtube mr-1"></i>{{$piece->youtube_count}}</small></span>
-        <span class="mr-1"><small><i class="fab fa-itunes mr-1"></i>{{$piece->itunes_count}}</small></span>
-      </div>
-      <div class="text-brand">
-        @created($piece)
-        <a href="{{route('admin.pieces.edit', $piece->id)}}">edit</a> | <a href="" data-name="{{$piece->name}}" data-url="{{route('admin.pieces.edit', $piece->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete">delete</a>
-        @else
-        <a href="{{route('admin.pieces.edit', $piece->id)}}">view details</a>
-        @endcreated
-      </div>
-    </div>
-  </div>
-</div>
+  </td>
+  <td>{{$piece->long_name}}</td>
+  <td style="white-space: nowrap;">{{$piece->composer->short_name}}</td>
+  <td><div class="badge badge-pill bg-{{strtolower($piece->level->name)}}">{{ucfirst($piece->level->name)}}</div></td>
+
+  <td class="text-right" style="white-space: nowrap;">
+    @created($piece)
+    <a href="{{route('admin.pieces.edit', $piece->id)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>
+    <a href="" data-name="{{$piece->name}}" data-url="{{route('admin.pieces.edit', $piece->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
+    @else
+    <a href="{{route('admin.pieces.edit', $piece->id)}}" target="_blank" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
+    @endcreated
+  </td>
+
+</tr>

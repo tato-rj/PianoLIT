@@ -38,7 +38,7 @@ class PiecesController extends Controller
             }
         }
 
-        $pieces = $pieces->orderBy('updated_at', $sort ?? 'desc')->paginate(20);
+        $pieces = $pieces->orderBy('updated_at', $sort ?? 'desc')->get();
 
         return view('admin.pages.pieces.index', compact('pieces'));
     }
