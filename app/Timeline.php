@@ -26,12 +26,10 @@ class Timeline extends PianoLit
     	
     	$minYear = $mainPiece->composed_in - $this->range; 
 
-        $extraPiece = Piece::where(function($q) use ($mainPiece) {
-                            $q->where('catalogue_name', '!=', $mainPiece->catalogue_name)->where('catalogue_number', '!=', $mainPiece->catalogue_number);
-                        })
-                       ->whereBetween('composed_in', [$minYear, $maxYear])
-                       ->inRandomOrder()
-                       ->first();
+        $extraPiece = Piece::where('catalogue_number', '!=', $mainPiece->catalogue_number)
+                           ->whereBetween('composed_in', [$minYear, $maxYear])
+                           ->inRandomOrder()
+                           ->first();
 
         $events = collect();
 
