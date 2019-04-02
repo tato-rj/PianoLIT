@@ -73,7 +73,7 @@ class UsersController extends Controller
         // // \Mail::to($user->email)->send(new \App\Mail\PianoLit\WelcomeEmail($user));
 
         if ($request->has('from_backend'))
-            return redirect()->back()->with('success', "The user has been successfully created!");
+            return redirect()->back()->with('status', "The user has been successfully created!");
 
         return $user;
     }

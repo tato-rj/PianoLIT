@@ -52,7 +52,7 @@ class TopicsController extends Controller
             'type' => $request->type
         ]);
 
-        return redirect()->back()->with('success', "The topic has been successfully added!");
+        return redirect()->back()->with('status', "The topic has been successfully added!");
     }
 
     /**
@@ -98,7 +98,7 @@ class TopicsController extends Controller
             'type' => $request->type,
         ]);
 
-        return redirect()->back()->with('success', "The topic has been successfully updated!");
+        return redirect()->back()->with('status', "The topic has been successfully updated!");
     }
 
     /**
@@ -113,6 +113,6 @@ class TopicsController extends Controller
 
         $topic->delete();
 
-        return redirect()->back()->with('success', "The topic has been successfully deleted!");
+        return redirect()->back()->with('status', "The topic has been successfully deleted!");
     }
 }

@@ -19,7 +19,7 @@ class MembershipsController extends Controller
         $form->user->subscribe($request);
 
         if (app()->environment() == 'local')
-            return redirect()->back()->with('success', "A susbcription was requested to {$form->user->first_name}'s profile.");
+            return redirect()->back()->with('status', "A susbcription was requested to {$form->user->first_name}'s profile.");
 
         return response()->json(true);
     }
@@ -37,7 +37,7 @@ class MembershipsController extends Controller
 
         // \Mail::to($user->email)->send(new \App\Mail\PianoLit\TrialExtendedEmail($user));
 
-        return redirect()->back()->with('success', "The trial has been update. It now expires on {$newDate->toFormattedDateString()}.");
+        return redirect()->back()->with('status', "The trial has been update. It now expires on {$newDate->toFormattedDateString()}.");
     }
 
     public function validateAll()
@@ -55,7 +55,7 @@ class MembershipsController extends Controller
             $user->membership->validate($request);   
         }
     
-        return redirect()->back()->with('success', "All users have been successfully re-validated.");
+        return redirect()->back()->with('status', "All users have been successfully re-validated.");
     }
 
     /**
@@ -103,6 +103,6 @@ class MembershipsController extends Controller
         $user->membership()->delete();
         $user->update(['trial_ends_at' => now()->addWeek()]);
 
-        return redirect()->back()->with('success', "The membership has been successfully removed.");
+        return redirect()->back()->with('status', "The membership has been successfully removed.");
     }
 }

@@ -60,7 +60,7 @@ class ComposersController extends Controller
             'creator_id' => auth()->guard('admin')->user()->id
         ]);
 
-        return redirect()->back()->with('success', "$composer->name has been successfully added!");
+        return redirect()->back()->with('status', "$composer->name has been successfully added!");
     }
 
     /**
@@ -108,7 +108,7 @@ class ComposersController extends Controller
             'period' => $form->period
         ]);
         
-        return redirect()->back()->with('success', "$request->name has been updated");
+        return redirect()->back()->with('status', "$request->name has been updated");
     }
 
     /**
@@ -126,6 +126,6 @@ class ComposersController extends Controller
     
         $composer->delete();
 
-        return redirect()->back()->with('success', "$composer->name has been successfully deleted!");
+        return redirect()->back()->with('status', "$composer->name has been successfully deleted!");
     }
 }

@@ -52,7 +52,7 @@ class EditorsController extends Controller
             'password' => \Hash::make($request->password)
         ]);
 
-        return redirect()->back()->with('success', "{$request->name} has been successfully added as an editor!");
+        return redirect()->back()->with('status', "{$request->name} has been successfully added as an editor!");
     }
 
     /**
@@ -108,7 +108,7 @@ class EditorsController extends Controller
             $feedback = "{$request->name}'s profile has been updated!";
         }
 
-        return redirect()->back()->with('success', $feedback);
+        return redirect()->back()->with('status', $feedback);
     }
 
     /**
@@ -123,6 +123,6 @@ class EditorsController extends Controller
         
         $editor->delete();
 
-        return redirect()->back()->with('success', "$editor->name has been successfully deleted!");
+        return redirect()->back()->with('status', "$editor->name has been successfully deleted!");
     }
 }

@@ -136,7 +136,7 @@ class PiecesController extends Controller
 
         $piece->tags()->attach(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
-        return redirect()->back()->with('success', "The piece has been successfully added!");
+        return redirect()->back()->with('status', "The piece has been successfully added!");
     }
 
     /**
@@ -220,7 +220,7 @@ class PiecesController extends Controller
             $piece->save();
         }
 
-        return redirect()->back()->with('success', "The piece has been successfully updated!");
+        return redirect()->back()->with('status', "The piece has been successfully updated!");
     }
 
     public function incrementViews(Request $request)
@@ -242,6 +242,6 @@ class PiecesController extends Controller
         
         $piece->delete();
 
-        return redirect()->back()->with('success', "The piece has been successfully deleted!");
+        return redirect()->back()->with('status', "The piece has been successfully deleted!");
     }
 }

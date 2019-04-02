@@ -77,7 +77,7 @@ $('.delete').on('click', function (e) {
 $(document).ready( function () {
   $('#pieces-table').DataTable({
     'columnDefs': [ { 'orderable': false, 'targets': [0, 4] } ],
-    'order': [[1, 'asc']],
+
   });
 } );
 </script>

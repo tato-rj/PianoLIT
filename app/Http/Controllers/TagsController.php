@@ -51,7 +51,7 @@ class TagsController extends Controller
             'type' => $request->type
         ]);
 
-        return redirect()->back()->with('success', "The tag has been successfully added!");
+        return redirect()->back()->with('status', "The tag has been successfully added!");
     }
 
     /**
@@ -96,7 +96,7 @@ class TagsController extends Controller
             'type' => $request->type,
         ]);
 
-        return redirect()->back()->with('success', "The tag has been successfully updated!");
+        return redirect()->back()->with('status', "The tag has been successfully updated!");
     }
 
     /**
@@ -111,6 +111,6 @@ class TagsController extends Controller
 
         $tag->delete();
 
-        return redirect()->back()->with('success', "The tag has been successfully deleted!");
+        return redirect()->back()->with('status', "The tag has been successfully deleted!");
     }
 }
