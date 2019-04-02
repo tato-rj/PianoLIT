@@ -36,6 +36,10 @@ p img {
 	max-width: 100%;
 	height: auto;
 }
+
+.blog-post p {
+	margin-bottom: 1.75rem;
+}
 </style>
 
 <script>

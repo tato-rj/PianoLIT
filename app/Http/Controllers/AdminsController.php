@@ -30,7 +30,7 @@ class AdminsController extends Controller
      */
     public function blog()
     {
-        $posts = Post::all();
+        $posts = Post::latest()->get();
 
         return view('admin.pages.blog.index', compact('posts'));
     }
