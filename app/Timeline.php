@@ -30,9 +30,9 @@ class Timeline extends PianoLit
 
         $events = collect();
 
-        $events->push(['year' => $mainPiece->composed_in, 'event' => $mainPiece->shortName . ' was composed', 'highlight' => true]);
+        $events->push(['year' => $mainPiece->composed_in, 'event' => $mainPiece->timeline_name . ' was composed by ' . $mainPiece->composer->short_name . '.', 'highlight' => true]);
 
-   		$events->push(['year' => $extraPiece->composed_in, 'event' => $extraPiece->shortName . ' was composed', 'highlight' => false]);
+   		$events->push(['year' => $extraPiece->composed_in, 'event' => $extraPiece->timeline_name . ' was composed by ' . $extraPiece->composer->short_name . '.', 'highlight' => false]);
 
     	foreach (Timeline::whereBetween('year', [$minYear, $maxYear])->get() as $event) {
     		$events->push(['year' => $event->year, 'event' => $event->event, 'highlight' => false]);

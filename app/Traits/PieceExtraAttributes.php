@@ -49,6 +49,17 @@ trait PieceExtraAttributes
         
         return $fullName;
     }
+
+    public function getTimelineNameAttribute()
+    {
+        if ($this->nickname)
+            return $this->nickname;
+
+        if ($this->collection_name && $this->catalogue_name)
+            return $this->collection_name  . ' ' . $this->catalogue_name . ' ' . $this->catalogue_number;
+
+        return $this->name;
+    }
     
     public function getYoutubeArrayAttribute()
     {
