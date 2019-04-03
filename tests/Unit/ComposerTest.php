@@ -24,4 +24,16 @@ class ComposerTest extends AppTest
 	{
 		$this->assertInstanceOf(Piece::class, $this->composer->pieces()->first());
 	}
+
+	/** @test */
+	public function it_knows_who_was_born_or_died_between_any_given_years()
+	{
+		Composer::truncate();
+
+		$composer1 = create(Composer::class, ['date_of_birth' => carbon('1802-01-01'), 'date_of_death' => carbon('1880-01-01')]);
+		$composer2 = create(Composer::class, ['date_of_birth' => carbon('1710-01-01'), 'date_of_death' => carbon('1798-01-01')]);
+
+		$this->assertCount(1, Composer::bornBetween([1780, 1820])->get());
+		$this->assertCount(1, Composer::diedBetween([1880, 1920])->get());
+	}
 }

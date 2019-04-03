@@ -67,4 +67,14 @@ class Composer extends PianoLit
     {
         return splitname($this->name)['last'];
     }
+
+    public function scopeBornBetween($query, $years)
+    {
+        $query->whereYear('date_of_birth', '>=', $years[0])->whereYear('date_of_birth', '<=', $years[1]);
+    }
+
+    public function scopeDiedBetween($query, $years)
+    {
+        $query->whereYear('date_of_death', '>=', $years[0])->whereYear('date_of_death', '<=', $years[1]);
+    }
 }

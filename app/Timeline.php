@@ -26,21 +26,21 @@ class Timeline extends PianoLit
     	
     	$minYear = $mainPiece->composed_in - $this->range; 
 
-        $extraPiece = Piece::where('catalogue_number', '!=', $mainPiece->catalogue_number)
-                           ->whereBetween('composed_in', [$minYear, $maxYear])
-                           ->inRandomOrder()
-                           ->first();
-
         $events = collect();
 
         $events->push(['year' => $mainPiece->composed_in, 'event' => $mainPiece->timeline_name . ' was composed by ' . $mainPiece->composer->short_name . '.', 'highlight' => true]);
 
-        if ($extraPiece)
-   		   $events->push(['year' => $extraPiece->composed_in, 'event' => $extraPiece->timeline_name . ' was composed by ' . $extraPiece->composer->short_name . '.', 'highlight' => false]);
-
     	foreach (Timeline::whereBetween('year', [$minYear, $maxYear])->get() as $event) {
     		$events->push(['year' => $event->year, 'event' => $event->event, 'highlight' => false]);
     	}
+
+        foreach (Composer::bornBetween([$minYear, $maxYear])->get() as $composer) {
+            $events->push(['year' => $composer->date_of_birth->year, 'event' => $composer->name . ' was born.', 'highlight' => false]);
+        }
+
+        foreach (Composer::diedBetween([$minYear, $maxYear])->get() as $composer) {
+            $events->push(['year' => $composer->date_of_death->year, 'event' => $composer->name . ' died.', 'highlight' => false]);
+        }
 
     	return $events->sortBy('year')->values();
     }
