@@ -78,9 +78,6 @@
             margin-bottom: 1.5rem;
         }
 
-        .font-lg {
-        }
-
         .card:hover .card-overlay {
             opacity: .6 !important;
         }
