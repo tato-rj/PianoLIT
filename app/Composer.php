@@ -6,6 +6,7 @@ class Composer extends PianoLit
 {
     protected $dates = ['date_of_birth', 'date_of_death'];
     protected $appends = ['last_name', 'short_name'];
+    protected $casts = ['is_famous' => 'boolear'];
     protected $withCount = ['pieces'];
 
     public function creator()
@@ -70,11 +71,16 @@ class Composer extends PianoLit
 
     public function scopeBornBetween($query, $years)
     {
-        $query->whereYear('date_of_birth', '>=', $years[0])->whereYear('date_of_birth', '<=', $years[1]);
+        return $query->whereYear('date_of_birth', '>=', $years[0])->whereYear('date_of_birth', '<=', $years[1]);
     }
 
     public function scopeDiedBetween($query, $years)
     {
-        $query->whereYear('date_of_death', '>=', $years[0])->whereYear('date_of_death', '<=', $years[1]);
+        return $query->whereYear('date_of_death', '>=', $years[0])->whereYear('date_of_death', '<=', $years[1]);
+    }
+
+    public function scopeFamous($query)
+    {
+        return $query->where('is_famous', true);
     }
 }

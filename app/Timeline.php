@@ -34,11 +34,11 @@ class Timeline extends PianoLit
     		$events->push(['year' => $event->year, 'event' => $event->event, 'highlight' => false]);
     	}
 
-        foreach (Composer::bornBetween([$minYear, $maxYear])->get() as $composer) {
+        foreach (Composer::famous()->bornBetween([$minYear, $maxYear])->get() as $composer) {
             $events->push(['year' => $composer->date_of_birth->year, 'event' => $composer->name . ' was born.', 'highlight' => false]);
         }
 
-        foreach (Composer::diedBetween([$minYear, $maxYear])->get() as $composer) {
+        foreach (Composer::famous()->diedBetween([$minYear, $maxYear])->get() as $composer) {
             $events->push(['year' => $composer->date_of_death->year, 'event' => $composer->name . ' died.', 'highlight' => false]);
         }
 
