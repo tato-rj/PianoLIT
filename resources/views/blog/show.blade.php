@@ -113,7 +113,7 @@ p img {
 	</div>
 </section>
 
-<div id="inner-subscribe" style="display: none;">
+<div id="inner-subscribe-model" style="display: none;">
 	<div class="border-top border-bottom py-6 mt-6 text-center">
 		<h4><strong>Would you like to read more about piano?</strong></h4>
 		<p>Subscribe now and receive the latest news, stories, ideas and much more right in your inbox!</p>
@@ -140,9 +140,7 @@ $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
 });
 
-let pCount = $('#blog-content p').length;
-
-$('#inner-subscribe').insertAfter('#blog-content p:nth(' + Math.floor(pCount/2) + ')').show();
+$('#inner-subscribe').html('#inner-subscribe-model > div');
 </script>
 
 <script type="text/javascript">
