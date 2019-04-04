@@ -140,7 +140,7 @@ $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
 });
 
-$('#inner-subscribe').html('#inner-subscribe-model > div');
+$('#inner-subscribe').html($('#inner-subscribe-model > div'));
 </script>
 
 <script type="text/javascript">
