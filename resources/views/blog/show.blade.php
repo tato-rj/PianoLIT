@@ -37,7 +37,7 @@ p img {
 	height: auto;
 }
 
-.blog-post p {
+.blog-font p {
 	margin-bottom: 1.75rem;
 }
 </style>
@@ -53,7 +53,7 @@ p img {
 
 @section('content')
 <section id="blog-post" class="container mb-5">
-	<div class="row border-bottom pb-4 mb-4">
+	<div class="row mb-6">
 		<div class="col-lg-8 col-12 mx-auto">
 			@if(! empty($preview))
 			<div class="alert alert-warning" role="alert">
@@ -65,7 +65,7 @@ p img {
 					@each('components.blog.topic', $post->topics, 'topic')
 				</div>
 				<h1 class="mb-4">{{$post->title}}</h1>
-				<p class="text-muted blog-post">{{$post->description}}</p>
+				<p class="text-muted blog-font">{{$post->description}}</p>
 				<div class="d-apart text-muted">
 					<p><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
 					<p><small><i class="fas fa-eye mr-2"></i>{{$post->views}}</small></p>
@@ -74,16 +74,34 @@ p img {
 					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded">
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
+				<div class="bg-grey-lightest rounded mb-3 p-3 text-center">
+					<p class="m-0">Want a heads up when a new story comes out? <a href="#" class="link-primary">Subscribe here</a></p>
+				</div>
 			</div>
-			<div class="blog-post mb-4">
+			<div id="blog-content" class="blog-font mb-5 pb-4 border-bottom">
 				{!! $post->content !!}
+			</div>
+			<div class="mb-5 d-apart">
+				<div>
+					<div class="d-inline-block align-middle mr-3">
+						<img src="{{asset('images/brand/app-icon.svg')}}" class="rounded-circle" width="50">
+					</div>
+					<div class="d-inline-block align-middle" style="max-width: 320px; line-height: 1.12">
+						<div style="font-size: .9rem"><strong>PianoLIT Team</strong></div>
+						<div class="text-muted"><small>Where pianists discover new pieces and find inspiration to play only what they love.</small></div>
+					</div>
+				</div>
+				<div class="text-right">
+
+					<a href="#" class="btn btn-primary-outline btn-sm">Subscribe</a>
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="row mb-5">
+	<div class="row mb-6">
 		<div class="col-12 mb-4">
-			<div><strong>READ NEXT</strong></div>
+			<div><i class="fas fa-glasses mr-2"></i><strong>READ NEXT</strong></div>
 		</div>
 		@each('components.blog.cards.small', $suggestions, 'suggestion')
 	</div>
@@ -94,6 +112,25 @@ p img {
 		</div>
 	</div>
 </section>
+
+<div id="inner-subscribe" style="display: none;">
+	<div class="border-top border-bottom py-6 mb-6 text-center">
+		<h4><strong>Would you like to read more about piano?</strong></h4>
+		<p>Subscribe now and receive the latest news, stories, ideas and much more right in your inbox!</p>
+		<form method="POST" action="{{route('subscriptions.store')}}">
+			@csrf
+			<div class="form-row">
+				<div class="col-lg-6 col-md-8 col-10 mx-auto">
+					<div class="form-group">
+						<input required type="email" name="email" placeholder="EMAIL ADDRESS" class="input-center form-control w-100 input-light">
+					</div>
+					@include('components/form/error', ['field' => 'email'])
+					<button type="submit" class="btn btn-primary shadow btn-block">JOIN NOW</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
 @endsection
 
 @push('scripts')
@@ -102,6 +139,10 @@ p img {
 $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
 });
+
+let pCount = $('#blog-content p').length;
+
+$('#inner-subscribe').insertAfter('#blog-content p:nth(' + Math.floor(pCount/2) + ')').show();
 </script>
 
 <script type="text/javascript">

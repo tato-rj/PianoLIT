@@ -39,6 +39,41 @@ button:focus {outline:0;}
 	}
 }
 
+.btn-primary-outline {
+	color: $brand-primary !important;
+	background-color: transparent;
+	border-color: $brand-primary;
+
+	&:hover {
+		color: white !important;
+		background-color: darken($brand-primary, 4%);
+		border-color: darken($brand-primary, 4%);
+	}
+
+	&:active {
+		background-color: darken($brand-primary, 4%);
+		border-color: darken($brand-primary, 4%);
+	}
+}
+
+input.input-light {
+	transition: .2s;
+	background: $grey-lighter;
+	border: 0;
+
+	&:hover {
+		background-color: $grey-light;
+	}
+
+	&:active {
+		background-color: $grey-light;
+	}
+
+	&:focus {
+		background-color: $grey-light;
+	}
+}
+
 input.input-center {
 	text-align: center;
 }

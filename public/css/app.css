@@ -20247,6 +20247,42 @@ button:focus {
   border-color: #096bf0;
 }
 
+.btn-primary-outline {
+  color: #1876f6 !important;
+  background-color: transparent;
+  border-color: #1876f6;
+}
+
+.btn-primary-outline:hover {
+  color: white !important;
+  background-color: #096bf0;
+  border-color: #096bf0;
+}
+
+.btn-primary-outline:active {
+  background-color: #096bf0;
+  border-color: #096bf0;
+}
+
+input.input-light {
+  -webkit-transition: .2s;
+  transition: .2s;
+  background: #e7ebee;
+  border: 0;
+}
+
+input.input-light:hover {
+  background-color: #d0d6dd;
+}
+
+input.input-light:active {
+  background-color: #d0d6dd;
+}
+
+input.input-light:focus {
+  background-color: #d0d6dd;
+}
+
 input.input-center {
   text-align: center;
 }

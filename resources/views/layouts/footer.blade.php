@@ -7,7 +7,7 @@
 				<div class="form-row mb-5">
 					<div class="col-lg-6 col-md-8 col-10 mx-auto">
 						<div class="form-group">
-							<input required type="email" name="email" placeholder="EMAIL ADDRESS" class="input-center form-control w-100 border-0 bg-grey-lighter">
+							<input required type="email" name="email" placeholder="EMAIL ADDRESS" class="input-center form-control w-100 input-light">
 						</div>
 						@include('components/form/error', ['field' => 'email'])
 						<button type="submit" class="btn btn-primary shadow btn-block">SIGN UP</button>

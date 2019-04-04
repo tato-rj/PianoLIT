@@ -40,3 +40,93 @@ $input-color-placeholder: lighten($text-color, 30%);
 
 // Panels
 $panel-default-heading-bg: #fff;
+
+$grey: #B8C2CC;
+$grey-dark: darken($grey, 10%);
+$grey-darker: darken($grey, 32%);
+$grey-darkest: darken($grey, 48%);
+$grey-light: lighten($grey, 8%);
+$grey-lighter: lighten($grey, 16%);
+$grey-lightest: lighten($grey, 20%);
+
+$red: #E3342F;
+$red-dark: darken($red, 10%);
+$red-darker: darken($red, 28%);
+$red-darkest: darken($red, 36%);
+$red-light: lighten($red, 10%);
+$red-lighter: lighten($red, 28%);
+$red-lightest: lighten($red, 40%);
+
+$orange: #F6993F;
+$orange-dark: darken($orange, 16%);
+$orange-darker: darken($orange, 35%);
+$orange-darkest: darken($orange, 46%);
+$orange-light: lighten($orange, 10%);
+$orange-lighter: lighten($orange, 25%);
+$orange-lightest: lighten($orange, 32%);
+
+$yellow: #FFED4A;
+$yellow-dark: darken($yellow, 17%);
+$yellow-darker: darken($yellow, 36%);
+$yellow-darkest: darken($yellow, 48%);
+$yellow-light: lighten($yellow, 8%);
+$yellow-lighter: lighten($yellow, 20%);
+$yellow-lightest: lighten($yellow, 27%);
+
+$green: #38C172;
+$green-dark: darken($green, 10%);
+$green-darker: darken($green, 24%);
+$green-darkest: darken($green, 38%);
+$green-light: lighten($green, 10%);
+$green-lighter: lighten($green, 28%);
+$green-lightest: lighten($green, 41%);
+
+$teal: #4DC0B5;
+$teal-dark: darken($teal, 11%);
+$teal-darker: darken($teal, 24%);
+$teal-darkest: darken($teal, 39%);
+$teal-light: lighten($teal, 14%);
+$teal-lighter: lighten($teal, 28%);
+$teal-lightest: lighten($teal, 39%);
+
+$blue: #3490DC;
+$blue-dark: darken($blue, 12%);
+$blue-darker: darken($blue, 25%);
+$blue-darkest: darken($blue, 41%);
+$blue-light: lighten($blue, 14%);
+$blue-lighter: lighten($blue, 29%);
+$blue-lightest: lighten($blue, 39%);
+
+$indigo: #6574CD;
+$indigo-dark: darken($indigo, 12%);
+$indigo-darker: darken($indigo, 29%);
+$indigo-darkest: darken($indigo, 48%);
+$indigo-light: lighten($indigo, 10%);
+$indigo-lighter: lighten($indigo, 24%);
+$indigo-lightest: lighten($indigo, 32%);
+
+$purple: #9561E2;
+$purple-dark: darken($purple, 10%);
+$purple-darker: darken($purple, 34%);
+$purple-darkest: darken($purple, 49%);
+$purple-light: lighten($purple, 10%);
+$purple-lighter: lighten($purple, 24%);
+$purple-lightest: lighten($purple, 31%);
+
+$pink: #F66D9B;
+$pink-dark: darken($pink, 8%);
+$pink-darker: darken($pink, 42%);
+$pink-darkest: darken($pink, 56%);
+$pink-light: lighten($pink, 10%);
+$pink-lighter: lighten($pink, 22%);
+$pink-lightest: lighten($pink, 26%);
+
+$social-facebook: #3b5998;
+$social-twitter: #1DA1F2;
+$social-youtube: #FF0000;
+$social-instagram: #8a3ab9;
+$social-google: #d34836;
+$social-linkedin: #0077B5;
+$social-github: #333;
+$social-slack: #3F0F3F;
+$social-whatsapp: #25D366;
