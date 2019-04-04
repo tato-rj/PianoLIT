@@ -114,7 +114,7 @@ p img {
 </section>
 
 <div id="inner-subscribe" style="display: none;">
-	<div class="border-top border-bottom py-6 mb-6 text-center">
+	<div class="border-top border-bottom py-6 mt-6 text-center">
 		<h4><strong>Would you like to read more about piano?</strong></h4>
 		<p>Subscribe now and receive the latest news, stories, ideas and much more right in your inbox!</p>
 		<form method="POST" action="{{route('subscriptions.store')}}">
