@@ -74,7 +74,7 @@ p img {
 					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded">
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
-				<div class="bg-grey-lightest rounded mb-3 p-3 text-center">
+				<div class="border-bottom mb-3 p-3 text-center">
 					<p class="m-0">Want a heads up when a new story comes out? <a href="#" class="link-primary">Subscribe here</a></p>
 				</div>
 			</div>
