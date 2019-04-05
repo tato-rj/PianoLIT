@@ -71,6 +71,7 @@
 
 @section('scripts')
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.js"></script>
+
 <script type="text/javascript">
 (new SimpleCropper({
   imageInput: 'input#image-input',

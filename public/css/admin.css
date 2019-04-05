@@ -19655,6 +19655,46 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+.mce-large-quote {
+  margin: 2.4rem 1.75rem;
+}
+
+.mce-large-quote .mce-quote-text {
+  border-left: 4px solid #1876f6;
+  padding: 0px 0px 0px 1.5rem;
+  font-size: 1.2em;
+  font-style: italic;
+  margin-bottom: 0;
+}
+
+.mce-large-quote .mce-quote-author {
+  text-align: right;
+  color: grey;
+  font-style: italic;
+  font-size: .9em;
+  margin: 0;
+}
+
+.mce-large-quote .mce-quote-author:before {
+  content: '';
+  display: inline-block;
+  background: lightgrey;
+  width: 16px;
+  height: 1px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.mce-dots-separator {
+  margin: 3rem 0;
+  text-align: center;
+  font-size: .8em;
+}
+
+.mce-dots-separator span.middle-dot {
+  margin: 0 1.4rem;
+}
+
 .elipsis {
   width: 100%;
   white-space: nowrap;
