@@ -1,4 +1,4 @@
-@component('layouts.overlay', ['name' => 'subscribe', 'light' => false, 'position' => 'center', 'background' => '0,0,0,0.8'])
+@component('layouts.overlay', ['name' => 'gift', 'light' => false, 'position' => 'center', 'background' => '0,0,0,0.8'])
 <div class="mx-3" style="max-width: 512px">
 	<div class="rounded text-center shadow-light">
 		<img src="{{asset('images/gifts/circle-of-fifths-brick-wall.jpg')}}" class="w-100 rounded-top">

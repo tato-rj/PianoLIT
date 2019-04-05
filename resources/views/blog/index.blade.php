@@ -37,7 +37,7 @@
 <script type="text/javascript">
 $(function() {
     setTimeout(function() {
-        $("#subscribe-overlay").fadeIn('fast');
+        $("#gift-overlay").fadeIn('fast');
     }, 3000);
 });
 

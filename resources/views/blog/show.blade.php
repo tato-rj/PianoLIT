@@ -75,7 +75,7 @@ p img {
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
 				<div class="border-bottom mb-3 pb-3 text-center">
-					<p class="m-0 text-muted">Want a heads up when a new story comes out? <a href="#" class="link-primary">Subscribe here</a></p>
+					<p class="m-0 text-muted">Want a heads up when a new story comes out? <a href="" class="link-primary btn-subscribe">Subscribe here</a></p>
 				</div>
 			</div>
 			<div id="blog-content" class="blog-font mb-5 pb-4 border-bottom">
@@ -93,7 +93,7 @@ p img {
 				</div>
 				<div class="text-right">
 
-					<a href="#" class="btn btn-primary-outline btn-sm">Subscribe</a>
+					<button  class="btn btn-primary-outline btn-sm btn-subscribe">Subscribe</button>
 				</div>
 			</div>
 		</div>
@@ -113,24 +113,8 @@ p img {
 	</div>
 </section>
 
-<div id="inner-subscribe-model" style="display: none;">
-	<div class="border-top border-bottom py-6 my-5 text-center">
-		<h4><strong>Would you like to read more about piano?</strong></h4>
-		<p>Subscribe now and receive the latest news, stories, ideas and much more right in your inbox!</p>
-		<form method="POST" action="{{route('subscriptions.store')}}">
-			@csrf
-			<div class="form-row">
-				<div class="col-lg-6 col-md-8 col-10 mx-auto">
-					<div class="form-group">
-						<input required type="email" name="email" placeholder="EMAIL ADDRESS" class="input-center form-control w-100 input-light">
-					</div>
-					@include('components/form/error', ['field' => 'email'])
-					<button type="submit" class="btn btn-primary shadow btn-block">JOIN NOW</button>
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
+@include('components.overlays.subscribe.model-1')
+@include('components.blog.inner-subscribe')
 @endsection
 
 @push('scripts')
@@ -138,6 +122,10 @@ p img {
 <script type="text/javascript">
 $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
+});
+
+$('.btn-subscribe').on('click', function() {
+	$("#subscribe-overlay").fadeIn('fast');
 });
 
 $('#inner-subscribe').html($('#inner-subscribe-model > div'));
