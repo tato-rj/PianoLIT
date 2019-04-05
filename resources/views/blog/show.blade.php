@@ -75,7 +75,7 @@ p img {
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
 				<div class="border-bottom mb-3 pb-3 text-center">
-					<p class="m-0 text-muted">Want a heads up when a new story comes out? <a href="" class="link-primary btn-subscribe">Subscribe here</a></p>
+					<p class="m-0 text-muted">Want a heads up when a new story comes out? <span class="text-blue cursor-pointer btn-subscribe">Subscribe here</span></p>
 				</div>
 			</div>
 			<div id="blog-content" class="blog-font mb-5 pb-4 border-bottom">
