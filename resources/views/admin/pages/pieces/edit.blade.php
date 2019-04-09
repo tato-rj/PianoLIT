@@ -8,14 +8,15 @@
     'title' => 'Pieces',
     'description' => 'Edit a piece'])
     
-    <div class="row my-5 mx-2">
-      <div class="col-lg-6 col-sm-10 col-12 mx-auto">
-        <div class="px-3 py-2 rounded mb-4 bg-light">
-          <i class="fas fa-eye text-brand mr-2"></i><small class="text-muted">{{$piece->views}} {{str_plural('view', $piece->views) }}</small>
-        </div>
-        <form id="edit-form" method="POST" action="{{route('admin.pieces.update', $piece->id)}}" enctype="multipart/form-data">
-          @csrf
-          @method('PATCH')
+    <form id="edit-form" method="POST" action="{{route('admin.pieces.update', $piece->id)}}" enctype="multipart/form-data">
+      @csrf
+      @method('PATCH')
+      <div class="row my-5 mx-2">
+        <div class="col-lg-6 col-sm-10 col-12 mx-auto">
+          <div class="px-3 py-2 rounded mb-4 bg-light">
+            <i class="fas fa-eye text-brand mr-2"></i><small class="text-muted">{{$piece->views}} {{str_plural('view', $piece->views) }}</small>
+          </div>
+
           {{-- Name --}}
           <div class="form-group form-row">
             <div class="col">
@@ -207,73 +208,73 @@
             </div>
           </div>
           @endmanager
-      </div>
+        </div>
 
-      <div class="col-lg-6 col-sm-10 col-12 mx-auto">
-          {{-- Tags --}}
-          <div class="rounded bg-light px-3 py-2 mb-3">
-            <p class="text-brand border-bottom pb-1 mb-1"><strong>TAGS</strong></p>
-            <div class="d-flex flex-wrap">
-              @foreach($types as $type => $tags)
-              <label class="p-2 mb-1 text-center w-100"><strong>{{ucfirst($type)}}</strong></label>
-                @foreach($tags as $tag)
-                <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}" {{($piece->tags->contains($tag->id)) ? 'checked' : ''}}>
-                  <label class="custom-control-label" for="{{$tag->name}}">{{$tag->name}}</label>
-                </div>
+        <div class="col-lg-6 col-sm-10 col-12 mx-auto">
+            {{-- Tags --}}
+            <div class="rounded bg-light px-3 py-2 mb-3">
+              <p class="text-brand border-bottom pb-1 mb-1"><strong>TAGS</strong></p>
+              <div class="d-flex flex-wrap">
+                @foreach($types as $type => $tags)
+                <label class="p-2 mb-1 text-center w-100"><strong>{{ucfirst($type)}}</strong></label>
+                  @foreach($tags as $tag)
+                  <div class="custom-control custom-checkbox mx-2 mb-2">
+                    <input type="checkbox" class="custom-control-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}" {{($piece->tags->contains($tag->id)) ? 'checked' : ''}}>
+                    <label class="custom-control-label" for="{{$tag->name}}">{{$tag->name}}</label>
+                  </div>
+                  @endforeach
                 @endforeach
-              @endforeach
+              </div>
+              <div class="mb-1 mt-4 ml-2 text-muted">
+                <small>Special tags are: {{\App\Tag::special()->get()->implode('name', ', ')}}</small>
+              </div>
             </div>
-            <div class="mb-1 mt-4 ml-2 text-muted">
-              <small>Special tags are: {{\App\Tag::special()->get()->implode('name', ', ')}}</small>
+            @manager
+            {{-- iTunes --}}
+            @component('admin.pages.pieces.itunes.layout')
+              @if($piece->itunes_array)
+                @foreach($piece->itunes_array as $itunes)
+                @include('admin.pages.pieces.itunes.input', [
+                  'names' => ["itunes[{$loop->index}][album]", "itunes[{$loop->index}][artist]", "itunes[{$loop->index}][link]"],
+                  'album' => $itunes['album'],
+                  'artist' => $itunes['artist'],
+                  'link' => $itunes['link']])
+                @endforeach
+              @endif
+            @endcomponent
+
+            {{-- Youtube --}}
+            @component('admin.pages.pieces.youtube.layout')
+              @if($piece->youtube_array)
+                @foreach($piece->youtube_array as $youtube)
+                @include('admin.pages.pieces.youtube.input', [
+                  'value' => $youtube,
+                  'type' => 'd-flex',
+                  'name' => 'youtube[]'])
+                @endforeach
+              @endif
+            @endcomponent
+            @endmanager
+        </div>
+
+        <div class="col-12 text-right">
+            @can('update', $piece)
+            <div class="">
+              <button type="submit" class="btn btn-default">Save changes</button>
             </div>
-          </div>
-          @manager
-          {{-- iTunes --}}
-          @component('admin.pages.pieces.itunes.layout')
-            @if($piece->itunes_array)
-              @foreach($piece->itunes_array as $itunes)
-              @include('admin.pages.pieces.itunes.input', [
-                'names' => ["itunes[{$loop->index}][album]", "itunes[{$loop->index}][artist]", "itunes[{$loop->index}][link]"],
-                'album' => $itunes['album'],
-                'artist' => $itunes['artist'],
-                'link' => $itunes['link']])
-              @endforeach
-            @endif
-          @endcomponent
 
-          {{-- Youtube --}}
-          @component('admin.pages.pieces.youtube.layout')
-            @if($piece->youtube_array)
-              @foreach($piece->youtube_array as $youtube)
-              @include('admin.pages.pieces.youtube.input', [
-                'value' => $youtube,
-                'type' => 'd-flex',
-                'name' => 'youtube[]'])
-              @endforeach
-            @endif
-          @endcomponent
-          @endmanager
+            @endcan
 
+            <div class="mt-3">
+              @if($piece->creator()->exists())
+              <p class="text-muted"><small><i>This piece was created by <strong>{{$piece->creator->name}}</strong></i></small></p>
+              @else
+              <p class="text-muted"><small><i>The creator of this piece has been removed</i></small></p>
+              @endif
+            </div>
+        </div>
       </div>
-
-      <div class="col-12 text-right">
-          @can('update', $piece)
-          <div class="">
-            <button type="submit" class="btn btn-default">Save changes</button>
-          </div>
-          @endcan
-
-          <div class="mt-3">
-            @if($piece->creator()->exists())
-            <p class="text-muted"><small><i>This piece was created by <strong>{{$piece->creator->name}}</strong></i></small></p>
-            @else
-            <p class="text-muted"><small><i>The creator of this piece has been removed</i></small></p>
-            @endif
-          </div>
-        </form>
-      </div>
-    </div>
+    </form>
   </div>
 </div>
 
@@ -329,9 +330,6 @@ $('a.add-new-field').on('click', function() {
     $clone.find('input').attr('name',  'youtube[]');
     $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
 
-  } else {
-    $clone.find('textarea').attr('name',  'tips[]');
-    $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
   }
 });
 
