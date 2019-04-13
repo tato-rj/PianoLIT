@@ -180,6 +180,6 @@ class Piece extends PianoLit
         }
         
         
-        return secure_asset($this->$filename);
+        return secure_asset($path);
     }
 }
