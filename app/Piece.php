@@ -173,7 +173,12 @@ class Piece extends PianoLit
         if (! $this->$filename)
             return null;
 
-        // $path = str_replace('public', 'storage', $this->$filename);
+        if (strpos($this->$filename, 'public') !== false) {
+            $path = str_replace('public', 'storage', $this->$filename);
+        } else {
+            $path = 'storage/' . $this->$filename;
+        }
+        
         
         return secure_asset($this->$filename);
     }
