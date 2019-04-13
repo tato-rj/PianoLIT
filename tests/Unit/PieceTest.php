@@ -57,21 +57,6 @@ class PieceTest extends AppTest
 	}
 
     /** @test */
-    public function audio_files_and_score_are_uploaded_when_a_piece_is_created()
-    {
-        \Storage::fake('public');
-
-        $this->signIn();
-
-        $piece = $this->postPiece();
-
-        \Storage::disk('public')->assertExists($piece->fresh()->audio_path);
-        \Storage::disk('public')->assertExists($piece->fresh()->audio_path_rh);
-        \Storage::disk('public')->assertExists($piece->fresh()->audio_path_lh);
-        \Storage::disk('public')->assertExists($piece->fresh()->score_path);
-    }
-
-    /** @test */
     public function it_knows_if_it_has_been_favorited_by_a_given_user()
     {
     	$this->assertTrue($this->piece->isFavorited($this->user->id));
