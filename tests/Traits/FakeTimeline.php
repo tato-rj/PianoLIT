@@ -19,6 +19,9 @@ trait FakeTimeline
 		create(Composer::class, ['is_famous' => true, 'date_of_birth' => carbon('2-7-' . ($date - 19))]);
 		create(Composer::class, ['is_famous' => true, 'date_of_death' => carbon('10-1-' . ($date - 11))]);
 		create(Composer::class, ['is_famous' => true, 'date_of_birth' => carbon('6-3-' . ($date - 15))]);
+		create(Composer::class, ['is_famous' => true, 'date_of_birth' => carbon('2-7-1802')]);
+		create(Composer::class, ['is_famous' => true, 'date_of_death' => carbon('10-1-1804')]);
+		create(Composer::class, ['is_famous' => true, 'date_of_birth' => carbon('6-3-' . ($date + 3))]);
 
 		create(Timeline::class, ['year' => $date + 3]);
 		create(Timeline::class, ['year' => $date + 10]);

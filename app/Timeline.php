@@ -46,13 +46,12 @@ class Timeline extends PianoLit
             return $a["year"] - $b["year"];
         });
 
-        $key = $this->findPieceKey($events);
+        if ($limit) {
+            $events = $this->trimBefore($events, $limit);
+            $events = $this->trimAfter($events, $limit);
+        }
 
-        $this->trimBefore($key, $events, $limit);
-
-        $this->trimAfter($key, $events, $limit);
-
-    	return [];
+    	return $events;
     }
 
     public function findPieceKey($events)
@@ -64,17 +63,34 @@ class Timeline extends PianoLit
         }
     }
 
-    public function trimBefore($key, $events, $limit)
+    public function trimBefore($events, $limit)
     {
-        $count = count($events) - 1;
-        $diff = $index - $limit;
+        $array = $events;
+        $key = $this->findPieceKey($events);
+        $diff = $key - $limit;
 
-        if ($diff > 0)
+        if ($diff > 0) {
+            for ($i=0; $i<$diff; $i++) {
+                array_shift($array);
+            }
+        }
 
+        return $array;
     }
 
-    public function trimAfter($key, $events, $limit)
+    public function trimAfter($events, $limit)
     {
+        $array = $events;
+        $key = $this->findPieceKey($events);
         $count = count($events) - 1;
+        $diff = ($count - $key) - $limit;
+
+        if ($diff > 0) {
+            for ($i=0; $i<$diff; $i++) {
+                array_pop($array);
+            }
+        }
+
+        return $array;
     }
 }
