@@ -162,10 +162,10 @@ class Api
             $model->setAttribute('short_name', $model->short_name);
             $model->setAttribute('medium_name', $model->medium_name);
             $model->setAttribute('long_name', $model->long_name);
-            $model->setAttribute('audio', $model->file_path('audio_path'));
-            $model->setAttribute('audio_rh', $model->file_path('audio_path_rh'));
-            $model->setAttribute('audio_lh', $model->file_path('audio_path_lh'));
-            $model->setAttribute('score', $model->file_path('score_path'));
+            $model->setAttribute('audio', storage($model->audio_path));
+            $model->setAttribute('audio_rh', storage($model->audio_path_rh));
+            $model->setAttribute('audio_lh', storage($model->audio_path_lh));
+            $model->setAttribute('score', storage($model->score_path));
             $model->setAttribute('is_favorited', $model->isFavorited($user_id));
             $model->composer->setAttribute('alive_on', $model->composer->alive_on);
             $model->composer->setAttribute('short_name', $model->composer->short_name);

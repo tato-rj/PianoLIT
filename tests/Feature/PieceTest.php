@@ -30,7 +30,9 @@ class PieceTest extends AppTest
 
         $this->signIn();
 
-        $piece = $this->postPiece()->fresh();
+        $this->postPiece();
+
+        $piece = Piece::latest()->first();
 
         \Storage::disk('public')->assertExists($piece->audio_path);
     }
@@ -42,7 +44,9 @@ class PieceTest extends AppTest
 
         $this->signIn();
 
-        $piece = $this->postPiece()->fresh();
+        $this->postPiece();
+
+        $piece = Piece::latest()->first();
 
         \Storage::disk('public')->assertExists($piece->score_path);
     }
@@ -50,6 +54,8 @@ class PieceTest extends AppTest
     /** @test */
     public function admins_can_edit_a_piece()
     {
+        \Storage::fake('public');
+
         $this->signIn();
 
         $updatedPiece = $this->updatePiece($this->piece);
@@ -82,6 +88,8 @@ class PieceTest extends AppTest
     /** @test */
     public function admins_can_delete_pieces()
     {
+        \Storage::fake('public');
+
         $this->signIn();
 
         $piece_id = $this->piece->id;
@@ -94,6 +102,8 @@ class PieceTest extends AppTest
     /** @test */
     public function the_tags_relationships_are_removed_when_a_piece_is_deleted()
     {
+        \Storage::fake('public');
+        
         $this->signIn();
 
         $piece_id = $this->piece->id;
