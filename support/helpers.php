@@ -2,7 +2,10 @@
 
 function storage($path)
 {
-	return asset(\Storage::url($path));
+	if ($path)
+		return asset(\Storage::url($path));
+
+	return null;
 }
 
 function dateToDatabase($date)
