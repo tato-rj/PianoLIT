@@ -126,10 +126,10 @@ class PiecesController extends Controller
             'score_copyright' => $request->score_copyright,
             'composer_id' => $request->composer_id,
             'composed_in' => $request->composed_in,
-            'audio_path' => $request->hasFile('audio_path') ? $request->file('audio_path')->store('app/audio_path', 'public') : null,
-            'audio_path_rh' => $request->hasFile('audio_path_rh') ? $request->file('audio_path_rh')->store('app/audio_path_rh', 'public') : null,
-            'audio_path_lh' => $request->hasFile('audio_path_lh') ? $request->file('audio_path_lh')->store('app/audio_path_lh', 'public') : null,
-            'score_path' => $request->hasFile('score_path') ? $request->file('score_path')->store('app/score_path', 'public') : null,
+            'audio_path' => $request->hasFile('audio') ? $request->file('audio')->store('app/audio', 'public') : null,
+            'audio_path_rh' => $request->hasFile('audio_rh') ? $request->file('audio_rh')->store('app/audio_rh', 'public') : null,
+            'audio_path_lh' => $request->hasFile('audio_lh') ? $request->file('audio_lh')->store('app/audio_lh', 'public') : null,
+            'score_path' => $request->hasFile('score') ? $request->file('score')->store('app/score', 'public') : null,
             'creator_id' => auth()->user()->id,
             'views' => mt_rand(5,15),
         ]);
@@ -208,13 +208,15 @@ class PiecesController extends Controller
 
         $piece->tags()->sync(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
-        $file_types = ['audio_path', 'audio_path_rh', 'audio_path_lh', 'score_path'];
+        $file_fields = ['audio_path', 'audio_path_rh', 'audio_path_lh', 'score_path'];
 
-        foreach ($file_types as $type) {
+        foreach ($file_fields as $field) {
+            $filename = str_replace('_path', '', $field);
 
-            if ($request->hasFile($type)) {
-                \Storage::disk('public')->delete($piece->$type);
-                $piece->$type = $request->file($type)->store("app/{$type}", 'public');
+            if ($request->hasFile($filename)) {
+                \Storage::disk('public')->delete($piece->$field);
+                
+                $piece->$field = $request->file($filename)->store("app/{$filename}", 'public');
             }
 
             $piece->save();

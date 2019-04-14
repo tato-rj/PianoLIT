@@ -15,7 +15,7 @@ class SearchTest extends AppTest
 
         $this->piece->tags()->attach(create(Tag::class, ['name' => 'foo']));
 
-        $this->assertCount(0, Piece::search(['bar'])->get());
+        $this->assertCount(0, Piece::search(['xxx'])->get());
         $this->assertCount(1, Piece::search(['foo'])->get());
     }
 }

@@ -43,11 +43,11 @@ $factory->define(Composer::class, function(Faker $faker) {
 
 $factory->define(Piece::class, function (Faker $faker) {
     return [
-            'name' => $faker->name,
-            'nickname' => $faker->name,
+            'name' => $faker->word,
+            'nickname' => $faker->word,
             'catalogue_name' => randval(catalogues()),
             'catalogue_number' => rand(1,100),
-            'collection_name' => $faker->name,
+            'collection_name' => $faker->word,
             'collection_number' => rand(1,10),
             'movement_number' => rand(1,4),
             'key' => randval(keys()),

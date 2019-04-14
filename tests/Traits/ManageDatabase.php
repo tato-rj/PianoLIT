@@ -11,22 +11,73 @@ trait ManageDatabase
 	{
         $file = UploadedFile::fake()->create('file.txt');
 
-        $piece = make(Piece::class)->toArray();
+        $model = make(Piece::class);
 
-        $piece = array_merge($piece, [
+        $piece = [
+            'name' => $model->name,
+            'nickname' => $model->nickname,
+            'collection_name' => $model->collection_name,
+            'collection_number' => $model->collection_number,
+            'catalogue_name' => $model->catalogue_name,
+            'catalogue_number' => $model->catalogue_number,
+            'movement_number' => $model->movement_number,
+            'curiosity' => $model->curiosity,
+            'youtube' => null,
+            'itunes' => null,
+            'key' => $model->key,
+            'score_url' => $model->score_url,
+            'score_editor' => $model->score_editor,
+            'score_publisher' => $model->score_publisher,
+            'score_copyright' => $model->score_copyright,
+            'composer_id' => $model->composer_id,
+            'composed_in' => $model->composed_in,
             'period' => [1],
             'length' => [2],
             'level' => [3],
-            'audio_path' => $file,
-            'audio_path_rh' => $file,
-            'audio_path_lh' => $file,
-            'score_path' => $file,
-        ]);
+            'audio' => $file,
+            'audio_rh' => $file,
+            'audio_lh' => $file,
+            'score' => $file,
+        ];
 
         $this->post(route('admin.pieces.store'), $piece);
 
         return Piece::latest()->first();
 	}
+
+    protected function updatePiece($piece)
+    {
+        $model = make(Piece::class);
+
+        $updatedPiece = [
+            'name' => $model->name,
+            'nickname' => $model->nickname,
+            'collection_name' => $model->collection_name,
+            'collection_number' => $model->collection_number,
+            'catalogue_name' => $model->catalogue_name,
+            'catalogue_number' => $model->catalogue_number,
+            'movement_number' => $model->movement_number,
+            'curiosity' => $model->curiosity,
+            'youtube' => null,
+            'itunes' => null,
+            'key' => $model->key,
+            'score_url' => $model->score_url,
+            'score_editor' => $model->score_editor,
+            'score_publisher' => $model->score_publisher,
+            'score_copyright' => $model->score_copyright,
+            'composer_id' => $model->composer_id,
+            'composed_in' => $model->composed_in,
+            'period' => [1],
+            'length' => [2],
+            'level' => [3],
+            'audio' => UploadedFile::fake()->create('new-audio.mp3'),
+            'score' => UploadedFile::fake()->create('new-score.pdf'),
+        ];
+
+        $this->patch(route('admin.pieces.update', $piece->id), $updatedPiece);
+
+        return $updatedPiece;
+    }
 
     protected function register($user = null)
     {

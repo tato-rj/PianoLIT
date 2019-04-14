@@ -151,7 +151,7 @@
                 <div class="input-group-text"><i class="fas fa-microphone"></i></div>
               </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio_path" id="customFile">
+                <input type="file" class="custom-file-input" name="audio" id="customFile">
                 <label class="custom-file-label truncate" for="customFile">Both hands</label>
               </div>
             </div>
@@ -160,7 +160,7 @@
                 <div class="input-group-text"><i class="fas fa-file-alt"></i></div>
               </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" name="score_path" id="customFile">
+                <input type="file" class="custom-file-input" name="score" id="customFile">
                 <label class="custom-file-label truncate" for="customFile">Score</label>
               </div>
             </div>
@@ -171,7 +171,7 @@
                 <div class="input-group-text"><i class="fas fa-hand-paper" style="transform: scaleX(-1)"></i></div>
               </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio_path_lh" id="customFile">
+                <input type="file" class="custom-file-input" name="audio_lh" id="customFile">
                 <label class="custom-file-label truncate" for="customFile">Left hand audio</label>
               </div>
             </div>
@@ -180,7 +180,7 @@
                 <div class="input-group-text"><i class="fas fa-hand-paper"></i></div>
               </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio_path_rh" id="customFile">
+                <input type="file" class="custom-file-input" name="audio_rh" id="customFile">
                 <label class="custom-file-label truncate" for="customFile">Right hand audio</label>
               </div>
             </div>

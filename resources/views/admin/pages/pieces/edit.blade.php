@@ -170,19 +170,19 @@
           <div class="form-row form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
-                <a class="input-group-text no-underline {{$piece->lookup('audio_path')}}" href="{{$piece->file_path('audio_path')}}" target="_blank"><i class="fas fa-microphone"></i></a>
+                <a class="input-group-text no-underline {{$piece->lookup('audio_path')}}" href="{{storage($piece->audio_path)}}" target="_blank"><i class="fas fa-microphone"></i></a>
               </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio_path" id="customFile">
+                <input type="file" class="custom-file-input" name="audio" id="customFile">
                 <label class="custom-file-label truncate" for="customFile">Both hands</label>
               </div>
             </div>
             <div class="col input-group">
               <div class="input-group-prepend">
-                <a class="input-group-text no-underline {{$piece->lookup('score_path')}}" href="{{$piece->file_path('score_path')}}" target="_blank"><i class="fas fa-file-alt"></i></a>
+                <a class="input-group-text no-underline {{$piece->lookup('score_path')}}" href="{{storage($piece->score_path)}}" target="_blank"><i class="fas fa-file-alt"></i></a>
               </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" name="score_path" id="customFile">
+                <input type="file" class="custom-file-input" name="score" id="customFile">
                 <label class="custom-file-label truncate" for="customFile">Score</label>
               </div>
             </div>
@@ -190,19 +190,19 @@
           <div class="form-row form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
-                <a class="input-group-text no-underline {{$piece->lookup('audio_path_lh')}}" href="{{$piece->file_path('audio_path_lh')}}" target="_blank"><i class="fas fa-hand-paper" style="transform: scaleX(-1)"></i></a>
+                <a class="input-group-text no-underline {{$piece->lookup('audio_path_lh')}}" href="{{storage($piece->audio_path_lh)}}" target="_blank"><i class="fas fa-hand-paper" style="transform: scaleX(-1)"></i></a>
               </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio_path_lh" id="customFile">
+                <input type="file" class="custom-file-input" name="audio_lh" id="customFile">
                 <label class="custom-file-label truncate" for="customFile">Left hand</label>
               </div>
             </div>
             <div class="col input-group">
               <div class="input-group-prepend">
-                <a class="input-group-text no-underline {{$piece->lookup('audio_path_rh')}}" href="{{$piece->file_path('audio_path_rh')}}" target="_blank"><i class="fas fa-hand-paper"></i></a>
+                <a class="input-group-text no-underline {{$piece->lookup('audio_path_rh')}}" href="{{storage($piece->audio_path_rh)}}" target="_blank"><i class="fas fa-hand-paper"></i></a>
               </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio_path_rh" id="customFile">
+                <input type="file" class="custom-file-input" name="audio_rh" id="customFile">
                 <label class="custom-file-label truncate" for="customFile">Right hand</label>
               </div>
             </div>

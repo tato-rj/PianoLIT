@@ -24,34 +24,35 @@ class PieceTest extends AppTest
     }
 
     /** @test */
-    public function audio_files_and_score_are_uploaded_when_a_piece_is_created()
+    public function audio_files_are_uploaded_when_a_piece_is_created()
     {
         \Storage::fake('public');
 
         $this->signIn();
 
-        $piece = $this->postPiece();
+        $piece = $this->postPiece()->fresh();
 
-        \Storage::disk('public')->assertExists($piece->fresh()->audio_path);
-        \Storage::disk('public')->assertExists($piece->fresh()->audio_path_rh);
-        \Storage::disk('public')->assertExists($piece->fresh()->audio_path_lh);
-        \Storage::disk('public')->assertExists($piece->fresh()->score_path);
+        \Storage::disk('public')->assertExists($piece->audio_path);
     }
-    
-    /** @test */
-    public function admins_can_edit_a_piece()
-    {
-        $updatedPiece = make(Piece::class)->toArray();
 
-        $updatedPiece = array_merge($updatedPiece, [
-            'period' => [1],
-            'length' => [2],
-            'level' => [3]
-        ]);
+    /** @test */
+    public function the_score_is_uploaded_when_a_piece_is_created()
+    {
+        \Storage::fake('public');
 
         $this->signIn();
 
-        $this->patch(route('admin.pieces.update', $this->piece->id), $updatedPiece);
+        $piece = $this->postPiece()->fresh();
+
+        \Storage::disk('public')->assertExists($piece->score_path);
+    }
+
+    /** @test */
+    public function admins_can_edit_a_piece()
+    {
+        $this->signIn();
+
+        $updatedPiece = $this->updatePiece($this->piece);
 
         $this->assertEquals($this->piece->fresh()->name, $updatedPiece['name']);
     }
@@ -65,20 +66,12 @@ class PieceTest extends AppTest
 
         $piece = $this->postPiece();
 
-        $updated_piece = make(Piece::class)->toArray();
-
-        $updated_piece = array_merge($updated_piece, [
-            'period' => [1],
-            'length' => [2],
-            'level' => [3],
-            'audio_path' => UploadedFile::fake()->create('new-audio.mp3'),
-            'score_path' => UploadedFile::fake()->create('new-score.pdf'),
-        ]);
+        $updatedPiece = $this->updatePiece($piece);
 
         $original_audio = $piece->audio_path;
         $original_score = $piece->score_path;
 
-        $this->patch(route('admin.pieces.update', $piece->id), $updated_piece);
+        $this->patch(route('admin.pieces.update', $piece->id), $updatedPiece);
 
         \Storage::disk('public')->assertMissing($original_audio);
         \Storage::disk('public')->assertExists($piece->fresh()->audio_path);

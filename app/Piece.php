@@ -167,19 +167,4 @@ class Piece extends PianoLit
     {
         return $this->$attribute ? 'text-success' : 'text-muted';
     }
-
-    public function file_path($filename)
-    {
-        if (! $this->$filename)
-            return null;
-
-        if (strpos($this->$filename, 'public') !== false) {
-            $path = str_replace('public', 'storage', $this->$filename);
-        } else {
-            $path = 'storage/' . $this->$filename;
-        }
-        
-        
-        return secure_asset($path);
-    }
 }

@@ -1,5 +1,10 @@
 <?php
 
+function storage($path)
+{
+	return \Storage::url($path);
+}
+
 function dateToDatabase($date)
 {
 	return \Carbon\Carbon::parse($date)->format('Y-m-d');
