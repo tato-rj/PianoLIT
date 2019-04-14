@@ -24,6 +24,16 @@ class Composer extends PianoLit
         return $this->belongsTo(Country::class);
     }
 
+    public function getBornInAttribute()
+    {
+        return $this->date_of_birth->year;
+    }
+
+    public function getDiedInAttribute()
+    {
+        return $this->date_of_death->year;
+    }
+
     public function getNationalityAttribute()
     {
         return $this->country->nationality;

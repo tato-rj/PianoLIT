@@ -17,6 +17,6 @@ class TimelineTest extends AppTest
 
 		$piece = Piece::first();
 
-		$this->assertCount(3, Timeline::generate($piece->id));
+		$this->assertCount(3, Timeline::generate($piece->id, 4));
 	}
 }

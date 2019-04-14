@@ -2,7 +2,7 @@
 
 function storage($path)
 {
-	return \Storage::url($path);
+	return asset(\Storage::url($path));
 }
 
 function dateToDatabase($date)
