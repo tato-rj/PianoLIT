@@ -1,20 +1,5 @@
 <?php
 
-Route::get('/update-files', function() {
-	$pieces = \App\Piece::all();
-
-	foreach ($pieces as $piece) {
-		$piece->update([
-			'audio_path' => str_replace('pianolit', 'app', $piece->audio_path),
-			'audio_path_lh' => str_replace('pianolit', 'app', $piece->audio_path_lh),
-			'audio_path_rh' => str_replace('pianolit', 'app', $piece->audio_path_rh),
-			'score_path' => str_replace('pianolit', 'app', $piece->score_path)
-		]);
-	}
-
-	return 'All good';
-});
-
 Route::resources([
     'subscriptions' => 'SubscriptionsController'
 ]);
