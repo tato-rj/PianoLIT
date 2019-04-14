@@ -116,6 +116,6 @@ class ApiController extends Controller
 
     public function timeline($piece_id)
     {
-        return Timeline::generate($piece_id);
+        return Timeline::generate($piece_id, 4);
     }
 }
