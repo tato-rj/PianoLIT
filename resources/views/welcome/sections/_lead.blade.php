@@ -4,8 +4,13 @@
 			<h1 class="mb-4"><strong>Find music that inspires you.</strong></h1>
 			<p class="text-muted mb-5">Where pianists discover new pieces and find inspiration to play only what they love.</p>
 			<div class="mb-2 bg-light d-inline-block px-5 py-4 border">
-				<h6><strong>COMING UP IN</strong></h6>
-				<div id="clock" class="d-flex flex-center mb-3"></div>
+				<div class="d-none d-sm-block">
+					<h6><strong>COMING UP IN</strong></h6>
+					<div id="clock" class="d-flex flex-wrap flex-center mb-3"></div>
+				</div>
+				<div class="d-block d-sm-none">
+					<h6><strong>COMING UP SOON!</strong></h6>					
+				</div>
 				<p class="m-0" style="max-width: 540px">In the mean time, subscribe to our <a href="https://www.youtube.com/channel/UCOB67MpdySxyTCZHvWgxHeg" target="_blank" class="link-blue">Youtube Channel</a> and enjoy daily videos of awesome piano pieces and tips!</p>
 			</div>
 			
