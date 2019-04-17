@@ -19,7 +19,6 @@
   animation:flyby 1s infinite ease;
 }
 
-
 @keyframes search {
   0%{
     transform:translate(40px, 40px) scale(.6);
@@ -46,6 +45,20 @@
     opacity:0
   }
 }
+
+#clock > div {
+  width: 112px;
+}
+
+#clock .number {
+  font-size: 2.6em;
+  margin-bottom: 6px;
+}
+
+#clock .label {
+  font-size: 1.2em;
+  text-transform: uppercase;
+}
 </style>
 @endpush
 
@@ -60,6 +73,17 @@
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$('#clock').countdown('2020/10/10', function(event) {
+  var $this = $(this).html(event.strftime(''
+    + '<div><span class="number">%w</span><div class="label">weeks</div></div> '
+    + '<div><span class="number">%d</span><div class="label">days</div></div> '
+    + '<div><span class="number">%H</span><div class="label">hours</div></div> '
+    + '<div><span class="number">%M</span><div class="label">minutes</div></div> '
+    + '<div><span class="number">%S</span><div class="label">seconds</div></div>'));
+});
+</script>
+
 <script>
   var swiper = new Swiper('.swiper-container', {
       slidesPerView: 1,
