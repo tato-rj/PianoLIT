@@ -37,7 +37,7 @@ p img {
 	height: auto;
 }
 
-.blog-font p {
+.blog-font p , .blog-font h4 {
 	margin-bottom: 1.75rem;
 }
 </style>
