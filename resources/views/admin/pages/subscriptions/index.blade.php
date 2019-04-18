@@ -43,7 +43,7 @@
           </thead>
           <tbody>
             @foreach($subscriptions as $subscription)
-            <tr>
+            <tr title="Subscribed at {{$subscription->created_at->format('g:i:s a')}}">
               <td>{{$subscription->created_at->toFormattedDateString()}}</td>
               <td>{{$subscription->email}}</td>
               <td id="status-{{$subscription->id}}" class="status-text text-{{$subscription->is_active ? 'success' : 'warning'}}">{{ucfirst($subscription->status)}}</td>
