@@ -4,6 +4,11 @@
     toolbar: 'formatselect | bold italic strikethrough forecolor backcolor formatpainter | link image media pageembed subscribeButton | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent',
     content_css: "/css/admin.css",
     menubar: "edit view insert format tools extra",
+
+    // audio_template_callback: function(data) {
+    //   return '<audio controls>' + '\n<source src="' + data.source1 + '"' + (data.source1mime ? ' type="' + data.source1mime + '"' : '') + ' />\n' + '</audio>';
+    // },
+    
     menu: {
       extra: { title: "Extra", items: "subscribe dotseparator quote" }
     },
@@ -33,8 +38,10 @@
         }
       });
     },
+
     image_advtab: true,
     images_upload_url: '/admin/blog/images/upload',
+
     images_upload_handler: function(blobInfo, success, failure) {
         var xhr, formData;
       

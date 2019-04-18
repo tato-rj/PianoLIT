@@ -24,6 +24,16 @@ Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::post('images/remove', 'PostsController@removeImage')->name('remove-image');
 
+	Route::prefix('audio')->name('audio.')->group(function() {
+
+		Route::get('', 'BlogAudioController@index')->name('index');
+
+		Route::post('store', 'BlogAudioController@store')->name('store');
+		
+		Route::delete('destroy', 'BlogAudioController@destroy')->name('destroy');
+
+	});
+
 	Route::get('{post}', 'PostsController@edit')->name('edit');
 
 	Route::patch('{post}', 'PostsController@update')->name('update');

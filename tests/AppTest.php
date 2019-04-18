@@ -56,9 +56,11 @@ class AppTest extends TestCase
         return $this->actingAs($admin, $guard);
     }
 
-    public function subscribe($email = null)
+    public function subscribe($email = null, $bot = null)
     {
-        return $this->post(route('subscriptions.store'), ['email' => $email ?? make(Subscription::class)->email]);
+        return $this->post(route('subscriptions.store'), [
+            'email' => $email ?? make(Subscription::class)->email,
+            'subscription_name' => $bot ?? null]);
     }
 
     public function unsubscribe($email)

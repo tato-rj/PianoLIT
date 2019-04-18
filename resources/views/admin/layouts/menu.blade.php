@@ -87,6 +87,9 @@
           <li>
             <a class="py-2" href="{{route('admin.topics.index')}}">Topics</a>
           </li>
+          <li>
+            <a class="py-2" href="{{route('admin.posts.audio.index')}}">Audio</a>
+          </li>
         </ul>
       </li>
 

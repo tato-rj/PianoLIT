@@ -18,6 +18,7 @@ mix.js('resources/js/app.js', 'public/js')
     .styles([
       'resources/sass/vendor/theme.min.css',
       'resources/sass/vendor/tables.css',
+      'resources/sass/vendor/dropzone.css',
       'public/css/admin.css',
       ], 'public/css/admin.css')
     .scripts([

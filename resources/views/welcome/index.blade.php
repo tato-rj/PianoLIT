@@ -73,6 +73,7 @@
 @endsection
 
 @push('scripts')
+<script src="{{asset('js/vendor/jquery.countdown.min.js')}}"></script>
 <script type="text/javascript">
 $('#clock').countdown('2020/10/10', function(event) {
   var $this = $(this).html(event.strftime(''

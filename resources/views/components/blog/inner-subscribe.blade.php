@@ -4,6 +4,7 @@
 		<p>Subscribe now and receive the latest news, stories, ideas and much more right in your inbox!</p>
 		<form method="POST" action="{{route('subscriptions.store')}}">
 			@csrf
+			<input type="hidden" name="subscription_name" placeholder="Your name here">
 			<div class="form-row">
 				<div class="col-lg-6 col-md-8 col-10 mx-auto">
 					<div class="form-group">

@@ -5,7 +5,6 @@ window.moment = require('moment');
 window.Calendar = require('fullcalendar');
 window.Trix = require('trix');
 window.Cropper = require('cropperjs');
-window.Countdown = require('jquery-countdown');
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support

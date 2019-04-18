@@ -16,7 +16,7 @@ class SubscriptionForm extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return ! $this->subscription_name;
     }
 
     /**

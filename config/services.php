@@ -44,4 +44,8 @@ return [
         ],
     ],
 
+    'youtube' => [
+        'channel' => 'https://www.youtube.com/channel/UCOB67MpdySxyTCZHvWgxHeg'
+    ]
+
 ];

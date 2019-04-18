@@ -18,6 +18,18 @@ class SubscriptionTest extends AppTest
     }
 
     /** @test */
+    public function if_the_hidden_input_is_filled_it_means_the_guest_is_a_bot_so_the_subscription_is_denied()
+    {
+        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
+        
+        $email = make(Subscription::class)->email;
+
+        $this->subscribe($email, $bot = 'is bot');
+
+        $this->assertDatabaseMissing('subscriptions', ['email' => $email]);    
+    }
+
+    /** @test */
     public function the_same_guest_cannot_subscribe_more_than_once_twice_minute()
     {
         $this->expectException('Illuminate\Http\Exceptions\ThrottleRequestsException');
