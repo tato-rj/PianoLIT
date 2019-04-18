@@ -27,6 +27,11 @@ class BlogAudioController extends Controller
 
     public function destroy(Request $request)
     {
+    	if (! \Storage::disk('public')->exists($request->path))
+    		abort(404, 'This file doesn\'t exist');
+
+    	\Storage::disk('public')->delete($request->path);
     	
+    	return response(200);
     }
 }

@@ -42,10 +42,11 @@
         <form action="{{route('admin.posts.audio.store')}}" class="dropzone" id="filesDropzone"></form>
       </div>
     </div>
-
+    
+    @if($audio)
     <div class="row my-3">
-      <div class="col-12 text-center">
-        <p class="text-center"><small>We have {{count($audio)}} audio files</small></p>
+      <div class="col-12">
+        <p class="text-center">We have {{count($audio)}} audio files</p>
       </div>
       <div class="col-12">
         <div class="d-flex flex-wrap mb-2">
@@ -53,7 +54,7 @@
         </div>
       </div>
     </div>
-
+    @endif
   </div>
 </div>
 
@@ -62,7 +63,7 @@
 @endsection
 
 @section('scripts')
-
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <script type="text/javascript" src="{{asset('js/vendor/dropzone.js')}}"></script>
 <script type="text/javascript">
 Dropzone.options.filesDropzone = {
@@ -83,5 +84,48 @@ Dropzone.options.filesDropzone = {
     alert(response.message);
   }
 };
+</script>
+<script type="text/javascript">
+function showTooltip(element) {
+    $(element).tooltip('show');
+
+    setTimeout(function(){
+        $(element).tooltip('hide');
+    }, 1000);
+}
+
+$('[data-toggle="tooltip"]').tooltip();
+
+var clipboard = new ClipboardJS('.clip');
+
+clipboard.on('success', function(e) {
+    showTooltip(e.trigger);
+    e.clearSelection();
+});
+</script>
+<script type="text/javascript">
+$('.remove-file').on('click', function(){
+  let $button = $(this);
+  let url = $button.attr('data-path');
+
+  if (! $button.hasClass('removing')) {
+    $button.addClass('removing');
+
+    $button.attr('disabled', true).find('i').removeClass('fa-trash-alt').addClass('fa-hourglass-half');
+
+    $.ajax({
+      url: url,
+      method: 'DELETE'
+    }).done(function() {
+      $button.parent().parent().fadeOut(function() {
+        $(this).remove();
+      });
+    }).fail(function(data) {
+      alert(data.responseJSON);
+    }).always(function() {
+      $button.removeClass('removing');
+    });
+  }
+});
 </script>
 @endsection
