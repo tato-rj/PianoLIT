@@ -46,7 +46,7 @@
     @if($audio)
     <div class="row my-3">
       <div class="col-12">
-        <p class="text-center">We have {{count($audio)}} audio files</p>
+        <p>We have {{count($audio)}} audio files</p>
       </div>
       <div class="col-12">
         <div class="d-flex flex-wrap mb-2">
