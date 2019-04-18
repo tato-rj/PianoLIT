@@ -22,8 +22,13 @@
 
       <li class="nav-item">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#statistics">
-          <i class="fas fa-chart-line fa-fw"></i>
-          <span class="nav-link-text">Statistics</span>
+          <div>
+            <i class="fas fa-chart-line fa-fw"></i>
+            <span class="nav-link-text">Statistics</span>
+          </div>
+          <div>
+            <i class="fas fa-caret-down"></i>
+          </div>
         </a>
         <ul class="sidenav-second-level collapse" id="statistics">
           <li>
@@ -41,8 +46,13 @@
       @manager
       <li class="nav-item">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#api">
-          <i class="fas fa-code fa-fw"></i>
-          <span class="nav-link-text">Api</span>
+          <div>
+            <i class="fas fa-code fa-fw"></i>
+            <span class="nav-link-text">Api</span>
+          </div>
+          <div>
+            <i class="fas fa-caret-down"></i>
+          </div>
         </a>
         <ul class="sidenav-second-level collapse" id="api">
           <li>
@@ -59,8 +69,13 @@
 
       <li class="nav-item">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#menu-repertoire">
-          <i class="fas fa-music fa-fw"></i>
-          <span class="nav-link-text">Repertoire</span>
+          <div>
+            <i class="fas fa-music fa-fw"></i>
+            <span class="nav-link-text">Repertoire</span>
+          </div>
+          <div>
+            <i class="fas fa-caret-down"></i>
+          </div>
         </a>
         <ul class="sidenav-second-level collapse" id="menu-repertoire">
           <li>
@@ -77,8 +92,13 @@
 
       <li class="nav-item">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#blog">
-          <i class="fas fa-newspaper fa-fw"></i>
-          <span class="nav-link-text">Blog</span>
+          <div>
+            <i class="fas fa-newspaper fa-fw"></i>
+            <span class="nav-link-text">Blog</span>
+          </div>
+          <div>
+            <i class="fas fa-caret-down"></i>
+          </div>
         </a>
         <ul class="sidenav-second-level collapse" id="blog">
           <li>

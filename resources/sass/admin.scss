@@ -16,6 +16,14 @@ $brand-primary: #2e5ab9;
 @import "global";
 @import "swiper";
 
+#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse.collapsed:after, #mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse:after {
+	content: none;
+}
+
+.nav-link-collapse {
+	@extend .d-flex, .justify-content-between;
+}
+
 footer.sticky-footer, #mainNav.fixed-top.navbar-light .sidenav-toggler, .breadcrumb, .navbar {
     background-color: #F8F9FF;
 }

@@ -8261,7 +8261,8 @@ button.bg-dark:focus {
 }
 
 .d-flex,
-.swiper-control {
+.swiper-control,
+.nav-link-collapse {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -8616,7 +8617,8 @@ button.bg-dark:focus {
           justify-content: center !important;
 }
 
-.justify-content-between {
+.justify-content-between,
+.nav-link-collapse {
   -webkit-box-pack: justify !important;
       -ms-flex-pack: justify !important;
           justify-content: space-between !important;
@@ -20311,6 +20313,11 @@ button:active {
 .swiper-button-disabled {
   opacity: 0.4;
   width: 50px;
+}
+
+#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse.collapsed:after,
+#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse:after {
+  content: none;
 }
 
 footer.sticky-footer,
