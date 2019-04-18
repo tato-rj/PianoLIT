@@ -42,7 +42,7 @@ class AdminsController extends Controller
      */
     public function subscriptions()
     {
-        $subscriptions = Subscription::all();
+        $subscriptions = Subscription::latest()->get();
 
         return view('admin.pages.subscriptions.index', compact('subscriptions'));
     }
