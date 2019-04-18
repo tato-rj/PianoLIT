@@ -20196,6 +20196,10 @@ button.swiper-pagination-bullet {
   margin: 0 1.4rem;
 }
 
+.tox .tox-edit-area__iframe {
+  padding: 12px;
+}
+
 @media (max-width: 767.98px) {
   .suggestion-card .card-img-top {
     height: 160px !important;

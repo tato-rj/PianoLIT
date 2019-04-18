@@ -20084,6 +20084,10 @@ input:checked + .slider:before {
   margin: 0 1.4rem;
 }
 
+.tox .tox-edit-area__iframe {
+  padding: 12px;
+}
+
 .elipsis {
   width: 100%;
   white-space: nowrap;
