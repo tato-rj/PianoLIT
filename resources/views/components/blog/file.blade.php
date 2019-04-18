@@ -1,5 +1,6 @@
-<div class="m-2">
+<div class="m-3">
 
+	<div class="text-muted mb-2"><strong>{{basename($file)}}</strong></div>
 	<audio controls class="mb-2 d-block">
 		<source src="{{storage($file)}}" type="audio/mp3">
 	</audio>
