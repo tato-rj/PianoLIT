@@ -24,7 +24,7 @@ class PieceTest extends AppTest
     }
 
     /** @test */
-    public function audio_files_are_uploaded_when_a_piece_is_created()
+    public function audio_files_and_score_are_uploaded_when_a_piece_is_created()
     {
         \Storage::fake('public');
 
@@ -34,21 +34,9 @@ class PieceTest extends AppTest
 
         $piece = Piece::latest()->first();
 
+        $this->assertNotEmpty($piece->audio_path);
+        $this->assertNotEmpty($piece->score_path);
         \Storage::disk('public')->assertExists($piece->audio_path);
-    }
-
-    /** @test */
-    public function the_score_is_uploaded_when_a_piece_is_created()
-    {
-        \Storage::fake('public');
-
-        $this->signIn();
-
-        $this->postPiece();
-
-        $piece = Piece::latest()->first();
-
-        \Storage::disk('public')->assertExists($piece->score_path);
     }
 
     /** @test */

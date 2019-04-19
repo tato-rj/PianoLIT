@@ -16,7 +16,7 @@ class SubscriptionForm extends FormRequest
      */
     public function authorize()
     {
-        return ! $this->subscription_name;
+        return ! $this->subscription_name && carbon($this->started_at)->lte(now()->subSeconds(3));
     }
 
     /**

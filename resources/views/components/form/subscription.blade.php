@@ -1,6 +1,7 @@
 <form method="POST" action="{{route('subscriptions.store')}}">
 	@csrf
 	<input type="hidden" name="subscription_name" placeholder="Your name here">
+	<input type="hidden" name="started_at" value="{{now()}}">
 	<div class="form-row mb-5">
 		<div class="col-lg-6 col-md-8 col-10 mx-auto">
 			<div class="form-group">

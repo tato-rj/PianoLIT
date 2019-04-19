@@ -56,11 +56,12 @@ class AppTest extends TestCase
         return $this->actingAs($admin, $guard);
     }
 
-    public function subscribe($email = null, $bot = null)
+    public function subscribe($email = null, $bot = null, $wait = true)
     {
         return $this->post(route('subscriptions.store'), [
             'email' => $email ?? make(Subscription::class)->email,
-            'subscription_name' => $bot ?? null]);
+            'subscription_name' => $bot ?? null,
+            'started_at' => $wait ? now()->subSeconds(5) : now()]);
     }
 
     public function unsubscribe($email)
