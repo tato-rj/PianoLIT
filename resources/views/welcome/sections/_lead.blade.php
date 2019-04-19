@@ -24,10 +24,10 @@
 					<iframe class="w-100" height="260" src="https://www.youtube.com/embed/78QlBf04SXs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 				</div>
 				<div class="col-lg-4 col-md-4 col-12 p-3">
-					<iframe class="w-100" height="260" src="https://www.youtube.com/embed/XDHViOGTDGY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+					<iframe class="w-100" height="260" src="https://www.youtube.com/embed/CV17BV-GNvw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 				</div>
 				<div class="col-lg-4 col-md-4 col-12 p-3">
-					<iframe class="w-100" height="260" src="https://www.youtube.com/embed/lJpXqYZlcQ0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+					<iframe class="w-100" height="260" src="https://www.youtube.com/embed/ucFvIzoBEeE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 				</div>
 			</div>
 			<a href="{{config('services.youtube.channel')}}" target="_blank" class="btn btn-primary btn-wide shadow show-overlay"><i class="fab fa-lg fa-youtube mr-3"></i>Visit our channel</a>
