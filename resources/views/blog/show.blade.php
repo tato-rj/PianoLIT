@@ -15,6 +15,7 @@
 <meta property="og:updated_time" content="{{$post->updated_at->format(DateTime::ISO8601)}}">
 
 <meta name="twitter:site" content="@litpiano">
+<meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="{{$post->thumbnail_image()}}">
 <meta name="twitter:title" content="{{$post->title}}">
 <meta name="twitter:description" content="{{$post->description}}">
