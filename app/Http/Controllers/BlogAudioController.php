@@ -15,10 +15,10 @@ class BlogAudioController extends Controller
 
     public function store(Request $request)
     {
-    	if (\Storage::disk('public')->exists('blog/audio/teste.mp3'))
-    		abort(403, 'An audio with this name already exists');
+        $audio = $request->file('file');
 
-    	$audio = $request->file('file');
+    	if (\Storage::disk('public')->exists('blog/audio/' . $audio->getClientOriginalName()))
+    		abort(403, 'An audio with this name already exists');
 
         $path = $request->file('file')->storeAs('blog/audio', $audio->getClientOriginalName(), 'public');
 

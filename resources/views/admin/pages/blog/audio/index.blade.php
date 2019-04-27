@@ -68,7 +68,7 @@
 <script type="text/javascript">
 Dropzone.options.filesDropzone = {
   acceptedFiles: 'audio/*,application/.mp3',
-  maxFilesize: 5,
+  maxFilesize: 2,
   maxFiles: 8,
   accept: function(file, done) {
     console.log(file);
@@ -78,10 +78,15 @@ Dropzone.options.filesDropzone = {
     formData.append("_token", window.app.csrfToken);
   },
   success: function(file, response) {
+    alert('Great, the file was uploaded!');
     console.log(response);
   },
-  error: function(file, response) {
-    alert(response.message);
+  error: function(file, response, request) {
+    if (request) {
+      alert(response.message);
+    } else {  
+      alert(response);
+    }
   }
 };
 </script>
