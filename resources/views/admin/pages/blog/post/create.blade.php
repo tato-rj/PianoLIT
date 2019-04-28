@@ -18,7 +18,7 @@
     'title' => 'Blog',
     'description' => 'Add a new post'])
     
-      <form class="row my-3" method="POST" action="{{route('admin.posts.store')}}" autocomplete="off" enctype="multipart/form-data">
+      <form id="create-post" class="row my-3" method="POST" action="{{route('admin.posts.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-12">
           <div class="rounded bg-light px-3 py-2 mb-3">
@@ -69,5 +69,6 @@
   cancelButton: '#cancel-button',
   submitButton: 'button[type="submit"]'
 })).create();
+
 </script>
 @endsection

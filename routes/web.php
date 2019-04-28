@@ -4,6 +4,10 @@ Route::resources([
     'subscriptions' => 'SubscriptionsController'
 ]);
 
+Route::get('youtube', function() {
+	return redirect(config('services.youtube.channel'));
+})->name('youtube');
+
 Route::get('/', function () {
 	$tags = \App\Tag::inRandomOrder()->get();
 
