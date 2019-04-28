@@ -33,6 +33,10 @@
     @include('components/alerts/error')
   @endif
 
+  @if($errors->any())
+    @include('components/alerts/error', ['message' => $errors->first()])
+  @endif
+
   <script type="text/javascript" src="{{mix('js/admin.js')}}"></script>
 
   <script type="text/javascript">

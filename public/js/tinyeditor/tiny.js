@@ -77,8 +77,8 @@ tinymce.init({
     }
 });
 
-window.onbeforeunload = function(){
-  if (formChanged) {
+window.onbeforeunload = function(event){
+  if (formChanged && event.target.activeElement.type != 'submit') {
     return 'Are you sure you want to leave?';
   }
 };
