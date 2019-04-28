@@ -2,8 +2,8 @@ let formChanged = false;
 
 tinymce.init({
     selector: 'textarea#editor',
-    plugins: 'advcode formatpainter linkchecker lists link image media mediaembed pageembed permanentpen powerpaste tinydrive tinymcespellchecker',
-    toolbar: 'formatselect | bold italic strikethrough forecolor backcolor formatpainter | link image media pageembed subscribeButton | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent',
+    plugins: 'lists link image media tinydrive',
+    toolbar: 'formatselect | bold italic strikethrough forecolor backcolor | link image media subscribeButton | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent',
     content_css: "/css/admin.css",
     menubar: "edit view insert format tools extra",
 
