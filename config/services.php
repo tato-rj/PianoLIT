@@ -44,8 +44,12 @@ return [
         ],
     ],
 
-    'youtube' => [
-        'channel' => 'https://www.youtube.com/channel/UCOB67MpdySxyTCZHvWgxHeg'
+    'channels' => [
+        'youtube' => 'https://www.youtube.com/channel/UCOB67MpdySxyTCZHvWgxHeg',
+        'facebook' => 'https://www.facebook.com/pianolit',
+        'reddit' => 'https://www.reddit.com/user/pianolit',
+        'twitter' => 'https://twitter.com/LitPiano',
+        'instagram' => 'https://www.instagram.com/pianolit_music/'
     ]
 
 ];

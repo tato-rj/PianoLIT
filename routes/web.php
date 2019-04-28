@@ -5,7 +5,7 @@ Route::resources([
 ]);
 
 Route::get('youtube', function() {
-	return redirect(config('services.youtube.channel'));
+	return redirect(config('services.channels.youtube'));
 })->name('youtube');
 
 Route::get('/', function () {
