@@ -8,6 +8,11 @@ function storage($path)
 	return null;
 }
 
+function traffic()
+{
+	return new \App\Tools\Traffic;
+}
+
 function dateToDatabase($date)
 {
 	return \Carbon\Carbon::parse($date)->format('Y-m-d');
