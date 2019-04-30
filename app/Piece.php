@@ -8,7 +8,8 @@ class Piece extends PianoLit
 {
     use PieceExtraAttributes;
     
-    protected $with = ['composer', 'tags'];
+    protected $with = ['composer', 'tags', 'views'];
+    protected $withCount = ['views'];
     protected $appends = ['medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name', 'timeline_url'];
 
     public static function boot()
@@ -29,6 +30,11 @@ class Piece extends PianoLit
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function views()
+    {
+        return $this->hasMany(PieceView::class);
     }
 
     public function composer()

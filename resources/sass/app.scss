@@ -12,6 +12,11 @@ iframe {border: 0;}
 
 button:focus {outline:0;}
 
+.input-invisible {
+	background-color: transparent !important;
+	border: 0;
+}
+
 .selected-tag {
 	background: #70cfa7 !important;
 	color: white;

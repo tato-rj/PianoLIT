@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 Route::prefix('pieces')->name('pieces.')->group(function() {
 
-	Route::post('/views', 'PiecesController@incrementViews')->name('increment-views');
+	Route::post('/views', 'PieceViewsController@store')->name('views.store');
 
 	Route::post('/find', 'ApiController@piece')->name('find');
 

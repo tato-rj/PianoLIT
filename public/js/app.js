@@ -89784,6 +89784,7 @@ module.exports = function(module) {
 
 __webpack_require__("./resources/js/bootstrap.js");
 __webpack_require__("./resources/js/vendor/clamp.js");
+__webpack_require__("./resources/js/helpers/display.js");
 
 $.ajaxSetup({
     headers: {
@@ -89815,6 +89816,18 @@ try {
 
   __webpack_require__("./node_modules/bootstrap/dist/js/bootstrap.js");
 } catch (e) {}
+
+/***/ }),
+
+/***/ "./resources/js/helpers/display.js":
+/***/ (function(module, exports) {
+
+jQuery.fn.showAfter = function (time) {
+  var element = this;
+  setTimeout(function () {
+    element.fadeIn('fast');
+  }, time * 1000);
+};
 
 /***/ }),
 

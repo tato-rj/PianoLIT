@@ -134,7 +134,6 @@ class PiecesController extends Controller
             'audio_path_lh' => $request->hasFile('audio_lh') ? $request->file('audio_lh')->store('app/audio_lh', 'public') : null,
             'score_path' => $request->hasFile('score') ? $request->file('score')->store('app/score', 'public') : null,
             'creator_id' => auth()->user()->id,
-            'views' => mt_rand(5,15),
         ]);
 
         $piece->tags()->attach(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
@@ -226,13 +225,6 @@ class PiecesController extends Controller
         }
 
         return redirect()->back()->with('status', "The piece has been successfully updated!");
-    }
-
-    public function incrementViews(Request $request)
-    {
-        Piece::find($request->piece_id)->increment('views');
-     
-        return response(200);
     }
 
     /**

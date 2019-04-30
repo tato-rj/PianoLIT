@@ -69,6 +69,8 @@
 	@include('welcome.sections.tags')
 	@include('components.overlays.tags')
 	@include('welcome.sections.testimonials')
+
+  @include('components.overlays.subscribe.paper-plane')
 	
 @endsection
 
@@ -146,5 +148,6 @@ $('#tags-search-button').on('click', function() {
   });
 });
 
+$("#subscribe-overlay").showAfter(2);
 </script>
 @endpush

@@ -45,6 +45,8 @@ class AppTest extends TestCase
 
         $this->piece->tags()->attach($this->tag);
 
+        $this->piece->views()->create(['user_id' => $this->user->id]);
+
         $this->post->topics()->attach($this->topic);
 
         $this->playlist->pieces()->attach($this->piece);

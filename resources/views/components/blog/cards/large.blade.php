@@ -2,6 +2,9 @@
 	<div class="card border-0 shadow-light w-100 t-2">
 		<a class="link-none" href="{{route('posts.show', $post->slug)}}">
 			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$post->cover_image()}}); height: 200px">
+				@if($post->created_at->isSameDay(now()))
+				<div class="absolute-top-right"><span class="badge badge-light text-green"><small><strong>NEW</strong></small></span></div>
+				@endif
 				<div class="card-overlay h-100 t-2" style="opacity: 0">
 					<div class="text-white overlay-blue d-flex flex-center rounded-top"><i class="fas fa-eye fa-3x"></i></div>
 				</div>

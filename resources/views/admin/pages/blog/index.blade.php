@@ -96,10 +96,5 @@ $('.delete').on('click', function (e) {
   $('#delete-modal').find('form').attr('action', url);
 });
 
-$(document).ready( function () {
-    $('#blog-table').DataTable({
-    'order': [[0, 'asc']],
-    });
-} );
 </script>
 @endsection

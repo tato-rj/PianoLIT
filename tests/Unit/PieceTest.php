@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\{Admin, Composer, Country, Tag, Playlist, Piece};
+use App\{Admin, Composer, Country, Tag, Playlist, Piece, PieceView};
 use Tests\Traits\ManageDatabase;
 use Tests\AppTest;
 
@@ -32,6 +32,12 @@ class PieceTest extends AppTest
 	public function it_has_many_tags()
 	{
 		$this->assertInstanceOf(Tag::class, $this->piece->tags()->first());
+	}
+
+	/** @test */
+	public function it_has_many_views()
+	{
+		$this->assertInstanceOf(PieceView::class, $this->piece->views->first());		 
 	}
 
 	/** @test */

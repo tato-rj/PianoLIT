@@ -37,7 +37,6 @@ class CreatePiecesTable extends Migration
             $table->unsignedInteger('composer_id');
             $table->unsignedInteger('composed_in')->nullable();
             $table->unsignedInteger('creator_id')->nullable();
-            $table->unsignedInteger('views')->default(0);
             $table->timestamps();
         });
     }

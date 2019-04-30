@@ -1,5 +1,10 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
+@endsection
+
 @section('content')
 
 <div class="content-wrapper">
@@ -11,6 +16,7 @@
     <div class="row"> 
       @include('admin.pages.stats.pieces.row', [
         'title' => 'Tags',
+        'subtitle' => 'How the ' . $tagsCount . ' tags are distributed in the database.',
         'id' => 'tagsChart',
         'col' => '12',
         'data' => $tagStats])
@@ -19,6 +25,7 @@
     <div class="row"> 
       @include('admin.pages.stats.pieces.row', [
         'title' => 'Composers',
+        'subtitle' => 'Number of pieces each of the ' . $composersCount . ' composers have in the database.',
         'id' => 'composersChart',
         'col' => '12',
         'data' => $composersStats])
@@ -27,21 +34,28 @@
     <div class="row"> 
       @include('admin.pages.stats.pieces.row', [
         'title' => 'Periods',
+        'subtitle' => 'Number of pieces in each period.',
         'id' => 'periodsChart',
         'col' => '4',
         'data' => $periodsStats])
 
       @include('admin.pages.stats.pieces.row', [
         'title' => 'Levels',
+        'subtitle' => 'Number of pieces per level.',
         'id' => 'levelsChart',
         'col' => '4',
         'data' => $levelsStats])
 
       @include('admin.pages.stats.pieces.row', [
         'title' => 'Recordings count',
+        'subtitle' => 'Pieces by number of recordings.',
         'id' => 'recChart',
         'col' => '4',
         'data' => $recStats])
+    </div>
+
+    <div class="row my-3">
+        @include('admin.pages.stats.pieces.ranking')
     </div>
 
   </div>
@@ -53,6 +67,15 @@
 @endsection
 
 @section('scripts')
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+<script type="text/javascript">
+$(document).ready( function () {
+    $('#pieces-table').DataTable({
+    'order': [[1, 'desc']],
+    });
+} );
+</script>
+
 <script type="text/javascript">
 var colors = ['#5eb58a', '#f5c86d', '#f3686f', '#9a40d5', '#e3342f', '#f6993f', '#38c172', '#4dc0b5', '#3490dc', '#6574cd', '#9561e2', '#f66d9b'];
 function getRandom(arr, n = 1) {

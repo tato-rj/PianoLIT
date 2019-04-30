@@ -14,7 +14,7 @@
       <div class="row my-5 mx-2">
         <div class="col-lg-6 col-sm-10 col-12 mx-auto">
           <div class="px-3 py-2 rounded mb-4 bg-light">
-            <i class="fas fa-eye text-brand mr-2"></i><small class="text-muted">{{$piece->views}} {{str_plural('view', $piece->views) }}</small>
+            <i class="fas fa-eye text-brand mr-2"></i><small class="text-muted">{{$piece->views_count}} {{str_plural('view', $piece->views_count) }}</small>
           </div>
 
           {{-- Name --}}
