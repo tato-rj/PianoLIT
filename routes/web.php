@@ -1,5 +1,9 @@
 <?php
 
+Route::get('ip', function() {
+	return request()->ip();
+});
+
 Route::resources([
     'subscriptions' => 'SubscriptionsController'
 ]);
