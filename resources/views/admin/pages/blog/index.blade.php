@@ -45,7 +45,7 @@
               <td>{{$post->created_at->toFormattedDateString()}}</td>
               <td>{{$post->title}}</td>
               <td>{{$post->reading_time}} min</td>
-              <td id="status-{{$post->slug}}" class="status-text text-{{$post->is_published ? 'success' : 'warning'}}">{{ucfirst($post->status)}}</td>
+              <td id="status-{{$post->slug}}" class="status-text text-{{$post->published_at ? 'success' : 'warning'}}">{{ucfirst($post->status)}}</td>
               <td class="text-right">
                 <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
                 <a href="{{route('admin.posts.edit', $post->slug)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>

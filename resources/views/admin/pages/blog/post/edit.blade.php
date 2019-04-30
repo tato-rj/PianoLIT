@@ -19,7 +19,7 @@
     'description' => 'Edit the post'])
     
     <div class="d-flex justify-content-end">
-      <div class="text-{{$post->is_published ? 'success' : 'warning'}} mr-3 status-text">{{ucfirst($post->status)}}</div>
+      <div class="text-{{$post->published_at ? 'success' : 'warning'}} mr-3 status-text">{{ucfirst($post->status)}}</div>
       @include('admin.components.toggle.blog')
     </div>
 
@@ -54,7 +54,7 @@
         </div>
         <div class="col-12 d-flex justify-content-end">
           <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="btn btn-outline-dark mr-2">
-            @if($post->is_published)
+            @if($post->published_at)
             <i class="fas fa-globe mr-2"></i>Visit
             @else
             <i class="far fa-eye mr-2"></i>Preview

@@ -44,11 +44,11 @@ class BlogTest extends AppTest
 
         $post = $this->storeBlogPost();
     	 
-    	$this->assertFalse($post->is_published);
+    	$this->assertNull($post->published_at);
 
     	$this->patch(route('admin.posts.update-status', $post->slug));
 
-    	$this->assertTrue($post->fresh()->is_published);
+    	$this->assertNotNull($post->fresh()->published_at);
     }
 
     /** @test */
@@ -94,7 +94,7 @@ class BlogTest extends AppTest
     /** @test */
     public function a_post_automatically_increments_its_view_each_time_it_is_viewed()
     {
-        $post = create(Post::class, ['is_published' => true]);
+        $post = create(Post::class, ['published_at' => now()]);
 
         $views = $post->views;
 

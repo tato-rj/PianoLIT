@@ -22,9 +22,9 @@ class CreatePostsTable extends Migration
             $table->text('content');
             $table->string('cover_path')->nullable();
             $table->string('cover_credits')->nullable();
-            $table->boolean('is_published')->default(false);
             $table->unsignedInteger('views')->default(0);
             $table->unsignedInteger('reading_time');
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
     }

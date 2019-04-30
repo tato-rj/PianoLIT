@@ -23,14 +23,14 @@ class BlogTest extends AppTest
 	/** @test */
 	public function it_knows_how_to_publish_or_unpublish_itself()
 	{
-		$this->assertFalse($this->post->is_published);
+		$this->assertNull($this->post->published_at);
 
 		$this->post->updateStatus();
 
-		$this->assertTrue($this->post->fresh()->is_published);
+		$this->assertNotNull($this->post->fresh()->published_at);
 
 		$this->post->updateStatus();
 
-		$this->assertFalse($this->post->fresh()->is_published);
+		$this->assertNull($this->post->fresh()->published_at);
 	}
 }

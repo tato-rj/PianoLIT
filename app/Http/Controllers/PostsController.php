@@ -55,7 +55,6 @@ class PostsController extends Controller
             'description' => $form->description,
             'content' => $form->content,
             'cover_credits' => $form->cover_credits,
-            'is_published' => false,
             'reading_time' => $form->reading_time
         ]);
 
@@ -76,7 +75,7 @@ class PostsController extends Controller
     {
         $suggestions = Post::exclude([$post->id])->suggestions(4)->get();
 
-        if (! $post->is_published) {
+        if (! $post->published_at) {
             if (auth()->guard('admin')->check())
                 return view('blog.show', compact(['post', 'suggestions']))->with('preview', true);
 

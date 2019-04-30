@@ -12,7 +12,7 @@ class Post extends PianoLit
 	use FindBySlug;
 	
     protected $thumbnailFolder = 'thumbnails';
-	protected $casts = ['is_published' => 'boolean'];
+	protected $dates = ['published_at'];
 
     protected static function boot()
     {
@@ -38,14 +38,23 @@ class Post extends PianoLit
         return $this->belongsToMany(Topic::class);
     }
 
+    public function getIsNewAttribute()
+    {
+        return $this->published_at->isSameDay(now());
+    }
+
     public function updateStatus()
     {
-    	$this->update(['is_published' => ! $this->is_published]);
+        if ($this->published_at) {
+        	$this->update(['published_at' => null]);
+        } else {
+            $this->update(['published_at' => now()]);
+        }
     }
 
     public function getStatusAttribute()
     {
-        return $this->is_published ? 'published' : 'unpublished';
+        return $this->published_at ? 'published' : 'unpublished';
     }
 
     public function scopeByTitle($query, $title)
@@ -55,7 +64,7 @@ class Post extends PianoLit
 
     public function scopePublished($query)
     {
-        return $query->where('is_published', true)->latest();
+        return $query->whereNotNull('published_at')->latest();
     }
 
     public function scopeSuggestions($query, $number)
