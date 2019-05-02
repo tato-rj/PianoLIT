@@ -21,15 +21,12 @@
           </a>
         </div>
         <div>
-          @include('admin.components.filters', ['filters' => ['composers', 'levels', 'periods', 'lengths']])
+          @include('admin.components.filters')
         </div>
       </div>
     </div>
 
     <div class="row my-3">
-{{--       <div class="col-12 text-center">
-        <p class="text-center"><small>Showing {{$pieces->count()}} of {{$pieces->total()}} pieces</small></p>
-      </div> --}}
       <div class="col-12">
         <table class="table table-hover" id="pieces-table">
           <thead>
@@ -49,13 +46,6 @@
         </table>
       </div>
     </div>
-
-    {{-- PAGINATION --}}
-{{--     <div class="row mb-3">
-          <div class="d-flex align-items-center w-100 justify-content-center my-4">
-        {{ $pieces->links() }}    
-        </div>
-    </div> --}}
 
   </div>
 </div>

@@ -142,7 +142,6 @@ var tagsChart = new Chart(tagsChartElement, {
             $modal.find('.modal-body').html('<p class="text-center text-muted my-4"><i>loading...</i></p>');
             $modal.modal('show');
           $.get("/piano-lit/tags/"+tag+"/pieces", function(data, status){
-            
             $modal.find('.modal-body').html(data);
           });
         }

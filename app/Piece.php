@@ -2,11 +2,11 @@
 
 namespace App;
 
-use App\Traits\PieceExtraAttributes;
+use App\Traits\{PieceExtraAttributes, PieceStatus};
 
 class Piece extends PianoLit
 {
-    use PieceExtraAttributes;
+    use PieceExtraAttributes, PieceStatus;
     
     protected $with = ['composer', 'tags', 'views'];
     protected $withCount = ['views'];
@@ -75,11 +75,6 @@ class Piece extends PianoLit
     public function deleteFiles()
     {
         \Storage::disk('public')->delete([$this->audio_path, $this->audio_rh_path, $this->audio_lh_path, $this->score_path]);
-    }
-
-    public function hasAudio()
-    {
-        return $this->audio_path || $this->audio_path_lh || $this->audio_path_rh;
     }
 
     public function getIsPublicDomainAttribute()

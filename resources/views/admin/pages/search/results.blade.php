@@ -11,6 +11,8 @@
   </form>
 </div>
 
-@foreach($pieces as $piece)
-@include('admin.pages.pieces.row')
-@endforeach
+<div class="list-group list-group-flush mx-2">
+  @foreach($pieces as $piece)
+  <a href="{{route('admin.pieces.edit', $piece->id)}}" title="Click to edit" class="list-group-item list-group-item-action">{{$piece->LongName}}</a>
+  @endforeach
+</div>

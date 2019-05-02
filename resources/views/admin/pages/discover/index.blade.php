@@ -11,7 +11,7 @@
   </div>
   
   <div class="text-center mb-2">
-    <a href="{{route('admin.api.discover')}}?api" target="_blank" class="link-default"><small>See JSON response</small></a>
+    <a href="{{route('admin.api.discover', ['api'])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
   </div>
 
   <div class="row mx-3">
@@ -36,9 +36,10 @@
       @if(! empty($playlist))
       @component('admin.components.swiper', ['title' => $playlist['title']])
         @foreach($playlist['content'] as $model)
-          <form name="{{$model->type == 'piece' ? 'piece_'.snake_case($model->id) : snake_case($model->name)}}_form" method="POST" action="{{$model->source}}" target="{{$model->type == 'piece' ? '_blank' : null}}">
+          <form name="{{$model->type == 'piece' ? 'piece_'.snake_case($model->id) : snake_case($model->name)}}_form" method="{{$model->type == 'piece' ? 'POST' : 'GET'}}" action="{{$model->source}}" target="_blank">
             <input type="hidden" name="search" value="{{$model->type == 'piece' ? $model->id : $model->name}}">
             <input type="hidden" name="global">
+            <input type="hidden" name="api">
             <input type="hidden" name="discover">
             @include('admin.pages.discover.card')
           </form>

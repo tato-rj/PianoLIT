@@ -69,4 +69,36 @@ class PieceTest extends AppTest
 
     	$this->assertFalse(create(Piece::class)->isFavorited($this->user->id));
     }
+
+    /** @test */
+    public function it_knows_the_status_of_its_resources()
+    {
+        $incompletePiece = create(Piece::class);
+
+        $completePiece = create(Piece::class, [
+            'score_path' => 'score.pdf', 
+            'audio_path' => 'audio.mp3',
+            'youtube' => serialize(['youtube']),
+            'itunes' => serialize(['itunes'])]);
+
+        $completePiece->tags()->attach($this->tag);
+
+    	$this->assertFalse($incompletePiece->hasScore());
+    	$this->assertTrue($completePiece->hasScore());
+
+    	$this->assertFalse($incompletePiece->hasAudio());
+    	$this->assertTrue($completePiece->hasAudio());
+
+    	$this->assertFalse($incompletePiece->hasTags());
+    	$this->assertTrue($completePiece->hasTags());    	 
+
+    	$this->assertFalse($incompletePiece->hasITunes());
+    	$this->assertTrue($completePiece->hasITunes());    	 
+
+    	$this->assertFalse($incompletePiece->hasYoutube());
+    	$this->assertTrue($completePiece->hasYoutube());    	 
+
+    	$this->assertFalse($incompletePiece->isComplete());
+    	$this->assertTrue($completePiece->isComplete());    	 
+    }
 }

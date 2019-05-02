@@ -28,7 +28,10 @@ class Api
 
     public function trending()
     {
-        $collection = Piece::orderBy('views', 'DESC')->take(10)->get();
+        $collection = Piece::has('views')->get()->sortByDesc(function($piece) {
+            return $piece->views_count;
+        })->take(10);
+
         $this->withAttributes($collection, [
             'type' => 'piece',
             'source' => route('api.pieces.find'),
@@ -128,7 +131,7 @@ class Api
         foreach ($collection as $model) {
             if (get_class($model) == 'App\Piece') {
                 $model->setAttribute('name', $model->medium_name);
-                $number = $model->views;
+                $number = $model->views_count;
                 $string = 'views';
             } else {
                 $model->name = ucfirst($model->name);

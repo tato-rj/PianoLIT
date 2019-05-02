@@ -72,3 +72,7 @@ Route::get('/search', 'ApiController@search')->name('search');
 Route::get('/tour', 'ApiController@tour')->name('tour');
 
 Route::get('/tags', 'ApiController@tags')->name('tags');
+
+Route::get('/composers', 'ApiController@composers')->name('composers');
+
+Route::get('/users', 'ApiController@users')->name('users');

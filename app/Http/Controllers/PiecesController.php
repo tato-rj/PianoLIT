@@ -14,31 +14,30 @@ class PiecesController extends Controller
      */
     public function index()
     {
-        $filtersArray = ['level', 'period', 'length'];
-        $sortArray = ['asc', 'desc'];
-
-        $request = array_keys(request()->toArray());
-
-        if (request()->has('order') && in_array(request('order'), $sortArray))
-            $sort = request('order');
-
         $pieces = new Piece;
 
-        foreach ($request as $filter) {
-            if ($filter == 'composer')
-                $pieces = $pieces->where('composer_id', request($filter));
+        if (request()->has('creator_id'))
+            $pieces = $pieces->where('creator_id', request($filter));
 
-            if ($filter == 'creator_id')
-                $pieces = $pieces->where('creator_id', request($filter));
-
-            if (in_array($filter, $filtersArray)) {
-                $pieces = $pieces->whereHas('tags', function($piece) use ($filter) {
-                    $piece->where('name', request($filter));
-                });
+        $pieces = $pieces->orderBy('updated_at', 'desc')->get();
+        
+        $pieces->each(function ($piece, $key) use ($pieces) {
+            if (request()->has('missing_audio')) {
+                if ($piece->hasAudio()) $pieces->forget($key);
             }
-        }
 
-        $pieces = $pieces->orderBy('updated_at', $sort ?? 'desc')->get();
+            if (request()->has('missing_score')) {
+                if ($piece->hasScore()) $pieces->forget($key);
+            }
+
+            if (request()->has('missing_youtube')) {
+                if ($piece->hasYoutube()) $pieces->forget($key);
+            }
+            
+            if (request()->has('missing_itunes')) {
+                if ($piece->hasITunes()) $pieces->forget($key);
+            }
+        });
 
         return view('admin.pages.pieces.index', compact('pieces'));
     }

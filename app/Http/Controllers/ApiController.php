@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Api, Piece, Tag, User, Timeline};
+use App\{Api, Piece, Tag, User, Timeline, Composer};
 use Illuminate\Http\Request;
 
 class ApiController extends Controller
@@ -112,6 +112,16 @@ class ApiController extends Controller
     public function tags()
     {
         return Tag::all();
+    }
+
+    public function composers()
+    {
+        return Composer::all();
+    }
+
+    public function users()
+    {
+        return User::all();
     }
 
     public function timeline($piece_id)

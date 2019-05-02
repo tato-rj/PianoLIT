@@ -19,7 +19,7 @@
               </div>
               <div class="mr-5">{{$pieces_count}} Pieces</div>
             </div>
-            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{-- {{route('piano-lit.api.pieces')}} --}}">
+            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{route('admin.api.search', ['api'])}}">
               <span class="float-left">See JSON response</span>
               <span class="float-right">
                 <i class="fa fa-angle-right"></i>
@@ -35,7 +35,7 @@
               </div>
               <div class="mr-5">{{$composers_count}} Composers</div>
             </div>
-            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{-- {{route('piano-lit.api.composers')}} --}}">
+            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{route('api.composers')}}">
               <span class="float-left">See JSON response</span>
               <span class="float-right">
                 <i class="fa fa-angle-right"></i>
@@ -51,7 +51,7 @@
               </div>
               <div class="mr-5">{{$tags_count}} Tags</div>
             </div>
-            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{-- {{route('piano-lit.api.tags')}} --}}">
+            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{route('api.tags')}}">
               <span class="float-left">See JSON response</span>
               <span class="float-right">
                 <i class="fa fa-angle-right"></i>
@@ -67,7 +67,7 @@
               </div>
               <div class="mr-5">{{$users_count}} Users</div>
             </div>
-            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{-- {{route('piano-lit.api.users')}} --}}">
+            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{route('api.users')}}">
               <span class="float-left">See JSON response</span>
               <span class="float-right">
                 <i class="fa fa-angle-right"></i>
