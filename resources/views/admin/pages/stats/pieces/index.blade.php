@@ -61,7 +61,8 @@
   </div>
 </div>
 
-@include('admin.components.modals.results', ['title' => 'We found the following pieces'])
+@component('admin.components.modals.results', ['title' => 'We found the following pieces'])
+@endcomponent
 
 @endsection
 
