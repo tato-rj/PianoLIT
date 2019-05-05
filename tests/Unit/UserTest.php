@@ -18,4 +18,10 @@ class UserTest extends AppTest
 	{
 		$this->assertInstanceOf(Piece::class, $this->user->favorites->first());
 	}
+
+	/** @test */
+	public function it_has_many_views()
+	{
+		$this->assertInstanceOf(Piece::class, $this->user->views->first());
+	}
 }

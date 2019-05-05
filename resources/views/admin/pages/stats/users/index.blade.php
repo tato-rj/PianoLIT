@@ -14,14 +14,16 @@
     'description' => 'Data analytics for the users'])
 
     <div class="row"> 
-        <div class="col-12 p-3 mb-4">
+        <div class="col-12 p-3">
             <div class="border py-4 px-3">
-                <h4 class="mb-1 text-center"><strong>Flow of users over time</strong></h4>
                 <div id="carouselRecords" class="carousel carousel-fade">
-                    <div class="select-btn-group btn-group btn-group-sm mb-4">
-                      <button data-target="#carouselRecords" data-slide-to="0" class="btn btn-blue">Daily</button>
-                      <button data-target="#carouselRecords" data-slide-to="1"  class="btn btn-light">Monthly</button>
-                      <button data-target="#carouselRecords" data-slide-to="2"  class="btn btn-light">Yearly</button>
+                    <div class="d-flex justify-content-between mb-4">
+                        <h4 class="text-center"><strong>Flow of users over time</strong></h4>
+                        <div class="select-btn-group btn-group btn-group-sm">
+                          <button data-target="#carouselRecords" data-slide-to="0" class="btn btn-blue">Daily</button>
+                          <button data-target="#carouselRecords" data-slide-to="1"  class="btn btn-light">Monthly</button>
+                          <button data-target="#carouselRecords" data-slide-to="2"  class="btn btn-light">Yearly</button>
+                        </div>
                     </div>
                     <div class="carousel-inner">
                         <div class="carousel-item active">
@@ -42,16 +44,10 @@
                 </div>
             </div>
         </div>
-{{--       @include('admin.pages.stats.row', [
-        'title' => 'Topics',
-        'subtitle' => 'How the ' . $topicsCount . ' topics are distributed in the database.',
-        'id' => 'topicsChart',
-        'col' => '12',
-        'data' => $topicStats]) --}}
     </div>
 
     <div class="row my-3">
-        {{-- @include('admin.pages.stats.blog.ranking') --}}
+        @include('admin.pages.stats.users.ranking')
     </div>
 
   </div>
@@ -62,15 +58,15 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-// $(document).ready( function () {
-//     $('#posts-table').DataTable({
-//         aaSorting: [],
-//         columnDefs: [{
-//                     targets: [3],
-//                     orderable: false
-//                 }]
-//     });
-// } );
+$(document).ready( function () {
+    $('#users-table').DataTable({
+        aaSorting: [],
+        columnDefs: [{
+                    targets: [3],
+                    orderable: false
+                }]
+    });
+} );
 </script>
 <script type="text/javascript">
 $('.select-btn-group .btn').on('click', function() {

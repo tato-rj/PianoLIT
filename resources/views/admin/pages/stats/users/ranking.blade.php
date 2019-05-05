@@ -2,31 +2,30 @@
   <div class="border py-4 px-3">
     <div class="ml-2 mb-4">
       <h4 class="mb-1"><strong>Views</strong></h4>
-      <p class="text-muted">Ranking of the number of times each post was viewed.</p>
+      <p class="text-muted">Ranking of the number of favorites and views from each user.</p>
     </div>
     <div class="px-2">
-      <table class="table table-hover" id="posts-table">
+      <table class="table table-hover" id="users-table">
         <thead>
           <tr>
             <th class="border-0" scope="col">Date</th>
-            <th class="border-0" scope="col">Title</th>
-            <th class="border-0" scope="col">Views</th>
-              <th class="border-0" scope="col"></th>
+            <th class="border-0" scope="col">Name</th>
+            <th class="border-0" scope="col">Pieces viewed</th>
+            <th class="border-0" scope="col">Pieces favorited</th>
+            <th class="border-0" scope="col">Status</th>
+            <th class="border-0" scope="col"></th>
           </tr>
         </thead>
         <tbody>
-          @foreach($posts as $post)
+          @foreach($users as $user)
           <tr>
-            @if($post->isPublished())
-            <td title="Published at {{$post->published_at->format('g:i:s a')}}">{{$post->published_at->toFormattedDateString()}}</td>
-            @else
-            <td class="text-warning">Unpublished</td>
-            @endif
-            <td>{{$post->title}}</td>
-            <td>{{$post->views}}</td>
+            <td title="Signed up at {{$user->created_at->format('g:i:s a')}}">{{$user->created_at->toFormattedDateString()}}</td>
+            <td>{{$user->full_name}}</td>
+            <td>{{$user->views_count}}</td>
+            <td>{{$user->favorites_count}}</td>
+            <td>{{ucfirst($user->getStatus())}}</td>
             <td class="text-right">
-              <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
-              <a href="{{route('admin.posts.edit', $post->slug)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>
+              <a href="{{route('admin.users.show', $user->id)}}" class="text-muted"><i class="far fa-eye align-middle"></i></a>
             </td>
           </tr>
           @endforeach

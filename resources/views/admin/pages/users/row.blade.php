@@ -2,7 +2,7 @@
         <a href="{{route('admin.users.show', $user->id)}}" class="link-none">
           <div class="d-flex align-items-center bg-light text-muted px-3 py-2 badge-pill hover-shadow-light t-2">
             
-            @include('admin.pages.users.status-icon/'.$user->getStatus())
+            @include('admin.pages.users.status-icon.'.$user->getStatus())
 
             <div class="px-3" style="flex-grow: 2">
               <span>
