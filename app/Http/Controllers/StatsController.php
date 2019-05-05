@@ -10,7 +10,11 @@ class StatsController extends Controller
 {
     public function users()
     {
-    	
+    	$usersDaily = User::stats()->daily();
+        $usersMonthly = User::stats()->monthly();
+        $usersYearly = User::stats()->yearly();
+
+        return view('admin.pages.stats.users.index', compact(['usersDaily', 'usersMonthly', 'usersYearly']));
     }
 
     public function pieces()

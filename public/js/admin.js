@@ -93660,6 +93660,7 @@ __webpack_require__("./node_modules/inputmask/dist/jquery.inputmask.bundle.js");
 __webpack_require__("./resources/js/helpers/cookie.js");
 __webpack_require__("./resources/js/helpers/string.js");
 __webpack_require__("./resources/js/helpers/extensions.js");
+__webpack_require__("./resources/js/helpers/charts.js");
 __webpack_require__("./resources/js/cropper/SimpleCropper.js");
 
 $.ajaxSetup({
@@ -93835,6 +93836,65 @@ var SimpleCropper = function () {
 }();
 
 window.SimpleCropper = SimpleCropper;
+
+/***/ }),
+
+/***/ "./resources/js/helpers/charts.js":
+/***/ (function(module, exports) {
+
+createLineChart = function createLineChart(type) {
+    var chart = document.getElementById(type + "-chart");
+    var ctx = chart.getContext('2d');
+    var activeRecords = JSON.parse(chart.getAttribute('data-records'));
+    // var deletedRecords = JSON.parse(chart.getAttribute('data-deleted-records'));
+
+    var activeData = [];
+    // var deletedData = [];
+    var fields = [];
+
+    for (var i = 0; i < activeRecords.length; i++) {
+        if (type == 'day') {
+            fields.push(activeRecords[i].month + " " + activeRecords[i].day);
+        } else if (type == 'month') {
+            fields.push(activeRecords[i].month);
+        } else {
+            fields.push(activeRecords[i].year);
+        }
+
+        activeData.push(activeRecords[i].count);
+        // deletedData.push(deletedRecords[i].count);
+    }
+
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: fields,
+            datasets: [{
+                label: 'New sign ups',
+                data: activeData,
+                pointBackgroundColor: 'rgba(52, 144, 220, 0.2)',
+                pointBorderColor: 'rgba(52, 144, 220, 1)',
+                backgroundColor: 'rgba(52, 144, 220, 0.2)',
+                borderColor: 'rgba(52,144,220,1)',
+                borderWidth: 1
+            }] },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        beginAtZero: true,
+                        callback: function callback(value, index, values) {
+                            if (Math.floor(value) === value) {
+                                return value;
+                            }
+                        }
+                    }
+                }]
+            }
+        }
+    });
+};
 
 /***/ }),
 

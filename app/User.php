@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Traits\HasMembership;
+use App\Stats\User as UserStats;
 
 class User extends Authenticatable
 {
@@ -97,5 +98,10 @@ class User extends Authenticatable
             return asset('images/default_avatar.png');
 
         return "http://graph.facebook.com/{$this->facebook_id}/picture?type=large";
+    }
+
+    public function scopeStats($query)
+    {
+        return new UserStats($this);
     }
 }
