@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Blog\{Post, Topic};
 use App\{User, Piece, Tag, Composer};
 use Illuminate\Http\Request;
 
@@ -24,5 +25,14 @@ class StatsController extends Controller
         $pieces = Piece::all();
 
         return view('admin.pages.stats.pieces.index', compact(['tagStats', 'tagsCount', 'composersStats', 'composersCount', 'levelsStats', 'recStats', 'periodsStats', 'pieces']));
+    }
+
+    public function blog()
+    {
+        $topicStats = Topic::withCount('posts')->orderBy('posts_count', 'DESC')->get();
+        $topicsCount = Topic::count();
+        $posts = Post::all();
+
+        return view('admin.pages.stats.blog.index', compact(['topicStats', 'topicsCount', 'posts']));
     }
 }

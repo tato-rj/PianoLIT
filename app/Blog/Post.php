@@ -43,6 +43,11 @@ class Post extends PianoLit
         return $this->published_at->isSameDay(now());
     }
 
+    public function isPublished()
+    {
+        return ! is_null($this->published_at);
+    }
+
     public function updateStatus()
     {
         if ($this->published_at) {

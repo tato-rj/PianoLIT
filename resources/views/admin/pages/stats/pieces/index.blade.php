@@ -10,11 +10,11 @@
 <div class="content-wrapper">
   <div class="container-fluid">
   @include('admin.components.breadcrumb', [
-    'title' => 'Statistics',
-    'description' => 'See how are the pieces and their tags being used across the database'])
+    'title' => 'Pieces statistics',
+    'description' => 'Charts and graphs on the pieces and their level, period and tags'])
 
     <div class="row"> 
-      @include('admin.pages.stats.pieces.row', [
+      @include('admin.pages.stats.row', [
         'title' => 'Tags',
         'subtitle' => 'How the ' . $tagsCount . ' tags are distributed in the database.',
         'id' => 'tagsChart',
@@ -23,7 +23,7 @@
     </div>
 
     <div class="row"> 
-      @include('admin.pages.stats.pieces.row', [
+      @include('admin.pages.stats.row', [
         'title' => 'Composers',
         'subtitle' => 'Number of pieces each of the ' . $composersCount . ' composers have in the database.',
         'id' => 'composersChart',
@@ -32,21 +32,21 @@
     </div>
 
     <div class="row"> 
-      @include('admin.pages.stats.pieces.row', [
+      @include('admin.pages.stats.row', [
         'title' => 'Periods',
         'subtitle' => 'Number of pieces in each period.',
         'id' => 'periodsChart',
         'col' => '4',
         'data' => $periodsStats])
 
-      @include('admin.pages.stats.pieces.row', [
+      @include('admin.pages.stats.row', [
         'title' => 'Levels',
         'subtitle' => 'Number of pieces per level.',
         'id' => 'levelsChart',
         'col' => '4',
         'data' => $levelsStats])
 
-      @include('admin.pages.stats.pieces.row', [
+      @include('admin.pages.stats.row', [
         'title' => 'Recordings count',
         'subtitle' => 'Pieces by number of recordings.',
         'id' => 'recChart',
@@ -61,8 +61,7 @@
   </div>
 </div>
 
-@component('admin.components.modals.results', ['title' => 'We found the following pieces'])
-@endcomponent
+@include('admin.components.modals.results', ['title' => 'We found the following pieces'])
 
 @endsection
 
