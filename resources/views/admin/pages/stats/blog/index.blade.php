@@ -36,6 +36,7 @@
 <script type="text/javascript">
 $(document).ready( function () {
     $('#posts-table').DataTable({
+        aaSorting: [],
         columnDefs: [{
                     targets: [3],
                     orderable: false
