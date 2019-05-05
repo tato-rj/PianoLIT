@@ -39,4 +39,19 @@ class User
 
         return $results;	
 	}
+
+    public function age()
+    {
+        return $this->user->selectRaw('age_range as age, count(*) as count')->groupBy('age_range')->get();
+    }
+
+    public function occupation()
+    {
+        return $this->user->selectRaw('occupation, count(*) as count')->groupBy('occupation')->get();
+    }
+
+    public function experience()
+    {
+        return $this->user->selectRaw('experience, count(*) as count')->groupBy('experience')->get();
+    }
 }

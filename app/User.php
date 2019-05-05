@@ -14,8 +14,23 @@ class User extends Authenticatable
 
     protected $guarded = [];
     protected $hidden = ['password', 'remember_token'];
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = [
+        'is_active' => 'boolean',
+        'super_user' => 'boolean'
+    ];
     protected $dates = ['trial_ends_at', 'email_verified_at'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function($user) {
+
+            $user->favorites()->detach();
+            $user->views()->detach();
+
+        });
+    }
 
     public function membership()
     {

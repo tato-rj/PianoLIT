@@ -89,6 +89,13 @@ class MembershipsController extends Controller
 
         return response()->json($status);
     }
+
+    public function superStatus(Request $request, User $user)
+    {
+        $user->update(['super_user' => ! $user->super_user]);
+
+        return response()->json(['status' => $user->fullName . '\'s super status has been updated.']);
+    }
     
     /**
      * Remove a user's membership record (local environment only)

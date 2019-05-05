@@ -77,6 +77,8 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::patch('{user}', 'MembershipsController@updateTrial')->name('update-trial');
 
+	Route::patch('{user}/super-status', 'MembershipsController@superStatus')->name('super-status');
+
 });
 
 Route::prefix('memberships')->name('memberships.')->group(function() {

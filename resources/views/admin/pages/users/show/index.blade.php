@@ -59,6 +59,19 @@
 
 @section('scripts')
 <script type="text/javascript">
+$('input.status-toggle').on('change', function() {
+  let $input = $(this);
+
+  $.ajax({
+    url: $input.attr('data-url'),
+    type: 'PATCH',
+    success: function(response) {
+      alert(response.status);
+    }
+  });
+});
+</script>
+<script type="text/javascript">
 $('.piece').on('click', function() {
   $piece = $(this);
   $heart = $piece.find('.fa-heart');

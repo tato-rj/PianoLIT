@@ -13,9 +13,13 @@ class StatsController extends Controller
     	$usersDaily = User::stats()->daily();
         $usersMonthly = User::stats()->monthly();
         $usersYearly = User::stats()->yearly();
+
+        $usersAge = User::stats()->age();
+        $usersOccupation = User::stats()->occupation();
+        $usersExperience = User::stats()->experience();
         $users = User::withCount(['favorites', 'views'])->latest()->get();
 
-        return view('admin.pages.stats.users.index', compact(['usersDaily', 'usersMonthly', 'usersYearly', 'users']));
+        return view('admin.pages.stats.users.index', compact(['usersDaily', 'usersMonthly', 'usersYearly', 'usersAge', 'usersOccupation', 'usersExperience', 'users']));
     }
 
     public function pieces()

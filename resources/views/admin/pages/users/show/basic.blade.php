@@ -27,5 +27,14 @@
         </p>
       </div>
     </div>
+
+    <div class="ml-auto">
+      <div>
+        <label class="text-brand m-0"><small>Super user status</small></label>
+        <div>
+          @include('admin.components.toggle.super-user')
+        </div>
+      </div>
+    </div>
   </div>
 </div>

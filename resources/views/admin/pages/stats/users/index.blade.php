@@ -46,7 +46,43 @@
         </div>
     </div>
 
-    <div class="row my-3">
+    <div class="row"> 
+      @include('admin.pages.stats.row', [
+        'title' => 'Age groups',
+        'subtitle' => 'Number of users per age group.',
+        'id' => 'ageChart',
+        'col' => '4',
+        'data' => $usersAge])
+
+      @include('admin.pages.stats.row', [
+        'title' => 'Occupation',
+        'subtitle' => 'Number of users by occupation.',
+        'id' => 'occupationChart',
+        'col' => '4',
+        'data' => $usersOccupation])
+
+      @include('admin.pages.stats.row', [
+        'title' => 'Experience',
+        'subtitle' => 'Number of users by experience.',
+        'id' => 'experienceChart',
+        'col' => '4',
+        'data' => $usersExperience])
+{{--       @include('admin.pages.stats.row', [
+        'title' => 'Levels',
+        'subtitle' => 'Number of pieces per level.',
+        'id' => 'levelsChart',
+        'col' => '4',
+        'data' => $levelsStats])
+
+      @include('admin.pages.stats.row', [
+        'title' => 'Recordings count',
+        'subtitle' => 'Pieces by number of recordings.',
+        'id' => 'recChart',
+        'col' => '4',
+        'data' => $recStats]) --}}
+    </div>
+
+    <div class="row">
         @include('admin.pages.stats.users.ranking')
     </div>
 
@@ -78,7 +114,7 @@ createLineChart('day');
 createLineChart('month');
 createLineChart('year');
 </script>
-{{-- <script type="text/javascript">
+<script type="text/javascript">
 var colors = ['#5eb58a', '#f5c86d', '#f3686f', '#9a40d5', '#e3342f', '#f6993f', '#38c172', '#4dc0b5', '#3490dc', '#6574cd', '#9561e2', '#f66d9b'];
 function getRandom(arr, n = 1) {
     var requests = n;
@@ -99,46 +135,96 @@ function getElements(arr, n) {
     return arr.slice(0, n);
 }
 </script>
+
 <script type="text/javascript">
+let ageRecords = JSON.parse($('#ageChart').attr('data-records'));
+let ages = [];
+let age_users_count = [];
 
-let topicsRecords = JSON.parse($('#topicsChart').attr('data-records'));
-console.log(topicsRecords);
-let topics = [];
-let topics_posts_count = [];
-let topics_count = topicsRecords.length;
-
-for (var i=0; i < topics_count; i++) {
-  topics.push(topicsRecords[i].name);
-  topics_posts_count.push(topicsRecords[i].posts_count);
+for (var i=0; i < ageRecords.length; i++) {
+  ages.push(ageRecords[i].age);
+  age_users_count.push(ageRecords[i].count);
 }
-var topicsChartElement = document.getElementById("topicsChart").getContext('2d');
-var topicsChart = new Chart(topicsChartElement, {
-    type: 'bar',
+
+var ageChartElement = document.getElementById("ageChart").getContext('2d');
+var ageChart = new Chart(ageChartElement,{
+    type: 'pie',
     data: {
-        labels: topics,
+        labels: ages,
         datasets: [{
-            data: topics_posts_count,
-            backgroundColor: getRandom(colors)
+            data: age_users_count,
+            backgroundColor: getRandom(colors, 6)
         }]
     },
     options: {
         legend: {
-          display: false
-        },
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    stepSize: 2
-                }
-            }],
-            xAxes: [{
-                ticks: {
-                  autoSkip: false
-                }
-            }]
-        },
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 20
+          }
+        }
     }
 });
-</script> --}}
+
+let occupationRecords = JSON.parse($('#occupationChart').attr('data-records'));
+let occupations = [];
+let occupation_users_count = [];
+
+for (var i=0; i < occupationRecords.length; i++) {
+  occupations.push(occupationRecords[i].occupation);
+  occupation_users_count.push(occupationRecords[i].count);
+}
+
+var occupationChartElement = document.getElementById("occupationChart").getContext('2d');
+var occupationChart = new Chart(occupationChartElement,{
+    type: 'pie',
+    data: {
+        labels: occupations,
+        datasets: [{
+            data: occupation_users_count,
+            backgroundColor: getRandom(colors, 6)
+        }]
+    },
+    options: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 20
+          }
+        }
+    }
+});
+
+let experienceRecords = JSON.parse($('#experienceChart').attr('data-records'));
+let experiences = [];
+let experience_users_count = [];
+
+for (var i=0; i < experienceRecords.length; i++) {
+  experiences.push(experienceRecords[i].experience);
+  experience_users_count.push(experienceRecords[i].count);
+}
+
+var experienceChartElement = document.getElementById("experienceChart").getContext('2d');
+var experienceChart = new Chart(experienceChartElement,{
+    type: 'pie',
+    data: {
+        labels: experiences,
+        datasets: [{
+            data: experience_users_count,
+            backgroundColor: getRandom(colors, 6)
+        }]
+    },
+    options: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 20
+          }
+        }
+    }
+});
+</script>
 @endsection

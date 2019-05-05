@@ -10,6 +10,9 @@ trait HasMembership
 {
     public function getStatus($callApple = false)
     {
+        if ($this->super_user)
+            return 'active';
+        
         if (! $this->membership()->exists() && $this->trial_ends_at->gte(now()))
             return 'trial';
 
