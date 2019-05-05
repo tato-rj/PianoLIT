@@ -27,7 +27,7 @@ class ApiController extends Controller
         $famous = $this->api->famous();
         $flashy = $this->api->flashy();
 
-        $collection = compact(['suggestions', 'trending', 'latest', 'composers', 'periods', 'improve', 'levels', 'famous', 'flashy']);
+        $collection = compact(['trending', 'latest', 'composers', 'periods', 'improve', 'levels', 'famous', 'flashy']);
 
         if (request()->wantsJson() || request()->has('api'))
             return array_values($collection);
