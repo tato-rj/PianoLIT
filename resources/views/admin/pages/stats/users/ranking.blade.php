@@ -23,7 +23,7 @@
             <td>{{$user->full_name}}</td>
             <td>{{$user->views_count}}</td>
             <td>{{$user->favorites_count}}</td>
-            <td>{{ucfirst($user->getStatus())}}</td>
+            <td>@include('admin.pages.users.show.status')</td>
             <td class="text-right">
               <a href="{{route('admin.users.show', $user->id)}}" class="text-muted"><i class="far fa-eye align-middle"></i></a>
             </td>
