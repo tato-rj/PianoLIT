@@ -31,7 +31,7 @@ class StatsController extends Controller
     {
         $topicStats = Topic::withCount('posts')->orderBy('posts_count', 'DESC')->get();
         $topicsCount = Topic::count();
-        $posts = Post::orderBy('published_at')->get();
+        $posts = Post::orderBy('published_at', 'DESC')->get();
 
         return view('admin.pages.stats.blog.index', compact(['topicStats', 'topicsCount', 'posts']));
     }
