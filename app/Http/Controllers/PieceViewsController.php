@@ -9,9 +9,7 @@ class PieceViewsController extends Controller
 {
     public function store(Request $request)
     {
-    	$user = User::findOrFail($request->user_id);
-
-    	if (! in_array($user->email, ['arthurvillar@gmail.com', 'mark@twain.com']));
+    	if (! in_array($request->user_id, [196, 244]));
 	        Piece::findOrFail($request->piece_id)->views()->create(['user_id' => $request->user_id]);
      
         return response(200);
