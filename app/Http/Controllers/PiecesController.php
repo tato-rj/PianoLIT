@@ -105,9 +105,6 @@ class PiecesController extends Controller
      */
     public function store(Request $request)
     {
-        if (! $request->hasFile('score') || ! $request->hasFile('audio'))
-            dd("here");
-
         $request->validate([
             'name' => 'required|max:255',
             'key' => 'required',
