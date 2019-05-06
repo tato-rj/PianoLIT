@@ -21,7 +21,7 @@
           </a>
         </div>
         <div>
-          @include('admin.components.filters', ['filters' => []])
+          @include('admin.components.filters.blog', ['filters' => []])
         </div>
       </div>
     </div>

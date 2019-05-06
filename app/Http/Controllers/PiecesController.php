@@ -17,7 +17,15 @@ class PiecesController extends Controller
         $pieces = new Piece;
 
         if (request()->has('creator_id'))
-            $pieces = $pieces->where('creator_id', request($filter));
+            $pieces = $pieces->where('creator_id', request('creator_id'));
+
+        if (request()->has('composer'))
+            $pieces = $pieces->where('composer_id', request('composer'));
+
+        if (request()->has('level'))
+            $pieces = $pieces->whereHas('tags', function($q) {
+                return $q->where('name', request('level'));
+            });
 
         $pieces = $pieces->orderBy('updated_at', 'desc')->get();
         

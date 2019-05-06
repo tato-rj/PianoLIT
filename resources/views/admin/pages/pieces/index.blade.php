@@ -21,7 +21,7 @@
           </a>
         </div>
         <div>
-          @include('admin.components.filters')
+          @include('admin.components.filters.pieces')
         </div>
       </div>
     </div>

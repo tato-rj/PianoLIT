@@ -19,7 +19,7 @@
 
         </div>
         <div>
-          @include('admin.components.filters', ['filters' => []])
+          @include('admin.components.filters.users', ['filters' => []])
         </div>
       </div>
     </div>
