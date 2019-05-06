@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-  <a class="navbar-brand mr-0" href="{{route('admin.home')}}"><img src="{{asset('images/brand/app-icon.svg')}}" class="mr-2"><span class="text-brand">Piano<strong>LIT</strong></span></a>
+  <a class="navbar-brand mr-0" href="{{route('admin.home')}}"><img src="{{asset('images/brand/admin-icon.svg')}}" class="mr-2 shadow-sm">Piano<strong>LIT</strong> | Admin</a>
   <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>

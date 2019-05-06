@@ -14,12 +14,12 @@
 <body>
     <div class="container">
         <div class="row align-items-center full-height">
-            <div class="col-lg-4 col-md-6 col-sm-8 col-xs-10 mx-auto text-white">
+            <div class="col-lg-4 col-8 mx-auto text-white">
                 <form class="form-horizontal" method="POST" action="{{ route('admin.login.submit') }}">
                     @csrf
-                    <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6 mx-auto mb-4 text-center">
-                        <img class="w-100 mb-2" src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 50%; vertical-align: sub;">
-                        <h4 class="text-brand">ADMIN</h4>
+                    <div class="mb-4 text-center">
+                        <img class="w-100 mb-2" src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 50%; vertical-align: sub; max-width: 100px">
+                        <h4>Login</h4>
                     </div>
                     
                     <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
