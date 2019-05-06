@@ -84,7 +84,7 @@
     <div class="col">
       <select class="form-control {{$errors->has('period') ? 'is-invalid' : ''}}" name="period" >
         <option selected disabled>Period</option>
-        @foreach(\App\Tag::periods() as $period)
+        @foreach(\App\Tag::periods()->get() as $period)
         <option value="{{$period->name}}" {{ old('period') == $period->name ? 'selected' : ''}}>{{ucfirst($period->name)}}</option>
         @endforeach
       </select>
