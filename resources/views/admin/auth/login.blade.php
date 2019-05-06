@@ -19,7 +19,7 @@
                     @csrf
                     <div class="mb-4 text-center">
                         <img class="w-100 mb-2" src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 50%; vertical-align: sub; max-width: 100px">
-                        <h4>Login</h4>
+                        <h4 class="text-dark">Login</h4>
                     </div>
                     
                     <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
