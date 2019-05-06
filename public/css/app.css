@@ -20209,6 +20209,20 @@ button.swiper-pagination-bullet {
     font-size: 1.6em !important;
   }
 
+  .dataTables_length {
+    display: none !important;
+  }
+
+  .dataTables_paginate {
+    margin-top: 16px;
+  }
+
+  .dataTables_paginate .pagination {
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+
   #blog-post h1 {
     font-size: 2.25rem !important;
   }
@@ -20219,20 +20233,6 @@ button.swiper-pagination-bullet {
 
   #blog-post iframe {
     width: 100% !important;
-  }
-
-  #blog-post .dataTables_length {
-    display: none !important;
-  }
-
-  #blog-post .dataTables_paginate {
-    margin-top: 16px;
-  }
-
-  #blog-post .dataTables_paginate .pagination {
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
   }
 
   .navbar-nav {
