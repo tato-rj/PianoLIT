@@ -13,7 +13,7 @@
     'title' => 'Blog',
     'description' => 'Manage the blog posts'])
 
-    <div class="row">
+    <div class="row d-none d-sm-flex">
       <div class="col-12 d-flex justify-content-between align-items-center mb-4">
         <div>
           <a href="{{route('admin.posts.create')}}" class="btn btn-sm btn-default">
@@ -28,12 +28,12 @@
 
     <div class="row my-3">
       <div class="col-12">
-        <table class="table table-hover" id="blog-table">
+        <table class="table table-hover w-100" id="blog-table">
           <thead>
             <tr>
-              <th class="border-0" scope="col">Date</th>
+              <th class="border-0 d-none d-sm-block" scope="col">Date</th>
               <th class="border-0" scope="col">Title</th>
-              <th class="border-0" scope="col">Reading Time</th>
+              <th class="border-0 d-none d-sm-block" scope="col">Reading Time</th>
               <th class="border-0" scope="col">Status</th>
               <th class="border-0" scope="col"></th>
               <th class="border-0" scope="col"></th>
@@ -42,14 +42,14 @@
           <tbody>
             @foreach($posts as $post)
             <tr>
-              <td>{{$post->created_at->toFormattedDateString()}}</td>
+              <td class="d-none d-sm-block" style="white-space: nowrap;">{{$post->created_at->toFormattedDateString()}}</td>
               <td>{{$post->title}}</td>
-              <td>{{$post->reading_time}} min</td>
+              <td class="d-none d-sm-block">{{$post->reading_time}} min</td>
               <td id="status-{{$post->slug}}" class="status-text text-{{$post->published_at ? 'success' : 'warning'}}">{{ucfirst($post->status)}}</td>
-              <td class="text-right">
-                <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
-                <a href="{{route('admin.posts.edit', $post->slug)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>
-                <a href="#" data-name="{{$post->title}}" data-url="{{route('admin.posts.destroy', $post->slug)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
+              <td class="justify-content-end d-flex">
+                <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="text-muted"><i class="far fa-eye align-middle"></i></a>
+                <a href="{{route('admin.posts.edit', $post->slug)}}" class="text-muted mx-2 d-none d-sm-block"><i class="far fa-edit align-middle"></i></a>
+                <a href="#" data-name="{{$post->title}}" data-url="{{route('admin.posts.destroy', $post->slug)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted d-none d-sm-block"><i class="far fa-trash-alt align-middle"></i></a>
               </td>
               <td class="text-right">
                 @include('admin.components.toggle.blog')
@@ -71,6 +71,15 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
+$(document).ready( function () {
+  $('#blog-table').DataTable({
+    'responsive': true,
+    'aaSorting': [],
+    'columnDefs': [ { 'orderable': false, 'targets': [4, 5] } ],
+
+  });
+} );
+
 $('input.status-toggle').on('change', function() {
   let $input = $(this);
   let $label = $($input.attr('data-target'));

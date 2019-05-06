@@ -20221,6 +20221,20 @@ button.swiper-pagination-bullet {
     width: 100% !important;
   }
 
+  #blog-post .dataTables_length {
+    display: none !important;
+  }
+
+  #blog-post .dataTables_paginate {
+    margin-top: 16px;
+  }
+
+  #blog-post .dataTables_paginate .pagination {
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+
   .navbar-nav {
     margin-top: 0.5rem !important;
     margin-bottom: 0.5rem !important;
