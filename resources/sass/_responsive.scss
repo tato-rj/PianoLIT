@@ -9,6 +9,18 @@
 		font-size: 1.6em !important;
 	}
 
+	.dataTables_length {
+		display: none !important;
+	}
+
+	.dataTables_paginate {
+		margin-top: 16px;
+
+		.pagination {
+			justify-content: center;
+		}
+	}
+	
 	#blog-post {
 		h1 {
 			font-size: 2.25rem !important;
@@ -20,18 +32,6 @@
 
 		iframe {
 			width: 100% !important;
-		}
-
-		.dataTables_length {
-			display: none !important;
-		}
-		
-		.dataTables_paginate {
-			margin-top: 16px;
-
-			.pagination {
-				justify-content: center;
-			}
 		}
 	}
 
