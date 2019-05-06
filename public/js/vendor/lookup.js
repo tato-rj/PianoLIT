@@ -55,6 +55,7 @@ function Lukup(obj)
         input: this.input.val()
       }, function(data, status){
         console.log('Searching with Lukup!');
+        console.log('Data: ' + data);
         // GET RESULTS
         data.forEach(result => {
           var container = menu.find('.model').clone().removeClass('model').appendTo(menu.find('div.border'));

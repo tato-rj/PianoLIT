@@ -1,3 +1,5 @@
+<ul>
 @foreach($results as $piece)
-	@include('admin.pages.pieces.row')
+	<li class="mb-2">{{$piece->long_name}}</li>
 @endforeach
+</ul>

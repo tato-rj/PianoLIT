@@ -70,10 +70,9 @@ class PiecesController extends Controller
 
         $results = Piece::selectRaw("$field, $field as output")
                         ->where($field, 'like', "%$request->input%")
-                        ->groupBy($field)
                         ->get();
 
-        return $results;
+        return $results->unique('output')->values()->all();
     }
    
     public function multiLookup(Request $request)
@@ -81,10 +80,9 @@ class PiecesController extends Controller
         $results = Piece::selectRaw('collection_name, catalogue_name, catalogue_number, composer_id, 
             CONCAT_WS(" ", collection_name, catalogue_name, catalogue_number) as output')
                         ->where('collection_name', 'like', "%$request->input%")
-                        ->groupBy('collection_name', 'catalogue_name', 'catalogue_number', 'composer_id')
                         ->get();
 
-        return $results;
+        return $results->unique('output')->values()->all();
     }
 
     public function validateName(Request $request)

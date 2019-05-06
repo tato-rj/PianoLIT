@@ -318,6 +318,7 @@ $('input.validate-name').on('blur', function() {
     });
 
     $.post(app.url+'/admin/pieces/validate-name', input, function(data, status, xhr) {
+
       $('#validation-results .results').html('');
 
       if (data != '') {
