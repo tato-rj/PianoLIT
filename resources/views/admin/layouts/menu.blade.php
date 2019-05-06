@@ -12,7 +12,7 @@
         </a>
       </li>
       @editor
-      <li class="nav-item">
+      <li class="nav-item d-none d-sm-block">
         <a class="nav-link" href="">
           <i class="fas fa-pencil-alt fa-fw"></i>
           <span class="nav-link-text">My profile</span>
@@ -20,7 +20,7 @@
       </li>
       @endeditor
 
-      <li class="nav-item">
+      <li class="nav-item d-none d-sm-block">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#statistics">
           <div>
             <i class="fas fa-chart-line fa-fw"></i>
@@ -44,7 +44,7 @@
       </li>      
 
       @manager
-      <li class="nav-item">
+      <li class="nav-item d-none d-sm-block">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#api">
           <div>
             <i class="fas fa-code fa-fw"></i>
@@ -107,7 +107,7 @@
           <li>
             <a class="py-2" href="{{route('admin.topics.index')}}">Topics</a>
           </li>
-          <li>
+          <li class="d-none d-sm-block">
             <a class="py-2" href="{{route('admin.posts.audio.index')}}">Audio</a>
           </li>
         </ul>
@@ -120,7 +120,7 @@
         </a>
       </li>
       
-      <li class="nav-item">
+      <li class="nav-item d-none d-sm-block">
         <a class="nav-link" href="{{route('admin.editors.index')}}">
           <i class="fas fa-pencil-alt fa-fw"></i>
           <span class="nav-link-text">Editors</span>
