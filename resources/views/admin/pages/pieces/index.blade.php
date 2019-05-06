@@ -66,6 +66,7 @@ $('.delete').on('click', function (e) {
 
 $(document).ready( function () {
   $('#pieces-table').DataTable({
+    'aaSorting': [],
     'columnDefs': [ { 'orderable': false, 'targets': [0, 4] } ],
 
   });
