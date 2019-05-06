@@ -16,7 +16,7 @@
           </button>
         </div>
         <div>
-          @include('admin.components.filters', ['filters' => []])
+          {{-- @include('admin.components.filters', ['filters' => []]) --}}
         </div>
       </div>
     </div>
