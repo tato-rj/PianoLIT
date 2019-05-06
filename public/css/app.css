@@ -20217,6 +20217,10 @@ button.swiper-pagination-bullet {
     font-size: 1.32em !important;
   }
 
+  #blog-post iframe {
+    width: 100% !important;
+  }
+
   .navbar-nav {
     margin-top: 0.5rem !important;
     margin-bottom: 0.5rem !important;

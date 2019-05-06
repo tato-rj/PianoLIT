@@ -41,6 +41,7 @@ p img {
 .blog-font p, .blog-font h4, .blog-font iframe {
 	margin-bottom: 1.75rem;
 }
+
 </style>
 
 <script>
