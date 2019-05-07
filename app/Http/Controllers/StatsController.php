@@ -26,14 +26,26 @@ class StatsController extends Controller
     {
         $tagStats = Tag::whereIn('type', ['mood', 'technique'])->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
         $tagsCount = Tag::count();
+
         $composersStats = Composer::select('name')->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
         $composersCount = Composer::count();
+        
         $levelsStats = Tag::levels()->withCount('pieces')->get();
         $periodsStats = Tag::periods()->withCount('pieces')->get();
         $recStats = Piece::byRecordingsAvailable();
-        $pieces = Piece::all();
+        
+        $pieces = Piece::withCount('tags')->get();
+        $tagsPiecesStats = $pieces->groupBy('tags_count');
 
-        return view('admin.pages.stats.pieces.index', compact(['tagStats', 'tagsCount', 'composersStats', 'composersCount', 'levelsStats', 'recStats', 'periodsStats', 'pieces']));
+        $publicDomainCount = Piece::inPublicDomain()->count();
+        $youtubeCount = Piece::withYoutube()->count();
+        $itunesCount = Piece::withiTunes()->count();
+
+        return view('admin.pages.stats.pieces.index', compact([
+            'tagStats', 'tagsCount', 'composersStats', 'composersCount', 
+            'levelsStats', 'recStats', 'periodsStats', 'pieces', 
+            'youtubeCount', 'itunesCount', 'tagsPiecesStats', 'publicDomainCount'
+        ]));
     }
 
     public function blog()

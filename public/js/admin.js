@@ -93658,6 +93658,7 @@ module.exports = function(module) {
 __webpack_require__("./resources/js/bootstrap.js");
 __webpack_require__("./node_modules/inputmask/dist/jquery.inputmask.bundle.js");
 __webpack_require__("./resources/js/helpers/cookie.js");
+__webpack_require__("./resources/js/helpers/time.js");
 __webpack_require__("./resources/js/helpers/string.js");
 __webpack_require__("./resources/js/helpers/extensions.js");
 __webpack_require__("./resources/js/helpers/charts.js");
@@ -93964,6 +93965,23 @@ formatBytes = function formatBytes(bytes, decimals) {
 
 jQuery.fn.cleanVal = function () {
   return this.val().replace(/\D/g, '');
+};
+
+/***/ }),
+
+/***/ "./resources/js/helpers/time.js":
+/***/ (function(module, exports) {
+
+delay = function delay(callback, ms) {
+  var timer = 0;
+  return function () {
+    var context = this,
+        args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      callback.apply(context, args);
+    }, ms || 0);
+  };
 };
 
 /***/ }),

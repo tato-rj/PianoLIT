@@ -3,6 +3,12 @@
 @section('head')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
+
+<script>
+    window.pieces = <?php echo json_encode([
+        'count' => $pieces->count()
+    ]); ?>
+</script>
 @endsection
 
 @section('content')
@@ -20,6 +26,15 @@
         'id' => 'tagsChart',
         'col' => '12',
         'data' => $tagStats])
+    </div>
+
+    <div class="row"> 
+      @include('admin.pages.stats.row', [
+        'title' => 'Pieces by tags',
+        'subtitle' => 'Ranking of the number of tags used in the pieces.',
+        'id' => 'tagsPiecesChart',
+        'col' => '12',
+        'data' => $tagsPiecesStats])
     </div>
 
     <div class="row"> 
@@ -47,11 +62,34 @@
         'data' => $levelsStats])
 
       @include('admin.pages.stats.row', [
+        'title' => 'Copyright',
+        'subtitle' => 'Number of pieces by copyright.',
+        'id' => 'copyrightChart',
+        'col' => '4',
+        'data' => $publicDomainCount])
+    </div>
+
+    <div class="row">
+      @include('admin.pages.stats.row', [
         'title' => 'Recordings count',
-        'subtitle' => 'Pieces by number of recordings.',
+        'subtitle' => 'Pieces by number of audio recordings.',
         'id' => 'recChart',
         'col' => '4',
         'data' => $recStats])
+
+      @include('admin.pages.stats.row', [
+        'title' => 'Youtube videos',
+        'subtitle' => 'Pieces by youtube videos.',
+        'id' => 'youtubeChart',
+        'col' => '4',
+        'data' => $youtubeCount])
+
+      @include('admin.pages.stats.row', [
+        'title' => 'iTunes recordings',
+        'subtitle' => 'Pieces by itunes recordings.',
+        'id' => 'itunesChart',
+        'col' => '4',
+        'data' => $itunesCount])
     </div>
 
     <div class="row my-3">
@@ -134,16 +172,49 @@ var tagsChart = new Chart(tagsChartElement, {
                   autoSkip: false
                 }
             }]
+        }
+    }
+});
+</script>
+
+<script type="text/javascript">
+
+let tagsPiecesRecords = JSON.parse($('#tagsPiecesChart').attr('data-records'));
+let tags_counts = [];
+let records_count = [];
+
+for (var property in tagsPiecesRecords) {
+  tags_counts.push(property + ' tags');
+  records_count.push(tagsPiecesRecords[property].length);
+}
+
+var tagsPiecesChartElement = document.getElementById("tagsPiecesChart").getContext('2d');
+
+var tagsPiecesChart = new Chart(tagsPiecesChartElement, {
+    type: 'bar',
+    data: {
+        labels: tags_counts,
+        datasets: [{
+            data: records_count,
+            backgroundColor: getRandom(colors)
+        }]
+    },
+    options: {
+        legend: {
+          display: false
         },
-        events: ["mousemove", "mouseout", "click"],
-        onClick: function(element, item) {
-            let tag = item[0]._view.label;
-            let $modal = $('#results-modal');
-            $modal.find('.modal-body').html('<p class="text-center text-muted my-4"><i>loading...</i></p>');
-            $modal.modal('show');
-          $.get("/piano-lit/tags/"+tag+"/pieces", function(data, status){
-            $modal.find('.modal-body').html(data);
-          });
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    stepSize: 2
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                  autoSkip: false
+                }
+            }]
         }
     }
 });
@@ -194,19 +265,6 @@ var composersChart = new Chart(composersChartElement, {
                 top: 0,
                 bottom: 0
             }
-        },
-        events: ["mousemove", "mouseout", "click"],
-        onClick: function(element, item) {
-            let label = item[0]._view.label;
-            let cut = label.lastIndexOf('.') + 1;
-            let composer = label.substring(cut, label.length);
-            console.log(composer);
-            let $modal = $('#results-modal');
-            $modal.find('.modal-body').html('<p class="text-center text-muted my-4"><i>loading...</i></p>');
-            $modal.modal('show');
-          $.get("/piano-lit/composers/"+composer+"/pieces", function(data, status){
-            $modal.find('.modal-body').html(data);
-          });
         }
     }
 });
@@ -238,17 +296,6 @@ var periodsChart = new Chart(periodsChartElement,{
           labels: {
             padding: 20
           }
-        },
-        events: ["mousemove", "mouseout", "click"],
-        onClick: function(element, item) {
-            let period = item[0]._view.label;
-            let $modal = $('#results-modal');
-            $modal.find('.modal-body').html('<p class="text-center text-muted my-4"><i>loading...</i></p>');
-            $modal.modal('show');
-          $.get("/piano-lit/tags/"+period+"/pieces", function(data, status){
-            
-            $modal.find('.modal-body').html(data);
-          });
         }
     }
 });
@@ -280,21 +327,11 @@ var levelsChart = new Chart(levelsChartElement,{
           labels: {
             padding: 20
           }
-        },
-        events: ["mousemove", "mouseout", "click"],
-        onClick: function(element, item) {
-            let level = item[0]._view.label;
-            let $modal = $('#results-modal');
-            $modal.find('.modal-body').html('<p class="text-center text-muted my-4"><i>loading...</i></p>');
-            $modal.modal('show');
-          $.get("/piano-lit/tags/"+level+"/pieces", function(data, status){
-            
-            $modal.find('.modal-body').html(data);
-          });
         }
     }
 });
 </script>
+
 <script type="text/javascript">
 let recRecords = JSON.parse($('#recChart').attr('data-records'));
 let rec_pieces_count = [0,0,0,0];
@@ -322,17 +359,81 @@ var recChart = new Chart(recChartElement,{
             padding: 20
           }
         },
-        events: ["mousemove", "mouseout", "click"],
-        // onClick: function(element, item) {
-        //     let level = item[0]._view.label;
-        //     let $modal = $('#results-modal');
-        //     $modal.find('.modal-body').html('<p class="text-center text-muted my-4"><i>loading...</i></p>');
-        //     $modal.modal('show');
-        //   $.get("/piano-lit/tags/"+level+"/pieces", function(data, status){
-            
-        //     $modal.find('.modal-body').html(data);
-        //   });
-        // }
+    }
+});
+</script>
+
+<script type="text/javascript">
+let youtubeCount = JSON.parse($('#youtubeChart').attr('data-records'));
+
+var youtubeChartElement = document.getElementById("youtubeChart").getContext('2d');
+var youtubeChart = new Chart(youtubeChartElement,{
+    type: 'pie',
+    data: {
+        labels: ['Has youtube videos', 'Missing youtube videos'],
+        datasets: [{
+            data: [youtubeCount, window.pieces.count - youtubeCount],
+            backgroundColor: getRandom(colors, 4)
+        }]
+    },
+    options: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 20
+          }
+        },
+    }
+});
+</script>
+
+<script type="text/javascript">
+let itunesCount = JSON.parse($('#itunesChart').attr('data-records'));
+
+var itunesChartElement = document.getElementById("itunesChart").getContext('2d');
+var itunesChart = new Chart(itunesChartElement,{
+    type: 'pie',
+    data: {
+        labels: ['Has itunes recordings', 'Missing itunes recordings'],
+        datasets: [{
+            data: [itunesCount, window.pieces.count - itunesCount],
+            backgroundColor: getRandom(colors, 4)
+        }]
+    },
+    options: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 20
+          }
+        },
+    }
+});
+</script>
+
+<script type="text/javascript">
+let publicDomainCount = JSON.parse($('#copyrightChart').attr('data-records'));
+
+var copyrightChartElement = document.getElementById("copyrightChart").getContext('2d');
+var copyrightChart = new Chart(copyrightChartElement,{
+    type: 'pie',
+    data: {
+        labels: ['Pieces in public domain', 'Pieces not in public domain'],
+        datasets: [{
+            data: [publicDomainCount, window.pieces.count - publicDomainCount],
+            backgroundColor: getRandom(colors, 4)
+        }]
+    },
+    options: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 20
+          }
+        },
     }
 });
 </script>

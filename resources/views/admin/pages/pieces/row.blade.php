@@ -7,6 +7,7 @@
     </div>
   </td>
   <td>{{$piece->long_name}}</td>
+  <td>{{$piece->tags()->count()}}</td>
   <td style="white-space: nowrap;">{{$piece->composer->short_name}}</td>
   <td><div class="badge badge-pill bg-{{strtolower($piece->level->name)}}">{{ucfirst($piece->level->name)}}</div></td>
 

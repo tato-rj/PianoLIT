@@ -33,6 +33,7 @@
             <tr>
               <th class="border-0" scope="col"></th>
               <th class="border-0" scope="col">Piece</th>
+              <th class="border-0" scope="col">Tags</th>
               <th class="border-0" scope="col">Composer</th>
               <th class="border-0" scope="col">Level</th>
               <th class="border-0" scope="col"></th>
