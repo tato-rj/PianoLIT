@@ -85,8 +85,8 @@
               </select>
             </div>
             <div class="col">
-              <label class="text-brand"><small>Written in</small></label>
-              <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Written in" value="{{$piece->composed_in}}">
+              <label class="text-brand"><small>Composed in</small></label>
+              <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Composed in" value="{{$piece->composed_in}}">
             </div>
             <div class="col">
               <label class="text-brand"><small>Key</small></label>
