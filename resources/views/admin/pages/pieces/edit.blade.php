@@ -265,13 +265,7 @@
 
             @endcan
 
-            <div class="mt-3">
-              @if($piece->creator()->exists())
-              <p class="text-muted"><small><i>This piece was created by <strong>{{$piece->creator->name}}</strong></i></small></p>
-              @else
-              <p class="text-muted"><small><i>The creator of this piece has been removed</i></small></p>
-              @endif
-            </div>
+            @include('admin.components.creator', ['model' => $piece, 'type' => 'piece'])
         </div>
       </div>
     </form>
