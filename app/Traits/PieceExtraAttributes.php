@@ -22,12 +22,21 @@ trait PieceExtraAttributes
     public function getShortNameAttribute()
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
-        return $number.$this->name;
+        $short_name = $number.$this->name;
+
+        $mediumName = "$short_name ";
+        $mediumName .= ($this->catalogue_name ? "{$this->catalogue}" : '');
+        $mediumName .= ($this->nickname ? " \"{$this->nickname}\"" : '');
+        
+        return $mediumName;   
     }
 
     public function getMediumNameAttribute()
     {
-        $mediumName = "$this->short_name ";
+        $number = $this->movement_number ? "$this->movement_number. " : '';
+        $short_name = $number.$this->name;
+
+        $mediumName = "$short_name ";
         $mediumName .= ($this->catalogue_name ? "{$this->catalogue}" : '');
         $mediumName .= ($this->nickname ? " \"{$this->nickname}\"" : '');
         
