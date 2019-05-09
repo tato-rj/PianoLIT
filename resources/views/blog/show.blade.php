@@ -43,7 +43,7 @@ p img {
 }
 
 </style>
-
+<script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
 <script>
     window.app = <?php echo json_encode([
         'csrfToken' => csrf_token(),
