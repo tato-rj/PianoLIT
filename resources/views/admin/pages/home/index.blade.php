@@ -1,5 +1,10 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
+@endsection
+
 @section('content')
 
   <div class="content-wrapper">
@@ -76,6 +81,18 @@
           </div>
         </div>
       </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="border py-4 px-3">
+            <div class="ml-2 mb-4">
+              <h4 class="mb-1"><strong>Our progress</strong></h4>
+              <p class="text-muted">Number of pieces added per day</p>
+            </div>
+            <canvas id="pieces_graph" class="w-100" height="300" data-records="{{$pieces_graph}}"></canvas>
+          </div>
+        </div>
+      </div>
       @else
       <div class="row p-4">
         <div class="col-12">
@@ -89,4 +106,53 @@
       </div>
       @endmanager
     </div>
+@endsection
+
+@section('scripts')
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+
+<script type="text/javascript">
+let piecesChartElement = document.getElementById("pieces_graph").getContext('2d');
+let piecesData = JSON.parse($('#pieces_graph').attr('data-records'));
+let labels = [];
+let data = [];
+
+for (var i=0; i < piecesData.length; i++) {
+  labels.push(piecesData[i].month + '/' + piecesData[i].day);
+  data.push(piecesData[i].count);
+}
+
+console.log(labels);
+console.log(data);
+let piecesGraph = new Chart(piecesChartElement, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'My First dataset',
+        borderColor: '#1876f6',
+        data: data,
+        fill: false,
+      }]
+    },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                  autoSkip: false
+                }
+            }]
+        }
+      }
+});
+</script>
 @endsection

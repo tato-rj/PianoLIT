@@ -43,6 +43,9 @@
           {{-- Catalogue and number --}}
           <div class="form-row form-group">
             <div class="col">
+              <label class="text-brand"><small>Collection number
+                @include('admin.components.info', ['message' => 'This number will appear after the name of the piece. Ex: <i>Piece Name Op.1</i> <u>No.1</u>'])
+              </small></label>
               <div class="input-group">
                 <div class="input-group-prepend">
                   <div class="input-group-text">No.</div>
@@ -51,6 +54,9 @@
               </div>
             </div>
             <div class="col">
+              <label class="text-brand"><small>Movement number
+                @include('admin.components.info', ['message' => 'This number will appear before the name of the piece: <u>1.</u> <i>Piece Name</i>'])
+              </small></label>
               <div class="input-group">
                 <div class="input-group-prepend">
                   <div class="input-group-text">Mov.</div>

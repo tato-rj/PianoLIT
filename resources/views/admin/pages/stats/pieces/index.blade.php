@@ -146,6 +146,7 @@ for (var i=0; i < tags_count; i++) {
   tags.push(tagsRecords[i].name);
   tags_pieces_count.push(tagsRecords[i].pieces_count);
 }
+
 var tagsChartElement = document.getElementById("tagsChart").getContext('2d');
 var tagsChart = new Chart(tagsChartElement, {
     type: 'bar',
