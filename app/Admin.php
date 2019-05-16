@@ -62,6 +62,6 @@ class Admin extends Authenticatable
         return \DB::table('pieces')
                   ->selectRaw('month(created_at) month, day(created_at) day, year(created_at) year, count(*) count')
                   ->groupBy('month', 'day', 'year')
-                  ->orderBy('created_at', 'desc');
+                  ->orderByRaw('min(created_at)');
     }
 }
