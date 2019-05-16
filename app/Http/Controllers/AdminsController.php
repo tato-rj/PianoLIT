@@ -20,7 +20,7 @@ class AdminsController extends Controller
         $composers_count = Composer::count();
         $users_count = User::count();
 
-        $pieces_graph = Admin::progress()->get()->reverse()->take(20);
+        $pieces_graph = Admin::progress()->get()->reverse()->take(20)->all();
 
         return view('admin.pages.home.index', compact('pieces_count', 'tags_count', 'composers_count', 'users_count', 'pieces_graph'));
     }
