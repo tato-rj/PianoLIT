@@ -85,8 +85,8 @@
       <div class="row">
         <div class="col-6">
           <div class="border py-4 px-3 mb-4">
-            <h4><strong>Average of last 7 days</strong></h4>
-            <p class="text-muted m-0">We added <span class="text-dark"><strong>{{$pieces_avg}} {{$pieces_avg == 1 ? 'piece' : 'pieces'}}</strong></span> on average over the past 7 days.</p>
+            <h4><strong>Average of last 15 days</strong></h4>
+            <p class="text-muted m-0">We have been adding <span class="text-dark"><strong>{{$pieces_avg}} {{$pieces_avg == 1 ? 'piece' : 'pieces'}}</strong></span> on average.</p>
           </div>
         </div>
         <div class="col-6">
@@ -103,7 +103,7 @@
           <div class="border py-4 px-3">
             <div class="ml-2 mb-4">
               <h4 class="mb-1"><strong>Our progress</strong></h4>
-              <p class="text-muted">Number of pieces added per day over the past 20 days</p>
+              <p class="text-muted">Number of pieces added per day over the past 15 days</p>
             </div>
             <canvas id="pieces_graph" class="w-100" height="300" data-records="{{$pieces_graph}}"></canvas>
           </div>

@@ -25,14 +25,14 @@ class Stats
 
         $avg = $piecesAdded / $days;
 
-        return ($avg > 0 && $avg < 1) ? 'Less than 1' : round($avg);
+        return ($avg > 0 && $avg < 1) ? 'Less than 1' : (int)round($avg);
     }
 
     public function milestone($avg)
     {
     	$pieces_count = Piece::count();
     	$report = [];
-dd($avg);
+
     	foreach ($this->milestones as $milestone) {
 			if ($pieces_count < $milestone) {
 				$report['current'] = $pieces_count;
