@@ -83,11 +83,27 @@
       </div>
 
       <div class="row">
+        <div class="col-6">
+          <div class="border py-4 px-3 mb-4">
+            <h4><strong>Average of last 7 days</strong></h4>
+            <p class="text-muted m-0">We added <span class="text-dark"><strong>{{$pieces_avg}} {{$pieces_avg == 1 ? 'piece' : 'pieces'}}</strong></span> on average over the past 7 days.</p>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="border py-4 px-3 mb-4">
+            <h4><strong>Next Milestone <span class="text-brand">{{$milestone['goal']}} pieces</span></strong></h4>
+            @if(!empty($milestone['days_left']))
+            <p class="text-muted m-0">We should reach the next milestone in <span class="text-dark"><strong>{{$milestone['days_left']}} {{ str_plural('piece', $$milestone['days_left']) }}</strong></span>.</p>
+            @else
+            <p class="text-muted m-0">It's been a while since we added any new pieces!</p>
+            @endif
+          </div>
+        </div>
         <div class="col-12">
           <div class="border py-4 px-3">
             <div class="ml-2 mb-4">
               <h4 class="mb-1"><strong>Our progress</strong></h4>
-              <p class="text-muted">Number of pieces added per day</p>
+              <p class="text-muted">Number of pieces added per day over the past 20 days</p>
             </div>
             <canvas id="pieces_graph" class="w-100" height="300" data-records="{{$pieces_graph}}"></canvas>
           </div>

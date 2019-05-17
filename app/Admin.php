@@ -56,12 +56,4 @@ class Admin extends Authenticatable
     {
         return $this->role == 'manager';
     }
-
-    public function scopeProgress($query)
-    {
-        return \DB::table('pieces')
-                  ->selectRaw('month(created_at) month, day(created_at) day, year(created_at) year, count(*) count')
-                  ->groupBy('month', 'day', 'year')
-                  ->orderByRaw('min(created_at)');
-    }
 }

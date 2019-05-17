@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\{Admin, User, Piece, Tag, Composer, Subscription};
 use App\Blog\Post;
+use App\Tools\Stats;
 use Illuminate\Http\Request;
 
 class AdminsController extends Controller
@@ -20,9 +21,12 @@ class AdminsController extends Controller
         $composers_count = Composer::count();
         $users_count = User::count();
 
-        $pieces_graph = Admin::progress()->take(20)->get();
+        $stats = new Stats;
+        $pieces_graph = $stats->progress(15);
+        $pieces_avg = $stats->average(7);
+        $milestone = $stats->milestone($pieces_avg);
 
-        return view('admin.pages.home.index', compact('pieces_count', 'tags_count', 'composers_count', 'users_count', 'pieces_graph'));
+        return view('admin.pages.home.index', compact('pieces_count', 'tags_count', 'composers_count', 'users_count', 'pieces_graph', 'pieces_avg', 'milestone'));
     }
 
     /**
