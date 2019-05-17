@@ -15,7 +15,7 @@ class Stats
                       ->groupBy('month', 'day', 'year')
                       ->orderByRaw('min(created_at)')
                       ->get()
-                      // ->slice(-$count)
+                      ->slice(-$count)
                       ->values();
     }
 
