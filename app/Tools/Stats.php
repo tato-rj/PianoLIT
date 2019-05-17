@@ -39,7 +39,7 @@ class Stats
 				$report['goal'] = $milestone;
 
 				if (is_integer($avg) && $avg > 0)
-					$report['days_left'] = round(($milestone - $pieces_count) / $avg);
+					$report['days_left'] = (int)round(($milestone - $pieces_count) / $avg);
 
 				break;
 			}
