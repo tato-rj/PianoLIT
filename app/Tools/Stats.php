@@ -22,7 +22,7 @@ class Stats
     public function average($days)
     {
         $piecesAdded = Piece::whereBetween('created_at', [now()->copy()->subDays($days), now()])->count();
-dd($piecesAdded);
+
         $avg = $piecesAdded / $days;
 
         return ($avg > 0 && $avg < 1) ? 'Less than 1' : round($avg);

@@ -24,6 +24,7 @@ class AdminsController extends Controller
         $stats = new Stats;
         $pieces_graph = $stats->progress(15);
         $pieces_avg = $stats->average(7);
+        dd($pieces_avg);
         $milestone = $stats->milestone($pieces_avg);
 
         return view('admin.pages.home.index', compact('pieces_count', 'tags_count', 'composers_count', 'users_count', 'pieces_graph', 'pieces_avg', 'milestone'));
