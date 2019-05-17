@@ -30,7 +30,6 @@ class Stats
     public function milestone($avg)
     {
     	$pieces_count = Piece::count();
-    	$avg = is_integer($avg) ? $avg : 1;
     	$report = [];
 
     	foreach ($this->milestones as $milestone) {
