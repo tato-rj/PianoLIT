@@ -93,7 +93,7 @@
           <div class="border py-4 px-3 mb-4">
             <h4><strong>Next Milestone <span class="text-brand">{{$milestone['goal']}} pieces</span></strong></h4>
             @if(!empty($milestone['days_left']))
-            <p class="text-muted m-0">We should reach the next milestone in <span class="text-dark"><strong>{{$milestone['days_left']}} {{ str_plural('piece', $milestone['days_left']) }}</strong></span>.</p>
+            <p class="text-muted m-0">We should reach the next milestone in <span class="text-dark"><strong>{{$milestone['days_left']}} {{ str_plural('day', $milestone['days_left']) }}</strong></span>.</p>
             @else
             <p class="text-muted m-0">It's been a while since we added any new pieces!</p>
             @endif
