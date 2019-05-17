@@ -94,18 +94,18 @@ class ComposersController extends Controller
      * @param  \App\Composer  $composer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Composer $composer, ComposerForm $form)
+    public function update(Request $request, Composer $composer)
     {
         $this->authorize('update', $composer);
 
         $composer->update([
             'name' => $request->name,
-            'date_of_birth' => $form->date_of_birth,
-            'date_of_death' => $form->date_of_death,
+            'date_of_birth' => carbon($request->date_of_birth)->format('Y-m-d'),
+            'date_of_death' => carbon($request->date_of_death)->format('Y-m-d'),
             'biography' => $request->biography,
             'curiosity' => $request->curiosity,
             'country_id' => $request->country_id,
-            'period' => $form->period
+            'period' => strtolower($request->period)
         ]);
         
         return redirect()->back()->with('status', "$request->name has been updated");
