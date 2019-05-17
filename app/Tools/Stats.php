@@ -37,7 +37,7 @@ class Stats
 				$report['current'] = $pieces_count;
 				$report['goal'] = $milestone;
 
-				if ($avg > 0)
+				if (is_integer($avg) && $avg > 0)
 					$report['days_left'] = round(($milestone - $pieces_count) / $avg);
 
 				break;
