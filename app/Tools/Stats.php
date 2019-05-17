@@ -32,7 +32,7 @@ class Stats
     {
     	$pieces_count = Piece::count();
     	$report = [];
-
+dd($avg);
     	foreach ($this->milestones as $milestone) {
 			if ($pieces_count < $milestone) {
 				$report['current'] = $pieces_count;
