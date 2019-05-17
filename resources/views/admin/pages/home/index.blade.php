@@ -86,7 +86,7 @@
         <div class="col-6">
           <div class="border py-4 px-3 mb-4">
             <h4><strong>Average of last 15 days</strong></h4>
-            <p class="text-muted m-0">We have been adding <span class="text-dark"><strong>{{$pieces_avg}} {{$pieces_avg == 1 ? 'piece' : 'pieces'}}</strong></span> on average.</p>
+            <p class="text-muted m-0">We have been adding <span class="text-dark"><strong>{{$pieces_avg}} {{$pieces_avg == 1 ? 'piece' : 'pieces'}}</strong></span> per day on average.</p>
           </div>
         </div>
         <div class="col-6">
