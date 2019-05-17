@@ -145,7 +145,7 @@ let piecesGraph = new Chart(piecesChartElement, {
     data: {
       labels: labels,
       datasets: [{
-        label: 'My First dataset',
+        label: 'New pieces',
         borderColor: '#1876f6',
         data: data,
         fill: false,
