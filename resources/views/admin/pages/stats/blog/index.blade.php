@@ -96,7 +96,7 @@ var topicsChart = new Chart(topicsChartElement, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    stepSize: 2
+                    stepSize: getStepSize(topics_posts_count)
                 }
             }],
             xAxes: [{

@@ -1,3 +1,7 @@
+getStepSize = function(records) {
+    return Math.ceil(Math.max(records)/10);
+}
+
 createLineChart = function(type) {
     var chart = document.getElementById(type+"-chart");
     var ctx = chart.getContext('2d');

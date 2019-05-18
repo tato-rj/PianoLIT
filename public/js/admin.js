@@ -93843,6 +93843,10 @@ window.SimpleCropper = SimpleCropper;
 /***/ "./resources/js/helpers/charts.js":
 /***/ (function(module, exports) {
 
+getStepSize = function getStepSize(records) {
+    return Math.ceil(Math.max(records) / 10);
+};
+
 createLineChart = function createLineChart(type) {
     var chart = document.getElementById(type + "-chart");
     var ctx = chart.getContext('2d');

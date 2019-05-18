@@ -136,10 +136,6 @@ function getElements(arr, n) {
     return arr.slice(0, n);
 }
 
-function getStepSize(records) {
-    return round(records[0]/10);
-}
-
 </script>
 <script type="text/javascript">
 
@@ -171,7 +167,7 @@ var tagsChart = new Chart(tagsChartElement, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    stepSize: getStepSize(tagsRecords)
+                    stepSize: getStepSize(tags_pieces_count)
                 }
             }],
             xAxes: [{
@@ -214,7 +210,7 @@ var tagsPiecesChart = new Chart(tagsPiecesChartElement, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    stepSize: 2
+                    stepSize: getStepSize(records_count)
                 }
             }],
             xAxes: [{
@@ -256,7 +252,7 @@ var composersChart = new Chart(composersChartElement, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    stepSize: 2
+                    stepSize: getStepSize(composers_pieces_count)
                 }
             }],
             xAxes: [{

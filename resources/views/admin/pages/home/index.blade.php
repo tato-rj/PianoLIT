@@ -172,7 +172,7 @@ let piecesGraph = new Chart(piecesChartElement, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    stepSize: 2
+                    stepSize: getStepSize(data)
                 }
             }],
             xAxes: [{
