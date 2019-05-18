@@ -86,7 +86,7 @@
         <div class="col-6">
           <div class="border text-center py-4 px-3 mb-4">
             <h4 class="m-0"><strong>We've been adding</strong></h4>
-            <h1 class="display-2 font-weight-bold">{{$pieces_avg}} {{$pieces_avg == 1 ? 'piece' : 'pieces'}}</h1>
+            <h1 class="display-2 font-weight-bold" style="word-spacing: -24px">{{$pieces_avg}} <span style="font-size: .3em">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}</span></h1>
             <p class="m-0">on average for the past 15 days</p>
           </div>
         </div>
@@ -94,7 +94,7 @@
           <div class="border text-center py-4 px-3 mb-4">
             <h4 class="m-0"><strong>We have about</strong></h4>
             @if(!empty($milestone['days_left']))
-            <h1 class="display-2 font-weight-bold">{{$milestone['days_left']}} {{ str_plural('day', $milestone['days_left']) }}</h1>
+            <h1 class="display-2 font-weight-bold" style="word-spacing: -24px">{{$milestone['days_left']}} <span style="font-size: .3em">{{ str_plural('day', $milestone['days_left']) }}</span></h1>
             <p class="m-0">left to reach <span class="text-brand"><strong>{{$milestone['goal']}}</strong></span> pieces</p>
             @else
             <h1 class="display-2">:/</h1>
