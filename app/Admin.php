@@ -56,4 +56,38 @@ class Admin extends Authenticatable
     {
         return $this->role == 'manager';
     }
+
+    public function getAlert()
+    {
+        $alert = [];
+        $total_count = Piece::count();
+        $levelsStats = Tag::levels()->withCount('pieces')->get();
+        $periodsStats = Tag::periods()->withCount('pieces')->get();
+
+        foreach ($levelsStats as $stat) {
+            if (percentage($stat->pieces_count, $total_count) < 20) {
+                array_push($alert, $stat->name);
+            }
+        }
+
+        foreach ($periodsStats as $stat) {
+            if (percentage($stat->pieces_count, $total_count) < 12) {
+                array_push($alert, $stat->name);
+            }
+        }
+
+        $alertCount = count($alert);
+
+        if ($alertCount == 0)
+            return null;
+
+        if ($alertCount == 1) {
+            $sentence = $alert[0] . '.';
+        } else {
+            $partial = array_slice($alert, 0, $alertCount-1);
+            $sentence = implode(', ', $partial) . ' and ' . $alert[$alertCount-1];
+        }
+
+        return $sentence;
+    }
 }

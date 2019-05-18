@@ -7,8 +7,15 @@
   @include('admin.components.breadcrumb', [
     'title' => 'Pieces',
     'description' => 'Add a new piece'])
-    
+
     <div class="row my-5 mx-2">
+      @if($alert)
+      <div class="col-12 mb-4">
+        <div class="alert alert-warning" role="alert">
+          <i class="fas fa-exclamation-triangle mr-2"></i>We need to add more pieces that are {{$alert}}.
+        </div>
+      </div>
+      @endif
       <div class="col-lg-6 col-md-8 col-12">
         <form method="POST" id="create-piece" action="{{route('admin.pieces.store')}}" autocomplete="off" enctype="multipart/form-data">
           @csrf
