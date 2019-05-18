@@ -131,9 +131,15 @@ function getRandom(arr, n = 1) {
 
     return requests == 1 ? result[0] : result;
 }
+
 function getElements(arr, n) {
     return arr.slice(0, n);
 }
+
+function getStepSize(records) {
+    return round(records[0]/10);
+}
+
 </script>
 <script type="text/javascript">
 
@@ -165,7 +171,7 @@ var tagsChart = new Chart(tagsChartElement, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    stepSize: 2
+                    stepSize: getStepSize(tagsRecords)
                 }
             }],
             xAxes: [{
