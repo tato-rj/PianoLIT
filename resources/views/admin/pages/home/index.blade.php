@@ -85,8 +85,10 @@
       <div class="row">
         <div class="col-6">
           <div class="border py-4 px-3 mb-4">
-            <h4 class="mb-1"><strong>Consistency</strong></h4>
-            <p class="text-muted m-0">Over the past 15 days we've added on average</p>
+            <div class="ml-2">
+              <h4 class="mb-1"><strong>Consistency</strong></h4>
+              <p class="text-muted m-0">Over the past 15 days we've added on average</p>
+            </div>
             <div class="text-center">
               <h1 class="display-2 font-weight-bold m-0">{{$pieces_avg}}</h1>
               <h3 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}</h3>
@@ -95,8 +97,10 @@
         </div>
         <div class="col-6">
           <div class="border py-4 px-3 mb-4">
-            <h4 class="mb-1"><strong>Milestone</strong></h4>
-            <p class="text-muted m-0">Time to reach the next goal of <strong class="text-brand">{{$milestone['goal']}} pieces</strong></p>
+            <div class="ml-2">
+              <h4 class="mb-1"><strong>Milestone</strong></h4>
+              <p class="text-muted m-0">Time to reach the next goal of <strong class="text-brand">{{$milestone['goal']}} pieces</strong></p>
+            </div>
             <div class="text-center">
               @if(!empty($milestone['days_left']))
               <h1 class="display-2 font-weight-bold m-0">{{$milestone['days_left']}}</h1>
