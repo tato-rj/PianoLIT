@@ -12,7 +12,7 @@
       @if($alert)
       <div class="col-12 mb-4">
         <div class="alert alert-warning" role="alert">
-          <i class="fas fa-exclamation-triangle mr-2"></i>We need to add more pieces that are {{$alert}}.
+          <i class="fas fa-exclamation-triangle mr-2"></i>We need to add more pieces that are <strong>{{$alert}}</strong>.
         </div>
       </div>
       @endif
