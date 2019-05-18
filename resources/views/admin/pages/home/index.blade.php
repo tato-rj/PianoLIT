@@ -85,14 +85,14 @@
       <div class="row">
         <div class="col-6">
           <div class="border text-center py-4 px-3 mb-4">
-            <p class="m-0"><strong>We've been adding</strong></p>
+            <h4 class="m-0"><strong>We've been adding</strong></h4>
             <h1 class="display-2 font-weight-bold">{{$pieces_avg}}</h1>
             <p class="text-muted m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}} average on the past 15 days</p>
           </div>
         </div>
         <div class="col-6">
           <div class="border text-center py-4 px-3 mb-4">
-            <p class="m-0"><strong>We're about</strong></p>
+            <h4 class="m-0"><strong>We have about</strong></h4>
             @if(!empty($milestone['days_left']))
             <h1 class="display-2 font-weight-bold">{{$milestone['days_left']}}</h1>
             <p class="text-muted m-0">{{ str_plural('day', $milestone['days_left']) }}</strong> left to reach <span class="text-dark">{{$milestone['goal']}}</span> pieces</p>
