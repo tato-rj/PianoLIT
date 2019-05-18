@@ -99,7 +99,7 @@
           <div class="border py-4 px-3 mb-4">
             <div class="ml-2">
               <h4 class="mb-1"><strong>Milestone</strong></h4>
-              <p class="text-muted m-0">Time to reach the next goal of <strong class="text-brand">{{$milestone['goal']}} pieces</strong></p>
+              <p class="text-muted m-0">Time to reach the next goal of <strong class="text-dark">{{$milestone['goal']}} pieces</strong></p>
             </div>
             <div class="text-center">
               @if(!empty($milestone['days_left']))
