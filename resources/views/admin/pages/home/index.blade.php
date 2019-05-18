@@ -84,21 +84,21 @@
 
       <div class="row">
         <div class="col-6">
-          <div class="border py-4 px-3 mb-4">
-            <h4><strong>Average of last 15 days</strong></h4>
-            <h1 class="text-center">{{$pieces_avg}}</h1>
-            <p class="text-muted text-center m-0">{{$pieces_avg == 1 ? 'Piece' : 'Pieces'}} per day on average</p>
+          <div class="border text-center py-4 px-3 mb-4">
+            <p><strong>We've been adding</strong></p>
+            <h1 class="display-2"><strong>{{$pieces_avg}}</strong></h1>
+            <p class="text-muted m-0">{{$pieces_avg == 1 ? 'Piece' : 'Pieces'}} average on the past 15 days</p>
           </div>
         </div>
         <div class="col-6">
-          <div class="border py-4 px-3 mb-4">
-            <h4><strong>Next Milestone <span class="text-brand">{{$milestone['goal']}} pieces</span></strong></h4>
+          <div class="border text-center py-4 px-3 mb-4">
+            <p><strong>Next Milestone is <span class="text-brand">{{$milestone['goal']}}</span> pieces</strong></p>
             @if(!empty($milestone['days_left']))
-            <h1 class="text-center">{{$milestone['days_left']}}</h1>
-            <p class="text-muted text-center m-0">{{ str_plural('Day', $milestone['days_left']) }}</strong> days to reach the milestone</p>
+            <h1 class="display-2">{{$milestone['days_left']}}</h1>
+            <p class="text-muted m-0">{{ str_plural('Day', $milestone['days_left']) }}</strong> to reach the next milestone</p>
             @else
-            <h1 class="text-center">x</h1>
-            <p class="text-muted text-center m-0">It's been a while since we added any new pieces!</p>
+            <h1 class="display-2">:/</h1>
+            <p class="text-muted m-0">It's been a while since we added any new pieces!</p>
             @endif
           </div>
         </div>
