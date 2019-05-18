@@ -22,19 +22,24 @@ class Piece extends PianoLit
         });
     }
 
+    public function getMissingInfoAttribute()
+    {
+        return 'No information available';
+    }
+
     public function getScoreEditorAttribute($editor)
     {
-        return $editor ?? 'No information available';
+        return $editor ?? $this->missing_info;
     }
 
     public function getScorePublisherAttribute($editor)
     {
-        return $editor ?? 'No information available';
+        return $editor ?? $this->missing_info;
     }
 
     public function getScoreCopyrightAttribute($editor)
     {
-        return $editor ?? 'No information available';
+        return $editor ?? $this->missing_info;
     }
 
     public function creator()
