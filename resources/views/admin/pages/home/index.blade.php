@@ -91,7 +91,7 @@
             </div>
             <div class="text-center">
               <h1 class="display-2 font-weight-bold m-0">{{$pieces_avg}}</h1>
-              <h3 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}</h3>
+              <h3 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}/day</h3>
             </div>
           </div>
         </div>
@@ -106,8 +106,8 @@
               <h1 class="display-2 font-weight-bold m-0">{{$milestone['days_left']}}</h1>
               <h3 class="m-0">{{ str_plural('day', $milestone['days_left']) }}</h3>
               @else
-              <h1 class="display-2 m-0">:/</h1>
-              <h1 class="m-0">Not enough data</h1>
+              <h1 class="display-2 font-weight-bold m-0">&#8734;</h1>
+              <h3 class="m-0">Not enough data</h3>
               @endif
             </div>
           </div>
