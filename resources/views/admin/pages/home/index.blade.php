@@ -95,7 +95,7 @@
             <h4 class="m-0"><strong>We have about</strong></h4>
             @if(!empty($milestone['days_left']))
             <h1 class="display-2 font-weight-bold">{{$milestone['days_left']}}</h1>
-            <p class="text-muted m-0">{{ str_plural('day', $milestone['days_left']) }}</strong> left to reach <span class="text-dark">{{$milestone['goal']}}</span> pieces</p>
+            <p class="text-muted m-0">{{ str_plural('day', $milestone['days_left']) }}</strong> left to reach <span class="text-brand"><strong>{{$milestone['goal']}}</strong></span> pieces</p>
             @else
             <h1 class="display-2">:/</h1>
             <p class="text-muted m-0">It's been a while since we added any new pieces!</p>
