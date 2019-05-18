@@ -86,16 +86,19 @@
         <div class="col-6">
           <div class="border py-4 px-3 mb-4">
             <h4><strong>Average of last 15 days</strong></h4>
-            <p class="text-muted m-0">We have been adding <span class="text-dark"><strong>{{$pieces_avg}} {{$pieces_avg == 1 ? 'piece' : 'pieces'}}</strong></span> per day on average.</p>
+            <h1 class="text-center">{{$pieces_avg}}</h1>
+            <p class="text-muted text-center m-0">{{$pieces_avg == 1 ? 'Piece' : 'Pieces'}} per day on average</p>
           </div>
         </div>
         <div class="col-6">
           <div class="border py-4 px-3 mb-4">
             <h4><strong>Next Milestone <span class="text-brand">{{$milestone['goal']}} pieces</span></strong></h4>
             @if(!empty($milestone['days_left']))
-            <p class="text-muted m-0">We should reach the next milestone in <span class="text-dark"><strong>{{$milestone['days_left']}} {{ str_plural('day', $milestone['days_left']) }}</strong></span>.</p>
+            <h1 class="text-center">{{$milestone['days_left']}}</h1>
+            <p class="text-muted text-center m-0">{{ str_plural('Day', $milestone['days_left']) }}</strong> days to reach the milestone</p>
             @else
-            <p class="text-muted m-0">It's been a while since we added any new pieces!</p>
+            <h1 class="text-center">x</h1>
+            <p class="text-muted text-center m-0">It's been a while since we added any new pieces!</p>
             @endif
           </div>
         </div>
