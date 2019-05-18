@@ -89,18 +89,18 @@
             <p class="text-muted m-0">Over the past 15 days we've added on average</p>
             <div class="text-center">
               <h1 class="display-2 font-weight-bold m-0">{{$pieces_avg}}</h1>
-              <h1 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}</h1>
+              <h3 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}</h3>
             </div>
           </div>
         </div>
         <div class="col-6">
           <div class="border py-4 px-3 mb-4">
             <h4 class="mb-1"><strong>Milestone</strong></h4>
-            <p class="text-muted m-0">Days left to reach <strong class="text-brand">{{$milestone['goal']}}</strong> pieces</p>
+            <p class="text-muted m-0">Days left to reach the next goal of <span class="text-white px-3 py-1 rounded" style="background: #1876f6">{{$milestone['goal']}} pieces</span></p>
             <div class="text-center">
               @if(!empty($milestone['days_left']))
               <h1 class="display-2 font-weight-bold m-0">{{$milestone['days_left']}}</h1>
-              <h1 class="m-0">{{ str_plural('day', $milestone['days_left']) }}</h1>
+              <h3 class="m-0">{{ str_plural('day', $milestone['days_left']) }}</h3>
               @else
               <h1 class="display-2 m-0">:/</h1>
               <h1 class="m-0">Not enough data</h1>
