@@ -145,16 +145,16 @@
           <div class="form-group form-row">
             <div class="col">
               <label class="text-brand"><small>Score editor</small></label>
-              <input type="text" class="form-control" name="score_editor" placeholder="Score editor" value="{{$piece->score_editor}}" >
+              <input type="text" class="form-control" name="score_editor" placeholder="Score editor" value="{{$piece->score_editor == 'No information available' ? null : $piece->score_editor}}" >
             </div>
             <div class="col">
               <label class="text-brand"><small>Score copyright</small></label>
-              <input type="text" class="form-control" name="score_copyright" placeholder="Score copyright" value="{{$piece->score_copyright}}">
+              <input type="text" class="form-control" name="score_copyright" placeholder="Score copyright" value="{{$piece->score_copyright == 'No information available' ? null : $piece->score_copyright}}">
             </div>
           </div>
           <div class="form-group">
               <label class="text-brand"><small>Score publisher</small></label>
-              <input type="text" class="form-control" name="score_publisher" placeholder="Score publisher" value="{{$piece->score_publisher}}">
+              <input type="text" class="form-control" name="score_publisher" placeholder="Score publisher" value="{{$piece->score_publisher == 'No information available' ? null : $piece->score_publisher}}">
           </div>
           <div class="form-group">
               <label class="text-brand"><small>Score url (for non-public domain only)</small></label>
