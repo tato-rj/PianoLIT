@@ -124,7 +124,7 @@
       </div>
       @else
       <div class="row p-4">
-        <div class="col-12">
+        <div class="col-12 mb-4">
           <p>Welcome <strong>{{auth()->user()->name}}</strong>!</p>
           <p>So far you have created 
             {{auth()->user()->pieces_count}} {{str_plural('piece', auth()->user()->pieces_count) }} and 
@@ -172,7 +172,7 @@ let piecesGraph = new Chart(piecesChartElement, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    stepSize: 1
+                    stepSize: 2
                 }
             }],
             xAxes: [{
