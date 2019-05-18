@@ -99,8 +99,6 @@
 @endsection
 
 @section('scripts')
-<script src="{{asset('js/vendor/inputmask.bundle.js')}}"></script>
-
 @cannot('update', $composer)
 <script type="text/javascript">
 $('#edit-form input, #edit-form select, #edit-form textarea').attr('disabled', true);

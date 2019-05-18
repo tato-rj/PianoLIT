@@ -1,5 +1,10 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
+@endsection
+
 @section('content')
 
 <div class="content-wrapper">
@@ -22,34 +27,23 @@
     </div>
 
     <div class="row my-3">
-      <div class="col-12 text-center">
-        <p class="text-center"><small>Showing {{$composers->count()}} of {{$composers->total()}}</small></p>
+      <div class="col-12">
+        <table class="table table-hover" id="composers-table">
+          <thead>
+            <tr>
+              <th class="border-0" scope="col">Name</th>
+              <th class="border-0" scope="col">Pieces count</th>
+              <th class="border-0" scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($composers as $composer)
+            @include('admin.pages.composers.row')
+            @endforeach
+          </tbody>
+        </table>
       </div>
-      @foreach($composers as $composer)
-      <div class="col-12 mb-2">
-        <div class="d-flex justify-content-between px-3 py-2 bg-light text-muted rounded">
-          <div>
-            <strong>{{$composer->name}} ({{$composer->alive_on}})</strong> | <small>{{$composer->pieces_count}} {{str_plural('piece', $composer->pieces_count)}}</small>
-          </div>
-          <div class="text-right text-brand">
-            @can('update', $composer)
-            <a href="{{route('admin.composers.edit', $composer->id)}}">edit</a> | <a href="" data-name="{{$composer->name}}" data-url="{{route('admin.composers.edit', $composer->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete">delete</a>
-            @else
-            <a href="{{route('admin.composers.edit', $composer->id)}}">view details</a>
-            @endcan
-          </div>
-        </div>
-      </div>
-      @endforeach
     </div>
-
-    {{-- PAGINATION --}}
-    <div class="row mb-3">
-          <div class="d-flex align-items-center w-100 justify-content-center my-4">
-        {{ $composers->links() }}    
-        </div>
-    </div>
-
   </div>
 </div>
 
@@ -106,7 +100,7 @@
 @endsection
 
 @section('scripts')
-<script src="{{asset('js/vendor/inputmask.bundle.js')}}"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
 $('.delete').on('click', function (e) {
@@ -120,6 +114,11 @@ var bornIn = document.getElementById("born-in");
 var diedIn = document.getElementById("died-in");
 
 $(document).ready(function(){
+  $('#composers-table').DataTable({
+    'aaSorting': [],
+    'columnDefs': [ { 'orderable': false, 'targets': [2] } ],
+
+  });
   $(bornIn).inputmask("99/99/9999");
   $(diedIn).inputmask("99/99/9999");
 });
