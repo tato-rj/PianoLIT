@@ -140,24 +140,24 @@
           </div>
           @manager
           {{-- Score Info --}}
-          <hr class="my-4">
-
-          <div class="form-group form-row">
-            <div class="col">
-              <input type="text" class="form-control" name="score_editor" placeholder="Score editor" value="{{old('score_editor')}}">
+          <div class="bg-light rounded px-3 py-2 mb-3">
+            <div class="d-flex justify-content-between">
+              <div>Is this piece in public domain?</div>
+              @include('admin.components.toggle.copyright', ['is_public' => true])
             </div>
-            <div class="col">
-              <input type="text" class="form-control" name="score_copyright" placeholder="Score copyright" value="{{old('score_copyright')}}">
+            <div class="is-public mt-3">
+              <div class="form-group">
+                <input type="text" class="form-control" name="score_editor" placeholder="Score editor" value="{{old('score_editor')}}">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" name="score_publisher" placeholder="Score publisher" value="{{ old('score_publisher') }}">
+                @include('admin.components.lookup')
+              </div>
+            </div>
+            <div class="form-group non-public mt-3" style="display: none;">
+              <input type="text" class="form-control" name="score_url" placeholder="Score url" value="{{ old('score_url') }}">
             </div>
           </div>
-          <div class="form-group">
-            <input type="text" class="form-control" name="score_publisher" placeholder="Score publisher" value="{{ old('score_publisher') }}">
-            @include('admin.components.lookup')
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" name="score_url" placeholder="Score url (for non-public domain only)" value="{{ old('score_url') }}">
-          </div>
-          <hr class="my-4">
           {{-- Files --}}
           <div class="form-row form-group">
             <div class="col input-group">
@@ -262,6 +262,16 @@
 <script type="text/javascript" src="{{asset('js/vendor/lookup.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <script type="text/javascript">
+$('.status-toggle').on('change', function() {
+  if ($(this).is(':checked')) {
+    $('.is-public').show();
+    $('.non-public').hide();
+  } else {
+    $('.is-public').hide();
+    $('.non-public').show();
+  }
+});
+
 $('.tag-input').on('change', function() {
   let tags = $('.tag-input:checked').length;
 

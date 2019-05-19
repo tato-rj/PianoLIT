@@ -130,7 +130,7 @@ class PiecesController extends Controller
             'score_url' => $request->score_url,
             'score_editor' => $request->score_editor,
             'score_publisher' => $request->score_publisher,
-            'score_copyright' => $request->score_copyright,
+            'score_copyright' => $request->is_public ? 'Public Domain' : null,
             'composer_id' => $request->composer_id,
             'composed_in' => $request->composed_in,
             'audio_path' => $request->hasFile('audio') ? $request->file('audio')->store('app/audio', 'public') : null,
@@ -189,7 +189,7 @@ class PiecesController extends Controller
             'period' => 'required',
             'key' => 'required',
             'length' => 'required',
-            'level' => 'required',
+            'level' => 'required'
         ]);
 
         $piece->update([
@@ -207,7 +207,7 @@ class PiecesController extends Controller
             'score_url' => $request->score_url,
             'score_editor' => $request->score_editor,
             'score_publisher' => $request->score_publisher,
-            'score_copyright' => $request->score_copyright,
+            'score_copyright' => $request->is_public ? 'Public Domain' : null,
             'composer_id' => $request->composer_id,
             'composed_in' => $request->composed_in,
         ]);

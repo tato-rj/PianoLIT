@@ -142,28 +142,30 @@
           </div>
           @manager
           {{-- Score Info --}}
-          <div class="form-group form-row">
-            <div class="col">
-              <label class="text-brand"><small>Score editor</small></label>
-              <input type="text" class="form-control" name="score_editor" placeholder="Score editor" value="{{$piece->score_editor == $piece->missing_info ? null : $piece->score_editor}}" >
+          <div class="bg-light rounded px-3 py-2">
+            <div class="d-flex justify-content-between">
+              <div>Is this piece in public domain?</div>
+              @include('admin.components.toggle.copyright', ['is_public' => $piece->is_public_domain])
             </div>
-            <div class="col">
-              <label class="text-brand"><small>Score copyright</small></label>
-              <input type="text" class="form-control" name="score_copyright" placeholder="Score copyright" value="{{$piece->score_copyright == $piece->missing_info ? null : $piece->score_copyright}}">
-            </div>
-          </div>
-          <div class="form-group">
-              <label class="text-brand"><small>Score publisher</small></label>
-              <input type="text" class="form-control" name="score_publisher" placeholder="Score publisher" value="{{$piece->score_publisher == $piece->missing_info ? null : $piece->score_publisher}}">
-          </div>
-          <div class="form-group">
-              <label class="text-brand"><small>Score url (for non-public domain only)</small></label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <a class="input-group-text no-underline {{$piece->lookup('score_url')}}" href="{{$piece->score_url}}" target="_blank"><i class="fas fa-globe"></i></a>
-                </div>
-                <input type="text" class="form-control" name="score_url" placeholder="Score url" value="{{$piece->score_url}}">
+            <div class="is-public mt-3" style="display: {{$piece->is_public_domain ? 'block' : 'none'}}">
+              <div class="form-group">
+                <label class="text-brand"><small>Score editor</small></label>
+                <input type="text" class="form-control" name="score_editor" placeholder="Score editor" value="{{$piece->score_editor == $piece->missing_info ? null : $piece->score_editor}}" >
               </div>
+              <div class="form-group">
+                  <label class="text-brand"><small>Score publisher</small></label>
+                  <input type="text" class="form-control" name="score_publisher" placeholder="Score publisher" value="{{$piece->score_publisher == $piece->missing_info ? null : $piece->score_publisher}}">
+              </div>
+            </div>
+            <div class="form-group non-public mt-3" style="display: {{$piece->is_public_domain ? 'none' : 'block'}}">
+                <label class="text-brand"><small>Score url</small></label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <a class="input-group-text no-underline {{$piece->lookup('score_url')}}" href="{{$piece->score_url}}" target="_blank"><i class="fas fa-globe"></i></a>
+                  </div>
+                  <input type="text" class="form-control" name="score_url" placeholder="Score url" value="{{$piece->score_url}}">
+                </div>
+            </div>
           </div>
           {{-- Files --}}
           <label class="text-brand"><small>Uploads</small></label>
@@ -284,6 +286,15 @@ $('.add-new-field, .remove-field').remove();
 @endcannot
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <script type="text/javascript">
+$('.status-toggle').on('change', function() {
+  if ($(this).is(':checked')) {
+    $('.is-public').show();
+    $('.non-public').hide();
+  } else {
+    $('.is-public').hide();
+    $('.non-public').show();
+  }
+});
 function showTooltip(element) {
     $(element).tooltip('show');
 

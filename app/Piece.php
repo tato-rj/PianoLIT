@@ -32,14 +32,14 @@ class Piece extends PianoLit
         return $editor ?? $this->missing_info;
     }
 
-    public function getScorePublisherAttribute($editor)
+    public function getScorePublisherAttribute($publisher)
     {
-        return $editor ?? $this->missing_info;
+        return $publisher ?? $this->missing_info;
     }
 
-    public function getScoreCopyrightAttribute($editor)
+    public function getScoreCopyrightAttribute($copyright)
     {
-        return $editor ?? $this->missing_info;
+        return $copyright ?? 'This work is protected by copyright';
     }
 
     public function creator()
