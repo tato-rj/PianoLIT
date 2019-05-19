@@ -322,7 +322,7 @@ new Lukup({
 new Lukup({
   url: app.url+'/admin/pieces/multi-lookup',
   field: 'collection_name',
-  autofill: ['collection_name', 'nickname', 'catalogue_name', 'catalogue_number', 'composer_id', 'composed_in', 'score_editor', 'score_copyright', 'score_publisher']
+  autofill: ['collection_name', 'nickname', 'score_url', 'period_id', 'level', 'catalogue_name', 'catalogue_number', 'composer_id', 'composed_in', 'score_editor', 'score_copyright', 'score_publisher']
 }).enable();
 
 </script>
