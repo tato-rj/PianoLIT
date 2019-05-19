@@ -12,7 +12,9 @@ class Youtube
 		$codes = $this->favorites;
 
 		shuffle($codes);
+
+		array_unshift($codes, $this->highlight);
 		
-		return array_unshift(array_slice($codes, 0, $number), $this->highlight);
+		return array_slice($codes, 0, $number);
 	}
 }
