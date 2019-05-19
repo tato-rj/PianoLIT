@@ -8,9 +8,9 @@
     'title' => 'Pieces',
     'description' => 'Add a new piece'])
 
-    <div class="row my-5 mx-2">
+    <div class="row">
       @if($alert)
-      <div class="col-12 mb-4">
+      <div class="col-12">
         <div class="alert alert-warning" role="alert">
           <i class="fas fa-exclamation-triangle mr-2"></i>We need to add more pieces that are <strong>{{$alert}}</strong>.
         </div>
@@ -215,7 +215,7 @@
               <label class="p-2 mb-1 text-center w-100"><strong>{{ucfirst($type)}}</strong></label>
                 @foreach($tags as $tag)
                 <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}">
+                  <input type="checkbox" class="custom-control-input tag-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}">
                   <label class="custom-control-label" for="{{$tag->name}}">{{$tag->name}}</label>
                 </div>
                 @endforeach
@@ -261,6 +261,13 @@
 <script type="text/javascript" src="{{asset('js/vendor/lookup.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <script type="text/javascript">
+$('.tag-input').on('change', function() {
+  let tags = $('.tag-input:checked').length;
+
+  if (tags > 5)
+    alert('You are adding too many tags! Try to keep them between 3 and 5 :)');
+});
+
 function showTooltip(element) {
     $(element).tooltip('show');
 
