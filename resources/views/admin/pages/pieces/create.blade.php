@@ -141,6 +141,7 @@
           @manager
           {{-- Score Info --}}
           <hr class="my-4">
+
           <div class="form-group form-row">
             <div class="col">
               <input type="text" class="form-control" name="score_editor" placeholder="Score editor" value="{{old('score_editor')}}">

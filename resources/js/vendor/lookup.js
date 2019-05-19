@@ -23,9 +23,11 @@ function Lukup(obj)
   }
 
   this.fillElements = function(element) {
+    let lookup = this;
+
     this.autofill.forEach(field => {
       value = $(element).attr('data-'+field);
-      if (! this.exclude.includes(value)) {
+      if (! lookup.exclude.includes(value)) {
         if (value) {
           $('input[name="'+field+'"]').val(value).addClass('border-warning');
           $('select[name="'+field+'"] option[value="'+value+'"]').prop('selected', true).parent().addClass('border-warning');
