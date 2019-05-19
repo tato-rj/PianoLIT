@@ -4,6 +4,7 @@ function Lukup(obj)
   this.request = null;
   this.url = obj.url;
   this.autofill = obj.autofill;
+  this.exclude = obj.exclude;
   this.input = $('input[name="'+obj.field+'"]');
   this.wrapper = this.input.parent();
   this.field = this.input.attr('name');
@@ -24,12 +25,14 @@ function Lukup(obj)
   this.fillElements = function(element) {
     this.autofill.forEach(field => {
       value = $(element).attr('data-'+field);
-      if (value) {
-        $('input[name="'+field+'"]').val(value).addClass('border-warning');
-        $('select[name="'+field+'"] option[value="'+value+'"]').prop('selected', true).parent().addClass('border-warning');
-      } else {
-        $('input[name="'+field+'"]').val(value).removeClass('border-warning');
-        $('select[name="'+field+'"] option[value="'+value+'"]').prop('selected', true).parent().removeClass('border-warning');
+      if (! this.exclude.includes(value)) {
+        if (value) {
+          $('input[name="'+field+'"]').val(value).addClass('border-warning');
+          $('select[name="'+field+'"] option[value="'+value+'"]').prop('selected', true).parent().addClass('border-warning');
+        } else {
+          $('input[name="'+field+'"]').val(value).removeClass('border-warning');
+          $('select[name="'+field+'"] option[value="'+value+'"]').prop('selected', true).parent().removeClass('border-warning');
+        }
       }
     });
   }

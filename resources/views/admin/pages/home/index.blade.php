@@ -8,7 +8,7 @@
 @section('content')
 
   <div class="content-wrapper">
-    <div class="container-fluid">
+    <div class="container-fluid mb-3">
       @include('admin.components.breadcrumb', [
         'title' => 'Dashboard',
         'description' => 'PianoLIT Admin page '])
