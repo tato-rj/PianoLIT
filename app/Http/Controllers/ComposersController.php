@@ -27,7 +27,7 @@ class ComposersController extends Controller
 
         $countries = Country::all();
         $composers = Composer::orderBy($sort[0], $sort[1])->paginate(20);
-
+return $composers;
         return view('admin.pages.composers.index', compact(['composers', 'countries']));
     }
 
@@ -101,7 +101,7 @@ class ComposersController extends Controller
         $composer->update([
             'name' => $request->name,
             'date_of_birth' => carbon($request->date_of_birth)->format('Y-m-d'),
-            'date_of_death' => carbon($request->date_of_death)->format('Y-m-d'),
+            'date_of_death' => $request->date_of_death ? carbon($request->date_of_death)->format('Y-m-d') : null,
             'biography' => $request->biography,
             'curiosity' => $request->curiosity,
             'country_id' => $request->country_id,
