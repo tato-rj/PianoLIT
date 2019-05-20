@@ -62,7 +62,7 @@
             </div>
             <div class="form-group">
               <label class="text-brand">Died in</label>
-              <input type="text" class="form-control" id="died-in" name="date_of_death" placeholder="Died in" value="{{ $composer->date_of_death->format('m/d/Y') }}" required>
+              <input type="text" class="form-control" id="died-in" name="date_of_death" placeholder="Died in" value="{{ $composer->date_of_death ? $composer->date_of_death->format('m/d/Y') : null}}" required>
             </div>
           </div>
         </div>
