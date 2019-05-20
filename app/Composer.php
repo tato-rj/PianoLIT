@@ -31,7 +31,7 @@ class Composer extends PianoLit
 
     public function getDiedInAttribute()
     {
-        return $this->date_of_death->year;
+        return $this->date_of_death ? $this->date_of_death->year : null;
     }
 
     public function getNationalityAttribute()
@@ -51,12 +51,15 @@ class Composer extends PianoLit
 
     public function getDiedAtAttribute()
     {
-        return $this->date_of_death->toFormattedDateString();
+        return $this->date_of_death ? $this->date_of_death->toFormattedDateString() : null;
     }
 
     public function getAliveOnAttribute()
     {
-        return "{$this->date_of_birth->year} - {$this->date_of_death->year}";
+        if ($this->date_of_death)
+            return "{$this->date_of_birth->year} - {$this->date_of_death->year}";
+
+        return "{$this->date_of_birth->year} - now";
     }
 
     public function getShortNameAttribute()
