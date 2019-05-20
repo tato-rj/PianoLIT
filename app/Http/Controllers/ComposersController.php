@@ -26,8 +26,8 @@ class ComposersController extends Controller
             $sort[1] = request('order');
 
         $countries = Country::all();
-        $composers = Composer::orderBy($sort[0], $sort[1])->paginate(20);
-return $composers;
+        $composers = Composer::orderBy($sort[0], $sort[1])->get();
+        
         return view('admin.pages.composers.index', compact(['composers', 'countries']));
     }
 
