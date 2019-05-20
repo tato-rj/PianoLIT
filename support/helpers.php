@@ -81,7 +81,7 @@ function catalogues()
 
 function periods()
 {
-	return ['baroque', 'classical', 'romantic', 'impressionist', 'modern'];
+	return ['baroque', 'classical', 'romantic', 'impressionist', 'modern', 'contemporary'];
 }
 
 function nationalities()

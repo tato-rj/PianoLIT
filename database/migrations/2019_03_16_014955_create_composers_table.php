@@ -22,7 +22,7 @@ class CreateComposersTable extends Migration
             $table->unsignedInteger('country_id')->nullable();
             $table->boolean('is_famous')->default(false);
             $table->date('date_of_birth');
-            $table->date('date_of_death');
+            $table->date('date_of_death')->nullable();
             $table->unsignedInteger('creator_id')->nullable();
             $table->timestamps();
         });
