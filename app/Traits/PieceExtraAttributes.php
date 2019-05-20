@@ -38,7 +38,7 @@ trait PieceExtraAttributes
     {
         $fullName = "$this->short_name";
 
-        if (! in_array($this->key, ['Modal', 'Serial', 'Chromatic']))
+        if (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental']))
             $fullName .= " in $this->key";
         
         if ($this->collection_name)
