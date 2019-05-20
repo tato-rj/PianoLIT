@@ -99,6 +99,7 @@
                   <option value="Modal" {{ old('key') == 'Modal' ? 'selected' : ''}}>Modal</option>
                   <option value="Serial" {{ old('key') == 'Serial' ? 'selected' : ''}}>Serial</option>
                   <option value="Chromatic" {{ old('key') == 'Chromatic' ? 'selected' : ''}}>Chromatic</option>
+                  <option value="Experimental" {{ old('key') == 'Experimental' ? 'selected' : ''}}>Experimental</option>
                 </optgroup>
               </select>
               @include('admin.components.feedback', ['field' => 'key'])

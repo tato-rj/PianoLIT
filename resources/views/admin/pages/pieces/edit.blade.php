@@ -101,6 +101,7 @@
                   <option value="Modal" {{($piece->key == 'Modal') ? 'selected' : ''}}>Modal</option>
                   <option value="Serial" {{($piece->key == 'Serial') ? 'selected' : ''}}>Serial</option>
                   <option value="Chromatic" {{($piece->key == 'Chromatic') ? 'selected' : ''}}>Chromatic</option>
+                  <option value="Experimental" {{ old('key') == 'Experimental' ? 'selected' : ''}}>Experimental</option>
                 </optgroup>
               </select>
             </div>
