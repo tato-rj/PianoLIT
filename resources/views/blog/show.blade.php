@@ -42,6 +42,11 @@ p img {
 	margin-bottom: 1.75rem;
 }
 
+p iframe {
+	display: block;
+    margin: 0 auto;
+}
+
 </style>
 <script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
 <script>
