@@ -15,113 +15,91 @@
         
       @manager
       <!-- Icon Cards-->
+      <div class="row mb-3">
+        <div class="col-6 row no-gutters"> 
+        @include('admin.pages.home.card', [
+          'color' => 'advanced',
+          'icon' => 'music',
+          'label' => $pieces_count . ' Pieces',
+          'url' => route('admin.api.search', ['api'])])
+
+        @include('admin.pages.home.card', [
+          'color' => 'beginner',
+          'icon' => 'address-card',
+          'label' => $composers_count . ' Composers',
+          'url' => route('api.composers')])
+
+        @include('admin.pages.home.card', [
+          'color' => 'elementary',
+          'icon' => 'tags',
+          'label' => $tags_count . ' Tags',
+          'url' => route('api.tags')])
+
+        @include('admin.pages.home.card', [
+          'color' => 'intermediate',
+          'icon' => 'users',
+          'label' => $users_count . ' Users',
+          'url' => route('api.users')])
+
+        @include('admin.pages.home.card', [
+          'color' => 'advanced',
+          'icon' => 'at',
+          'label' => $subscriptions_count . ' Subscribers',
+          'url' => route('admin.api.search', ['api'])])
+
+        @include('admin.pages.home.card', [
+          'color' => 'beginner',
+          'icon' => 'newspaper',
+          'label' => $blog_count . ' Blog posts',
+          'url' => route('api.composers')])
+        </div>
+  
+        <div class="col-6 row">
+          <div class="col-6 p-2">
+            <div class="h-100 bg-light rounded p-4">
+              <div class="mb-4">
+                <h4 class="mb-1"><strong>Consistency</strong></h4>
+                <p class="text-muted m-0">Over the past 15 days we've added on average</p>
+              </div>
+              <div class="text-center">
+                <h1 class="display-2 font-weight-bold m-0">{{$pieces_avg}}</h1>
+                <h3 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}/day</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 p-2">
+            <div class="h-100 bg-light rounded p-4">
+              <div class="mb-4">
+                <h4 class="mb-1"><strong>Milestone</strong></h4>
+                <p class="text-muted m-0">Time to reach the next goal of <strong class="text-dark">{{$milestone['goal']}} pieces</strong></p>
+              </div>
+              <div class="text-center">
+                @if(!empty($milestone['days_left']))
+                <h1 class="display-2 font-weight-bold m-0">{{$milestone['days_left']}}</h1>
+                <h3 class="m-0">{{ str_plural('day', $milestone['days_left']) }}</h3>
+                @else
+                <h1 class="display-2 font-weight-bold m-0">&#8734;</h1>
+                <h3 class="m-0">Not enough data</h3>
+                @endif
+              </div>
+            </div>
+          </div>
+        </div>
+    
+      </div>
+    
       <div class="row">
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card bg-advanced o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fas fa-music"></i>
+          <div class="col-12">
+            <div class="border py-4 px-3">
+              <div class="ml-2 mb-4">
+                <h4 class="mb-1"><strong>Our progress</strong></h4>
+                <p class="text-muted">Number of pieces added per day over the past 15 days</p>
               </div>
-              <div class="mr-5">{{$pieces_count}} Pieces</div>
+              <canvas id="pieces_graph" class="w-100" height="300" data-records="{{$pieces_graph}}"></canvas>
             </div>
-            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{route('admin.api.search', ['api'])}}">
-              <span class="float-left">See JSON response</span>
-              <span class="float-right">
-                <i class="fa fa-angle-right"></i>
-              </span>
-            </a>
           </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card bg-beginner o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fas fa-fw fa-address-card"></i>
-              </div>
-              <div class="mr-5">{{$composers_count}} Composers</div>
-            </div>
-            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{route('api.composers')}}">
-              <span class="float-left">See JSON response</span>
-              <span class="float-right">
-                <i class="fa fa-angle-right"></i>
-              </span>
-            </a>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card bg-elementary o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fas fa-fw fa-tags"></i>
-              </div>
-              <div class="mr-5">{{$tags_count}} Tags</div>
-            </div>
-            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{route('api.tags')}}">
-              <span class="float-left">See JSON response</span>
-              <span class="float-right">
-                <i class="fa fa-angle-right"></i>
-              </span>
-            </a>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-3">
-          <div class="card bg-intermediate o-hidden h-100">
-            <div class="card-body">
-              <div class="card-body-icon">
-                <i class="fa fa-fw fa-users"></i>
-              </div>
-              <div class="mr-5">{{$users_count}} Users</div>
-            </div>
-            <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{route('api.users')}}">
-              <span class="float-left">See JSON response</span>
-              <span class="float-right">
-                <i class="fa fa-angle-right"></i>
-              </span>
-            </a>
-          </div>
-        </div>
       </div>
 
-      <div class="row">
-        <div class="col-6">
-          <div class="border py-4 px-3 mb-4">
-            <div class="ml-2">
-              <h4 class="mb-1"><strong>Consistency</strong></h4>
-              <p class="text-muted m-0">Over the past 15 days we've added on average</p>
-            </div>
-            <div class="text-center">
-              <h1 class="display-2 font-weight-bold m-0">{{$pieces_avg}}</h1>
-              <h3 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}/day</h3>
-            </div>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="border py-4 px-3 mb-4">
-            <div class="ml-2">
-              <h4 class="mb-1"><strong>Milestone</strong></h4>
-              <p class="text-muted m-0">Time to reach the next goal of <strong class="text-dark">{{$milestone['goal']}} pieces</strong></p>
-            </div>
-            <div class="text-center">
-              @if(!empty($milestone['days_left']))
-              <h1 class="display-2 font-weight-bold m-0">{{$milestone['days_left']}}</h1>
-              <h3 class="m-0">{{ str_plural('day', $milestone['days_left']) }}</h3>
-              @else
-              <h1 class="display-2 font-weight-bold m-0">&#8734;</h1>
-              <h3 class="m-0">Not enough data</h3>
-              @endif
-            </div>
-          </div>
-        </div>
-        <div class="col-12">
-          <div class="border py-4 px-3">
-            <div class="ml-2 mb-4">
-              <h4 class="mb-1"><strong>Our progress</strong></h4>
-              <p class="text-muted">Number of pieces added per day over the past 15 days</p>
-            </div>
-            <canvas id="pieces_graph" class="w-100" height="300" data-records="{{$pieces_graph}}"></canvas>
-          </div>
-        </div>
-      </div>
       @else
       <div class="row p-4">
         <div class="col-12 mb-4">
