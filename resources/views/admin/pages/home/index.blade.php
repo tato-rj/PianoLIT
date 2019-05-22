@@ -42,13 +42,13 @@
           'url' => route('api.users')])
 
         @include('admin.pages.home.card', [
-          'color' => 'advanced',
+          'color' => 'beginner',
           'icon' => 'at',
           'label' => $subscriptions_count . ' Subscribers',
           'url' => route('admin.api.search', ['api'])])
 
         @include('admin.pages.home.card', [
-          'color' => 'beginner',
+          'color' => 'advanced',
           'icon' => 'newspaper',
           'label' => $blog_count . ' Blog posts',
           'url' => route('api.composers')])
