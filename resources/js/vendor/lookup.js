@@ -4,7 +4,7 @@ function Lukup(obj)
   this.request = null;
   this.url = obj.url;
   this.autofill = obj.autofill;
-  this.exclude = obj.exclude;
+  this.exclude = obj.exclude || [];
   this.input = $('input[name="'+obj.field+'"]');
   this.wrapper = this.input.parent();
   this.field = this.input.attr('name');
