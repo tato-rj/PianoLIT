@@ -32,9 +32,9 @@ trait PieceExtraAttributes
 
     public function getMediumNameAttribute()
     {
-        $mediumName = $this->basename(). ' ';
-        $mediumName .= ($this->catalogue_name ? "{$this->catalogue}" : '');
-        $mediumName .= ($this->nickname ? " \"{$this->nickname}\"" : '');
+        $mediumName = $this->basename();
+        $mediumName .= $this->catalogue_name ? "{$this->catalogue}" : ' in ' . $this->key;
+        $mediumName .= $this->nickname ? " \"{$this->nickname}\"" : '';
         
         return $mediumName;       
     }
