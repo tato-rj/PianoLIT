@@ -27,32 +27,33 @@ trait PieceExtraAttributes
 
     public function getShortNameAttribute()
     {
-        return $this->basename() . ' in ' . $this->key;
+        $name = $this->basename();
+        $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental'])) ? ' in ' . $this->key : null;
+        $name .= $this->catalogue_name ? " {$this->catalogue}" : $key;
+        return $name;
     }
 
     public function getMediumNameAttribute()
     {
-        $mediumName = $this->basename();
-        $mediumName .= $this->catalogue_name ? "{$this->catalogue}" : ' in ' . $this->key;
-        $mediumName .= $this->nickname ? " \"{$this->nickname}\"" : '';
-        
-        return $mediumName;       
+        $name = $this->basename();
+        $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
+        return $name;       
     }
 
     public function getLongNameAttribute()
     {
-        $fullName = $this->basename();
+        $name = $this->basename();
 
         if (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental']))
-            $fullName .= " in $this->key";
+            $name .= " in $this->key";
         
         if ($this->collection_name)
-            $fullName .= " from $this->collection_name";
+            $name .= " from $this->collection_name";
 
-        $fullName .= $this->catalogue_name ? " {$this->catalogue}" : '';
-        $fullName .= $this->nickname ? " \"{$this->nickname}\"" : '';
+        $name .= $this->catalogue_name ? " {$this->catalogue}" : '';
+        $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
         
-        return $fullName;
+        return $name;
     }
 
     public function getTimelineNameAttribute()
