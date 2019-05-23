@@ -19,15 +19,20 @@ trait PieceExtraAttributes
     //     return ucfirst($level);
     // }
 
-    public function getShortNameAttribute()
+    public function basename()
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
-        return $number . $this->name . ' in ' . $this->key;
+        return $number . $this->name;
+    }
+
+    public function getShortNameAttribute()
+    {
+        return $this->basename() . ' in ' . $this->key;
     }
 
     public function getMediumNameAttribute()
     {
-        $mediumName = "$this->short_name ";
+        $mediumName = $this->basename(). ' ';
         $mediumName .= ($this->catalogue_name ? "{$this->catalogue}" : '');
         $mediumName .= ($this->nickname ? " \"{$this->nickname}\"" : '');
         
@@ -36,7 +41,7 @@ trait PieceExtraAttributes
 
     public function getLongNameAttribute()
     {
-        $fullName = "$this->short_name";
+        $fullName = $this->basename();
 
         if (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental']))
             $fullName .= " in $this->key";
