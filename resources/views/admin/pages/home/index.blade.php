@@ -16,7 +16,7 @@
       @manager
       <!-- Icon Cards-->
       <div class="row mb-3">
-        <div class="col-6 row no-gutters"> 
+        <div class="col-lg-6 col-md-6 col-12 row no-gutters"> 
         @include('admin.pages.home.card', [
           'color' => 'advanced',
           'icon' => 'music',
@@ -54,9 +54,9 @@
           'url' => route('api.composers')])
         </div>
   
-        <div class="col-6 row">
-          <div class="col-6 p-2">
-            <div class="h-100 bg-light rounded p-4">
+        <div class="col-lg-6 col-md-6 col-12 row no-gutters">
+          <div class="col-lg-6 col-xs-12">
+            <div class="h-100 p-2">
               <div class="mb-4">
                 <h4 class="mb-1"><strong>Consistency</strong></h4>
                 <p class="text-muted m-0">Over the past 15 days we've added on average</p>
@@ -67,8 +67,8 @@
               </div>
             </div>
           </div>
-          <div class="col-6 p-2">
-            <div class="h-100 bg-light rounded p-4">
+          <div class="col-lg-6 col-xs-12">
+            <div class="h-100 p-2">
               <div class="mb-4">
                 <h4 class="mb-1"><strong>Milestone</strong></h4>
                 <p class="text-muted m-0">Time to reach the next goal of <strong class="text-dark">{{$milestone['goal']}} pieces</strong></p>
