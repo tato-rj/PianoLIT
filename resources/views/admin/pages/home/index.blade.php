@@ -56,7 +56,7 @@
   
         <div class="col-lg-6 col-md-6 col-12 row no-gutters">
           <div class="col-lg-6 col-xs-12">
-            <div class="h-100 p-2">
+            <div class="h-100 px-2 py-3">
               <div class="mb-4">
                 <h4 class="mb-1"><strong>Consistency</strong></h4>
                 <p class="text-muted m-0">Over the past 15 days we've added on average</p>
@@ -68,7 +68,7 @@
             </div>
           </div>
           <div class="col-lg-6 col-xs-12">
-            <div class="h-100 p-2">
+            <div class="h-100 px-2 py-3">
               <div class="mb-4">
                 <h4 class="mb-1"><strong>Milestone</strong></h4>
                 <p class="text-muted m-0">Time to reach the next goal of <strong class="text-dark">{{$milestone['goal']}} pieces</strong></p>
