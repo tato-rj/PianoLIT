@@ -22,7 +22,7 @@ trait PieceExtraAttributes
     public function getShortNameAttribute()
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
-        return $number.$this->name;
+        return $number . $this->name . ' in ' . $this->key;
     }
 
     public function getMediumNameAttribute()
