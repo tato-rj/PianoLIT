@@ -1,4 +1,4 @@
-<tr>
+<tr data-toggle="tooltip" data-placement="bottom" data-html="true" title="Short name: <b>{{$piece->short_name}}</b>">
   <td style="font-size: .8rem; white-space: nowrap; vertical-align: middle;">
     <a href="{{$piece->timeline_url}}" title="JSON response to timeline" target="_blank" class="text-brand mr-1"><i class="fas fa-list-ul"></i></a>
     @include('admin.pages.pieces.play-icon')
