@@ -35,7 +35,7 @@ trait PieceExtraAttributes
 
     public function getMediumNameAttribute()
     {
-        $name = $this->basename();
+        $name = $this->short_name;
         $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
         return $name;       
     }
