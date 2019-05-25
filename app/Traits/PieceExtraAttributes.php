@@ -28,7 +28,7 @@ trait PieceExtraAttributes
     public function getShortNameAttribute()
     {
         $name = $this->basename();
-        $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental'])) ? ' in ' . $this->key : null;
+        $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental', 'Atonal'])) ? ' in ' . $this->key : null;
         $name .= $this->catalogue_name ? " {$this->catalogue}" : $key;
         return $name;
     }
@@ -44,7 +44,7 @@ trait PieceExtraAttributes
     {
         $name = $this->basename();
 
-        if (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental']))
+        if (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental', 'Atonal']))
             $name .= " in $this->key";
         
         if ($this->collection_name)

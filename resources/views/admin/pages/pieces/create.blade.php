@@ -96,6 +96,7 @@
                   @endforeach
                 </optgroup>
                 <optgroup label="Non-tonal">
+                  <option value="Atonal" {{ old('key') == 'Atonal' ? 'selected' : ''}}>Atonal</option>
                   <option value="Modal" {{ old('key') == 'Modal' ? 'selected' : ''}}>Modal</option>
                   <option value="Serial" {{ old('key') == 'Serial' ? 'selected' : ''}}>Serial</option>
                   <option value="Chromatic" {{ old('key') == 'Chromatic' ? 'selected' : ''}}>Chromatic</option>
