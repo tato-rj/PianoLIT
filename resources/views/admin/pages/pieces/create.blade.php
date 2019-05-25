@@ -37,10 +37,11 @@
               <div class="input-group">
                 <div class="input-group-prepend">
                   <select class="form-control rounded-left" style="border-radius: 0" name="catalogue_name" >
-                    <option class="default" selected>Catalogue</option>
+                    <option class="default" selected disabled>Catalogue</option>
                     @foreach(catalogues() as $catalogue)
                     <option value="{{$catalogue}}" {{ old('catalogue_name') == $catalogue ? 'selected' : ''}}>{{$catalogue}}</option>
                     @endforeach
+                    <option value="">No catalogue</option>
                   </select>
                 </div>
                 <input type="text" class="validate-name form-control" name="catalogue_number" placeholder="Number" value="{{ old('catalogue_number') }}">
