@@ -165,7 +165,7 @@
                   <div class="input-group-prepend">
                     <a class="input-group-text no-underline {{$piece->lookup('score_url')}}" href="{{$piece->score_url}}" target="_blank"><i class="fas fa-globe"></i></a>
                   </div>
-                  <input type="text" class="form-control" name="score_url" placeholder="Score url" value="{{$piece->score_url}}">
+                  <input type="text" class="form-control" maxlength="255" name="score_url" placeholder="Score url" value="{{$piece->score_url}}">
                 </div>
             </div>
           </div>

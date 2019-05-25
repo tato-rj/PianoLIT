@@ -158,7 +158,7 @@
               </div>
             </div>
             <div class="form-group non-public mt-3" style="display: none;">
-              <input type="text" class="form-control" name="score_url" placeholder="Score url" value="{{ old('score_url') }}">
+              <input type="text" class="form-control" name="score_url" maxlength="255" placeholder="Score url" value="{{ old('score_url') }}">
             </div>
           </div>
           {{-- Files --}}
