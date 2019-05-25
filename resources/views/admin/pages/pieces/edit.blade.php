@@ -99,6 +99,7 @@
                   @endforeach
                 </optgroup>
                 <optgroup label="Non-tonal">
+                  <option value="Atonal" {{($piece->key == 'Atonal') ? 'selected' : ''}}>Atonal</option>
                   <option value="Modal" {{($piece->key == 'Modal') ? 'selected' : ''}}>Modal</option>
                   <option value="Serial" {{($piece->key == 'Serial') ? 'selected' : ''}}>Serial</option>
                   <option value="Chromatic" {{($piece->key == 'Chromatic') ? 'selected' : ''}}>Chromatic</option>
