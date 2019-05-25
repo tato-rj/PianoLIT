@@ -38,7 +38,7 @@
               <div class="input-group">
                 <div class="input-group-prepend">
                   <select class="form-control rounded-left" style="border-radius: 0" name="catalogue_name" >
-                    <option selected disabled>Catalogue</option>
+                    <option selected>Catalogue</option>
                     @foreach(catalogues() as $catalogue)
                     <option value="{{$catalogue}}" {{($piece->catalogue_name == $catalogue) ? 'selected' : ''}}>{{$catalogue}}</option>
                     @endforeach
