@@ -5,7 +5,7 @@ namespace App;
 class Composer extends PianoLit
 {
     protected $dates = ['date_of_birth', 'date_of_death'];
-    protected $appends = ['last_name', 'short_name', 'nationality'];
+    protected $appends = ['last_name', 'short_name', 'nationality_name'];
     protected $casts = ['is_famous' => 'boolear'];
     protected $withCount = ['pieces'];
 
@@ -34,7 +34,7 @@ class Composer extends PianoLit
         return $this->date_of_death ? $this->date_of_death->year : null;
     }
 
-    public function getNationalityAttribute()
+    public function getNationalityNameAttribute()
     {
         return $this->country->nationality;
     }
