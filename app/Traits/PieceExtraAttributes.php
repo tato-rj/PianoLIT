@@ -6,7 +6,7 @@ trait PieceExtraAttributes
 {
     public function getLevelNameAttribute()
     {
-        return $this->level->name;
+        return ucfirst($this->level->name);
     }
 
     public function getPeriodNameAttribute()
