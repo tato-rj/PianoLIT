@@ -218,9 +218,9 @@ class PiecesController extends Controller
 
         foreach ($file_fields as $field) {
             $filename = str_replace('_path', '', $field);
-
+dd($filename);
             if ($request->hasFile($filename)) {
-                dd($filename);
+                
                 \Storage::disk('public')->delete($piece->$field);
                 
                 $piece->$field = $request->file($filename)->store("app/{$filename}", 'public');
