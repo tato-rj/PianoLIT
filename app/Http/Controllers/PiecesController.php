@@ -192,6 +192,7 @@ class PiecesController extends Controller
             'level' => 'required'
         ]);
 
+        dd($request->file('audio'));
         $piece->update([
             'name' => $request->name,
             'nickname' => $request->nickname,
