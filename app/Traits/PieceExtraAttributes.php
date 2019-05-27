@@ -9,10 +9,10 @@ trait PieceExtraAttributes
         return $this->level->name;
     }
 
-    // public function getPeriodAttribute($period)
-    // {
-    //     return ucfirst($period);
-    // }
+    public function getPeriodNameAttribute()
+    {
+        return ucfirst($this->period->name);
+    }
 
     // public function getLevelAttribute($level)
     // {
