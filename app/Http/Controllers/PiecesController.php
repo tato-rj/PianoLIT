@@ -218,7 +218,7 @@ class PiecesController extends Controller
 
         foreach ($file_fields as $field) {
             $filename = str_replace('_path', '', $field);
-dd($request->file('audio'));
+dd($request->hasFile('audio'));
             if ($request->hasFile($filename)) {
                 \Storage::disk('public')->delete($piece->$field);
                 
