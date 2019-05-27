@@ -215,10 +215,10 @@ class PiecesController extends Controller
         $piece->tags()->sync(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
         $file_fields = ['audio_path', 'audio_path_rh', 'audio_path_lh', 'score_path'];
-dd($request->file('audio'));
+
         foreach ($file_fields as $field) {
             $filename = str_replace('_path', '', $field);
-
+dd($request->file('audio'));
             if ($request->hasFile($filename)) {
                 \Storage::disk('public')->delete($piece->$field);
                 
