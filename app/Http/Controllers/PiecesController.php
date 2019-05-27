@@ -133,10 +133,10 @@ class PiecesController extends Controller
             'score_copyright' => $request->is_public ? 'Public Domain' : null,
             'composer_id' => $request->composer_id,
             'composed_in' => $request->composed_in,
-            'audio_path' => $request->has('audio') ? $request->file('audio')->store('app/audio', 'public') : null,
-            'audio_path_rh' => $request->has('audio_rh') ? $request->file('audio_rh')->store('app/audio_rh', 'public') : null,
-            'audio_path_lh' => $request->has('audio_lh') ? $request->file('audio_lh')->store('app/audio_lh', 'public') : null,
-            'score_path' => $request->has('score') ? $request->file('score')->store('app/score', 'public') : null,
+            'audio_path' => $request->hasFile('audio') ? $request->file('audio')->store('app/audio', 'public') : null,
+            'audio_path_rh' => $request->hasFile('audio_rh') ? $request->file('audio_rh')->store('app/audio_rh', 'public') : null,
+            'audio_path_lh' => $request->hasFile('audio_lh') ? $request->file('audio_lh')->store('app/audio_lh', 'public') : null,
+            'score_path' => $request->hasFile('score') ? $request->file('score')->store('app/score', 'public') : null,
             'creator_id' => auth()->user()->id,
         ]);
 
@@ -219,7 +219,8 @@ class PiecesController extends Controller
         foreach ($file_fields as $field) {
             $filename = str_replace('_path', '', $field);
 
-            if ($request->has($filename)) {
+            if ($request->hasFile($filename)) {
+                dd('test');
                 \Storage::disk('public')->delete($piece->$field);
                 
                 $piece->$field = $request->file($filename)->store("app/{$filename}", 'public');
