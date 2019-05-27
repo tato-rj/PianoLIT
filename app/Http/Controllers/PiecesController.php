@@ -192,7 +192,6 @@ class PiecesController extends Controller
             'level' => 'required'
         ]);
 
-        dd($request->file('audio'));
         $piece->update([
             'name' => $request->name,
             'nickname' => $request->nickname,
@@ -221,6 +220,7 @@ class PiecesController extends Controller
             $filename = str_replace('_path', '', $field);
 
             if ($request->hasFile($filename)) {
+                dd($filename);
                 \Storage::disk('public')->delete($piece->$field);
                 
                 $piece->$field = $request->file($filename)->store("app/{$filename}", 'public');
