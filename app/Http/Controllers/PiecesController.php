@@ -105,6 +105,7 @@ class PiecesController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request->file('audio'));
         $request->validate([
             'name' => 'required|max:255',
             'key' => 'required',
