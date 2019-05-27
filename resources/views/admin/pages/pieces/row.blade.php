@@ -1,10 +1,10 @@
 <tr>
   <td style="font-size: .8rem; white-space: nowrap; vertical-align: middle;">
-    <a href="{{$piece->timeline_url}}" title="JSON response to timeline" target="_blank" class="text-brand mr-1"><i class="fas fa-list-ul"></i></a>
-    <span class="{{$piece->curiosity ? 'text-brand' : 'text-muted'}}" title="{{$piece->curiosity}}"><i class="fas fa-info-circle mr-1"></i></span>
+    <a href="{{$piece->timeline_url}}" title="JSON response to timeline" target="_blank" class="text-primary mr-1"><i class="fas fa-list-ul"></i></a>
+    <span class="{{$piece->curiosity ? 'text-primary' : 'text-muted'}}" title="{{$piece->curiosity}}"><i class="fas fa-info-circle mr-1"></i></span>
     @include('admin.pages.pieces.play-icon')
-    <span class="mx-1 {{$piece->youtube_count > 0 ? 'text-brand' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$piece->youtube_count}}</span>
-    <span class="{{$piece->itunes_count > 0 ? 'text-brand' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$piece->itunes_count}}</span>
+    <span class="mx-1 {{$piece->youtube_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$piece->youtube_count}}</span>
+    <span class="{{$piece->itunes_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$piece->itunes_count}}</span>
     </div>
   </td>
   <td>{{$piece->long_name}}</td>
