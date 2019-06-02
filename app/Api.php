@@ -53,7 +53,7 @@ class Api
 
     public function composers()
     {
-        $collection = Composer::has('pieces', '>=', 20)->select('name')->withCount('pieces')->get();
+        $collection = Composer::select('name')->withCount('pieces')->get();
         $this->withAttributes($collection, [
             'type' => 'collection',
             'source' => \URL::to('/api/search'),
