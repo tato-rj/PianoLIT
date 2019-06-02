@@ -16,6 +16,10 @@ Route::get('/', function () {
     return view('welcome.index', compact(['tags', 'videos']));
 })->name('home');
 
+Route::get('/tools/circle-of-fifths', function() {
+	return view('tools.circle.index');
+});
+
 Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::get('', 'PostsController@index')->name('index');
