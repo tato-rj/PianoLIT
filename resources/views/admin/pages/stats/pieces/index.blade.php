@@ -41,6 +41,7 @@
       @include('admin.pages.stats.row', [
         'title' => 'Composers',
         'subtitle' => 'Number of pieces each of the ' . $composersCount . ' composers have in the database.',
+        'footer' => 'Composers with 3 or less pieces: ' . arrayToSentence($composersWithFewPieces),
         'id' => 'composersChart',
         'col' => '12',
         'data' => $composersStats])

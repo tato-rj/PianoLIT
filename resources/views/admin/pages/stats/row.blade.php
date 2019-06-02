@@ -5,5 +5,10 @@
 		    <p class="text-muted">{{$subtitle ?? null}}</p>
 		</div>
 	    <canvas id="{{$id}}" class="w-100" height="300" data-records="{{$data}}"></canvas>
+		@if(!empty($footer))
+		<div class="ml-2 mt-4">
+			<span class="badge badge-warning mr-2">Note</span><small>{{$footer}}</small>
+		</div>
+		@endif
 	</div>
   </div>

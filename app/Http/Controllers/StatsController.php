@@ -28,8 +28,7 @@ class StatsController extends Controller
         $tagsCount = Tag::count();
 
         $composersStats = Composer::has('pieces', '>', 3)->select('name')->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
-        $composersWithFewPieces = Composer::has('pieces', '<=', 3)->pluck('name')->get();
-        return $composersWithFewPieces;
+        $composersWithFewPieces = Composer::has('pieces', '<=', 3)->pluck('name')->toArray();
         $composersCount = Composer::count();
         
         $levelsStats = Tag::levels()->withCount('pieces')->get();
@@ -44,7 +43,7 @@ class StatsController extends Controller
         $itunesCount = Piece::withiTunes()->count();
 
         return view('admin.pages.stats.pieces.index', compact([
-            'tagStats', 'tagsCount', 'composersStats', 'composersCount', 
+            'tagStats', 'tagsCount', 'composersStats', 'composersCount', 'composersWithFewPieces',
             'levelsStats', 'recStats', 'periodsStats', 'pieces', 
             'youtubeCount', 'itunesCount', 'tagsPiecesStats', 'publicDomainCount'
         ]));

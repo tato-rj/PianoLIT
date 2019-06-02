@@ -8,6 +8,20 @@ function storage($path)
 	return null;
 }
 
+function arrayToSentence($array)
+{
+	$arrayCount = count($array);
+
+	if ($arrayCount == 1) {
+	    $sentence = $array[0] . '.';
+	} else {
+	    $partial = array_slice($array, 0, $arrayCount-1);
+	    $sentence = implode(', ', $partial) . ' and ' . $array[$arrayCount-1];
+	}
+
+	return $sentence;
+}
+
 function traffic()
 {
 	return new \App\Tools\Traffic;
