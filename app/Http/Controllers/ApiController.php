@@ -113,7 +113,7 @@ class ApiController extends Controller
 
     public function tags()
     {
-        return Tag::all();
+        return Tag::orderBy('name')->get();
     }
 
     public function composers()
