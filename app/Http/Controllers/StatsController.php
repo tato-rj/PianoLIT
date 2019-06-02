@@ -27,7 +27,9 @@ class StatsController extends Controller
         $tagStats = Tag::whereIn('type', ['mood', 'technique'])->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
         $tagsCount = Tag::count();
 
-        $composersStats = Composer::select('name')->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
+        $composersStats = Composer::has('pieces', '>', 3)->select('name')->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
+        $composersWithFewPieces = Composer::has('pieces', '<=', 3)->pluck('name')->get();
+        return $composersWithFewPieces;
         $composersCount = Composer::count();
         
         $levelsStats = Tag::levels()->withCount('pieces')->get();
