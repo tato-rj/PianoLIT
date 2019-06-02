@@ -42,7 +42,7 @@ p img {
 	margin-bottom: 1.75rem;
 }
 
-p iframe {
+iframe {
 	display: block;
     margin: 0 auto;
 }
