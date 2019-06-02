@@ -191,6 +191,6 @@ class Piece extends PianoLit
 
     public function isTranscription()
     {
-        return $this->tags->has(['name', 'transcription']);
+        return $this->tags_array->contains('transcription');
     }
 }
