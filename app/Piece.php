@@ -188,4 +188,9 @@ class Piece extends PianoLit
     {
         return $this->$attribute ? 'text-success' : 'text-muted';
     }
+
+    public function isTranscription()
+    {
+        return $this->tags->has(['name', 'transcription']);
+    }
 }

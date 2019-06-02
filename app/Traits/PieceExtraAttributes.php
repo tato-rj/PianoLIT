@@ -37,6 +37,7 @@ trait PieceExtraAttributes
     {
         $name = $this->short_name;
         $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
+        $name .= $this->isTranscription() ? " (piano transcription)" : '';
         return $name;       
     }
 
