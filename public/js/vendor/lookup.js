@@ -29,10 +29,10 @@ function Lukup(obj)
       value = $(element).attr('data-'+field);
       if (! lookup.exclude.includes(value)) {
         if (value) {
-          $('input[name="'+field+'"]').val(value).addClass('border-warning');
+          $('input[name="'+field+'"], textarea[name="'+field+'"]').val(value).addClass('border-warning');
           $('select[name="'+field+'"] option[value="'+value+'"]').prop('selected', true).parent().addClass('border-warning');
         } else {
-          $('input[name="'+field+'"]').val(value).removeClass('border-warning');
+          $('input[name="'+field+'"], textarea[name="'+field+'"]').val(value).removeClass('border-warning');
           $('select[name="'+field+'"] option[value="'+value+'"]').prop('selected', true).parent().removeClass('border-warning');
         }
       }

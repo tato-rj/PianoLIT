@@ -65,13 +65,13 @@ class Admin extends Authenticatable
         $periodsStats = Tag::periods()->withCount('pieces')->get();
 
         foreach ($levelsStats as $stat) {
-            if (percentage($stat->pieces_count, $total_count) < 20) {
+            if (percentage($stat->pieces_count, $total_count) < 15) {
                 array_push($alert, $stat->name);
             }
         }
 
         foreach ($periodsStats as $stat) {
-            if (percentage($stat->pieces_count, $total_count) < 12) {
+            if (percentage($stat->pieces_count, $total_count) < 10) {
                 array_push($alert, $stat->name);
             }
         }
