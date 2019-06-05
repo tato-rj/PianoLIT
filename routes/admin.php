@@ -103,4 +103,6 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 	
 	Route::post('/validate-name', 'PiecesController@validateName')->name('validate-name');
 
+	Route::patch('{piece}/update-level', 'PiecesController@updateLevel')->name('update-level');
+
 });

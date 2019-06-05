@@ -76,4 +76,62 @@ $(document).ready( function () {
   });
 } );
 </script>
+
+<script type="text/javascript">
+// $('html').click(function(e) {
+//   let $element = $(e.target);
+// console.log($element.hasClass('level-element'));
+//   if (!$element.hasClass('level-element')) {
+//     if($element.hasClass('badge-level')) {
+//       $('.levels-select').hide();
+//       $element.next('div').show();                    
+//     } else {
+//       $('.levels-select').hide();   
+//     }
+//   } else {
+//     alert('outside');
+//   }
+// });
+
+$(window).click(function() {
+  $('.levels-select').hide(); 
+});
+
+$('.levels-select').on('click', function(event) {
+  event.stopPropagation();
+});
+
+$('.badge-level').on('click', function(event) {
+  event.stopPropagation();
+  $('.levels-select').hide();
+  $(this).next('div').show();
+});
+
+$('.input-level').on('change', function() {
+  let $level = $(this);
+  let $badge = $($level.attr('data-badge'));
+  let url = $level.attr('data-url');
+  let originalClass = $badge.attr('data-original-class');
+  let oldLevel = $badge.attr('data-original-id');
+  let newLevel = $level.val();
+console.log($badge);
+  $.ajax({
+    url: url,
+    type: 'PATCH',
+    data: {old_level_id: oldLevel, new_level_id: newLevel}
+  })
+  .done(function(response) {
+    $badge.removeClass(originalClass)
+          .addClass('bg-'+response.level_name.toLowerCase())
+          .text(response.level_name)
+          .attr('data-original-id', response.level_id)
+          .attr('data-original-class', 'bg-'+response.level_name.toLowerCase());
+
+  })
+  .fail(function(response) {
+    alert('Something went wrong...');
+  });
+});
+
+</script>
 @endsection

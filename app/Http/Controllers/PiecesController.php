@@ -231,6 +231,14 @@ class PiecesController extends Controller
         return redirect()->back()->with('status', "The piece has been successfully updated!");
     }
 
+    public function updateLevel(Request $request, Piece $piece)
+    {
+        $piece->tags()->detach($request->old_level_id);
+        $piece->tags()->attach($request->new_level_id);
+
+        return response()->json(['level_name' => ucfirst($piece->level->name), 'level_id' => $piece->level->id]);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
