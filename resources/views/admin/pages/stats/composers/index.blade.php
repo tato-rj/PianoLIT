@@ -145,7 +145,7 @@ var periodsChart = new Chart(periodsChartElement,{
         labels: periods,
         datasets: [{
             data: periods_composers_count,
-            backgroundColor: getRandom(colors, 6)
+            backgroundColor: getRandom(colors, periodsRecords.length)
         }]
     },
     options: {
