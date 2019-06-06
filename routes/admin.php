@@ -68,6 +68,8 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 
 	Route::get('pieces', 'StatsController@pieces')->name('pieces');
 
+	Route::get('composers', 'StatsController@composers')->name('composers');
+
 	Route::get('blog', 'StatsController@blog')->name('blog');
 
 });

@@ -39,16 +39,6 @@
 
     <div class="row"> 
       @include('admin.pages.stats.row', [
-        'title' => 'Composers',
-        'subtitle' => 'Number of pieces each of the ' . $composersCount . ' composers have in the database.',
-        'footer' => 'Composers with 3 or less pieces: ' . arrayToSentence($composersWithFewPieces),
-        'id' => 'composersChart',
-        'col' => '12',
-        'data' => $composersStats])
-    </div>
-
-    <div class="row"> 
-      @include('admin.pages.stats.row', [
         'title' => 'Periods',
         'subtitle' => 'Number of pieces in each period.',
         'id' => 'periodsChart',
@@ -224,55 +214,6 @@ var tagsPiecesChart = new Chart(tagsPiecesChartElement, {
 });
 </script>
 
-<script type="text/javascript">
-let composersRecords = JSON.parse($('#composersChart').attr('data-records'));
-let composers = [];
-let composers_pieces_count = [];
-let composers_count = composersRecords.length;
-
-for (var i=0; i < composers_count; i++) {
-  composers.push(composersRecords[i].short_name);
-  composers_pieces_count.push(composersRecords[i].pieces_count);
-}
-
-var composersChartElement = document.getElementById("composersChart").getContext('2d');
-var composersChart = new Chart(composersChartElement, {
-    type: 'bar',
-    data: {
-        labels: composers,
-        datasets: [{
-            data: composers_pieces_count,
-            backgroundColor: getRandom(colors)
-        }]
-    },
-    options: {
-        legend: {
-          display: false
-        },
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    stepSize: getStepSize(composers_pieces_count)
-                }
-            }],
-            xAxes: [{
-                ticks: {
-                  autoSkip: false
-                }
-            }]
-        },
-        layout: {
-            padding: {
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0
-            }
-        }
-    }
-});
-</script>
 <script type="text/javascript">
 let periodsRecords = JSON.parse($('#periodsChart').attr('data-records'));
 let periods = [];

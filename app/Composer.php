@@ -40,7 +40,7 @@ class Composer extends PianoLit
         return $query->whereRaw('DATE_ADD(date_of_birth, INTERVAL YEAR(CURDATE())-YEAR(date_of_birth) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_birth),1,0) YEAR) = CURDATE()');
     }
 
-    public function scopeUpcomnigBirthdays($query, $days)
+    public function scopeUpcomingBirthdays($query, $days)
     {
         return $query->whereRaw('
             DATE_ADD(date_of_birth, INTERVAL YEAR(CURDATE())-YEAR(date_of_birth) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_birth),1,0) YEAR) 
@@ -52,7 +52,7 @@ class Composer extends PianoLit
         return $query->whereRaw('DATE_ADD(date_of_death, INTERVAL YEAR(CURDATE())-YEAR(date_of_death) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_death),1,0) YEAR) = CURDATE()');
     }
 
-    public function scopeUpcomnigDeathdays($query, $days)
+    public function scopeUpcomingDeathdays($query, $days)
     {
         return $query->whereRaw('
             DATE_ADD(date_of_death, INTERVAL YEAR(CURDATE())-YEAR(date_of_death) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_death),1,0) YEAR) 

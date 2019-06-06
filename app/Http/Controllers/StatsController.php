@@ -26,10 +26,6 @@ class StatsController extends Controller
     {
         $tagStats = Tag::whereIn('type', ['mood', 'technique'])->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
         $tagsCount = Tag::count();
-
-        $composersStats = Composer::has('pieces', '>', 3)->select('name')->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
-        $composersWithFewPieces = Composer::has('pieces', '<=', 3)->pluck('name')->toArray();
-        $composersCount = Composer::count();
         
         $levelsStats = Tag::levels()->withCount('pieces')->get();
         $periodsStats = Tag::periods()->withCount('pieces')->get();
@@ -43,10 +39,20 @@ class StatsController extends Controller
         $itunesCount = Piece::withiTunes()->count();
 
         return view('admin.pages.stats.pieces.index', compact([
-            'tagStats', 'tagsCount', 'composersStats', 'composersCount', 'composersWithFewPieces',
-            'levelsStats', 'recStats', 'periodsStats', 'pieces', 
+            'tagStats', 'tagsCount', 'levelsStats', 'recStats', 'periodsStats', 'pieces', 
             'youtubeCount', 'itunesCount', 'tagsPiecesStats', 'publicDomainCount'
         ]));
+    }
+
+    public function composers()
+    {
+        $composersStats = Composer::has('pieces', '>', 3)->select('name')->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
+        $composersWithFewPieces = Composer::has('pieces', '<=', 3)->pluck('name')->toArray();
+        $composersCount = Composer::count();
+        $upcomingBirthdays = Composer::upcomingBirthdays(10)->get();
+        $upcomingDeathdays = Composer::upcomingDeathdays(10)->get();
+
+        return view('admin.pages.stats.composers.index', compact(['composersStats', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays']));
     }
 
     public function blog()

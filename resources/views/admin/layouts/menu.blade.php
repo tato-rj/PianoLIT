@@ -38,6 +38,9 @@
             <a class="py-2" href="{{route('admin.stats.pieces')}}">Pieces</a>
           </li>
           <li>
+            <a class="py-2" href="{{route('admin.stats.composers')}}">Composers</a>
+          </li>
+          <li>
             <a class="py-2" href="{{route('admin.stats.blog')}}">Blog</a>
           </li>
         </ul>
