@@ -16,12 +16,14 @@
         </thead>
         <tbody>
           @foreach($composers as $composer)
-          <tr>
-            <td>{{$composer->name}}</td>
-            <td>{{$composer->date_of_birth ? $composer->date_of_birth->toFormattedDateString() : null}}</td>
-            <td>{{$composer->date_of_death ? $composer->date_of_death->toFormattedDateString() : null}}</td>
-            <td>{{$composer->age}}</td>
-          </tr>
+            @if($composer->date_of_birth)
+            <tr>
+              <td>{{$composer->name}}</td>
+              <td>{{$composer->date_of_birth ? $composer->date_of_birth->toFormattedDateString() : null}}</td>
+              <td>{{$composer->date_of_death ? $composer->date_of_death->toFormattedDateString() : null}}</td>
+              <td>{{$composer->age}}</td>
+            </tr>
+            @endif
           @endforeach
         </tbody>
       </table>
