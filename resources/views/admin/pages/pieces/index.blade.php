@@ -34,7 +34,12 @@ small .custom-control-label::before, small .custom-control-label::after {
 
     <div class="row my-3">
       <div class="col-12">
-        <table class="table table-hover" id="pieces-table">
+      <div class="w-100 text-center mt-5" id="spinner">
+        <div class="spinner-border text-brand" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+        <table class="table table-hover" id="pieces-table" style="display: none;">
           <thead>
             <tr>
               <th class="border-0" scope="col"></th>
@@ -72,6 +77,8 @@ $('.delete').on('click', function (e) {
 });
 
 $(document).ready( function () {
+  $('#spinner').remove();
+  $('#pieces-table').show();
   $('#pieces-table').DataTable({
     'aaSorting': [],
     'columnDefs': [ { 'orderable': false, 'targets': [0, 4] } ],
