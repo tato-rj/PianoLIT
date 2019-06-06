@@ -78,30 +78,16 @@ $('.delete').on('click', function (e) {
 
 $(document).ready( function () {
   $('#spinner').remove();
-  $('#pieces-table').show();
   $('#pieces-table').DataTable({
     'aaSorting': [],
     'columnDefs': [ { 'orderable': false, 'targets': [0, 4] } ],
 
   });
+  $('#pieces-table').fadeIn();
 } );
 </script>
 
 <script type="text/javascript">
-// $('html').click(function(e) {
-//   let $element = $(e.target);
-// console.log($element.hasClass('level-element'));
-//   if (!$element.hasClass('level-element')) {
-//     if($element.hasClass('badge-level')) {
-//       $('.levels-select').hide();
-//       $element.next('div').show();                    
-//     } else {
-//       $('.levels-select').hide();   
-//     }
-//   } else {
-//     alert('outside');
-//   }
-// });
 
 $(window).click(function() {
   $('.popup').hide(); 
