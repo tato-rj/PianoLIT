@@ -66,7 +66,7 @@ class Composer extends PianoLit
 
     public function getBornInAttribute()
     {
-        return $this->date_of_birth->year;
+        return $this->date_of_birth ? $this->date_of_birth->year : null;
     }
 
     public function getDiedInAttribute()
@@ -76,7 +76,11 @@ class Composer extends PianoLit
 
     public function getAgeAttribute()
     {
+        if (! $this->date_of_birth)
+            return null;
+
         $date = $this->date_of_death ?? now();
+
         return $date->diffInYears($this->date_of_birth);
     }
 
@@ -92,7 +96,7 @@ class Composer extends PianoLit
 
     public function getBornAtAttribute()
     {
-        return $this->date_of_birth->toFormattedDateString();
+        return $this->date_of_birth ? $this->date_of_birth->toFormattedDateString() : null;
     }
 
     public function getDiedAtAttribute()
@@ -102,6 +106,9 @@ class Composer extends PianoLit
 
     public function getAliveOnAttribute()
     {
+        if (! $this->date_of_birth)
+            return null;
+
         if ($this->date_of_death)
             return "{$this->date_of_birth->year} - {$this->date_of_death->year}";
 
