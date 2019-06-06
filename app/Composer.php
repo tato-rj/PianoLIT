@@ -74,6 +74,11 @@ class Composer extends PianoLit
         return $this->date_of_death ? $this->date_of_death->year : null;
     }
 
+    public function getAgeAttribute()
+    {
+        return $this->date_of_death->diffInYears($this->date_of_birth);
+    }
+
     public function getNationalityAttribute()
     {
         return $this->country->nationality;
