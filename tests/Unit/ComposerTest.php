@@ -14,6 +14,26 @@ class ComposerTest extends AppTest
 	}
 
 	/** @test */
+	public function it_knows_if_today_is_a_birthday()
+	{
+		$composerWithoutBirthday = create(Composer::class, ['date_of_birth' => now()->copy()->subWeek()]);
+		$composerWithBirthday = create(Composer::class, ['date_of_birth' => now()]);
+
+		$this->assertTrue($composerWithBirthday->wasBornToday());
+		$this->assertFalse($composerWithoutBirthday->wasBornToday());
+	}
+
+	/** @test */
+	public function it_knows_if_died_on_this_day()
+	{
+		$composerDiedAnotherDay = create(Composer::class, ['date_of_death' => now()->copy()->subWeek()]);
+		$composerDiedToday= create(Composer::class, ['date_of_death' => now()]);
+
+		$this->assertTrue($composerDiedToday->hasDiedToday());
+		$this->assertFalse($composerDiedAnotherDay->hasDiedToday());
+	}
+
+	/** @test */
 	public function it_knows_its_nationality()
 	{
 		$this->assertInstanceOf(Country::class, $this->composer->country);

@@ -23,12 +23,15 @@ class AdminsController extends Controller
         $subscriptions_count = Subscription::count() - 2;
         $blog_count = Post::count();
 
+        $birthdays = Composer::bornToday()->get();
+        $deathdays = Composer::diedToday()->get();
+
         $stats = new Stats;
         $pieces_graph = $stats->progress(15);
         $pieces_avg = $stats->average(15);
         $milestone = $stats->milestone($pieces_avg);
 
-        return view('admin.pages.home.index', compact('pieces_count', 'tags_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'pieces_graph', 'pieces_avg', 'milestone'));
+        return view('admin.pages.home.index', compact('pieces_count', 'tags_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'pieces_graph', 'pieces_avg', 'milestone', 'birthdays', 'deathdays'));
     }
 
     /**

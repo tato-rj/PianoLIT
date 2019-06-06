@@ -25,6 +25,40 @@ class Composer extends PianoLit
         return $this->belongsTo(Country::class);
     }
 
+    public function wasBornToday()
+    {
+        return $this->date_of_birth->isBirthday(now());
+    }
+
+    public function hasDiedToday()
+    {
+        return $this->date_of_death->isBirthday(now());
+    }
+
+    public function scopeBornToday($query)
+    {
+        return $query->whereRaw('DATE_ADD(date_of_birth, INTERVAL YEAR(CURDATE())-YEAR(date_of_birth) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_birth),1,0) YEAR) = CURDATE()');
+    }
+
+    public function scopeUpcomnigBirthdays($query, $days)
+    {
+        return $query->whereRaw('
+            DATE_ADD(date_of_birth, INTERVAL YEAR(CURDATE())-YEAR(date_of_birth) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_birth),1,0) YEAR) 
+            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)');
+    }
+
+    public function scopeDiedToday($query)
+    {
+        return $query->whereRaw('DATE_ADD(date_of_death, INTERVAL YEAR(CURDATE())-YEAR(date_of_death) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_death),1,0) YEAR) = CURDATE()');
+    }
+
+    public function scopeUpcomnigDeathdays($query, $days)
+    {
+        return $query->whereRaw('
+            DATE_ADD(date_of_death, INTERVAL YEAR(CURDATE())-YEAR(date_of_death) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_death),1,0) YEAR) 
+            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)');
+    }
+
     public function getBornInAttribute()
     {
         return $this->date_of_birth->year;

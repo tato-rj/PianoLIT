@@ -12,7 +12,16 @@
       @include('admin.components.breadcrumb', [
         'title' => 'Dashboard',
         'description' => 'PianoLIT Admin page '])
-        
+      
+      <div>
+        @foreach($birthdays as $composer)
+        @include('admin.pages.home.alerts.birthday')
+        @endforeach
+        @foreach($deathdays as $composer)
+        @include('admin.pages.home.alerts.deathday')
+        @endforeach
+      </div>
+
       @manager
       <!-- Icon Cards-->
       <div class="row mb-3">
