@@ -76,7 +76,8 @@ class Composer extends PianoLit
 
     public function getAgeAttribute()
     {
-        return $this->date_of_death->diffInYears($this->date_of_birth);
+        $date = $this->date_of_death ?? now();
+        return $date->diffInYears($this->date_of_birth);
     }
 
     public function getNationalityAttribute()

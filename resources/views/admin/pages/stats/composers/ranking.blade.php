@@ -19,7 +19,7 @@
           <tr>
             <td>{{$composer->name}}</td>
             <td>{{$composer->date_of_birth->toFormattedDateString()}}</td>
-            <td>{{$composer->date_of_death->toFormattedDateString()}}</td>
+            <td>{{$composer->date_of_death ? $composer->date_of_death->toFormattedDateString() : null}}</td>
             <td>{{$composer->age}}</td>
           </tr>
           @endforeach
