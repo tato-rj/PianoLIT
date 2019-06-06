@@ -1,5 +1,5 @@
 <div class="border py-4 px-3 h-100">
-    <div class="ml-2 mb-4">
+    <div class="ml-2 mb-3">
         <h4 class="mb-1"><strong><i class="fas fa-skull mr-2"></i>Upcoming deathdays</strong></h4>
         <p class="text-muted">We found {{$upcomingDeathdays->count()}} {{str_plural('deathday', $upcomingDeathdays->count())}} over the next 10 days.</p>
     </div>
