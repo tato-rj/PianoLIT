@@ -25,6 +25,11 @@ class Composer extends PianoLit
         return $this->belongsTo(Country::class);
     }
 
+    public function scopeByPeriod($query)
+    {
+        return \DB::table('composers')->selectRaw('period, count(*) as count')->groupBy('period')->get();
+    }
+
     public function wasBornToday()
     {
         return $this->date_of_birth->isBirthday(now());

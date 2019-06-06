@@ -30,6 +30,22 @@
         'data' => $composersStats])
     </div>
 
+    <div class="row"> 
+      @include('admin.pages.stats.row', [
+        'title' => 'Periods',
+        'subtitle' => 'Number of composers in each period.',
+        'id' => 'periodsChart',
+        'col' => '4',
+        'data' => $periodsStats])
+
+      @include('admin.pages.stats.row', [
+        'title' => 'Nationalities',
+        'subtitle' => 'Number of composers by nationality.',
+        'id' => 'countriesChart',
+        'col' => '8',
+        'data' => $countriesStats])
+    </div>
+
   </div>
 </div>
 
@@ -80,6 +96,88 @@ var composersChart = new Chart(composersChartElement, {
         labels: composers,
         datasets: [{
             data: composers_pieces_count,
+            backgroundColor: getRandom(colors)
+        }]
+    },
+    options: {
+        legend: {
+          display: false
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    stepSize: getStepSize(composers_pieces_count)
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                  autoSkip: false
+                }
+            }]
+        },
+        layout: {
+            padding: {
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0
+            }
+        }
+    }
+});
+</script>
+
+<script type="text/javascript">
+let periodsRecords = JSON.parse($('#periodsChart').attr('data-records'));
+let periods = [];
+let periods_composers_count = [];
+
+for (var i=0; i < periodsRecords.length; i++) {
+  periods.push(periodsRecords[i].period);
+  periods_composers_count.push(periodsRecords[i].count);
+}
+
+var periodsChartElement = document.getElementById("periodsChart").getContext('2d');
+var periodsChart = new Chart(periodsChartElement,{
+    type: 'pie',
+    data: {
+        labels: periods,
+        datasets: [{
+            data: periods_composers_count,
+            backgroundColor: getRandom(colors, 6)
+        }]
+    },
+    options: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 20
+          }
+        }
+    }
+});
+</script>
+
+<script type="text/javascript">
+let countriesRecords = JSON.parse($('#countriesChart').attr('data-records'));
+let countries = [];
+let countries_composers_count = [];
+let countries_count = countriesRecords.length;
+
+for (var i=0; i < countries_count; i++) {
+  countries.push(countriesRecords[i].nationality);
+  countries_composers_count.push(countriesRecords[i].composers_count);
+}
+
+var countriesChartElement = document.getElementById("countriesChart").getContext('2d');
+var countriesChart = new Chart(countriesChartElement, {
+    type: 'bar',
+    data: {
+        labels: countries,
+        datasets: [{
+            data: countries_composers_count,
             backgroundColor: getRandom(colors)
         }]
     },

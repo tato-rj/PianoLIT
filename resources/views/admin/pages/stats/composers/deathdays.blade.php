@@ -6,7 +6,7 @@
     <div class="mx-2">
         @if($upcomingDeathdays->count() > 0)
             <div class="d-flex justify-content-between">
-                <div><strong>Name</strong></div><div><strong>Died in</strong></div>
+                <div><small><strong>Name</strong></div><div><strong>Died in</strong></small></div>
             </div>
             @foreach($upcomingDeathdays as $composer)
             <div class="d-flex justify-content-between">

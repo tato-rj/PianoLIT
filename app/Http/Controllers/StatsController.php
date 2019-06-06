@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Blog\{Post, Topic};
-use App\{User, Piece, Tag, Composer};
+use App\{User, Piece, Tag, Composer, Country};
 use Illuminate\Http\Request;
 
 class StatsController extends Controller
@@ -51,8 +51,10 @@ class StatsController extends Controller
         $composersCount = Composer::count();
         $upcomingBirthdays = Composer::upcomingBirthdays(10)->get();
         $upcomingDeathdays = Composer::upcomingDeathdays(10)->get();
-
-        return view('admin.pages.stats.composers.index', compact(['composersStats', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays']));
+        $periodsStats = Composer::byPeriod();
+        $countriesStats = Country::withCount('composers')->orderBy('composers_count', 'DESC')->get();
+// return $countriesStats;
+        return view('admin.pages.stats.composers.index', compact(['composersStats', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays', 'periodsStats', 'countriesStats']));
     }
 
     public function blog()
