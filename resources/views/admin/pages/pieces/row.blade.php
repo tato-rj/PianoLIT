@@ -8,18 +8,17 @@
     </div>
   </td>
   <td>{{$piece->long_name}}</td>
-  <td>{{$piece->tags()->count()}}</td>
   <td style="white-space: nowrap;">{{$piece->composer->short_name}}</td>
   <td class="position-relative">
-    <div class="badge-level cursor-pointer badge badge-pill bg-{{strtolower($piece->level->name)}}" data-original-class="bg-{{strtolower($piece->level->name)}}" data-original-id="{{$piece->level->id}}" id="badge-level-{{$piece->id}}">{{ucfirst($piece->level->name)}}</div>
-    <div class="position-absolute bg-white shadow-sm p-2 rounded levels-select" style="top: 10px; display: none; z-index: 1; right: 0">
-      @foreach($levels as $level)
-      <div class="custom-control custom-radio level-element" style="transform: scale(.85);">
-        <input type="radio" id="level-{{$level->name}}-{{$piece->id}}" value="{{$level->id}}" name="level-{{$piece->id}}" {{($piece->level->name == $level->name) ? 'checked' : ''}} class="custom-control-input input-level" data-badge="#badge-level-{{$piece->id}}" data-url="{{route('admin.pieces.update-level', $piece->id)}}">
-        <label class="custom-control-label" for="level-{{$level->name}}-{{$piece->id}}">{{ucfirst($level->name)}}</label>
-      </div>
-      @endforeach
-    </div>
+    <span class="badge badge-light badge-popup cursor-pointer" id="badge-tag-{{$piece->id}}">{{$piece->tags_count}}</span>
+    @include('admin.pages.pieces.popups.tags')
+  </td>
+  <td class="position-relative">
+    <div class="badge-popup cursor-pointer badge badge-pill bg-{{strtolower($piece->level->name)}}" 
+        data-original-class="bg-{{strtolower($piece->level->name)}}" 
+        data-original-id="{{$piece->level->id}}" 
+        id="badge-level-{{$piece->id}}">{{ucfirst($piece->level->name)}}</div>
+    @include('admin.pages.pieces.popups.levels')
   </td>
 
   <td class="text-right" style="white-space: nowrap;">

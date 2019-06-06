@@ -105,4 +105,6 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::patch('{piece}/update-level', 'PiecesController@updateLevel')->name('update-level');
 
+	Route::patch('{piece}/update-tag', 'PiecesController@updateTag')->name('update-tag');
+
 });

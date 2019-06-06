@@ -15,4 +15,9 @@ class PianoLit extends Model
     {
         return $query->whereNotIn('id', $ids);
     }
+
+    public function scopeExcept($query, $column,$exclude)
+    {
+        return $query->whereNotIn($column, $exclude);
+    }
 }

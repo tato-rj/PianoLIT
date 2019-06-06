@@ -25,7 +25,8 @@ class AppServiceProvider extends ServiceProvider
     {
         \View::composer('admin.pages.pieces.index', function($view) {
             $view->with([
-                'levels' => \App\Tag::levels()->get()
+                'levels' => \App\Tag::levels()->get(),
+                'tagsByType' => \App\Tag::byTypes($except = ['levels', 'periods', 'lengths'])
             ]);
         });
 

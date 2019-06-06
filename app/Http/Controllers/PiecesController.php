@@ -239,6 +239,13 @@ class PiecesController extends Controller
         return response()->json(['level_name' => ucfirst($piece->level->name), 'level_id' => $piece->level->id]);
     }
 
+    public function updateTag(Request $request, Piece $piece)
+    {
+        $piece->tags()->toggle($request->id);
+
+        return response()->json(['count' => $piece->fresh()->tags_count]);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

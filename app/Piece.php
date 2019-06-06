@@ -9,7 +9,7 @@ class Piece extends PianoLit
     use PieceExtraAttributes, PieceStatus;
     
     protected $with = ['composer', 'tags', 'views'];
-    protected $withCount = ['views'];
+    protected $withCount = ['views', 'tags'];
     protected $appends = ['medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name', 'timeline_url', 'period_name'];
 
     public static function boot()
@@ -20,6 +20,11 @@ class Piece extends PianoLit
             $piece->tags()->detach();
             $piece->deleteFiles();
         });
+    }
+
+    public function getTagsCountAttribute($count)
+    {
+        return $count - 3;
     }
 
     public function getMissingInfoAttribute()
