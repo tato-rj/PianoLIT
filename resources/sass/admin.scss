@@ -16,6 +16,10 @@ $brand-primary: #2e5ab9;
 @import "global";
 @import "swiper";
 
+html {
+	background-color: white;
+}
+
 #mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse.collapsed:after, #mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse:after {
 	content: none;
 }
