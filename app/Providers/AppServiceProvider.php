@@ -23,13 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        \View::composer('admin.pages.pieces.index', function($view) {
-            $view->with([
-                'levels' => \App\Tag::levels()->get(),
-                'tagsByType' => \App\Tag::byTypes($except = ['levels', 'periods', 'lengths'])
-            ]);
-        });
-
         \Blade::if('manager', function () {
             return auth()->guard('admin')->user()->role == 'manager';
         });

@@ -34,12 +34,7 @@ small .custom-control-label::before, small .custom-control-label::after {
 
     <div class="row my-3">
       <div class="col-12">
-      <div class="w-100 text-center mt-5" id="spinner">
-        <div class="spinner-border text-brand" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
-        <table class="table table-hover" id="pieces-table" style="display: none;">
+        <table class="table table-hover" id="pieces-table">
           <thead>
             <tr>
               <th class="border-0" scope="col"></th>
@@ -77,14 +72,11 @@ $('.delete').on('click', function (e) {
 });
 
 $(document).ready( function () {
-  $('#spinner').remove();
   $('#pieces-table').DataTable({
     'aaSorting': [],
     'columnDefs': [ { 'orderable': false, 'targets': [0, 4] } ],
-
   });
-  $('#pieces-table').fadeIn();
-} );
+});
 </script>
 
 <script type="text/javascript">
@@ -98,12 +90,23 @@ $('.popup').on('click', function(event) {
 });
 
 $('.badge-popup').on('click', function(event) {
+  let $popup = $(this).next('div');
+  let url = $popup.attr('data-url');
   event.stopPropagation();
-  $('.popup').hide();
-  $(this).next('div').show();
+  $('.popup').hide();  
+  $popup.show();
+
+  if ($popup.find('.spinner').is(':visible')) {
+    $.get(url, function(view) {
+      $popup.find('.spinner').hide();
+      $popup.find('.content').html(view);
+    }).fail(function() {
+      alert('We couldn\'t load the content...');
+    });
+  }
 });
 
-$('.input-level').on('change', function() {
+$(document).on('change', '.input-level', function() {
   let $level = $(this);
 
   if (! $level.is(':disabled')) {
@@ -135,7 +138,7 @@ $('.input-level').on('change', function() {
   }
 });
 
-$('.input-tag').on('change', function() {
+$(document).on('change', '.input-tag', function() {
   let $tag = $(this);
 
   if (! $tag.is(':disabled')) {

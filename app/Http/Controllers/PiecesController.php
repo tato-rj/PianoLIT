@@ -46,8 +46,22 @@ class PiecesController extends Controller
                 if ($piece->hasITunes()) $pieces->forget($key);
             }
         });
-
+        
         return view('admin.pages.pieces.index', compact('pieces'));
+    }
+
+    public function loadTags(Piece $piece)
+    {
+        $tags = Tag::byTypes($except = ['levels', 'periods', 'lengths']);
+
+        return view('admin.pages.pieces.popups.tags', ['piece' => $piece, 'tagsByType' => $tags])->render();
+    }
+
+    public function loadLevels(Piece $piece)
+    {
+        $levels = Tag::levels()->get();
+
+        return view('admin.pages.pieces.popups.levels', ['piece' => $piece, 'levels' => $levels])->render();
     }
 
     /**

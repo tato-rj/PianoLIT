@@ -11,14 +11,18 @@
   <td style="white-space: nowrap;">{{$piece->composer->short_name}}</td>
   <td class="position-relative">
     <span class="badge badge-light badge-popup cursor-pointer" id="badge-tag-{{$piece->id}}">{{$piece->tags_count}}</span>
-    @include('admin.pages.pieces.popups.tags')
+    <div class="position-absolute bg-white shadow-sm border p-2 rounded popup mb-3" data-url="{{route('admin.pieces.load-tags', $piece->id)}}" style="top: 10px; display: none; z-index: 2; right: 0; width: 720px">
+      @include('admin.pages.pieces.popups.content')
+    </div>
   </td>
   <td class="position-relative">
     <div class="badge-popup cursor-pointer badge badge-pill bg-{{strtolower($piece->level->name)}}" 
         data-original-class="bg-{{strtolower($piece->level->name)}}" 
         data-original-id="{{$piece->level->id}}" 
         id="badge-level-{{$piece->id}}">{{ucfirst($piece->level->name)}}</div>
-    @include('admin.pages.pieces.popups.levels')
+    <div class="position-absolute bg-white shadow-sm border px-2 pt-2 pb-1 rounded popup mb-3"  data-url="{{route('admin.pieces.load-levels', $piece->id)}}" style="top: 10px; display: none; z-index: 1; left: 0">
+    @include('admin.pages.pieces.popups.content')
+    </div>
   </td>
 
   <td class="text-right" style="white-space: nowrap;">
