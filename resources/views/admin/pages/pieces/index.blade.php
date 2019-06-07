@@ -34,7 +34,7 @@ small .custom-control-label::before, small .custom-control-label::after {
 
     <div class="row my-3">
       <div class="col-12">
-        <table class="table table-hover" id="pieces-table">
+        <table class="table table-hover" id="pieces-table" style="display: none;">
           <thead>
             <tr>
               <th class="border-0" scope="col"></th>
@@ -76,6 +76,8 @@ $(document).ready( function () {
     'aaSorting': [],
     'columnDefs': [ { 'orderable': false, 'targets': [0, 4] } ],
   });
+
+  $('#pieces-table').fadeIn();
 });
 </script>
 

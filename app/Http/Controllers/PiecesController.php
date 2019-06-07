@@ -15,21 +15,6 @@ class PiecesController extends Controller
     public function index()
     {
         $pieces = Piece::filters(['creator_id', 'itunes', 'youtube', 'score_path', 'audio_path'])->orderBy('updated_at', 'desc')->get();
-
-        // if (request()->has('creator_id'))
-        //     $pieces = $pieces->where('creator_id', request('creator_id'));
-
-        // if (request()->has('itunes'))
-        //     $pieces = $pieces->where('itunes', request('itunes'));
-
-        // if (request()->has('youtube'))
-        //     $pieces = $pieces->where('youtube', request('youtube'));
-
-        // if (request()->has('score_path'))
-        //     $pieces = $pieces->where('score_path', request('score_path'));
-
-        // if (request()->has('audio_path'))
-        //     $pieces = $pieces->where('audio_path', request('audio_path'));
         
         return view('admin.pages.pieces.index', compact('pieces'));
     }
