@@ -14,38 +14,22 @@ class PiecesController extends Controller
      */
     public function index()
     {
-        $pieces = new Piece;
+        $pieces = Piece::filters(['creator_id', 'itunes', 'youtube', 'score_path', 'audio_path'])->orderBy('updated_at', 'desc')->get();
 
-        if (request()->has('creator_id'))
-            $pieces = $pieces->where('creator_id', request('creator_id'));
+        // if (request()->has('creator_id'))
+        //     $pieces = $pieces->where('creator_id', request('creator_id'));
 
-        if (request()->has('composer'))
-            $pieces = $pieces->where('composer_id', request('composer'));
+        // if (request()->has('itunes'))
+        //     $pieces = $pieces->where('itunes', request('itunes'));
 
-        if (request()->has('level'))
-            $pieces = $pieces->whereHas('tags', function($q) {
-                return $q->where('name', request('level'));
-            });
+        // if (request()->has('youtube'))
+        //     $pieces = $pieces->where('youtube', request('youtube'));
 
-        $pieces = $pieces->orderBy('updated_at', 'desc')->get();
-        
-        $pieces->each(function ($piece, $key) use ($pieces) {
-            if (request()->has('missing_audio')) {
-                if ($piece->hasAudio()) $pieces->forget($key);
-            }
+        // if (request()->has('score_path'))
+        //     $pieces = $pieces->where('score_path', request('score_path'));
 
-            if (request()->has('missing_score')) {
-                if ($piece->hasScore()) $pieces->forget($key);
-            }
-
-            if (request()->has('missing_youtube')) {
-                if ($piece->hasYoutube()) $pieces->forget($key);
-            }
-            
-            if (request()->has('missing_itunes')) {
-                if ($piece->hasITunes()) $pieces->forget($key);
-            }
-        });
+        // if (request()->has('audio_path'))
+        //     $pieces = $pieces->where('audio_path', request('audio_path'));
         
         return view('admin.pages.pieces.index', compact('pieces'));
     }

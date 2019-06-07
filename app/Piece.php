@@ -198,4 +198,19 @@ class Piece extends PianoLit
     {
         return $this->tags_array->contains('transcription');
     }
+
+    public function scopeFilters($query, $filters)
+    {
+        foreach ($filters as $filter) {
+            if (request()->has($filter)) {
+                if (request($filter) == 'missing') {
+                    $query->whereNull($filter);
+                } else {
+                    $query->where($filter, request($filter));
+                }
+            }
+        }
+
+        return $query;
+    }
 }

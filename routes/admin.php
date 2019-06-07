@@ -113,4 +113,6 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::get('{piece}/load-levels', 'PiecesController@loadLevels')->name('load-levels');
 
+	Route::get('datatable', 'PiecesController@datatable')->name('datatable');
+
 });
