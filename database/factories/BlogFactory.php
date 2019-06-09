@@ -13,6 +13,7 @@ $factory->define(Post::class, function (Faker $faker) {
         'title' => $faker->sentence(8),
         'description' => $faker->paragraph(2),
         'content' => $faker->paragraph,
+        'gift_path' => $faker->sentence,
         'cover_path' => $faker->image(),
         'cover_credits' => $faker->sentence,
         'views' => $faker->numberBetween(0,500),

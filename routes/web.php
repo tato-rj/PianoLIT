@@ -30,4 +30,4 @@ Route::prefix('blog')->name('posts.')->group(function() {
 
 });
 
-Route::get('gift/{gift}', 'UsersController@gift')->name('gift');
+Route::get('gift', 'UsersController@gift')->name('gift');

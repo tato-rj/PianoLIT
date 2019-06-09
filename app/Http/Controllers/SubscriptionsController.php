@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Subscription;
 use App\Http\Requests\SubscriptionForm;
+use App\Mail\Gift;
 use Illuminate\Http\Request;
 
 class SubscriptionsController extends Controller
@@ -15,7 +16,7 @@ class SubscriptionsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('throttle:2')->only('store');
+        // $this->middleware('throttle:2')->only('store');
     }
 
     /**
@@ -46,12 +47,20 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
-        if (Subscription::active()->byEmail($form->email)->exists())
+        if (Subscription::active()->byEmail($form->email)->exists() && ! $request->gift)
             return redirect()->back()->with('error', 'We already have this email in our subscription list.');
 
         Subscription::createOrActivate($form->email);
 
-        return redirect()->back()->with('status', 'Thanks for subscribing!');
+        if ($request->gift) {
+            \Mail::to($form->email)->send(new Gift($request->gift));
+            $message = 'We just sent out the gift, check your mailbox!';
+        } else {
+            $message = 'Thanks for subscribing!';
+        }
+
+
+        return redirect()->back()->with('status', $message);
     }
 
     /**

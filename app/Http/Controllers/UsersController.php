@@ -19,12 +19,14 @@ class UsersController extends Controller
         return view('admin.pages.users.index', compact('users'));
     }
 
-    public function gift($gift)
+    public function gift()
     {
-        if (! \Storage::disk('public')->exists('gifts/' . $gift))
+        $file = str_replace('storage/', '', request('gift'));
+
+        if (! \Storage::disk('public')->exists($file))
             abort(404);
 
-        return \Storage::disk('public')->download('gifts/' . $gift);
+        return \Storage::disk('public')->download($file);
     }
 
     /**

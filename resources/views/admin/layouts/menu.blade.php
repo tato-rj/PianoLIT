@@ -113,6 +113,9 @@
           <li class="d-none d-sm-block">
             <a class="py-2" href="{{route('admin.posts.audio.index')}}">Audio</a>
           </li>
+          <li class="d-none d-sm-block">
+            <a class="py-2" href="{{route('admin.posts.gifts.index')}}">Gifts</a>
+          </li>
         </ul>
       </li>
 

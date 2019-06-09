@@ -54,6 +54,7 @@ class PostsController extends Controller
             'title' => $form->title,
             'description' => $form->description,
             'content' => $form->content,
+            'gift_path' => $form->gift_path,
             'cover_credits' => $form->cover_credits,
             'reading_time' => $form->reading_time
         ]);
@@ -126,6 +127,7 @@ class PostsController extends Controller
             'title' => $form->title,
             'description' => $form->description,
             'content' => $form->content,
+            'gift_path' => $form->gift_path,
             'reading_time' => $form->reading_time,
             'cover_credits' => $form->cover_credits
         ]);

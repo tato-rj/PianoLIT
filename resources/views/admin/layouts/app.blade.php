@@ -14,6 +14,7 @@
         <meta name="theme-color" content="#ffffff">
 
         <title>PianoLIT | Admin</title>
+        <link rel="stylesheet" type="text/css" href="{{asset('css/primer.css')}}">
         <link rel="stylesheet" type="text/css" href="{{mix('css/admin.css')}}">
         
         <script>
