@@ -49,7 +49,7 @@ class Composer extends PianoLit
     {
         return $query->whereRaw('
             DATE_ADD(date_of_birth, INTERVAL YEAR(CURDATE())-YEAR(date_of_birth) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_birth),1,0) YEAR) 
-            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)');
+            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)')->orderBy('date_of_birth');
     }
 
     public function scopeDiedToday($query)
@@ -61,7 +61,7 @@ class Composer extends PianoLit
     {
         return $query->whereRaw('
             DATE_ADD(date_of_death, INTERVAL YEAR(CURDATE())-YEAR(date_of_death) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_death),1,0) YEAR) 
-            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)');
+            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)')->orderBy('date_of_death');
     }
 
     public function getBornInAttribute()
