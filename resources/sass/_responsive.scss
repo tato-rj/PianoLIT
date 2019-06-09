@@ -1,4 +1,8 @@
 @include media-breakpoint-down(sm) {
+	button#gift {
+		bottom: 60px !important;
+	}
+	
 	.suggestion-card {
 		.card-img-top {
 			height: 160px !important;

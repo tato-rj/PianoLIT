@@ -43,7 +43,11 @@
             @foreach($posts as $post)
             <tr>
               <td class="d-none d-sm-block" style="white-space: nowrap;">{{$post->created_at->toFormattedDateString()}}</td>
-              <td>{{$post->title}}</td>
+              <td>{{$post->title}}
+              @if($post->hasGift())
+              <span class="ml-2"><i class="fas fa-gift" style="color: #E92C59"></i></span>
+              @endif
+              </td>
               <td class="d-none d-sm-block">{{$post->reading_time}} min</td>
               <td id="status-{{$post->slug}}" class="status-text text-{{$post->published_at ? 'success' : 'warning'}}">{{ucfirst($post->status)}}</td>
               <td class="justify-content-end d-flex">
