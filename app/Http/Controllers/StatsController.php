@@ -49,8 +49,8 @@ class StatsController extends Controller
         $composersStats = Composer::has('pieces', '>', 3)->select('name')->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
         $composersWithFewPieces = Composer::has('pieces', '<=', 3)->pluck('name')->toArray();
         $composersCount = Composer::count();
-        $upcomingBirthdays = Composer::upcomingBirthdays(10)->get();
-        $upcomingDeathdays = Composer::upcomingDeathdays(10)->get();
+        $upcomingBirthdays = Composer::upcomingBirthdays(30)->get();
+        $upcomingDeathdays = Composer::upcomingDeathdays(30)->get();
         $periodsStats = Composer::byPeriod();
         $countriesStats = Country::withCount('composers')->orderBy('composers_count', 'DESC')->get();
         $composers = Composer::all();
