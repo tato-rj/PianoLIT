@@ -122,13 +122,14 @@ g.key {
 
     rotation = snap(d - startAngle);
 
-    $(rot).css({
-    	'-webkit-transform': "rotate(" + (angle + rotation) + "deg)",
-    	'-moz-transform': "rotate(" + (angle + rotation) + "deg)",
-    	'-ms-transform': "rotate(" + (angle + rotation) + "deg)",
-    	'-o-transform': "rotate(" + (angle + rotation) + "deg)",
-    	'transform': "rotate(" + (angle + rotation) + "deg)"
-    });
+    return rot.style.webkitTransform = "rotate(" + (angle + rotation) + "deg)";
+    // $(rot).css({
+    // 	'-webkit-transform': "rotate(" + (angle + rotation) + "deg)",
+    // 	'-moz-transform': "rotate(" + (angle + rotation) + "deg)",
+    // 	'-ms-transform': "rotate(" + (angle + rotation) + "deg)",
+    // 	'-o-transform': "rotate(" + (angle + rotation) + "deg)",
+    // 	'transform': "rotate(" + (angle + rotation) + "deg)"
+    // });
   };
 
   stop = function() {
