@@ -75,8 +75,9 @@ g.key {
 
   init = function() {
     rot.addEventListener("mousedown", start, false);
+    rot.addEventListener("touchstart", start, false);
 
-    $(document).bind('mousemove', function(event) {
+    $(document).bind('mousemove touchmove', function(event) {
       if (active === true) {
         event.preventDefault();
 	  	$letters.removeClass('key');
@@ -84,7 +85,7 @@ g.key {
         rotate(event);
       }
     });
-    $(document).bind('mouseup', function(event) {
+    $(document).bind('mouseup touchend', function(event) {
 		event.preventDefault();
 		stop(event);
 	    setTimeout( function() {
