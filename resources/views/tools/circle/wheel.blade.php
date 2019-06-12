@@ -11,14 +11,14 @@
 </svg>
 </div>
 
-<svg id="target" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" style="width: 100%" viewBox="0 0 600 600" enable-background="new 0 0 600 600" xml:space="preserve">
-<g id="WHEEL">
+<svg id="circle" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" style="width: 100%" viewBox="0 0 600 600" enable-background="new 0 0 600 600" xml:space="preserve">
+<g id="wheel">
 	<circle opacity="0.15" fill="none" stroke="#59BAB6" stroke-width="73" stroke-miterlimit="10" cx="300" cy="300" r="230"/>
 	<path opacity="0.15" fill="none" stroke="#FCC6A3" stroke-width="59" stroke-miterlimit="10" d="M455,300
 		c0,85.607-69.393,155-155,155c-85.605,0-155-69.393-155-155c0-85.605,69.395-155,155-155C385.608,145,455,214.396,455,300z"/>
 </g>
-<g id="LETTERS">
-	<g id="key-f" key-major="F major" key-minor="D minor" key-major-relatives="Bb major|C major|A minor|G minor">
+<g id="letters">
+	<g id="key-f" key-major="F major" key-minor="D minor" key-relatives="Bb major|C major|A minor|G minor">
 		<path fill="#47827E" d="M182.07,124.743L165.574,96.17c-0.347-0.6-0.234-1.066,0.34-1.396L185.44,83.5
 			c0.572-0.331,1.033-0.195,1.379,0.405l3.025,5.24c0.347,0.601,0.234,1.065-0.339,1.396l-12.487,7.209l3.641,6.304l9.127-5.271
 			c0.601-0.346,1.083-0.207,1.445,0.421l2.859,4.954c0.348,0.601,0.22,1.074-0.381,1.42l-9.129,5.271l5.389,9.333
@@ -37,7 +37,7 @@
 				S216.296,171.503,216.768,172.319z"/>
 		</g>
 	</g>
-	<g id="key-bb" key-major="Bb major" key-minor="G minor" key-major-relatives="Eb major|F major|C minor|D minor">
+	<g id="key-bb" key-major="Bb major" key-minor="G minor" key-relatives="Eb major|F major|C minor|D minor">
 		<path fill="#47827E" d="M106.279,215.637l-32.586-18.814c-0.716-0.413-0.877-0.963-0.48-1.648l8.544-14.799
 			c0.79-1.369,1.793-2.513,3.008-3.431c1.214-0.917,2.541-1.561,3.98-1.934c1.438-0.373,2.919-0.475,4.437-0.303
 			c1.52,0.174,2.98,0.662,4.381,1.471c2.335,1.348,3.922,3.199,4.762,5.551c1.657-0.495,3.385-0.668,5.19-0.522
@@ -77,7 +77,7 @@
 				c-0.472,0.816-0.558,1.649-0.258,2.495C155.531,229.602,156.101,230.268,156.939,230.752z"/>
 		</g>
 	</g>
-	<g id="key-eb" key-major="Eb major" key-minor="C minor" key-major-relatives="Ab major|Bb major|F minor|G minor">
+	<g id="key-eb" key-major="Eb major" key-minor="C minor" key-relatives="Ab major|Bb major|F minor|G minor">
 		<path fill="#47827E" d="M90.812,324.464H53.188c-0.792,0-1.187-0.395-1.187-1.185v-26.794c0-0.789,0.395-1.184,1.187-1.184h6.899
 			c0.792,0,1.186,0.395,1.186,1.184v17.574h6.63v-13.368c0-0.863,0.414-1.294,1.24-1.294h5.553c0.791,0,1.187,0.431,1.187,1.294
 			v13.368h6.899v-18.112c0-0.791,0.397-1.187,1.187-1.187h6.845c0.793,0,1.188,0.396,1.188,1.187v27.332
@@ -106,7 +106,7 @@
 				c0-0.615-0.119-1.309-0.355-2.068C150.682,304.312,150.384,303.697,150.024,303.222z"/>
 		</g>
 	</g>
-	<g id="key-ab" key-major="Ab major" key-minor="F minor" key-major-relatives="Db major|Eb major|Bb minor|C minor">
+	<g id="key-ab" key-major="Ab major" key-minor="F minor" key-relatives="Db major|Eb major|Bb minor|C minor">
 		<path fill="#47827E" d="M130.352,429.172l-39.891,6.162c-0.847,0.115-1.467-0.168-1.863-0.854l-3.288-5.695
 			c-0.414-0.717-0.341-1.381,0.218-1.994l25.228-31.559c0.523-0.676,0.992-0.656,1.404,0.061l4.018,6.957
 			c0.395,0.684,0.313,1.332-0.246,1.945l-3.633,4.275l7.358,12.746l5.492-1.055c0.811-0.178,1.423,0.092,1.836,0.807l4.016,6.957
@@ -132,7 +132,7 @@
 				L164.692,388.775z"/>
 		</g>
 	</g>
-	<g id="key-db" key-major="Db major" key-minor="Bb minor" key-major-relatives="Gb major|Ab major|Eb minor|F minor">
+	<g id="key-db" key-major="Db major" key-minor="Bb minor" key-relatives="Gb major|Ab major|Eb minor|F minor">
 		<path fill="#47827E" d="M210.181,493.101l-16.918,29.305c-0.355,0.614-0.826,0.753-1.414,0.415l-10.917-6.302
 			c-1.957-1.131-3.634-2.642-5.026-4.527c-1.393-1.887-2.413-3.947-3.061-6.189c-0.646-2.236-0.861-4.563-0.645-6.977
 			c0.217-2.412,0.947-4.698,2.191-6.852c1.18-2.043,2.717-3.767,4.61-5.172c1.896-1.408,3.959-2.429,6.188-3.063
@@ -174,7 +174,7 @@
 				c-0.451-0.261-0.903-0.315-1.35-0.166C203.896,427.972,203.537,428.277,203.27,428.741z"/>
 		</g>
 	</g>
-	<g id="key-fs" key-major="F# major" key-minor="D# minor" key-major-relatives="B major|C# major|G# minor|A# minor">
+	<g id="key-fs" key-major="F# major" key-minor="D# minor" key-relatives="B major|C# major|G# minor|A# minor">
 		<path fill="#47827E" d="M326.213,511.188v37.626c0,0.791-0.377,1.187-1.132,1.187h-25.715c-0.754,0-1.131-0.396-1.131-1.187v-6.9
 			c0-0.791,0.377-1.185,1.131-1.185h16.443v-8.302h-12.021c-0.79,0-1.188-0.413-1.188-1.238v-6.524c0-0.791,0.397-1.188,1.188-1.188
 			h12.021v-12.289c0-0.791,0.396-1.188,1.185-1.188h8.087C325.836,510,326.213,510.397,326.213,511.188z"/>
@@ -215,7 +215,7 @@
 				l-0.2,2.345H294.13z"/>
 		</g>
 	</g>
-	<g id="key-b" key-major="B major" key-minor="G# minor" key-major-relatives="F# major|E major|D# minor|C# minor">
+	<g id="key-b" key-major="B major" key-minor="G# minor" key-relatives="F# major|E major|D# minor|C# minor">
 		<path fill="#47827E" d="M424.242,470.534l19.755,34.216c0.434,0.751,0.293,1.335-0.427,1.75l-15.54,8.972
 			c-1.436,0.83-2.949,1.345-4.534,1.54c-1.586,0.197-3.133,0.087-4.637-0.329c-1.504-0.417-2.9-1.103-4.194-2.055
 			c-1.291-0.955-2.36-2.168-3.21-3.639c-1.414-2.45-1.889-4.967-1.414-7.549c-1.768-0.418-3.432-1.168-4.994-2.248
@@ -257,7 +257,7 @@
 				L373.273,455.018z M375.944,450.074l-1.081-2.31l-1.366,0.792l1.078,2.308L375.944,450.074z"/>
 		</g>
 	</g>
-	<g id="key-e" key-major="E major" key-minor="C# minor" key-major-relatives="B major|A major|G# minor|F# minor">
+	<g id="key-e" key-major="E major" key-minor="C# minor" key-relatives="B major|A major|G# minor|F# minor">
 		<path fill="#47827E" d="M490.69,386.565l34.216,19.755c0.719,0.415,0.87,0.984,0.456,1.7l-14.067,24.366
 			c-0.413,0.717-0.981,0.87-1.7,0.454l-6.275-3.622c-0.719-0.415-0.869-0.983-0.456-1.7l9.228-15.982l-6.029-3.48l-7.019,12.157
 			c-0.454,0.786-1.055,0.96-1.806,0.526l-5.051-2.916c-0.719-0.415-0.852-1.013-0.398-1.799l7.02-12.157l-6.275-3.622l-9.509,16.47
@@ -290,7 +290,7 @@
 				l-0.855,1.484l2.256,1.571L436.974,392.018z"/>
 		</g>
 	</g>
-	<g id="key-a" key-major="A major" key-minor="F# minor" key-major-relatives="E major|D major|C# minor|B minor">
+	<g id="key-a" key-major="A major" key-minor="F# minor" key-relatives="E major|D major|C# minor|B minor">
 		<path fill="#47827E" d="M510.248,279.425l39.507,15.337c0.832,0.341,1.246,0.925,1.246,1.754v6.907
 			c0,0.869-0.414,1.434-1.246,1.699l-39.507,15.453c-0.832,0.34-1.247,0.074-1.247-0.794v-8.434c0-0.829,0.415-1.379,1.247-1.641
 			l5.547-1.981v-15.453l-5.547-1.924c-0.832-0.263-1.247-0.83-1.247-1.698v-8.434C509,279.348,509.416,279.083,510.248,279.425z
@@ -316,7 +316,7 @@
 				c-0.091,0.113-0.21,0.165-0.357,0.148L465.877,312.044z M462.856,307.136l-2.6-0.226v1.624l2.6,0.221V307.136z"/>
 		</g>
 	</g>
-	<g id="key-d" key-major="D major" key-minor="B minor" key-major-relatives="A major|G major|F# minor|E minor">
+	<g id="key-d" key-major="D major" key-minor="B minor" key-relatives="A major|G major|F# minor|E minor">
 		<path fill="#47827E" d="M477.43,186.293l34.217-19.755c0.718-0.415,1.275-0.281,1.672,0.406l7.359,12.746
 			c1.319,2.286,2.134,4.791,2.44,7.511c0.307,2.721,0.134,5.402-0.519,8.045c-0.654,2.643-1.794,5.12-3.42,7.434
 			c-1.63,2.313-3.701,4.196-6.217,5.648c-2.387,1.378-4.948,2.225-7.684,2.541c-2.738,0.314-5.419,0.144-8.045-0.521
@@ -338,7 +338,7 @@
 				c0.503,0.87,1.2,1.398,2.097,1.58C434.915,234.533,435.81,234.366,436.703,233.85z"/>
 		</g>
 	</g>
-	<g id="key-g" key-major="G major" key-minor="E minor" key-major-relatives="D major|C major|B minor|A minor">
+	<g id="key-g" key-major="G major" key-minor="E minor" key-relatives="D major|C major|B minor|A minor">
 		<path fill="#47827E" d="M417.5,114.374c0.509,0.294,1.094,0.58,1.76,0.858s1.297,0.484,1.896,0.619l3.629-6.285
 			c0.402-0.697,0.952-0.847,1.65-0.443l6.381,3.684c0.223,0.128,0.413,0.325,0.579,0.589c0.165,0.265,0.119,0.619-0.138,1.063
 			l-6.651,11.521c-0.275,0.477-0.677,0.731-1.205,0.766c-1.99,0.078-4.112-0.186-6.367-0.789c-2.254-0.604-4.461-1.527-6.619-2.773
@@ -364,7 +364,7 @@
 				C389.958,165.497,389.305,164.779,388.289,164.192z"/>
 		</g>
 	</g>
-	<g id="key-c" key-major="C major" key-minor="A minor" key-major-relatives="F major|G major|E minor|D minor">
+	<g class="key" id="key-c" key-major="C major" key-minor="A minor" key-relatives="F major|G major|E minor|D minor" key-major-dominants="G major|B diminished|E minor" key-major-subdominants="F major|A minor|D minor" key-minor-dominants="E major|G# diminished|C augmented" key-minor-subdominants="D minor|F major|B diminished">
 		<path fill="#47827E" d="M309.984,78.921c0.406-0.292,0.767-0.458,1.102-0.493c0.328-0.038,0.621,0.128,0.871,0.493l4.502,6.588
 			c0.293,0.404,0.404,0.724,0.332,0.958c-0.074,0.242-0.31,0.505-0.715,0.797c-1.458,1.066-3.17,1.952-5.136,2.663
 			c-1.953,0.714-4.177,1.073-6.669,1.073c-2.892,0-5.618-0.548-8.179-1.65c-2.562-1.097-4.806-2.605-6.725-4.527
