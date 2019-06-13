@@ -73,7 +73,7 @@ g.key {
 						<a class="nav-link" id="minor-tab" data-toggle="tab" href="#mode-minor" role="tab" aria-controls="minor" aria-selected="false">Minor</a>
 					</li>
 				</ul>
-				<div class="tab-content p-3 t-2" id="mode-panels" style="opacity: 0;">
+				<div class="tab-content p-1 t-2" id="mode-panels" style="opacity: 0;">
 					@include('tools.circle.labels.major')
 					@include('tools.circle.labels.minor')
 				</div>

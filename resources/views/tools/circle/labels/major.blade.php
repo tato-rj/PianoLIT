@@ -17,21 +17,21 @@
 	<div>
 		@include('tools.circle.labels.title', ['title' => 'functional harmony'])
 		<div class="mb-4 key-major-roman d-flex flex-wrap border bg-light rounded px-3 py-1"></div>
-		<div class="row">
+		<div class="row no-gutters">
 			<div class="col-4 mb-4">
-				<div class="bg-light position-relative border rounded px-3 py-1">
+				<div class="">
 					<label><small><strong>TONIC</strong></small></label>
 					<div class="key-tonic"></div>
 				</div>
 			</div>
 			<div class="col-4 mb-4">
-				<div class="bg-light position-relative border rounded px-3 py-1">
+				<div class="">
 					<label><small><strong>DOMINANT</strong></small></label>
 					<div class="key-dominant"></div>
 				</div>
 			</div>
 			<div class="col-4 mb-4">
-				<div class="bg-light position-relative border rounded px-3 py-1">
+				<div class="">
 					<label><small><strong>SUBDOMINANT</strong></small></label>
 					<div class="key-subdominant"></div>
 				</div>
