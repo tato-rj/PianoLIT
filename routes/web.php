@@ -17,7 +17,9 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/tools/circle-of-fifths', function() {
-	return view('tools.circle.index');
+	$keys = new \App\Tools\CircleOfFifths;
+
+	return view('tools.circle.index', compact('keys'));
 });
 
 Route::prefix('blog')->name('posts.')->group(function() {
