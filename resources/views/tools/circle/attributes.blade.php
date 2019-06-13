@@ -1,8 +1,8 @@
 @php ($keyObj = $keys->find($key))
 
-id="key-{{$key}}" 
-control-next="#key-{{$keyObj->next()}}"
-control-prev="#key-{{$keyObj->prev()}}"
+id="key-{{str_replace('#', 's', $key)}}" 
+control-left="#key-{{$keyObj->next()}}"
+control-right="#key-{{$keyObj->prev()}}"
 
 key-major="{{$keyObj->getMajorKey()}}" 
 key-minor="{{$keyObj->getMinorKey()}}" 

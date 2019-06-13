@@ -100,6 +100,7 @@ g.key {
   	  $circle = $('#circle'),
 	  $letters = $('g#letters > g'),
 	  $mode = $('input[name="mode"]'),
+	  $next,
       enabled = true,
       rotation = 0;
 
@@ -109,12 +110,13 @@ g.key {
 
     $('#wheel-controls button').on('click', function() {
     	if (enabled) {
+    		let $button = $(this);
     		disable();
-	    	let direction = $(this).attr('direction') == 'left' ? -30 : 30;
+	    	let direction = $button.attr('direction') == 'left' ? -30 : 30;
 	    	rotation += direction;
 	    	applyCss(rotation);
 	    	hideLabels();
-		    highlightKey();
+		    highlightKey($button.attr('direction'));
 		}
     });
   };
@@ -138,27 +140,31 @@ g.key {
   };
 
   hideLabels = function() {
-  	$('g').removeClass('key');
   	$labels.css('opacity', 0);
   };
 
-  highlightKey = function() {
+  highlightKey = function(direction) {
+  	$next = $($('g.key').first().attr('control-'+direction));
+  	
+  	$('g').removeClass('key');
     setTimeout( function() {
-	  	let offsets = [];  	
+    	$next.addClass('key');
+    	showDescription();
+	  	// let offsets = [];  	
 	  	
-	  	$letters.each(function() {
-	  		offsets.push($(this).offset().top);
-	  	});
+	  	// $letters.each(function() {
+	  	// 	offsets.push($(this).offset().top);
+	  	// });
 	  	
-	  	offsets.sort();
+	  	// offsets.sort();
 	  	
-	  	$letters.each(function() {
-	  		if ($(this).offset().top == offsets[0]) {
-	  			$(this).addClass('key');
-	  			showDescription();
-		  		return false;
-		  	}
-	  	});
+	  	// $letters.each(function() {
+	  	// 	if ($(this).offset().top == offsets[0]) {
+	  	// 		$(this).addClass('key');
+	  	// 		showDescription();
+		  // 		return false;
+		  // 	}
+	  	// });
 
 	  	enable();
     }, 400);

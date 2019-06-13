@@ -222,25 +222,23 @@ class CircleOfFifths
 	{
 		$index = array_search($this->key, $this->model);
 
-		if ($index == 11) {
-			$index = 0;
-		} else {
-			$index++;
-		}
+		$index += 7;
+
+		if ($index > 11)
+			$index -= 12;
 		
-		return $this->model[$index][0];
+		return str_replace('#', 's', $this->model[$index][0]);
 	}
 
 	public function prev()
 	{
 		$index = array_search($this->key, $this->model);
 
-		if ($index == 0) {
-			$index = 11;
-		} else {
-			$index--;
-		}
+		$index += 5;
+
+		if ($index > 11)
+			$index -= 12;
 		
-		return $this->model[$index][0];
+		return str_replace('#', 's', $this->model[$index][0]);
 	}
 }
