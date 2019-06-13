@@ -2,13 +2,6 @@
 
 @push('header')
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-<script>
-    window.app = <?php echo json_encode([
-        'csrfToken' => csrf_token(),
-        'page_url' => url()->current(),
-        'page_id' => url()->current()
-    ]); ?>
-</script>
 <style type="text/css">
 #mode-tabs .nav-link {
 	color: #b8c2cc;
@@ -79,11 +72,6 @@ g.key {
 					@include('tools.circle.labels.minor')
 				</div>
 			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-12">
-			<div id="disqus_thread"></div>
 		</div>
 	</div>
 </div>
@@ -281,17 +269,5 @@ g.key {
 
 }).call(this);
 </script>
-<script type="text/javascript">
-var disqus_config = function () {
-this.page.url = app.page_url;
-this.page.identifier = app.page_id;
-};
 
-(function() { // DON'T EDIT BELOW THIS LINE
-var d = document, s = d.createElement('script');
-s.src = 'https://pianolit.disqus.com/embed.js';
-s.setAttribute('data-timestamp', +new Date());
-(d.head || d.body).appendChild(s);
-})();
-</script>
 @endpush
