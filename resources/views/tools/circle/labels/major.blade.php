@@ -16,7 +16,7 @@
 
 	<div>
 		@include('tools.circle.labels.title', ['title' => 'functional harmony'])
-		<div class="mb-4 key-major-roman d-flex flex-wrap border bg-light rounded px-3 py-1"></div>
+		<div class="mb-3 key-major-roman d-flex flex-wrap"></div>
 		<div class="row no-gutters">
 			<div class="col-4 mb-4">
 				<div class="">
