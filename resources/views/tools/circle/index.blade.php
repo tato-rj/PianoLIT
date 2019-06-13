@@ -215,9 +215,9 @@ g.key {
 		$('#mode-major .key-negative').append(`
 			<div style="width:14.25%">
 				<div class="rounded border">
-					<div class="text-center text-grey px-2 pt-1">`+majorNeg['regular'][i]+`</div>
+					<div class="text-center text-grey pt-1">`+majorNeg['regular'][i]+`</div>
 					<div class="mb-1 text-grey text-center"><i class="fas fa-sort-down"></i></div>
-					<div class="text-center text-dark px-2 pb-1"><strong>`+majorNeg['negative'][i]+`</strong></div>
+					<div class="text-center text-dark pb-1"><strong>`+majorNeg['negative'][i]+`</strong></div>
 				</div>
 			</div>`);		
 	}
@@ -252,9 +252,9 @@ g.key {
 		$('#mode-minor .key-negative').append(`
 			<div style="width:14.25%">
 				<div class="rounded border">
-					<div class="text-center text-grey px-2 pt-1">`+minorNeg['regular'][i]+`</div>
+					<div class="text-center text-grey pt-1">`+minorNeg['regular'][i]+`</div>
 					<div class="mb-1 text-grey text-center"><i class="fas fa-sort-down"></i></div>
-					<div class="text-center text-dark px-2 pb-1"><strong>`+minorNeg['negative'][i]+`</strong></div>
+					<div class="text-center text-dark pb-1"><strong>`+minorNeg['negative'][i]+`</strong></div>
 				</div>
 			</div>`);		
 	}
