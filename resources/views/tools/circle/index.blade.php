@@ -54,7 +54,7 @@ g.key {
 @section('content')
 <div class="container mb-7">
 	<div class="row mb-6">
-		<div class="col-lg-5 col-md-6 col-12 px-4 mb-4">
+		<div class="col-lg-5 col-md-6 col-12 px-4 mb-6">
 			<div id="wheel-container" class="w-100 position-relative">
 				@include('tools.circle.wheel')
 			</div>
