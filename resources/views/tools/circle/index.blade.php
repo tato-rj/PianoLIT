@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @push('header')
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <script>
     window.app = <?php echo json_encode([
         'csrfToken' => csrf_token(),
@@ -145,7 +146,7 @@ g.key {
 
   highlightKey = function(direction) {
   	$next = $($('g.key').first().attr('control-'+direction));
-  	
+
   	$('g').removeClass('key');
     setTimeout( function() {
     	$next.addClass('key');
