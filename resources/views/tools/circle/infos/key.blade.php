@@ -1,0 +1,7 @@
+@component('components.overlays.modal', ['title' => 'Key', 'size' => 'lg', 'feedback' => true])
+<h6>What is Key?</h6>
+<p>In music a <i>key</i> is a group notes and chords that revolves or gravitates around a single chord, known as the <strong>tonic</strong>. That attraction is created by the presence of the <strong>leading-tone</strong>: the last note of the scale that is just a half step away from the tonic (the first note). A key also assigns functions to each of its chords: much like in a sentence each word has a specific function (verbs, nouns, and so on), chords in a musical phrase also have functions that give meaning to the group.</p>
+<h6>Major and Minor: what's the difference?</h6>
+<p>What we refer to as <i>major</i> and <i>minor</i> keys are just 2 out of the 7 greek modes (<a href="#" target="_blank">click here</a> to learn more about them). The basic difference between them is that the 3rd note in the major scale is a major 3rd whereas in a minor scale it is a minor 3rd.</p>
+<p>In short, a song played in the "key of C major" revolves around the seven notes of the C major scale: C, D, E, F, G, A, and B. That means the fundamental notes making up the song’s melody, chords, and bassline are all derived from that group of notes. In the same way, a tune played in the "key of A minor" revolves around the seven notes of the A minor scale: A, B, C, D, E, F, and G.</p>
+@endcomponent

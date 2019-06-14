@@ -75,6 +75,12 @@ g.key {
 		</div>
 	</div>
 </div>
+
+@include('tools.circle.infos.key')
+@include('tools.circle.infos.relative')
+@include('tools.circle.infos.neighbors')
+@include('tools.circle.infos.functional')
+@include('tools.circle.infos.negative')
 @endsection
 
 @push('scripts')

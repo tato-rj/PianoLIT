@@ -1,11 +1,11 @@
 <div class="tab-pane fade" id="mode-minor" role="tabpanel">
 	<div>
 		<div class="mb-4">
-			@include('tools.circle.labels.title', ['title' => 'minor key'])
+			@include('tools.circle.labels.title', ['title' => 'key'])
 			<h4 class="key-name"></h4>
 		</div>
 		<div class="mb-4">
-			@include('tools.circle.labels.title', ['title' => 'relative major'])
+			@include('tools.circle.labels.title', ['title' => 'relative'])
 			<h4 class="key-relative"></h4>
 		</div>
 		<div class="mb-4">
