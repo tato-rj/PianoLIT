@@ -78,7 +78,7 @@ class Alerts
         $composers = Composer::famous()->withCount('pieces')->get();
 
         foreach ($composers as $composer) {
-            if (percentage($composer->pieces_count, $this->pieces_count) < 20) {
+            if (percentage($composer->pieces_count, $this->pieces_count) < 10) {
                 array_push($array, $composer->name);
             }
         }
