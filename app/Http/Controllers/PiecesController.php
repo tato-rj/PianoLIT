@@ -40,7 +40,7 @@ class PiecesController extends Controller
      */
     public function create()
     {
-        $alert = auth()->user()->getAlert();
+        $alert = auth()->user()->getAlert(['levels', 'periods']);
 
         $composers = Composer::orderBy('name')->get();
 
