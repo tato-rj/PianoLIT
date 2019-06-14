@@ -22,6 +22,13 @@ class Alerts
         		$array = array_merge($array, $this->$alert());
         }
 
+        $sentence = $this->toSentence($array);
+
+        return $sentence;
+    }
+
+    public function toSentence($array)
+    {
         $arrayCount = count($array);
 
         if ($arrayCount == 0)
@@ -34,17 +41,17 @@ class Alerts
             $sentence = implode(', ', $partial) . ' and ' . $array[$arrayCount-1];
         }
 
-        return $sentence;
+        return $sentence;	
     }
 
     public function levels()
     {
     	$array = [];
-        $levelsStats = Tag::levels()->withCount('pieces')->get();
+        $levels = Tag::levels()->withCount('pieces')->get();
 
-        foreach ($levelsStats as $stat) {
-            if (percentage($stat->pieces_count, $this->pieces_count) < 15) {
-                array_push($array, $stat->name);
+        foreach ($levels as $level) {
+            if (percentage($level->pieces_count, $this->pieces_count) < 15) {
+                array_push($array, $level->name);
             }
         }
 
@@ -54,14 +61,28 @@ class Alerts
     public function periods()
     {
     	$array = [];
-        $periodsStats = Tag::periods()->withCount('pieces')->get();
+        $periods = Tag::periods()->withCount('pieces')->get();
 
-        foreach ($periodsStats as $stat) {
-            if (percentage($stat->pieces_count, $this->pieces_count) < 10) {
-                array_push($array, $stat->name);
+        foreach ($periods as $period) {
+            if (percentage($period->pieces_count, $this->pieces_count) < 10) {
+                array_push($array, $period->name);
             }
         }
 
         return $array;
+    }
+
+    public function composers()
+    {
+    	$array = [];
+        $composers = Composer::famous()->withCount('pieces')->get();
+
+        foreach ($composers as $composer) {
+            if (percentage($composer->pieces_count, $this->pieces_count) < 20) {
+                array_push($array, $composer->name);
+            }
+        }
+
+        return $array;    	
     }
 }
