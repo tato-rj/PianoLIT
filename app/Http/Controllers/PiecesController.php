@@ -40,13 +40,17 @@ class PiecesController extends Controller
      */
     public function create()
     {
-        $alert = auth()->user()->getAlert(['composers']);
-
         $composers = Composer::orderBy('name')->get();
 
         $types = Tag::byTypes($except = ['levels', 'periods', 'lengths']);
 
-        return view('admin.pages.pieces.create', compact(['composers', 'types', 'alert']));
+        return view('admin.pages.pieces.create', compact(['composers', 'types']));
+    }
+
+    public function alerts()
+    {
+        $data = auth()->user()->getAlert(request('alerts'));
+        return view('admin.pages.pieces.alert', compact('data'))->render();
     }
 
     public function singleLookup(Request $request)

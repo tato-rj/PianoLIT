@@ -126,6 +126,10 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 	
 	Route::post('/validate-name', 'PiecesController@validateName')->name('validate-name');
 
+	Route::get('datatable', 'PiecesController@datatable')->name('datatable');
+
+	Route::get('alerts/show', 'PiecesController@alerts')->name('alerts');
+
 	Route::patch('{piece}/update-level', 'PiecesController@updateLevel')->name('update-level');
 
 	Route::patch('{piece}/update-tag', 'PiecesController@updateTag')->name('update-tag');
@@ -133,7 +137,5 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 	Route::get('{piece}/load-tags', 'PiecesController@loadTags')->name('load-tags');
 
 	Route::get('{piece}/load-levels', 'PiecesController@loadLevels')->name('load-levels');
-
-	Route::get('datatable', 'PiecesController@datatable')->name('datatable');
 
 });

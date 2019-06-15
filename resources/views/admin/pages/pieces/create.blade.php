@@ -8,14 +8,33 @@
     'title' => 'Pieces',
     'description' => 'Add a new piece'])
 
-    <div class="row">
-      @if($alert)
+    <div class="row mb-3">
       <div class="col-12">
-        <div class="alert alert-warning" role="alert">
-          <i class="fas fa-exclamation-triangle mr-2"></i>We need to add more pieces for <strong>{{$alert}}</strong>.
+        <div class="form-inline text-right">
+
+          <div class="btn-group btn-group-toggle mr-2" title="Show composers that need more pieces">
+            <label class="btn btn-light">
+              <input type="checkbox" name="alerts[]" autocomplete="off" value="composers"><i class="fas fa-user"></i>
+            </label>
+          </div>
+          <div class="btn-group btn-group-toggle mr-2" title="Show levels that need more pieces">
+            <label class="btn btn-light">
+              <input type="checkbox" name="alerts[]" autocomplete="off" value="levels"><i class="fas fa-swimmer"></i></i>
+            </label>
+          </div>
+          <div class="btn-group btn-group-toggle mr-2" title="Show periods that need more pieces">
+            <label class="btn btn-light">
+              <input type="checkbox" name="alerts[]" autocomplete="off" value="periods"><i class="fas fa-monument"></i></i>
+            </label>
+          </div>
         </div>
       </div>
-      @endif
+    </div>
+
+    <div class="row">
+      
+      <div class="col-12" id="alerts-container"></div>
+
       <div class="col-lg-6 col-md-8 col-12">
         <form method="POST" id="create-piece" action="{{route('admin.pieces.store')}}" autocomplete="off" enctype="multipart/form-data">
           @csrf
@@ -265,6 +284,21 @@
 <script type="text/javascript" src="{{asset('js/vendor/lookup.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <script type="text/javascript">
+  $('input[name="alerts[]"]').on('click', function() {
+    $(this).parent().toggleClass('active');
+    $('#alerts-container').html(`<p class="text-muted text-center mb-4"><i>Loading...</i></p>`);
+    var alerts = [];
+    $.each($('input[name="alerts[]"]:checked'), function(){            
+      alerts.push($(this).val());
+    });
+
+    $.get("{{route('admin.pieces.alerts')}}", {alerts: alerts}, function(data) {
+      $('#alerts-container').html(data);
+    }).fail(function(response) {
+      console.log(response);
+    });
+  });
+
 $(document).on('blur', 'input.itunes-link', function() {
   let url = $(this).val();
   let updatedUrl = url.replace('https', 'itms');

@@ -5,11 +5,11 @@
 			<h4 class="key-name"></h4>
 		</div>
 		<div class="mb-4">
-			@include('tools.circle.labels.title', ['title' => 'relative'])
+			@include('tools.circle.labels.title', ['title' => 'relative key'])
 			<h4 class="key-relative"></h4>
 		</div>
 		<div class="mb-4">
-			@include('tools.circle.labels.title', ['title' => 'neighbors'])
+			@include('tools.circle.labels.title', ['title' => 'neighbor keys'])
 			<div class="key-neighbors"></div>
 		</div>
 	</div>

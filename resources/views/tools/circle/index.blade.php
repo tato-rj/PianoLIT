@@ -76,11 +76,11 @@ g.key {
 	</div>
 </div>
 
-@include('tools.circle.infos.key')
-@include('tools.circle.infos.relative')
-@include('tools.circle.infos.neighbors')
-@include('tools.circle.infos.functional')
-@include('tools.circle.infos.negative')
+@include('tools.circle.info.key')
+@include('tools.circle.info.relative')
+@include('tools.circle.info.neighbors')
+@include('tools.circle.info.functional')
+@include('tools.circle.info.negative')
 @endsection
 
 @push('scripts')
