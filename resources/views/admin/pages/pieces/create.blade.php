@@ -10,8 +10,7 @@
 
     <div class="row mb-3">
       <div class="col-12">
-        <div class="form-inline text-right">
-
+        <div class="form-inline justify-content-end">
           <div class="btn-group btn-group-toggle mr-2" title="Show composers that need more pieces">
             <label class="btn btn-light">
               <input type="checkbox" name="alerts[]" autocomplete="off" value="composers"><i class="fas fa-user"></i>
@@ -22,7 +21,7 @@
               <input type="checkbox" name="alerts[]" autocomplete="off" value="levels"><i class="fas fa-swimmer"></i></i>
             </label>
           </div>
-          <div class="btn-group btn-group-toggle mr-2" title="Show periods that need more pieces">
+          <div class="btn-group btn-group-toggle" title="Show periods that need more pieces">
             <label class="btn btn-light">
               <input type="checkbox" name="alerts[]" autocomplete="off" value="periods"><i class="fas fa-monument"></i></i>
             </label>
@@ -285,18 +284,25 @@
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <script type="text/javascript">
   $('input[name="alerts[]"]').on('click', function() {
+    let alerts = [];
+    let $alertsContainer = $('#alerts-container');
+    
     $(this).parent().toggleClass('active');
-    $('#alerts-container').html(`<p class="text-muted text-center mb-4"><i>Loading...</i></p>`);
-    var alerts = [];
+    
+    $alertsContainer.html(`<p class="text-muted text-center mb-4"><i>Loading...</i></p>`);
+
     $.each($('input[name="alerts[]"]:checked'), function(){            
       alerts.push($(this).val());
     });
-
-    $.get("{{route('admin.pieces.alerts')}}", {alerts: alerts}, function(data) {
-      $('#alerts-container').html(data);
-    }).fail(function(response) {
-      console.log(response);
-    });
+    if (alerts.length == 0) {
+      $alertsContainer.html('');
+    } else {
+      $.get("{{route('admin.pieces.alerts')}}", {alerts: alerts}, function(data) {
+        $alertsContainer.html(data);
+      }).fail(function(response) {
+        console.log(response);
+      });
+    }
   });
 
 $(document).on('blur', 'input.itunes-link', function() {
