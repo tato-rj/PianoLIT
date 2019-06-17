@@ -296,11 +296,6 @@ $(document).on('click', '.youtube-to-mp3', function(event) {
     alert('You forgot to include the ID!');
   }
 });
-
-$(document).on('click', '#modal-youtube-to-mp3 a', function(event) {
-  event.preventDefault();
-  alert('NOPE');
-});
 </script>
 <script type="text/javascript">
   $('input[name="alerts[]"]').on('click', function() {
