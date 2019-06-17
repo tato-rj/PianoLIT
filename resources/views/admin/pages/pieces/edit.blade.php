@@ -282,18 +282,18 @@
 
 @section('scripts')
 <script type="text/javascript">
-$(document).on('click', '.youtube-to-mp3', function(event) {
-  event.preventDefault();
-  let $modal = $('#modal-youtube-to-mp3');
-  let id = $(this).parent().siblings('input').val();
-  if (id) {
-    let iframe = `<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms" src="https://www.yt-download.org/@api/button/mp3/`+id+`" class="mt-3" width="100%" height="100px" scrolling="no" style="border:none;"></iframe>`;
-    $modal.find('.modal-body').html(iframe);
-    $modal.modal('show');
-  } else {
-    alert('You forgot to include the ID!');
-  }
-});
+// $(document).on('click', '.youtube-to-mp3', function(event) {
+//   event.preventDefault();
+//   let $modal = $('#modal-youtube-to-mp3');
+//   let id = $(this).parent().siblings('input').val();
+//   if (id) {
+//     let iframe = `<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms" src="https://www.yt-download.org/@api/button/mp3/`+id+`" class="mt-3" width="100%" height="100px" scrolling="no" style="border:none;"></iframe>`;
+//     $modal.find('.modal-body').html(iframe);
+//     $modal.modal('show');
+//   } else {
+//     alert('You forgot to include the ID!');
+//   }
+// });
 </script>
 @cannot('update', $piece)
 <script type="text/javascript">

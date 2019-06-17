@@ -7,9 +7,9 @@
 	@if(! empty($type) && $type == 'original-type')
 	<div class="input-group input-group-sm">
 	<input rows="1" class="form-control-sm form-control">
-		<div class="input-group-append">
-			<button class="input-group-text text-warning bg-muted youtube-to-mp3"><i class="fas fa-file-download"></i></button>
-		</div>
+{{-- 		<div class="input-group-append">
+			<a href="" class="input-group-text text-warning bg-muted youtube-to-mp3"><i class="fas fa-file-download"></i></a>
+		</div> --}}
 	</div>
 	@else
 	<div class="input-group input-group-sm">
@@ -18,7 +18,7 @@
 		</div>
 		<input rows="1" class="form-control" name="{{$name}}" value="{{$value}}">
 		<div class="input-group-append">
-			<button class="input-group-text text-warning bg-muted youtube-to-mp3"><i class="fas fa-file-download"></i></button>
+			<a href="https://www.yt-download.org/@api/button/mp3/{{$value}}" target="_blank" class="input-group-text text-warning bg-muted youtube-to-mp3"><i class="fas fa-file-download"></i></a>
 		</div>
 	</div>
 	@endif
