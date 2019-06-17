@@ -5,13 +5,21 @@
 	</a>
 
 	@if(! empty($type) && $type == 'original-type')
+	<div class="input-group input-group-sm">
 	<input rows="1" class="form-control-sm form-control">
+		<div class="input-group-append">
+			<button class="input-group-text text-white border-0 bg-warning youtube-to-mp3"><i class="fas fa-file-download"></i></button>
+		</div>
+	</div>
 	@else
 	<div class="input-group input-group-sm">
 		<div class="input-group-prepend">
 			<a href="https://www.youtube.com/watch?v={{$value}}" target="_blank" class="input-group-text no-underline"><i class="text-success fas fa-globe"></i></a>
 		</div>
 		<input rows="1" class="form-control" name="{{$name}}" value="{{$value}}">
+		<div class="input-group-append">
+			<button class="input-group-text p-0 text-white border-0 bg-warning youtube-to-mp3"><i class="fas fa-file-download"></i></button>
+		</div>
 	</div>
 	@endif
 
