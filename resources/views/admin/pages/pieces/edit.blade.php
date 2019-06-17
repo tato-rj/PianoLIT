@@ -287,7 +287,7 @@ $(document).on('click', '.youtube-to-mp3', function(event) {
   let $modal = $('#modal-youtube-to-mp3');
   let id = $(this).parent().siblings('input').val();
   if (id) {
-    let iframe = `<iframe src="https://www.yt-download.org/@api/button/mp3/`+id+`" class="mt-3" width="100%" height="100px" scrolling="no" style="border:none;"></iframe>`;
+    let iframe = `<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms" src="https://www.yt-download.org/@api/button/mp3/`+id+`" class="mt-3" width="100%" height="100px" scrolling="no" style="border:none;"></iframe>`;
     $modal.find('.modal-body').html(iframe);
     $modal.modal('show');
   } else {
