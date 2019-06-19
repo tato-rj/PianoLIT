@@ -12,7 +12,7 @@
 				</div>
 			</div>
 			<div>
-				<img class="key-signature" data-folder="{{asset('images/misc/keys/')}}" src="{{asset('images/misc/keys/key-loading.svg')}}" style="max-width: 180px">		
+				<img class="key-signature" data-folder="{{asset('images/misc/keys/')}}" src="{{asset('images/misc/keys/key-loading.svg')}}" style="max-width: 200px">		
 			</div>
 		</div>
 		<div class="mb-4">
