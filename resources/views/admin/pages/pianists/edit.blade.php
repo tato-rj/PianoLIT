@@ -40,17 +40,17 @@
               </select>
             </div>
             <div class="form-group">
+              <label class="text-brand">Born in</label>
+              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ $pianist->date_of_birth->format('m/d/Y') }}" required>      
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
               <div class="w-100 d-flex justify-content-between">
                 <label class="text-brand">iTunes ID</label>
                 <div>@include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])</div>
               </div>
               <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ $pianist->itunes_id }}">
-            </div>
-          </div>
-          <div class="col">
-            <div class="form-group">
-              <label class="text-brand">Born in</label>
-              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ $pianist->date_of_birth->format('m/d/Y') }}" required>      
             </div>
             <div class="form-group">
               <label class="text-brand">Died in</label>

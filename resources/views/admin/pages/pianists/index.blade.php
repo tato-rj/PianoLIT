@@ -69,6 +69,9 @@
       @include('admin.components.feedback', ['field' => 'nationality'])
     </div>
   </div>
+  <div class="form-group">
+    <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ old('itunes_id') }}" required>
+  </div>
   {{-- Dates --}}
   <div class="form-row form-group">
     <div class="col">
