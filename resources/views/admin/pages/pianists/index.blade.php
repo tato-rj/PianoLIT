@@ -63,7 +63,7 @@
       <select class="form-control {{$errors->has('country_id') ? 'is-invalid' : ''}}" name="country_id">
         <option selected disabled>Nationality</option>
         @foreach($countries as $country)
-        <option value="{{$country->id}}" {{ old('country_id') == $country->id ? 'selected' : ''}}>{{$country->name}}</option>
+        <option value="{{$country->id}}" {{ old('country_id') == $country->id ? 'selected' : ''}}>{{$country->nationality}}</option>
         @endforeach
       </select>
       @include('admin.components.feedback', ['field' => 'nationality'])
