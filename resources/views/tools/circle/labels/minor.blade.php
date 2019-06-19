@@ -23,7 +23,7 @@
 
 	<div>
 		@include('tools.circle.labels.title', ['title' => 'functional harmony'])
-		<div class="mb-3 key-minor-roman d-flex"></div>
+		<div class="mb-3 mt-1 key-minor-roman d-flex"></div>
 		<div class="row no-gutters mb-4">
 			<div class="col-4 mb-2">
 				<div class="">
@@ -51,6 +51,6 @@
 
 	<div>
 		@include('tools.circle.labels.title', ['title' => 'negative harmony'])
-		<div class="key-negative d-flex"></div>
+		<div class="mt-1 key-negative d-flex"></div>
 	</div>
 </div>

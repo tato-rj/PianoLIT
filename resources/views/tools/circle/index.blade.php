@@ -218,7 +218,7 @@ g.key {
 	$('.key-major-roman').html('');
 	for (key in majorRoman) {
 		$('.key-major-roman').append(`
-			<div class="mr-2 border-bottom border-1x">
+			<div class="mr-2 bg-light px-2 py-1">
 				<strong>`+key+`</strong> `+majorRoman[key]+`</div>
 			</div>`);
 	}
@@ -255,7 +255,7 @@ g.key {
 	$('.key-minor-roman').html('');
 	for (key in minorRoman) {
 		$('.key-minor-roman').append(`
-			<div class="mr-2 border-bottom border-1x">
+			<div class="mr-2 bg-light px-2 py-1">
 				<strong>`+key+`</strong> `+minorRoman[key]+`</div>
 			</div>`);
 	}
