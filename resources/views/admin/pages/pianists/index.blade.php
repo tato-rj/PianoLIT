@@ -70,7 +70,8 @@
     </div>
   </div>
   <div class="form-group">
-    <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ old('itunes_id') }}" required>
+    <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ old('itunes_id') }}">
+    <div>@include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])</div>
   </div>
   {{-- Dates --}}
   <div class="form-row form-group">
