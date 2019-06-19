@@ -25,7 +25,7 @@ class ComposersController extends Controller
         if (request()->has('order') && in_array(request('order'), ['asc', 'desc']))
             $sort[1] = request('order');
 
-        $countries = Country::orderBy('name')->get();
+        $countries = Country::orderBy('nationality')->get();
         $composers = Composer::orderBy($sort[0], $sort[1])->get();
         
         return view('admin.pages.composers.index', compact(['composers', 'countries']));
@@ -82,7 +82,7 @@ class ComposersController extends Controller
      */
     public function edit(Composer $composer)
     {
-        $countries = Country::orderBy('name')->get();
+        $countries = Country::orderBy('nationality')->get();
         
         return view('admin.pages.composers.edit', compact(['composer', 'countries']));
     }
