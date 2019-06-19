@@ -25,7 +25,7 @@ class PianistsController extends Controller
         if (request()->has('order') && in_array(request('order'), ['asc', 'desc']))
             $sort[1] = request('order');
 
-        $countries = Country::all();
+        $countries = Country::orderBy('name')->get();
         $pianists = Pianist::orderBy($sort[0], $sort[1])->get();
         
         return view('admin.pages.pianists.index', compact(['pianists', 'countries']));
@@ -81,7 +81,7 @@ class PianistsController extends Controller
      */
     public function edit(Pianist $pianist)
     {
-        $countries = Country::all();
+        $countries = Country::orderBy('name')->get();
         
         return view('admin.pages.pianists.edit', compact(['pianist', 'countries']));
     }
