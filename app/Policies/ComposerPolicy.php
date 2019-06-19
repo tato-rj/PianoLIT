@@ -2,8 +2,7 @@
 
 namespace App\Policies;
 
-use App\Admin;
-use App\Composer;
+use App\{Admin, Composer};
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ComposerPolicy

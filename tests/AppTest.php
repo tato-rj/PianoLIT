@@ -3,7 +3,7 @@
 namespace Tests;
 
 use App\Blog\{Post, Topic};
-use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist, Subscription, Timeline};
+use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist, Subscription, Timeline, Pianist};
 
 class AppTest extends TestCase
 {
@@ -30,6 +30,11 @@ class AppTest extends TestCase
         $this->playlist = create(Playlist::class);
 
         $this->tag = create(Tag::class, ['creator_id' => $this->admin->id]);
+
+        $this->pianist = create(Pianist::class, [
+            'creator_id' => $this->admin->id,
+            'country_id' => $this->country->id
+        ]);
 
         $this->composer = create(Composer::class, [
         	'creator_id' => $this->admin->id,

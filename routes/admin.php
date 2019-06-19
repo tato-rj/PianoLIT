@@ -9,7 +9,8 @@ Route::resources([
     'topics' => 'TopicsController',
     'editors' => 'EditorsController',
     'users' => 'UsersController',
-    'timelines' => 'TimelinesController'
+    'timelines' => 'TimelinesController',
+    'pianists' => 'PianistsController'
 ]);
 
 Route::prefix('blog')->name('posts.')->group(function() {

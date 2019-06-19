@@ -1,6 +1,6 @@
 <?php
 
-use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline};
+use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -33,6 +33,25 @@ $factory->define(Composer::class, function(Faker $faker) {
                 return create(Country::class)->id;
             },
             'is_famous' => $faker->boolean(),
+            'date_of_birth' => $faker->date(),
+            'date_of_death' => $faker->date(),
+            'creator_id' => function() {
+                return create(Admin::class)->id;
+            },
+    ];
+});
+
+
+$factory->define(Pianist::class, function(Faker $faker) {
+    $periods = periods();
+
+    return [
+            'name' => $faker->name,
+            'biography' => $faker->paragraph,
+            'country_id' => function() {
+                return create(Country::class)->id;
+            },
+            'itunes_id' => $faker->word,
             'date_of_birth' => $faker->date(),
             'date_of_death' => $faker->date(),
             'creator_id' => function() {

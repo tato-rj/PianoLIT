@@ -16,7 +16,7 @@ class SubscriptionsController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('throttle:2')->only('store');
+        $this->middleware('throttle:2')->only('store');
     }
 
     /**
