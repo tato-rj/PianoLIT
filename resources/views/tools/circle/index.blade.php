@@ -145,28 +145,16 @@ g.key {
     setTimeout( function() {
     	$next.addClass('key');
     	showDescription();
-	  	// let offsets = [];  	
-	  	
-	  	// $letters.each(function() {
-	  	// 	offsets.push($(this).offset().top);
-	  	// });
-	  	
-	  	// offsets.sort();
-	  	
-	  	// $letters.each(function() {
-	  	// 	if ($(this).offset().top == offsets[0]) {
-	  	// 		$(this).addClass('key');
-	  	// 		showDescription();
-		  // 		return false;
-		  // 	}
-	  	// });
-
 	  	enable();
     }, 400);
   };
 
   showDescription = function() {
   	let $key = $('g.key');
+  	let $majorSignature = $('#mode-major .key-signature');
+  	let $minorSignature = $('#mode-minor .key-signature');
+
+  	let id = $key.attr('id');
   	let neighbors = JSON.parse($key.attr('key-neighbors'));
 
   	let majorRoman = JSON.parse($key.attr('key-major-roman'));
@@ -180,6 +168,10 @@ g.key {
   	let minorDom = JSON.parse($key.attr('key-minor-dominant'));
   	let minorSub = JSON.parse($key.attr('key-minor-subdominant'));
   	let minorNeg = JSON.parse($key.attr('key-minor-negative'));
+
+  	// console.log($majorSignature);
+  	$majorSignature.attr('src', $majorSignature.attr('data-folder') + '/key-loading.svg').attr('src', $majorSignature.attr('data-folder') + '/' + id + '.svg');
+  	$minorSignature.attr('src', $minorSignature.attr('data-folder') + '/key-loading.svg').attr('src', $minorSignature.attr('data-folder') + '/' + id + '.svg');
 
 	$('#mode-major .key-name').text($key.attr('key-major'));
 	$('#mode-major .key-relative').text($key.attr('key-minor'));

@@ -1,19 +1,25 @@
 <div class="tab-pane fade show active" id="mode-major" role="tabpanel">
 	<div>
-		<div class="mb-4">
-			@include('tools.circle.labels.title', ['title' => 'key'])
-			<h4 class="key-name"></h4>
-		</div>
-		<div class="mb-4">
-			@include('tools.circle.labels.title', ['title' => 'relative key'])
-			<h4 class="key-relative"></h4>
+		<div class="d-flex justify-content-between">
+			<div>
+				<div class="mb-4">
+					@include('tools.circle.labels.title', ['title' => 'key'])
+					<h4 class="key-name"></h4>
+				</div>
+				<div class="mb-4">
+					@include('tools.circle.labels.title', ['title' => 'relative key'])
+					<h4 class="key-relative"></h4>
+				</div>
+			</div>
+			<div>
+				<img class="key-signature" data-folder="{{asset('images/misc/keys/')}}" src="{{asset('images/misc/keys/key-loading.svg')}}" style="max-width: 180px">		
+			</div>
 		</div>
 		<div class="mb-4">
 			@include('tools.circle.labels.title', ['title' => 'neighbor keys'])
 			<div class="key-neighbors"></div>
 		</div>
 	</div>
-
 	<div>
 		@include('tools.circle.labels.title', ['title' => 'functional harmony'])
 		<div class="mb-3 key-major-roman d-flex"></div>
