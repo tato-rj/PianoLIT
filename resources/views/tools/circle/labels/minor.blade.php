@@ -1,21 +1,23 @@
 <div class="tab-pane fade" id="mode-minor" role="tabpanel">
-	<div class="d-flex">
-		<div>
-			<div class="mb-4">
-				@include('tools.circle.labels.title', ['title' => 'key'])
-				<h4 class="key-name"></h4>
+	<div>
+		<div class="d-flex justify-content-between">
+			<div>
+				<div class="mb-4">
+					@include('tools.circle.labels.title', ['title' => 'key'])
+					<h4 class="key-name"></h4>
+				</div>
+				<div class="mb-4">
+					@include('tools.circle.labels.title', ['title' => 'relative key'])
+					<h4 class="key-relative"></h4>
+				</div>
 			</div>
-			<div class="mb-4">
-				@include('tools.circle.labels.title', ['title' => 'relative key'])
-				<h4 class="key-relative"></h4>
-			</div>
-			<div class="mb-4">
-				@include('tools.circle.labels.title', ['title' => 'neighbor keys'])
-				<div class="key-neighbors"></div>
+			<div>
+				<img class="key-signature" data-folder="{{asset('images/misc/keys/')}}" src="{{asset('images/misc/keys/key-loading.svg')}}" style="max-width: 200px">		
 			</div>
 		</div>
-		<div>
-			<img class="key-signature" data-folder="{{asset('images/misc/keys/')}}" src="{{asset('images/misc/keys/key-loading.svg')}}" style="width: 200px">
+		<div class="mb-4">
+			@include('tools.circle.labels.title', ['title' => 'neighbor keys'])
+			<div class="key-neighbors"></div>
 		</div>
 	</div>
 
