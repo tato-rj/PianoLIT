@@ -85,7 +85,7 @@ g.key {
 			</div>
 			<div id="wheel-controls" class="w-100 d-flex align-items-center px-5">
 				<button direction="left" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-left"></i></button>
-				<div class="flex-grow text-grey text-center mx-2"><div><small>Click the arrows to turn the wheel</small></div></div>
+				<div class="flex-grow text-grey text-center mx-2"><div><small>Use the arrows to turn the wheel</small></div></div>
 				<button direction="right" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-right"></i></button>
 			</div>
 		</div>
