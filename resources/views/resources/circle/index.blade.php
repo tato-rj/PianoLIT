@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('header')
-<meta name="twitter:card" value="The interactive Circle of Fifths that will help you understand what it is and how to use it.">
+<meta name="twitter:card" value="An interactive Circle of Fifths that will help you understand what it is and how to use it.">
 <meta property="og:site_name" content="PianoLIT" />
 <meta property="og:title" content="The Interactive Circle of Fifths" />
 <meta property="og:type" content="article" />
@@ -9,7 +9,7 @@
 <meta property="og:image" content="{{asset('images/misc/thumbnails/circle.jpg')}}" />
 <meta property="og:image:width" content="400" />
 <meta property="og:image:height" content="245" />
-<meta property="og:description" content="The interactive Circle of Fifths that will help you understand what it is and how to use it." />
+<meta property="og:description" content="An interactive Circle of Fifths that will help you understand what it is and how to use it." />
 <meta property="article:published_time" content="{{carbon('20-06-2019')}}">
 <meta property="article:modified_time" content="{{carbon('20-06-2019')}}">
 <meta property="og:updated_time" content="{{carbon('20-06-2019')}}">
@@ -18,14 +18,14 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="{{asset('images/misc/thumbnails/circle.jpg')}}">
 <meta name="twitter:title" content="The Interactive Circle of Fifths">
-<meta name="twitter:description" content="The interactive Circle of Fifths that will help you understand what it is and how to use it.">
+<meta name="twitter:description" content="An interactive Circle of Fifths that will help you understand what it is and how to use it.">
 <meta name="twitter:app:country" content="US">
 <meta name="twitter:app:name:iphone" content="PianoLIT">
 <meta name="twitter:app:id:iphone" content="00000000">
 
 <meta itemprop="name" content="The Interactive Circle of Fifths"/>
-<meta itemprop="headline" content="The interactive Circle of Fifths that will help you understand what it is and how to use it."/>
-<meta itemprop="description" content="The interactive Circle of Fifths that will help you understand what it is and how to use it."/>
+<meta itemprop="headline" content="An interactive Circle of Fifths that will help you understand what it is and how to use it."/>
+<meta itemprop="description" content="An interactive Circle of Fifths that will help you understand what it is and how to use it."/>
 <meta itemprop="image" content="{{asset('images/misc/thumbnails/circle.jpg')}}"/>
 <meta itemprop="datePublished" content="{{carbon('20-06-2019')}}"/>
 <meta itemprop="dateModified" content="{{carbon('20-06-2019')}}" />
