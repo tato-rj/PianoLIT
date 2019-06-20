@@ -1,6 +1,37 @@
 @extends('layouts.app')
 
 @push('header')
+<meta name="twitter:card" value="The interactive Circle of Fifths that will help you understand what it is and how to use it.">
+<meta property="og:site_name" content="PianoLIT" />
+<meta property="og:title" content="The Interactive Circle of Fifths" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="{{url()->current()}}" />
+<meta property="og:image" content="{{asset('images/misc/thumbnails/circle.jpg')}}" />
+<meta property="og:image:width" content="400" />
+<meta property="og:image:height" content="245" />
+<meta property="og:description" content="The interactive Circle of Fifths that will help you understand what it is and how to use it." />
+<meta property="article:published_time" content="{{$carbon('6-20-2019')}}">
+<meta property="article:modified_time" content="{{$carbon('6-20-2019')}}">
+<meta property="og:updated_time" content="{{$carbon('6-20-2019')}}">
+
+<meta name="twitter:site" content="@litpiano">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="{{asset('images/misc/thumbnails/circle.jpg')}}">
+<meta name="twitter:title" content="The Interactive Circle of Fifths">
+<meta name="twitter:description" content="The interactive Circle of Fifths that will help you understand what it is and how to use it.">
+<meta name="twitter:app:country" content="US">
+<meta name="twitter:app:name:iphone" content="PianoLIT">
+<meta name="twitter:app:id:iphone" content="00000000">
+
+<meta itemprop="name" content="The Interactive Circle of Fifths"/>
+<meta itemprop="headline" content="The interactive Circle of Fifths that will help you understand what it is and how to use it."/>
+<meta itemprop="description" content="The interactive Circle of Fifths that will help you understand what it is and how to use it."/>
+<meta itemprop="image" content="{{asset('images/misc/thumbnails/circle.jpg')}}"/>
+<meta itemprop="datePublished" content="{{carbon('6-20-2019')}}"/>
+<meta itemprop="dateModified" content="{{carbon('6-20-2019')}}" />
+<meta itemprop="author" content="PianoLIT"/>
+
+<link rel="canonical" href="{{url()->current()}}" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 <style type="text/css">
 #mode-tabs .nav-link {
@@ -50,10 +81,11 @@ g.key {
 	<div class="row mb-6">
 		<div class="col-lg-5 col-md-6 col-12 px-4 mb-6">
 			<div id="wheel-container" class="w-100 position-relative">
-				@include('tools.circle.wheel')
+				@include('resources.circle.wheel')
 			</div>
-			<div id="wheel-controls" class="w-100 d-flex align-items-center justify-content-between px-5">
+			<div id="wheel-controls" class="w-100 d-flex align-items-center px-5">
 				<button direction="left" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-left"></i></button>
+				<div class="flex-grow text-grey text-center mx-2"><div><small>Click the arrows to turn the wheel</small></div></div>
 				<button direction="right" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-right"></i></button>
 			</div>
 		</div>
@@ -68,19 +100,19 @@ g.key {
 					</li>
 				</ul>
 				<div class="tab-content p-1 t-2" id="mode-panels" style="opacity: 0;">
-					@include('tools.circle.labels.major')
-					@include('tools.circle.labels.minor')
+					@include('resources.circle.labels.major')
+					@include('resources.circle.labels.minor')
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
-@include('tools.circle.info.key')
-@include('tools.circle.info.relative')
-@include('tools.circle.info.neighbors')
-@include('tools.circle.info.functional')
-@include('tools.circle.info.negative')
+@include('resources.circle.info.key')
+@include('resources.circle.info.signature')
+@include('resources.circle.info.relative')
+@include('resources.circle.info.neighbors')
+@include('resources.circle.info.functional')
 @endsection
 
 @push('scripts')
@@ -104,8 +136,9 @@ g.key {
   	showDescription();
 
     $('#wheel-controls button').on('click', function() {
+		let $button = $(this);
+		$button.siblings('div').find('div').fadeOut();
     	if (enabled) {
-    		let $button = $(this);
     		disable();
 	    	let direction = $button.attr('direction') == 'left' ? -30 : 30;
 	    	rotation += direction;
@@ -161,13 +194,11 @@ g.key {
   	let majorTonic = JSON.parse($key.attr('key-major-tonic'));
   	let majorDom = JSON.parse($key.attr('key-major-dominant'));
   	let majorSub = JSON.parse($key.attr('key-major-subdominant'));
-  	let majorNeg = JSON.parse($key.attr('key-major-negative'));
 
   	let minorRoman = JSON.parse($key.attr('key-minor-roman'));
   	let minorTonic = JSON.parse($key.attr('key-minor-tonic'));
   	let minorDom = JSON.parse($key.attr('key-minor-dominant'));
   	let minorSub = JSON.parse($key.attr('key-minor-subdominant'));
-  	let minorNeg = JSON.parse($key.attr('key-minor-negative'));
 
   	// console.log($majorSignature);
   	$majorSignature.attr('src', $majorSignature.attr('data-folder') + '/key-loading.svg').attr('src', $majorSignature.attr('data-folder') + '/' + id + '.svg');
@@ -203,18 +234,6 @@ g.key {
 		$('#mode-major .key-subdominant').append('<div>'+subdominant+'</div>');
 	});
 
-	$('#mode-major .key-negative').html('');
-	for (var i=0; i<7; i++) {
-		$('#mode-major .key-negative').append(`
-			<div style="width:14.25%">
-				<div class="rounded border">
-					<div class="text-center text-grey pt-1">`+majorNeg['regular'][i]+`</div>
-					<div class="mb-1 text-grey text-center"><i class="fas fa-sort-down"></i></div>
-					<div class="text-center text-dark pb-1"><strong>`+majorNeg['negative'][i]+`</strong></div>
-				</div>
-			</div>`);		
-	}
-
 	$('.key-major-roman').html('');
 	for (key in majorRoman) {
 		$('.key-major-roman').append(`
@@ -239,18 +258,6 @@ g.key {
 	minorSub.forEach(function(subdominant) {
 		$('#mode-minor .key-subdominant').append('<div>'+subdominant+'</div>');
 	});
-
-	$('#mode-minor .key-negative').html('');
-	for (var i=0; i<7; i++) {
-		$('#mode-minor .key-negative').append(`
-			<div style="width:14.25%">
-				<div class="rounded border">
-					<div class="text-center text-grey pt-1">`+minorNeg['regular'][i]+`</div>
-					<div class="mb-1 text-grey text-center"><i class="fas fa-sort-down"></i></div>
-					<div class="text-center text-dark pb-1"><strong>`+minorNeg['negative'][i]+`</strong></div>
-				</div>
-			</div>`);		
-	}
 
 	$('.key-minor-roman').html('');
 	for (key in minorRoman) {

@@ -1,1 +1,0 @@
-<p class="text-right"><a href="{{$link ?? '#'}}" target="_blank" class="link-blue">Learn more</a></p>

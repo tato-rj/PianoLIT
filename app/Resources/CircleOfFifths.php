@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Tools;
+namespace App\Resources;
 
 class CircleOfFifths
 {
 	protected $key;
 	protected $mode;
 	protected $modes = [
-		'full' => [' major', ' minor', ' minor', ' major', ' major', ' minor', ' diminished'],
+		'full' => [' major', ' minor', ' minor', ' major', ' major', ' minor', ' dim'],
 		'short' => ['M', 'm', 'm', 'M', 'M', 'm', '&#176;'],
 	];
 	protected $model = [
@@ -74,59 +74,6 @@ class CircleOfFifths
 			$this->keyToString(4),
 			$this->keyToString(5)
 		]);
-	}
-
-	public function getNegative()
-	{
-		$third = (strpos($this->key[2], '#') !== false) ? $this->key[2][0] : $this->key[2] . 'b';
-		$sixth = (strpos($this->key[5], '#') !== false) ? $this->key[5][0] : $this->key[5] . 'b';
-		$seventh = (strpos($this->key[6], '#') !== false) ? $this->key[6][0] : $this->key[6] . 'b';
-		
-		if ($this->mode == 'major') {
-			$map = [
-				'regular' => [
-					$this->keyToString(1, 'short'),
-					$this->keyToString(2, 'short'),
-					$this->keyToString(3, 'short'),
-					$this->keyToString(4, 'short'),
-					$this->keyToString(5, 'short'),
-					$this->keyToString(6, 'short'),
-					$this->keyToString(7, 'short'),
-				],
-				'negative' => [
-					ucfirst($this->key[0]) . 'm',
-					ucfirst($seventh) . 'M',
-					ucfirst($sixth) . 'M',
-					ucfirst($this->key[4]) . 'm',
-					ucfirst($this->key[3]) . 'm',
-					ucfirst($third) . 'M',
-					ucfirst($this->key[1]) . '&#176;'
-				]
-			];
-		} else {
-			$map = [
-				'regular' => [
-					$this->keyToString(6, 'short'),
-					$this->keyToString(7, 'short'),
-					$this->keyToString(1, 'short'),
-					$this->keyToString(2, 'short'),
-					$this->keyToString(3, 'short'),
-					$this->keyToString(4, 'short'),
-					$this->keyToString(5, 'short'),
-				],
-				'negative' => [
-					ucfirst($third) . 'M',
-					ucfirst($this->key[1]) . '&#176;',
-					ucfirst($this->key[0]) . 'm',
-					ucfirst($seventh) . 'M',
-					ucfirst($sixth) . 'M',
-					ucfirst($this->key[4]) . 'm',
-					ucfirst($this->key[3]) . 'm',
-				]
-			];
-		}
-
-		return json_encode($map);
 	}
 
 	public function getRomanNumerals()
@@ -205,8 +152,8 @@ class CircleOfFifths
 			$seventh = (strpos($this->key[4], 'b') !== false) ? $this->key[4][0] : $this->key[4] . 'b';
 
 			array_push($group, ucfirst($fifth) . ' major*');
-			array_push($group, ucfirst($seventh) . ' diminished*');
-			array_push($group, ucfirst($third) . ' augmented*');
+			array_push($group, ucfirst($seventh) . ' dim*');
+			array_push($group, ucfirst($third) . ' aug*');
 		}
 
 		return json_encode($group);
