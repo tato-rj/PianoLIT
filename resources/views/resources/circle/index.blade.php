@@ -10,9 +10,9 @@
 <meta property="og:image:width" content="400" />
 <meta property="og:image:height" content="245" />
 <meta property="og:description" content="The interactive Circle of Fifths that will help you understand what it is and how to use it." />
-<meta property="article:published_time" content="{{$carbon('6-20-2019')}}">
-<meta property="article:modified_time" content="{{$carbon('6-20-2019')}}">
-<meta property="og:updated_time" content="{{$carbon('6-20-2019')}}">
+<meta property="article:published_time" content="{{carbon('20-06-2019')}}">
+<meta property="article:modified_time" content="{{carbon('20-06-2019')}}">
+<meta property="og:updated_time" content="{{carbon('20-06-2019')}}">
 
 <meta name="twitter:site" content="@litpiano">
 <meta name="twitter:card" content="summary">
@@ -27,8 +27,8 @@
 <meta itemprop="headline" content="The interactive Circle of Fifths that will help you understand what it is and how to use it."/>
 <meta itemprop="description" content="The interactive Circle of Fifths that will help you understand what it is and how to use it."/>
 <meta itemprop="image" content="{{asset('images/misc/thumbnails/circle.jpg')}}"/>
-<meta itemprop="datePublished" content="{{carbon('6-20-2019')}}"/>
-<meta itemprop="dateModified" content="{{carbon('6-20-2019')}}" />
+<meta itemprop="datePublished" content="{{carbon('20-06-2019')}}"/>
+<meta itemprop="dateModified" content="{{carbon('20-06-2019')}}" />
 <meta itemprop="author" content="PianoLIT"/>
 
 <link rel="canonical" href="{{url()->current()}}" />
