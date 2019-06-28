@@ -25,7 +25,7 @@ class Stats
 
         $avg = $piecesAdded / $days;
 
-        return ($avg > 0 && $avg < 1) ? 'Less than 1' : (int)round($avg);
+        return $avg < 1 ? null : (int)round($avg);
     }
 
     public function milestone($avg)

@@ -71,8 +71,13 @@
                 <p class="text-muted m-0">Over the past 15 days we've added on average</p>
               </div>
               <div class="text-center">
+                @if($pieces_avg)
                 <h1 class="display-2 font-weight-bold m-0">{{$pieces_avg}}</h1>
                 <h3 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}/day</h3>
+                @else
+                <h1 class="display-2 font-weight-bold m-0">&#8734;</h1>
+                <h3 class="m-0">Not enough data</h3>
+                @endif
               </div>
             </div>
           </div>
