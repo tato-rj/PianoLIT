@@ -44,7 +44,7 @@
           @textarea(['bag' => 'default', 'name' => 'description', 'placeholder' => 'Post description', 'limit' => 238])
           @input(['bag' => 'default', 'name' => 'reading_time', 'placeholder' => 'Reading time', 'type' => 'number'])
           @input(['bag' => 'default', 'name' => 'cover_credits', 'placeholder' => 'Cover image credits', 'limit' => 120, 'required' => false])
-          @input(['bag' => 'default', 'name' => 'gift_path', 'placeholder' => 'Gift path here', 'limit' => 180])
+          @input(['bag' => 'default', 'name' => 'gift_path', 'placeholder' => 'Gift path here', 'limit' => 180, 'required' => false])
         </div>
 
         <div class="col-12 mb-4">
