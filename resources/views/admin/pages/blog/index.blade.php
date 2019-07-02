@@ -3,6 +3,11 @@
 @section('head')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
+<style type="text/css">
+.gift:hover img {
+  display: block !important;
+}
+</style>
 @endsection
 
 @section('content')
@@ -45,7 +50,9 @@
               <td class="d-none d-sm-block" style="white-space: nowrap;">{{$post->created_at->toFormattedDateString()}}</td>
               <td>{{$post->title}}
               @if($post->hasGift())
-              <span class="ml-2"><i class="fas fa-gift" style="color: #E92C59"></i></span>
+              <span class="ml-2 gift position-relative"><i class="fas fa-gift" style="color: #E92C59"></i>
+                <img src="{{$post->gift_path}}" class="position-absolute t-2 shadow-sm" style="left: 20px; top: 0; display: none;" width="100">
+              </span>
               @endif
               </td>
               <td class="d-none d-sm-block">{{$post->reading_time}} min</td>
