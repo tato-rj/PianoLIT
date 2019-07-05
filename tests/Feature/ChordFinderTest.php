@@ -64,7 +64,7 @@ class ChordFinderTest extends AppTest
         // $first = $this->finder->interval()->find('a', 'e');
         // $second = $this->finder->interval()->find('g', 'd');
         // $third = $this->finder->interval()->find('b', 'f');
-        $fourth = $this->finder->interval()->find('c', 'g');
+        $fourth = $this->finder->interval()->find('g', 'a');
         dd($fourth);
 
         $this->assertEquals($first['full'], 'perfect 5');

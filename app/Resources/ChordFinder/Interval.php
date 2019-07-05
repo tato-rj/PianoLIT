@@ -5,16 +5,20 @@ namespace App\Resources\ChordFinder;
 class Interval
 {
 	use Factory;
-	protected $firstIndex, $secondIndex, $distance, $interval;
+	protected $firstIndex, $secondIndex, $distance, $interval, $octaveUp;
 
-	public function find($first, $second, $octaveUp = false)
+	public function __construct($octaveUp = false)
+	{
+		$this->octaveUp = $octaveUp;
+	}
+
+	public function find($first, $second)
 	{
 		$this->getFirstIndex($first);
 		$this->getSecondIndex($second);
-		$this->getDistance($first, $second, $octaveUp);
-
-		dd($this->getInterval($this->distance, $this->interval));
-
+		$this->getDistance($first, $second);
+		$this->getInterval();
+dd($this->interval);
 		$index = $this->secondIndex - $this->firstIndex;
 
 		$type = $this->intervals($index)[0];
@@ -54,14 +58,23 @@ class Interval
 		return $index;
 	}
 
-	public function getDistance($first, $second, $octaveUp = false)
+	public function getDistance($first, $second)
 	{
 		$firstIndex = strpos($this->guide(), $first[0]);
 		$scale = implode('', array_slice(str_split($this->guide()), $firstIndex));
 		$distance = strpos($scale, $second[0]) + 1;
-		$octave = $octaveUp ? 7 : 0;
+		$octave = $this->octaveUp ? 7 : 0;
 
 		$this->distance = $distance + $octave;
+	}
+
+	public function getInterval()
+	{
+		$index = $this->octaveUp ? $this->distance - 7 : $this->distance;
+		$this->interval = [
+			'number' => $this->distance,
+			'type' => $this->intervals[$index][$this->secondIndex - $this->firstIndex]
+		];
 	}
 
 	public function getFirstIndex($note)
@@ -82,6 +95,5 @@ class Interval
 		) + $this->firstIndex;
 
 		$this->secondIndex = $index;
-		$this->interval = $this->secondIndex - $this->firstIndex;
 	}
 }

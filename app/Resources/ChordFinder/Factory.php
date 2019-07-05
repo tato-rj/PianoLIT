@@ -66,12 +66,4 @@ trait Factory
 	{
 		return str_split($this->tones);
 	}
-
-	public function getInterval($distance, $interval)
-	{
-		return [
-			'number' => $distance,
-			'type' => $this->intervals[$distance][$interval]
-		];
-	}
 }

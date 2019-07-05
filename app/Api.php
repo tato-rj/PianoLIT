@@ -131,11 +131,11 @@ class Api
         foreach ($collection as $model) {
             if (get_class($model) == 'App\Piece') {
                 $model->setAttribute('name', $model->medium_name);
-                $count = $model->composer->short_name;
+                $subtitle = $model->composer->short_name;
             } else {
                 $model->name = ucfirst($model->name);
                 $number = $model->pieces_count;
-                $count = $number.' '.'pieces';
+                $subtitle = $number.' '.'pieces';
             }
 
             $background = empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
@@ -145,7 +145,7 @@ class Api
             $model->setAttribute('color', $args['color']);
             $model->setAttribute('background', $background);
             $model->setAttribute('special_attribute', $args['special_attribute'] ?? null);
-            $model->setAttribute('count', $count);
+            $model->setAttribute('subtitle', $subtitle);
         }
     }
 

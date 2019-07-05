@@ -29,9 +29,9 @@ class ChordFinder
 		];
 	}
 
-	public function interval()
+	public function interval($octaveUp = false)
 	{
-		return new Interval;
+		return new Interval($octaveUp);
 	}
 
 	public function findInterval($note, $interval)
