@@ -53,6 +53,19 @@
         <div class="col-12 mb-4">
           @tinyeditor(['bag' => 'default', 'name' => 'content', 'value' => $post->content])
         </div>
+
+        <div class="col-12 mb-4"> 
+          @component('admin.pages.blog.post.references.layout')
+            @if($post->referencesArray)
+              @foreach($post->referencesArray as $reference)
+              @include('admin.pages.blog.post.references.input', [
+                'link' => $reference,
+                'name' => 'references['.$loop->index.']'])
+              @endforeach
+            @endif
+          @endcomponent
+        </div>
+
         <div class="col-12 text-right">
           <div class="d-flex justify-content-end">
             <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="btn btn-outline-dark mr-2">
@@ -107,6 +120,29 @@ $('input.status-toggle').on('change', function() {
       }
     }
   });
+});
+</script>
+<script type="text/javascript">
+/////////////////
+// ADD NEW TIP //
+/////////////////
+$('a.add-new-field').on('click', function() {
+  $button = $(this);
+  $type = $button.attr('data-type');
+  $clone = $button.siblings('.original-type').clone();
+
+  number = $('.reference-form:not(.original-type)').length;
+  input = $clone.find('input');
+  $(input).attr('name',  'references['+number+']');
+  $clone.removeClass('original-type').insertBefore($button).show();
+
+});
+
+////////////////
+// REMOVE TIP //
+////////////////
+$(document).on('click', 'a.remove-field', function() {
+  $(this).parent().remove();
 });
 </script>
 @endsection

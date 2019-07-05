@@ -28,6 +28,11 @@ class Post extends PianoLit
         });
     }
 
+    public function getReferencesArrayAttribute()
+    {
+        return unserialize($this->references);
+    }
+
     public function creator()
     {
         return $this->belongsTo(Admin::class);

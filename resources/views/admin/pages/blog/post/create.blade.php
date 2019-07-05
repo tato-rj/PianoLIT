@@ -50,6 +50,11 @@
         <div class="col-12 mb-4">
           @tinyeditor(['bag' => 'default', 'name' => 'content'])
         </div>
+
+        <div class="col-12 mb-4">
+          @include('admin.pages.blog.post.references.layout')
+        </div>
+
         <div class="col-12 text-right">
           <button type="submit" id="submit-button" class="btn btn-default">Create post</button>
         </div>
@@ -71,5 +76,28 @@
   submitButton: 'button[type="submit"]'
 })).create();
 
+</script>
+<script type="text/javascript">
+/////////////////
+// ADD NEW TIP //
+/////////////////
+$('a.add-new-field').on('click', function() {
+  $button = $(this);
+  $type = $button.attr('data-type');
+  $clone = $button.siblings('.original-type').clone();
+
+  number = $('.reference-form:not(.original-type)').length;
+  input = $clone.find('input');
+  $(input).attr('name',  'references['+number+']');
+  $clone.removeClass('original-type').insertBefore($button).show();
+
+});
+
+////////////////
+// REMOVE TIP //
+////////////////
+$(document).on('click', 'a.remove-field', function() {
+  $(this).parent().remove();
+});
 </script>
 @endsection

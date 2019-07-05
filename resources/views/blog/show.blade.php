@@ -85,8 +85,18 @@ iframe {
 					<p class="m-0 text-muted">Want a heads up when a new story comes out? <span class="text-blue cursor-pointer btn-subscribe">Subscribe here</span></p>
 				</div>
 			</div>
-			<div id="blog-content" class="blog-font mb-5 pb-4 border-bottom">
+			<div id="blog-content" class="blog-font">
 				{!! $post->content !!}
+			</div>
+			<div class="mb-5 pb-4 border-bottom text-muted">
+				<div class="mb-1"><strong>References</strong></div>
+				<ul class="pl-4">
+					<small>
+						@foreach($post->referencesArray as $reference)
+							<li>{{$reference}}</li>
+						@endforeach
+					</small>
+				</ul>
 			</div>
 			<div class="mb-5 d-apart">
 				<div>
