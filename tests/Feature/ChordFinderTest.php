@@ -47,11 +47,29 @@ class ChordFinderTest extends AppTest
     }
 
     /** @test */
-    public function it_can_identify_an_interval()
+    public function it_can_identify_a_third()
     {
-        $interval = $this->finder->interval()->find('g', 'a', true);
+        $first = $this->finder->interval()->find('a', 'c');
+        $second = $this->finder->interval()->find('a', 'c+');
+        $third = $this->finder->interval()->find('c', 'e-');
 
-        dd($interval); 
+        $this->assertEquals($first['full'], 'minor 3');
+        $this->assertEquals($second['full'], 'major 3');
+        $this->assertEquals($third['full'], 'minor 3');
+    }
+
+    /** @test */
+    public function it_can_identify_a_fifth()
+    {
+        // $first = $this->finder->interval()->find('a', 'e');
+        // $second = $this->finder->interval()->find('g', 'd');
+        // $third = $this->finder->interval()->find('b', 'f');
+        $fourth = $this->finder->interval()->find('c', 'g');
+        dd($fourth);
+
+        $this->assertEquals($first['full'], 'perfect 5');
+        $this->assertEquals($second['full'], 'perfect 5');
+        $this->assertEquals($third['full'], 'diminished 5');
     }
 
     /** @test */

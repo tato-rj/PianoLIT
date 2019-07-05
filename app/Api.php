@@ -146,7 +146,7 @@ class Api
             $model->setAttribute('color', $args['color']);
             $model->setAttribute('background', $background);
             $model->setAttribute('special_attribute', $args['special_attribute'] ?? null);
-            $model->setAttribute('count', $number.' '.$string);
+            $model->setAttribute('count', 'testing');
         }
     }
 
