@@ -67,7 +67,8 @@ class ApiController extends Controller
 
         $pieces = Piece::search($inputArray, $request)->get();
 
-        $this->api->prepare($request, $pieces, $inputArray);
+        if (! empty($inputArray))
+            $this->api->prepare($request, $pieces, $inputArray);
 
         if ($request->wantsJson() || $request->has('api'))
             return $pieces;

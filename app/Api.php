@@ -236,6 +236,9 @@ class Api
 
     public function prepareInput($request)
     {
+        if (! $request->search)
+            return [];
+
         $inputString = trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $request->search)));
 
         $inputArray = array_map('mb_strtolower', explode(' ', $inputString));

@@ -23,14 +23,6 @@ class ChordFinderTest extends AppTest
 	}
 
 	/** @test */
-	public function if_knows_how_to_reorder_a_seventh()
-	{
-        $chord = $this->finder->take(['c', 'g', 'b'])->analyse();
-
-        $this->assertEquals($chord['notes'], ['c', 'g', 'b']);		 
-	}
-
-	/** @test */
 	public function it_knows_how_to_discard_any_repeated_notes()
 	{
         $chord = $this->finder->take(['c', 'c', 'g', 'e'])->analyse();
@@ -47,48 +39,68 @@ class ChordFinderTest extends AppTest
     }
 
     /** @test */
-    public function it_can_identify_a_third()
+    public function it_can_identify_any_interval()
     {
-        $first = $this->finder->interval()->find('a', 'c');
-        $second = $this->finder->interval()->find('a', 'c+');
-        $third = $this->finder->interval()->find('c', 'e-');
+        $intervals = [
+            ['name' => 'minor 2', 'notes' => ['a', 'b-'], 'octaveUp' => false],
+            ['name' => 'major 2', 'notes' => ['b', 'c+'], 'octaveUp' => false],
+            ['name' => 'minor 3', 'notes' => ['f', 'a-'], 'octaveUp' => false],
+            ['name' => 'major 3', 'notes' => ['f-', 'a-'], 'octaveUp' => false],
+            ['name' => 'diminished 4', 'notes' => ['g-', 'c--'], 'octaveUp' => false],
+            ['name' => 'perfect 4', 'notes' => ['d+', 'g+'], 'octaveUp' => false],
+            ['name' => 'augmented 4', 'notes' => ['e', 'a+'], 'octaveUp' => false],
+            ['name' => 'diminished 5', 'notes' => ['f-', 'c--'], 'octaveUp' => false],
+            ['name' => 'perfect 5', 'notes' => ['b', 'f+'], 'octaveUp' => false],
+            ['name' => 'augmented 5', 'notes' => ['a', 'e+'], 'octaveUp' => false],
+            ['name' => 'minor 6', 'notes' => ['c', 'a-'], 'octaveUp' => false],
+            ['name' => 'major 6', 'notes' => ['g', 'e'], 'octaveUp' => false],
+            ['name' => 'augmented 6', 'notes' => ['g', 'e+'], 'octaveUp' => false],
+            ['name' => 'minor 7', 'notes' => ['f', 'e-'], 'octaveUp' => false],
+            ['name' => 'major 7', 'notes' => ['c', 'b'], 'octaveUp' => false],
+            ['name' => 'minor 9', 'notes' => ['c', 'd-'], 'octaveUp' => true],
+            ['name' => 'major 9', 'notes' => ['e', 'f+'], 'octaveUp' => true]
+        ];
 
-        $this->assertEquals($first['full'], 'minor 3');
-        $this->assertEquals($second['full'], 'major 3');
-        $this->assertEquals($third['full'], 'minor 3');
-    }
-
-    /** @test */
-    public function it_can_identify_a_fifth()
-    {
-        // $first = $this->finder->interval()->find('a', 'e');
-        // $second = $this->finder->interval()->find('g', 'd');
-        // $third = $this->finder->interval()->find('b', 'f');
-        $fourth = $this->finder->interval()->find('g', 'a');
-        dd($fourth);
-
-        $this->assertEquals($first['full'], 'perfect 5');
-        $this->assertEquals($second['full'], 'perfect 5');
-        $this->assertEquals($third['full'], 'diminished 5');
+        foreach ($intervals as $interval) {
+            $this->assertEquals(
+                $this->finder->interval($interval['notes'][0], $interval['notes'][1], $interval['octaveUp'])->analyse()['full'], 
+                $interval['name']
+            );            
+        }
     }
 
     /** @test */
     public function it_knows_the_name_of_a_simple_triad()
     {
-        $CMajorChord = $this->finder->take(['e', 'c', 'g'])->analyse();
-        $GMajorChord = $this->finder->take(['b', 'g', 'd'])->analyse();
+        $chords = [
+            'C major' => ['e', 'c', 'g'],
+            'G major' => ['b', 'g', 'd'],
+            'F minor' => ['c', 'a-', 'f'],
+            'E diminished' => ['e', 'b-', 'g'],
+            'C# diminished' => ['e', 'c+', 'g'],
+            'Ab augmented' => ['e', 'a-', 'c']
+        ];
 
-        $this->assertEquals($CMajorChord['name'], 'C major');
-        $this->assertEquals($GMajorChord['name'], 'G major');
+        foreach ($chords as $chord => $notes) {
+            $this->assertEquals(
+                $this->finder->take($notes)->analyse()['chords'][0]['info']['full_name'], 
+                $chord
+            );            
+        }
     }
 
     /** @test */
     public function it_knows_the_name_of_a_four_note_chord()
     {
-        $GMajorChord = $this->finder->take(['b', 'd', 'g', 'f'])->analyse();
-        $FMajorChord = $this->finder->take(['f', 'e', 'c', 'a'])->analyse();
+        $chords = [
+            'G minor b7' => ['d', 'b-', 'g', 'f']
+        ];
 
-        $this->assertEquals($GMajorChord['name'], 'G major');
-        $this->assertEquals($FMajorChord['name'], 'F major');
+        foreach ($chords as $chord => $notes) {
+            $this->assertEquals(
+                $this->finder->take($notes)->analyse()['chords'][0]['info']['full_name'], 
+                $chord
+            );            
+        }
     }
 }
