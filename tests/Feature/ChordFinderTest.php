@@ -42,28 +42,28 @@ class ChordFinderTest extends AppTest
     public function it_can_identify_any_interval()
     {
         $intervals = [
-            ['name' => 'minor 2', 'notes' => ['a', 'b-'], 'octaveUp' => false],
-            ['name' => 'major 2', 'notes' => ['b', 'c+'], 'octaveUp' => false],
-            ['name' => 'minor 3', 'notes' => ['f', 'a-'], 'octaveUp' => false],
-            ['name' => 'major 3', 'notes' => ['f-', 'a-'], 'octaveUp' => false],
-            ['name' => 'diminished 4', 'notes' => ['g-', 'c--'], 'octaveUp' => false],
-            ['name' => 'perfect 4', 'notes' => ['d+', 'g+'], 'octaveUp' => false],
-            ['name' => 'augmented 4', 'notes' => ['e', 'a+'], 'octaveUp' => false],
-            ['name' => 'diminished 5', 'notes' => ['f-', 'c--'], 'octaveUp' => false],
-            ['name' => 'perfect 5', 'notes' => ['b', 'f+'], 'octaveUp' => false],
-            ['name' => 'augmented 5', 'notes' => ['a', 'e+'], 'octaveUp' => false],
-            ['name' => 'minor 6', 'notes' => ['c', 'a-'], 'octaveUp' => false],
-            ['name' => 'major 6', 'notes' => ['g', 'e'], 'octaveUp' => false],
-            ['name' => 'augmented 6', 'notes' => ['g', 'e+'], 'octaveUp' => false],
-            ['name' => 'minor 7', 'notes' => ['f', 'e-'], 'octaveUp' => false],
-            ['name' => 'major 7', 'notes' => ['c', 'b'], 'octaveUp' => false],
-            ['name' => 'minor 9', 'notes' => ['c', 'd-'], 'octaveUp' => true],
-            ['name' => 'major 9', 'notes' => ['e', 'f+'], 'octaveUp' => true]
+            ['name' => 'minor 2', 'notes' => ['a', 'b-']],
+            ['name' => 'major 2', 'notes' => ['b', 'c+']],
+            ['name' => 'minor 3', 'notes' => ['f', 'a-']],
+            ['name' => 'major 3', 'notes' => ['f-', 'a-']],
+            ['name' => 'diminished 4', 'notes' => ['g-', 'c--']],
+            ['name' => 'perfect 4', 'notes' => ['d+', 'g+']],
+            ['name' => 'augmented 4', 'notes' => ['e', 'a+']],
+            ['name' => 'diminished 5', 'notes' => ['f-', 'c--']],
+            ['name' => 'perfect 5', 'notes' => ['b', 'f+']],
+            ['name' => 'augmented 5', 'notes' => ['a', 'e+']],
+            ['name' => 'minor 6', 'notes' => ['c', 'a-']],
+            ['name' => 'major 6', 'notes' => ['g', 'e']],
+            ['name' => 'augmented 6', 'notes' => ['g', 'e+']],
+            ['name' => 'minor 7', 'notes' => ['f', 'e-']],
+            ['name' => 'major 7', 'notes' => ['c', 'b']],
+            ['name' => 'minor 9', 'notes' => ['c', 'd-2']],
+            ['name' => 'major 9', 'notes' => ['e', 'f+2']]
         ];
 
         foreach ($intervals as $interval) {
             $this->assertEquals(
-                $this->finder->interval($interval['notes'][0], $interval['notes'][1], $interval['octaveUp'])->analyse()['full'], 
+                $this->finder->interval($interval['notes'][0], $interval['notes'][1])->analyse()['full'], 
                 $interval['name']
             );            
         }
@@ -92,14 +92,8 @@ class ChordFinderTest extends AppTest
     /** @test */
     public function it_knows_how_to_order_the_dissonances_on_a_multi_note_chord()
     {
-        dd($this->finder->take(['e', 'c', 'g'])->analyse());
         $this->assertEquals(
             $this->finder->take(['d', 'c', 'g', 'f'])->analyse()['chords'][2]['info']['full_name'], 
-            'G sus4 b7'
-        );
-
-        $this->assertEquals(
-            $this->finder->take(['a', 'c', 'g', 'f'])->analyse()['chords'][2]['info']['full_name'], 
             'G sus4 b7'
         );
     }

@@ -81,7 +81,7 @@ g.key {
 	<div class="row mb-6">
 		<div class="col-lg-5 col-md-6 col-12 px-4 mb-6">
 			<div id="wheel-container" class="w-100 position-relative">
-				@include('resources.circle.wheel')
+				@include('tools.circle.wheel')
 			</div>
 			<div id="wheel-controls" class="w-100 d-flex align-items-center px-5">
 				<button direction="left" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-left"></i></button>
@@ -100,19 +100,19 @@ g.key {
 					</li>
 				</ul>
 				<div class="tab-content p-1 t-2" id="mode-panels" style="opacity: 0;">
-					@include('resources.circle.labels.major')
-					@include('resources.circle.labels.minor')
+					@include('tools.circle.labels.major')
+					@include('tools.circle.labels.minor')
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
-@include('resources.circle.info.key')
-@include('resources.circle.info.signature')
-@include('resources.circle.info.relative')
-@include('resources.circle.info.neighbors')
-@include('resources.circle.info.functional')
+@include('tools.circle.info.key')
+@include('tools.circle.info.signature')
+@include('tools.circle.info.relative')
+@include('tools.circle.info.neighbors')
+@include('tools.circle.info.functional')
 @endsection
 
 @push('scripts')

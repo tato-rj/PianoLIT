@@ -3,27 +3,27 @@
 		<div class="row">
 			<div class="col-6">
 				<div class="mb-4">
-					@include('resources.circle.labels.title', ['title' => 'key'])
+					@include('tools.circle.labels.title', ['title' => 'key'])
 					<h4 class="key-name"></h4>
 				</div>
 				<div class="mb-4">
-					@include('resources.circle.labels.title', ['title' => 'relative key'])
+					@include('tools.circle.labels.title', ['title' => 'relative key'])
 					<h4 class="key-relative"></h4>
 				</div>
 			</div>
 			<div class="col-6">
-				@include('resources.circle.labels.title', ['title' => 'key signature'])
+				@include('tools.circle.labels.title', ['title' => 'key signature'])
 				<img class="key-signature w-100" data-folder="{{asset('images/misc/keys/')}}" src="{{asset('images/misc/keys/key-loading.svg')}}" style="max-width: 180px; margin-top: -8px;">
 			</div>
 		</div>
 		<div class="mb-4">
-			@include('resources.circle.labels.title', ['title' => 'neighbor keys'])
+			@include('tools.circle.labels.title', ['title' => 'neighbor keys'])
 			<div class="key-neighbors"></div>
 		</div>
 	</div>
 
 	<div>
-		@include('resources.circle.labels.title', ['title' => 'functional harmony'])
+		@include('tools.circle.labels.title', ['title' => 'functional harmony'])
 		<div class="mb-3 mt-1 key-minor-roman d-flex"></div>
 		<div class="row no-gutters mb-4">
 			<div class="col-4 mb-2">

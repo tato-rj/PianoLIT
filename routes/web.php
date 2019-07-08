@@ -16,10 +16,10 @@ Route::get('/', function () {
     return view('welcome.index', compact(['tags', 'videos']));
 })->name('home');
 
-Route::get('/resources/circle-of-fifths', function() {
+Route::get('/tools/circle-of-fifths', function() {
 	$keys = new \App\Resources\CircleOfFifths;
 
-	return view('resources.circle.index', compact('keys'));
+	return view('tools.circle.index', compact('keys'));
 });
 
 Route::prefix('blog')->name('posts.')->group(function() {
