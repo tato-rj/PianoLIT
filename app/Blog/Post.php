@@ -45,7 +45,7 @@ class Post extends PianoLit
 
     public function getIsNewAttribute()
     {
-        return $this->published_at->isSameDay(now());
+        return $this->published_at->isSameMonth(now());
     }
 
     public function hasGift()
