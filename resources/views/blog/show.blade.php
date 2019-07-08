@@ -88,6 +88,7 @@ iframe {
 			<div id="blog-content" class="blog-font">
 				{!! $post->content !!}
 			</div>
+			@if($post->references)
 			<div class="mb-5 pb-4 border-bottom text-muted">
 				<div class="mb-1"><strong>References</strong></div>
 				<ul class="pl-4">
@@ -98,6 +99,7 @@ iframe {
 					</small>
 				</ul>
 			</div>
+			@endif
 			<div class="mb-5 d-apart">
 				<div>
 					<div class="d-inline-block align-middle mr-3">

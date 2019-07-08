@@ -90,17 +90,17 @@ class ChordFinderTest extends AppTest
     }
 
     /** @test */
-    public function it_knows_the_name_of_a_four_note_chord()
+    public function it_knows_how_to_order_the_dissonances_on_a_multi_note_chord()
     {
-        $chords = [
-            'G minor b7' => ['d', 'b-', 'g', 'f']
-        ];
+        dd($this->finder->take(['e', 'c', 'g'])->analyse());
+        $this->assertEquals(
+            $this->finder->take(['d', 'c', 'g', 'f'])->analyse()['chords'][2]['info']['full_name'], 
+            'G sus4 b7'
+        );
 
-        foreach ($chords as $chord => $notes) {
-            $this->assertEquals(
-                $this->finder->take($notes)->analyse()['chords'][0]['info']['full_name'], 
-                $chord
-            );            
-        }
+        $this->assertEquals(
+            $this->finder->take(['a', 'c', 'g', 'f'])->analyse()['chords'][2]['info']['full_name'], 
+            'G sus4 b7'
+        );
     }
 }

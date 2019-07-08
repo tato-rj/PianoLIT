@@ -14,9 +14,9 @@ class ChordFinder
 		$this->validator = new Validator($this);
 	}
 	
-	public function interval($first, $second, $octaveUp = false)
+	public function interval($first, $second)
 	{
-		return new Interval($first, $second, $octaveUp);
+		return new Interval($first, $second);
 	}
 
 	public function take(array $notes)
@@ -32,8 +32,9 @@ class ChordFinder
 
 	public function analyse()
 	{
-		$this->organize();
 
+		$this->organize();
+			
 		$this->getChords();
 
 		return [
@@ -54,6 +55,15 @@ class ChordFinder
 		$root = $this->notes[0];
 		array_shift($this->notes);
 		array_push($this->notes, $root);
+
+		foreach ($this->notes as $key => $note) {
+			if (strpos($note, '2') !== false) {
+				$dissonance = $this->notes[$key];
+				unset($this->notes[$key]);
+				array_push($this->notes, $dissonance);
+			}
+		}
+
 		$this->notes = array_values($this->notes);
 
 		return $this->notes;
@@ -120,9 +130,13 @@ class ChordFinder
 		$chordIntervals = $this->chordIntervals($chord);
 
 		if ($this->hasThirdAndFifth($chordIntervals)) {
-			$fullType .= $chordIntervals['fifth']['type'] == 'perfect' ? $chordIntervals['third']['type'] : $chordIntervals['fifth']['type'];
-			$note = 'root position';
-			$is_main = true;
+			if ($this->validTriad($chordIntervals)) {
+				$fullType .= $chordIntervals['fifth']['type'] == 'perfect' ? $chordIntervals['third']['type'] : $chordIntervals['fifth']['type'];
+				$note = 'root position';
+				$is_main = true;
+			} else {
+				$relevant = false;
+			}
 		} elseif ($this->hasThirdOrFifth($chordIntervals)) {
 			$fullType .= $chordIntervals['fifth'] ? $chordIntervals['fifth']['type'] : $chordIntervals['third']['type'];
 		} else {
@@ -144,13 +158,15 @@ class ChordFinder
 
 		if ($this->isSus($chordIntervals)) {
 			if ($chordIntervals['second']) {
-				$fullType .= 'sus2';
+				$fullType .= ' sus2';
 				$shortType .= 'sus2';
 			}
 			if ($chordIntervals['fourth']) {
-				$fullType .= 'sus4'; 
+				$fullType .= ' sus4'; 
 				$shortType .= 'sus4';
 			}
+
+			$relevant = ! $this->hasThird($chordIntervals);
 		}
 
 		if ($this->hasSeventh($chordIntervals)) {
@@ -163,13 +179,30 @@ class ChordFinder
 			$shortType .= $chordIntervals['sixth']['short'];
 		}
 
+		$dissonances = $this->getOtherDissonances($chord);
+
 		return [
-			'full_name' => $root . ' ' . $fullType,
-			'short_name' => $root . $shortType,
+			'full_name' => str_replace('  ', ' ', $root . ' ' . $fullType . $dissonances),
+			'short_name' => $root . $shortType . $dissonances,
 			'note' => $note,
 			'is_main' => $is_main,
 			'relevant' => $relevant
 		];
+	}
+
+	public function getOtherDissonances($chord)
+	{
+		$dissonances = [];
+
+		foreach ($chord['intervals'] as $index => $interval) {
+			if ($interval > 8)
+				array_push($dissonances, $chord[$index]['short']);
+		}
+		
+		if (empty($dissonances))
+			return null;
+
+		return implode('', $dissonances);
 	}
 
 	public function find($chord, $interval)
@@ -194,6 +227,18 @@ class ChordFinder
 		];
 	}
 
+	public function validTriad($chordIntervals)
+	{
+		if ($chordIntervals['fifth']['type'] == 'perfect')
+			return true;
+
+		if ($chordIntervals['fifth']['type'] == 'augmented')
+			return $chordIntervals['third']['type'] == 'major';
+
+		if ($chordIntervals['fifth']['type'] == 'diminished')
+			return $chordIntervals['third']['type'] == 'minor';
+	}
+
 	public function hasThirdAndFifth($chordIntervals)
 	{
 		return $chordIntervals['third'] && $chordIntervals['fifth'];
@@ -207,6 +252,11 @@ class ChordFinder
 	public function isFirstInversion($chordIntervals)
 	{
 		return $chordIntervals['third'] && $chordIntervals['sixth'] && !$chordIntervals['fifth'];
+	}
+
+	public function hasThird($chordIntervals)
+	{
+		return $chordIntervals['third'];
 	}
 
 	public function hasSixth($chordIntervals)
@@ -228,61 +278,8 @@ class ChordFinder
 	{
 		$note = str_replace('+', '#', $note);
 		$note = str_replace('-', 'b', $note);
+		$note = str_replace('2', '', $note);
 
 		return ucfirst($note);
 	}
-
-	// public function findInterval($note, $interval)
-	// {
-	// 	$array = str_split($this->guide());
-	// 	$index = strpos($this->guide(), $note[0]) - 1;
-	// 	$ext = (strlen($note) == 1) ? '' : substr($note, strpos($note, $note[0]) + 1);
-
-	// 	return $array[$index + $interval] . $ext;
-	// }
-
-	// public function eliminateIntervals($intervals)
-	// {
-	// 	while ($index = $this->hasAny($intervals)) {
-	// 		$note = $this->notes[$index];
-	// 		unset($this->notes[$index]);
-	// 		array_unshift($this->notes, $note);
-	// 		$this->notes = array_values($this->notes);
-	// 	}
-	// }
-
-	// public function hasAny($intervals)
-	// {
-	// 	$returnIndex = false;
-
-	// 	foreach ($intervals as $interval) {
-	// 		foreach ($this->notes as $index => $note) {
-	// 			if ($index == count($this->notes) - 1)
-	// 				break;
-
-	// 			if ($this->findInterval($note[0], $interval) == $this->next($index)) {
-	// 				$returnIndex = $index + 1;
-	// 				break;
-	// 			}
-	// 		}
-
-	// 		if ($returnIndex)
-	// 			break;
-	// 	}
-
-	// 	return $returnIndex;
-	// }
-
-	// public function next($index, $plain = true)
-	// {
-	// 	return $plain ? $this->notes[$index + 1][0] : $this->notes[$index + 1];
-	// }
-
-	// public function getChord()
-	// {
-	// 	for ($i=0; $i<count($this->notes); $i++) {
-	// 		$this->chord[$i]['note'] = $this->notes[$i];
-	// 		$this->chord[$i]['interval'] = $this->interval($this->notes[0], $this->notes[$i])->analyse();
-	// 	}	
-	// }
 }
