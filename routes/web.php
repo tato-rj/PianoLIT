@@ -22,6 +22,12 @@ Route::get('/tools/circle-of-fifths', function() {
 	return view('tools.circle.index', compact('keys'));
 });
 
+Route::get('/tools/chord-finder', function() {
+	$finder = new \App\Resources\ChordFinder\ChordFinder;
+	return $finder->take(request()->notes)->analyse();
+	return view('tools.circle.index', compact('chords'));
+});
+
 Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::get('', 'PostsController@index')->name('index');

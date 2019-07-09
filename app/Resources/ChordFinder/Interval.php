@@ -80,7 +80,9 @@ class Interval
 		$firstIndex = strpos($this->guide(), $this->firstNote[0]);
 		$scale = implode('', array_slice(str_split($this->guide()), $firstIndex));
 		$distance = strpos($scale, $this->secondNote[0]) + 1;
+	
 		$this->ignoreTwelvethInterval($distance);
+	
 		$octave = $this->octaveUp ? 7 : 0;
 
 		$this->distance = $distance + $octave;
@@ -89,7 +91,7 @@ class Interval
 	public function ignoreTwelvethInterval($distance)
 	{
 		if ($this->octaveUp)
-			$this->octaveUp = ($distance != 5);
+			$this->octaveUp = ($distance != 5 || $distance != 3);
 	}
 
 	public function getIntervalType()
@@ -123,5 +125,22 @@ class Interval
 		) + $this->firstIndex;
 
 		$this->secondIndex = $index;
+	}
+
+	public function in($intervals)
+	{
+		$this->getFirstIndex();
+		$this->getSecondIndex();
+		$this->getDistance();
+		$response = false;
+		
+		foreach ($intervals as $interval) {
+			if ($this->distance == $interval) {
+				$response = true;
+				break;
+			}
+		}
+		
+		return $response;
 	}
 }
