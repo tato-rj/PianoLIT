@@ -20,7 +20,7 @@ class AdminsController extends Controller
         $tags_count = Tag::count();
         $composers_count = Composer::count();
         $users_count = User::count();
-        $subscriptions_count = Subscription::count() - 2;
+        $subscriptions_count = Subscription::active()->count() - 2;
         $blog_count = Post::count();
 
         $birthdays = Composer::bornToday()->get();
