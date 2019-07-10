@@ -132,9 +132,9 @@ class CircleOfFifths
 	{
 		$group = [];
 		$modes = [
-			'major' => [1,3,6],
+			'major' => [1,6,3],
 			'minor' => [6,1,4],
-			'enharmonic' => [1,3,6]
+			'enharmonic' => [1,6,3]
 		];
 
 		for ($i=0; $i<count($modes[$this->mode]); $i++) {
