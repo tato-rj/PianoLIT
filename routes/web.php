@@ -16,17 +16,13 @@ Route::get('/', function () {
     return view('welcome.index', compact(['tags', 'videos']));
 })->name('home');
 
-Route::get('/tools/circle-of-fifths', function() {
-	$keys = new \App\Resources\CircleOfFifths;
-});
-
 Route::prefix('tools')->name('tools.')->group(function() {
 
 	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
 
 		Route::get('', function() {
 			return view('tools.chords.index');
-		});
+		})->name('index');
 		
 		Route::get('/analyse', function() {
 			$finder = new \App\Resources\ChordFinder\ChordFinder;
@@ -36,6 +32,12 @@ Route::prefix('tools')->name('tools.')->group(function() {
 		})->name('analyse');
 
 	});
+
+	Route::get('circle-of-fifths', function() {
+		$keys = new \App\Resources\CircleOfFifths;
+
+		return view('tools.circle.index', compact('keys'));
+	})->name('circle-of-fifths');
 
 });
 

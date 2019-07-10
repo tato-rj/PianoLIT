@@ -2,6 +2,163 @@
 
 @push('header')
 <style type="text/css">
+/*START WORKERS*/
+
+.place_balk_workers {
+	width: 437px;
+	position: relative;
+	margin: 0 auto;
+}
+
+.place_balk_workers .balk_workers{
+    width: 437px;
+    height: 213px;
+    position: relative;
+    background-image: url("/images/animations/workers.svg");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-color: transparent;
+    background-size: 100%;
+    z-index: 3;
+}
+
+.place_balk_workers .balk {
+    width: 60px;
+    height: 23px;
+    background-image: url("/images/animations/balk.svg");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-color: transparent;
+    background-size: 100%;
+    position: absolute;
+    top: 92px;
+    left: 194px;
+}
+
+.place_balk_workers .saw{
+    width: 325px;
+    height: 63px;
+    background-image: url("/images/animations/saw.svg");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-color: transparent;
+    background-size: 100%;
+    position: absolute;
+    left: 53px;
+    top: 68px;
+    z-index: 2;
+    -moz-animation: 1.0s ease 0s normal none infinite saw;
+    -moz-transform-origin: 85% 65%;
+    -webkit-animation:saw 1.0s infinite ease-in-out;
+    -webkit-transform-origin: 85% 65%;
+    -o-animation: 1.0s ease 0s normal none infinite saw;
+    -o-animation:saw 1.0s infinite ease-in-out;
+    -o-transform-origin: 85% 65%;
+    -ms-animation: 1.0s ease 0s normal none infinite saw;
+    -ms-animation:saw 1.0s infinite ease-in-out;
+    -ms-transform-origin: 85% 65%;
+    animation: 1.0s ease 0s normal none infinite saw;
+    animation:saw 1.0s infinite ease-in-out;
+    transform-origin: 85% 65%;
+}
+
+@-moz-keyframes saw {
+    0%{left:53px}
+    50%{left:72px}
+    100%{left:53px}
+}
+@-webkit-keyframes saw {
+    0%{left:53px}
+    50%{left:72px}
+    100%{left:53px}
+}
+@-o-keyframes saw {
+    0%{left:53px}
+    50%{left:72px}
+    100%{left:53px}
+}
+@-ms-keyframes saw {
+    0%{left:53px}
+    50%{left:72px}
+    100%{left:53px}
+}
+@keyframes saw {
+    0%{left:53px}
+    50%{left:72px}
+    100%{left:53px}
+}
+
+@-moz-keyframes saw_mob {
+    0%{left:47px}
+    50%{left:33px}
+    100%{left:47px}
+}
+@-webkit-keyframes saw_mob {
+    0%{left:47px}
+    50%{left:33px}
+    100%{left:47px}
+}
+@-o-keyframes saw_mob {
+    0%{left:47px}
+    50%{left:33px}
+    100%{left:47px}
+}
+@-ms-keyframes saw_mob {
+    0%{left:47px}
+    50%{left:33px}
+    100%{left:47px}
+}
+@keyframes saw_mob {
+    0%{left:47px}
+    50%{left:33px}
+    100%{left:47px}
+}
+
+/* Start media ( max = 468px ) */
+@media (max-width: 468px) {
+    .place_balk_workers {
+        width: 290px;
+        height: 150px;
+        margin: 40px auto -10px;
+    }
+    .place_balk_workers .balk_workers {
+        width: 290px;
+        height: 150px;
+    }
+    .place_balk_workers .balk {
+        width: 41px;
+        height: 15px;
+        top: 70px;
+        left: 128px;
+    }
+    .place_balk_workers .saw {
+        width: 215px;
+        height: 36px;
+        left: 37px;
+        top: 59px;
+        -moz-animation: 1.0s ease 0s normal none infinite saw_mob;
+        -moz-transform-origin: 85% 65%;
+        -webkit-animation: saw_mob 1.0s infinite ease-in-out;
+        -webkit-transform-origin: 85% 65%;
+        -o-animation: 1.0s ease 0s normal none infinite saw_mob;
+        -o-animation: saw_mob 1.0s infinite ease-in-out;
+        -o-transform-origin: 85% 65%;
+        -ms-animation: 1.0s ease 0s normal none infinite saw_mob;
+        -ms-animation: saw_mob 1.0s infinite ease-in-out;
+        -ms-transform-origin: 85% 65%;
+        animation: 1.0s ease 0s normal none infinite saw_mob;
+        animation: saw_mob 1.0s infinite ease-in-out;
+        transform-origin: 85% 65%;
+    }
+
+}
+
+/*END OF WORKERS*/
+
+
+
+
+
 .note {
 	position: relative;
 }
@@ -79,6 +236,11 @@ button.control:disabled {
 @endpush
 
 @section('content')
+<div class="mb-5 text-center">
+	<h3>Chord Finder</h3>
+	<p class="text-grey">Just tell us the notes and we'll show you all the possible chords you can make with them</p>
+</div>
+@if(app()->isLocal())
 <div class="container mb-4" id="notes-container">
 	<p class="text-center text-grey mb-4">Tap/click on a note to select it</p>
 	<div class="row no-gutters justify-content-center mb-4">
@@ -101,6 +263,12 @@ button.control:disabled {
 		</div>
 	</div>
 </div>
+@else
+<div class="my-6">
+	@include('components/animations/workers')
+	<h3 class="text-grey text-center my-4">Coming up soon!</h3>
+</div>
+@endif
 @endsection
 
 @push('scripts')

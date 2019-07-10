@@ -54,6 +54,14 @@
             border: 0;
         }
 
+        .navbar-nav .show>.nav-link {
+            color: rgba(0,0,0,.5) !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: rgba(0,0,0,.7) !important;
+        }
+
         .accent-bottom::after {
             content: '';
             display: block;

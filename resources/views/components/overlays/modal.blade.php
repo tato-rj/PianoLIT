@@ -7,7 +7,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body px-4 pb-0">
+      <div class="modal-body px-4 {{! empty($feedback) ? 'pb-0' : null}}">
         {{$slot}}
       </div>
       @if(!empty($feedback))
