@@ -4,8 +4,7 @@ namespace App\Resources;
 
 class CircleOfFifths
 {
-	protected $key;
-	protected $mode;
+	protected $key, $mode, $index;
 	protected $modes = [
 		'full' => [' major', ' minor', ' minor', ' major', ' major', ' minor', ' dim'],
 		'short' => ['M', 'm', 'm', 'M', 'M', 'm', '&#176;'],
@@ -25,13 +24,27 @@ class CircleOfFifths
 		['b', 'c#', 'd#', 'e', 'f#', 'g#', 'a#']
 	];
 
+	protected $enharmonicModel = [
+		['b#', 'c##', 'd##', 'e#', 'f##', 'g##', 'a##'],
+		['c#', 'd#', 'e#', 'f#', 'g#', 'a#', 'b#'],
+		['ebb', 'fb', 'gb', 'abb' ,'bbb', 'cb', 'db'],
+		['d#', 'e#', 'f##', 'g#', 'a#', 'b#', 'c##'],
+		['fb', 'gb', 'ab', 'bbb', 'cb', 'db', 'eb'],
+		['gbb', 'abb', 'bbb', 'cbb', 'dbb', 'ebb', 'fb'],
+		['gb', 'ab', 'bb', 'cb', 'db', 'eb', 'f'],
+		['abb', 'bbb', 'cb', 'dbb', 'ebb', 'fb', 'gb'],
+		['g#', 'a#', 'b#', 'c#', 'd#', 'e#', 'f##'],
+		['bbb', 'cb', 'db', 'eb', 'fb', 'gb', 'ab'],
+		['a#', 'b#', 'c##', 'd#', 'e#', 'f##', 'g##'],
+		['cb', 'db', 'eb', 'fb', 'gb', 'ab', 'bb']
+	];
+
 	public function find($key)
 	{
-		$this->setMajor();
-
-		foreach ($this->model as $array) {
+		foreach ($this->model as $index => $array) {
 			if ($array[0] == $key) {
 				$this->key = $array;
+				$this->index = $index;
 				break;
 			}
 		}
@@ -39,12 +52,15 @@ class CircleOfFifths
 		if (! $this->key)
 			abort(404, 'The key of ' . $key . ' could not be found.');
 
+		$this->setMajor();
+
 		return $this;
 	}
 
 	public function setMajor()
 	{
 		$this->mode = 'major';
+		$this->key = $this->model[$this->index];
 
 		return $this;
 	}
@@ -52,8 +68,17 @@ class CircleOfFifths
 	public function setMinor()
 	{
 		$this->mode = 'minor';
+		$this->key = $this->model[$this->index];
 
 		return $this;
+	}
+
+	public function setEnharmonic()
+	{
+		$this->mode = 'enharmonic';
+		$this->key = $this->enharmonicModel[$this->index];
+
+		return $this;		
 	}
 
 	public function getMajorKey()
@@ -78,17 +103,7 @@ class CircleOfFifths
 
 	public function getRomanNumerals()
 	{
-		if ($this->mode == 'major') {
-			$numerals = [
-				'I' => $this->keyToString(1, 'short'),
-				'ii' => $this->keyToString(2, 'short'),
-				'iii' => $this->keyToString(3, 'short'),
-				'IV' => $this->keyToString(4, 'short'),
-				'V' => $this->keyToString(5, 'short'),
-				'VI' => $this->keyToString(6, 'short'),
-				'vii' => $this->keyToString(7, 'short')
-			];
-		} else {
+		if ($this->mode == 'minor') {
 			$numerals = [
 				'i' => $this->keyToString(6, 'short'),
 				'ii' => $this->keyToString(7, 'short'),
@@ -97,6 +112,16 @@ class CircleOfFifths
 				'v' => $this->keyToString(3, 'short'),
 				'VI' => $this->keyToString(4, 'short'),
 				'VII' => $this->keyToString(5, 'short')
+			];
+		} else {
+			$numerals = [
+				'I' => $this->keyToString(1, 'short'),
+				'ii' => $this->keyToString(2, 'short'),
+				'iii' => $this->keyToString(3, 'short'),
+				'IV' => $this->keyToString(4, 'short'),
+				'V' => $this->keyToString(5, 'short'),
+				'VI' => $this->keyToString(6, 'short'),
+				'vii' => $this->keyToString(7, 'short')
 			];
 		}
 
@@ -108,7 +133,8 @@ class CircleOfFifths
 		$group = [];
 		$modes = [
 			'major' => [1,3,6],
-			'minor' => [6,1,4]
+			'minor' => [6,1,4],
+			'enharmonic' => [1,3,6]
 		];
 
 		for ($i=0; $i<count($modes[$this->mode]); $i++) {
@@ -123,7 +149,8 @@ class CircleOfFifths
 		$group = [];
 		$modes = [
 			'major' => [4,2,6],
-			'minor' => [2,6,4]
+			'minor' => [2,6,4],
+			'enharmonic' => [4,2,6]
 		];
 
 		for ($i=0; $i<count($modes[$this->mode]); $i++) {
@@ -138,7 +165,8 @@ class CircleOfFifths
 		$group = [];
 		$modes = [
 			'major' => [5,7,3],
-			'minor' => []
+			'minor' => [],
+			'enharmonic' => [5,7,3]
 		];
 
 		for ($i=0; $i<count($modes[$this->mode]); $i++) {

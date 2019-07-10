@@ -65,14 +65,12 @@ g.key {
 	opacity: 1!important;
 }
 
-.key-neighbors span:not(:last-of-type)::after {
+.key-neighbors span:not(:last-of-type)::after, .key-enharmonic-neighbors span:not(:last-of-type)::after {
 	content: '|';
 	margin-left: .4rem;
 	margin-right: .4rem;
 }
-.key-negative > div:not(:last-of-type) {
-	padding-right: .25rem;
-}
+
 </style>
 @endpush
 
@@ -102,10 +100,14 @@ g.key {
 					<li class="nav-item">
 						<a class="nav-link" id="minor-tab" data-toggle="tab" href="#mode-minor" role="tab" aria-controls="minor" aria-selected="false">Minor</a>
 					</li>
+					<li class="nav-item enharmonic-item">
+						<a class="nav-link" id="minor-tab" data-toggle="tab" href="#mode-enharmonic" role="tab" aria-controls="minor" aria-selected="false">Enharmonic</a>
+					</li>
 				</ul>
 				<div class="tab-content p-1 t-2" id="mode-panels" style="opacity: 0;">
 					@include('tools.circle.labels.major')
 					@include('tools.circle.labels.minor')
+					@include('tools.circle.labels.enharmonic')
 				</div>
 			</div>
 		</div>
@@ -193,18 +195,23 @@ g.key {
 
   	let id = $key.attr('id');
   	let neighbors = JSON.parse($key.attr('key-neighbors'));
+  	let enharmonicNeighbors = JSON.parse($key.attr('key-enharmonic-neighbors'));
 
   	let majorRoman = JSON.parse($key.attr('key-major-roman'));
   	let majorTonic = JSON.parse($key.attr('key-major-tonic'));
   	let majorDom = JSON.parse($key.attr('key-major-dominant'));
   	let majorSub = JSON.parse($key.attr('key-major-subdominant'));
 
+  	let enharmonicRoman = JSON.parse($key.attr('key-enharmonic-roman'));
+  	let enharmonicTonic = JSON.parse($key.attr('key-enharmonic-tonic'));
+  	let enharmonicDom = JSON.parse($key.attr('key-enharmonic-dominant'));
+  	let enharmonicSub = JSON.parse($key.attr('key-enharmonic-subdominant'));
+
   	let minorRoman = JSON.parse($key.attr('key-minor-roman'));
   	let minorTonic = JSON.parse($key.attr('key-minor-tonic'));
   	let minorDom = JSON.parse($key.attr('key-minor-dominant'));
   	let minorSub = JSON.parse($key.attr('key-minor-subdominant'));
 
-  	// console.log($majorSignature);
   	$majorSignature.attr('src', $majorSignature.attr('data-folder') + '/key-loading.svg').attr('src', $majorSignature.attr('data-folder') + '/' + id + '.svg');
   	$minorSignature.attr('src', $minorSignature.attr('data-folder') + '/key-loading.svg').attr('src', $minorSignature.attr('data-folder') + '/' + id + '.svg');
 
@@ -214,11 +221,44 @@ g.key {
 	$('#mode-minor .key-name').text($key.attr('key-minor'));
 	$('#mode-minor .key-relative').text($key.attr('key-major'));
 
+	$('#mode-enharmonic .key-name').text($key.attr('key-enharmonic-major'));
+	$('#mode-enharmonic .key-relative').text($key.attr('key-enharmonic-minor'));
 
 	$('.key-neighbors').html('');
 	neighbors.forEach(function(neighbor) {
 		$('.key-neighbors').append('<span><strong>'+neighbor+'</strong></span>');
 	});
+
+	$('.key-enharmonic-neighbors').html('');
+	enharmonicNeighbors.forEach(function(neighbor) {
+		$('.key-enharmonic-neighbors').append('<span><strong>'+neighbor+'</strong></span>');
+	});
+
+	//////////////////////////
+	// ENHARMONIC FUNCTIONS //
+	//////////////////////////
+	$('#mode-enharmonic .key-tonic').html('');
+	enharmonicTonic.forEach(function(tonic) {
+		$('#mode-enharmonic .key-tonic').append('<div>'+tonic+'</div>');
+	});
+
+	$('#mode-enharmonic .key-dominant').html('');
+	enharmonicDom.forEach(function(dominant) {
+		$('#mode-enharmonic .key-dominant').append('<div>'+dominant+'</div>');
+	});
+
+	$('#mode-enharmonic .key-subdominant').html('');
+	enharmonicSub.forEach(function(subdominant) {
+		$('#mode-enharmonic .key-subdominant').append('<div>'+subdominant+'</div>');
+	});
+
+	$('.key-enharmonic-roman').html('');
+	for (key in enharmonicRoman) {
+		$('.key-enharmonic-roman').append(`
+			<div class="mr-2 bg-light px-2 py-1">
+				<strong>`+key+`</strong> `+enharmonicRoman[key]+`</div>
+			</div>`);
+	}
 
 	/////////////////////
 	// MAJOR FUNCTIONS //
