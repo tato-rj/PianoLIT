@@ -100,8 +100,8 @@ g.key {
 					<li class="nav-item">
 						<a class="nav-link" id="minor-tab" data-toggle="tab" href="#mode-minor" role="tab" aria-controls="minor" aria-selected="false">Minor</a>
 					</li>
-					<li class="nav-item enharmonic-item">
-						<a class="nav-link" id="minor-tab" data-toggle="tab" href="#mode-enharmonic" role="tab" aria-controls="minor" aria-selected="false">Enharmonic</a>
+					<li class="nav-item">
+						<a class="nav-link" id="enharmonic-tab" data-toggle="tab" href="#mode-enharmonic" role="tab" aria-controls="minor" aria-selected="false">Enharmonic</a>
 					</li>
 				</ul>
 				<div class="tab-content p-1 t-2" id="mode-panels" style="opacity: 0;">

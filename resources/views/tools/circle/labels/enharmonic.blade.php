@@ -1,4 +1,4 @@
-<div class="tab-pane fade show active" id="mode-enharmonic" role="tabpanel">
+<div class="tab-pane fade" id="mode-enharmonic" role="tabpanel">
 	<div>
 		<div class="row">
 			<div class="col-6">
