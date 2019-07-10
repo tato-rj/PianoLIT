@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['title' => 'The (interactive) Circle of Fifths | ' . config('app.name')])
 
 @push('header')
 <meta name="twitter:card" value="An interactive Circle of Fifths that will help you understand what it is and how to use it.">
