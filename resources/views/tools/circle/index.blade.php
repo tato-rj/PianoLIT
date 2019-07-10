@@ -255,7 +255,7 @@ g.key {
 	$('.key-enharmonic-roman').html('');
 	for (key in enharmonicRoman) {
 		$('.key-enharmonic-roman').append(`
-			<div class="mr-2 bg-l mb-2ight px-2 py-1">
+			<div class="mr-2 mb-2 bg-light px-2 py-1">
 				<strong>`+key+`</strong> `+enharmonicRoman[key]+`</div>
 			</div>`);
 	}
