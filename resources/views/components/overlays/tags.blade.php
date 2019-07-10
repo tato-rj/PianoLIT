@@ -8,6 +8,8 @@
 		<p class="mb-4" style="font-size: 1.4em">We found <span class="text-primary results-count"></span> pieces!</p>
 		<form method="POST" action="{{route('subscriptions.store')}}" style="max-width: 380px">
 			@csrf
+			<input type="hidden" name="subscription_name" placeholder="Your name here">
+			<input type="hidden" name="started_at" value="{{now()}}">
 			<p>The <strong>PianoLIT</strong> app is coming up soon. Would you like us to let ou know when it is ready for download?</p>
 			<div class="form-group">
 				<input required type="email" name="email" class="form-control input-center" placeholder="Your email address">

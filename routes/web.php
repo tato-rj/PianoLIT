@@ -18,14 +18,23 @@ Route::get('/', function () {
 
 Route::get('/tools/circle-of-fifths', function() {
 	$keys = new \App\Resources\CircleOfFifths;
-
-	return view('tools.circle.index', compact('keys'));
 });
 
-Route::get('/tools/chord-finder', function() {
-	$finder = new \App\Resources\ChordFinder\ChordFinder;
-	return $finder->take(request()->notes)->analyse();
-	return view('tools.circle.index', compact('chords'));
+Route::prefix('tools')->name('tools.')->group(function() {
+
+	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
+
+		Route::get('', function() {
+			return view('tools.chords.index');
+		});
+		
+		Route::get('/analyse', function() {
+			$finder = new \App\Resources\ChordFinder\ChordFinder;
+			return $finder->take(request()->notes)->analyse();
+		});
+
+	});
+
 });
 
 Route::prefix('blog')->name('posts.')->group(function() {
