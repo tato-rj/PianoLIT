@@ -30,8 +30,10 @@ Route::prefix('tools')->name('tools.')->group(function() {
 		
 		Route::get('/analyse', function() {
 			$finder = new \App\Resources\ChordFinder\ChordFinder;
-			return $finder->take(request()->notes)->analyse();
-		});
+			$request = $finder->take(request()->notes)->analyse();
+
+			return view('tools.chords.results.index', compact('request'))->render();
+		})->name('analyse');
 
 	});
 

@@ -6,11 +6,11 @@ class ChordFinder
 {
 	use Factory;
 
-	public $notes, $full_name, $short_name, $chord, $chords, $inversions;
+	public $notes, $full_name, $short_name, $chord, $results, $inversions;
 
 	public function __construct()
 	{
-		$this->chords = [];
+		$this->results = ['content' => [], 'type' => ''];
 		$this->inversions = [];
 		$this->validator = new Validator($this);
 		$this->organizer = new Organizer($this);
@@ -36,16 +36,29 @@ class ChordFinder
 
 	public function analyse()
 	{
-		foreach ($this->inversions as $inversion) {
-			$chord = $this->worker()->get($inversion);
-			
-			if ($chord['is_relevant'])
-				array_push($this->chords, $chord);
+		if (count($this->notes) == 2) {
+			array_push($this->results['content'], $this->worker()->interval($this->notes[0], $this->notes[1])->analyse());
+			array_push($this->results['content'], $this->worker()->interval($this->notes[1], $this->notes[0])->analyse());
+
+			$this->results['type'] = 'intervals';
+		} else {
+			foreach ($this->inversions as $inversion) {
+				$chord = $this->worker()->get($inversion);
+				
+				if ($chord['is_relevant'])
+					array_push($this->results['content'], $chord);
+			}
+
+			$this->results['type'] = 'chords';
+		}
+		
+		foreach ($this->notes as $index => $note) {
+			$this->notes[$index] = ucfirst(strtr($note, ['+' => '#', '-' => 'b']));
 		}
 
 		return [
 			'notes' => $this->notes,
-			'chords' => $this->chords
+			'results' => $this->results
 		];
 	}
 }

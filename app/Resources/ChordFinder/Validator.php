@@ -11,8 +11,10 @@ class Validator
 
 	public function run()
 	{
-		if (! $this->finder->notes || count($this->finder->notes) < 3)
-			abort(422, 'We need a minimum of 3 notes');
+		if (! $this->finder->notes || count($this->finder->notes) < 2)
+			abort(422, 'We need a minimum of 2 notes');
+
+		$this->finder->notes = array_map('strtolower', $this->finder->notes);
 	}
 
 	public function third()

@@ -45,29 +45,27 @@ class Worker
 		$third = $this->find(3);
 
 		foreach ($this->chord as $index => $note) {
-			if ($note['distance'] == 2)
+			if ($note['distance'] == 2) {
 				array_push($firstLabel, is_null($third) ? 'sus'.$note['short'] : 'add'.$note['short']);
-
-			if ($note['distance'] == 3 && $this->hasPerfectFifth())
+			} else if ($note['distance'] == 3 && $this->hasPerfectFifth()) {
 				array_unshift($firstLabel, $note['type'] == 'minor' ? 'm' : 'M');
-
-			if ($note['distance'] == 4)
+			} else if ($note['distance'] == 4) {
 				array_push($firstLabel, is_null($third) ? 'sus'.$note['short'] : 'add'.$note['short']);
-
-			if ($note['distance'] == 5 && $note['type'] != 'perfect')
+			} else if ($note['distance'] == 5 && $note['type'] != 'perfect') {
 				array_unshift($firstLabel, substr($note['type'], 0, 3));
-
-			if ($note['distance'] == 7)
+			} else if ($note['distance'] == 7) {
 				array_push($firstLabel, $note['short']);
-
-			if ($note['distance'] == 6 || $note['distance'] > 8)
+			} else if ($note['distance'] == 6 || $note['distance'] > 8) {
 				array_push($secondLabel, str_replace('#', '', $note['short']));
+			}
 		}
 
 		if (empty($secondLabel))
-			return ucfirst($root) . implode(' ', $firstLabel);
+			$name = ucfirst($root) . implode(' ', $firstLabel);
 
-		return ucfirst($root) . implode(' ', $firstLabel) . ' ' . implode(' ', $secondLabel);
+		$name = ucfirst($root) . implode(' ', $firstLabel) . ' ' . implode(' ', $secondLabel);
+
+		return strtr($name, ['+' => '#', '-' => 'b']);
 	}
 
 	public function isRelevant()
@@ -84,7 +82,7 @@ class Worker
 	{
 		$fifth = $this->find(5);
 
-		return ! is_null($fifth) || $fifth['type'] == 'perfect';
+		return is_null($fifth) || $fifth['type'] == 'perfect';
 	}
 
 	public function find($interval)
