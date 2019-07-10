@@ -120,7 +120,7 @@ class CircleOfFifths
 				'iii' => $this->keyToString(3, 'short'),
 				'IV' => $this->keyToString(4, 'short'),
 				'V' => $this->keyToString(5, 'short'),
-				'VI' => $this->keyToString(6, 'short'),
+				'vi' => $this->keyToString(6, 'short'),
 				'vii' => $this->keyToString(7, 'short')
 			];
 		}
