@@ -75,7 +75,7 @@ g.key {
 @endpush
 
 @section('content')
-<div class="container mb-7">
+<div class="container mb-4">
 	<div class="mb-5 text-center">
 		<h3>The Circle of Fifths</h3>
 		<p class="text-grey">An interactive and fun tool to explore music harmony in an innovative way. Enjoy!</p>
@@ -86,9 +86,9 @@ g.key {
 				@include('tools.circle.wheel')
 			</div>
 			<div id="wheel-controls" class="w-100 d-flex align-items-center px-5">
-				<button direction="left" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-left"></i></button>
+				<button direction="right" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-left"></i></button>
 				<div class="flex-grow text-grey text-center mx-2"><div><small>Use the arrows to turn the wheel</small></div></div>
-				<button direction="right" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-right"></i></button>
+				<button direction="left" class="border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-right"></i></button>
 			</div>
 		</div>
 		<div class="col-lg-7 col-md-6 col-12" id="labels-container">
@@ -112,6 +112,11 @@ g.key {
 			</div>
 		</div>
 	</div>
+</div>
+
+<div class="container mb-6">
+	@include('components.sections.feedback')
+	@include('components.sections.youtube')
 </div>
 
 @include('tools.circle.info.key')
@@ -192,8 +197,10 @@ g.key {
   	let $key = $('g.key');
   	let $majorSignature = $('#mode-major .key-signature');
   	let $minorSignature = $('#mode-minor .key-signature');
+  	let $enharmonicSignature = $('#mode-enharmonic .key-signature');
 
   	let id = $key.attr('id');
+  	let enharmonicId = $key.attr('enharmonic-id');
   	let neighbors = JSON.parse($key.attr('key-neighbors'));
   	let enharmonicNeighbors = JSON.parse($key.attr('key-enharmonic-neighbors'));
 
@@ -214,6 +221,7 @@ g.key {
 
   	$majorSignature.attr('src', $majorSignature.attr('data-folder') + '/key-loading.svg').attr('src', $majorSignature.attr('data-folder') + '/' + id + '.svg');
   	$minorSignature.attr('src', $minorSignature.attr('data-folder') + '/key-loading.svg').attr('src', $minorSignature.attr('data-folder') + '/' + id + '.svg');
+  	$enharmonicSignature.attr('src', $enharmonicSignature.attr('data-folder') + '/key-loading.svg').attr('src', $enharmonicSignature.attr('data-folder') + '/' + enharmonicId + '.svg');
 
 	$('#mode-major .key-name').text($key.attr('key-major'));
 	$('#mode-major .key-relative').text($key.attr('key-minor'));

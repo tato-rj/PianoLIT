@@ -1,7 +1,9 @@
 @php ($keyObj = $keys->find($key))
 
 id="key-{{str_replace('#', 's', $key)}}" 
-control-left="#key-{{$keyObj->next()}}"
+enharmonic-id="key-{{$keyObj->setEnharmonic()->isValid() ? str_replace('#', 's', $keyObj->getKey()) : 'loading'}}" 
+
+control-left="#key-{{$keyObj->setMajor()->next()}}"
 control-right="#key-{{$keyObj->prev()}}"
 
 key-major="{{$keyObj->getMajorKey()}}" 

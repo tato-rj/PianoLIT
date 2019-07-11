@@ -9,11 +9,9 @@ Route::get('youtube', function() {
 })->name('youtube');
 
 Route::get('/', function () {
-	$videos = (new \App\Services\Youtube)->favorites(3);
-
 	$tags = \App\Tag::inRandomOrder()->get();
 
-    return view('welcome.index', compact(['tags', 'videos']));
+    return view('welcome.index', compact(['tags']));
 })->name('home');
 
 Route::prefix('tools')->name('tools.')->group(function() {

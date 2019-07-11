@@ -81,6 +81,18 @@ class CircleOfFifths
 		return $this;		
 	}
 
+	public function isValid()
+	{
+		$invalidKeys = ['b#', 'ebb', 'd#', 'fb', 'gbb', 'abb', 'g#', 'bbb', 'a#'];
+
+		return ! in_array($this->key[0], $invalidKeys);
+	}
+
+	public function getKey()
+	{
+		return $this->key[0];
+	}
+
 	public function getMajorKey()
 	{
 		return ucfirst($this->key[0]) . ' major';

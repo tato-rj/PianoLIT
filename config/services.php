@@ -49,6 +49,7 @@ return [
         'facebook' => 'https://www.facebook.com/pianolit',
         'reddit' => 'https://www.reddit.com/user/pianolit',
         'twitter' => 'https://twitter.com/LitPiano',
+        'pinterest' => 'https://www.pinterest.com/pianolit/',
         'instagram' => 'https://www.instagram.com/pianolit_music/'
     ]
 
