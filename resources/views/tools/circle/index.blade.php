@@ -111,7 +111,7 @@ g.key {
 				</div>
 			</div>
 		</div>
-		<div class="col-12 mt-4 text-center">
+		<div class="col-12 mt-3 text-center">
 			<p class="text-grey">The scale on a piano keyboard</p>
 			@include('components.piano.keyboard')
 		</div>
@@ -170,7 +170,7 @@ g.key {
   	let scale = JSON.parse($('g.key').attr('key-'+mode+'-scale'));
   	let count = 1;
   	let index;
-  	
+
   	$('.keyboard .dot').hide();
   	
   	$keysArray.each(function() {
