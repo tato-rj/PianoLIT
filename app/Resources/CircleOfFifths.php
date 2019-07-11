@@ -16,9 +16,9 @@ class CircleOfFifths
 		['eb', 'f', 'g', 'ab', 'bb', 'c', 'd'],
 		['e', 'f#', 'g#', 'a', 'b', 'c#', 'd#'],
 		['f', 'g', 'a', 'bb', 'c', 'd', 'e'],
-		['f#', 'g#', 'a#', 'b', 'c#', 'd#', 'e'],
+		['f#', 'g#', 'a#', 'b', 'c#', 'd#', 'e#'],
 		['g', 'a', 'b', 'c', 'd', 'e', 'f#'],
-		['ab', 'bb', 'c', 'dd', 'eb', 'f', 'g'],
+		['ab', 'bb', 'c', 'db', 'eb', 'f', 'g'],
 		['a', 'b', 'c#', 'd', 'e', 'f#', 'g#'],
 		['bb', 'c', 'd', 'eb', 'f', 'g', 'a'],
 		['b', 'c#', 'd#', 'e', 'f#', 'g#', 'a#']
@@ -86,6 +86,16 @@ class CircleOfFifths
 		$invalidKeys = ['b#', 'ebb', 'd#', 'fb', 'gbb', 'abb', 'g#', 'bbb', 'a#'];
 
 		return ! in_array($this->key[0], $invalidKeys);
+	}
+
+	public function getScale()
+	{
+		if ($this->mode == 'minor') {
+			array_unshift($this->key, array_pop($this->key));
+			array_unshift($this->key, array_pop($this->key));
+		}
+
+		return $this->key;
 	}
 
 	public function getKey()

@@ -93,15 +93,15 @@ g.key {
 		</div>
 		<div class="col-lg-7 col-md-6 col-12" id="labels-container">
 			<div id="mode-controls" class=" mb-2">
-				<ul class="nav nav-tabs mb-3" id="mode-tabs" role="tablist">
+				<ul class="nav nav-tabs mode-tabs mb-3" id="mode-tabs" role="tablist">
 					<li class="nav-item">
-						<a class="nav-link active" id="major-tab" data-toggle="tab" href="#mode-major" role="tab" aria-controls="major" aria-selected="true">Major</a>
+						<a class="nav-link active" data-name="major" id="major-tab" data-toggle="tab" href="#mode-major" role="tab" aria-controls="major" aria-selected="true">Major</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" id="minor-tab" data-toggle="tab" href="#mode-minor" role="tab" aria-controls="minor" aria-selected="false">Minor</a>
+						<a class="nav-link" data-name="minor" id="minor-tab" data-toggle="tab" href="#mode-minor" role="tab" aria-controls="minor" aria-selected="false">Minor</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" id="enharmonic-tab" data-toggle="tab" href="#mode-enharmonic" role="tab" aria-controls="minor" aria-selected="false">Enharmonic</a>
+						<a class="nav-link" data-name="enharmonic" id="enharmonic-tab" data-toggle="tab" href="#mode-enharmonic" role="tab" aria-controls="minor" aria-selected="false">Enharmonic</a>
 					</li>
 				</ul>
 				<div class="tab-content p-1 t-2" id="mode-panels" style="opacity: 0;">
@@ -110,6 +110,10 @@ g.key {
 					@include('tools.circle.labels.enharmonic')
 				</div>
 			</div>
+		</div>
+		<div class="col-12 mt-4 text-center">
+			<p class="text-grey">The scale on a piano keyboard</p>
+			@include('components.piano.keyboard')
 		</div>
 	</div>
 </div>
@@ -160,6 +164,49 @@ g.key {
     });
   };
 
+  highlightKeyboard = function() {
+  	let mode = $('.mode-tabs .active').attr('data-name');
+  	let $keysArray = $('.keyboard-key');
+  	let scale = JSON.parse($('g.key').attr('key-'+mode+'-scale'));
+  	let count = 1;
+  	let index;
+console.log(scale);
+  	$('.keyboard .dot').hide();
+  	
+  	$keysArray.each(function() {
+  		let $key = $(this);
+  		let keyNames = JSON.parse($key.attr('data-names'));
+
+  		if (keyNames.includes(scale[0])) {
+  			index = $('.keyboard-key').index(this);
+  			return false;
+  		}
+  	});
+
+  	$keysArray.splice(0, index);
+
+  	$keysArray.each(function() {
+  		let $key = $(this);
+  		let keyNames = JSON.parse($key.attr('data-names'));
+
+  		if (count > 12)
+  			return false;
+
+  		let found = scale.filter(function(n) {
+  			return keyNames.indexOf(n) !== -1;
+  		});
+
+  		if (found.length)
+  			$key.find(' > .dot').fadeIn();
+
+		count++;
+  	});
+  }
+
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		highlightKeyboard();
+	});
+
   applyCss = function(degrees) {
     $circle.css({
     	'-webkit-transform': "rotate(" + degrees + "deg)",
@@ -189,6 +236,7 @@ g.key {
     setTimeout( function() {
     	$next.addClass('key');
     	showDescription();
+		highlightKeyboard();
 	  	enable();
     }, 400);
   };

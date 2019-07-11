@@ -1,0 +1,7 @@
+@include('components.piano.key', ['names' => ['c', 'c#'], 'highlight' => !empty($highlights) ? [$highlights[0][0], $highlights[0][1]] : [false, false]])
+@include('components.piano.key', ['names' => ['d', 'd#'], 'highlight' => !empty($highlights) ? [$highlights[1][0], $highlights[1][1]] : [false, false]])
+@include('components.piano.key', ['names' => ['e', null], 'highlight' => !empty($highlights) ? [$highlights[2][0], $highlights[2][1]] : [false, false]])
+@include('components.piano.key', ['names' => ['f', 'f#'], 'highlight' => !empty($highlights) ? [$highlights[3][0], $highlights[3][1]] : [false, false]])
+@include('components.piano.key', ['names' => ['g', 'g#'], 'highlight' => !empty($highlights) ? [$highlights[4][0], $highlights[4][1]] : [false, false]])
+@include('components.piano.key', ['names' => ['a', 'a#'], 'highlight' => !empty($highlights) ? [$highlights[5][0], $highlights[5][1]] : [false, false]])
+@include('components.piano.key', ['names' => ['b', null], 'highlight' => !empty($highlights) ? [$highlights[6][0], $highlights[6][1]] : [false, false]])

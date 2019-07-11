@@ -1,5 +1,10 @@
 <?php
 
+function enharmonic()
+{
+	return new \App\Resources\CircleOfFifths\Enharmonics;
+}
+
 function storage($path)
 {
 	if ($path)

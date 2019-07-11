@@ -11,6 +11,10 @@ key-minor="{{$keyObj->getMinorKey()}}"
 key-enharmonic-major="{{$keyObj->setEnharmonic()->getMajorKey()}}" 
 key-enharmonic-minor="{{$keyObj->setEnharmonic()->getMinorKey()}}" 
 
+key-major-scale="{{json_encode($keyObj->setMajor()->getScale())}}" 
+key-minor-scale="{{json_encode($keyObj->setMinor()->getScale())}}"
+key-enharmonic-scale="{{json_encode($keyObj->setEnharmonic()->getScale())}}"
+
 key-neighbors="{{$keyObj->setMajor()->getNeighbors()}}"
 key-enharmonic-neighbors="{{$keyObj->setEnharmonic()->getNeighbors()}}"
 
