@@ -111,7 +111,7 @@ g.key {
 				</div>
 			</div>
 		</div>
-		<div class="col-12 mt-3 text-center">
+		<div class="col-12 mt-2 text-center">
 			<p class="text-grey">The scale on a piano keyboard</p>
 			@include('components.piano.keyboard')
 		</div>
