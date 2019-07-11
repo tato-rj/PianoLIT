@@ -79,6 +79,23 @@
 			justify-content: left !important;
 		}
 	}
+
+	.keyboard-white-key {
+		> .dot {
+			width: 19px !important;
+			height: 19px !important;
+		}
+	}
+
+	.keyboard-black-key {
+		width: 24px !important;
+		right: -13.3px !important;
+
+		> .dot {
+			width: 18px !important;
+			height: 18px !important;
+		}
+	}
 }
 @include media-breakpoint-down(md) {
 

@@ -170,7 +170,7 @@ g.key {
   	let scale = JSON.parse($('g.key').attr('key-'+mode+'-scale'));
   	let count = 1;
   	let index;
-console.log(scale);
+  	
   	$('.keyboard .dot').hide();
   	
   	$keysArray.each(function() {
