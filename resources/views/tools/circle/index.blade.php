@@ -173,30 +173,20 @@ var piano = new Tone.Sampler({
 let $keyDown;
 
 $('.keyboard-key').on('mousedown touchstart', function(e) {
-	let $key = $(e.target);
-
-	if ($key.hasClass('dot'))
-		$key = $key.parent();
+	let $key = findKey(e);
 
 	press($key);
 });
 
 $('.keyboard-key').on('mouseup touchend', function(e) {
-	let $key = $(e.target);
-
-	if ($key.hasClass('dot'))
-		$key = $key.parent();
+	let $key = findKey(e);
 
 	release();
-	
 });
 
 $('.keyboard-key').on('mousemove', function(e) {
 	if ($keyDown) {
-		let $key = $(e.target);
-
-		if ($key.hasClass('dot'))
-			$key = $key.parent();
+		let $key = findKey(e);
 
 		if ($keyDown.get(0) != $key.get(0))
 			release();
@@ -205,6 +195,7 @@ $('.keyboard-key').on('mousemove', function(e) {
 
 function press($key) {
 	if (! $keyDown) {
+		setTimeout(function() {
 		let note = $key.attr('data-name').toUpperCase();
 		let octave = $key.attr('data-octave');
 
@@ -215,6 +206,7 @@ function press($key) {
 		} else {
 			$key.removeClass('bg-dark');
 		}
+		}, 100);
 	}
 
 	$keyDown = $key;
@@ -228,6 +220,15 @@ function release() {
 
 function play(note, octave) {
 	piano.triggerAttackRelease(note + octave, "8n");
+}
+
+function findKey(e) {
+	let $key = $(e.target);
+
+	if ($key.hasClass('dot'))
+		$key = $key.parent();
+
+	return $key;
 }
 </script>
 <script type="text/javascript">
