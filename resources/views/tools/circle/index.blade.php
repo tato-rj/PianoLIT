@@ -212,6 +212,7 @@ function press($key) {
 
 function release() {
 	$keyDown = null;
+	piano.releaseAll();
 	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
 	$('.keyboard-black-key').addClass('bg-dark');
 }
