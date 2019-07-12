@@ -33,7 +33,12 @@
 
 <link rel="canonical" href="{{url()->current()}}" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<link href="https://fonts.googleapis.com/css?family=Roboto+Slab:700&display=swap" rel="stylesheet">
 <style type="text/css">
+.roman-numeral {
+	font-family: 'Roboto Slab', serif;
+}
+
 #mode-tabs .nav-link {
 	color: #b8c2cc;
 }
@@ -132,111 +137,8 @@ g.key {
 
 @push('scripts')
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5c872ce214693180"></script>
-{{-- <script type="text/javascript" src="{{asset('js/Tone.js')}}"></script> --}}
-{{-- <script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script> --}}
+<script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
 
-<script type="text/javascript">
-var piano = new Tone.Sampler({
-	"A0" : "A0.[mp3|ogg]",
-	"C1" : "C1.[mp3|ogg]",
-	"D#1" : "Ds1.[mp3|ogg]",
-	"F#1" : "Fs1.[mp3|ogg]",
-	"A1" : "A1.[mp3|ogg]",
-	"C2" : "C2.[mp3|ogg]",
-	"D#2" : "Ds2.[mp3|ogg]",
-	"F#2" : "Fs2.[mp3|ogg]",
-	"A2" : "A2.[mp3|ogg]",
-	"C3" : "C3.[mp3|ogg]",
-	"D#3" : "Ds3.[mp3|ogg]",
-	"F#3" : "Fs3.[mp3|ogg]",
-	"A3" : "A3.[mp3|ogg]",
-	"C4" : "C4.[mp3|ogg]",
-	"D#4" : "Ds4.[mp3|ogg]",
-	"F#4" : "Fs4.[mp3|ogg]",
-	"A4" : "A4.[mp3|ogg]",
-	"C5" : "C5.[mp3|ogg]",
-	"D#5" : "Ds5.[mp3|ogg]",
-	"F#5" : "Fs5.[mp3|ogg]",
-	"A5" : "A5.[mp3|ogg]",
-	"C6" : "C6.[mp3|ogg]",
-	"D#6" : "Ds6.[mp3|ogg]",
-	"F#6" : "Fs6.[mp3|ogg]",
-	"A6" : "A6.[mp3|ogg]",
-	"C7" : "C7.[mp3|ogg]",
-	"D#7" : "Ds7.[mp3|ogg]",
-	"F#7" : "Fs7.[mp3|ogg]",
-	"A7" : "A7.[mp3|ogg]",
-	"C8" : "C8.[mp3|ogg]"
-}, {
-	"release" : 1,
-	"baseUrl" : "https://tonejs.github.io/examples/audio/salamander/"
-}).toMaster();
-var $keyDown;
-var notPlaying = true; 
-
-$('.keyboard-key').on('mousedown touchstart', function(e) {
-	let $key = findKey(e);
-
-	press($key);
-});
-
-$('.keyboard-key').on('mouseup touchend', function(e) {
-	let $key = findKey(e);
-
-	release();
-});
-
-$('.keyboard-key').on('mousemove', function(e) {
-	if ($keyDown) {
-		let $key = findKey(e);
-
-		if ($keyDown.get(0) != $key.get(0))
-			release();
-	}
-});
-
-function press($key) {
-	if (! $keyDown) {
-		let note = $key.attr('data-name').toUpperCase();
-		let octave = $key.attr('data-octave');
-
-		play(note, octave);
-
-		if ($key.hasClass('keyboard-white-key')) {
-			$key.css('background', 'rgba(0,0,0,0.05)').removeClass('shadow-sm');
-		} else {
-			$key.removeClass('bg-dark');
-		}
-	}
-
-	$keyDown = $key;
-}
-
-function release() {
-	$keyDown = null;
-	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
-	$('.keyboard-black-key').addClass('bg-dark');
-}
-
-function play(note, octave) {
-	if (notPlaying) {
-		piano.triggerAttackRelease(note + octave, "8n");
-		notPlaying = false;
-		setTimeout(function() {
-			notPlaying = true;
-		}, 500);
-	}
-}
-
-function findKey(e) {
-	let $key = $(e.target);
-
-	if ($key.hasClass('dot'))
-		$key = $key.parent();
-
-	return $key;
-}
-</script>
 <script type="text/javascript">
 ///////////////////////////////
 // -------  rotate  -------- //
@@ -417,7 +319,7 @@ function findKey(e) {
 	for (key in enharmonicRoman) {
 		$('.key-enharmonic-roman').append(`
 			<div class="mr-2 mb-2 bg-light px-2 py-1">
-				<strong>`+key+`</strong> `+enharmonicRoman[key]+`</div>
+				<span class="roman-numeral">`+key+`</span> `+enharmonicRoman[key]+`</div>
 			</div>`);
 	}
 
@@ -443,7 +345,7 @@ function findKey(e) {
 	for (key in majorRoman) {
 		$('.key-major-roman').append(`
 			<div class="mr-2 mb-2 bg-light px-2 py-1">
-				<strong>`+key+`</strong> `+majorRoman[key]+`</div>
+				<span class="roman-numeral">`+key+`</span> `+majorRoman[key]+`</div>
 			</div>`);
 	}
 	/////////////////////
@@ -468,7 +370,7 @@ function findKey(e) {
 	for (key in minorRoman) {
 		$('.key-minor-roman').append(`
 			<div class="mr-2 mb-2 bg-light px-2 py-1">
-				<strong>`+key+`</strong> `+minorRoman[key]+`</div>
+				<span class="roman-numeral">`+key+`</span> `+minorRoman[key]+`</div>
 			</div>`);
 	}
 

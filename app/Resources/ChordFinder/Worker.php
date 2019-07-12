@@ -70,12 +70,27 @@ class Worker
 
 	public function isRelevant()
 	{
-		return ! is_null($this->find(3));
+		return ! is_null($this->find(3)) || $this->isSus($strict = true);
 	}
 
 	public function isMain()
 	{
 		return $this->isRelevant() && ! is_null($this->find(5));
+	}
+
+	public function isSus($strict = false)
+	{
+		$second = $this->find(2);
+		$third = $this->find(3);
+		$fourth = $this->find(4);
+
+		if ($strict) {
+			$hasSus = (! is_null($fourth) && $fourth['type'] == 'perfect') || (! is_null($second) && $second['type'] == 'perfect');
+		} else {
+			$hasSus = ! is_null($fourth) || ! is_null($second);
+		}
+
+		return is_null($third) && $hasSus;		
 	}
 
 	public function hasPerfectFifth()

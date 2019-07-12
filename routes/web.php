@@ -26,6 +26,9 @@ Route::prefix('tools')->name('tools.')->group(function() {
 			$finder = new \App\Resources\ChordFinder\ChordFinder;
 			$request = $finder->take(request()->notes)->analyse();
 
+			if (request()->has('dev'))
+				return $request;
+			
 			return view('tools.chords.results.index', compact('request'))->render();
 		})->name('analyse');
 

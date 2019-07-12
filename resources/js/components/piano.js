@@ -33,3 +33,62 @@ var piano = new Tone.Sampler({
 	"release" : 1,
 	"baseUrl" : "https://tonejs.github.io/examples/audio/salamander/"
 }).toMaster();
+
+var $keyDown;
+var notPlaying = true; 
+
+$(document).on('mousedown touchstart', '.keyboard-key', function(e) {
+	let $key = findKey(e);
+	press($key);
+}).on('mouseup touchend', function(e) {
+	let $key = findKey(e);
+	release();
+}).on('mousemove', function(e) {
+	if ($keyDown) {
+		let $key = findKey(e);
+		if ($keyDown.get(0) != $key.get(0))
+			release();
+	}
+});
+
+function press($key) {
+	if (! $keyDown) {
+		let note = $key.attr('data-name').toUpperCase();
+		let octave = $key.attr('data-octave');
+
+		play(note, octave);
+
+		if ($key.hasClass('keyboard-white-key')) {
+			$key.css('background', 'rgba(0,0,0,0.05)').removeClass('shadow-sm');
+		} else {
+			$key.removeClass('bg-dark');
+		}
+	}
+
+	$keyDown = $key;
+}
+
+function release() {
+	$keyDown = null;
+	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
+	$('.keyboard-black-key').addClass('bg-dark');
+}
+
+function play(note, octave) {
+	if (notPlaying) {
+		piano.triggerAttackRelease(note + octave, "8n");
+		notPlaying = false;
+		setTimeout(function() {
+			notPlaying = true;
+		}, 500);
+	}
+}
+
+function findKey(e) {
+	let $key = $(e.target);
+
+	if ($key.hasClass('dot'))
+		$key = $key.parent();
+
+	return $key;
+}

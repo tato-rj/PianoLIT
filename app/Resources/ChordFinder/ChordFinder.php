@@ -10,7 +10,7 @@ class ChordFinder
 
 	public function __construct()
 	{
-		$this->results = ['content' => [], 'type' => ''];
+		$this->results = ['main_content' => [], 'additional_content' => [], 'type' => ''];
 		$this->inversions = [];
 		$this->validator = new Validator($this);
 		$this->organizer = new Organizer($this);
@@ -37,16 +37,21 @@ class ChordFinder
 	public function analyse()
 	{
 		if (count($this->notes) == 2) {
-			array_push($this->results['content'], $this->worker()->interval($this->notes[0], $this->notes[1])->analyse());
-			array_push($this->results['content'], $this->worker()->interval($this->notes[1], $this->notes[0])->analyse());
+			array_push($this->results['main_content'], $this->worker()->interval($this->notes[0], $this->notes[1])->analyse());
+			array_push($this->results['main_content'], $this->worker()->interval($this->notes[1], $this->notes[0])->analyse());
 
 			$this->results['type'] = 'intervals';
 		} else {
 			foreach ($this->inversions as $inversion) {
 				$chord = $this->worker()->get($inversion);
 				
-				if ($chord['is_relevant'])
-					array_push($this->results['content'], $chord);
+				if ($chord['is_relevant']) {
+					if ($chord['is_main']) {
+						array_push($this->results['main_content'], $chord);
+					} else {
+						array_push($this->results['additional_content'], $chord);
+					}
+				}
 			}
 
 			$this->results['type'] = 'chords';

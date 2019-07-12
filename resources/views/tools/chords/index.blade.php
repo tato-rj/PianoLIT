@@ -3,7 +3,6 @@
 @push('header')
 <style type="text/css">
 /*START WORKERS*/
-
 .place_balk_workers {
 	width: 437px;
 	position: relative;
@@ -155,9 +154,11 @@
 
 /*END OF WORKERS*/
 
-
-
-
+.chord-results:not(:last-of-type) {
+    padding-bottom: 1.5rem!important;
+    margin-bottom: 1.5rem!important;
+    border-bottom: 1px solid #dee2e6!important;
+}
 
 .note {
 	position: relative;
@@ -253,7 +254,7 @@ button.control:disabled {
 		@include('tools.chords.inputs.note', ['note' => 'G'])
 	</div>
 	<div class="text-center mb-6">
-		<button class="btn btn-primary" id="submit-notes">Look it up!</button>
+		<button class="btn btn-primary" id="submit-notes"><i class="fas fa-lightbulb mr-2"></i>Look it up!</button>
 	</div>
 </div>
 <div class="container mb-6">
@@ -272,6 +273,11 @@ button.control:disabled {
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$(document).on('click', 'button#reload', function() {
+    window.location.reload();
+});
+</script>
 <script type="text/javascript">
 var input = [];
 
