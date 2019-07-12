@@ -206,7 +206,7 @@ function press($key) {
 		} else {
 			$key.removeClass('bg-dark');
 		}
-		}, 100);
+	}, 200);
 	}
 
 	$keyDown = $key;
