@@ -170,7 +170,8 @@ var piano = new Tone.Sampler({
 	"baseUrl" : "https://tonejs.github.io/examples/audio/salamander/"
 }).toMaster();
 
-let $keyDown;
+var $keyDown;
+var notPlaying = true; 
 
 $('.keyboard-key').on('mousedown touchstart', function(e) {
 	let $key = findKey(e);
@@ -184,12 +185,10 @@ $('.keyboard-key').on('mouseup touchend', function(e) {
 	release();
 });
 
-$('.keyboard-key').on('mousemove touchmove', function(e) {
+$('.keyboard-key').on('mousemove', function(e) {
 	if ($keyDown) {
 		let $key = findKey(e);
 
-	piano.releaseAll();
-	
 		if ($keyDown.get(0) != $key.get(0))
 			release();
 	}
@@ -214,13 +213,16 @@ function press($key) {
 
 function release() {
 	$keyDown = null;
-	piano.releaseAll();
 	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
 	$('.keyboard-black-key').addClass('bg-dark');
 }
 
 function play(note, octave) {
-	piano.triggerAttackRelease(note + octave, "8n");
+	if (notPlaying) {
+		piano.triggerAttackRelease(note + octave, "8n");
+
+		notPlaying = false;
+	}
 }
 
 function findKey(e) {
