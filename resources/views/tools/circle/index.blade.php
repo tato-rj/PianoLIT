@@ -188,6 +188,8 @@ $('.keyboard-key').on('mousemove', function(e) {
 	if ($keyDown) {
 		let $key = findKey(e);
 
+		piano.releaseAll();
+	
 		if ($keyDown.get(0) != $key.get(0))
 			release();
 	}
