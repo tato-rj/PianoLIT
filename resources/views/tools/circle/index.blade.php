@@ -223,7 +223,7 @@ function play(note, octave) {
 		notPlaying = false;
 		setTimeout(function() {
 			notPlaying = true;
-		}, 250);
+		}, 500);
 	}
 }
 
