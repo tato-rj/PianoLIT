@@ -174,7 +174,7 @@ function press($key) {
 		let note = $key.attr('data-name').toUpperCase();
 		let octave = $key.attr('data-octave');
 
-		piano.play(note, octave, 1);
+		// piano.play(note, octave, 1);
 
 		if ($key.hasClass('keyboard-white-key')) {
 			$key.css('background', 'rgba(0,0,0,0.03)').removeClass('shadow-sm');
