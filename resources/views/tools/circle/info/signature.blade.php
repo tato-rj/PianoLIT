@@ -1,7 +1,7 @@
 @component('components.overlays.modal', ['title' => 'Key Signature', 'size' => 'lg'])
 	@include('tools.circle.info.title')
 
-	<p>When you look at the beginning of a music score, the first thing you see, before the notes, is the clef. Immediately following the clef there are two important pieces of information that will help you understand how the music is written: the <i>Key Signature</i> and the <i>Time Signature</i>. We are now looking at the first one, the Key Signature, where the composer will indicate which notes (if any) are sharps or flats. That indication follows a specific order and it tells you what is the <strong>key</strong> the piece.</p>
+	<p>The Key Signature is where the composer will indicate which notes (if any) are sharps or flats. That indication follows a specific order and it tells you what is the <strong>key</strong> the piece. You can find the Key Signature located at the beginning of the score, right after the clefs.</p>
 
 	@include('tools.circle.info.link', ['link' => 'https://en.wikipedia.org/wiki/Key_signature'])
 

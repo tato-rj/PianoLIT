@@ -1,7 +1,7 @@
 @component('components.overlays.modal', ['title' => 'Functional Harmony', 'size' => 'lg'])
 	@include('tools.circle.info.title')
 
-	<p>Keys are a <strong>set of chords that follow a strict pattern</strong>. A musical scale has 7 notes and, to create the key, we build one chord over each note of the scale. The major and minor scales have a specific set of intervals, which leads to the patterns we use most of the time.</p>
+	<p>Keys are a <strong>set of chords that follow a strict pattern</strong>. A musical scale has 7 notes and, to create the key, we build a triad (a 3-note chord) over each note of the scale. The major and minor scales have a specific set of intervals, which leads to the patterns we use most of the time.</p>
 
 	<p>Music that is centered around a tonic (the first chord of a key) is called tonal music. In order to establish its tonal center, a scale needs three intervals: a <strong>perfect 4th</strong>, a <strong>perfect 5th</strong> and a <strong>major 7th</strong> (also called leading tone). The perfect 4th and 5th give the scale <i>stability</i>, for those are the two most consonant intervals after the octave. Both major and minor scales have these intervals, so we don't need to change them. The major 7th (last note of the scale, only a half step before the first) is also important because it <i>creates the tension needed to establish the home key</i>. As the nickname suggests, it <i>leads</i> our ears back to the home key. This interval is minor on minor scales and that is the reason why we raise the 7th on minor keys, making it a major 7th.</p>
 
