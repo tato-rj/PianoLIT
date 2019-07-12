@@ -11,8 +11,7 @@
 			<div class="mb-5">
 				<ul class="d-flex list-flat justify-content-center">
 					<li class="m-2 text-muted"><a href="{{route('posts.index')}}" class="link-inherit">blog</a></li>
-					<li class="m-2 text-muted"><a href="{{route('tools.circle-of-fifths')}}" class="link-inherit">circle of fifths</a></li>
-					<li class="m-2 text-muted"><a href="{{route('tools.chord-finder.index')}}" class="link-inherit">chord finder</a></li>
+					<li class="m-2 text-muted"><a href="{{route('youtube')}}" class="link-inherit">youtube</a></li>
 					{{-- <li class="m-2 text-muted"><a href="#" class="link-inherit">press</a></li> --}}
 					{{-- <li class="m-2 text-muted"><a href="#" class="link-inherit">privacy</a></li> --}}
 					<li class="m-2 text-muted"><a href="mailto:contact@leftlaneapps.com" class="link-inherit">contact us</a></li>
