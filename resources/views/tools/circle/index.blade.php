@@ -132,7 +132,9 @@ g.key {
 
 @push('scripts')
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5c872ce214693180"></script>
-<script type="text/javascript" src="{{asset('js/Tone.js')}}"></script>
+{{-- <script type="text/javascript" src="{{asset('js/Tone.js')}}"></script> --}}
+{{-- <script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script> --}}
+
 <script type="text/javascript">
 var piano = new Tone.Sampler({
 	"A0" : "A0.[mp3|ogg]",
@@ -169,7 +171,6 @@ var piano = new Tone.Sampler({
 	"release" : 1,
 	"baseUrl" : "https://tonejs.github.io/examples/audio/salamander/"
 }).toMaster();
-
 var $keyDown;
 var notPlaying = true; 
 

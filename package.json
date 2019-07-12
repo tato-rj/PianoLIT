@@ -30,6 +30,7 @@
         "jquery-ui-bundle": "^1.12.1-migrate",
         "moment": "^2.22.2",
         "swiper": "^4.5.0",
+        "tone": "^13.4.9",
         "trix": "^0.11.2"
     }
 }

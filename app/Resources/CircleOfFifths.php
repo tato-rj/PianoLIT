@@ -198,8 +198,14 @@ class CircleOfFifths
 		if ($this->mode == 'minor') {
 			$third = $this->key[0];
 			$fifth = $this->key[2];
-			$seventh = $this->key[4];
-			$seventh = (strpos($this->key[4], 'b') !== false) ? $this->key[4][0] : $this->key[4] . 'b';
+
+			if (strpos($this->key[4], '#') === false && strpos($this->key[4], 'b') === false) {
+				$seventh = $this->key[4] . '#';
+			} else if (strpos($this->key[4], '#') !== false || $this->key[4] == 'b') {
+				$seventh = $this->key[4] . '#';				
+			} else {
+				$seventh = $this->key[4][0];
+			}
 
 			array_push($group, ucfirst($fifth) . ' major*');
 			array_push($group, ucfirst($seventh) . ' dim*');

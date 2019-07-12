@@ -35,6 +35,7 @@ mix.js('resources/js/app.js', 'public/js')
       ], 'public/js/admin.js')
     .copyDirectory('resources/sass/primer', 'public/css')
     .copyDirectory('resources/js/vendor', 'public/js/vendor')
+    .copyDirectory('resources/js/components', 'public/js/components')
     .copyDirectory('resources/js/tinyeditor', 'public/js/tinyeditor')
     .copyDirectory('resources/images', 'public/images')
     .version();
