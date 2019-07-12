@@ -132,6 +132,66 @@ g.key {
 
 @push('scripts')
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5c872ce214693180"></script>
+<script type="text/javascript" src="{{asset('js/audiosynth.js')}}"></script>
+<script type="text/javascript">
+Synth instanceof AudioSynth;
+let piano = Synth.createInstrument('piano');
+let $keyDown;
+
+$('.keyboard-key').on('mousedown touchstart', function(e) {
+	let $key = $(e.target);
+
+	if ($key.hasClass('dot'))
+		$key = $key.parent();
+
+	press($key);
+});
+
+$('.keyboard-key').on('mouseup touchend', function(e) {
+	let $key = $(e.target);
+
+	if ($key.hasClass('dot'))
+		$key = $key.parent();
+
+	release();
+	
+});
+
+$('.keyboard-key').on('mousemove', function(e) {
+	if ($keyDown) {
+		let $key = $(e.target);
+
+		if ($key.hasClass('dot'))
+			$key = $key.parent();
+
+		if ($keyDown.get(0) != $key.get(0))
+			release();
+	}
+});
+
+function press($key) {
+	if (! $keyDown) {
+		let note = $key.attr('data-name').toUpperCase();
+		let octave = $key.attr('data-octave');
+
+		piano.play(note, octave, 1);
+
+		if ($key.hasClass('keyboard-white-key')) {
+			$key.css('background', 'rgba(0,0,0,0.03)').removeClass('shadow-sm');
+		} else {
+			$key.removeClass('bg-dark');
+		}
+	}
+
+	$keyDown = $key;
+}
+
+function release() {
+	$keyDown = null;
+	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
+	$('.keyboard-black-key').addClass('bg-dark');
+}
+</script>
 <script type="text/javascript">
 ///////////////////////////////
 // -------  rotate  -------- //

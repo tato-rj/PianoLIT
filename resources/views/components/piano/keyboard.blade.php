@@ -8,7 +8,7 @@
 			[true, false],
 			[true, false],
 			[true, false]
-		]])
-		@include('components.piano.octave')
+		], 'octave' => 3])
+		@include('components.piano.octave', ['octave' => 4])
 	</div>
 </div>
