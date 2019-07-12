@@ -132,65 +132,103 @@ g.key {
 
 @push('scripts')
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5c872ce214693180"></script>
-<script type="text/javascript" src="{{asset('js/audiosynth.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/Tone.js')}}"></script>
 <script type="text/javascript">
-// Synth instanceof AudioSynth;
-// let piano = Synth.createInstrument('piano');
-// let $keyDown;
+var piano = new Tone.Sampler({
+	"A0" : "A0.[mp3|ogg]",
+	"C1" : "C1.[mp3|ogg]",
+	"D#1" : "Ds1.[mp3|ogg]",
+	"F#1" : "Fs1.[mp3|ogg]",
+	"A1" : "A1.[mp3|ogg]",
+	"C2" : "C2.[mp3|ogg]",
+	"D#2" : "Ds2.[mp3|ogg]",
+	"F#2" : "Fs2.[mp3|ogg]",
+	"A2" : "A2.[mp3|ogg]",
+	"C3" : "C3.[mp3|ogg]",
+	"D#3" : "Ds3.[mp3|ogg]",
+	"F#3" : "Fs3.[mp3|ogg]",
+	"A3" : "A3.[mp3|ogg]",
+	"C4" : "C4.[mp3|ogg]",
+	"D#4" : "Ds4.[mp3|ogg]",
+	"F#4" : "Fs4.[mp3|ogg]",
+	"A4" : "A4.[mp3|ogg]",
+	"C5" : "C5.[mp3|ogg]",
+	"D#5" : "Ds5.[mp3|ogg]",
+	"F#5" : "Fs5.[mp3|ogg]",
+	"A5" : "A5.[mp3|ogg]",
+	"C6" : "C6.[mp3|ogg]",
+	"D#6" : "Ds6.[mp3|ogg]",
+	"F#6" : "Fs6.[mp3|ogg]",
+	"A6" : "A6.[mp3|ogg]",
+	"C7" : "C7.[mp3|ogg]",
+	"D#7" : "Ds7.[mp3|ogg]",
+	"F#7" : "Fs7.[mp3|ogg]",
+	"A7" : "A7.[mp3|ogg]",
+	"C8" : "C8.[mp3|ogg]"
+}, {
+	"release" : 1,
+	"baseUrl" : "https://tonejs.github.io/examples/audio/salamander/"
+}).toMaster();
 
-// $('.keyboard-key').on('mousedown touchstart', function(e) {
-// 	let $key = $(e.target);
+let $keyDown;
 
-// 	if ($key.hasClass('dot'))
-// 		$key = $key.parent();
+$('.keyboard-key').on('mousedown touchstart', function(e) {
+	let $key = $(e.target);
 
-// 	press($key);
-// });
+	if ($key.hasClass('dot'))
+		$key = $key.parent();
 
-// $('.keyboard-key').on('mouseup touchend', function(e) {
-// 	let $key = $(e.target);
+	press($key);
+});
 
-// 	if ($key.hasClass('dot'))
-// 		$key = $key.parent();
+$('.keyboard-key').on('mouseup touchend', function(e) {
+	let $key = $(e.target);
 
-// 	release();
+	if ($key.hasClass('dot'))
+		$key = $key.parent();
+
+	release();
 	
-// });
+});
 
-// $('.keyboard-key').on('mousemove', function(e) {
-// 	if ($keyDown) {
-// 		let $key = $(e.target);
+$('.keyboard-key').on('mousemove', function(e) {
+	if ($keyDown) {
+		let $key = $(e.target);
 
-// 		if ($key.hasClass('dot'))
-// 			$key = $key.parent();
+		if ($key.hasClass('dot'))
+			$key = $key.parent();
 
-// 		if ($keyDown.get(0) != $key.get(0))
-// 			release();
-// 	}
-// });
+		if ($keyDown.get(0) != $key.get(0))
+			release();
+	}
+});
 
-// function press($key) {
-// 	if (! $keyDown) {
-// 		let note = $key.attr('data-name').toUpperCase();
-// 		let octave = $key.attr('data-octave');
+function press($key) {
+	if (! $keyDown) {
+		let note = $key.attr('data-name').toUpperCase();
+		let octave = $key.attr('data-octave');
 
-// 		piano.play(note, octave, 1);
+		play(note, octave);
 
-// 		if ($key.hasClass('keyboard-white-key')) {
-// 			$key.css('background', 'rgba(0,0,0,0.03)').removeClass('shadow-sm');
-// 		} else {
-// 			$key.removeClass('bg-dark');
-// 		}
-// 	}
+		if ($key.hasClass('keyboard-white-key')) {
+			$key.css('background', 'rgba(0,0,0,0.03)').removeClass('shadow-sm');
+		} else {
+			$key.removeClass('bg-dark');
+		}
+	}
 
-// 	$keyDown = $key;
-// }
+	$keyDown = $key;
+}
 
-// function release() {
-// 	$keyDown = null;
-// 	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
-// 	$('.keyboard-black-key').addClass('bg-dark');
-// }
+function release() {
+	$keyDown = null;
+	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
+	$('.keyboard-black-key').addClass('bg-dark');
+}
+
+function play(note, octave) {
+	piano.triggerAttackRelease(note + octave, "8n");
+}
 </script>
 <script type="text/javascript">
 ///////////////////////////////
