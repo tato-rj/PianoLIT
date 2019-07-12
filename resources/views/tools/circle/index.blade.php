@@ -184,11 +184,11 @@ $('.keyboard-key').on('mouseup touchend', function(e) {
 	release();
 });
 
-$('.keyboard-key').on('mousemove', function(e) {
+$('.keyboard-key').on('mousemove touchmove', function(e) {
 	if ($keyDown) {
 		let $key = findKey(e);
 
-		piano.releaseAll();
+	piano.releaseAll();
 	
 		if ($keyDown.get(0) != $key.get(0))
 			release();
