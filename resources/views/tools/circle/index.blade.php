@@ -220,8 +220,10 @@ function release() {
 function play(note, octave) {
 	if (notPlaying) {
 		piano.triggerAttackRelease(note + octave, "8n");
-
 		notPlaying = false;
+		setTimeout(function() {
+			notPlaying = true;
+		}, 250);
 	}
 }
 
