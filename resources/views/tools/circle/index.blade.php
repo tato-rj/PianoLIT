@@ -195,7 +195,6 @@ $('.keyboard-key').on('mousemove', function(e) {
 
 function press($key) {
 	if (! $keyDown) {
-		setTimeout(function() {
 		let note = $key.attr('data-name').toUpperCase();
 		let octave = $key.attr('data-octave');
 
@@ -206,7 +205,6 @@ function press($key) {
 		} else {
 			$key.removeClass('bg-dark');
 		}
-	}, 200);
 	}
 
 	$keyDown = $key;
