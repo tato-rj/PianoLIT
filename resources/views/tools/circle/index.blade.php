@@ -202,7 +202,7 @@ function press($key) {
 		play(note, octave);
 
 		if ($key.hasClass('keyboard-white-key')) {
-			$key.css('background', 'rgba(0,0,0,0.03)').removeClass('shadow-sm');
+			$key.css('background', 'rgba(0,0,0,0.04)').removeClass('shadow-sm');
 		} else {
 			$key.removeClass('bg-dark');
 		}
