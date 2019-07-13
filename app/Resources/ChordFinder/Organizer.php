@@ -45,8 +45,8 @@ class Organizer
 	public function clean()
 	{
 		$this->finder->notes = array_unique($this->finder->notes);
-		
-		foreach ($this->finder->notes as $note) {
+		foreach ($this->finder->notes as $key => $note) {
+			$this->finder->notes[$key] = str_replace('s', '+', $note);
 			if ($this->isOctaveUp($note)) {
 				$note = str_replace('2', '', $note);
 				if ($index = array_search($note, $this->finder->notes))

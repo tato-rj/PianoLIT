@@ -19,14 +19,11 @@ Route::prefix('tools')->name('tools.')->group(function() {
 	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
 
 		Route::get('', function() {
-			$request = null;
-
-			if (request()->has('input')) {
-				$input = explode(',', str_replace('s', '+', request('input')));
-				$finder = new \App\Resources\ChordFinder\ChordFinder;
-				$request = $finder->take($input)->analyse();
-				return $request;
-				// TRYING TO KEEP RESULTS ON THE PAGE
+			$finder = new \App\Resources\ChordFinder\ChordFinder;
+			try {
+				$request = $finder->take(request()->test)->analyse();
+			} catch (\Exception $e) {
+				$request = [];
 			}
 
 			return view('tools.chords.index', compact('request'));
