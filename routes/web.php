@@ -21,7 +21,7 @@ Route::prefix('tools')->name('tools.')->group(function() {
 		Route::get('', function() {
 			$finder = new \App\Resources\ChordFinder\ChordFinder;
 			try {
-				$request = $finder->take(request()->test)->analyse();
+				$request = $finder->take(request()->notes)->analyse();
 			} catch (\Exception $e) {
 				$request = [];
 			}

@@ -120,7 +120,20 @@ g.key {
 		<div class="col-12 mt-2 text-center">
 			<p class="text-grey m-0">The scale on a piano keyboard</p>
 			<p class="text-grey">Tap/click to play the notes</p>
-			@include('components.piano.keyboard')
+			@include('components.piano.keyboard', [
+				'octaves' => [
+					3 => [
+						[true, false],
+						[true, false],
+						[true, false],
+						[true, false],
+						[true, false],
+						[true, false],
+						[true, false]
+					],
+					4 => []
+				]
+			])
 		</div>
 	</div>
 </div>

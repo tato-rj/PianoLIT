@@ -1,14 +1,7 @@
-<div class="keyboard">
-	<div style="height: 160px" class="d-flex justify-content-center">
-		@include('components.piano.octave', ['highlights' => [
-			[true, false],
-			[true, false],
-			[true, false],
-			[true, false],
-			[true, false],
-			[true, false],
-			[true, false]
-		], 'octave' => 3])
-		@include('components.piano.octave', ['octave' => 4])
+<div>
+	<div style="height: 160px" class="d-flex justify-content-center keyboard">
+		@foreach($octaves as $octave => $highlights)
+			@include('components.piano.octave', ['octave' => $octave, 'highlights' => $highlights])
+		@endforeach
 	</div>
 </div>

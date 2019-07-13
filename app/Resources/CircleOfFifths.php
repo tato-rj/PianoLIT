@@ -128,7 +128,7 @@ class CircleOfFifths
 		if ($this->mode == 'minor') {
 			$numerals = [
 				'i' => $this->keyToString(6, 'short'),
-				'ii' => $this->keyToString(7, 'short'),
+				'ii°' => $this->keyToString(7, 'short'),
 				'III' => $this->keyToString(1, 'short'),
 				'iv' => $this->keyToString(2, 'short'),
 				'v' => $this->keyToString(3, 'short'),
@@ -143,7 +143,7 @@ class CircleOfFifths
 				'IV' => $this->keyToString(4, 'short'),
 				'V' => $this->keyToString(5, 'short'),
 				'vi' => $this->keyToString(6, 'short'),
-				'vii' => $this->keyToString(7, 'short')
+				'vii°' => $this->keyToString(7, 'short')
 			];
 		}
 

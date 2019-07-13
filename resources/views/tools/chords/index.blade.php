@@ -242,11 +242,13 @@ button.control:disabled {
 	<p class="text-grey">Just tell us the notes and we'll show you all the possible chords you can make with them</p>
 </div>
 @if(app()->isLocal())
-@if(! empty($request))
-    @include('tools.chords.results.index')
-@else
-    @include('tools.chords.empty')
-@endif
+    @if(! empty($request))
+    <div class="container mb-4" id="notes-container">
+        @include('tools.chords.results.index')
+    </div>
+    @else
+        @include('tools.chords.empty')
+    @endif
 @else
 <div class="my-6">
 	@include('components.animations.workers')
@@ -256,10 +258,39 @@ button.control:disabled {
 @endsection
 
 @push('scripts')
+<script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
+
 <script type="text/javascript">
 $(document).on('click', '#reload', function() {
-    window.location.reload();
+    window.location = window.location.href.split("?")[0];
 });
+</script>
+<script type="text/javascript">
+$(document).on('click', '.chords-results button', function() {
+    if (notPlaying) {
+        hideDots();
+        let notes = JSON.parse($(this).attr('data-notes'));
+        let noteIndex = 0;
+        let chord = [];
+console.log(notes);
+        // notes.forEach(function(element, index) {
+        //     let note = element.replace('+', '#').replace('-', 'b');
+        //     let $key = findKey(note, noteIndex);
+        //     chord.push(note + $key.attr('data-octave'));
+        //     noteIndex = $key.hasClass('keyboard-black-key') ? $key.parent().next().index() : $key.index();
+
+        //     setTimeout(function() {
+        //         press($key, 150, false);
+        //         highlight($key);
+        //     }, 200 * index);
+        // });
+
+        // setTimeout(function() {
+        //     piano.triggerAttackRelease(chord, "1n");
+        // }, (notes.length + 1) * 200);
+    }
+});
+
 </script>
 <script type="text/javascript">
 var input = [];
@@ -348,6 +379,17 @@ function submit(notes) {
 	}).fail(function(response) {
 		console.log(response);
 	});
+}
+
+function updateUrl(notes) {
+    let query = '?';
+    notes.forEach(function(note) {
+        query += 'notes[]=' + note.replace('+', 's') + '&';
+    });
+    if (history.pushState) {
+        let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + query;
+        window.history.pushState({path:newurl},'',newurl);
+    }
 }
 </script>
 @endpush

@@ -34,6 +34,7 @@ class Worker
 			$this->chord['is_main'] = $this->isMain();
 			$this->chord['root'] = $root;
 			$this->chord['intervals'] = $this->intervals;
+			$this->chord['notes'] = $this->notes;
 
 			return $this->chord;
 		}
@@ -70,7 +71,13 @@ class Worker
 
 	public function isRelevant()
 	{
-		return ! is_null($this->find(3)) || $this->isSus($strict = true);
+		$third = $this->find(3);
+		$fifth = $this->find(5);
+		
+		if ($third['type'] == 'augmented' || $third['type'] == 'minor' && $fifth['type'] == 'augmented' || $third['type'] == 'major' && $fifth['type'] == 'diminished')
+			return false;
+
+		return ! is_null($third) || $this->isSus($strict = true);
 	}
 
 	public function isMain()

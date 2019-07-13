@@ -15,6 +15,11 @@ class Validator
 			abort(422, 'We need a minimum of 2 notes');
 
 		$this->finder->notes = array_map('strtolower', $this->finder->notes);
+
+		foreach ($this->finder->notes as $note) {
+			if (! in_array($note[0], ['a', 'b', 'c', 'd', 'e', 'f', 'g']))
+				abort(422, 'The note ' . $note . ' is not valid');
+		}
 	}
 
 	public function third()

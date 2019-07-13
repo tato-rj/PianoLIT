@@ -56,6 +56,8 @@ class Organizer
 
 		sort($this->finder->notes);
 
+		$this->finder->notes = array_values($this->finder->notes);
+
 		return $this;
 	}
 

@@ -38,57 +38,88 @@ var $keyDown;
 var notPlaying = true; 
 
 $(document).on('mousedown touchstart', '.keyboard-key', function(e) {
-	let $key = findKey(e);
-	press($key);
+	let $key = getKey(e);
+	press($key, 500);
 }).on('mouseup touchend', function(e) {
-	let $key = findKey(e);
+	let $key = getKey(e);
 	release();
 }).on('mousemove', function(e) {
 	if ($keyDown) {
-		let $key = findKey(e);
+		let $key = getKey(e);
 		if ($keyDown.get(0) != $key.get(0))
 			release();
 	}
 });
 
-function press($key) {
-	if (! $keyDown) {
+highlight = function($key) {
+	$key.find('> .dot').fadeIn('fast');
+};
+
+hideDots = function(delay = 0) {
+	setTimeout(function() {
+		$('.dot').fadeOut('fast');
+	}, delay);
+}
+
+press = function($key, duration = null, strict = true) {
+	if (! $keyDown || ! strict) {
 		let note = $key.attr('data-name').toUpperCase();
 		let octave = $key.attr('data-octave');
 
-		play(note, octave);
+		play(note, octave, duration);
 
 		if ($key.hasClass('keyboard-white-key')) {
 			$key.css('background', 'rgba(0,0,0,0.05)').removeClass('shadow-sm');
 		} else {
 			$key.removeClass('bg-dark');
 		}
+
+		if (duration && ! strict) {
+			setTimeout(function() {
+				release();
+			}, duration);
+		}
 	}
 
 	$keyDown = $key;
 }
 
-function release() {
+release = function() {
 	$keyDown = null;
 	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
 	$('.keyboard-black-key').addClass('bg-dark');
 }
 
-function play(note, octave) {
+play = function(note, octave, duration) {
 	if (notPlaying) {
 		piano.triggerAttackRelease(note + octave, "8n");
 		notPlaying = false;
 		setTimeout(function() {
 			notPlaying = true;
-		}, 500);
+		}, duration);
 	}
 }
 
-function findKey(e) {
+getKey = function(e) {
 	let $key = $(e.target);
 
 	if ($key.hasClass('dot'))
 		$key = $key.parent();
 
 	return $key;
+}
+
+findKey = function(note, startAt = null) {
+    let result = null;
+    let $keys = $('.keyboard-key');
+
+    $keys.slice(startAt, $keys.length).each(function(key) {
+        let notes = JSON.parse($(this).attr('data-names'));
+        if (notes.includes(note)) {
+            result = $(this);
+            return false;
+        }
+    });
+
+    return result;
 }
