@@ -32,7 +32,7 @@ class Interval
 		$full = $this->intervalType . ' ' . $this->distance;
 		$short = $this->distance;
 
-		if ($this->intervalType == 'major') {
+		if ($this->intervalType == 'major' && $this->distance != 2) {
 			$short = '#' . $short;
 		} elseif ($this->intervalType == 'minor') {
 			$short = 'b' . $short;

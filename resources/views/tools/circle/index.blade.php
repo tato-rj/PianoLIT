@@ -1,6 +1,7 @@
 @extends('layouts.app', ['title' => 'The (interactive) Circle of Fifths | ' . config('app.name')])
 
 @push('header')
+<meta name="keywords" content="circle of fifths,music theory,circle,fifths,music theory,chords">
 <meta name="twitter:card" value="An interactive Circle of Fifths that will help you understand what it is and how to use it.">
 <meta property="og:site_name" content="PianoLIT" />
 <meta property="og:title" content="The Interactive Circle of Fifths" />

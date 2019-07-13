@@ -154,7 +154,7 @@
 
 /*END OF WORKERS*/
 
-.chord-results:not(:last-of-type) {
+.chords-results:not(:last-of-type) {
     padding-bottom: 1.5rem!important;
     margin-bottom: 1.5rem!important;
     border-bottom: 1px solid #dee2e6!important;
@@ -274,7 +274,7 @@ button.control:disabled {
 
 @push('scripts')
 <script type="text/javascript">
-$(document).on('click', 'button#reload', function() {
+$(document).on('click', '#reload', function() {
     window.location.reload();
 });
 </script>

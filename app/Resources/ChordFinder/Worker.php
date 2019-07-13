@@ -46,11 +46,11 @@ class Worker
 
 		foreach ($this->chord as $index => $note) {
 			if ($note['distance'] == 2) {
-				array_push($firstLabel, is_null($third) ? 'sus'.$note['short'] : 'add'.$note['short']);
+				array_push($firstLabel, is_null($third) ? ' sus'.$note['short'] : ' add'.$note['short']);
 			} else if ($note['distance'] == 3 && $this->hasPerfectFifth()) {
 				array_unshift($firstLabel, $note['type'] == 'minor' ? 'm' : 'M');
 			} else if ($note['distance'] == 4) {
-				array_push($firstLabel, is_null($third) ? 'sus'.$note['short'] : 'add'.$note['short']);
+				array_push($firstLabel, is_null($third) ? ' sus'.$note['short'] : ' add'.$note['short']);
 			} else if ($note['distance'] == 5 && $note['type'] != 'perfect') {
 				array_unshift($firstLabel, substr($note['type'], 0, 3));
 			} else if ($note['distance'] == 7) {
@@ -65,7 +65,7 @@ class Worker
 
 		$name = ucfirst($root) . implode(' ', $firstLabel) . ' ' . implode(' ', $secondLabel);
 
-		return strtr($name, ['+' => '#', '-' => 'b']);
+		return rtrim(strtr($name, ['+' => '#', '-' => 'b']), ' ');
 	}
 
 	public function isRelevant()
