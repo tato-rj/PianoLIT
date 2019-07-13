@@ -34,7 +34,7 @@ class Worker
 			$this->chord['is_main'] = $this->isMain();
 			$this->chord['root'] = $root;
 			$this->chord['intervals'] = $this->intervals;
-			$this->chord['notes'] = $this->notes;
+			$this->chord['notes'] = array_values($this->notes);
 
 			return $this->chord;
 		}
@@ -72,9 +72,13 @@ class Worker
 	public function isRelevant()
 	{
 		$third = $this->find(3);
+		$fourth = $this->find(4);
 		$fifth = $this->find(5);
 		
-		if ($third['type'] == 'augmented' || $third['type'] == 'minor' && $fifth['type'] == 'augmented' || $third['type'] == 'major' && $fifth['type'] == 'diminished')
+		if (! $this->hasValidThirdAndFifth($third, $fifth))
+			return false;
+
+		if ($fourth['type'] == 'diminished')
 			return false;
 
 		return ! is_null($third) || $this->isSus($strict = true);
@@ -82,7 +86,10 @@ class Worker
 
 	public function isMain()
 	{
-		return $this->isRelevant() && ! is_null($this->find(5));
+		if (! $this->isRelevant())
+			return false;
+
+		return ! is_null($this->find(5)) && substr_count($this->chord['name'], 'add') < 2;
 	}
 
 	public function isSus($strict = false)
@@ -98,6 +105,14 @@ class Worker
 		}
 
 		return is_null($third) && $hasSus;		
+	}
+
+	public function hasValidThirdAndFifth($third, $fifth)
+	{
+		if ($third['type'] == 'augmented' || $third['type'] == 'minor' && $fifth['type'] == 'augmented' || $third['type'] == 'major' && $fifth['type'] == 'diminished')
+			return false;
+
+		return true;
 	}
 
 	public function hasPerfectFifth()

@@ -272,22 +272,22 @@ $(document).on('click', '.chords-results button', function() {
         let notes = JSON.parse($(this).attr('data-notes'));
         let noteIndex = 0;
         let chord = [];
-console.log(notes);
-        // notes.forEach(function(element, index) {
-        //     let note = element.replace('+', '#').replace('-', 'b');
-        //     let $key = findKey(note, noteIndex);
-        //     chord.push(note + $key.attr('data-octave'));
-        //     noteIndex = $key.hasClass('keyboard-black-key') ? $key.parent().next().index() : $key.index();
 
-        //     setTimeout(function() {
-        //         press($key, 150, false);
-        //         highlight($key);
-        //     }, 200 * index);
-        // });
+        notes.forEach(function(element, index) {
+            let note = element.replace('+', '#').replace('-', 'b').replace('2', '');
+            let $key = findKey(note, noteIndex);
+            chord.push(note + $key.attr('data-octave'));
+            noteIndex = $key.hasClass('keyboard-black-key') ? $key.parent().next().index() : $key.index();
 
-        // setTimeout(function() {
-        //     piano.triggerAttackRelease(chord, "1n");
-        // }, (notes.length + 1) * 200);
+            setTimeout(function() {
+                press($key, 150, false);
+                highlight($key);
+            }, 200 * index);
+        });
+
+        setTimeout(function() {
+            piano.triggerAttackRelease(chord, "1n");
+        }, (notes.length + 1) * 200);
     }
 });
 
