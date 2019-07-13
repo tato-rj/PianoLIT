@@ -129,11 +129,11 @@ class CircleOfFifths
 			$numerals = [
 				'i' => $this->keyToString(6, 'short'),
 				'ii°' => $this->keyToString(7, 'short'),
-				'III' => $this->keyToString(1, 'short'),
+				'bIII' => $this->keyToString(1, 'short'),
 				'iv' => $this->keyToString(2, 'short'),
 				'v' => $this->keyToString(3, 'short'),
-				'VI' => $this->keyToString(4, 'short'),
-				'VII' => $this->keyToString(5, 'short')
+				'bVI' => $this->keyToString(4, 'short'),
+				'bVII' => $this->keyToString(5, 'short')
 			];
 		} else {
 			$numerals = [
