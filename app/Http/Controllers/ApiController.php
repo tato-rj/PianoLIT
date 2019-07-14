@@ -69,6 +69,7 @@ class ApiController extends Controller
             $mood = array_rand($inputArray, 1);
 
             $inputArray = [$level, $mood];
+            dd($inputArray);
         }
 
         $pieces = Piece::search($inputArray, $request)->get();
