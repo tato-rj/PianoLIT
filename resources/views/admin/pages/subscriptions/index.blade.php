@@ -18,6 +18,8 @@
         <div>
         <form method="POST" action="{{route('subscriptions.store')}}" class="form-inline">
           @csrf
+          <input type="hidden" name="subscription_name" placeholder="Your name here">
+          <input type="hidden" name="started_at" value="{{now()}}">
           <input type="email" required name="email" placeholder="Add a new email here" class="form-control mr-2">
           <button type="submit" class="btn btn-default">Subscribe</button>
         </form>
