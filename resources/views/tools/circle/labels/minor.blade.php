@@ -17,7 +17,7 @@
 			</div>
 		</div>
 		<div class="mb-4">
-			@include('tools.circle.labels.title', ['title' => 'neighbor keys'])
+			@include('tools.circle.labels.title', ['title' => 'closely related keys'])
 			<div class="key-neighbors"></div>
 		</div>
 	</div>
