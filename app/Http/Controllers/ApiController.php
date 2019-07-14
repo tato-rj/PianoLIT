@@ -65,16 +65,18 @@ class ApiController extends Controller
 
         $inputArray = $this->api->prepareInput($request);
 
-        $level = array_shift($inputArray);
-        
-        $mood = array_rand($inputArray, 1);
+        if (! empty($inputArray)) {
+            $level = array_shift($inputArray);
+            
+            $mood = array_rand($inputArray, 1);
 
-        $tourArray = [$level, $mood];
+            $inputArray = [$level, $mood];
+        }
 
-        $pieces = Piece::search($tourArray, $request)->get();
+        $pieces = Piece::search($inputArray, $request)->get();
 
         if (! empty($inputArray))
-            $this->api->prepare($request, $pieces, $tourArray);
+            $this->api->prepare($request, $pieces, $inputArray);
 
         if ($request->wantsJson() || $request->has('api'))
             return $pieces;
