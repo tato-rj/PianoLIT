@@ -1,4 +1,4 @@
-@component('components.overlays.modal', ['title' => 'Neighbor Keys', 'size' => 'lg'])
+@component('components.overlays.modal', ['title' => 'Closely Related Keys', 'size' => 'lg'])
 	@include('tools.circle.info.title')
 	
 	<p>The <i>closely related keys</i> are those keys that have only <strong>one note different from the main key</strong>, therefore are very similar and considered to be close. The more steps you move in either direction on the circle of fifths, the more distant the keys get from the main key (the more different they will sound).</p>
