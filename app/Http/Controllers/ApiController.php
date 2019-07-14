@@ -66,7 +66,7 @@ class ApiController extends Controller
         if (! empty($inputArray)) {
             $level = array_shift($inputArray);
             
-            $mood = array_rand($inputArray, 1);
+            $mood = $inputArray[array_rand($inputArray, 1)];
 
             $inputArray = [$level, $mood];
             dd($inputArray);
