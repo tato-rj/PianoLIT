@@ -17,7 +17,7 @@
 @endif
 <div class="chords-results d-flex flex-wrap">
 @foreach($request['results']['additional_content'] as $chord)
-	<button class="btn btn btn-outline-secondary m-1" data-notes="{{json_encode($chord['notes'])}}">
+	<button class="btn btn-light btn-chord-additional m-1" data-notes="{{json_encode($chord['notes'])}}">
 		<i class="fas fa-play-circle mr-2 opacity-4"></i><strong>{{$chord['name']}}</strong>
 	</button>
 @endforeach

@@ -243,14 +243,25 @@ button.control:disabled {
 
 .btn-chord-main:active {
     background-color: #2fe45861;
-    -webkit-box-shadow: none;
-    box-shadow: none;
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
 }
 
-.btn-chord-selected {
+.btn-chord-main:focus {
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.btn-chord-main.btn-chord-selected {
     background-color: #2fe4584d;
     -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
     box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.btn-chord-additional.btn-chord-selected {
+    color:#212529;
+    background-color:#e2e6ea;
+    border-color:#dae0e5;
 }
 
 </style>
@@ -289,6 +300,8 @@ $(document).on('click', '#reload', function() {
 $(document).on('click', '.chords-results button', function() {
     if (notPlaying) {
         hideDots();
+        $('.chords-results button').removeClass('btn-chord-selected');
+        $(this).addClass('btn-chord-selected');
         let notes = JSON.parse($(this).attr('data-notes'));
         let noteIndex = 0;
         let chord = [];

@@ -57,7 +57,8 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'collection',
             'source' => \URL::to('/api/search'),
-            'color' => 'lightblue']);
+            'color' => 'lightblue',
+            'background' => 'https://img.purch.com/h/1400/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzEwNC84MTkvb3JpZ2luYWwvY3V0ZS1raXR0ZW4uanBn']);
 
         return $this->createPlaylist($collection, ['title' => 'Composers']);
     }
