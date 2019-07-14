@@ -57,8 +57,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'collection',
             'source' => \URL::to('/api/search'),
-            'color' => 'lightblue',
-            'background' => 'https://img.purch.com/h/1400/aHR0cDovL3d3dy5saXZlc2NpZW5jZS5jb20vaW1hZ2VzL2kvMDAwLzEwNC84MTkvb3JpZ2luYWwvY3V0ZS1raXR0ZW4uanBn']);
+            'color' => 'lightblue']);
 
         return $this->createPlaylist($collection, ['title' => 'Composers']);
     }
@@ -139,7 +138,7 @@ class Api
                 $subtitle = $number.' '.'pieces';
             }
 
-            $background = $args['background'] ?? null;//empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
+            $background = empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
 
             $model->setAttribute('source', $args['source']);
             $model->setAttribute('type', $args['type']);
