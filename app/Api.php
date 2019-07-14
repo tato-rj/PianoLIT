@@ -139,7 +139,7 @@ class Api
                 $subtitle = $number.' '.'pieces';
             }
 
-            $background = empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
+            $background = $args['background'] ?? null;//empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
 
             $model->setAttribute('source', $args['source']);
             $model->setAttribute('type', $args['type']);
