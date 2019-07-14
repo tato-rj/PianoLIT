@@ -154,12 +154,6 @@
 
 /*END OF WORKERS*/
 
-.chords-results:not(:last-of-type) {
-    padding-bottom: 1.5rem!important;
-    margin-bottom: 1.5rem!important;
-    border-bottom: 1px solid #dee2e6!important;
-}
-
 .note {
 	position: relative;
 }
@@ -233,6 +227,32 @@ button.control:disabled {
 	animation: loadingAnimation 1s infinite ease-in-out;
 	opacity: .4;
 }
+
+.btn-chord-main {
+    font-size: 1.5em;
+    background-color: #2fe4581f;
+    color: #20a23ed1;
+    transition: .2s;
+}
+
+.btn-chord-main:hover {
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    color: #20a23ed1;
+}
+
+.btn-chord-main:active {
+    background-color: #2fe45861;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.btn-chord-selected {
+    background-color: #2fe4584d;
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
 </style>
 @endpush
 

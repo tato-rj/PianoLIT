@@ -2,7 +2,7 @@
 <label class="text-muted text-muted"><strong>THE CHORD IS MOST LIKELY{{count($request['results']['main_content']) > 1 ? ' ONE OF THESE...' : null}}</strong></label>
 <div class="chords-results d-flex flex-wrap">
 @foreach($request['results']['main_content'] as $chord)
-	<button style="font-size: 1.5em" class="m-1 btn btn-teal" data-notes="{{json_encode($chord['notes'])}}">
+	<button class="m-1 btn btn-chord-main" data-notes="{{json_encode($chord['notes'])}}">
 		<i class="fas fa-play-circle mr-2 opacity-4"></i><strong>{{$chord['name']}}</strong>
 	</button>
 @endforeach
