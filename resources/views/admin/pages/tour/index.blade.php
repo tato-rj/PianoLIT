@@ -100,7 +100,7 @@ function prepareInput() {
   $('#app-intro .carousel-item').slice(1).each(function() {
     tagsArray.push($(this).attr('value'));
   });
-  $input.val(tagsArray);
+  $input.val(tagsArray.join(' '));
   // $input.val($input.val()+' '+tagsArray[Math.floor(Math.random()*tagsArray.length)]);
 }
 
