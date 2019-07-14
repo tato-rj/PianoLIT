@@ -101,7 +101,7 @@ function prepareInput() {
     tagsArray.push($(this).attr('value'));
   });
   $input.val(tagsArray.shift());
-  $input.val($input.val()+' '+tagsArray[Math.floor(Math.random()*tagsArray.length)]);
+  // $input.val($input.val()+' '+tagsArray[Math.floor(Math.random()*tagsArray.length)]);
 }
 
 $('#app-intro .tag-button').on('click', function() {
