@@ -65,7 +65,13 @@ class ApiController extends Controller
 
         $inputArray = $this->api->prepareInput($request);
 
-        $pieces = Piece::search($inputArray, $request)->get();
+        $level = array_shift($inputArray);
+        
+        $mood = array_rand($inputArray, 1);
+
+        $tourArray = [$level, $mood];
+
+        $pieces = Piece::search($tourArray, $request)->get();
 
         if (! empty($inputArray))
             $this->api->prepare($request, $pieces, $inputArray);
