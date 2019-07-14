@@ -61,8 +61,6 @@ class ApiController extends Controller
 
     public function tour(Request $request)
     {
-        $request->request->add(['global' => null]);
-
         $inputArray = $this->api->prepareInput($request);
 
         if (! empty($inputArray)) {
