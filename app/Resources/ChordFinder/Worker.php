@@ -78,8 +78,8 @@ class Worker
 		if (! $this->hasValidThirdAndFifth($third, $fifth))
 			return false;
 
-		if ($fourth['type'] == 'diminished')
-			return false;
+		// if ($fourth['type'] == 'diminished')
+		// 	return false;
 
 		return ! is_null($third) || $this->isSus($strict = true);
 	}

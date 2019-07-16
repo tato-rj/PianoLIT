@@ -272,7 +272,7 @@ button.control:disabled {
 	<h3>Chord Finder</h3>
 	<p class="text-grey">Just tell us the notes and we'll show you all the possible chords you can make with them</p>
 </div>
-@if(app()->isLocal())
+@if(app()->isLocal() || request()->has('dev'))
     @if(! empty($request))
     <div class="container mb-4" id="notes-container">
         @include('tools.chords.results.index')
