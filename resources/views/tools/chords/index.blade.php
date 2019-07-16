@@ -388,7 +388,9 @@ $('button#submit-notes').on('click', function() {
 		$(this).text('We\'re working on it...');
 
 		animate();
-		submit();
+        setTimeout(function() {
+            submit();
+        }, 1500);
 	}
 
 });
