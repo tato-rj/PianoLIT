@@ -121,6 +121,7 @@ g.key {
 			<p class="text-grey m-0">The scale on a piano keyboard</p>
 			<p class="text-grey">Tap/click to play the notes</p>
 			@include('components.piano.keyboard', [
+				'centered' => true,
 				'octaves' => [
 					3 => [
 						[true, false],
