@@ -4,11 +4,13 @@ namespace App\Resources\ChordFinder;
 
 class Organizer
 {
-	protected $inversions;
+	protected $inversions, $enharmonicInversions;
+	private $halfSteps = ['e+', 'b+'];
 
 	public function __construct(ChordFinder $finder)
 	{
 		$this->inversions = [];
+		$this->enharmonicInversions = [];
 		$this->finder = $finder;
 	}
 	
@@ -37,16 +39,43 @@ class Organizer
 			array_push($this->finder->notes, $root);
 		}
 
+		if ($this->finder->enharmonicNotes) {
+			for ($i=0; $i<count($this->finder->enharmonicNotes); $i++) {
+				array_push($this->enharmonicInversions, $this->finder->enharmonicNotes);
+
+				if ($this->isOctaveUp($this->enharmonicInversions[$i][0]))
+					$this->enharmonicInversions[$i][0] = $this->removeOctave($this->enharmonicInversions[$i][0]);
+
+				$root = $this->enharmonicInversions[$i][0];
+				for ($j=1; $j<count($this->enharmonicInversions[$i]); $j++) {
+					if ($this->interval($root, $this->enharmonicInversions[$i][$j])->in([10, 11, 12, 14]))
+						$this->enharmonicInversions[$i][$j] = $this->removeOctave($this->enharmonicInversions[$i][$j]);
+
+					if ($this->isOctaveUp($this->enharmonicInversions[$i][$j]))
+						$this->enharmonicInversions[$i] = $this->moveToEnd($this->enharmonicInversions[$i], $j);
+				}
+				array_shift($this->finder->enharmonicNotes);
+				array_push($this->finder->enharmonicNotes, $root);
+			}
+		}
+
 		$this->finder->inversions = $this->inversions;
+		$this->finder->enharmonicInversions = $this->enharmonicInversions;
 
 		return $this;
 	}
 
 	public function clean()
 	{
+		$hasSharps = $hasFlats = $hasEnharmonics = false;
 		$this->finder->notes = array_unique($this->finder->notes);
 		foreach ($this->finder->notes as $key => $note) {
 			$this->finder->notes[$key] = str_replace('s', '+', $note);
+
+			$hasSharps = $hasSharps ? $hasSharps : strhas($this->finder->notes[$key], '+');
+			$hasFlats = $hasFlats ? $hasFlats : strhas($this->finder->notes[$key], '-');
+			$hasEnharmonics = $hasEnharmonics ? $hasEnharmonics : $note == 'es' && nextLetter($note) == 'F' || $note == 'bs' && nextLetter($note) == 'C';
+			
 			if ($this->isOctaveUp($note)) {
 				$note = str_replace('2', '', $note);
 				if ($index = array_search($note, $this->finder->notes))
@@ -54,9 +83,23 @@ class Organizer
 			}
 		}
 
-		sort($this->finder->notes);
+		if ($hasEnharmonics || ($hasSharps && $hasFlats)) {
+			$count = count($this->finder->notes);
+			$this->finder->enharmonicNotes = $this->finder->notes;
 
-		$this->finder->notes = array_values($this->finder->notes);
+			foreach ($this->finder->notes as $key => $note) {
+				if ($key < $count-1) {
+					$nextNote = $this->finder->notes[$key+1];
+
+					if (in_array($note, $this->halfSteps) || (strhas($note, '+') && strhas($nextNote, '-') && (nextLetter($note) == strtoupper($nextNote[0])))) {
+						unset($this->finder->notes[$key]);
+						unset($this->finder->enharmonicNotes[$key+1]);
+					}
+				}
+			}
+		}
+
+		$this->sort();
 
 		return $this;
 	}
@@ -78,5 +121,16 @@ class Organizer
 		array_push($notes, $note);
 
 		return $notes;
+	}
+
+	public function sort()
+	{
+		sort($this->finder->notes);
+		$this->finder->notes = array_values($this->finder->notes);
+	
+		if ($this->finder->enharmonicNotes) {
+			sort($this->finder->enharmonicNotes);
+			$this->finder->enharmonicNotes = array_values($this->finder->enharmonicNotes);
+		}
 	}
 }

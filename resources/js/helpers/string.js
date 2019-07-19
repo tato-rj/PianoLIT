@@ -19,3 +19,8 @@ formatBytes = function(bytes,decimals) {
 jQuery.fn.cleanVal = function() {
 	return this.val().replace(/\D/g,'');
 };
+
+const ucfirst = (s) => {
+  if (typeof s !== 'string') return ''
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}

@@ -1,4 +1,8 @@
 @include media-breakpoint-down(sm) {
+	.hide-on-sm {
+		display: none !important;
+	}
+	
 	button#gift {
 		bottom: 60px !important;
 	}

@@ -5,9 +5,11 @@ namespace App\Resources\ChordFinder;
 class Worker
 {
 	protected $chord, $distances, $notes;
+	protected $is_valid;
 
 	public function __construct(ChordFinder $finder)
 	{
+		$this->is_valid = true;
 		$this->finder = $finder;
 	}
 	
@@ -25,10 +27,15 @@ class Worker
 		foreach ($this->notes as $index => $root) {
 			$subChord = $index > 0 ? $this->invert($index) : $this->notes;
 			array_shift($subChord);
+
 			foreach ($subChord as $note) {
 				$this->saveInterval($root, $note);
 				$this->saveDistance();
 			}
+
+			if (! $this->is_valid)
+				return null;
+
 			$this->chord['name'] =  $this->name($root);
 			$this->chord['is_relevant'] = $this->isRelevant();
 			$this->chord['is_main'] = $this->isMain();
@@ -75,11 +82,8 @@ class Worker
 		$fourth = $this->find(4);
 		$fifth = $this->find(5);
 		
-		if (! $this->hasValidThirdAndFifth($third, $fifth))
+		if (! $this->hasValidThirdAndFifth($third, $fifth) || ! $this->checkDimSeventh())
 			return false;
-
-		// if ($fourth['type'] == 'diminished')
-		// 	return false;
 
 		return ! is_null($third) || $this->isSus($strict = true);
 	}
@@ -122,6 +126,18 @@ class Worker
 		return is_null($fifth) || $fifth['type'] == 'perfect';
 	}
 
+	public function checkDimSeventh()
+	{
+		$fifth = $this->find(5);
+		$seventh = $this->find(7);
+
+		if (! $seventh || $seventh['type'] != 'diminished')
+			return true;
+
+		return $fifth && $fifth['type'] == 'diminished';
+		
+	}
+
 	public function find($interval)
 	{
 		$key = array_search($interval, $this->intervals);
@@ -145,10 +161,14 @@ class Worker
 
 	public function saveInterval($root, $note)
 	{
-		array_push(
-			$this->chord,
-			$this->interval($root, $note)->analyse()
-		);
+		try {
+			array_push(
+				$this->chord,
+				$this->interval($root, $note)->analyse()
+			);
+		} catch (\Exception $e) {
+			$this->is_valid = false;
+		}
 	}
 
 	public function saveDistance()

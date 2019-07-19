@@ -5,6 +5,22 @@ function enharmonic()
 	return new \App\Resources\CircleOfFifths\Enharmonics;
 }
 
+function strhas($str, $needle)
+{
+	return strpos($str, $needle) !== false;
+}
+
+function nextLetter($letter, $music = true)
+{
+	$nextLetter = strtolower($letter[0]);
+	$nextLetter++;
+
+	if ($music && $nextLetter == 'h')
+		$nextLetter = 'A';
+
+	return ucfirst($nextLetter);
+}
+
 function storage($path)
 {
 	if ($path)

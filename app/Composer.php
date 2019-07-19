@@ -31,4 +31,9 @@ class Composer extends Person
     {
         return $query->where('is_famous', true);
     }
+
+    public function getCoverImageAttribute()
+    {
+        return asset('composers/' . str_slug($this->short_name));
+    }
 }

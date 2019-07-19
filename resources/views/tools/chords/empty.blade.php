@@ -1,16 +1,32 @@
 <div class="container mb-4" id="notes-container">
-	<p class="text-center text-grey mb-4">Tap/click on a note to select it</p>
-	<div class="row no-gutters justify-content-center mb-4">
-		@include('tools.chords.inputs.note', ['note' => 'A'])
-		@include('tools.chords.inputs.note', ['note' => 'B'])
-		@include('tools.chords.inputs.note', ['note' => 'C'])
-		@include('tools.chords.inputs.note', ['note' => 'D'])
-		@include('tools.chords.inputs.note', ['note' => 'E'])
-		@include('tools.chords.inputs.note', ['note' => 'F'])
-		@include('tools.chords.inputs.note', ['note' => 'G'])
+	<p class="text-center text-grey">Tap/click on a note to select it</p>
+	<div class="row position-relative no-gutters justify-content-center mb-4">
+		<div class="input-overlay"></div>
+		@include('tools.chords.inputs.note', ['note' => 'A', 'octave' => 3])
+		@include('tools.chords.inputs.note', ['note' => 'B', 'octave' => 3])
+		@include('tools.chords.inputs.note', ['note' => 'C', 'octave' => 4])
+		@include('tools.chords.inputs.note', ['note' => 'D', 'octave' => 4])
+		@include('tools.chords.inputs.note', ['note' => 'E', 'octave' => 4])
+		@include('tools.chords.inputs.note', ['note' => 'F', 'octave' => 4])
+		@include('tools.chords.inputs.note', ['note' => 'G', 'octave' => 4])
+	</div>
+	<p class="text-center text-grey">Or use the keyboard to select the notes</p>
+	<div class="row position-relative mb-4">
+		<div class="input-overlay"></div>
+		<div class="col-12 keyboard-input">
+			@include('components.piano.keyboard', [
+				'centered' => true,
+				'octaves' => [
+					3 => [],
+					4 => [],
+					5 => []
+				]
+			])
+		</div>
 	</div>
 	<div class="text-center mb-6">
-		<button class="btn btn-primary" id="submit-notes"><i class="fas fa-lightbulb mr-2"></i>Look it up!</button>
+		<p class="text-center text-grey">All set?</p>
+		<button class="btn btn-primary" id="submit-notes"><i class="fas fa-lightbulb mr-2"></i>Look up the chords!</button>
 	</div>
 </div>
 <div class="container mb-6">

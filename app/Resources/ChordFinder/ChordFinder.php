@@ -6,11 +6,13 @@ class ChordFinder
 {
 	use Factory;
 
-	public $notes, $full_name, $short_name, $chord, $results, $inversions;
+	public $notes, $full_name, $short_name, $chord, $results, $enharmonicResults, $inversions, $enharmonicInversions,$enharmonicNotes;
 
 	public function __construct()
 	{
-		$this->results = ['main_content' => [], 'additional_content' => [], 'type' => ''];
+		$this->results = ['main_content' => [], 'additional_content' => []];
+		$this->enharmonicResults = ['main_content' => [], 'additional_content' => []];
+		$this->enharmonicInversions = [];
 		$this->inversions = [];
 		$this->validator = new Validator($this);
 		$this->organizer = new Organizer($this);
@@ -40,30 +42,55 @@ class ChordFinder
 			array_push($this->results['main_content'], $this->worker()->interval($this->notes[0], $this->notes[1])->analyse());
 			array_push($this->results['main_content'], $this->worker()->interval($this->notes[1], $this->notes[0])->analyse());
 
-			$this->results['type'] = 'intervals';
+			$type = 'intervals';
 		} else {
 			foreach ($this->inversions as $inversion) {
 				$chord = $this->worker()->get($inversion);
 				
-				if ($chord['is_relevant']) {
-					if ($chord['is_main']) {
-						array_push($this->results['main_content'], $chord);
-					} else {
-						array_push($this->results['additional_content'], $chord);
+				if ($chord) {
+					if ($chord['is_relevant']) {
+						if ($chord['is_main']) {
+							array_push($this->results['main_content'], $chord);
+						} else {
+							array_push($this->results['additional_content'], $chord);
+						}
 					}
 				}
 			}
 
-			$this->results['type'] = 'chords';
+			if ($this->enharmonicNotes) {
+				foreach ($this->enharmonicInversions as $inversion) {
+					$chord = $this->worker()->get($inversion);
+					
+					if ($chord['is_relevant']) {
+						if ($chord['is_main']) {
+							array_push($this->enharmonicResults['main_content'], $chord);
+						} else {
+							array_push($this->enharmonicResults['additional_content'], $chord);
+						}
+					}
+				}
+			}
+
+			$type = 'chords';
 		}
-		
+
 		foreach ($this->notes as $index => $note) {
-			$this->notes[$index] = ucfirst(strtr($note, ['+' => '#', '-' => 'b']));
+			$this->notes[$index] = ucfirst(strtr($this->notes[$index], ['+' => '#', '-' => 'b']));
+		}	
+
+		if ($this->enharmonicNotes) {
+			foreach ($this->enharmonicNotes as $index => $note) {
+				$this->enharmonicNotes[$index] = ucfirst(strtr($this->enharmonicNotes[$index], ['+' => '#', '-' => 'b']));
+			}
 		}
 
 		return [
+			'type' => $type,
 			'notes' => $this->notes,
-			'results' => $this->results
+			'enharmonic' => $this->enharmonicNotes,
+			'results' => $this->results,
+			'enharmonicResults' => $this->enharmonicResults
 		];
 	}
 }

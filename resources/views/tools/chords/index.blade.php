@@ -170,14 +170,15 @@
 	background: transparent;
 }
 
-.note .overlay {
+.input-overlay {
 	width: 100%; 
 	height: 100%; 
 	position: absolute; 
 	top: 0; 
 	left: 0; 
 	display: none; 
-	background: transparent;
+	background: rgba(255,255,255,0.5);
+    z-index: 100;
 }
 
 .note-inactive {
@@ -224,8 +225,10 @@ button.control:disabled {
 }
 
 .loading {
-	animation: loadingAnimation 1s infinite ease-in-out;
-	opacity: .4;
+	animation-name: loadingAnimation;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+	opacity: .6;
 }
 
 .btn-chord-main {
@@ -259,18 +262,49 @@ button.control:disabled {
 }
 
 .btn-chord-additional.btn-chord-selected {
-    color:#212529;
-    background-color:#e2e6ea;
-    border-color:#dae0e5;
+    color: #544c00ab;
+    background-color: #f2da008c;
 }
 
+.btn-chord-additional {
+    background-color: #f2da004a;
+    color: #544c00ab;
+    transition: .2s;
+}
+
+.btn-chord-additional:hover {
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    color: #544c00ab;
+}
+
+.btn-chord-additional:active {
+    background-color: #f2da008c;
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.btn-chord-additional:focus {
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+#chord-label > div {
+    margin: .5rem!important;
+    font-size: 1.6em;
+    color: #6c757d!important;
+    font-weight: bold;
+    text-transform: capitalize;
+}
 </style>
 @endpush
 
 @section('content')
-<div class="mb-5 text-center">
+<div class="mb-4 text-center">
 	<h3>Chord Finder</h3>
-	<p class="text-grey">Just tell us the notes and we'll show you all the possible chords you can make with them</p>
+    <div id="subtitle" class="text-grey">
+        <div class="">Just tell us the notes and we'll show you all the possible chords you can make with them</div>
+    </div>
 </div>
 @if(app()->isLocal() || request()->has('dev'))
     @if(! empty($request))
@@ -296,10 +330,12 @@ $(document).on('click', '#reload', function() {
     window.location = window.location.href.split("?")[0];
 });
 </script>
+
 <script type="text/javascript">
 $(document).on('click', '.chords-results button', function() {
     if (notPlaying) {
         hideDots();
+        resetLabel();
         $('.chords-results button').removeClass('btn-chord-selected');
         $(this).addClass('btn-chord-selected');
         let notes = JSON.parse($(this).attr('data-notes'));
@@ -315,6 +351,7 @@ $(document).on('click', '.chords-results button', function() {
             setTimeout(function() {
                 press($key, 150, false);
                 highlight($key);
+                updateLabel(note);
             }, 200 * index);
         });
 
@@ -324,22 +361,48 @@ $(document).on('click', '.chords-results button', function() {
     }
 });
 
+function updateLabel(note) {
+    $label = $('#chord-label');
+    $label.append('<div>'+note+'</div>');
+}
+
+function resetLabel() {
+    $('#chord-label').html('');
+}
+
 </script>
 <script type="text/javascript">
 var input = [];
+
+$('.keyboard-input .keyboard-white-key, .keyboard-input .keyboard-white-key').on('click', function(e) {
+    let $key = $(e.target);
+    reset('.note');
+    $key.find(' > .dot').toggle();
+
+    getNotes();
+});
+
+$('.dot').on('click', function() {
+    $(this).hide();
+
+    getNotes();
+});
 
 $('.note h1').on('click', function() {
 	let $note = $(this).parent();
 	$note.toggleClass('note-inactive note-active');
 	$note.find('button').toggleAttr('disabled');
 
-	getNotes();
+    reset('.dot');
+    playNote($note);
+    getNotes();
 });
 
 $('.note button').on('click', function() {
 	let symbol = $(this).attr('data-symbol');
 	let accidental = '';
 	let accidentals = [];
+    let $note = $(this).parent().parent();
 	let $label = $(this).parent().siblings('h1').find('span');
 	let steps = parseInt($label.attr('data-steps'));
 	
@@ -361,11 +424,34 @@ $('.note button').on('click', function() {
 	}
 
 	$label.text(accidentals.join(''));
+    
+    let ext = accidentals.join('') == '##' ? 'x' : accidentals.join('');
+
+    $note.attr('data-name', $note.attr('data-name')[0] + ext);
+    playNote($note);
 	getNotes();
 });
 
+function reset(elem) {
+    let $notes = $(elem);
+    
+    if (elem == '.dot') {
+        $notes.hide();
+    } else {
+        $notes.removeClass('note-active').addClass('note-inactive');
+        $notes.find('button').prop('disabled', true);
+    }
+}
+
+function playNote($note) {
+    if ($note.hasClass('note-active'))
+        play($note.attr('data-name'), $note.attr('data-octave'), 500);
+}
+
 function getNotes() {
+    let $firstKey = $('.dot:visible').first();
 	let notes = [];
+    let octaves = [];
 
 	$('.note-active').each(function() {
 		let note = $(this).find('h1').text();
@@ -374,15 +460,47 @@ function getNotes() {
 		notes.push(note);
 	});
 
-	input = notes;
+    $('.dot:visible').each(function() {
+        let $key = $(this).parent();
+        let note = $key.attr('data-name').toUpperCase();
+        let ext = ''; 
+        octaves.push($key.attr('data-octave'));
+
+        if (note[0] == 'B') {
+            if ($key.attr('data-octave') > octaves[0] + 1)
+                ext = 2;
+        } else {
+            if ($key.attr('data-octave') > octaves[0])
+                ext = 2;
+        }
+
+        note += ext;
+
+        if (note[0] == 'C')
+            notes.push('B+'+ext);
+
+        if (note[0] == 'F')
+            notes.push('E+'+ext);
+
+        note = note.replace(/#|_/g, '+');
+        notes.push(note);
+        
+        if (note.includes('+'))
+            notes.push(nextLetter(note[0]) + '-');
+
+    });
+
+	console.log(notes);
+    
+    input = notes;
 
 	return notes;
 }
 
 $('button#submit-notes').on('click', function() {
 
-	if (input.length < 2) {
-		alert('Please select at least two notes');
+	if (input.length < 3) {
+		alert('Please select at least 3 notes');
 	} else {
 		$(this).prop('disabled', true);
 		$(this).text('We\'re working on it...');
@@ -395,23 +513,32 @@ $('button#submit-notes').on('click', function() {
 
 });
 
-function animate() {
-	let $notes = $('.note');
+function nextLetter(letter) {
+    let next = letter.substring(0, letter.length - 1) + String.fromCharCode(letter.charCodeAt(letter.length - 1) + 1);
 
-	for (var i = 0; i<$notes.length; i++) {
-		let $note = $($notes[i]);
-		$note.find('.overlay').show();
-		setTimeout(function() {
-			$note.addClass('loading');
-		}, i*100);
+    if (next == 'H')
+        return 'A';
+
+    return next;
+}
+
+function animate() {
+	let $elements = $('.dot:visible').length > 0 ? $('.dot:visible') : $('.note-active');
+    $('.input-overlay').show();
+
+	for (var i = 0; i<$elements.length; i++) {
+		let $note = $($elements[i]);
+		$note.addClass('loading').css('animation-duration', ((Math.random() * (0.5 -2) +2).toFixed(2)) + 's');
 	}
 }
 
-function submit(notes) {
+function submit() {
 	console.log('Sending: '+input)
 	$.get('{{route('tools.chord-finder.analyse')}}', {notes: input}, function(response) {
 		$('#notes-container').html(response);
+        $('#subtitle').html($('#notes-container').find('#subtitle-results').contents());
 	}).fail(function(response) {
+        alert(response.responseJSON.message);
 		console.log(response);
 	});
 }
