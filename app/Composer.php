@@ -34,6 +34,6 @@ class Composer extends Person
 
     public function getCoverImageAttribute()
     {
-        return asset('composers/' . str_slug($this->short_name));
+        return asset('composers/' . str_slug($this->short_name) . '.jpeg');
     }
 }
