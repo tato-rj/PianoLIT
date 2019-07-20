@@ -181,6 +181,7 @@ class Api
             $model->setAttribute('born_at', $model->born_at);
             $model->setAttribute('died_at', $model->died_at);
             $model->setAttribute('short_name', $model->short_name);
+            $model->setAttribute('cover_image', $model->cover_image);
         
         }
 	}
