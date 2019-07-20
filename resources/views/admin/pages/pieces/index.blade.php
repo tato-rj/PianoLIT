@@ -8,6 +8,9 @@ small .custom-control-label::before, small .custom-control-label::after {
     top: 0.10rem;
     left: -1.34rem;
 }
+.dropdown-toggle:after {
+  display: none!important;
+}
 </style>
 @endsection
 

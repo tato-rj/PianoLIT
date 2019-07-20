@@ -73,7 +73,6 @@ class PieceTest extends AppTest
     /** @test */
     public function it_knows_the_status_of_its_resources()
     {
-        $incompletePiece = create(Piece::class);
 
         $completePiece = create(Piece::class, [
             'score_path' => 'score.pdf', 
@@ -100,5 +99,20 @@ class PieceTest extends AppTest
 
     	$this->assertFalse($incompletePiece->isComplete());
     	$this->assertTrue($completePiece->isComplete());    	 
+    }
+
+    /** @test */
+    public function it_knows_the_other_pieces_from_its_collection()
+    {
+        $piece = create(Piece::class);
+        $differentPiece = create(Piece::class);
+        $pieceFromSameCatalogue = create(Piece::class, [
+        	'composer_id' => $piece->composer_id,
+        	'catalogue_name' => $piece->catalogue_name,
+        	'catalogue_number' => $piece->catalogue_number
+        ]);
+
+        $this->assertCount(1, $piece->siblings());
+        $this->assertEquals($piece->siblings()->first()->id, $pieceFromSameCatalogue->id);
     }
 }

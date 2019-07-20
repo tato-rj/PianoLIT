@@ -21,6 +21,7 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::get('{piece}/timeline', 'ApiController@timeline')->name('timeline');
 
+	Route::get('{piece}/collection', 'PiecesController@collection')->name('collection');
 });
 
 Route::prefix('blog')->name('blog.')->group(function() {

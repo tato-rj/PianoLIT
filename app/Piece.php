@@ -213,4 +213,10 @@ class Piece extends PianoLit
 
         return $query;
     }
+
+    public function siblings()
+    {
+        return Piece::where(['composer_id' => $this->composer_id, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
+                    ->where('id', '!=', $this->id)->get();
+    }
 }

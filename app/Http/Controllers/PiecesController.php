@@ -133,14 +133,14 @@ class PiecesController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the collection for a specified resource.
      *
      * @param  \App\Piece  $piece
      * @return \Illuminate\Http\Response
      */
-    public function show(Piece $piece)
+    public function collection(Piece $piece)
     {
-        //
+        return $piece->siblings();
     }
 
     /**
