@@ -74,7 +74,9 @@ class Organizer
 
 			$hasSharps = $hasSharps ? $hasSharps : strhas($this->finder->notes[$key], '+');
 			$hasFlats = $hasFlats ? $hasFlats : strhas($this->finder->notes[$key], '-');
-			$hasEnharmonics = $hasEnharmonics ? $hasEnharmonics : $note == 'es' && nextLetter($note) == 'F' || $note == 'bs' && nextLetter($note) == 'C';
+			$hasEnharmonics = $hasEnharmonics ? 
+				$hasEnharmonics : 
+				$this->finder->notes[$key] == 'e+' && nextLetter($note) == 'F' || $this->finder->notes[$key] == 'b+' && nextLetter($note) == 'C';
 			
 			if ($this->isOctaveUp($note)) {
 				$note = str_replace('2', '', $note);
