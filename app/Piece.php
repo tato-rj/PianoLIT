@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use App\Traits\{PieceExtraAttributes, PieceStatus};
 
 class Piece extends PianoLit
@@ -95,6 +96,11 @@ class Piece extends PianoLit
     public function getPeriodAttribute()
     {
         return $this->tags()->where('type', 'period')->first();
+    }
+
+    public function mood()
+    {
+        return $this->tags()->where('type', 'mood')->get();
     }
 
     public function deleteFiles()
@@ -216,7 +222,24 @@ class Piece extends PianoLit
 
     public function siblings()
     {
-        return Piece::where(['composer_id' => $this->composer_id, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
-                    ->where('id', '!=', $this->id)->get();
+        return Piece::exceptThis()
+                    ->where(['composer_id' => $this->composer_id, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
+                    ->get();
+    }
+
+    public function similar()
+    {
+        $mood = $this->mood()->pluck('id');
+
+        $similar = Piece::exceptThis()->whereHas('tags', function(Builder $query) use ($mood) {
+            $query->whereIn('id', $mood);
+        })->get();
+
+        foreach ($similar as $key => $piece) {
+            if ($piece->level->id != $this->level->id || $piece->period->id != $this->period->id)
+                $similar->forget($key);
+        }
+
+        return $similar;
     }
 }

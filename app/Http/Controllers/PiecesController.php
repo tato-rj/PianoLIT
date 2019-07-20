@@ -143,6 +143,11 @@ class PiecesController extends Controller
         return $piece->siblings();
     }
 
+    public function similar(Piece $piece)
+    {
+        return $piece->similar();
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

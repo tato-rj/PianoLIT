@@ -115,4 +115,30 @@ class PieceTest extends AppTest
         $this->assertCount(1, $piece->siblings());
         $this->assertEquals($piece->siblings()->first()->id, $pieceFromSameCatalogue->id);
     }
+
+    /** @test */
+    public function it_finds_other_pieces_like_it()
+    {
+        $baroque = create(Tag::class, ['type' => 'period', 'name' => 'baroque']);
+        $modern = create(Tag::class, ['type' => 'period', 'name' => 'modern']);
+
+        $beginner = create(Tag::class, ['type' => 'level', 'name' => 'beginner']);
+        $advanced = create(Tag::class, ['type' => 'level', 'name' => 'advanced']);
+
+        $happy = create(Tag::class, ['type' => 'mood', 'name' => 'happy']);
+        $meditative = create(Tag::class, ['type' => 'mood', 'name' => 'meditative']);
+        $serious = create(Tag::class, ['type' => 'mood', 'name' => 'serious']);
+
+        $piece = create(Piece::class);
+        $piece->tags()->attach([$baroque->id, $beginner->id, $happy->id]);
+        $pieceSimilar = create(Piece::class);
+        $pieceSimilar->tags()->attach([$baroque->id, $beginner->id, $happy->id]);
+        $pieceNotSimilar = create(Piece::class);
+        $pieceNotSimilar->tags()->attach([$modern->id, $advanced->id, $meditative->id]);
+        $pieceAlsoNotSimilar = create(Piece::class);
+        $pieceAlsoNotSimilar->tags()->attach([$baroque->id, $advanced->id, $meditative->id]);
+
+        $this->assertCount(1, $piece->similar());
+        $this->assertEquals($piece->similar()->first()->id, $pieceSimilar->id);
+    }
 }
