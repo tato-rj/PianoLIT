@@ -2,8 +2,12 @@
 
 namespace App\Resources\ChordFinder;
 
+use App\Resources\ChordFinder\Traits\Factory;
+
 class Cleaner
 {
+	use Factory;
+	
 	protected $notes;
 
 	public function __construct($notes)
@@ -49,12 +53,26 @@ class Cleaner
 
 	public function fixSharps()
 	{
-		foreach ($this->notes as $index => $note) {
+		$copy = $this->notes;
+
+		foreach ($copy as $index => $note) {
 			if (strhas($note, 's'))
-				$this->notes[$index] = str_replace('s', '+', $note);
+				$copy[$index] = str_replace('s', '+', $note);
 		}
 
+		$this->notes = $copy;
+
 		return $this;		
+	}
+
+	public function withEnharmonics()
+	{
+		$array = [];
+		$copy = $this->notes;
+
+		foreach ($copy as $index => $note) {
+			
+		}
 	}
 
 	public function getNotes()
