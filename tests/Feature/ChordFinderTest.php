@@ -15,58 +15,53 @@ class ChordFinderTest extends AppTest
 	}
 
 	/** @test */
-	public function it_does_not_accept_less_than_three_notes()
+	public function it_does_not_accept_less_than_two_notes()
 	{
         $this->expectException('Symfony\Component\HttpKernel\Exception\HttpException');
 
-		$this->finder->take(['c', 'g'])->analyse();		 
+		$this->finder->take(['c'])->cleaner()->setMinimum(2);		 
 	}
+
+    /** @test */
+    public function it_capitalizes_all_letters()
+    {
+        $array = $this->finder->take(['c', 'g', 'e'])->cleaner()->capitalize()->getNotes();
+
+        $this->assertEquals($array, ['C', 'G', 'E']);
+    }
+
+    /** @test */
+    public function it_fixes_sharp_signs()
+    {
+        $array = $this->finder->take(['cs', 'gss', 'e'])->cleaner()->fixSharps()->getNotes();
+
+        $this->assertEquals($array, ['c+', 'g++', 'e']);
+    }
 
 	/** @test */
 	public function it_knows_how_to_discard_any_repeated_notes()
 	{
-        $chord = $this->finder->take(['c', 'c', 'g', 'e'])->analyse();
+        $arrayOne = $this->finder->take(['c', 'c', 'g', 'e'])->cleaner()->removeDuplicates()->getNotes();
+        $arrayTwo = $this->finder->take(['c', 'c2', 'g', 'e'])->cleaner()->removeDuplicates()->getNotes();
 
-        $this->assertEquals($chord['notes'], ['c', 'e', 'g']);
+        $this->assertEquals($arrayOne, ['c', 'g', 'e']);
+        $this->assertEquals($arrayTwo, ['c', 'g', 'e']);
 	}
 
     /** @test */
     public function it_can_sort_the_notes()
     {
-        $chord = $this->finder->take(['e', 'c+', 'g'])->analyse();
+        $array = $this->finder->take(['e', 'c+', 'g'])->cleaner()->sort()->getNotes();
 
-        $this->assertEquals($chord['notes'], ['c+', 'e', 'g']);
+        $this->assertEquals($array, ['c+', 'e', 'g']);
     }
 
     /** @test */
-    public function it_can_identify_any_interval()
+    public function it_separates_a_request_into_enharmonic_sets_if_needed()
     {
-        $intervals = [
-            ['name' => 'minor 2', 'notes' => ['a', 'b-']],
-            ['name' => 'major 2', 'notes' => ['b', 'c+']],
-            ['name' => 'minor 3', 'notes' => ['f', 'a-']],
-            ['name' => 'major 3', 'notes' => ['f-', 'a-']],
-            ['name' => 'diminished 4', 'notes' => ['g-', 'c--']],
-            ['name' => 'perfect 4', 'notes' => ['d+', 'g+']],
-            ['name' => 'augmented 4', 'notes' => ['e', 'a+']],
-            ['name' => 'diminished 5', 'notes' => ['f-', 'c--']],
-            ['name' => 'perfect 5', 'notes' => ['b', 'f+']],
-            ['name' => 'augmented 5', 'notes' => ['a', 'e+']],
-            ['name' => 'minor 6', 'notes' => ['c', 'a-']],
-            ['name' => 'major 6', 'notes' => ['g', 'e']],
-            ['name' => 'augmented 6', 'notes' => ['g', 'e+']],
-            ['name' => 'minor 7', 'notes' => ['f', 'e-']],
-            ['name' => 'major 7', 'notes' => ['c', 'b']],
-            ['name' => 'minor 9', 'notes' => ['c', 'd-2']],
-            ['name' => 'major 9', 'notes' => ['e', 'f+2']]
-        ];
-
-        foreach ($intervals as $interval) {
-            $this->assertEquals(
-                $this->finder->interval($interval['notes'][0], $interval['notes'][1])->analyse()['full'], 
-                $interval['name']
-            );            
-        }
+        $array = $this->finder->take(['e', 'f-', 'b+', 'c', 'g'])->cleaner()->getNotes();
+        
+        dd($array);
     }
 
     /** @test */
@@ -80,6 +75,7 @@ class ChordFinderTest extends AppTest
             'C# diminished' => ['e', 'c+', 'g'],
             'Ab augmented' => ['e', 'a-', 'c']
         ];
+        dd($this->finder->take(['e', 'c', 'g']))->analyse();
 
         foreach ($chords as $chord => $notes) {
             $this->assertEquals(

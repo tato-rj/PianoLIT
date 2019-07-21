@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Resources\ChordFinder;
+namespace App\Resources\ChordFinderOLD;
 
 class Organizer
 {
@@ -68,7 +68,9 @@ class Organizer
 	public function clean()
 	{
 		$hasSharps = $hasFlats = $hasEnharmonics = false;
-		$this->finder->notes = array_unique($this->finder->notes);
+		
+		$this->removeDuplicates();
+
 		foreach ($this->finder->notes as $key => $note) {
 			$this->finder->notes[$key] = str_replace('s', '+', $note);
 
@@ -104,6 +106,18 @@ class Organizer
 		$this->sort();
 
 		return $this;
+	}
+
+	public function removeDuplicates()
+	{
+		$this->finder->notes = array_unique($this->finder->notes);
+
+		foreach ($this->finder->notes as $key => $note) {
+			if (strhas($note, '2') && in_array($note[0], $this->finder->notes))
+				unset($this->finder->notes[$key]);
+		}
+
+		$this->finder->notes = array_values($this->finder->notes);
 	}
 
 	public function isOctaveUp($note)

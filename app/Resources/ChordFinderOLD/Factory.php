@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Resources\ChordFinder;
+namespace App\Resources\ChordFinderOLD;
 
 trait Factory
 {
