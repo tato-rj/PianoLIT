@@ -7,7 +7,7 @@ use App\Resources\ChordFinder\Traits\Factory;
 class Cleaner
 {
 	use Factory;
-	
+
 	protected $notes;
 
 	public function __construct($notes)
@@ -62,16 +62,17 @@ class Cleaner
 
 		$this->notes = $copy;
 
-		return $this;		
+		return $this;
 	}
 
 	public function withEnharmonics()
 	{
 		$array = [];
+		$hasSharps = $hasFlats = false;
 		$copy = $this->notes;
 
 		foreach ($copy as $index => $note) {
-			
+			if (in_array($note, $this->whiteEnharmonics) &&)
 		}
 	}
 
