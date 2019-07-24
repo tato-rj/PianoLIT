@@ -102,7 +102,8 @@ trait PieceExtraAttributes
         if ($this->collection_name)
             $collection .= $this->collection_name;
 
-        $collection .= $this->catalogue_name ? " {$this->catalogue}" : '';
+        if ($this->catalogue_name)
+            $collection .= " $this->catalogue_name $this->catalogue_number";
 
         return $collection;
     }

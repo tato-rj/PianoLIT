@@ -59,38 +59,49 @@ class ChordFinderTest extends AppTest
     /** @test */
     public function it_separates_a_request_into_enharmonic_sets_if_needed()
     {
-        $array = $this->finder->take(['e', 'f-', 'b+', 'c', 'g'])->cleaner()->getNotes();
-        
-        dd($array);
+        $inputOne = $this->finder->take(['e', 'f-', 'b+','c', 'g'])->cleaner()->splitEnharmonics()->getNotes();
+        $inputTwo = $this->finder->take(['e', 'f-', 'b+', 'c', 'g+', 'a-'])->cleaner()->splitEnharmonics()->getNotes();
+        $inputThree = $this->finder->take(['e', 'c', 'g+', 'a-', 'a+', 'b-'])->cleaner()->splitEnharmonics()->getNotes();
+
+        $this->assertCount(3, $inputOne);
+        $this->assertCount(4, $inputTwo);
+        $this->assertCount(2, $inputThree);
     }
 
     /** @test */
     public function it_knows_the_name_of_a_simple_triad()
     {
-        $chords = [
-            'C major' => ['e', 'c', 'g'],
-            'G major' => ['b', 'g', 'd'],
-            'F minor' => ['c', 'a-', 'f'],
-            'E diminished' => ['e', 'b-', 'g'],
-            'C# diminished' => ['e', 'c+', 'g'],
-            'Ab augmented' => ['e', 'a-', 'c']
-        ];
-        dd($this->finder->take(['e', 'c', 'g']))->analyse();
-
-        foreach ($chords as $chord => $notes) {
-            $this->assertEquals(
-                $this->finder->take($notes)->analyse()['chords'][0]['info']['full_name'], 
-                $chord
-            );            
-        }
+        $results = $this->finder->take(['e','f-','c','g','a+','b-'])->validate()->get();
+        dd($results);
     }
 
-    /** @test */
-    public function it_knows_how_to_order_the_dissonances_on_a_multi_note_chord()
-    {
-        $this->assertEquals(
-            $this->finder->take(['d', 'c', 'g', 'f'])->analyse()['chords'][2]['info']['full_name'], 
-            'G sus4 b7'
-        );
-    }
+    // /** @test */
+    // public function it_knows_the_name_of_a_simple_triad()
+    // {
+    //     $chords = [
+    //         'C major' => ['e', 'c', 'g'],
+    //         'G major' => ['b', 'g', 'd'],
+    //         'F minor' => ['c', 'a-', 'f'],
+    //         'E diminished' => ['e', 'b-', 'g'],
+    //         'C# diminished' => ['e', 'c+', 'g'],
+    //         'Ab augmented' => ['e', 'a-', 'c']
+    //     ];
+    //     dd($this->finder->take(['e', 'c', 'g']))->get();
+
+    //     foreach ($chords as $chord => $notes) {
+    //         $this->assertEquals(
+    //             $this->finder->take($notes)->get()['chords'][0]['info']['full_name'], 
+    //             $chord
+    //         );            
+    //     }
+    // }
+
+    // /** @test */
+    // public function it_knows_how_to_order_the_dissonances_on_a_multi_note_chord()
+    // {
+    //     $this->assertEquals(
+    //         $this->finder->take(['d', 'c', 'g', 'f'])->get()['chords'][2]['info']['full_name'], 
+    //         'G sus4 b7'
+    //     );
+    // }
 }

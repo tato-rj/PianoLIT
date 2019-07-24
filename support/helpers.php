@@ -10,15 +10,28 @@ function strhas($str, $needle)
 	return strpos($str, $needle) !== false;
 }
 
-function nextLetter($letter, $music = true)
+function array_has_array(array $haystack, array $needle) {
+	$result = false;
+
+	foreach ($haystack as $key => $array) {
+		if (is_array($array) && $array == $needle) {
+			$result = true;
+			break;
+		}
+	}
+
+  	return $result;
+}
+
+function next_letter($letter, $music = true)
 {
 	$nextLetter = strtolower($letter[0]);
 	$nextLetter++;
 
 	if ($music && $nextLetter == 'h')
-		$nextLetter = 'A';
+		$nextLetter = 'a';
 
-	return ucfirst($nextLetter);
+	return $nextLetter;
 }
 
 function storage($path)

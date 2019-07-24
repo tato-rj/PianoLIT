@@ -2,11 +2,9 @@
 
 namespace App\Resources\ChordFinder;
 
-use App\Resources\ChordFinder\Traits\Factory;
 
 class Cleaner
 {
-	use Factory;
 
 	protected $notes;
 
@@ -46,7 +44,19 @@ class Cleaner
 
 	public function sort()
 	{
-		sort($this->notes);
+		$copy = $this->notes;
+
+		if (is_array($copy[0])) {
+			foreach ($copy as $index => $array) {
+				unset($copy[$index]);
+				sort($array);
+				array_push($copy, $array);
+			}
+		} else {
+			sort($copy);
+		}
+
+		$this->notes = array_values($copy);
 
 		return $this;
 	}
@@ -65,15 +75,44 @@ class Cleaner
 		return $this;
 	}
 
-	public function withEnharmonics()
+	public function splitEnharmonics()
 	{
-		$array = [];
-		$hasSharps = $hasFlats = false;
 		$copy = $this->notes;
 
-		foreach ($copy as $index => $note) {
-			if (in_array($note, $this->whiteEnharmonics) &&)
+		foreach ($this->notes as $index => $note) {
+			if (array_key_exists($index+1, $copy)) {
+				if ((new Interval($note, $copy[$index+1]))->isEnharmonic()) {
+					unset($this->notes[$index]);
+					unset($copy[$index+1]);
+				}
+			}
 		}
+		
+		$this->notes = ($copy != $this->notes) ? [
+			array_values($this->notes), 
+			array_values($copy)
+		] : [$copy];
+
+		$this->splitWhiteEnharmonics();
+
+		return $this;
+	}
+
+	public function splitWhiteEnharmonics()
+	{
+		$copy = $this->notes;
+
+		foreach ($copy as $key => $array) {
+			foreach ($array as $index => $note) {
+				$enharmonic = (new Interval($note))->getWhiteEnharmonic();
+				if ($enharmonic != $note)
+					$array[$index] = $enharmonic;	
+			}
+
+			if ($copy[$key] != $array && ! array_has_array($this->notes, $array))
+				array_push($this->notes, $array);
+		}
+
 	}
 
 	public function getNotes()
