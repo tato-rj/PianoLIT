@@ -225,6 +225,7 @@ class Piece extends PianoLit
         return Piece::exceptThis()
                     ->where(['composer_id' => $this->composer_id, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
                     ->orderByRaw('LENGTH(collection_number)')
+                    ->orderByRaw('LENGTH(movement_number)')
                     ->get();
     }
 
