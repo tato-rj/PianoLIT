@@ -18,8 +18,13 @@ class ValidatorTest extends AppTest
     public function it_knows_how_to_remove_impossible_chords()
     {
         $raw = $this->finder->take(['e','f-','c','g','a+','b-'])->validate()->get();
-        $cleaned = (new Validator($raw))->removeImpossible();
+        $cleaned = (new Validator($raw))->removeImpossible()->get();
 
-        $this->assertNotEquals(count($raw), count($cleaned));    
+        $this->assertNotEquals(count($raw), count($cleaned));
+
+        $raw = $this->finder->take(['e','c','g'])->validate()->get();
+        $cleaned = (new Validator($raw))->removeImpossible()->get();
+
+        $this->assertEquals(count($raw), count($cleaned));
     }
 }

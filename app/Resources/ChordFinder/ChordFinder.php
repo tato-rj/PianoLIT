@@ -16,9 +16,14 @@ class ChordFinder
 		return new Inversion($chord);
 	}
 
-	public function analyser($chord)
+	public function validator()
 	{
-		return new Analyser($chord);
+		return new Validator($this->results);
+	}
+
+	public function label()
+	{
+		return new Label($this->results);
 	}
 
 	public function take($notes)
@@ -44,18 +49,11 @@ class ChordFinder
 	public function get()
 	{
 		$this->getInversions();
-		$this->getLabels();
+		$this->results = $this->label()->intervals();
+		$this->results = $this->validator()->removeImpossible()->get();
+		$this->results = $this->label()->chords();
 
 		return $this->results;
-	}
-
-	public function getLabels()
-	{
-		foreach ($this->results as $index => $chord) {
-			foreach ($chord['inversions'] as $key => $inversion) {
-				$this->results[$index]['inversions'][$key]['intervals'] = $this->analyser($inversion['chord'])->intervals();
-			}
-		}
 	}
 
 	public function getInversions()

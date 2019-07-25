@@ -1,5 +1,10 @@
 <?php
 
+function sup($str)
+{
+	return '<sup>'. $str .'</sup>';
+}
+
 function enharmonic()
 {
 	return new \App\Resources\CircleOfFifths\Enharmonics;

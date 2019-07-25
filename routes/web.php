@@ -19,19 +19,12 @@ Route::prefix('tools')->name('tools.')->group(function() {
 	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
 
 		Route::get('', function() {
-			$finder = new \App\Resources\ChordFinder\ChordFinder;
-			try {
-				$request = $finder->take(request()->notes)->analyse();
-			} catch (\Exception $e) {
-				$request = [];
-			}
-
-			return view('tools.chords.index', compact('request'));
+			return view('tools.chords.index');
 		})->name('index');
 		
 		Route::get('/analyse', function() {
 			$finder = new \App\Resources\ChordFinder\ChordFinder;
-			$request = $finder->take(request()->notes)->analyse();
+			$request = $finder->take(request()->notes)->validate()->get();
 
 			if (request()->has('dev'))
 				return $request;

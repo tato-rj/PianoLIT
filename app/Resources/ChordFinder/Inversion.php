@@ -22,14 +22,11 @@ class Inversion
 	public function all()
 	{
 		$inversions = [];
-
 		foreach ($this->chord as $index => $notes) {
 			$inversions[$index]['chord'] = $this->get();
 		}
-
 		$first = array_pop($inversions);
 		array_unshift($inversions, $first);
-
 		return array_values($inversions);
 	}
 }
