@@ -38,6 +38,7 @@ class Validator
 	public function filters($intervals)
 	{
 		return $this->inversionNotValid($intervals) || 
+			   $this->hasFalseSeventh($intervals) || 
 			   $this->isFalseDiminished($intervals) || 
 			   $this->isFalseAugmented($intervals) || 
 			   $this->missingThirdAndFifth($intervals);
@@ -75,6 +76,25 @@ class Validator
 			return false;
 
 		return ! $hasDimFifth && $hasDimSeventh;
+	}
+
+	public function hasFalseSeventh($intervals)
+	{
+		$hasDimFifth = false;
+		$hasDimSeventh = false;
+
+		foreach ($intervals as $interval) {
+			if ($interval['name'] == 'diminished 5')
+				$hasAugFifth = true;
+
+			if ($interval['name'] == 'diminished 7')
+				$hasDimSeventh = true;
+		}
+
+		if (! $hasDimSeventh)
+			return false;
+
+		return ! $hasDimFifth;
 	}
 
 	public function isFalseAugmented($intervals)
