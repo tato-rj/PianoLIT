@@ -26,7 +26,7 @@ class Cleaner
 		$copy = array_unique($this->notes);
 
 		foreach ($copy as $index => $note) {
-			if (strhas($note, '2') && in_array($note[0], $copy))
+			if (strhas($note, '2') && in_array(str_replace('2', '', $note), $copy))
 				unset($copy[$index]);
 		}
 
@@ -38,6 +38,13 @@ class Cleaner
 	public function capitalize()
 	{
 		$this->notes = array_map('ucfirst', $this->notes);
+
+		return $this;		
+	}
+
+	public function lowercase()
+	{
+		$this->notes = array_map('strtolower', $this->notes);
 
 		return $this;		
 	}
@@ -106,11 +113,12 @@ class Cleaner
 			foreach ($array as $index => $note) {
 				$enharmonic = (new Interval($note))->getWhiteEnharmonic();
 				if ($enharmonic != $note)
-					$array[$index] = $enharmonic;	
+					$array[$index] = $enharmonic;
 			}
 
-			if ($copy[$key] != $array && ! array_has_array($this->notes, $array))
-				array_push($this->notes, $array);
+			if ($copy[$key] != $array && ! array_has_array($this->notes, $array)) {
+				array_push($this->notes, array_unique($array));
+			}
 		}
 
 	}

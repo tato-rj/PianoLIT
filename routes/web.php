@@ -24,12 +24,13 @@ Route::prefix('tools')->name('tools.')->group(function() {
 		
 		Route::get('/analyse', function() {
 			$finder = new \App\Resources\ChordFinder\ChordFinder;
-			$request = $finder->take(request()->notes)->validate()->get();
+			$request = $finder->take(request()->notes)->validate()->analyse()->ranked()->get();
+			$json = $finder->take(request()->notes)->debug();
 
 			if (request()->has('dev'))
 				return $request;
 			
-			return view('tools.chords.results.index', compact('request'))->render();
+			return view('tools.chords.results.index', compact(['request', 'json']))->render();
 		})->name('analyse');
 
 	});

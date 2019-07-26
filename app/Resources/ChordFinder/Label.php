@@ -52,12 +52,16 @@ class Label
 
 	public function read($inversion)
 	{
-		return array_merge(
-			$this->root($inversion),
-			$this->core($inversion),
-			$this->seventh($inversion),
-			$this->sus($inversion),
-			$this->extensions($inversion)
-		);
+		$root = $this->root($inversion);
+		$type = $this->core($inversion);
+		$seventh = $this->seventh($inversion);
+		$sus = $this->sus($inversion);
+		$ext = $this->extensions($inversion);
+
+		$full = [
+			'full_shorthand' => $root['root'] . $type['type_shorthand'] . $seventh['seventh_shorthand'] . $sus['sus_shorthand'] . $ext['ext_shorthand']
+		];
+
+		return array_merge($root, $type, $seventh, $sus, $ext, $full);
 	}
 }

@@ -2,6 +2,9 @@
 
 @push('header')
 <style type="text/css">
+sup.extension {
+    margin-left: 4px;
+}
 /*START WORKERS*/
 .place_balk_workers {
 	width: 437px;
@@ -339,8 +342,12 @@ $(document).on('click', '.chords-results button', function() {
         $('.chords-results button').removeClass('btn-chord-selected');
         $(this).addClass('btn-chord-selected');
         let notes = JSON.parse($(this).attr('data-notes'));
+        let info = $(this).attr('href');
         let noteIndex = 0;
         let chord = [];
+
+        $('.chord-info').hide();
+        $(info).fadeIn('fast');
 
         notes.forEach(function(element, index) {
             let note = element.replace('+', '#').replace('-', 'b').replace('2', '');
@@ -460,38 +467,33 @@ function getNotes() {
 		notes.push(note);
 	});
 
+    let rootOctave = 0;
+
     $('.dot:visible').each(function() {
         let $key = $(this).parent();
-        let note = $key.attr('data-name').toUpperCase();
-        let ext = ''; 
-        octaves.push($key.attr('data-octave'));
+        let octave = parseInt($key.attr('data-octave'));
 
-        if (note[0] == 'B') {
-            if ($key.attr('data-octave') > octaves[0] + 1)
-                ext = 2;
-        } else {
-            if ($key.attr('data-octave') > octaves[0])
-                ext = 2;
-        }
+        if (rootOctave == 0)
+            rootOctave = octave;
 
-        note += ext;
+        let ext = octave == rootOctave ? '' : 2;
+        let note = $key.attr('data-name').toUpperCase() + ext;
 
-        if (note[0] == 'C')
-            notes.push('B+'+ext);
+        if (note == 'C')
+            notes.push('B+' + ext);
 
-        if (note[0] == 'F')
-            notes.push('E+'+ext);
+        if (note == 'F')
+            notes.push('E+' + ext);
 
         note = note.replace(/#|_/g, '+');
         notes.push(note);
         
         if (note.includes('+'))
-            notes.push(nextLetter(note[0]) + '-');
+            notes.push(nextLetter(note[0]) + '-' + ext);
 
     });
 
 	console.log(notes);
-    
     input = notes;
 
 	return notes;
@@ -536,7 +538,7 @@ function submit() {
 	console.log('Sending: '+input)
 	$.get('{{route('tools.chord-finder.analyse')}}', {notes: input}, function(response) {
 		$('#notes-container').html(response);
-        $('#subtitle').html($('#notes-container').find('#subtitle-results').contents());
+        // $('#subtitle').html($('#notes-container').find('#subtitle-results').contents());
 	}).fail(function(response) {
         alert(response.responseJSON.message);
 		console.log(response);

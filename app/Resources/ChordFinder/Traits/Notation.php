@@ -6,7 +6,11 @@ trait Notation
 {
 	public function root($notes)
 	{
-		return ['root' => $notes['chord'][0]];		
+		$root = $notes['chord'][0];
+		$root = str_replace('-', 'b', $root);
+		$root = str_replace('+', '#', $root);
+		$root = str_replace('2', '', $root);
+		return ['root' => ucfirst($root)];		
 	}
 
 	public function core($notes)
@@ -36,7 +40,7 @@ trait Notation
 
 		if ($third['type'] == 'major' && $fifth['type'] == 'augmented') {
 			$label['type'] = 'augmented';
-			$label['type_shorthand'] = '+';
+			$label['type_shorthand'] = 'aug';
 		}
 
 		return $label;
@@ -44,26 +48,31 @@ trait Notation
 
 	public function seventh($notes)
 	{
-		$label = [];
+		$label = ['seventh' => '', 'seventh_shorthand' => ''];
 		$third = $this->find($notes, 3);
 		$fifth = $this->find($notes, 5);
 		$seventh = $this->find($notes, 7);
 		
 		if (is_null($seventh))
-			return ['seventh' => '', 'seventh_shorthand' => ''];
+			return $label;
 
-		if ($third['type'] == 'major' && $fifth['type'] == 'perfect') {
-			$label['seventh'] = 'dominant 7';
-			$label['seventh_shorthand'] = sup('7');				
+		if (is_null($fifth) || $fifth['type'] == 'perfect') {
+			if ($seventh['type'] == 'major') {
+				$label['seventh'] = $third == 'major' ? 'dominant 7' : 'minor 7';
+				$label['seventh_shorthand'] = '+7';
+			} else if ($seventh['type'] == 'minor') {
+				$label['seventh'] = 'minor 7';
+				$label['seventh_shorthand'] = '7';
+			}
 		} else if ($seventh['type'] == 'diminished') {
 			$label['seventh'] = $seventh['name'];
-			$label['seventh_shorthand'] = sup('7');
+			$label['seventh_shorthand'] = '7';
 		} else if ($fifth['type'] == 'diminished' && $seventh['type'] == 'minor') {
 			$label['seventh'] = $seventh['name'];
-			$label['seventh_shorthand'] = '';
+			$label['seventh_shorthand'] = '7';
 		} else {
 			$label['seventh'] = $seventh['name'];
-			$label['seventh_shorthand'] = sup($seventh['shorthand'] . '7');
+			$label['seventh_shorthand'] = $seventh['shorthand'] . '7';
 		}
 
 		return $label;

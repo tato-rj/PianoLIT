@@ -87,9 +87,9 @@ class Interval
 	public function isEnharmonic()
 	{
 		try {
-			$double =  strhas($this->first, '+') && next_letter($this->first) == $this->second[0];
+			$double =  strhas($this->first, '+') && strhas($this->second, '-') && next_letter($this->first) == $this->second[0];
 			$single = $this->first == 'b' && $this->second == 'c-' || $this->first == 'e' && $this->second == 'f-';	
-			
+
 			return $double || $single;	
 		} catch (\Exception $e) {
 			return false;

@@ -26,6 +26,11 @@ class ChordFinder
 		return new Label($this->results);
 	}
 
+	public function ranking()
+	{
+		return new Ranking($this->results);
+	}
+
 	public function take($notes)
 	{
 		$this->notes = $notes;
@@ -33,10 +38,25 @@ class ChordFinder
 		return $this;
 	}
 
+	public function debug()
+	{
+		$query = '?';
+
+		foreach ($this->notes as $note) {
+			$note = str_replace('+', 's', $note);
+			$query .= 'notes[]=' . $note . '&';	
+		}
+
+		$query .= 'dev';
+
+		return route('tools.chord-finder.analyse') . $query;
+	}
+
 	public function validate()
-	{		
+	{
 		$this->notes = $this->cleaner()
 							->setMinimum(2)
+							->lowercase()
 							->removeDuplicates()
 							->fixSharps()
 							->splitEnharmonics()
@@ -46,13 +66,26 @@ class ChordFinder
 		return $this;
 	}
 
-	public function get()
+	public function analyse()
 	{
 		$this->getInversions();
 		$this->results = $this->label()->intervals();
 		$this->results = $this->validator()->removeImpossible()->get();
 		$this->results = $this->label()->chords();
+		$this->results = array_values($this->results);
 
+		return $this;
+	}
+
+	public function ranked()
+	{
+		$this->results = $this->ranking()->apply();
+
+		return $this;
+	}
+
+	public function get()
+	{
 		return $this->results;
 	}
 

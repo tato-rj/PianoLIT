@@ -1,8 +1,17 @@
 <?php
 
+function chordToHumans($str)
+{
+	$chord = str_replace('2', '', $str);
+	$chord = str_replace('+', '#', $chord);
+	$chord = str_replace('-', 'b', $chord);
+
+	return ucfirst(strip_tags($chord));
+}
+
 function sup($str)
 {
-	return '<sup>'. $str .'</sup>';
+	return '<sup class="extension">'. $str .'</sup>';
 }
 
 function enharmonic()

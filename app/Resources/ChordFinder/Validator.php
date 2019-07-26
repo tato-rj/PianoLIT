@@ -43,6 +43,11 @@ class Validator
 			   $this->missingThirdAndFifth($intervals);
 	}
 
+	public function inversionNotValid($intervals)
+	{
+		return in_array(null, $intervals);
+	}
+
 	public function isFalseDiminished($intervals)
 	{
 		$hasMajThird = false;
@@ -60,6 +65,9 @@ class Validator
 				$hasDimSeventh = true;
 		}
 
+		if (! $hasDimFifth)
+			return false;
+
 		if ($hasMajThird)
 			return true;
 
@@ -71,11 +79,15 @@ class Validator
 
 	public function isFalseAugmented($intervals)
 	{
+		$hasMinThird = false;
 		$hasAugFifth = false;
 		$hasMinSeventh = false;
 		$hasDimSeventh = false;
 
 		foreach ($intervals as $interval) {
+			if ($interval['name'] == 'minor 3')
+				$hasMinThird = true;
+
 			if ($interval['name'] == 'augmented 5')
 				$hasAugFifth = true;
 
@@ -88,13 +100,11 @@ class Validator
 
 		if (! $hasAugFifth)
 			return false;
+		
+		if ($hasMinThird)
+			return true;
 
 		return $hasMinSeventh || $hasDimSeventh;
-	}
-
-	public function inversionNotValid($intervals)
-	{
-		return in_array(null, $intervals);
 	}
 
 	public function missingThirdAndFifth($intervals)

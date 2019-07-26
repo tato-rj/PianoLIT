@@ -25,9 +25,4 @@ class Analyser
 
 		return $intervals;
 	}
-
-	public function name()
-	{
-		return 'Stella';
-	}
 }
