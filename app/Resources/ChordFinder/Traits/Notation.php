@@ -19,7 +19,7 @@ trait Notation
 		$third = $this->find($notes, 3);
 		$fifth = $this->find($notes, 5);
 		$seventh = $this->find($notes, 7);
-		
+
 		if ($fifth['type'] == 'perfect' || is_null($fifth)) {
 			$label['type'] = $third['type'];
 			$label['type_shorthand'] = $third['type'] == 'minor' ? 'm' : '';
@@ -38,11 +38,11 @@ trait Notation
 			}
 		}
 
-		if ($third['type'] == 'major' && $fifth['type'] == 'augmented') {
+		if ((is_null($third) || $third['type'] == 'major') && $fifth['type'] == 'augmented') {
 			$label['type'] = 'augmented';
 			$label['type_shorthand'] = 'aug';
 		}
-
+		
 		return $label;
 	}
 
