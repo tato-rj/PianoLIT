@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Piece, Composer, Tag};
+use App\{Piece, Composer, Tag, Api};
 use Illuminate\Http\Request;
 
 class PiecesController extends Controller
@@ -145,7 +145,13 @@ class PiecesController extends Controller
 
     public function similar(Piece $piece)
     {
-        return $piece->similar();
+        $pieces = $piece->similar();
+        
+        $pieces->each(function($result) {
+            (new Api)->setCustomAttributes($result, request('user_id'));
+        });
+
+        return $pieces;
     }
 
     /**
