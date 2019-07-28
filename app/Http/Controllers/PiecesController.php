@@ -140,7 +140,13 @@ class PiecesController extends Controller
      */
     public function collection(Piece $piece)
     {
-        return $piece->siblings();
+        $pieces = $piece->siblings();
+        
+        $pieces->each(function($result) {
+            (new Api)->setCustomAttributes($result, request('user_id'));
+        });
+
+        return $pieces;
     }
 
     public function similar(Piece $piece)
