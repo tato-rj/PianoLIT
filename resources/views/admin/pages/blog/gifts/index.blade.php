@@ -34,8 +34,8 @@
 <div class="content-wrapper">
   <div class="container-fluid">
   @include('admin.components.breadcrumb', [
-    'title' => 'Gifts',
-    'description' => 'Manage the gifts used in blog posts and emails'])
+    'title' => 'Images',
+    'description' => 'Manage the images used in blog posts and emails'])
     
     <div class="row mb-3">
       <div class="col-12">
@@ -46,7 +46,7 @@
     
     <div class="row my-3">
       <div class="col-12">
-        <p>We have {{count($gifts)}} {{str_plural('gift', count($gifts))}}</p>
+        <p>We have {{count($gifts)}} {{str_plural('image', count($gifts))}}</p>
       </div>
       <div class="col-12">
         <div class="row">
