@@ -45,7 +45,7 @@ tinymce.init({
             text: 'Excerpt',
             context: 'extra',
             onAction: function () {
-                editor.insertContent('<p class="mx-5">Excerpt here</p>');
+                editor.insertContent('<p class="mce-excerpt">Excerpt here</p>');
             }
         });
     },
