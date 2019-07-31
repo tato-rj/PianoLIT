@@ -8,7 +8,7 @@ tinymce.init({
     menubar: "edit view insert format tools extra",
 
     menu: {
-        extra: { title: "Extra", items: "subscribe dotseparator quote" }
+        extra: { title: "Extra", items: "subscribe dotseparator quote excerpt" }
     },
 
     setup: function(editor) {
@@ -38,6 +38,14 @@ tinymce.init({
             context: 'extra',
             onAction: function () {
                 editor.insertContent('<div class="mce-large-quote"><p class="mce-quote-text">Quote</p><p class="mce-quote-author">Author</p></div>');
+            }
+        });
+
+        editor.ui.registry.addMenuItem('excerpt', {
+            text: 'Excerpt',
+            context: 'extra',
+            onAction: function () {
+                editor.insertContent('<p class="mx-5">Excerpt here</p>');
             }
         });
     },
