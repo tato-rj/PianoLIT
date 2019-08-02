@@ -18,7 +18,9 @@
 </div>
 @endif
 <div class="mb-4">
+@if($request['has_relevant'])
 <label class="m-0">Other options are probably just inversions of the above.<label>
+@endif
 @if($request['has_irrelevant'])
 
 	@if($request['has_relevant'])
