@@ -16,7 +16,7 @@
 </div>
 <div class="row">
 	<div class="col-12">
-		<div id="info-alert" class="rounded alert-grey px-5 py-4 d-flex flex-center mb-4">
+		<div id="info-alert" class="rounded text-grey bg-light px-5 py-4 d-flex flex-center mb-4">
 			<h4 class="my-4 text-center">Select a chord above to learn more about it!</h4>
 		</div>
 		<div id="info-container">
