@@ -123,11 +123,11 @@ class Validator
 		if (! $hasDimFifth)
 			return false;
 
-		if (! $hasDimSeventh)
-			return false;
-
 		if ($hasMajThird)
 			return true;
+		
+		if (! $hasDimSeventh)
+			return false;
 
 		return ! $hasDimFifth && $hasDimSeventh;
 	}
