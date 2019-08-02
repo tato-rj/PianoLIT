@@ -24,6 +24,8 @@ class Ranking
 						$ranking+=1;
 				}
 
+				$ranking += strlen($inversion['label']['ext']);
+
 				if ($ranking <= 3)
 					$hasRelevant = true;
 
@@ -44,6 +46,7 @@ class Ranking
 	public function reformat()
 	{
 		$results = [];
+		$best_score = 10;
 		$hasRelevant = $hasIrrelevant = false;
 
 		foreach ($this->chords as $chord) {
@@ -52,11 +55,17 @@ class Ranking
 
 			if ($chord['has_irrelevant'])
 				$hasIrrelevant = true;
+
+			foreach ($chord['inversions'] as $inversion) {
+				if ($inversion['ranking'] < $best_score)
+					$best_score = $inversion['ranking'];
+			}
 		}
 	
 		$results['chords'] = $this->chords;
 		$results['has_relevant'] = $hasRelevant;
 		$results['has_irrelevant'] = $hasIrrelevant;
+		$results['most_relevant'] = $best_score;
 
 		return $results;
 	}

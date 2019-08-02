@@ -88,7 +88,8 @@ class Interval
 	{
 		try {
 			$double =  strhas($this->first, '+') && strhas($this->second, '-') && next_letter($this->first) == $this->second[0];
-			$single = $this->first == 'b' && $this->second == 'c-' || $this->first == 'e' && $this->second == 'f-';	
+			$single = $this->first == 'b' && $this->second == 'c-' || $this->first == 'e' && $this->second == 'f-' ||
+						$this->first == 'e+' && $this->second == 'f' || $this->first == 'b+' && $this->second == 'c';	
 
 			return $double || $single;	
 		} catch (\Exception $e) {

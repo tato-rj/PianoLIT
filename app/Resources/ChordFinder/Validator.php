@@ -35,11 +35,47 @@ class Validator
 		return $this;
 	}
 
+	public function addNinth()
+	{
+		$copy = $this->array;
+		$newInversion = [];
+
+		foreach ($copy as $index => $notes) {
+			foreach ($notes['inversions'] as $key => $inversion) {
+				foreach ($inversion['intervals'] as $item => $interval) {
+					if ($interval['interval'] == 2) {
+						$newInversion = $copy[$index]['inversions'][$key];
+						$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
+						$newStep = $newInversion['intervals'][$item]['steps'] + 12;
+
+						$newInversion['intervals'][$item]['name'] = str_replace(
+							$newInversion['intervals'][$item]['interval'], $newInterval, 
+							$newInversion['intervals'][$item]['name']
+						);
+						$newInversion['intervals'][$item]['interval'] = $newInterval;
+						$newInversion['intervals'][$item]['steps'] = $newStep;
+					}
+				}
+			}
+			
+			if (!empty($newInversion)) {
+				array_push($copy[$index]['inversions'], $newInversion);
+				$newInversion = [];
+			}
+
+		}
+
+		$this->array = $copy;
+
+		return $this;
+	}
+
 	public function filters($intervals)
 	{
 		return $this->inversionNotValid($intervals) || 
 			   $this->hasFalseSeventh($intervals) || 
 			   $this->isFalseDiminished($intervals) || 
+			   $this->hasFalseSixth($intervals) || 
 			   $this->isFalseAugmented($intervals) || 
 			   $this->missingThirdAndFifth($intervals);
 	}
@@ -47,6 +83,24 @@ class Validator
 	public function inversionNotValid($intervals)
 	{
 		return in_array(null, $intervals);
+	}
+
+	public function hasFalseSixth($intervals)
+	{
+		$hasMinThird = $hasDimFifth = $hasMajorSixth = false;
+
+		foreach ($intervals as $interval) {
+			if ($interval['name'] == 'minor 3')
+				$hasMinThird = true;
+			
+			if ($interval['name'] == 'diminished 5')
+				$hasDimFifth = true;
+
+			if ($interval['name'] == 'major 6')
+				$hasMajorSixth = true;
+		}
+
+		return $hasMinThird && $hasDimFifth && $hasMajorSixth;
 	}
 
 	public function isFalseDiminished($intervals)
@@ -69,11 +123,11 @@ class Validator
 		if (! $hasDimFifth)
 			return false;
 
-		if ($hasMajThird)
-			return true;
-
 		if (! $hasDimSeventh)
 			return false;
+
+		if ($hasMajThird)
+			return true;
 
 		return ! $hasDimFifth && $hasDimSeventh;
 	}
@@ -85,7 +139,7 @@ class Validator
 
 		foreach ($intervals as $interval) {
 			if ($interval['name'] == 'diminished 5')
-				$hasAugFifth = true;
+				$hasDimFifth = true;
 
 			if ($interval['name'] == 'diminished 7')
 				$hasDimSeventh = true;

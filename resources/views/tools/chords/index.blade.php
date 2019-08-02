@@ -2,6 +2,7 @@
 
 @push('header')
 <style type="text/css">
+
 sup.extension {
     margin-left: 4px;
 }
@@ -303,10 +304,11 @@ button.control:disabled {
 @endpush
 
 @section('content')
-<div class="mb-4 text-center">
+<div class="mb-4 text-center position-relative">
+    @include('components.overlays.loading')
 	<h3>Chord Finder</h3>
     <div id="subtitle" class="text-grey">
-        <div class="">Just tell us the notes and we'll show you all the possible chords you can make with them</div>
+        <div class="">Just tell us the notes and we'll show the most likely chords you can make with them</div>
     </div>
 </div>
 @if(app()->isLocal() || request()->has('dev'))
@@ -347,6 +349,7 @@ $(document).on('click', '.chords-results button', function() {
         let chord = [];
 
         $('.chord-info').hide();
+        $('#info-alert').remove();
         $(info).fadeIn('fast');
 
         notes.forEach(function(element, index) {
@@ -379,14 +382,100 @@ function resetLabel() {
 
 </script>
 <script type="text/javascript">
-var input = [];
+var input = exclude = include = [];
+
+$(document).on('click', '#options-container button', function() {
+    let $button = $(this);
+
+    resetOptions($button);
+
+    $button.removeClass('btn-outline-secondary').addClass('btn-green');
+
+    $('#options-container button').each(function() {
+        let $sibling = $(this).siblings('button').first();
+        if ($(this).hasClass('btn-green')) {
+            exclude.push($sibling.attr('data-name'));
+            include.push($(this).attr('data-name'));
+        }
+    });
+
+    input.forEach(function(item, key) {
+        if (exclude.includes(item))
+            input.splice(key, 1);
+    });
+
+    include.forEach(function(item, key) {
+        if (! input.includes(item))
+            input.push(item);
+    });
+    
+    console.log(input);
+});
+
+$(document).on('click', '#reset-options', function() {
+    resetOptions();
+    console.log(input);
+});
+
+function showOptions(notes) {
+    $('#options-buttons').html('');
+    let singleNotes = ['D', 'G', 'A'];
+
+    for (var i=0; i<notes.length-1; i++) {
+        let first = notes[i];
+        let second = notes[i+1];
+
+        if (! singleNotes.includes(notes[i]) && $('button[data-name="'+first+'"]').length == 0) {
+            if (first && second) {
+                let firstToHumans = first.replace('+', '#');
+                    firstToHumans = firstToHumans.replace('-', 'b');
+                let secondToHumans = second.replace('+', '#');
+                    secondToHumans = secondToHumans.replace('-', 'b');
+
+                let html = `<div class="btn-group m-2">
+                                <button class="btn btn-outline-secondary font-weight-bold" data-name="`+first+`" type="button">`+firstToHumans+`</button>
+                                <button class="btn btn-outline-secondary font-weight-bold" data-name="`+second+`" type="button">`+secondToHumans+`</button>
+                            </div>`;
+
+                $('#options-buttons').append(html);
+            }
+        }
+    }
+
+    if ($('#options-buttons > div').length > 0) {
+        $('#options-container').show();
+    } else {
+        $('#options-container').hide();
+    }
+}
+
+function resetOptions(element = null) {
+    include = [];
+    exclude = [];
+
+    if (element) {
+        element.siblings('button').first().removeClass('btn-green').addClass('btn-outline-secondary');
+    } else {
+        $('#options-container button').removeClass('btn-green').addClass('btn-outline-secondary');
+    }
+
+    if ($('#reset-options').attr('data-original'))
+        input = JSON.parse($('#reset-options').attr('data-original'));
+}
+
+function removeOptions() {
+    resetOptions();
+    showOptions([]);
+}
 
 $('.keyboard-input .keyboard-white-key, .keyboard-input .keyboard-white-key').on('click', function(e) {
     let $key = $(e.target);
     reset('.note');
     $key.find(' > .dot').toggle();
 
-    getNotes();
+    notes = getNotes();
+
+    showOptions(notes);
 });
 
 $('.dot').on('click', function() {
@@ -401,6 +490,7 @@ $('.note h1').on('click', function() {
 	$note.find('button').toggleAttr('disabled');
 
     reset('.dot');
+    removeOptions();
     playNote($note);
     getNotes();
 });
@@ -458,7 +548,6 @@ function playNote($note) {
 function getNotes() {
     let $firstKey = $('.dot:visible').first();
 	let notes = [];
-    let octaves = [];
 
 	$('.note-active').each(function() {
 		let note = $(this).find('h1').text();
@@ -467,34 +556,34 @@ function getNotes() {
 		notes.push(note);
 	});
 
-    let rootOctave = 0;
-
     $('.dot:visible').each(function() {
         let $key = $(this).parent();
-        let octave = parseInt($key.attr('data-octave'));
-
-        if (rootOctave == 0)
-            rootOctave = octave;
-
-        let ext = octave == rootOctave ? '' : 2;
-        let note = $key.attr('data-name').toUpperCase() + ext;
-
-        if (note == 'C')
-            notes.push('B+' + ext);
-
-        if (note == 'F')
-            notes.push('E+' + ext);
+        let note = $key.attr('data-name').toUpperCase();
 
         note = note.replace(/#|_/g, '+');
+
+        if (note == 'C')
+            notes.push('B+');
+
+        if (note == 'F')
+            notes.push('E+');
+        
         notes.push(note);
+
+        if (note == 'B')
+            notes.push('C-');
+
+        if (note == 'E')
+            notes.push('F-');
         
         if (note.includes('+'))
-            notes.push(nextLetter(note[0]) + '-' + ext);
+            notes.push(nextLetter(note[0]) + '-');
 
     });
 
 	console.log(notes);
     input = notes;
+    $('#reset-options').attr('data-original', JSON.stringify(notes));
 
 	return notes;
 }
@@ -505,7 +594,7 @@ $('button#submit-notes').on('click', function() {
 		alert('Please select at least 3 notes');
 	} else {
 		$(this).prop('disabled', true);
-		$(this).text('We\'re working on it...');
+		$(this).text('Hang on a sec...');
 
 		animate();
         setTimeout(function() {
@@ -525,13 +614,7 @@ function nextLetter(letter) {
 }
 
 function animate() {
-	let $elements = $('.dot:visible').length > 0 ? $('.dot:visible') : $('.note-active');
     $('.input-overlay').show();
-
-	for (var i = 0; i<$elements.length; i++) {
-		let $note = $($elements[i]);
-		$note.addClass('loading').css('animation-duration', ((Math.random() * (0.5 -2) +2).toFixed(2)) + 's');
-	}
 }
 
 function submit() {

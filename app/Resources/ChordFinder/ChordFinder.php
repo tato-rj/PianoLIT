@@ -71,6 +71,7 @@ class ChordFinder
 		$this->getInversions();
 		$this->results = $this->label()->intervals();
 		$this->results = $this->validator()->removeImpossible()->get();
+		$this->results = $this->validator()->addNinth()->get();
 		$this->results = $this->label()->chords();
 		$this->results = array_values($this->results);
 

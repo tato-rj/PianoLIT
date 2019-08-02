@@ -118,6 +118,13 @@
     <script src="{{ mix('js/app.js') }}"></script>
 
     <script type="text/javascript">
+
+    $(document).ready(function() {
+        $('#load-screen').fadeOut(function() {
+            $(this).remove();
+        });
+    });
+
     $('#tags-search .tag').on('click', function() {
       $tag = $(this);
 

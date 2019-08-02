@@ -21,27 +21,6 @@ class Cleaner
 		return $this;
 	}
 
-	public function removeDuplicates()
-	{
-		$copy = array_unique($this->notes);
-
-		foreach ($copy as $index => $note) {
-			if (strhas($note, '2') && in_array(str_replace('2', '', $note), $copy))
-				unset($copy[$index]);
-		}
-
-		$this->notes = array_values($copy);
-
-		return $this;
-	}
-
-	public function capitalize()
-	{
-		$this->notes = array_map('ucfirst', $this->notes);
-
-		return $this;		
-	}
-
 	public function lowercase()
 	{
 		$this->notes = array_map('strtolower', $this->notes);
@@ -49,19 +28,9 @@ class Cleaner
 		return $this;		
 	}
 
-	public function sort()
+	public function removeDuplicates()
 	{
-		$copy = $this->notes;
-
-		if (is_array($copy[0])) {
-			foreach ($copy as $index => $array) {
-				unset($copy[$index]);
-				sort($array);
-				array_push($copy, $array);
-			}
-		} else {
-			sort($copy);
-		}
+		$copy = array_unique($this->notes);
 
 		$this->notes = array_values($copy);
 
@@ -94,13 +63,41 @@ class Cleaner
 				}
 			}
 		}
-		
+
 		$this->notes = ($copy != $this->notes) ? [
 			array_values($this->notes), 
 			array_values($copy)
 		] : [$copy];
 
 		$this->splitWhiteEnharmonics();
+
+		$this->removeDuplicateLetters();
+
+		return $this;
+	}
+
+	public function capitalize()
+	{
+		$this->notes = array_map('ucfirst', $this->notes);
+
+		return $this;		
+	}
+
+	public function sort()
+	{
+		$copy = $this->notes;
+
+		if (is_array($copy[0])) {
+			foreach ($copy as $index => $array) {
+				unset($copy[$index]);
+				sort($array);
+				array_push($copy, $array);
+			}
+		} else {
+			sort($copy);
+		}
+
+		$this->notes = array_values($copy);
 
 		return $this;
 	}
@@ -120,7 +117,22 @@ class Cleaner
 				array_push($this->notes, array_unique($array));
 			}
 		}
+	}
 
+	public function removeDuplicateLetters()
+	{
+		$copy = $this->notes;
+
+		foreach ($copy as $key => $array) {
+			foreach ($array as $index => $note) {
+				if (strlen($note) == 1) {
+					if (in_array($note . '+', $array) || in_array($note . '-', $array))
+						unset($copy[$key]);
+				}
+			}
+		}
+		
+		$this->notes = array_values($copy);
 	}
 
 	public function getNotes()
