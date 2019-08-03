@@ -36,26 +36,11 @@
 						</div>
 
 				  		<div class="px-4">
-				  			<span class="badge alert-red m-0">STEP 1: INTERVALS</span>
-				  			<div class="p-2 text-muted">
-					  			<p>In order to figure out the name of the chord, we consider only the <u>intervals between the root (the first note) and each of the other notes</u>. Here, the root {{chordToHumans($inversion['chord'][0])}} forms a {{$inversion['intervals'][0]['name']}} with the second note {{chordToHumans($inversion['chord'][1])}}, and so on.</p>
-							</div>
-				  			<span class="badge alert-red m-0">STEP 2: 3rd AND 5th</span>
-				  			<div class="p-2 text-muted">
-					  			<p>Once each interval has been named, we first need to determine if the chord is major, minor, diminished or augmented. To do that, all we need is the <strong>3rd</strong> and the <strong>5th</strong>. Learn more about this <a href="#" target="_blank">here</a>.</p>
-							</div>
-				  			<span class="badge alert-red m-0">STEP 3: ADD OR SUS</span>
-				  			<div class="p-2 text-muted">
-				  				<p>Once we figure out what type of chord this is based on the 3rd and the 5th, we can look for other intervals. If there is a 2nd and/or a 4th, we'll indicate that by saying this is an <strong>add</strong> or <strong>sus</strong> chord. Learn more about this <a href="#" target="_blank">here</a>.</p>
-							</div>
-				  			<span class="badge alert-red m-0">STEP 4: THE 7th</span>
-				  			<div class="p-2 text-muted">
-				  				<p>Next, we'll check if there is a <strong>7th</strong>. If yes, we will add the 7th to the chord according to the corresponding interval. Learn more about this <a href="#" target="_blank">here</a>.</p>
-							</div>
-				  			<span class="badge alert-red m-0">STEP 5: OTHER INTERVALS</span>
-				  			<div class="p-2 text-muted">
-				  				<p>Finally, let's look for any other intervals, such as a <strong>6th</strong>, a <strong>9th</strong>, an <strong>11th</strong>, etc. For each one, we'll add that note the chord according to the corresponding interval. Learn more about this <a href="#" target="_blank">here</a>.</p>
-				  			</div>
+							@include('tools.chords.results.labels.root')
+							@include('tools.chords.results.labels.type')
+							@include('tools.chords.results.labels.sus')
+							@include('tools.chords.results.labels.seventh')
+							@include('tools.chords.results.labels.others')
 				  		</div>
 				  	</div>
 				  </div>

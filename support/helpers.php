@@ -1,5 +1,15 @@
 <?php
 
+function iterationToHumans($key)
+{
+	$words = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth', 'eleventh', 'twelveth'];
+
+	if (array_key_exists($key, $words))
+		return $words[$key];
+
+	return null;
+}
+
 function chordToHumans($str)
 {
 	$chord = str_replace('2', '', $str);

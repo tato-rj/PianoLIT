@@ -23,10 +23,8 @@
 @endif
 @if($request['has_irrelevant'])
 
-	@if($request['has_relevant'])
-	<label class="">If we give them their own names, while less likely, the chord may also be...</label>
-	@else
-	<label class="">The chord isn't quite complete, but it may be...</label>
+	@if(! $request['has_relevant'])
+	<label class="">This chord can be different things, here are some options...</label>
 	@endif
 
 	<div class="chords-results d-flex flex-wrap">
