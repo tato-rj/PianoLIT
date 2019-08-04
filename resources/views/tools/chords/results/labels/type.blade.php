@@ -6,17 +6,18 @@
 		$fifth = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 5);
 
 		if ($third) {
-			$thirdType = 'has a <strong>' . $third['name'] . '</strong>';
+			$type = 'has a <strong>' . $third['name'] . '</strong>';
 		} elseif ($fifth['type'] == 'diminished') {
-			$thirdType = '<strong>is missing the 3rd</strong>, but it has a diminished 5th, so we treat it as having a minor 3rd';
+			$type = '<strong>is missing the 3rd</strong>, but it has a <strong>diminished 5th</strong>, so we treat it as having a minor 3rd';
 		} else {
-			$thirdType = '<strong>is missing the 3rd</strong>, so we treat it as having a major 3rd';
+			$type = '<strong>is missing the 3rd</strong>, so we treat it as having a major 3rd';
+		}
+
+		if (! $fifth) {
+			$type .= ' and it <strong>is missing the 5th</strong>, so we assume it is a perfect 5th';
+		} elseif ($fifth['type'] != 'diminished') {
+			$type .= ' and it <strong>is missing the 5th</strong>, so we assume it is a perfect 5th';
 		}
 	@endphp
-	<p>In this case, the chord 
-		{!! $thirdType !!} 
-		and it 
-		{!! $fifth ? 'has a <strong>' . $fifth['name'] . '</strong>' : '<strong>is missing the 5th</strong>, so we assume it is a perfect 5th' !!}. 
-		That is why we consider it <strong>{{$inversion['label']['type'] ?? 'major'}}</strong>.
-	</p>
+	<p>In this case, the chord {!! $type !!}. That is why we consider it <strong>{{$inversion['label']['type'] ?? 'major'}}</strong>.</p>
 </div>
