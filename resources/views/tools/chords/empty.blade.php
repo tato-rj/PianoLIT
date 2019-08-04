@@ -27,7 +27,7 @@
 		<div class="input-overlay"></div>
 		<div class="col-12">
 			<div class="rounded bg-light px-5 py-4 text-center">
-				<p class="text-muted m-0">You can help us narrow down your results by specifying which notes you mean from these enharmonics.<br>If relevant, just select from each group below.</p>
+				<p class="text-muted m-0">Some notes on the piano can have more than one name (we call these <u>enharmonics</u>). You can help us narrow down your results by specifying which notes you mean from these enharmonics.<br>If this is relevant, just select from each group below.</p>
 				<div id="options-buttons"></div>
 				<p class="text-muted m-0">Is this confusing or irrelevant? That's ok! Just continue and we'll do our best:)</p>
 				<p class="text-muted m-0">If you made any unwanted changes, <span id="reset-options" data-original="" class="cursor-pointer text-blue">click here</span> to undo them.</p>
