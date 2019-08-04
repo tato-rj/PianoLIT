@@ -8,7 +8,7 @@
 		if ($third) {
 			$thirdType = 'has a <strong>' . $third['name'] . '</strong>';
 		} elseif ($fifth['type'] == 'diminished') {
-			$thirdType = '<strong>is missing the 3rd</strong>, but it has a diminished 5th, so we treat it as having a minor 3rd'
+			$thirdType = '<strong>is missing the 3rd</strong>, but it has a diminished 5th, so we treat it as having a minor 3rd';
 		} else {
 			$thirdType = '<strong>is missing the 3rd</strong>, so we treat it as having a major 3rd';
 		}
