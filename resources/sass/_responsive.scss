@@ -2,7 +2,20 @@
 	.hide-on-sm {
 		display: none !important;
 	}
-	
+
+	.chord-info > div {
+		flex-direction: column;
+
+		> div:first-of-type {
+		    padding: 0 1.5rem;
+		    text-align: center;
+		}
+	}
+
+	.note button {
+	    font-size: 1.2em;
+	}
+
 	button#gift {
 		bottom: 60px !important;
 	}
