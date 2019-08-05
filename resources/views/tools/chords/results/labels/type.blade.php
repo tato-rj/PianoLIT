@@ -14,10 +14,10 @@
 		}
 
 		if (! $fifth) {
-			$type .= ' and it <strong>is missing the 5th</strong>, so we assume it is a perfect 5th';
+			$type .= ' but it <strong>is missing the 5th</strong>, so we assume it is a perfect 5th';
 		} elseif ($fifth['type'] != 'diminished') {
 			$type .= ' and it <strong>is missing the 5th</strong>, so we assume it is a perfect 5th';
 		}
 	@endphp
-	<p>In this case, the chord {!! $type !!}. We consider this chord to be <strong>{{$inversion['label']['type'] ?? 'major'}}</strong>.</p>
+	<p>In this case, the chord {!! $type !!}. We say this is a <strong>{{$inversion['label']['type'] ?? 'major'}}</strong> chord.{{}}</p>
 </div>

@@ -82,6 +82,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::patch('{subscription}/status', 'SubscriptionsController@updateStatus')->name('update-status');
 
+	Route::get('export', 'SubscriptionsController@export')->name('export');
+
 });
 
 Route::prefix('statistics')->name('stats.')->group(function() {

@@ -6,6 +6,7 @@ use App\Subscription;
 use App\Http\Requests\SubscriptionForm;
 use App\Mail\Gift;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SubscriptionsController extends Controller
 {
@@ -29,14 +30,14 @@ class SubscriptionsController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function export()
     {
-        //
+        if (! request()->has('type'))
+            abort(422, 'Please specify which format you need.');
+
+        $emails = Subscription::active()->get()->pluck('email')->toArray();
+
+        return view('admin.pages.subscriptions.exports.txt', compact('emails'));
     }
 
     /**

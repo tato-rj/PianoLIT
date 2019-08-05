@@ -26,7 +26,7 @@
         @include('admin.components.feedback', ['field' => 'name'])
         </div>
         <div>
-          {{-- @include('admin.components.filters', ['filters' => []]) --}}
+          <a href="{{route('admin.subscriptions.export', ['type' => 'txt'])}}" target="_blank" class="btn btn-light" name="export-list" data-type="text"><i class="fas fa-file-alt"></i></a>
         </div>
       </div>
     </div>
