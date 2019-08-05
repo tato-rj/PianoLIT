@@ -91,7 +91,7 @@ trait PieceExtraAttributes
     public function getCatalogueAttribute()
     {
         $catalogue = "$this->catalogue_name $this->catalogue_number";
-        $catalogue .= $this->collection_number ? " No.{$this->collection_number}" : '';
+        $catalogue .= $this->collection_number ? " No. {$this->collection_number}" : '';
         return $catalogue;
     }
 
