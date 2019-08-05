@@ -621,6 +621,7 @@ function submit() {
 	console.log('Sending: '+input)
 	$.get('{{route('tools.chord-finder.analyse')}}', {notes: input}, function(response) {
 		$('#notes-container').html(response);
+        $('html,body').scrollTop(0);
         // $('#subtitle').html($('#notes-container').find('#subtitle-results').contents());
 	}).fail(function(response) {
         alert(response.responseJSON.message);
