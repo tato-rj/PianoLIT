@@ -87,6 +87,8 @@ class ChordFinder
 
 	public function get()
 	{
+		$this->validator()->ready();
+		
 		return $this->results;
 	}
 

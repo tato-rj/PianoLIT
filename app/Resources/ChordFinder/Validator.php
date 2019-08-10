@@ -11,6 +11,14 @@ class Validator
 		$this->array = $array;
 	}
 
+	public function ready()
+	{
+		if (empty($this->array['chords']))
+			abort(422, 'Sorry, we couldn\'t create chords with these notes.');
+
+		return true;
+	}
+
 	public function removeImpossible()
 	{
 		$copy = $this->array;

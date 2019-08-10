@@ -87,7 +87,7 @@ class Cleaner
 	{
 		$copy = $this->notes;
 
-		if (is_array($copy[0])) {
+		if (count($copy) && is_array($copy[0])) {
 			foreach ($copy as $index => $array) {
 				unset($copy[$index]);
 				sort($array);

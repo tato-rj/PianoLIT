@@ -325,6 +325,8 @@ button.control:disabled {
 	<h3 class="text-grey text-center my-4">Coming up soon!</h3>
 </div>
 @endif
+
+@include('tools.chords.error')
 @endsection
 
 @push('scripts')
@@ -622,11 +624,25 @@ function submit() {
 	$.get('{{route('tools.chord-finder.analyse')}}', {notes: input}, function(response) {
 		$('#notes-container').html(response);
         $('html,body').scrollTop(0);
-        // $('#subtitle').html($('#notes-container').find('#subtitle-results').contents());
 	}).fail(function(response) {
-        alert(response.responseJSON.message);
-		console.log(response);
+        showError(response.responseJSON.message);
 	});
+}
+
+function showError(response) {
+    $('#modal-error .modal-body div').text(response);
+    $('#modal-error').modal('show');
+}
+
+$('#modal-error').on('hide.bs.modal', function() {
+    reload();
+});
+
+function reload() {
+    reset('.dot');
+    reset('.note');
+    $('button#submit-notes').text($('button#submit-notes').attr('data-text')).prop('disabled', false);
+    $('.input-overlay').hide();
 }
 
 function updateUrl(notes) {
