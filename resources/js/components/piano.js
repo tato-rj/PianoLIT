@@ -37,7 +37,7 @@ var piano = new Tone.Sampler({
 var $keyDown;
 var notPlaying = true; 
 
-$(document).on('mousedown', '.keyboard-key', function(e) {
+$(document).on('mousedown touchstart', '.keyboard-key', function(e) {
 	let $key = getKey(e);
 	press($key, 500);
 }).on('mouseup touchend', function(e) {
@@ -91,14 +91,15 @@ release = function() {
 }
 
 play = function(note, octave, duration) {
-	// if (notPlaying) {
-		piano.releaseAll();
+	console.log(piano.context);
+	console.log(piano.loaded);
+	if (notPlaying) {
 		piano.triggerAttackRelease(note + octave, "8n");
 		notPlaying = false;
 		setTimeout(function() {
 			notPlaying = true;
 		}, duration);
-	// }
+	}
 }
 
 getKey = function(e) {
