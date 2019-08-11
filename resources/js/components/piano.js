@@ -91,8 +91,6 @@ release = function() {
 }
 
 play = function(note, octave, duration) {
-	console.log(piano.context);
-	console.log(piano.loaded);
 	if (notPlaying) {
 		piano.triggerAttackRelease(note + octave, "8n");
 		notPlaying = false;
