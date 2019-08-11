@@ -1,8 +1,8 @@
 <div class="row">
-	<div class="col-lg-6 col-md-6 col-12 mb-4">
+	<div class="col-lg-6 col-12 mb-4">
 		@include('tools.chords.results.chords')
 	</div>
-	<div class="col-lg-6 col-md-6 col-12 mb-4">
+	<div class="col-lg-6 col-12 mb-4">
 		<p class="text-grey"><i class="fas fa-volume-up mr-2"></i>Click the chords to hear them on the keyboard</p>
 		@include('components.piano.keyboard', [
 			'centered' => false,

@@ -100,8 +100,7 @@
 			justify-content: left !important;
 		}
 	}
-}
-@include media-breakpoint-down(md) {
+
 	.keyboard-white-key {
 		> .dot {
 			width: 19px !important;
@@ -118,6 +117,9 @@
 			height: 18px !important;
 		}
 	}
+}
+@include media-breakpoint-down(md) {
+
 }
 @include media-breakpoint-down(lg) {
 
