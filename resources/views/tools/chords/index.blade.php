@@ -345,7 +345,7 @@ button.control:disabled {
         <div class="">Just tell us the notes and we'll show the most likely chords you can make with them</div>
     </div>
 </div>
-@if(app()->isLocal() || request()->has('dev'))
+{{-- @if(app()->isLocal() || request()->has('dev')) --}}
     @if(! empty($request))
     <div class="container mb-4" id="notes-container">
         @include('tools.chords.results.index')
@@ -353,12 +353,12 @@ button.control:disabled {
     @else
         @include('tools.chords.empty')
     @endif
-@else
+{{-- @else
 <div class="my-6">
 	@include('components.animations.workers')
 	<h3 class="text-grey text-center my-4">Coming up soon!</h3>
 </div>
-@endif
+@endif --}}
 
 @include('tools.chords.error')
 @endsection
