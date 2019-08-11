@@ -91,13 +91,14 @@ release = function() {
 }
 
 play = function(note, octave, duration) {
-	if (notPlaying) {
+	// if (notPlaying) {
+		piano.releaseAll();
 		piano.triggerAttackRelease(note + octave, "8n");
 		notPlaying = false;
 		setTimeout(function() {
 			notPlaying = true;
 		}, duration);
-	}
+	// }
 }
 
 getKey = function(e) {

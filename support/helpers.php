@@ -1,5 +1,15 @@
 <?php
 
+function lastword($str)
+{
+	if (! $str || ! is_string($str))
+		return null;
+
+	$pieces = explode(' ', $str);
+
+	return array_pop($pieces);
+}
+
 function iterationToHumans($key)
 {
 	$words = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth', 'eleventh', 'twelveth'];
