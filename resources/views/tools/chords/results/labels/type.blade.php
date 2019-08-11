@@ -19,5 +19,5 @@
 			$type .= ' and a <strong>' . $fifth['name'] . '</strong>';
 		}
 	@endphp
-	<p>In this case, the chord {!! $type !!}. That's why say this is a <strong>{{$inversion['label']['type'] ? lastword($inversion['label']['type']) : 'major'}}</strong> chord.</p>
+	<p>In this case, the chord {!! $type !!}. That's why we say this is a <strong>{{$inversion['label']['type'] ? lastword($inversion['label']['type']) : 'major'}}</strong> chord.</p>
 </div>
