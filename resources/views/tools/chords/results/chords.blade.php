@@ -24,7 +24,7 @@
 @if($request['has_irrelevant'])
 
 	@if(! $request['has_relevant'])
-	<label class="">This chord can be different things, here are some options...</label>
+	<label class="">These notes don't make commonly used chords. Here is what we could come up with...</label>
 	@endif
 
 	<div class="chords-results d-flex flex-wrap">

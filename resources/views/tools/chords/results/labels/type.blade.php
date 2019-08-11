@@ -19,5 +19,5 @@
 			$type .= ' and it <strong>is missing the 5th</strong>, so we assume it is a perfect 5th';
 		}
 	@endphp
-	<p>In this case, the chord {!! $type !!}. We say this is a <strong>{{$inversion['label']['type'] ?? 'major'}}</strong> chord.{{}}</p>
+	<p>In this case, the chord {!! $type !!}. We say this is a <strong>{{$inversion['label']['type'] ?? 'major'}}</strong> chord.</p>
 </div>

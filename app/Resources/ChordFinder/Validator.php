@@ -14,7 +14,7 @@ class Validator
 	public function ready()
 	{
 		if (empty($this->array['chords']))
-			abort(422, 'Sorry, we couldn\'t create chords with these notes.');
+			abort(422, 'Sorry, we couldn\'t create any chord with these notes.');
 
 		return true;
 	}

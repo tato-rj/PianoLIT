@@ -26,10 +26,10 @@ class Ranking
 
 				$ranking += strlen($inversion['label']['ext']);
 
-				if ($ranking <= 3)
+				if ($ranking <= 4)
 					$hasRelevant = true;
 
-				if ($ranking > 3)
+				if ($ranking > 4)
 					$hasIrrelevant = true;
 				
 				$this->chords[$index]['inversions'][$key]['ranking'] = $ranking;

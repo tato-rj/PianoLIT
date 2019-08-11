@@ -83,6 +83,7 @@ g.key {
 @section('content')
 <div class="container mb-4">
 	<div class="mb-5 text-center">
+    	<div class="text-grey"><small>version 1.1</small></div>
 		<h3>The Circle of Fifths</h3>
 		<p class="text-grey">An interactive and fun tool to explore music harmony in an innovative way. Enjoy!</p>
 	</div>

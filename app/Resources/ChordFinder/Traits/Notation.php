@@ -84,31 +84,38 @@ trait Notation
 		$second = $this->find($notes, 2);
 		$third = $this->find($notes, 3);
 		$fourth = $this->find($notes, 4);
+		$secondType = $fourthType = null;
+
+		if ($second)
+			$secondType = $second['type'] == 'minor' ? '-2' : '2';
+
+		if ($fourth)
+			$fourthType = $fourth['type'] == 'augmented' ? '+4' : '4';
 
 		if (is_null($second) && is_null($fourth))
 			return ['sus' => '', 'sus_shorthand' => ''];
 
 		if (is_null($third)) {
 			if ($second && $fourth) {
-				$label['sus'] = 'suspended 2 and 4';
-				$label['sus_shorthand'] = sup('sus24');
+				$label['sus'] = 'suspended '.$secondType.' and '.$fourthType;
+				$label['sus_shorthand'] = sup('sus'.$secondType.$fourthType);
 			} else if ($second && is_null($fourth)) {
-				$label['sus'] = 'suspended 2';
-				$label['sus_shorthand'] = sup('sus2');				
+				$label['sus'] = 'suspended '.$secondType;
+				$label['sus_shorthand'] = sup('sus'.$secondType);				
 			} else if (is_null($second) && $fourth) {
-				$label['sus'] = 'suspended 4';
-				$label['sus_shorthand'] = sup('sus4');				
+				$label['sus'] = 'suspended '.$fourthType;
+				$label['sus_shorthand'] = sup('sus'.$fourthType);				
 			}
 		} else {
 			if ($second && $fourth) {
-				$label['sus'] = 'added 2 and 4';
-				$label['sus_shorthand'] = sup('add24');
+				$label['sus'] = 'added '.$secondType.' and '.$fourthType;
+				$label['sus_shorthand'] = sup('add'.$secondType.$fourthType);
 			} else if ($second && is_null($fourth)) {
-				$label['sus'] = 'added 2';
-				$label['sus_shorthand'] = sup('add2');				
+				$label['sus'] = 'added '.$secondType;
+				$label['sus_shorthand'] = sup('add'.$secondType);				
 			} else if (is_null($second) && $fourth) {
-				$label['sus'] = 'added 4';
-				$label['sus_shorthand'] = sup('add4');				
+				$label['sus'] = 'added '.$fourthType;
+				$label['sus_shorthand'] = sup('add'.$fourthType);				
 			}
 		}
 
