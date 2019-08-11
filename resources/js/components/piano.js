@@ -37,7 +37,7 @@ var piano = new Tone.Sampler({
 var $keyDown;
 var notPlaying = true; 
 
-$(document).on('mousedown touchstart', '.keyboard-key', function(e) {
+$(document).on('mousedown', '.keyboard-key', function(e) {
 	let $key = getKey(e);
 	press($key, 500);
 }).on('mouseup touchend', function(e) {
