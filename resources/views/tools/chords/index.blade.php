@@ -683,10 +683,13 @@ $('#modal-error').on('hide.bs.modal', function() {
 });
 
 function reload() {
+    input = [];
     reset('.dot');
     reset('.note');
     $('button#submit-notes').text($('button#submit-notes').attr('data-text')).prop('disabled', false);
     $('.input-overlay').hide();
+    $('#options-buttons').html('').parent().removeClass('border');
+    $('#options-container').hide();
 }
 
 function updateUrl(notes) {
