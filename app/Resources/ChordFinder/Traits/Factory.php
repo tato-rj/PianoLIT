@@ -53,13 +53,13 @@ trait Factory
 
 	public function intervals($absolute)
 	{
-		if (! $absolute) {
-			foreach ($this->nonValidChordIntervals as $step => $array) {
-				foreach ($array as $interval) {
-					unset($this->intervals[$step][$interval]);
-				}
-			}
-		}
+		// if (! $absolute) {
+		// 	foreach ($this->nonValidChordIntervals as $step => $array) {
+		// 		foreach ($array as $interval) {
+		// 			unset($this->intervals[$step][$interval]);
+		// 		}
+		// 	}
+		// }
 
 		return $this->intervals;
 	}

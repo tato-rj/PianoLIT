@@ -39,7 +39,7 @@ var notPlaying = true;
 
 $(document).on('mousedown touchstart', '.keyboard-key', function(e) {
 	let $key = getKey(e);
-	press($key, 500);
+	press($key, 300);
 }).on('mouseup touchend', function(e) {
 	let $key = getKey(e);
 	release();
@@ -111,14 +111,25 @@ getKey = function(e) {
 
 findKey = function(note, startAt = null) {
     let result = null;
-    let $keys = $('.keyboard-key');
+    let $keys = $('.keyboard-white-key');
 
     $keys.slice(startAt, $keys.length).each(function(key) {
-        let notes = JSON.parse($(this).attr('data-names'));
-        if (notes.includes(note)) {
-            result = $(this);
+    	let $whiteKey = $(this);
+    	let $blackKey = $(this).find('.keyboard-black-key');
+
+        let whiteNotes = JSON.parse($whiteKey.attr('data-names'));
+        if (whiteNotes.includes(note)) {
+            result = $whiteKey;
             return false;
         }
+
+        if ($blackKey.length) {
+	        let blackNotes = JSON.parse($blackKey.attr('data-names'));
+	        if (blackNotes.includes(note)) {
+	            result = $blackKey;
+	            return false;
+	        }
+	    }
     });
 
     return result;

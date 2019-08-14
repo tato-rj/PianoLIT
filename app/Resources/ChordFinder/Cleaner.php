@@ -16,7 +16,7 @@ class Cleaner
 	public function setMinimum($minimum)
 	{
 		if (! $this->notes || count($this->notes) < $minimum)
-			abort(422, 'Can\'t make a chord with less than '.$minimum.' notes');
+			abort(422, 'Please select a minimum of '.$minimum.' notes');
 
 		return $this;
 	}

@@ -339,26 +339,20 @@ button.control:disabled {
 @section('content')
 <div class="mb-4 text-center position-relative">
     @include('components.overlays.loading')
-    <div class="text-grey"><small>version 1.0</small></div>
+    <div class="text-grey"><small>version 1.1</small></div>
 	<h3>Chord Finder</h3>
     <div id="subtitle" class="text-grey">
         <div class="">Just tell us the notes and we'll show the most likely chords you can make with them</div>
     </div>
 </div>
-{{-- @if(app()->isLocal() || request()->has('dev')) --}}
-    @if(! empty($request))
-    <div class="container mb-4" id="notes-container">
-        @include('tools.chords.results.index')
-    </div>
-    @else
-        @include('tools.chords.empty')
-    @endif
-{{-- @else
-<div class="my-6">
-	@include('components.animations.workers')
-	<h3 class="text-grey text-center my-4">Coming up soon!</h3>
+
+@if(! empty($request))
+<div class="container mb-4" id="notes-container">
+    @include('tools.chords.results.index')
 </div>
-@endif --}}
+@else
+    @include('tools.chords.empty')
+@endif
 
 @include('tools.chords.error')
 @endsection
@@ -382,7 +376,7 @@ $(document).on('click', '.chords-results button', function() {
         $(this).addClass('btn-chord-selected');
         let notes = JSON.parse($(this).attr('data-notes'));
         let info = $(this).attr('href');
-        let noteIndex = 0;
+        let noteIndex = firstIndex = 0;
         let chord = [];
 
         $('.chord-info').hide();
@@ -392,9 +386,18 @@ $(document).on('click', '.chords-results button', function() {
         notes.forEach(function(element, index) {
             let note = element.replace('+', '#').replace('-', 'b').replace('2', '');
             let $key = findKey(note, noteIndex);
+
+            if ($key == null)
+                $key = findKey(note, firstIndex);
+
             chord.push(note + $key.attr('data-octave'));
             noteIndex = $key.hasClass('keyboard-black-key') ? $key.parent().next().index() : $key.index();
+            
+            if (firstIndex == 0)
+                firstIndex = noteIndex;
 
+            console.log('Playing ' + note + ' at index ' + noteIndex);
+            
             setTimeout(function() {
                 press($key, 150, false);
                 highlight($key);
@@ -445,13 +448,10 @@ $(document).on('click', '#options-container button', function() {
         if (! input.includes(item))
             input.push(item);
     });
-    
-    console.log(input);
 });
 
 $(document).on('click', '#reset-options', function() {
     resetOptions();
-    console.log(input);
 });
 
 function showOptions(notes) {
@@ -618,7 +618,6 @@ function getNotes() {
 
     });
 
-	console.log(notes);
     input = notes;
     $('#reset-options').attr('data-original', JSON.stringify(notes));
 
@@ -629,7 +628,9 @@ $('button#submit-notes').on('click', function() {
 
 	if (input.length < 3) {
 		alert('Please select at least 3 notes');
-	} else {
+	} else if (selectedEnharmonics() > 0) {
+        alert('Please select each enharmonic note, you\'re missing ' + selectedEnharmonics());
+    } else {
 		$(this).prop('disabled', true);
 		$(this).text('Hang on a sec...');
 
@@ -638,8 +639,16 @@ $('button#submit-notes').on('click', function() {
             submit();
         }, 1500);
 	}
-
 });
+
+function selectedEnharmonics() {
+    $missing = $('#options-buttons .btn-group').length - $('#options-buttons .btn-green').length;
+
+    if ($missing > 0)
+        $('#options-buttons').parent().addClass('border-warning border');
+
+    return $missing;
+}
 
 function nextLetter(letter) {
     let next = letter.substring(0, letter.length - 1) + String.fromCharCode(letter.charCodeAt(letter.length - 1) + 1);

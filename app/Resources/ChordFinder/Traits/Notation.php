@@ -59,7 +59,7 @@ trait Notation
 		if (is_null($fifth) || $fifth['type'] == 'perfect') {
 			if ($seventh['type'] == 'major') {
 				$label['seventh'] = $third == 'major' ? 'dominant 7' : 'minor 7';
-				$label['seventh_shorthand'] = '+7';
+				$label['seventh_shorthand'] = ' maj7';
 			} else if ($seventh['type'] == 'minor') {
 				$label['seventh'] = 'minor 7';
 				$label['seventh_shorthand'] = '7';
@@ -137,6 +137,15 @@ trait Notation
 				} else if ($note['type'] == 'minor') {
 					$label['ext'] .= 'm' . $note['interval'];
 					$label['ext_shorthand'] .= sup('m' . $note['interval']);
+				} else if ($note['type'] == 'perfect') {
+					$label['ext'] .= $note['interval'];
+					$label['ext_shorthand'] .= sup($note['interval']);
+				} else if ($note['type'] == 'diminished') {
+					$label['ext'] .= '-' . $note['interval'];
+					$label['ext_shorthand'] .= sup('-' . $note['interval']);
+				} else if ($note['type'] == 'augmented') {
+					$label['ext'] .= '+' . $note['interval'];
+					$label['ext_shorthand'] .= sup('+' . $note['interval']);
 				}
 			}
 		}

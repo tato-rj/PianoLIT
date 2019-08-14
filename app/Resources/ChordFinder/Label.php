@@ -62,6 +62,26 @@ class Label
 			'full_shorthand' => $root['root'] . $type['type_shorthand'] . $seventh['seventh_shorthand'] . $sus['sus_shorthand'] . $ext['ext_shorthand']
 		];
 
+		if (strhas($full['full_shorthand'], '9'))
+			$full['full_shorthand'] = str_replace('7', '', $full['full_shorthand']);
+
+		if (strhas($full['full_shorthand'], '11')) {
+			$full['full_shorthand'] = str_replace('7', '', $full['full_shorthand']);
+
+			if (! strhas($full['full_shorthand'], 'm9'))
+				$full['full_shorthand'] = str_replace('9', '', $full['full_shorthand']);
+		}
+
+		if (strhas($full['full_shorthand'], '13')) {
+			$full['full_shorthand'] = str_replace('7', '', $full['full_shorthand']);
+
+			if (! strhas($full['full_shorthand'], 'm9'))
+				$full['full_shorthand'] = str_replace('9', '', $full['full_shorthand']);
+
+			if (! strhas($full['full_shorthand'], '-11') && ! strhas($full['full_shorthand'], '+11'))
+				$full['full_shorthand'] = str_replace('11', '', $full['full_shorthand']);
+		}
+
 		return array_merge($root, $type, $seventh, $sus, $ext, $full);
 	}
 }

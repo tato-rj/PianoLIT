@@ -22,7 +22,7 @@
 		<div id="info-container">
 			@foreach($request['chords'] as $chord)
 				@foreach($chord['inversions'] as $inversion)
-				  <div class="chord-info" style="display: none;" id="{{str_replace('#', '', chordToHumans($inversion['label']['full_shorthand']))}}">
+				  <div class="chord-info" style="display: none;" id="{{$inversion['id']}}">
 				  	<div class="d-flex">
 						<div class="mb-4">
 							<label class="alert-grey rounded-top py-2 px-4 text-center w-100 m-0 text-nowrap"><small><strong>THIS CHORD HAS</strong></small></label>

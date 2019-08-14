@@ -55,7 +55,7 @@ class ChordFinder
 	public function validate()
 	{
 		$this->notes = $this->cleaner()
-							->setMinimum(2)
+							->setMinimum(3)
 							->lowercase()
 							->removeDuplicates()
 							->fixSharps()
@@ -72,6 +72,9 @@ class ChordFinder
 		$this->results = $this->label()->intervals();
 		$this->results = $this->validator()->removeImpossible()->get();
 		$this->results = $this->validator()->addNinth()->get();
+		$this->results = $this->validator()->addEleventh()->get();
+		$this->results = $this->validator()->addThirteenth()->get();
+		$this->results = $this->validator()->fixAddedIntervals()->get();
 		$this->results = $this->label()->chords();
 		$this->results = array_values($this->results);
 

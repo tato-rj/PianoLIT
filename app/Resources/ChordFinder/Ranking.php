@@ -13,28 +13,25 @@ class Ranking
 
 	public function apply()
 	{
-		$hasRelevant = $hasIrrelevant = false;
-
 		foreach ($this->chords as $index => $chord) {
 			foreach ($chord['inversions'] as $key => $inversion) {
 				$ranking = 0;
+				$intervals = [];
 
-				foreach ($inversion['label'] as $title => $label) {
-					if (strhas($title, 'shorthand') && ! empty($label))
-						$ranking+=1;
+				foreach ($inversion['intervals'] as $interval) {
+					array_push($intervals, $interval['interval']);
 				}
 
-				$ranking += strlen($inversion['label']['ext']);
+				if (in_array(3, $intervals) && in_array(5, $intervals))
+					$ranking += 1;
 
-				if ($ranking <= 4)
-					$hasRelevant = true;
-
-				if ($ranking > 4)
-					$hasIrrelevant = true;
+				if (in_array(6, $intervals) || in_array(7, $intervals) || in_array(9, $intervals) || in_array(11, $intervals) || in_array(13, $intervals))
+					$ranking += 1;
 				
+				if (! in_array(3, $intervals))
+					$ranking -= 1;
+
 				$this->chords[$index]['inversions'][$key]['ranking'] = $ranking;
-				$this->chords[$index]['has_relevant'] = $hasRelevant;
-				$this->chords[$index]['has_irrelevant'] = $hasIrrelevant;
 			}
 		}
 
@@ -46,26 +43,23 @@ class Ranking
 	public function reformat()
 	{
 		$results = [];
-		$best_score = 10;
-		$hasRelevant = $hasIrrelevant = false;
+		$count = 0;
+		$best_score = 0;
 
-		foreach ($this->chords as $chord) {
-			if ($chord['has_relevant'])
-				$hasRelevant = true;
+		foreach ($this->chords as $index => $chord) {
+			foreach ($chord['inversions'] as $key => $inversion) {
+				$count++;
 
-			if ($chord['has_irrelevant'])
-				$hasIrrelevant = true;
-
-			foreach ($chord['inversions'] as $inversion) {
-				if ($inversion['ranking'] < $best_score)
+				if ($inversion['ranking'] > $best_score)
 					$best_score = $inversion['ranking'];
+				
+				$this->chords[$index]['inversions'][$key]['id'] = str_random();
 			}
 		}
 	
 		$results['chords'] = $this->chords;
-		$results['has_relevant'] = $hasRelevant;
-		$results['has_irrelevant'] = $hasIrrelevant;
 		$results['most_relevant'] = $best_score;
+		$results['chords_count'] = $count;
 
 		return $results;
 	}

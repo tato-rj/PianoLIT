@@ -4,7 +4,7 @@
 	<p>Here, the <strong>root {{chordToHumans($inversion['chord'][0])}}</strong> forms 
 		@foreach($inversion['chord'] as $index => $note)
 		@if(! $loop->last)
-		a <strong>{{$inversion['intervals'][$index]['name']}}{{$inversion['intervals'][$index]['interval'] > 8 ? ' (if played one octave above)' : null}}</strong> with the {{iterationToHumans($loop->iteration)}} note {{chordToHumans($inversion['chord'][$loop->iteration])}}{{$loop->iteration < count($inversion['chord']) - 1 ? ',' : '.'}}
+		a <strong>{{$inversion['intervals'][$index]['name']}}</strong> with the {{iterationToHumans($loop->iteration)}} note {{chordToHumans($inversion['chord'][$loop->iteration])}}{{$inversion['intervals'][$index]['interval'] > 8 ? ' (an octave above)' : null}}{{$loop->iteration < count($inversion['chord']) - 1 ? ',' : '.'}}
 		@endif
 		@endforeach
 	</p>

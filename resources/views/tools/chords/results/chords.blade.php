@@ -1,12 +1,13 @@
-@if($request['has_relevant'])
+@php($count = 0)
 <div class="mb-4">
-	<label class=""><strong>THE CHORD IS MOST LIKELY...</strong></label>
+	<label class=""><strong>MOST LIKELY {{ str_plural('CHORD', $request['chords_count']) }}...</strong></label>
 	<div class="chords-results d-flex flex-wrap">
-	@foreach($request['chords'] as $chord)
-		@foreach($chord['inversions'] as $inversion)
-			@if($inversion['ranking'] <= $request['most_relevant'] + 1)
+	@foreach($request['chords'] as $index => $chord)
+		@foreach($chord['inversions'] as $key => $inversion)
+			@if($inversion['ranking'] == $request['most_relevant'])
+				@php($count++)
 				<button class="m-1 btn btn-chord-main" 
-					href="#{{str_replace('#', '', chordToHumans($inversion['label']['full_shorthand']))}}" 
+					href="#{{$inversion['id']}}" 
 					data-notes="{{json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
 					<i class="fas fa-play-circle mr-2 opacity-4"></i>
 					<strong>{!! $inversion['label']['full_shorthand'] !!}</strong>
@@ -16,23 +17,16 @@
 	@endforeach
 	</div>
 </div>
-@endif
+
+@if($request['chords_count'] > $count)
 <div class="mb-4">
-@if($request['has_relevant'])
-<label>Other options are probably just inversions of the above.</label>
-@endif
-@if($request['has_irrelevant'])
-
-	@if(! $request['has_relevant'])
-	<label class="">These notes don't make commonly used chords. Here is what we could come up with...</label>
-	@endif
-
+<label>Less likely chords...</label>
 	<div class="chords-results d-flex flex-wrap">
 	@foreach($request['chords'] as $chord)
 		@foreach($chord['inversions'] as $inversion)
-			@if($inversion['ranking'] > $request['most_relevant'] + 1)
+			@if($inversion['ranking'] < $request['most_relevant'])
 				<button class="btn btn-chord-additional m-1" 
-					href="#{{str_replace('#', '', chordToHumans($inversion['label']['full_shorthand']))}}" 
+					href="#{{$inversion['id']}}" 
 					data-notes="{{json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
 					<i class="fas fa-play-circle mr-2 opacity-4"></i>
 					<strong>{!! $inversion['label']['full_shorthand'] !!}</strong>
@@ -41,5 +35,5 @@
 		@endforeach
 	@endforeach
 	</div>
-@endif
 </div>
+@endif
