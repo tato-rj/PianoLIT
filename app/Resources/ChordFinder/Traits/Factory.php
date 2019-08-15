@@ -23,6 +23,7 @@ trait Factory
 		2 => [
 			1 => 'minor',
 			2 => 'major',
+			3 => 'augmented'
 		],
 		3 => [
 			3 => 'minor',
