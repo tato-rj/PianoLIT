@@ -41,6 +41,9 @@
 							@include('tools.chords.results.labels.sus')
 							@include('tools.chords.results.labels.seventh')
 							@include('tools.chords.results.labels.others')
+							@if($request['strict'])
+								@include('tools.chords.results.labels.bass')
+							@endif
 				  		</div>
 				  	</div>
 				  </div>
