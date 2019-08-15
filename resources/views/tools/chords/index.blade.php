@@ -736,6 +736,8 @@ function reload() {
     $('.input-overlay').hide();
     $('#options-buttons').html('').parent().removeClass('border');
     $('#options-container').hide();
+    $('#root-buttons').html('');
+    $('#root-container').hide();
 }
 
 function updateUrl(notes) {
