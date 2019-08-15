@@ -423,6 +423,7 @@ function resetLabel() {
 </script>
 <script type="text/javascript">
 var input = exclude = include = [];
+var root = null;
 
 $(document).on('click', '#options-container button', function() {
     let $button = $(this);
@@ -440,21 +441,65 @@ $(document).on('click', '#options-container button', function() {
     });
 
     input.forEach(function(item, key) {
-        if (exclude.includes(item))
+        if (exclude.includes(item)) {
             input.splice(key, 1);
+
+            let enharmonic = include[exclude.indexOf(item)];
+
+            if (! input.includes(enharmonic))
+                input.splice(key, 0, enharmonic);
+        }
     });
 
-    include.forEach(function(item, key) {
-        if (! input.includes(item))
-            input.push(item);
-    });
+    if (missingEnharmonics() == 0)
+        showRootOptions(input);
+});
+
+$(document).on('click', '#root-container button', function() {
+    let $button = $(this);
+
+    $('#root-container button').not(this).removeClass('btn-green').addClass('btn-outline-secondary');
+    
+    if ($button.hasClass('btn-outline-secondary')) {
+        root = $button.attr('data-name');
+        console.log('You just selected ' + root + ' as the root');
+    } else {
+        root = null;
+        console.log('The root has been erased');
+    }
+
+    $button.toggleClass('btn-outline-secondary btn-green');
 });
 
 $(document).on('click', '#reset-options', function() {
     resetOptions();
 });
 
-function showOptions(notes) {
+function showRootOptions(notes) {
+    $('#root-buttons').html('');
+    root = null;
+
+    if (notes.length > 2) {
+        for (var i=0; i<notes.length; i++) {
+            let noteToHumans = notes[i].replace('+', '#');
+                noteToHumans = noteToHumans.replace('-', 'b');
+
+            let html = `<div class="m-2 d-inline-block">
+                            <button class="btn btn-outline-secondary font-weight-bold" data-name="`+notes[i]+`" type="button">`+noteToHumans+`</button>
+                        </div>`;
+
+            $('#root-buttons').append(html);
+        }
+    }
+    
+    if ($('#root-buttons > div').length > 0) {
+        $('#root-container').show();
+    } else {
+        $('#root-container').hide();
+    }
+}
+
+function showEnharmonicOptions(notes) {
     $('#options-buttons').html('');
     let singleNotes = ['D', 'G', 'A'];
 
@@ -502,7 +547,8 @@ function resetOptions(element = null) {
 
 function removeOptions() {
     resetOptions();
-    showOptions([]);
+    showEnharmonicOptions([]);
+    showRootOptions([]);
 }
 
 $('.keyboard-input .keyboard-white-key, .keyboard-input .keyboard-white-key').on('click', function(e) {
@@ -512,7 +558,8 @@ $('.keyboard-input .keyboard-white-key, .keyboard-input .keyboard-white-key').on
 
     notes = getNotes();
 
-    showOptions(notes);
+    showEnharmonicOptions(notes);
+    showRootOptions([]);
 });
 
 $('.dot').on('click', function() {
@@ -529,7 +576,8 @@ $('.note h1').on('click', function() {
     reset('.dot');
     removeOptions();
     playNote($note);
-    getNotes();
+    notes = getNotes();
+    showRootOptions(notes);
 });
 
 $('.note button').on('click', function() {
@@ -628,8 +676,9 @@ $('button#submit-notes').on('click', function() {
 
 	if (input.length < 3) {
 		alert('Please select at least 3 notes');
-	} else if (selectedEnharmonics() > 0) {
-        alert('Please select each enharmonic note, you\'re missing ' + selectedEnharmonics());
+	} else if (missingEnharmonics() > 0) {
+        alert('Please select each enharmonic note, you\'re missing ' + missingEnharmonics());
+        $('#options-container').removeClass('bounce').addClass('bounce');
     } else {
 		$(this).prop('disabled', true);
 		$(this).text('Hang on a sec...');
@@ -641,13 +690,8 @@ $('button#submit-notes').on('click', function() {
 	}
 });
 
-function selectedEnharmonics() {
-    $missing = $('#options-buttons .btn-group').length - $('#options-buttons .btn-green').length;
-
-    if ($missing > 0)
-        $('#options-buttons').parent().addClass('border-warning border');
-
-    return $missing;
+function missingEnharmonics() {
+    return $('#options-buttons .btn-group').length - $('#options-buttons .btn-green').length;
 }
 
 function nextLetter(letter) {
@@ -664,8 +708,10 @@ function animate() {
 }
 
 function submit() {
-	console.log('Sending: '+input)
-	$.get('{{route('tools.chord-finder.analyse')}}', {notes: input}, function(response) {
+	console.log('Sending: '+input);
+    console.log(root ? 'The selected root is ' + root : 'No root was selected');
+
+	$.get('{{route('tools.chord-finder.analyse')}}', {notes: input, root: root}, function(response) {
 		$('#notes-container').html(response);
         $('html,body').scrollTop(0);
 	}).fail(function(response) {

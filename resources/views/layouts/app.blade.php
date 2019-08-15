@@ -119,7 +119,7 @@
 
     <script type="text/javascript">
 
-    $(document).ready(function() {
+    $(window).bind('load', function() {
         $('#load-screen').fadeOut(function() {
             $(this).remove();
         });

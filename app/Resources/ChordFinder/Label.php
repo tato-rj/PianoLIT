@@ -8,7 +8,7 @@ class Label
 {
 	use Notation;
 
-	protected $array;
+	protected $array, $bass;
 
 	public function __construct(array $array)
 	{
@@ -18,6 +18,12 @@ class Label
 	public function analyser($chord)
 	{
 		return new Analyser($chord);
+	}
+
+	public function strict($bass)
+	{
+		$this->bass = $bass;
+		return $this;
 	}
 
 	public function intervals()
@@ -53,13 +59,14 @@ class Label
 	public function read($inversion)
 	{
 		$root = $this->root($inversion);
+		$bass = $this->bass()['bass'] && $this->bass()['bass'][0] != $root['root'][0] ? '/' . $this->bass()['bass'] : null;
 		$type = $this->core($inversion);
 		$seventh = $this->seventh($inversion);
 		$sus = $this->sus($inversion);
 		$ext = $this->extensions($inversion);
 
 		$full = [
-			'full_shorthand' => $root['root'] . $type['type_shorthand'] . $seventh['seventh_shorthand'] . $sus['sus_shorthand'] . $ext['ext_shorthand']
+			'full_shorthand' => $root['root'] . $type['type_shorthand'] . $seventh['seventh_shorthand'] . $sus['sus_shorthand'] . $ext['ext_shorthand'] . $bass
 		];
 
 		if (strhas($full['full_shorthand'], '9'))
@@ -82,6 +89,6 @@ class Label
 				$full['full_shorthand'] = str_replace('11', '', $full['full_shorthand']);
 		}
 
-		return array_merge($root, $type, $seventh, $sus, $ext, $full);
+		return array_merge($root, $this->bass(), $type, $seventh, $sus, $ext, $full);
 	}
 }

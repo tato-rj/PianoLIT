@@ -83,8 +83,11 @@ class Cleaner
 		return $this;		
 	}
 
-	public function sort()
+	public function sort($hasRoot)
 	{
+		if ($hasRoot)
+			return $this;
+		
 		$copy = $this->notes;
 
 		if (count($copy) && is_array($copy[0])) {

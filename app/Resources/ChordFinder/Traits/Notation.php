@@ -4,6 +4,15 @@ namespace App\Resources\ChordFinder\Traits;
 
 trait Notation
 {
+	public function bass()
+	{
+		$bass = str_replace('-', 'b', $this->bass);
+		$bass = str_replace('+', '#', $bass);
+		$bass = str_replace('2', '', $bass);
+
+		return ['bass' => $bass];	
+	}
+
 	public function root($notes)
 	{
 		$root = $notes['chord'][0];

@@ -1,6 +1,12 @@
 @php($count = 0)
 <div class="mb-4">
-	<label class=""><strong>MOST LIKELY {{ str_plural('CHORD', $request['chords_count']) }}...</strong></label>
+	<label class="">
+		@if($request['strict'])
+		<strong>THE CHORD IS...</strong>
+		@else
+		<strong>MOST LIKELY {{ str_plural('CHORD', $request['chords_count']) }}...</strong>
+		@endif
+	</label>
 	<div class="chords-results d-flex flex-wrap">
 	@foreach($request['chords'] as $index => $chord)
 		@foreach($chord['inversions'] as $key => $inversion)
@@ -8,7 +14,7 @@
 				@php($count++)
 				<button class="m-1 btn btn-chord-main" 
 					href="#{{$inversion['id']}}" 
-					data-notes="{{json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
+					data-notes="{{$request['strict'] ? json_encode($request['chords'][0]['notes']) : json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
 					<i class="fas fa-play-circle mr-2 opacity-4"></i>
 					<strong>{!! $inversion['label']['full_shorthand'] !!}</strong>
 				</button>
@@ -20,7 +26,7 @@
 
 @if($request['chords_count'] > $count)
 <div class="mb-4">
-<label>Less likely chords...</label>
+<label>Other chords we can make with these notes...</label>
 	<div class="chords-results d-flex flex-wrap">
 	@foreach($request['chords'] as $chord)
 		@foreach($chord['inversions'] as $inversion)

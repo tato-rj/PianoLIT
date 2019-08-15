@@ -64,7 +64,7 @@ class Interval
 
 		$interval = $secondIndex - $firstIndex + 1;
 
-		return $interval == 2 ? $interval + $octave : $interval;
+		return $interval + $octave;
 	}
 
 	public function countSteps($considerOctave = true)
@@ -81,7 +81,7 @@ class Interval
 
 		$steps = $secondIndex - $firstIndex;	
 
-		return in_array($steps, [1,2]) ? $steps + $octave : $steps;	
+		return $steps + $octave;	
 	}
 
 	public function isEnharmonic()

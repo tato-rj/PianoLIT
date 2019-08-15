@@ -4,11 +4,12 @@ namespace App\Resources\ChordFinder;
 
 class Ranking
 {
-	protected $chords;
+	protected $chords, $strict;
 
-	public function __construct(array $chords)
+	public function __construct(array $chords, $root)
 	{
 		$this->chords = $chords;
+		$this->strict = ! is_null($root);
 	}
 
 	public function apply()
@@ -23,11 +24,35 @@ class Ranking
 				}
 
 				if (in_array(3, $intervals) && in_array(5, $intervals))
+					$ranking += 2;
+
+				if (! in_array(3, $intervals) && in_array(5, $intervals) && (in_array(2, $intervals) || in_array(4, $intervals)))
 					$ranking += 1;
 
-				if (in_array(6, $intervals) || in_array(7, $intervals) || in_array(9, $intervals) || in_array(11, $intervals) || in_array(13, $intervals))
+				if (in_array(3, $intervals) && in_array(5, $intervals) && in_array(7, $intervals))
 					$ranking += 1;
-				
+
+				if (in_array(3, $intervals) && in_array(5, $intervals) && in_array(6, $intervals))
+					$ranking += 1;
+
+				if (in_array(2, $intervals) || in_array(4, $intervals) || in_array(9, $intervals) || in_array(11, $intervals) || in_array(13, $intervals))
+					$ranking += 1;
+
+				if (in_array(7, $intervals) && in_array(9, $intervals) || 
+					in_array(7, $intervals) && in_array(9, $intervals) && in_array(11, $intervals) ||
+					in_array(7, $intervals) && in_array(9, $intervals) && in_array(11, $intervals) && in_array(13, $intervals))
+					$ranking += 1;
+
+				if (in_array(2, $intervals) && in_array(6, $intervals))
+					$ranking -= 1;
+
+				if (in_array(4, $intervals) && in_array(6, $intervals))
+					$ranking -= 1;
+
+				if (in_array(6, $intervals) && in_array(7, $intervals) || 
+					in_array(13, $intervals) && in_array(7, $intervals) && (! in_array(9, $intervals) || ! in_array(11, $intervals)))
+					$ranking -= 1;
+
 				if (! in_array(3, $intervals))
 					$ranking -= 1;
 
@@ -60,6 +85,7 @@ class Ranking
 		$results['chords'] = $this->chords;
 		$results['most_relevant'] = $best_score;
 		$results['chords_count'] = $count;
+		$results['strict'] = $this->strict;
 
 		return $results;
 	}

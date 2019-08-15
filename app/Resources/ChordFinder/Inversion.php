@@ -29,4 +29,16 @@ class Inversion
 		array_unshift($inversions, $first);
 		return array_values($inversions);
 	}
+
+	public function defined($root)
+	{
+		$inversions = $this->all();
+
+		foreach ($inversions as $index => $inversion) {
+			if ($inversion['chord'][0][0] != strtolower($root[0]))
+				unset($inversions[$index]);
+		}
+
+		return array_values($inversions);
+	}
 }
