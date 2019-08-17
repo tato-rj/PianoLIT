@@ -20,9 +20,11 @@ class Label
 		return new Analyser($chord);
 	}
 
-	public function strict($bass)
+	public function strict($bass, $tool)
 	{
-		$this->bass = $bass;
+		if ($tool != 'button')
+			$this->bass = $bass;
+	
 		return $this;
 	}
 

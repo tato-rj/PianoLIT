@@ -83,9 +83,9 @@ class Cleaner
 		return $this;		
 	}
 
-	public function sort($hasRoot)
+	public function sort($hasRoot, $tool)
 	{
-		if ($hasRoot)
+		if ($hasRoot && $tool != 'button')
 			return $this;
 		
 		$copy = $this->notes;

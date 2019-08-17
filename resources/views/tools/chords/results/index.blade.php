@@ -41,7 +41,7 @@
 							@include('tools.chords.results.labels.sus')
 							@include('tools.chords.results.labels.seventh')
 							@include('tools.chords.results.labels.others')
-							@if($request['strict'] && $inversion['label']['bass'][0] != $inversion['label']['root'][0])
+							@if($request['strict'] && $inversion['label']['bass'] && $inversion['label']['bass'][0] != $inversion['label']['root'][0])
 								@include('tools.chords.results.labels.bass')
 							@endif
 				  		</div>

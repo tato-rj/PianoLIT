@@ -24,8 +24,8 @@ Route::prefix('tools')->name('tools.')->group(function() {
 		
 		Route::get('/analyse', function() {
 			$finder = new \App\Resources\ChordFinder\ChordFinder;
-			$request = $finder->take(request()->notes)->root(request()->root)->validate()->analyse()->ranked()->get();
-			$json = $finder->take(request()->notes)->root(request()->root)->debug();
+			$request = $finder->take(request())->validate()->analyse()->ranked()->get();
+			$json = $finder->take(request())->debug();
 
 			if (request()->has('dev'))
 				return $request;

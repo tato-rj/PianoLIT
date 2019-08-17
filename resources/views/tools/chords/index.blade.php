@@ -384,7 +384,10 @@ $(document).on('click', '.chords-results button', function() {
         $(info).fadeIn('fast');
 
         notes.forEach(function(element, index) {
-            let note = element.replace('+', '#').replace('-', 'b').replace('2', '');
+            let note = element;
+
+            note = noteToHumans(note).toLowerCase();
+
             let $key = findKey(note, noteIndex);
 
             if ($key == null)
@@ -423,38 +426,55 @@ function resetLabel() {
 </script>
 <script type="text/javascript">
 var input = exclude = include = [];
-var root = null;
+var root = tool = null;
 
+////////////////////////
+// ENHARMONIC OPTIONS //
+////////////////////////
 $(document).on('click', '#options-container button', function() {
     let $button = $(this);
+    let $selected = $('#options-container button[data-source="'+$button.attr('data-source')+'"].btn-green');
+    let target;
+
+    if ($selected.length > 0) {
+        target = $selected.attr('data-name');
+    } else {
+        target = $button.attr('data-source');
+    }
+
+    let index = notes.indexOf(target);
+    notes[index] = $button.attr('data-name');
 
     resetOptions($button);
 
     $button.removeClass('btn-outline-secondary').addClass('btn-green');
 
-    $('#options-container button').each(function() {
-        let $sibling = $(this).siblings('button').first();
-        if ($(this).hasClass('btn-green')) {
-            exclude.push($sibling.attr('data-name'));
-            include.push($(this).attr('data-name'));
-        }
-    });
+    // $('#options-container button').each(function() {
+    //     let $sibling = $(this).siblings('button').first();
+    //     if ($(this).hasClass('btn-green')) {
+    //         exclude.push($sibling.attr('data-name'));
+    //         include.push($(this).attr('data-name'));
+    //     }
+    // });
 
-    input.forEach(function(item, key) {
-        if (exclude.includes(item)) {
-            input.splice(key, 1);
+    // input.forEach(function(item, key) {
+    //     if (exclude.includes(item)) {
+    //         input.splice(key, 1);
 
-            let enharmonic = include[exclude.indexOf(item)];
+    //         let enharmonic = include[exclude.indexOf(item)];
 
-            if (! input.includes(enharmonic))
-                input.splice(key, 0, enharmonic);
-        }
-    });
-
+    //         if (! input.includes(enharmonic))
+    //             input.splice(key, 0, enharmonic);
+    //     }
+    // });
+    
     if (missingEnharmonics() == 0)
         showRootOptions(input);
 });
 
+//////////////////
+// ROOT OPTIONS //
+//////////////////
 $(document).on('click', '#root-container button', function() {
     let $button = $(this);
 
@@ -471,9 +491,15 @@ $(document).on('click', '#root-container button', function() {
     $button.toggleClass('btn-outline-secondary btn-green');
 });
 
-$(document).on('click', '#reset-options', function() {
-    resetOptions();
-});
+function noteToHumans(note) {
+    return ucfirst(note.replace('+', '#').replace('+', '#').replace('-', 'b').replace('-', 'b').replace('2', ''));
+}
+
+function noteToMachine(note) {
+    let letter = ucfirst(note[0]);
+
+    return letter + note.substring(1).replace('#', '+').replace('#', '+').replace('b', '-').replace('b', '-');    
+}
 
 function showRootOptions(notes) {
     $('#root-buttons').html('');
@@ -481,11 +507,8 @@ function showRootOptions(notes) {
 
     if (notes.length > 2) {
         for (var i=0; i<notes.length; i++) {
-            let noteToHumans = notes[i].replace('+', '#');
-                noteToHumans = noteToHumans.replace('-', 'b');
-
             let html = `<div class="m-2 d-inline-block">
-                            <button class="btn btn-outline-secondary font-weight-bold" data-name="`+notes[i]+`" type="button">`+noteToHumans+`</button>
+                            <button class="btn btn-outline-secondary font-weight-bold" data-name="`+notes[i]+`" type="button">`+noteToHumans(notes[i])+`</button>
                         </div>`;
 
             $('#root-buttons').append(html);
@@ -501,27 +524,20 @@ function showRootOptions(notes) {
 
 function showEnharmonicOptions(notes) {
     $('#options-buttons').html('');
-    let singleNotes = ['D', 'G', 'A'];
+    console.log('Looking at: '+notes);
+    for (var i=0; i<notes.length; i++) {
+        let enharmonics = JSON.parse($('.keyboard-key[data-name="'+noteToHumans(notes[i]).toLowerCase()+'"]').attr('data-names'));
 
-    for (var i=0; i<notes.length-1; i++) {
-        let first = notes[i];
-        let second = notes[i+1];
+            let html = '<div class="btn-group m-2">';
 
-        if (! singleNotes.includes(notes[i]) && $('button[data-name="'+first+'"]').length == 0) {
-            if (first && second) {
-                let firstToHumans = first.replace('+', '#');
-                    firstToHumans = firstToHumans.replace('-', 'b');
-                let secondToHumans = second.replace('+', '#');
-                    secondToHumans = secondToHumans.replace('-', 'b');
+            enharmonics.forEach(function(enharmonic) {
+                html += '<button class="btn btn-outline-secondary font-weight-bold" data-source="'+notes[i]+'" data-name="'+noteToMachine(enharmonic)+'" type="button">'+noteToHumans(enharmonic)+'</button>';
+            });
+            
+            html += '</div>';
 
-                let html = `<div class="btn-group m-2">
-                                <button class="btn btn-outline-secondary font-weight-bold" data-name="`+first+`" type="button">`+firstToHumans+`</button>
-                                <button class="btn btn-outline-secondary font-weight-bold" data-name="`+second+`" type="button">`+secondToHumans+`</button>
-                            </div>`;
-
-                $('#options-buttons').append(html);
-            }
-        }
+            $('#options-buttons').append(html);
+        
     }
 
     if ($('#options-buttons > div').length > 0) {
@@ -536,13 +552,10 @@ function resetOptions(element = null) {
     exclude = [];
 
     if (element) {
-        element.siblings('button').first().removeClass('btn-green').addClass('btn-outline-secondary');
+        element.siblings('button').removeClass('btn-green').addClass('btn-outline-secondary');
     } else {
         $('#options-container button').removeClass('btn-green').addClass('btn-outline-secondary');
     }
-
-    if ($('#reset-options').attr('data-original'))
-        input = JSON.parse($('#reset-options').attr('data-original'));
 }
 
 function removeOptions() {
@@ -551,27 +564,39 @@ function removeOptions() {
     showRootOptions([]);
 }
 
+////////////////////
+// KEYBOARD CLICK //
+////////////////////
 $('.keyboard-input .keyboard-white-key, .keyboard-input .keyboard-white-key').on('click', function(e) {
     let $key = $(e.target);
+ 
+    tool = 'keyboard';
+ 
     reset('.note');
+ 
     $key.find(' > .dot').toggle();
 
     notes = getNotes();
 
     showEnharmonicOptions(notes);
+
     showRootOptions([]);
 });
 
 $('.dot').on('click', function() {
     $(this).hide();
-
     getNotes();
 });
 
+//////////////////////
+// NOTE INPUT CLICK //
+//////////////////////
 $('.note h1').on('click', function() {
 	let $note = $(this).parent();
 	$note.toggleClass('note-inactive note-active');
 	$note.find('button').toggleAttr('disabled');
+
+    tool = 'button';
 
     reset('.dot');
     removeOptions();
@@ -580,6 +605,9 @@ $('.note h1').on('click', function() {
     showRootOptions(notes);
 });
 
+///////////////////////////////////
+// NOTE PLUS/MINUS BUTTONS CLICK //
+///////////////////////////////////
 $('.note button').on('click', function() {
 	let symbol = $(this).attr('data-symbol');
 	let accidental = '';
@@ -611,7 +639,8 @@ $('.note button').on('click', function() {
 
     $note.attr('data-name', $note.attr('data-name')[0] + ext);
     playNote($note);
-	getNotes();
+	notes = getNotes();
+    showRootOptions(notes);
 });
 
 function reset(elem) {
@@ -631,7 +660,6 @@ function playNote($note) {
 }
 
 function getNotes() {
-    let $firstKey = $('.dot:visible').first();
 	let notes = [];
 
 	$('.note-active').each(function() {
@@ -641,39 +669,27 @@ function getNotes() {
 		notes.push(note);
 	});
 
-    $('.dot:visible').each(function() {
-        let $key = $(this).parent();
-        let note = $key.attr('data-name').toUpperCase();
+    $('.keyboard-key').each(function() {
+        $key = $(this);
 
-        note = note.replace(/#|_/g, '+');
-
-        if (note == 'C')
-            notes.push('B+');
-
-        if (note == 'F')
-            notes.push('E+');
-        
-        notes.push(note);
-
-        if (note == 'B')
-            notes.push('C-');
-
-        if (note == 'E')
-            notes.push('F-');
-        
-        if (note.includes('+'))
-            notes.push(nextLetter(note[0]) + '-');
-
+        if ($key.find('>.dot:visible').length > 0) {
+            let note = $key.attr('data-name').toUpperCase();
+            
+            notes.push(note.replace(/#|_/g, '+'));
+        }
     });
 
     input = notes;
+
     $('#reset-options').attr('data-original', JSON.stringify(notes));
 
 	return notes;
 }
 
+////////////////////////
+// SUBMIT NOTES CLICK //
+////////////////////////
 $('button#submit-notes').on('click', function() {
-
 	if (input.length < 3) {
 		alert('Please select at least 3 notes');
 	} else if (missingEnharmonics() > 0) {
@@ -708,10 +724,11 @@ function animate() {
 }
 
 function submit() {
-	console.log('Sending: '+input);
+	console.log('Sending: ' + input);
+    console.log('Tool used: ' + tool);
     console.log(root ? 'The selected root is ' + root : 'No root was selected');
 
-	$.get('{{route('tools.chord-finder.analyse')}}', {notes: input, root: root}, function(response) {
+	$.get('{{route('tools.chord-finder.analyse')}}', {notes: input, root: root, tool: tool}, function(response) {
 		$('#notes-container').html(response);
         $('html,body').scrollTop(0);
 	}).fail(function(response) {
@@ -749,6 +766,11 @@ function updateUrl(notes) {
         let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + query;
         window.history.pushState({path:newurl},'',newurl);
     }
+}
+
+const ucfirst = (s) => {
+  if (typeof s !== 'string') return ''
+  return s.charAt(0).toUpperCase() + s.slice(1)
 }
 </script>
 @endpush

@@ -24,7 +24,7 @@ class Enharmonics
 		foreach ($this->map as $note => $enharmonics) {
 			if ($input == $note) {
 				if ($includeOriginal)
-					array_push($enharmonics, $note);
+					array_splice($enharmonics, 1, 0, $note);
 
 				return $enharmonics;
 			}
@@ -34,7 +34,7 @@ class Enharmonics
 					$index = array_search($input, $enharmonics);
 					unset($enharmonics[$index]);
 				}
-				array_push($enharmonics, $note);
+				array_splice($enharmonics, 1, 0, $note);
 				
 				return $enharmonics;
 			}

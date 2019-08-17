@@ -2,9 +2,11 @@
 
 namespace App\Resources\ChordFinder;
 
+use Illuminate\Http\Request;
+
 class ChordFinder
 {
-	protected $notes, $results, $root, $bass;
+	protected $notes, $results, $root, $bass, $tool;
 
 	public function cleaner()
 	{
@@ -31,6 +33,13 @@ class ChordFinder
 		return new Ranking($this->results, $this->root);
 	}
 
+	public function tool($tool)
+	{
+		$this->tool = $tool;
+
+		return $this;
+	}
+
 	public function root($root)
 	{
 		$this->root = $root;
@@ -41,9 +50,11 @@ class ChordFinder
 		return $this;
 	}
 
-	public function take($notes)
+	public function take(Request $request)
 	{
-		$this->notes = $notes;
+		$this->notes = $request->notes;
+		$this->root($request->root);
+		$this->tool($request->tool);
 
 		return $this;
 	}
@@ -59,6 +70,8 @@ class ChordFinder
 
 		$query .= "root={$this->root}&";
 
+		$query .= "tool={$this->tool}&";
+
 		$query .= 'dev';
 
 		return route('tools.chord-finder.analyse') . $query;
@@ -72,7 +85,7 @@ class ChordFinder
 							->removeDuplicates()
 							->fixSharps()
 							->splitEnharmonics()
-							->sort($this->root)
+							->sort($this->root, $this->tool)
 							->getNotes();
 
 		return $this;
@@ -80,12 +93,11 @@ class ChordFinder
 
 	public function analyse()
 	{
-
 			$this->getInversions();
 			$this->results = $this->label()->intervals();
 
 			if ($this->root) {
-				$this->results = $this->label()->strict($this->bass)->chords();
+				$this->results = $this->label()->strict($this->bass, $this->tool)->chords();
 			} else {
 				$this->results = $this->validator()->removeImpossible()->get();
 				$this->results = $this->validator()->addNinth()->get();
@@ -111,6 +123,8 @@ class ChordFinder
 	{
 		$this->validator()->ready();
 		
+		$this->results['tool'] = $this->tool;
+
 		return $this->results;
 	}
 
