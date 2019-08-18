@@ -113,7 +113,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'piece',
             'source' => route('api.pieces.find'),
-            'color' => 'darkblue']);
+            'color' => 'blue']);
 
         return $this->createPlaylist($collection, ['title' => 'Flashy']);
     }
