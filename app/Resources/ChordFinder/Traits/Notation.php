@@ -96,7 +96,7 @@ trait Notation
 		$secondType = $fourthType = null;
 
 		if ($second)
-			$secondType = $second['type'] == 'minor' ? '-2' : '2';
+			$secondType = $second['type'] == 'minor' ? 'b2' : '2';
 
 		if ($fourth)
 			$fourthType = $fourth['type'] == 'augmented' ? '+4' : '4';
@@ -144,8 +144,8 @@ trait Notation
 					$label['ext'] .= $note['interval'];
 					$label['ext_shorthand'] .= sup($note['interval']);
 				} else if ($note['type'] == 'minor') {
-					$label['ext'] .= 'm' . $note['interval'];
-					$label['ext_shorthand'] .= sup('m' . $note['interval']);
+					$label['ext'] .= 'b' . $note['interval'];
+					$label['ext_shorthand'] .= sup('b' . $note['interval']);
 				} else if ($note['type'] == 'perfect') {
 					$label['ext'] .= $note['interval'];
 					$label['ext_shorthand'] .= sup($note['interval']);

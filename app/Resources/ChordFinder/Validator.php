@@ -211,6 +211,7 @@ class Validator
 	public function filters($intervals)
 	{
 		return $this->inversionNotValid($intervals) || 
+			   $this->missingThird($intervals) || 
 			   $this->hasFalseSeventh($intervals) || 
 			   $this->hasFalseThird($intervals) || 
 			   $this->isFalseDiminished($intervals) || 
@@ -335,10 +336,27 @@ class Validator
 		return $hasMinSeventh || $hasDimSeventh;
 	}
 
+	public function missingThird($intervals)
+	{
+		$hasThird = $hasSecondOrFourth = false;
+
+		foreach ($intervals as $interval) {
+			if ($interval['interval'] == 3)
+				$hasThird = true;
+
+			if ($interval['interval'] == 2 || $interval['interval'] == 4)
+				$hasSecondOrFourth = true;
+		}
+
+		if ($hasSecondOrFourth)
+			return false;
+
+		return ! $hasThird;
+	}
+
 	public function missingThirdAndFifth($intervals)
 	{
-		$hasThird = false;
-		$hasFifth = false;
+		$hasThird = $hasFifth = false;
 
 		foreach ($intervals as $interval) {
 			if ($interval['interval'] == 3)

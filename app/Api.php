@@ -57,7 +57,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'collection',
             'source' => \URL::to('/api/search'),
-            'color' => 'lightblue']);
+            'color' => 'lightpink']);
 
         return $this->createPlaylist($collection, ['title' => 'Composers']);
     }

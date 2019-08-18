@@ -51,7 +51,12 @@ class Interval
 		if (in_array($type, ['augmented', 'diminished'])) {
 			return substr($type, 0, 3);
 		} else {
-			return $type == 'minor' ? 'm' : 'M';
+			if ($type == 'minor')
+				return 'm';
+			if ($type == 'major')
+				return 'M';
+
+			return '';
 		}
 	}
 

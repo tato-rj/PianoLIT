@@ -99,14 +99,15 @@ class ChordFinder
 			if ($this->root) {
 				$this->results = $this->label()->strict($this->bass, $this->tool)->chords();
 			} else {
-				$this->results = $this->validator()->removeImpossible()->get();
 				$this->results = $this->validator()->addNinth()->get();
 				$this->results = $this->validator()->addEleventh()->get();
 				$this->results = $this->validator()->addThirteenth()->get();
 				$this->results = $this->validator()->fixAddedIntervals()->get();
 				$this->results = $this->label()->chords();
 			}
-			
+
+			$this->results = $this->validator()->removeImpossible()->get();
+
 			$this->results = array_values($this->results);
 
 		return $this;
