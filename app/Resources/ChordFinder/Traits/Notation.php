@@ -148,27 +148,36 @@ trait Notation
 		$label = ['ext' => '', 'ext_shorthand' => ''];
 		$extensions = [6,9,11,13];
 
+		$third = $this->find($notes, 3);
+		$fifth = $this->find($notes, 5);
+		$prefix = ($third['type'] == 'major' && $fifth['type'] == 'diminished') ? 'b5' : null;
+
 		foreach ($extensions as $extension) {
 			$note = $this->find($notes, $extension);
 
 			if ($note) {
 				if ($note['type'] == 'major') {
 					$label['ext'] .= $note['interval'];
-					$label['ext_shorthand'] .= sup($note['interval']);
+					$label['ext_shorthand'] .= sup($prefix . $note['interval']);
 				} else if ($note['type'] == 'minor') {
 					$label['ext'] .= 'b' . $note['interval'];
-					$label['ext_shorthand'] .= sup('b' . $note['interval']);
+					$label['ext_shorthand'] .= sup($prefix . 'b' . $note['interval']);
 				} else if ($note['type'] == 'perfect') {
 					$label['ext'] .= $note['interval'];
-					$label['ext_shorthand'] .= sup($note['interval']);
+					$label['ext_shorthand'] .= sup($prefix . $note['interval']);
 				} else if ($note['type'] == 'diminished') {
 					$label['ext'] .= 'b' . $note['interval'];
-					$label['ext_shorthand'] .= sup('b' . $note['interval']);
+					$label['ext_shorthand'] .= sup($prefix . 'b' . $note['interval']);
 				} else if ($note['type'] == 'augmented') {
 					$label['ext'] .= '#' . $note['interval'];
-					$label['ext_shorthand'] .= sup('#' . $note['interval']);
+					$label['ext_shorthand'] .= sup($prefix . '#' . $note['interval']);
 				}
 			}
+		}
+
+		if (! $label['ext']) {
+			$label['ext'] = $prefix;
+			$label['ext_shorthand'] = sup($prefix);
 		}
 
 		return $label;
