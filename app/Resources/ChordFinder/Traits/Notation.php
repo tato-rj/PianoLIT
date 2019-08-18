@@ -24,7 +24,7 @@ trait Notation
 
 	public function core($notes)
 	{
-		$label = [];
+		$label = ['type' => null, 'type_shorthand' => null];
 		$third = $this->find($notes, 3);
 		$fifth = $this->find($notes, 5);
 		$seventh = $this->find($notes, 7);
@@ -80,8 +80,13 @@ trait Notation
 			$label['seventh'] = $seventh['name'];
 			$label['seventh_shorthand'] = '7';
 		} else {
-			$label['seventh'] = $seventh['name'];
-			$label['seventh_shorthand'] = $seventh['shorthand'] . '7';
+			if ($seventh['type'] == 'major') {
+				$label['seventh'] = 'major 7';
+				$label['seventh_shorthand'] = ' maj7';
+			} else if ($seventh['type'] == 'minor') {
+				$label['seventh'] = 'minor 7';
+				$label['seventh_shorthand'] = '7';
+			}
 		}
 
 		return $label;
@@ -95,11 +100,18 @@ trait Notation
 		$fourth = $this->find($notes, 4);
 		$secondType = $fourthType = null;
 
-		if ($second)
-			$secondType = $second['type'] == 'minor' ? 'b2' : '2';
+		if ($second) {
+			if ($second['type'] == 'minor') {
+				$secondType = 'b2';
+			} else if ($second['type'] == 'augmented') {
+				$secondType = '#2';
+			}  else {
+				$secondType = '2';
+			}
+		}
 
 		if ($fourth)
-			$fourthType = $fourth['type'] == 'augmented' ? '+4' : '4';
+			$fourthType = $fourth['type'] == 'augmented' ? '#4' : '4';
 
 		if (is_null($second) && is_null($fourth))
 			return ['sus' => '', 'sus_shorthand' => ''];
@@ -150,11 +162,11 @@ trait Notation
 					$label['ext'] .= $note['interval'];
 					$label['ext_shorthand'] .= sup($note['interval']);
 				} else if ($note['type'] == 'diminished') {
-					$label['ext'] .= '-' . $note['interval'];
-					$label['ext_shorthand'] .= sup('-' . $note['interval']);
+					$label['ext'] .= 'b' . $note['interval'];
+					$label['ext_shorthand'] .= sup('b' . $note['interval']);
 				} else if ($note['type'] == 'augmented') {
-					$label['ext'] .= '+' . $note['interval'];
-					$label['ext_shorthand'] .= sup('+' . $note['interval']);
+					$label['ext'] .= '#' . $note['interval'];
+					$label['ext_shorthand'] .= sup('#' . $note['interval']);
 				}
 			}
 		}

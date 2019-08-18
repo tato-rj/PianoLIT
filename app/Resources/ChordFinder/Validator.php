@@ -4,19 +4,27 @@ namespace App\Resources\ChordFinder;
 
 class Validator
 {
-	protected $array;
+	protected $array, $error;
 
 	public function __construct(array $array)
 	{
 		$this->array = $array;
 	}
 
-	public function ready()
+	public function report($error = null)
 	{
-		if (empty($this->array['chords']))
-			abort(422, 'Sorry, we couldn\'t create any chord with these notes.');
+		if (! $this->error)
+			$this->error = (new Error($error))->report();
 
-		return true;
+		return $this->error;
+	}
+
+	public function check(array $array)
+	{
+		if (empty($array))
+			abort(422, $this->error);
+
+		$this->array = $array;
 	}
 
 	public function removeImpossible()
@@ -25,7 +33,7 @@ class Validator
 
 		foreach ($this->array as $index => $result) {
 			foreach ($result['inversions'] as $key => $inversion) {
-				if ($this->filters($inversion['intervals']))
+				if ($this->filters($inversion['intervals'], $result['inversions'][$key]['chord']))
 					unset($copy[$index]['inversions'][$key]);
 			}
 		}
@@ -33,14 +41,28 @@ class Validator
 		foreach ($copy as $index => $result) {
 			if (empty($result['inversions'])) {
 				unset($copy[$index]);
+				$this->error = $this->report();
 			} else {
 				$copy[$index]['inversions'] = array_values($result['inversions']);
 			}
 		}
 
-		$this->array = $copy;
+		$this->check($copy);
 
 		return $this;
+	}
+
+	public function filters($intervals, $notes)
+	{
+		return $this->hasRepeatedLetters($notes) || 
+			   $this->hasFalseEnharmonic($notes) || 
+			   $this->missingThird($intervals) || 
+			   $this->hasFalseSeventh($intervals) || 
+			   $this->hasFalseThird($intervals) || 
+			   $this->hasFalseSixth($intervals) || 
+			   $this->isFalseAugmented($intervals) || 
+			   $this->missingThirdAndFifth($intervals) ||
+			   $this->inversionNotValid($intervals);
 	}
 
 	public function addNinth()
@@ -208,36 +230,67 @@ class Validator
 		return $this;
 	}
 
-	public function filters($intervals)
-	{
-		return $this->inversionNotValid($intervals) || 
-			   $this->missingThird($intervals) || 
-			   $this->hasFalseSeventh($intervals) || 
-			   $this->hasFalseThird($intervals) || 
-			   $this->isFalseDiminished($intervals) || 
-			   $this->hasFalseSixth($intervals) || 
-			   $this->isFalseAugmented($intervals) || 
-			   $this->missingThirdAndFifth($intervals);
-	}
-
 	public function inversionNotValid($intervals)
 	{
-		return in_array(null, $intervals);
+		$notValid = in_array(null, $intervals);
+
+		if ($notValid)
+			$this->error = $this->report('We couldn\'t quite figure out what this chord is. Please check those notes and try again!');
+
+		return $notValid;
+	}
+
+	public function hasRepeatedLetters($notes)
+	{
+		$hasRepeatedLetters = false;
+
+		foreach ($notes as $index => $note) {
+			if (strlen($note) == 1) {
+				if (in_array($note . '+', $notes) || in_array($note . '-', $notes)) {
+					$hasRepeatedLetters = true;
+					$this->error = $this->report('We found two ' . strtoupper($note[0]) . 's in this chord. In standard harmony, we cannot have more than one note with the same letter.');
+				}
+			}
+		}
+
+		return $hasRepeatedLetters;
+	}
+
+	public function hasFalseEnharmonic($notes)
+	{
+		$hasFalseEnharmonic = false;
+
+		foreach ($notes as $index => $note) {
+			if (array_key_exists($index+1, $notes)) {
+				if ((new Interval($note, $notes[$index+1]))->isEnharmonic()) {
+					$hasFalseEnharmonic = true;
+					$this->error = $this->report(noteToHumans($note) . ' and ' . noteToHumans($notes[$index+1]) . ' are the same note (also called enharmonic notes), and cannot be in the same chord together.');
+				}
+			}
+		}
+
+		return $hasFalseEnharmonic;
 	}
 
 	public function hasFalseThird($intervals)
 	{
-		$hasThird = $hasDimFourth = false;
+		$falseThird = $falseFourth = false;
 
 		foreach ($intervals as $interval) {
-			if ($interval['interval'] == 3)
-				$hasThird = true;
-
 			if ($interval['name'] == 'diminished 4')
-				$hasDimFourth = true;
+				$falseFourth = $interval['type'];
+
+			if ($interval['name'] == 'diminished 3' || $interval['name'] == 'augmented 3')
+				$falseThird = $interval['type'];
 		}
 
-		return ! $hasThird && $hasDimFourth;
+		if ($falseFourth)
+			$this->error = $this->report('We found the 4th to be ' . $falseFourth . ', which isn\'t a valid interval because it takes the place of the major 3rd (they are enharmonic). Did you mean this chord to have a perfect 4th or the major 3rd instead?');
+
+		if ($falseThird)
+			$this->error = $this->report('We found the 3rd to be ' . $falseThird . ', which isn\'t a valid interval. Did you mean this chord to have a major or minor 3rd?');
+
+		return $falseThird || $falseFourth;
 	}
 
 	public function hasFalseSixth($intervals)
@@ -255,42 +308,44 @@ class Validator
 				$hasMajorSixth = true;
 		}
 
-		return $hasMinThird && $hasDimFifth && $hasMajorSixth;
-	}
-
-	public function isFalseDiminished($intervals)
-	{
-		$hasMajThird = false;
-		$hasDimFifth = false;
-		$hasDimSeventh = false;
-
-		foreach ($intervals as $interval) {
-			if ($interval['name'] == 'major 3')
-				$hasMajThird = true;
-
-			if ($interval['name'] == 'diminished 5')
-				$hasDimFifth = true;
-
-			if ($interval['name'] == 'diminished 7')
-				$hasDimSeventh = true;
-		}
-
-		if (! $hasDimFifth)
-			return false;
-
-		if ($hasMajThird)
-			return true;
+		$falseSixth = $hasMinThird && $hasDimFifth && $hasMajorSixth;
 		
-		if (! $hasDimSeventh)
-			return false;
+		if ($falseSixth)
+			$this->error = $this->report('The 6th in this chord should be a diminished 7th. Did you mean this to be a fully diminished chord?');
 
-		return ! $hasDimFifth && $hasDimSeventh;
+		return $falseSixth;
 	}
+
+	// public function isFalseDiminished($intervals)
+	// {
+	// 	$hasMajThird = $hasDimFifth = $hasDimSeventh = false;
+
+	// 	foreach ($intervals as $interval) {
+	// 		if ($interval['name'] == 'major 3')
+	// 			$hasMajThird = true;
+
+	// 		if ($interval['name'] == 'diminished 5')
+	// 			$hasDimFifth = true;
+
+	// 		if ($interval['name'] == 'diminished 7')
+	// 			$hasDimSeventh = true;
+	// 	}
+
+	// 	if (! $hasDimFifth)
+	// 		return false;
+
+	// 	if ($hasMajThird)
+	// 		return true;
+		
+	// 	if (! $hasDimSeventh)
+	// 		return false;
+
+	// 	return ! $hasDimFifth && $hasDimSeventh;
+	// }
 
 	public function hasFalseSeventh($intervals)
 	{
-		$hasDimFifth = false;
-		$hasDimSeventh = false;
+		$hasDimFifth = $hasDimSeventh = false;
 
 		foreach ($intervals as $interval) {
 			if ($interval['name'] == 'diminished 5')
@@ -300,18 +355,17 @@ class Validator
 				$hasDimSeventh = true;
 		}
 
-		if (! $hasDimSeventh)
-			return false;
+		$falseSeventh = ! $hasDimFifth && $hasDimSeventh;
 
-		return ! $hasDimFifth;
+		if ($falseSeventh)
+			$this->error = $this->report('Only diminished chords can have a diminished 7th.');
+
+		return $falseSeventh;
 	}
 
 	public function isFalseAugmented($intervals)
 	{
-		$hasMinThird = false;
-		$hasAugFifth = false;
-		$hasMinSeventh = false;
-		$hasDimSeventh = false;
+		$hasMinThird = $hasAugFifth = $hasMinSeventh = $hasDimSeventh = false;
 
 		foreach ($intervals as $interval) {
 			if ($interval['name'] == 'minor 3')
@@ -320,20 +374,19 @@ class Validator
 			if ($interval['name'] == 'augmented 5')
 				$hasAugFifth = true;
 
-			if ($interval['name'] == 'minor 7')
-				$hasMinSeventh = true;
-
 			if ($interval['name'] == 'diminished 7')
 				$hasDimSeventh = true;
 		}
 
-		if (! $hasAugFifth)
-			return false;
-		
-		if ($hasMinThird)
-			return true;
+		$falseAugmented = $hasAugFifth && $hasMinThird || $hasAugFifth && $hasDimSeventh;
 
-		return $hasMinSeventh || $hasDimSeventh;
+		if ($hasAugFifth && $hasMinThird)
+			$this->error = $this->report('An augmented chord can\'t have a minor 3rd.');
+
+		if ($hasAugFifth && $hasDimSeventh)
+			$this->error = $this->report('An augmented chord can\'t have a diminished 7th.');
+
+		return $falseAugmented;
 	}
 
 	public function missingThird($intervals)
@@ -348,10 +401,12 @@ class Validator
 				$hasSecondOrFourth = true;
 		}
 
-		if ($hasSecondOrFourth)
-			return false;
+		$missingThird = ! $hasThird && ! $hasSecondOrFourth;
 
-		return ! $hasThird;
+		if ($missingThird)
+			$this->error = $this->report('Looks like we\'re missing the 3rd. Without it we can\'t figure out what type of chord this is (major, minor, etc).');
+
+		return $missingThird;
 	}
 
 	public function missingThirdAndFifth($intervals)
@@ -366,7 +421,12 @@ class Validator
 				$hasFifth = true;
 		}
 
-		return !$hasThird && !$hasFifth;
+		$missingThirdAndFifth = ! $hasThird && ! $hasFifth;
+
+		if ($missingThirdAndFifth)
+			$this->error = $this->report('We\'re missing both the 3rd and the 5th. Maybe this is not the correct root?');
+
+		return $missingThirdAndFifth;
 	}
 
 	public function get()

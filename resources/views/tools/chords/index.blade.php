@@ -433,41 +433,27 @@ var root = tool = null;
 ////////////////////////
 $(document).on('click', '#options-container button', function() {
     let $button = $(this);
-    let $selected = $('#options-container button[data-source="'+$button.attr('data-source')+'"].btn-green');
-    let target;
-
-    if ($selected.length > 0) {
-        target = $selected.attr('data-name');
-    } else {
-        target = $button.attr('data-source');
-    }
-
-    let index = notes.indexOf(target);
-    notes[index] = $button.attr('data-name');
-
     resetOptions($button);
-
     $button.removeClass('btn-outline-secondary').addClass('btn-green');
 
-    // $('#options-container button').each(function() {
-    //     let $sibling = $(this).siblings('button').first();
-    //     if ($(this).hasClass('btn-green')) {
-    //         exclude.push($sibling.attr('data-name'));
-    //         include.push($(this).attr('data-name'));
-    //     }
-    // });
-
-    // input.forEach(function(item, key) {
-    //     if (exclude.includes(item)) {
-    //         input.splice(key, 1);
-
-    //         let enharmonic = include[exclude.indexOf(item)];
-
-    //         if (! input.includes(enharmonic))
-    //             input.splice(key, 0, enharmonic);
-    //     }
-    // });
+    let $selected = $('#options-container button[data-source="'+$button.attr('data-source')+'"].btn-green');
+    let target, source;
     
+    target = $selected.attr('data-name');
+    source = $selected.attr('data-source');
+
+    notes = [];
+
+    $('#options-container button.btn-green').each(function() {
+        notes.push($(this).attr('data-name'));
+    });
+    
+    console.log('You just selected the ' + target);
+
+    console.log('Set of notes: ' + notes);
+    
+    input = notes;
+        
     if (missingEnharmonics() == 0)
         showRootOptions(input);
 });
@@ -524,7 +510,7 @@ function showRootOptions(notes) {
 
 function showEnharmonicOptions(notes) {
     $('#options-buttons').html('');
-    console.log('Looking at: '+notes);
+
     for (var i=0; i<notes.length; i++) {
         let enharmonics = JSON.parse($('.keyboard-key[data-name="'+noteToHumans(notes[i]).toLowerCase()+'"]').attr('data-names'));
 
@@ -737,7 +723,7 @@ function submit() {
 }
 
 function showError(response) {
-    $('#modal-error .modal-body div').text(response);
+    $('#modal-error .modal-body div#error-report').text(response);
     $('#modal-error').modal('show');
 }
 

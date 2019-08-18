@@ -84,7 +84,6 @@ class ChordFinder
 							->lowercase()
 							->removeDuplicates()
 							->fixSharps()
-							->splitEnharmonics()
 							->sort($this->root, $this->tool)
 							->getNotes();
 
@@ -94,6 +93,7 @@ class ChordFinder
 	public function analyse()
 	{
 			$this->getInversions();
+
 			$this->results = $this->label()->intervals();
 
 			if ($this->root) {
@@ -121,9 +121,7 @@ class ChordFinder
 	}
 
 	public function get()
-	{
-		$this->validator()->ready();
-		
+	{		
 		$this->results['tool'] = $this->tool;
 
 		return $this->results;

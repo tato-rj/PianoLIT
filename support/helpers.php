@@ -10,6 +10,13 @@ function lastword($str)
 	return array_pop($pieces);
 }
 
+function noteToHumans($note) {
+	$result = str_replace('+', '#', $note);
+	$result = str_replace('-', 'b', $result);
+
+	return ucfirst(str_replace('2', '', $result));
+}
+
 function iterationToHumans($key)
 {
 	$words = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth', 'eleventh', 'twelveth'];

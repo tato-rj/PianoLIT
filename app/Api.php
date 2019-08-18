@@ -57,7 +57,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'collection',
             'source' => \URL::to('/api/search'),
-            'color' => 'lightpink']);
+            'color' => 'purple']);
 
         return $this->createPlaylist($collection, ['title' => 'Composers']);
     }
@@ -68,7 +68,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'collection',
             'source' => \URL::to('/api/search'),
-            'color' => 'purple']);
+            'color' => 'lightpink']);
 
         return $this->createPlaylist($collection, ['title' => 'Periods']);
     }
@@ -79,7 +79,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'collection',
             'source' => \URL::to('/api/search'),
-            'color' => 'pink']);
+            'color' => 'yellow']);
 
         return $this->createPlaylist($collection, ['title' => 'Improve your']);
     }
@@ -91,7 +91,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'collection',
             'source' => \URL::to('/api/search'),
-            'color' => 'yellow']);
+            'color' => 'orange']);
 
         return $this->createPlaylist($collection, ['title' => 'Levels']);
     }
@@ -102,7 +102,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'piece',
             'source' => route('api.pieces.find'),
-            'color' => 'orange']);
+            'color' => 'red']);
 
         return $this->createPlaylist($collection, ['title' => 'Most famous']);
     }
@@ -113,7 +113,7 @@ class Api
         $this->withAttributes($collection, [
             'type' => 'piece',
             'source' => route('api.pieces.find'),
-            'color' => 'red']);
+            'color' => 'darkblue']);
 
         return $this->createPlaylist($collection, ['title' => 'Flashy']);
     }

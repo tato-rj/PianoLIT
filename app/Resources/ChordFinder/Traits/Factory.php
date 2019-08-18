@@ -26,8 +26,10 @@ trait Factory
 			3 => 'augmented'
 		],
 		3 => [
+			2 => 'diminished',
 			3 => 'minor',
 			4 => 'major',
+			5 => 'augmented',
 		],
 		4 => [
 			4 => 'diminished',
