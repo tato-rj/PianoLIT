@@ -731,16 +731,19 @@ $('#modal-error').on('hide.bs.modal', function() {
     reload();
 });
 
-function reload() {
-    input = [];
-    reset('.dot');
-    reset('.note');
+function reload(full = false) {
     $('button#submit-notes').text($('button#submit-notes').attr('data-text')).prop('disabled', false);
     $('.input-overlay').hide();
-    $('#options-buttons').html('').parent().removeClass('border');
-    $('#options-container').hide();
-    $('#root-buttons').html('');
-    $('#root-container').hide();
+    
+    if (full) {
+        input = [];
+        reset('.dot');
+        reset('.note');
+        $('#options-buttons').html('').parent().removeClass('border');
+        $('#options-container').hide();
+        $('#root-buttons').html('');
+        $('#root-container').hide();
+    }
 }
 
 function updateUrl(notes) {
