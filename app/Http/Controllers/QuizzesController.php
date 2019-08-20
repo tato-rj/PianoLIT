@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Blog\Post;
 use App\Quiz\Quiz;
 use App\Http\Requests\QuizForm;
 use Illuminate\Http\Request;
@@ -43,7 +44,7 @@ class QuizzesController extends Controller
             'slug' => str_slug($form->title),
             'title' => $form->title,
             'description' => $form->description,
-            'questions' => serialize($form->questions),
+            'questions' => serialize($form->questions()),
             'feedback' => serialize($form->feedback)
         ]);
 
@@ -99,7 +100,7 @@ class QuizzesController extends Controller
             'slug' => str_slug($form->title),
             'title' => $form->title,
             'description' => $form->description,
-            'questions' => serialize($form->questions),
+            'questions' => serialize($form->questions()),
             'feedback' => serialize($form->feedback)
         ]);
 

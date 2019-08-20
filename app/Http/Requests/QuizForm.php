@@ -16,6 +16,25 @@ class QuizForm extends FormRequest
         return true;
     }
 
+    public function questions()
+    {
+        $quiz = [];
+
+        foreach ($this->questions as $index => $question) {
+            $array = ['Q' => null, 'A' => []];
+            foreach ($question as $key => $value) {
+                if ($key == 0) {
+                    $array['Q'] = $value;
+                } else {
+                    array_push($array['A'], $value);
+                }
+            }
+            array_push($quiz, $array);
+        }
+
+        return $quiz;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

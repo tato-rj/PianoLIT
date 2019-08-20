@@ -19,6 +19,9 @@
         </div>
       </li>
       <li class="nav-item mx-2">
+        <a class="nav-link" href="{{route('quizzes.index')}}">Quizzes</a>
+      </li>
+      <li class="nav-item mx-2">
         <a class="nav-link" href="{{route('posts.index')}}">Blog</a>
       </li>
       <li class="nav-item mx-2">

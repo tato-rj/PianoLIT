@@ -1,39 +1,15 @@
-@extends('layouts.app', ['title' => 'The (interactive) Circle of Fifths | ' . config('app.name')])
+@extends('layouts.app', [
+	'title' => 'The (interactive) Circle of Fifths | ' . config('app.name'),
+	'shareable' => [
+		'keywords' => 'circle of fifths,music theory,circle,fifths,music theory,chords',
+		'title' => 'The Interactive Circle of Fifths',
+		'description' => 'An interactive Circle of Fifths that will help you understand what it is and how to use it.',
+		'thumbnail' => asset('images/misc/thumbnails/circle.jpg'),
+		'created_at' => carbon('20-06-2019'),
+		'updated_at' => carbon('20-06-2019')
+	]])
 
 @push('header')
-<meta name="keywords" content="circle of fifths,music theory,circle,fifths,music theory,chords">
-<meta name="twitter:card" value="An interactive Circle of Fifths that will help you understand what it is and how to use it.">
-<meta property="og:site_name" content="PianoLIT" />
-<meta property="og:title" content="The Interactive Circle of Fifths" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="{{url()->current()}}" />
-<meta property="og:image" content="{{asset('images/misc/thumbnails/circle.jpg')}}" />
-<meta property="og:image:width" content="400" />
-<meta property="og:image:height" content="245" />
-<meta property="og:description" content="An interactive Circle of Fifths that will help you understand what it is and how to use it." />
-<meta property="article:published_time" content="{{carbon('20-06-2019')}}">
-<meta property="article:modified_time" content="{{carbon('20-06-2019')}}">
-<meta property="og:updated_time" content="{{carbon('20-06-2019')}}">
-
-<meta name="twitter:site" content="@litpiano">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="{{asset('images/misc/thumbnails/circle.jpg')}}">
-<meta name="twitter:title" content="The Interactive Circle of Fifths">
-<meta name="twitter:description" content="An interactive Circle of Fifths that will help you understand what it is and how to use it.">
-<meta name="twitter:app:country" content="US">
-<meta name="twitter:app:name:iphone" content="PianoLIT">
-<meta name="twitter:app:id:iphone" content="00000000">
-
-<meta itemprop="name" content="The Interactive Circle of Fifths"/>
-<meta itemprop="headline" content="An interactive Circle of Fifths that will help you understand what it is and how to use it."/>
-<meta itemprop="description" content="An interactive Circle of Fifths that will help you understand what it is and how to use it."/>
-<meta itemprop="image" content="{{asset('images/misc/thumbnails/circle.jpg')}}"/>
-<meta itemprop="datePublished" content="{{carbon('20-06-2019')}}"/>
-<meta itemprop="dateModified" content="{{carbon('20-06-2019')}}" />
-<meta itemprop="author" content="PianoLIT"/>
-
-<link rel="canonical" href="{{url()->current()}}" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:700&display=swap" rel="stylesheet">
 <style type="text/css">
 .roman-numeral {

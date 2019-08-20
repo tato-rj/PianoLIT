@@ -23,11 +23,6 @@ class Post extends ShareableContent
         return unserialize($this->references);
     }
 
-    public function creator()
-    {
-        return $this->belongsTo(Admin::class);
-    }
-
     public function topics()
     {
         return $this->belongsToMany(Topic::class);

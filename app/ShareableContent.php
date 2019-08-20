@@ -13,6 +13,11 @@ abstract class ShareableContent extends PianoLit
     protected $thumbnailFolder = 'thumbnails';
 	protected $dates = ['published_at'];
 
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class);
+    }
+
     public function isPublished()
     {
         return ! is_null($this->published_at);

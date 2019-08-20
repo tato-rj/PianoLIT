@@ -1,39 +1,15 @@
-@extends('layouts.app', ['title' => 'The Ultimate Chord Finder | ' . config('app.name')])
+@extends('layouts.app', [
+    'title' => 'The Ultimate Chord Finder | ' . config('app.name'),
+    'shareable' => [
+        'keywords' => 'chords,chord finder,music theory,harmony',
+        'title' => 'The Ultimate Chord Finder',
+        'description' => 'Give us the notes and we\'ll tell you the chords you can make with them. Also learn how this process works with an easy step-by-step guide.',
+        'thumbnail' => asset('images/misc/thumbnails/chords.jpg'),
+        'created_at' => carbon('10-08-2019'),
+        'updated_at' => carbon('20-08-2019')
+    ]])
 
 @push('header')
-<meta name="keywords" content="chords,chord finder,music theory,harmony">
-<meta name="twitter:card" value="Give us the notes and we'll tell you the chords you can make with them. Also learn how this process works with an easy step-by-step guide.">
-<meta property="og:site_name" content="PianoLIT" />
-<meta property="og:title" content="The Ultimate Chord Finder" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="{{url()->current()}}" />
-<meta property="og:image" content="{{asset('images/misc/thumbnails/chords.jpg')}}" />
-<meta property="og:image:width" content="400" />
-<meta property="og:image:height" content="245" />
-<meta property="og:description" content="Give us the notes and we'll tell you the chords you can make with them. Also learn how this process works with an easy step-by-step guide." />
-<meta property="article:published_time" content="{{carbon('10-08-2019')}}">
-<meta property="article:modified_time" content="{{carbon('10-08-2019')}}">
-<meta property="og:updated_time" content="{{carbon('10-08-2019')}}">
-
-<meta name="twitter:site" content="@litpiano">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="{{asset('images/misc/thumbnails/chords.jpg')}}">
-<meta name="twitter:title" content="The Ultimate Chord Finder">
-<meta name="twitter:description" content="Give us the notes and we'll tell you the chords you can make with them. Also learn how this process works with an easy step-by-step guide.">
-<meta name="twitter:app:country" content="US">
-<meta name="twitter:app:name:iphone" content="PianoLIT">
-<meta name="twitter:app:id:iphone" content="00000000">
-
-<meta itemprop="name" content="The Ultimate Chord Finder"/>
-<meta itemprop="headline" content="Give us the notes and we'll tell you the chords you can make with them. Also learn how this process works with an easy step-by-step guide."/>
-<meta itemprop="description" content="Give us the notes and we'll tell you the chords you can make with them. Also learn how this process works with an easy step-by-step guide."/>
-<meta itemprop="image" content="{{asset('images/misc/thumbnails/chords.jpg')}}"/>
-<meta itemprop="datePublished" content="{{carbon('10-08-2019')}}"/>
-<meta itemprop="dateModified" content="{{carbon('10-08-2019')}}" />
-<meta itemprop="author" content="PianoLIT"/>
-
-<link rel="canonical" href="{{url()->current()}}" />
-
 <style type="text/css">
 
 sup.extension {

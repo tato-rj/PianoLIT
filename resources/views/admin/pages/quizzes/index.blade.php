@@ -15,7 +15,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
   @include('admin.components.breadcrumb', [
-    'title' => 'Quizzes',
+    'title' => 'Quiz',
     'description' => 'Manage the quizzes'])
 
     <div class="row d-none d-sm-flex">

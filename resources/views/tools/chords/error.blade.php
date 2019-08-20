@@ -1,4 +1,4 @@
-<div class="modal" id="modal-error" tabindex="-1" role="dialog">
+<div class="modal fade" id="modal-error" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body text-center">

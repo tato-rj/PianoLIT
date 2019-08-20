@@ -1,37 +1,14 @@
-@extends('layouts.app', ['title' => $post->title . ' | PianoLIT Blog'])
+@extends('layouts.app', ['title' => $post->title . ' | PianoLIT Blog',
+	'shareable' => [
+		'keywords' => '',
+		'title' => $post->title,
+		'description' => $post->description,
+		'thumbnail' => $post->thumbnail_image(),
+		'created_at' => $post->created_at->format(DateTime::ISO8601),
+		'updated_at' => $post->updated_at->format(DateTime::ISO8601)
+	]])
 
 @push('header')
-<meta name="twitter:card" value="{{$post->description}}">
-<meta property="og:site_name" content="PianoLIT Blog" />
-<meta property="og:title" content="{{$post->title}}" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="{{route('posts.show', $post->slug)}}" />
-<meta property="og:image" content="{{$post->thumbnail_image()}}" />
-<meta property="og:image:width" content="400" />
-<meta property="og:image:height" content="225" />
-<meta property="og:description" content="{{$post->description}}" />
-<meta property="article:published_time" content="{{$post->created_at->format(DateTime::ISO8601)}}">
-<meta property="article:modified_time" content="{{$post->updated_at->format(DateTime::ISO8601)}}">
-<meta property="og:updated_time" content="{{$post->updated_at->format(DateTime::ISO8601)}}">
-
-<meta name="twitter:site" content="@litpiano">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="{{$post->thumbnail_image()}}">
-<meta name="twitter:title" content="{{$post->title}}">
-<meta name="twitter:description" content="{{$post->description}}">
-<meta name="twitter:app:country" content="US">
-<meta name="twitter:app:name:iphone" content="PianoLIT">
-<meta name="twitter:app:id:iphone" content="00000000">
-
-<meta itemprop="name" content="{{$post->title}}"/>
-<meta itemprop="headline" content="{{$post->title}}"/>
-<meta itemprop="description" content="{{$post->description}}"/>
-<meta itemprop="image" content="{{$post->cover_image()}}"/>
-<meta itemprop="datePublished" content="{{$post->created_at->format(DateTime::ISO8601)}}"/>
-<meta itemprop="dateModified" content="{{$post->updated_at->format(DateTime::ISO8601)}}" />
-<meta itemprop="author" content="PianoLIT"/>
-
-<link rel="canonical" href="{{url()->current()}}" />
 <style type="text/css">
 p img {
 	max-width: 100%;

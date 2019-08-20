@@ -30,7 +30,6 @@ trait AdminEvents
         Storage::fake('public');
 
         $quiz = make(Quiz::class, ['cover_image' => UploadedFile::fake()->image('cover.jpg')]);
-
         $quiz->cropped_width = '200';
         $quiz->cropped_height = '200';
         $quiz->cropped_x = '0';

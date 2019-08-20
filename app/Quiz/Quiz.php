@@ -25,7 +25,12 @@ class Quiz extends ShareableContent
 
     public function getQuestionsAttribute($questions)
     {
-    	$array = array_values(unserialize($questions));
+        return array_values(unserialize($questions));        
+    }
+
+    public function questions()
+    {
+        $array = $this->questions;
 
         foreach ($array as $index => $question) {
             $array[$index]['Q'] = preg_replace("/\[[^)]+\]/", '',$question['Q']);
@@ -33,6 +38,15 @@ class Quiz extends ShareableContent
         }
 
         return $array;
+    }
+
+    public function getDurationAttribute()
+    {
+        $count = count($this->questions);
+        $seconds = 8 * $count;
+        $duration = intval(ceil($seconds/60));
+
+        return $duration . str_plural('minute', $duration);
     }
 
     public function getFeedbackAttribute($feedback)

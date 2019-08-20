@@ -33,8 +33,8 @@ class QuizTest extends AppTest
 
 		$quiz = create(Quiz::class, ['questions' => serialize($questions)]);
 
-		$this->assertNotNull($quiz->questions[0]['audio']);
-		$this->assertFalse(strhas($quiz->questions[0]['Q'], '['));
+		$this->assertNotNull($quiz->questions()[0]['audio']);
+		$this->assertFalse(strhas($quiz->questions()[0]['Q'], '['));
 	}
 
 	/** @test */
