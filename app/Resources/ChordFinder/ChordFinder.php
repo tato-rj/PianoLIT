@@ -102,7 +102,7 @@ class ChordFinder
 				$this->results = $this->validator()->addNinth()->get();
 				$this->results = $this->validator()->addEleventh()->get();
 				$this->results = $this->validator()->addThirteenth()->get();
-				$this->results = $this->validator()->fixAddedIntervals()->get();
+				// $this->results = $this->validator()->fixAddedIntervals()->get();
 				$this->results = $this->label()->chords();
 			}
 

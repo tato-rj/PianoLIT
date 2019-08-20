@@ -2,11 +2,11 @@
 
 namespace App\Resources\ChordFinder;
 
-use App\Resources\ChordFinder\Traits\Notation;
+use App\Resources\ChordFinder\Traits\{Notation, Finder};
 
 class Label
 {
-	use Notation;
+	use Notation, Finder;
 
 	protected $array, $bass;
 
@@ -48,14 +48,6 @@ class Label
 		}
 
 		return $this->array;
-	}
-
-	public function find($notes, $interval)
-	{
-		foreach ($notes['intervals'] as $note) {
-			if ($note['interval'] == $interval)
-				return $note;
-		}
 	}
 
 	public function read($inversion)

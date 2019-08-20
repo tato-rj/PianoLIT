@@ -25,16 +25,15 @@ Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::post('images/remove', 'PostsController@removeImage')->name('remove-image');
 
-	Route::prefix('audio')->name('audio.')->group(function() {
+	// Route::prefix('audio')->name('audio.')->group(function() {
 
-		Route::get('', 'BlogAudioController@index')->name('index');
+	// 	Route::get('', 'BlogAudioController@index')->name('index');
 
-		Route::post('store', 'BlogAudioController@store')->name('store');
+	// 	Route::post('store', 'BlogAudioController@store')->name('store');
 		
-		Route::delete('destroy', 'BlogAudioController@destroy')->name('destroy');
+	// 	Route::delete('destroy', 'BlogAudioController@destroy')->name('destroy');
 
-	});
-
+	// });
 
 	Route::prefix('audio')->name('audio.')->group(function() {
 	
@@ -63,6 +62,38 @@ Route::prefix('blog')->name('posts.')->group(function() {
 	Route::patch('{post}/status', 'PostsController@updateStatus')->name('update-status');
 
 	Route::delete('{post}', 'PostsController@destroy')->name('destroy');
+
+});
+
+Route::prefix('quiz')->name('quizzes.')->group(function() {
+
+	Route::get('', 'AdminsController@quiz')->name('index');
+
+	Route::get('create', 'QuizzesController@create')->name('create');
+
+	Route::post('', 'QuizzesController@store')->name('store');
+
+	Route::post('images/upload', 'QuizzesController@uploadImage')->name('upload-image');
+
+	Route::post('images/remove', 'QuizzesController@removeImage')->name('remove-image');
+
+	Route::prefix('audio')->name('audio.')->group(function() {
+	
+		Route::get('', 'QuizMediaController@audio')->name('index');
+
+		Route::post('store', 'QuizMediaController@store')->name('store');
+		
+		Route::delete('destroy', 'QuizMediaController@destroy')->name('destroy');
+
+	});
+
+	Route::get('{quiz}', 'QuizzesController@edit')->name('edit');
+
+	Route::patch('{quiz}', 'QuizzesController@update')->name('update');
+
+	Route::patch('{quiz}/status', 'QuizzesController@updateStatus')->name('update-status');
+
+	Route::delete('{quiz}', 'QuizzesController@destroy')->name('destroy');
 
 });
 

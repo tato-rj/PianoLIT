@@ -53,4 +53,12 @@ Route::prefix('blog')->name('posts.')->group(function() {
 
 });
 
+Route::prefix('quiz')->name('quizzes.')->group(function() {
+
+	Route::get('', 'QuizzesController@index')->name('index');
+	
+	Route::get('/{quiz}', 'QuizzesController@show')->name('show');
+
+});
+
 Route::get('gift', 'UsersController@gift')->name('gift');

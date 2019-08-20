@@ -676,11 +676,11 @@ function getNotes() {
 // SUBMIT NOTES CLICK //
 ////////////////////////
 $('button#submit-notes').on('click', function() {
-	if (input.length < 3) {
+    if (missingEnharmonics() > 0) {
+            alert('Please select each enharmonic note, you\'re missing ' + missingEnharmonics());
+            $('#options-container').removeClass('bounce').addClass('bounce');
+    } else if (input.length < 3) {
 		alert('Please select at least 3 notes');
-	} else if (missingEnharmonics() > 0) {
-        alert('Please select each enharmonic note, you\'re missing ' + missingEnharmonics());
-        $('#options-container').removeClass('bounce').addClass('bounce');
     } else {
 		$(this).prop('disabled', true);
 		$(this).text('Hang on a sec...');

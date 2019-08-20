@@ -2,8 +2,12 @@
 
 namespace App\Resources\ChordFinder;
 
+use App\Resources\ChordFinder\Traits\Finder;
+
 class Validator
 {
+	use Finder;
+
 	protected $array, $error;
 
 	public function __construct(array $array)
@@ -72,34 +76,36 @@ class Validator
 
 		foreach ($copy as $index => $notes) {
 			foreach ($notes['inversions'] as $key => $inversion) {
-				foreach ($inversion['intervals'] as $item => $interval) {
-					if ($interval['interval'] == 2) {
-						$newInversion = $copy[$index]['inversions'][$key];
-						$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
-						$newStep = $newInversion['intervals'][$item]['steps'] + 12;
+				if ($this->find($inversion, 7)) {
+					foreach ($inversion['intervals'] as $item => $interval) {
+						if ($interval['interval'] == 2) {
+							$newInversion = $copy[$index]['inversions'][$key];
+							$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
+							$newStep = $newInversion['intervals'][$item]['steps'] + 12;
 
-						$newInversion['intervals'][$item]['name'] = str_replace(
-							$newInversion['intervals'][$item]['interval'], $newInterval, 
-							$newInversion['intervals'][$item]['name']
-						);
-						$newInversion['intervals'][$item]['interval'] = $newInterval;
-						$newInversion['intervals'][$item]['steps'] = $newStep;
+							$newInversion['intervals'][$item]['name'] = str_replace(
+								$newInversion['intervals'][$item]['interval'], $newInterval, 
+								$newInversion['intervals'][$item]['name']
+							);
+							$newInversion['intervals'][$item]['interval'] = $newInterval;
+							$newInversion['intervals'][$item]['steps'] = $newStep;
 
-						$tempInterval = $newInversion['intervals'][$item];
-						unset($newInversion['intervals'][$item]);
-						array_push($newInversion['intervals'], $tempInterval);
-						$newInversion['intervals'] = array_values($newInversion['intervals']);
+							$tempInterval = $newInversion['intervals'][$item];
+							unset($newInversion['intervals'][$item]);
+							array_push($newInversion['intervals'], $tempInterval);
+							$newInversion['intervals'] = array_values($newInversion['intervals']);
 
-						$tempNote = $inversion['chord'][$item+1];
-						unset($inversion['chord'][$item+1]);
-						array_push($inversion['chord'], $tempNote);
-						$newInversion['chord'] = array_values($inversion['chord']);
+							$tempNote = $inversion['chord'][$item+1];
+							unset($inversion['chord'][$item+1]);
+							array_push($inversion['chord'], $tempNote);
+							$newInversion['chord'] = array_values($inversion['chord']);
+						}
 					}
-				}
-				
-				if (!empty($newInversion)) {
-					array_push($copy[$index]['inversions'], $newInversion);
-					$newInversion = [];
+					
+					if (!empty($newInversion)) {
+						array_push($copy[$index]['inversions'], $newInversion);
+						$newInversion = [];
+					}
 				}
 			}
 		}
@@ -116,35 +122,37 @@ class Validator
 
 		foreach ($copy as $index => $notes) {
 			foreach ($notes['inversions'] as $key => $inversion) {
-				foreach ($inversion['intervals'] as $item => $interval) {
-					if ($interval['interval'] == 4) {
-						$newInversion = $copy[$index]['inversions'][$key];
-						$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
-						$newStep = $newInversion['intervals'][$item]['steps'] + 12;
+				if ($this->find($inversion, 7)) {
+					foreach ($inversion['intervals'] as $item => $interval) {
+						if ($interval['interval'] == 4) {
+							$newInversion = $copy[$index]['inversions'][$key];
+							$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
+							$newStep = $newInversion['intervals'][$item]['steps'] + 12;
 
-						$newInversion['intervals'][$item]['name'] = str_replace(
-							$newInversion['intervals'][$item]['interval'], $newInterval, 
-							$newInversion['intervals'][$item]['name']
-						);
-						$newInversion['intervals'][$item]['interval'] = $newInterval;
-						$newInversion['intervals'][$item]['steps'] = $newStep;
+							$newInversion['intervals'][$item]['name'] = str_replace(
+								$newInversion['intervals'][$item]['interval'], $newInterval, 
+								$newInversion['intervals'][$item]['name']
+							);
+							$newInversion['intervals'][$item]['interval'] = $newInterval;
+							$newInversion['intervals'][$item]['steps'] = $newStep;
 
-						$tempInterval = $newInversion['intervals'][$item];
-						unset($newInversion['intervals'][$item]);
-						array_push($newInversion['intervals'], $tempInterval);
-						$newInversion['intervals'] = array_values($newInversion['intervals']);
+							$tempInterval = $newInversion['intervals'][$item];
+							unset($newInversion['intervals'][$item]);
+							array_push($newInversion['intervals'], $tempInterval);
+							$newInversion['intervals'] = array_values($newInversion['intervals']);
 
-						$tempNote = $inversion['chord'][$item+1];
-						unset($inversion['chord'][$item+1]);
-						array_push($inversion['chord'], $tempNote);
-						$newInversion['chord'] = array_values($inversion['chord']);
+							$tempNote = $inversion['chord'][$item+1];
+							unset($inversion['chord'][$item+1]);
+							array_push($inversion['chord'], $tempNote);
+							$newInversion['chord'] = array_values($inversion['chord']);
+						}
+					}
+
+					if (!empty($newInversion)) {
+						array_push($copy[$index]['inversions'], $newInversion);
+						$newInversion = [];
 					}
 				}
-
-				if (!empty($newInversion)) {
-					array_push($copy[$index]['inversions'], $newInversion);
-					$newInversion = [];
-				}			
 			}
 		}
 
@@ -160,38 +168,39 @@ class Validator
 
 		foreach ($copy as $index => $notes) {
 			foreach ($notes['inversions'] as $key => $inversion) {
-				foreach ($inversion['intervals'] as $item => $interval) {
-					
-					$isLast = count($inversion['intervals']) == $item +1;
+				if ($this->find($inversion, 7)) {
+					foreach ($inversion['intervals'] as $item => $interval) {
+						$isLast = count($inversion['intervals']) == $item +1;
 
-					if ($interval['interval'] == 6 && ! $isLast) {
-						$newInversion = $copy[$index]['inversions'][$key];
-						$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
-						$newStep = $newInversion['intervals'][$item]['steps'] + 12;
+						if ($interval['interval'] == 6 && ! $isLast) {
+							$newInversion = $copy[$index]['inversions'][$key];
+							$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
+							$newStep = $newInversion['intervals'][$item]['steps'] + 12;
 
-						$newInversion['intervals'][$item]['name'] = str_replace(
-							$newInversion['intervals'][$item]['interval'], $newInterval, 
-							$newInversion['intervals'][$item]['name']
-						);
-						$newInversion['intervals'][$item]['interval'] = $newInterval;
-						$newInversion['intervals'][$item]['steps'] = $newStep;
+							$newInversion['intervals'][$item]['name'] = str_replace(
+								$newInversion['intervals'][$item]['interval'], $newInterval, 
+								$newInversion['intervals'][$item]['name']
+							);
+							$newInversion['intervals'][$item]['interval'] = $newInterval;
+							$newInversion['intervals'][$item]['steps'] = $newStep;
 
-						$tempInterval = $newInversion['intervals'][$item];
-						unset($newInversion['intervals'][$item]);
-						array_push($newInversion['intervals'], $tempInterval);
-						$newInversion['intervals'] = array_values($newInversion['intervals']);
+							$tempInterval = $newInversion['intervals'][$item];
+							unset($newInversion['intervals'][$item]);
+							array_push($newInversion['intervals'], $tempInterval);
+							$newInversion['intervals'] = array_values($newInversion['intervals']);
 
-						$tempNote = $inversion['chord'][$item+1];
-						unset($inversion['chord'][$item+1]);
-						array_push($inversion['chord'], $tempNote);
-						$newInversion['chord'] = array_values($inversion['chord']);
+							$tempNote = $inversion['chord'][$item+1];
+							unset($inversion['chord'][$item+1]);
+							array_push($inversion['chord'], $tempNote);
+							$newInversion['chord'] = array_values($inversion['chord']);
+						}
+					}
+
+					if (!empty($newInversion)) {
+						array_push($copy[$index]['inversions'], $newInversion);
+						$newInversion = [];
 					}
 				}
-
-				if (!empty($newInversion)) {
-					array_push($copy[$index]['inversions'], $newInversion);
-					$newInversion = [];
-				}			
 			}
 		}
 

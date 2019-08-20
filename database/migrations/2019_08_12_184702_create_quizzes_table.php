@@ -16,9 +16,14 @@ class CreateQuizzesTable extends Migration
         Schema::create('quizzes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('slug');
+            $table->unsignedInteger('creator_id');
             $table->string('title');
             $table->string('description');
+            $table->string('cover_path')->nullable();
             $table->text('questions');
+            $table->text('feedback');
+            $table->timestamp('published_at')->nullable();
+            $table->unsignedInteger('views')->default(0);
             $table->timestamps();
         });
     }

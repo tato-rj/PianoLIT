@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use Tests\AppTest;
-use App\Quiz;
+use App\Quiz\{Quiz, QuizResult};
 
 class QuizTest extends AppTest
 {
@@ -12,7 +12,29 @@ class QuizTest extends AppTest
 	{
 		$quiz = create(Quiz::class);
 
-		$this->assertCount(1, $quiz->questions);
+		$this->assertCount(10, $quiz->questions);
+	}
+
+	/** @test */
+	public function it_has_many_results()
+	{
+		$quiz = create(Quiz::class);
+		$quiz->results()->create(['score' => 8]);
+
+		$this->assertInstanceOf(QuizResult::class, $quiz->results->first());
+	}
+
+	/** @test */
+	public function it_knows_if_a_question_has_audio()
+	{
+		$questions = [
+			['Q' => 'Here is a question with audio [audio]', 'A' => ['Answer 1', 'Answer 2[x]']]
+		];
+
+		$quiz = create(Quiz::class, ['questions' => serialize($questions)]);
+
+		$this->assertNotNull($quiz->questions[0]['audio']);
+		$this->assertFalse(strhas($quiz->questions[0]['Q'], '['));
 	}
 
 	/** @test */
@@ -31,11 +53,27 @@ class QuizTest extends AppTest
 			['Q' => 'Here is another question?', 'A' => ['Answer 1[x]', 'Answer 2']]
 		];
 
+		$feedback = ['Bad', 'Average', 'Good', 'Excellent', 'Perfect'];
+
 		$answers = [1,1];
 
-		$quiz = create(Quiz::class, ['questions' => serialize($questions)]);
+		$quiz = create(Quiz::class, ['questions' => serialize($questions), 'feedback' => serialize($feedback)]);
 
 		$this->assertEquals([true, 1], $quiz->evaluate($answers)['results']);
 		$this->assertEquals(1, $quiz->evaluate($answers)['score']);
+		$this->assertEquals('Good', $quiz->evaluate($answers)['feedback']);
+	}
+
+	/** @test */
+	public function it_knows_how_to_compare_an_individual_result_with_all_other_results()
+	{
+		$quiz = create(Quiz::class);
+
+		$quiz->results()->createMany([
+			['score' => 6],
+			['score' => 2]
+		]);
+
+		$this->assertEquals(40, $quiz->average);
 	}
 }

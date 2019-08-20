@@ -123,6 +123,26 @@
       </li>
 
       <li class="nav-item">
+        <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#quiz">
+          <div>
+            <i class="fas fa-book-open fa-fw"></i>
+            <span class="nav-link-text">Quizzes</span>
+          </div>
+          <div>
+            <i class="fas fa-caret-down"></i>
+          </div>
+        </a>
+        <ul class="sidenav-second-level collapse" id="quiz">
+          <li>
+            <a class="py-2" href="{{route('admin.quizzes.index')}}">Games</a>
+          </li>
+          <li class="d-none d-sm-block">
+            <a class="py-2" href="{{route('admin.quizzes.audio.index')}}">Audio</a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link" href="{{route('admin.timelines.index')}}">
           <i class="fas fa-list-ul"></i>
           <span class="nav-link-text">Timeline</span>

@@ -87,6 +87,25 @@ class Ranking
 		$results['chords_count'] = $count;
 		$results['strict'] = $this->strict;
 
+		return $this->verify($results);
+	}
+
+	public function verify($results)
+	{
+		$mostRelevant = null;
+
+		foreach ($results['chords'] as $index => $chord) {
+			foreach ($chord['inversions'] as $key => $inversion) {
+				if ($mostRelevant < $inversion['ranking'])
+					$mostRelevant = $inversion['ranking'];
+			}
+		}
+
+		if ($mostRelevant == $results['most_relevant'])
+			return $results;
+
+		$results['most_relevant'] = $mostRelevant;
+		
 		return $results;
 	}
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\{Admin, User, Piece, Tag, Composer, Subscription};
+use App\Quiz\Quiz;
 use App\Blog\Post;
 use App\Tools\Stats;
 use Illuminate\Http\Request;
@@ -44,6 +45,18 @@ class AdminsController extends Controller
         $posts = Post::latest()->get();
 
         return view('admin.pages.blog.index', compact('posts'));
+    }
+
+    /**
+     * Display the quiz page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function quiz()
+    {
+        $quizzes = Quiz::latest()->get();
+
+        return view('admin.pages.quizzes.index', compact('quizzes'));
     }
 
     /**

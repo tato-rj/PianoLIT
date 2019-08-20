@@ -20,6 +20,7 @@ class CreatePostsTable extends Migration
             $table->string('title')->unique();
             $table->string('description');
             $table->text('content');
+            $table->text('references')->nullable();
             $table->string('gift_path')->nullable();
             $table->string('cover_path')->nullable();
             $table->string('cover_credits')->nullable();
