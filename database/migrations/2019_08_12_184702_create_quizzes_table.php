@@ -21,7 +21,6 @@ class CreateQuizzesTable extends Migration
             $table->string('description');
             $table->string('cover_path')->nullable();
             $table->text('questions');
-            $table->text('feedback');
             $table->timestamp('published_at')->nullable();
             $table->unsignedInteger('views')->default(0);
             $table->timestamps();

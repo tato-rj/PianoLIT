@@ -11,8 +11,6 @@ $factory->define(Quiz::class, function (Faker $faker) {
         array_push($questions, ['Q' => $faker->sentence, 'A' => [$faker->sentence, $faker->sentence . '[x]']]);
     }
 
-	$feedback = ['Bad', 'Average', 'Good', 'Excellent', 'Perfect'];
-
     return [
     	'slug' => str_slug($faker->sentence),
         'creator_id' => function() {
@@ -21,8 +19,7 @@ $factory->define(Quiz::class, function (Faker $faker) {
     	'title' => $faker->sentence,
     	'description' => $faker->sentence,
     	'cover_path' => $faker->url,
-        'questions' => serialize($questions),
-        'feedback' => serialize($feedback)
+        'questions' => serialize($questions)
     ];
 });
 

@@ -30,7 +30,6 @@
         <div class="col-lg-8 col-md-6 col-12 mb-4">
           @input(['bag' => 'default', 'value' => $quiz->title, 'name' => 'title', 'placeholder' => 'Quiz title', 'limit' => 120])
           @textarea(['bag' => 'default', 'value' => $quiz->description, 'name' => 'description', 'placeholder' => 'Quiz description', 'limit' => 238])
-          @include('admin.pages.quizzes.feedback')
           @component('admin.pages.quizzes.question.layout')
             @foreach($quiz->questions as $question)
             @include('admin.pages.quizzes.question.input', [

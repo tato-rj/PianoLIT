@@ -53,15 +53,12 @@ class QuizTest extends AppTest
 			['Q' => 'Here is another question?', 'A' => ['Answer 1[x]', 'Answer 2']]
 		];
 
-		$feedback = ['Bad', 'Average', 'Good', 'Excellent', 'Perfect'];
-
 		$answers = [1,1];
 
-		$quiz = create(Quiz::class, ['questions' => serialize($questions), 'feedback' => serialize($feedback)]);
+		$quiz = create(Quiz::class, ['questions' => serialize($questions)]);
 
 		$this->assertEquals([true, 1], $quiz->evaluate($answers)['results']);
 		$this->assertEquals(1, $quiz->evaluate($answers)['score']);
-		$this->assertEquals('Good', $quiz->evaluate($answers)['feedback']);
 	}
 
 	/** @test */

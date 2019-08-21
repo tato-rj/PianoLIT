@@ -17,7 +17,6 @@ class CreateQuizResultsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedInteger('quiz_id');
             $table->unsignedInteger('score');
-            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

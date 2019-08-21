@@ -4,9 +4,12 @@ namespace App\Quiz;
 
 use App\{ShareableContent, Admin};
 use App\Traits\FindBySlug;
+use App\Quiz\Traits\Feedback;
 
 class Quiz extends ShareableContent
 {
+    use Feedback;
+
     protected $folder = 'quiz';
 
     protected static function boot()
@@ -49,11 +52,6 @@ class Quiz extends ShareableContent
         return $duration . str_plural('minute', $duration);
     }
 
-    public function getFeedbackAttribute($feedback)
-    {
-        return array_values(unserialize($feedback));
-    }
-
     public function getFeedback($score)
     {
         $percentage = percentage($score, count($this->questions));
@@ -62,12 +60,13 @@ class Quiz extends ShareableContent
 
         foreach ($slots as $index => $slot) {
             if ($percentage <= $slot) {
-                $feedback = $this->feedback[$index];
+                $gif = $this->gif($index);
+                $feedback = $this->feedbacks[$index];
                 break;  
             }
         }
 
-        return $feedback ?? 'Thanks for taking our quiz!';
+        return ['gif' => $gif, 'sentence' => $feedback];
     }
 
     public function getAudio($question)
@@ -103,6 +102,7 @@ class Quiz extends ShareableContent
     {
     	$outcome = [];
     	$score = 0;
+        $count = count($this->questions);
 
     	foreach ($answers as $index => $answer) {
     		$result = $answer == $this->getAnswer($index) ? true : $answer;
@@ -113,10 +113,17 @@ class Quiz extends ShareableContent
     		array_push($outcome, $result);
     	}
 
+        $percentage = percentage($score, $count);
+
+        $feedback = $this->getFeedback($score);
+
     	return [
+            'total' => $count,
     		'score' => $score,
+            'percentage' => $percentage,
     		'results' => $outcome,
-            'feedback' => $this->getFeedback($score)
+            'feedback' => $feedback['sentence'],
+            'gif' => $feedback['gif']
     	];
     }
 }

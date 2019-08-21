@@ -35,8 +35,9 @@
 @endpush
 
 @section('content')
+@include('components.progressbar')
 <section id="quiz" class="container mb-5">
-	<div class="row mb-6">
+	<div class="row mb-6" id="main-content">
 		<div class="col-lg-8 col-12 mx-auto">
 			@if(! empty($preview))
 			<div class="alert alert-warning" role="alert">
@@ -111,15 +112,21 @@ var answers = [];
 $('#start-quiz').click(function() {
 	$(this).parent().remove();
 	$('#quiz-content').show();
+	showScrollProgressBar($('#main-content'));
 });
 
 $('.quiz-answers button').on('click', function() {
 	$button = $(this);
 	$parent = $button.parent();
 	
+	stopAll();
+	
 	$($button.attr('data-overlay')).show();
 
-	answers.push($button.index());
+	$button.addClass('selected');
+	
+	getAnswers();
+
 	console.log(answers);
 
 	$parent.find('button[correct]').toggleClass('list-group-item-action alert-green').find('.fas').show();
@@ -127,8 +134,37 @@ $('.quiz-answers button').on('click', function() {
 	if (! $button.is('[correct]'))
 		$button.toggleClass('list-group-item-action alert-red').find('.fas').show();
 
-	if (answers.length == $('.quiz-items').length)
-		$('#quiz-results').modal('show');
+	if (! answers.includes(null))
+		submit();
 });
+
+function getAnswers()
+{
+	answers = [];
+	
+	$('.quiz-answers').each(function(index) {
+		selection = $(this).find('button.selected').index();
+		answers.push(selection >= 0 ? selection : null);
+	});
+}
+
+function submit() {
+	$.get('{{route('quizzes.feedback', $quiz->slug)}}', {answers: answers}, function(response) {
+		$('#quiz-feedback').html(response);
+		$('#quiz-results').modal('show');
+	}).fail(function(response) {
+        console.log(response);
+	});
+}
+
+function stopAll() {
+    var media = document.getElementsByClassName('audio'),
+        i = media.length;
+
+    while (i--) {
+        media[i].pause();
+        media[i].currentTime = 0;
+    }
+}
 </script>
 @endpush

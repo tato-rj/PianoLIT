@@ -44,8 +44,7 @@ class QuizzesController extends Controller
             'slug' => str_slug($form->title),
             'title' => $form->title,
             'description' => $form->description,
-            'questions' => serialize($form->questions()),
-            'feedback' => serialize($form->feedback)
+            'questions' => serialize($form->questions())
         ]);
 
         $quiz->uploadCoverImage($request);
@@ -76,6 +75,15 @@ class QuizzesController extends Controller
         return view('quizzes.show', compact(['quiz', 'suggestions']));
     }
 
+    public function feedback(Request $request, Quiz $quiz)
+    {
+        $feedback = $quiz->evaluate($request->answers);
+
+        $quiz->results()->create(['score' => $feedback['score']]);
+
+        return view('components.quiz.feedback', compact('feedback'))->render();
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -100,8 +108,7 @@ class QuizzesController extends Controller
             'slug' => str_slug($form->title),
             'title' => $form->title,
             'description' => $form->description,
-            'questions' => serialize($form->questions()),
-            'feedback' => serialize($form->feedback)
+            'questions' => serialize($form->questions())
         ]);
 
         $quiz->uploadCoverImage($request);

@@ -24,7 +24,6 @@
         <div class="col-lg-8 col-md-6 col-12 mb-4">
           @input(['bag' => 'default', 'name' => 'title', 'placeholder' => 'Quiz title', 'limit' => 120])
           @textarea(['bag' => 'default', 'name' => 'description', 'placeholder' => 'Quiz description', 'limit' => 238])
-          @include('admin.pages.quizzes.feedback')
 
           @component('admin.pages.quizzes.question.layout')
             @if(old('questions'))

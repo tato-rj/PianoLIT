@@ -41,8 +41,10 @@ iframe {
 @endpush
 
 @section('content')
+@include('components.progressbar')
+
 <section id="blog-post" class="container mb-5">
-	<div class="row mb-6">
+	<div class="row mb-6" id="main-content">
 		<div class="col-lg-8 col-12 mx-auto">
 			@if(! empty($preview))
 			<div class="alert alert-warning" role="alert">
@@ -124,6 +126,10 @@ iframe {
 @push('scripts')
 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5c872ce214693180"></script>
 <script type="text/javascript">
+$(document).ready(function() {
+	showScrollProgressBar($('#main-content'));
+});
+
 $(document).on('click', "button#gift", function() {
 	let $button = $(this);
 	$button.find('i').removeClass('animated');

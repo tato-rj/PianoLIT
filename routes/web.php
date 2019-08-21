@@ -59,6 +59,8 @@ Route::prefix('quizzes')->name('quizzes.')->group(function() {
 	
 	Route::get('/{quiz}', 'QuizzesController@show')->name('show');
 
+	Route::get('/{quiz}/feedback', 'QuizzesController@feedback')->name('feedback');
+
 });
 
 Route::get('gift', 'UsersController@gift')->name('gift');

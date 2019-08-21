@@ -34,12 +34,12 @@
 <div class="content-wrapper">
   <div class="container-fluid">
   @include('admin.components.breadcrumb', [
-    'title' => 'Audio',
-    'description' => 'Manage the audio used in blog posts'])
+    'title' => 'Quiz',
+    'description' => 'Manage the audio used in the quizzes'])
     
     <div class="row mb-3">
       <div class="col-12">
-        <form action="{{route('admin.posts.audio.store')}}" class="dropzone" id="filesDropzone"></form>
+        <form action="{{route('admin.quizzes.audio.store')}}" class="dropzone" id="filesDropzone"></form>
       </div>
     </div>
     
@@ -50,7 +50,7 @@
       </div>
       <div class="col-12">
         <div class="d-flex flex-wrap mb-2">
-          @each('components.blog.file', $audio, 'file')
+          @each('components.quiz.file', $audio, 'file')
         </div>
       </div>
     </div>

@@ -4,10 +4,10 @@
 	<div class="question-overlay" id="overlay-{{$loop->iteration}}"></div>	
 	<div class="quiz-question mb-4">
 		<label class="text-muted"><small>Question {{$loop->iteration}} of {{$loop->count}}</small></label>
-		<h5><span class="bg-blue text-white rounded px-2 py-1 mr-2"><strong>Q</strong></span>{{$question['Q']}}</h5>
+		<h5 style="line-height: 1.8;"><span class="bg-blue text-white rounded px-2 py-1 mr-2"><strong>Q</strong></span>{{$question['Q']}}</h5>
 		@if($question['audio'])
-		<audio controls class="mt-4 w-100 d-block">
-			<source src="{{storage($question['audio'])}}" type="audio/mp3">
+		<audio controls class="mt-4 w-100 d-block audio">
+			<source src="{{asset($question['audio'])}}" type="audio/mp3">
 			</audio>
 		@endif
 	</div>

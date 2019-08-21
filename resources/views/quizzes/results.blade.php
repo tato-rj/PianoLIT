@@ -1,11 +1,16 @@
 <div class="modal fade" id="quiz-results" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog mb-6" role="document">
     <div class="modal-content border-0">
       <div class="modal-body text-center p-4">
-        <h5 class="mb-3"><strong>How did I do?</strong></h5>
-        <div class="font-weight-bld bg-light rounded p-3">
-			<h4 class="text-grey opacity-6 my-4">We're checking your results...</h4>
-        </div>
+        <div id="quiz-feedback" class="mb-4"></div>
+        <button type="button" class="btn btn-teal btn-sm btn-wide" data-dismiss="modal"><strong>Review my answers</strong></button>
+      </div>
+      <div class="modal-footer text-center">
+    		<div class="w-100">
+          <p class="mb-1"><strong>Did you like this quiz?</strong></p>
+    			<p>Subscribe and we'll keep you in the loop about the new ones!</p>
+    			@include('components.form.subscription')
+    		</div>
       </div>
     </div>
   </div>
