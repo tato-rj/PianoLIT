@@ -49,7 +49,7 @@ class Quiz extends ShareableContent
         $seconds = 8 * $count;
         $duration = intval(ceil($seconds/60));
 
-        return $duration . str_plural('minute', $duration);
+        return $duration . ' ' . str_plural('minute', $duration);
     }
 
     public function getFeedback($score)
