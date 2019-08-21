@@ -79,7 +79,8 @@ class QuizzesController extends Controller
     {
         $feedback = $quiz->evaluate($request->answers);
 
-        $quiz->results()->create(['score' => $feedback['score']]);
+        if (traffic()->isRealVisitor())
+            $quiz->results()->create(['score' => $feedback['score']]);
 
         return view('components.quiz.feedback', compact('feedback'))->render();
     }
