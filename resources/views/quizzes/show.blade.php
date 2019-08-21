@@ -45,7 +45,7 @@
 			</div>
 			@endif
 			<div class="mb-4">
-				<h1 class="mb-4">{{$quiz->title}}</h1>
+				<h1 class="mb-4">QUIZ: {{$quiz->title}}</h1>
 				<p class="text-muted blog-font">{{$quiz->description}}</p>
 				<div class="d-apart text-muted">
 					<p><small>{{$quiz->created_at->toFormattedDateString()}} &bull; {{count($quiz->questions)}} questions</small></p>
