@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => $quiz->title . ' | PianoLIT Quiz',
 	'shareable' => [
 		'keywords' => '',
-		'title' => $quiz->title,
+		'title' => 'QUIZ: ' . $quiz->title,
 		'description' => $quiz->description,
 		'thumbnail' => $quiz->thumbnail_image(),
 		'created_at' => $quiz->created_at->format(DateTime::ISO8601),
