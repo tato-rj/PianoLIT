@@ -1,4 +1,4 @@
-<div class="form-group mb-0">
+<div class="form-group mb-3">
   <div id="upload-box">
     <input type="file" data-target="#image" id="image-input" name="{{$name}}" style="display:none;" />
 

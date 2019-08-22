@@ -3,10 +3,29 @@
 namespace Tests\Unit;
 
 use Tests\AppTest;
-use App\Quiz\{Quiz, QuizResult};
+use App\Admin;
+use App\Quiz\{Quiz, QuizResult, Topic, Level};
 
 class QuizTest extends AppTest
 {
+	/** @test */
+	public function it_belongs_to_an_admin()
+	{
+		$this->assertInstanceOf(Admin::class, $this->quiz->creator);
+	}
+
+	/** @test */
+	public function it_has_many_topics()
+	{
+		$this->assertInstanceOf(Topic::class, $this->quiz->topics->first());
+	}
+
+	/** @test */
+	public function it_has_a_level()
+	{
+		$this->assertInstanceOf(Level::class, $this->quiz->level);
+	}
+
 	/** @test */
 	public function it_has_many_questions_and_answers()
 	{

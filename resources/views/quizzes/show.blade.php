@@ -45,6 +45,9 @@
 			</div>
 			@endif
 			<div class="mb-4">
+				<div class="d-flex flex-wrap mb-2">
+					@each('components.quiz.topic', $quiz->topics, 'topic')
+				</div>
 				<h1 class="mb-4">QUIZ: {{$quiz->title}}</h1>
 				<p class="text-muted blog-font">{{$quiz->description}}</p>
 				<div class="d-apart text-muted">
@@ -57,8 +60,10 @@
 				<div class="border-bottom mb-3 pb-3 text-center">
 					<p class="m-0 text-muted">Want a heads up when a new quiz comes out? <span class="text-blue cursor-pointer btn-subscribe">Subscribe here</span></p>
 				</div>
+
+				@include('quizzes/level')
 			</div>
-			<div class="bg-light rounded px-5 py-4 text-center mt-6 mb-7">
+			<div class="bg-light rounded px-5 py-4 text-center mt-5 mb-7">
 				<p>This quiz has <strong>{{count($quiz->questions)}}</strong> questions and it shouldn't take more than <u>{{$quiz->duration}}</u> to complete.</p>
 				<h5 class="mb-3">Are you ready to start?</h5>
 				<button class="btn btn-blue btn-wide" id="start-quiz"><strong>Yes, let's do this!</strong></button>

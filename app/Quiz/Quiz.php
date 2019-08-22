@@ -17,13 +17,31 @@ class Quiz extends ShareableContent
         parent::boot();
 
         self::deleting(function($quiz) {
+            $quiz->topics()->detach();
             \Storage::disk('public')->delete($quiz->cover_path);
         });
+    }
+
+    public function topics()
+    {
+        return $this->belongsToMany(Topic::class, 'quiz_quiz_topic');
+    }
+
+    public function level()
+    {
+        return $this->belongsTo(Level::class);
     }
 
     public function results()
     {
         return $this->hasMany(QuizResult::class);    
+    }
+
+    public function scopeByTopic($query, Topic $topic)
+    {
+        return $query->whereHas('topics', function($q) use ($topic) {
+            $q->where('slug', $topic->slug);
+        });
     }
 
     public function getQuestionsAttribute($questions)

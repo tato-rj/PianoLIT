@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'PianoLIT Blog'])
+@extends('layouts.app', ['title' => 'PianoLIT Quizzes'])
 
 @push('header')
   <!-- END Twitter Card -->

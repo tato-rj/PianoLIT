@@ -3,6 +3,8 @@
 namespace Tests;
 
 use App\Blog\{Post, Topic};
+use App\Quiz\Quiz;
+use App\Quiz\Topic as QuizTopic;
 use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist, Subscription, Timeline, Pianist};
 
 class AppTest extends TestCase
@@ -20,6 +22,10 @@ class AppTest extends TestCase
         $this->post = create(Post::class, ['creator_id' => $this->admin->id]);
 
         $this->topic = create(Topic::class, ['creator_id' => $this->admin->id]);
+
+        $this->quiz = create(Quiz::class, ['creator_id' => $this->admin->id]);
+
+        $this->quiz_topic = create(QuizTopic::class, ['creator_id' => $this->admin->id]);
 
         $this->membership = create(Membership::class);
 
@@ -53,6 +59,8 @@ class AppTest extends TestCase
         $this->piece->views()->create(['user_id' => $this->user->id]);
 
         $this->post->topics()->attach($this->topic);
+
+        $this->quiz->topics()->attach($this->quiz_topic);
 
         $this->playlist->pieces()->attach($this->piece);
 	}

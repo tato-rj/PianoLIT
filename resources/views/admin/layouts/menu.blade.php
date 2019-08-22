@@ -134,7 +134,10 @@
         </a>
         <ul class="sidenav-second-level collapse" id="quiz">
           <li>
-            <a class="py-2" href="{{route('admin.quizzes.index')}}">Games</a>
+            <a class="py-2" href="{{route('admin.quizzes.index')}}">Quizzes</a>
+          </li>
+          <li>
+            <a class="py-2" href="{{route('admin.quizzes.topics.index')}}">Topics</a>
           </li>
           <li class="d-none d-sm-block">
             <a class="py-2" href="{{route('admin.quizzes.audio.index')}}">Audio</a>

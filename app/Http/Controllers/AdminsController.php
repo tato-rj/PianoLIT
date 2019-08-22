@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\{Admin, User, Piece, Tag, Composer, Subscription};
-use App\Quiz\Quiz;
+use App\Quiz\{Quiz, Level};
+use App\Quiz\Topic as QuizTopic;
 use App\Blog\Post;
 use App\Tools\Stats;
 use Illuminate\Http\Request;
@@ -55,8 +56,16 @@ class AdminsController extends Controller
     public function quiz()
     {
         $quizzes = Quiz::latest()->get();
+        $levels = Level::all();
 
-        return view('admin.pages.quizzes.index', compact('quizzes'));
+        return view('admin.pages.quizzes.index', compact(['quizzes', 'levels']));
+    }
+
+    public function quizTopics()
+    {
+        $topics = QuizTopic::all();
+
+        return view('admin.pages.quizzes.topics.index', compact('topics'));
     }
 
     /**

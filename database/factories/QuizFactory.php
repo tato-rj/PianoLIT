@@ -1,6 +1,6 @@
 <?php
 
-use App\Quiz\{Quiz, QuizResult};
+use App\Quiz\{Quiz, QuizResult, Level, Topic};
 use App\Admin;
 use Faker\Generator as Faker;
 
@@ -15,6 +15,9 @@ $factory->define(Quiz::class, function (Faker $faker) {
     	'slug' => str_slug($faker->sentence),
         'creator_id' => function() {
             return create(Admin::class)->id;
+        },
+        'level_id' => function() {
+            return create(Level::class)->id;
         },
     	'title' => $faker->sentence,
     	'description' => $faker->sentence,
@@ -31,5 +34,22 @@ $factory->define(QuizResult::class, function (Faker $faker) {
             return $quiz->id;
         },
         'score' => count($quiz->questions)
+    ];
+});
+
+$factory->define(Level::class, function (Faker $faker) {
+    return [
+        'slug' => str_slug($faker->word),
+        'name' => $faker->word
+    ];
+});
+
+$factory->define(Topic::class, function (Faker $faker) {
+    return [
+        'slug' => str_slug($faker->word),
+        'name' => $faker->word,
+        'creator_id' => function() {
+            return create(Admin::class)->id;
+        },
     ];
 });

@@ -87,6 +87,18 @@ Route::prefix('quiz')->name('quizzes.')->group(function() {
 
 	});
 
+	Route::prefix('topics')->name('topics.')->group(function() {
+	
+		Route::get('', 'AdminsController@quizTopics')->name('index');
+
+		Route::post('store', 'QuizzesController@topicStore')->name('store');
+
+		Route::patch('{topic}/update', 'QuizzesController@topicUpdate')->name('update');
+		
+		Route::delete('{topic}/destroy', 'QuizzesController@topicDestroy')->name('destroy');
+
+	});
+
 	Route::get('{quiz}', 'QuizzesController@edit')->name('edit');
 
 	Route::patch('{quiz}', 'QuizzesController@update')->name('update');

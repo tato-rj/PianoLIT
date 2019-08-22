@@ -48,8 +48,7 @@ class TopicsController extends Controller
         Topic::create([
             'slug' => str_slug($request->name),
             'name' => $request->name,
-            'creator_id' => auth()->guard('admin')->user()->id,
-            'type' => $request->type
+            'creator_id' => auth()->guard('admin')->user()->id
         ]);
 
         return redirect()->back()->with('status', "The topic has been successfully added!");
@@ -94,8 +93,7 @@ class TopicsController extends Controller
 
         $topic->update([
             'slug' => str_slug($request->name),
-            'name' => $request->name,
-            'type' => $request->type,
+            'name' => $request->name
         ]);
 
         return redirect()->back()->with('status', "The topic has been successfully updated!");

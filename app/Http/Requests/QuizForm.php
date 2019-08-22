@@ -46,6 +46,7 @@ class QuizForm extends FormRequest
             'title' => 'required|min:4|max:120',
             'description' => 'required|max:238',
             'questions' => 'required',
+            'level_id' => 'required',
             'cover_image' => 'sometimes|required|mimes:jpeg,jpg'
         ];
     }

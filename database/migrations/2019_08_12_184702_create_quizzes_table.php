@@ -17,6 +17,7 @@ class CreateQuizzesTable extends Migration
             $table->bigIncrements('id');
             $table->string('slug');
             $table->unsignedInteger('creator_id');
+            $table->unsignedInteger('level_id');
             $table->string('title');
             $table->string('description');
             $table->string('cover_path')->nullable();
