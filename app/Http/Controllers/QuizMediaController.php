@@ -8,9 +8,17 @@ class QuizMediaController extends Controller
 {
     public function audio()
     {
-    	$audio = \Storage::disk('public')->allFiles('quiz/audio');
+        $files = [];
 
-    	return view('admin.pages.quizzes.audio.index', compact('audio'));
+        foreach (\Storage::disk('public')->allFiles('quiz/audio') as $index => $file) {
+            $files[$index]['file'] = $file;
+            $files[$index]['created_at'] = carbon(\Storage::disk('public')->lastModified($file))->toDateString();
+        }
+
+        $count = count($files);
+        $files = collect($files)->groupBy('created_at')->sortKeysDesc();
+
+    	return view('admin.pages.quizzes.audio.index', compact(['files', 'count']));
     }
 
     public function store(Request $request)

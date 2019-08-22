@@ -43,15 +43,20 @@
       </div>
     </div>
     
-    @if($audio)
+    @if($files)
     <div class="row my-3">
       <div class="col-12">
-        <p>We have {{count($audio)}} audio files</p>
+        <p>We have {{$count}} audio files</p>
       </div>
       <div class="col-12">
-        <div class="d-flex flex-wrap mb-2">
-          @each('components.quiz.file', $audio, 'file')
-        </div>
+        @foreach($files as $date => $group)
+          <div class="mb-3">
+            <p class="text-center mb-0"><small>Files uploaded on {{carbon($date)->toFormattedDateString()}}</small></p>
+            <div class="d-flex" style="overflow-x: scroll;">
+              @each('components.quiz.file', $group, 'file')
+            </div>
+          </div>
+        @endforeach
       </div>
     </div>
     @endif
