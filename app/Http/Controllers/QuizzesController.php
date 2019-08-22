@@ -68,7 +68,7 @@ class QuizzesController extends Controller
     public function topicStore(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:topics|max:255',
+            'name' => 'required|unique:quiz_topics|max:255',
         ]);
 
         Topic::create([
