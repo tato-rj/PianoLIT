@@ -12,8 +12,8 @@ class Level extends Model
     		1 => 'green',
     		2 => 'yellow',
             3 => 'orange',
-    		4 => 'purple',
-    		5 => 'red'
+    		4 => 'red',
+    		5 => 'purble'
     	];
    	protected $appends = ['color', 'index'];
 
