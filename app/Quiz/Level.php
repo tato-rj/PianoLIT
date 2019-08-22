@@ -11,8 +11,9 @@ class Level extends Model
     protected $types = [
     		1 => 'green',
     		2 => 'yellow',
-    		3 => 'purple',
-    		4 => 'red'
+            3 => 'orange',
+    		4 => 'purple',
+    		5 => 'red'
     	];
    	protected $appends = ['color', 'index'];
 
