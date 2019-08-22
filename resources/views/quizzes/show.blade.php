@@ -91,7 +91,9 @@
 		@each('components.quiz.cards.small', $suggestions, 'suggestion')
 	</div>
 </section>
-
+<div class="container mb-6">
+	@include('components.sections.youtube')
+</div>
 @include('quizzes.results')
 @endsection
 
