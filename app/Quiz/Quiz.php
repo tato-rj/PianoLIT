@@ -12,6 +12,7 @@ class Quiz extends ShareableContent
 
     protected $folder = 'quiz';
     protected $withCount = ['results'];
+    protected $appends = ['questions'];
 
     protected static function boot()
     {
@@ -146,8 +147,9 @@ class Quiz extends ShareableContent
         $feedback = $this->getFeedback($score);
 
     	return [
-            'total' => $count,
+            'questions_count' => $count,
     		'score' => $score,
+            'quiz_average' => $this->average_score,
             'percentage' => $percentage,
     		'results' => $outcome,
             'feedback' => $feedback['sentence'],
