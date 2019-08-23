@@ -30,37 +30,37 @@
           'color' => 'advanced',
           'icon' => 'music',
           'label' => $pieces_count . ' Pieces',
-          'url' => route('admin.api.search', ['api'])])
+          'url' => route('admin.stats.pieces')])
 
         @include('admin.pages.home.card', [
           'color' => 'beginner',
           'icon' => 'address-card',
           'label' => $composers_count . ' Composers',
-          'url' => route('api.composers')])
+          'url' => route('admin.stats.composers')])
 
         @include('admin.pages.home.card', [
           'color' => 'elementary',
           'icon' => 'book-open',
           'label' => $quiz_results_count . ' Quiz results',
-          'url' => route('api.tags')])
+          'url' => route('admin.stats.quizzes')])
 
         @include('admin.pages.home.card', [
           'color' => 'intermediate',
           'icon' => 'users',
           'label' => $users_count . ' Users',
-          'url' => route('api.users')])
+          'url' => route('admin.stats.users')])
 
         @include('admin.pages.home.card', [
           'color' => 'beginner',
           'icon' => 'at',
           'label' => $subscriptions_count . ' Subscribers',
-          'url' => route('admin.api.search', ['api'])])
+          'url' => route('admin.subscriptions.index')])
 
         @include('admin.pages.home.card', [
           'color' => 'advanced',
           'icon' => 'newspaper',
           'label' => $blog_count . ' Blog posts',
-          'url' => route('api.composers')])
+          'url' => route('admin.stats.blog')])
         </div>
   
         <div class="col-lg-6 col-md-6 col-12 row no-gutters">
