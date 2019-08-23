@@ -50,6 +50,11 @@ class Quiz extends ShareableContent
         return array_values(unserialize($questions));        
     }
 
+    public function getAverageScoreAttribute()
+    {
+        return intval(round($this->results()->avg('score')));
+    }
+
     public function questions()
     {
         $array = $this->questions;
