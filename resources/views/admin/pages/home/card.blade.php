@@ -7,7 +7,7 @@
         </div>
         <div class="mr-5">{{$label}}</div>
       </div>
-      <a class="card-footer color-inherit clearfix small z-1" target="_blank" href="{{$url}}">
+      <a class="card-footer color-inherit clearfix small z-1" href="{{$url}}">
         <span class="float-left">See JSON response</span>
         <span class="float-right">
           <i class="fa fa-angle-right"></i>

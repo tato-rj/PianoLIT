@@ -77,15 +77,19 @@ Route::prefix('quiz')->name('quizzes.')->group(function() {
 
 	Route::post('images/remove', 'QuizzesController@removeImage')->name('remove-image');
 
-	Route::prefix('audio')->name('audio.')->group(function() {
+	Route::prefix('media')->name('media.')->group(function() {
 	
-		Route::get('', 'QuizMediaController@audio')->name('index');
+		Route::get('audio', 'QuizMediaController@audio')->name('audio');
 
-		Route::post('store', 'QuizMediaController@store')->name('store');
+		Route::get('images', 'QuizMediaController@images')->name('images');
+
+		Route::post('{type}/store', 'QuizMediaController@store')->name('store');
 		
 		Route::delete('destroy', 'QuizMediaController@destroy')->name('destroy');
 
 	});
+	
+	Route::delete('destroy', 'QuizMediaController@destroy')->name('destroy');
 
 	Route::prefix('topics')->name('topics.')->group(function() {
 	

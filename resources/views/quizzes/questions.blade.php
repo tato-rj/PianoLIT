@@ -8,7 +8,10 @@
 		@if($question['audio'])
 		<audio controls class="mt-4 w-100 d-block audio">
 			<source src="{{asset($question['audio'])}}" type="audio/mp3">
-			</audio>
+		</audio>
+		@endif
+		@if($question['image'])
+			<img src="{{asset($question['image'])}}" class="mt-3 w-100" style="max-width: 360px">
 		@endif
 	</div>
 	<div class="quiz-answers">

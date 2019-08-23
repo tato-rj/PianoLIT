@@ -61,7 +61,8 @@ class Quiz extends ShareableContent
 
         foreach ($array as $index => $question) {
             $array[$index]['Q'] = preg_replace("/\[[^)]+\]/", '',$question['Q']);
-            $array[$index]['audio'] = $this->getAudio($question['Q']);
+            $array[$index]['audio'] = $this->getFile($question['Q'], 'audio');
+            $array[$index]['image'] = $this->getFile($question['Q'], 'images');
         }
 
         return $array;
@@ -93,11 +94,14 @@ class Quiz extends ShareableContent
         return ['gif' => $gif, 'sentence' => $feedback];
     }
 
-    public function getAudio($question)
+    public function getFile($question, $type)
     {
         preg_match('#\[(.*?)\]#', $question, $url);
 
-        return array_key_exists(1, $url) ? $url[1] : null;
+        if (! array_key_exists(1, $url))
+            return null;
+
+        return strhas($url[1], $type) ? $url[1] : null;
     }
 
     public function getAnswer($key)

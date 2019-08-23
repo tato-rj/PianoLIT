@@ -38,7 +38,7 @@ $(document).ready( function () {
     $('#quizzes-table').DataTable({
         aaSorting: [],
         columnDefs: [{
-                    targets: [3],
+                    targets: [5],
                     orderable: false
                 }]
     });

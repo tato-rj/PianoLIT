@@ -21,14 +21,32 @@ class QuizMediaController extends Controller
     	return view('admin.pages.quizzes.audio.index', compact(['files', 'count']));
     }
 
-    public function store(Request $request)
+    public function images()
     {
-        $audio = $request->file('file');
+        $files = [];
 
-    	if (\Storage::disk('public')->exists('quiz/audio/' . $audio->getClientOriginalName()))
-    		abort(403, 'An audio with this name already exists');
+        foreach (\Storage::disk('public')->allFiles('quiz/images') as $index => $file) {
+            $files[$index]['file'] = $file;
+            $files[$index]['created_at'] = carbon(\Storage::disk('public')->lastModified($file))->toDateString();
+        }
 
-        $path = $request->file('file')->storeAs('quiz/audio', $audio->getClientOriginalName(), 'public');
+        $count = count($files);
+        $files = collect($files)->groupBy('created_at')->sortKeysDesc();
+
+        return view('admin.pages.quizzes.images.index', compact(['files', 'count']));
+    }
+
+    public function store(Request $request, $type)
+    {
+        if (! in_array($type, ['audio', 'images']))
+            abort(403, 'This is not a valid media type');
+
+        $file = $request->file('file');
+
+    	if (\Storage::disk('public')->exists('quiz/'.$type.'/' . $file->getClientOriginalName()))
+    		abort(403, 'A file with this name already exists');
+
+        $path = $request->file('file')->storeAs('quiz/'.$type, $file->getClientOriginalName(), 'public');
 
         return asset('storage/' . $path);
     }

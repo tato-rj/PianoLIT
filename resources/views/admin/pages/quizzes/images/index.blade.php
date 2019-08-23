@@ -34,36 +34,33 @@
 <div class="content-wrapper">
   <div class="container-fluid">
   @include('admin.components.breadcrumb', [
-    'title' => 'Quiz',
-    'description' => 'Manage the audio used in the quizzes'])
+    'title' => 'Images',
+    'description' => 'Manage the images used in quizzes'])
     
     <div class="row mb-3">
       <div class="col-12">
-        <form action="{{route('admin.quizzes.media.store', 'audio')}}" class="dropzone" id="filesDropzone"></form>
+        <form action="{{route('admin.quizzes.media.store', 'images')}}" class="dropzone" id="filesDropzone"></form>
       </div>
     </div>
     
-    @if($files)
+    
     <div class="row my-3">
       <div class="col-12">
-        <p>We have {{$count}} audio files</p>
+        <p>We have {{count($files)}} {{str_plural('image', count($files))}}</p>
       </div>
       <div class="col-12">
         @foreach($files as $date => $group)
           <div class="mb-3">
-            <p class="text-center mb-0"><small>Files uploaded on {{carbon($date)->toFormattedDateString()}}</small></p>
+            <p class="text-center mb-0"><small>Images uploaded on {{carbon($date)->toFormattedDateString()}}</small></p>
             <div class="d-flex" style="overflow-x: scroll;">
-              @each('components.quiz.file', $group, 'file')
+              @each('components.quiz.image', $group, 'file')
             </div>
           </div>
         @endforeach
       </div>
     </div>
-    @endif
   </div>
 </div>
-
-@include('admin.components.modals.topic')
 
 @endsection
 
@@ -72,8 +69,8 @@
 <script type="text/javascript" src="{{asset('js/vendor/dropzone.js')}}"></script>
 <script type="text/javascript">
 Dropzone.options.filesDropzone = {
-  acceptedFiles: 'audio/*,application/.mp3',
-  maxFilesize: 2,
+  acceptedFiles: 'image/*,application/.jpg,.jpeg',
+  maxFilesize: 5,
   maxFiles: 8,
   accept: function(file, done) {
     console.log(file);
@@ -121,13 +118,13 @@ $('.remove-file').on('click', function(){
   if (! $button.hasClass('removing')) {
     $button.addClass('removing');
 
-    $button.attr('disabled', true).find('i').removeClass('fa-trash-alt').addClass('fa-hourglass-half');
+    $button.attr('disabled', true).text('removing');
 
     $.ajax({
       url: url,
       method: 'DELETE'
     }).done(function() {
-      $button.parent().parent().fadeOut(function() {
+      $button.parent().parent().parent().parent().fadeOut(function() {
         $(this).remove();
       });
     }).fail(function(data) {

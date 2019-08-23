@@ -143,7 +143,10 @@
             <a class="py-2" href="{{route('admin.quizzes.topics.index')}}">Topics</a>
           </li>
           <li class="d-none d-sm-block">
-            <a class="py-2" href="{{route('admin.quizzes.audio.index')}}">Audio</a>
+            <a class="py-2" href="{{route('admin.quizzes.media.audio')}}">Audio</a>
+          </li>
+          <li class="d-none d-sm-block">
+            <a class="py-2" href="{{route('admin.quizzes.media.images')}}">Images</a>
           </li>
         </ul>
       </li>

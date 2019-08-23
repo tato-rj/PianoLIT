@@ -4,7 +4,7 @@
 		<source src="{{storage($file['file'])}}" type="audio/mp3">
 	</audio>
 	<div class="d-flex justify-content-between w-100">
-		<button class="btn btn-danger btn-sm remove-file px-2" data-path="{{route('admin.quizzes.audio.destroy', ['path' => $file['file']])}}" style="border-radius: 20px;">
+		<button class="btn btn-danger btn-sm remove-file px-2" data-path="{{route('admin.quizzes.media.destroy', ['path' => $file['file']])}}" style="border-radius: 20px;">
 			<i class="fas fa-trash-alt mr-2"></i><strong>Delete</strong>
 		</button>
 
