@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\{Admin, User, Piece, Tag, Composer, Subscription};
-use App\Quiz\{Quiz, Level};
+use App\Quiz\{Quiz, Level, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Blog\Post;
 use App\Tools\Stats;
@@ -19,10 +19,10 @@ class AdminsController extends Controller
     public function home()
     {
         $pieces_count = Piece::count();
-        $tags_count = Tag::count();
         $composers_count = Composer::count();
         $users_count = User::count();
         $subscriptions_count = Subscription::active()->count() - 2;
+        $quiz_results_count = QuizResult::count();
         $blog_count = Post::count();
 
         $birthdays = Composer::bornToday()->get();
@@ -33,7 +33,7 @@ class AdminsController extends Controller
         $pieces_avg = $stats->average(15);
         $milestone = $stats->milestone($pieces_avg);
 
-        return view('admin.pages.home.index', compact('pieces_count', 'tags_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'pieces_graph', 'pieces_avg', 'milestone', 'birthdays', 'deathdays'));
+        return view('admin.pages.home.index', compact('pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'pieces_graph', 'pieces_avg', 'milestone', 'birthdays', 'deathdays'));
     }
 
     /**

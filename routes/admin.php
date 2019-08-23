@@ -139,6 +139,8 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 
 	Route::get('blog', 'StatsController@blog')->name('blog');
 
+	Route::get('quizzes', 'StatsController@quizzes')->name('quizzes');
+
 });
 
 

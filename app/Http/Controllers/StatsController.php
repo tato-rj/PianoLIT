@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Blog\{Post, Topic};
+use App\Quiz\Quiz;
+use App\Quiz\Topic as QuizTopic;
+use App\Quiz\Level as QuizLevel;
 use App\{User, Piece, Tag, Composer, Country};
 use Illuminate\Http\Request;
 
@@ -65,5 +68,15 @@ class StatsController extends Controller
         $posts = Post::orderBy('published_at', 'DESC')->get();
 
         return view('admin.pages.stats.blog.index', compact(['topicStats', 'topicsCount', 'posts']));
+    }
+
+    public function quizzes()
+    {
+        $topicStats = QuizTopic::withCount('quizzes')->orderBy('quizzes_count', 'DESC')->get();
+        $levelStats = QuizLevel::withCount('quizzes')->orderBy('quizzes_count', 'DESC')->get();
+        $topicsCount = QuizTopic::count();
+        $quizzes = Quiz::orderBy('published_at', 'DESC')->get();
+
+        return view('admin.pages.stats.quizzes.index', compact(['levelStats', 'topicStats', 'topicsCount', 'quizzes']));
     }
 }

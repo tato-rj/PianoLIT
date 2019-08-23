@@ -11,6 +11,7 @@ class Quiz extends ShareableContent
     use Feedback;
 
     protected $folder = 'quiz';
+    protected $withCount = ['results'];
 
     protected static function boot()
     {

@@ -43,6 +43,9 @@
           <li>
             <a class="py-2" href="{{route('admin.stats.blog')}}">Blog</a>
           </li>
+          <li>
+            <a class="py-2" href="{{route('admin.stats.quizzes')}}">Quizzes</a>
+          </li>
         </ul>
       </li>      
 

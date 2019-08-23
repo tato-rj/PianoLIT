@@ -40,8 +40,8 @@
 
         @include('admin.pages.home.card', [
           'color' => 'elementary',
-          'icon' => 'tags',
-          'label' => $tags_count . ' Tags',
+          'icon' => 'book-open',
+          'label' => $quiz_results_count . ' Quiz results',
           'url' => route('api.tags')])
 
         @include('admin.pages.home.card', [
