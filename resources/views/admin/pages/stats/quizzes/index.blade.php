@@ -78,6 +78,8 @@ for (var i=0; i < topics_count; i++) {
   topics.push(topicsRecords[i].name);
   topics_quizzes_count.push(topicsRecords[i].quizzes_count);
 }
+
+console.log(getStepSize(topics_quizzes_count));
 var topicsChartElement = document.getElementById("topicsChart").getContext('2d');
 var topicsChart = new Chart(topicsChartElement, {
     type: 'bar',

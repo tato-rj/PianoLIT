@@ -1,5 +1,5 @@
 getStepSize = function(records) {
-    return Math.ceil(Math.max(records)/10);
+    return Math.ceil(Math.max.apply(Math, records)/10);
 }
 
 createLineChart = function(type) {
