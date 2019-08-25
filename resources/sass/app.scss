@@ -24,7 +24,11 @@ button:focus {outline:0;}
 }
 
 .text-primary {
-	color: $brand-primary;
+	color: $brand-primary !important;
+}
+
+.bg-primary {
+	background-color: $brand-primary;
 }
 
 .btn-primary {

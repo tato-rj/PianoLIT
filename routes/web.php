@@ -14,6 +14,17 @@ Route::get('/', function () {
     return view('welcome.index', compact(['tags']));
 })->name('home');
 
+Route::get('riddles', function() {
+	$riddles = [
+		'#fff' => ['Beethoven', 'Jane', 'Waltz', 'Trombone'],
+		'#d7f3e366' => ['Practice', 'Sonata', 'Nocturne', 'Find the right key'],
+		// '#feeaf1' => ['Catching Zs', 'Night Owl', 'Beauty Sleep', 'Early Bird'],
+		'#ffffff' => ['Scales', 'Whole note and quarter note', 'Etude', 'Classical']
+	];
+
+	return view('riddles.index', compact('riddles'));
+})->name('riddles');
+
 Route::prefix('tools')->name('tools.')->group(function() {
 
 	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {

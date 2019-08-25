@@ -7,6 +7,10 @@
 
 @section('content')
 <section class="container mb-5">
+    @include('components.title', [
+        'title' => 'Quizzes', 
+        'subtitle' => 'Test your knowledge and learn cool new facts about music'])
+
 	<div class="row">
 		
 		@each('components.quiz.cards.large', $quizzes, 'quiz')

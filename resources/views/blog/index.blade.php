@@ -7,6 +7,10 @@
 
 @section('content')
 <section class="container mb-5">
+    @include('components.title', [
+        'title' => 'Blog', 
+        'subtitle' => 'A space where we share our ideas and explore intriguing facts about the exciting world of classical music'])
+
 	<div class="row">
 		
 		@each('components.blog.cards.large', $posts, 'post')

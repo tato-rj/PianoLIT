@@ -58,11 +58,12 @@ g.key {
 
 @section('content')
 <div class="container mb-4">
-	<div class="mb-5 text-center">
-    	<div class="text-grey"><small>version 1.1</small></div>
-		<h3>The Circle of Fifths</h3>
-		<p class="text-grey">An interactive and fun tool to explore music harmony in an innovative way. Enjoy!</p>
-	</div>
+	
+	@include('components.title', [
+		'version' => '1.1',
+		'title' => 'The Circle of Fifths', 
+		'subtitle' => 'An interactive and fun tool to explore music harmony in an innovative way. Enjoy!'])
+	
 	<div class="row mb-6">
 		<div class="col-lg-5 col-md-6 col-12 px-4 mb-6">
 			<div id="wheel-container" class="w-100 position-relative">

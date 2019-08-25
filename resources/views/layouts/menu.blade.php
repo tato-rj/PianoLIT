@@ -18,8 +18,14 @@
           <a class="nav-link p-0 ml-1" href="{{route('tools.chord-finder.index')}}">Chord finder</a>
         </div>
       </li>
-      <li class="nav-item mx-2">
-        <a class="nav-link" href="{{route('quizzes.index')}}">Quizzes</a>
+      <li class="nav-item dropdown mx-2">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Games
+        </a>
+        <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
+          <a class="nav-link p-0 mb-2 ml-1" href="{{route('quizzes.index')}}">Quizzes</a>
+          <a class="nav-link p-0 ml-1" href="{{route('riddles')}}">Riddles</a>
+        </div>
       </li>
       <li class="nav-item mx-2">
         <a class="nav-link" href="{{route('posts.index')}}">Blog</a>

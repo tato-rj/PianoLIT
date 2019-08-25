@@ -313,14 +313,13 @@ button.control:disabled {
 @endpush
 
 @section('content')
-<div class="mb-4 text-center position-relative">
     @include('components.overlays.loading')
-    <div class="text-grey"><small>version 1.1</small></div>
-	<h3>Chord Finder</h3>
-    <div id="subtitle" class="text-grey">
-        <div class="">Just tell us the notes and we'll show the most likely chords you can make with them</div>
-    </div>
-</div>
+
+    @include('components.title', [
+        'version' => '2.0',
+        'title' => 'Chord Finder', 
+        'subtitle' => 'Just tell us the notes and we\'ll show the most likely chords you can make with them'])
+
 
 @if(! empty($request))
 <div class="container mb-4" id="notes-container">
