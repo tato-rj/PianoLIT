@@ -1,5 +1,4 @@
-<span class="badge alert-red m-0">STEP 2: 3rd AND 5th</span>
-<div class="p-2 text-muted">
+@component('tools.chords.results.labels.accordion-cell', ['title' => '3rd AND 5th', 'index' => $index, 'step' => $step])
 	<p>Once each interval has been named, we first need to determine if the chord is major, minor, diminished or augmented. To do that, all we need is the <strong>3rd</strong> and the <strong>5th</strong>.</p>
 	@php
 		$third = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 3);
@@ -20,4 +19,4 @@
 		}
 	@endphp
 	<p>In this case, the chord {!! $type !!}. That's why we say this is a <strong>{{$inversion['label']['type'] ? lastword($inversion['label']['type']) : 'major'}}</strong> chord.</p>
-</div>
+@endcomponent

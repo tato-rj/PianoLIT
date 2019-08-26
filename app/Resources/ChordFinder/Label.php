@@ -44,6 +44,7 @@ class Label
 		foreach ($this->array as $index => $chord) {
 			foreach ($chord['inversions'] as $key => $inversion) {
 				$this->array[$index]['inversions'][$key]['label'] = $this->read($inversion);
+				$this->array[$index]['inversions'][$key]['chord'] = $this->fixInversion($inversion);
 			}
 		}
 
@@ -84,5 +85,15 @@ class Label
 		// }
 
 		return array_merge($root, $this->bass(), $type, $seventh, $sus, $ext, $full);
+	}
+
+	public function fixInversion($inversion)
+	{
+		$isInversion = $this->bass && strtolower($this->bass[0]) != strtolower($inversion['chord'][0][0]);
+
+		if (! $isInversion)
+			return $inversion['chord'];
+
+		return $this->array[0]['notes'];
 	}
 }

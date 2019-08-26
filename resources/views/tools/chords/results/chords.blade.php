@@ -14,7 +14,7 @@
 				@php($count++)
 				<button class="m-1 btn btn-chord-main" 
 					href="#{{$inversion['id']}}" 
-					data-notes="{{$request['strict'] && $request['tool'] != 'button' ? json_encode($request['chords'][0]['notes']) : json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
+					data-notes="{{json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
 					<i class="fas fa-play-circle mr-2 opacity-4"></i>
 					<strong>{!! $inversion['label']['full_shorthand'] !!}</strong>
 				</button>

@@ -1,5 +1,4 @@
-<span class="badge alert-red m-0">STEP 4: THE 7th</span>
-<div class="p-2 text-muted">
+@component('tools.chords.results.labels.accordion-cell', ['title' => 'THE 7th', 'index' => $index, 'step' => $step])
 	<p>We also check if there is a <strong>7th</strong>. If yes, we will add the 7th to the chord according to the corresponding interval.</p>
 	@php
 	$seventh = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 7);
@@ -20,4 +19,4 @@
 		<p>We also call this a <strong>dominant chord</strong>, because it is major and has a minor 7th. Check out our <a href="{{route('tools.circle-of-fifths')}}" target="_blank">Circle of Fifths</a> page to learn more about functional harmony.</p>
 		@endif
 	@endif
-</div>
+@endcomponent

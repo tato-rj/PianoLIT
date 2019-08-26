@@ -1,5 +1,4 @@
-<span class="badge alert-red m-0">STEP 5: OTHER INTERVALS</span>
-<div class="p-2 text-muted">
+@component('tools.chords.results.labels.accordion-cell', ['title' => 'OTHER INTERVALS', 'index' => $index, 'step' => $step])
 	<p>Finally, let's look for any other intervals, such as a <strong>6th</strong>, a <strong>9th</strong>, an <strong>11th</strong>, etc. For each one, we'll add that note the chord according to the corresponding interval.</p>
 	@php
 	$dissonances = [];
@@ -19,4 +18,4 @@
 		@endforeach
 		</p>
 	@endif
-</div>
+@endcomponent

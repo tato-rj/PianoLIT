@@ -38,9 +38,7 @@ class Ranking
 				if (in_array(2, $intervals) || in_array(4, $intervals) || in_array(9, $intervals) || in_array(11, $intervals) || in_array(13, $intervals))
 					$ranking += 1;
 
-				if (in_array(7, $intervals) && in_array(9, $intervals) || 
-					in_array(7, $intervals) && in_array(9, $intervals) && in_array(11, $intervals) ||
-					in_array(7, $intervals) && in_array(9, $intervals) && in_array(11, $intervals) && in_array(13, $intervals))
+				if (in_array(7, $intervals) && (in_array(9, $intervals) || in_array(11, $intervals) || in_array(13, $intervals)))
 					$ranking += 1;
 
 				if (in_array(2, $intervals) && in_array(6, $intervals))

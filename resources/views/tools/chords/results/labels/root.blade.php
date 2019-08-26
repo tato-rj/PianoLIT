@@ -1,5 +1,4 @@
-<span class="badge alert-red m-0">STEP 1: INTERVALS</span>
-<div class="p-2 text-muted">
+@component('tools.chords.results.labels.accordion-cell', ['title' => 'INTERVALS', 'show' => 'show', 'index' => $index, 'step' => $step])
 	<p>In order to figure out the name of the chord we consider only the <u>intervals between the root (the first note) and each of the other notes</u>.</p>
 	<p>Here, the <strong>root {{chordToHumans($inversion['chord'][0])}}</strong> forms 
 		@foreach($inversion['chord'] as $index => $note)
@@ -8,4 +7,5 @@
 		@endif
 		@endforeach
 	</p>
-</div>
+	<p>Keep reading below to learn more about how we named this chord.</p>
+@endcomponent

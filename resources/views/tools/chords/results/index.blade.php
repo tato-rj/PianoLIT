@@ -24,7 +24,7 @@
 				@foreach($chord['inversions'] as $inversion)
 				  <div class="chord-info" style="display: none;" id="{{$inversion['id']}}">
 				  	<div class="d-flex">
-						<div class="mb-4">
+						<div class="mb-4 px-2">
 							<label class="alert-grey rounded-top py-2 px-4 text-center w-100 m-0 text-nowrap"><small><strong>THIS CHORD HAS</strong></small></label>
 							<ul class="list-flat">
 								@foreach($inversion['intervals'] as $interval)
@@ -35,16 +35,7 @@
 							</ul>
 						</div>
 
-				  		<div class="px-4">
-							@include('tools.chords.results.labels.root')
-							@include('tools.chords.results.labels.type')
-							@include('tools.chords.results.labels.sus')
-							@include('tools.chords.results.labels.seventh')
-							@include('tools.chords.results.labels.others')
-							@if($request['strict'] && $inversion['label']['bass'] && $inversion['label']['bass'][0] != $inversion['label']['root'][0])
-								@include('tools.chords.results.labels.bass')
-							@endif
-				  		</div>
+						@include('tools.chords.results.labels.accordion', ['index' => $loop->iteration])
 				  	</div>
 				  </div>
 				@endforeach
