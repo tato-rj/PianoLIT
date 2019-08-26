@@ -3,8 +3,11 @@
 	@php
 		$third = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 3);
 		$fifth = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 5);
+		$tenth = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 10);
 
-		if ($third) {
+		if ($tenth) {
+			$type = 'has a <strong>' . str_replace('10', '3', $tenth['name']) . '</strong> (we see it an octave above as a 10th, but this will still count as a 3rd)';
+		} elseif ($third) {
 			$type = 'has a <strong>' . $third['name'] . '</strong>';
 		} elseif ($fifth['type'] == 'diminished') {
 			$type = '<strong>is missing the 3rd</strong>, but it has a <strong>diminished 5th</strong>, so we treat it as having a minor 3rd';
