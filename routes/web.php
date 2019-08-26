@@ -29,28 +29,13 @@ Route::prefix('tools')->name('tools.')->group(function() {
 
 	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
 
-		Route::get('', function() {
-			return view('tools.chords.index');
-		})->name('index');
-		
-		Route::get('/analyse', function() {
-			$finder = new \App\Resources\ChordFinder\ChordFinder;
-			$request = $finder->take(request())->validate()->analyse()->ranked()->get();
-			$json = $finder->take(request())->debug();
+		Route::get('', 'ToolsController@chordFinder')->name('index');
 
-			if (request()->has('dev'))
-				return $request;
-			
-			return view('tools.chords.results.index', compact(['request', 'json']))->render();
-		})->name('analyse');
+		Route::get('analyse', 'ToolsController@analyseChord')->name('analyse');
 
 	});
 
-	Route::get('circle-of-fifths', function() {
-		$keys = new \App\Resources\CircleOfFifths;
-
-		return view('tools.circle.index', compact('keys'));
-	})->name('circle-of-fifths');
+	Route::get('circle-of-fifths', 'ToolsController@circleOfFifths')->name('circle-of-fifths');
 
 });
 

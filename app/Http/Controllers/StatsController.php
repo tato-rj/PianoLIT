@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Blog\{Post, Topic};
-use App\Quiz\Quiz;
+use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
 use App\{User, Piece, Tag, Composer, Country};
@@ -76,7 +76,8 @@ class StatsController extends Controller
         $levelStats = QuizLevel::withCount('quizzes')->orderBy('quizzes_count', 'DESC')->get();
         $topicsCount = QuizTopic::count();
         $quizzes = Quiz::orderBy('published_at', 'DESC')->get();
+        $results_graph = QuizResult::stats(15);
 
-        return view('admin.pages.stats.quizzes.index', compact(['levelStats', 'topicStats', 'topicsCount', 'quizzes']));
+        return view('admin.pages.stats.quizzes.index', compact(['levelStats', 'topicStats', 'topicsCount', 'quizzes', 'results_graph']));
     }
 }
