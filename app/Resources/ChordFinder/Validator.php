@@ -400,7 +400,7 @@ class Validator
 
 	public function missingThird($intervals)
 	{
-		$hasThird = $hasSecondOrFourth = false;
+		$hasThird = $hasSecondOrFourth = $hasTenth = false;
 
 		foreach ($intervals as $interval) {
 			if ($interval['interval'] == 3)
@@ -408,9 +408,12 @@ class Validator
 
 			if ($interval['interval'] == 2 || $interval['interval'] == 4)
 				$hasSecondOrFourth = true;
+
+			if ($interval['interval'] == 10)
+				$hasTenth = true;
 		}
 
-		$missingThird = ! $hasThird && ! $hasSecondOrFourth;
+		$missingThird = ! $hasThird && ! $hasSecondOrFourth && ! $hasTenth;
 
 		if ($missingThird)
 			$this->error = $this->report('Looks like we\'re missing the 3rd. Without it we can\'t figure out what type of chord this is (major, minor, etc).');

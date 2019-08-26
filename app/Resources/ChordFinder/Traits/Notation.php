@@ -25,7 +25,7 @@ trait Notation
 	public function core($notes)
 	{
 		$label = ['type' => null, 'type_shorthand' => null];
-		$third = $this->find($notes, 3);
+		$third = $this->find($notes, 3) ?? $this->find($notes, 10);
 		$fifth = $this->find($notes, 5);
 		$seventh = $this->find($notes, 7);
 

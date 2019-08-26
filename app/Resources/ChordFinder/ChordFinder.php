@@ -140,7 +140,7 @@ class ChordFinder
 				$results[$index]['inversions'] = $this->inversion($notes)->all();
 			}			
 		}
-
+		
 		$this->results = $results;
 	}
 }
