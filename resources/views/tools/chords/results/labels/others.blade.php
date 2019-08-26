@@ -10,9 +10,9 @@
 	}
 	@endphp
 	@if (empty($dissonances))
-		<p>This chord <strong>has no other dissonances</strong>.</p>
+		<p class="m-0">This chord <strong>has no other dissonances</strong>.</p>
 	@else
-		<p>In this case we have 
+		<p class="m-0">In this case we have 
 		@foreach($dissonances as $dissonance)
 		{!! 'a <strong>'.$dissonance['name'].'</strong>' !!}{{$loop->iteration < count($dissonances) - 1 ? ', ' : null}}{{$loop->iteration == count($dissonances) - 1 ? ' and ' : null}}{{$loop->last ? '.' : null}}
 		@endforeach

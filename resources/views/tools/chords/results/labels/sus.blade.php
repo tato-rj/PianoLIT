@@ -5,9 +5,9 @@
 	$fourth = (new \App\Resources\ChordFinder\Label([]))->find($inversion, 4);
 	@endphp
 	@if (! $second && ! $fourth)
-	<p>This chord <strong>has no 2nd or 4th</strong>, so it is neither add nor sus.</p>
+	<p class="m-0">This chord <strong>has no 2nd or 4th</strong>, so it is neither add nor sus.</p>
 	@else
-	<p>In this chord we find a  
+	<p class="m-0">In this chord we find a  
 		{!! $second ? ' <strong>' . $second['name'] . '</strong>' : null !!} 
 		{{ $fourth && $second ? ' and a' : null}}
 		{!! $fourth ? ' <strong>' . $fourth['name'] . '</strong>' : null !!}. 

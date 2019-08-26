@@ -7,5 +7,5 @@
 		@endif
 		@endforeach
 	</p>
-	<p>Keep reading below to learn more about how we named this chord.</p>
+	<p class="m-0">Keep reading below to learn more about how we named this chord.</p>
 @endcomponent
