@@ -4,6 +4,10 @@ Route::resources([
     'subscriptions' => 'SubscriptionsController'
 ]);
 
+Route::get('pdf', function() {
+	return response()->file('images/sheets/'.request('type').'.pdf');
+});
+
 Route::get('youtube', function() {
 	return redirect(config('services.channels.youtube'));
 })->name('youtube');
