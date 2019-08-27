@@ -462,14 +462,19 @@ function noteToMachine(note) {
     return letter + note.substring(1).replace('#', '+').replace('#', '+').replace('b', '-').replace('b', '-');    
 }
 
+function unique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+
 function showRootOptions(notes) {
+    let array = notes.filter(unique);
     $('#root-buttons').html('');
     root = null;
 
-    if (notes.length > 2) {
-        for (var i=0; i<notes.length; i++) {
+    if (array.length > 2) {
+        for (var i=0; i<array.length; i++) {
             let html = `<div class="m-2 d-inline-block">
-                            <button class="btn btn-outline-secondary font-weight-bold" data-name="`+notes[i]+`" type="button">`+noteToHumans(notes[i])+`</button>
+                            <button class="btn btn-outline-secondary font-weight-bold" data-name="`+array[i]+`" type="button">`+noteToHumans(array[i])+`</button>
                         </div>`;
 
             $('#root-buttons').append(html);
