@@ -426,10 +426,10 @@ class Validator
 		$hasThird = $hasFifth = false;
 
 		foreach ($intervals as $interval) {
-			if ($interval['interval'] == 3)
+			if (in_array($interval['interval'], [3, 10]))
 				$hasThird = true;
 
-			if ($interval['interval'] == 5)
+			if (in_array($interval['interval'], [5, 12]))
 				$hasFifth = true;
 		}
 

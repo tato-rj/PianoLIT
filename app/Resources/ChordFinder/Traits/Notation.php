@@ -26,7 +26,7 @@ trait Notation
 	{
 		$label = ['type' => null, 'type_shorthand' => null];
 		$third = $this->find($notes, 3) ?? $this->find($notes, 10);
-		$fifth = $this->find($notes, 5);
+		$fifth = $this->find($notes, 5) ?? $this->find($notes, 12);
 		$seventh = $this->find($notes, 7);
 
 		if ($fifth['type'] == 'perfect' || is_null($fifth)) {
