@@ -31,4 +31,15 @@ class ToolsController extends Controller
 
 		return view('tools.circle.index', compact('keys'));
     }
+
+    public function staff($type = null)
+    {
+    	$files = ['blank', 'piano'];
+    	$size = request()->has('size') ? '-' . request('size') : null;
+
+	   	if (in_array($type, $files))
+	    	return response()->file('images/sheets/'.$type.$size.'.pdf');
+
+		return view('tools.staff.index', compact('files'));
+    }
 }

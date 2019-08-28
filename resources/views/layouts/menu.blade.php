@@ -15,7 +15,8 @@
         </a>
         <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
           <a class="nav-link p-0 mb-2 ml-1" href="{{route('tools.circle-of-fifths')}}">Circle of Fifths</a>
-          <a class="nav-link p-0 ml-1" href="{{route('tools.chord-finder.index')}}">Chord finder</a>
+          <a class="nav-link p-0 mb-2 ml-1" href="{{route('tools.chord-finder.index')}}">Chord Finder</a>
+          <a class="nav-link p-0 ml-1" href="{{route('tools.staff')}}">Staff Generator</a>
         </div>
       </li>
       <li class="nav-item dropdown mx-2">
