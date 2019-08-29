@@ -100,6 +100,7 @@
 	@include('components.sections.youtube')
 </div>
 @include('quizzes.results')
+@include('components.overlays.subscribe.model-1')
 @endsection
 
 @push('scripts')
