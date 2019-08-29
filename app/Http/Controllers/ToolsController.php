@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Resources\ChordFinder\ChordFinder;
+use App\Resources\Technique\{Scale, Arpeggio};
 use App\Resources\CircleOfFifths;
 
 class ToolsController extends Controller
@@ -41,5 +42,23 @@ class ToolsController extends Controller
 	    	return response()->file('images/sheets/'.$type.$size.'.pdf');
 
 		return view('tools.staff.index', compact('files'));
+    }
+
+    public function scales()
+    {
+        return view('tools.scales.index');
+    }
+
+    public function generateScales(Request $request)
+    {
+        $scale = new Scale($request->key);
+        $arpeggio = new Arpeggio($request->key);
+
+        $results = [
+            $scale->types(['diatonic'])->generate(),
+            $arpeggio->types(['triad'])->generate()
+        ];
+
+        dd($results);
     }
 }

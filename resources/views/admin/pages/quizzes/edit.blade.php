@@ -51,7 +51,9 @@
         </div>
         <div class="col-lg-8 col-md-6 col-12 mb-4">
           @input(['bag' => 'default', 'value' => $quiz->title, 'name' => 'title', 'placeholder' => 'Quiz title', 'limit' => 120])
+          
           @textarea(['bag' => 'default', 'value' => $quiz->description, 'name' => 'description', 'placeholder' => 'Quiz description', 'limit' => 238])
+          
           @component('admin.pages.quizzes.question.layout')
             @foreach($quiz->questions as $question)
             @include('admin.pages.quizzes.question.input', [
@@ -123,6 +125,16 @@ $('input.status-toggle').on('change', function() {
 });
 </script>
 <script type="text/javascript">
+function updateCounters() {
+  $counters = $('.question-counter:visible');
+
+  $counters.each(function(index) {
+    $(this).text('- question ' + (index + 1) + ' of ' + $counters.length + ' -');
+  });
+}
+
+updateCounters();
+
 //////////////////////
 // ADD NEW QUESTION //
 //////////////////////
@@ -139,6 +151,7 @@ $('a.add-new-field').on('click', function() {
 
   $clone.removeClass('original-type').insertBefore($button).show();
 
+  updateCounters();
 });
 
 /////////////////////
@@ -146,6 +159,8 @@ $('a.add-new-field').on('click', function() {
 /////////////////////
 $(document).on('click', 'a.remove-field', function() {
   $(this).parent().remove();
+
+  updateCounters();
 });
 </script>
 @endsection

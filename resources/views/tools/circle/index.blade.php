@@ -57,13 +57,12 @@ g.key {
 @endpush
 
 @section('content')
-<div class="container mb-4">
+@include('components.title', [
+	'version' => '1.1',
+	'title' => 'The Circle of Fifths', 
+	'subtitle' => 'An interactive and fun tool to explore music harmony in an innovative way. Enjoy!'])
 	
-	@include('components.title', [
-		'version' => '1.1',
-		'title' => 'The Circle of Fifths', 
-		'subtitle' => 'An interactive and fun tool to explore music harmony in an innovative way. Enjoy!'])
-	
+<div class="container mb-4">	
 	<div class="row mb-6">
 		<div class="col-lg-5 col-md-6 col-12 px-4 mb-6">
 			<div id="wheel-container" class="w-100 position-relative">

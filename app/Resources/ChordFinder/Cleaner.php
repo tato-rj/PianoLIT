@@ -2,10 +2,8 @@
 
 namespace App\Resources\ChordFinder;
 
-
 class Cleaner
 {
-
 	protected $notes;
 
 	public function __construct($notes)

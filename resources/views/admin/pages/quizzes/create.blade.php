@@ -96,6 +96,16 @@
 
 </script>
 <script type="text/javascript">
+function updateCounters() {
+  $counters = $('.question-counter');
+
+  $counters.each(function(index) {
+    $(this).text('- question ' + index + 1 + ' of ' + $counters.length . ' -');
+  });
+}
+
+updateCounters();
+
 //////////////////////
 // ADD NEW QUESTION //
 //////////////////////
@@ -112,6 +122,7 @@ $('a.add-new-field').on('click', function() {
 
   $clone.removeClass('original-type').insertBefore($button).show();
 
+  updateCounters();
 });
 
 /////////////////////
@@ -119,6 +130,8 @@ $('a.add-new-field').on('click', function() {
 /////////////////////
 $(document).on('click', 'a.remove-field', function() {
   $(this).parent().remove();
+  
+  updateCounters();
 });
 </script>
 @endsection

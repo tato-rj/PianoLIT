@@ -39,6 +39,14 @@ Route::prefix('tools')->name('tools.')->group(function() {
 	
 	Route::get('staff/{type?}', 'ToolsController@staff')->name('staff');
 
+	Route::prefix('scales')->name('scales.')->group(function() {
+
+		Route::get('', 'ToolsController@scales')->name('index');
+
+		Route::get('generate', 'ToolsController@generateScales')->name('generate');
+
+	});
+
 });
 
 Route::prefix('blog')->name('posts.')->group(function() {

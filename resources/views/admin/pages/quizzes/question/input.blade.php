@@ -1,5 +1,5 @@
 <div class="form-group type-container {{$type ?? ''}} mb-2 quiz-form" style="display: {{$display ?? null}}">
-
+	<div class="text-muted text-center"><small class="question-counter"></small></div>
 	@for($i=0; $i<5; $i++)
 		@if($i == 0)
 		<input rows="1" class="form-control-sm form-control mb-1" placeholder="Question" name="{{$names[$i] ?? null}}" value="{{$question ?? null}}">

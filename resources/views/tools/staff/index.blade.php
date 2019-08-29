@@ -18,15 +18,13 @@
 @endpush
 
 @section('content')
-<div class="container mb-4">
-	
-	@include('components.title', [
-		'version' => '1.0',
-		'title' => 'Staff Generator', 
-		'subtitle' => 'Download new staff paper in different formats quick and easy'])
-	
+@include('components.title', [
+	'version' => '1.0',
+	'title' => 'Staff Generator', 
+	'subtitle' => 'Download new staff paper in different formats quick and easy'])
 
-	<div class="row mt-5 mb-6">
+<div class="container mb-4">
+	<div class="row mb-6">
 		<div class="col-lg-8 col-12 mx-auto">
 			<div class="row">
 				@foreach($files as $file)

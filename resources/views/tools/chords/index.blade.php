@@ -11,7 +11,9 @@
 
 @push('header')
 <style type="text/css">
-
+.fadeInUp {
+    animation-duration: .2s;
+}
 sup.extension {
     margin-left: 4px;
 }
