@@ -20,23 +20,15 @@ abstract class Technique
 
 	public function generate()
 	{
-		$results = [$this->name => []];
-
-		foreach ($this->types as $type) {
-			array_push($results[$this->name], $this->{$type}());
-		}
-
-		return $results;
+		return $this->{$this->type}();
 	}
 
-	public function types($types)
+	public function type($type)
 	{
-		foreach ($types as $type) {
-			if (! method_exists($this, $type))
-				abort(422, 'Sorry, the type '.$type.' doesn\'t exist');	
-		}
+		if (! method_exists($this, $type))
+			abort(422, 'Sorry, the type '.$type.' doesn\'t exist');	
 
-		$this->types = $types;
+		$this->type = $type;
 
 		return $this;
 	}

@@ -6,6 +6,8 @@
 
 @import "components/swiper";
 @import "components/tinymce";
+@import "components/animations";
+@import "components/music";
 @import "responsive";
 @import "variables";
 
@@ -101,4 +103,8 @@ input.input-center::-webkit-input-placeholder {
 
   input.input-center:-ms-input-placeholder {  
     text-align: center; 
+  }
+
+  .fadeInUp {
+  	animation-duration: .2s;
   }

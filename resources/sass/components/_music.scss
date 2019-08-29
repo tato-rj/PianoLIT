@@ -1,0 +1,123 @@
+sup.extension {
+    margin-left: 4px;
+}
+
+.note {
+	position: relative;
+}
+
+.note h1 span {
+	font-size: .4em;
+	vertical-align: super;
+	font-style: italic;
+}
+
+.note button {
+	border: 0;
+	padding: 0;
+	background: transparent;
+}
+
+.input-overlay {
+	width: 100%; 
+	height: 100%; 
+	position: absolute; 
+	top: 0; 
+	left: 0; 
+	display: none; 
+	background: rgba(255,255,255,0.5);
+    z-index: 100;
+}
+
+.note-inactive {
+	opacity: .6;
+}
+
+.note-inactive div {
+	background-color: #b8c2cc;
+}
+
+.note-inactive h1 {
+	color: #b8c2cc;
+	border-color: #b8c2cc !important;
+}
+
+.note-active div {
+	background-color: #4dc0b5;
+}
+
+.note-active h1 {
+	color: #4dc0b5;
+	border-color: #4dc0b5 !important;
+}
+
+button.control:disabled {
+	opacity: .4;
+	color: white;
+}
+
+.btn-chord-main {
+    font-size: 1.5em;
+    background-color: #2fe4581f;
+    color: #20a23ed1;
+    transition: .2s;
+}
+
+.btn-chord-main:hover {
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    color: #20a23ed1;
+}
+
+.btn-chord-main:active {
+    background-color: #2fe45861;
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.btn-chord-main:focus {
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.btn-chord-main.btn-chord-selected {
+    background-color: #2fe4584d;
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.btn-chord-additional.btn-chord-selected {
+    color: #544c00ab;
+    background-color: #f2da008c;
+}
+
+.btn-chord-additional {
+    background-color: #f2da004a;
+    color: #544c00ab;
+    transition: .2s;
+}
+
+.btn-chord-additional:hover {
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    color: #544c00ab;
+}
+
+.btn-chord-additional:active {
+    background-color: #f2da008c;
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+.btn-chord-additional:focus {
+    -webkit-box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}
+
+#chord-label > div {
+    margin: .5rem!important;
+    font-size: 1.6em;
+    color: #6c757d!important;
+    font-weight: bold;
+    text-transform: capitalize;
+}

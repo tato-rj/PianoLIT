@@ -21,6 +21,7 @@ trait Keys
 		// 	]
 		// ],
 		'A-' => [
+			'label' => 'Ab major',
 			'notes' => ['a-', 'b-', 'c', 'd-', 'e-', 'f', 'g'],
 			'scale' => [
 				'diatonic' => [
@@ -36,6 +37,7 @@ trait Keys
 			]
 		],
 		'A' => [
+			'label' => 'A major',
 			'notes' => ['a', 'b', 'c+', 'd', 'e', 'f+', 'g+'],
 			'scale' => [
 				'diatonic' => [
@@ -51,6 +53,7 @@ trait Keys
 			]
 		],
 		'A-m' => [
+			'label' => 'Ab minor',
 			'notes' => ['a-', 'b-', 'c-', 'd-', 'e-', 'f-', 'g-'],
 			'scale' => [
 				'diatonic' => [
@@ -66,6 +69,7 @@ trait Keys
 			]
 		],
 		'Am' => [
+			'label' => 'A minor',
 			'notes' => ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
 			'scale' => [
 				'diatonic' => [
@@ -81,11 +85,13 @@ trait Keys
 			]
 		],
 		'A+m' => [
+			'label' => 'A# minor',
 			'notes' => ['a+', 'b+', 'c+', 'd+', 'e+', 'f+', 'g+'],
 			'scale' => 'B-m',
 			'arpeggio' => 'B-m'
 		],
 		'B-' => [
+			'label' => 'Bb major',
 			'notes' => ['b-', 'c', 'd', 'e-', 'f', 'g', 'a'],
 			'scale' => [
 				'diatonic' => [
@@ -101,6 +107,7 @@ trait Keys
 			]
 		],
 		'B' => [
+			'label' => 'B major',
 			'notes' => ['b', 'c+', 'd+', 'e', 'f+', 'g+', 'a+'],
 			'scale' => [
 				'diatonic' => [
@@ -116,6 +123,7 @@ trait Keys
 			]
 		],
 		'B-m' => [
+			'label' => 'Bb minor',
 			'notes' => ['b-', 'c', 'd-', 'e-', 'f', 'g-', 'a-'],
 			'scale' => [
 				'diatonic' => [
@@ -131,6 +139,7 @@ trait Keys
 			]
 		],
 		'Bm' => [
+			'label' => 'B minor',
 			'notes' => ['b', 'c+', 'd', 'e', 'f+', 'g', 'a'],
 			'scale' => [
 				'diatonic' => [
@@ -146,11 +155,13 @@ trait Keys
 			]
 		],
 		'C-' => [
+			'label' => 'Cb major',
 			'notes' => ['c-', 'd-', 'e-', 'f-', 'g-', 'a-', 'b-'],
 			'scale' => 'B',
 			'arpeggio' => 'B'
 		],
 		'C' => [
+			'label' => 'C major',
 			'notes' => ['c', 'd', 'e', 'f', 'g', 'a', 'b'],
 			'scale' => [
 				'diatonic' => [
@@ -166,6 +177,7 @@ trait Keys
 			]
 		],
 		'C+' => [
+			'label' => 'C# major',
 			'notes' => ['c+', 'd+', 'e+', 'f+', 'g+', 'a+', 'b+'],
 			'scale' => [
 				'diatonic' => [
@@ -181,6 +193,7 @@ trait Keys
 			]
 		],
 		'Cm' => [
+			'label' => 'C minor',
 			'notes' => ['c', 'd', 'e-', 'f', 'g', 'a-', 'b-'],
 			'scale' => [
 				'diatonic' => [
@@ -196,6 +209,7 @@ trait Keys
 			]
 		],
 		'C+m' => [
+			'label' => 'C# minor',
 			'notes' => ['c+', 'd+', 'e', 'f+', 'g+', 'a', 'b'],
 			'scale' => [
 				'diatonic' => [
@@ -211,9 +225,15 @@ trait Keys
 			]
 		],
 		'D-' => [
+			'label' => 'Db major',
 			'notes' => ['d-', 'e-', 'f', 'g-', 'a-', 'b-', 'c'],
 			'scale' => 'C+',
 			'arpeggio' => 'C+'
 		],
 	];
+
+	public function getKeys()
+	{
+		return $this->keys;
+	}
 }

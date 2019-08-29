@@ -1,5 +1,10 @@
 <?php
 
+function lastletter($word)
+{
+	return substr($word, -1);
+}
+
 function lastword($str)
 {
 	if (! $str || ! is_string($str))

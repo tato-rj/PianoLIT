@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Resources\ChordFinder\ChordFinder;
-use App\Resources\Technique\{Scale, Arpeggio};
+use App\Resources\Technique\{Scale, Arpeggio, Template};
 use App\Resources\CircleOfFifths;
 
 class ToolsController extends Controller
@@ -55,10 +55,13 @@ class ToolsController extends Controller
         $arpeggio = new Arpeggio($request->key);
 
         $results = [
-            $scale->types(['diatonic'])->generate(),
-            $arpeggio->types(['triad'])->generate()
+            $scale->type('diatonic')->generate(),
+            $arpeggio->type('triad')->generate()
         ];
 
-        dd($results);
+        if (request()->has('dev'))
+            return $results;
+        
+        return view('tools.scales.results.index', compact('results'))->render();
     }
 }

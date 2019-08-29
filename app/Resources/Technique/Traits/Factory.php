@@ -4,19 +4,22 @@ namespace App\Resources\Technique\Traits;
 
 trait Factory
 {
-	public function getFingering($hand, $type, $inversion = 0)
+	public function getFingering($hand, $inversion = 0)
 	{
 		$key = $this->keys[$this->key][$this->name];
 
 		if (is_array($key))
-			return $key[$type][$inversion][$hand];
+			return $key[$this->type][$inversion][$hand];
 
-		return $this->keys[$key][$this->name][$type][$inversion][$hand];
+		return $this->keys[$key][$this->name][$this->type][$inversion][$hand];
 	}
 
 	public function getNotes()
 	{
-		return $this->keys[$this->key]['notes'];
+		$notes = $this->keys[$this->key]['notes'];
+		array_push($notes, $notes[0]);
+		
+		return $notes;
 	}
 
 	public function getChord($length, $inversion = 0)

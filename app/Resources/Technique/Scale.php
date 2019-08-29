@@ -7,11 +7,10 @@ class Scale extends Technique
 	public function diatonic()
 	{
 		return [
-			'diatonic' => [
-				'notes' => $this->getNotes(),
-				'rh' => $this->getFingering('rh', 'diatonic'),
-				'lh' => $this->getFingering('lh', 'diatonic')
-			]
+			'type' => $this->type,
+			'notes' => $this->getNotes(),
+			'rh' => $this->getFingering('rh'),
+			'lh' => $this->getFingering('lh')
 		];
 	}
 
