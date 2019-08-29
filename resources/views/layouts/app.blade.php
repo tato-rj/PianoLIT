@@ -161,6 +161,10 @@
         });
     });
 
+    $('.btn-subscribe').on('click', function() {
+        $("#subscribe-overlay").fadeIn('fast');
+    });
+
     $('#tags-search .tag').on('click', function() {
       $tag = $(this);
 

@@ -142,10 +142,6 @@ $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
 });
 
-$('.btn-subscribe').on('click', function() {
-	$("#subscribe-overlay").fadeIn('fast');
-});
-
 $('#inner-subscribe').html($('#inner-subscribe-model > div'));
 </script>
 
