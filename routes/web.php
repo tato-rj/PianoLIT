@@ -43,7 +43,15 @@ Route::prefix('tools')->name('tools.')->group(function() {
 
 		Route::get('', 'ToolsController@scales')->name('index');
 
-		Route::get('generate', 'ToolsController@generateScales')->name('generate');
+		Route::get('generate', 'ToolsController@generateScale')->name('generate');
+
+	});
+
+	Route::prefix('arpeggios')->name('arpeggios.')->group(function() {
+
+		Route::get('', 'ToolsController@arpeggios')->name('index');
+
+		Route::get('generate', 'ToolsController@generateArpeggio')->name('generate');
 
 	});
 

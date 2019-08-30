@@ -29,7 +29,8 @@
 			<div class="row">
 				@foreach($files as $file)
 				<div class="col-lg-6 col-md-6 col-12 position-relative mb-4">
-				<img src="{{asset('images/sheets/' . $file . '.png')}}" class="w-100 rounded shadow-sm border cursor-pointer staff">
+					<h4 class="text-grey">{{ucfirst($file)}}</h4>
+					<img src="{{asset('images/sheets/' . $file . '.png')}}" class="w-100 rounded shadow-sm border cursor-pointer staff">
 					<div class="controls position-absolute w-100 h-100" style="display: none; top: 0; left: 0; background-color: rgba(255,255,255,0.6)">
 						<div class="d-flex flex-center flex-column w-100 h-100">
 							<a href="{{route('tools.staff', ['type' => $file])}}" target="_blank" class="btn btn-teal mb-2 animated fadeInUp shadow" style="display: none;"><i class="fas fa-cloud-download-alt mr-2"></i>Normal</a>

@@ -3,7 +3,7 @@
 		<p class="text-grey mb-1">The notes in this scale are</p>
 		<div class="d-flex flex-wrap justify-content-center">
 			@php($octave = 3)
-			@foreach($results[0]['notes'] as $index => $note)
+			@foreach($scale['notes'] as $index => $note)
 				@if(! $loop->first && in_array(noteToHumans($note), ['B#', 'C', 'C#']))
 					@php($octave = 4)
 				@endif
@@ -30,15 +30,15 @@
 	<div class="col-lg-8 col-md-10 col-12 mx-auto">
 		<div class="row">
 			<div class="col-6">
-				<button class="btn btn-light btn-block play-notes pb-4 pt-3" data-label="LEFT HAND FINGERING" data-fingering="{{json_encode($results[0]['lh'])}}" data-notes="{{json_encode($results[0]['notes'])}}">
+				<button class="btn btn-light btn-block play-notes pb-4 pt-3" data-label="LEFT HAND FINGERING" data-fingering="{{json_encode($scale['lh'])}}" data-notes="{{json_encode($scale['notes'])}}">
 					<div class="text-muted mb-2"><small><strong>PLAY LEFT HAND</strong></small></div>
-					<i class="fas text-grey fa-hand-paper fa-flip-horizontal fa-8x"></i>
+					<i class="fas opacity-6 text-grey fa-hand-paper fa-flip-horizontal fa-8x"></i>
 				</button>
 			</div>
 			<div class="col-6">
-				<button class="btn btn-light btn-block play-notes pb-4 pt-3" data-label="RIGHT HAND FINGERING" data-fingering="{{json_encode($results[0]['rh'])}}" data-notes="{{json_encode($results[0]['notes'])}}">
+				<button class="btn btn-light btn-block play-notes pb-4 pt-3" data-label="RIGHT HAND FINGERING" data-fingering="{{json_encode($scale['rh'])}}" data-notes="{{json_encode($scale['notes'])}}">
 					<div class="text-muted mb-2"><small><strong>PLAY RIGHT HAND</strong></small></div>
-					<i class="fas text-grey fa-hand-paper fa-8x"></i>
+					<i class="fas opacity-6 text-grey fa-hand-paper fa-8x"></i>
 				</button>
 			</div>
 		</div>

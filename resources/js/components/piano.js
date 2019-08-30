@@ -109,9 +109,9 @@ getKey = function(e) {
 	return $key;
 }
 
-findKey = function(note, startAt = null) {
+findKey = function(note, startAt = null, container = 'body') {
     let result = null;
-    let $keys = $('.keyboard-white-key');
+    let $keys = $(container).find('.keyboard-white-key');
 
     $keys.slice(startAt, $keys.length).each(function(key) {
     	let $whiteKey = $(this);

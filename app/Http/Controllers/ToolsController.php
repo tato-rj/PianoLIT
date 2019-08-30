@@ -35,7 +35,7 @@ class ToolsController extends Controller
 
     public function staff($type = null)
     {
-    	$files = ['blank', 'piano'];
+    	$files = ['blank', 'piano', 'treble', 'bass'];
     	$size = request()->has('size') ? '-' . request('size') : null;
 
 	   	if (in_array($type, $files))
@@ -49,19 +49,28 @@ class ToolsController extends Controller
         return view('tools.scales.index');
     }
 
-    public function generateScales(Request $request)
+    public function generateScale(Request $request)
     {
-        $scale = new Scale($request->key);
-        $arpeggio = new Arpeggio($request->key);
-
-        $results = [
-            $scale->type('diatonic')->generate(),
-            $arpeggio->type('triad')->generate()
-        ];
+        $scale = (new Scale($request->key))->type('diatonic')->generate();
 
         if (request()->has('dev'))
-            return $results;
+            return $scale;
         
-        return view('tools.scales.results.index', compact('results'))->render();
+        return view('tools.scales.results.index', compact('scale'))->render();
+    }
+
+    public function arpeggios()
+    {
+        return view('tools.arpeggios.index');
+    }
+
+    public function generateArpeggio(Request $request)
+    {
+        $arpeggio = (new Arpeggio($request->key))->type('triad')->generate();
+
+        if (request()->has('dev'))
+            return $arpeggio;
+        
+        return view('tools.arpeggios.results.index', compact('arpeggio'))->render();
     }
 }

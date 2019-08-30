@@ -36,6 +36,8 @@ trait Factory
 			array_push($triad, $first);
 		}
 
+		array_push($triad, $triad[0]);
+
 		return array_values($triad);
 	}
 }

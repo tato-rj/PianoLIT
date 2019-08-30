@@ -1,10 +1,10 @@
 @extends('layouts.app', [
-	'title' => 'Scales Tutor | ' . config('app.name'),
+	'title' => 'Arpeggios Tutor | ' . config('app.name'),
 	'shareable' => [
 		'keywords' => 'scale,arpeggio,music theory,fingering',
-		'title' => 'Scales Tutor',
-		'description' => 'All you need to know about the main scales at any time',
-		'thumbnail' => asset('images/misc/thumbnails/scales.jpg'),
+		'title' => 'Arpeggios Tutor',
+		'description' => 'All you need to know about the main arpeggios at any time',
+		'thumbnail' => asset('images/misc/thumbnails/arpeggios.jpg'),
 		'created_at' => carbon('29-08-2019'),
 		'updated_at' => carbon('29-08-2019')
 	]])
@@ -21,8 +21,8 @@
 
 @include('components.title', [
 	'version' => '1.0',
-	'title' => 'Scales Tutor', 
-	'subtitle' => 'Select below the scale you need and we\'ll show the notes and fingering for each hand'])
+	'title' => 'Arpeggios Tutor', 
+	'subtitle' => 'Select below the key you need and we\'ll show the notes and fingering for each hand'])
 
 @include('tools.scales.empty')
 
@@ -128,7 +128,9 @@ $(document).on('click', 'button.play-notes', function() {
     hideDots();
     let notes = JSON.parse($(this).attr('data-notes'));
     let fingering = JSON.parse($(this).attr('data-fingering'));
-    let label = $(this).attr('data-label')
+    let label = $(this).attr('data-label');
+    let target = $(this).attr('data-target');
+    let fingeringTarget = $(this).attr('data-fingering-target');
     let noteIndex = firstIndex = 0;
 
     notes.forEach(function(element, index) {
@@ -137,10 +139,10 @@ $(document).on('click', 'button.play-notes', function() {
 
         note = noteToHumans(note).toLowerCase();
 
-        let $key = findKey(note, noteIndex);
+        let $key = findKey(note, noteIndex, target);
 
         if ($key == null)
-            $key = findKey(note, firstIndex);
+            $key = findKey(note, firstIndex, target);
 
         noteIndex = $key.hasClass('keyboard-black-key') ? $key.parent().next().index() : $key.index();
         
@@ -153,7 +155,7 @@ $(document).on('click', 'button.play-notes', function() {
 
         setTimeout(function() {
             press($key, 150, false);
-            showFingering(finger, label);
+            showFingering(finger, label, fingeringTarget);
             highlight($key);
         }, 300 * index);
     });
@@ -163,15 +165,15 @@ $(document).on('click', 'button.play-notes', function() {
 // FUNCTIONS //
 ///////////////
 function resetFingerings() {
-	$('#scale-fingering').hide();
-	$('#scale-fingering small.label').text('');
-	$('#scale-fingering > div.content').html('');
+	$('.fingering-container').hide();
+	$('.fingering-container small.label').text('');
+	$('.fingering-container > div.content').html('');
 }
 
-function showFingering(finger, label) {
-	$('#scale-fingering small.label').text(label);
-	$('#scale-fingering > div.content').append('<h4 class="mx-2 my-0 text-muted"><strong>'+finger+'</strong></h4>');
-	$('#scale-fingering').show();
+function showFingering(finger, label, container) {
+	$(container).find('small.label').text(label);
+	$(container).find('> div.content').append('<h4 class="mx-2 my-0 text-muted"><strong>'+finger+'</strong></h4>');
+	$(container).show();
 }
 
 function showError(response) {
@@ -201,7 +203,7 @@ function submit() {
 	let key = getInput();
 	console.log('Sending: ' + key);
 
-	$.get('{{route('tools.scales.generate')}}', {key: key}, function(response) {
+	$.get('{{route('tools.arpeggios.generate')}}', {key: key}, function(response) {
 		$('#key-container').html(response);
         $('html,body').scrollTop(0);
 	}).fail(function(response) {
