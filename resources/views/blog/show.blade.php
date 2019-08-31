@@ -61,7 +61,7 @@ iframe {
 					<p><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
 					<p><small><i class="fas fa-eye mr-2"></i>{{$post->views}}</small></p>
 				</div>
-				<figure class="figure">
+				<figure class="figure w-100">
 					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded">
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
