@@ -17,12 +17,12 @@
           @each('components.quiz.cards.large', $quizzes, 'quiz')
         </div>
     </div>
-    <div class="col-lg-2 col-md-3 col-12">
+    <div class="col-lg-2 col-md-3 col-12" id="filters">
       <div class="mb-2">
         <p class="text-muted mb-1 pb-1 border-bottom"><strong>LEVELS</strong></p>
         <div>
           @foreach($levels as $level)
-          <a href="{{route('quizzes.index', ['level' => $level->slug])}}" class="btn btn-{{request('level') == $level->slug ? 'teal' : 'light'}} m-1 btn-sm text-muted text-truncate">{{ucfirst($level->name)}}</a>
+          <button data-href="{{route('quizzes.index', ['level' => $level->slug])}}" class="btn btn-{{request('level') == $level->slug ? 'teal' : 'light'}} m-1 btn-sm text-muted text-truncate">{{ucfirst($level->name)}}</button>
           @endforeach
         </div>
       </div>
@@ -31,7 +31,7 @@
         <p class="text-muted mb-1 pb-1 border-bottom"><strong>TOPICS</strong></p>
         <div>
           @foreach($topics as $topic)
-          <a href="{{route('quizzes.index', ['topics' => $topic->slug])}}" class="btn btn-{{request('topics') == $topic->slug ? 'teal' : 'light'}} m-1 btn-sm text-muted">{{ucfirst($topic->name)}}</a>
+          <button data-href="{{route('quizzes.index', ['topics' => $topic->slug])}}" class="btn btn-{{request('topics') == $topic->slug ? 'teal' : 'light'}} m-1 btn-sm text-muted">{{ucfirst($topic->name)}}</button>
           @endforeach
         </div>
       </div>
@@ -42,6 +42,16 @@
 
 @push('scripts')
 <script type="text/javascript">
+$('#filters button').on('click', function() {
+  let href = $(this).attr('data-href');
+  
+  if ($(this).hasClass('btn-teal')) {
+    window.location = window.location.href.split("?")[0];
+  } else {
+    window.location = href;
+  }
+});
+
 $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
 });
