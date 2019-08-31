@@ -62,7 +62,7 @@ iframe {
 					<p><small><i class="fas fa-eye mr-2"></i>{{$post->views}}</small></p>
 				</div>
 				<figure class="figure w-100">
-					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded">
+					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded w-100">
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
 				<div class="border-bottom mb-3 pb-3 text-center">
