@@ -97,10 +97,10 @@
 </script>
 <script type="text/javascript">
 function updateCounters() {
-  $counters = $('.question-counter');
+  $counters = $('.question-counter:visible');
 
   $counters.each(function(index) {
-    $(this).text('- question ' + index + 1 + ' of ' + $counters.length . ' -');
+    $(this).text('- question ' + (index + 1) + ' of ' + $counters.length + ' -');
   });
 }
 
