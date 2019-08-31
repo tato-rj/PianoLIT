@@ -102,6 +102,11 @@ function arrayToSentence($array)
 	return $sentence;
 }
 
+function slug_str($slug)
+{
+    return ucwords(str_replace('-', ' ', $slug));
+}
+
 function traffic()
 {
 	return new \App\Tools\Traffic;

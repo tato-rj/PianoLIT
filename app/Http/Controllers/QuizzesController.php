@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Quiz\{Quiz, Topic, Level};
 use App\Http\Requests\QuizForm;
+use App\Filters\QuizFilters;
 use Illuminate\Http\Request;
 
 class QuizzesController extends Controller
@@ -13,11 +14,13 @@ class QuizzesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, QuizFilters $filters)
     {
-        $quizzes = Quiz::published()->paginate(12);
+        $quizzes = Quiz::published()->filter($filters)->paginate(12);
+        $levels = Level::all();
+        $topics = Topic::all();
 
-        return view('quizzes.index', compact('quizzes'));
+        return view('quizzes.index', compact(['quizzes', 'levels', 'topics']));
     }
 
     public function topic(Topic $topic)

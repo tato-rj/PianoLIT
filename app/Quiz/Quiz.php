@@ -3,12 +3,12 @@
 namespace App\Quiz;
 
 use App\{ShareableContent, Admin};
-use App\Traits\FindBySlug;
+use App\Traits\{FindBySlug, Filterable};
 use App\Quiz\Traits\Feedback;
 
 class Quiz extends ShareableContent
 {
-    use Feedback;
+    use Feedback, Filterable;
 
     protected $folder = 'quiz';
     protected $withCount = ['results'];
