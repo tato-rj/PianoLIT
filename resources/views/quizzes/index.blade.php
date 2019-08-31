@@ -57,7 +57,7 @@ $('.card-title').each(function() {
 });
 
 $('.card-text').each(function() {
-  $clamp(this, {clamp: 5});
+  $clamp(this, {clamp: 4});
 });
 </script>
 @endpush
