@@ -12,7 +12,7 @@
         'subtitle' => 'Test your knowledge and learn cool new facts about music'])
 
 	<div class="row">
-		<div class="col-lg-10 col-md-9 col-12">
+		<div class="col-lg-10 col-md-9 col-12 mb-4">
         <div class="row">
           @each('components.quiz.cards.large', $quizzes, 'quiz')
         </div>
