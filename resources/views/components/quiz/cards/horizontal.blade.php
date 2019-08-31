@@ -7,9 +7,10 @@
 		    </div>
 		    <div class="col-lg-9">
 		      <div class="card-body">
-				<p class="text-muted mb-1"><small>{{$quiz->created_at->toFormattedDateString()}} &bull; {{count($quiz->questions)}} questions</small></p>
-				<h5 class="card-title">{{$quiz->title}}</h5>
-				<p class="card-text">{{$quiz->description}}</p>
+				<p class="text-muted mb-0"><small>{{$quiz->created_at->toFormattedDateString()}} &bull; {{count($quiz->questions)}} questions</small></p>
+				<h5 class="card-title mb-1">{{$quiz->title}}</h5>
+				<p class="card-text mb-1">{{$quiz->description}}</p>
+				<p class="m-0 text-muted"><small>This quiz is <span class="text-{{$quiz->level->color}}">{{$quiz->level->name}}</span></small></p>
 		      </div>
 		    </div>
 		  </div>

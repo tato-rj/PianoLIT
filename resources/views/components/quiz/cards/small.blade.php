@@ -8,7 +8,8 @@
 			</div>
 			<div class="card-body">
 				<h6 class="card-title mb-1">{{$suggestion->title}}</h6>
-				<p class="text-muted m-0"><small>{{$suggestion->created_at->toFormattedDateString()}} &bull; {{count($suggestion->questions)}} questions</small></p>
+				<p class="text-muted mb-1"><small>{{$suggestion->created_at->toFormattedDateString()}} &bull; {{count($suggestion->questions)}} questions</small></p>
+				<p class="m-0 text-muted"><small>This quiz is <span class="text-{{$suggestion->level->color}}">{{$suggestion->level->name}}</span></small></p>
 			</div>
 		</a>
 	</div>

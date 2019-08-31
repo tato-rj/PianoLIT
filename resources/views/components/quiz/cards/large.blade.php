@@ -11,8 +11,9 @@
 			</div>
 			<div class="card-body rounded-bottom">
 				<p class="text-muted mb-1"><small>{{$quiz->created_at->toFormattedDateString()}} &bull; {{count($quiz->questions)}} questions</small></p>
-				<h5 class="card-title">{{$quiz->title}}</h5>
-				<p class="card-text">{{$quiz->description}}</p>
+				<h5 class="card-title mb-2">{{$quiz->title}}</h5>
+				<p class="card-text mb-2">{{$quiz->description}}</p>
+				<p class="m-0 text-muted"><small>This quiz is <span class="text-{{$quiz->level->color}}">{{$quiz->level->name}}</span></small></p>
 			</div>
 		</a>
 	</div>
