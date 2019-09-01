@@ -76,11 +76,11 @@ abstract class ShareableContent extends PianoLit
 
     public function scopePublished($query)
     {
-        return $query->whereNotNull('published_at')->latest();
+        return $query->whereNotNull('published_at');
     }
 
     public function scopeSuggestions($query, $number)
     {
-        return $query->published()->inRandomOrder()->take(4);
+        return $query->inRandomOrder()->published()->take(4);
     }
 }

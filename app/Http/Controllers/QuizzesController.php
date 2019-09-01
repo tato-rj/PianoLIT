@@ -16,7 +16,7 @@ class QuizzesController extends Controller
      */
     public function index(Request $request, QuizFilters $filters)
     {
-        $quizzes = Quiz::published()->filter($filters)->paginate(12);
+        $quizzes = Quiz::published()->latest()->filter($filters)->paginate(12);
         $levels = Level::all();
         $topics = Topic::all();
 
@@ -26,7 +26,7 @@ class QuizzesController extends Controller
     public function topic(Topic $topic)
     {
         $topics = Topic::exclude([$topic->id])->get();
-        $quizzes = Quiz::published()->byTopic($topic)->paginate(12);
+        $quizzes = Quiz::published()->latest()->byTopic($topic)->paginate(12);
 
         return view('quizzes.topic', compact(['quizzes', 'topics', 'topic']));
     }

@@ -15,7 +15,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::published()->paginate(12);
+        $posts = Post::published()->latest()->paginate(12);
 
         return view('blog.index', compact('posts'));
     }
@@ -23,7 +23,7 @@ class PostsController extends Controller
     public function topic(Topic $topic)
     {
         $topics = Topic::exclude([$topic->id])->get();
-        $posts = Post::published()->byTopic($topic)->paginate(12);
+        $posts = Post::published()->latest()->byTopic($topic)->paginate(12);
 
         return view('blog.topic', compact(['posts', 'topics', 'topic']));
     }
