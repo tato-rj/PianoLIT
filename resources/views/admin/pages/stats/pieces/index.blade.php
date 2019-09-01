@@ -69,11 +69,11 @@
         'data' => $recStats])
 
       @include('admin.pages.stats.row', [
-        'title' => 'Youtube videos',
-        'subtitle' => 'Pieces by youtube videos.',
-        'id' => 'youtubeChart',
+        'title' => 'Videos',
+        'subtitle' => 'Pieces by videos.',
+        'id' => 'videosChart',
         'col' => '4',
-        'data' => $youtubeCount])
+        'data' => $videosCount])
 
       @include('admin.pages.stats.row', [
         'title' => 'iTunes recordings',
@@ -309,15 +309,15 @@ var recChart = new Chart(recChartElement,{
 </script>
 
 <script type="text/javascript">
-let youtubeCount = JSON.parse($('#youtubeChart').attr('data-records'));
+let videosCount = JSON.parse($('#videosChart').attr('data-records'));
 
-var youtubeChartElement = document.getElementById("youtubeChart").getContext('2d');
-var youtubeChart = new Chart(youtubeChartElement,{
+var videosChartElement = document.getElementById("videosChart").getContext('2d');
+var videosChart = new Chart(videosChartElement,{
     type: 'pie',
     data: {
-        labels: ['Has youtube videos', 'Missing youtube videos'],
+        labels: ['Has videos', 'Missing videos'],
         datasets: [{
-            data: [youtubeCount, window.pieces.count - youtubeCount],
+            data: [videosCount, window.pieces.count - videosCount],
             backgroundColor: getRandom(colors, 4)
         }]
     },

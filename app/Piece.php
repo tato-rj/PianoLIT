@@ -9,6 +9,7 @@ class Piece extends PianoLit
 {
     use PieceExtraAttributes, PieceStatus;
     
+    protected $googleCloud = 'https://storage.googleapis.com/pianolit-app/videos/';
     protected $with = ['composer', 'tags', 'views'];
     protected $withCount = ['views', 'tags'];
     protected $appends = ['long_name', 'medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name', 'timeline_url', 'period_name'];
@@ -21,6 +22,20 @@ class Piece extends PianoLit
             $piece->tags()->detach();
             $piece->deleteFiles();
         });
+    }
+
+    public function cloudUrlFor($name)
+    {
+        $url = null;
+
+        foreach ($this->videos_array as $video) {
+            if (strhas($video, $name)) {
+                $url = $video;
+                break;
+            }   
+        }
+
+        return $url;
     }
 
     public function getTagsCountAttribute($count)

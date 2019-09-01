@@ -28,7 +28,7 @@ class CreatePiecesTable extends Migration
             $table->string('audio_path_rh')->nullable();
             $table->string('audio_path_lh')->nullable();
             $table->text('itunes')->nullable();
-            $table->text('youtube')->nullable();
+            $table->text('videos')->nullable();
             $table->string('score_url')->nullable();
             $table->string('score_path')->nullable();
             $table->string('score_editor')->nullable();

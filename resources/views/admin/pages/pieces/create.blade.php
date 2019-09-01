@@ -250,8 +250,8 @@
           @manager
           {{-- iTunes --}}
           @include('admin.pages.pieces.itunes.layout')
-          {{-- Youtube --}}
-          @include('admin.pages.pieces.youtube.layout', ['subject' => 'YOUTUBE'])
+          {{-- Videos --}}
+          @include('admin.pages.pieces.videos.layout', ['subject' => 'VIDEOS'])
           @endmanager
 
           <div class="text-center my-5">
@@ -283,16 +283,16 @@
 <script type="text/javascript" src="{{asset('js/vendor/lookup.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 <script type="text/javascript">
-$(document).on('click', '.youtube-to-mp3', function(event) {
-  event.preventDefault();
-  let $modal = $('#modal-youtube-to-mp3');
-  let id = $(this).parent().siblings('input').val();
-  if (id) {
-    window.open("https://www.yt-download.org/@api/button/mp3/"+id, "_blank");
-  } else {
-    alert('You forgot to include the ID!');
-  }
-});
+// $(document).on('click', '.youtube-to-mp3', function(event) {
+//   event.preventDefault();
+//   let $modal = $('#modal-youtube-to-mp3');
+//   let id = $(this).parent().siblings('input').val();
+//   if (id) {
+//     window.open("https://www.yt-download.org/@api/button/mp3/"+id, "_blank");
+//   } else {
+//     alert('You forgot to include the ID!');
+//   }
+// });
 </script>
 <script type="text/javascript">
   $('input[name="alerts[]"]').on('click', function() {
@@ -447,8 +447,8 @@ $('a.add-new-field').on('click', function() {
     $(inputs[2]).attr('name',  'itunes['+number+'][link]');
     $clone.removeClass('original-type').insertBefore($button).show();
 
-  } else if ($type == 'youtube') {
-    $clone.find('input').attr('name',  'youtube[]');
+  } else if ($type == 'videos') {
+    $clone.find('input').attr('name',  'videos[]');
     $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
 
   } else {

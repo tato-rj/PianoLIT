@@ -29,19 +29,19 @@ trait PieceStatus
         return $query->whereNotNull('itunes');
     }
 
-    public function hasYoutube()
+    public function hasVideos()
     {
-    	return $this->youtube_count > 0;
+    	return $this->videos_count > 0;
     }
 
-    public function scopeWithYoutube($query)
+    public function scopeWithVideos($query)
     {
-        return $query->whereNotNull('youtube');
+        return $query->whereNotNull('videos');
     }
 
     public function isComplete()
     {
-    	return $this->hasScore() && $this->hasAudio() && $this->hasTags() && $this->hasITunes() && $this->hasYoutube();
+    	return $this->hasScore() && $this->hasAudio() && $this->hasTags() && $this->hasITunes() && $this->hasVideos();
     }
 
     public function scopeInPublicDomain($query)

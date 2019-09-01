@@ -68,14 +68,28 @@ trait PieceExtraAttributes
         return $this->name;
     }
     
-    public function getYoutubeArrayAttribute()
+    public function getVideosArrayAttribute()
     {
-        return unserialize($this->youtube);
+        $videos = unserialize($this->videos);
+
+        if (!$videos)
+            return null;
+        
+        foreach ($videos as $index => $video) {
+            $videos[$index] = $this->googleCloud . str_slug($this->composer->name) . '/' . $video . '.mp4';
+        }
+
+        return $videos;
     }
 
-    public function getYoutubeCountAttribute()
+    public function getVideosArrayRawAttribute()
     {
-        return $this->youtube_array ? count($this->youtube_array) : 0;
+        return unserialize($this->videos);
+    }
+
+    public function getVideosCountAttribute()
+    {
+        return $this->videos_array ? count($this->videos_array) : 0;
     }
 
     public function getItunesArrayAttribute()

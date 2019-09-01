@@ -248,14 +248,14 @@
               @endif
             @endcomponent
 
-            {{-- Youtube --}}
-            @component('admin.pages.pieces.youtube.layout')
-              @if($piece->youtube_array)
-                @foreach($piece->youtube_array as $youtube)
-                @include('admin.pages.pieces.youtube.input', [
-                  'value' => $youtube,
+            {{-- Videos --}}
+            @component('admin.pages.pieces.videos.layout')
+              @if($piece->videos_array)
+                @foreach($piece->videos_array_raw as $videos)
+                @include('admin.pages.pieces.videos.input', [
+                  'value' => $videos,
                   'type' => 'd-flex',
-                  'name' => 'youtube[]'])
+                  'name' => 'videos[]'])
                 @endforeach
               @endif
             @endcomponent
@@ -281,16 +281,16 @@
 
 @section('scripts')
 <script type="text/javascript">
-$(document).on('click', '.youtube-to-mp3', function(event) {
-  event.preventDefault();
-  let $modal = $('#modal-youtube-to-mp3');
-  let id = $(this).parent().siblings('input').val();
-  if (id) {
-    window.open("https://www.yt-download.org/@api/button/mp3/"+id, "_blank");
-  } else {
-    alert('You forgot to include the ID!');
-  }
-});
+// $(document).on('click', '.youtube-to-mp3', function(event) {
+//   event.preventDefault();
+//   let $modal = $('#modal-youtube-to-mp3');
+//   let id = $(this).parent().siblings('input').val();
+//   if (id) {
+//     window.open("https://www.yt-download.org/@api/button/mp3/"+id, "_blank");
+//   } else {
+//     alert('You forgot to include the ID!');
+//   }
+// });
 </script>
 @cannot('update', $piece)
 <script type="text/javascript">
@@ -351,8 +351,8 @@ $('a.add-new-field').on('click', function() {
     $(inputs[2]).attr('name',  'itunes['+number+'][link]');
     $clone.removeClass('original-type').insertBefore($button).show();
 
-  } else if ($type == 'youtube') {
-    $clone.find('input').attr('name',  'youtube[]');
+  } else if ($type == 'videos') {
+    $clone.find('input').attr('name',  'videos[]');
     $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
 
   }

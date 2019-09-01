@@ -10,7 +10,7 @@
     </div>
     <span class="{{$piece->curiosity ? 'text-primary' : 'text-muted'}}" title="{{$piece->curiosity}}"><i class="fas fa-info-circle mr-1"></i></span>
     @include('admin.pages.pieces.play-icon')
-    <span class="mx-1 {{$piece->youtube_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$piece->youtube_count}}</span>
+    <span class="mx-1 {{$piece->videos_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$piece->videos_count}}</span>
     <span class="{{$piece->itunes_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$piece->itunes_count}}</span>
     </div>
   </td>

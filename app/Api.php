@@ -154,7 +154,7 @@ class Api
         $classname = get_class($model);
 
         if ($classname == 'App\Piece') {
-            $model->setAttribute('youtube_array', $model->youtube);
+            $model->setAttribute('videos_array', $model->videos);
             $model->setAttribute('level', $model->level_name);
             $model->setAttribute('period', $model->period ? $model->period->name : null);
             $model->setAttribute('itunes_array', $model->itunes);

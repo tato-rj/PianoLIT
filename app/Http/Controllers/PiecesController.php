@@ -14,7 +14,7 @@ class PiecesController extends Controller
      */
     public function index()
     {
-        $pieces = Piece::filters(['creator_id', 'itunes', 'youtube', 'score_path', 'audio_path'])->orderBy('updated_at', 'desc')->get();
+        $pieces = Piece::filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path'])->orderBy('updated_at', 'desc')->get();
         
         return view('admin.pages.pieces.index', compact('pieces'));
     }
@@ -111,7 +111,7 @@ class PiecesController extends Controller
             'catalogue_number' => $request->catalogue_number,
             'movement_number' => $request->movement_number,
             'curiosity' => $request->curiosity,
-            'youtube' => $request->youtube ? serialize($request->youtube) : null,
+            'videos' => $request->videos ? serialize($request->videos) : null,
             'itunes' => $request->itunes ? serialize($request->itunes) : null,
             'key' => $request->key,
             'score_url' => $request->is_public ? null : $request->score_url,
@@ -205,7 +205,7 @@ class PiecesController extends Controller
             'catalogue_number' => $request->catalogue_number,
             'movement_number' => $request->movement_number,
             'curiosity' => $request->curiosity,
-            'youtube' => $request->youtube ? serialize($request->youtube) : null,
+            'videos' => $request->videos ? serialize($request->videos) : null,
             'itunes' => $request->itunes ? serialize($request->itunes) : null,
             'key' => $request->key,
             'score_url' => $request->is_public ? null : $request->score_url,
