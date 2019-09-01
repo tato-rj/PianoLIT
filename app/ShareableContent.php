@@ -81,6 +81,6 @@ abstract class ShareableContent extends PianoLit
 
     public function scopeSuggestions($query, $number)
     {
-        return $query->published()->take(4);
+        return $query->published()->inRandomOrder()->take(4);
     }
 }
