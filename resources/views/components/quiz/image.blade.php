@@ -1,6 +1,6 @@
-<div class="m-3" style="max-width: 260px">
+<div class="m-3">
 	<div class="position-relative w-100 shadow-sm">
-		<img src="{{storage($file['file'])}}" class="w-100">
+		<img src="{{storage($file['file'])}}" style="width: auto; height: 160px">
 		<div class="show-on-hover">
 		    <div class="m-0 absolute-center z-10 text-center">
 		        <a class="link-none" href="">

@@ -45,9 +45,9 @@
     
     
     <div class="row my-3">
-      <div class="col-12">
+{{--       <div class="col-12">
         <p>We have {{count($files)}} {{str_plural('image', count($files))}}</p>
-      </div>
+      </div> --}}
       <div class="col-12">
         @foreach($files as $date => $group)
           <div class="mb-3">
