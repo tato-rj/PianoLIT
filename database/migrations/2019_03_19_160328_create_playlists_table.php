@@ -15,14 +15,20 @@ class CreatePlaylistsTable extends Migration
     {
         Schema::create('playlists', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedInteger('creator_id');
+            $table->string('group')->nullable();
             $table->string('name');
+            $table->string('subtitle');
+            $table->string('description');
             $table->timestamps();
         });
 
         Schema::create('piece_playlist', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->unsignedInteger('piece_id');
             $table->unsignedInteger('playlist_id');
-            $table->primary(['piece_id', 'playlist_id']);
+            $table->unsignedInteger('order')->nullable();
+            $table->unique(['piece_id', 'playlist_id']);
         });
     }
 

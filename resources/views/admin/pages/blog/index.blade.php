@@ -87,9 +87,8 @@ $(document).ready( function () {
     'responsive': true,
     'aaSorting': [],
     'columnDefs': [ { 'orderable': false, 'targets': [4, 5] } ],
-
   });
-} );
+});
 
 $('input.status-toggle').on('change', function() {
   let $input = $(this);

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Playlist;
+use App\{Playlist, Piece};
 use Illuminate\Http\Request;
 
-class PlaylistController extends Controller
+class PlaylistsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,9 @@ class PlaylistController extends Controller
      */
     public function index()
     {
-        //
+        $playlists = Playlist::all();
+
+        return view('admin.pages.playlists.index', compact('playlists'));
     }
 
     /**
@@ -35,7 +37,15 @@ class PlaylistController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Playlist::create([
+            'creator_id' => auth()->user()->id,
+            'name' => $request->name,
+            'subtitle' => $request->subtitle,
+            'group' => strtoupper($request->group),
+            'description' => $request->description
+        ]);
+
+        return redirect()->back()->with('status', 'The playlist has been created');
     }
 
     /**
@@ -57,7 +67,9 @@ class PlaylistController extends Controller
      */
     public function edit(Playlist $playlist)
     {
-        //
+        $pieces = Piece::orderBy('updated_at', 'desc')->get();
+
+        return view('admin.pages.playlists.edit', compact(['playlist', 'pieces']));
     }
 
     /**
@@ -69,7 +81,20 @@ class PlaylistController extends Controller
      */
     public function update(Request $request, Playlist $playlist)
     {
-        //
+        $playlist->update([
+            'name' => $request->name,
+            'subtitle' => $request->subtitle,
+            'group' => strtoupper($request->group),
+            'description' => $request->description
+        ]);
+
+        $playlist->pieces()->detach();
+
+        foreach ($request->pieces as $order => $piece) {
+            $playlist->pieces()->attach($piece, ['order' => $order]);
+        }
+
+        return redirect()->back()->with('status', 'The playlist has been successfully updated');
     }
 
     /**
@@ -80,6 +105,8 @@ class PlaylistController extends Controller
      */
     public function destroy(Playlist $playlist)
     {
-        //
+        $playlist->delete();
+
+        return redirect()->back()->with('status', 'The playlist has been removed');
     }
 }

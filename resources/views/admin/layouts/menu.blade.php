@@ -88,6 +88,9 @@
             <a class="py-2" href="{{route('admin.pieces.index')}}">Pieces</a>
           </li>
           <li>
+            <a class="py-2" href="{{route('admin.playlists.index')}}">Playlists</a>
+          </li>
+          <li>
             <a class="py-2" href="{{route('admin.composers.index')}}">Composers</a>
           </li>
           <li>

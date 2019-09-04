@@ -17,7 +17,12 @@ use Faker\Generator as Faker;
 
 $factory->define(Playlist::class, function (Faker $faker) {
     return [
+        'creator_id' => function() {
+            return create(Admin::class)->id;
+        },
         'name' => $faker->word,
+        'subtitle' => $faker->word,
+        'description' => $faker->sentence,
     ];
 });
 

@@ -1,0 +1,1 @@
+<div class="cursor-pointer play-clip {{$audio ? 'text-success' : 'text-muted opacity-4'}}" title="{{$audio ? 'Click to play' : 'No audio available'}}" data-src="{{$audio}}"><i class="fas fa-play-circle"></i></div>

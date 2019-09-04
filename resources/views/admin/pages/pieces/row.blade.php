@@ -40,5 +40,4 @@
     <a href="{{route('admin.pieces.edit', $piece->id)}}" target="_blank" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
     @endcreated
   </td>
-
 </tr>
