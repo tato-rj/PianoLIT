@@ -90,8 +90,10 @@ class PlaylistsController extends Controller
 
         $playlist->pieces()->detach();
 
-        foreach ($request->pieces as $order => $piece) {
-            $playlist->pieces()->attach($piece, ['order' => $order]);
+        if ($request->has('pieces')) {
+            foreach ($request->pieces as $order => $piece) {
+                $playlist->pieces()->attach($piece, ['order' => $order]);
+            }
         }
 
         return redirect()->back()->with('status', 'The playlist has been successfully updated');

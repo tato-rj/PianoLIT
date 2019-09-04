@@ -10,11 +10,11 @@
       <a href="{{route('admin.pieces.edit', $piece->id)}}" target="_blank" class="text-muted"><i class="far fa-eye"></i></a>
     </div>
     <div>
-      <a href="" class="text-muted add-piece" data-id="{{$piece->id}}"><i class="fas fa-plus-circle"></i></a>
+      <a href="" class="text-muted add-piece" data-id="{{$piece->id}}"><i class="fas fa-plus-circle"></i>
+        <div style="display: none;">
+          @include('admin.pages.playlists.piece')
+        </div>
+      </a>
     </div>
-    <div style="display: none;">
-      @include('admin.pages.playlists.piece')
-    </div>
-    </a>
   </td>
 </tr>
