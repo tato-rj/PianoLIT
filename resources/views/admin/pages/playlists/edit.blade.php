@@ -20,14 +20,14 @@
 					@csrf
 					@method('PATCH')
 		            <div class="row">
-		              <div class="col-6">
+		              <div class="col-5">
 	          			<label class="text-muted">Basic information</label>
 		                <input type="text" name="name" placeholder="Name" class="form-control mb-2" value="{{$playlist->name}}" required>
 		                <input type="text" name="subtitle" placeholder="Subtitle" class="form-control mb-2" value="{{$playlist->subtitle}}" required>
 		                <input type="text" name="group" placeholder="Group (optional)" class="form-control mb-2" value="{{$playlist->group}}" style="text-transform: uppercase;">
-		                <textarea name="description" placeholder="Description" class="form-control" rows="4" maxlength="255" required>{{$playlist->description}}</textarea>
+		                <textarea name="description" placeholder="Description" class="form-control" rows="6" maxlength="255" required>{{$playlist->description}}</textarea>
 		              </div>
-		              <div class="col-6">
+		              <div class="col-7">
 			    		<label class="text-muted">Pieces</label>
 			    		<div id="playlist-pieces" class=""> 
 							@foreach($playlist->pieces as $piece)
