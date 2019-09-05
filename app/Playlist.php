@@ -27,7 +27,7 @@ class Playlist extends PianoLit
 
     public function scopeJourney($query)
     {
-        return $query->where('group', 'JOURNEY');        
+        return $query->where('group', 'journey');        
     }
     
 	public function scopeFoundation($query)

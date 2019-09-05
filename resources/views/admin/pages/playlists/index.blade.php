@@ -23,7 +23,10 @@
               <div class="col">
                 <input type="text" name="name" placeholder="Name" class="form-control mb-2" value="{{old('name')}}" required>
                 <input type="text" name="subtitle" placeholder="Subtitle" class="form-control mb-2" value="{{old('subtitle')}}" required>
-                <input type="text" name="group" placeholder="Group (optional)" class="form-control" value="{{old('group')}}" style="text-transform: uppercase;">
+                <select name="group" class="form-control">
+                  <option selected disabled>Select the group</option>
+                  <option value="journey" {{ old('group') == 'journey' ? 'selected' : ''}}>Journey</option>
+                </select>
               </div>
               <div class="col">
                 <textarea name="description" placeholder="Description" class="form-control h-100" maxlength="255" required>{{old('description')}}</textarea>

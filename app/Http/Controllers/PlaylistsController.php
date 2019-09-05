@@ -41,7 +41,7 @@ class PlaylistsController extends Controller
             'creator_id' => auth()->user()->id,
             'name' => $request->name,
             'subtitle' => $request->subtitle,
-            'group' => strtoupper($request->group),
+            'group' => strtolower($request->group),
             'description' => $request->description
         ]);
 
@@ -84,7 +84,7 @@ class PlaylistsController extends Controller
         $playlist->update([
             'name' => $request->name,
             'subtitle' => $request->subtitle,
-            'group' => strtoupper($request->group),
+            'group' => strtolower($request->group),
             'description' => $request->description
         ]);
 
