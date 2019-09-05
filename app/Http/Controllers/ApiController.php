@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Api, Piece, Tag, User, Timeline, Composer};
+use App\{Api, Piece, Tag, User, Timeline, Composer, Playlist};
 use Illuminate\Http\Request;
 
 class ApiController extends Controller
@@ -135,5 +135,15 @@ class ApiController extends Controller
     public function timeline($piece_id)
     {
         return Timeline::generate($piece_id, 4);
+    }
+
+    public function playlists($group)
+    {
+        return Playlist::journey()->get();
+    }
+
+    public function playlist(Playlist $playlist)
+    {
+        return $playlist;
     }
 }

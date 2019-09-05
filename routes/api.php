@@ -26,6 +26,14 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 	Route::get('{piece}/similar', 'PiecesController@similar')->name('similar');
 });
 
+Route::prefix('playlists')->name('playlists.')->group(function() {
+
+	Route::get('{group}', 'ApiController@playlists')->name('all');
+
+	Route::get('{playlist}', 'ApiController@playlist')->name('show');
+
+});
+
 Route::prefix('blog')->name('blog.')->group(function() {
 
 	Route::get('/search', 'PostsController@search')->name('search');

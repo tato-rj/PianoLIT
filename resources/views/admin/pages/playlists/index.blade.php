@@ -12,7 +12,9 @@
   @include('admin.components.breadcrumb', [
     'title' => 'Playlists',
     'description' => 'Manage the playlists'])
-    
+    <div class="text-center mb-2">
+      <a href="{{route('api.playlists.all', 'journey')}}" target="_blank" class="link-default"><small>See JSON response</small></a>
+    </div>
     <div class="row mb-3">
       <div class="col-12">
         <div class="bg-light rounded px-4 py-3">

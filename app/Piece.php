@@ -12,7 +12,7 @@ class Piece extends PianoLit
     protected $googleCloud = 'https://storage.googleapis.com/pianolit-app/videos/';
     protected $with = ['composer', 'tags', 'views'];
     protected $withCount = ['views', 'tags'];
-    protected $appends = ['long_name', 'medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name', 'timeline_url', 'period_name'];
+    protected $appends = ['long_name', 'medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name', 'timeline_url', 'period_name', 'first_video'];
 
     public static function boot()
     {

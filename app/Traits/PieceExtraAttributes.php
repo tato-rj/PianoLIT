@@ -82,6 +82,14 @@ trait PieceExtraAttributes
         return $videos;
     }
 
+    public function getFirstVideoAttribute()
+    {
+        if (! $this->videos_array)
+            return null;
+
+        return $this->videos_array[0];
+    }
+
     public function getVideosArrayRawAttribute()
     {
         return unserialize($this->videos);
