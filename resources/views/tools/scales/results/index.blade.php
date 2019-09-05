@@ -4,10 +4,12 @@
 		<div class="d-flex flex-wrap justify-content-center">
 			@php($octave = 3)
 			@foreach($scale['notes'] as $index => $note)
-				@if(! $loop->first && in_array(noteToHumans($note), ['B#', 'C', 'C#']))
+				@if(! $loop->first && in_array(noteToHumans($note), ['Cbb', 'Cb', 'C', 'C#', 'C##']))
 					@php($octave = 4)
 				@endif
-				<button class="btn btn-light btn-xl m-1 play-note shadow-sm" data-name="{{noteToHumans($note)}}" data-octave="{{$octave}}"><strong>{{noteToHumans($note)}}</strong></button>
+				<button class="btn btn-teal-outline play-note btn-xl m-1" data-name="{{noteToMachine($note)}}" data-octave="{{$octave}}">
+					<strong>{{noteToHumans($note)}}</strong>
+				</button>
 			@endforeach
 		</div>
 	</div>

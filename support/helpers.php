@@ -22,6 +22,14 @@ function noteToHumans($note) {
 	return ucfirst(str_replace('2', '', $result));
 }
 
+function noteToMachine($note) {
+	$result = str_replace('+', '#', $note);
+	$result = str_replace('-', 'b', $result);
+	$result = str_replace('##', 'x', $result);
+
+	return ucfirst(str_replace('2', '', $result));
+}
+
 function iterationToHumans($key)
 {
 	$words = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eigth', 'ninth', 'tenth', 'eleventh', 'twelveth'];

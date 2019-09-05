@@ -24,7 +24,7 @@
 	'title' => 'Arpeggios Tutor', 
 	'subtitle' => 'Select below the key you need and we\'ll show the notes and fingering for each hand'])
 
-@include('tools.scales.empty')
+@include('tools.arpeggios.empty')
 
 <div class="container mb-6">
 	@include('components.sections.feedback')
@@ -37,8 +37,17 @@
 @push('scripts')
 @include('components.addthis')
 <script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
-
 <script type="text/javascript">
+$(document).on('click', '#reload', function() {
+    window.location = window.location.href.split("?")[0];
+});
+</script>
+<script type="text/javascript">
+//////////////////////
+// GLOBAL VARIABLES //
+//////////////////////
+var scaleLoops = [];
+
 //////////////////////
 // NOTE INPUT CLICK //
 //////////////////////
@@ -119,19 +128,22 @@ $('button#submit-key').on('click', function() {
 // PLAY NOTES //
 ////////////////
 $(document).on('click', 'button.play-note', function() {
+	stopLoop();
 	hideDots();
 	resetFingerings();
 	playNote($(this));
 });
 
 $(document).on('click', 'button.play-notes', function() {
-    hideDots();
     let notes = JSON.parse($(this).attr('data-notes'));
     let fingering = JSON.parse($(this).attr('data-fingering'));
     let label = $(this).attr('data-label');
     let target = $(this).attr('data-target');
     let fingeringTarget = $(this).attr('data-fingering-target');
     let noteIndex = firstIndex = 0;
+
+    stopLoop();
+    hideDots();
 
     notes.forEach(function(element, index) {
         let note = element;
@@ -149,21 +161,34 @@ $(document).on('click', 'button.play-notes', function() {
         if (firstIndex == 0)
             firstIndex = noteIndex;
 
-        console.log('Playing ' + note + ' at index ' + noteIndex);
         
         resetFingerings();
 
-        setTimeout(function() {
+        scaleLoops.push(setTimeout(function() {
+        	// console.log('Playing ' + note + ' at index ' + noteIndex);
             press($key, 150, false);
             showFingering(finger, label, fingeringTarget);
             highlight($key);
-        }, 300 * index);
+            highlightNote(index);
+        }, 500 * index));
     });
 });
 
 ///////////////
 // FUNCTIONS //
 ///////////////
+function highlightNote(index) {
+	$('button.play-note').removeClass('btn-teal').addClass('btn-teal-outline');
+	$('button.play-note:eq('+index+')').toggleClass('btn-teal-outline btn-teal');
+}
+
+function stopLoop() {
+	$('button.play-note').removeClass('btn-teal').addClass('btn-teal-outline');
+    for (var i=0; i<scaleLoops.length; i++) {
+    	clearTimeout(scaleLoops[i]);
+    }
+}
+
 function resetFingerings() {
 	$('.fingering-container').hide();
 	$('.fingering-container small.label').text('');
@@ -172,7 +197,7 @@ function resetFingerings() {
 
 function showFingering(finger, label, container) {
 	$(container).find('small.label').text(label);
-	$(container).find('> div.content').append('<h4 class="mx-2 my-0 text-muted"><strong>'+finger+'</strong></h4>');
+	$(container).find('> div.content').append('<h2 class="mx-2 my-0"><strong>'+finger+'</strong></h2>');
 	$(container).show();
 }
 
@@ -219,7 +244,7 @@ function getInput() {
 }
 
 function noteToHumans(note) {
-    return ucfirst(note.replace('+', '#').replace('+', '#').replace('-', 'b').replace('-', 'b').replace('2', ''));
+    return ucfirst(note.replace('+', '#').replace('x', '##').replace('+', '#').replace('-', 'b').replace('-', 'b').replace('2', ''));
 }
 
 function noteToMachine(note) {

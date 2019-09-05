@@ -1,14 +1,14 @@
-<div class="tab-pane fade show active" id="pills-{{str_slug($position['name'])}}" role="tabpanel" aria-labelledby="pills-{{str_slug($position['name'])}}-tab">
+<div class="tab-pane fade {{$loop->first ? 'show active' : null}}" id="pills-{{str_slug($position['name'])}}" role="tabpanel" aria-labelledby="pills-{{str_slug($position['name'])}}-tab">
 	<div class="row mb-4">
 		<div class="col-12 text-center">
 			<p class="text-grey mb-1">The notes in this arpeggio are</p>
 			<div class="d-flex flex-wrap justify-content-center">
 				@php($octave = 3)
 				@foreach($position['notes'] as $index => $note)
-					@if(! $loop->first && in_array(noteToHumans($note), ['B#', 'C', 'C#']))
+					@if(! $loop->first && in_array(noteToHumans($note), ['Cbb', 'Cb', 'C', 'C#', 'C##']))
 						@php($octave = 4)
 					@endif
-					<button class="btn btn-light btn-xl m-1 play-note shadow-sm" data-name="{{noteToHumans($note)}}" data-octave="{{$octave}}"><strong>{{noteToHumans($note)}}</strong></button>
+					<button class="btn btn-teal-outline play-note btn-xl m-1" data-name="{{noteToMachine($note)}}" data-octave="{{$octave}}"><strong>{{noteToHumans($note)}}</strong></button>
 				@endforeach
 			</div>
 		</div>
