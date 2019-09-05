@@ -58,7 +58,7 @@
             <tr>
               <td class="d-none d-sm-block" style="white-space: nowrap;">{{$playlist->created_at->toFormattedDateString()}}</td>
               <td>{{$playlist->name}}</td>
-              <td>{{$playlist->group}}</td>
+              <td>{{slug_str($playlist->group)}}</td>
               <td>{{$playlist->pieces_count}} pieces</td>
               <td class="justify-content-end d-flex">
                 <a href="{{route('admin.playlists.edit', $playlist->id)}}" class="text-muted mx-2 d-none d-sm-block"><i class="far fa-edit align-middle"></i></a>
