@@ -24,7 +24,7 @@
 	          			<label class="text-muted">Basic information</label>
 		                <input type="text" name="name" placeholder="Name" class="form-control mb-2" value="{{$playlist->name}}" required>
 		                <input type="text" name="subtitle" placeholder="Subtitle" class="form-control mb-2" value="{{$playlist->subtitle}}" required>
-		                <select name="group" class="form-control" required>
+		                <select name="group" class="form-control mb-2" required>
 		                  <option selected disabled>Select the group</option>
 		                  <option value="journey" {{ $playlist->group == 'journey' ? 'selected' : ''}}>Journey</option>
 		                </select>
