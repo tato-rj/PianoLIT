@@ -12,4 +12,7 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-lg-8 col-md-9 col-12 mx-auto text-center mt-4">
+		<div class="alert alert-warning d-inline-block"><i class="fas fa-calendar-alt mr-2"></i>Advanced modes and keys coming up soon!</div>
+	</div>
 </div>
