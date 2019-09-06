@@ -8,7 +8,7 @@ class Scale extends Technique
 	{
 		return [
 			'type' => $this->type,
-			'notes' => $this->getNotes(),
+			'notes' => $this->isMinor() ? $this->getModes() : $this->getNotes(),
 			'rh' => $this->getFingering('rh'),
 			'lh' => $this->getFingering('lh')
 		];

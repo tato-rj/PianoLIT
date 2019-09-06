@@ -170,7 +170,7 @@ $(document).on('click', 'button.play-notes', function() {
             showFingering(finger, label, fingeringTarget);
             highlight($key);
             highlightNote(index);
-        }, 500 * index));
+        }, 400 * index));
     });
 });
 

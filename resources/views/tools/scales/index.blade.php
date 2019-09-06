@@ -14,6 +14,15 @@
 .fadeInUp {
 	animation-duration: .2s;
 }
+
+#pills-tab .nav-link {
+	color: #b8c2cc;
+}
+
+#pills-tab .active {
+	color: #343a40!important;
+	font-weight: bold;
+}
 </style>
 @endpush
 
@@ -138,6 +147,9 @@ $(document).on('click', 'button.play-notes', function() {
     let notes = JSON.parse($(this).attr('data-notes'));
     let fingering = JSON.parse($(this).attr('data-fingering'));
     let label = $(this).attr('data-label');
+    let fingeringTarget = $(this).attr('data-fingering-target');
+    let notesTarget = $(this).attr('data-notes-target');
+    let target = $(this).attr('data-target');
     let noteIndex = firstIndex = 0;
 
     stopLoop();
@@ -149,10 +161,10 @@ $(document).on('click', 'button.play-notes', function() {
 
         note = noteToHumans(note).toLowerCase();
 
-        let $key = findKey(note, noteIndex);
+        let $key = findKey(note, noteIndex, target);
 
         if ($key == null)
-            $key = findKey(note, firstIndex);
+            $key = findKey(note, firstIndex, target);
 
         noteIndex = $key.hasClass('keyboard-black-key') ? $key.parent().next().index() : $key.index();
         
@@ -164,19 +176,19 @@ $(document).on('click', 'button.play-notes', function() {
         scaleLoops.push(setTimeout(function() {
        		// console.log('Playing ' + note + ' at index ' + noteIndex);
             press($key, 150, false);
-            showFingering(finger, label);
+            showFingering(finger, label, fingeringTarget);
             highlight($key);
-            highlightNote(index);
-        }, 500 * index));
+            highlightNote(index, notesTarget);
+        }, 400 * index));
     });
 });
 
 ///////////////
 // FUNCTIONS //
 ///////////////
-function highlightNote(index) {
-	$('button.play-note').removeClass('btn-teal').addClass('btn-teal-outline');
-	$('button.play-note:eq('+index+')').toggleClass('btn-teal-outline btn-teal');
+function highlightNote(index, container = 'body') {
+	$(container + ' button.play-note').removeClass('btn-teal').addClass('btn-teal-outline');
+	$(container + ' button.play-note:eq('+index+')').toggleClass('btn-teal-outline btn-teal');
 }
 
 function stopLoop() {
@@ -186,16 +198,16 @@ function stopLoop() {
     }
 }
 
-function resetFingerings() {
-	$('#scale-fingering').hide();
-	$('#scale-fingering small.label').text('');
-	$('#scale-fingering > div.content').html('');
+function resetFingerings(container = '#scale-fingering') {
+	$('.fingering-container').hide();
+	$('.fingering-container small.label').text('');
+	$('.fingering-container > div.content').html('');
 }
 
-function showFingering(finger, label) {
-	$('#scale-fingering small.label').text(label);
-	$('#scale-fingering > div.content').append('<h2 class="mx-2 my-0"><strong>'+finger+'</strong></h2>');
-	$('#scale-fingering').show();
+function showFingering(finger, label, container = '#scale-fingering') {
+	$(container).find('small.label').text(label);
+	$(container).find('> div.content').append('<h2 class="mx-2 my-0"><strong>'+finger+'</strong></h2>');
+	$(container).show();
 }
 
 function showError(response) {

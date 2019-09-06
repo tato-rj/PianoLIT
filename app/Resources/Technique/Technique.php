@@ -33,6 +33,11 @@ abstract class Technique
 		return $this;
 	}
 
+	public function isMinor()
+	{
+		return $this->keys[$this->key]['mode'] == 'minor';
+	}
+
 	public function name()
 	{
 		return strtolower((new \ReflectionClass($this))->getShortName());

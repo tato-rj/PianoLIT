@@ -18,8 +18,20 @@ trait Factory
 	{
 		$notes = $this->keys[$this->key]['notes'];
 		array_push($notes, $notes[0]);
-		
-		return $notes;
+
+		return [$notes];
+	}
+
+	public function getModes()
+	{
+		$notes = $this->keys[$this->key]['notes'];
+		$harmonic = [$notes[0], $notes[1], $notes[2], $notes[3], $notes[4], $notes[5], $this->stepUp($notes[6])];
+		$melodic = [$notes[0], $notes[1], $notes[2], $notes[3], $notes[4], $this->stepUp($notes[5]), $this->stepUp($notes[6])];
+		array_push($notes, $notes[0]);
+		array_push($harmonic, $notes[0]);
+		array_push($melodic, $notes[0]);
+
+		return ['natural' => $notes, 'harmonic' => $harmonic, 'melodic' => $melodic];
 	}
 
 	public function getChord($length, $inversion = 0)
@@ -39,5 +51,10 @@ trait Factory
 		array_push($triad, $triad[0]);
 
 		return array_values($triad);
+	}
+
+	public function stepUp($note)
+	{
+		return strhas($note, '-') ? substr($note, 0, -1) : $note . '+';
 	}
 }

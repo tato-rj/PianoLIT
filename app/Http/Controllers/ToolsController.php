@@ -56,7 +56,10 @@ class ToolsController extends Controller
         if (request()->has('dev'))
             return $scale;
         
-        return view('tools.scales.results.index', compact('scale'))->render();
+        if (count($scale['notes']) > 1)
+            return view('tools.scales.results.multi', compact('scale'))->render();
+
+        return view('tools.scales.results.single', compact('scale'))->render();
     }
 
     public function arpeggios()
