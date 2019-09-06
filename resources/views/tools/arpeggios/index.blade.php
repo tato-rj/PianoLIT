@@ -14,6 +14,15 @@
 .fadeInUp {
 	animation-duration: .2s;
 }
+
+#pills-tab .nav-link {
+	color: #b8c2cc;
+}
+
+#pills-tab .active {
+	color: #343a40!important;
+	font-weight: bold;
+}
 </style>
 @endpush
 
