@@ -3,7 +3,7 @@
 		<ul class="nav justify-content-center nav-tabs mb-4" id="pills-tab" role="tablist">
 			@foreach($arpeggio['positions'] as $position)
 			<li class="nav-item">
-				<a class="nav-link {{$loop->first ? 'active' : null}}" id="pills-{{str_slug($position['name'])}}-tab" data-toggle="pill" href="#pills-{{str_slug($position['name'])}}" role="tab" aria-controls="pills-home" aria-selected="true">{{$position['name']}}</a>
+				<a class="nav-link {{$loop->first ? 'active' : null}}" id="pills-{{str_slug($type)}}-tab" data-toggle="pill" href="#pills-{{str_slug($type)}}" role="tab" aria-controls="pills-home" aria-selected="true">{{$type}}</a>
 			</li>
 			@endforeach
 		</ul>

@@ -46,7 +46,7 @@ class ToolsController extends Controller
 
     public function scales()
     {
-        return view('tools.scales.index');
+        return view('tools.technique.scales');
     }
 
     public function generateScale(Request $request)
@@ -56,15 +56,12 @@ class ToolsController extends Controller
         if (request()->has('dev'))
             return $scale;
         
-        if (count($scale['notes']) > 1)
-            return view('tools.scales.results.multi', compact('scale'))->render();
-
-        return view('tools.scales.results.single', compact('scale'))->render();
+        return view('tools.technique.results.scales', compact('scale'))->render();
     }
 
     public function arpeggios()
     {
-        return view('tools.arpeggios.index');
+        return view('tools.technique.arpeggios');
     }
 
     public function generateArpeggio(Request $request)
@@ -74,6 +71,6 @@ class ToolsController extends Controller
         if (request()->has('dev'))
             return $arpeggio;
         
-        return view('tools.arpeggios.results.index', compact('arpeggio'))->render();
+        return view('tools.technique.results.arpeggios', compact('arpeggio'))->render();
     }
 }
