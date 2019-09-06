@@ -39,8 +39,8 @@
 	<div class="row">
 		@include('tools.technique.components.submit', ['type' => 'scales'])
 		<div class="col-12 mb-6">
-			<p>This tool will not only show you the name of the possible chords based on the notes you put in, but also help you understand how we do this! If you are a beginner this process may seem a bit overwhelming at first but don't worry, it will soon be quite simple.</p>
-			<p>Just put the notes you have in the inputs above and we'll show you all the chords we can make with those notes. On the next screen, as you select each chord you will see detailed description about how we figured out its name.</p>
+			<p>This tool will help you learn the notes and fingering for every scale in any key or mode. You will also find information about the different types of minor keys and special modes.</p>
+			<p>Just select the key and mode you need and we will show you all the resources you need!</p>
 		</div>
 	</div>
 </div>
