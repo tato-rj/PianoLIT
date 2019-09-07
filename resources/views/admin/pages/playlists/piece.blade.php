@@ -7,8 +7,8 @@
     {{-- INPUTS --}}
     <div class="d-flex align-items-center">
       @include('admin.components.play', ['audio' => storage($piece->audio_path)])
-      <div class="ml-2 {{$piece->lookup('score_path')}}">
-        <a href="{{storage($piece->score_path)}}" target="_blank"><i class="fas fa-file-alt"></i></a>
+      <div class="ml-2">
+        <a href="{{storage($piece->score_path)}}" target="_blank" class="{{$piece->lookup('score_path')}}"><i class="fas fa-file-alt"></i></a>
       </div>
       <input type="hidden" name="pieces[]" value="{{$piece->id}}">
       <p class="m-0 ml-2 piece-name">{{$piece->short_name}} by {{$piece->composer->short_name}}</p>
