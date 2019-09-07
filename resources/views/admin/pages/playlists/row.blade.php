@@ -6,11 +6,14 @@
   </td>
   <td class="d-flex justify-content-end align-items-center">
     @include('admin.components.play', ['audio' => storage($piece->audio_path)])
-    <div class="mx-2">
+    <div class="ml-2">
+      <a href="{{storage($piece->score_path)}}" target="_blank" class="text-muted"><i class="fas fa-fa-file-alt"></i></a>
+    </div>
+    <div class="ml-2">
       <a href="{{route('admin.pieces.edit', $piece->id)}}" target="_blank" class="text-muted"><i class="far fa-eye"></i></a>
     </div>
     <div>
-      <a href="" class="text-muted add-piece" data-id="{{$piece->id}}"><i class="fas fa-plus-circle"></i>
+      <a href="" class="text-muted add-piece ml-2" data-id="{{$piece->id}}"><i class="fas fa-plus-circle"></i>
         <div style="display: none;">
           @include('admin.pages.playlists.piece')
         </div>
