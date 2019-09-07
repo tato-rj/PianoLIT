@@ -13,11 +13,11 @@
       <a href="{{route('admin.pieces.edit', $piece->id)}}" target="_blank" class="text-warning"><i class="far fa-eye"></i></a>
     </div>
     <div>
-      <a href="" class="text-primary add-piece ml-2" data-id="{{$piece->id}}"><i class="fas fa-plus-circle"></i>
+      <div class="text-primary cursor-pointer add-piece ml-2" data-id="{{$piece->id}}"><i class="fas fa-plus-circle"></i>
         <div style="display: none;">
           @include('admin.pages.playlists.piece')
         </div>
-      </a>
+      </div>
     </div>
   </td>
 </tr>

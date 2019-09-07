@@ -95,6 +95,7 @@ $('.add-piece').on('click', function(event) {
 	if ($container.has('input[value="'+id+'"]').length) {
 		alert('This pieces is already in this playlist');
 	} else {
+		console.log($piece);
 		$piece.attr('name', 'pieces[]');
 		$container.append($piece);
 	}
