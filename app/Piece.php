@@ -212,7 +212,7 @@ class Piece extends PianoLit
 
     public function lookup($attribute)
     {
-        return $this->$attribute ? 'text-success' : 'text-muted';
+        return $this->$attribute ? 'text-success' : 'text-muted opacity-4';
     }
 
     public function isTranscription()
