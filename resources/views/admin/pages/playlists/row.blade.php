@@ -6,7 +6,7 @@
   </td>
   <td class="d-flex justify-content-end align-items-center">
     @include('admin.components.play', ['audio' => storage($piece->audio_path)])
-    <div class="ml-2 {{$piece->lookup('score_url')}}">
+    <div class="ml-2 {{$piece->lookup('score_path')}}">
       <a href="{{storage($piece->score_path)}}" target="_blank" class="text-muted"><i class="fas fa-file-alt"></i></a>
     </div>
     <div class="ml-2">
