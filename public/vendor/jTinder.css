@@ -1,0 +1,52 @@
+
+/* Wrapper with padding */
+.wrap  {
+    height: 300px;
+    padding: 5%;
+}
+
+#tinderslide {
+    position: relative;
+    height: 320px;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+}
+
+#tinderslide ul {
+    margin: 0;
+    position: relative;
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+#tinderslide li {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    left: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 2rem;
+}
+
+#tinderslide li:nth-last-child(-n+2){
+    -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.08)!important;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08)!important;
+}
+
+#tinderslide li:nth-last-child(-n+4){
+    -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.04);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.04);
+}
+
+
+#tinderslide li:nth-last-child(-n+6){
+    -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.02);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.02);
+}

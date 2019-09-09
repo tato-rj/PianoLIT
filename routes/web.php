@@ -14,6 +14,12 @@ Route::get('/', function () {
     return view('welcome.index', compact(['tags']));
 })->name('home');
 
+Route::get('true-or-not', function() {
+	$questions = ['Lorem ipsum dolor sit amet' => true, 'Consectetur adipiscing elit' => true, 'Sed do eiusmod tempor incididunt ut' => false, 'Labore et dolore magna aliqua' => true, 'Ut enim ad minim veniam' => false, 'Quis nostrud exercitation ullamco' => false, 'Laboris nisi ut aliquip ex ea commodo consequat' => false, 'Duis aute irure dolor in reprehenderit in voluptate' => true, 'Velit esse cillum dolore' => false, 'Eu fugiat nulla pariatur' => true, 'Excepteur sint occaecat cupidatat non proident' => true, 'Sunt in culpa qui officia deserunt mollit anim id est laborum'];
+
+	return view('trueornot.index', compact('questions'));
+});
+
 Route::get('riddles', function() {
 	$riddles = [
 		'#fff' => ['Beethoven', 'Jane', 'Waltz', 'Trombone'],
