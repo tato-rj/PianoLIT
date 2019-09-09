@@ -1,4 +1,19 @@
 <?php
+function shuffle_assoc($array)
+{
+	$shuffled_array = array();
+
+	$keys = array_keys($array);
+	
+	shuffle($keys);
+
+	foreach ($keys as $key)
+	{
+		$shuffled_array[$key] = $array[$key];
+	}
+
+	return $shuffled_array;
+}
 
 function lastletter($word)
 {

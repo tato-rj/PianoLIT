@@ -14,10 +14,12 @@ Route::get('/', function () {
     return view('welcome.index', compact(['tags']));
 })->name('home');
 
-Route::get('true-or-not', function() {
-	$questions = ['Lorem ipsum dolor sit amet' => true, 'Consectetur adipiscing elit' => true, 'Sed do eiusmod tempor incididunt ut' => false, 'Labore et dolore magna aliqua' => true, 'Ut enim ad minim veniam' => false, 'Quis nostrud exercitation ullamco' => false, 'Laboris nisi ut aliquip ex ea commodo consequat' => false, 'Duis aute irure dolor in reprehenderit in voluptate' => true, 'Velit esse cillum dolore' => false, 'Eu fugiat nulla pariatur' => true, 'Excepteur sint occaecat cupidatat non proident' => true, 'Sunt in culpa qui officia deserunt mollit anim id est laborum'];
+Route::get('true-or-false', function() {
+	$colors = ['#fbe3e3', '#fdecdb', '#fffbd4', '#d7f3e3', '#e0f4f2', '#deedf9', '#e0e3f5', '#efe7fb', '#feeaf1'];
 
-	return view('trueornot.index', compact('questions'));
+	$statements = shuffle_assoc(['The piano has 88 keys' => true, 'J.S.Bach was born in Germany' => true, 'The Damper Pedal makes the piano sound softer' => false, 'G B D are the notes in a G major chord' => true, 'C.Debussy composed 9 Symphonies' => false, 'W.A.Mozart died when he was 52 years old' => false, 'L.V.Beethoven was a life long admirer of Haydn\'s music' => false, 'F to Db is a Minor 6th' => true, 'B to F is a Perfect 5th' => false, 'F.Chopin dedicated his Études Opus 10 to F.Liszt' => true, 'Debussy did not consider his music to be Symbolistic, rather than Impressionistic' => true, 'Bach was primarily a piano composer' => false]);
+
+	return view('trueornot.index', compact(['statements', 'colors']));
 });
 
 Route::get('riddles', function() {
