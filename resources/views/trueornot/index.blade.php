@@ -14,33 +14,31 @@ main {overflow: hidden !important;}
         'subtitle' => 'Have fun with our riddles and puzzles. How many can you solve?'])
 
 <div class="row">
-	<div class="col-lg-6 col-10 mx-auto mb-6">
-		<div class="text-center mb-4" style="max-width: 380px; margin: 0 auto;">
-			<label class="text-teal m-0"><strong>IS THIS STATEMENT CORRECT?</strong></label>
-			<div class="d-apart">
-				<div>
-					<label class="m-0 text-grey"><strong>NOPE</strong></label>
-					<div><i class="fas fa-long-arrow-alt-left text-grey align-top"></i></div>
-				</div>
-				<div>
-					<label class="m-0 text-grey"><strong>YES</strong></label>
-					<div><i class="fas fa-long-arrow-alt-right text-grey align-top"></i></div>
-				</div>
-			</div>
-		</div>
+	<div class="col-lg-6 col-10 mx-auto mb-5 mt-4">
 		<div id="tinderslide">
-			<div class="absolute-center d-flex flex-center w-100 h-100" style="z-index: 1">
+			<div id="instructions">
+				<div class="mb-4">
+					<div class="bg-light rounded-pill px-5 py-4 w-100 mb-3 d-flex">
+						<h1 class="m-0 text-muted" style="opacity: .12"><strong>1</strong></h1>
+						<div class="flex-grow ml-4">
+							<p class="m-0 text-muted">Swipe <strong>RIGHT</strong> if you think the statement is <strong class="text-green">TRUE</strong></p>
+						</div>
+					</div>
+					<div class="bg-light rounded-pill px-5 py-4 w-100 d-flex">
+						<h1 class="m-0 text-muted" style="opacity: .12"><strong>2</strong></h1>
+						<div class="flex-grow ml-4">
+							<p class="m-0 text-muted">Swipe <strong>LEFT</strong> if you think the statement is <strong class="text-red">FALSE</strong></p>
+						</div>
+					</div>
+				</div>
 				<div class="text-center">
-					<label class="text-grey m-0"><strong>YOU SCORED</strong></label>
-					<h1 style="font-size: 4em" id="final-score" class="m-0"></h1>
-					<h5 class="mb-3"><strong>out of {{count($statements)}}</strong></small></h5>
-					<button class="btn btn-primary">Play again</button>
+					<p class="text-grey">Are you ready to play?</p>
+					<button id="start-game" class="btn btn-wide btn-primary">Let's do this!</button>
 				</div>
 			</div>
-		    <ul class="list-flat">
-
+		    <ul class="list-flat" style="display: none;">
 		    	@foreach($statements as $statement => $answer)
-		        <li class="card d-flex p-4 flex-center bg-white" data-answer="{{$answer ? 'correct' : 'wrong'}}" style="cursor: grab; border: 24px solid {{randval($colors)}}"><h5 class="m-0 font-weight-bold">{{$statement}}</h5></li>
+		        <li class="card d-flex p-4 flex-center bg-white" data-answer="{{$answer ? 'correct' : 'wrong'}}" style="opacity: 0; cursor: grab; border: 2.4rem solid {{randval($colors)}}"><h5 class="m-0">{!! $statement !!}</h5></li>
 		        @endforeach
 		    </ul>
 		    <div class="feedback z-10 w-100 h-100 absolute-center" style="display: none; cursor: grab">
@@ -57,13 +55,30 @@ main {overflow: hidden !important;}
   @include('components.sections.youtube')
 </div>
 
+@include('components.games.results')
 @endsection
 
 @push('scripts')
 <script type="text/javascript" src="{{asset('vendor/jquery.transform2d.js')}}"></script>
 <script type="text/javascript" src="{{asset('vendor/jquery.jTinder.js')}}"></script>
 <script type="text/javascript">
-var score = 0;
+$('#start-game').on('click', function() {
+	$('#instructions').fadeOut(function() {
+		$(this).remove();
+	});
+	$('#tinderslide ul').show(function() {
+		$(this).find('li').each(function(index, element) {
+			let $card = $(this);
+			setTimeout(function() {
+				$card.css('opacity', 1);
+			}, 100 * index);
+		});
+		startGame();
+	});
+});
+</script>
+<script type="text/javascript">
+var score = cardsNum = 0;
 function showFeedback($item, result) {
 	let answer = result ? 'correct' : 'wrong';
 	let color = result ? 'green' : 'red';
@@ -81,6 +96,11 @@ function showFeedback($item, result) {
 			easing: 'swing',
 			complete: function() {
 				$card.remove();
+				if ($('li.card').length == 0) {
+					$('#game-feedback h1').text(score);
+					$('#game-feedback span').text(cardsNum);
+					$('#game-results').modal('show');
+				}
 			}
 		});
 	});
@@ -89,9 +109,6 @@ function showFeedback($item, result) {
 function evaluate(choice, answer) {
 	let result = choice == answer;
 
-	console.log('This was a '+answer+' statement.');
-	console.log(result);
-
 	if (result)
 		score += 1;
 
@@ -99,21 +116,24 @@ function evaluate(choice, answer) {
 	return result;
 }
 
-$("#tinderslide").jTinder({
-    onDislike: function (item) {
-        showFeedback(item, evaluate('wrong', item.attr('data-answer')));
-        item.remove();
-    },
-    onLike: function (item) {
-        showFeedback(item, evaluate('correct', item.attr('data-answer')));
-        item.remove();
-    },
-	animationRevertSpeed: 200,
-	animationSpeed: 400,
-	threshold: 1,
-	likeSelector: '.like',
-	dislikeSelector: '.dislike'
-});
+function startGame() {
+	cardsNum = $('#tinderslide li').length;
+	$("#tinderslide").jTinder({
+	    onDislike: function (item) {
+	        showFeedback(item, evaluate('wrong', item.attr('data-answer')));
+	        item.remove();
+	    },
+	    onLike: function (item) {
+	        showFeedback(item, evaluate('correct', item.attr('data-answer')));
+	        item.remove();
+	    },
+		animationRevertSpeed: 200,
+		animationSpeed: 400,
+		threshold: 1,
+		likeSelector: '.like',
+		dislikeSelector: '.dislike'
+	});
+}
 
 $('.card').each(function() {
 	var num = Math.floor(Math.random()*5) + 1;

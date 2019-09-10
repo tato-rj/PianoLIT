@@ -17,7 +17,7 @@ Route::get('/', function () {
 Route::get('true-or-false', function() {
 	$colors = ['#fbe3e3', '#fdecdb', '#fffbd4', '#d7f3e3', '#e0f4f2', '#deedf9', '#e0e3f5', '#efe7fb', '#feeaf1'];
 
-	$statements = shuffle_assoc(['The piano has 88 keys' => true, 'J.S.Bach was born in Germany' => true, 'The Damper Pedal makes the piano sound softer' => false, 'G B D are the notes in a G major chord' => true, 'C.Debussy composed 9 Symphonies' => false, 'W.A.Mozart died when he was 52 years old' => false, 'L.V.Beethoven was a life long admirer of Haydn\'s music' => false, 'F to Db is a Minor 6th' => true, 'B to F is a Perfect 5th' => false, 'F.Chopin dedicated his Études Opus 10 to F.Liszt' => true, 'Debussy did not consider his music to be Symbolistic, rather than Impressionistic' => true, 'Bach was primarily a piano composer' => false]);
+	$statements = shuffle_assoc(['The piano has <u>88 keys</u>' => true, 'J.S.Bach was born in <u>Germany</u>' => true, 'The <strong>Damper Pedal</strong> makes the piano sound <u>softer</u>' => false, '<strong>G B D</strong> are the notes in a <u>G major chord</u>' => true, 'C.Debussy composed <u>9 Symphonies</u>' => false, 'W.A.Mozart died when he was <u>52 years old</u>' => false, 'L.V.Beethoven was a life long admirer of Haydn\'s music' => false, '<strong>F to Db</strong> is a <u>Minor 6th</u>' => true, '<strong>B to F</strong> is a <u>Perfect 5th</u>' => false, 'F.Chopin dedicated his Études Opus 10 to F.Liszt' => true, 'Debussy <u>did not</u> consider his music to be <i>Symbolistic</i>, rather than <i>Impressionistic</i>' => true, 'Bach was a prominant composer in the <u>classical period</u>' => false]);
 
 	return view('trueornot.index', compact(['statements', 'colors']));
 });
