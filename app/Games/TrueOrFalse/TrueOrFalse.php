@@ -17,7 +17,7 @@ class TrueOrFalse
 			if (! property_exists($this, $level))
 				abort(422, 'The level '.$level.' does not exist');
 
-			$game[$level] = shuffle_assoc($this->$level);
+			$game[$level] = array_slice(shuffle_assoc($this->$level), 0, 12);
 		}
 
 		return $game;
