@@ -1,9 +1,59 @@
-@extends('layouts.app', ['title' => 'PianoLIT True or False?'])
+@extends('layouts.app', ['title' => 'PianoLIT Games: True or False'])
 
 @push('header')
 <link rel="stylesheet" type="text/css" href="{{asset('vendor/jTinder.css')}}">
 <style type="text/css">
 main {overflow: hidden !important;}
+.tinderslide {
+    position: relative;
+    height: 320px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+#endgame {
+    position: relative;
+    height: 200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.tinderslide ul {
+    margin: 0;
+    position: relative;
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.tinderslide li {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    left: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 2rem;
+}
+
+.tinderslide li:nth-last-child(-n+2){
+    -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.08)!important;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08)!important;
+}
+
+.tinderslide li:nth-last-child(-n+4){
+    -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.04);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.04);
+}
+
+.tinderslide li:nth-last-child(-n+6){
+    -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.02);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.02);
+}
 </style>
 @endpush
 
@@ -11,7 +61,7 @@ main {overflow: hidden !important;}
 <section class="container-fluid mb-5">
     @include('components.title', [
         'title' => 'True or False', 
-        'subtitle' => 'Have fun with our riddles and puzzles. How many can you solve?'])
+        'subtitle' => 'Swipe right if you think the statemtent is true, left if you think it is false. Let\'s see how well you can do!'])
 
 <div class="row">
 	<div class="col-10 mx-auto mb-4" style="max-width: 380px">
@@ -36,16 +86,26 @@ main {overflow: hidden !important;}
   @include('components.sections.youtube')
 </div>
 
-@include('components.games.results')
+@include('components.games.results', ['button' => 'Go back'])
 @endsection
 
 @push('scripts')
+@include('components.addthis')
 <script type="text/javascript" src="{{asset('vendor/jquery.transform2d.js')}}"></script>
 <script type="text/javascript" src="{{asset('vendor/jquery.jTinder.js')}}"></script>
 <script type="text/javascript">
 $(document).on('click', '#reload', function() {
     window.location = window.location.href.split("?")[0];
 });
+
+function submit(score, count) {
+	$.get('{{route('true-or-false.feedback')}}', {score: score, count: count}, function(response) {
+		$('#game-feedback').html(response);
+		$('#game-results').modal('show');
+	}).fail(function(response) {
+        console.log(response);
+	});
+}
 
 $('#level button.level').on('click', function() {
 	$('#level button.level').removeClass('btn-teal').addClass('btn-light text-grey');
@@ -95,9 +155,7 @@ function showFeedback($item, result, game) {
 			complete: function() {
 				$card.remove();
 				if ($(game).find('li.card').length == 0) {
-					$('#game-feedback h1').text(score);
-					$('#game-feedback span').text(cardsNum);
-					$('#game-results').modal('show');
+					submit(score, cardsNum);
 					$('#game-results').on('hide.bs.modal', function (e) {
 						$('.tinderslide, .game-element').hide();
 						$('#endgame').show();

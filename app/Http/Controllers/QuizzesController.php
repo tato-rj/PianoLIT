@@ -113,7 +113,7 @@ class QuizzesController extends Controller
         if (traffic()->isRealVisitor())
             $quiz->results()->create(['score' => $feedback['score']]);
 
-        return view('components.quiz.feedback', compact('feedback'))->render();
+        return view('components.games.feedback', compact('feedback'))->render();
     }
 
     /**

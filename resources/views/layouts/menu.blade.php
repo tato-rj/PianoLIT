@@ -32,6 +32,7 @@
         </a>
         <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
           <a class="nav-link p-0 mb-2 ml-1" href="{{route('quizzes.index')}}">Quizzes</a>
+          <a class="nav-link p-0 mb-2 ml-1" href="{{route('true-or-false.index')}}">True or False</a>
           <a class="nav-link p-0 ml-1" href="{{route('riddles')}}">Riddles</a>
         </div>
       </li>

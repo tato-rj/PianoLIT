@@ -99,12 +99,12 @@
 <div class="container mb-6">
 	@include('components.sections.youtube')
 </div>
-@include('quizzes.results')
+@include('components.games.results', ['button' => 'Review my answers'])
 @include('components.overlays.subscribe.model-3')
 @endsection
 
 @push('scripts')
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5c872ce214693180"></script>
+@include('components.addthis')
 <script type="text/javascript">
 $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
@@ -158,8 +158,8 @@ function getAnswers()
 
 function submit() {
 	$.get('{{route('quizzes.feedback', $quiz->slug)}}', {answers: answers}, function(response) {
-		$('#quiz-feedback').html(response);
-		$('#quiz-results').modal('show');
+		$('#game-feedback').html(response);
+		$('#game-results').modal('show');
 	}).fail(function(response) {
         console.log(response);
 	});

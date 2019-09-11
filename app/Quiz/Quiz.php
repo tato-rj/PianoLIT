@@ -4,7 +4,7 @@ namespace App\Quiz;
 
 use App\{ShareableContent, Admin};
 use App\Traits\{FindBySlug, Filterable};
-use App\Quiz\Traits\Feedback;
+use App\Games\Traits\Feedback;
 
 class Quiz extends ShareableContent
 {
@@ -78,23 +78,6 @@ class Quiz extends ShareableContent
         return $duration . ' ' . str_plural('minute', $duration);
     }
 
-    public function getFeedback($score)
-    {
-        $percentage = percentage($score, count($this->questions));
-        $slots = [24, 49, 74, 99, 100];
-        $feedback;
-
-        foreach ($slots as $index => $slot) {
-            if ($percentage <= $slot) {
-                $gif = $this->gif($index);
-                $feedback = $this->feedbacks[$index];
-                break;  
-            }
-        }
-
-        return ['gif' => $gif, 'sentence' => $feedback];
-    }
-
     public function getFile($question, $type)
     {
         preg_match('#\[(.*?)\]#', $question, $url);
@@ -144,7 +127,7 @@ class Quiz extends ShareableContent
 
         $percentage = percentage($score, $count);
 
-        $feedback = $this->getFeedback($score);
+        $feedback = $this->getFeedback($score, count($this->questions));
 
     	return [
             'questions_count' => $count,
