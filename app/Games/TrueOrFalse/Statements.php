@@ -9,7 +9,7 @@ trait Statements
 		'J.S.Bach was born in <u>Germany</u>' => true,
 		'The <strong>Damper Pedal</strong> makes the piano sound <u>softer</u>' => false,
 		'<strong>G B D</strong> are the notes in a <u>G major chord</u>' => true,
-		'<strong>P</strong> means soft' => false,
+		'<strong>P</strong> means soft' => true,
 		'2/4 means <u>4 quarter notes</u> per measure' => false,
 		'L.V.Beethoven was the last romantic composer' => false,
 		'<strong>F to A</strong> is a <u>major 3rd</u>' => true,
