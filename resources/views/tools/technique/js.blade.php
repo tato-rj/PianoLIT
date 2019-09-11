@@ -110,10 +110,15 @@ $(document).on('click', 'button.play-notes', function() {
     notes.forEach(function(element, index) {
         let note = element;
         let finger = fingering[index];
+        let $key;
 
         note = noteToHumans(note).toLowerCase();
 
-        let $key = findKey(note, noteIndex, target);
+        if (index == 0 || (index > 7 && index == notes.length - 1)) {
+            $key = findKey(note, 0, target);
+        } else {
+            $key = index <= 7 ? findKey(note, noteIndex, target) : findKey(note, firstIndex, target);
+        }
 
         if ($key == null)
             $key = findKey(note, firstIndex, target);
@@ -128,8 +133,12 @@ $(document).on('click', 'button.play-notes', function() {
         scaleLoops.push(setTimeout(function() {
        		// console.log('Playing ' + note + ' at index ' + noteIndex);
             press($key, 150, false);
-            showFingering(finger, label, fingeringTarget);
+            
+            if (index <= 7)
+                showFingering(finger, label, fingeringTarget);
+
             highlight($key);
+
             highlightNote(index, notesTarget);
         }, 400 * index));
     });

@@ -148,6 +148,6 @@ $('#tags-search-button').on('click', function() {
   });
 });
 
-$("#subscribe-overlay").showAfter(6);
+$("#subscribe-overlay").showAfter(5);
 </script>
 @endpush

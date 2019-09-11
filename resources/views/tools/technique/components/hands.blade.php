@@ -7,7 +7,7 @@
 				data-fingering-target="#fingering-{{str_slug($result['name'])}}"
 				data-label="LEFT HAND FINGERING" 
 				data-fingering="{{json_encode($result['lh'])}}" 
-				data-notes="{{json_encode($result['notes'])}}">
+				data-notes="{{json_encode($result['up_down'])}}">
 				<div class="text-muted mb-2"><small><strong>PLAY LEFT HAND</strong></small></div>
 				<i class="fas opacity-6 text-grey fa-hand-paper fa-flip-horizontal fa-8x"></i>
 			</button>
@@ -19,7 +19,7 @@
 				data-fingering-target="#fingering-{{str_slug($result['name'])}}"
 				data-label="RIGHT HAND FINGERING" 
 				data-fingering="{{json_encode($result['rh'])}}" 
-				data-notes="{{json_encode($result['notes'])}}">
+				data-notes="{{json_encode($result['up_down'])}}">
 				<div class="text-muted mb-2"><small><strong>PLAY RIGHT HAND</strong></small></div>
 				<i class="fas opacity-6 text-grey fa-hand-paper fa-8x"></i>
 			</button>

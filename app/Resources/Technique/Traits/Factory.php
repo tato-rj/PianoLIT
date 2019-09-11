@@ -11,10 +11,10 @@ trait Factory
 		if (is_array($key))
 			return $key[$this->type][$inversion][$hand];
 
-		return $this->keys[$key][$this->name][$this->type][$inversion][$hand];
+		return  $this->keys[$key][$this->name][$this->type][$inversion][$hand];
 	}
 
-	public function getNotes()
+	public function getMajor()
 	{
 		$notes = $this->keys[$this->key]['notes'];
 		array_push($notes, $notes[0]);
@@ -24,16 +24,31 @@ trait Factory
 				'key' => $this->keys[$this->key]['label'] . ' scale',
 				'name' => 'major',
 				'notes' => $notes,
+				'up_down' => $this->full($notes),
 				'rh' => $this->getFingering('rh'),
 				'lh' => $this->getFingering('lh')
 			]
 		];
 	}
 
+	public function full($notes, $original = null)
+	{
+		$copy = $notes;
+
+		array_pop($copy);
+
+		if ($original)
+			array_pop($original);
+
+		$reverse = array_reverse($original ?? $copy);
+
+		return array_merge($notes, $reverse);
+	}
+
 	public function getModes()
 	{
 		if (! $this->isMinor())
-			return $this->getNotes();
+			return $this->getMajor();
 
 		$natural = $this->keys[$this->key]['notes'];
 		$harmonic = [$natural[0], $natural[1], $natural[2], $natural[3], $natural[4], $natural[5], $this->stepUp($natural[6])];
@@ -47,6 +62,7 @@ trait Factory
 				'key' => explode(' ', $this->keys[$this->key]['label'])[0] . ' natural ' . explode(' ', $this->keys[$this->key]['label'])[1],
 				'name' => 'natural',
 				'notes' => $natural,
+				'up_down' => $this->full($natural),
 				'rh' => $this->getFingering('rh'),
 				'lh' => $this->getFingering('lh')
 			], 
@@ -54,6 +70,7 @@ trait Factory
 				'key' => explode(' ', $this->keys[$this->key]['label'])[0] . ' harmonic ' . explode(' ', $this->keys[$this->key]['label'])[1],
 				'name' => 'harmonic',
 				'notes' => $harmonic,
+				'up_down' => $this->full($harmonic),
 				'rh' => $this->getFingering('rh'),
 				'lh' => $this->getFingering('lh')
 			],
@@ -61,6 +78,7 @@ trait Factory
 				'key' => explode(' ', $this->keys[$this->key]['label'])[0] . ' melodic ' . explode(' ', $this->keys[$this->key]['label'])[1],
 				'name' => 'melodic',
 				'notes' => $melodic,
+				'up_down' => $this->full($melodic, $natural),
 				'rh' => $this->getFingering('rh'),
 				'lh' => $this->getFingering('lh')
 			], 
