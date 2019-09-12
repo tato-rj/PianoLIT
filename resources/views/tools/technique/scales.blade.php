@@ -102,10 +102,13 @@
 	@include('tools.technique.components.key')
 	<div class="row">
 		@include('tools.technique.components.submit', ['type' => 'scales'])
-		<div class="col-12 mb-6">
+		<div class="col-12 mb-5">
 			<p>This tool will help you learn the notes and fingering for every scale in any key or mode. You will also find information about the different types of minor keys and special modes.</p>
 			<p>Just select the key and mode you need and we will show you all the resources you need!</p>
 		</div>
+    <div class="col-12 text-center mb-4">
+      <h6>Need help with <strong>Arpeggios</strong>? <a href="{{route('tools.arpeggios.index')}}">Click here</a></h6>
+    </div>
 	</div>
 </div>
 
