@@ -1,4 +1,10 @@
 @include media-breakpoint-down(sm) {
+	#pills-tab a.nav-link {
+		padding-left: .5rem!important;
+		padding-right: .5rem!important;
+		font-weight: .9em;
+	}
+
 	.hide-on-sm {
 		display: none !important;
 	}
