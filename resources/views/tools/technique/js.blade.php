@@ -182,7 +182,7 @@ function showFingering(finger, label, container = '#scale-fingering', index) {
 	$(container).show();
 }
 function animateFingering(finger, index) {
-    $(document).find('#'+index+'-'+finger).addClass('heartBeat');
+    $(document).find('#'+index+'-'+finger).toggleClass('fadeInUp heartBeat');
 }
 
 function showError(response) {
