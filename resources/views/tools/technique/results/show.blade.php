@@ -6,7 +6,7 @@
 	@endif
 
 	@include('tools.technique.components.notes', [
-		'label' => 'The notes in the <strong class="text-dark">'.$result['key'].'</strong> are',
+		'label' => 'The notes in the <strong class="text-dark">'.noteToHumans($result['key']).'</strong> are',
 		'notes' => $result['notes']
 	])
 

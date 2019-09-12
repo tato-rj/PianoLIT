@@ -130,6 +130,7 @@ $('#start-game').on('click', function() {
 				}, 100 * index);
 			});
 			startGame(game);
+			startTimer();
 		});
 	}
 });
@@ -155,11 +156,7 @@ function showFeedback($item, result, game) {
 			complete: function() {
 				$card.remove();
 				if ($(game).find('li.card').length == 0) {
-					submit(score, cardsNum);
-					$('#game-results').on('hide.bs.modal', function (e) {
-						$('.tinderslide, .game-element').hide();
-						$('#endgame').show();
-					})
+					endGame();
 				}
 			}
 		});
@@ -174,6 +171,14 @@ function evaluate(choice, answer) {
 
 	$('#final-score').text(score);
 	return result;
+}
+
+function endGame() {
+	submit(score, cardsNum);
+	$('#game-results').on('hide.bs.modal', function (e) {
+		$('.tinderslide, .game-element').hide();
+		$('#endgame').show();
+	})
 }
 
 function startGame(game) {
@@ -204,5 +209,23 @@ $('.card').each(function() {
 
 	$(this).css('transform', 'rotate('+num+'deg)');
 });
+</script>
+<script type="text/javascript">
+function startTimer() {
+	var timeleft = parseInt($('#timer h4').text());
+	var tiner = setInterval(function(){
+		if (timeleft < 0) {
+			clearInterval(tiner);
+			endGame();
+		} else {
+			if (timeleft <= 5)
+				$('#timer').removeClass('alert-grey').addClass('alert-red');
+
+			$('#timer h4').text(timeleft);
+			timeleft -= 1;			
+		}
+
+	}, 1000);
+}
 </script>
 @endpush
