@@ -8,10 +8,17 @@ trait Factory
 	{
 		$key = $this->keys[$this->key][$this->name];
 
-		if (is_array($key))
-			return $key[$this->type][$inversion][$hand];
+		if (is_array($key)) {
+			$fingering = $key[$this->type][$inversion][$hand];
+		} else {
+			$fingering =  $this->keys[$key][$this->name][$this->type][$inversion][$hand];			
+		}
 
-		return  $this->keys[$key][$this->name][$this->type][$inversion][$hand];
+		$up = $fingering;
+
+		array_pop($up);
+
+		return array_merge($fingering, array_reverse($up)); 
 	}
 
 	public function getMajor()

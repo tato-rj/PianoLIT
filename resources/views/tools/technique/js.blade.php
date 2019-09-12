@@ -131,18 +131,29 @@ $(document).on('click', 'button.play-notes', function() {
         resetFingerings();
 
         scaleLoops.push(setTimeout(function() {
-       		// console.log('Playing ' + note + ' at index ' + noteIndex);
             press($key, 150, false);
             
-            if (index <= 7)
-                showFingering(finger, label, fingeringTarget);
+            if (index <= 7) {
+                showFingering(finger, label, fingeringTarget, index);
+            } else {
+                animateFingering(finger, notes.length - index - 1);                
+            }
 
             highlight($key);
 
             highlightNote(index, notesTarget);
-        }, 400 * index));
+        }, 500 * index));
     });
 });
+
+///////////////////
+// ON TAB CHANGE //
+///////////////////
+$(document).on('show.bs.tab', '#pills-tab a[data-toggle="pill"]', function () {
+    stopLoop();
+    hideDots();
+    resetFingerings();
+})
 
 ///////////////
 // FUNCTIONS //
@@ -165,10 +176,13 @@ function resetFingerings() {
 	$('.fingering-container > div.content').html('');
 }
 
-function showFingering(finger, label, container = '#scale-fingering') {
+function showFingering(finger, label, container = '#scale-fingering', index) {
 	$(container).find('small.label').text(label);
-	$(container).find('> div.content').append('<h2 class="mx-2 my-0"><strong>'+finger+'</strong></h2>');
+	$(container).find('> div.content').append('<h2 id="'+index+'-'+finger+'" class="mx-2 my-0 animate fadeInUp"><strong>'+finger+'</strong></h2>');
 	$(container).show();
+}
+function animateFingering(finger, index) {
+    $(document).find('#'+index+'-'+finger).addClass('heartBeat');
 }
 
 function showError(response) {
