@@ -30,7 +30,7 @@ Route::prefix('playlists')->name('playlists.')->group(function() {
 
 	Route::get('{group}', 'ApiController@playlists')->name('all');
 
-	Route::get('{playlist}', 'ApiController@playlist')->name('show');
+	Route::get('{playlist}/pieces', 'ApiController@playlist')->name('show');
 
 });
 

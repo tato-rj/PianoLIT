@@ -5,7 +5,6 @@ namespace App;
 class Playlist extends PianoLit
 {
     protected $withCount = ['pieces'];
-    protected $with = ['pieces'];
 
     public static function boot()
     {

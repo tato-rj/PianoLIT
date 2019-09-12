@@ -144,6 +144,6 @@ class ApiController extends Controller
 
     public function playlist(Playlist $playlist)
     {
-        return $playlist;
+        return $playlist->pieces;
     }
 }
