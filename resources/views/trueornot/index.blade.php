@@ -98,6 +98,22 @@ $(document).on('click', '#reload', function() {
     window.location = window.location.href.split("?")[0];
 });
 
+$('#level input[type="checkbox"]').on('change', function() {
+	let $checkbox = $(this);
+	let $container = $checkbox.parent();
+	withTimer = $checkbox.is(':checked');
+
+	if (withTimer) {
+		$container.prev('p').css('opacity', 0);
+		$container.next('p').css('opacity', 1);
+		$('#timer').parent().show();
+	} else {
+		$container.prev('p').css('opacity', 1);
+		$container.next('p').css('opacity', 0);
+		$('#timer').parent().hide();
+	}
+});
+
 function submit(score, count) {
 	$.get('{{route('true-or-false.feedback')}}', {score: score, count: count}, function(response) {
 		$('#game-feedback').html(response);
@@ -130,13 +146,16 @@ $('#start-game').on('click', function() {
 				}, 100 * index);
 			});
 			startGame(game);
-			startTimer();
+
+			if (withTimer)
+				startTimer();
 		});
 	}
 });
 </script>
 <script type="text/javascript">
 var score = cardsNum = 0;
+var withTimer = false;
 
 function showFeedback($item, result, game) {
 	let answer = result ? 'correct' : 'wrong';
