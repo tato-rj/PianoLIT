@@ -1,7 +1,6 @@
 @extends('layouts.app', ['title' => 'PianoLIT Games: True or False'])
 
 @push('header')
-<link rel="stylesheet" type="text/css" href="{{asset('vendor/jTinder.css')}}">
 <style type="text/css">
 main {overflow: hidden !important;}
 .tinderslide {
@@ -69,15 +68,15 @@ main {overflow: hidden !important;}
 			<h5 class="text-grey text-center mb-3">Is this true?</h5>
 		</div>
 		<div class="mb-4">
-			@include('trueornot.levels')
+			@include('trueorfalse.levels')
 			
-			@include('trueornot.cards', ['levels' => ['easy', 'difficult']])
+			@include('trueorfalse.cards', ['levels' => ['easy', 'difficult']])
 		</div>
-		@include('trueornot.feedback')
+		@include('trueorfalse.feedback')
 
-		@include('trueornot.endgame')
+		@include('trueorfalse.endgame')
 
-		@include('trueornot.arrows')
+		@include('trueorfalse.arrows')
 	</div>
 </div>
 </section>
@@ -91,8 +90,8 @@ main {overflow: hidden !important;}
 
 @push('scripts')
 @include('components.addthis')
-<script type="text/javascript" src="{{asset('vendor/jquery.transform2d.js')}}"></script>
-<script type="text/javascript" src="{{asset('vendor/jquery.jTinder.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/vendor/jquery.transform2d.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/vendor/jquery.jTinder.js')}}"></script>
 <script type="text/javascript">
 $(document).on('click', '#reload', function() {
     window.location = window.location.href.split("?")[0];

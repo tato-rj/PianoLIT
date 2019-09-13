@@ -21,7 +21,7 @@ Route::prefix('true-or-false')->name('true-or-false.')->group(function() {
 
 		$statements = (new \App\Games\TrueOrFalse\TrueOrFalse)->statements(['easy', 'difficult']);
 
-		return view('trueornot.index', compact(['statements', 'colors']));
+		return view('trueorfalse.index', compact(['statements', 'colors']));
 	})->name('index');
 
 	Route::get('feedback', function() {
@@ -72,6 +72,12 @@ Route::prefix('tools')->name('tools.')->group(function() {
 		Route::get('generate', 'ToolsController@generateArpeggio')->name('generate');
 
 	});
+
+});
+
+Route::prefix('pieces')->name('pieces.')->group(function() {
+
+	Route::get('{piece}/score', 'PiecesController@score')->name('score');
 
 });
 

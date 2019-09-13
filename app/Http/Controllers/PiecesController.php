@@ -84,6 +84,13 @@ class PiecesController extends Controller
         return view('admin.pages.pieces.validation', compact('results'))->render();        
     }
 
+    public function score($piece)
+    {
+        $piece = Piece::find($piece);
+        
+        return view('pieces.score', compact('piece'));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
