@@ -13,7 +13,7 @@
 	'title' => 'Pianists', 
 	'subtitle' => 'Discover recordings from the most famous pianists of our time'])
 
-<div class="container mb-4">
+<div class="container mb-5">
 	<div class="row">
 		@foreach($pianists as $pianist)
 		@include('tools.pianists.card')
