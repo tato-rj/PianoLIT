@@ -47,7 +47,7 @@
 @include('admin.components.modals/delete', ['model' => 'pianist'])
 
 @component('admin.components.modals/add', ['model' => 'pianist'])
-<form method="POST" action="{{route('admin.pianists.store')}}">
+<form method="POST" action="{{route('admin.pianists.store')}}" enctype="multipart/form-data">
   @csrf
   {{-- Name --}}
   <div class="form-group">
@@ -58,6 +58,10 @@
     <textarea class="form-control" rows="6" name="biography" placeholder="Biography" required>{{ old('biography') }}</textarea>
   </div>
   {{-- Nationality and period --}}
+  <div class="form-group">
+    <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ old('itunes_id') }}">
+    <div class="ml-2">@include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])</div>
+  </div>
   <div class="form-row form-group">
     <div class="col">
       <select class="form-control {{$errors->has('country_id') ? 'is-invalid' : ''}}" name="country_id">
@@ -68,10 +72,12 @@
       </select>
       @include('admin.components.feedback', ['field' => 'nationality'])
     </div>
-  </div>
-  <div class="form-group">
-    <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ old('itunes_id') }}">
-    <div class="ml-2">@include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])</div>
+    <div class="col">
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" name="cover" id="customFile">
+        <label class="custom-file-label truncate" for="customFile">Cover image</label>
+      </div>
+    </div>
   </div>
   {{-- Dates --}}
   <div class="form-row form-group">

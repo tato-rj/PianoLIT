@@ -17,6 +17,7 @@ class CreatePianistsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->text('biography');
+            $table->string('cover_path');
             $table->unsignedInteger('country_id')->nullable();
             $table->string('itunes_id')->nullable();
             $table->date('date_of_birth')->nullable();

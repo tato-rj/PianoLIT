@@ -4,6 +4,6 @@
     	@endif
 	    <h3>{{$title}}</h3>
 		<div id="subtitle" class="text-grey">
-		    <div class="mx-auto" style="max-width: 500px">{{$subtitle}}</div>
+		    <div class="mx-auto" style="max-width: {{$width ?? '500px'}}">{{$subtitle}}</div>
 		</div>
 	</div>

@@ -9,7 +9,7 @@
     'description' => 'Edit a pianist'])
 
     <div class="row my-5 mx-2">
-      <form id="edit-form" method="POST" action="{{route('admin.pianists.update', $pianist->id)}}" class="col-lg-6 col-sm-10 col-12 mx-auto">
+      <form id="edit-form" method="POST" action="{{route('admin.pianists.update', $pianist->id)}}" enctype="multipart/form-data" class="col-lg-6 col-sm-10 col-12 mx-auto">
         @csrf
         @method('PATCH')
         {{-- Name --}}
@@ -26,7 +26,13 @@
             <textarea class="form-control" rows="6" name="biography" placeholder="pianist's biography" required>{{ $pianist->biography }}</textarea>
           </div>
         </div>
-
+        <div class="form-group">
+          <div class="w-100 d-flex justify-content-between">
+            <label class="text-brand">iTunes ID</label>
+            <div>@include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])</div>
+          </div>
+          <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ $pianist->itunes_id }}">
+        </div>
         {{-- Nationality and period --}}
         <div class="form-row form-group">
           <div class="col">
@@ -46,11 +52,11 @@
           </div>
           <div class="col">
             <div class="form-group">
-              <div class="w-100 d-flex justify-content-between">
-                <label class="text-brand">iTunes ID</label>
-                <div>@include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])</div>
+              <label class="text-brand">Cover image</label>
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" name="cover" id="customFile">
+                <label class="custom-file-label truncate" for="customFile">Upload</label>
               </div>
-              <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ $pianist->itunes_id }}">
             </div>
             <div class="form-group">
               <label class="text-brand">Died in</label>
@@ -70,9 +76,12 @@
         </div>
       </form>
       
-      <div class="col-lg-6 col-sm-10 col-12 mx-auto" style="max-height: 460px; overflow-y: scroll;">
-        <div id="api-results">
-          <p class="text-muted text-center"><i>Loading iTunes albums...</i></p>
+      <div class="col-lg-6 col-sm-10 col-12 mx-auto">
+        <img src="{{storage($pianist->cover_path)}}" class="shadow rounded-circle d-block mx-auto mb-4" style="width: 120px">
+        <div>
+          <div id="api-results" style="max-height: 460px; overflow-y: scroll;">
+            <p class="text-muted text-center"><i>Loading iTunes albums...</i></p>
+          </div>
         </div>
       </div>
     </div>
@@ -85,34 +94,34 @@
 <script type="text/javascript">
 $(document).ready(function() {
   $('#api-results').html('');
-$.ajax({
-    url: 'https://itunes.apple.com/lookup',
-    data: {id: '{{$pianist->itunes_id}}', entity: 'album'},
-    type: 'GET',
-    crossDomain: true,
-    dataType: 'jsonp',
-    success: function(response) { 
-      let albums = response.results;
-      albums.shift();
-      let html = '<p class="text-muted">We found '+albums.length+' albums on iTunes</p>';
-      // albums = albums.slice(0,10);
+  $.ajax({
+      url: 'https://itunes.apple.com/lookup',
+      data: {id: '{{$pianist->itunes_id}}', entity: 'album'},
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'jsonp',
+      success: function(response) { 
+        let albums = response.results;
+        albums.shift();
+        let html = '<p class="text-muted">We found '+albums.length+' albums on iTunes</p>';
+        // albums = albums.slice(0,10);
 
-      for (album in albums) {
-        html += `
-          <div class="d-flex mb-2 pb-2 border-bottom">
-            <div class="mr-3"><img src="`+albums[album].artworkUrl100+`"></div>
-            <div>
-              <a href="`+albums[album].collectionViewUrl+`" target="_blank"><p class="m-0">`+albums[album].collectionName+`</p></a>
-              <p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
+        for (album in albums) {
+          html += `
+            <div class="d-flex mb-2 pb-2 border-bottom">
+              <div class="mr-3"><img src="`+albums[album].artworkUrl100+`"></div>
+              <div>
+                <a href="`+albums[album].collectionViewUrl+`" target="_blank"><p class="m-0">`+albums[album].collectionName+`</p></a>
+                <p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
+              </div>
             </div>
-          </div>
-        `;
-      }
+          `;
+        }
 
-      $('#api-results').html(html);
-    },
-    error: function(status) { alert('Couldn\'t get the albums from iTunes!'); }
-});
+        $('#api-results').html(html);
+      },
+      error: function(status) { alert('Couldn\'t get the albums from iTunes!'); }
+  });
 });
 </script>
 @cannot('update', $pianist)

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Resources\ChordFinder\ChordFinder;
 use App\Resources\Technique\{Scale, Arpeggio, Template};
 use App\Resources\CircleOfFifths;
+use App\Pianist;
 
 class ToolsController extends Controller
 {
@@ -72,5 +73,17 @@ class ToolsController extends Controller
             return $arpeggio;
         
         return view('tools.technique.results.arpeggios', compact('arpeggio'))->render();
+    }
+
+    public function pianists()
+    {
+        $pianists = Pianist::orderBy('name')->get();
+        
+        return view('tools.pianists.index', compact('pianists'));
+    }
+
+    public function pianist(Pianist $pianist)
+    {
+        return view('tools.pianists.show', compact('pianist'));        
     }
 }

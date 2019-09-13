@@ -45,6 +45,14 @@ Route::get('riddles', function() {
 
 Route::prefix('tools')->name('tools.')->group(function() {
 
+	Route::prefix('pianists')->name('pianists.')->group(function() {
+
+		Route::get('', 'ToolsController@pianists')->name('index');
+
+		Route::get('{pianist}', 'ToolsController@pianist')->name('show');
+
+	});
+
 	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
 
 		Route::get('', 'ToolsController@chordFinder')->name('index');

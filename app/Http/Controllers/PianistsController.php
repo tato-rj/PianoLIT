@@ -52,6 +52,7 @@ class PianistsController extends Controller
         $pianist = Pianist::create([
             'name' => $form->name,
             'biography' => $form->biography,
+            'cover_path' => $request->file('cover')->store('app/pianists', 'public'),
             'country_id' => $form->country_id,
             'itunes_id' => $form->itunes_id,
             'date_of_birth' => $form->date_of_birth,
@@ -105,7 +106,13 @@ class PianistsController extends Controller
             'biography' => $request->biography,
             'country_id' => $request->country_id
         ]);
-        
+    
+        if ($request->hasFile('cover')) {
+            \Storage::disk('public')->delete($pianist->cover_path);
+            
+            $pianist->update(['cover_path' => $request->file('cover')->store('app/pianists', 'public')]);
+        }
+
         return redirect()->back()->with('status', "$request->name has been updated");
     }
 
