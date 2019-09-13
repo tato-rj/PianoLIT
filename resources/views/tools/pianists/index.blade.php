@@ -1,13 +1,4 @@
-@extends('layouts.app', [
-	'title' => 'Pianists | ' . config('app.name'),
-	'shareable' => [
-		'keywords' => 'recordings,famous pianists,albums,classical music',
-		'title' => 'Pianists',
-		'description' => 'Discover recordings from the most famous pianists of our time',
-		'thumbnail' => asset('images/misc/thumbnails/staff.jpg'),
-		'created_at' => carbon('15-09-2019'),
-		'updated_at' => carbon('15-09-2019')
-	]])
+@extends('layouts.app', ['title' => 'Pianists | ' . config('app.name')])
 
 @push('header')
 <style type="text/css">

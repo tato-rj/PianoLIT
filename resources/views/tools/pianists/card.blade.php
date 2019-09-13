@@ -2,6 +2,6 @@
 	<a class="link-none" href="{{route('tools.pianists.show', $pianist->slug)}}">
 		<img src="{{storage($pianist->cover_path)}}" style="width: 100px" class="rounded-circle mb-2 shadow">
 		<p class="m-0"><strong>{{$pianist->name}}</strong></p>
-		<p class="text-grey">{{$pianist->nationality}}</p>
+		<p class="text-grey">{{$pianist->country->name}}</p>
 	</a>
 </div>
