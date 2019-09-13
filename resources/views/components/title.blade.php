@@ -1,4 +1,4 @@
-	<div class="mb-4 text-center mx-4">
+	<div class="mb-4 text-center px-2">
 		@if(!empty($version))
     	<div class="text-grey"><small>version {{$version}}</small></div>
     	@endif
