@@ -51,7 +51,7 @@ $(document).ready(function() {
 				<div class="d-flex rounded p-2 alert-grey">
 					<div class="mr-3"><img src="`+albums[album].artworkUrl100+`" class="rounded"></div>
 					<div>
-						<p class="m-0"><strong>`+albums[album].collectionName+`</strong></p>
+						<p class="m-0 album-title"><strong>`+albums[album].collectionName+`</strong></p>
 						<p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
 					</div>
 				</div>
@@ -61,6 +61,10 @@ $(document).ready(function() {
         }
 
         $('#api-results').html(html);
+
+        $('.album-title').each(function() {
+          $clamp(this, {clamp: 2});
+        });
       },
       error: function(status) { alert('Couldn\'t get the albums from iTunes!'); }
   });
