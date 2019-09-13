@@ -49,7 +49,7 @@ $(document).ready(function() {
           <div class="col-lg-6 col-md-6 col-12 mb-3">
 			<a href="`+albums[album].collectionViewUrl+`" target="_blank" class="link-none">
 				<div class="d-flex rounded p-2 alert-grey">
-					<div class="mr-3"><img src="`+albums[album].artworkUrl100+`" class="rounded"></div>
+					<div class="mr-3"><img src="`+albums[album].artworkUrl100+`" style="width:100px; height: 100px;" class="rounded"></div>
 					<div>
 						<p class="m-0 album-title"><strong>`+albums[album].collectionName+`</strong></p>
 						<p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
