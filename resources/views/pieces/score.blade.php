@@ -23,8 +23,11 @@
 			<p><i>by {{$piece->composer->name}}</i></p>
 		</div>
 		@if($piece->isPublicDomain)
-			<div class="embed-responsive embed-responsive-a4">
+			<div class="embed-responsive embed-responsive-a4 mb-4">
 				<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
+			</div>
+			<div class="text-center w-100">
+				<a href="{{storage($piece->score_path)}}" class="btn btn-wide btn-teal"><i class="fas fa-cloud-download-alt mr-2"></i>Download score</a>
 			</div>
 		@else
 			<div class="text-center mb-8">
