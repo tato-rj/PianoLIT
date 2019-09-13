@@ -24,7 +24,9 @@
 		</div>
 		@if($piece->isPublicDomain)
 			<div class="embed-responsive embed-responsive-a4">
-				<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
+				<object type="application/pdf" data="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
+					<p>This browser doen't support pdf</p>
+				</object>
 			</div>
 		@else
 			<div class="text-center mb-8">
