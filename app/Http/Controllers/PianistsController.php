@@ -50,6 +50,7 @@ class PianistsController extends Controller
     public function store(Request $request, PianistForm $form)
     {
         $pianist = Pianist::create([
+            'slug' => str_slug($form->name),
             'name' => $form->name,
             'biography' => $form->biography,
             'cover_path' => $request->file('cover')->store('app/pianists', 'public'),
@@ -99,6 +100,7 @@ class PianistsController extends Controller
         $this->authorize('update', $pianist);
 
         $pianist->update([
+            'slug' => str_slug($request->name),
             'name' => $request->name,
             'date_of_birth' => carbon($request->date_of_birth)->format('Y-m-d'),
             'date_of_death' => $request->date_of_death ? carbon($request->date_of_death)->format('Y-m-d') : null,

@@ -29,6 +29,7 @@ class PianistForm extends FormRequest
         return [
             'name' => 'required|unique:pianists|max:140',
             'biography' => 'required',
+            'cover' => 'required',
             'country_id' => 'required',
             'date_of_birth' => 'required'
         ];
