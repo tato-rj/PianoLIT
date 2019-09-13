@@ -1,4 +1,4 @@
-@component('layouts.overlay', ['name' => 'search', 'light' => true, 'background' => '255,255,255,1', 'position' => 'top'])
+@component('layouts.overlay', ['name' => 'search', 'light' => true, 'background' => '255,255,255,1', 'window_bg' => 'white', 'position' => 'top'])
 <div class="container py-5">
 	<div class="row">
 		<div class="col-lg-10 col-12 mx-auto">
