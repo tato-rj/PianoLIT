@@ -55,7 +55,7 @@
   </div>
   {{-- Life --}}
   <div class="form-group">
-    <textarea class="form-control" rows="6" name="biography" placeholder="Biography" required>{{ old('biography') }}</textarea>
+    <textarea class="form-control" maxlength="275" rows="6" name="biography" placeholder="Biography" required>{{ old('biography') }}</textarea>
   </div>
   {{-- Nationality and period --}}
   <div class="form-group">

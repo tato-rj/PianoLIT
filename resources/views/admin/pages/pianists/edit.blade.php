@@ -23,7 +23,7 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label text-brand">Biography</label>
           <div class="col-sm-10">
-            <textarea class="form-control" rows="6" name="biography" placeholder="pianist's biography" required>{{ $pianist->biography }}</textarea>
+            <textarea maxlength="275" class="form-control" rows="6" name="biography" placeholder="pianist's biography" required>{{ $pianist->biography }}</textarea>
           </div>
         </div>
         <div class="form-group">
