@@ -16,7 +16,7 @@
 	'subtitle' => $pianist->biography,
 	'width' => '800px'])
 
-<div class="container my-5">
+<div class="container mt-4 mb-5">
 	<div id="api-results" class="row">
 		<div class="col-12"><h5 class="text-grey my-6 text-center">Loading...</h5></div>
 	</div>
