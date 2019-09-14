@@ -54,13 +54,13 @@
 <script type="text/javascript">
 
 $('input#search-pianist').on('keyup', function() {
-	let val = $(this).val();
+	let val = $(this).val().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 	if (val.length > 2) {
 		console.log('Find names with: '+val);
 		$('.name').each(function() {
 			let $name = $(this);
-			if ($name.text().toLowerCase().includes(val)) {
+			if ($name.text().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(val)) {
 				$name.parent().parent().show();
 			} else {
 				$name.parent().parent().hide();
