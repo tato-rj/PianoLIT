@@ -127,6 +127,11 @@
             opacity: .6 !important;
         }
 
+        .breadcrumb {
+            background-color: transparent;
+            font-size: 80%;
+        }
+
     </style>
 
     @stack('header')

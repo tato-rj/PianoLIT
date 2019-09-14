@@ -9,6 +9,10 @@
 @endpush
 
 @section('content')
+<div class="container">
+  <a href="{{route('tools.pianists.index')}}" class="link-blue"><small><i class="fas fa-angle-left mr-1"></i>back to previous page</small></a>
+</div>
+@include('tools.pianists.powered')
 
 <img src="{{storage($pianist->cover_path)}}" class="rounded-circle shadow mb-4 mx-auto d-block" style="width: 160px">
 @include('components.title', [
@@ -46,13 +50,18 @@ $(document).ready(function() {
 
         for (album in albums) {
           html += `
-          <div class="col-lg-6 col-md-6 col-12 mb-3">
+          <div class="col-lg-6 col-md-6 col-12 mb-4">
 			<a href="`+albums[album].collectionViewUrl+`" target="_blank" class="link-none">
-				<div class="d-flex rounded p-2 alert-grey">
-					<div class="mr-3"><img src="`+albums[album].artworkUrl100+`" style="width:100px; height: 100px;" class="rounded"></div>
-					<div>
-						<p class="m-0 album-title"><strong>`+albums[album].collectionName+`</strong></p>
-						<p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
+				<div class="d-flex rounded alert-grey border" style="height: 100px;border-color: #f3f5f7!important;">
+					<div class="mr-3"><img src="`+albums[album].artworkUrl100+`" style="width:100px; height: 100%;" class="rounded-left"></div>
+					<div class="d-flex flex-grow">
+            <div class="flex-grow py-2">
+  						<p class="m-0 album-title"><strong>`+albums[album].collectionName+`</strong></p>
+  						<p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
+            </div>
+            <div class="d-flex flex-center p-2">
+              <i class="ml-1 fas fa-angle-right fa-lg"></i>
+            </div>
 					</div>
 				</div>
 			</a>
