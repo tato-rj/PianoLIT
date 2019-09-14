@@ -9,9 +9,6 @@
 @endpush
 
 @section('content')
-<div class="container">
-  <a href="{{route('tools.pianists.index')}}" class="link-blue"><small><i class="fas fa-angle-left mr-1"></i>back to previous page</small></a>
-</div>
 @include('tools.pianists.powered')
 
 <img src="{{storage($pianist->cover_path)}}" class="rounded-circle shadow mb-4 mx-auto d-block" style="width: 160px">
