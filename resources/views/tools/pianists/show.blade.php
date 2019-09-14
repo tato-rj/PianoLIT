@@ -56,7 +56,7 @@ $(document).ready(function() {
   						<p class="m-0 album-title"><strong>`+albums[album].collectionName+`</strong></p>
   						<p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
             </div>
-            <div class="d-flex flex-center p-2">
+            <div class="d-flex flex-center p-2" style="background: rgba(0,0,0,0.025);">
               <i class="ml-1 fas fa-angle-right fa-lg"></i>
             </div>
 					</div>
