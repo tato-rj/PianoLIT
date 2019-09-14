@@ -144,6 +144,12 @@ class ApiController extends Controller
 
     public function playlist(Playlist $playlist)
     {
-        return $playlist->pieces;
+        $pieces = $playlist->pieces;
+        
+        $pieces->each(function($result) use ($request) {
+            $this->api->setCustomAttributes($result, $request->user_id);
+        });
+
+        return $pieces;
     }
 }
