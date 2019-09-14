@@ -52,7 +52,7 @@ $(document).ready(function() {
 				<div class="d-flex rounded alert-grey border" style="height: 100px;border-color: #f3f5f7!important;">
 					<div class="mr-3"><img src="`+albums[album].artworkUrl100+`" style="width:100px; height: 100%;" class="rounded-left"></div>
 					<div class="d-flex flex-grow">
-            <div class="flex-grow py-2">
+            <div class="flex-grow py-2 pr-2">
   						<p class="m-0 album-title"><strong>`+albums[album].collectionName+`</strong></p>
   						<p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
             </div>
