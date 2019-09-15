@@ -29,8 +29,8 @@
         </a>
         <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
           <label style="font-size: .9em" class="m-0 text-grey"><small>TO HEAR</small></label>
-          <a class="nav-link p-0 ml-1" href="{{route('resources.pianists.index')}}">Top Pianists</a>
-          <a class="nav-link p-0 ml-1" href="{{route('resources.podcasts')}}">Podcasts</a>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.pianists.index')}}">Great Pianists</a>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.podcasts')}}">Top Podcasts</a>
           <div class="dropdown-divider"></div>
           <label style="font-size: .9em" class="m-0 text-grey"><small>TO USE</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.staff')}}">Staff Generator</a>

@@ -41,7 +41,7 @@ $(document).ready(function() {
       crossDomain: true,
       dataType: 'jsonp',
       success: function(response) { 
-      	let html = '<div class="col-12"><p class="text-center mb-4 text-muted">We found <strong><span>'+response.resultCount+'</span> albums</strong> for this pianist on Apple Music</p></div>';
+      	let html = '<div class="col-12"><p class="text-center mb-4 text-muted">We found <strong><span>'+response.resultCount+'</span> albums</strong> on Apple Music</p></div>';
         let albums = response.results;
         albums.shift();
 

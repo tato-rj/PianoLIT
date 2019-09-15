@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Pianists | ' . config('app.name')])
+@extends('layouts.app', ['title' => 'Great Pianists | ' . config('app.name')])
 
 @push('header')
 <style type="text/css">
@@ -24,7 +24,7 @@
 @include('resources.pianists.powered')
 
 @include('components.title', [
-	'title' => 'Pianists', 
+	'title' => 'Great Pianists', 
 	'subtitle' => 'Discover recordings from the most famous pianists of our time'])
 
 <div class="container mb-5">

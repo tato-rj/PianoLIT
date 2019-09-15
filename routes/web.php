@@ -45,7 +45,7 @@ Route::get('riddles', function() {
 
 Route::prefix('resources')->name('resources.')->group(function() {
 
-	Route::prefix('top-pianists')->name('pianists.')->group(function() {
+	Route::prefix('great-pianists')->name('pianists.')->group(function() {
 
 		Route::get('', 'ResourcesController@pianists')->name('index');
 
@@ -57,7 +57,7 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 	Route::get('infographs/{name?}', 'ResourcesController@infographs')->name('infographs');
 
-	Route::get('podcasts', 'ResourcesController@podcasts')->name('podcasts');
+	Route::get('top-podcasts', 'ResourcesController@podcasts')->name('podcasts');
 	
 });
 

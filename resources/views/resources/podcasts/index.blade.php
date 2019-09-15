@@ -1,8 +1,8 @@
 @extends('layouts.app', [
-	'title' => 'Podcasts | ' . config('app.name'),
+	'title' => 'Top Podcasts | ' . config('app.name'),
 	'shareable' => [
 		'keywords' => 'podcasts,learn music,music theory,music history',
-		'title' => 'Podcasts',
+		'title' => 'Top Podcasts',
 		'description' => 'Here is a list of our favorite podcasts',
 		'thumbnail' => null,
 		'created_at' => carbon('28-08-2019'),
@@ -19,7 +19,7 @@
 
 @section('content')
 @include('components.title', [
-	'title' => 'Podcasts', 
+	'title' => 'Top Podcasts', 
 	'subtitle' => 'Here is a list of our favorite podcasts'])
 
 @if(app()->isLocal())
