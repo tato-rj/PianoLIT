@@ -47,7 +47,7 @@ $(document).ready(function() {
 
         for (album in albums) {
           html += `
-          <div class="col-lg-6 col-md-6 col-12 mb-4">
+          <div class="col-lg-6 col-md-6 col-12 mb-4 animate fadeInUp">
 			<a href="`+albums[album].collectionViewUrl+`" target="_blank" class="link-none">
 				<div class="d-flex rounded alert-grey border" style="height: 100px;border-color: #f3f5f7!important;">
 					<div class="mr-3"><img src="`+albums[album].artworkUrl100+`" style="width:100px; height: 100%;" class="rounded-left"></div>
