@@ -9,6 +9,7 @@
 	text-indent: 30px;
 	border: 0; 
 	padding-bottom: .35rem;
+	border-radius: 0;
 }
 .search .fa-search { 
     position: absolute;

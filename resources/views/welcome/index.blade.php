@@ -77,7 +77,7 @@
 @push('scripts')
 <script src="{{asset('js/vendor/jquery.countdown.min.js')}}"></script>
 <script type="text/javascript">
-$('#clock').countdown('2019/10/10', function(event) {
+$('#clock').countdown('2020/01/03', function(event) {
   var $this = $(this).html(event.strftime(''
     + '<div><span class="number">%w</span><div class="label">weeks</div></div> '
     + '<div><span class="number">%d</span><div class="label">days</div></div> '
