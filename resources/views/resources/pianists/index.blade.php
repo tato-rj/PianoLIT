@@ -60,11 +60,14 @@ $('input#search-pianist').on('keyup', function() {
 	if (val.length > 2) {
 		console.log('Find names with: '+val);
 		$('.name').each(function() {
-			let $name = $(this);
-			if ($name.text().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(val)) {
-				$name.parent().parent().show();
+			let $element = $(this);
+			let name = $element.text().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+			let country = $element.next('p').text().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+			if (name.includes(val) || country.includes(val)) {
+				$element.parent().parent().show();
 			} else {
-				$name.parent().parent().hide();
+				$element.parent().parent().hide();
 			}
 		});
 	} else {
