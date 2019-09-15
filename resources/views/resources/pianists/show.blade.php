@@ -42,7 +42,7 @@ $(document).ready(function() {
       dataType: 'jsonp',
       success: function(response) { 
         let albums = response.results;
-      	let html = '<div class="col-12"><p class="text-center mb-4 text-muted">We found <strong><span>'+albums.count+'</span> albums</strong> on Apple Music</p></div>';
+      	let html = '<div class="col-12"><p class="text-center mb-4 text-muted">We found <strong><span>'+albums.length+'</span> albums</strong> on Apple Music</p></div>';
         albums.shift();
 
         for (album in albums) {
