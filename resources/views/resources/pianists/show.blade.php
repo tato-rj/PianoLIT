@@ -36,11 +36,13 @@
 $(document).ready(function() {
   $.ajax({
       url: 'https://itunes.apple.com/lookup',
-      data: {id: '{{$pianist->itunes_id}}', entity: 'album'},
+      data: {id: '{{$pianist->itunes_id}}', entity: 'album', limit: 200},
       type: 'GET',
       crossDomain: true,
       dataType: 'jsonp',
       success: function(response) { 
+        let test = response;
+        console.log(test = response);
       	let html = '<div class="col-12"><p class="text-center mb-4 text-muted">We found <strong><span>'+response.resultCount+'</span> albums</strong> on Apple Music</p></div>';
         let albums = response.results;
         albums.shift();
