@@ -9,7 +9,7 @@
 @endpush
 
 @section('content')
-@include('tools.pianists.powered')
+@include('resources.pianists.powered')
 
 <img src="{{storage($pianist->cover_path)}}" class="rounded-circle shadow mb-4 mx-auto d-block" style="width: 160px">
 @include('components.title', [

@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Resources\ChordFinder\ChordFinder;
 use App\Resources\Technique\{Scale, Arpeggio, Template};
 use App\Resources\CircleOfFifths;
-use App\Pianist;
 
 class ToolsController extends Controller
 {
@@ -32,17 +31,6 @@ class ToolsController extends Controller
 		$keys = new CircleOfFifths;
 
 		return view('tools.circle.index', compact('keys'));
-    }
-
-    public function staff($type = null)
-    {
-    	$files = ['blank', 'piano', 'treble', 'bass'];
-    	$size = request()->has('size') ? '-' . request('size') : null;
-
-	   	if (in_array($type, $files))
-	    	return response()->file('images/sheets/'.$type.$size.'.pdf');
-
-		return view('tools.staff.index', compact('files'));
     }
 
     public function scales()
@@ -73,17 +61,5 @@ class ToolsController extends Controller
             return $arpeggio;
         
         return view('tools.technique.results.arpeggios', compact('arpeggio'))->render();
-    }
-
-    public function pianists()
-    {
-        $pianists = Pianist::orderBy('name')->get();
-        
-        return view('tools.pianists.index', compact('pianists'));
-    }
-
-    public function pianist(Pianist $pianist)
-    {
-        return view('tools.pianists.show', compact('pianist'));        
     }
 }

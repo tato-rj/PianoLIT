@@ -43,15 +43,25 @@ Route::get('riddles', function() {
 	return view('riddles.index', compact('riddles'));
 })->name('riddles');
 
-Route::prefix('tools')->name('tools.')->group(function() {
+Route::prefix('resources')->name('resources.')->group(function() {
 
-	Route::prefix('pianists')->name('pianists.')->group(function() {
+	Route::prefix('top-pianists')->name('pianists.')->group(function() {
 
-		Route::get('', 'ToolsController@pianists')->name('index');
+		Route::get('', 'ResourcesController@pianists')->name('index');
 
-		Route::get('{pianist}', 'ToolsController@pianist')->name('show');
+		Route::get('{pianist}', 'ResourcesController@pianist')->name('show');
 
 	});
+
+	Route::get('staff/{type?}', 'ResourcesController@staff')->name('staff');
+
+	Route::get('infographs/{name?}', 'ResourcesController@infographs')->name('infographs');
+
+	Route::get('podcasts', 'ResourcesController@podcasts')->name('podcasts');
+	
+});
+
+Route::prefix('tools')->name('tools.')->group(function() {
 
 	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
 
@@ -63,8 +73,6 @@ Route::prefix('tools')->name('tools.')->group(function() {
 
 	Route::get('circle-of-fifths', 'ToolsController@circleOfFifths')->name('circle-of-fifths');
 	
-	Route::get('staff/{type?}', 'ToolsController@staff')->name('staff');
-
 	Route::prefix('scales')->name('scales.')->group(function() {
 
 		Route::get('', 'ToolsController@scales')->name('index');

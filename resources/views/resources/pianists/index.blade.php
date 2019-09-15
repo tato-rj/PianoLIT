@@ -21,7 +21,7 @@
 @endpush
 
 @section('content')
-@include('tools.pianists.powered')
+@include('resources.pianists.powered')
 
 @include('components.title', [
 	'title' => 'Pianists', 
@@ -38,7 +38,7 @@
 	</div>
 	<div class="row" id="pianists">		
 		@foreach($pianists as $pianist)
-		@include('tools.pianists.card')
+		@include('resources.pianists.card')
 		@endforeach
 	</div>
 </div>

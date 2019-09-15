@@ -21,10 +21,20 @@
           <label style="font-size: .9em" class="m-0 text-grey"><small>TECHNIQUE</small></label>
           <a class="nav-link p-0 mb-1 ml-1" href="{{route('tools.scales.index')}}">Scales</a>
           <a class="nav-link p-0 mb-1 ml-1" href="{{route('tools.arpeggios.index')}}">Arpeggios</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown mx-2">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Resources
+        </a>
+        <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
+          <label style="font-size: .9em" class="m-0 text-grey"><small>TO HEAR</small></label>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.pianists.index')}}">Top Pianists</a>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.podcasts')}}">Podcasts</a>
           <div class="dropdown-divider"></div>
-          <label style="font-size: .9em" class="m-0 text-grey"><small>MISC</small></label>
-          <a class="nav-link p-0 ml-1" href="{{route('tools.pianists.index')}}">Pianists</a>
-          <a class="nav-link p-0 ml-1" href="{{route('tools.staff')}}">Staff Generator</a>
+          <label style="font-size: .9em" class="m-0 text-grey"><small>TO USE</small></label>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.staff')}}">Staff Generator</a>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.infographs')}}">Infographs</a>
         </div>
       </li>
       <li class="nav-item dropdown mx-2">
