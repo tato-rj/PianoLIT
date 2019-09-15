@@ -36,7 +36,7 @@
 $(document).ready(function() {
   $.ajax({
       url: 'https://itunes.apple.com/lookup',
-      data: {id: '{{$pianist->itunes_id}}', entity: 'album', limit: 200},
+      data: {id: '{{$pianist->itunes_id}}', entity: 'album', limit: 500},
       type: 'GET',
       crossDomain: true,
       dataType: 'jsonp',
