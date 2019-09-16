@@ -21,12 +21,12 @@ class UsersController extends Controller
 
     public function gift()
     {
-        $file = str_replace('storage/', '', request('gift'));
+        $file = public_path('images/gifts/'.request('gift'));
 
-        if (! \Storage::disk('public')->exists($file))
-            abort(404);
+        if (! file_exists($file))
+            $file = public_path('images/gifts/circle-of-fifths.jpg');
 
-        return \Storage::disk('public')->download($file);
+        return response()->file($file);
     }
 
     /**
