@@ -1,4 +1,13 @@
-@extends('layouts.app', ['title' => 'Pianists | ' . config('app.name')])
+@extends('layouts.app', [
+  'title' => $pianist->name . ' | ' . config('app.name'),
+  'shareable' => [
+    'keywords' => $pianist->name . ',pianists,classical music,classical recordings,best classical pianists,chopin album,liszt recording,beethoven album,mozart music',
+    'title' => 'Great Pianists | ' . $pianist->name,
+    'description' => 'Discover the greatest pianists of our time and their recordings, an online database powered by Apple Music',
+    'thumbnail' => asset('images/misc/thumbnails/pianists.jpg'),
+    'created_at' => carbon('16-09-2019'),
+    'updated_at' => carbon('16-09-2019')
+    ]])
 
 @push('header')
 <style type="text/css">
@@ -38,11 +47,13 @@
 	@include('components.sections.youtube')
 </div>
 
+@include('components.overlays.subscribe.paper-plane')
 @endsection
 
 @push('scripts')
 @include('components.addthis')
 <script type="text/javascript">
+$("#subscribe-overlay").showAfter(5);
 $(document).ready(function() {
   $.ajax({
       url: 'https://itunes.apple.com/lookup',
