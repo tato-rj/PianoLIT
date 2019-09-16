@@ -375,7 +375,7 @@ g.key {
   init();
 
 }).call(this);
-$("#subscribe-overlay").showAfter(4);
+$("#gift-overlay").showAfter(4);
 </script>
 
 @endpush

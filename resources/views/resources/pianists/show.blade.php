@@ -53,7 +53,7 @@
 @push('scripts')
 @include('components.addthis')
 <script type="text/javascript">
-$("#subscribe-overlay").showAfter(5);
+$("#gift-overlay").showAfter(5);
 
 $(document).ready(function() {
   $.ajax({
