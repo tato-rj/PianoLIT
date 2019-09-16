@@ -12,10 +12,14 @@
 @include('resources.pianists.powered')
 
 <img src="{{storage($pianist->cover_path)}}" class="rounded-circle shadow mb-4 mx-auto d-block" style="width: 160px">
-@include('components.title', [
-	'title' => $pianist->name, 
-	'subtitle' => $pianist->biography,
-	'width' => '800px'])
+
+<div class="mb-4 text-center px-3">
+  <h3 class="m-0">{{$pianist->name}}</h3>
+  <div id="subtitle" class="text-muted">
+  <p><small>{{$pianist->date_of_birth->toFormattedDateString()}} to {{$pianist->date_of_death ? $pianist->date_of_death->toFormattedDateString() : 'now'}}</small></p>
+    <div class="mx-auto" style="max-width: 860px">{{$pianist->biography}}</div>
+  </div>
+</div>
 
 <div class="container mt-4 mb-5">
 	<div id="api-results" class="row">
