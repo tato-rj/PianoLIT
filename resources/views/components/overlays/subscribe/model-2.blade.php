@@ -8,7 +8,7 @@
 				<div>Subscribe today and get a <strong><u>FREE</u></strong> poster in your inbox!</div>
 			</div>
 			
-			@include('components.form.subscription', ['gift' => $gift])
+			@include('components.form.subscription', ['gift' => 'images/gifts/'.$gift])
 		</div>
 	</div>
 </div>

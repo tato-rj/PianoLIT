@@ -21,7 +21,7 @@ class UsersController extends Controller
 
     public function gift()
     {
-        $file = public_path('images/gifts/'.request('gift'));
+        $file = public_path(request('gift'));
 
         if (! file_exists($file))
             $file = public_path('images/gifts/circle-of-fifths.jpg');
