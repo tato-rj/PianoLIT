@@ -126,6 +126,8 @@ g.key {
 @include('tools.circle.info.relative')
 @include('tools.circle.info.neighbors')
 @include('tools.circle.info.functional')
+
+@include('components.overlays.subscribe.model-2')
 @endsection
 
 @push('scripts')
@@ -373,6 +375,7 @@ g.key {
   init();
 
 }).call(this);
+$("#subscribe-overlay").showAfter(4);
 </script>
 
 @endpush

@@ -47,13 +47,14 @@
 	@include('components.sections.youtube')
 </div>
 
-@include('components.overlays.subscribe.paper-plane')
+@include('components.overlays.subscribe.model-2')
 @endsection
 
 @push('scripts')
 @include('components.addthis')
 <script type="text/javascript">
 $("#subscribe-overlay").showAfter(5);
+
 $(document).ready(function() {
   $.ajax({
       url: 'https://itunes.apple.com/lookup',
