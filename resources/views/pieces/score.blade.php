@@ -48,10 +48,12 @@
   @include('components.sections.youtube')
 </div>
 
-@include('components.overlays.subscribe.paper-plane')
+@include('components.overlays.subscribe.model-2')
 @endsection
 
 @push('scripts')
 @include('components.addthis')
-
+<script type="text/javascript">
+$("#gift-overlay").showAfter(3);
+</script>
 @endpush
