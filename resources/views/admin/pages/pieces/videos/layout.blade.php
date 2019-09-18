@@ -1,7 +1,7 @@
 <div class="rounded bg-light px-3 py-2 mb-3">
 	<div class="d-flex justify-content-between pb-1 mb-3 text-brand border-bottom">
 	  <p class="m-0"><strong>VIDEOS</strong></p>
-	  <p class="m-0">@include('admin.components.link', ['link' => "https://www.youtube.com"])</p>
+	  <p class="m-0">@include('admin.components.link', ['link' => "https://console.cloud.google.com/home/dashboard?folder=true&organizationId=true&project=pianolit"])</p>
 	</div>
 
   @include('admin.pages.pieces.videos.input', [
