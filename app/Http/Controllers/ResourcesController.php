@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Pianist;
+use App\{Pianist, Piece};
 
 class ResourcesController extends Controller
 {
@@ -43,5 +43,12 @@ class ResourcesController extends Controller
     public function pianist(Pianist $pianist)
     {
         return view('resources.pianists.show', compact('pianist'));        
+    }
+
+    public function score($piece)
+    {
+        $piece = Piece::find($piece);
+        
+        return view('pieces.score', compact('piece'));
     }
 }

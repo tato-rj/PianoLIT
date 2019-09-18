@@ -6,6 +6,7 @@
         <a href="{{$piece->timeline_url}}" target="_blank" class="dropdown-item">Timeline</a>
         <a href="{{route('api.pieces.collection', $piece->id)}}" target="_blank" class="dropdown-item">Collection</a>
         <a href="{{route('api.pieces.similar', $piece->id)}}" target="_blank" class="dropdown-item">More like this</a>
+        <a href="{{route('resources.score', $piece->id)}}" target="_blank" class="dropdown-item">Score</a>
       </div>
     </div>
     <span class="{{$piece->curiosity ? 'text-primary' : 'text-muted'}}" title="{{$piece->curiosity}}"><i class="fas fa-info-circle mr-1"></i></span>
