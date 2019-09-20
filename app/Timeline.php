@@ -36,8 +36,8 @@ class Timeline extends PianoLit
             array_push($events, [
                 'year' => $event->year, 
                 'content' => $event->event, 
-                'start' => $event->year . '01-01', 
-                'end' => $event->year . '02-01']);
+                'start' => $event->year . '-01-01', 
+                'end' => $event->year+1 . '-01-01']);
         }
 
         foreach (Composer::famous()->get() as $composer) {
@@ -45,7 +45,7 @@ class Timeline extends PianoLit
                 'year' => $composer->born_in, 
                 'content' => $composer->name . ' was born.', 
                 'start' => $composer->born_in . '-01-01', 
-                'end' => $composer->born_in . '-02-01']);
+                'end' => $composer->born_in+1 . '-01-01']);
         }
 
         foreach (Composer::famous()->get() as $composer) {
@@ -53,7 +53,7 @@ class Timeline extends PianoLit
                 'year' => $composer->died_in, 
                 'content' => $composer->name . ' died.', 
                 'start' => $composer->died_in . '-01-01',
-                'end' => $composer->died_in . '-02-01']);
+                'end' => $composer->died_in+1 . '-01-01']);
         }
         
         usort($events, function($a, $b) {
