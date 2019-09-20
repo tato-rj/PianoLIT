@@ -31,7 +31,8 @@ class Timeline extends PianoLit
             array_push($events, [
                 'decade' => $this->decade($event->year),
                 'year' => $event->year,
-                'event' => $event->event
+                'event' => $event->event,
+                'icon' => strhas($event->event, 'was composed by') ? 'feather-alt' : 'globe-europe'
                 ]);
         }
 
@@ -39,7 +40,8 @@ class Timeline extends PianoLit
             array_push($events, [
                 'decade' => $this->decade($composer->born_in),
                 'year' => $composer->born_in, 
-                'event' => $composer->name . ' was born.'
+                'event' => $composer->name . ' was born.',
+                'icon' => 'birthday-cake'
                 ]);
         }
 
@@ -47,10 +49,11 @@ class Timeline extends PianoLit
             array_push($events, [
                 'decade' => $this->decade($composer->died_in),
                 'year' => $composer->died_in, 
-                'event' => $composer->name . ' died.'
+                'event' => $composer->name . ' died.',
+                'icon' => 'skull-crossbones'
                 ]);
         }
-        
+
         usort($events, function($a, $b) {
             return $a["year"] - $b["year"];
         });

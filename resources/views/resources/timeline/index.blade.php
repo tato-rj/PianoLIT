@@ -36,13 +36,16 @@
               <div><i class="fas fa-caret-down"></i></div>
             </h6>
           </div>
+          <div id="timeline-{{$decade}}" class="collapse mb-2" data-parent="#timeline">
           @foreach($events as $event)
-          <div id="timeline-{{$decade}}" class="collapse" data-parent="#timeline">
-            <div class="card-body">
-              <span class="rounded px-2 py-1 mr-2 alert-teal"><strong>{{$event['year']}}</strong></span>{{$event['event']}}
+          
+            <div class="px-4 pt-3 d-flex align-items-baseline">
+              <div style="white-space: nowrap;" class="rounded px-2 py-1 mr-2 alert-teal"><strong><i class="fas fa-{{$event['icon']}} mr-2"></i>{{$event['year']}}</strong></div>
+              <div>{{$event['event']}}</div>
             </div>
-          </div>
+          
           @endforeach
+        </div>
         </div>
         @endforeach  
       </div>
