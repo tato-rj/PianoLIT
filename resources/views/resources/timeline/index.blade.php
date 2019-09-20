@@ -84,6 +84,7 @@ console.log(start);
 
   // Configuration for the Timeline
   var options = {
+    width: 'auto',
   	zoomMax: 4.73e+11,
   	zoomMin: 1.577e+11,
   	min: start,
