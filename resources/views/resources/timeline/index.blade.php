@@ -39,7 +39,7 @@
                 <div><i class="fas fa-caret-down"></i></div>
               </h6>
             </div>
-            <div id="timeline-{{$decade}}" class="collapse mb-2" data-parent="timeline">
+            <div id="timeline-{{$decade}}" class="collapse mb-2" data-parent="#timeline">
               @foreach($events as $event)
               
                 <div class="px-4 pt-3 d-flex align-items-baseline">
