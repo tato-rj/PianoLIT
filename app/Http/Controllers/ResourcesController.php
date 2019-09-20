@@ -54,8 +54,8 @@ class ResourcesController extends Controller
 
     public function timeline()
     {
-        $events = Timeline::generate();
-        // return $events;
-        return view('resources.timeline.index', compact('events'));        
+        $timeline = Timeline::generate();
+        
+        return view('resources.timeline.index', compact('timeline'));        
     }
 }

@@ -10,33 +10,9 @@
 	]])
 
 @push('header')
-<link rel="stylesheet" type="text/css" href="{{asset('css/vendor/vis-timeline-graph2d.min.css')}}">
 <style type="text/css">
 .fadeInUp {
 	animation-duration: .2s;
-}
-.vis-timeline {
-	border: 0;
-}
-
-.vis-item {
-    position: absolute;
-    color: #1b7b72;
-    background-color: #cdefeb;
-    display: inline-block;
-    z-index: 1;
-    border: 0;
-}
-
-.is-dot, .vis-item.vis-line {
-    color: #60b1a9;
-}
-
-.vis-item.vis-selected {
-    background-color: #fff3cd;
-    border-color: #fff3cd;
-    z-index: 2;
-    color: #856404;
 }
 </style>
 @endpush
@@ -50,8 +26,26 @@
 @if(app()->isLocal() || request()->has('dev'))
 <div class="container mb-4">
 	<div class="row mb-6">
-		<div class="col-12">
-		<div id="visualization" data-events="{{json_encode($events)}}"></div>
+		<div class="col-lg-8 col-md-8 col-12 mx-auto">
+		  <div class="accordion" id="timeline">
+        @foreach($timeline as $decade => $events)
+        <div class="card border-0 mb-2">
+          <div class="alert-grey px-4 py-3 cursor-pointer border-pill">
+            <h6 class="mb-0 d-flex d-apart" data-toggle="collapse" data-target="#timeline-{{$decade}}" aria-expanded="true" aria-controls="timeline">
+              <div>The {{$decade}}s</div>
+              <div><i class="fas fa-caret-down"></i></div>
+            </h6>
+          </div>
+          @foreach($events as $event)
+          <div id="timeline-{{$decade}}" class="collapse" data-parent="#timeline">
+            <div class="card-body">
+              <span class="rounded px-2 py-1 mr-2 alert-teal"><strong>{{$event['year']}}</strong></span>{{$event['event']}}
+            </div>
+          </div>
+          @endforeach
+        </div>
+        @endforeach  
+      </div>
 		</div>
 	</div>
 </div>
@@ -71,27 +65,4 @@
 
 @push('scripts')
 @include('components.addthis')
-<script type="text/javascript" src="{{asset('js/vendor/vis-timeline-graph2d.min.js')}}"></script>
-<script type="text/javascript">
-  // DOM element where the Timeline will be attached
-  var container = document.getElementById('visualization');
-  let events = JSON.parse(container.getAttribute('data-events'));
-  let start = moment(events[0]['start']).subtract(50, 'years');
-  let end = moment(events[events.length-1]['start']).add(50, 'years');
-console.log(start);
-  // Create a DataSet (allows two way data-binding)
-  var items = new vis.DataSet(events);
-
-  // Configuration for the Timeline
-  var options = {
-    width: 'auto',
-  	zoomMax: 4.73e+11,
-  	zoomMin: 1.577e+11,
-  	min: start,
-  	max: end
-  };
-
-  // Create a Timeline
-  var timeline = new vis.Timeline(container, items, options);
-</script>
 @endpush

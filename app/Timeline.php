@@ -13,58 +13,53 @@ class Timeline extends PianoLit
         return $this->belongsTo(Admin::class);
     }
 
-    public function getContentAttribute()
-    {
-        return $this->event;
-    }
-
-    public function getStartAttribute()
-    {
-        return $this->year . '-01-01';
-    }
-
     public function getCenturyAttribute()
     {
         return substr($this->year, 0, 2) . '00';
     }
 
+    public function decade($year)
+    {
+        return floor($year/10) * 10;        
+    }
+
     public function scopeGenerate($query, $limit = null)
     {
-        $events = [];
+        $events = $decades = [];
 
         foreach (Timeline::all() as $event) {
             array_push($events, [
-                'year' => $event->year, 
-                'content' => $event->event, 
-                'start' => $event->year . '-01-01', 
-                'end' => $event->year+1 . '-01-01']);
+                'decade' => $this->decade($event->year),
+                'year' => $event->year,
+                'event' => $event->event
+                ]);
         }
 
         foreach (Composer::famous()->get() as $composer) {
             array_push($events, [
+                'decade' => $this->decade($composer->born_in),
                 'year' => $composer->born_in, 
-                'content' => $composer->name . ' was born.', 
-                'start' => $composer->born_in . '-01-01', 
-                'end' => $composer->born_in+1 . '-01-01']);
+                'event' => $composer->name . ' was born.'
+                ]);
         }
 
         foreach (Composer::famous()->get() as $composer) {
             array_push($events, [
+                'decade' => $this->decade($composer->died_in),
                 'year' => $composer->died_in, 
-                'content' => $composer->name . ' died.', 
-                'start' => $composer->died_in . '-01-01',
-                'end' => $composer->died_in+1 . '-01-01']);
+                'event' => $composer->name . ' died.'
+                ]);
         }
         
         usort($events, function($a, $b) {
             return $a["year"] - $b["year"];
         });
 
-        foreach ($events as $index => $event) {
-            $events[$index]['id'] = $index + 1;
+        foreach ($events as $event) {
+            $decades[$event['decade']][] = $event;
         }
 
-        return $events;        
+        return $decades;        
     }
 
     public function scopeFor($query, $pieceId, $limit = null)
