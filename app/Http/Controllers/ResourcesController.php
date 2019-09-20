@@ -55,7 +55,7 @@ class ResourcesController extends Controller
     public function timeline()
     {
         $timeline = Timeline::generate();
-        
+
         return view('resources.timeline.index', compact('timeline'));        
     }
 }

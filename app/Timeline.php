@@ -15,7 +15,12 @@ class Timeline extends PianoLit
 
     public function getCenturyAttribute()
     {
-        return substr($this->year, 0, 2) . '00';
+        return substr($year, 0, 2) . '00';
+    }
+
+    public function century($year)
+    {
+        return intval(substr($year, 0, 2)) + 1 . 'th';
     }
 
     public function decade($year)
@@ -25,12 +30,13 @@ class Timeline extends PianoLit
 
     public function scopeGenerate($query, $limit = null)
     {
-        $events = $decades = [];
+        $events = $decades = $centuries = [];
 
         foreach (Timeline::all() as $event) {
             $is_history = ! strhas($event->event, 'was composed by');
 
             array_push($events, [
+                'century' => $this->century($event->year),
                 'decade' => $this->decade($event->year),
                 'year' => $event->year,
                 'event' => $event->event,
@@ -41,6 +47,7 @@ class Timeline extends PianoLit
 
         foreach (Composer::famous()->get() as $composer) {
             array_push($events, [
+                'century' => $this->century($composer->born_in),
                 'decade' => $this->decade($composer->born_in),
                 'year' => $composer->born_in, 
                 'event' => $composer->name . ' was born.',
@@ -51,6 +58,7 @@ class Timeline extends PianoLit
 
         foreach (Composer::famous()->get() as $composer) {
             array_push($events, [
+                'century' => $this->century($composer->died_in),
                 'decade' => $this->decade($composer->died_in),
                 'year' => $composer->died_in, 
                 'event' => $composer->name . ' died.',
@@ -64,7 +72,13 @@ class Timeline extends PianoLit
         });
 
         foreach ($events as $event) {
-            $decades[$event['decade']][] = $event;
+            $centuries[$event['century']][] = $event;
+        }
+
+        foreach ($centuries as $century => $events) {
+            foreach ($events as $event) {
+                $decades[$century][$event['decade']][] = $event;
+            }
         }
 
         return $decades;        
