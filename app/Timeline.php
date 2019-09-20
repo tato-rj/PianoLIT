@@ -36,24 +36,24 @@ class Timeline extends PianoLit
             array_push($events, [
                 'year' => $event->year, 
                 'content' => $event->event, 
-                'start' => $event->start, 
-                'end' => $event->start]);
+                'start' => $event->year . '01-01', 
+                'end' => $event->year . '02-01']);
         }
 
         foreach (Composer::famous()->get() as $composer) {
             array_push($events, [
                 'year' => $composer->born_in, 
                 'content' => $composer->name . ' was born.', 
-                'start' => $composer->born_in . '-01-01', 
-                'end' => $composer->born_in . '-01-01']);
+                'start' => $composer->born_in . '-02-01', 
+                'end' => $composer->born_in . '-02-01']);
         }
 
         foreach (Composer::famous()->get() as $composer) {
             array_push($events, [
                 'year' => $composer->died_in, 
                 'content' => $composer->name . ' died.', 
-                'start' => $composer->died_in . '-01-01',
-                'end' => $composer->died_in . '-01-01']);
+                'start' => $composer->died_in . '-02-01',
+                'end' => $composer->died_in . '-02-01']);
         }
         
         usort($events, function($a, $b) {
