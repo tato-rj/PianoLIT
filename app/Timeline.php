@@ -48,6 +48,10 @@ class Timeline extends PianoLit
             return $a["year"] - $b["year"];
         });
 
+        foreach ($events as $index => $event) {
+            $events[$index]['id'] = $index + 1;
+        }
+
         return $events;        
     }
 
