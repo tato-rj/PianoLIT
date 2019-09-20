@@ -134,7 +134,7 @@ class ApiController extends Controller
 
     public function timeline($piece_id)
     {
-        return Timeline::generate($piece_id, 4);
+        return Timeline::for($piece_id, 4);
     }
 
     public function playlists($group)

@@ -53,6 +53,8 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 	});
 
+	Route::get('timeline', 'ResourcesController@timeline')->name('timeline');
+
 	Route::get('staff/{type?}', 'ResourcesController@staff')->name('staff');
 
 	Route::get('infographs/{name?}', 'ResourcesController@infographs')->name('infographs');

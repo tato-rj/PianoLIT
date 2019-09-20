@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Pianist, Piece};
+use App\{Pianist, Piece, Timeline};
 
 class ResourcesController extends Controller
 {
@@ -50,5 +50,12 @@ class ResourcesController extends Controller
         $piece = Piece::find($piece);
         
         return view('pieces.score', compact('piece'));
+    }
+
+    public function timeline()
+    {
+        $events = Timeline::generate();
+        // return $events;
+        return view('resources.timeline.index', compact('events'));        
     }
 }

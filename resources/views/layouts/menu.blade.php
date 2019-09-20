@@ -34,6 +34,7 @@
           <div class="dropdown-divider"></div>
           <label style="font-size: .9em" class="m-0 text-grey"><small>TO USE</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.staff')}}">Staff Generator</a>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.timeline')}}">Music Timeline</a>
           <a class="nav-link p-0 ml-1" href="{{route('resources.infographs')}}">Infographs</a>
         </div>
       </li>

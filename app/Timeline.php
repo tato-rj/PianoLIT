@@ -13,12 +13,45 @@ class Timeline extends PianoLit
         return $this->belongsTo(Admin::class);
     }
 
+    public function getContentAttribute()
+    {
+        return $this->event;
+    }
+
+    public function getStartAttribute()
+    {
+        return $this->year . '-01-01';
+    }
+
     public function getCenturyAttribute()
     {
         return substr($this->year, 0, 2) . '00';
     }
 
-    public function scopeGenerate($query, $pieceId, $limit = null)
+    public function scopeGenerate($query, $limit = null)
+    {
+        $events = [];
+
+        foreach (Timeline::all() as $event) {
+            array_push($events, ['year' => $event->year, 'content' => $event->event, 'start' => $event->start]);
+        }
+
+        foreach (Composer::famous()->get() as $composer) {
+            array_push($events, ['year' => $composer->born_in, 'content' => $composer->name . ' was born.', 'start' => $composer->born_in . '-01-01']);
+        }
+
+        foreach (Composer::famous()->get() as $composer) {
+            array_push($events, ['year' => $composer->died_in, 'content' => $composer->name . ' died.', 'start' => $composer->died_in . '-01-01']);
+        }
+        
+        usort($events, function($a, $b) {
+            return $a["year"] - $b["year"];
+        });
+
+        return $events;        
+    }
+
+    public function scopeFor($query, $pieceId, $limit = null)
     {
     	$mainPiece = Piece::findOrFail($pieceId);
     	
