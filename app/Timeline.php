@@ -44,7 +44,7 @@ class Timeline extends PianoLit
             array_push($events, [
                 'year' => $composer->born_in, 
                 'content' => $composer->name . ' was born.', 
-                'start' => $composer->born_in . '-02-01', 
+                'start' => $composer->born_in . '-01-01', 
                 'end' => $composer->born_in . '-02-01']);
         }
 
@@ -52,7 +52,7 @@ class Timeline extends PianoLit
             array_push($events, [
                 'year' => $composer->died_in, 
                 'content' => $composer->name . ' died.', 
-                'start' => $composer->died_in . '-02-01',
+                'start' => $composer->died_in . '-01-01',
                 'end' => $composer->died_in . '-02-01']);
         }
         
