@@ -28,11 +28,14 @@ class Timeline extends PianoLit
         $events = $decades = [];
 
         foreach (Timeline::all() as $event) {
+            $is_history = ! strhas($event->event, 'was composed by');
+
             array_push($events, [
                 'decade' => $this->decade($event->year),
                 'year' => $event->year,
                 'event' => $event->event,
-                'icon' => strhas($event->event, 'was composed by') ? 'feather-alt' : 'globe-europe'
+                'icon' => $is_history ? 'globe-europe' : 'feather-alt',
+                'color' => $is_history ? 'teal' : 'indigo'
                 ]);
         }
 
@@ -41,7 +44,8 @@ class Timeline extends PianoLit
                 'decade' => $this->decade($composer->born_in),
                 'year' => $composer->born_in, 
                 'event' => $composer->name . ' was born.',
-                'icon' => 'birthday-cake'
+                'icon' => 'birthday-cake',
+                'color' => 'yellow'
                 ]);
         }
 
@@ -50,7 +54,8 @@ class Timeline extends PianoLit
                 'decade' => $this->decade($composer->died_in),
                 'year' => $composer->died_in, 
                 'event' => $composer->name . ' died.',
-                'icon' => 'skull-crossbones'
+                'icon' => 'skull-crossbones',
+                'color' => 'grey'
                 ]);
         }
 
