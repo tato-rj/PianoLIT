@@ -11,8 +11,17 @@
         <form method="POST" id="edit-event">
           @csrf
           @method('PATCH')
-          <div class="form-group">
-            <input type="number" name="year" min="1600" max="{{now()->year}}" class="form-control" id="year">
+          <div class="form-row form-group">
+            <div class="col">
+              <input type="number" name="year" min="1600" max="{{now()->year}}" class="form-control" id="year">
+            </div>
+            <div class="col">
+              <select id="type" name="type" class="form-control mr-2">
+                <option selected disabled>Type</option>
+                <option value="history">History</option>
+                <option value="music">Music</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
             <textarea name="event" class="form-control" id="event"></textarea>

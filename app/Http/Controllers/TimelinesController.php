@@ -49,7 +49,8 @@ class TimelinesController extends Controller
         Timeline::create([
             'creator_id' => auth()->guard('admin')->user()->id,
             'year' => $request->year, 
-            'event' => $request->event
+            'event' => $request->event,
+            'type' => $request->type
         ]);
 
         return redirect()->back()->with('status', 'The event has been successfully added to the timeline!');
@@ -88,6 +89,7 @@ class TimelinesController extends Controller
     {
         $timeline->update([
             'year' => $request->year, 
+            'type' => $request->type,
             'event' => $request->event
         ]);
 

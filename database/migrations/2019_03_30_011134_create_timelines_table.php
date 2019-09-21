@@ -17,6 +17,7 @@ class CreateTimelinesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedInteger('creator_id');
             $table->unsignedInteger('year');
+            $table->string('type');
             $table->string('event');
             $table->timestamps();
 

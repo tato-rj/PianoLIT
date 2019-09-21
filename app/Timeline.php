@@ -33,15 +33,13 @@ class Timeline extends PianoLit
         $events = $decades = $centuries = [];
 
         foreach (Timeline::all() as $event) {
-            $is_history = ! strhas($event->event, 'was composed by');
-
             array_push($events, [
                 'century' => $this->century($event->year),
                 'decade' => $this->decade($event->year),
                 'year' => $event->year,
                 'event' => $event->event,
-                'icon' => $is_history ? 'globe-europe' : 'feather-alt',
-                'color' => $is_history ? 'teal' : 'indigo'
+                'icon' => $event->type == 'music' ? 'feather-alt' : 'globe-europe',
+                'color' => $event->type == 'music' ? 'indigo' : 'teal'
                 ]);
         }
 

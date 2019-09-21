@@ -98,6 +98,7 @@ $factory->define(Piece::class, function (Faker $faker) {
 $factory->define(Timeline::class, function (Faker $faker) {
     return [
         'year' => $faker->year,
+        'type' => $faker->word,
         'event' => $faker->sentence,
         'creator_id' => function() {
             return create(Admin::class)->id;

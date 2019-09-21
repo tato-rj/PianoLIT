@@ -19,6 +19,11 @@
         <form method="POST" action="{{route('admin.timelines.store')}}" class="d-flex">
           @csrf
           <input type="number" required name="year" placeholder="Year" min="1600" max="{{now()->year}}" class="form-control mr-2" style="max-width: 100px">
+          <select name="type" class="form-control mr-2" style="max-width: 200px">
+            <option selected disabled>Type</option>
+            <option value="history">History</option>
+            <option value="music">Music</option>
+          </select>
           <input type="text" required name="event" placeholder="New event here..." class="form-control flex-grow-1 mr-2">
           <button type="submit" class="btn btn-default" style="white-space: nowrap;">Create event</button>
         </form>
@@ -45,6 +50,7 @@
           <thead>
             <tr>
               <th class="border-0" scope="col">Year</th>
+              <th class="border-0" scope="col">Type</th>
               <th class="border-0" scope="col">Event</th>
               <th class="border-0" scope="col">Creator</th>
               <th class="border-0" scope="col"></th>
@@ -54,10 +60,11 @@
             @foreach($timelines as $timeline)
             <tr>
               <td>{{$timeline->year}}</td>
+              <td>{{ucfirst($timeline->type)}}</td>
               <td>{{$timeline->event}}</td>
               <td class="text-muted"><i><small>Created by {{$timeline->creator->name}}</small></i></td>
               <td class="text-right">
-                <a href="#" data-toggle="modal" data-target="#event-modal" class="text-muted cursor-pointer mr-2 event" data-year="{{$timeline->year}}" data-event="{{$timeline->event}}" data-edit-url="{{route('admin.timelines.update', $timeline->id)}}"><i class="far fa-edit align-middle"></i></a>
+                <a href="#" data-toggle="modal" data-target="#event-modal" class="text-muted cursor-pointer mr-2 event" data-type="{{$timeline->type}}" data-year="{{$timeline->year}}" data-event="{{$timeline->event}}" data-edit-url="{{route('admin.timelines.update', $timeline->id)}}"><i class="far fa-edit align-middle"></i></a>
                 <a href="#" data-name="{{$timeline->event}}" data-url="{{route('admin.timelines.destroy', $timeline->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
               </td>
             </tr>
@@ -90,11 +97,13 @@ $('.event').on('click', function (e) {
   let $event = $(this);
   let year = $event.attr('data-year');
   let event = $event.attr('data-event');
+  let type = $event.attr('data-type');
   let edit_url = $event.attr('data-edit-url');
 
   $('#event-modal').find('form#edit-event').attr('action', edit_url);
   $('#event-modal').find('input#year').val(year);
   $('#event-modal').find('textarea#event').val(event);
+  $('#event-modal').find('select#type option[value="'+type+'"]').prop('selected', true);
 })
 
 $(document).ready( function () {
