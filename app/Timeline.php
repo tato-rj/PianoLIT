@@ -15,7 +15,7 @@ class Timeline extends PianoLit
 
     public function getCenturyAttribute()
     {
-        return substr($year, 0, 2) . '00';
+        return substr($this->year, 0, 2) . '00';
     }
 
     public function century($year)
