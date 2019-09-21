@@ -62,8 +62,8 @@
               <td>{{$timeline->year}}</td>
               <td>{{ucfirst($timeline->type)}}</td>
               <td>{{$timeline->event}}</td>
-              <td class="text-muted"><i><small>Created by {{$timeline->creator->name}}</small></i></td>
-              <td class="text-right">
+              <td class="text-muted" style="white-space: nowrap;"><i><small>Created by {{$timeline->creator->name}}</small></i></td>
+              <td class="text-right" style="white-space: nowrap;">
                 <a href="#" data-toggle="modal" data-target="#event-modal" class="text-muted cursor-pointer mr-2 event" data-type="{{$timeline->type}}" data-year="{{$timeline->year}}" data-event="{{$timeline->event}}" data-edit-url="{{route('admin.timelines.update', $timeline->id)}}"><i class="far fa-edit align-middle"></i></a>
                 <a href="#" data-name="{{$timeline->event}}" data-url="{{route('admin.timelines.destroy', $timeline->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
               </td>
