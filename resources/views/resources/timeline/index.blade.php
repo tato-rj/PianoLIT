@@ -14,6 +14,14 @@
 .fadeInUp {
 	animation-duration: .2s;
 }
+
+.border-pill span {
+  opacity: 0;
+}
+
+.border-pill:hover span {
+  opacity: 1;
+}
 </style>
 @endpush
 
@@ -29,29 +37,7 @@
 		<div class="col-lg-8 col-md-8 col-12 mx-auto">
 		  <div class="accordion" id="timeline">
         @foreach($timeline as $century => $decades)
-        <div class="mb-4">
-          <h5 class="mb-3">The {{$century}} Century</h5>
-          @foreach($decades as $decade => $events)
-          <div class="card border-0 mb-2">
-            <div class="alert-grey px-4 py-3 cursor-pointer border-pill">
-              <h6 class="mb-0 d-flex d-apart" data-toggle="collapse" data-target="#timeline-{{$decade}}" aria-expanded="true" aria-controls="timeline">
-                <div>{{$decade}}s</div>
-                <div><i class="fas fa-caret-down"></i></div>
-              </h6>
-            </div>
-            <div id="timeline-{{$decade}}" class="collapse mb-2" data-parent>
-              @foreach($events as $event)
-              
-                <div class="px-4 pt-3 d-flex align-items-baseline">
-                  <div style="white-space: nowrap;" class="rounded px-2 py-1 mr-2 alert-{{$event['color']}}"><strong><i class="fas fa-{{$event['icon']}} mr-2"></i>{{$event['year']}}</strong></div>
-                  <div>{{$event['event']}}</div>
-                </div>
-              
-              @endforeach
-            </div>
-          </div>
-          @endforeach
-        </div>
+        @include('resources/timeline/century')
         @endforeach  
       </div>
 		</div>
@@ -73,4 +59,17 @@
 
 @push('scripts')
 @include('components.addthis')
+<script type="text/javascript">
+$('.collapse').on('hide.bs.collapse', function () {
+  let $title = $(this).prev('div');
+  $title.find('i').removeClass('fa-caret-up').addClass('fa-caret-down');
+  $title.find('span small').text('click to show');
+});
+
+$('.collapse').on('show.bs.collapse', function () {
+  let $title = $(this).prev('div');
+  $title.find('i').addClass('fa-caret-up').removeClass('fa-caret-down');
+  $title.find('span small').text('click to hide');
+});
+</script>
 @endpush
