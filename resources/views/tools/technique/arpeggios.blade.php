@@ -29,7 +29,7 @@
 @section('content')
 
 @include('components.title', [
-	'version' => '1.0',
+	'version' => '2.0',
 	'title' => 'Arpeggios Tutor', 
 	'subtitle' => 'Select below the key you need and we\'ll show the notes and fingering for each hand'])
 

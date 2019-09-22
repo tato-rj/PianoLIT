@@ -3,6 +3,7 @@
 $(document).on('click', '#reload', function() {
     window.location = window.location.href.split("?")[0];
 });
+
 </script>
 <script type="text/javascript">
 //////////////////////
@@ -131,7 +132,7 @@ $(document).on('click', 'button.play-notes', function() {
         resetFingerings();
 
         scaleLoops.push(setTimeout(function() {
-            press($key, 150, false);
+            press($key, 250, false, bgcolor = '#fff173');
             
             if (index <= 7) {
                 showFingering(finger, label, fingeringTarget, index);
@@ -142,7 +143,7 @@ $(document).on('click', 'button.play-notes', function() {
             highlight($key);
 
             highlightNote(index, notesTarget);
-        }, 500 * index));
+        }, 750 * index));
     });
 });
 

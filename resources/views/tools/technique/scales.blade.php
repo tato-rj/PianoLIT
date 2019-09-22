@@ -93,7 +93,7 @@
 @section('content')
 
 @include('components.title', [
-	'version' => '1.1',
+	'version' => '2.0',
 	'title' => 'Scales Tutor', 
 	'subtitle' => 'Select below the scale you need and we\'ll show the notes and fingering for each hand'])
 

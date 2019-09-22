@@ -61,7 +61,7 @@ hideDots = function(delay = 0) {
 	}, delay);
 }
 
-press = function($key, duration = null, strict = true) {
+press = function($key, duration = null, strict = true, color = null) {
 	if (! $keyDown || ! strict) {
 		let note = $key.attr('data-name').toUpperCase();
 		let octave = $key.attr('data-octave');
@@ -69,9 +69,12 @@ press = function($key, duration = null, strict = true) {
 		play(note, octave, duration);
 
 		if ($key.hasClass('keyboard-white-key')) {
-			$key.css('background', 'rgba(0,0,0,0.05)').removeClass('shadow-sm');
+			let bgcolor = color ? color : 'rgba(0,0,0,0.05)';
+			$key.css('background', bgcolor).removeClass('shadow-sm');
 		} else {
 			$key.removeClass('bg-dark');
+			if (color)
+				$key.css('background', color);
 		}
 
 		if (duration && ! strict) {
@@ -87,7 +90,7 @@ press = function($key, duration = null, strict = true) {
 release = function() {
 	$keyDown = null;
 	$('.keyboard-white-key').css('background', 'transparent').addClass('shadow-sm');
-	$('.keyboard-black-key').addClass('bg-dark');
+	$('.keyboard-black-key').css('background', '#171a1c').addClass('bg-dark');
 }
 
 play = function(note, octave, duration) {
