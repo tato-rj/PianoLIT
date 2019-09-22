@@ -132,7 +132,7 @@ $(document).on('click', 'button.play-notes', function() {
         resetFingerings();
 
         scaleLoops.push(setTimeout(function() {
-            press($key, 250, false, bgcolor = '#fff173');
+            press($key, 350, false, bgcolor = '#fff173');
             
             if (index <= 7) {
                 showFingering(finger, label, fingeringTarget, index);
