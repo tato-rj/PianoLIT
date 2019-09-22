@@ -41,6 +41,9 @@ class Membership extends PianoLit
 
         $this->reactivate($latest_receipt);
 
+        if ($latest_receipt->is_trial_period)
+        	return 'trial';
+
         return 'active';
 	}
 }
