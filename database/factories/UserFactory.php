@@ -21,7 +21,7 @@ $factory->define(User::class, function (Faker $faker) {
         'experience' => randval($experience),
         'preferred_piece_id' => 1,//$favorite->id,
         'occupation' => randval($occupation),
-        'trial_ends_at' => now()->addWeek()
+        // 'trial_ends_at' => now()->addWeek()
     ];
 });
 

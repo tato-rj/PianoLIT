@@ -35,10 +35,7 @@ trait HasMembership
         if ($this->super_user)
             return 'active';
         
-        if (! $this->membership()->exists() && $this->trial_ends_at->gte(now()))
-            return 'trial';
-
-        if (! $this->membership()->exists() && $this->trial_ends_at->lt(now()))
+        if (! $this->membership()->exists())
             return 'expired';
 
         if (! $this->membership->expired())
