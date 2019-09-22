@@ -66,7 +66,7 @@ class MembershipsController extends Controller
     public function history(Request $request)
     {
         $user = User::findOrFail($request->user_id);
-
+return $user;
         $receipt = $user->callApple($user->membership->latest_receipt, $user->membership->password);
 
         $history = $user->cleanReceipt($receipt);
