@@ -15,7 +15,7 @@
 <div class="col-6">
 	@if($user->membership->expired())
 		<div class="mb-3">
-			<form method="POST" action="{{route('admin.memberships.validate.user')}}">
+			<form method="POST" action="{{route('admin.memberships.validate.user', $user->id)}}">
 				@csrf
 				<input type="hidden" name="user_id" value="{{$user->id}}">
 				<button class="btn btn-sm btn-danger">Validate membership</button>
