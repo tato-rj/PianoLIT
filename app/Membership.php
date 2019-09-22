@@ -25,13 +25,13 @@ class Membership extends PianoLit
 	public function validate($request)
 	{
         $request = json_decode($request);
-dd($request);
+
         if (empty($request->receipt))
         	abort(400, $this->appleError($request->status));
 
         // $latest_receipt = end($request->latest_receipt_info);
 		$latest_receipt = $request->latest_receipt_info;
-
+dd($latest_receipt);
         $is_valid = carbon($latest_receipt->expires_date)->setTimezone(config('app.timezone')) >= now();
 
         $this->update(['validated_at' => now()]);
