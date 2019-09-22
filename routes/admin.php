@@ -163,7 +163,7 @@ Route::prefix('memberships')->name('memberships.')->group(function() {
 
 		Route::get('', 'MembershipsController@validateAll')->name('all');
 
-		Route::post('{user}', 'MembershipsController@validate')->name('user');
+		Route::post('{user}', 'MembershipsController@validateUser')->name('user');
 	
 	});
 

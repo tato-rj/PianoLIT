@@ -58,6 +58,20 @@ class MembershipsController extends Controller
         return redirect()->back()->with('status', "All users have been successfully re-validated.");
     }
 
+    public function validateUser(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (! $user)
+            return redirect()->back()->with('error', "Sorry, we couldn't find the user");
+
+        $request = $user->callApple($user->membership->latest_receipt, $user->membership->password);
+
+        $user->membership->validate($request);
+    
+        return redirect()->back()->with('success', "The has been successfully re-validated.");
+    }
+
     /**
      * Retrieves entire membership history from a given user
      * @param  Request $request
