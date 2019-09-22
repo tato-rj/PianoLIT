@@ -25,7 +25,7 @@ class Membership extends PianoLit
 	public function validate($request)
 	{
         $request = json_decode($request);
-
+dd($request);
         if (empty($request->receipt))
         	abort(400, $this->appleError($request->status));
 
