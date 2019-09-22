@@ -82,7 +82,7 @@ class MembershipsController extends Controller
         $user = User::findOrFail($request->user_id);
 
         $receipt = $user->callApple($user->membership->latest_receipt, $user->membership->password);
-return $receipt;
+
         $history = $user->cleanReceipt($receipt);
 
         return view('admin.pages.users.show.membership.history', compact('history'))->render();

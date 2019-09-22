@@ -71,6 +71,25 @@ trait HasMembership
         return $response;
     }
 
+    public function cleanReceipt($request)
+    {
+        $request = json_decode($request);
+
+        foreach ($request->receipt as $field => $value) {
+            if (preg_match('(pst|ms)', $field) === 1 || is_null($value))
+                unset($request->receipt->$field);   
+        }
+
+        foreach ($request->latest_receipt_info as $receipt) {
+            foreach ($receipt as $field => $value) {
+                if (preg_match('(pst|ms)', $field) === 1 || is_null($value))
+                    unset($receipt->$field);   
+            }
+        }
+
+        return $request;
+    }
+    
     public function scopeExpired($query)
     {
         $users = $query->has('membership')->get();
