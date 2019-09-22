@@ -21,7 +21,7 @@ trait HasMembership
             'latest_receipt' => $request->receipt_data,
             'latest_receipt_info' => json_encode($latest_receipt),
             'password' => $request->password,
-            'renews_at' => Carbon::parse($latest_receipt->expires_date)->timezone(config('app.timezone')),
+            'renews_at' => carbon($latest_receipt->expires_date)->timezone(config('app.timezone')),
             'validated_at' => now()
         ]);
 

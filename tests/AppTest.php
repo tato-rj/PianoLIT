@@ -83,4 +83,13 @@ class AppTest extends TestCase
     {
         return $this->post(route('api.subscriptions.unsubscribe', ['email' => $email]));
     }
+
+    protected function postMembership($user, $membership)
+    {
+        return $this->post(route('api.memberships.store'), [
+            'user_id' => $user->id,
+            'receipt_data' => $membership->withRequest()->receipt_data,
+            'password' => $membership->withRequest()->password
+        ]);
+    }
 }

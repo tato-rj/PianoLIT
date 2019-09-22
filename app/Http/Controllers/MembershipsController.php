@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\{User, Membership};
-use App\Heep\Requests\VerifySubscriptionForm;
+use App\Http\Requests\VerifySubscriptionForm;
 use Illuminate\Http\Request;
 
 class MembershipsController extends Controller

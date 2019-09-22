@@ -4,9 +4,25 @@ namespace Tests\Feature;
 
 use App\User;
 use Tests\AppTest;
-
+use App\Services\Apple\Sandbox\Membership as AppleMembership;
 class MembershipTest extends AppTest
 {
+    /** @test */
+    public function a_user_can_subscribe()
+    {
+        $membership = new AppleMembership;
+
+        $user = create(User::class);
+
+        $this->assertFalse($user->membership()->exists());
+
+        $this->postMembership($user, $membership);
+
+        $this->assertTrue($user->membership()->exists());
+
+        $this->assertEquals('active', $user->getStatus());
+    }
+
     /** @test */
     public function an_admin_can_extend_the_users_trial()
     {

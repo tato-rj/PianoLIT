@@ -52,6 +52,7 @@ $factory->define(Pianist::class, function(Faker $faker) {
 
     return [
             'name' => $faker->name,
+            'cover_path' => $faker->url,
             'biography' => $faker->paragraph,
             'country_id' => function() {
                 return create(Country::class)->id;
