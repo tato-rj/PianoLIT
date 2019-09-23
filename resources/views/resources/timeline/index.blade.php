@@ -22,6 +22,7 @@
 .border-pill:hover span {
   opacity: 1;
 }
+
 </style>
 @endpush
 
@@ -35,11 +36,7 @@
 <div class="container mb-4">
 	<div class="row mb-6">
 		<div class="col-lg-8 col-md-8 col-12 mx-auto">
-		  <div class="accordion" id="timeline">
-        @foreach($timeline as $century => $decades)
-        @include('resources/timeline/century')
-        @endforeach  
-      </div>
+		@include('resources/timeline/carousel')
 		</div>
 	</div>
 </div>
@@ -60,6 +57,11 @@
 @push('scripts')
 @include('components.addthis')
 <script type="text/javascript">
+$('.timeline-btn').on('click', function() {
+	$('.timeline-btn').removeClass('btn-teal').addClass('btn-teal-outline');
+	$(this).toggleClass('btn-teal btn-teal-outline');
+});
+
 $('.collapse').on('hide.bs.collapse', function () {
   let $title = $(this).prev('div');
   $title.find('i').removeClass('fa-caret-up').addClass('fa-caret-down');
