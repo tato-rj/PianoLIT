@@ -3,7 +3,7 @@
   <button 
     data-target="#timeline-carousel"
     data-slide-to="{{$loop->index}}" 
-    class="timeline-btn m-1 btn btn-teal{{$loop->first ? null : '-outline'}}">{{substr(array_key_first($decades), 0, 2)}}00</button>
+    class="timeline-btn m-1 btn btn-teal{{$loop->first ? null : '-outline'}}">{{intval(substr($century, 0, 2)) - 1}}00</button>
   @endforeach
 </div>
 <div id="timeline-carousel" class="carousel slide" data-interval="false" data-ride="carousel">

@@ -69,10 +69,10 @@ class Timeline extends PianoLit
             return $a["year"] - $b["year"];
         });
 
-        foreach ($events as $event) {
+        foreach ($events as $index => $event) {
             $centuries[$event['century']][] = $event;
         }
-
+        
         foreach ($centuries as $century => $events) {
             foreach ($events as $event) {
                 $decades[$century][$event['decade']][] = $event;
