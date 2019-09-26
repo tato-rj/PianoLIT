@@ -106,7 +106,7 @@
               <td>{{ucfirst($timeline->type)}}</td>
               <td>
                 @if($timeline->url)
-                <a href="{{$timeline->url}}" target="_blank" class="link-blue"><i class="fas fa-globe"></i></a>
+                <a href="{{$timeline->url}}" target="_blank" class="link-blue mr-1"><i class="fas fa-globe"></i></a>
                 @endif
                 {{$timeline->event}}
               </td>
