@@ -41,7 +41,7 @@
 
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-      @include('admin.pages.timline.create')
+      @include('admin.pages.timeline.create')
       </div>
     </div>
 
