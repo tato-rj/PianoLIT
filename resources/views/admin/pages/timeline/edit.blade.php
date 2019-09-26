@@ -20,6 +20,7 @@
                 <option selected disabled>Type</option>
                 <option value="history">History</option>
                 <option value="music">Music</option>
+                <option value="premiere">Premiere</option>
               </select>
             </div>
           </div>

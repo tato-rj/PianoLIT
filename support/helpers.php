@@ -1,4 +1,9 @@
 <?php
+function wiki($str)
+{
+	return 'https://wikipedia.com/wiki/' . $str;
+}
+
 function shuffle_assoc($array)
 {
 	$shuffled_array = array();

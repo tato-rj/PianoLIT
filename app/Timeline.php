@@ -5,8 +5,14 @@ namespace App;
 class Timeline extends PianoLit
 {
 	protected $range = 30;
-
     protected $appends = ['century'];
+    protected $icons = [
+        'history' => ['icon' => 'globe-europe', 'color' => 'teal'],
+        'music' => ['icon' => 'feather-alt', 'color' => 'indigo'],
+        'premiere' => ['icon' => 'theater-masks', 'color' => 'orange'],
+        'birthday' => ['icon' => 'birthday-cake', 'color' => 'yellow'],
+        'deathday' => ['icon' => 'skull-crossbones', 'color' => 'grey']
+    ];
 
     public function creator()
     {
@@ -21,6 +27,14 @@ class Timeline extends PianoLit
     public function century($year)
     {
         return intval(substr($year, 0, 2)) + 1 . 'th';
+    }
+
+    public function getIcon($type)
+    {
+        if (array_key_exists($type, $this->icons))
+            return $this->icons[$type];
+
+        return $this->icons[0];
     }
 
     public function decade($year)
@@ -38,8 +52,9 @@ class Timeline extends PianoLit
                 'decade' => $this->decade($event->year),
                 'year' => $event->year,
                 'event' => $event->event,
-                'icon' => $event->type == 'music' ? 'feather-alt' : 'globe-europe',
-                'color' => $event->type == 'music' ? 'indigo' : 'teal'
+                'icon' => $this->getIcon($event->type)['icon'],
+                'color' => $this->getIcon($event->type)['color'],
+                'url' => $event['url'],
                 ]);
         }
 
@@ -49,8 +64,9 @@ class Timeline extends PianoLit
                 'decade' => $this->decade($composer->born_in),
                 'year' => $composer->born_in, 
                 'event' => $composer->name . ' was born.',
-                'icon' => 'birthday-cake',
-                'color' => 'yellow'
+                'icon' => $this->getIcon('birthday')['icon'],
+                'color' => $this->getIcon('birthday')['color'],
+                'url' => wiki($composer->name),
                 ]);
         }
 
@@ -60,8 +76,9 @@ class Timeline extends PianoLit
                 'decade' => $this->decade($composer->died_in),
                 'year' => $composer->died_in, 
                 'event' => $composer->name . ' died.',
-                'icon' => 'skull-crossbones',
-                'color' => 'grey'
+                'icon' => $this->getIcon('deathday')['icon'],
+                'color' => $this->getIcon('deathday')['color'],
+                'url' => wiki($composer->name),
                 ]);
         }
 
