@@ -18,11 +18,7 @@
             <div class="col">
               <select id="type" name="type" class="form-control mr-2">
                 <option selected disabled>Type</option>
-                <option value="history">History</option>
-                <option value="music">Music</option>
-                <option value="premiere">Premiere</option>
-                <option value="birthday">Birthday</option>
-                <option value="deathday">Deathday</option>
+                @include('admin.pages.timeline.types')
               </select>
             </div>
           </div>

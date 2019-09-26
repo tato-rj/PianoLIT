@@ -9,11 +9,7 @@
         <div class="input-group">
           <select name="type" class="form-control">
             <option selected disabled>Type</option>
-            <option value="history">History</option>
-            <option value="music">Music</option>
-            <option value="premiere">Premiere</option>
-            <option value="birthday">Birthday</option>
-            <option value="deathday">Deathday</option>
+            @include('admin.pages.timeline.types')
           </select>
         </div>
       </div>
