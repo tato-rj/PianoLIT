@@ -50,6 +50,7 @@ class TimelinesController extends Controller
             'creator_id' => auth()->guard('admin')->user()->id,
             'year' => $request->year, 
             'event' => $request->event,
+            'url' => $request->url,
             'type' => $request->type
         ]);
 
@@ -90,6 +91,7 @@ class TimelinesController extends Controller
         $timeline->update([
             'year' => $request->year, 
             'type' => $request->type,
+            'url' => $request->url,
             'event' => $request->event
         ]);
 

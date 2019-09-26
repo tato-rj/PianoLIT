@@ -19,6 +19,7 @@ class CreateTimelinesTable extends Migration
             $table->unsignedInteger('year');
             $table->string('type');
             $table->string('event');
+            $table->string('url')->nullable();
             $table->timestamps();
 
             $table->unique(['year', 'event']);

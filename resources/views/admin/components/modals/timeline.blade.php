@@ -24,6 +24,9 @@
             </div>
           </div>
           <div class="form-group">
+            <input type="text" placeholder="Url address" name="url" class="form-control" id="url">
+          </div>
+          <div class="form-group">
             <textarea name="event" class="form-control" id="event"></textarea>
           </div>
           <div class="text-right">
