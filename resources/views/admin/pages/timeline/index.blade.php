@@ -104,7 +104,12 @@
             <tr>
               <td>{{$timeline->year}}</td>
               <td>{{ucfirst($timeline->type)}}</td>
-              <td>{{$timeline->event}}</td>
+              <td>
+                @if($timeline->url)
+                <a href="{{$timeline->url}}" target="_blank" class="link-blue"><i class="fas fa-globe"></i></a>
+                @endif
+                {{$timeline->event}}
+              </td>
               <td class="text-muted" style="white-space: nowrap;"><i><small>Created by {{$timeline->creator->name}}</small></i></td>
               <td class="text-right" style="white-space: nowrap;">
                 <a href="#" 
