@@ -132,7 +132,8 @@ $('.event').on('click', function (e) {
 
 $(document).ready( function () {
     $('#blog-table').DataTable({
-    'order': [[0, 'asc']],
+      'pageLength': 50,
+      'order': [[0, 'asc']],
     });
 } );
 </script>
