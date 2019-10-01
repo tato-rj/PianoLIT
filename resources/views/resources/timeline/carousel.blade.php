@@ -6,7 +6,7 @@
     class="timeline-btn m-1 btn btn-teal{{$loop->first ? null : '-outline'}}">{{intval(substr($century, 0, 2)) - 1}}00</button>
   @endforeach
 </div>
-<div id="timeline-carousel" class="carousel slide" data-interval="false" >
+<div id="timeline-carousel" class="carousel slide" data-interval="false" data-touch="false" data-ride="carousel">
   <div class="carousel-inner">
     @foreach($timeline as $century => $decades)
     <div class="carousel-item {{$loop->first ? 'active' : null}}">
