@@ -34,9 +34,8 @@ Route::prefix('true-or-false')->name('true-or-false.')->group(function() {
 
 Route::get('riddles', function() {
 	$riddles = [
-		'#fff' => ['Beethoven', 'Jane', 'Waltz', 'Trombone'],
+		'#fff' => ['Beethoven', 'Jane', 'Waltz', 'Trombone', 'Drum Harmonica'],
 		'#d7f3e366' => ['Practice', 'Sonata', 'Nocturne', 'Find the right key'],
-		// '#feeaf1' => ['Catching Zs', 'Night Owl', 'Beauty Sleep', 'Early Bird'],
 		'#ffffff' => ['Scales', 'Whole note and quarter note', 'Etude', 'Classical']
 	];
 

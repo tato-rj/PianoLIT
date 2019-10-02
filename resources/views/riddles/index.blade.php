@@ -15,7 +15,9 @@
     @foreach($group as $riddle)
       <div class="col-lg-7 col-md-8 col-10 mx-auto text-center mt-6 mb-8 cursor-pointer riddle">
         <div class="position-relative mb-5">
-          <img src="{{asset('images/riddles/'.str_slug($riddle).'.svg')}}" class="w-100 t-2" style="max-width: 460px">
+          <a class="link-none" name="{{$riddle}}">
+            <img src="{{asset('images/riddles/'.str_slug($riddle).'.svg')}}" class="w-100 t-2" style="max-width: 460px">
+          </a>
           <h4 class="text-primary position-absolute t-2" style="opacity: 0; top: 50%; left: 50%; transform: translate(-50%, -50%);">{{$riddle}}</h4>
         </div>
         <div class="text-muted answer" data-hidden="Tap to reveal the answer" data-visible="Back to the puzzle">Tap to reveal the answer</div>
