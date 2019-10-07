@@ -87,6 +87,7 @@ $factory->define(Piece::class, function (Faker $faker) {
             'score_publisher' => '',
             'score_copyright' => '',
             'composed_in' => $faker->year,
+            'published_in' => $faker->year,
             'composer_id' => function() {
                 return create(Composer::class)->id;
             },

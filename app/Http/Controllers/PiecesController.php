@@ -120,6 +120,7 @@ class PiecesController extends Controller
             'score_copyright' => $request->is_public ? 'Public Domain' : null,
             'composer_id' => $request->composer_id,
             'composed_in' => $request->composed_in,
+            'published_in' => $request->published_in,
             'audio_path' => $request->hasFile('audio') ? $request->file('audio')->store('app/audio', 'public') : null,
             'audio_path_rh' => $request->hasFile('audio_rh') ? $request->file('audio_rh')->store('app/audio_rh', 'public') : null,
             'audio_path_lh' => $request->hasFile('audio_lh') ? $request->file('audio_lh')->store('app/audio_lh', 'public') : null,
@@ -214,6 +215,7 @@ class PiecesController extends Controller
             'score_copyright' => $request->is_public ? 'Public Domain' : null,
             'composer_id' => $request->composer_id,
             'composed_in' => $request->composed_in,
+            'published_in' => $request->published_in,
         ]);
 
         $piece->tags()->sync(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));

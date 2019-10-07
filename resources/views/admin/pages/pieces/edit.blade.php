@@ -34,19 +34,13 @@
               <input type="text" class="form-control" name="collection_name" placeholder="Collection name" value="{{$piece->collection_name}}">
             </div>
             <div class="col">
-              <label class="text-brand"><small>Catalogue</small></label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <select class="form-control rounded-left" style="border-radius: 0" name="catalogue_name" >
-                    <option selected disabled>Catalogue</option>
-                    @foreach(catalogues() as $catalogue)
-                    <option value="{{$catalogue}}" {{($piece->catalogue_name == $catalogue) ? 'selected' : ''}}>{{$catalogue}}</option>
-                    @endforeach
-                    <option value="">No catalogue</option>
-                  </select>
-                </div>
-                <input type="text" class="form-control" name="catalogue_number" placeholder="Catalogue number" value="{{$piece->catalogue_number}}">
-              </div>
+              <label class="text-brand"><small>Composer</small></label>
+              <select class="form-control" name="composer_id">
+                <option selected disabled>Composer</option>
+                @foreach($composers as $composer)
+                <option value="{{$composer->id}}" {{($piece->composer_id == $composer->id) ? 'selected' : ''}}>{{$composer->short_name}}</option>
+                @endforeach
+              </select>
             </div>
           </div>
           {{-- Catalogue and number --}}
@@ -73,21 +67,31 @@
                 <input type="text" class="form-control" name="movement_number" placeholder="Number" value="{{$piece->movement_number}}">
               </div>
             </div>
+            <div class="col">
+              <label class="text-brand"><small>Catalogue</small></label>
+              <div class="input-group">
+                <div class="input-group-prepend" style="width: 40%">
+                  <select class="form-control rounded-left" style="border-radius: 0" name="catalogue_name" >
+                    <option selected disabled>Catalogue</option>
+                    @foreach(catalogues() as $catalogue)
+                    <option value="{{$catalogue}}" {{($piece->catalogue_name == $catalogue) ? 'selected' : ''}}>{{$catalogue}}</option>
+                    @endforeach
+                    <option value="">None</option>
+                  </select>
+                </div>
+                <input type="text" class="form-control" name="catalogue_number" placeholder="Catalogue number" value="{{$piece->catalogue_number}}">
+              </div>
+            </div>
           </div>
           {{-- Key and Composer --}}
           <div class="form-row form-group">
             <div class="col">
-              <label class="text-brand"><small>Composer</small></label>
-              <select class="form-control" name="composer_id">
-                <option selected disabled>Composer</option>
-                @foreach($composers as $composer)
-                <option value="{{$composer->id}}" {{($piece->composer_id == $composer->id) ? 'selected' : ''}}>{{$composer->short_name}}</option>
-                @endforeach
-              </select>
-            </div>
-            <div class="col">
               <label class="text-brand"><small>Composed in</small></label>
               <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Composed in" value="{{$piece->composed_in}}">
+            </div>
+            <div class="col">
+              <label class="text-brand"><small>Published in</small></label>
+              <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="published_in" placeholder="Published in" value="{{$piece->published_in}}">
             </div>
             <div class="col">
               <label class="text-brand"><small>Key</small></label>

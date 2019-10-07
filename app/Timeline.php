@@ -103,18 +103,15 @@ class Timeline extends PianoLit
     public function scopeFor($query, $pieceId, $limit = null)
     {
     	$mainPiece = Piece::findOrFail($pieceId);
+        
+        $originalYear = $mainPiece->composed_in ? $mainPiece->composed_in : $mainPiece->published_in;
+
+    	$maxYear = $originalYear + $this->range;
     	
-    	$maxYear = $mainPiece->composed_in + $this->range;
-    	
-    	$minYear = $mainPiece->composed_in - $this->range; 
+    	$minYear = $originalYear - $this->range; 
 
-        $age = null;
-
-        if ($mainPiece->composer->born_in && $mainPiece->composed_in)
-            $age = ', at the age of ' . ($mainPiece->composed_in - $mainPiece->composer->born_in) . ' years old';
-
-        $info = ['year' => $mainPiece->composed_in, 
-                'event' => $mainPiece->timeline_name . ' was composed by ' . $mainPiece->composer->short_name . $age . '.', 
+        $info = ['year' => $originalYear, 
+                'event' => $mainPiece->timeline_name . $mainPiece->original_event, 
                 'highlight' => true];
 
         $events = [];

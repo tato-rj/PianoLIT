@@ -52,18 +52,13 @@
               <input type="text" class="validate-name form-control" name="collection_name" placeholder="Collection name" value="{{ old('collection_name') }}">
             </div>
             <div class="col">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <select class="form-control rounded-left" style="border-radius: 0" name="catalogue_name" >
-                    <option class="default" selected disabled>Catalogue</option>
-                    @foreach(catalogues() as $catalogue)
-                    <option value="{{$catalogue}}" {{ old('catalogue_name') == $catalogue ? 'selected' : ''}}>{{$catalogue}}</option>
-                    @endforeach
-                    <option value="">No catalogue</option>
-                  </select>
-                </div>
-                <input type="text" class="validate-name form-control" name="catalogue_number" placeholder="Number" value="{{ old('catalogue_number') }}">
-              </div>
+              <select class="form-control required {{$errors->has('composer_id') ? 'is-invalid' : ''}}" name="composer_id">
+                <option class="default" selected disabled>Composer</option>
+                @foreach($composers as $composer)
+                <option value="{{$composer->id}}" {{ old('composer_id') == $composer->id ? 'selected' : ''}}>{{$composer->short_name}}</option>
+                @endforeach
+              </select>
+              @include('admin.components.feedback', ['field' => 'composer_id'])
             </div>
           </div>
           {{-- Catalogue and number --}}
@@ -90,21 +85,33 @@
                 <input type="text" class="validate-name form-control" name="movement_number" placeholder="Number" value="{{ old('movement_number') }}">
               </div>
             </div>
+            <div class="col">
+              <label class="text-brand"><small>Catalogue number
+                @include('admin.components.info', ['message' => 'This number will appear after the name of the piece: <i>Piece Name</i> <u>Op. 1</u>'])
+              </small></label>
+              <div class="input-group">
+                <div class="input-group-prepend" style="width: 40%">
+                  <select class="form-control rounded-left" style="border-radius: 0" name="catalogue_name" >
+                    <option class="default" selected disabled>Cat.</option>
+                    @foreach(catalogues() as $catalogue)
+                    <option value="{{$catalogue}}" {{ old('catalogue_name') == $catalogue ? 'selected' : ''}}>{{$catalogue}}</option>
+                    @endforeach
+                    <option value="">None</option>
+                  </select>
+                </div>
+                <input type="text" class="validate-name form-control" name="catalogue_number" placeholder="Number" value="{{ old('catalogue_number') }}">
+              </div>
+            </div>
           </div>
           {{-- Key and Composer --}}
           <div class="form-row form-group">
             <div class="col">
-              <select class="form-control required {{$errors->has('composer_id') ? 'is-invalid' : ''}}" name="composer_id">
-                <option class="default" selected disabled>Composer</option>
-                @foreach($composers as $composer)
-                <option value="{{$composer->id}}" {{ old('composer_id') == $composer->id ? 'selected' : ''}}>{{$composer->short_name}}</option>
-                @endforeach
-              </select>
-              @include('admin.components.feedback', ['field' => 'composer_id'])
-            </div>
-            <div class="col">
               <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Composed in" value="{{old('composed_in')}}">
               @include('admin.components.feedback', ['field' => 'composed_in'])
+            </div>
+            <div class="col">
+              <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="published_in" placeholder="Published in" value="{{old('published_in')}}">
+              @include('admin.components.feedback', ['field' => 'published_in'])
             </div>
             <div class="col">
               <select class="form-control required {{$errors->has('key') ? 'is-invalid' : ''}}" name="key" >

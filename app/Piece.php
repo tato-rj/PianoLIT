@@ -48,6 +48,17 @@ class Piece extends PianoLit
         return 'No information available';
     }
 
+    public function getOriginalEventAttribute()
+    {
+        if ($this->composed_in)
+            return ' was composed by ' . $this->composer->short_name . $this->composer->calculateAge($this->composed_in, 'at the age of') . '.';
+
+        if ($this->published_in)
+            return ' was first published when ' . $this->composer->short_name . $this->composer->calculateAge($this->published_in, 'was') . '.';
+
+        return null;
+    }
+
     public function getScoreEditorAttribute($editor)
     {
         return $editor ?? $this->missing_info;

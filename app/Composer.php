@@ -17,6 +17,16 @@ class Composer extends Person
     	return $this->hasMany(Piece::class);
     }
 
+    public function calculateAge($event, $prefix)
+    {
+        if (! $event || ! $this->born_in)
+            return null;
+
+        $string = ' ' . $prefix . ' ' . ($event - $this->born_in) . ' years old';
+
+        return str_replace('  ', ' ', $string);
+    }
+
     public function scopeByPeriod($query)
     {
         return \DB::table('composers')->selectRaw('period, count(*) as count')->groupBy('period')->get();
