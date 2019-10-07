@@ -146,7 +146,7 @@ class Timeline extends PianoLit
             $events = [
                 'year' => null, 
                 'event' => 'The year this piece was composed is unknown.',
-                'highlight' => false
+                'highlight' => true
             ];
         }
 
