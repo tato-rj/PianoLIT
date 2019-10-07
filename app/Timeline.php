@@ -108,9 +108,19 @@ class Timeline extends PianoLit
     	
     	$minYear = $mainPiece->composed_in - $this->range; 
 
+        if ($mainPiece->composer->born_in && $mainPiece->composed_in) {
+            $age = ', at the age of ' . $mainPiece->composed_in - $mainPiece->composer->born_in . ' years old';
+        } else {
+            $age = null;
+        }
+
+        $info = ['year' => $mainPiece->composed_in, 
+                'event' => $mainPiece->timeline_name . ' was composed by ' . $mainPiece->composer->short_name . $age . '.', 
+                'highlight' => true];
+
         $events = [];
 
-        array_push($events, ['year' => $mainPiece->composed_in, 'event' => $mainPiece->timeline_name . ' was composed by ' . $mainPiece->composer->short_name . '.', 'highlight' => true]);
+        array_push($events, $info);
 
     	foreach (Timeline::whereBetween('year', [$minYear, $maxYear])->get() as $event) {
     		array_push($events, ['year' => $event->year, 'event' => $event->event, 'highlight' => false]);
