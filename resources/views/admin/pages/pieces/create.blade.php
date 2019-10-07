@@ -401,7 +401,7 @@ new Lukup({
 new Lukup({
   url: app.url+'/admin/pieces/multi-lookup',
   field: 'collection_name',
-  autofill: ['collection_name', 'nickname', 'score_url', 'catalogue_name', 'catalogue_number', 'composer_id', 'composed_in', 'score_editor', 'score_copyright', 'score_publisher', 'curiosity'],
+  autofill: ['collection_name', 'nickname', 'score_url', 'catalogue_name', 'catalogue_number', 'composer_id', 'composed_in', 'published_in', 'score_editor', 'score_copyright', 'score_publisher', 'curiosity'],
   exclude: ['No information available']
 }).enable();
 
