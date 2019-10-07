@@ -108,7 +108,7 @@ class Timeline extends PianoLit
 
     	$maxYear = $originalYear + $this->range;
     	
-    	$minYear = $originalYear - $this->range; 
+    	$minYear = $originalYear - $this->range;
 
         $info = ['year' => $originalYear, 
                 'event' => $mainPiece->timeline_name . $mainPiece->original_event, 
@@ -139,7 +139,7 @@ class Timeline extends PianoLit
             $events = $this->trimAfter($events, $limit);
         }
 
-        if (count($events) == 1) {
+        if (count($events) == 1 && ! $events[0]['year']) {
             $events = [
                 ['year' => null, 
                 'event' => 'It is unknown which year this piece was composed.',

@@ -17,14 +17,28 @@ class Composer extends Person
     	return $this->hasMany(Piece::class);
     }
 
-    public function calculateAge($event, $prefix)
+    public function calculateAge($year, $event)
     {
-        if (! $event || ! $this->born_in)
+        if (! $year || ! $this->born_in)
             return null;
 
-        $string = ' ' . $prefix . ' ' . ($event - $this->born_in) . ' years old';
+        $string = null;
 
-        return str_replace('  ', ' ', $string);
+        if ($event == 'composition') {
+
+            $string = ' at the age of ' . ($year - $this->born_in) . ' years old';
+        
+        } else if ($event == 'publication') {
+        
+            if ($year <= $this->died_in) {
+                $string = 'when ' . $this->short_name . ' was ' . ($year - $this->born_in) . ' years old';
+            } else {
+                $string = ($year - $this->died_in) . ' years after ' . $this->short_name . ' died';
+            }
+        
+        }
+
+        return $string;
     }
 
     public function scopeByPeriod($query)

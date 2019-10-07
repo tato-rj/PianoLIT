@@ -51,10 +51,10 @@ class Piece extends PianoLit
     public function getOriginalEventAttribute()
     {
         if ($this->composed_in)
-            return ' was composed by ' . $this->composer->short_name . $this->composer->calculateAge($this->composed_in, 'at the age of') . '.';
+            return ' was composed by ' . $this->composer->short_name . $this->composer->calculateAge($this->composed_in, 'composition') . '.';
 
         if ($this->published_in)
-            return ' was first published when ' . $this->composer->short_name . $this->composer->calculateAge($this->published_in, 'was') . '.';
+            return ' was first published ' . $this->composer->calculateAge($this->published_in, 'publication') . '.';
 
         return null;
     }
