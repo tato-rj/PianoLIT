@@ -142,6 +142,14 @@ class Timeline extends PianoLit
             $events = $this->trimAfter($events, $limit);
         }
 
+        if (count($events) == 1) {
+            $events = [
+                'year' => null, 
+                'event' => 'The year this piece was composed is unknown.',
+                'highlight' => false
+            ];
+        }
+
     	return $events;
     }
 
