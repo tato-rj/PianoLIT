@@ -108,11 +108,10 @@ class Timeline extends PianoLit
     	
     	$minYear = $mainPiece->composed_in - $this->range; 
 
-        if ($mainPiece->composer->born_in && $mainPiece->composed_in) {
-            $age = ', at the age of ' . $mainPiece->composed_in - $mainPiece->composer->born_in . ' years old';
-        } else {
-            $age = null;
-        }
+        $age = null;
+
+        if ($mainPiece->composer->born_in && $mainPiece->composed_in)
+            $age = ', at the age of ' . ($mainPiece->composed_in - $mainPiece->composer->born_in) . ' years old';
 
         $info = ['year' => $mainPiece->composed_in, 
                 'event' => $mainPiece->timeline_name . ' was composed by ' . $mainPiece->composer->short_name . $age . '.', 
