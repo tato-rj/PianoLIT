@@ -16,7 +16,10 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label text-brand">Name</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" name="name" placeholder="Full name" value="{{ $composer->name }}" required>
+            <div class="d-flex">
+              <input type="text" class="form-control mr-2" name="name" placeholder="Full name" value="{{ $composer->name }}" required>
+              @include('admin.pages.composers.gender', ['gender' => $composer->gender])
+            </div>
           </div>
         </div>
         {{-- Biography --}}

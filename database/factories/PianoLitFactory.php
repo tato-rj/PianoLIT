@@ -32,6 +32,7 @@ $factory->define(Composer::class, function(Faker $faker) {
     return [
             'name' => $faker->name,
             'biography' => $faker->paragraph,
+            'gender' => $faker->word,
             'curiosity' => $faker->paragraph,
             'period' => $periods[rand(0, count($periods) - 1)],
             'country_id' => function() {

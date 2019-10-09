@@ -59,6 +59,11 @@
     $(function () {
       $('[data-toggle="popover"]').popover()
     })
+
+    $('.modal').each(function() {
+      if ($(this).find('.is-invalid')[0])
+        $(this).modal('show');
+    });
   </script>
   @yield('scripts')
   <script type="text/javascript">

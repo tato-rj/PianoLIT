@@ -53,8 +53,13 @@
 <form method="POST" action="{{route('admin.composers.store')}}">
   @csrf
   {{-- Name --}}
-  <div class="form-group">
-    <input type="text" class="form-control" name="name" placeholder="Full name" value="{{ old('name') }}" required>
+  <div class="d-flex form-group">
+    <div class="flex-grow mr-2">
+      <input type="text" class="form-control" name="name" placeholder="Full name" value="{{ old('name') }}" required>
+    </div>
+    <div>
+      @include('admin.pages.composers.gender', ['gender' => old('gender')])
+    </div>
   </div>
   {{-- Life --}}
   <div class="form-group">

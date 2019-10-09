@@ -52,6 +52,7 @@ class ComposersController extends Controller
         $composer = Composer::create([
             'name' => $form->name,
             'biography' => $form->biography,
+            'gender' => $form->gender,
             'curiosity' => $form->curiosity,
             'country_id' => $form->country_id,
             'period' => $form->period,
@@ -103,6 +104,7 @@ class ComposersController extends Controller
             'date_of_birth' => carbon($request->date_of_birth)->format('Y-m-d'),
             'date_of_death' => $request->date_of_death ? carbon($request->date_of_death)->format('Y-m-d') : null,
             'biography' => $request->biography,
+            'gender' => $request->gender,
             'curiosity' => $request->curiosity,
             'country_id' => $request->country_id,
             'period' => strtolower($request->period)
