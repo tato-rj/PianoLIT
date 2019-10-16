@@ -32,7 +32,6 @@
 	'title' => 'Music Timeline', 
 	'subtitle' => 'View the major music events in connection with world history'])
 
-@if(app()->isLocal() || request()->has('dev'))
 <div class="container mb-4">
 	<div class="row mb-6">
 		<div class="col-lg-8 col-md-8 col-12 mx-auto">
@@ -40,12 +39,6 @@
 		</div>
 	</div>
 </div>
-@else
-<div class="my-6">
-  @include('components/animations/workers')
-  <h3 class="text-grey text-center my-4">Coming up soon!</h3>
-</div>
-@endif
 
 <div class="container mb-6">
 	@include('components.sections.feedback')
