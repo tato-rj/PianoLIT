@@ -50,6 +50,14 @@
   <script type="text/javascript" src="{{mix('js/admin.js')}}"></script>
 
   <script type="text/javascript">
+    setTimeout(function() {
+      $('.alert-container').fadeOut(function() {
+        $(this).remove();
+      });
+    }, 2000);
+  </script>
+
+  <script type="text/javascript">
     $('.alert .fa').on('click', function(){
       $(this).parent().parent().remove();
     });
