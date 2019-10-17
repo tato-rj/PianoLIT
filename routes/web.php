@@ -4,6 +4,13 @@ Route::resources([
     'subscriptions' => 'SubscriptionsController'
 ]);
 
+Route::get('/timeline-email', function () {
+    $composersBorn = \App\Composer::bornToday()->get();
+    $composersDied = \App\Composer::diedToday()->get();
+
+    return new \App\Mail\OnThisDay($composersBorn, $composersDied);
+});
+
 Route::get('youtube', function() {
 	return redirect(config('services.channels.youtube'));
 })->name('youtube');
