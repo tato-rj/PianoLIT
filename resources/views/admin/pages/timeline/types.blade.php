@@ -1,4 +1,4 @@
-<option value="history">History</option>
+<option value="history">World history</option>
 <option value="us-history">US history</option>
 <option value="science">Science</option>
 <option value="literature">Literature</option>
