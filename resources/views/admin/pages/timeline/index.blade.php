@@ -69,7 +69,7 @@
             @foreach($timelines as $timeline)
             <tr>
               <td>{{$timeline->year}}</td>
-              <td>{{slug_str($timeline->type)}}</td>
+              <td style="white-space: nowrap;">{{slug_str($timeline->type)}}</td>
               <td>
                 @if($timeline->url)
                 <a href="{{$timeline->url}}" target="_blank" class="link-blue mr-1"><i class="fas fa-{{$timeline->getIcon($timeline->type)['icon']}}"></i></a>
