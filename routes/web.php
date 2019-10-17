@@ -8,7 +8,7 @@ Route::get('/timeline-email', function () {
     $composersBorn = \App\Composer::bornToday()->get();
     $composersDied = \App\Composer::diedToday()->get();
 
-    return new \App\Mail\OnThisDay($composersBorn, $composersDied);
+    return new \App\Mail\Timeline\OnThisDay($composersBorn, $composersDied);
 });
 
 Route::get('youtube', function() {
