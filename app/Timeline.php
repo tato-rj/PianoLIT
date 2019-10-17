@@ -45,6 +45,11 @@ class Timeline extends PianoLit
         return floor($year/10) * 10;        
     }
 
+    public function scopeFromYear($query, $year)
+    {
+        return $query->where('year', $year);
+    }
+
     public function scopeGenerate($query, $limit = null)
     {
         $events = $decades = $centuries = [];
