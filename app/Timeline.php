@@ -8,6 +8,7 @@ class Timeline extends PianoLit
     protected $appends = ['century'];
     protected $icons = [
         'history' => ['icon' => 'globe-europe', 'color' => 'teal'],
+        'us-history' => ['icon' => 'flag-usa', 'color' => 'blue'],
         'science' => ['icon' => 'flask', 'color' => 'red'],
         'literature' => ['icon' => 'book', 'color' => 'pink'],
         'music' => ['icon' => 'feather-alt', 'color' => 'indigo'],
