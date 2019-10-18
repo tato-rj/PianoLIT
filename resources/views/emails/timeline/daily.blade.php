@@ -9,7 +9,7 @@
 Learn more about {{$composer->last_name}}
 @endcomponent
 
-@if($history->exists())
+@if($history->count() > 0)
 @include('emails.timeline.history')
 @endif
 

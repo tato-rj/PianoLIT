@@ -20,7 +20,7 @@ class SendTimelineEmail extends Command
      *
      * @var string
      */
-    protected $description = 'Send daily emails with historical events happening on that day.';
+    protected $description = 'Send daily emails with birthdays along with historical events that happened around that time.';
 
     /**
      * Create a new command instance.
