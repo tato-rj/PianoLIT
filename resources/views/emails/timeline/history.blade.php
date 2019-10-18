@@ -3,7 +3,9 @@
 @component('mail::panel')
 @foreach($history as $event)
 <div style="display: flex; align-items: flex-start; margin-bottom: {{$loop->last ? null : '.75rem'}}">
-	<div style="background-color: #48a59d; color: white; border-radius: 4px; padding: .15rem .4rem; margin-right: .5rem; white-space: nowrap; font-weight: bold; font-size: .85em">{{$event->year}}</div>
+	<div>
+		<div style="background-color: #48a59d; color: white; border-radius: 4px; padding: .15rem .4rem; margin-right: .5rem; white-space: nowrap; font-weight: bold; font-size: .85em">{{$event->year}}</div>
+	</div>
 	<p>{{$event->event}}</p>
 </div>
 @endforeach
