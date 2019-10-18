@@ -42,7 +42,7 @@ class SendTimelineEmail extends Command
         $composersBorn = Composer::bornToday()->get();
         $composersDied = Composer::diedToday()->get();
 
-        if ($composersBorn->count() + $composersDied->count() > 0)
+        // if ($composersBorn->count() + $composersDied->count() > 0)
             \Mail::to('arthurvillar@gmail.com')->send(new OnThisDay($composersBorn, $composersDied));
     }
 }
