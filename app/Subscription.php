@@ -6,7 +6,7 @@ use App\Mail\Newsletter\Welcome;
 
 class Subscription extends PianoLit
 {
-	protected $casts = ['is_active' => 'boolean'];
+	protected $casts = ['is_active' => 'boolean', 'daily_timeline' => 'boolean'];
 
     public function getRouteKeyName()
     {
@@ -58,5 +58,10 @@ class Subscription extends PianoLit
         \Mail::to($email)->send(new Welcome);
 
     	return $this->create(['email' => $email]);
+    }
+
+    public function scopeTimeline($query)
+    {
+        return $query->where('daily_timeline', true);
     }
 }

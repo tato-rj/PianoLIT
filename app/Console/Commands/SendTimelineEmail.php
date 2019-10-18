@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\{Composer, Timeline};
+use App\{Composer, Subscription};
 use App\Mail\Timeline\OnThisDay;
 
 class SendTimelineEmail extends Command
@@ -42,7 +42,10 @@ class SendTimelineEmail extends Command
         $composersBorn = Composer::bornToday()->get();
         $composersDied = Composer::diedToday()->get();
 
-        // if ($composersBorn->count() + $composersDied->count() > 0)
-            \Mail::to('arthurvillar@gmail.com')->send(new OnThisDay($composersBorn, $composersDied));
+        if ($composersBorn->count() + $composersDied->count() > 0) {
+            foreach (Subscription::timeline()->get() as $subscriber) {
+                \Mail::to($subscriber->email)->send(new OnThisDay($composersBorn, $composersDied)); 
+            }
+        }
     }
 }

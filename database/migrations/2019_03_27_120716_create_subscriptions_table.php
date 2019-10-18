@@ -17,6 +17,7 @@ class CreateSubscriptionsTable extends Migration
             $table->bigIncrements('id');
             $table->string('email');
             $table->boolean('is_active')->default(true);
+            $table->boolean('daily_timeline')->default(false);
             $table->timestamps();
         });
     }
