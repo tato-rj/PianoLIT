@@ -1,5 +1,7 @@
 @component('mail::message')
-# On the {{now()->format('jS \o\f F')}}...
+# Hello there!
+
+<div style="margin-bottom: 1.5rem">On this date, <strong>{{now()->format('jS \o\f F')}}</strong> here's what we found...</div>
 
 @if($composersBorn->count() > 0)
 @include('emails.timeline.born')
@@ -9,8 +11,6 @@
 @include('emails.timeline.died')
 @endif
 
-@component('mail::button', ['url' => ''])
-Recommend this to a friend
-@endcomponent
+<div style="margin-bottom: 4rem"></div>
 
 @endcomponent
