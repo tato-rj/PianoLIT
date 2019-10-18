@@ -100,7 +100,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapMailRoutes()
     {
         Route::middleware(['web'])
-             ->prefix('emails')
+             ->prefix('email-preview')
              ->namespace($this->namespace)
              ->group(base_path('routes/mail.php'));
     }

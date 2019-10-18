@@ -157,6 +157,11 @@ class Timeline extends PianoLit
     	return $events;
     }
 
+    public function scopeAroundYear($query, $year, $range)
+    {
+        return Timeline::whereBetween('year', [$year - $range, $year + $range]);
+    }
+
     public function findPieceKey($events)
     {
         foreach($events as $key => $event)

@@ -39,12 +39,11 @@ class SendTimelineEmail extends Command
      */
     public function handle()
     {
-        $composersBorn = Composer::bornToday()->get();
-        $composersDied = Composer::diedToday()->get();
+        $composer = Composer::bornToday()->inRandomOrder()->first();
 
-        if ($composersBorn->count() + $composersDied->count() > 0) {
+        if ($composer->exists()) {
             foreach (Subscription::timeline()->get() as $subscriber) {
-                \Mail::to($subscriber->email)->send(new OnThisDay($composersBorn, $composersDied)); 
+                \Mail::to($subscriber->email)->send(new OnThisDay($composer)); 
             }
         }
     }

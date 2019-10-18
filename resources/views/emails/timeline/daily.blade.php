@@ -1,18 +1,16 @@
 @component('mail::message')
-# Hello there!
+# <img src="{{asset('images/icons/birthday-cake.png')}}" style="width: 20px"> Happy birthday to {{$composer->short_name}}!
 
-On this date, <strong>{{now()->format('jS \o\f F')}}</strong> here's what we found...
+{{$composer->gender == 'male' ? 'He' : 'She'}} was born {{now()->diffInYears($composer->date_of_birth)}} years ago on {{$composer->date_of_birth->toFormattedDateString()}}.
 
-<div style="margin-bottom: 1.5rem"></div>
+{{preview($composer->biography, 40)}}...
 
-@if($composersBorn->count() > 0)
-@include('emails.timeline.born')
+@component('mail::button', ['url' => wiki($composer->name)])
+Learn more about {{$composer->last_name}}
+@endcomponent
+
+@if($history->exists())
+@include('emails.timeline.history')
 @endif
-
-@if($composersDied->count() > 0)
-@include('emails.timeline.died')
-@endif
-
-<div style="margin-bottom: 4rem"></div>
 
 @endcomponent

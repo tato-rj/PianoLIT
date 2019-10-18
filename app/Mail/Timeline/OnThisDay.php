@@ -12,12 +12,15 @@ class OnThisDay extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $composersBorn, $composersDied;
+    public $composer, $history;
 
-    public function __construct($composersBorn, $composersDied)
+    public function __construct($composer)
     {
-        $this->composersBorn = $composersBorn;
-        $this->composersDied = $composersDied;
+        if (! $composer)
+            abort(413, 'No composer was born today.');
+
+        $this->composer = $composer;
+        $this->history = Timeline::aroundYear($composer->born_in, 10);
     }
 
     /**
@@ -27,6 +30,6 @@ class OnThisDay extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject('What happened on this day...')->markdown('emails.timeline.daily');
+        return $this->subject($this->composer->last_name . '\'s birthday today!')->markdown('emails.timeline.daily');
     }
 }

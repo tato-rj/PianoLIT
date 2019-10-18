@@ -1,4 +1,12 @@
 <?php
+
+function preview($text, $length)
+{
+    $text = strip_tags($text);
+    preg_match("/(?:\w+(?:\W+|$)){0,$length}/", $text, $matches);
+    return $matches[0];
+}
+
 function wiki($str)
 {
 	return 'https://wikipedia.com/wiki/' . $str;
