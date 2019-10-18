@@ -32,7 +32,7 @@ abstract class Person extends PianoLit
     {
         return $query->whereRaw('
             DATE_ADD(date_of_birth, INTERVAL YEAR(CURDATE())-YEAR(date_of_birth) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_birth),1,0) YEAR) 
-            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)')->orderBy('date_of_birth');
+            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)')->orderByRaw('MONTH(date_of_birth), DAY(date_of_birth)');
     }
 
     public function scopeDiedToday($query)
@@ -44,7 +44,7 @@ abstract class Person extends PianoLit
     {
         return $query->whereRaw('
             DATE_ADD(date_of_death, INTERVAL YEAR(CURDATE())-YEAR(date_of_death) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_death),1,0) YEAR) 
-            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)')->orderBy('date_of_death');
+            BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)')->orderByRaw('MONTH(date_of_birth), DAY(date_of_birth)');
     }
 
     public function getBornInAttribute()
