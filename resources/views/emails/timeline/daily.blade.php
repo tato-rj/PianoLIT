@@ -1,7 +1,9 @@
 @component('mail::message')
 # Hello there!
 
-<div style="margin-bottom: 1.5rem">On this date, <strong>{{now()->format('jS \o\f F')}}</strong> here's what we found...</div>
+On this date, <strong>{{now()->format('jS \o\f F')}}</strong> here's what we found...
+
+<div style="margin-bottom: 1.5rem"></div>
 
 @if($composersBorn->count() > 0)
 @include('emails.timeline.born')
