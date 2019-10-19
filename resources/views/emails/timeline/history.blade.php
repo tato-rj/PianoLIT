@@ -1,4 +1,4 @@
-<hr style="opacity: 0.3; margin: 2rem 0;">
+<hr style="opacity: 0.3; margin: 3rem 0;">
 <strong style="text-align: center; width: 100%;">Also happening around the world...</strong>
 @component('mail::panel')
 @foreach($history as $event)
