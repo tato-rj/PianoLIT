@@ -8,6 +8,15 @@ abstract class Person extends PianoLit
     protected $dates = ['date_of_birth', 'date_of_death'];
     protected $with = ['country'];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function($person) {
+            \Storage::disk('public')->delete($person->cover_path);
+        });
+    }
+
     public function country()
     {
         return $this->belongsTo(Country::class);

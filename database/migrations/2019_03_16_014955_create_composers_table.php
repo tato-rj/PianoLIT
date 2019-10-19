@@ -17,6 +17,7 @@ class CreateComposersTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->text('biography');
+            $table->string('cover_path');
             $table->string('gender');
             $table->text('curiosity')->nullable();
             $table->string('period');

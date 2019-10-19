@@ -9,7 +9,7 @@
     'description' => 'Edit a composer'])
 
     <div class="row my-5 mx-2">
-      <form id="edit-form" method="POST" action="{{route('admin.composers.update', $composer->id)}}" class="col-lg-6 col-sm-10 col-12 mx-auto">
+      <form id="edit-form" method="POST" action="{{route('admin.composers.update', $composer->id)}}" enctype="multipart/form-data" class="col-lg-6 col-sm-10 col-12 mx-auto">
         @csrf
         @method('PATCH')
         {{-- Name --}}
@@ -34,6 +34,14 @@
           <label class="col-sm-2 col-form-label text-brand">Did you know?</label>
           <div class="col-sm-10">
             <textarea class="form-control" rows="3" name="curiosity" placeholder="Enter a curiosity here">{{ $composer->curiosity }}</textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="text-brand">Cover image</label>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" name="cover" id="customFile">
+            <label class="custom-file-label truncate" for="customFile">Upload</label>
           </div>
         </div>
         {{-- Nationality and period --}}
@@ -82,6 +90,9 @@
       </form>
       
       <div class="col-lg-6 col-sm-10 col-12 mx-auto">
+        <div>
+          <img src="{{storage($composer->cover_path)}}" class="rounded-circle shadow mb-4 mx-auto d-block" style="width: 160px">
+        </div>
         <p class="text-muted"><strong>{{$composer->name}} has {{$composer->pieces_count}} {{str_plural('piece', $composer->pieces_count)}}</strong></p>
         @if($composer->pieces_count > 0)
         <ul class="list-style-none pl-2">

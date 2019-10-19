@@ -52,6 +52,7 @@ class ComposersController extends Controller
         $composer = Composer::create([
             'name' => $form->name,
             'biography' => $form->biography,
+            'cover_path' => $form->file('cover')->store('app/composers', 'public'),
             'gender' => $form->gender,
             'curiosity' => $form->curiosity,
             'country_id' => $form->country_id,
@@ -109,7 +110,14 @@ class ComposersController extends Controller
             'country_id' => $request->country_id,
             'period' => strtolower($request->period)
         ]);
-        
+
+        if ($request->hasFile('cover')) {
+
+            \Storage::disk('public')->delete($composer->cover_path);
+            
+            $composer->update(['cover_path' => $request->file('cover')->store('app/composers', 'public')]);
+        }
+
         return redirect()->back()->with('status', "$request->name has been updated");
     }
 

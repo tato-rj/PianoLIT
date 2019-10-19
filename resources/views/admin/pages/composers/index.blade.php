@@ -20,9 +20,6 @@
             <i class="fas fa-plus mr-2"></i>Add a new composer
           </button>
         </div>
-        <div>
-          {{-- @include('admin.components.filters', ['filters' => []]) --}}
-        </div>
       </div>
     </div>
 
@@ -50,7 +47,7 @@
 @include('admin.components.modals/delete', ['model' => 'composer'])
 
 @component('admin.components.modals/add', ['model' => 'composer'])
-<form method="POST" action="{{route('admin.composers.store')}}">
+<form method="POST" action="{{route('admin.composers.store')}}" enctype="multipart/form-data">
   @csrf
   {{-- Name --}}
   <div class="d-flex form-group">
@@ -68,6 +65,12 @@
   {{-- Curiosity --}}
   <div class="form-group">
     <textarea class="form-control" rows="3" name="curiosity" placeholder="Did you know?">{{ old('curiosity') }}</textarea>
+  </div>
+  <div class="form-group">
+    <div class="custom-file">
+      <input type="file" class="custom-file-input" name="cover" id="customFile">
+      <label class="custom-file-label truncate" for="customFile">Cover image</label>
+    </div>
   </div>
   {{-- Nationality and period --}}
   <div class="form-row form-group">

@@ -53,7 +53,7 @@ class PianistsController extends Controller
             'slug' => str_slug($form->name),
             'name' => $form->name,
             'biography' => $form->biography,
-            'cover_path' => $request->file('cover')->store('app/pianists', 'public'),
+            'cover_path' => $form->file('cover')->store('app/pianists', 'public'),
             'country_id' => $form->country_id,
             'itunes_id' => $form->itunes_id,
             'date_of_birth' => $form->date_of_birth,

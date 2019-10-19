@@ -1,5 +1,5 @@
 <tr>
-  <td>{{$composer->name}} ({{$composer->alive_on}})</td>
+  <td><img src="{{storage($composer->cover_path)}}" class="d-inline rounded-circle mr-1" style="width: 18px; vertical-align: sub"> {{$composer->name}} ({{$composer->alive_on}})</td>
   <td>{{$composer->pieces_count}} {{str_plural('piece', $composer->pieces_count)}}</td>
   <td class="text-right" style="white-space: nowrap;">
       @can('update', $composer)
