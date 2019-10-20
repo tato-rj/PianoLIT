@@ -39,7 +39,7 @@ class SendTimelineEmail extends Command
      */
     public function handle()
     {
-        $composer = Composer::bornToday()->inRandomOrder()->first();
+        $composer = Composer::famous()->bornToday()->inRandomOrder()->first();
 
         if ($composer->exists()) {
             foreach (Subscription::activeList('birthday_list')->get() as $subscriber) {
