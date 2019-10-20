@@ -4,9 +4,14 @@
 @foreach($history as $event)
 <div style="display: flex; align-items: flex-start; margin-bottom: {{$loop->last ? null : '.75rem'}}">
 	<div>
-		<div style="background-color: #48a59d; color: white; border-radius: 4px; padding: .15rem .4rem; margin-right: .5rem; white-space: nowrap; font-weight: bold; font-size: .85em">{{$event->year}}</div>
+		<div style="background-color: #48a59d; color: white; border-radius: 4px; padding: .15rem .4rem; white-space: nowrap; font-weight: bold; font-size: .85em">{{$event->year}}</div>
 	</div>
-	<p>{{$event->event}} | <a href="{{$event->url}}" target="_blank" style="color: #3490dc; text-decoration: none;">Read more</a></p>
+	<div style="flex-grow: 1; margin: 0 .5rem">
+		<p>{{$event->event}}</p>
+	</div>
+	<div>
+		<a href="{{$event->url}}" target="_blank" style="color: #3490dc; text-decoration: none; white-space: nowrap;">Read more</a>
+	</div>
 </div>
 @endforeach
 @endcomponent
