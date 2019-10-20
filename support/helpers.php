@@ -11,7 +11,7 @@ function preview($text, $length)
 function emoji($type, $number)
 {
 	$emojis = [
-		'birthday' => ['🎉', '👏', '🤗', '🎁', '🎂', '🍾', '😃']
+		'birthday' => ['🎉', '👏', '🤗', '🎁', '🎂', '🍾', '😃', '🥳']
 	];
 
 	if (! array_key_exists($type, $emojis))

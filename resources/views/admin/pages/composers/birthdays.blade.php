@@ -10,6 +10,7 @@
       <div class="modal-body">
         <p>This is a list of the <strong>{{$composers->where('is_famous', true)->count()}} most famous</strong> composers. An email will be generated for <u>each one</u> on the respective birthday.</p>
         <table class="table table-sm table-hover table-borderless">
+          @php($missingNext = true)
           @foreach($composers->where('is_famous', true)->sortBy('month_of_birth')->groupBy('month_of_birth') as $month => $list)
           <thead>
             <tr>
@@ -21,7 +22,13 @@
           @foreach($list->sortBy('day_of_birth') as $composer)
           <tbody>
             <tr>
-              <td>{{$composer->short_name}}</td>
+              <td>
+                {{$composer->short_name}}
+                @if($missingNext && $composer->date_of_birth->format('md') > now()->format('md'))
+                  @php($missingNext = false)
+                  <span class="badge badge-success ml-1">next</span>
+                @endif
+              </td>
               <td>{{$composer->date_of_birth->toFormattedDateString()}}</td>
               <td class="text-right">
                 <a href="{{route('email-preview.birthday.mail', ['composer_id' => $composer->id])}}" target="_blank" title="Receive a preview of the birthday email" class="text-muted mr-2"><i class="fas fa-envelope-open"></i></a>
