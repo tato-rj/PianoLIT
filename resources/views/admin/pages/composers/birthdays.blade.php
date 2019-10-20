@@ -9,9 +9,8 @@
       </div>
       <div class="modal-body">
         <p>Here is a list of the birthdays of the most famous composers. An email will be generated for <u>each one</u> on its respective day.</p>
-        <table class="table table-sm table-hover">
-
-            @foreach($composers->where('is_famous', true)->sortBy('month_of_birth')->groupBy('month_of_birth') as $month => $list)
+        <table class="table table-sm table-hover table-borderless">
+          @foreach($composers->where('is_famous', true)->sortBy('month_of_birth')->groupBy('month_of_birth') as $month => $list)
           <thead>
             <tr>
               <th scope="col">{{date("F", mktime(0, 0, 0, $month, 1))}}</th>
@@ -19,7 +18,7 @@
               <th scope="col"></th>
             </tr>
           </thead>
-            @foreach($list->sortBy('day_of_birth') as $composer)
+          @foreach($list->sortBy('day_of_birth') as $composer)
           <tbody>
             <tr>
               <td>{{$composer->short_name}}</td>
@@ -27,8 +26,8 @@
               <td class="text-right"><a href="{{route('email-preview.birthday', ['composer_id' => $composer->id])}}" target="_blank" title="See a preview of the birthday email" class="text-muted mr-2"><i class="fas fa-birthday-cake"></i></a></td>
             </tr>
           </tbody>
-            @endforeach
-            @endforeach
+          @endforeach
+          @endforeach
         </table>
       </div>
     </div>
