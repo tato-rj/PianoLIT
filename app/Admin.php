@@ -43,6 +43,11 @@ class Admin extends Authenticatable
         return $this->hasMany(Tag::class, 'creator_id');
     }
 
+    public function getFirstNameAttribute()
+    {
+        return explode(' ', $this->name)[0];
+    }
+
     public function scopeEditors($query)
     {
         return $query->where('role', 'editor');

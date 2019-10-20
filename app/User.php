@@ -5,12 +5,12 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Traits\HasMembership;
+use App\Traits\{HasMembership, Reportable};
 use App\Stats\User as UserStats;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasMembership;
+    use Notifiable, HasMembership, Reportable;
 
     protected $guarded = [];
     protected $hidden = ['password', 'remember_token'];

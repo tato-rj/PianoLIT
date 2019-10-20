@@ -13,6 +13,7 @@ class Quiz extends ShareableContent
     protected $folder = 'quiz';
     protected $withCount = ['results'];
     protected $appends = ['questions'];
+    protected $report_by = 'title';
 
     protected static function boot()
     {

@@ -1,4 +1,13 @@
 <?php
+function class_str($class, $plural = false)
+{
+	$str = ucwords(camel_str(str_replace('\\', '', substr($class, strrpos($class, '\\')))));
+	
+	if ($plural)
+		return str_plural($str, 2);
+
+	return $str; 
+}
 
 function preview($text, $length)
 {
@@ -6,6 +15,15 @@ function preview($text, $length)
     preg_match("/(?:\w+(?:\W+|$)){0,$length}/", $text, $matches);
 
     return rtrim($matches[0], ' ') . '...';
+}
+
+function camel_str($camel) {
+	preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $camel, $matches);
+	$ret = $matches[0];
+	foreach ($ret as &$match) {
+		$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+	}
+	return implode(' ', $ret);
 }
 
 function emoji($type, $number)

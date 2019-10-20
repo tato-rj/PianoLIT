@@ -8,18 +8,8 @@ use App\Mail\Timeline\OnThisDay;
 
 class SendTimelineEmail extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    protected $composer;
     protected $signature = 'pianolit:timeline-email';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Send daily emails with birthdays along with historical events that happened around that time.';
 
     /**
@@ -30,6 +20,8 @@ class SendTimelineEmail extends Command
     public function __construct()
     {
         parent::__construct();
+
+        $this->composer = Composer::famous()->bornToday()->inRandomOrder()->first();
     }
 
     /**
@@ -39,11 +31,9 @@ class SendTimelineEmail extends Command
      */
     public function handle()
     {
-        $composer = Composer::famous()->bornToday()->inRandomOrder()->first();
-
-        if ($composer->exists()) {
+        if ($this->composer->exists()) {
             foreach (Subscription::activeList('birthday_list')->get() as $subscriber) {
-                \Mail::to($subscriber->email)->send(new OnThisDay($composer, $subscriber));
+                \Mail::to($subscriber->email)->send(new OnThisDay($this->composer, $subscriber));
             }
         }
     }

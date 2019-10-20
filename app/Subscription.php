@@ -5,9 +5,11 @@ namespace App;
 use App\Mail\Newsletter\Welcome;
 
 class Subscription extends PianoLit
-{
+{    
     protected $lists = ['newsletter_list', 'birthday_list'];
 	protected $casts = ['newsletter_list' => 'boolean', 'birthday_list' => 'boolean'];
+    protected $appends = ['report_name'];
+    protected $report_by = 'email';
 
     public function scopeAdmin($query)
     {

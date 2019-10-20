@@ -2,12 +2,12 @@
 
 namespace App;
 
-use App\Traits\BelongsToThrough;
+use App\Traits\{BelongsToThrough, Reportable};
 use Illuminate\Database\Eloquent\Model;
 
 class PianoLit extends Model
 {
-	use BelongsToThrough;
+	use BelongsToThrough, Reportable;
 	
 	protected $guarded = [];
 

@@ -7,6 +7,7 @@ use App\{ShareableContent, Admin};
 class Post extends ShareableContent
 {
     protected $folder = 'blog';
+    protected $report_by = 'title';
 
     protected static function boot()
     {
