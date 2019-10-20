@@ -2,13 +2,13 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{$composers->where('is_famous', true)->count()}} Famous birthdays</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Famous birthdays</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p>Here is a list of the birthdays of the most famous composers. An email will be generated for <u>each one</u> on its respective day.</p>
+        <p>Here is a list of the birthdays of the <strong>{{$composers->where('is_famous', true)->count()}}most famous</strong> composers. An email will be generated for <u>each one</u> on its respective day.</p>
         <table class="table table-sm table-hover table-borderless">
           @foreach($composers->where('is_famous', true)->sortBy('month_of_birth')->groupBy('month_of_birth') as $month => $list)
           <thead>
