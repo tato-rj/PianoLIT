@@ -20,7 +20,7 @@ class OnThisDay extends Mailable implements ShouldQueue
             abort(413, 'No composer was born today.');
 
         $this->composer = $composer;
-        $this->history = Timeline::aroundYear($composer->born_in, 5)->orderBy('year')->get();
+        $this->history = Timeline::aroundYear($composer->born_in, 5)->get();
         $this->subscriber = $subscriber;
     }
 
