@@ -20,6 +20,11 @@
             <i class="fas fa-plus mr-2"></i>Add a new composer
           </button>
         </div>
+        <div>
+          <button type="button" data-toggle="modal" data-target="#famous-birthdays" class="btn btn-sm btn-warning">
+            <i class="fas fa-birthday-cake mr-2"></i>Famous birthdays
+          </button>
+        </div>
       </div>
     </div>
 
@@ -45,9 +50,10 @@
   </div>
 </div>
 
-@include('admin.components.modals/delete', ['model' => 'composer'])
+@include('admin.components.modals.delete', ['model' => 'composer'])
+@include('admin.pages.composers.birthdays')
 
-@component('admin.components.modals/add', ['model' => 'composer'])
+@component('admin.components.modals.add', ['model' => 'composer'])
 <form method="POST" action="{{route('admin.composers.store')}}" enctype="multipart/form-data">
   @csrf
   {{-- Name --}}

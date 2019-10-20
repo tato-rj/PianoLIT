@@ -27,7 +27,7 @@ class ComposersController extends Controller
 
         $countries = Country::orderBy('nationality')->get();
         $composers = Composer::orderBy($sort[0], $sort[1])->get();
-        
+// $months = $composers->where('is_famous', true)->groupBy('month_of_birth');
         return view('admin.pages.composers.index', compact(['composers', 'countries']));
     }
 

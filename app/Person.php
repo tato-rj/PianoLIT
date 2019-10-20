@@ -4,7 +4,7 @@ namespace App;
 
 abstract class Person extends PianoLit
 {
-    protected $appends = ['last_name', 'short_name'];
+    protected $appends = ['last_name', 'short_name', 'month_of_birth', 'day_of_birth'];
     protected $dates = ['date_of_birth', 'date_of_death'];
     protected $with = ['country'];
 
@@ -54,6 +54,16 @@ abstract class Person extends PianoLit
         return $query->whereRaw('
             DATE_ADD(date_of_death, INTERVAL YEAR(CURDATE())-YEAR(date_of_death) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_death),1,0) YEAR) 
             BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL '.$days.' DAY)')->orderByRaw('MONTH(date_of_birth), DAY(date_of_birth)');
+    }
+
+    public function getMonthOfBirthAttribute()
+    {
+        return $this->date_of_birth ? $this->date_of_birth->month : null;        
+    }
+
+    public function getDayOfBirthAttribute()
+    {
+        return $this->date_of_birth ? $this->date_of_birth->day : null;        
     }
 
     public function getBornInAttribute()
