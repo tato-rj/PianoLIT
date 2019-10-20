@@ -8,7 +8,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>Here is a list of the birthdays of the <strong>{{$composers->where('is_famous', true)->count()}}most famous</strong> composers. An email will be generated for <u>each one</u> on its respective day.</p>
+        <p>Here is a list of the birthdays of the <strong>{{$composers->where('is_famous', true)->count()}} most famous</strong> composers. An email will be generated for <u>each one</u> on its respective day.</p>
         <table class="table table-sm table-hover table-borderless">
           @foreach($composers->where('is_famous', true)->sortBy('month_of_birth')->groupBy('month_of_birth') as $month => $list)
           <thead>
