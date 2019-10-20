@@ -4,7 +4,11 @@ Route::resources([
     'subscriptions' => 'SubscriptionsController'
 ]);
 
-Route::patch('subscriptions/{subscription}/status', 'SubscriptionsController@toggleStatus')->name('subscriptions.toggle-status');
+Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
+
+	Route::patch('{subscription}/status', 'SubscriptionsController@toggleStatus')->name('toggle-status');
+
+});
 
 Route::get('youtube', function() {
 	return redirect(config('services.channels.youtube'));

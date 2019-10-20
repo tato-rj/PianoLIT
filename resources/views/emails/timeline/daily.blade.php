@@ -1,4 +1,4 @@
-@component('mail::message')
+@component('mail::message', ['email' => $subscriber->email])
 <div style="margin-top: -1.5em; margin-bottom: 2em;">
 	<div style="text-align: center; font-weight: 18px; margin-bottom: .3em">🎉👏🤗🎁</div>
 	<div style="

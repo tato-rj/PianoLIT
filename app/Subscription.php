@@ -9,6 +9,11 @@ class Subscription extends PianoLit
     protected $lists = ['newsletter_list', 'birthday_list'];
 	protected $casts = ['newsletter_list' => 'boolean', 'birthday_list' => 'boolean'];
 
+    public function scopeAdmin($query)
+    {
+        return $query->where('email', 'arthurvillar@gmail.com')->first();
+    }
+
     public function scopeLists()
     {
         return $this->lists;
