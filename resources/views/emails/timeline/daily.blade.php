@@ -16,7 +16,7 @@
 	<div style="color: #4dc0b5; font-size: 30px; font-weight: bold">{{$composer->date_of_birth->format('F jS, Y')}}</div>
 </div>
 
-{{preview($composer->biography, 40)}}...
+{{preview($composer->biography, 40)}}
 
 @component('mail::button', ['url' => wiki($composer->name)])
 Learn more about {{$composer->last_name}}

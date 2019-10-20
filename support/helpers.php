@@ -4,7 +4,8 @@ function preview($text, $length)
 {
     $text = strip_tags($text);
     preg_match("/(?:\w+(?:\W+|$)){0,$length}/", $text, $matches);
-    return $matches[0];
+
+    return rtrim($matches[0], ' ') . '...';
 }
 
 function wiki($str)
