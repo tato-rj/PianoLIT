@@ -6,11 +6,8 @@
 	<div>
 		<div style="background-color: #48a59d; color: white; border-radius: 4px; padding: .15rem .4rem; white-space: nowrap; font-weight: bold; font-size: .85em">{{$event->year}}</div>
 	</div>
-	<div style="flex-grow: 1; margin: 0 .5rem">
-		<p>{{$event->event}}</p>
-	</div>
 	<div>
-		<a href="{{$event->url}}" target="_blank" style="color: #3490dc; text-decoration: none; white-space: nowrap;">Read more</a>
+		<p>{{$event->event}}</p>
 	</div>
 </div>
 @endforeach
