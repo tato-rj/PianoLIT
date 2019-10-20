@@ -134,6 +134,14 @@
 
     </style>
 
+    <script>
+        window.app = <?php echo json_encode([
+            'csrfToken' => csrf_token(),
+            'url' => \Request::root(),
+            'user' => null
+        ]); ?>
+    </script>
+
     @stack('header')
 </head>
 <body>

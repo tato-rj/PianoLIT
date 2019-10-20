@@ -21,7 +21,7 @@ class AdminsController extends Controller
         $pieces_count = Piece::count();
         $composers_count = Composer::count();
         $users_count = User::count();
-        $subscriptions_count = Subscription::active()->count() - 2;
+        $subscriptions_count = Subscription::activeList('newsletter_list')->count() - 2;
         $quiz_results_count = QuizResult::count();
         $blog_count = Post::count();
 

@@ -35,7 +35,7 @@ class SubscriptionsController extends Controller
         if (! request()->has('type'))
             abort(422, 'Please specify which format you need.');
 
-        $emails = Subscription::active()->get()->pluck('email')->toArray();
+        $emails = Subscription::activeList('newsletter_list')->get()->pluck('email')->toArray();
 
         return view('admin.pages.subscriptions.exports.txt', compact('emails'));
     }
@@ -48,7 +48,7 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
-        if (Subscription::active()->byEmail($form->email)->exists() && ! $request->gift)
+        if (Subscription::activeList('newsletter_list')->byEmail($form->email)->exists() && ! $request->gift)
             return redirect()->back()->with('error', 'We already have this email in our subscription list.');
 
         Subscription::createOrActivate($form->email);
@@ -83,7 +83,7 @@ class SubscriptionsController extends Controller
      */
     public function edit(Subscription $subscription)
     {
-        //
+        return view('subscriptions.edit', compact('subscription'));
     }
 
     /**
@@ -93,16 +93,16 @@ class SubscriptionsController extends Controller
      * @param  \App\Subscription  $subscription
      * @return \Illuminate\Http\Response
      */
-    public function updateStatus(Request $request, Subscription $subscription)
+    public function toggleStatus(Request $request, Subscription $subscription)
     {
-        $subscription->updateStatus();
+        $subscription->toggleStatusFor($request->list);
 
-        return response()->json(['status' => 'The subscription is now ' . $subscription->status . '.']);
+        return response()->json(['status' => 'The subscription is now ' . $subscription->getStatusFor($request->list) . '.']);
     }
 
     public function unsubscribe(Request $request)
     {
-        Subscription::byEmail($request->email)->firstOrFail()->deactivate();
+        Subscription::byEmail($request->email)->firstOrFail()->deactivate($request->list);
 
         return redirect()->back()->with('status', 'We\'re sorry to see you go!');
     }

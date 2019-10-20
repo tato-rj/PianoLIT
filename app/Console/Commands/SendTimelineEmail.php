@@ -42,7 +42,7 @@ class SendTimelineEmail extends Command
         $composer = Composer::bornToday()->inRandomOrder()->first();
 
         if ($composer->exists()) {
-            foreach (Subscription::timeline()->get() as $subscriber) {
+            foreach (Subscription::activeList('birthday_list')->get() as $subscriber) {
                 \Mail::to($subscriber->email)->send(new OnThisDay($composer)); 
             }
         }

@@ -38,8 +38,9 @@
             <tr>
               <th class="border-0" scope="col">Date</th>
               <th class="border-0" scope="col">Email</th>
-              <th class="border-0" scope="col">Status</th>
-              <th class="border-0" scope="col"></th>
+              @foreach(\App\Subscription::lists() as $list)
+              <th class="border-0" scope="col">{{snake_str($list)}}</th>
+              @endforeach
               <th class="border-0" scope="col"></th>
             </tr>
           </thead>
@@ -48,13 +49,12 @@
             <tr title="Subscribed at {{$subscription->created_at->format('g:i:s a')}}">
               <td>{{$subscription->created_at->toFormattedDateString()}}</td>
               <td>{{$subscription->email}}</td>
-              <td id="status-{{$subscription->id}}" class="status-text text-{{$subscription->is_active ? 'success' : 'warning'}}">{{ucfirst($subscription->status)}}</td>
+              @foreach(\App\Subscription::lists() as $list)
+              <td>@include('admin.components.toggle.subscription', ['list' => $list])</td>
+              @endforeach
               <td class="text-right">
                 <a href="mailto:{{$subscription->email}}" target="_blank" class="text-muted mr-2"><i class="far fa-envelope align-middle"></i></a>
                 <a href="#" data-name="{{$subscription->email}}" data-url="{{route('subscriptions.destroy', $subscription->email)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
-              </td>
-              <td class="text-right">
-                @include('admin.components.toggle.subscription')
               </td>
             </tr>
             @endforeach
@@ -75,18 +75,15 @@
 <script type="text/javascript">
 $('input.status-toggle').on('change', function() {
   let $input = $(this);
-  let $label = $($input.attr('data-target'));
 
-  $label.addClass('text-muted').removeClass('text-warning text-success');
   $.ajax({
     url: $input.attr('data-url'),
     type: 'PATCH',
     success: function(res) {
-      if ($input.is(':checked')) {
-        $label.text('Subscribed').toggleClass('text-muted text-success');
-      } else {
-        $label.text('Unsubscribed').toggleClass('text-muted text-warning');
-      }
+      alert('Your update was successful!');
+    },
+    error: function(xhr,status,error) {
+      alert('Something went wrong: ' + error);
     }
   });
 });

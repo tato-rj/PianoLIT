@@ -128,8 +128,6 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::get('', 'AdminsController@subscriptions')->name('index');
 
-	Route::patch('{subscription}/status', 'SubscriptionsController@updateStatus')->name('update-status');
-
 	Route::get('export', 'SubscriptionsController@export')->name('export');
 
 });

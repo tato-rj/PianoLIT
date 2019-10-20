@@ -1,8 +1,8 @@
 @component('mail::message')
-<div style="margin-top: -1.5em;">
+<div style="margin-top: -1.5em; margin-bottom: 2em;">
 	<div style="text-align: center; font-weight: 18px; margin-bottom: .3em">🎉👏🤗🎁</div>
 	<div style="
-		margin-bottom: 2em;
+		
 		color: #3D4852;
 	    font-size: 24px;
 	    font-weight: bold; text-align: center;">Happy birthday to {{$composer->short_name}}!

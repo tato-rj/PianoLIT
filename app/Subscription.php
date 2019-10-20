@@ -6,31 +6,54 @@ use App\Mail\Newsletter\Welcome;
 
 class Subscription extends PianoLit
 {
-	protected $casts = ['is_active' => 'boolean', 'daily_timeline' => 'boolean'];
+    protected $lists = ['newsletter_list', 'birthday_list'];
+	protected $casts = ['newsletter_list' => 'boolean', 'birthday_list' => 'boolean'];
+
+    public function scopeLists()
+    {
+        return $this->lists;
+    }
 
     public function getRouteKeyName()
     {
         return 'email';
     }
 
-    public function getStatusAttribute()
+    public function getStatusFor($list, $boolean = false)
     {
-        return $this->is_active ? 'subscribed' : 'unsubscribed';
+        $this->validateList($list);
+
+        $results = $boolean ? [true, false] : ['subscribed', 'unsubscribed'];
+
+        return $this->$list ? $results[0] : $results[1];
     }
 
     public function reactivate()
     {
-    	$this->update(['is_active' => true]);
+        $this->validateList($list);
+
+    	$this->update([$list => true]);
     }
 
-    public function deactivate()
+    public function reactivateAll()
     {
-    	$this->update(['is_active' => false]);
+        foreach ($this->lists as $list) {
+            $this->reactivate($list);
+        }
     }
 
-    public function updateStatus()
+    public function deactivate($list)
     {
-        $this->update(['is_active' => ! $this->is_active]);
+        $this->validateList($list);
+
+    	$this->update([$list => false]);
+    }
+
+    public function toggleStatusFor($list)
+    {
+        $this->validateList($list);
+
+        $this->update([$list => ! $this->$list]);
     }
 
     public function scopeByEmail($query, $email)
@@ -38,30 +61,35 @@ class Subscription extends PianoLit
     	return $query->where('email', $email);
     }
 
-    public function scopeActive($query)
-    {
-    	return $query->where('is_active', true);
-    }
-
-    public function scopeInactive($query)
-    {
-        return $query->where('is_active', false);
-    }
-
     public function scopeCreateOrActivate($query, $email)
     {
     	$record = $query->byEmail($email);
 
     	if ($record->exists())
-    		return $record->first()->reactivate();
+    		return $record->first()->reactivateAll();
 
         \Mail::to($email)->send(new Welcome);
 
     	return $this->create(['email' => $email]);
     }
 
-    public function scopeTimeline($query)
+    public function scopeActiveList($query, $list)
     {
-        return $query->where('daily_timeline', true);
+        $this->validateList($list);
+
+        return $query->where($list, true);
+    }
+
+    public function scopeInactiveList($query, $list)
+    {
+        $this->validateList($list);
+
+        return $query->where($list, false);
+    }
+
+    public function validateList($list)
+    {
+        if (! \Schema::hasColumn($this->getTable(), $list))
+            abort(403, 'The list ' . $list . ' does not exist.');
     }
 }

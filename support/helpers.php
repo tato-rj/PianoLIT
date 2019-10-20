@@ -143,6 +143,11 @@ function slug_str($slug)
     return ucwords(str_replace('-', ' ', $slug));
 }
 
+function snake_str($snake)
+{
+    return ucwords(str_replace('_', ' ', $snake));
+}
+
 function traffic()
 {
 	return new \App\Tools\Traffic;
