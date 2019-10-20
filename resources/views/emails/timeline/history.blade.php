@@ -6,7 +6,7 @@
 	<div>
 		<div style="background-color: #48a59d; color: white; border-radius: 4px; padding: .15rem .4rem; margin-right: .5rem; white-space: nowrap; font-weight: bold; font-size: .85em">{{$event->year}}</div>
 	</div>
-	<p>{{$event->event}}</p>
+	<p>{{$event->event}} | <a href="{{$event->url}}" target="_blank" style="color: #3490dc; text-decoration: none;">Read more</a></p>
 </div>
 @endforeach
 @endcomponent
