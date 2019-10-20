@@ -1,6 +1,6 @@
 @component('mail::message', ['email' => $subscriber->email, 'list' => 'birthday_list'])
 <div style="margin-top: -1.5em; margin-bottom: 2em;">
-	<div style="text-align: center; font-weight: 18px; margin-bottom: .3em">🎉👏🤗🎁</div>
+	<div style="text-align: center; font-weight: 18px; margin-bottom: .3em">{{emoji('birthday', 4)}}</div>
 	<div style="
 		
 		color: #3D4852;

@@ -8,6 +8,20 @@ function preview($text, $length)
     return rtrim($matches[0], ' ') . '...';
 }
 
+function emoji($type, $number)
+{
+	$emojis = [
+		'birthday' => ['🎉', '👏', '🤗', '🎁', '🎂', '🍾', '😃']
+	];
+
+	if (! array_key_exists($type, $emojis))
+		return null;
+
+	$array = $emojis[$type];
+	shuffle($array);
+	return array_slice($array, 0, $number);
+}
+
 function wiki($str)
 {
 	return 'https://wikipedia.com/wiki/' . $str;
