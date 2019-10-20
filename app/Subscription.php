@@ -14,9 +14,14 @@ class Subscription extends PianoLit
         return $query->where('email', 'arthurvillar@gmail.com')->first();
     }
 
-    public function scopeLists()
+    public function scopeLists($query, $list = null)
     {
-        return $this->lists;
+        if (is_null($list))
+            return $this->lists;
+
+        $this->validateList($list);
+
+        return [$list];
     }
 
     public function getRouteKeyName()
@@ -73,9 +78,11 @@ class Subscription extends PianoLit
     	if ($record->exists())
     		return $record->first()->reactivateAll();
 
-        \Mail::to($email)->send(new Welcome);
+        $subscriber = $this->create(['email' => $email]);
 
-    	return $this->create(['email' => $email]);
+        \Mail::to($email)->send(new Welcome($subscriber));
+
+        return $subscriber;
     }
 
     public function scopeActiveList($query, $list)

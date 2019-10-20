@@ -41,7 +41,7 @@
                 </div>
                 
                 <div>
-                    <p>You have received this email as a subscriber of PianoLIT.com<br>You can <a href="{{route('subscriptions.edit', $email)}}" target="_blank" class="link-none"><strong>unsubscribe</strong></a> from these emails here<br>(Don't worry, we won't take it personally).</p>
+                    <p>You have received this email as a subscriber of PianoLIT.com<br>You can <a href="{{route('subscriptions.edit', ['subscription' => $email, 'list' => $list ?? null])}}" target="_blank" class="link-none"><strong>unsubscribe</strong></a> from these emails here<br>(Don't worry, we won't take it personally).</p>
                     <p>© {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')</p>
                 </div>
             </div>

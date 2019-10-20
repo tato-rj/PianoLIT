@@ -18,7 +18,7 @@
 			<p class="text-center mb-4">The email <strong style="font-size: 1.2em">{{$subscription->email}}</strong> is subscribed to:</p>
 			<table class="table table-bordered mx-auto" style="max-width: 380px">
 				<tbody>
-	              @foreach(\App\Subscription::lists() as $list)
+	              @foreach(\App\Subscription::lists(request('list')) as $list)
 					<tr>
 						<td><h5 class="text-teal m-0"><strong>{{snake_str($list)}}</strong></h5></td>
 						<td class="text-center align-middle">@include('admin.components.toggle.subscription', ['list' => $list])</td>

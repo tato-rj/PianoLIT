@@ -11,14 +11,16 @@ class Welcome extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    public $subscriber;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($subscriber)
     {
-        //
+        $this->subscriber = $subscriber;
     }
 
     /**

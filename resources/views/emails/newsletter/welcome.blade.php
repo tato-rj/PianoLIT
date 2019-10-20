@@ -1,4 +1,4 @@
-@component('mail::message')
+@component('mail::message', ['email' => $subscriber->email])
 # Welcome to our newsletter
 
 Thank you for subscribing! We will send you notifications about our latests posts, app features and promotions about once per month. We will also let you know whenever there is a birthday of a famous composer!
