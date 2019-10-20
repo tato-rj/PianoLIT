@@ -57,6 +57,11 @@ trait PieceExtraAttributes
         return $name;
     }
 
+    public function getMediumNameWithComposerAttribute()
+    {
+        return $this->medium_name . ' by ' . $this->composer->short_name;
+    }
+
     public function getTimelineNameAttribute()
     {
         if ($this->nickname)

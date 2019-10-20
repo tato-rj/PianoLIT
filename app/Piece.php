@@ -13,7 +13,7 @@ class Piece extends PianoLit
     protected $with = ['composer', 'tags', 'views'];
     protected $withCount = ['views', 'tags'];
     protected $appends = ['long_name', 'medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name', 'timeline_url', 'period_name'];
-    protected $report_by = 'long_name';
+    protected $report_by = 'medium_name_with_composer';
 
     public static function boot()
     {
