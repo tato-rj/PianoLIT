@@ -23,31 +23,21 @@
         @component('mail::footer')
             <div style="margin: 8px 0">
                 <div style="margin-bottom: 32px">
-                    <a href="#" class="link-none">
+                    <a target="_blank" href="{{config('services.channels.facebook')}}" class="link-none">
                         <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/facebook.png')}}">
                     </a>
-                    <a href="#" class="link-none">
+                    <a target="_blank" href="{{config('services.channels.youtube')}}" class="link-none">
                         <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/youtube.png')}}">
                     </a>
-                    <a href="#" class="link-none">
-                        <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/twitter.png')}}">
-                    </a>
-                    <a href="#" class="link-none">
+                    <a target="_blank" href="{{config('services.channels.pinterest')}}" class="link-none">
                         <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/pinterest.png')}}">
                     </a>
-                    <a href="#" class="link-none">
+                    <a target="_blank" href="{{config('services.channels.reddit')}}" class="link-none">
                         <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/reddit.png')}}">
                     </a>
-                    <a href="#" class="link-none">
+                    <a target="_blank" href="{{config('services.channels.instagram')}}" class="link-none">
                         <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/instagram.png')}}">
                     </a>
-                </div>
-
-                <div style="margin-bottom: 32px">
-                    <a href="{{route('home')}}" style="margin: 0 10px" class="link-none">home</a>|
-                    <a href="{{route('home')}}" style="margin: 0 10px" class="link-none">app</a>|
-                    <a href="{{route('home')}}" style="margin: 0 10px" class="link-none">blog</a>|
-                    <a href="{{route('home')}}" style="margin: 0 10px" class="link-none">contact</a>
                 </div>
                 
                 <div>
