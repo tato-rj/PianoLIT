@@ -101,6 +101,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware(['web'])
              ->prefix('email-preview')
+             ->name('email-preview.')
              ->namespace($this->namespace)
              ->group(base_path('routes/mail.php'));
     }

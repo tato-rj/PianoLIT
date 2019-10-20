@@ -14,6 +14,8 @@ Route::resources([
     'playlists' => 'PlaylistsController'
 ]);
 
+Route::patch('composers/{composer}/toggle-famous', 'ComposersController@toggleFamous')->name('composers.toggle-famous');
+
 Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::get('', 'AdminsController@blog')->name('index');

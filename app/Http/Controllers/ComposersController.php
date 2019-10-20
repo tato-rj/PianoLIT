@@ -121,6 +121,13 @@ class ComposersController extends Controller
         return redirect()->back()->with('status', "$request->name has been updated");
     }
 
+    public function toggleFamous(Request $request, Composer $composer)
+    {
+        $composer->update(['is_famous' => ! $composer->is_famous]);
+
+        return response(200);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

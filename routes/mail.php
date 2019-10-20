@@ -6,8 +6,10 @@ use App\{Composer, Subscription};
 
 Route::get('welcome', function() {
 	return new Welcome;
-});
+})->name('welcome');
 
-Route::get('onthisday', function () {
-    return new OnThisDay(Composer::bornToday()->inRandomOrder()->first(), Subscription::admin());
-});
+Route::get('birthday', function () {
+	$composer = request()->has('composer_id') ? Composer::find(request('composer_id')) : Composer::bornToday()->inRandomOrder()->first();
+
+    return new OnThisDay($composer, Subscription::admin());
+})->name('birthday');

@@ -29,6 +29,7 @@
           <thead>
             <tr>
               <th class="border-0" scope="col">Name</th>
+              <th class="border-0" scope="col">Is Famous</th>
               <th class="border-0" scope="col">Pieces count</th>
               <th class="border-0" scope="col"></th>
             </tr>
@@ -111,6 +112,21 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
+$('input.famous-toggle').on('change', function() {
+  let $input = $(this);
+
+  $.ajax({
+    url: $input.attr('data-url'),
+    type: 'PATCH',
+    success: function(res) {
+      alert('Your update was successful!');
+    },
+    error: function(xhr,status,error) {
+      alert('Something went wrong: ' + error);
+    }
+  });
+});
+
 $('.delete').on('click', function (e) {
   $composer = $(this);
   name = $composer.attr('data-name');
