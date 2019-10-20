@@ -49,8 +49,7 @@ class SendAdminReport extends Command
             array_push($results, [
                 'name' => class_str($model),
                 'title' => class_str($model, $plural = true),
-                'data' => $model::report($this->duration)->get(),
-                'duration' => $this->duration
+                'data' => $model::report($this->duration)->get()
             ]);
         }
 
