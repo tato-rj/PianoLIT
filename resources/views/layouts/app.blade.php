@@ -171,9 +171,11 @@
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
-
+    <script type='application/javascript' src="{{asset('js/vendor/fastclick.js')}}"></script>
     <script type="text/javascript">
-
+$(function() {
+    FastClick.attach(document.body);
+});
     $(window).bind('load', function() {
         $('#load-screen').fadeOut(function() {
             $(this).remove();

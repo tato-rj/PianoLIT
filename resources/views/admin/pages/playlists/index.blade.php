@@ -44,6 +44,9 @@
     </div>
 
     <div class="row my-3">
+      <div class="col-12 text-right">
+        <button data-toggle="modal" data-target="#playlists-overview" class="btn btn-sm btn-warning">Overview</button>
+      </div>
       <div class="col-12">
         <table class="table table-hover w-100" id="playlist-table">
           <thead>
@@ -77,6 +80,7 @@
   </div>
 </div>
 
+@include('admin.pages.playlists.overview')
 @include('admin.components.modals.delete', ['model' => 'playlist'])
 @endsection
 
