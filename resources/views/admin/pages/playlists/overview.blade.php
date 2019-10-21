@@ -16,8 +16,9 @@
               @foreach($playlist->pieces as $piece)
               <div class="mb-1">
                 <div style="line-height: 1" class="d-flex">
-                  <div class="mr-1 text-truncate"><small>{{$loop->iteration}}. {{$piece->medium_name}}</small></div>
-                  @include('admin.components.play', ['audio' => storage($piece->audio_path)])</div>
+                  @include('admin.components.play', ['audio' => storage($piece->audio_path)])
+                  <div class="ml-1 text-truncate"><small>{{$loop->iteration}}. {{$piece->medium_name}}</small></div>
+                </div>
                 <div class="text-muted" style="line-height: 1"><small>by {{$piece->composer->short_name}}</small></div>
               </div>
               @endforeach
