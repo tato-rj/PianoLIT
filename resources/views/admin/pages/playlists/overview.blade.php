@@ -12,7 +12,7 @@
           @foreach($playlists as $playlist)
           <div class="col-lg-3 col-md-4 col-12 mb-2">
             <div class="bg-light text-muted mb-2 rounded px-1"><strong><span class="text-blue mr-2">{{$loop->iteration}}</span>{{$playlist->name}}</strong></div>
-            <div class="px-1">
+            <div class="px-2">
               @forelse($playlist->pieces as $piece)
               <div class="mb-1">
                 <div style="line-height: 1" class="d-flex">
@@ -24,7 +24,7 @@
                 </div>
               </div>
               @empty
-              <p class="text-muted">This playlist is empty</p>
+              <p class="text-muted ml-2"><small>This playlist is empty</small></p>
               @endforelse
             </div>
           </div>
