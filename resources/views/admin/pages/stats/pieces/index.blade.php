@@ -283,17 +283,17 @@ let gender_pieces_count = [];
 
 for (var i=0; i < Object.keys(genderRecords).length; i++) {
     let index = Object.keys(genderRecords)[i];
-    gender_pieces_count[i] = genderRecords[index].count;
+    gender_pieces_count[index] = genderRecords[index].count;
 }
-console.log(gender_pieces_count);
+
 var genderChartElement = document.getElementById("genderChart").getContext('2d');
 var genderChart = new Chart(genderChartElement,{
     type: 'pie',
     data: {
-        labels: ['Female', 'Male'],
+        labels: ['Male', 'Female'],
         datasets: [{
-            data: gender_pieces_count,
-            backgroundColor: ['#f66d9b', '#3490dc']
+            data: [gender_pieces_count['male'], gender_pieces_count['female']],
+            backgroundColor: ['#3490dc', '#f66d9b']
         }]
     },
     options: {
