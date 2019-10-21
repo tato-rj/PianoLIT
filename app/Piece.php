@@ -151,7 +151,7 @@ class Piece extends PianoLit
         return $count;
     }
 
-    public function scopeByRecordingsAvailable($query)
+    public function scopebyRecordingsAvailable($query)
     {
         return $query->whereHas('tags', function($q) {
             return $q->whereIn('name', ['elementary', 'beginner', 'intermediate']);
@@ -160,6 +160,15 @@ class Piece extends PianoLit
         });
     }
     
+    public function scopebyGender($query)
+    {
+        return $query->get()->groupBy(function($piece) {
+            return $piece->composer->gender;
+        })->each(function($gender) {
+            $gender['count'] = $gender->count();
+        });
+    }
+
     public function isFavorited($user_id)
     {
         $result = \DB::table('favorites')->where([

@@ -32,18 +32,17 @@ class StatsController extends Controller
         
         $levelsStats = Tag::levels()->withCount('pieces')->get();
         $periodsStats = Tag::periods()->withCount('pieces')->get();
-        $recStats = Piece::byRecordingsAvailable();
-        
+        $genderStats = Piece::byGender();
         $pieces = Piece::withCount('tags')->get();
         $tagsPiecesStats = $pieces->groupBy('tags_count');
 
         $publicDomainCount = Piece::inPublicDomain()->count();
-        $youtubeCount = Piece::withYoutube()->count();
+        $videosCount = Piece::withVideos()->count();
         $itunesCount = Piece::withiTunes()->count();
 
         return view('admin.pages.stats.pieces.index', compact([
-            'tagStats', 'tagsCount', 'levelsStats', 'recStats', 'periodsStats', 'pieces', 
-            'youtubeCount', 'itunesCount', 'tagsPiecesStats', 'publicDomainCount'
+            'tagStats', 'tagsCount', 'levelsStats', 'genderStats', 'periodsStats', 'pieces', 
+            'videosCount', 'itunesCount', 'tagsPiecesStats', 'publicDomainCount'
         ]));
     }
 

@@ -62,11 +62,11 @@
 
     <div class="row">
       @include('admin.pages.stats.row', [
-        'title' => 'Recordings count',
-        'subtitle' => 'Pieces by number of audio recordings.',
-        'id' => 'recChart',
+        'title' => 'Gender',
+        'subtitle' => 'Male vs female composers.',
+        'id' => 'genderChart',
         'col' => '4',
-        'data' => $recStats])
+        'data' => $genderStats])
 
       @include('admin.pages.stats.row', [
         'title' => 'Videos',
@@ -278,22 +278,22 @@ var levelsChart = new Chart(levelsChartElement,{
 </script>
 
 <script type="text/javascript">
-let recRecords = JSON.parse($('#recChart').attr('data-records'));
-let rec_pieces_count = [0,0,0,0];
+let genderRecords = JSON.parse($('#genderChart').attr('data-records'));
+let gender_pieces_count = [];
 
-for (var i=0; i < Object.keys(recRecords).length; i++) {
-    let index = Object.keys(recRecords)[i];
-    rec_pieces_count[index] = recRecords[index].count;
+for (var i=0; i < Object.keys(genderRecords).length; i++) {
+    let index = Object.keys(genderRecords)[i];
+    gender_pieces_count[i] = genderRecords[index].count;
 }
-
-var recChartElement = document.getElementById("recChart").getContext('2d');
-var recChart = new Chart(recChartElement,{
+console.log(gender_pieces_count);
+var genderChartElement = document.getElementById("genderChart").getContext('2d');
+var genderChart = new Chart(genderChartElement,{
     type: 'pie',
     data: {
-        labels: ['0 recorgings', '1 recording','2 recordings','3 recordings'],
+        labels: ['Female', 'Male'],
         datasets: [{
-            data: rec_pieces_count,
-            backgroundColor: getRandom(colors, 4)
+            data: gender_pieces_count,
+            backgroundColor: ['#f66d9b', '#3490dc']
         }]
     },
     options: {
