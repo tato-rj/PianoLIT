@@ -5,8 +5,8 @@
         'title' => 'Your favorite composer\' birthday in your mailbox',
         'description' => 'We\'ll send you an email whenever a famous composer has a birthday, along with some relevant world news from the time the composer was born.',
         'thumbnail' => asset('images/misc/thumbnails/birthdays.jpg'),
-        'created_at' => carbon('10-21-2019'),
-        'updated_at' => carbon('20-21-2019')
+        'created_at' => carbon('21-10-2019'),
+        'updated_at' => carbon('21-10-2019')
 	]])
 
 @push('header')
