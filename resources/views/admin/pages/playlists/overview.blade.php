@@ -16,7 +16,7 @@
               @foreach($playlist->pieces as $piece)
               <div class="mb-1">
                 <div style="line-height: 1"><small>{{$loop->iteration}}. {{$piece->medium_name}}</small></div>
-                <div class="text-muted" style="line-height: 1"><small>{{$piece->composer->short_name}}</small></div>
+                <div class="text-muted" style="line-height: 1"><small>by {{$piece->composer->short_name}}</small></div>
               </div>
               @endforeach
             </div>
