@@ -10,7 +10,7 @@
       <div class="modal-body">
         <div class="row">
           @foreach($playlists as $playlist)
-          <div class="col-lg-3 col-md-4 col-12 mb-2">
+          <div class="col-lg-3 col-md-4 col-12 mb-3">
             <div class="bg-light text-muted mb-2 rounded px-1"><strong><span class="text-blue mr-2">{{$loop->iteration}}</span>{{$playlist->name}}</strong></div>
             <div class="px-2">
               @forelse($playlist->pieces as $piece)
