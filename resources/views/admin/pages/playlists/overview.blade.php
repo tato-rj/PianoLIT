@@ -14,7 +14,8 @@
             <div class="bg-light text-muted mb-2 rounded px-1"><strong><span class="text-blue mr-2">{{$loop->iteration}}</span>{{$playlist->name}}</strong></div>
             <div class="px-1">
               @foreach($playlist->pieces as $piece)
-              <div><small>{{$loop->iteration}}. {{$piece->medium_name_with_composer}}</small></div>
+              <div><small>{{$loop->iteration}}. {{$piece->medium_name}}</small></div>
+              <div class="text-muted"><small>{{$piece->composer->short_name}}</small></div>
               @endforeach
             </div>
           </div>
