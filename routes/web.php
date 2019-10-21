@@ -10,6 +10,14 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 });
 
+Route::prefix('campaigns')->group(function() {
+
+	Route::get('birthdays', function() {
+		return view('promotions.birthdays');
+	});
+
+});
+
 Route::get('youtube', function() {
 	return redirect(config('services.channels.youtube'));
 })->name('youtube');

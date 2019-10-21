@@ -1,7 +1,7 @@
 <footer class="bg-light py-6">
 	<div class="container">
 		<div class="col-lg-8 col-md-10 col-12 mx-auto text-center">
-			<h2 class="mb-5">Subscribe for updates</h2>
+			<h2 class="mb-5">Subscribe to our newsletter</h2>
 			<div class="row mb-5">
 				<div class="col-lg-6 col-md-8 col-10 mx-auto">
 					@include('components.form.subscription')
