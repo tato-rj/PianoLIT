@@ -49,6 +49,7 @@
 @endsection
 
 @push('scripts')
+@include('components.addthis')
 <script type="text/javascript">
 
 </script>
