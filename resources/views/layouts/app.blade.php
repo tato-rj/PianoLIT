@@ -146,14 +146,20 @@
 </head>
 <body>
     <div id="app">
+        @if($full ?? true)
         <header class="container">
             @include('layouts.menu')
         </header>
+        @endif
+
         <main style="overflow-x: hidden">
             @yield('content')
         </main>
         @include('components.overlays.search.form')
+        
+        @if($full ?? true)
         @include('layouts.footer')
+        @endif
 
         @if($message = session('status'))
         @include('components/alerts/success')

@@ -1,21 +1,19 @@
 <footer class="bg-light py-6">
 	<div class="container">
 		<div class="col-lg-8 col-md-10 col-12 mx-auto text-center">
-			<h2 class="mb-5">Subscribe to our newsletter</h2>
-			<div class="row mb-5">
+			<h2>Subscribe to our newsletter</h2>
+			<p class="text-muted mb-4">We'll send you one monthly email with news, updates and fun piano resources we discover</p>
+			<div class="row mb-3">
 				<div class="col-lg-6 col-md-8 col-10 mx-auto">
 					@include('components.form.subscription')
 				</div>
 			</div>
-
 			<div class="mb-5">
-				<ul class="d-flex list-flat justify-content-center">
+{{-- 				<ul class="d-flex list-flat justify-content-center">
 					<li class="m-2 text-muted"><a href="{{route('posts.index')}}" class="link-inherit">blog</a></li>
 					<li class="m-2 text-muted"><a href="{{route('youtube')}}" class="link-inherit">youtube</a></li>
-					{{-- <li class="m-2 text-muted"><a href="#" class="link-inherit">press</a></li> --}}
-					{{-- <li class="m-2 text-muted"><a href="#" class="link-inherit">privacy</a></li> --}}
 					<li class="m-2 text-muted"><a href="mailto:contact@leftlaneapps.com" class="link-inherit">contact us</a></li>
-				</ul>
+				</ul> --}}
 				<ul class="d-flex list-flat align-items-center justify-content-center social-icons">
 					<li class="m-2"><a target="_blank" href="{{config('services.channels.facebook')}}" class="link-inherit"><i class="fab fa-facebook-f"></i></a></li>
 					<li class="m-2"><a target="_blank" href="{{config('services.channels.youtube')}}" class="link-inherit"><i class="fab fa-youtube"></i></a></li>
