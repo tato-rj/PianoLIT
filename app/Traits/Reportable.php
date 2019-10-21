@@ -14,8 +14,8 @@ trait Reportable
 		return $this->$name;
 	}
 
-	public function scopeReport($query, $days)
+	public function scopeReport($query, $days, $initialDate)
 	{
-		return $query->whereBetween('created_at', [now()->subDays($days), now()]);
+		return $query->whereBetween('created_at', [now()->subDays($days), $initialDate]);
 	}
 }

@@ -26,6 +26,6 @@ class AdminReport extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject('PianoLIT weekly report')->markdown('emails.admin.report');
+        return $this->subject('PianoLIT weekly report')->markdown('emails.admin.report.index');
     }
 }

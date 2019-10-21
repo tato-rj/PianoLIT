@@ -20,13 +20,13 @@ class SendAdminReport extends Command
 
     protected $models = [
         \App\Subscription::class,
-        // \App\User::class,
-        // \App\Membership::class,
         \App\Piece::class,
-        // \App\Composer::class,
         \App\Blog\Post::class,
         \App\Quiz\Quiz::class,
         \App\Quiz\QuizResult::class
+        // \App\User::class,
+        // \App\Membership::class,
+        // \App\Composer::class,
     ];
     /**
      * Create a new command instance.
@@ -49,7 +49,8 @@ class SendAdminReport extends Command
             array_push($results, [
                 'name' => class_str($model),
                 'title' => class_str($model, $plural = true),
-                'data' => $model::report($this->duration)->get()
+                'data' => $model::report($this->duration, now())->get(),
+                'pastData' => $model::report($this->duration, now()->subDays($this->duration))->get()
             ]);
         }
 

@@ -1,4 +1,9 @@
 <?php
+function hex($symbol, $type = 'html')
+{
+	return (new \App\Tools\Hex)->get($symbol, $type);
+}
+
 function class_str($class, $plural = false)
 {
 	$str = ucwords(camel_str(str_replace('\\', '', substr($class, strrpos($class, '\\')))));
