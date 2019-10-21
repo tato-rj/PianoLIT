@@ -13,7 +13,7 @@
           <div class="col-lg-3 col-md-4 col-12 mb-2">
             <div class="bg-light text-muted mb-2 rounded px-1"><strong><span class="text-blue mr-2">{{$loop->iteration}}</span>{{$playlist->name}}</strong></div>
             <div class="px-1">
-              @foreach($playlist->pieces as $piece)
+              @forelse($playlist->pieces as $piece)
               <div class="mb-1">
                 <div style="line-height: 1" class="d-flex">
                   @include('admin.components.play', ['audio' => storage($piece->audio_path)])
@@ -23,7 +23,9 @@
                   </div>
                 </div>
               </div>
-              @endforeach
+              @empty
+              <p class="text-muted">This playlist is empty</p>
+              @endforelse
             </div>
           </div>
           @endforeach
