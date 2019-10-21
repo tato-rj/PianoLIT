@@ -37,7 +37,7 @@ class SendAdminReport extends Command
     {
         parent::__construct();
 
-        $this->recipients = Admin::where('email', 'arthurvillar@gmail.com')->get();//Admin::managers()->get();
+        $this->recipients = Admin::managers()->get();
         $this->reports = $this->generateReports();
     }
 
