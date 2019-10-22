@@ -13,11 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        \View::composer('*', function($view) {
-            $view->with([
-                'videos' => (new \App\Services\Youtube)->favorites(3)
-            ]);
-        });
+        //
     }
 
     /**

@@ -138,6 +138,7 @@
         window.app = <?php echo json_encode([
             'csrfToken' => csrf_token(),
             'url' => \Request::root(),
+            'youtube_key' => env('YOUTUBE_V3_KEY'),
             'user' => null
         ]); ?>
     </script>
@@ -173,9 +174,54 @@
     <script src="{{ mix('js/app.js') }}"></script>
     <script type='application/javascript' src="{{asset('js/vendor/fastclick.js')}}"></script>
     <script type="text/javascript">
-$(function() {
-    FastClick.attach(document.body);
-});
+    $(document).ready(function(){
+        $.get('https://www.googleapis.com/youtube/v3/channels', {
+            part: 'contentDetails',
+            id: 'UCOB67MpdySxyTCZHvWgxHeg',
+            key: app.youtube_key},
+            function(data, status, xhr) {
+                $.each(data.items, function(key, item) {
+                    getVideos(item.contentDetails.relatedPlaylists.uploads);
+                });
+            }
+        );
+
+        function getVideos(id) {
+
+            $.get('https://www.googleapis.com/youtube/v3/playlistItems', {
+                part: 'snippet',
+                maxResults: 20,
+                playlistId: id,
+                key: app.youtube_key},
+                function(data, status, xhr) {
+                    let videos = getRandom(data.items, 2);
+                    $('iframe.youtube-video-1').attr('src', 'https://www.youtube.com/embed/' + videos[0].snippet.resourceId.videoId);
+                    $('iframe.youtube-video-2').attr('src', 'https://www.youtube.com/embed/' + videos[1].snippet.resourceId.videoId);
+
+                    $('#youtube-previews').css('opacity', 1);
+                }
+            );
+        }
+
+        function getRandom(arr, n) {
+            var result = new Array(n),
+                len = arr.length,
+                taken = new Array(len);
+            if (n > len)
+                throw new RangeError("getRandom: more elements taken than available");
+            while (n--) {
+                var x = Math.floor(Math.random() * len);
+                result[n] = arr[x in taken ? taken[x] : x];
+                taken[x] = --len in taken ? taken[len] : len;
+            }
+            return result;
+        }
+    });
+
+    $(function() {
+        FastClick.attach(document.body);
+    });
+    
     $(window).bind('load', function() {
         $('#load-screen').fadeOut(function() {
             $(this).remove();

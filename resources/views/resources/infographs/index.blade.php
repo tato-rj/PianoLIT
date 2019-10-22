@@ -23,7 +23,7 @@
 	'subtitle' => 'Cool infographs about all music things related'])
 
 @if(app()->isLocal())
-<div class="my-6">
+<div class="container mb-5">
 	@include('components/animations/workers')
 	<h3 class="text-grey text-center my-4">Coming up soon!</h3>
 </div>
@@ -45,14 +45,6 @@
 @include('components.addthis')
 
 <script type="text/javascript">
-$('.staff').on('click', function() {
-	$('.staff').next('.controls').fadeOut(function() {
-		$(this).find('a').hide();
-	});
 
-	$(this).next('.controls').fadeIn('fast', function() {
-		$(this).find('a').show();
-	});
-});
 </script>
 @endpush
