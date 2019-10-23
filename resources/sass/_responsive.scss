@@ -67,9 +67,6 @@
 	}
 
 	.navbar-nav {
-		margin-top: 0.5rem !important;
-		margin-bottom: 0.5rem !important;
-
 		.nav-item {
 			border-bottom: 1px solid #dee2e6 !important;
 			padding-top: 0.5rem !important;
@@ -127,6 +124,10 @@
 @include media-breakpoint-down(md) {
 	.inline-on-collapse {
 		display: inline-block !important;
+	}
+
+	.notifications-count {
+		transform: translate(-50%, -50%);
 	}
 }
 @include media-breakpoint-down(lg) {
