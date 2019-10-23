@@ -36,6 +36,9 @@ class SendAdminReport extends Command
     public function __construct()
     {
         parent::__construct();
+        
+        if (testing())
+            return null;
 
         $this->recipients = Admin::managers()->get();
         $this->reports = $this->generateReports();

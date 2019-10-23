@@ -13,16 +13,19 @@
 
 		<div class="panel-body px-4 py-3">
 			<div class="list-group">
-				@include('components.panel.item')
-				@include('components.panel.item')
+				@forelse(auth()->user()->unreadNotifications as $notification)
+				@include('components.panel.item', $notification)
+				@empty
+				<i class="text-muted">You have no new notifications</i>
+				@endforelse
 			</div>
-			{{-- You have no new notifications --}}
 		</div>
-
+		@if(auth()->user()->hasNewNotifications())
 		<div class="panel-footer bg-light px-4 py-3 position-absolute w-100" style="left: 0; bottom: 0;">
 			<div class="text-center">
-				<a href="#"><small>Mark all as read</small></a>
+				<a href="{{route('admin.notifications.read')}}"><small>Mark all as read</small></a>
 			</div>
 		</div>
+		@endif
 	</div>
 </div>

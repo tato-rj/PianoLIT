@@ -27,7 +27,6 @@ class CreateUsersTable extends Migration
             
             $table->string('locale')->default('en_US');
             $table->string('password');
-            // $table->timestamp('trial_ends_at')->nullable();
             $table->boolean('super_user')->default(false);
             $table->rememberToken();
             $table->timestamps();

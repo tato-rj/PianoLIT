@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Mail\Newsletter\Welcome;
+use App\Notifications\Subscriptions\NewSubscriber;
 
 class Subscription extends PianoLit
 {    
@@ -40,7 +41,7 @@ class Subscription extends PianoLit
         return $this->$list ? $results[0] : $results[1];
     }
 
-    public function reactivate()
+    public function reactivate($list)
     {
         $this->validateList($list);
 
@@ -90,6 +91,8 @@ class Subscription extends PianoLit
         ]);
 
         \Mail::to($form->email)->send(new Welcome($subscriber));
+        
+        Admin::notifyAll(new NewSubscriber($subscriber));
 
         return $subscriber;
     }

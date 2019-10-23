@@ -30,12 +30,19 @@ trait AdminEvents
         Storage::fake('public');
 
         $quiz = make(Quiz::class, ['cover_image' => UploadedFile::fake()->image('cover.jpg')]);
-        $quiz->cropped_width = '200';
-        $quiz->cropped_height = '200';
-        $quiz->cropped_x = '0';
-        $quiz->cropped_y = '0';
 
-        $this->post(route('admin.quizzes.store'), $quiz->toArray());
+        $this->post(route('admin.quizzes.store'), [
+            'title' => $quiz->title,
+            'level_id' => $quiz->level_id,
+            'description' => $quiz->description,
+            'questions' => $quiz->questions(),
+            'topics' => $quiz->topics,
+            'cover_image' => $quiz->cover_image,
+            'cropped_width' => '200',
+            'cropped_height' => '200',
+            'cropped_x' => '0',
+            'cropped_y' => '0',
+        ]);
 
         return Quiz::byTitle($quiz->title);
     }

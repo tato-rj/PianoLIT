@@ -59,8 +59,15 @@ class QuizTest extends AppTest
         $quiz = $this->storeQuiz();
 
         $title = $quiz->title;
-
-        $this->patch(route('admin.quizzes.update', $quiz->slug), make(Quiz::class, ['title' => 'New title'])->toArray());
+        
+        $update = make(Quiz::class, ['title' => 'New title']);
+        
+        $this->patch(route('admin.quizzes.update', $quiz->slug), [
+            'title' => $update->title,
+            'level_id' => $update->level_id,
+            'description' => $update->description,
+            'questions' => $update->questions
+        ]);
 
         $this->assertNotEquals($title, $quiz->fresh()->title);       
     }

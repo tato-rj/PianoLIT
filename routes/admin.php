@@ -16,6 +16,12 @@ Route::resources([
 
 Route::patch('composers/{composer}/toggle-famous', 'ComposersController@toggleFamous')->name('composers.toggle-famous');
 
+Route::prefix('notifications')->name('notifications.')->group(function() {
+
+	Route::get('read', 'NotificationsController@read')->name('read');
+
+});
+
 Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::get('', 'AdminsController@blog')->name('index');

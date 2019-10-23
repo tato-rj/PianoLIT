@@ -20,8 +20,7 @@ $factory->define(User::class, function (Faker $faker) {
         'age_range' => randval($age),
         'experience' => randval($experience),
         'preferred_piece_id' => 1,//$favorite->id,
-        'occupation' => randval($occupation),
-        // 'trial_ends_at' => now()->addWeek()
+        'occupation' => randval($occupation)
     ];
 });
 
@@ -38,7 +37,9 @@ $factory->define(Admin::class, function (Faker $faker) {
 $factory->define(Subscription::class, function (Faker $faker) {
     return [
         'email' => $faker->unique()->safeEmail,
-        'origin_url' => $faker->url
+        'origin_url' => $faker->url,
+        'newsletter_list' => true,
+        'birthday_list' => true
     ];
 });
 

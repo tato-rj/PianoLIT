@@ -79,9 +79,12 @@ class AppTest extends TestCase
             'started_at' => $wait ? now()->subSeconds(5) : now()]);
     }
 
-    public function unsubscribe($email)
+    public function unsubscribe($email, $list)
     {
-        return $this->post(route('api.subscriptions.unsubscribe', ['email' => $email]));
+        return $this->post(route('api.subscriptions.unsubscribe', [
+            'email' => $email,
+            'list' => $list
+        ]));
     }
 
     protected function postMembership($user, $membership)

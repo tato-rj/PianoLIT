@@ -20,13 +20,13 @@ class SubscriptionTest extends AppTest
     /** @test */
     public function upon_subscription_an_email_is_automatically_reactivated_if_it_exists_or_created_new_if_it_doesnt()
     {
-        $unsubscribedSubscription = create(Subscription::class, ['is_active' => false]);
+        $unsubscribedSubscription = create(Subscription::class, ['newsletter_list' => false]);
 
-        $this->assertFalse($unsubscribedSubscription->is_active);
+        $this->assertFalse($unsubscribedSubscription->getStatusFor('newsletter_list', $boolean = true));
 
         $this->subscribe($unsubscribedSubscription->email);
 
-        $this->assertTrue($unsubscribedSubscription->fresh()->is_active);
+        $this->assertTrue($unsubscribedSubscription->fresh()->getStatusFor('newsletter_list', $boolean = true));
 
         $this->assertCount(1, Subscription::all());
 
@@ -40,13 +40,13 @@ class SubscriptionTest extends AppTest
     {
         $subscription = create(Subscription::class);
 
-        $this->assertTrue($subscription->is_active);
+        $this->assertTrue($subscription->getStatusFor('newsletter_list', true));
 
-        $this->unsubscribe($subscription->email);
+        $this->unsubscribe($subscription->email, 'newsletter_list');
 
         $this->assertDatabaseHas('subscriptions', ['email' => $subscription->email]);
 
-        $this->assertFalse($subscription->fresh()->is_active);
+        $this->assertFalse($subscription->fresh()->getStatusFor('newsletter_list', true));
     }
 
     /** @test */

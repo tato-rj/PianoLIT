@@ -21,9 +21,27 @@
             window.app = <?php echo json_encode([
                 'csrfToken' => csrf_token(),
                 'url' => \Request::root(),
-                'user' => auth()->guard('admin')->user()
+                'user' => auth()->guard('admin')->user(),
+                'user_model' => get_class(auth()->guard('admin')->user()),
+                'user_id' => auth()->guard('admin')->user()->id,
             ]); ?>
         </script>
+        <style type="text/css">
+          .notifications-count {
+            width: 18px; 
+            height: 18px; 
+            font-size: .7em; 
+            bottom: 0; 
+            right: 0;
+            display: none;
+          }
+          .notifications-link.active i {
+            color: #38c172;
+          }
+          .notifications-link.active .notifications-count {
+            display: flex !important;
+          }
+        </style>
         @yield('head')
     </head>
 <body class="fixed-nav sticky-footer bg-dark" id="page-top">
@@ -48,6 +66,41 @@
   @endif
 
   <script type="text/javascript" src="{{mix('js/admin.js')}}"></script>
+
+<script type="text/javascript">
+  $('a[data-toggle="fixed-panel"]').on('click', function() {
+    let $link = $(this);
+    let $panel = $($link.attr('data-target'));
+
+    $link.removeClass('active');
+
+    $panel.fadeToggle();
+    
+    $('body').toggleCssBetween('overflow', ['hidden', 'auto']);
+    
+    $panel.find('.panel-content').css('right', 0);
+  });
+
+  $('button[data-dismiss="fixed-panel"], .fixed-panel .panel-overlay').on('click', function() {
+    let $panel = $(this).closest('.fixed-panel');
+
+    $panel.find('.panel-content').css('right', '-100%');
+
+    $panel.fadeToggle();
+    
+    $('body').toggleCssBetween('overflow', ['hidden', 'auto']);
+  });
+
+  $('.notification-item').on('click', function() {
+    let notificationId = $(this).attr('data-id');
+    let url = $(this).attr('data-url');
+    let target = $(this).attr('data-target');
+
+    $.get(url, function(data, status, xhr) {
+      window.location.href = target;
+    });
+  });
+</script>
 
   <script type="text/javascript">
     setTimeout(function() {
@@ -75,21 +128,6 @@
   </script>
   @yield('scripts')
   <script type="text/javascript">
-    $('a[data-toggle="fixed-panel"]').on('click', function() {
-      let $panel = $($(this).attr('data-target'));
-      $panel.fadeToggle();
-      $('body').toggleCssBetween('overflow', ['hidden', 'auto']);
-      $panel.find('.panel-content').css('right', 0);
-    });
-
-    $('button[data-dismiss="fixed-panel"], .fixed-panel .panel-overlay').on('click', function() {
-      let $panel = $(this).closest('.fixed-panel');
-
-      $panel.find('.panel-content').css('right', '-100%');
-      $panel.fadeToggle();
-      $('body').toggleCssBetween('overflow', ['hidden', 'auto']);
-    });
-
     var audio = new Audio;
     $(document).on('click', '.play-clip', function() {
       let $icon = $(this).find('i');

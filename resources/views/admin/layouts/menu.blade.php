@@ -188,7 +188,12 @@
     </ul>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-        <a class="nav-link" data-toggle="fixed-panel" data-target="#notifications-panel"><i class="fas fa-fw fa-bell"></i><span class="inline-on-collapse ml-1">Notifications</span></a>
+        <a class="nav-link position-relative notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" data-toggle="fixed-panel" data-target="#notifications-panel">
+          <i class="fas fa-fw fa-bell"></i><span class="inline-on-collapse ml-1">Notifications</span>
+          <div class="notifications-count bg-white rounded-circle position-absolute font-weight-bold shadow-sm">
+            <div class="d-flex flex-center w-100 h-100">{{auth()->user()->unreadNotifications->count()}}</div>
+          </div>
+        </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" data-toggle="modal" data-target="#logoutModal">

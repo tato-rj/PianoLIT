@@ -21,6 +21,9 @@ class SendTimelineEmail extends Command
     {
         parent::__construct();
 
+        if (testing())
+            return null;
+
         $this->composer = Composer::famous()->bornToday()->inRandomOrder()->first();
     }
 

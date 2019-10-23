@@ -40,7 +40,7 @@ $factory->define(QuizResult::class, function (Faker $faker) {
 $factory->define(Level::class, function (Faker $faker) {
     return [
         'slug' => str_slug($faker->word),
-        'name' => $faker->word
+        'name' => $faker->unique()->word
     ];
 });
 

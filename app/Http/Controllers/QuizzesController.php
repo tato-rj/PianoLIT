@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Quiz\{Quiz, Topic, Level};
+use App\Admin;
+use App\Notifications\QuizCompleted;
 use App\Http\Requests\QuizForm;
 use App\Filters\QuizFilters;
 use Illuminate\Http\Request;
@@ -110,8 +112,11 @@ class QuizzesController extends Controller
     {
         $feedback = $quiz->evaluate($request->answers);
 
-        if (traffic()->isRealVisitor())
+        if (traffic()->isRealVisitor()) {
             $quiz->results()->create(['score' => $feedback['score']]);
+
+            Admin::notifyAll(new QuizCompleted($quiz));
+        }
 
         return view('components.games.feedback', compact('feedback'))->render();
     }

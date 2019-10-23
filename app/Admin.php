@@ -23,6 +23,18 @@ class Admin extends Authenticatable
         });
     }
 
+    public function scopeNotifyAll($query, $notification)
+    {
+        return $query->get()->each(function($admin) use ($notification) {
+            $admin->notify($notification);
+        });
+    }
+
+    public function hasNewNotifications()
+    {
+        return $this->unreadNotifications->count() > 0;
+    }
+
     public function pieces()
     {
         return $this->hasMany(Piece::class, 'creator_id');

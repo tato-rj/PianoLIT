@@ -1,4 +1,9 @@
 <?php
+function testing()
+{
+	return app()->environment() == 'testing';
+}
+
 function hex($symbol, $type = 'html')
 {
 	return (new \App\Tools\Hex)->get($symbol, $type);
