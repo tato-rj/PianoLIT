@@ -11,7 +11,8 @@ Route::resources([
     'users' => 'UsersController',
     'timelines' => 'TimelinesController',
     'pianists' => 'PianistsController',
-    'playlists' => 'PlaylistsController'
+    'playlists' => 'PlaylistsController',
+    'infographs' => 'InfographsController'
 ]);
 
 Route::patch('composers/{composer}/toggle-famous', 'ComposersController@toggleFamous')->name('composers.toggle-famous');

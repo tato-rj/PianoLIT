@@ -43,6 +43,7 @@ class NewSubscriber extends Notification
     public function toArray($notifiable)
     {
         return [
+            'title' => 'New subscriber',
             'message' => '<strong>' . $this->subscriber->email . '</strong> subscribed to our newsletter.',
             'url' => route('admin.subscriptions.index')
         ];

@@ -17,9 +17,12 @@ class CreateInfographsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('description');
+            $table->string('orientation');
             $table->string('type');
-            $table->string('image_path')->nullable();
-            $table->unsignedInteger('downloads');
+            $table->string('cover_path')->nullable();
+            $table->unsignedInteger('downloads')->default(0);
+            $table->unsignedInteger('creator_id');
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
     }

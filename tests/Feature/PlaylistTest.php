@@ -36,6 +36,7 @@ class PlaylistTest extends AppTest
             'name' => $this->playlist->name, 
             'group' => $this->playlist->group, 
             'description' => $this->playlist->description,
+            'subtitle' => $this->playlist->subtitle,
             'pieces' => $pieces]);
 
         $this->assertCount(3, $this->playlist->fresh()->pieces);

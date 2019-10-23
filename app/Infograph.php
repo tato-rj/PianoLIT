@@ -2,7 +2,8 @@
 
 namespace App;
 
-class Infograph extends Pianolit
+class Infograph extends ShareableContent
 {
-    //
+    protected $folder = 'infograph';
+    protected $report_by = 'name';
 }

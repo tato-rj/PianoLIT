@@ -12,14 +12,14 @@ class SubscriptionTest extends AppTest
 	{
 		$subscription = create(Subscription::class);
 
-		$this->assertTrue($subscription->is_active);
+		$this->assertTrue($subscription->getStatusFor('newsletter_list', true));
 
-		$subscription->deactivate();
+		$subscription->deactivate('newsletter_list');
 
-		$this->assertFalse($subscription->fresh()->is_active);
+		$this->assertFalse($subscription->fresh()->getStatusFor('newsletter_list', true));
 
-		$subscription->reactivate();
+		$subscription->reactivate('newsletter_list');
 
-		$this->assertTrue($subscription->fresh()->is_active);
+		$this->assertTrue($subscription->fresh()->getStatusFor('newsletter_list', true));
 	}
 }

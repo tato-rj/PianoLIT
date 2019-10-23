@@ -1,6 +1,6 @@
 <?php
 
-use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist};
+use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist, Infograph};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -14,6 +14,19 @@ use Faker\Generator as Faker;
 | model instances for testing / seeding your application's database.
 |
 */
+
+$factory->define(Infograph::class, function (Faker $faker) {
+    return [
+        'creator_id' => function() {
+            return create(Admin::class)->id;
+        },
+        'name' => $faker->word,
+        'description' => $faker->sentence,
+        'orientation' => $faker->word,
+        'type' => $faker->word,
+        'cover_path' => $faker->url
+    ];
+});
 
 $factory->define(Playlist::class, function (Faker $faker) {
     return [
@@ -54,6 +67,7 @@ $factory->define(Pianist::class, function(Faker $faker) {
 
     return [
             'name' => $faker->name,
+            'slug' => str_slug($faker->name),
             'cover_path' => $faker->url,
             'biography' => $faker->paragraph,
             'country_id' => function() {

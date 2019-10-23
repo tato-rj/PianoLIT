@@ -22,11 +22,11 @@ class AdminTest extends AppTest
 
         $editor = make(Admin::class)->toArray();
 
-        $this->assertEquals(1, Admin::count());
+        $originalCount = Admin::count();
 
         $this->post(route('admin.editors.store'), $editor);
 
-        $this->assertEquals(2, Admin::count());
+        $this->assertEquals($originalCount + 1, Admin::count());
     }
 
     /** @test */

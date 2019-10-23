@@ -16,6 +16,7 @@ class CreatePianistsTable extends Migration
         Schema::create('pianists', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('slug');
             $table->text('biography');
             $table->string('cover_path');
             $table->unsignedInteger('country_id')->nullable();

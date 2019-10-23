@@ -24,22 +24,6 @@ class MembershipsController extends Controller
         return response()->json(true);
     }
 
-    /**
-     * Updates the user's trial period
-     * @param  User $user
-     * @return redirect
-     */
-    public function updateTrial(Request $request, User $user)
-    {
-        $newDate = $user->trial_ends_at->gte(now()) ? $user->trial_ends_at->addWeek() : now()->addWeek();
-
-        $user->update(['trial_ends_at' => $newDate]);
-
-        // \Mail::to($user->email)->send(new \App\Mail\PianoLit\TrialExtendedEmail($user));
-
-        return redirect()->back()->with('status', "The trial has been update. It now expires on {$newDate->toFormattedDateString()}.");
-    }
-
     public function validateAll()
     {
         $this->authorize('validate', Membership::class);

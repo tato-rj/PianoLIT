@@ -29,7 +29,7 @@ class MembershipTest extends AppTest
         $this->signIn();
 
         $this->user->membership->update(['renews_at' => now()->copy()->subWeek()]);
-        dd('test');
+        
         $this->assertNull($this->user->membership->validated_at);
 
         $this->get(route('admin.memberships.validate.all'));

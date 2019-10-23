@@ -43,6 +43,7 @@ class QuizCompleted extends Notification
     public function toArray($notifiable)
     {
         return [
+            'Quiz completed',
             'message' => 'The quiz <strong>' . $this->quiz->title . '</strong> has been completed.',
             'url' => route('admin.stats.quizzes')
         ];

@@ -4,17 +4,29 @@ namespace Tests\Feature;
 
 use App\{Composer, Admin};
 use Tests\AppTest;
+use Illuminate\Http\UploadedFile;
 
 class ComposerTest extends AppTest
 {
     /** @test */
     public function an_admin_can_add_a_composer()
     {
-        $composer = make(Composer::class)->toArray();
+        $composer = make(Composer::class);
 
         $this->signIn();
 
-        $this->post(route('admin.composers.store'), $composer);
+        $this->post(route('admin.composers.store'), [
+            'name' => $composer->name,
+            'biography' => $composer->biography,
+            'cover' => UploadedFile::fake()->create('file.jpg'),
+            'gender' => $composer->gender,
+            'curiosity' => $composer->curiosity,
+            'period' => $composer->period,
+            'country_id' => $composer->country_id,
+            'is_famous' => $composer->is_famous,
+            'date_of_birth' => $composer->date_of_birth,
+            'date_of_death' => $composer->date_of_death,
+        ]);
 
         $this->assertDatabaseHas('composers', ['name' => $composer['name']]);
     }

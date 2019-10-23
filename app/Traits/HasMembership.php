@@ -25,8 +25,6 @@ trait HasMembership
             'validated_at' => now()
         ]);
 
-        $this->update(['trial_ends_at' => null]);
-
         return $record;
     }
 

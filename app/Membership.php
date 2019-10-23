@@ -29,8 +29,9 @@ class Membership extends PianoLit
         if (empty($request->receipt))
         	abort(400, $this->appleError($request->status));
 
-        $latest_receipt = end($request->latest_receipt_info);
-		// $latest_receipt = $request->latest_receipt_info;
+		$latest_receipt = array_key_exists('expires_date', $request->latest_receipt_info) ? 
+			$request->latest_receipt_info : 
+			end($request->latest_receipt_info);
 
         $is_valid = carbon($latest_receipt->expires_date)->setTimezone(config('app.timezone')) >= now();
 

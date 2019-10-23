@@ -130,6 +130,6 @@ class PianistsController extends Controller
     
         $pianist->delete();
 
-        return redirect()->back()->with('status', "$pianist->name has been successfully deleted!");
+        return redirect()->back()->with('status', "The pianist has been successfully deleted!");
     }
 }

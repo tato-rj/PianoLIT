@@ -16,7 +16,7 @@ class Cropper
 	public function make($name)
 	{
 		$this->file = $this->request->file($name);
-
+dd($this->file);
         $this->image = \Image::make($this->file)->crop(
             intval($this->request->cropped_width),
             intval($this->request->cropped_height), 

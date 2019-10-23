@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Infograph;
 use Illuminate\Http\Request;
 
-class InfographController extends Controller
+class InfographsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -35,7 +35,17 @@ class InfographController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $infograph = Infograph::create([
+            'creator_id' => auth()->guard('admin')->user()->id,
+            'name' => $request->name,
+            'description' => $request->description,
+            'orientation' => $request->orientation,
+            'type' => $request->type
+        ]);
+
+        $infograph->uploadCoverImage($request);
+
+        return redirect(route('admin.infographs.index'))->with('status', 'The infograph has been successfuly created!');
     }
 
     /**
