@@ -8,6 +8,7 @@ class NotificationsController extends Controller
 {
     public function read(Request $request)
     {
+    	return $request->all();
     	if ($request->has('ids')) {
     		foreach (json_decode($request->ids) as $id) {
 		    	auth()->user()->notifications()->find($id)->markAsRead();
