@@ -28,11 +28,9 @@
         </script>
         <style type="text/css">
           .notifications-count {
-            width: 18px; 
-            height: 18px; 
-            font-size: .7em; 
-            bottom: 0; 
-            right: 0;
+            width: 16px; 
+            height: 16px; 
+            font-size: .58em; 
             display: none;
           }
           .notifications-link.active i {
@@ -40,6 +38,9 @@
           }
           .notifications-link.active .notifications-count {
             display: flex !important;
+          }
+          .notification-bell {
+            font-size: 1.16em;
           }
         </style>
         @yield('head')

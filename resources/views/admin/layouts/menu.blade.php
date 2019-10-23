@@ -1,8 +1,21 @@
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-  <a class="navbar-brand mr-0" href="{{route('admin.home')}}"><img src="{{asset('images/brand/admin-icon.svg')}}" class="mr-2 shadow-sm">Piano<strong>LIT</strong> | Admin</a>
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <a class="navbar-brand mr-0" href="{{route('admin.home')}}">
+    <img src="{{asset('images/brand/admin-icon.svg')}}" class="mr-2 shadow-sm">Piano<strong>LIT</strong> | Admin
+  </a>
+  <div>
+    <li class="nav-item inline-on-collapse text-muted">
+      <a class="nav-link position-relative cursor-pointer notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" data-toggle="fixed-panel" data-target="#notifications-panel">
+        <i class="fas fa-fw fa-bell notification-bell"></i>
+        <div class="notifications-count bg-white rounded-circle position-absolute font-weight-bold shadow-sm" style="bottom: -2px; right: 0;">
+          <div class="d-flex flex-center w-100 h-100">{{auth()->user()->unreadNotifications->count()}}</div>
+        </div>
+      </a>
+    </li>
+    <button class="border-0 navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+
   <div class="collapse navbar-collapse" id="navbarResponsive">
     <ul class="navbar-nav navbar-sidenav">
       <li class="nav-item">
@@ -187,17 +200,17 @@
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
+      <li class="nav-item hide-on-collapse">
         <a class="nav-link position-relative notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" data-toggle="fixed-panel" data-target="#notifications-panel">
-          <i class="fas fa-fw fa-bell"></i><span class="inline-on-collapse ml-1">Notifications</span>
-          <div class="notifications-count bg-white rounded-circle position-absolute font-weight-bold shadow-sm">
+          <i class="fas fa-fw fa-bell notification-bell"></i><span class="inline-on-collapse ml-1">Notifications</span>
+          <div class="notifications-count bg-white rounded-circle position-absolute font-weight-bold shadow-sm" style="bottom: 4px; right: 2px;">
             <div class="d-flex flex-center w-100 h-100">{{auth()->user()->unreadNotifications->count()}}</div>
           </div>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" data-toggle="modal" data-target="#logoutModal">
-          <i class="fas fa-fw fa-sign-out-alt"></i><span class="ml-1 inline-on-collapse">Logout</span>
+          <i class="fas fa-fw fa-sign-out-alt" style="font-size: 1.16em"></i><span class="ml-1 inline-on-collapse">Logout</span>
         </a>
       </li>
     </ul>
