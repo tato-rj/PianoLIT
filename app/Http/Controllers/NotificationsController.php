@@ -8,11 +8,14 @@ class NotificationsController extends Controller
 {
     public function read(Request $request)
     {
-    	if ($request->has('id'))
-	    	return auth()->user()->notifications()->find($request->id)->markAsRead();
+    	if ($request->has('ids')) {
+    		foreach (json_decode($request->ids) as $id) {
+		    	auth()->user()->notifications()->find($id)->markAsRead();
+    		}
+    	}
 
     	auth()->user()->notifications->markAsRead();
 
-    	return redirect()->back();
+    	return redirect()->to($request->url);
     }
 }

@@ -91,15 +91,15 @@
     $('body').toggleCssBetween('overflow', ['hidden', 'auto']);
   });
 
-  $('.notification-item').on('click', function() {
-    let notificationId = $(this).attr('data-id');
-    let url = $(this).attr('data-url');
-    let target = $(this).attr('data-target');
+  // $('.notification-item').on('click', function() {
+  //   let notificationId = $(this).attr('data-id');
+  //   let url = $(this).attr('data-url');
+  //   let target = $(this).attr('data-target');
 
-    $.get(url, function(data, status, xhr) {
-      window.location.href = target;
-    });
-  });
+  //   $.get(url, function(data, status, xhr) {
+  //     window.location.href = target;
+  //   });
+  // });
 </script>
 
   <script type="text/javascript">

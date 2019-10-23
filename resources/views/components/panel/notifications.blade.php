@@ -14,7 +14,7 @@
 		<div class="panel-body px-4 py-3" style="overflow-y: auto; height: 85%;">
 			<div class="list-group">
 				@forelse(auth()->user()->unreadNotifications->groupBy('data.message') as $group)
-					@include('components.panel.item', ['notification' => $group[0], 'count' => count($group)])
+					@include('components.panel.item', ['notifications' => $group])
 				@empty
 				<i class="text-muted">You have no new notifications</i>
 				@endforelse
@@ -23,7 +23,7 @@
 		@if(auth()->user()->hasNewNotifications())
 		<div class="panel-footer bg-light px-4 py-3 position-absolute w-100" style="left: 0; bottom: 0;">
 			<div class="text-center">
-				<a href="{{route('admin.notifications.read')}}"><small>Mark all as read</small></a>
+				<a href="{{route('admin.notifications.read', ['url' => url()->current()])}}"><small>Mark all as read</small></a>
 			</div>
 		</div>
 		@endif
