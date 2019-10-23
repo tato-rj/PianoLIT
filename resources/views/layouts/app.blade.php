@@ -27,7 +27,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? config('app.name') }}</title>
+    <title>{{local() ? '(local)' : null}} {{$title ?? config('app.name')}}</title>
 
     @if(! empty($shareable))
         <meta name="keywords" content="{{$shareable['keywords']}}">

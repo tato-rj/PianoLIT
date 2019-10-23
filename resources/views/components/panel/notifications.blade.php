@@ -13,8 +13,8 @@
 
 		<div class="panel-body px-4 py-3">
 			<div class="list-group">
-				@forelse(auth()->user()->unreadNotifications as $notification)
-				@include('components.panel.item', $notification)
+				@forelse(auth()->user()->unreadNotifications->groupBy('data.message') as $group)
+					@include('components.panel.item', ['notification' => $group[0], 'count' => count($group)])
 				@empty
 				<i class="text-muted">You have no new notifications</i>
 				@endforelse

@@ -1,4 +1,9 @@
 <?php
+function local()
+{
+	return app()->environment() == 'local';
+}
+
 function testing()
 {
 	return app()->environment() == 'testing';

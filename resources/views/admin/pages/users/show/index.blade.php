@@ -51,7 +51,6 @@
 </div>
 
 @include('admin.components.modals.delete', ['model' => 'user'])
-@include('admin.components.modals.trial', ['model' => 'user'])
 @include('admin.components.modals.favorites')
 @include('admin.components.modals.history')
 

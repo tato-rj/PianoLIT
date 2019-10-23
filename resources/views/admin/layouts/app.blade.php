@@ -13,7 +13,7 @@
         <meta name="msapplication-TileColor" content="#da532c">
         <meta name="theme-color" content="#ffffff">
 
-        <title>PianoLIT | Admin</title>
+        <title>{{local() ? '(local)' : null}} PianoLIT | Admin</title>
         <link rel="stylesheet" type="text/css" href="{{asset('css/primer.css')}}">
         <link rel="stylesheet" type="text/css" href="{{mix('css/admin.css')}}">
         
