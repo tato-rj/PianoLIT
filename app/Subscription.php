@@ -73,16 +73,19 @@ class Subscription extends PianoLit
     	return $query->where('email', $email);
     }
 
-    public function scopeCreateOrActivate($query, $email)
+    public function scopeCreateOrActivate($query, $form)
     {
-    	$record = $query->byEmail($email);
+    	$record = $query->byEmail($form->email);
 
     	if ($record->exists())
     		return $record->first()->reactivateAll();
 
-        $subscriber = $this->create(['email' => $email]);
+        $subscriber = $this->create([
+            'email' => $form->email,
+            'origin_url' => $form->origin_url
+        ]);
 
-        \Mail::to($email)->send(new Welcome($subscriber));
+        \Mail::to($form->email)->send(new Welcome($subscriber));
 
         return $subscriber;
     }

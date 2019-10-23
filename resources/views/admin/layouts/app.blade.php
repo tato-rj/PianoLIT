@@ -75,6 +75,21 @@
   </script>
   @yield('scripts')
   <script type="text/javascript">
+    $('a[data-toggle="fixed-panel"]').on('click', function() {
+      let $panel = $($(this).attr('data-target'));
+      $panel.fadeToggle();
+      $('body').toggleCssBetween('overflow', ['hidden', 'auto']);
+      $panel.find('.panel-content').css('right', 0);
+    });
+
+    $('button[data-dismiss="fixed-panel"], .fixed-panel .panel-overlay').on('click', function() {
+      let $panel = $(this).closest('.fixed-panel');
+
+      $panel.find('.panel-content').css('right', '-100%');
+      $panel.fadeToggle();
+      $('body').toggleCssBetween('overflow', ['hidden', 'auto']);
+    });
+
     var audio = new Audio;
     $(document).on('click', '.play-clip', function() {
       let $icon = $(this).find('i');

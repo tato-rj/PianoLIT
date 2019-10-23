@@ -20,6 +20,7 @@
           @csrf
           <input type="hidden" name="subscription_name" placeholder="Your name here">
           <input type="hidden" name="started_at" value="{{now()}}">
+          <input type="hidden" name="origin_url" value="{{url()->current()}}">
           <input type="email" required name="email" placeholder="Add a new email here" class="form-control mr-2">
           <button type="submit" class="btn btn-default">Subscribe</button>
         </form>
@@ -38,6 +39,7 @@
             <tr>
               <th class="border-0" scope="col">Date</th>
               <th class="border-0" scope="col">Email</th>
+              <th class="border-0" scope="col">Origin</th>
               @foreach(\App\Subscription::lists() as $list)
               <th class="border-0" scope="col">{{snake_str($list)}}</th>
               @endforeach
@@ -46,13 +48,14 @@
           </thead>
           <tbody>
             @foreach($subscriptions as $subscription)
-            <tr title="Subscribed at {{$subscription->created_at->format('g:i:s a')}}">
-              <td>{{$subscription->created_at->toFormattedDateString()}}</td>
-              <td>{{$subscription->email}}</td>
+            <tr>
+              <td style="white-space: nowrap;">{{$subscription->created_at->toFormattedDateString()}}</td>
+              <td title="Subscribed at {{$subscription->created_at->format('g:i:s a')}}">{{$subscription->email}}</td>
+              <td title="{{$subscription->origin_url}}" style="max-width: 280px" class="text-truncate">{{$subscription->origin_url}}</td>
               @foreach(\App\Subscription::lists() as $list)
               <td>@include('admin.components.toggle.subscription', ['list' => $list])</td>
               @endforeach
-              <td class="text-right">
+              <td class="text-right" style="white-space: nowrap;">
                 <a href="mailto:{{$subscription->email}}" target="_blank" class="text-muted mr-2"><i class="far fa-envelope align-middle"></i></a>
                 <a href="#" data-name="{{$subscription->email}}" data-url="{{route('subscriptions.destroy', $subscription->email)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
               </td>

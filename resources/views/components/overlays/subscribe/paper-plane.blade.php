@@ -4,8 +4,7 @@
 		<div class="px-5 py-4 bg-white rounded">
 			<form method="POST" action="{{route('subscriptions.store')}}" autocomplete="off">
 				@csrf
-				<input type="hidden" name="subscription_name" placeholder="Your name here">
-				<input type="hidden" name="started_at" value="{{now()}}">
+				@include('components.form.subscription.hidden')
 
 				<div class="form-group position-relative">
 					<img src="{{asset('images/misc/paper-plane.svg')}}" class="w-100">

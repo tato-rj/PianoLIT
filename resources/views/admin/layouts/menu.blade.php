@@ -47,8 +47,7 @@
             <a class="py-2" href="{{route('admin.stats.quizzes')}}">Quizzes</a>
           </li>
         </ul>
-      </li>      
-
+      </li>
       @manager
       <li class="nav-item d-none d-sm-block">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#api">
@@ -72,7 +71,6 @@
           </li>
         </ul>
       </li>
-
       <li class="nav-item">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#menu-repertoire">
           <div>
@@ -160,7 +158,7 @@
           <span class="nav-link-text">Timeline</span>
         </a>
       </li>
-      
+
       <li class="nav-item d-none d-sm-block">
         <a class="nav-link" href="{{route('admin.editors.index')}}">
           <i class="fas fa-pencil-alt fa-fw"></i>
@@ -180,7 +178,6 @@
           <span class="nav-link-text">Subscriptions</span>
         </a>
       </li>
-
     </ul>
     <ul class="navbar-nav sidenav-toggler">
       <li class="nav-item">
@@ -191,9 +188,15 @@
     </ul>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
+        <a class="nav-link" data-toggle="fixed-panel" data-target="#notifications-panel"><i class="fas fa-fw fa-bell"></i><span class="inline-on-collapse ml-1">Notifications</span></a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" data-toggle="modal" data-target="#logoutModal">
-          <i class="fas fa-fw fa-sign-out-alt"></i>Logout</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+          <i class="fas fa-fw fa-sign-out-alt"></i><span class="ml-1 inline-on-collapse">Logout</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+@include('components.panel.notifications')

@@ -3,6 +3,7 @@
 @import "~jquery-ui-bundle/jquery-ui.min";
 
 @import "components/datatables";
+@import "components/panel";
 @import "components/toggle";
 @import "components/tinymce";
 @import "variables";
@@ -12,6 +13,7 @@ $body-bg: #e9ecef;
 $brand-primary: #2e5ab9;
 
 @import "bootstrap-custom";
+@import "responsive";
 @import "theme-custom";
 @import "global";
 @import "swiper";

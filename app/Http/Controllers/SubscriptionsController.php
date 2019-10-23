@@ -51,7 +51,7 @@ class SubscriptionsController extends Controller
         if (Subscription::activeList('newsletter_list')->byEmail($form->email)->exists() && ! $request->gift)
             return redirect()->back()->with('error', 'We already have this email in our subscription list.');
 
-        Subscription::createOrActivate($form->email);
+        Subscription::createOrActivate($form);
 
         if ($request->gift) {
             \Mail::to($form->email)->send(new Gift($request->gift));

@@ -125,7 +125,9 @@
 	}
 }
 @include media-breakpoint-down(md) {
-
+	.inline-on-collapse {
+		display: inline-block !important;
+	}
 }
 @include media-breakpoint-down(lg) {
 

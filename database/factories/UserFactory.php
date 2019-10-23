@@ -38,7 +38,7 @@ $factory->define(Admin::class, function (Faker $faker) {
 $factory->define(Subscription::class, function (Faker $faker) {
     return [
         'email' => $faker->unique()->safeEmail,
-        'is_active' => true
+        'origin_url' => $faker->url
     ];
 });
 

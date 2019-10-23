@@ -8,8 +8,7 @@
 		
 		<form method="POST" action="{{route('subscriptions.store')}}">
 			@csrf
-			<input type="hidden" name="subscription_name" placeholder="Your name here">
-			<input type="hidden" name="started_at" value="{{now()}}">
+			@include('components.form.subscription.hidden')
 			<div class="form-group">
 				<input required type="email" name="email" placeholder="EMAIL ADDRESS" class="input-center form-control w-100 input-light">
 			</div>

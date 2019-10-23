@@ -3,6 +3,7 @@ require('inputmask/dist/jquery.inputmask.bundle.js');
 require('./helpers/cookie');
 require('./helpers/time');
 require('./helpers/string');
+require('./helpers/display');
 require('./helpers/extensions');
 require('./helpers/charts');
 require('./cropper/SimpleCropper');
