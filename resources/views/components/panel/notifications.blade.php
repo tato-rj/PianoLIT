@@ -11,7 +11,7 @@
 			</div>
 		</div>
 
-		<div class="panel-body px-4 py-3">
+		<div class="panel-body px-4 py-3" style="overflow-y: auto; height: 85%;">
 			<div class="list-group">
 				@forelse(auth()->user()->unreadNotifications->groupBy('data.message') as $group)
 					@include('components.panel.item', ['notification' => $group[0], 'count' => count($group)])
