@@ -1,4 +1,4 @@
-@component('mail::message')
+@component('mail::message', ['email' => $subscriber->email])
 # Hi there!
 
 Here is the gift you, we hope you enjoy it:)
