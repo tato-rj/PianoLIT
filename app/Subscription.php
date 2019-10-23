@@ -45,6 +45,8 @@ class Subscription extends PianoLit
         $this->validateList($list);
 
     	$this->update([$list => true]);
+
+        return $this;
     }
 
     public function reactivateAll()
@@ -52,6 +54,8 @@ class Subscription extends PianoLit
         foreach ($this->lists as $list) {
             $this->reactivate($list);
         }
+
+        return $this;
     }
 
     public function deactivate($list)
