@@ -69,8 +69,7 @@
 				<p class="lead">We'll send you an email whenever a famous composer has a birthday, along with some relevant world news from the time the composer was born, you'll love it :)</p>
 				<form method="POST" action="{{route('subscriptions.store')}}">
 					@csrf
-					<input type="hidden" name="subscription_name" placeholder="Your name here">
-					<input type="hidden" name="started_at" value="{{now()}}">
+					@include('components.form.subscription.hidden')
 					<div class="form-group">
 						<input required type="email" name="email" placeholder="EMAIL ADDRESS" class="input-center form-control w-100 input-light">
 					</div>
