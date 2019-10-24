@@ -6,7 +6,7 @@ class Infograph extends ShareableContent
 {
     protected $folder = 'infograph';
     protected $report_by = 'name';
-    protected $types = ['composers', 'theory', 'curiosity', 'quotes'];
+    protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0];
 
     protected static function boot()
     {
@@ -19,6 +19,16 @@ class Infograph extends ShareableContent
 
     public function scopeTypes($query)
     {
+        $records = $query->published()->selectRaw('type, count(*) count')->groupBy('type')->get()->toArray();
+
+        foreach ($this->types as $type => $count) {
+            foreach ($records as $record) {
+                if ($type == $record['type'])
+                    $this->types[$type] = $record['count'];
+            }
+                
+        }
+
     	return $this->types;
     }
 

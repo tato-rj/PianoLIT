@@ -24,8 +24,10 @@
 <div class="container mb-5">
 	<div class="d-flex flex-wrap flex-center mb-4">
 		<button data-target=".thumbnail" class="infograph-type-btn m-1 btn btn-teal">All</button>
-		@foreach($types as $type)
-		<button data-target=".thumbnail-{{$type}}" class="infograph-type-btn m-1 btn btn-teal-outline">{{ucfirst($type)}}</button>
+		@foreach($types as $type => $count)
+		@if($count > 0)
+		<button data-target=".thumbnail-{{$type}}" class="infograph-type-btn m-1 btn btn-teal-outline">{{ucfirst($type)}} ({{$count}})</button>
+		@endif
 		@endforeach
 	</div>
 	<div class="row">

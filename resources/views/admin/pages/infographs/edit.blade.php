@@ -32,7 +32,7 @@
 							<div class="col">
 								<select name="type" class="form-control">
 									<option selected disabled>Type</option>
-									@foreach($types as $type)
+									@foreach(array_keys($types) as $type)
 									<option value="{{$type}}" {{ $infograph->type == $type ? 'selected' : ''}}>{{ucfirst($type)}}</option>
 									@endforeach
 								</select>
