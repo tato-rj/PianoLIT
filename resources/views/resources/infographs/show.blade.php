@@ -14,7 +14,7 @@
 							<img src="" class="preview border w-100">
 						</div>
 						<div class="col-lg-5 col-md-6 col-12 d-flex align-items-center">
-							<div>
+							<div class="py-4">
 								<div class="mb-4 pb-4 border-bottom">
 									<span class="badge type badge-light mb-2"></span>
 									<h4 class="name mb-1"></h4>
