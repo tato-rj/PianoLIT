@@ -6,6 +6,7 @@ class Infograph extends ShareableContent
 {
     protected $folder = 'infograph';
     protected $report_by = 'name';
+    protected $types = ['composers', 'theory', 'curiosity', 'quotes'];
 
     protected static function boot()
     {
@@ -18,7 +19,7 @@ class Infograph extends ShareableContent
 
     public function scopeTypes($query)
     {
-    	return $query->select('type')->groupBy('type')->get()->pluck('type');
+    	return $this->types;
     }
 
     public function updateScore(bool $liked)

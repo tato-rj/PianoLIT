@@ -9,8 +9,9 @@
 				<div class="col">
 					<select name="type" class="form-control">
 						<option selected disabled>Type</option>
-						<option value="composers" {{ old('type') == 'composers' ? 'selected' : ''}}>Composers</option>
-						<option value="general"{{ old('type') == 'general' ? 'selected' : ''}}>General</option>
+						@foreach($types as $type)
+						<option value="{{$type}}" {{ old('type') == $type ? 'selected' : ''}}>{{ucfirst($type)}}</option>
+						@endforeach
 					</select>
 				</div>
 				<div class="col">
