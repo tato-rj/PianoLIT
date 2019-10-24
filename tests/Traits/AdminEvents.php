@@ -52,20 +52,15 @@ trait AdminEvents
     {
         Storage::fake('public');
 
-        $request = make(Infograph::class);
+        $infograph = make(Infograph::class, ['cover_image' => UploadedFile::fake()->image('cover.jpg')]);
 
-        $this->post(route('admin.infographs.store', [
-            'name' => $request->name,
-            'description' => $request->description,
-            'orientation' => $request->orientation,
-            'type' => $request->type,
-            'cover_image' => UploadedFile::fake()->create('file.jpg'),
-            'cropped_width' => '200',
-            'cropped_height' => '200',
-            'cropped_x' => '0',
-            'cropped_y' => '0',
-        ]));
+        $this->post(route('admin.infographs.store'), [
+            'name' => $infograph->name,
+            'orientation' => $infograph->orientation,
+            'type' => $infograph->type,
+            'cover_image' => $infograph->cover_image
+        ]);
 
-        return Infograph::where('name', $request->name)->first();
+        return Infograph::where('name', $infograph->name)->first();
     }
 }

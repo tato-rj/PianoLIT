@@ -47,16 +47,14 @@ abstract class ShareableContent extends PianoLit
         return $this->published_at ? 'published' : 'unpublished';
     }
 
-    public function uploadCoverImage(Request $request)
+    public function uploadCoverImage(Request $request, $crop = true)
     {
         if ($request->hasFile('cover_image')) {
             if ($this->cover_path)
                 \Storage::disk('public')->delete([$this->cover_path, $this->thumbnail_path]);
-
-            dd('Not reaching this, but it should!');
-            
+         
             $this->update([
-                'cover_path' => (new Cropper($request))->withThumbnail()->make('cover_image')->saveTo($this->folder . '/cover_images/')->getPath()
+                'cover_path' => (new Cropper($request, $crop))->withThumbnail()->make('cover_image')->saveTo($this->folder . '/cover_images/')->getPath()
             ]);
         }
     }

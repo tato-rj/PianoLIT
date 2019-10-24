@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\Infograph;
-use Illuminate\Http\UploadedFile;
 use Tests\Traits\AdminEvents;
 
 class InfographTest extends AppTest
@@ -26,12 +25,89 @@ class InfographTest extends AppTest
     {
         $this->signIn();
 
-        $quiz = $this->storeInfograph();
+        $infograph = $this->storeInfograph();
 
-        $this->assertNotEquals($quiz->thumbnail_path, $quiz->cover_path);
+        $this->assertNotEquals($infograph->thumbnail_path, $infograph->cover_path);
         
-        $this->assertTrue(Storage::disk('public')->exists($quiz->cover_path));
+        $this->assertTrue(\Storage::disk('public')->exists($infograph->cover_path));
 
-        $this->assertTrue(Storage::disk('public')->exists($quiz->thumbnail_path));
+        $this->assertTrue(\Storage::disk('public')->exists($infograph->thumbnail_path));
+    }
+
+    /** @test */
+    public function an_admin_can_publish_an_infograph()
+    {
+        $this->signIn();
+
+        $infograph = $this->storeInfograph();
+         
+        $this->assertNull($infograph->published_at);
+
+        $this->patch(route('admin.infographs.update-status', $infograph->slug));
+
+        $this->assertNotNull($infograph->fresh()->published_at);
+    }
+
+    /** @test */
+    public function an_admin_can_update_an_infograph()
+    {
+        $this->signIn();
+
+        $infograph = $this->storeInfograph();
+
+        $name = $infograph->name;
+        
+        $update = make(Infograph::class, ['name' => 'New name']);
+        
+        $this->patch(route('admin.infographs.update', $infograph->slug), [
+            'name' => $update->name,
+            'description' => $update->description,
+            'type' => $update->type
+        ]);
+
+        $this->assertNotEquals($name, $infograph->fresh()->name);       
+    }
+
+    /** @test */
+    public function an_admin_can_remove_an_infograph()
+    {
+        $this->signIn();
+
+        $infograph = $this->storeInfograph();
+
+        $this->delete(route('admin.infographs.destroy', $infograph->slug));
+
+        $this->assertDatabaseMissing('quizzes', ['title' => $infograph->title]);
+
+        \Storage::disk('public')->assertMissing($infograph->cover_path);
+        \Storage::disk('public')->assertMissing($infograph->thumbnail_path);
+    }
+
+    /** @test */
+    public function an_infograph_automatically_increments_its_download_count_each_time_it_is_downloaded()
+    {
+        $infograph = create(Infograph::class, ['published_at' => now()]);
+
+        $downloads = $infograph->downloads;
+
+        $this->get(route('infographs.download', $infograph->slug));
+
+        $this->assertNotEquals($downloads, $infograph->fresh()->downloads);
+    }
+
+    /** @test */
+    public function a_visitor_can_give_thumbs_up_or_down_to_an_infograph()
+    {
+        $infograph = create(Infograph::class);
+
+        $this->assertEquals(0, $infograph->score);
+        
+        $this->post(route('infographs.update-score', $infograph->slug), ['liked' => true]);
+
+        $this->assertEquals(1, $infograph->fresh()->score);
+        
+        $this->post(route('infographs.update-score', $infograph->slug), ['liked' => false]);
+
+        $this->assertEquals(0, $infograph->fresh()->score);
     }
 }

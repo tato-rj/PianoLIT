@@ -130,3 +130,7 @@ Route::prefix('quizzes')->name('quizzes.')->group(function() {
 });
 
 Route::get('gift', 'UsersController@gift')->name('gift');
+
+Route::get('infographs/{infograph}/download', 'InfographsController@download')->name('infographs.download');
+
+Route::post('infographs/{infograph}/update-score', 'InfographsController@updateScore')->name('infographs.update-score');

@@ -37,7 +37,7 @@ class Timeline extends PianoLit
         if (array_key_exists($type, $this->icons))
             return $this->icons[$type];
 
-        return $this->icons[0];
+        return array_values($this->icons)[0];
     }
 
     public function decade($year)

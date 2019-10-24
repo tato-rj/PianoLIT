@@ -20,11 +20,12 @@ $factory->define(Infograph::class, function (Faker $faker) {
         'creator_id' => function() {
             return create(Admin::class)->id;
         },
-        'name' => $faker->word,
+        'name' => $faker->sentence,
         'description' => $faker->sentence,
-        'orientation' => $faker->word,
+        'slug' => str_slug($faker->sentence),
         'type' => $faker->word,
-        'cover_path' => $faker->url
+        'cover_path' => $faker->url,
+        'score' => 0
     ];
 });
 

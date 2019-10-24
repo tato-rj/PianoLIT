@@ -2,30 +2,7 @@
 
 @section('head')
 <style type="text/css">
-.dropzone {
-  border: 4px dashed #1876f6;
-  border-radius: 0;
-}
 
-.dropzone .dz-message {
-  color: #6c757d;
-  line-height: 3;
-  font-weight: bold;
-}
-
-.dropzone .dz-preview .dz-error-message {
-  background: #e3342f;
-  border-radius: 0;
-}
-
-.dropzone .dz-preview .dz-error-message:after {
-  border-bottom: 6px solid #e3342f;
-}
-
-.dropzone .dz-preview.dz-file-preview .dz-image {
-    border-radius: 20px;
-    background: linear-gradient(to bottom, #d7f3e3, #a3e4bf);
-}
 </style>
 @endsection
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Pianist, Piece, Timeline};
+use App\{Pianist, Piece, Timeline, Infograph};
 
 class ResourcesController extends Controller
 {
@@ -20,12 +20,10 @@ class ResourcesController extends Controller
 
     public function infographs($name = null)
     {
-    	// $files = ['blank', 'piano', 'treble', 'bass'];
+        $infographs = Infograph::published()->inRandomOrder()->get();
+        $types = Infograph::types();
 
-	   	// if (in_array($name, $files))
-	    // 	return response()->file('images/sheets/'.$name.'.pdf');
-
-		return view('resources.infographs.index');
+		return view('resources.infographs.index', compact(['infographs', 'types']));
     }
 
     public function podcasts()

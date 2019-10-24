@@ -16,11 +16,12 @@ class CreateInfographsTable extends Migration
         Schema::create('infographs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('slug');
             $table->string('description');
-            $table->string('orientation');
             $table->string('type');
             $table->string('cover_path')->nullable();
             $table->unsignedInteger('downloads')->default(0);
+            $table->integer('score')->default(0);
             $table->unsignedInteger('creator_id');
             $table->timestamp('published_at')->nullable();
             $table->timestamps();

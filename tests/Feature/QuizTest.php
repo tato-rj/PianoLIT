@@ -84,6 +84,7 @@ class QuizTest extends AppTest
         $this->assertDatabaseMissing('quizzes', ['title' => $quiz->title]);
 
         Storage::disk('public')->assertMissing($quiz->cover_path);
+        Storage::disk('public')->assertMissing($quiz->thumbnail_path);
     }
 
     /** @test */

@@ -73,7 +73,7 @@ class PieceTest extends AppTest
     /** @test */
     public function it_knows_the_status_of_its_resources()
     {
-
+        $incompletePiece = create(Piece::class);
         $completePiece = create(Piece::class, [
             'score_path' => 'score.pdf', 
             'audio_path' => 'audio.mp3',

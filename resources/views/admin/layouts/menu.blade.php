@@ -173,11 +173,17 @@
       </li>
 
       <li class="nav-item d-none d-sm-block">
+        <a class="nav-link" href="{{route('admin.infographs.index')}}">
+          <i class="fas fa-pencil-ruler fa-fw"></i>
+          <span class="nav-link-text">Infographs</span>
+        </a>
+      </li>
+{{--       <li class="nav-item d-none d-sm-block">
         <a class="nav-link" href="{{route('admin.editors.index')}}">
           <i class="fas fa-pencil-alt fa-fw"></i>
           <span class="nav-link-text">Editors</span>
         </a>
-      </li>
+      </li> --}}
       <li class="nav-item">
         <a class="nav-link" href="{{route('admin.users.index')}}">
           <i class="fa fa-fw fa-users"></i>

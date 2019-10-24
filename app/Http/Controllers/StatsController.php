@@ -79,4 +79,9 @@ class StatsController extends Controller
 
         return view('admin.pages.stats.quizzes.index', compact(['levelStats', 'topicStats', 'topicsCount', 'quizzes', 'results_graph']));
     }
+
+    public function infographs()
+    {
+        
+    }
 }

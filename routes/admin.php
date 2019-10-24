@@ -23,6 +23,12 @@ Route::prefix('notifications')->name('notifications.')->group(function() {
 
 });
 
+Route::prefix('infographs')->name('infographs.')->group(function() {
+
+	Route::patch('{infograph}/status', 'InfographsController@updateStatus')->name('update-status');
+
+});
+
 Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::get('', 'AdminsController@blog')->name('index');
@@ -152,6 +158,8 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 	Route::get('blog', 'StatsController@blog')->name('blog');
 
 	Route::get('quizzes', 'StatsController@quizzes')->name('quizzes');
+
+	Route::get('infographs', 'StatsController@infographs')->name('infographs');
 
 });
 

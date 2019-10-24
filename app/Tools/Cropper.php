@@ -6,31 +6,42 @@ use Illuminate\Http\Request;
 
 class Cropper
 {
-	protected $request, $file, $image, $path, $filename, $thumbnail;
+	protected $request, $file, $image, $path, $filename, $thumbnail, $crop;
 
-	public function __construct(Request $request)
+	public function __construct(Request $request, bool $crop)
 	{
 		$this->request = $request;
+		$this->crop = $crop;
 	}
 
 	public function make($name)
 	{
 		$this->file = $this->request->file($name);
-dd($this->file);
-        $this->image = \Image::make($this->file)->crop(
-            intval($this->request->cropped_width),
-            intval($this->request->cropped_height), 
-            intval($this->request->cropped_x), 
-            intval($this->request->cropped_y)
-        );
 
-        if ($this->thumbnail) {
-	        $this->thumbnail = \Image::make($this->file)->crop(
+        $this->image = \Image::make($this->file);
+
+        if ($this->crop) {
+        	$this->image = $this->image->crop(
 	            intval($this->request->cropped_width),
 	            intval($this->request->cropped_height), 
 	            intval($this->request->cropped_x), 
 	            intval($this->request->cropped_y)
-	        )->resize(400, null, function ($constraint) {
+	        );
+        }
+
+        if ($this->thumbnail) {
+	        $this->thumbnail = \Image::make($this->file);
+
+	        if ($this->crop) {
+	        	$this->thumbnail = $this->thumbnail->crop(
+		            intval($this->request->cropped_width),
+		            intval($this->request->cropped_height), 
+		            intval($this->request->cropped_x), 
+		            intval($this->request->cropped_y)
+		        );
+	        }
+
+	        $this->thumbnail = $this->thumbnail->resize(400, null, function ($constraint) {
 	    		$constraint->aspectRatio();
 	    	});
 	    }

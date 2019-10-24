@@ -21,7 +21,7 @@ class Quiz extends ShareableContent
 
         self::deleting(function($quiz) {
             $quiz->topics()->detach();
-            \Storage::disk('public')->delete($quiz->cover_path);
+            \Storage::disk('public')->delete([$quiz->cover_path, $quiz->thumbnail_path]);
         });
     }
 
