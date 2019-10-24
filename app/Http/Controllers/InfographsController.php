@@ -23,8 +23,9 @@ class InfographsController extends Controller
     public function index()
     {
         $infographs = Infograph::all();
+        $types = Infograph::types();
 
-        return view('admin.pages.infographs.index', compact('infographs'));
+        return view('admin.pages.infographs.index', compact(['infographs', 'types']));
     }
 
     /**
