@@ -30,7 +30,7 @@
 		@endif
 		@endforeach
 	</div>
-	<div class="row">
+	<div class="row m-0">
 		@foreach($infographs as $infograph)
 		@include('resources.infographs.card')
 		@endforeach
