@@ -13,7 +13,6 @@
 <style type="text/css">
 
 </style>
-<script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
 @endpush
 
 @section('content')
