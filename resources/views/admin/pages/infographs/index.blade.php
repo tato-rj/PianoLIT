@@ -54,8 +54,20 @@
 <script type="text/javascript">
 $('#infograph-preview').on('show.bs.modal', function (e) {
   let image = $(e.relatedTarget).attr('data-image');
+  let thumbnail = $(e.relatedTarget).attr('data-thumbnail');
+  let $previewImage = $(e.target).find('img.image');
+  let $previewThumbnail = $(e.target).find('img.thumbnail');
 
-  $(e.target).find('img').attr('src', image);
+  $previewImage.attr('src', image);
+  $previewThumbnail.attr('src', thumbnail);
+
+  $previewImage.on('load', function() {
+    $(e.target).find('.legend-image h1').text($(this).prop("naturalWidth") + ' x ' + $(this).prop("naturalHeight"));
+  });
+
+  $previewThumbnail.on('load', function() {
+    $(e.target).find('.legend-thumbnail h1').text($(this).prop("naturalWidth") + ' x ' + $(this).prop("naturalHeight"));
+  });
 });
 
 $('.delete').on('click', function (e) {
