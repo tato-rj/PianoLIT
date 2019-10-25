@@ -14,7 +14,7 @@
 						style="bottom: 0; left: 0">
 				</div>
 				@include('components/form/error', ['field' => 'email'])
-				<button type="submit" class="btn btn-primary shadow btn-wide mb-2 mt-3">SIGN UP</button>
+				<button type="submit" class="btn btn-primary shadow btn-wide mb-2">SIGN UP</button>
 				<div class="text-muted"><small>Ps: we'll never share your email with anyone</small></div>
 
 			</form>

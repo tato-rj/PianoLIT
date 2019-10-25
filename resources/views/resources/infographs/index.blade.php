@@ -4,7 +4,7 @@
 		'keywords' => 'infograph,learn music,music theory,music sheet,piano sheet,treble sheet,bass sheet',
 		'title' => 'Infographs',
 		'description' => 'Cool infographs about all music things related',
-		'thumbnail' => null,
+		'thumbnail' => asset('images/misc/thumbnails/infographs.jpg'),
 		'created_at' => carbon('28-08-2019'),
 		'updated_at' => carbon('28-08-2019')
 	]])
@@ -13,6 +13,7 @@
 <style type="text/css">
 
 </style>
+<script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
 @endpush
 
 @section('content')
@@ -20,7 +21,6 @@
 	'title' => 'Infographs', 
 	'subtitle' => 'Cool infographs about all music things related'])
 
-@if(app()->isLocal() || request()->has('dev'))
 <div class="container mb-5">
 	<div class="d-flex flex-wrap flex-center mb-4">
 		<button data-target=".thumbnail" class="infograph-type-btn m-1 btn btn-teal">All</button>
@@ -36,12 +36,6 @@
 		@endforeach
 	</div>
 </div>
-@else
-<div class="my-6">
-	@include('components/animations/workers')
-	<h3 class="text-grey text-center my-4">Coming up soon!</h3>
-</div>
-@endif
 
 <div class="container mb-6">
 	@include('components.sections.feedback')
@@ -49,6 +43,7 @@
 </div>
 
 @include('resources.infographs.show')
+@include('components.overlays.subscribe.paper-plane')
 @endsection
 
 @push('scripts')
@@ -109,5 +104,7 @@ function vote($hand) {
       });
   }
 }
+
+$("#subscribe-overlay").showAfter(5);
 </script>
 @endpush

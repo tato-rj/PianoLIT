@@ -80,7 +80,7 @@ $('.delete').on('click', function (e) {
 $(document).ready(function(){
   $('#infographs-table').DataTable({
     'aaSorting': [],
-    'columnDefs': [ { 'orderable': false, 'targets': [2] } ],
+    'columnDefs': [ { 'orderable': false, 'targets': [4,5] } ],
   });
 });
 
