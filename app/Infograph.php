@@ -6,7 +6,7 @@ class Infograph extends ShareableContent
 {
     protected $folder = 'infograph';
     protected $report_by = 'name';
-    protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0];
+    protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0, 'piano' => 0];
 
     protected static function boot()
     {
@@ -29,7 +29,9 @@ class Infograph extends ShareableContent
                 
         }
 
-    	return $this->types;
+    	ksort($this->types);
+
+        return $this->types;
     }
 
     public function updateScore(bool $liked)
