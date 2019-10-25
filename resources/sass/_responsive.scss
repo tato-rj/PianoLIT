@@ -1,4 +1,8 @@
 @include media-breakpoint-down(sm) {
+	.card-columns {
+	    column-count: 2 !important;
+	}
+
 	#pills-tab a.nav-link {
 		padding-left: .5rem!important;
 		padding-right: .5rem!important;
@@ -121,6 +125,7 @@
 		}
 	}
 }
+
 @include media-breakpoint-down(md) {
 	.inline-on-collapse {
 		display: inline-block !important;
@@ -137,6 +142,9 @@
 @include media-breakpoint-down(lg) {
 
 }
-@include media-breakpoint-down(xl) {
 
+@include media-breakpoint-down(xl) {
+	.card-columns {
+	    column-count: 4;
+	}
 }

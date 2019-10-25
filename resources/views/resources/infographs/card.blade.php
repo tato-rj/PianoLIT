@@ -1,4 +1,4 @@
-<div class="col-lg-3 col-md-3 col-6 mb-4 thumbnail t-2 thumbnail-{{$infograph->type}}" 
+<div class="card thumbnail t-2 thumbnail-{{$infograph->type}}" 
 	data-url="{{route('infographs.download', $infograph->slug)}}" 
 	data-review-url="{{route('infographs.update-score', $infograph->slug)}}" 
 	data-image="{{storage($infograph->cover_path)}}" 
