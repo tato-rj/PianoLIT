@@ -20,7 +20,7 @@
 					<li class="m-2"><a target="_blank" href="{{config('services.channels.twitter')}}" class="link-inherit"><i class="fab fa-twitter"></i></a></li>
 					<li class="m-2"><a target="_blank" href="{{config('services.channels.pinterest')}}" class="link-inherit"><i class="fab fa-pinterest"></i></a></li>
 					<li class="m-2"><a target="_blank" href="{{config('services.channels.reddit')}}" class="link-inherit"><i class="fab fa-reddit"></i></a></li>
-					<li class="m-2"><a href="{{config('services.channels.instagram')}}" class="link-inherit"><i class="fab fa-instagram"></i></a></li>
+					<li class="m-2"><a target="_blank" href="{{config('services.channels.instagram')}}" class="link-inherit"><i class="fab fa-instagram"></i></a></li>
 				</ul>
 			</div>
 			<p class="text-muted m-0"><small>MADE WITH ❤ BY LEFTLANE</small></p>
