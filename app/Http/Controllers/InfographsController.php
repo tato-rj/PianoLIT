@@ -22,7 +22,7 @@ class InfographsController extends Controller
      */
     public function index()
     {
-        $infographs = Infograph::all();
+        $infographs = Infograph::latest()->get();
         $types = Infograph::types();
 
         return view('admin.pages.infographs.index', compact(['infographs', 'types']));
