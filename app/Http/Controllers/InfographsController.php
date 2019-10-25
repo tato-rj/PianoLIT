@@ -51,6 +51,7 @@ class InfographsController extends Controller
             'name' => $form->name,
             'description' => $form->description,
             'slug' => str_slug($form->name),
+            'published_at' => now(),
             'type' => $form->type
         ]);
 
