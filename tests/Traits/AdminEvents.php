@@ -56,7 +56,7 @@ trait AdminEvents
 
         $this->post(route('admin.infographs.store'), [
             'name' => $infograph->name,
-            'orientation' => $infograph->orientation,
+            'description' => $infograph->description,
             'type' => $infograph->type,
             'cover_image' => $infograph->cover_image
         ]);

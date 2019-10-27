@@ -34,6 +34,11 @@ class Infograph extends ShareableContent
         return $this->types;
     }
 
+    public function scopeGifts($query)
+    {
+        return $query->published()->whereNotNull('giftable_at');
+    }
+
     public function updateScore(bool $liked)
     {
         $action = $liked ? 'increment' : 'decrement';

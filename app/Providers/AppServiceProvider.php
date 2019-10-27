@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Infograph;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        \View::composer('*', function($view) {
+            $view->with('gift', Infograph::gifts()->inRandomOrder()->first());
+        });
     }
 
     /**

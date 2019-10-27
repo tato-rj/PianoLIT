@@ -39,8 +39,8 @@ class InfographTest extends AppTest
     {
         $this->signIn();
 
-        $infograph = $this->storeInfograph();
-         
+        $infograph = create(Infograph::class, ['published_at' => null]);
+
         $this->assertNull($infograph->published_at);
 
         $this->patch(route('admin.infographs.update-status', $infograph->slug));
@@ -86,7 +86,9 @@ class InfographTest extends AppTest
     /** @test */
     public function an_infograph_automatically_increments_its_download_count_each_time_it_is_downloaded()
     {
-        $infograph = create(Infograph::class, ['published_at' => now()]);
+        $this->signIn();
+
+        $infograph = $this->storeInfograph();
 
         $downloads = $infograph->downloads;
 

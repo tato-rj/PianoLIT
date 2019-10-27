@@ -48,13 +48,13 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
-        if (Subscription::activeList('newsletter_list')->byEmail($form->email)->exists() && ! $request->gift)
+        if (Subscription::activeList('newsletter_list')->byEmail($form->email)->exists() && ! $request->gift_url)
             return redirect()->back()->with('error', 'We already have this email in our subscription list.');
 
         $subscriber = Subscription::createOrActivate($form);
 
-        if ($request->gift) {
-            \Mail::to($subscriber->email)->send(new Gift($request->gift, $subscriber));
+        if ($request->gift_url) {
+            \Mail::to($subscriber->email)->send(new Gift($request->gift_url, $subscriber));
             $message = 'We just sent out the gift, check your mailbox!';
         } else {
             $message = 'Thanks for subscribing!';

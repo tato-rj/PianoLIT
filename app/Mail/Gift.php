@@ -11,16 +11,16 @@ class Gift extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $gift, $subscriber;
+    public $gift_url, $subscriber;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($gift, $subscriber)
+    public function __construct($gift_url, $subscriber)
     {
-        $this->gift = $gift;
+        $this->gift_url = $gift_url;
         $this->subscriber = $subscriber;
     }
 

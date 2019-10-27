@@ -11,7 +11,6 @@ class InfographsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('throttle:5')->only('download');
         $this->middleware('throttle:2')->only('updateScore');
     }
 
@@ -73,7 +72,7 @@ class InfographsController extends Controller
             Admin::notifyAll(new InfographDownload($infograph));
         }
 
-        return response()->download(storage_path('app/public/' . $infograph->cover_path));
+        return \Storage::disk('public')->download($infograph->cover_path);
     }
 
     /**
@@ -112,9 +111,9 @@ class InfographsController extends Controller
 
     public function updateStatus(Request $request, Infograph $infograph)
     {
-        $infograph->updateStatus();
+        $infograph->updateStatus($request->attribute);
 
-        return response()->json(['status' => 'The infograph has been ' . $infograph->status . '.']);
+        return response()->json(['status' => 'The infograph has been updated.']);
     }
 
     public function updateScore(Request $request, Infograph $infograph)

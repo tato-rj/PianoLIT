@@ -24,6 +24,7 @@ class CreateInfographsTable extends Migration
             $table->integer('score')->default(0);
             $table->unsignedInteger('creator_id');
             $table->timestamp('published_at')->nullable();
+            $table->timestamp('giftable_at')->nullable();
             $table->timestamps();
         });
     }

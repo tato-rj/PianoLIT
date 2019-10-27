@@ -33,12 +33,14 @@ abstract class ShareableContent extends PianoLit
         return $query->where('title', $title)->first();
     }
 
-    public function updateStatus()
+    public function updateStatus($attribute = null)
     {
-        if ($this->published_at) {
-        	$this->update(['published_at' => null]);
+        $attribute = $attribute ?? 'published_at';
+
+        if ($this->$attribute) {
+        	$this->update([$attribute => null]);
         } else {
-            $this->update(['published_at' => now()]);
+            $this->update([$attribute => now()]);
         }
     }
 
