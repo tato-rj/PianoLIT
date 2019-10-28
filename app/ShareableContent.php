@@ -25,7 +25,7 @@ abstract class ShareableContent extends PianoLit
 
     public function getIsNewAttribute()
     {
-        return $this->published_at->isSameMonth(now());
+        return $this->published_at->isSameWeek(now());
     }
 
     public function scopeByTitle($query, $title)
