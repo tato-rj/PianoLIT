@@ -33,4 +33,10 @@ class BlogTest extends AppTest
 
 		$this->assertNull($this->post->fresh()->published_at);
 	}
+
+	/** @test */
+	public function it_knows_how_to_calculate_its_reading_time()
+	{
+		$this->assertTrue($this->post->calculateTime() > 0);
+	}
 }
