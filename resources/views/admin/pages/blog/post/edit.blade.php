@@ -46,7 +46,6 @@
         <div class="col-lg-8 col-md-6 col-12 mb-4">
           @input(['bag' => 'default', 'value' => $post->title, 'name' => 'title', 'placeholder' => 'Post title', 'limit' => 120])
           @textarea(['bag' => 'default', 'value' => $post->description, 'name' => 'description', 'placeholder' => 'Post description', 'limit' => 238])
-          @input(['bag' => 'default', 'value' => $post->reading_time, 'name' => 'reading_time', 'placeholder' => 'Reading time', 'type' => 'number'])
           @input(['bag' => 'default', 'value' => $post->cover_credits, 'name' => 'cover_credits', 'placeholder' => 'Cover image credits', 'limit' => 120, 'required' => false])
           @input(['bag' => 'default', 'value' => $post->gift_path, 'name' => 'gift_path', 'placeholder' => 'Gift path here', 'limit' => 180, 'required' => false])
         </div>

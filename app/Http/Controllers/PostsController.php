@@ -57,7 +57,7 @@ class PostsController extends Controller
             'references' => $request->references ? serialize($request->references) : null,
             'gift_path' => $form->gift_path,
             'cover_credits' => $form->cover_credits,
-            'reading_time' => $form->reading_time
+            'reading_time' => calculateReadingTime($form->content)
         ]);
 
         $post->topics()->attach($request->topics);
@@ -130,7 +130,7 @@ class PostsController extends Controller
             'content' => $form->content,
             'references' => $request->references ? serialize($request->references) : null,
             'gift_path' => $form->gift_path,
-            'reading_time' => $form->reading_time,
+            'reading_time' => calculateReadingTime($form->content),
             'cover_credits' => $form->cover_credits
         ]);
 

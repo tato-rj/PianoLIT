@@ -1,4 +1,11 @@
 <?php
+
+function calculateReadingTime($text)
+{
+    // 124 is the number of words we read per minute on average
+    return intval(ceil(str_word_count(strip_tags($text)) / 124));
+}
+
 function local()
 {
 	return app()->environment() == 'local';

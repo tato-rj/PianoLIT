@@ -20,7 +20,7 @@ class ResourcesController extends Controller
 
     public function infographs($name = null)
     {
-        $infographs = Infograph::published()->inRandomOrder()->get();
+        $infographs = Infograph::published()->inRandomOrder()->newFirst();
         $types = Infograph::types();
 
 		return view('resources.infographs.index', compact(['infographs', 'types']));

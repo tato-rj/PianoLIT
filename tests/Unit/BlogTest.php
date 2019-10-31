@@ -37,6 +37,6 @@ class BlogTest extends AppTest
 	/** @test */
 	public function it_knows_how_to_calculate_its_reading_time()
 	{
-		$this->assertTrue($this->post->calculateTime() > 0);
+		$this->assertTrue(calculateReadingTime($this->post->content) > 0);
 	}
 }

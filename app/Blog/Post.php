@@ -29,12 +29,6 @@ class Post extends ShareableContent
         return $this->belongsToMany(Topic::class);
     }
 
-    public function calculateTime()
-    {
-        // 124 is the number of words we read per minute on average
-        return intval(ceil(str_word_count(strip_tags($this->content)) / 124));
-    }
-
     public function hasGift()
     {
         return ! is_null($this->gift_path);
