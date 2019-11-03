@@ -8,7 +8,7 @@
 	data-toggle="modal" data-target="#infograph-modal">
 	
 	<div class=" cursor-pointer border position-relative">
-		@include('components.cards.new', ['is_new' => $infograph->is_new])
+		@include('components.cards.new', ['is_new' => $infograph->is_new, 'color' => 'danger'])
 		<img src="{{storage($infograph->thumbnail_path)}}" class="w-100">
 	</div>
 </div>
