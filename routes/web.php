@@ -22,11 +22,7 @@ Route::get('youtube', function() {
 	return redirect(config('services.channels.youtube'));
 })->name('youtube');
 
-Route::get('/', function () {
-	$tags = \App\Tag::inRandomOrder()->get();
-
-    return view('welcome.index', compact(['tags']));
-})->name('home');
+Route::get('/', 'HomeController@index')->name('home');
 
 Route::prefix('true-or-false')->name('true-or-false.')->group(function() {
 

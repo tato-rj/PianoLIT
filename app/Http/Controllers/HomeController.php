@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\{Api, Tag};
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -13,7 +14,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->api = new Api;      
     }
 
     /**
@@ -23,6 +24,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $latest = $this->api->latest();
+        $composers = $this->api->composers();
+        $periods = $this->api->periods();
+        $improve = $this->api->improve();
+        $levels = $this->api->levels();
+        
+        $tags = Tag::inRandomOrder()->get();
+
+        $collections = collect([$latest, $composers, $periods, $improve, $levels]);
+// return $collections;
+        return view('welcome.index', compact(['collections', 'tags']));
     }
 }

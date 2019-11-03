@@ -6,6 +6,11 @@ function calculateReadingTime($text)
     return intval(ceil(str_word_count(strip_tags($text)) / 124));
 }
 
+function production()
+{
+	return app()->environment() == 'production';
+}
+
 function local()
 {
 	return app()->environment() == 'local';
@@ -251,6 +256,7 @@ function gradient($color)
 		'orange' => ['#DA2D00FF', '#F0683BFF'],
 		'yellow' => ['#E68300FF', '#EFB600FF'],
 		'pink' => ['#D0277EFF', '#F167ABFF'],
+		'lightpink' => ['#0078DEFF', '#4FAAF0FF'],
 		'lightblue' => ['#0078DEFF', '#4FAAF0FF'],
 		'darkblue' => ['#0048BBFF', '#2F77DDFF'],
 		'green' => ['#00A490FF', '#44D0B2FF'],

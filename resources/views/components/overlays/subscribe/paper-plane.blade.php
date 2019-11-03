@@ -1,3 +1,4 @@
+@env('production')
 @component('layouts.overlay', ['name' => 'subscribe', 'light' => false, 'position' => 'center', 'background' => '0,0,0,0.8'])
 <div class="mx-3" style="max-width: 512px">
 	<div class="rounded text-center shadow-light">
@@ -22,3 +23,4 @@
 	</div>
 </div>
 @endcomponent
+@endenv
