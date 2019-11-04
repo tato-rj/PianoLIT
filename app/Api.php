@@ -173,7 +173,7 @@ class Api
             $model->composer->setAttribute('short_name', $model->composer->short_name);
             $model->composer->setAttribute('born_at', $model->composer->born_at);
             $model->composer->setAttribute('died_at', $model->composer->died_at);
-            $model->composer->setAttribute('cover_image', $model->composer->cover_image);
+            $model->composer->setAttribute('cover_image', storage($model->composer->cover_path));
         
         } else if ($classname == 'App\Composer') {
         
@@ -181,7 +181,7 @@ class Api
             $model->setAttribute('born_at', $model->born_at);
             $model->setAttribute('died_at', $model->died_at);
             $model->setAttribute('short_name', $model->short_name);
-            $model->setAttribute('cover_image', $model->cover_image);
+            $model->setAttribute('cover_image', storage($model->cover_path));
         
         }
 	}
