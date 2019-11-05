@@ -4,7 +4,7 @@
             <h6><strong>{{$title}}</strong></h6>
         </div>
     </div>
-    <div class="pb-2 w-100 d-flex custom-scroll" style="overflow-x: scroll;">
+    <div class="pb-2 w-100 d-flex custom-scroll dragscroll" style="overflow-x: scroll;">
         {{$slot}}
     </div>    
 </section>

@@ -1,3 +1,39 @@
+.bg-elementary {
+	background: lighten($elementary, 35) !important;
+	color: darken($elementary, 12);
+}
+
+.bg-beginner {
+	background: lighten($beginner, 25) !important;
+	color: darken($beginner, 15);
+}
+
+.bg-intermediate {
+	background: lighten($intermediate, 25) !important;
+	color: darken($intermediate, 5);
+}
+
+.bg-advanced {
+	background: lighten($advanced, 40) !important;
+	color: lighten($advanced, 10);
+}
+
+.text-elementary {
+	color: darken($elementary, 40);
+}
+
+.text-beginner {
+	color: darken($beginner, 40);
+}
+
+.text-intermediate {
+	color: darken($intermediate, 40);
+}
+
+.text-advanced {
+	color: darken($advanced, 40);
+}
+
 textarea {
 	overflow-x: hidden;
 }

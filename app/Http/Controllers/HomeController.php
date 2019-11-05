@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Api, Tag};
+use App\{Api, Tag, Piece};
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -24,16 +24,30 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $latest = $this->api->latest();
-        $composers = $this->api->composers();
-        $periods = $this->api->periods();
-        $improve = $this->api->improve();
-        $levels = $this->api->levels();
+        $collections = collect([
+            $this->api->latest(),
+            $this->api->composers(),
+            $this->api->tag('scales', 'blue'),
+            $this->api->tag('passionate', 'red'),
+            $this->api->tag('melancholic', 'purple'),
+        ]);
+
         
         $tags = Tag::inRandomOrder()->get();
 
-        $collections = collect([$latest, $composers, $periods, $improve, $levels]);
-// return $collections;
         return view('welcome.index', compact(['collections', 'tags']));
+    }
+
+    public function search(Request $request)
+    {
+        $inputArray = $this->api->prepareInput($request);
+
+        $results = Piece::search($inputArray, $request);
+
+        $pieces = $results->get();
+
+        $this->api->prepare($request, $pieces, $inputArray);
+
+        return $pieces;
     }
 }

@@ -222,6 +222,15 @@ class Piece extends PianoLit
         return $results;
     }
 
+    public function scopeFor($query, $tag)
+    {
+        $results = $query->whereHas('tags', function($q) use ($tag) {
+            $q->where('name', $tag);
+        })->get();
+
+        return $results;
+    }
+
     public function scopeSuggestedTips($query, $request)
     {
         $tagsArray = explode(',', $request->tags);

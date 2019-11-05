@@ -1,6 +1,6 @@
 <section class="container mb-5">
 	<div class="row">
-		@env('production')
+		@if(production() || request()->has('dev'))
 		<div class="col-lg-9 col-sm-10 col-12 mx-auto text-center">
 			<h1 class="mb-4"><strong>Find music that inspires you.</strong></h1>
 			<p class="text-muted mb-5">Where pianists discover new pieces and find inspiration to play only what they love.</p>
@@ -28,6 +28,6 @@
 		@else
 			@include('welcome.sections.search')		
 			@include('components.sections.youtube')
-		@endenv
+		@endif
 	</div>
 </section>

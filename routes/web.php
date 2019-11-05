@@ -10,6 +10,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 });
 
+Route::get('search', 'HomeController@search')->name('search');
+
 Route::prefix('campaigns')->group(function() {
 
 	Route::get('birthdays', function() {

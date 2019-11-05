@@ -76,6 +76,30 @@
 
 @push('scripts')
 <script src="{{asset('js/vendor/jquery.countdown.min.js')}}"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/asvd/dragscroll/master/dragscroll.js"></script>
+<script type="text/javascript">
+    $(function() {
+      var counter = 0;
+      var isDragging = false;
+      $(".result-card")
+      .mousedown(function(e) {
+          $(window).mousemove(function() {
+              isDragging = true;
+              $(window).unbind("mousemove");
+          });
+      })
+      .mouseup(function(element) {
+          let card = element.target;
+          var wasDragging = isDragging;
+          isDragging = false;
+          $(window).unbind("mousemove");
+          if (!wasDragging) {
+              $(card).closest('form').submit();
+          }
+      });
+    });
+</script>
+
 <script type="text/javascript">
 $('#clock').countdown('2020/01/03', function(event) {
   var $this = $(this).html(event.strftime(''

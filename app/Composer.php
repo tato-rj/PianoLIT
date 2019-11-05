@@ -5,6 +5,7 @@ namespace App;
 class Composer extends Person
 {
     protected $casts = ['is_famous' => 'boolean'];
+    protected $appends = ['cover_image'];
     protected $withCount = ['pieces'];
 
     public function creator()
