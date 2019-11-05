@@ -19,6 +19,7 @@ class Api
 
         $collection = $user->suggestions(12);
         $this->withAttributes($collection, [
+            'type' => 'piece', 
             'source' => route('api.pieces.find'),
             'color' => 'blue']);
 
@@ -32,6 +33,7 @@ class Api
         })->take(10);
 
         $this->withAttributes($collection, [
+            'type' => 'piece', 
             'source' => route('api.pieces.find'),
             'color' => 'green']);
 
@@ -42,6 +44,7 @@ class Api
     {
         $collection = Piece::latest()->take(15)->get();
         $this->withAttributes($collection, [
+            'type' => 'piece', 
             'source' => route('api.pieces.find'),
             'color' => 'teal']);
 
@@ -52,6 +55,7 @@ class Api
     {
         $collection = Composer::withCount('pieces')->get();
         $this->withAttributes($collection, [
+            'type' => 'composer', 
             'source' => \URL::to('/api/search'),
             'color' => 'purple']);
 
@@ -62,6 +66,7 @@ class Api
     {
         $collection = Tag::periods()->select('name')->withCount('pieces')->get();
         $this->withAttributes($collection, [
+            'type' => 'collection', 
             'source' => \URL::to('/api/search'),
             'color' => 'lightpink']);
 
@@ -72,6 +77,7 @@ class Api
     {
         $collection = Tag::improve()->select('name')->withCount('pieces')->get();
         $this->withAttributes($collection, [
+            'type' => 'collection', 
             'source' => \URL::to('/api/search'),
             'color' => 'yellow']);
 
@@ -83,6 +89,7 @@ class Api
         $collection = Tag::levels()->select('name')->withCount('pieces')->get();
 
         $this->withAttributes($collection, [
+            'type' => 'collection', 
             'source' => \URL::to('/api/search'),
             'color' => 'orange']);
 
@@ -93,6 +100,7 @@ class Api
     {
         $collection = Piece::famous()->take(10);
         $this->withAttributes($collection, [
+            'type' => 'piece', 
             'source' => route('api.pieces.find'),
             'color' => 'red']);
 
@@ -103,6 +111,7 @@ class Api
     {
         $collection = Piece::flashy()->take(10);
         $this->withAttributes($collection, [
+            'type' => 'piece', 
             'source' => route('api.pieces.find'),
             'color' => 'blue']);
 
@@ -113,6 +122,7 @@ class Api
     {
         $collection = Piece::for($tag)->take(10);
         $this->withAttributes($collection, [
+            'type' => 'piece', 
             'source' => route('api.pieces.find'),
             'color' => $color]);
 
@@ -143,7 +153,7 @@ class Api
             $background = empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
 
             $model->setAttribute('source', $args['source']);
-            // $model->setAttribute('type', $args['type']);
+            $model->setAttribute('type', $args['type']);
             $model->setAttribute('color', $args['color']);
             $model->setAttribute('background', $background);
             $model->setAttribute('special_attribute', $args['special_attribute'] ?? null);
@@ -242,7 +252,7 @@ class Api
     {
         if (! $request->search)
             return [];
-dd($request->search);
+
         $inputString = trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $request->search)));
 
         $inputArray = array_map('mb_strtolower', explode(' ', $inputString));
