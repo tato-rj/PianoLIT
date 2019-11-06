@@ -22,7 +22,15 @@ trait PieceExtraAttributes
     public function basename()
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
-        return $this->name;
+        return $number . $this->name;
+    }
+
+    public function getSimpleNameAttribute()
+    {
+        $name = $this->name;
+        $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental', 'Atonal'])) ? ' in ' . $this->key : null;
+        $name .= $this->catalogue_name ? " {$this->catalogue}" : $key;
+        return $name;
     }
 
     public function getShortNameAttribute()
