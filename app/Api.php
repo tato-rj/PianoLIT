@@ -126,7 +126,7 @@ class Api
     {
         $piece = Piece::famous()->inRandomOrder()->first();
         $collection = $piece->similar()->take(10);
-        $name = $piece->nickname ?? $piece->short_name;
+        $name = $piece->nickname ?? $piece->simple_name;
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
