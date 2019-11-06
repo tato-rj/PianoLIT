@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-trait IgnoreWords
+trait Dictionary
 {
 	protected $ignore = [
 		'the',
@@ -16,5 +16,9 @@ trait IgnoreWords
 		'repertoire',
 		'good',
 		'best'
+	];
+
+	protected $substitute = [
+		'beginners' => 'beginner'
 	];
 }

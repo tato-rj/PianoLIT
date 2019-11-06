@@ -4,11 +4,11 @@ namespace App;
 
 use Carbon\Carbon;
 use App\{Piece, Composer, Tag, Api, Country, Playlist};
-use App\Traits\{Backgrounds, IgnoreWords};
+use App\Traits\{Backgrounds, Dictionary};
 
 class Api
 {
-    use Backgrounds, IgnoreWords;
+    use Backgrounds, Dictionary;
 
     public function forUser($id)
     {
@@ -283,6 +283,7 @@ class Api
             $inputArray = $this->fixException($inputArray, $key, $tag, ['finger'], 'substitution');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['4', '8'], 'hands');
             $inputArray = $this->ignoreWord($inputArray, $key, $tag);
+            $inputArray = $this->substituteWord($inputArray, $key, $tag);
 
         }
 
@@ -297,6 +298,16 @@ class Api
         }
 
         return $array;
+    }
+    
+    public function substituteWord($array, $key, $word)
+    {
+        if (array_key_exists($word, $this->substitute)) {
+            unset($array[$key]);
+            array_push($array, $this->substitute[$word]);
+        }
+
+        return $array;   
     }
 
     public function ignoreWord($array, $key, $word)
