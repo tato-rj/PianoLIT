@@ -4,3 +4,10 @@ jQuery.fn.toggleAttr = function(attr) {
 		$this.attr(attr) ? $this.removeAttr(attr) : $this.attr(attr, attr);
 	});
 };
+
+jQuery.fn.textToArray = function() {
+return this.map(function(){
+     return $.trim($(this).text());
+  }).get();
+};
+

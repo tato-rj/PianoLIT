@@ -27,15 +27,29 @@ class HomeController extends Controller
         $collections = collect([
             $this->api->latest(),
             $this->api->composers(),
-            $this->api->tag('scales', 'blue'),
-            $this->api->tag('passionate', 'red'),
-            $this->api->tag('melancholic', 'purple'),
+            $this->api->tag('To improve your', 'scales'),
+            $this->api->women(),
+            $this->api->tag('We love pieces that are', 'playful'),
+            $this->api->similar('If you like', 'For Elise'),
         ]);
 
-        
         $tags = Tag::inRandomOrder()->get();
 
         return view('welcome.index', compact(['collections', 'tags']));
+    }
+
+    public function more(Request $request)
+    {
+        $tag = Tag::whereIn('type', ['mood', 'technique'])->has('pieces', '>', 20)->except('name', $request->tags)->inRandomOrder()->first();
+
+        if (empty($tag))
+            return null;
+
+        $title = $tag->type == 'mood' ? 'Pieces that are' : 'Pieces good for';
+
+        return view('components.cards.galleries.row', [
+            'playlist' => $this->api->tag($title, $tag->name)
+        ])->render();
     }
 
     public function search(Request $request)

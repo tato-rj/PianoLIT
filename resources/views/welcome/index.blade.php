@@ -78,26 +78,44 @@
 <script src="{{asset('js/vendor/jquery.countdown.min.js')}}"></script>
 <script type="text/javascript" src="https://cdn.rawgit.com/asvd/dragscroll/master/dragscroll.js"></script>
 <script type="text/javascript">
-    $(function() {
-      var counter = 0;
-      var isDragging = false;
-      $(".result-card")
-      .mousedown(function(e) {
-          $(window).mousemove(function() {
-              isDragging = true;
-              $(window).unbind("mousemove");
-          });
-      })
-      .mouseup(function(element) {
-          let card = element.target;
-          var wasDragging = isDragging;
-          isDragging = false;
+$(function() {
+  var counter = 0;
+  var isDragging = false;
+  $(document)
+  .on('mousedown', '.result-card', function(e) {
+      $(window).mousemove(function() {
+          isDragging = true;
           $(window).unbind("mousemove");
-          if (!wasDragging) {
-              $(card).closest('form').submit();
-          }
       });
-    });
+  })
+  .on('mouseup', '.result-card', function(element) {
+      let card = element.target;
+      var wasDragging = isDragging;
+      isDragging = false;
+      $(window).unbind("mousemove");
+      if (!wasDragging) {
+          $(card).closest('form').submit();
+      }
+  });
+});
+
+$('#show-more button').on('click', function() {
+  let $button = $(this);
+  let url = $button.attr('data-url');
+  let tags = $('.result-row span.tag').textToArray();
+
+  $button.prop('disabled', true).text('LOADING...');
+
+  $.get(url, {tags: tags}, function(response) {
+    if (response) {
+      $(response).insertAfter($('.result-row').last());
+      $button.prop('disabled', false).text('SHOW MORE');
+    } else {
+      $button.prop('disabled', false).text('NO MORE TAGS TO SHOW');      
+    }
+    dragscroll.reset();
+  });
+});
 </script>
 
 <script type="text/javascript">
