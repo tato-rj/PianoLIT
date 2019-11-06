@@ -2,6 +2,10 @@
 
 @push('header')
 <style type="text/css">
+.result-piece:hover > div {
+  width: 228px!important;
+}
+
 #svg-searching {
   position:absolute;
   top:50%;
@@ -79,6 +83,10 @@
 <script src="{{asset('js/vendor/jquery.countdown.min.js')}}"></script>
 <script type="text/javascript" src="https://cdn.rawgit.com/asvd/dragscroll/master/dragscroll.js"></script>
 <script type="text/javascript">
+$('.search-suggestion').click(function() {
+  $('input[name="search"]').val($(this).text());
+});
+
 $(function() {
   var counter = 0;
   var isDragging = false;

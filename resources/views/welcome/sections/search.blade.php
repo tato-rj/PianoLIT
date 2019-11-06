@@ -7,7 +7,7 @@
 
   	<div class="text-muted">
   		{{-- <div class="mb-2">Search for something, let's see what you can find &#10548;</div> --}}
-  		<div>Ex: <i><u>pieces for the left hand</u></i>, <i><u>flashy intermediate repertoire</u></i>, <i><u>4-hands for beginners</u></i>, etc...</div>
+  		<div>Ex: <i><u class="search-suggestion cursor-pointer">pieces for the left hand</u></i>, <i><u class="search-suggestion cursor-pointer">flashy intermediate repertoire</u></i>, <i><u class="search-suggestion cursor-pointer">4-hands for beginners</u></i>, etc...</div>
   	</div>
   </div>
 </div>
