@@ -22,7 +22,7 @@ trait PieceExtraAttributes
     public function basename()
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
-        return $number . $this->name;
+        return $this->name;
     }
 
     public function getShortNameAttribute()
