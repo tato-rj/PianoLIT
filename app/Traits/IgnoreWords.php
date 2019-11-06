@@ -13,6 +13,8 @@ trait IgnoreWords
 		'for',
 		'piece',
 		'pieces',
-		'repertoire'
+		'repertoire',
+		'good',
+		'best'
 	];
 }
