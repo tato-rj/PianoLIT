@@ -22,6 +22,7 @@ trait PieceExtraAttributes
     public function basename()
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
+
         return $number . $this->name;
     }
 
@@ -36,8 +37,10 @@ trait PieceExtraAttributes
     public function getShortNameAttribute()
     {
         $name = $this->basename();
+
         $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental', 'Atonal'])) ? ' in ' . $this->key : null;
         $name .= $this->catalogue_name ? " {$this->catalogue}" : $key;
+
         return $name;
     }
 
