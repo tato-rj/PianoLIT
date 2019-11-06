@@ -56,7 +56,7 @@ class Api
             'source' => \URL::to('/api/search'),
             'color' => 'purple']);
 
-        return $this->createPlaylist($collection, ['type' => 'composer', 'title' => 'Most popular composers']);
+        return $this->createPlaylist($collection, ['type' => 'composer', 'title' => 'Most famous composers']);
     }
 
     public function periods()
@@ -122,15 +122,17 @@ class Api
         return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title, 'tag' => $tag]);
     }
 
-    public function similar($title, $name, $color = null)
+    public function similar($color = null)
     {
-        $collection = Piece::where('nickname', $name)->first()->similar()->take(10);
+        $piece = Piece::famous()->inRandomOrder()->first();
+        $collection = $piece->similar()->take(10);
+        $name = $piece->nickname ?? $piece->short_name;
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
             'color' => $color]);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title, 'tag' => $name]);
+        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'If you like', 'tag' => $piece->composer->last_name . '\'s ' . $name]);
     }
 
     public function women()
@@ -280,6 +282,7 @@ class Api
             $inputArray = $this->fixException($inputArray, $key, $tag, ['alberti'], 'bass');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['finger'], 'substitution');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['4', '8'], 'hands');
+            $inputArray = $this->ignoreWord($inputArray, $key, $tag);
 
         }
 
@@ -294,5 +297,13 @@ class Api
         }
 
         return $array;
+    }
+
+    public function ignoreWord($array, $key, $word)
+    {
+        if (in_array($word, $this->ignore))
+            unset($array[$key]);
+
+        return $array;   
     }
 }

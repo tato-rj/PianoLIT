@@ -213,11 +213,9 @@ class Piece extends PianoLit
 
     public function scopeFamous($query)
     {
-        $results = $query->whereHas('tags', function($q) {
+        return $query->whereHas('tags', function($q) {
             $q->where('name', 'famous');
-        })->get();
-        
-        return $results;
+        });
     }
 
     public function scopeFlashy($query)

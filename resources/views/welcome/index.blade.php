@@ -10,6 +10,7 @@
   max-width:128px;
   max-height:128px;
 }
+
 .magnify{
   fill:#70cfa7;
   animation:search 1s infinite ease;

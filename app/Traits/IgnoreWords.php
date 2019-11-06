@@ -12,6 +12,7 @@ trait IgnoreWords
 		'of',
 		'for',
 		'piece',
-		'pieces'
+		'pieces',
+		'repertoire'
 	];
 }
