@@ -97,7 +97,7 @@ class Api
 
     public function famous()
     {
-        $collection = Piece::famous()->take(10);
+        $collection = Piece::famous()->inRandomOrder()->take(10)->get();
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
@@ -112,7 +112,7 @@ class Api
 
     public function flashy()
     {
-        $collection = Piece::flashy()->take(10);
+        $collection = Piece::flashy()->inRandomOrder()->take(10)->get();
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
@@ -127,7 +127,7 @@ class Api
 
     public function tag($title, $tag, $color = null)
     {
-        $collection = Piece::for($tag)->inRandomOrder()->take(10);
+        $collection = Piece::for($tag)->inRandomOrder()->take(10)->get();
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),

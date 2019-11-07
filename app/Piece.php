@@ -223,7 +223,7 @@ class Piece extends PianoLit
     {
         $results = $query->whereHas('tags', function($q) {
             $q->where('name', 'flashy');
-        })->get();
+        });
 
         return $results;
     }
@@ -232,7 +232,7 @@ class Piece extends PianoLit
     {
         $results = $query->whereHas('tags', function($q) use ($tag) {
             $q->where('name', $tag);
-        })->get();
+        });
 
         return $results;
     }
