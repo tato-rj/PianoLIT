@@ -95,4 +95,14 @@ abstract class ShareableContent extends PianoLit
     {
         return $query->inRandomOrder()->published()->take(4);
     }
+
+    public function scopeSearch($query, array $columns, $input)
+    {
+        return $query->where(function($q) use ($columns, $input) {
+            $q->where(array_shift($columns), 'LIKE', '%'.$input.'%');
+            foreach ($columns as $column) {
+                $q->orWhere($column, 'LIKE', '%'.$input.'%');
+            }
+        });
+    }
 }
