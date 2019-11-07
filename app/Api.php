@@ -10,6 +10,11 @@ class Api
 {
     use Backgrounds, Dictionary;
 
+    public function __construct()
+    {
+        $this->limit = mt_rand(12,18);
+    }
+
     public function forUser($id)
     {
         $user = User::find($id);
@@ -29,7 +34,7 @@ class Api
     {
         $collection = Piece::has('views')->get()->sortByDesc(function($piece) {
             return $piece->views_count;
-        })->take(10);
+        })->take($this->limit);
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
@@ -40,7 +45,7 @@ class Api
 
     public function latest()
     {
-        $collection = Piece::latest()->take(15)->get();
+        $collection = Piece::latest()->take($this->limit)->get();
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
@@ -97,7 +102,7 @@ class Api
 
     public function famous()
     {
-        $collection = Piece::famous()->inRandomOrder()->take(10)->get();
+        $collection = Piece::famous()->inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
@@ -112,7 +117,7 @@ class Api
 
     public function flashy()
     {
-        $collection = Piece::flashy()->inRandomOrder()->take(10)->get();
+        $collection = Piece::flashy()->inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
@@ -127,7 +132,7 @@ class Api
 
     public function tag($title, $tag, $color = null)
     {
-        $collection = Piece::for($tag)->inRandomOrder()->take(10)->get();
+        $collection = Piece::for($tag)->inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
@@ -144,7 +149,7 @@ class Api
     public function similar($color = null)
     {
         $piece = Piece::famous()->inRandomOrder()->first();
-        $collection = $piece->similar()->take(10);
+        $collection = $piece->similar()->take($this->limit);
         $name = $piece->nickname ?? $piece->simple_name;
 
         $this->withAttributes($collection, [
@@ -161,7 +166,7 @@ class Api
 
     public function women()
     {
-        $collection = Piece::byWomen()->inRandomOrder()->take(15)->get();
+        $collection = Piece::byWomen()->inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, [
             'source' => route('api.pieces.find'),
