@@ -61,6 +61,12 @@ Route::get('riddles', function() {
 	return view('riddles.index', compact('riddles'));
 })->name('riddles');
 
+Route::prefix('pieces')->name('pieces.')->group(function() {
+
+	Route::get('{piece}', 'PiecesController@show')->name('show');
+
+});
+
 Route::prefix('resources')->name('resources.')->group(function() {
 
 	Route::prefix('great-pianists')->name('pianists.')->group(function() {

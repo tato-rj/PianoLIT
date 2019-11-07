@@ -33,6 +33,11 @@ class PiecesController extends Controller
         return view('admin.pages.pieces.popups.levels', ['piece' => $piece, 'levels' => $levels])->render();
     }
 
+    public function show(Piece $piece)
+    {
+        return view('pieces.score', compact('piece'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *

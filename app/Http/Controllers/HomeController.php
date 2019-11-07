@@ -32,7 +32,7 @@ class HomeController extends Controller
             $this->api->tag('We love pieces that are', randval(['playful', 'melancholic', 'triumphant'])),
             $this->api->similar(),
         ]);
-        
+
         $tags = Tag::inRandomOrder()->get();
 
         return view('welcome.index', compact(['collections', 'tags']));

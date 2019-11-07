@@ -37,9 +37,7 @@ class SearchController extends Controller
     {
         $inputArray = $this->api->prepareInput($request);
 
-        $results = Piece::search($inputArray, $request);
-
-        $pieces = $results->get();
+        $pieces = Piece::search($inputArray, $request)->get();
 
         $this->api->prepare($request, $pieces, $inputArray);
 

@@ -197,7 +197,8 @@ class Piece extends PianoLit
 
                 if (is_null($request) || $request->has('global')) {
                     $query->orWhereHas('composer', function($q) use ($tag) {
-                           $q->where('name', 'like', "%$tag%");
+                           $q->where('name', 'like', "%$tag%")
+                             ->orWhere('gender', 'like', "%$tag%");
                     })->orWhere('nickname', 'like', "%$tag%")
                       ->orWhere('name', 'like', "%$tag%")
                       ->orWhere('collection_name', 'like', "%$tag%")

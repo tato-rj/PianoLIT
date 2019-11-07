@@ -46,7 +46,11 @@ class Api
             'source' => route('api.pieces.find'),
             'color' => 'teal']);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'Latest pieces']);
+        return $this->createPlaylist($collection, [
+            'type' => 'piece', 
+            'title' => 'Latest pieces',
+            'url' => route('search.index', ['global', 'search'])
+        ]);
     }
 
     public function composers()
@@ -94,32 +98,47 @@ class Api
     public function famous()
     {
         $collection = Piece::famous()->take(10);
+
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
             'color' => 'red']);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'Most famous']);
+        return $this->createPlaylist($collection, [
+            'type' => 'piece', 
+            'title' => 'Most famous',
+            'url' => route('search.index', ['global', 'search' => 'famous'])
+        ]);
     }
 
     public function flashy()
     {
         $collection = Piece::flashy()->take(10);
+
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
             'color' => 'blue']);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'Flashy']);
+        return $this->createPlaylist($collection, [
+            'type' => 'piece', 
+            'title' => 'Flashy',
+            'url' => route('search.index', ['global', 'search' => 'flashy'])
+        ]);
     }
 
     public function tag($title, $tag, $color = null)
     {
-        $collection = Piece::for($tag)->take(10);
+        $collection = Piece::for($tag)->inRandomOrder()->take(10);
 
         $this->withAttributes($collection, [ 
             'source' => route('api.pieces.find'),
             'color' => $color]);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title, 'tag' => $tag]);
+        return $this->createPlaylist($collection, [
+            'type' => 'piece', 
+            'title' => $title, 
+            'tag' => $tag,
+            'url' => route('search.index', ['global', 'search' => $tag])
+        ]);
     }
 
     public function similar($color = null)
@@ -128,29 +147,40 @@ class Api
         $collection = $piece->similar()->take(10);
         $name = $piece->nickname ?? $piece->simple_name;
 
-        $this->withAttributes($collection, [ 
+        $this->withAttributes($collection, [
             'source' => route('api.pieces.find'),
             'color' => $color]);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'If you like', 'tag' => $piece->composer->last_name . '\'s ' . $name]);
+        return $this->createPlaylist($collection, [
+            'type' => 'piece', 
+            'title' => 'If you like', 
+            'tag' => $piece->composer->last_name . '\'s ' . $name,
+            'url' => route('search.index', ['global', 'search' => $name])
+        ]);
     }
 
     public function women()
     {
-        $collection = Piece::byWomen()->take(15)->get();
+        $collection = Piece::byWomen()->inRandomOrder()->take(15)->get();
 
-        $this->withAttributes($collection, [ 
+        $this->withAttributes($collection, [
             'source' => route('api.pieces.find'),
             'color' => 'teal']);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'Pieces by', 'tag' => 'women composers']);
+        return $this->createPlaylist($collection, [
+            'type' => 'piece', 
+            'title' => 'Pieces by', 
+            'tag' => 'women composers', 
+            'url' => route('search.index', ['global', 'search' => 'woman composers'])
+        ]);
     }
 
     public function createPlaylist($model, array $args)
     {
-        $playlist['title'] = $args['title'];
-        $playlist['type'] = $args['type'];
-        $playlist['tag'] = $args['tag'] ?? null;
+        foreach ($args as $key => $value) {
+            $playlist[$key] = $args[$key];            
+        }
+
         $playlist['content'] = $model;
 
         return $playlist;
@@ -159,15 +189,16 @@ class Api
     public function withAttributes($collection, array $args)
     {
         foreach ($collection as $model) {
-            if (get_class($model) == 'App\Piece') {
-                $model->setAttribute('name', $model->medium_name);
-                $subtitle = $model->composer->short_name;
-            } else {
-                $model->name = ucfirst($model->name);
-                $number = $model->pieces_count;
-                $subtitle = $number.' '.'pieces';
-            }
+            // if (get_class($model) == 'App\Piece') {
+            //     // $model->setAttribute('name', $model->medium_name);
+            //     $subtitle = $model->composer->short_name;
+            // } else {
+            //     // $model->name = ucfirst($model->name);
+            //     $number = $model->pieces_count;
+            //     $subtitle = $number.' '.'pieces';
+            // }
 
+            $subtitle = get_class($model) == 'App\Piece' ? $model->composer->short_name : $model->pieces_count.' '.'pieces';
             $background = empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
 
             $model->setAttribute('source', $args['source']);
@@ -231,16 +262,17 @@ class Api
                     'collection_name',
                     'collection_number',
                     'key']));
+
                 // Bring every word to lower case
                 $pieceArray = array_map('mb_strtolower', $pieceArray);
                 // Prepare the tags array
                 $pieceTags = $piece->tags()->pluck('name');
                 // Prepares the composer name
                 $pieceComposer = mb_strtolower($piece->composer()->pluck('name')->first());
-
+                $composerGender = mb_strtolower($piece->composer()->pluck('gender')->first());
                 // Merges piece relevant fields with tags and composer name
                 $pieceArray = $pieceTags->merge($pieceArray);
-                $pieceArray->push($pieceComposer);
+                $pieceArray->push($pieceComposer)->push($composerGender);
 
                 $matchesCount = 0;
 

@@ -15,10 +15,14 @@ trait Dictionary
 		'pieces',
 		'repertoire',
 		'good',
-		'best'
+		'best',
+		'composers',
+		'composer'
 	];
 
 	protected $substitute = [
-		'beginners' => 'beginner'
+		'beginners' => 'beginner',
+		'women' => 'female',
+		'woman' => 'female'
 	];
 }
