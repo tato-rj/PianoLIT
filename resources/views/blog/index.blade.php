@@ -11,11 +11,17 @@
         'title' => 'Blog', 
         'subtitle' => 'A space where we share our ideas and explore intriguing facts about the exciting world of classical music'])
 
-	<div class="row">
+	<div class="row mb-4">
 		
 		@each('components.blog.cards.large', $posts, 'post')
 
 	</div>
+
+  <div class="row">
+    <div class="col-12 d-flex justify-content-center">
+      {{ $posts->links() }}
+    </div>
+  </div>
 </section>
 
 @include('components.overlays.subscribe.model-2')
