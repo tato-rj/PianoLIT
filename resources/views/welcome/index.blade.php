@@ -102,9 +102,9 @@ $(function() {
       var wasDragging = isDragging;
       isDragging = false;
       $(window).unbind("mousemove");
-      console.log(target);
+
       if (!wasDragging) {
-          window.location.href = $(target).closest('.result-card').attr('data-url');
+          goTo($(target).closest('.result-card').attr('data-url'));
       }
   });
 });

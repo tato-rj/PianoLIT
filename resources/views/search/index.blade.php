@@ -31,27 +31,9 @@
 @push('scripts')
 <script type="text/javascript" src="https://cdn.rawgit.com/asvd/dragscroll/master/dragscroll.js"></script>
 <script type="text/javascript">
-$(function() {
-  var counter = 0;
-  var isDragging = false;
-  $(document)
-  .on('mousedown', '.result-card', function(e) {
-      $(window).mousemove(function() {
-          isDragging = true;
-          $(window).unbind("mousemove");
-      });
-  })
-  .on('mouseup', '.result-card', function(element) {
-      let card = element.target;
-      var wasDragging = isDragging;
-      isDragging = false;
-      $(window).unbind("mousemove");
-      if (!wasDragging) {
-          $(card).closest('form').submit();
-      }
-  });
+$('.result-card').click(function() {
+  goTo($(this).attr('data-url'));
 });
-
 </script>
 
 @endpush

@@ -21,3 +21,7 @@ insertParam = function(key, value)
     //this will reload the page, it's likely better to store this until finished
     document.location.search = kvp.join('&'); 
 }
+
+goTo = function(url) {
+    window.location.href = url;
+}
