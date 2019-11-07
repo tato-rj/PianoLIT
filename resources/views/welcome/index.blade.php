@@ -98,12 +98,13 @@ $(function() {
       });
   })
   .on('mouseup', '.result-card', function(element) {
-      let card = element.target;
+      let target = element.target;
       var wasDragging = isDragging;
       isDragging = false;
       $(window).unbind("mousemove");
+      console.log(target);
       if (!wasDragging) {
-          $(card).closest('form').submit();
+          window.location.href = $(target).closest('.result-card').attr('data-url');
       }
   });
 });
