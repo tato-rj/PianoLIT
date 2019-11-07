@@ -2,7 +2,7 @@
     <div class="">
         <h5 class="mb-3">
         	@if($title[1])
-        	<strong class="text-grey">{{$title[0]}} <span class="text-muted tag"><u>{{$title[1]}}</u></span></strong>
+        	<strong class="text-grey">{{$title[0]}} <span class="tag"><u><a href="{{route('search.index', ['global', 'search' => $title[1]])}}" class="text-muted">{{$title[1]}}</a></u></span></strong>
         	@else
         	<strong class="text-grey">{{$title[0]}}</strong>
         	@endif
