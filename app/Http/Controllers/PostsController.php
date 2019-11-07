@@ -92,7 +92,7 @@ class PostsController extends Controller
 
     public function search(Request $request)
     {
-        $posts = Post::where('title', 'LIKE', '%'.$request->input.'%')
+        $posts = Post::published()->where('title', 'LIKE', '%'.$request->input.'%')
             ->orWhere('content', 'LIKE', '%'.$request->input.'%')->get();
 
         if ($request->wantsJson())
