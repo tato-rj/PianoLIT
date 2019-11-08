@@ -48,6 +48,7 @@ class Api
         $collection = Piece::latest()->take($this->limit)->get();
 
         $this->withAttributes($collection, [ 
+            'type' => 'piece', 
             'source' => route('api.pieces.find'),
             'color' => 'teal']);
 
@@ -194,16 +195,16 @@ class Api
     public function withAttributes($collection, array $args)
     {
         foreach ($collection as $model) {
-            // if (get_class($model) == 'App\Piece') {
-            //     // $model->setAttribute('name', $model->medium_name);
-            //     $subtitle = $model->composer->short_name;
-            // } else {
-            //     // $model->name = ucfirst($model->name);
-            //     $number = $model->pieces_count;
-            //     $subtitle = $number.' '.'pieces';
-            // }
+            if (get_class($model) == 'App\Piece') {
+                $model->setAttribute('name', $model->medium_name);
+                $subtitle = $model->composer->short_name;
+            } else {
+                $model->name = ucfirst($model->name);
+                $number = $model->pieces_count;
+                $subtitle = $number.' '.'pieces';
+            }
 
-            $subtitle = get_class($model) == 'App\Piece' ? $model->composer->short_name : $model->pieces_count.' '.'pieces';
+            // $subtitle = get_class($model) == 'App\Piece' ? $model->composer->short_name : $model->pieces_count.' '.'pieces';
             $background = empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
 
             $model->setAttribute('source', $args['source']);
