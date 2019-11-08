@@ -208,7 +208,7 @@ class Api
             $background = empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
 
             $model->setAttribute('source', $args['source']);
-            // $model->setAttribute('type', $args['type']);
+            $model->setAttribute('type', $args['type'] ?? null);
             $model->setAttribute('color', $args['color']);
             $model->setAttribute('background', $background);
             $model->setAttribute('special_attribute', $args['special_attribute'] ?? null);
