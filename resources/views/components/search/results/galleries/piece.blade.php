@@ -3,7 +3,7 @@
 	style="height: 188px; width: {{empty($width) ? '158px' : '100%'}};">
 		<div class="h-100" style="overflow: hidden;">
 			<span class="badge badge-pill mb-2 bg-{{$model->level->name}}">{{$model->level->name}}</span>
-			<p class="mb-0 clamp-2" style="max-width: 100%;"><strong>{{$model->medium_name}}</strong></p>
+			<p class="mb-0 clamp-2" style="max-width: 100%;"><strong>{{$model->name}}</strong></p>
 			<p class="clamp-1 m-0 text-muted"><small>by {{$model->composer->short_name}}</small></p>
 		</div>
 		<div>
