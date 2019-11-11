@@ -6,7 +6,7 @@ class Infograph extends ShareableContent
 {
     protected $folder = 'infograph';
     protected $report_by = 'name';
-    protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0, 'piano' => 0];
+    protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0, 'piano' => 0, 'history' => 0];
 
     protected static function boot()
     {
