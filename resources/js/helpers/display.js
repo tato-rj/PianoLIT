@@ -1,6 +1,9 @@
 jQuery.fn.showAfter = function(time) {
 	let element = this;
-    setTimeout(function() {element.fadeIn('fast')}, time * 1000);
+    setTimeout(function() {
+    	if ($('.modal:visible').length == 0)
+	    	element.fadeIn('fast');
+    }, time * 1000);
 };
 
 jQuery.fn.toggleCssBetween = function(style, options) {
