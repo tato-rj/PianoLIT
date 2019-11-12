@@ -1,3 +1,7 @@
+searchable = function(string) {
+  return string.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
 fullDatePT = function($element)
 {
 	$element.text(
@@ -15,10 +19,6 @@ formatBytes = function(bytes,decimals) {
        i = Math.floor(Math.log(bytes) / Math.log(k));
    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
-
-jQuery.fn.cleanVal = function() {
-	return this.val().replace(/\D/g,'');
-};
 
 const ucfirst = (s) => {
   if (typeof s !== 'string') return ''

@@ -21,6 +21,15 @@
 	'subtitle' => 'Cool infographs about all music things related'])
 
 <div class="container mb-5">
+	<div class="row mb-3">
+		<div class="col-lg-6 col-md-7 col-10 mx-auto">
+			<div class="search-bar position-relative">
+				<i class="fas fa-search"></i>
+				<input id="search-infograph" type="text" placeholder="Search here..." class="w-100 border-bottom">
+			</div>
+		</div>
+	</div>
+
 	<div class="d-flex flex-wrap flex-center mb-4">
 		<button data-target=".thumbnail" class="infograph-type-btn m-1 btn btn-teal">All</button>
 		@foreach($types as $type => $count)
@@ -83,6 +92,8 @@ $('.infograph-type-btn').on('click', function() {
 
 	$('.thumbnail').hide();
 	$(type).show();
+
+	$('input#search-infograph').val('');
 });
 
 $('.review').click(function() {vote($(this))});
@@ -103,6 +114,31 @@ function vote($hand) {
       });
   }
 }
+
+$('input#search-infograph').on('keyup', function() {
+	let val = searchable($(this).val());
+
+	if (val.length > 2) {
+		console.log('Find infographs with: '+val);
+		$('.infograph-card').each(function() {
+			let $element = $(this);
+			let name = searchable($element.attr('data-name'));
+			let description = searchable($element.attr('data-description'));
+
+			if (name.includes(val) || description.includes(val)) {
+				$element.show();
+			} else {
+				$element.hide();
+			}
+
+			$('.infograph-type-btn').addClass('btn-teal-outline').removeClass('btn-teal');
+		});
+	} else {
+		console.log('Show all');
+		$('.infograph-card').show();
+		$('.infograph-type-btn').first().removeClass('btn-teal-outline').addClass('btn-teal');
+	}
+});
 
 $("#subscribe-overlay").showAfter(5);
 </script>
