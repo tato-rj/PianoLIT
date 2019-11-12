@@ -66,6 +66,7 @@ $('.thumbnail').hover(function() {
 $('#infograph-modal').on('show.bs.modal', function (e) {
 	let $modal = $(e.target);
 	let $infograph = $(e.relatedTarget);
+	let downloads = $infograph.attr('data-downloads');
 
 	$modal.find('.review').attr('data-url', $infograph.attr('data-review-url'));
 	$modal.find('.url').attr('href', $infograph.attr('data-url'));
@@ -73,6 +74,13 @@ $('#infograph-modal').on('show.bs.modal', function (e) {
 	$modal.find('.name').text($infograph.attr('data-name'));
 	$modal.find('.description').text($infograph.attr('data-description'));
 	$modal.find('.type').text($infograph.attr('data-type'));
+
+	if (downloads > 10) {
+		$('#downloads-count span').text(downloads);
+		$('#downloads-count').show();
+	} else {
+		$('#downloads-count').hide();		
+	}
 });
 
 $('#infograph-modal').on('hidden.bs.modal', function (e) {

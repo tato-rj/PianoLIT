@@ -22,6 +22,9 @@
 									<div>
 										<a href="" class="url btn btn-block btn-green py-2 font-weight-bold"><i class="fas fa-file-download mr-2"></i>Download</a>
 									</div>
+									<div class="text-muted text-center mt-1" id="downloads-count" style="display: none;">
+										<small><i class="fas fa-star text-yellow mr-1"></i>I've been downloaded <span></span> times!</small>
+									</div>
 								</div>
 								<div style="line-height: 1.2" class="mb-3">
 									<div><small><strong>PianoLIT License</strong></small></div>

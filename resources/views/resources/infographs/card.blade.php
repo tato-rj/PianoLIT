@@ -5,6 +5,7 @@
 	data-name="{{$infograph->name}}"
 	data-description="{{$infograph->description}}"
 	data-type="{{ucfirst($infograph->type)}}"
+	data-downloads="{{ucfirst($infograph->downloads)}}"
 	data-toggle="modal" data-target="#infograph-modal">
 	
 	<div class=" cursor-pointer border position-relative">
