@@ -123,9 +123,8 @@ $('input#search-infograph').on('keyup', function() {
 		$('.infograph-card').each(function() {
 			let $element = $(this);
 			let name = searchable($element.attr('data-name'));
-			let description = searchable($element.attr('data-description'));
 
-			if (name.includes(val) || description.includes(val)) {
+			if (name.includes(val)) {
 				$element.show();
 			} else {
 				$element.hide();
