@@ -23,14 +23,14 @@ class InfographsController extends Controller
     public function index()
     {
         $infographs = Infograph::latest()->get();
-        $topics = Topic::all();
+        $topics = Topic::ordered()->get();
 
         return view('admin.pages.infographs.index', compact(['infographs', 'topics']));
     }
 
     public function topics()
     {
-        $topics = topic::all();
+        $topics = Topic::ordered()->get();
 
         return view('admin.pages.infographs.topics.index', compact('topics'));
     }
@@ -107,7 +107,7 @@ class InfographsController extends Controller
      */
     public function edit(Infograph $infograph)
     {
-        $topics = Topic::all();
+        $topics = Topic::ordered()->get();
 
         return view('admin.pages.infographs.edit', compact(['infograph', 'topics']));
     }

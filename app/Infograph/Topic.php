@@ -20,4 +20,9 @@ class Topic extends PianoLit
     {
         return $this->belongsToMany(Infograph::class, 'infograph_infograph_topic');
     }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('name', 'asc');
+    }
 }

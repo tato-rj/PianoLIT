@@ -23,7 +23,7 @@ class ResourcesController extends Controller
     public function infographs($name = null)
     {
         $infographs = Infograph::published()->inRandomOrder()->newFirst();
-        $topics = InfographTopic::has('infographs', '>', 0)->get();
+        $topics = InfographTopic::has('infographs', '>', 0)->ordered()->get();
 
 		return view('resources.infographs.index', compact(['infographs', 'topics']));
     }
