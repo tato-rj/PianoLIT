@@ -31,10 +31,10 @@
 	</div>
 
 	<div class="d-flex flex-wrap flex-center mb-4">
-		<button data-target=".thumbnail" class="infograph-type-btn m-1 btn btn-teal">All</button>
+		<button data-target=".thumbnail" class="infograph-type-btn m-1 border-0 rounded-pill btn btn-teal">View all</button>
 		@foreach($types as $type => $count)
 		@if($count > 0)
-		<button data-target=".thumbnail-{{$type}}" class="infograph-type-btn m-1 btn btn-teal-outline">{{ucfirst($type)}} ({{$count}})</button>
+		<button data-target=".thumbnail-{{$type}}" class="infograph-type-btn m-1 btn border-0 rounded-pill btn-teal-outline">{{ucfirst($type)}} ({{$count}})</button>
 		@endif
 		@endforeach
 	</div>
