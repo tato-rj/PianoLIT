@@ -166,18 +166,32 @@
       </li>
 
       <li class="nav-item">
+        <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#infograph">
+          <div>
+            <i class="fas fa-pencil-ruler fa-fw"></i>
+            <span class="nav-link-text">Infographs</span>
+          </div>
+          <div>
+            <i class="fas fa-caret-down"></i>
+          </div>
+        </a>
+        <ul class="sidenav-second-level collapse" id="infograph">
+          <li>
+            <a class="py-2" href="{{route('admin.infographs.index')}}">Designs</a>
+          </li>
+          <li>
+            <a class="py-2" href="{{route('admin.infographs.topics.index')}}">Topics</a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
         <a class="nav-link" href="{{route('admin.timelines.index')}}">
           <i class="fas fa-list-ul"></i>
           <span class="nav-link-text">Timeline</span>
         </a>
       </li>
 
-      <li class="nav-item d-none d-sm-block">
-        <a class="nav-link" href="{{route('admin.infographs.index')}}">
-          <i class="fas fa-pencil-ruler fa-fw"></i>
-          <span class="nav-link-text">Infographs</span>
-        </a>
-      </li>
 {{--       <li class="nav-item d-none d-sm-block">
         <a class="nav-link" href="{{route('admin.editors.index')}}">
           <i class="fas fa-pencil-alt fa-fw"></i>

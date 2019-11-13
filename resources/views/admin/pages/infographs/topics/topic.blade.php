@@ -2,8 +2,8 @@
 	 style="border-color: lightgrey"
 	 data-name="{{$topic->name}}"
 	 data-creator="{{$topic->creator->name}}"
-	 data-edit-url="{{route('admin.quizzes.topics.update', $topic->slug)}}" 
-	 data-delete-url="{{route('admin.quizzes.topics.destroy', $topic->slug)}}" 
+	 data-edit-url="{{route('admin.infographs.topics.update', $topic->slug)}}" 
+	 data-delete-url="{{route('admin.infographs.topics.destroy', $topic->slug)}}" 
 	 data-toggle="modal" 
 	 data-target="#topic-modal">
   <p class="m-0">{{$topic->name}}</p>

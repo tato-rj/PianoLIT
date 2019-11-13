@@ -26,7 +26,6 @@ class InfographForm extends FormRequest
         return [
             'name' => 'required|min:4|max:120',
             'description' => 'required|min:4|max:238',
-            'type' => 'required',
             'cover_image' => 'sometimes|required|mimes:jpeg,jpg'
         ];
     }

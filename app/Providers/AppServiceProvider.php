@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Infograph;
+use App\Infograph\Infograph;
 
 class AppServiceProvider extends ServiceProvider
 {

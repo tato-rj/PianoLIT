@@ -82,6 +82,8 @@ class BlogTest extends AppTest
     /** @test */
     public function a_user_can_search_the_blog_database()
     {
+        $this->post->updateStatus();
+        
         $response = $this->json('get', route('api.blog.search'), ['input' => 'xxx']);
 
         $this->assertCount(0, $response->baseResponse->original['results']);

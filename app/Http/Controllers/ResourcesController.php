@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Pianist, Piece, Timeline, Infograph};
+use App\{Pianist, Piece, Timeline};
+use App\Infograph\Infograph;
+use App\Infograph\Topic as InfographTopic;
 
 class ResourcesController extends Controller
 {
@@ -21,9 +23,9 @@ class ResourcesController extends Controller
     public function infographs($name = null)
     {
         $infographs = Infograph::published()->inRandomOrder()->newFirst();
-        $types = Infograph::types();
+        $topics = InfographTopic::has('infographs', '>', 0)->get();
 
-		return view('resources.infographs.index', compact(['infographs', 'types']));
+		return view('resources.infographs.index', compact(['infographs', 'topics']));
     }
 
     public function podcasts()

@@ -11,8 +11,7 @@ Route::resources([
     'users' => 'UsersController',
     'timelines' => 'TimelinesController',
     'pianists' => 'PianistsController',
-    'playlists' => 'PlaylistsController',
-    'infographs' => 'InfographsController'
+    'playlists' => 'PlaylistsController'
 ]);
 
 Route::patch('composers/{composer}/toggle-famous', 'ComposersController@toggleFamous')->name('composers.toggle-famous');
@@ -24,9 +23,32 @@ Route::prefix('notifications')->name('notifications.')->group(function() {
 });
 
 Route::prefix('infographs')->name('infographs.')->group(function() {
+	
+	Route::get('', 'InfographsController@index')->name('index');
+
+	Route::get('create', 'InfographsController@create')->name('create');
+
+	Route::post('', 'InfographsController@store')->name('store');
+
+	Route::prefix('topics')->name('topics.')->group(function() {
+	
+		Route::get('', 'InfographsController@topics')->name('index');
+
+		Route::post('store', 'InfographsController@topicStore')->name('store');
+
+		Route::patch('{topic}/update', 'InfographsController@topicUpdate')->name('update');
+		
+		Route::delete('{topic}/destroy', 'InfographsController@topicDestroy')->name('destroy');
+
+	});
 
 	Route::patch('{infograph}/status', 'InfographsController@updateStatus')->name('update-status');
 
+	Route::get('{infograph}', 'InfographsController@edit')->name('edit');
+
+	Route::patch('{infograph}', 'InfographsController@update')->name('update');
+
+	Route::delete('{infograph}', 'InfographsController@destroy')->name('destroy');
 });
 
 Route::prefix('blog')->name('posts.')->group(function() {

@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Infograph;
+use App\Infograph\Infograph;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;

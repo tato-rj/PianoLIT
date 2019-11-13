@@ -1,38 +1,46 @@
 <?php
 
-namespace App;
+namespace App\Infograph;
+
+use App\{ShareableContent, Admin};
 
 class Infograph extends ShareableContent
 {
     protected $folder = 'infograph';
     protected $report_by = 'name';
-    protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0, 'piano' => 0, 'history' => 0];
+    // protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0, 'piano' => 0, 'history' => 0];
 
     protected static function boot()
     {
         parent::boot();
 
         self::deleting(function($infograph) {
+            $infograph->topics()->detach();
             \Storage::disk('public')->delete([$infograph->cover_path, $infograph->thumbnail_path]);
         });
     }
 
-    public function scopeTypes($query)
+    public function topics()
     {
-        $records = $query->published()->selectRaw('type, count(*) count')->groupBy('type')->get()->toArray();
-
-        foreach ($this->types as $type => $count) {
-            foreach ($records as $record) {
-                if ($type == $record['type'])
-                    $this->types[$type] = $record['count'];
-            }
-                
-        }
-
-    	ksort($this->types);
-
-        return $this->types;
+        return $this->belongsToMany(Topic::class, 'infograph_infograph_topic');
     }
+
+    // public function scopeTypes($query)
+    // {
+    //     $records = $query->published()->selectRaw('type, count(*) count')->groupBy('type')->get()->toArray();
+
+    //     foreach ($this->types as $type => $count) {
+    //         foreach ($records as $record) {
+    //             if ($type == $record['type'])
+    //                 $this->types[$type] = $record['count'];
+    //         }
+                
+    //     }
+
+    // 	ksort($this->types);
+
+    //     return $this->types;
+    // }
 
     public function scopeGifts($query)
     {

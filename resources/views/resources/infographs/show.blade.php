@@ -16,7 +16,7 @@
 						<div class="col-lg-5 col-md-6 col-12 d-flex align-items-center">
 							<div class="py-4">
 								<div class="mb-4 pb-4 border-bottom">
-									<span class="badge type badge-light mb-2"></span>
+									<div class="topics"></div>
 									<h4 class="name mb-1"></h4>
 									<p class="description text-muted mb-4"></p>
 									<div>

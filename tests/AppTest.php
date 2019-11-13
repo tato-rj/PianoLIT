@@ -3,6 +3,8 @@
 namespace Tests;
 
 use App\Blog\{Post, Topic};
+use App\Infograph\Infograph;
+use App\Infograph\Topic as InfographTopic;
 use App\Quiz\Quiz;
 use App\Quiz\Topic as QuizTopic;
 use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist, Subscription, Timeline, Pianist};
@@ -16,6 +18,10 @@ class AppTest extends TestCase
         $this->admin = create(Admin::class);
 
         $this->user = create(User::class);
+
+        $this->infograph = create(Infograph::class, ['creator_id' => $this->admin->id]);
+
+        $this->infograph_topic = create(InfographTopic::class, ['creator_id' => $this->admin->id]);
 
         $this->timeline = create(Timeline::class, ['creator_id' => $this->admin->id]);
 
@@ -61,6 +67,8 @@ class AppTest extends TestCase
         $this->post->topics()->attach($this->topic);
 
         $this->quiz->topics()->attach($this->quiz_topic);
+
+        $this->infograph->topics()->attach($this->infograph_topic);
 
         $this->playlist->pieces()->attach($this->piece);
 	}

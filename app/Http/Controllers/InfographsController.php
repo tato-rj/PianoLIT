@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\{Infograph, Admin};
+use App\Admin;
+use App\Infograph\{Infograph, Topic};
 use Illuminate\Http\Request;
 use App\Http\Requests\InfographForm;
 use App\Notifications\{InfographDownload, InfographVoted};
@@ -22,9 +23,16 @@ class InfographsController extends Controller
     public function index()
     {
         $infographs = Infograph::latest()->get();
-        $types = Infograph::types();
+        $topics = Topic::all();
 
-        return view('admin.pages.infographs.index', compact(['infographs', 'types']));
+        return view('admin.pages.infographs.index', compact(['infographs', 'topics']));
+    }
+
+    public function topics()
+    {
+        $topics = topic::all();
+
+        return view('admin.pages.infographs.topics.index', compact('topics'));
     }
 
     /**
@@ -50,13 +58,29 @@ class InfographsController extends Controller
             'name' => $form->name,
             'description' => $form->description,
             'slug' => str_slug($form->name),
-            'published_at' => now(),
-            'type' => $form->type
+            'published_at' => now()
         ]);
+
+        $infograph->topics()->attach($request->topics);
 
         $infograph->uploadCoverImage($request, $crop = false);
 
         return redirect(route('admin.infographs.index'))->with('status', 'The infograph has been successfuly created!');
+    }
+
+    public function topicStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|unique:infograph_topics|max:255',
+        ]);
+
+        Topic::create([
+            'slug' => str_slug($request->name),
+            'name' => $request->name,
+            'creator_id' => auth()->guard('admin')->user()->id
+        ]);
+
+        return redirect()->back()->with('status', "The topic has been successfully added!");
     }
 
     /**
@@ -83,9 +107,9 @@ class InfographsController extends Controller
      */
     public function edit(Infograph $infograph)
     {
-        $types = Infograph::types();
+        $topics = Topic::all();
 
-        return view('admin.pages.infographs.edit', compact(['infograph', 'types']));
+        return view('admin.pages.infographs.edit', compact(['infograph', 'topics']));
     }
 
     /**
@@ -100,13 +124,28 @@ class InfographsController extends Controller
         $infograph->update([
             'slug' => str_slug($form->name),
             'name' => $form->name,
-            'description' => $form->description,
-            'type' => $form->type
+            'description' => $form->description
         ]);
+
+        $infograph->topics()->sync($request->topics);
 
         $infograph->uploadCoverImage($request, $crop = false);
 
         return redirect()->back()->with('status', 'The infograph has been successfuly updated!');    
+    }
+
+    public function topicUpdate(Request $request, Topic $topic)
+    {
+        $request->validate([
+            'name' => 'required|max:255',
+        ]);
+        
+        $topic->update([
+            'slug' => str_slug($request->name),
+            'name' => $request->name
+        ]);
+
+        return redirect()->back()->with('status', "The topic has been successfully updated!");
     }
 
     public function updateStatus(Request $request, Infograph $infograph)
@@ -137,5 +176,12 @@ class InfographsController extends Controller
         $infograph->delete();
 
         return redirect()->back()->with('status', 'The infograph has been successfuly deleted!');
+    }
+
+    public function topicDestroy(Topic $topic)
+    {
+        $topic->delete();
+
+        return redirect()->back()->with('status', "The topic has been successfully deleted!");
     }
 }

@@ -9,7 +9,7 @@ use Tests\AppTest;
 class BlogTest extends AppTest
 {
 	/** @test */
-	public function a_post_belongs_to_an_admin()
+	public function it_belongs_to_an_admin()
 	{
 		$this->assertInstanceOf(Admin::class, $this->post->creator);
 	}

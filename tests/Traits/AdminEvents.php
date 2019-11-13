@@ -4,7 +4,7 @@ namespace Tests\Traits;
 
 use App\Blog\Post;
 use App\Quiz\Quiz;
-use App\Infograph;
+use App\Infograph\Infograph;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -57,7 +57,7 @@ trait AdminEvents
         $this->post(route('admin.infographs.store'), [
             'name' => $infograph->name,
             'description' => $infograph->description,
-            'type' => $infograph->type,
+            'tags' => $infograph->tags,
             'cover_image' => $infograph->cover_image
         ]);
 

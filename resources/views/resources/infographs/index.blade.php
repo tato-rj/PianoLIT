@@ -11,7 +11,15 @@
 
 @push('header')
 <style type="text/css">
-
+.card-overlay {
+	background: rgb(0,0,0);
+	background: -moz-linear-gradient(0deg, rgba(0,0,0,0.7514356084230567) 0%, rgba(0,212,255,0) 87%);
+	background: -webkit-linear-gradient(0deg, rgba(0,0,0,0.7514356084230567) 0%, rgba(0,212,255,0) 87%);
+	background: linear-gradient(0deg, rgba(0,0,0,0.7514356084230567) 0%, rgba(0,212,255,0) 87%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#00d4ff",GradientType=1);
+	bottom: 0; 
+	right: 0;
+}
 </style>
 @endpush
 
@@ -32,10 +40,8 @@
 
 	<div class="d-flex flex-wrap flex-center mb-4">
 		<button data-target=".thumbnail" class="infograph-type-btn m-1 border-0 rounded-pill btn btn-teal">View all</button>
-		@foreach($types as $type => $count)
-		@if($count > 0)
-		<button data-target=".thumbnail-{{$type}}" class="infograph-type-btn m-1 btn border-0 rounded-pill btn-teal-outline">{{ucfirst($type)}}</button>
-		@endif
+		@foreach($topics as $topic)
+			<button data-target=".thumbnail-{{$topic->slug}}" class="infograph-type-btn m-1 btn border-0 rounded-pill btn-teal-outline">{{$topic->name}}</button>
 		@endforeach
 	</div>
 	<div class="row m-0">
@@ -66,14 +72,21 @@ $('.thumbnail').hover(function() {
 $('#infograph-modal').on('show.bs.modal', function (e) {
 	let $modal = $(e.target);
 	let $infograph = $(e.relatedTarget);
+	let $topicsContainer = $modal.find('.topics');
 	let downloads = $infograph.attr('data-downloads');
+	let topics = JSON.parse($infograph.attr('data-topics'));
 
 	$modal.find('.review').attr('data-url', $infograph.attr('data-review-url'));
 	$modal.find('.url').attr('href', $infograph.attr('data-url'));
 	$modal.find('.preview').attr('src', $infograph.attr('data-image'));
 	$modal.find('.name').text($infograph.attr('data-name'));
 	$modal.find('.description').text($infograph.attr('data-description'));
-	$modal.find('.type').text($infograph.attr('data-type'));
+
+	$topicsContainer.html('');
+
+	topics.forEach(function(topic) {
+		$topicsContainer.append('<span class="badge type badge-light mb-2 mr-2">'+topic+'</span>');
+	});
 
 	if (downloads > 10) {
 		$('#downloads-count span').text(downloads);

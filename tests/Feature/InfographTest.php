@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\AppTest;
-use App\Infograph;
+use App\Infograph\{Infograph, Topic};
 use Tests\Traits\AdminEvents;
 
 class InfographTest extends AppTest
@@ -62,7 +62,7 @@ class InfographTest extends AppTest
         $this->patch(route('admin.infographs.update', $infograph->slug), [
             'name' => $update->name,
             'description' => $update->description,
-            'type' => $update->type
+            'topics' => $update->topics
         ]);
 
         $this->assertNotEquals($name, $infograph->fresh()->name);       

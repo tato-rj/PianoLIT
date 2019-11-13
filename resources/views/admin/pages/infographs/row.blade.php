@@ -1,6 +1,5 @@
 <tr>
 	<td>{{$infograph->name}}</td>
-	<td>{{ucfirst($infograph->type)}}</td>
 	<td>{{$infograph->downloads}}</td>
 	<td>{{$infograph->score}}</td>
 	<td>

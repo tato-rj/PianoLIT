@@ -25,7 +25,6 @@
           <thead>
             <tr>
               <th class="border-0" scope="col">Name</th>
-              <th class="border-0" scope="col">Type</th>
               <th class="border-0" scope="col">Downloads</th>
               <th class="border-0" scope="col">Score</th>
               <th class="border-0" scope="col">Published</th>
