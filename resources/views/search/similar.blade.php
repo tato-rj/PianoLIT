@@ -10,7 +10,8 @@
 <section class="container">
   <div class="row mb-4">
     <div class="text-center col-12">
-      @include('components.search.form', ['value' => request('search')])
+      <p class="mb-1">Pieces that are similar to</p>
+      <h5><strong>{{$piece->medium_name}}</strong> by {{$piece->composer->short_name}}</h5>
       <p class="text-muted m-0">We found {{count($results)}} {{str_plural('result', count($results))}}!</p>
     </div>
   </div>

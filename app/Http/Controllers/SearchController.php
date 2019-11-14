@@ -19,6 +19,13 @@ class SearchController extends Controller
     	return view('search.index', compact('results'));
     }
 
+    public function similar(Piece $piece)
+    {
+        $pieces = $piece->similar();
+
+        return view('search.similar', ['results' => $pieces, 'piece' => $piece]);
+    }
+
     public function moreRows(Request $request)
     {
         $tag = Tag::whereIn('type', ['mood', 'technique'])->has('pieces', '>', 20)->except('name', $request->tags)->inRandomOrder()->first();

@@ -158,12 +158,12 @@ $('#clock').countdown('2020/01/03', function(event) {
 </script>
 
 <script type="text/javascript">
-let $scrollMark = $('#screens-composition').offset().top;
+let scrollMark = $('#screens-composition').offset().top - 300;
 
 $(window).scroll(function() {
-  let $scrollTop = $(this).scrollTop();
+  let scrollTop = $(this).scrollTop();
 
-  if ($scrollTop > $scrollMark){
+  if (scrollTop > scrollMark){
     $('#screens-container img:nth-child(2)').css('margin-left', '192px');
     $('#screens-container img:nth-child(3)').css('margin-left', '-192px');
     $('#screens-container img:nth-child(4)').css('margin-left', '328px');
@@ -172,7 +172,6 @@ $(window).scroll(function() {
     $('#screens-container img').css('margin-left', '0');
   }
 });
-
 </script>
 <script type="text/javascript">
 $('#tags-search-button').on('click', function() {

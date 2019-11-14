@@ -35,7 +35,7 @@ class PiecesController extends Controller
 
     public function show(Piece $piece)
     {
-        return view('pieces.score', compact('piece'));
+        return view('pieces.show', compact('piece'));
     }
 
     /**
@@ -162,7 +162,7 @@ class PiecesController extends Controller
         $pieces->each(function($result) {
             (new Api)->setCustomAttributes($result, request('user_id'));
         });
-
+        
         return $pieces;
     }
 
