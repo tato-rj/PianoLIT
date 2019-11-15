@@ -2,37 +2,95 @@
 
 @push('header')
 <style type="text/css">
-.embed-responsive-a4 {
-  padding-bottom: 141.42%;
-}
+
 </style>
 @endpush
 
 @section('content')
 
 <div class="container mt-5 mb-6">
-	<div class="col-lg-8 col-md-9 col-sm-10 col-12 mx-auto mb-6">
+	<div class="col-lg-8 col-md-10 col-12 mx-auto mb-6">
 
-			<div class="mb-4">
-				<span class="badge badge-pill mb-3 bg-{{$piece->level->name}}">{{$piece->level->name}}</span>
-				<h5><strong>{{$piece->long_name}}</strong></h5>
-				<p><i>by {{$piece->composer->name}}</i></p>
-			</div>
+		<div class="mb-4">
+			<span class="badge badge-pill mb-3 bg-{{$piece->level->name}}">{{$piece->level->name}}</span>
+			<h5><strong>{{$piece->long_name}}</strong></h5>
+			<p><i>by {{$piece->composer->name}}</i></p>
+		</div>
 
-			<div class="row">
-				<div class="col-6">
-					<button class="btn btn-block btn-light py-6">
-						<h1><i class="fas text-grey fa-{{$piece->isPublicDomain ? 'cloud-download-alt' : 'shopping-bag'}}"></i></h1>
-						<h5>{{$piece->isPublicDomain ? 'Download' : 'Buy'}} score</h5>
-					</button>
-				</div>
-				<div class="col-6">
-					<a href="{{route('search.similar', $piece->id)}}" class="btn btn-block btn-light py-6">
-						<h1><i class="text-grey fas fa-gift"></i></h1>
-						<h5>More like this</h5>
-					</a>
-				</div>
+		<div class="row mb-2">
+			<div class="col-lg-6 col-md-6 col-12 mb-3">
+				<a href="{{storage($piece->score_path)}}" target="_blank" class="btn btn-block btn-light py-6">
+					<h1><i class="fas text-grey fa-{{$piece->isPublicDomain ? 'cloud-download-alt' : 'shopping-bag'}}"></i></h1>
+					<h5>{{$piece->isPublicDomain ? 'Download' : 'Buy'}} score</h5>
+				</a>
 			</div>
+			<div class="col-lg-6 col-md-6 col-12 mb-3">
+				<a href="{{route('search.similar', $piece->id)}}" target="_blank" class="btn btn-block btn-light py-6">
+					<h1><i class="text-grey fas fa-gift"></i></h1>
+					<h5>More like this</h5>
+				</a>
+			</div>
+		</div>
+		@if($piece->hasAudio())
+		<div class="row mb-5">
+			<div class="col-12">
+				<audio controls class="w-100">
+					<source src="{{storage($piece->audio_path)}}" type="audio/mp3">
+				</audio>
+			</div>
+		</div>
+		@endif
+
+		<div class="row">
+			@php($tags = $piece->tags()->mood()->get())
+			@if(! $tags->isEmpty())
+			<div class="col-12 mb-4">
+				<h6 class="mb-3">What's this piece like?</h6>
+				@foreach($tags as $tag)
+				    <a href="{{route('search.index', ['global', 'search' => $tag->name])}}"
+				    	target="_blank" title="Find more pieces about this" class="align-text-bottom link-teal tag rounded-pill alert-teal m-1 px-3 py-1">
+				      <strong>{{$tag->name}}</strong>
+				    </a>
+				@endforeach
+			</div>
+			@endif
+
+			@php($tags = $piece->tags()->technique()->get())
+			@if(! $tags->isEmpty())
+			<div class="col-12">
+				<h6 class="mb-3">What's this piece good for?</h6>
+				@foreach($tags as $tag)
+				    <a href="{{route('search.index', ['global', 'search' => $tag->name])}}"
+				    	target="_blank" title="Find more pieces about this" class="align-text-bottom link-blue tag rounded-pill alert-blue m-1 px-3 py-1">
+				      <strong>{{$tag->name}}</strong>
+				    </a>
+				@endforeach
+			</div>
+			@endif
+		</div>
+	</div>
+
+	<div class="col-lg-8 col-md-9 col-sm-10 col-12 mx-auto border-top pt-5" id="screens-composition">
+		<div class="text-center">
+			<p class="mb-2 text-muted">Looking for more resources?</p>
+			<h4>We're working on an iOS app for that!</h4>
+		</div>
+		@include('components.app.screens')
+
+		<div class="text-center">
+			<div style="max-width: 400px" class="mx-auto">
+				<h4 class="mb-3">Coming out soon</h4>
+				<p>Subscribe to our newletter and be the first one to know when the app is out!</p>
+				@include('components.form.subscription')
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container mb-6">
+  @include('components.sections.youtube')
+</div>
+
 {{-- 			@if($piece->isPublicDomain)
 				<div class="embed-responsive embed-responsive-a4 mb-4">
 					<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
@@ -46,24 +104,6 @@
 					<a href="{{$piece->score_url}}" target="_blank" class="btn btn-teal btn-wide"><i class="fas fa-shopping-bag mr-2"></i>Buy the score here</a>
 				</div>
 			@endif --}}
-
-
-
-	</div>
-
-	<div class="col-lg-8 col-md-9 col-sm-10 col-12 mx-auto border-top pt-5" id="screens-composition">
-		<div class="text-center">
-			<p class="mb-2 text-muted">Looking for more resources?</p>
-			<h4>We've got an iOS app for that!</h4>
-		</div>
-		@include('components.app.screens')
-	</div>
-</div>
-
-<div class="container mb-6">
-  @include('components.sections.youtube')
-</div>
-
 @include('components.overlays.subscribe.model-2')
 @endsection
 
