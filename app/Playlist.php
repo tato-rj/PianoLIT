@@ -2,8 +2,12 @@
 
 namespace App;
 
+use App\Traits\Sortable;
+
 class Playlist extends PianoLit
 {
+    use Sortable;
+    
     protected $withCount = ['pieces'];
 
     public static function boot()

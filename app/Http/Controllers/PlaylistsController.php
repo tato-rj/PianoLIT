@@ -14,7 +14,7 @@ class PlaylistsController extends Controller
      */
     public function index()
     {
-        $playlists = Playlist::all();
+        $playlists = Playlist::sorted()->get();
 
         return view('admin.pages.playlists.index', compact('playlists'));
     }

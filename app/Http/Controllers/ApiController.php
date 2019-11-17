@@ -139,7 +139,7 @@ class ApiController extends Controller
 
     public function playlists($group)
     {
-        return Playlist::journey()->get();
+        return Playlist::journey()->sorted()->get();
     }
 
     public function playlist(Playlist $playlist)
