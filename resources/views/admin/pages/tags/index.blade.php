@@ -13,7 +13,7 @@
         <form method="POST" action="{{route('admin.tags.store')}}" class="form-inline">
           {{csrf_field()}}
           <input type="text" name="name" placeholder="Create a new tag here" class="form-control mr-2">
-            <select class="form-control mr-2" name="type">
+            <select required class="form-control mr-2" name="type">
               <option selected disabled>Type</option>
              
               @foreach(\App\Tag::labels() as $label => $options)

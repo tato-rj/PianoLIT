@@ -43,6 +43,7 @@ class TagsController extends Controller
 
         $request->validate([
             'name' => 'required|unique:tags|max:255',
+            'type' => 'required'
         ]);
 
         Tag::create([
