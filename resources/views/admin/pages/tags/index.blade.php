@@ -16,10 +16,10 @@
             <select class="form-control mr-2" name="type">
               <option selected disabled>Type</option>
              
-              @foreach(\App\Tag::labels() as $label => $types)
+              @foreach(\App\Tag::labels() as $label => $options)
                 <optgroup label="{{ucfirst($label)}} tags">
-                  @foreach($types as $type)
-                  <option value="{{$type}}">{{ucfirst($type)}}</option>
+                  @foreach($options as $option)
+                  <option value="{{$option}}">{{ucfirst($option)}}</option>
                   @endforeach
                 </optgroup>
               @endforeach

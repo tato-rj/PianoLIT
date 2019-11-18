@@ -6,7 +6,7 @@ class Tag extends PianoLit
 {
     protected $labels = [
         'search' => ['mood', 'technique', 'genre', 'ranking'],
-        'core' => ['leve', 'period', 'length']
+        'core' => ['level', 'period', 'length']
     ];
 
     private $specialTags = ['dreamy', 'elegant', 'flashy', 'crazy', 'melancholic', 'happy'];
