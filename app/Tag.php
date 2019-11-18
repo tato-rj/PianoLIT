@@ -61,6 +61,11 @@ class Tag extends PianoLit
         return $query->where('type', 'genre');
     }
 
+    public function scopeRanking($query)
+    {
+        return $query->where('type', 'ranking');
+    }
+
     public function scopeByTypes($query, $except = [])
     {
         $tags['mood'] = $this->mood()->orderBy('name')->get();
@@ -69,6 +74,7 @@ class Tag extends PianoLit
         $tags['levels'] = $this->levels()->get();
         $tags['lengths'] = $this->lengths()->get();
         $tags['periods'] = $this->periods()->get();
+        $tags['ranking'] = $this->ranking()->get();
 
         foreach ($except as $type) {
             unset($tags[$type]);
