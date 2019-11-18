@@ -4,6 +4,11 @@ namespace App;
 
 class Tag extends PianoLit
 {
+    protected $labels = [
+        'search' => ['mood', 'technique', 'genre', 'ranking'],
+        'core' => ['leve', 'period', 'length']
+    ];
+
     private $specialTags = ['dreamy', 'elegant', 'flashy', 'crazy', 'melancholic', 'happy'];
     
     public function creator()
@@ -14,6 +19,11 @@ class Tag extends PianoLit
     public function pieces()
     {
         return $this->belongsToMany(Piece::class);
+    }
+
+    public function scopeLabels($query)
+    {
+        return $this->labels;
     }
 
     public function scopeSpecial($query)

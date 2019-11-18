@@ -15,16 +15,14 @@
           <input type="text" name="name" placeholder="Create a new tag here" class="form-control mr-2">
             <select class="form-control mr-2" name="type">
               <option selected disabled>Type</option>
-              <optgroup label="Search tags">
-                <option value="mood">Mood</option>
-                <option value="technique">Technique</option>      
-                <option value="genre">Genre</option>
-              </optgroup>
-              <optgroup label="Core tags">
-                <option value="level">Level</option>
-                <option value="period">Period</option>
-                <option value="length">Length</option>
-              </optgroup>
+             
+              @foreach(Tag::labels() as $label => $types)
+                <optgroup label="{{ucfirst($label)}} tags">
+                  @foreach($types as $type)
+                  <option value="{{$type}}">{{ucfirst($type)}}</option>
+                  @endforeach
+                </optgroup>
+              @endforeach
             </select>
           
           <button type="submit" class="btn btn-default">Save</button>
