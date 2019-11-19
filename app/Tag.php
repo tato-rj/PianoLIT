@@ -61,9 +61,9 @@ class Tag extends PianoLit
         return $query->where('type', 'genre');
     }
 
-    public function scopeRanking($query)
+    public function scopeRanking($query, $ranking = null)
     {
-        return $query->where('type', 'ranking');
+        return $query->where('type', 'ranking')->where('name', 'like', "%$ranking%");
     }
 
     public function scopeByTypes($query, $except = [])

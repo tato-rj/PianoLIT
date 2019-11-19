@@ -1,4 +1,4 @@
-<section class="mb-6 result-row">
+<section class="mb-5 result-row">
     <div class="">
         <h5 class="mb-3">
         	@if($title[1])

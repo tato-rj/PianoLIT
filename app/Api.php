@@ -131,6 +131,20 @@ class Api
         ]);
     }
 
+    public function ranking($ranking, $color = 'blue')
+    {
+        $collection = Tag::ranking($ranking)->select('name')->withCount('pieces')->get();
+        
+        $this->withAttributes($collection, [
+            'source' => route('search.index', ['global', 'search' => $ranking]),
+            'color' => $color]);
+
+        return $this->createPlaylist($collection, [
+            'type' => 'collection', 
+            'title' => 'Equivalent to the ' . strtoupper($ranking) . ' levels' 
+        ]);
+    }
+
     public function tag($title, $tag, $color = null)
     {
         $collection = Piece::for($tag)->inRandomOrder()->take($this->limit)->get();
@@ -322,6 +336,7 @@ class Api
             $inputArray = $this->fixException($inputArray, $key, $tag, ['4', '8'], 'hands');
             $inputArray = $this->ignoreWord($inputArray, $key, $tag);
             $inputArray = $this->substituteWord($inputArray, $key, $tag);
+            $inputArray = $this->considerRankingTags($inputArray, $key, $tag);
 
         }
 
@@ -354,5 +369,21 @@ class Api
             unset($array[$key]);
 
         return $array;   
+    }
+
+    public function considerRankingTags($array, $key, $tag)
+    {
+        if ($tag == 'abrsm' || $tag == 'rcm') {
+            if (array_key_exists($key+1, $array)) {
+                $newTag = $array[$key] . ' ' . $array[$key+1];
+                unset($array[$key+1]);
+            } else {
+                $newTag = $array[$key];
+            }
+            unset($array[$key]);
+            array_push($array, $newTag);
+        }
+
+        return $array;
     }
 }

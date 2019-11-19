@@ -343,8 +343,8 @@ $('.status-toggle').on('change', function() {
 $('.tag-input').on('change', function() {
   let tags = $('.tag-input:checked').length;
 
-  if (tags > 5)
-    alert('You are adding too many tags! Try to keep them between 3 and 5 :)');
+  if (tags > 7)
+    alert('You are adding too many tags! Try to keep them between 5 and 7 :)');
 });
 
 function showTooltip(element) {

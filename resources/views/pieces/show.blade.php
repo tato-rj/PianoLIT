@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'PianoLIT Music Score'])
+@extends('layouts.app', ['title' => 'PianoLIT | ' . $piece->long_name])
 
 @push('header')
 <style type="text/css">
@@ -47,23 +47,27 @@
 			<div class="col-12 mb-4">
 				<h6 class="mb-3">What's this piece like?</h6>
 				@foreach($tags as $tag)
-				    <a href="{{route('search.index', ['global', 'search' => $tag->name])}}"
-				    	target="_blank" title="Find more pieces about this" class="align-text-bottom link-teal tag rounded-pill alert-teal m-1 px-3 py-1">
-				      <strong>{{$tag->name}}</strong>
-				    </a>
+				    @include('pieces.tag', ['color' => 'teal'])
 				@endforeach
 			</div>
 			@endif
 
 			@php($tags = $piece->tags()->technique()->get())
 			@if(! $tags->isEmpty())
-			<div class="col-12">
+			<div class="col-12 mb-4">
 				<h6 class="mb-3">What's this piece good for?</h6>
 				@foreach($tags as $tag)
-				    <a href="{{route('search.index', ['global', 'search' => $tag->name])}}"
-				    	target="_blank" title="Find more pieces about this" class="align-text-bottom link-blue tag rounded-pill alert-blue m-1 px-3 py-1">
-				      <strong>{{$tag->name}}</strong>
-				    </a>
+				    @include('pieces.tag', ['color' => 'blue'])
+				@endforeach
+			</div>
+			@endif
+
+			@php($tags = $piece->tags()->ranking()->get())
+			@if(! $tags->isEmpty())
+			<div class="col-12">
+				<h6 class="mb-3">The level of this piece is equivalent to...</h6>
+				@foreach($tags as $tag)
+				    @include('pieces.tag', ['color' => 'orange'])
 				@endforeach
 			</div>
 			@endif

@@ -1,0 +1,1 @@
+<div class="badge badge-pill alert-blue m-0">We found {{count($results)}} {{str_plural('result', count($results))}}!</div>

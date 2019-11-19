@@ -27,6 +27,8 @@ class HomeController extends Controller
         $collections = collect([
             $this->api->latest(),
             $this->api->composers(),
+            $this->api->ranking('abrsm'),
+            $this->api->ranking('rcm', 'orange'),
             $this->api->tag('To improve your', randval(['scales', 'left hand', 'arpeggios'])),
             $this->api->women(),
             $this->api->tag('We love pieces that are', randval(['playful', 'melancholic', 'triumphant'])),
