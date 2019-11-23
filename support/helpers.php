@@ -1,5 +1,10 @@
 <?php
 
+function youtube($input)
+{
+	return "https://www.youtube.com/results?search_query={$input}";
+}
+
 function calculateReadingTime($text)
 {
     // 124 is the number of words we read per minute on average

@@ -62,6 +62,8 @@ small .custom-control-label::before, small .custom-control-label::after {
 
 @include('admin.components.modals.delete', ['model' => 'piece'])
 
+@include('admin.pages.pieces.rankings', ['ranking' => 'abrsm'])
+@include('admin.pages.pieces.rankings', ['ranking' => 'rcm'])
 @endsection
 
 @section('scripts')
