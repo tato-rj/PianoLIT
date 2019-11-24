@@ -188,6 +188,9 @@ class Piece extends PianoLit
 
     public function scopeSearch($query, $array, $request = null)
     {
+        if (empty($array))
+            return $query->take(0);
+
         $results = $query->where(function($query) use ($array, $request) {
 
             foreach ($array as $tag) {
