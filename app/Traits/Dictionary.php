@@ -5,6 +5,7 @@ namespace App\Traits;
 trait Dictionary
 {
 	protected $ignore = [
+		'are',
 		'the',
 		'that',
 		'with',
