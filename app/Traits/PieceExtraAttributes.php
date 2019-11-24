@@ -9,6 +9,37 @@ trait PieceExtraAttributes
         return $this->level->name;
     }
 
+    public function getRankingsAttribute()
+    {
+        $rcm = $this->getRanking('rcm');
+        $abrsm = $this->getRanking('abrsm');
+
+        if (! $rcm) {
+            if ($this->level_name == 'advanced') {
+                $rcmDefault = 'This piece is beyond all RCM levels';
+            } elseif ($this->level_name == 'elementary') {
+                $rcmDefault = 'This piece is easier than RCM level 1';                
+            } else {
+                $rcmDefault = 'No RCM ranking available yet';
+            }
+        }
+
+        if (! $abrsm) {
+            if ($this->level_name == 'advanced') {
+                $abrsmDefault = 'This piece is beyond all ABRSM levels';
+            } elseif ($this->level_name == 'elementary') {
+                $abrsmDefault = 'This piece is easier than ABRSM level 1';                
+            } else {
+                $abrsmDefault = 'No ABRSM ranking available yet';
+            }
+        }
+
+        return [
+            'rcm' => $rcm ? "Equivalent to RCM level $rcm" : $rcmDefault, 
+            'abrsm' => $abrsm ? "Equivalent to ABRSM level $abrsm" : $abrsmDefault
+        ];
+    }
+
     public function getCatalogueFullNameAttribute()
     {
         return $this->catalogue_name == 'Op.' ? 'Opus' : null;
