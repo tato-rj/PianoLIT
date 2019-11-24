@@ -35,7 +35,7 @@ class HomeController extends Controller
             $this->api->similar(),
         ]);
 
-        $tags = Tag::inRandomOrder()->get();
+        $tags = Tag::display()->inRandomOrder()->get();
 
         return view('welcome.index', compact(['collections', 'tags']));
     }
