@@ -82,6 +82,11 @@ class Tag extends PianoLit
         return $tags;
     }
 
+    public function scopeDisplay($query)
+    {
+        return $query->whereNotIn('type', ['ranking', 'lengths']);
+    }
+
     public function scopeImprove($query)
     {
         return $query->whereIn('name', ['scales', 'arpeggios', 'octaves', 'thirds', 'fifths', 'fourths', 'right hand', 'left hand']);

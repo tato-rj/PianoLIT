@@ -53,8 +53,8 @@ class ApiController extends Controller
         if ($request->has('discover'))
             return $this->discover($pieces, $inputArray);
 
-        $tags = Tag::pluck('name');
-                
+        $tags = Tag::display()->pluck('name');
+        
         return view('admin.pages.search.index', compact(['pieces', 'inputArray', 'tags']));
     }
 
@@ -119,7 +119,7 @@ class ApiController extends Controller
 
     public function tags()
     {
-        return Tag::orderBy('name')->get();
+        return Tag::display()->orderBy('name')->get();
     }
 
     public function composers()
