@@ -191,8 +191,9 @@ class Piece extends PianoLit
         $results = $query->where(function($query) use ($array, $request) {
 
             foreach ($array as $tag) {
-                $query->whereHas('tags', function($q) use ($tag) {
-                       $q->where('name', 'like', "%$tag%"); 
+                $suffix = is_numeric(lastchar($tag)) ? null : '%';
+                $query->whereHas('tags', function($q) use ($tag, $suffix) {
+                       $q->where('name', 'like', "%$tag$suffix"); 
                 });
 
                 if (is_null($request) || $request->has('global')) {

@@ -9,6 +9,11 @@ trait PieceExtraAttributes
         return $this->level->name;
     }
 
+    public function getCatalogueFullNameAttribute()
+    {
+        return $this->catalogue_name == 'Op.' ? 'Opus' : null;
+    }
+
     public function getPeriodNameAttribute()
     {
         return ucfirst($this->period->name);

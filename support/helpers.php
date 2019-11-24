@@ -1,5 +1,10 @@
 <?php
 
+function lastchar($string)
+{
+	return substr($string, -1);
+}
+
 function youtube($input)
 {
 	return "https://www.youtube.com/results?search_query={$input}";

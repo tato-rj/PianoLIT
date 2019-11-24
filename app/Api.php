@@ -277,12 +277,11 @@ class Api
                 $pieceArray = array_values($piece->only([
                     'name',
                     'nickname',
-                    'catalogue_name',
+                    'catalogue_full_name',
                     'catalogue_number',
                     'collection_name',
                     'collection_number',
                     'key']));
-
                 // Bring every word to lower case
                 $pieceArray = array_map('mb_strtolower', $pieceArray);
                 // Prepare the tags array
