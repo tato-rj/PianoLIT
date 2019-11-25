@@ -86,8 +86,6 @@ Route::prefix('resources')->name('resources.')->group(function() {
 	Route::get('infographs/{name?}', 'ResourcesController@infographs')->name('infographs');
 
 	Route::get('top-podcasts', 'ResourcesController@podcasts')->name('podcasts');
-
-	Route::get('score/{piece}', 'ResourcesController@score')->name('score');
 });
 
 Route::prefix('tools')->name('tools.')->group(function() {

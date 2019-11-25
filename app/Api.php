@@ -10,37 +10,11 @@ class Api
 {
     use Backgrounds, Dictionary;
 
+    protected $color;
+
     public function __construct()
     {
         $this->limit = mt_rand(12,18);
-    }
-
-    public function forUser($id)
-    {
-        $user = User::find($id);
-
-        if (! $user)
-            return [];
-
-        $collection = $user->suggestions(12);
-        $this->withAttributes($collection, [ 
-            'source' => route('api.pieces.find'),
-            'color' => 'blue']);
-
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => "For {$user->first_name}"]);
-    }
-
-    public function trending()
-    {
-        $collection = Piece::has('views')->get()->sortByDesc(function($piece) {
-            return $piece->views_count;
-        })->take($this->limit);
-
-        $this->withAttributes($collection, [ 
-            'source' => route('api.pieces.find'),
-            'color' => 'green']);
-
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'Trending']);
     }
 
     public function latest()
@@ -49,8 +23,8 @@ class Api
 
         $this->withAttributes($collection, [ 
             'type' => 'piece', 
-            'source' => route('api.pieces.find'),
-            'color' => 'teal']);
+            'source' => route('api.pieces.find')
+        ]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
@@ -62,82 +36,38 @@ class Api
     public function composers()
     {
         $collection = Composer::has('pieces', '>', production() ? 15 : 2)->withCount('pieces')->get();
-        $this->withAttributes($collection, [
-            'source' => \URL::to('/api/search'),
-            'color' => 'purple']);
+        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, ['type' => 'composer', 'title' => 'Most famous composers']);
-    }
-
-    public function periods()
-    {
-        $collection = Tag::periods()->select('name')->withCount('pieces')->get();
-
-        $this->withAttributes($collection, [
-            'source' => \URL::to('/api/search'),
-            'color' => 'lightpink']);
-
-        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Periods']);
     }
 
     public function improve()
     {
         $collection = Tag::improve()->select('name')->withCount('pieces')->get();
-        $this->withAttributes($collection, [
-            'source' => \URL::to('/api/search'),
-            'color' => 'yellow']);
+        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Improve your']);
     }
 
-    public function levels()
+    public function women()
     {
-        $collection = Tag::levels()->select('name')->withCount('pieces')->get();
+        $collection = Piece::byWomen()->inRandomOrder()->take($this->limit)->get();
 
-        $this->withAttributes($collection, [
-            'source' => \URL::to('/api/search'),
-            'color' => 'orange']);
-
-        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Levels']);
-    }
-
-    public function famous()
-    {
-        $collection = Piece::famous()->inRandomOrder()->take($this->limit)->get();
-
-        $this->withAttributes($collection, [ 
-            'source' => route('api.pieces.find'),
-            'color' => 'red']);
+        $this->withAttributes($collection, ['source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
-            'title' => 'Most famous',
-            'url' => route('search.index', ['global', 'search' => 'famous'])
+            'title' => 'Women composers', 
+            'tag' => 'women composers', 
+            'url' => route('search.index', ['global', 'search' => 'woman composers'])
         ]);
     }
 
-    public function flashy()
-    {
-        $collection = Piece::flashy()->inRandomOrder()->take($this->limit)->get();
-
-        $this->withAttributes($collection, [ 
-            'source' => route('api.pieces.find'),
-            'color' => 'blue']);
-
-        return $this->createPlaylist($collection, [
-            'type' => 'piece', 
-            'title' => 'Flashy',
-            'url' => route('search.index', ['global', 'search' => 'flashy'])
-        ]);
-    }
-
-    public function ranking($ranking, $color = 'blue')
+    public function ranking($ranking)
     {
         $collection = Tag::ranking($ranking)->select('name')->withCount('pieces')->get();
         
-        $this->withAttributes($collection, [
-            'source' => route('search.index', ['global', 'search' => $ranking]),
-            'color' => $color]);
+        $this->withAttributes($collection, ['source' => route('search.index', ['global', 'search' => $ranking])]);
 
         return $this->createPlaylist($collection, [
             'type' => 'collection', 
@@ -145,13 +75,20 @@ class Api
         ]);
     }
 
-    public function tag($title, $tag, $color = null)
+    public function levels()
+    {
+        $collection = Tag::levels()->select('name')->withCount('pieces')->get();
+
+        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
+
+        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Levels']);
+    }
+
+    public function tag($title, $tag)
     {
         $collection = Piece::for($tag)->inRandomOrder()->take($this->limit)->get();
 
-        $this->withAttributes($collection, [ 
-            'source' => route('api.pieces.find'),
-            'color' => $color]);
+        $this->withAttributes($collection, ['source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
@@ -161,15 +98,22 @@ class Api
         ]);
     }
 
-    public function similar($color = null)
+    public function periods()
+    {
+        $collection = Tag::periods()->select('name')->withCount('pieces')->get();
+
+        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
+
+        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Periods']);
+    }
+
+    public function similar()
     {
         $piece = Piece::famous()->inRandomOrder()->first();
         $collection = $piece->similar()->take($this->limit);
         $name = $piece->nickname ?? $piece->simple_name;
 
-        $this->withAttributes($collection, [
-            'source' => route('api.pieces.find'),
-            'color' => $color]);
+        $this->withAttributes($collection, ['source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
@@ -179,20 +123,11 @@ class Api
         ]);
     }
 
-    public function women()
+    public function setColor($color)
     {
-        $collection = Piece::byWomen()->inRandomOrder()->take($this->limit)->get();
+        $this->color = $color;
 
-        $this->withAttributes($collection, [
-            'source' => route('api.pieces.find'),
-            'color' => 'teal']);
-
-        return $this->createPlaylist($collection, [
-            'type' => 'piece', 
-            'title' => 'Pieces by', 
-            'tag' => 'women composers', 
-            'url' => route('search.index', ['global', 'search' => 'woman composers'])
-        ]);
+        return $this;
     }
 
     public function createPlaylist($model, array $args)
@@ -223,7 +158,7 @@ class Api
 
             $model->setAttribute('source', $args['source']);
             $model->setAttribute('type', $args['type'] ?? null);
-            $model->setAttribute('color', $args['color']);
+            $model->setAttribute('color', $this->color);
             $model->setAttribute('background', $background);
             $model->setAttribute('special_attribute', $args['special_attribute'] ?? null);
             $model->setAttribute('subtitle', $subtitle);

@@ -14,19 +14,17 @@ class ApiController extends Controller
 
     public function discover($pieces = null, $inputArray = null)
     {
-        // Collections of playlists
-        $composers = $this->api->composers();
-        $periods = $this->api->periods();
-        $improve = $this->api->improve();
-        $levels = $this->api->levels();
-
-        // Collections of pieces
-        $suggestions = request()->has('user_id') ? $this->api->forUser(request('user_id')) : [];
-        $latest = $this->api->latest();
-        $famous = $this->api->famous();
-        $flashy = $this->api->flashy();
-
-        $collection = compact(['latest', 'composers', 'periods', 'improve', 'levels', 'famous', 'flashy']);
+        $collection = collect([
+            $this->api->setColor('teal')->latest(),
+            $this->api->setColor('purple')->composers(),
+            $this->api->setColor('lightpink')->improve(),
+            $this->api->setColor('yellow')->women(),
+            $this->api->setColor('orange')->ranking('abrsm'),
+            $this->api->setColor('red')->ranking('rcm'),
+            $this->api->setColor('teal')->levels(),
+            $this->api->setColor('purple')->tag('We love pieces that are', randval(['playful', 'melancholic', 'triumphant'])),
+            $this->api->setColor('lightpink')->periods(),
+        ]);
 
         if (request()->wantsJson() || request()->has('api'))
             return array_values($collection);

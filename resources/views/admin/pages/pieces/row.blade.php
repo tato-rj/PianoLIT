@@ -1,18 +1,20 @@
 <tr>
-  <td style="font-size: .8rem; white-space: nowrap; vertical-align: middle;">
+  <td style="font-size: .8rem; white-space: nowrap; vertical-align: middle;" class="d-flex">
     <div class="dropdown d-inline-block align-text-bottom cursor-pointer mr-1">
       <i class="fas fa-ellipsis-v dropdown-toggle align-middle" data-toggle="dropdown"></i>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <a href="{{$piece->timeline_url}}" target="_blank" class="dropdown-item">Timeline</a>
         <a href="{{route('api.pieces.collection', $piece->id)}}" target="_blank" class="dropdown-item">Collection</a>
         <a href="{{route('api.pieces.similar', $piece->id)}}" target="_blank" class="dropdown-item">More like this</a>
-        <a href="{{route('resources.score', $piece->id)}}" target="_blank" class="dropdown-item">Score</a>
+        <a href="{{route('pieces.show', $piece->id)}}" target="_blank" class="dropdown-item">Score</a>
       </div>
     </div>
-    <span class="{{$piece->curiosity ? 'text-primary' : 'text-muted'}}" title="{{$piece->curiosity}}"><i class="fas fa-info-circle mr-1"></i></span>
-    @include('admin.pages.pieces.play-icon')
-    <span class="mx-1 {{$piece->videos_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$piece->videos_count}}</span>
-    <span class="{{$piece->itunes_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$piece->itunes_count}}</span>
+    <div class="d-flex">
+      <span class="{{$piece->curiosity ? 'text-primary' : 'text-muted'}}" title="{{$piece->curiosity}}"><i class="fas fa-info-circle mr-1"></i></span>
+      @include('admin.components.play', ['audio' => storage($piece->audio_path)])
+      <span class="mx-1 {{$piece->videos_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$piece->videos_count}}</span>
+      <span class="{{$piece->itunes_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$piece->itunes_count}}</span>
+    </div>
     </div>
   </td>
   <td>{{$piece->long_name}}</td>
