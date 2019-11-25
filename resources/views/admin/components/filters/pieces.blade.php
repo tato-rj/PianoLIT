@@ -1,6 +1,6 @@
 <div class="d-flex">
-  <button class="btn  btn-light mr-2 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
-  <button class="btn  btn-light mr-2 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
+  <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
+  <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
   <form method="GET" action="{{\URL::current()}}" class="form-inline">
     <div class="btn-group btn-group-toggle mr-2" title="Show only pieces created by me">
       <label class="btn btn-light {{(request('creator_id') == auth()->guard('admin')->user()->id) ? 'active' : ''}}">

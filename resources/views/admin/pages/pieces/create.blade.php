@@ -10,22 +10,9 @@
 
     <div class="row mb-3">
       <div class="col-12">
-        <div class="form-inline justify-content-end">
-          <div class="btn-group btn-group-toggle mr-2" title="Show composers that need more pieces">
-            <label class="btn btn-light">
-              <input type="checkbox" name="alerts[]" autocomplete="off" value="composers"><i class="fas fa-user"></i>
-            </label>
-          </div>
-          <div class="btn-group btn-group-toggle mr-2" title="Show levels that need more pieces">
-            <label class="btn btn-light">
-              <input type="checkbox" name="alerts[]" autocomplete="off" value="levels"><i class="fas fa-swimmer"></i></i>
-            </label>
-          </div>
-          <div class="btn-group btn-group-toggle" title="Show periods that need more pieces">
-            <label class="btn btn-light">
-              <input type="checkbox" name="alerts[]" autocomplete="off" value="periods"><i class="fas fa-monument"></i></i>
-            </label>
-          </div>
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
+          <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
         </div>
       </div>
     </div>
@@ -283,6 +270,8 @@
   </div>
 </div>
 
+@include('admin.pages.pieces.rankings', ['ranking' => 'abrsm'])
+@include('admin.pages.pieces.rankings', ['ranking' => 'rcm'])
 @endsection
 
 @section('scripts')

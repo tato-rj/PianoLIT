@@ -7,6 +7,15 @@
   @include('admin.components.breadcrumb', [
     'title' => 'Pieces',
     'description' => 'Edit a piece'])
+
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
+          <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
+        </div>
+      </div>
+    </div>
     
     <form id="edit-form" method="POST" action="{{route('admin.pieces.update', $piece->id)}}" enctype="multipart/form-data">
       @csrf
@@ -281,6 +290,8 @@
   </div>
 </div>
 
+@include('admin.pages.pieces.rankings', ['ranking' => 'abrsm'])
+@include('admin.pages.pieces.rankings', ['ranking' => 'rcm'])
 @endsection
 
 @section('scripts')
