@@ -177,7 +177,7 @@ class PiecesController extends Controller
         $composers = Composer::orderBy('name')->get();
 
         $types = Tag::byTypes($except = ['levels', 'periods', 'lengths']);
-return $piece;
+
         return view('admin.pages.pieces.edit', compact(['composers', 'piece', 'types']));
     }
 
