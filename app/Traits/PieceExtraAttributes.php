@@ -42,18 +42,13 @@ trait PieceExtraAttributes
 
     public function getCatalogueFullNameAttribute()
     {
-        return $this->catalogue_name == 'Op.' ? 'Opus' : null;
+        return $this->catalogue_name == 'Op.' ? 'Opus' : $this->catalogue_name;
     }
 
     public function getPeriodNameAttribute()
     {
         return ucfirst($this->period->name);
     }
-
-    // public function getLevelAttribute($level)
-    // {
-    //     return ucfirst($level);
-    // }
 
     public function basename()
     {
@@ -66,8 +61,8 @@ trait PieceExtraAttributes
     {
         $name = $this->name;
         $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental', 'Atonal'])) ? ' in ' . $this->key : null;
-        $name .= $this->catalogue_name ? " {$this->catalogue}" : $key;
-        return $name;
+        $name .= $this->catalogue_name || $this->collection_number ? " {$this->catalogue}" : $key;
+        return rm_whitespaces($name);
     }
 
     public function getShortNameAttribute()
@@ -75,16 +70,16 @@ trait PieceExtraAttributes
         $name = $this->basename();
 
         $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental', 'Atonal'])) ? ' in ' . $this->key : null;
-        $name .= $this->catalogue_name ? " {$this->catalogue}" : $key;
+        $name .= $this->catalogue_name || $this->collection_number ? " {$this->catalogue}" : $key;
 
-        return $name;
+        return rm_whitespaces($name);
     }
 
     public function getMediumNameAttribute()
     {
         $name = $this->short_name;
         $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
-        return $name;       
+        return rm_whitespaces($name);       
     }
 
     public function getLongNameAttribute()
@@ -97,11 +92,11 @@ trait PieceExtraAttributes
         if ($this->collection_name)
             $name .= " from $this->collection_name";
 
-        $name .= $this->catalogue_name ? " {$this->catalogue}" : '';
+        $name .= $this->catalogue_name || $this->collection_number ? " {$this->catalogue}" : '';
         $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
         $name .= $this->isTranscription() ? " (piano transcription)" : '';
         
-        return $name;
+        return rm_whitespaces($name);
     }
 
     public function getMediumNameWithComposerAttribute()

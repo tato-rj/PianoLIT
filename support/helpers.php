@@ -1,5 +1,9 @@
 <?php
 
+function rm_whitespaces($string) {
+	return preg_replace('/\s+/', ' ',$string);
+}
+
 function lastchar($string)
 {
 	return substr($string, -1);
