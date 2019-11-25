@@ -326,8 +326,7 @@
 
 $(document).on('blur', 'input.itunes-link', function() {
   let url = $(this).val();
-  let updatedUrl = url.replace('https', 'itms');
-  $(this).val(updatedUrl);
+  $(this).val(url);
 });
 
 $('.status-toggle').on('change', function() {
