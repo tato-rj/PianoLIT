@@ -324,12 +324,6 @@
     }
   });
 
-// $(document).on('blur', 'input.itunes-link', function() {
-//   let url = $(this).val();
-//   let updatedUrl = url.replace('https', 'itms');
-//   $(this).val(updatedUrl);
-// });
-
 $('.status-toggle').on('change', function() {
   if ($(this).is(':checked')) {
     $('.is-public').show();
