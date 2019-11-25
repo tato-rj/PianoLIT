@@ -2,8 +2,12 @@
 
 namespace App;
 
+use App\Traits\HasLimit;
+
 class Composer extends Person
 {
+    use HasLimit;
+    
     protected $casts = ['is_famous' => 'boolean'];
     protected $appends = ['cover_image'];
     protected $withCount = ['pieces'];

@@ -35,7 +35,7 @@ class Api
 
     public function composers()
     {
-        $collection = Composer::has('pieces', '>', production() ? 15 : 2)->withCount('pieces')->get();
+        $collection = Composer::atLeast(15)->withCount('pieces')->get();
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, ['type' => 'composer', 'title' => 'Most famous composers']);
@@ -43,7 +43,7 @@ class Api
 
     public function improve()
     {
-        $collection = Tag::improve()->select('name')->withCount('pieces')->get();
+        $collection = Tag::atLeast(5)->improve()->select('name')->withCount('pieces')->get();
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Improve your']);
@@ -51,7 +51,7 @@ class Api
 
     public function women()
     {
-        $collection = Piece::byWomen()->inRandomOrder()->take($this->limit)->get();
+        $collection = Piece::byWomen();
 
         $this->withAttributes($collection, ['source' => route('api.pieces.find')]);
 
@@ -65,7 +65,7 @@ class Api
 
     public function ranking($ranking)
     {
-        $collection = Tag::ranking($ranking)->select('name')->withCount('pieces')->get();
+        $collection = Tag::atLeast(5)->ranking($ranking)->select('name')->withCount('pieces')->get();
         
         $this->withAttributes($collection, ['source' => route('search.index', ['global', 'search' => $ranking])]);
 
@@ -77,7 +77,7 @@ class Api
 
     public function levels()
     {
-        $collection = Tag::levels()->select('name')->withCount('pieces')->get();
+        $collection = Tag::atLeast(5)->levels()->select('name')->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
@@ -100,7 +100,7 @@ class Api
 
     public function periods()
     {
-        $collection = Tag::periods()->select('name')->withCount('pieces')->get();
+        $collection = Tag::atLeast(5)->periods()->select('name')->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 

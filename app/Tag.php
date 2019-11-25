@@ -2,8 +2,12 @@
 
 namespace App;
 
+use App\Traits\HasLimit;
+
 class Tag extends PianoLit
 {
+    use HasLimit;
+    
     protected $labels = [
         'search' => ['mood', 'technique', 'genre', 'ranking'],
         'core' => ['level', 'period', 'length']

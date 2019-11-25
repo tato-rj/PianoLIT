@@ -161,7 +161,7 @@ class Piece extends PianoLit
     public function scopebyRecordingsAvailable($query)
     {
         return $query->whereHas('tags', function($q) {
-            return $q->whereIn('name', ['elementary', 'beginner', 'intermediate']);
+            $q->whereIn('name', ['elementary', 'beginner', 'intermediate']);
         })->get()->groupBy('recordingsAvailable')->each(function($group) {
             $group['count'] = $group->count();
         });
@@ -170,7 +170,7 @@ class Piece extends PianoLit
     public function scopeByGender($query)
     {
         return $query->get()->groupBy(function($piece) {
-            return $piece->composer->gender;
+            $piece->composer->gender;
         })->each(function($gender) {
             $gender['count'] = $gender->count();
         });
@@ -178,9 +178,18 @@ class Piece extends PianoLit
 
     public function scopeByWomen($query)
     {
-        return $query->whereHas('composer', function($q) {
-            return $q->where('gender', 'female');
+        $name;
+        $count = 0;
+
+        $collection = $query->whereHas('composer', function($q) {
+            $q->where('gender', 'female');
+        })->get()->groupBy('composer.name');
+
+        $collection->each(function($composer, $key) use ($collection) {
+            $collection[$key] = $composer->random($composer->count() > 5 ? 5 : $composer->count());
         });
+
+        return $collection->flatten();
     }
 
     public function isFavorited($user_id)
