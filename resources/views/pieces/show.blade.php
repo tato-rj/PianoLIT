@@ -19,7 +19,7 @@
 
 		<div class="row mb-2">
 			<div class="col-lg-6 col-md-6 col-12 mb-3">
-				<a href="{{storage($piece->score_path)}}" target="_blank" class="btn btn-block btn-light py-6">
+				<a href="{{$piece->isPublicDomain ? storage($piece->score_path) : $piece->score_url}}" target="_blank" class="btn btn-block btn-light py-6">
 					<h1><i class="fas text-grey fa-{{$piece->isPublicDomain ? 'cloud-download-alt' : 'shopping-bag'}}"></i></h1>
 					<h5>{{$piece->isPublicDomain ? 'Download' : 'Buy'}} score</h5>
 				</a>
