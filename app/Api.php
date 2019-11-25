@@ -51,7 +51,7 @@ class Api
 
     public function women()
     {
-        $collection = Piece::byWomen();
+        $collection = Piece::byWomen()->shuffle();
 
         $this->withAttributes($collection, ['source' => route('api.pieces.find')]);
 
