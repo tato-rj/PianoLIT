@@ -43,12 +43,12 @@ class FixAppleMusicLinks extends Command
 
             if (is_array($array)) {
                 foreach ($array as $index => $itunes) {
-                    $array[$index]['link'] = str_replace('httpssss', 'https', $array[$index]['link']);
+                    $array[$index]['link'] = str_replace('itms', 'https', $array[$index]['link']);
                     $array[$index]['link'] = str_replace('itunes.', 'music.', $array[$index]['link']);
                 }
+    
+                $piece->update(['itunes' => serialize($array)]);
             }
-
-            $piece->update(['itunes' => serialize($array)]);
         }
     }
 }
