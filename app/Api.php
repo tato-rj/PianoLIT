@@ -275,7 +275,7 @@ class Api
 
     public function fixException($array, $key, $tag, $exceptions, $append)
     {
-        if (in_array($tag, $exceptions)) {
+        if (in_array($tag, $exceptions) && ! in_array($tag, ['rcm', 'abrsm'])) {
             unset($array[$key], $array[$key+1]);
             array_push($array, "{$tag} {$append}");
         }
