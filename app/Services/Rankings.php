@@ -8,11 +8,26 @@ class Rankings
 	
 	protected $rcm = [
 		[
+			// LIST A
+			'Burlesque in G Major (in Notebook for Wolfgang)' => 'Anonymous',
 			'Aria in F Major, BWV Anh. 131 (in Notenbuch der Anna Magdalena Bach)' => 'Bach, Johann Christian',
+			'Minuet in C Major' => 'Bach, Johann Christoph Friedrich',
+			'Schwäbisch in D Major' => 'Bach, Johann Christoph Friedrich',
 			'Chorale, BWV 514 (in Notenbuch der Anna Magdalena Bach BAR; WIE)' => 'Bach, Johann Sebastian',
 			'Écossaise in E flat Major, WoO 86 (in Celebrate Beethoven, 1 FHM)' => 'Beethoven, Ludwig van',
+			'Ukrainian Folk Song, op. 107, no. 3' => 'Beethoven, Ludwig van',
+			'Pyrenese Melody, Op.42 No.48' => 'Clementi, Muzio',
+			'Sonatina in C Major' => 'Duncombe, William',
 			'German Dance in D Major, Hob. IX:22, no. 2' => 'Haydn, Franz Joseph',
+			'German Dance in G Major, Hob. IX:22, no. 3' => 'Haydn, Franz Joseph',
+			'Minuet in A Minor, from Partita No. 6 in B flat Major ' => 'Krieger, Johann',
+			'Allegro in B flat Major, K 3' => 'Mozart, Wolfgang Amadeus',
 			'Minuet in F Major, K 2' => 'Mozart, Wolfgang Amadeus',
+			'Andante in G Minor' => 'Telemann, Georg Philipp',
+			'The Ballet' => 'Türk, Daniel Gottlob',
+			'The Hunting Horns and the Echo' => 'Türk, Daniel Gottlob',
+			'Arioso in F Major' => 'Türk, Daniel Gottlob',
+			// LIST B
 			'A Happy Tale (no. 31)' => 'Gedike, Alexander',
 			'Spooky Footsteps' => 'Gillock, William',
 			'Toy Soldiers March' => 'Goolkasian Rahbee, Dianne',
