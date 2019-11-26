@@ -61,8 +61,8 @@ class Api
     public function ranking($ranking)
     {
         $collection = Tag::atLeast(5)->ranking($ranking)->select('name')->withCount('pieces')->get();
-        
-        $this->withAttributes($collection, ['source' => route('search.index', ['global', 'search' => $ranking])]);
+        // route('search.index', ['global', 'search' => $ranking])
+        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'collection', 

@@ -15,15 +15,15 @@ class ApiController extends Controller
     public function discover($pieces = null, $inputArray = null)
     {
         $randomTag = randval(['playful', 'melancholic', 'triumphant']);
-        
+dd($this->api->setColor('orange')->ranking('rcm'));
         $collection = collect([
             $this->api->setColor('teal')->latest(),
             $this->api->setColor('purple')->composers(),
-            $this->api->setColor('lightpink')->improve(),
-            $this->api->setColor('yellow')->women(),
-            $this->api->setColor('orange')->ranking('abrsm'),
-            $this->api->setColor('red')->ranking('rcm'),
-            $this->api->setColor('teal')->levels(),
+            $this->api->setColor('lightpink')->women(),
+            $this->api->setColor('yellow')->levels(),
+            $this->api->setColor('orange')->ranking('rcm'),
+            $this->api->setColor('red')->ranking('abrsm'),
+            $this->api->setColor('teal')->improve(),
             $this->api->setColor('purple')->tag('Pieces that are ' . $randomTag, $randomTag),
             $this->api->setColor('lightpink')->periods(),
         ]);
