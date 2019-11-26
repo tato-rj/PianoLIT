@@ -258,16 +258,19 @@ class Api
 
         foreach ($inputArray as $key => $tag) {
 
+            $inputArray = $this->considerRankingTags($inputArray, $key, $tag);
+            $inputArray = $this->ignoreWord($inputArray, $key, $tag);
+            $inputArray = $this->substituteWord($inputArray, $key, $tag);
+
+        }
+
+        foreach ($inputArray as $key => $tag) {
             $inputArray = $this->fixException($inputArray, $key, $tag, ['left', 'right', 'crossing'], 'hand');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['alternating'], 'fingers');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['broken', 'block'], 'chords');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['alberti'], 'bass');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['finger'], 'substitution');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['4', '8'], 'hands');
-            $inputArray = $this->ignoreWord($inputArray, $key, $tag);
-            $inputArray = $this->substituteWord($inputArray, $key, $tag);
-            $inputArray = $this->considerRankingTags($inputArray, $key, $tag);
-
         }
 
         return $inputArray;  
@@ -275,7 +278,7 @@ class Api
 
     public function fixException($array, $key, $tag, $exceptions, $append)
     {
-        if (in_array($tag, $exceptions) && ! in_array($tag, ['rcm', 'abrsm'])) {
+        if (in_array($tag, $exceptions)) {
             unset($array[$key], $array[$key+1]);
             array_push($array, "{$tag} {$append}");
         }

@@ -15,7 +15,7 @@ class ApiController extends Controller
     public function discover($pieces = null, $inputArray = null)
     {
         $randomTag = randval(['playful', 'melancholic', 'triumphant']);
-// dd($this->api->setColor('orange')->ranking('rcm'));
+
         $collection = collect([
             $this->api->setColor('teal')->latest(),
             $this->api->setColor('purple')->composers(),
