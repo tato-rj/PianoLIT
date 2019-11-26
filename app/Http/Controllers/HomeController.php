@@ -25,14 +25,14 @@ class HomeController extends Controller
     public function index()
     {
         $collections = collect([
-            $this->api->setColor('teal')->latest(),
-            $this->api->setColor('purple')->composers(),
-            $this->api->setColor('yellow')->ranking('abrsm'),
-            $this->api->setColor('blue')->ranking('rcm'),
-            $this->api->setColor('lightpink')->tag('To improve your', randval(['scales', 'left hand', 'arpeggios'])),
-            $this->api->setColor('teal')->women(),
-            $this->api->setColor('red')->tag('We love pieces that are', randval(['playful', 'melancholic', 'triumphant'])),
-            $this->api->setColor('purple')->similar(),
+            $this->api->order(0)->latest(),
+            $this->api->order(1)->composers(),
+            $this->api->order(2)->ranking('abrsm'),
+            $this->api->order(3)->ranking('rcm'),
+            $this->api->order(4)->tag('To improve your', randval(['scales', 'left hand', 'arpeggios'])),
+            $this->api->order(5)->women(),
+            $this->api->order(6)->tag('We love pieces that are', randval(['playful', 'melancholic', 'triumphant'])),
+            $this->api->order(7)->similar(),
         ]);
 
         $tags = Tag::display()->inRandomOrder()->get();
