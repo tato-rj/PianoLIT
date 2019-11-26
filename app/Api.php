@@ -14,37 +14,38 @@ class Api
 
     public function __construct()
     {
+        $this->colors = ['teal', 'purple', 'lightpink', 'yellow', 'orange', 'red'];
         $this->limit = mt_rand(12,18);
     }
 
-    public function latest()
+    public function latest($title)
     {
         $collection = Piece::latest()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'Latest pieces']);
+        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title]);
     }
 
-    public function composers()
+    public function composers($title)
     {
         $collection = Composer::atLeast(15)->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
-        return $this->createPlaylist($collection, ['type' => 'composer', 'title' => 'Most famous composers']);
+        return $this->createPlaylist($collection, ['type' => 'composer', 'title' => $title]);
     }
 
-    public function improve()
+    public function improve($title)
     {
         $collection = Tag::atLeast(5)->improve()->select('name')->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
-        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Improve your']);
+        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
 
-    public function women()
+    public function women($title)
     {
         $collection = Piece::byWomen()->shuffle();
 
@@ -52,13 +53,13 @@ class Api
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
-            'title' => 'Women composers', 
+            'title' => $title, 
             'tag' => 'women composers', 
             'url' => route('search.index', ['global', 'search' => 'woman composers'])
         ]);
     }
 
-    public function ranking($ranking)
+    public function ranking($ranking, $title)
     {
         $collection = Tag::atLeast(5)->ranking($ranking)->select('name')->withCount('pieces')->get();
         // route('search.index', ['global', 'search' => $ranking])
@@ -66,40 +67,41 @@ class Api
 
         return $this->createPlaylist($collection, [
             'type' => 'collection', 
-            'title' => 'Equivalent to the ' . strtoupper($ranking) . ' levels' 
+            'title' => $title 
         ]);
     }
 
-    public function levels()
+    public function levels($title)
     {
         $collection = Tag::atLeast(5)->levels()->select('name')->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
-        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Levels']);
+        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
 
-    public function tag($title, $tag)
+    public function tag($title)
     {
+        $tag = Tag::mood()->has('pieces', '>', 20)->inRandomOrder()->pluck('name')->first();
         $collection = Piece::for($tag)->inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
-            'title' => $title, 
+            'title' => $title . ' ' . $tag, 
             'tag' => $tag,
             'url' => route('search.index', ['global', 'search' => $tag])
         ]);
     }
 
-    public function periods()
+    public function periods($title)
     {
         $collection = Tag::atLeast(5)->periods()->select('name')->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
-        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Periods']);
+        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
 
     public function similar()
@@ -118,9 +120,9 @@ class Api
         ]);
     }
 
-    public function setColor($color)
+    public function order($order)
     {
-        $this->color = $color;
+        $this->color = array_infinite($this->colors, $order);
 
         return $this;
     }
@@ -257,11 +259,9 @@ class Api
         $inputArray = array_map('mb_strtolower', explode(' ', $inputString));
 
         foreach ($inputArray as $key => $tag) {
-
             $inputArray = $this->considerRankingTags($inputArray, $key, $tag);
             $inputArray = $this->ignoreWord($inputArray, $key, $tag);
             $inputArray = $this->substituteWord($inputArray, $key, $tag);
-
         }
 
         foreach ($inputArray as $key => $tag) {

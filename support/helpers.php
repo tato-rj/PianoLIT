@@ -1,5 +1,9 @@
 <?php
 
+function array_infinite($array, $key) {
+	return $array[intval(fmod($key,count($array)))];
+}
+
 function rm_whitespaces($string) {
 	return preg_replace('/\s+/', ' ',$string);
 }

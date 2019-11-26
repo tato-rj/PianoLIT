@@ -13,19 +13,17 @@ class ApiController extends Controller
     }
 
     public function discover($pieces = null, $inputArray = null)
-    {
-        $randomTag = randval(['playful', 'melancholic', 'triumphant']);
-
+    {        
         $collection = collect([
-            $this->api->setColor('teal')->latest(),
-            $this->api->setColor('purple')->composers(),
-            $this->api->setColor('lightpink')->women(),
-            $this->api->setColor('yellow')->levels(),
-            $this->api->setColor('orange')->ranking('rcm'),
-            $this->api->setColor('red')->ranking('abrsm'),
-            $this->api->setColor('teal')->improve(),
-            $this->api->setColor('purple')->tag('Pieces that are ' . $randomTag, $randomTag),
-            $this->api->setColor('lightpink')->periods(),
+            $this->api->order(0)->latest('Latest pieces'),
+            $this->api->order(1)->composers('Most famous composers'),
+            $this->api->order(2)->women('Women composers'),
+            $this->api->order(3)->levels('Levels'),
+            $this->api->order(4)->ranking('rcm', 'Equivalent to the RCM levels'),
+            $this->api->order(5)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
+            $this->api->order(6)->improve('Improve your'),
+            $this->api->order(7)->tag('Pieces that are '),
+            $this->api->order(8)->periods('Periods'),
         ]);
 
         if (request()->wantsJson() || request()->has('api'))
