@@ -21,22 +21,16 @@ class Api
     {
         $collection = Piece::latest()->take($this->limit)->get();
 
-        $this->withAttributes($collection, [ 
-            'type' => 'piece', 
-            'source' => route('api.pieces.find')
-        ]);
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
-        return $this->createPlaylist($collection, [
-            'type' => 'piece', 
-            'title' => 'Latest pieces',
-            'url' => route('search.index', ['global', 'search'])
-        ]);
+        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => 'Latest pieces']);
     }
 
     public function composers()
     {
         $collection = Composer::atLeast(15)->withCount('pieces')->get();
-        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
+
+        $this->withAttributes($collection, ['source' => route('api.search')]);
 
         return $this->createPlaylist($collection, ['type' => 'composer', 'title' => 'Most famous composers']);
     }
@@ -44,7 +38,8 @@ class Api
     public function improve()
     {
         $collection = Tag::atLeast(5)->improve()->select('name')->withCount('pieces')->get();
-        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
+
+        $this->withAttributes($collection, ['source' => route('api.search')]);
 
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => 'Improve your']);
     }
@@ -53,7 +48,7 @@ class Api
     {
         $collection = Piece::byWomen()->shuffle();
 
-        $this->withAttributes($collection, ['source' => route('api.pieces.find')]);
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
@@ -88,7 +83,7 @@ class Api
     {
         $collection = Piece::for($tag)->inRandomOrder()->take($this->limit)->get();
 
-        $this->withAttributes($collection, ['source' => route('api.pieces.find')]);
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
@@ -113,7 +108,7 @@ class Api
         $collection = $piece->similar()->take($this->limit);
         $name = $piece->nickname ?? $piece->simple_name;
 
-        $this->withAttributes($collection, ['source' => route('api.pieces.find')]);
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
