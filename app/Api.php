@@ -266,7 +266,7 @@ class Api
 
         foreach ($inputArray as $key => $tag) {
             $inputArray = $this->fixException($inputArray, $key, $tag, ['left', 'right', 'crossing'], 'hand');
-            $inputArray = $this->fixException($inputArray, $key, $tag, ['alternating'], 'fingers');
+            $inputArray = $this->fixException($inputArray, $key, $tag, ['repeated'], 'notes');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['alternating'], 'hands');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['broken', 'block'], 'chords');
             $inputArray = $this->fixException($inputArray, $key, $tag, ['alberti'], 'bass');
