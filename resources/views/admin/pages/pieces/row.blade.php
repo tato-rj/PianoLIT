@@ -19,6 +19,14 @@
   </td>
   <td>{{$piece->long_name}}</td>
   <td style="white-space: nowrap;">{{$piece->composer->short_name}}</td>
+  <td style="white-space: nowrap;">
+    @if($rcm = $piece->getRanking('rcm'))
+    <div class="badge badge-pill alert-blue"><strong>RCM {{$rcm}}</strong></div>
+    @endif
+    @if($abrsm = $piece->getRanking('abrsm'))
+    <div class="badge badge-pill alert-blue"><strong>ABRSM {{$abrsm}}</strong></div>
+    @endif
+  </td>
   <td class="position-relative">
     <span class="badge badge-light badge-popup cursor-pointer" id="badge-tag-{{$piece->id}}">{{$piece->tags_count}}</span>
     <div class="position-absolute bg-white shadow-sm border p-2 rounded popup mb-3" data-url="{{route('admin.pieces.load-tags', $piece->id)}}" style="top: 10px; display: none; z-index: 2; right: 0; width: 720px">

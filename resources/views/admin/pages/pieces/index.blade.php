@@ -43,6 +43,7 @@ small .custom-control-label::before, small .custom-control-label::after {
               <th class="border-0" scope="col"></th>
               <th class="border-0" scope="col">Piece</th>
               <th class="border-0" scope="col">Composer</th>
+              <th class="border-0" scope="col">Rankings</th>
               <th class="border-0" scope="col">Tags</th>
               <th class="border-0" scope="col">Level</th>
               <th class="border-0" scope="col"></th>
