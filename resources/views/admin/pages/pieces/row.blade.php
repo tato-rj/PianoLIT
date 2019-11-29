@@ -17,7 +17,11 @@
     </div>
     </div>
   </td>
-  <td>{{$piece->long_name}} <a href="{{youtube($piece->long_name . ' by ' . $piece->composer->name)}}" class="link-blue"><i class="fas fa-external-link-alt ml-2"></i></a></td>
+  <td>{{$piece->long_name}}
+    @if($piece->hasAudio())
+    <a href="{{youtube($piece->long_name . ' by ' . $piece->composer->name)}}" class="link-blue"><i class="fas fa-external-link-alt ml-2"></i></a>
+    @endif
+  </td>
   <td style="white-space: nowrap;">{{$piece->composer->short_name}}</td>
   <td style="white-space: nowrap;">
     @if($rcm = $piece->getRanking('rcm'))
