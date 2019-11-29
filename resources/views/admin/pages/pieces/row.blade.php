@@ -18,8 +18,8 @@
     </div>
   </td>
   <td>{{$piece->long_name}}
-    @if($piece->hasAudio())
-    <a href="{{youtube($piece->long_name . ' by ' . $piece->composer->name)}}" class="link-blue"><i class="fas fa-external-link-alt ml-2"></i></a>
+    @if(! $piece->hasAudio())
+    <a href="{{youtube($piece->long_name . ' by ' . $piece->composer->name)}}" class="link-blue"><i class="fas fa-external-link-alt ml-1 fa-xs"></i></a>
     @endif
   </td>
   <td style="white-space: nowrap;">{{$piece->composer->short_name}}</td>
