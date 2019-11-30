@@ -58,17 +58,25 @@
                 <div>
                   <h5 class="text-brand my-4">If you were a composer you would be:</h5>
                 </div>
-                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="happy"><strong>Mozart</strong></button>
-                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="counterpoint"><strong>Bach</strong></button>
-                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="serious"><strong>Beethoven</strong></button>
-                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="meditative"><strong>Chopin</strong></button>
-                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="mysterious"><strong>Debussy</strong></button>
-                  <button class="tag-button tag-final btn btn-light py-3 m-0 rounded-0 btn-block" data-tag="percussive"><strong>Bartók</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="happy"><strong>Mozart</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="counterpoint"><strong>Bach</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="serious"><strong>Beethoven</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="meditative"><strong>Chopin</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="mysterious"><strong>Debussy</strong></button>
+                  <button class="tag-button btn btn-light py-3 m-0 rounded-0 btn-block" data-tag="percussive"><strong>Bartók</strong></button>
               </div>
-            
+              <div class="carousel-item text-center carousel-level">
+                <div>
+                  <h5 class="text-brand my-4">What do you struggle with the most?</h5>
+                </div>
+                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="0"><strong>Not sure yet, I'm a beginner</strong></button>
+                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="0"><strong>Memorization</strong></button>
+                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="1"><strong>Little time for practicing</strong></button>
+                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="3"><strong>Playing fast passages</strong></button>
+                  <button class="tag-button tag-final btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="3"><strong>Sight reading</strong></button>
+              </div>
           </div>
         </div>
-
     </div>
   </div>
 </div>
@@ -97,7 +105,7 @@ function average(array) {
 
 function prepareInput() {
   let tagsArray = [];
-  $('#app-intro .carousel-item').slice(1).each(function() {
+  $('#app-intro .carousel-item').slice(2).each(function() {
     tagsArray.push($(this).attr('value'));
   });
   $input.val(tagsArray.join(' '));
