@@ -27,19 +27,19 @@
                     <h5 class="text-brand my-4">How long have you been playing piano?</h5>
                   </div>
                   <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="0"><strong>Just started</strong></button>
-                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="1"><strong>Less than one year</strong></button>
-                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="2"><strong>Less than five years</strong></button>
-                  <button class="tag-button btn btn-light py-3 m-0 rounded-0 btn-block" data-tag="3"><strong>More than five years</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="1"><strong>Between one and three years</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="2"><strong>More than three years</strong></button>
+                  <button class="tag-button btn btn-light py-3 m-0 rounded-0 btn-block" data-tag="3"><strong>More than eight years</strong></button>
                 </div>
               </div>
               <div class="carousel-item text-center carousel-level">
                 <div>
-                  <h5 class="text-brand my-4">In an ideal situation, how often would you play piano?</h5>
+                  <h5 class="text-brand my-4">How are your musical reading skills?</h5>
                 </div>
-                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="0"><strong>Rarely, every now and then</strong></button>
-                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="1"><strong>Sometime, about once a week</strong></button>
-                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="2"><strong>I would try to play everyday</strong></button>
-                  <button class="tag-button btn btn-light py-3 m-0 rounded-0 btn-block" data-tag="3"><strong>Two or more hours each day</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="0"><strong>Can't really read either clef</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="1"><strong>May be able to read treble or bass clef</strong></button>
+                  <button class="tag-button btn btn-light py-3 border-bottom m-0 rounded-0 btn-block" data-tag="2"><strong>Can read treble and bass clefs together</strong></button>
+                  <button class="tag-button btn btn-light py-3 m-0 rounded-0 btn-block" data-tag="3"><strong>Fully understand all musical notation</strong></button>
               </div>
               <div class="carousel-item row">
                 <div class="col-8 mx-auto text-center my-2">
