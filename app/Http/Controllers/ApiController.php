@@ -61,7 +61,7 @@ class ApiController extends Controller
         $inputArray = $this->api->prepareInput($request);
 
         if (! empty($inputArray)) {
-            dd($inputArray);
+            // dd($inputArray);
             $level = array_shift($inputArray);
             
             $mood = $inputArray[array_rand($inputArray, 1)];
