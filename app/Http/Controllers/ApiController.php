@@ -60,14 +60,14 @@ class ApiController extends Controller
     {
         $inputArray = $this->api->prepareInput($request);
 
-        if (! empty($inputArray)) {
-            // dd($inputArray);
-            $level = array_shift($inputArray);
+        // if (! empty($inputArray)) {
             
-            $mood = $inputArray[array_rand($inputArray, 1)];
+        //     $level = array_shift($inputArray);
+        //     dd($inputArray);
+        //     $mood = $inputArray[array_rand($inputArray, 1)];
 
-            $inputArray = [$level, $mood];
-        }
+        //     $inputArray = [$level, $mood];
+        // }
 
         $pieces = Piece::search($inputArray, $request)->get();
 
