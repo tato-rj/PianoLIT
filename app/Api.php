@@ -29,7 +29,7 @@ class Api
 
     public function composers($title)
     {
-        $collection = Composer::atLeast(15)->withCount('pieces')->get();
+        $collection = Composer::inRandomOrder()->atLeast(15)->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
@@ -38,7 +38,7 @@ class Api
 
     public function improve($title)
     {
-        $collection = Tag::atLeast(5)->improve()->select('name')->withCount('pieces')->get();
+        $collection = Tag::inRandomOrder()->atLeast(5)->improve()->select('name')->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
