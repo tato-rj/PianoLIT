@@ -68,7 +68,7 @@ class UsersController extends Controller
             'experience' => strtolower($request->experience),
             'preferred_piece_id' => $request->preferred_piece_id,
             'occupation' => strtolower($request->occupation),
-            'email_verified_at' => now()
+            // 'email_verified_at' => now()
         ]);
 
         // // \Mail::to($user->email)->send(new \App\Mail\PianoLit\WelcomeEmail($user));

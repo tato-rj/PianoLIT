@@ -59,4 +59,9 @@ class LoginController extends Controller
                 'email' => \Lang::get('auth.failed'),
             ]);
     }
+
+    public function guard()
+    {
+    	return Auth::guard('admin');
+    }
 }

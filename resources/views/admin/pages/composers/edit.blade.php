@@ -69,7 +69,7 @@
           <div class="col">
             <div class="form-group">
               <label class="text-brand">Born in</label>
-              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ $composer->date_of_birth->format('m/d/Y') }}" required>      
+              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ $composer->date_of_birth->format('m/d/Y') }}">      
             </div>
             <div class="form-group">
               <label class="text-brand">Died in</label>

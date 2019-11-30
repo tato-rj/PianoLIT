@@ -12,7 +12,7 @@ class TagTest extends AppTest
     {
         $this->signIn();
 
-        $this->post(route('admin.tags.store'), ['name' => 'new tag']);
+        $this->post(route('admin.tags.store'), ['name' => 'new tag', 'type' => 'type']);
 
         $this->assertDatabaseHas('tags', ['name' => 'new tag']);
     }

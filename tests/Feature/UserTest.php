@@ -18,6 +18,16 @@ class UserTest extends AppTest
     }
 
     /** @test */
+    public function users_receive_a_confirmation_email_upon_registration()
+    {
+        // \Mail::fake();
+
+        $this->register();
+         
+        
+    }
+
+    /** @test */
     public function a_users_favorites_are_removed_when_the_user_is_deleted()
     {
     	$this->signIn();

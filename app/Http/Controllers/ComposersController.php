@@ -85,7 +85,7 @@ class ComposersController extends Controller
     public function edit(Composer $composer)
     {
         $countries = Country::orderBy('nationality')->get();
-        
+        return $composer;
         return view('admin.pages.composers.edit', compact(['composer', 'countries']));
     }
 
@@ -102,7 +102,7 @@ class ComposersController extends Controller
 
         $composer->update([
             'name' => $request->name,
-            'date_of_birth' => carbon($request->date_of_birth)->format('Y-m-d'),
+            'date_of_birth' => $request->date_of_birth ? carbon($request->date_of_birth)->format('Y-m-d') : null,
             'date_of_death' => $request->date_of_death ? carbon($request->date_of_death)->format('Y-m-d') : null,
             'biography' => $request->biography,
             'gender' => $request->gender,
