@@ -85,7 +85,7 @@ class ComposersController extends Controller
     public function edit(Composer $composer)
     {
         $countries = Country::orderBy('nationality')->get();
-        return $composer;
+
         return view('admin.pages.composers.edit', compact(['composer', 'countries']));
     }
 
