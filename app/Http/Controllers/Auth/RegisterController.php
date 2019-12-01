@@ -84,9 +84,9 @@ class RegisterController extends Controller
 
     protected function registered(Request $request, $user)
     {
-        if ($request->origin == 'app')
+        // if ($request->origin == 'app')
             return $user;
     
-        return redirect()->back()->with('status', "Your account successfully created!");
+        // return redirect()->back()->with('status', "Your account successfully created!");
     }
 }
