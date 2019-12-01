@@ -84,7 +84,7 @@ class RegisterController extends Controller
 
     protected function registered(Request $request, $user)
     {
-        if ($request->wantsJson())
+        if ($request->origin == 'app')
             return $user;
     
         return redirect()->back()->with('status', "Your account successfully created!");
