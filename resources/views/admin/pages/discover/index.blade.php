@@ -16,7 +16,8 @@
 
   <div class="row mx-3">
     <div class="col-lg-6 col-md-8 col-10 mx-auto">
-      <form method="GET" action="{{route('admin.api.discover')}}">
+      <form method="POST" action="{{route('api.users.suggestions')}}">
+        @csrf
         <div class="form-group">
           <select name="user_id" class="form-control" onchange="this.form.submit()">
             <option selected disabled>See suggestions for...</option>
