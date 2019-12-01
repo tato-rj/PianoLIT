@@ -108,7 +108,7 @@ class ApiController extends Controller
             return response()->json(['User not found']);
 
         $suggestions = $user->suggestions(10);
-        
+
         $suggestions->each(function($piece) use ($user) {
             $this->api->setCustomAttributes($piece, $user->id);
         });

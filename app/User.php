@@ -54,7 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getPreferredLevelAttribute()
     {
-        $levels = ['none' => 'beginner', 'little' => 'intermediate', 'a lot' => 'advanced'];
+        $levels = ['none' => 'beginner', 'some' => 'intermediate', 'a lot' => 'advanced'];
 
         $level = array_key_exists($this->experience, $levels) ? $levels[$this->experience] : 'unknown';
 
