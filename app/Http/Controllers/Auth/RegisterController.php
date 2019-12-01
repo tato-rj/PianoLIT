@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -79,5 +80,13 @@ class RegisterController extends Controller
             'preferred_piece_id' => $data['preferred_piece_id'],
             'occupation' => strtolower($data['occupation']),
         ]);
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        if ($request->wantsJson())
+            return $user;
+    
+        return redirect()->back()->with('status', "Your account successfully created!");
     }
 }
