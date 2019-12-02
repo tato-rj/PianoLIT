@@ -310,7 +310,7 @@ class Piece extends PianoLit
                     ->where(['composer_id' => $this->composer_id, 'collection_name' => $this->collection_name, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
                     ->orderByRaw('LENGTH(collection_number)')
                     ->orderByRaw('LENGTH(movement_number)')
-                    ->get()->sortBy('collection_number');
+                    ->get()->sortBy('key');
 
         $pieces->each(function($piece, $key) use ($pieces) {
             if ($piece->single)
