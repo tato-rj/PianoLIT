@@ -49,6 +49,11 @@ class Piece extends PianoLit
         return 'No information available';
     }
 
+    public function getSingleAttribute()
+    {
+        return $this->catalogue_name == 'Op. posth.' && is_null($this->catalogue_number);
+    }
+
     public function getOriginalEventAttribute()
     {
         if ($this->composed_in)
@@ -293,11 +298,18 @@ class Piece extends PianoLit
 
     public function siblings()
     {
-        return Piece::exceptThis()
-                    ->where(['composer_id' => $this->composer_id, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
+        $pieces = Piece::exceptThis()
+                    ->where(['composer_id' => $this->composer_id, 'collection_name' => $this->collection_name, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
                     ->orderByRaw('LENGTH(collection_number)')
                     ->orderByRaw('LENGTH(movement_number)')
                     ->get();
+
+        $pieces->each(function($piece, $key) use ($pieces) {
+            if ($piece->single)
+                $pieces->forget($key);
+        });
+
+        return $pieces;
     }
 
     public function similar()
