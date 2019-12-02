@@ -51,7 +51,7 @@ class Piece extends PianoLit
 
     public function getSingleAttribute()
     {
-        return $this->catalogue_name == 'Op. posth.' && is_null($this->catalogue_number);
+        return is_null($this->catalogue_number) && ($this->catalogue_name == 'Op. posth.' || is_null($this->collection_name));
     }
 
     public function getOriginalEventAttribute()
