@@ -298,6 +298,14 @@ class Piece extends PianoLit
 
     public function siblings()
     {
+        foreach (['Notebook for Anna Magdalena Bach'] as $collection) {
+            if ($this->collection_name == $collection)
+                return Piece::exceptThis()->where(['collection_name' => $collection])
+                    ->orderByRaw('LENGTH(collection_number)')
+                    ->orderByRaw('LENGTH(movement_number)')
+                    ->get();
+        }
+
         $pieces = Piece::exceptThis()
                     ->where(['composer_id' => $this->composer_id, 'collection_name' => $this->collection_name, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
                     ->orderByRaw('LENGTH(collection_number)')
