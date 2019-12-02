@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Auth\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
-	protected $defaultRedirectTo = '/admin';
+    use AuthenticatesUsers;
+
+	// protected $defaultRedirectTo = '/admin';
+    protected $redirectTo = '/';
 
     public function __construct()
     {
@@ -62,6 +66,11 @@ class LoginController extends Controller
 
     public function guard()
     {
-    	return Auth::guard('admin');
+    	return \Auth::guard('admin');
+    }
+
+    protected function loggedOut(Request $request)
+    {
+        return redirect()->route('admin.home');
     }
 }

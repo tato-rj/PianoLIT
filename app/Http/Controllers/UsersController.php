@@ -45,39 +45,39 @@ class UsersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $validator = \Validator::make($request->all(), [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validator = \Validator::make($request->all(), [
+    //         'first_name' => 'required',
+    //         'last_name' => 'required',
+    //         'email' => 'required|email|unique:users',
+    //         'password' => 'required|string|min:6|confirmed',
+    //     ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->messages(), 403);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json($validator->messages(), 403);
+    //     }
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => \Hash::make($request->password),
-            'locale' => 'unknown',
-            'age_range' => strtolower($request->age_range),
-            'experience' => strtolower($request->experience),
-            'preferred_piece_id' => $request->preferred_piece_id,
-            'occupation' => strtolower($request->occupation),
-            // 'email_verified_at' => now()
-        ]);
+    //     $user = User::create([
+    //         'first_name' => $request->first_name,
+    //         'last_name' => $request->last_name,
+    //         'email' => $request->email,
+    //         'password' => \Hash::make($request->password),
+    //         'locale' => 'unknown',
+    //         'age_range' => strtolower($request->age_range),
+    //         'experience' => strtolower($request->experience),
+    //         'preferred_piece_id' => $request->preferred_piece_id,
+    //         'occupation' => strtolower($request->occupation),
+    //         // 'email_verified_at' => now()
+    //     ]);
 
-        // // \Mail::to($user->email)->send(new \App\Mail\PianoLit\WelcomeEmail($user));
+    //     // // \Mail::to($user->email)->send(new \App\Mail\PianoLit\WelcomeEmail($user));
 
-        if ($request->has('from_backend'))
-            return redirect()->back()->with('status', "The user has been successfully created!");
+    //     if ($request->has('from_backend'))
+    //         return redirect()->back()->with('status', "The user has been successfully created!");
 
-        return $user;
-    }
+    //     return $user;
+    // }
 
     public function appLogin(Request $request)
     {

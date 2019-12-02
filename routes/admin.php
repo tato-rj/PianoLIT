@@ -2,6 +2,8 @@
 
 Route::get('', 'AdminsController@home')->name('home');
 
+Route::post('logout', 'Auth\Admin\LoginController@logout')->name('logout');
+
 Route::resources([
     'pieces' => 'PiecesController',
     'composers' => 'ComposersController',

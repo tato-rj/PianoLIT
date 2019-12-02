@@ -57,6 +57,16 @@
       <li class="nav-item mx-2">
         <button class="nav-link bg-transparent border-0 show-overlay" data-target="#search-overlay"><i class="fas fa-search"></i><span class="ml-2 d-inline-block d-sm-none">Search here</span></button>
       </li>
+      @auth
+      <li class="nav-item dropdown mx-2">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user-circle text-blue"></i>
+        </a>
+        <div class="dropdown-menu p-2" style="font-size: .9em; left: initial; right: 0; min-width: auto" aria-labelledby="navbarDropdown">
+          <a class="nav-link p-0" href="{{route('logout')}}">Logout</a>
+        </div>
+      </li>
+      @endauth
     </ul>
   </div>
 </nav>
