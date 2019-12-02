@@ -151,7 +151,8 @@ trait PieceExtraAttributes
 
     public function getCatalogueAttribute()
     {
-        $catalogue = "$this->catalogue_name$this->catalogue_number";
+        $space = strhas($this->catalogue_name, '.') ? '' : ' ';
+        $catalogue = "$this->catalogue_name$space$this->catalogue_number";
         $catalogue .= $this->collection_number ? " No.{$this->collection_number}" : '';
         return $catalogue;
     }
