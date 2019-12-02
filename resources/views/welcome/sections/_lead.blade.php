@@ -1,11 +1,11 @@
-@if(local() || request()->has('dev'))
+{{-- @if(local() || request()->has('dev'))
 <section class="container-fluid">
 	@include('welcome.sections.search')		
 </section>
 <section class="container mb-5">
 	@include('components.sections.youtube')	
 </section>
-@else
+@else --}}
 <section class="container mb-5">
 	<div class="row">		
 		<div class="col-lg-9 col-sm-10 col-12 mx-auto text-center">
@@ -35,4 +35,4 @@
 
 	</div>
 </section>
-@endif
+{{-- @endif --}}

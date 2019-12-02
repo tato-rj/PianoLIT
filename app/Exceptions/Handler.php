@@ -63,16 +63,16 @@ class Handler extends ExceptionHandler
 
         switch ($guard) {
             case 'admin':
-                $login = route('admin.login.show');
+                $login = 'admin.login.show';
                 break;
             
             default:
-                $login = route('login');
+                $login = 'login';
                 break;
         }
 
         return $request->expectsJson()
                     ? response()->json(['message' => $exception->getMessage()], 401)
-                    : redirect()->guest($login);
+                    : redirect()->guest(route($login));
     }
 }

@@ -10,17 +10,11 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-	// protected $defaultRedirectTo = '/admin';
-    protected $redirectTo = '/';
-
-    public function __construct()
-    {
-        // $this->middleware('guest:admin')->except('logout');
-    }
+    protected $redirectTo = '/admin';
 
 	public function showLoginForm()
 	{
-		return view('admin/auth/login');
+		return view('admin.auth.login');
 	}
 
 	public function login(Request $request)
@@ -36,17 +30,10 @@ class LoginController extends Controller
 	            ->withErrors($validator);
         }
 
-		$credentials = [
-			'email' => $request->email,
-			'password' => $request->password
-		];
-
-		if (\Auth::guard('admin')->attempt($credentials, $request->remember)) {
-			return redirect()->intended('/admin');
-		}
+		if (\Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->remember))
+			return redirect()->intended(route('admin.home'));
 
 		return $this->sendFailedLoginResponse($request);
-		// return back()->withInput($request->only('email', 'remember'));
 	}
 
     /**
@@ -71,6 +58,6 @@ class LoginController extends Controller
 
     protected function loggedOut(Request $request)
     {
-        return redirect()->route('admin.home');
+        return redirect(route('admin.home'));
     }
 }

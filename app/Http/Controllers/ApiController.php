@@ -22,7 +22,7 @@ class ApiController extends Controller
             $this->api->order(4)->ranking('rcm', 'Equivalent to the RCM levels'),
             $this->api->order(5)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
             $this->api->order(6)->improve('Improve your'),
-            $this->api->order(7)->tag('Pieces that are '),
+            $this->api->order(7)->tag('Pieces that are'),
             $this->api->order(8)->periods('Periods'),
         ]);
 

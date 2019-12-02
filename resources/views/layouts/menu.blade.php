@@ -63,7 +63,10 @@
           <i class="fas fa-user-circle text-blue"></i>
         </a>
         <div class="dropdown-menu p-2" style="font-size: .9em; left: initial; right: 0; min-width: auto" aria-labelledby="navbarDropdown">
-          <a class="nav-link p-0" href="{{route('logout')}}">Logout</a>
+          <a class="nav-link p-0 mb-2" style="white-space: nowrap;" href="{{route('user.profile.show')}}">My profile</a>
+          <a class="nav-link p-0" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>Logout
+          </a>
         </div>
       </li>
       @endauth

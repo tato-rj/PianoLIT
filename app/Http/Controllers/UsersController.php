@@ -29,6 +29,11 @@ class UsersController extends Controller
         return response()->file($file);
     }
 
+    public function profile()
+    {
+        return view('users.profile.index');
+    }
+
     /**
      * Show the form for creating a new resource.
      *
