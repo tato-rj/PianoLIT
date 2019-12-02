@@ -315,7 +315,7 @@ class Piece extends PianoLit
         $pieces->each(function($piece, $key) use ($pieces) {
             if ($piece->single)
                 $pieces->forget($key);
-        });
+        })->sortBy('collection_number');
 
         return $pieces;
     }
