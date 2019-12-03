@@ -67,9 +67,11 @@ class RegisterController extends Controller
             return response()->json($validator->messages(), 403);
         }
         
-        event(new Registered($user = $this->create($request->all())));
+        $user = $this->create($request->all());
 
-        Admin::notifyAll(new NewUser($quiz));
+        event(new Registered($user));
+
+        Admin::notifyAll(new NewUser($user));
 
         $this->guard()->login($user);
 
