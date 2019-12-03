@@ -70,8 +70,7 @@ class RegisterController extends Controller
 
         $this->guard()->login($user);
 
-        return $this->registered($request, $user)
-                        ?: redirect($this->redirectPath());
+        return $this->registered($request, $user);
     }
 
     /**
@@ -92,7 +91,7 @@ class RegisterController extends Controller
             'experience' => array_key_exists('experience', $data) ? strtolower($data['experience']) : null,
             'preferred_piece_id' => array_key_exists('preferred_piece_id', $data) ? $data['preferred_piece_id'] : null,
             'occupation' => array_key_exists('occupation', $data) ? strtolower($data['occupation']) : null,
-            'origin' => 'web',
+            'origin' => 'ios',
         ]);
     }
 
