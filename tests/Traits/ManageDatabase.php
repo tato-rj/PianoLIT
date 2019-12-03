@@ -81,7 +81,7 @@ trait ManageDatabase
 
     protected function register($user = null)
     {
-        return $this->post(route('register'), [
+        return $this->post(route('api.users.store'), [
             'first_name' => $user['first_name'] ?? 'John',
             'last_name' => $user['last_name'] ?? 'Doe',
             'email' => $user['email'] ?? 'doe@email.com',
