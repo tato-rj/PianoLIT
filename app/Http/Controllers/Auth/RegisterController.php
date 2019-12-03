@@ -50,14 +50,10 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-
-            // 'name' => ['required', 'string', 'max:255'],
-            // 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            // 'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'first_name' => 'required|max:255',
+            'last_name' => 'required|max:255',
+            'email' => 'required|email|unique:users|max:255',
+            'password' => 'required|string|min:8|confirmed',
         ]);
     }
 
@@ -70,23 +66,24 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
+            'first_name' => ucfirst($data['first_name']),
+            'last_name' => ucfirst($data['last_name']),
             'email' => $data['email'],
             'password' => \Hash::make($data['password']),
             'locale' => 'unknown',
-            'age_range' => strtolower($data['age_range']),
-            'experience' => strtolower($data['experience']),
-            'preferred_piece_id' => $data['preferred_piece_id'],
-            'occupation' => strtolower($data['occupation']),
+            'age_range' => array_key_exists('age_range', $data) ? strtolower($data['age_range']) : null,
+            'experience' => array_key_exists('experience', $data) ? strtolower($data['experience']) : null,
+            'preferred_piece_id' => array_key_exists('preferred_piece_id', $data) ? $data['preferred_piece_id'] : null,
+            'occupation' => array_key_exists('occupation', $data) ? strtolower($data['occupation']) : null,
+            'origin' => 'web',
         ]);
     }
 
     protected function registered(Request $request, $user)
     {
-        // if ($request->origin == 'app')
-            return $user;
-    
-        // return redirect()->back()->with('status', "Your account successfully created!");
+        if ($user->origin == 'web')
+            return back()->with('status', 'Your account successfully created! Please check your inbox to confirm your email.');
+        
+        return $user;
     }
 }

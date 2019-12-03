@@ -4,7 +4,7 @@ Auth::routes(['verify' => true]);
 
 Route::get('email/verified', function() {
 	return view('auth.verified');
-})->middleware('verified');
+})->middleware('verified')->name('verification.verified');
 
 Route::prefix('admin')->name('admin.')->group(function() {
 	

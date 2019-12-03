@@ -108,6 +108,7 @@ class PieceTest extends AppTest
         $differentPiece = create(Piece::class);
         $pieceFromSameCatalogue = create(Piece::class, [
         	'composer_id' => $piece->composer_id,
+            'collection_name' => $piece->collection_name,
         	'catalogue_name' => $piece->catalogue_name,
         	'catalogue_number' => $piece->catalogue_number
         ]);

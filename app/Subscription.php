@@ -78,7 +78,7 @@ class Subscription extends PianoLit
     	return $query->where('email', $email);
     }
 
-    public function scopeCreateOrActivate($query, $form)
+    public function scopeCreateOrActivate($query, $form, $notifyUser = true)
     {
     	$record = $query->byEmail($form->email);
 
@@ -90,7 +90,8 @@ class Subscription extends PianoLit
             'origin_url' => $form->origin_url
         ]);
 
-        \Mail::to($form->email)->send(new Welcome($subscriber));
+        if ($notifyUser)
+            \Mail::to($form->email)->send(new Welcome($subscriber));
         
         Admin::notifyAll(new NewSubscriber($subscriber));
 

@@ -51,25 +51,37 @@
       <li class="nav-item mx-2">
         <a class="nav-link" href="{{route('posts.index')}}">Blog</a>
       </li>
-      <li class="nav-item mx-2">
-        <a class="nav-link" href="{{route('youtube')}}" target="_blank">Youtube</a>
-      </li>
-      <li class="nav-item mx-2">
-        <button class="nav-link bg-transparent border-0 show-overlay" data-target="#search-overlay"><i class="fas fa-search"></i><span class="ml-2 d-inline-block d-sm-none">Search here</span></button>
-      </li>
+      @env('local')
       @auth
       <li class="nav-item dropdown mx-2">
-        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-user-circle text-blue"></i>
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          You
         </a>
         <div class="dropdown-menu p-2" style="font-size: .9em; left: initial; right: 0; min-width: auto" aria-labelledby="navbarDropdown">
-          <a class="nav-link p-0 mb-2" style="white-space: nowrap;" href="{{route('user.profile.show')}}">My profile</a>
-          <a class="nav-link p-0" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+          <a class="nav-link" style="white-space: nowrap;" href="{{route('user.profile.show')}}">Invite Friends</a>
+          <div class="dropdown-divider my-1"></div>
+          <a class="nav-link" style="white-space: nowrap;" href="{{route('user.profile.show')}}">My profile</a>
+          <div class="dropdown-divider my-1"></div>
+          <a class="nav-link" style="white-space: nowrap;" href="{{route('user.profile.show')}}">Help & Support</a>
+          <div class="dropdown-divider my-1"></div>
+          <a class="nav-link" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>Logout
           </a>
         </div>
       </li>
+      @else
+      <li class="nav-item mx-2">
+        <a class="nav-link" href="{{route('login')}}">Log in</a>
+      </li>
       @endauth
+      @else
+      <li class="nav-item mx-2">
+        <a class="nav-link" href="{{route('youtube')}}" target="_blank">Youtube</a>
+      </li>
+      @endenv
+      <li class="nav-item mx-2">
+        <button class="nav-link bg-transparent border-0 show-overlay" data-target="#search-overlay"><i class="fas fa-search"></i><span class="ml-2 d-inline-block d-sm-none">Search here</span></button>
+      </li>
     </ul>
   </div>
 </nav>

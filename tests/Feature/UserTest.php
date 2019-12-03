@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use Tests\Traits\ManageDatabase;
+use App\{User, Subscription};
 
 class UserTest extends AppTest
 {
@@ -12,19 +13,27 @@ class UserTest extends AppTest
     /** @test */
     public function users_can_signup_from_the_app()
     {
-        $this->register()->assertSuccessful();
-
+        $this->register();
+        
         $this->assertDatabaseHas('users', ['first_name' => 'John']); 
     }
 
     /** @test */
-    public function users_receive_a_confirmation_email_upon_registration()
+    public function users_are_subscribed_after_confirming_their_email()
     {
-        // \Mail::fake();
+        \Mail::fake();
 
         $this->register();
-         
         
+        $user = User::latest()->first();
+
+        $this->assertDatabaseMissing('subscriptions', ['email' => $user->email]);
+
+        if ($user->markEmailAsVerified()) {
+            event(new \Illuminate\Auth\Events\Verified($user));
+        }
+
+        $this->assertDatabaseHas('subscriptions', ['email' => $user->email]);
     }
 
     /** @test */

@@ -24,8 +24,10 @@ class CreateUsersTable extends Migration
             $table->string('occupation')->nullable();
             $table->string('age_range')->nullable();
             $table->string('experience')->nullable();
-            
+
+            $table->string('origin')->nullable();
             $table->string('locale')->default('en_US');
+
             $table->string('password');
             $table->boolean('super_user')->default(false);
             $table->rememberToken();

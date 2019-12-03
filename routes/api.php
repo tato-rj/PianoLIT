@@ -56,7 +56,7 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	});
 
-	Route::post('', 'UsersController@store')->name('store');
+	// Route::post('', 'UsersController@store')->name('store');
 
 	Route::post('/login', 'UsersController@appLogin')->name('login');
 

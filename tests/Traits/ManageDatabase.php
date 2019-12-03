@@ -81,12 +81,12 @@ trait ManageDatabase
 
     protected function register($user = null)
     {
-        return $this->post(route('api.users.store'), [
+        return $this->post(route('register'), [
             'first_name' => $user['first_name'] ?? 'John',
             'last_name' => $user['last_name'] ?? 'Doe',
             'email' => $user['email'] ?? 'doe@email.com',
-            'password' => $user['password'] ?? 'secret',
-            'password_confirmation' => $user['password_confirmation'] ?? 'secret',
+            'password' => $user['password'] ?? 'secret999',
+            'password_confirmation' => $user['password_confirmation'] ?? 'secret999',
             'locale' => $user['locale'] ?? 'en_US',
             'age_range' => $user['age_range'] ?? '35 to 45',
             'experience' => $user['experience'] ?? 'Little',
