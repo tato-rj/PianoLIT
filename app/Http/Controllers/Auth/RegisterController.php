@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\{User, Admin};
+use App\Notifications\NewUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -67,6 +68,8 @@ class RegisterController extends Controller
         }
         
         event(new Registered($user = $this->create($request->all())));
+
+        Admin::notifyAll(new NewUser($quiz));
 
         $this->guard()->login($user);
 
