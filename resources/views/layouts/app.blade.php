@@ -157,6 +157,8 @@
             @yield('content')
         </main>
         @include('components.overlays.search.form')
+
+        @include('auth.modal')
         
         @if($full ?? true)
         @include('layouts.footer')

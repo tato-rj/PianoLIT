@@ -18,59 +18,60 @@
 		</div>
 
 		<div class="row mb-2">
-			<div class="col-lg-6 col-md-6 col-12 mb-3">
-				<a href="{{$piece->isPublicDomain ? storage($piece->score_path) : $piece->score_url}}" target="_blank" class="btn btn-block btn-light py-6">
-					<h1><i class="fas text-grey fa-{{$piece->isPublicDomain ? 'cloud-download-alt' : 'shopping-bag'}}"></i></h1>
-					<h5>{{$piece->isPublicDomain ? 'Download' : 'Buy'}} score</h5>
-				</a>
+			<div class="col-lg-6 col-md-6 col-12">
+			@if($piece->isPublicDomain)
+				<div class="embed-responsive embed-responsive-a4 mb-4">
+					<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
+				</div>
+			@endif
 			</div>
-			<div class="col-lg-6 col-md-6 col-12 mb-3">
-				<a href="{{route('search.similar', $piece->id)}}" target="_blank" class="btn btn-block btn-light py-6">
-					<h1><i class="text-grey fas fa-gift"></i></h1>
-					<h5>More like this</h5>
-				</a>
-			</div>
-		</div>
-		@if($piece->hasAudio())
-		<div class="row mb-5">
-			<div class="col-12">
+
+			<div class="col-lg-6 col-md-6 col-12">
+				@php($tags = $piece->tags()->mood()->get())
+				@if(! $tags->isEmpty())
+				<div class=" mb-4">
+					<h6 class="mb-3">What's this piece like?</h6>
+					@foreach($tags as $tag)
+					    @include('pieces.tag', ['color' => 'teal'])
+					@endforeach
+				</div>
+				@endif
+
+				@php($tags = $piece->tags()->technique()->get())
+				@if(! $tags->isEmpty())
+				<div class=" mb-4">
+					<h6 class="mb-3">What's this piece good for?</h6>
+					@foreach($tags as $tag)
+					    @include('pieces.tag', ['color' => 'blue'])
+					@endforeach
+				</div>
+				@endif
+
+				@php($tags = $piece->tags()->ranking()->get())
+				@if(! $tags->isEmpty())
+				<div class="">
+					<h6 class="mb-3">The level of this piece is equivalent to...</h6>
+					@foreach($tags as $tag)
+					    @include('pieces.tag', ['color' => 'orange'])
+					@endforeach
+				</div>
+				@endif
+				<hr class="my-4">
+				<div class="text-center w-100 mb-4">
+					@if($piece->isPublicDomain)	
+						<a href="{{storage($piece->score_path)}}" class="btn btn-block btn-wide btn-teal"><i class="fas fa-cloud-download-alt mr-2"></i>Download score</a>
+					@else
+						<a href="{{$piece->score_url}}" target="_blank" class="btn btn-block btn-teal btn-wide"><i class="fas fa-shopping-bag mr-2"></i>Buy the score here</a>
+					@endif
+				</div>
+				@if($piece->hasAudio())
+				<div>
 				<audio controls class="w-100">
 					<source src="{{storage($piece->audio_path)}}" type="audio/mp3">
 				</audio>
+				</div>
+				@endif
 			</div>
-		</div>
-		@endif
-
-		<div class="row">
-			@php($tags = $piece->tags()->mood()->get())
-			@if(! $tags->isEmpty())
-			<div class="col-12 mb-4">
-				<h6 class="mb-3">What's this piece like?</h6>
-				@foreach($tags as $tag)
-				    @include('pieces.tag', ['color' => 'teal'])
-				@endforeach
-			</div>
-			@endif
-
-			@php($tags = $piece->tags()->technique()->get())
-			@if(! $tags->isEmpty())
-			<div class="col-12 mb-4">
-				<h6 class="mb-3">What's this piece good for?</h6>
-				@foreach($tags as $tag)
-				    @include('pieces.tag', ['color' => 'blue'])
-				@endforeach
-			</div>
-			@endif
-
-			@php($tags = $piece->tags()->ranking()->get())
-			@if(! $tags->isEmpty())
-			<div class="col-12">
-				<h6 class="mb-3">The level of this piece is equivalent to...</h6>
-				@foreach($tags as $tag)
-				    @include('pieces.tag', ['color' => 'orange'])
-				@endforeach
-			</div>
-			@endif
 		</div>
 	</div>
 
@@ -95,19 +96,6 @@
   @include('components.sections.youtube')
 </div>
 
-{{-- 			@if($piece->isPublicDomain)
-				<div class="embed-responsive embed-responsive-a4 mb-4">
-					<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
-				</div>
-				<div class="text-center w-100">
-					<a href="{{storage($piece->score_path)}}" class="btn btn-wide btn-teal"><i class="fas fa-cloud-download-alt mr-2"></i>Download score</a>
-				</div>
-			@else
-				<div class="text-center mb-8">
-					<p>This piece is <strong><u>not</u></strong> in the public domain.</p>
-					<a href="{{$piece->score_url}}" target="_blank" class="btn btn-teal btn-wide"><i class="fas fa-shopping-bag mr-2"></i>Buy the score here</a>
-				</div>
-			@endif --}}
 @include('components.overlays.subscribe.model-2')
 @endsection
 
