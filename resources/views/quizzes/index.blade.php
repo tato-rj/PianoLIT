@@ -13,8 +13,13 @@
 
 	<div class="row">
 		<div class="col-lg-10 col-md-9 col-12 mb-4">
-        <div class="row">
+        <div class="row mb-4">
           @each('components.quiz.cards.large', $quizzes, 'quiz')
+        </div>
+        <div class="row">
+          <div class="col-12 d-flex justify-content-center">
+            {{ $quizzes->links() }}
+          </div>
         </div>
     </div>
     <div class="col-lg-2 col-md-3 col-12" id="filters">
