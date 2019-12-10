@@ -1,24 +1,28 @@
-      <div class="col-12 mb-2">
-        <a href="{{route('admin.users.show', $user->id)}}" class="link-none">
-          <div class="d-flex align-items-center bg-light text-muted px-3 py-2 badge-pill hover-shadow-light t-2">
-            
-            @include('admin.pages.users.status-icon.'.$user->getStatus())
-
-            <div class="px-3" style="flex-grow: 2">
-              <span>
-                <strong>{{$user->full_name}}</strong> | <small><i>signed up on {{$user->created_at->toFormattedDateString()}}</i></small>
-              </span>
-            </div>
-
-            <div>
-              @if($user->membership()->exists())
-                @if($user->membership->expired())
-                <span class="text-muted"><i><small>validated {{$user->membership->validated_at->diffForHumans()}}</small></i></span>
-                @else
-                <div><i class="fas fa-credit-card"></i></div>
-                @endif
-              @endif
-            </div>
-          </div>
-        </a>
-      </div>
+<tr>
+  <td style="width: 16px">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input check-user" id="check-user-{{$user->id}}">
+      <label class="custom-control-label" for="check-user-{{$user->id}}"></label>
+    </div>
+  </td>
+  <td style="white-space: nowrap;">{{$user->created_at->toFormattedDateString()}}</td>
+  <td title="Subscribed at {{$user->created_at->format('g:i:s a')}}">{{$user->full_name}}</td>
+  <td class="text-truncate">{{$user->origin}}</td>
+  <td class="text-truncate">
+    @if($user->membership()->exists())
+      @if($user->membership->expired())
+      <span class="text-muted"><i><small>validated {{$user->membership->validated_at->diffForHumans()}}</small></i></span>
+      @else
+      <div><i class="fas fa-credit-card"></i></div>
+      @endif
+    @else
+      Guest
+    @endif
+  </td>
+  <td>@include('admin.components.toggle.super-user')</td>
+  <td class="text-right" style="white-space: nowrap;">
+    <a href="mailto:{{$user->email}}" target="_blank" class="text-muted mr-2"><i class="far fa-envelope align-middle"></i></a>
+    <a href="{{route('admin.users.show', $user->id)}}" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
+    <a href="#" data-name="{{$user->full_name}}" data-url="{{route('admin.users.destroy', $user->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-danger"><i class="far fa-trash-alt align-middle"></i></a>
+  </td>
+</tr>

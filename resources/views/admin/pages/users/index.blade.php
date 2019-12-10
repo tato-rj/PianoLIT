@@ -1,5 +1,10 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
+@endsection
+
 @section('content')
 
 <div class="content-wrapper">
@@ -11,40 +16,92 @@
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center">
         <div>
-    
           <form method="GET" action="{{route('admin.memberships.validate.all')}}">
             @csrf
             <button class="btn btn-sm btn-success"><i class="fas fa-clipboard-check mr-2"></i>Validate all subscriptions</button>
           </form>
-
         </div>
         <div>
           @include('admin.components.filters.users', ['filters' => []])
         </div>
       </div>
+      <div class="col-12 mt-2" id="multi-select" style="display: none;">
+        <div class="alert alert-warning d-flex justify-content-between align-items-center">
+          <div><strong><span id="selected-count">3</span> selected</strong></div>
+          <div>
+            <button class="btn btn-sm btn-warning">Delete all</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="row my-3">
-      <div class="col-12 text-center">
-        <p class="text-center"><small>Showing {{$users->count()}} of {{$users->total()}}</small></p>
+      <div class="col-12">
+        <table class="table table-hover" id="users-table">
+          <thead>
+            <tr>
+              <th class="border-0" scope="col"></th>
+              <th class="border-0" scope="col">Date</th>
+              <th class="border-0" scope="col">Name</th>
+              <th class="border-0" scope="col">Origin</th>
+              <th class="border-0" scope="col">Status</th>
+              <th class="border-0" scope="col">Super User</th>
+              <th class="border-0" scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @each('admin.pages.users.row', $users, 'user')
+          </tbody>
+        </table>
       </div>
-      @foreach($users as $user)
-        @include('admin.pages.users.row')
-      @endforeach
     </div>
-
-    {{-- PAGINATION --}}
-    <div class="row mb-3">
-          <div class="d-flex align-items-center w-100 justify-content-center my-4">
-        {{ $users->links() }}    
-        </div>
-    </div>
-
   </div>
 </div>
 
+@include('admin.components.modals.delete', ['model' => 'user'])
 @endsection
 
 @section('scripts')
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+<script type="text/javascript">
+$(document).ready( function () {
+    $('#users-table').DataTable({
+    // 'responsive': true,
+    'aaSorting': [],
+    'columnDefs': [ { 'orderable': false, 'targets': [0, 5, 6] } ],
+    });
+} );
+</script>
+<script type="text/javascript">
+$('input.status-toggle').on('change', function() {
+  let $input = $(this);
 
+  $.ajax({
+    url: $input.attr('data-url'),
+    type: 'PATCH',
+    success: function(response) {
+      alert(response.status);
+    }
+  });
+});
+</script>
+<script type="text/javascript">
+$('#delete-modal').on('shown.bs.modal', function(e) {
+  let url = $(e.relatedTarget).attr('data-url');
+  $(this).find('form').attr('action', url);
+});
+</script>
+<script type="text/javascript">
+$('.check-user').on('change', function() {
+  let selected = $('.check-user:checked').length;
+  let $container = $('#multi-select');
+  console.log(selected);
+  if (selected > 0) {
+    $container.find('#selected-count').text(selected);
+    $container.show();
+  } else {
+    $container.hide();
+  }
+});
+</script>
 @endsection

@@ -21,11 +21,6 @@ class LoginController extends Controller
         $this->redirectTo = url()->previous();
     }
 
-    // public function redirectTo()
-    // {
-    //     return back();
-    // }
-
     public function guard()
     {
         return \Auth::guard('web');
