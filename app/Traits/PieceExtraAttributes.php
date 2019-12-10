@@ -6,7 +6,10 @@ trait PieceExtraAttributes
 {
     public function getLevelNameAttribute()
     {
-        return $this->level->name;
+        if ($this->level)
+            return $this->level->name;
+
+        return null;
     }
 
     public function getRankingsAttribute()

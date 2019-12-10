@@ -302,6 +302,27 @@
         }
     };
     </script>
+
+<script type="text/javascript">
+$('#auth-only').on('click', function(event) {
+    event.preventDefault();
+    $('#modal-auth').modal('show');
+});
+
+$('div[data-toggle="panel"]').on('click', function() {
+    let target = $(this).attr('href');
+    let parent = $(this).attr('href-parent');
+    $(parent).add(target).toggle();
+});  
+</script>
+
+
+<script language="JavaScript">
+$('.no-click').bind('contextmenu', function(e) {
+    return false;
+}); 
+</script>
+
     @stack('scripts')
 
 </body>

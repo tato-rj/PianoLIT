@@ -41,6 +41,17 @@ class Infograph extends ShareableContent
 
     //     return $this->types;
     // }
+    
+    public function related()
+    {
+        $related = collect();
+
+        foreach ($this->topics as $topic) {
+            $related->push($topic->infographs()->where('id', '!=', $this->id)->published()->get());
+        }
+
+        return $related->flatten()->unique();
+    }
 
     public function scopeGifts($query)
     {

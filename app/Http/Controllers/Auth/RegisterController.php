@@ -64,6 +64,9 @@ class RegisterController extends Controller
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
+            if ($request->origin == 'web')
+                return back()->with('error', $validator->messages()->first());
+
             return response()->json($validator->messages(), 403);
         }
         
@@ -96,13 +99,13 @@ class RegisterController extends Controller
             'experience' => array_key_exists('experience', $data) ? strtolower($data['experience']) : null,
             'preferred_piece_id' => array_key_exists('preferred_piece_id', $data) ? $data['preferred_piece_id'] : null,
             'occupation' => array_key_exists('occupation', $data) ? strtolower($data['occupation']) : null,
-            'origin' => 'ios',
+            'origin' => $data['origin'],
         ]);
     }
 
     protected function registered(Request $request, $user)
     {
-        if ($user->origin == 'web')
+        if ($request->origin == 'web')
             return back()->with('status', 'Your account successfully created! Please check your inbox to confirm your email.');
         
         return $user;

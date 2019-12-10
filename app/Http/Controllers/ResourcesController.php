@@ -20,7 +20,7 @@ class ResourcesController extends Controller
 		return view('resources.staff.index', compact('files'));
     }
 
-    public function infographs($name = null)
+    public function infographs()
     {
         $infographs = Infograph::published()->inRandomOrder()->newFirst();
         $topics = InfographTopic::has('infographs', '>', 0)->ordered()->get();

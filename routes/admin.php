@@ -10,7 +10,7 @@ Route::resources([
     'tags' => 'TagsController',
     'topics' => 'TopicsController',
     'editors' => 'EditorsController',
-    'users' => 'UsersController',
+    // 'users' => 'UsersController',
     'timelines' => 'TimelinesController',
     'pianists' => 'PianistsController',
     'playlists' => 'PlaylistsController'
@@ -169,6 +169,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::get('export', 'SubscriptionsController@export')->name('export');
 
+	Route::post('', 'Admin\SubscriptionsController@store')->name('store');
+
 });
 
 Route::prefix('statistics')->name('stats.')->group(function() {
@@ -191,6 +193,12 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 Route::prefix('users')->name('users.')->group(function() {
 
 	Route::patch('{user}/super-status', 'MembershipsController@superStatus')->name('super-status');
+
+	Route::get('', 'Admin\UsersController@index')->name('index');
+
+	Route::get('{user}', 'Admin\UsersController@show')->name('show');
+
+	Route::delete('{user}', 'Admin\UsersController@destroy')->name('destroy');
 
 });
 

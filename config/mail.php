@@ -133,4 +133,15 @@ return [
 
     'log_channel' => env('MAIL_LOG_CHANNEL'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Lists information
+    |--------------------------------------------------------------------------
+    |
+    */
+   
+   'lists' => [
+        'newsletter_list' => 'A monthly newsletter with highlights from our products, as well as the most interesting music-related news we discover each month.',
+        'birthday_list' => 'Receive an email on the birthday of the most famous composers and be the first to share the news!' 
+   ]
 ];

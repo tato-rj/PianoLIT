@@ -40,4 +40,19 @@ class HomeController extends Controller
 
         return view('welcome.index', compact(['collections', 'tags']));
     }
+
+    public function terms()
+    {
+        return view('legal.terms');
+    }
+
+    public function privacy()
+    {
+        return view('legal.privacy');
+    }
+
+    public function contact()
+    {
+        return view('contact.index');
+    }
 }

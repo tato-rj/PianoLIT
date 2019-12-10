@@ -45,7 +45,7 @@ return [
     ],
 
     'channels' => [
-        'youtube' => 'https://www.youtube.com/channel/UCOB67MpdySxyTCZHvWgxHeg',
+        'youtube' => 'https://www.youtube.com/pianolit',
         'facebook' => 'https://www.facebook.com/pianolit',
         'reddit' => 'https://www.reddit.com/user/pianolit',
         'twitter' => 'https://twitter.com/LitPiano',

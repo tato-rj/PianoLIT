@@ -20,7 +20,8 @@ $factory->define(User::class, function (Faker $faker) {
         'age_range' => randval($age),
         'experience' => randval($experience),
         'preferred_piece_id' => 1,//$favorite->id,
-        'occupation' => randval($occupation)
+        'occupation' => randval($occupation),
+        'origin' => 'test'
     ];
 });
 

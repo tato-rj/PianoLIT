@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['appLogin', 'gift']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,9 +19,9 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = User::latest()->paginate(10);
+        // $users = User::latest()->paginate(10);
 
-        return view('admin.pages.users.index', compact('users'));
+        // return view('admin.pages.users.index', compact('users'));
     }
 
     public function gift()
@@ -33,6 +38,14 @@ class UsersController extends Controller
     {
         return view('users.profile.index');
     }
+
+
+    public function invite()
+    {
+        return view('users.invite');
+    }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -112,16 +125,16 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        if (request('format') == 'json')
-            return $user->membership;
+        // if (request('format') == 'json')
+        //     return $user->membership;
 
-        $pieces = Piece::orderBy('name')->get();
+        // $pieces = Piece::orderBy('name')->get();
 
-        $pieces->each(function($piece) use ($user) {
-            (new Api)->setCustomAttributes($piece, $user->id);
-        });
+        // $pieces->each(function($piece) use ($user) {
+        //     (new Api)->setCustomAttributes($piece, $user->id);
+        // });
 
-        return view('admin.pages.users.show.index', compact(['user', 'pieces']));
+        // return view('admin.pages.users.show.index', compact(['user', 'pieces']));
     }
 
     /**
@@ -144,7 +157,20 @@ class UsersController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $this->authorize('update', $user);
+
+        $subscription = $user->subscription;
+
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email
+        ]);
+
+        if ($subscription)
+            $subscription->update(['email' => $request->email]);
+
+        return back()->with(['status' => 'Update successful.']);
     }
 
     /**
@@ -155,8 +181,10 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->authorize('update', $user);
+        
         $user->delete();
 
-        return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted');
+        return back()->with('status', 'The user has been successfully deleted');
     }
 }

@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Admin;
+use App\{Admin, Subscription};
 use Tests\AppTest;
+use App\Mail\Newsletter\Welcome as WelcomeToNewsletter;
 
 class AdminTest extends AppTest
 {
@@ -53,5 +54,36 @@ class AdminTest extends AppTest
         $this->assertDatabaseMissing('admins', ['name' => $admin->name]);
 
         $this->assertNull($piece->creator);
+    }
+
+    /** @test */
+    public function admins_can_remove_users()
+    {
+        $this->signIn();
+
+        $id = $this->user->id;
+
+        $this->delete(route('admin.users.destroy', $id));
+
+        $this->assertDatabaseMissing('users', ['id' => $id]);
+    }
+
+    /** @test */
+    public function admins_can_subscribe_multiple_emails_at_the_same_time()
+    {
+        \Mail::fake();
+
+        $this->signIn();
+
+        Subscription::truncate();
+
+        $this->post(route('admin.subscriptions.store', [
+            'emails' => '  test1@email.com,   test2@email.com, test3@email.com ',
+            'origin_url' => 'testing'
+        ]));
+
+        $this->assertEquals(3, Subscription::count());
+
+        \Mail::assertNotQueued(WelcomeToNewsletter::class);
     }
 }

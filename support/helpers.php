@@ -170,6 +170,11 @@ function strhas($str, $needle)
 	return strpos($str, $needle) !== false;
 }
 
+function valid_email($email)
+{
+	return strhas($email, '@') && strhas($email, '.');
+}
+
 function array_has_array(array $haystack, array $needle) {
 	$result = false;
 

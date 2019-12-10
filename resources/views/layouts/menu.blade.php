@@ -35,7 +35,7 @@
           <label style="font-size: .9em" class="m-0 text-grey"><small>TO USE</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.staff')}}">Staff Generator</a>
           <a class="nav-link p-0 ml-1" href="{{route('resources.timeline')}}">Music Timeline</a>
-          <a class="nav-link p-0 ml-1" href="{{route('resources.infographs')}}">Infographs</a>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.infographs.index')}}">Infographs</a>
         </div>
       </li>
       <li class="nav-item dropdown mx-2">
@@ -58,11 +58,11 @@
           {{auth()->user()->first_name}}
         </a>
         <div class="dropdown-menu p-2" style="font-size: .9em; left: initial; right: 0; min-width: auto" aria-labelledby="navbarDropdown">
-          <a class="nav-link" style="white-space: nowrap;" href="{{route('user.profile.show')}}">Invite Friends</a>
+{{--           <a class="nav-link" style="white-space: nowrap;" href="{{route('users.invite')}}">Invite Friends</a>
+          <div class="dropdown-divider my-1"></div> --}}
+          <a class="nav-link" style="white-space: nowrap;" href="{{route('users.profile')}}">My profile</a>
           <div class="dropdown-divider my-1"></div>
-          <a class="nav-link" style="white-space: nowrap;" href="{{route('user.profile.show')}}">My profile</a>
-          <div class="dropdown-divider my-1"></div>
-          <a class="nav-link" style="white-space: nowrap;" href="{{route('user.profile.show')}}">Help & Support</a>
+          <a class="nav-link" style="white-space: nowrap;" href="{{route('contact')}}">Help & Support</a>
           <div class="dropdown-divider my-1"></div>
           <a class="nav-link" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>Logout

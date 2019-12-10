@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('content')
-
 <div class="content-wrapper">
   <div class="container-fluid">
   @include('admin.components.breadcrumb', [
@@ -139,6 +138,12 @@ $('#membership-history').on('shown.bs.modal', function (e) {
 $('#membership-history').on('hidden.bs.modal', function (e) {
   $(this).find('#history-data').html('').hide();
   $(this).find('#history-loading').show();
+});
+</script>
+<script type="text/javascript">
+$('#delete-modal').on('shown.bs.modal', function(e) {
+  let url = $(e.relatedTarget).attr('data-url');
+  $(this).find('form').attr('action', url);
 });
 </script>
 @endsection

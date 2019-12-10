@@ -133,8 +133,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapUserRoutes()
     {
-        Route::name('user.')
-             ->middleware(['web', 'auth'])
+        Route::middleware('web')
+             ->name('users.')
              ->namespace($this->namespace)
              ->group(base_path('routes/user.php'));
     }

@@ -1,5 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Infographs | ' . config('app.name'),
+	'noclicks' => true,
 	'shareable' => [
 		'keywords' => 'infograph,learn music,music theory,music sheet,piano sheet,treble sheet,bass sheet',
 		'title' => 'Infographs',
@@ -51,12 +52,7 @@
 	</div>
 </div>
 
-<div class="container mb-6">
-	@include('components.sections.feedback')
-	@include('components.sections.youtube')
-</div>
 
-@include('resources.infographs.show')
 @include('components.overlays.subscribe.paper-plane')
 @endsection
 
@@ -77,7 +73,7 @@ $('#infograph-modal').on('show.bs.modal', function (e) {
 	let topics = JSON.parse($infograph.attr('data-topics'));
 
 	$modal.find('.review').attr('data-url', $infograph.attr('data-review-url'));
-	$modal.find('.url').attr('href', $infograph.attr('data-url'));
+
 	$modal.find('.preview').attr('src', $infograph.attr('data-image'));
 	$modal.find('.name').text($infograph.attr('data-name'));
 	$modal.find('.description').text($infograph.attr('data-description'));

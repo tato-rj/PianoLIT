@@ -14,6 +14,9 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    'emails' => [
+        'general' => 'contact@pianolit.com'
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +55,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'http://pianolit.test'),
 
     'asset_url' => env('ASSET_URL', null),
 

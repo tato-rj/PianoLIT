@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Admin, User, Piece, Tag, Composer, Subscription};
+use App\{Admin, User, Piece, Tag, Composer, Subscription, Api};
 use App\Quiz\{Quiz, Level, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Blog\Post;

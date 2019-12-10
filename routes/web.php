@@ -10,6 +10,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 });
 
+Route::get('contact-us', 'HomeController@contact')->name('contact');
+
 Route::prefix('search')->name('search.')->group(function() {
 
 	Route::get('', 'SearchController@index')->name('index');
@@ -83,7 +85,13 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 	Route::get('staff/{type?}', 'ResourcesController@staff')->name('staff');
 
-	Route::get('infographs/{name?}', 'ResourcesController@infographs')->name('infographs');
+	Route::prefix('infographs')->name('infographs.')->group(function() {
+
+		Route::get('', 'ResourcesController@infographs')->name('index');
+
+		Route::get('{infograph}', 'InfographsController@show')->name('show');
+
+	});
 
 	Route::get('top-podcasts', 'ResourcesController@podcasts')->name('podcasts');
 });
@@ -142,6 +150,9 @@ Route::prefix('quizzes')->name('quizzes.')->group(function() {
 
 Route::get('gift', 'UsersController@gift')->name('gift');
 
-Route::get('infographs/{infograph}/download', 'InfographsController@download')->name('infographs.download');
+Route::get('infographs/{infograph}/download', 'InfographsController@download')->name('infographs.download')->middleware('auth');
 
 Route::post('infographs/{infograph}/update-score', 'InfographsController@updateScore')->name('infographs.update-score');
+
+Route::get('terms-of-service', 'HomeController@terms')->name('terms');
+Route::get('privacy-policy', 'HomeController@privacy')->name('privacy');

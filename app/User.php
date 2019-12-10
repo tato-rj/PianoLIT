@@ -25,11 +25,14 @@ class User extends Authenticatable implements MustVerifyEmail
         parent::boot();
 
         self::deleting(function($user) {
-
             $user->favorites()->detach();
             $user->views()->detach();
-
         });
+    }
+
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class, 'email', 'email');
     }
 
     public function membership()
@@ -56,25 +59,30 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $levels = ['none' => 'beginner', 'some' => 'intermediate', 'a lot' => 'advanced'];
 
-        $level = array_key_exists($this->experience, $levels) ? $levels[$this->experience] : 'unknown';
+        $level = array_key_exists($this->experience, $levels) ? $levels[$this->experience] : null;
 
         return $level;
     }
 
     public function getPreferredMoodAttribute()
     {
-        return $this->preferredPiece->tags->where('type', 'mood')->pluck('name');
+        if (! $this->preferred_Piece)
+            return null;
+
+        return $this->preferredPiece->tags->where('type', 'mood')->pluck('name');        
     }
 
     public function tags()
     {
         $tags = [];
 
-        foreach ($this->preferred_piece->tags as $tag) {
-            array_push($tags, $tag->name);
+        if ($this->preferred_Piece) {
+            foreach ($this->preferred_piece->tags as $tag) {
+                array_push($tags, $tag->name);
+            }
         }
 
-        if (! $this->favorites()->exists())
+        if (! $this->favorites()->exists() && $this->preferredLevel)
             array_push($tags, $this->preferredLevel, $this->preferredLevel, $this->preferredLevel, $this->preferredMood);
 
         foreach ($this->favorites as $piece) {
@@ -123,5 +131,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeStats($query)
     {
         return new UserStats($this);
+    }
+
+    public function referralUrl()
+    {
+        $code = '';
+
+        foreach (str_split($this->email) as $letter) {
+            if (ctype_alpha($letter))
+                $code .= ord($letter) - 96;
+        }
+
+        return route('register', ['referral' => $code]);
     }
 }

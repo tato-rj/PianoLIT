@@ -35,6 +35,13 @@ class InfographsController extends Controller
         return view('admin.pages.infographs.topics.index', compact('topics'));
     }
 
+    public function show(Infograph $infograph)
+    {
+        $related = $infograph->related();
+
+        return view('resources.infographs.show', compact(['infograph', 'related']));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -96,7 +103,9 @@ class InfographsController extends Controller
             Admin::notifyAll(new InfographDownload($infograph));
         }
 
-        return \Storage::disk('public')->download($infograph->cover_path);
+        $file = request('size') == 'lg' ? $infograph->cover_path : $infograph->thumbnail_path;
+
+        return \Storage::disk('public')->download($file);
     }
 
     /**
