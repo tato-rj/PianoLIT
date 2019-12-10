@@ -50,7 +50,7 @@ class Infograph extends ShareableContent
             $related->push($topic->infographs()->where('id', '!=', $this->id)->published()->get());
         }
 
-        return $related->flatten()->unique();
+        return $related->flatten()->unique()->shuffle()->take(8);
     }
 
     public function scopeGifts($query)
