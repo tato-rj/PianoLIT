@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Admin;
+use App\Merchandise\Purchase;
 use App\Infograph\{Infograph, Topic};
 use Illuminate\Http\Request;
 use App\Http\Requests\InfographForm;
@@ -100,6 +101,11 @@ class InfographsController extends Controller
     {
         if (traffic()->isRealVisitor()) {
             $infograph->increment('downloads');
+            
+            // TEMPORARY!!!
+            Purchase::create(['user_id' => auth()->user()->id, 'item_id' => $infograph->id, 'item_type' => get_class($infograph)]);
+            // TEMPORATY!!!
+            
             Admin::notifyAll(new InfographDownload($infograph));
         }
 

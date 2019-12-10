@@ -84,6 +84,18 @@ class InfographTest extends AppTest
     }
 
     /** @test */
+    public function a_purchase_is_saved_when_an_infograph_is_downloaded()
+    {
+        $this->signIn();
+
+        $infograph = $this->storeInfograph();
+
+        $this->get(route('infographs.download', $infograph->slug));
+
+        $this->assertEquals(1, $infograph->fresh()->purchases->count());
+    }
+
+    /** @test */
     public function an_infograph_automatically_increments_its_download_count_each_time_it_is_downloaded()
     {
         $this->signIn();

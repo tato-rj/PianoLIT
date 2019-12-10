@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Traits\{HasMembership, Reportable};
+use App\Merchandise\Purchase;
 use App\Stats\User as UserStats;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -48,6 +49,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function views()
     {
         return $this->belongsToMany(Piece::class, 'piece_views', 'user_id', 'piece_id');
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
     }
 
     public function getPreferredPieceAttribute()

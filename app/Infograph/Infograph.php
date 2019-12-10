@@ -3,9 +3,12 @@
 namespace App\Infograph;
 
 use App\{ShareableContent, Admin};
+use App\Traits\Merchandise;
 
 class Infograph extends ShareableContent
 {
+    use Merchandise;
+    
     protected $folder = 'infograph';
     protected $report_by = 'name';
     // protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0, 'piano' => 0, 'history' => 0];
