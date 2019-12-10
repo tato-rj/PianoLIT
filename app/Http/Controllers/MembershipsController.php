@@ -34,11 +34,13 @@ class MembershipsController extends Controller
             return redirect()->back()->with('error', "We found no expired subscriptions.");
 
         foreach ($users as $user) {
-            if (! is_null($user->membership->latest_receipt)) {
-                $request = $user->callApple($user->membership->latest_receipt, $user->membership->password);
+            try {
+                $request = $user->callApple($user->membership->latest_receipt, $user->membership->password);                
+            } catch (\Exception $e) {
+                dd($e);            
+            }
 
-                $user->membership->validate($request);  
-            } 
+            $user->membership->validate($request);   
         }
     
         return redirect()->back()->with('status', "All users have been successfully re-validated.");
