@@ -99,7 +99,7 @@ class InfographsController extends Controller
      */
     public function download(Infograph $infograph)
     {
-        if (traffic()->isRealVisitor()) {
+        // if (traffic()->isRealVisitor()) {
             $infograph->increment('downloads');
             
             // TEMPORARY!!!
@@ -107,7 +107,7 @@ class InfographsController extends Controller
             // TEMPORATY!!!
             
             Admin::notifyAll(new InfographDownload($infograph));
-        }
+        // }
 
         $file = request('size') == 'lg' ? $infograph->cover_path : $infograph->thumbnail_path;
 
