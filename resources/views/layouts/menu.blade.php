@@ -51,7 +51,6 @@
       <li class="nav-item mx-2">
         <a class="nav-link" href="{{route('posts.index')}}">Blog</a>
       </li>
-      @env('local')
       @auth
       <li class="nav-item dropdown mx-2">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -74,11 +73,6 @@
         <a class="nav-link" href="{{route('login')}}">Log in</a>
       </li>
       @endauth
-      @else
-      <li class="nav-item mx-2">
-        <a class="nav-link" href="{{route('youtube')}}" target="_blank">Youtube</a>
-      </li>
-      @endenv
       <li class="nav-item mx-2">
         <button class="nav-link bg-transparent border-0 show-overlay" data-target="#search-overlay"><i class="fas fa-search"></i><span class="ml-2 d-inline-block d-sm-none">Search here</span></button>
       </li>
