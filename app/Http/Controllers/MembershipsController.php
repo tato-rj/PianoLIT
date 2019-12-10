@@ -37,7 +37,7 @@ class MembershipsController extends Controller
             try {
                 $request = $user->callApple($user->membership->latest_receipt, $user->membership->password);                
             } catch (\Exception $e) {
-                dd($e);            
+                dd(' test');            
             }
 
             $user->membership->validate($request);   
