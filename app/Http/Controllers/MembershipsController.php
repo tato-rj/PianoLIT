@@ -34,7 +34,7 @@ class MembershipsController extends Controller
             return redirect()->back()->with('error', "We found no expired subscriptions.");
 
         foreach ($users as $user) {
-            if ($user->membership()->exists()) {
+            if (! is_null($user->membership->latest_receipt)) {
                 $request = $user->callApple($user->membership->latest_receipt, $user->membership->password);
 
                 $user->membership->validate($request);  
