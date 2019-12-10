@@ -40,7 +40,7 @@ class MembershipsController extends Controller
             try {              
                 $user->membership->validate($request);   
             } catch (\Exception $e) {
-                dd($e);
+                dd(get_class_methods($e));
                 return redirect()->back()->with('error', $e['message']);
             }
         }
