@@ -29,7 +29,12 @@
         <div class="alert alert-warning d-flex justify-content-between align-items-center">
           <div><strong><span id="selected-count">3</span> selected</strong></div>
           <div>
-            <button class="btn btn-sm btn-warning">Delete all</button>
+            <form method="POST" action="{{route('admin.users.destroy-many')}}">
+              @csrf
+              @method('DELETE')
+              <input type="hidden" name="ids">
+              <button type="submit" class="btn btn-sm btn-warning">Delete selected</button>
+            </form>
           </div>
         </div>
       </div>
@@ -93,11 +98,18 @@ $('#delete-modal').on('shown.bs.modal', function(e) {
 </script>
 <script type="text/javascript">
 $('.check-user').on('change', function() {
-  let selected = $('.check-user:checked').length;
+  let $selected = $('.check-user:checked');
   let $container = $('#multi-select');
-  console.log(selected);
-  if (selected > 0) {
-    $container.find('#selected-count').text(selected);
+  let ids = [];
+
+  $selected.each(function() {
+    ids.push($(this).attr('data-id'));
+  });
+
+  $('input[name="ids"]').val(JSON.stringify(ids));
+
+  if ($selected.length > 0) {
+    $container.find('#selected-count').text($selected.length);
     $container.show();
   } else {
     $container.hide();

@@ -35,4 +35,13 @@ class UsersController extends Controller
 
         return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted');
     }
+
+    public function destroyMany(Request $request)
+    {        
+        foreach (json_decode($request->ids) as $id) {
+            User::findOrFail($id)->delete();
+        }
+
+        return redirect(route('admin.users.index'))->with('status', 'The users have been successfully deleted');
+    }
 }

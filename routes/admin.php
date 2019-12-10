@@ -198,6 +198,8 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::get('{user}', 'Admin\UsersController@show')->name('show');
 
+	Route::delete('destroy-many', 'Admin\UsersController@destroyMany')->name('destroy-many');
+
 	Route::delete('{user}', 'Admin\UsersController@destroy')->name('destroy');
 
 });

@@ -1,7 +1,7 @@
 <tr>
   <td style="width: 16px">
     <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input check-user" id="check-user-{{$user->id}}">
+      <input type="checkbox" class="custom-control-input check-user" data-id="{{$user->id}}" id="check-user-{{$user->id}}">
       <label class="custom-control-label" for="check-user-{{$user->id}}"></label>
     </div>
   </td>
