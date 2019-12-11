@@ -43,7 +43,7 @@
             <i class="fas fa-caret-down"></i>
           </div>
         </a>
-        <ul class="sidenav-second-level collapse" id="statistics">
+        <ul class="sidenav-second-level collapse" id="statistics" data-parent="#navbarResponsive">
           <li>
             <a class="py-2" href="{{route('admin.stats.users')}}">Users</a>
           </li>
@@ -72,7 +72,7 @@
             <i class="fas fa-caret-down"></i>
           </div>
         </a>
-        <ul class="sidenav-second-level collapse" id="api">
+        <ul class="sidenav-second-level collapse" id="api" data-parent="#navbarResponsive">
           <li>
             <a class="py-2" href="{{route('admin.api.discover')}}">Discover</a>
           </li>
@@ -94,7 +94,7 @@
             <i class="fas fa-caret-down"></i>
           </div>
         </a>
-        <ul class="sidenav-second-level collapse" id="menu-repertoire">
+        <ul class="sidenav-second-level collapse" id="menu-repertoire" data-parent="#navbarResponsive">
           <li>
             <a class="py-2" href="{{route('admin.pieces.index')}}">Pieces</a>
           </li>
@@ -123,7 +123,7 @@
             <i class="fas fa-caret-down"></i>
           </div>
         </a>
-        <ul class="sidenav-second-level collapse" id="blog">
+        <ul class="sidenav-second-level collapse" id="blog" data-parent="#navbarResponsive">
           <li>
             <a class="py-2" href="{{route('admin.posts.index')}}">Posts</a>
           </li>
@@ -149,7 +149,7 @@
             <i class="fas fa-caret-down"></i>
           </div>
         </a>
-        <ul class="sidenav-second-level collapse" id="quiz">
+        <ul class="sidenav-second-level collapse" id="quiz" data-parent="#navbarResponsive">
           <li>
             <a class="py-2" href="{{route('admin.quizzes.index')}}">Quizzes</a>
           </li>
@@ -175,7 +175,7 @@
             <i class="fas fa-caret-down"></i>
           </div>
         </a>
-        <ul class="sidenav-second-level collapse" id="infograph">
+        <ul class="sidenav-second-level collapse" id="infograph" data-parent="#navbarResponsive">
           <li>
             <a class="py-2" href="{{route('admin.infographs.index')}}">Designs</a>
           </li>
@@ -184,20 +184,12 @@
           </li>
         </ul>
       </li>
-
       <li class="nav-item">
         <a class="nav-link" href="{{route('admin.timelines.index')}}">
           <i class="fas fa-list-ul"></i>
           <span class="nav-link-text">Timeline</span>
         </a>
       </li>
-
-{{--       <li class="nav-item d-none d-sm-block">
-        <a class="nav-link" href="{{route('admin.editors.index')}}">
-          <i class="fas fa-pencil-alt fa-fw"></i>
-          <span class="nav-link-text">Editors</span>
-        </a>
-      </li> --}}
       <li class="nav-item">
         <a class="nav-link" href="{{route('admin.users.index')}}">
           <i class="fa fa-fw fa-users"></i>
