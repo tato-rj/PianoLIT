@@ -69,12 +69,12 @@
             <div class="h-100 px-2 py-3">
               <div class="mb-4">
                 <h4 class="mb-1"><strong>Subscribers</strong></h4>
-                <p class="text-muted m-0">Over the past 15 days we've added on average</p>
+                <p class="text-muted m-0">Over the past 15 days we got on average</p>
               </div>
               <div class="text-center">
                 @if($subs)
                 <h1 class="display-2 font-weight-bold m-0">{{$subs}}</h1>
-                <h3 class="m-0">{{$subs == 1 ? 'piece' : 'pieces'}}/day</h3>
+                <h3 class="m-0">{{str_plural('subscriber', $subs)}}/day</h3>
                 @else
                 <h1 class="display-2 font-weight-bold m-0">&#8734;</h1>
                 <h3 class="m-0">Not enough data</h3>
@@ -87,7 +87,7 @@
             <div class="h-100 px-2 py-3">
               <div class="mb-4">
                 <h4 class="mb-1"><strong>Milestone</strong></h4>
-                <p class="text-muted m-0">Time to reach the next goal of <strong class="text-dark">{{$milestone['goal']}} pieces</strong></p>
+                <p class="text-muted m-0">Time to reach the next goal of <strong class="text-dark">{{$milestone['goal']}} subscribers</strong></p>
               </div>
               <div class="text-center">
                 @if(!empty($milestone['days_left']))
