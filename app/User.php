@@ -139,6 +139,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return new UserStats($this);
     }
 
+    public function scopeExclude($query, $ids)
+    {
+        return $query->whereNotIn('id', $ids);
+    }
+    
     public function referralUrl()
     {
         $code = '';

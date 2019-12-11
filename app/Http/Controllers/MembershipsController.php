@@ -28,7 +28,7 @@ class MembershipsController extends Controller
     {
         $this->authorize('validate', Membership::class);
 
-        $users = User::expired();
+        $users = User::exclude([284, 260, 249, 196])->expired();
 
         if ($users->isEmpty())
             return redirect()->back()->with('error', "We found no expired subscriptions.");
