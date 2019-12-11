@@ -111,7 +111,7 @@
                 <h4 class="mb-1"><strong>Our progress</strong></h4>
                 <p class="text-muted">Number of new subscribers per day over the past 30 days</p>
               </div>
-              <canvas id="line-chart" class="w-100" height="300" data-records="{{$stats->progress(15)}}"></canvas>
+              <canvas id="line-chart" class="w-100" height="300" data-records="{{$stats->progress(30)}}"></canvas>
             </div>
           </div>
       </div>
