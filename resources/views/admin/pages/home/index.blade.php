@@ -65,15 +65,16 @@
   
         <div class="col-lg-6 col-md-6 col-12 row no-gutters">
           <div class="col-lg-6 col-xs-12">
+            @php($subs = $stats->average(15))
             <div class="h-100 px-2 py-3">
               <div class="mb-4">
-                <h4 class="mb-1"><strong>Consistency</strong></h4>
+                <h4 class="mb-1"><strong>Subscribers</strong></h4>
                 <p class="text-muted m-0">Over the past 15 days we've added on average</p>
               </div>
               <div class="text-center">
-                @if($pieces_avg)
-                <h1 class="display-2 font-weight-bold m-0">{{$pieces_avg}}</h1>
-                <h3 class="m-0">{{$pieces_avg == 1 ? 'piece' : 'pieces'}}/day</h3>
+                @if($subs)
+                <h1 class="display-2 font-weight-bold m-0">{{$subs}}</h1>
+                <h3 class="m-0">{{$subs == 1 ? 'piece' : 'pieces'}}/day</h3>
                 @else
                 <h1 class="display-2 font-weight-bold m-0">&#8734;</h1>
                 <h3 class="m-0">Not enough data</h3>
@@ -82,6 +83,7 @@
             </div>
           </div>
           <div class="col-lg-6 col-xs-12">
+            @php($milestone = $stats->milestone($subs))
             <div class="h-100 px-2 py-3">
               <div class="mb-4">
                 <h4 class="mb-1"><strong>Milestone</strong></h4>
@@ -107,9 +109,9 @@
             <div class="border py-4 px-3">
               <div class="ml-2 mb-4">
                 <h4 class="mb-1"><strong>Our progress</strong></h4>
-                <p class="text-muted">Number of pieces added per day over the past 15 days</p>
+                <p class="text-muted">Number of new subscribers per day over the past 30 days</p>
               </div>
-              <canvas id="pieces_graph" class="w-100" height="300" data-records="{{$pieces_graph}}"></canvas>
+              <canvas id="line-chart" class="w-100" height="300" data-records="{{$stats->progress(15)}}"></canvas>
             </div>
           </div>
       </div>
@@ -133,24 +135,22 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
-let piecesChartElement = document.getElementById("pieces_graph").getContext('2d');
-let piecesData = JSON.parse($('#pieces_graph').attr('data-records'));
+let graph = document.getElementById("line-chart").getContext('2d');
+let graphData = JSON.parse($('#line-chart').attr('data-records'));
 let labels = [];
 let data = [];
 
-for (var i=0; i < piecesData.length; i++) {
-  labels.push(piecesData[i].month + '/' + piecesData[i].day);
-  data.push(piecesData[i].count);
+for (var i=0; i < graphData.length; i++) {
+  labels.push(graphData[i].month + '/' + graphData[i].day);
+  data.push(graphData[i].count);
 }
 
-console.log(labels);
-console.log(data);
-let piecesGraph = new Chart(piecesChartElement, {
+let piecesGraph = new Chart(graph, {
     type: 'line',
     data: {
       labels: labels,
       datasets: [{
-        label: 'New pieces',
+        label: 'New subscribers',
         borderColor: '#1876f6',
         data: data,
         fill: false,

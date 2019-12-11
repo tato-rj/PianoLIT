@@ -29,12 +29,9 @@ class AdminsController extends Controller
         $birthdays = Composer::bornToday()->get();
         $deathdays = Composer::diedToday()->get();
 
-        $stats = new Stats;
-        $pieces_graph = $stats->progress(15);
-        $pieces_avg = $stats->average(15);
-        $milestone = $stats->milestone($pieces_avg);
+        $stats = (new Stats)->model(Subscription::class);
 
-        return view('admin.pages.home.index', compact('pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'pieces_graph', 'pieces_avg', 'milestone', 'birthdays', 'deathdays'));
+        return view('admin.pages.home.index', compact('pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays'));
     }
 
     public function notifications()
