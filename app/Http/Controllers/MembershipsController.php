@@ -40,7 +40,6 @@ class MembershipsController extends Controller
             try {              
                 $user->membership->validate($request);   
             } catch (\Exception $e) {
-                dd($user);
                 return redirect()->back()->with('error', $e->getMessage());
             }
         }

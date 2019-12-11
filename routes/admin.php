@@ -10,7 +10,6 @@ Route::resources([
     'tags' => 'TagsController',
     'topics' => 'TopicsController',
     'editors' => 'EditorsController',
-    // 'users' => 'UsersController',
     'timelines' => 'TimelinesController',
     'pianists' => 'PianistsController',
     'playlists' => 'PlaylistsController'
@@ -20,7 +19,11 @@ Route::patch('composers/{composer}/toggle-famous', 'ComposersController@toggleFa
 
 Route::prefix('notifications')->name('notifications.')->group(function() {
 
+	Route::get('', 'AdminsController@notifications')->name('index');
+
 	Route::get('read', 'NotificationsController@read')->name('read');
+
+	Route::get('unread', 'NotificationsController@unread')->name('unread');
 
 });
 

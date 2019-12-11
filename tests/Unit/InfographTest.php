@@ -24,8 +24,8 @@ class InfographTest extends AppTest
 	/** @test */
 	public function it_has_many_downloads()
 	{
-		Purchase::create(['user_id' => $this->user->id, 'item_id' => $this->infograph->id, 'item_type' => get_class($this->infograph)]);
-
+		$this->user->purchase($this->infograph);
+		
 		$this->assertInstanceOf(Purchase::class, $this->infograph->purchases->first());
 	}
 }

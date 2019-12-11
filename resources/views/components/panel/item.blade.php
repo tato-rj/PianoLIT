@@ -1,5 +1,5 @@
 <a href="{{route('admin.notifications.read', [
-	'ids' => json_encode($notifications->pluck('id')),
+	'ids' => $notifications->pluck('id')->toArray(),
 	'url' => $notifications[0]->data['url']])}}" 
 	class="list-group-item list-group-item-action border-0 rounded-0 cursor-pointer notification-item">
 	<div class="mb-1"><span class="badge badge-light border">{{strtolower($notifications[0]->data['title'])}}</span></div>

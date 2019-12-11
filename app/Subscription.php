@@ -86,7 +86,7 @@ class Subscription extends PianoLit
     		return $record->first()->reactivateAll();
 
         $subscriber = $this->create([
-            'email' => $form->email,
+            'email' => strtolower($form->email),
             'origin_url' => $form->origin_url
         ]);
 

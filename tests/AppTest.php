@@ -79,6 +79,11 @@ class AppTest extends TestCase
         return $this->actingAs($admin, $guard);
     }
 
+    protected function logout()
+    {
+        \Auth::logout();
+    }
+
     public function subscribe($email = null, $bot = null, $wait = true)
     {
         return $this->post(route('subscriptions.store'), [

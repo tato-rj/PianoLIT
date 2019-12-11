@@ -9,13 +9,30 @@ class NotificationsController extends Controller
     public function read(Request $request)
     {
     	if ($request->has('ids')) {
-    		foreach (json_decode($request->ids) as $id) {
+    		foreach ($request->ids as $id) {
 		    	auth()->user()->notifications()->find($id)->markAsRead();
     		}
     	} else {
-	    	auth()->user()->notifications->markAsRead();
+	    	auth()->user()->notifications()->update(['read_at' => now()]);
     	}
 
+        if ($request->wantsJson())
+            return response(200);
+
     	return redirect()->to($request->url);
+    }
+
+    public function unread(Request $request)
+    {
+        if ($request->has('ids')) {
+            foreach ($request->ids as $id) {
+                auth()->user()->notifications()->find($id)->update(['read_at' => null]);
+            }
+        }
+
+        if ($request->wantsJson())
+            return response(200);
+
+        return redirect()->to($request->url); 
     }
 }

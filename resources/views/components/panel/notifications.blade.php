@@ -9,6 +9,11 @@
 					<span class="mb-1" aria-hidden="true">&times;</span>
 				</button>
 			</div>
+			@if(auth()->user()->hasNewNotifications())
+			<div class="">
+				<a href="{{route('admin.notifications.read', ['url' => url()->current()])}}"><small>Mark all as read</small></a>
+			</div>
+			@endif
 		</div>
 
 		<div class="panel-body px-4 py-3" style="overflow-y: auto; height: 85%;">
@@ -20,12 +25,10 @@
 				@endforelse
 			</div>
 		</div>
-		@if(auth()->user()->hasNewNotifications())
 		<div class="panel-footer bg-light px-4 py-3 position-absolute w-100" style="left: 0; bottom: 0;">
 			<div class="text-center">
-				<a href="{{route('admin.notifications.read', ['url' => url()->current()])}}"><small>Mark all as read</small></a>
+				<a href="{{route('admin.notifications.index')}}"><small>See all</small></a>
 			</div>
 		</div>
-		@endif
 	</div>
 </div>

@@ -37,6 +37,11 @@ class AdminsController extends Controller
         return view('admin.pages.home.index', compact('pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'pieces_graph', 'pieces_avg', 'milestone', 'birthdays', 'deathdays'));
     }
 
+    public function notifications()
+    {
+        return view('admin.pages.notifications.index');
+    }
+
     /**
      * Display the blog page.
      *

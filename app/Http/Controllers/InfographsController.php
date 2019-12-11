@@ -101,10 +101,8 @@ class InfographsController extends Controller
     {
         if (traffic()->isRealVisitor()) {
             $infograph->increment('downloads');
-            
-            // TEMPORARY!!!
-            Purchase::create(['user_id' => auth()->user()->id, 'item_id' => $infograph->id, 'item_type' => get_class($infograph)]);
-            // TEMPORATY!!!
+
+            auth()->user()->purchase($infograph);
             
             Admin::notifyAll(new InfographDownload($infograph));
         }

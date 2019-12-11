@@ -4,6 +4,8 @@ namespace Tests\Unit;
 
 use App\{Membership, Piece, Subscription};
 use Tests\AppTest;
+use App\Merchandise\Purchase;
+use App\Infograph\Infograph;
 
 class UserTest extends AppTest
 {
@@ -31,5 +33,14 @@ class UserTest extends AppTest
 		create(Subscription::class, ['email' => $this->user->email]);
 
 		$this->assertInstanceOf(Subscription::class, $this->user->subscription); 
+	}
+
+	/** @test */
+	public function it_has_many_purchases()
+	{
+		$this->user->purchase($this->infograph);
+
+		$this->assertInstanceOf(Purchase::class, $this->user->purchases->first());
+		$this->assertInstanceOf(Infograph::class, $this->user->purchases->first()->item);
 	}
 }

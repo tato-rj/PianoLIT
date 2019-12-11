@@ -3,15 +3,12 @@
 namespace App\Infograph;
 
 use App\{ShareableContent, Admin};
-use App\Traits\Merchandise;
+use App\Contracts\Merchandise;
 
-class Infograph extends ShareableContent
-{
-    use Merchandise;
-    
+class Infograph extends ShareableContent implements Merchandise
+{    
     protected $folder = 'infograph';
     protected $report_by = 'name';
-    // protected $types = ['composers' => 0, 'theory' => 0, 'curiosity' => 0, 'quotes' => 0, 'piano' => 0, 'history' => 0];
 
     protected static function boot()
     {
@@ -28,23 +25,11 @@ class Infograph extends ShareableContent
         return $this->belongsToMany(Topic::class, 'infograph_infograph_topic');
     }
 
-    // public function scopeTypes($query)
-    // {
-    //     $records = $query->published()->selectRaw('type, count(*) count')->groupBy('type')->get()->toArray();
+    public function purchases()
+    {
+        return $this->morphMany('App\Merchandise\Purchase', 'item');
+    }
 
-    //     foreach ($this->types as $type => $count) {
-    //         foreach ($records as $record) {
-    //             if ($type == $record['type'])
-    //                 $this->types[$type] = $record['count'];
-    //         }
-                
-    //     }
-
-    // 	ksort($this->types);
-
-    //     return $this->types;
-    // }
-    
     public function related()
     {
         $related = collect();
