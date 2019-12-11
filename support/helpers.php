@@ -296,7 +296,7 @@ function gradient($color)
 
 function catalogues()
 {
-	$catalogues = ['Op.', 'KV', 'K', 'H', 'D', 'Hob', 'BWV', 'WoO', 'Op. posth.', 'Anh', 'Sz', 'S', 'L'];
+	$catalogues = ['Op.', 'B', 'KV', 'K', 'H', 'D', 'Hob', 'BWV', 'WoO', 'Op. posth.', 'Anh', 'Sz', 'S', 'L'];
 	
 	sort($catalogues);
 
