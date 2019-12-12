@@ -25,6 +25,8 @@ class CreateUsersTable extends Migration
             $table->string('age_range')->nullable();
             $table->string('experience')->nullable();
 
+            $table->string('gender')->nullable();
+
             $table->string('origin')->nullable();
             $table->string('locale')->default('en_US');
 

@@ -100,6 +100,7 @@ class RegisterController extends Controller
             'preferred_piece_id' => array_key_exists('preferred_piece_id', $data) ? $data['preferred_piece_id'] : null,
             'occupation' => array_key_exists('occupation', $data) ? strtolower($data['occupation']) : null,
             'origin' => $data['origin'],
+            'gender' => gender($data['first_name'])
         ]);
     }
 

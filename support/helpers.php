@@ -1,10 +1,21 @@
 <?php
 
-function array_infinite($array, $key) {
+function gender($name)
+{
+	try {
+		return \Genderize::name($name)->get()->result[0]->gender;
+	} catch (\Exception $e) {
+		return null;
+	}
+}
+
+function array_infinite($array, $key)
+{
 	return $array[intval(fmod($key,count($array)))];
 }
 
-function rm_whitespaces($string) {
+function rm_whitespaces($string)
+{
 	return preg_replace('/\s+/', ' ',$string);
 }
 
