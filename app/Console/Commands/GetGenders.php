@@ -37,7 +37,7 @@ class GetGenders extends Command
      */
     public function handle()
     {
-        $this->info(\Genderize::name('John')->get()->result[0]->gender);
+        $this->info(\Pixelpeter\Genderize\Facades\Genderize::name('John')->get()->result[0]->gender);
         // foreach (\App\User::all() as $user) {
         //     $user->update(['gender' => gender($user->first_name)]);
         //     $this->info($user->first_name . ' is ' . $user->gender . '!');
