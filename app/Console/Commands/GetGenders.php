@@ -39,6 +39,8 @@ class GetGenders extends Command
     {
         foreach (\App\User::all() as $user) {
             $user->update(['gender' => gender($user->first_name)]);
+            $this->info($user->first_name . ' is ' . $user->gender . '!');
         }
+
     }
 }
