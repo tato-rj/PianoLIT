@@ -38,5 +38,6 @@ mix.js('resources/js/app.js', 'public/js')
     .copyDirectory('resources/js/components', 'public/js/components')
     .copyDirectory('resources/js/tinyeditor', 'public/js/tinyeditor')
     .copyDirectory('resources/images', 'public/images')
+    .copyDirectory('resources/fonts', 'public/fonts')
     .version();
 

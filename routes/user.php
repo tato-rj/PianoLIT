@@ -1,5 +1,9 @@
 <?php
 
+Route::resources([
+    'studio-policies' => 'StudioPoliciesController',
+]);
+
 Route::get('my-profile', 'UsersController@profile')->name('profile');
 
 Route::get('invite-friends', 'UsersController@invite')->name('invite');

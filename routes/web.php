@@ -124,6 +124,14 @@ Route::prefix('tools')->name('tools.')->group(function() {
 
 	});
 
+	Route::prefix('studio-policy')->name('studio-policy.')->group(function() {
+
+		Route::get('', 'StudioPoliciesController@index')->name('index');
+
+		Route::get('create', 'StudioPoliciesController@create')->middleware('auth:web')->name('create');
+
+	});
+
 });
 
 Route::prefix('blog')->name('posts.')->group(function() {

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\{Membership, Piece, Subscription};
+use App\{Membership, Piece, Subscription, StudioPolicy};
 use Tests\AppTest;
 use App\Merchandise\Purchase;
 use App\Infograph\Infograph;
@@ -33,6 +33,14 @@ class UserTest extends AppTest
 		create(Subscription::class, ['email' => $this->user->email]);
 
 		$this->assertInstanceOf(Subscription::class, $this->user->subscription); 
+	}
+
+	/** @test */
+	public function it_has_many_studio_policies()
+	{
+		create(StudioPolicy::class, ['user_id' => $this->user->id]);
+
+		$this->assertInstanceOf(StudioPolicy::class, $this->user->studioPolicies->first()); 
 	}
 
 	/** @test */

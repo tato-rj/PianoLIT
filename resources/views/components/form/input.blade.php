@@ -12,7 +12,12 @@
 		maxlength="{{$limit}}"
 		@endif
 		placeholder="{{$placeholder ?? snake_str($name)}}" 
-		value="{{$value ?? old($name)}}">
+		@if(old($name))
+		value="{{old($name)}}"
+		@else
+		value="{{$value ?? null}}"
+		@endif
+	>
 
 	@include('components/form/error', ['bag' => $bag, 'field' => $name])
 </div>

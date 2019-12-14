@@ -1,6 +1,6 @@
 <?php
 
-use App\{User, Admin, Membership, Subscription};
+use App\{User, Admin, Membership, Subscription, StudioPolicy};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -54,5 +54,15 @@ $factory->define(Membership::class, function (Faker $faker) {
         'password' => \Hash::make('secret'),
         'latest_receipt_info' => '',
         'renews_at' => now()->copy()->addMonth()
+    ];
+});
+
+$factory->define(StudioPolicy::class, function (Faker $faker) {
+    return [
+        'user_id' => function() {
+            return create(User::class)->id;
+        },
+        'data' => json_encode(['foo' => 'bar']),
+        'theme' => 'default'
     ];
 });
