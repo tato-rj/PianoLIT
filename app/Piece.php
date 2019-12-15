@@ -340,4 +340,16 @@ class Piece extends PianoLit
 
         return $similar;
     }
+
+    public function uploadCoverImage(Request $request)
+    {
+        if ($request->hasFile('cover_image')) {
+            if ($this->cover_path)
+                \Storage::disk('public')->delete([$this->cover_path, $this->thumbnail_path]);
+         
+            $this->update([
+                'cover_image' => (new Cropper($request, $crop = true))->make('cover_image')->saveTo($this->folder . '/cover_images/')->getPath()
+            ]);
+        }
+    }
 }

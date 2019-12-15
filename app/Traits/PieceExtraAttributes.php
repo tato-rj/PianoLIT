@@ -133,17 +133,17 @@ trait PieceExtraAttributes
             [
                 'title' => 'Performance',
                 'description' => null,
-                'url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
+                'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
             ],
             [
                 'title' => 'Tutorial',
                 'description' => 'Balance between right and left hand',
-                'url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
+                'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
             ],
             [
                 'title' => 'Tutorial',
                 'description' => 'Tips to get a full and rich tone',
-                'url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
+                'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
             ]
         ];
 
