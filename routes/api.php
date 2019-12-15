@@ -56,6 +56,16 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	});
 
+	Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function() {
+
+		Route::get('', 'TutorialRequestsController@index')->name('index');
+
+		Route::post('', 'TutorialRequestsController@store')->name('store');
+
+		Route::delete('/cancel', 'TutorialRequestsController@destroy')->name('destroy');
+
+	});
+
 	Route::post('', 'Auth\RegisterController@register')->name('store');
 
 	Route::post('/login', 'UsersController@appLogin')->name('login');

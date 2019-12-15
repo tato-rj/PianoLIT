@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\{Admin, Composer, Country, Tag, Playlist, Piece, PieceView};
+use App\{Admin, Composer, Country, Tag, Playlist, Piece, PieceView, TutorialRequest};
 use Tests\Traits\ManageDatabase;
 use Tests\AppTest;
 
@@ -45,6 +45,14 @@ class PieceTest extends AppTest
 	{
 		$this->assertInstanceOf(Playlist::class, $this->piece->playlists()->first());
 	}
+
+    /** @test */
+    public function it_has_many_tutorial_requests()
+    {
+        create(TutorialRequest::class, ['piece_id' => $this->piece->id]);
+
+        $this->assertInstanceOf(TutorialRequest::class, $this->piece->tutorialRequests->first());         
+    }
 
 	/** @test */
 	public function it_has_a_level_a_length_and_a_period()

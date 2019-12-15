@@ -65,4 +65,9 @@ class Composer extends Person
     {
         return storage($this->cover_path);
     }
+
+    public function getBackgroundAttribute()
+    {
+        return storage($this->cover_path);
+    }
 }

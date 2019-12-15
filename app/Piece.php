@@ -25,6 +25,11 @@ class Piece extends PianoLit
         });
     }
 
+    public function tutorialRequests()
+    {
+        return $this->hasMany(TutorialRequest::class);
+    }
+
     public function cloudUrlFor($name)
     {
         $url = null;

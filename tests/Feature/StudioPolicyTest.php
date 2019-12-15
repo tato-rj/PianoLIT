@@ -21,7 +21,7 @@ class StudioPolicyTest extends AppTest
 
         $data = ['name' => auth()->user()->full_name];
 
-        $this->post(route('users.studio-policies.store'), ['data' => $data]);
+        $this->post(route('users.studio-policies.store'), $data);
 
         $this->assertDatabaseHas('studio_policies', ['data' => json_encode($data)]);
     }
@@ -33,7 +33,7 @@ class StudioPolicyTest extends AppTest
 
         $data = ['name' => 'New name'];
 
-        $this->patch(route('users.studio-policies.update', $this->studio_policy->id), ['data' => $data]);
+        $this->patch(route('users.studio-policies.update', $this->studio_policy->id), $data);
 
         $this->assertDatabaseHas('studio_policies', ['data' => json_encode($data)]);
     }
@@ -59,7 +59,7 @@ class StudioPolicyTest extends AppTest
 
         $data = ['name' => 'New name'];
 
-        $this->patch(route('users.studio-policies.update', create(StudioPolicy::class)->id), ['data' => $data]);
+        $this->patch(route('users.studio-policies.update', create(StudioPolicy::class)->id), $data);
     }
 
     /** @test */

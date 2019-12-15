@@ -59,7 +59,22 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function studioPolicies()
     {
-        return $this->hasMany(studioPolicy::class);
+        return $this->hasMany(StudioPolicy::class);
+    }
+
+    public function tutorialRequests()
+    {
+        return $this->hasMany(TutorialRequest::class);
+    }
+
+    public function pendingTutorialRequests()
+    {
+        return $this->tutorialRequests()->whereNull('published_at');
+    }
+
+    public function publishedTutorialRequests()
+    {
+        return $this->tutorialRequests()->whereNotNull('published_at');
     }
 
     public function purchasesOf(Merchandise $item)

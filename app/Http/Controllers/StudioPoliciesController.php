@@ -35,31 +35,31 @@ class StudioPoliciesController extends Controller
      */
     public function store(Request $request)
     {
-        $data = [
-            'name' => $request->name,
-            'start_month' => $request->start_month,
-            'end_month' => $request->end_month,
-            'years' => [$request->start_year, $request->end_year],
-            'vacation_weeks' => 2,
-            'makeup_weeks' => 3,
-            'group_classes' => 3,
-            'student_agreement' => true,
-            'absence_notice' => 48,
-        ];
+        // $data = [
+        //     'name' => $request->name,
+        //     'start_month' => $request->start_month,
+        //     'end_month' => $request->end_month,
+        //     'years' => [$request->start_year, $request->end_year],
+        //     'vacation_weeks' => 2,
+        //     'makeup_weeks' => 3,
+        //     'group_classes' => 3,
+        //     'student_agreement' => true,
+        //     'absence_notice' => 48,
+        // ];
         
-        $pdf = \PDF::loadView('pdf.agreement.index', compact('data'));
+        // $pdf = \PDF::loadView('pdf.agreement.index', compact('data'));
 
-        return $pdf->download('my-policy.pdf');
+        // return $pdf->download('my-policy.pdf');
 
         // $request->validate(['data' => 'required']);
 
-        // StudioPolicy::create([
-        //     'user_id' => auth()->user()->id,
-        //     'data' => json_encode($request->except('_token')),
-        //     'theme' => $request->theme ?? 'default'
-        // ]);
+        StudioPolicy::create([
+            'user_id' => auth()->user()->id,
+            'data' => json_encode($request->except('_token')),
+            'theme' => $request->theme ?? 'default'
+        ]);
 
-        // return back()->with('status', 'Your studio policy has been successfully created!');
+        return back()->with('status', 'Your studio policy has been successfully created!');
     }
 
     /**

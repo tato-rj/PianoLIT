@@ -1,6 +1,6 @@
 <?php
 
-use App\{User, Admin, Membership, Subscription, StudioPolicy};
+use App\{User, Admin, Membership, Subscription, StudioPolicy, TutorialRequest, Piece};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -64,5 +64,16 @@ $factory->define(StudioPolicy::class, function (Faker $faker) {
         },
         'data' => json_encode(['foo' => 'bar']),
         'theme' => 'default'
+    ];
+});
+
+$factory->define(TutorialRequest::class, function (Faker $faker) {
+    return [
+        'user_id' => function() {
+            return create(User::class)->id;
+        },
+        'piece_id' => function() {
+            return create(Piece::class)->id;
+        },
     ];
 });
