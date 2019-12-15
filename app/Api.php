@@ -186,7 +186,6 @@ class Api
             $model->composer->setAttribute('short_name', $model->composer->short_name);
             $model->composer->setAttribute('born_at', $model->composer->born_at);
             $model->composer->setAttribute('died_at', $model->composer->died_at);
-            $model->composer->setAttribute('cover_image', storage($model->composer->cover_path));
         
         } else if ($classname == 'App\Composer') {
         

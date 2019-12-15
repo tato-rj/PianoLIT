@@ -122,12 +122,14 @@ trait PieceExtraAttributes
     {
         $videos = unserialize($this->videos);
 
-        if (!$videos)
+        if (! $videos)
             return null;
         
         foreach ($videos as $index => $video) {
             $videos[$index] = $this->googleCloud . str_slug($this->composer->name) . '/' . $video . '.mp4';
         }
+
+        $videos = ['test'];
 
         return $videos;
     }
