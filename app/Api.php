@@ -15,7 +15,7 @@ class Api
     public function __construct()
     {
         $this->colors = [null, 'yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', 'green'];
-        $this->limit = mt_rand(12,18);
+        $this->limit = mt_rand(6,10);
     }
 
     public function latest($title)
