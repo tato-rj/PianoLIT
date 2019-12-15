@@ -14,7 +14,7 @@ class Api
 
     public function __construct()
     {
-        $this->colors = ['yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', 'green'];
+        $this->colors = [null, 'yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', 'green'];
         $this->limit = mt_rand(12,18);
     }
 
