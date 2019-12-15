@@ -132,7 +132,7 @@ trait PieceExtraAttributes
         $videos = [
             [
                 'title' => 'Performance',
-                'description' => null,
+                'description' => 'Full length performance of the piece',
                 'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
             ],
             [
