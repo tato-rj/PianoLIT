@@ -135,6 +135,8 @@ class PiecesController extends Controller
 
         $piece->tags()->attach(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
+        $piece->uploadCoverImage($request);
+
         return redirect()->back()->with('status', "The piece has been successfully added!");
     }
 
@@ -224,6 +226,8 @@ class PiecesController extends Controller
         ]);
 
         $piece->tags()->sync(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
+
+        $piece->uploadCoverImage($request);
 
         $file_fields = ['audio_path', 'audio_path_rh', 'audio_path_lh', 'score_path'];
 

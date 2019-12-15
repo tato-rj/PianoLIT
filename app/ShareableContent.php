@@ -56,7 +56,7 @@ abstract class ShareableContent extends PianoLit
                 \Storage::disk('public')->delete([$this->cover_path, $this->thumbnail_path]);
          
             $this->update([
-                'cover_path' => (new Cropper($request, $crop))->withThumbnail()->make('cover_image')->saveTo($this->folder . '/cover_images/')->getPath()
+                'cover_path' => (new Cropper($request, $crop))->withThumbnail()->make('cover_image')->saveTo("$this->folder/cover_images/$this->id/")->getPath()
             ]);
         }
     }

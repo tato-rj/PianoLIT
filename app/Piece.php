@@ -10,6 +10,7 @@ class Piece extends PianoLit
     use PieceExtraAttributes, PieceStatus;
     
     protected $googleCloud = 'https://storage.googleapis.com/pianolit-app/videos/';
+    protected $folder = 'pieces';
     protected $with = ['composer', 'tags', 'views'];
     protected $withCount = ['views', 'tags'];
     protected $appends = ['long_name', 'medium_name', 'recordingsAvailable', 'is_public_domain', 'level_name', 'timeline_url', 'period_name', 'rankings'];
@@ -348,7 +349,7 @@ class Piece extends PianoLit
                 \Storage::disk('public')->delete([$this->cover_path, $this->thumbnail_path]);
          
             $this->update([
-                'cover_image' => (new Cropper($request, $crop = true))->make('cover_image')->saveTo($this->folder . '/cover_images/')->getPath()
+                'cover_path' => (new Cropper($request, $crop = true))->make('cover_image')->saveTo("$this->folder/cover_images/$this->id/")->getPath()
             ]);
         }
     }

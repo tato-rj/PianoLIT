@@ -74,7 +74,6 @@
   cancelButton: '#cancel-button',
   submitButton: 'button[type="submit"]'
 })).create();
-
 </script>
 <script type="text/javascript">
 /////////////////

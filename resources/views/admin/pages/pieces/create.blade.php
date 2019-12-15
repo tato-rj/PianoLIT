@@ -214,13 +214,6 @@
               </div>
             </div>
           </div>
-  {{--         <div class="form-group">
-            <select class="form-control {{$errors->has('performer_id') ? 'is-invalid' : ''}}" name="performer_id" >
-              <option class="default" selected disabled>Performer</option>
-              <option>PianoLIT</option>
-            </select>
-            @include('admin.components.feedback', ['field' => 'key'])
-          </div> --}}
           @endmanager
           {{-- Tags --}}
           <hr class="my-4">
@@ -254,6 +247,9 @@
         </form>
       </div>
       <div class="col-lg-6 col-md-8 col-12">
+  
+        @image(['name' => 'cover_image', 'image' => asset('images/misc/placeholder-image.png'), 'empty' => true])
+
         <div class="">
           <div class="mb-4 pb-3 border-bottom">
             <p class="text-muted m-0"><strong>From the database</strong></p>
@@ -278,6 +274,16 @@
 <script type="text/javascript" src="{{asset('js/vendor/jquery.ba-throttle-debounce.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/vendor/lookup.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.js"></script>
+<script type="text/javascript">
+(new SimpleCropper({
+  imageInput: 'input#image-input',
+  uploadButton: '#upload-button',
+  confirmButton: '#confirm-button',
+  cancelButton: '#cancel-button',
+  submitButton: 'button[type="submit"]'
+})).create();
+</script>
 <script type="text/javascript">
 // $(document).on('click', '.youtube-to-mp3', function(event) {
 //   event.preventDefault();
@@ -291,6 +297,7 @@
 // });
 </script>
 <script type="text/javascript">
+
   $('input[name="alerts[]"]').on('click', function() {
     let alerts = [];
     let $alertsContainer = $('#alerts-container');
