@@ -129,23 +129,23 @@ trait PieceExtraAttributes
             $videos[$index] = $this->googleCloud . str_slug($this->composer->name) . '/' . $video . '.mp4';
         }
 
-        $videos = [
-            [
-                'title' => 'Performance',
-                'description' => 'Full length performance of the piece',
-                'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
-            ],
-            [
-                'title' => 'Tutorial',
-                'description' => 'Balance between right and left hand',
-                'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
-            ],
-            [
-                'title' => 'Tutorial',
-                'description' => 'Tips to get a full and rich tone',
-                'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
-            ]
-        ];
+        // $videos = [
+        //     [
+        //         'title' => 'Performance',
+        //         'description' => 'Full length performance of the piece',
+        //         'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
+        //     ],
+        //     [
+        //         'title' => 'Tutorial',
+        //         'description' => 'Balance between right and left hand',
+        //         'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
+        //     ],
+        //     [
+        //         'title' => 'Tutorial',
+        //         'description' => 'Tips to get a full and rich tone',
+        //         'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
+        //     ]
+        // ];
 
         return $videos;
     }

@@ -15,15 +15,16 @@ class ApiController extends Controller
     public function discover($pieces = null, $inputArray = null)
     {        
         $collection = collect([
-            $this->api->order(0)->composers('Composers'),
-            $this->api->order(1)->latest('Latest pieces'),
-            $this->api->order(2)->women('From women composers'),
-            $this->api->order(3)->levels('Levels'),
-            $this->api->order(4)->ranking('rcm', 'Equivalent to the RCM levels'),
-            $this->api->order(5)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
-            $this->api->order(6)->improve('Improve your'),
-            $this->api->order(7)->tag('Pieces that are'),
-            $this->api->order(8)->periods('Periods'),
+            $this->api->order(0)->free('Free weekly pick'),
+            $this->api->order(1)->composers('Composers'),
+            $this->api->order(2)->latest('Latest pieces'),
+            $this->api->order(3)->women('From women composers'),
+            $this->api->order(4)->levels('Levels'),
+            $this->api->order(5)->ranking('rcm', 'Equivalent to the RCM levels'),
+            $this->api->order(6)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
+            $this->api->order(7)->improve('Improve your'),
+            $this->api->order(8)->tag('Pieces that are'),
+            $this->api->order(9)->periods('Periods'),
         ]);
 
         if (request()->wantsJson() || request()->has('api'))

@@ -17,6 +17,15 @@ class Api
         $this->colors = [null, 'yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', 'green'];
         $this->limit = mt_rand(6,10);
     }
+    
+    public function free($title)
+    {
+        $collection = Piece::free()->exists() ? [Piece::free()->first()] : [Piece::first()];
+
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+
+        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title]);
+    }
 
     public function latest($title)
     {

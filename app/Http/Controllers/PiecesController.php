@@ -135,8 +135,6 @@ class PiecesController extends Controller
 
         $piece->tags()->attach(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
-        $piece->uploadCoverImage($request);
-
         return redirect()->back()->with('status', "The piece has been successfully added!");
     }
 

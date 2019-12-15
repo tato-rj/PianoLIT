@@ -35,6 +35,7 @@ class CreatePiecesTable extends Migration
             $table->string('score_publisher')->nullable();
             $table->string('score_copyright')->nullable();
             $table->string('cover_image')->nullable();
+            $table->boolean('is_free')->default(false);
             $table->unsignedInteger('composer_id');
             $table->unsignedInteger('composed_in')->nullable();
             $table->unsignedInteger('published_in')->nullable();

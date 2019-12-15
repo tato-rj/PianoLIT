@@ -8,6 +8,7 @@ class SimpleCropper
 		this.$cancelButton = $(params.cancelButton);
 		this.$submitButton = $(params.submitButton);
 		this.defaultImage = this.$image.attr('src');
+		this.ratio = params.hasOwnProperty('ratio') ? params.ratio : 16/9;
 
 		this._createInputs();
 	}
@@ -95,10 +96,11 @@ class SimpleCropper
 	}
 
 	_enableCropper() {
+		let obj = this;
 		let image = document.getElementById('image');
 
 		this.cropper = new Cropper(image, {
-			aspectRatio: 16 / 9,
+			aspectRatio: obj.ratio,
 			viewMode: 1,
 			movable: false,
 			scalable: false,

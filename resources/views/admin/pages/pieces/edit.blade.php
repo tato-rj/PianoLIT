@@ -1,5 +1,12 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.css">
+<style type="text/css">
+.image-container canvas { width: 100% !important; }
+</style>
+@endsection
+
 @section('content')
 
 <div class="content-wrapper">
@@ -229,6 +236,9 @@
         </div>
 
         <div class="col-lg-6 col-sm-10 col-12 mx-auto">
+
+            @image(['name' => null, 'image' => $piece->cover_image() ?? asset('images/misc/placeholder-image-wide.png'), 'empty' => true])
+          
             {{-- Tags --}}
             <div class="rounded bg-light px-3 py-2 mb-3">
               <p class="text-brand border-bottom pb-1 mb-1"><strong>TAGS</strong></p>
@@ -295,6 +305,22 @@
 @endsection
 
 @section('scripts')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.js"></script>
+
+<script type="text/javascript">
+(new SimpleCropper({
+  ratio: 25/13,
+  imageInput: 'input#image-input',
+  uploadButton: '#upload-button',
+  confirmButton: '#confirm-button',
+  cancelButton: '#cancel-button',
+  submitButton: 'button[type="submit"]'
+})).create();
+
+$('#image-input').on('change', function() {
+  $(this).attr('name', 'cover_image');
+});
+</script>
 <script type="text/javascript">
 // $(document).on('click', '.youtube-to-mp3', function(event) {
 //   event.preventDefault();

@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Builder;
 use App\Traits\{PieceExtraAttributes, PieceStatus};
+use Illuminate\Http\Request;
+use App\Tools\Cropper;
 
 class Piece extends PianoLit
 {
@@ -352,5 +354,15 @@ class Piece extends PianoLit
                 'cover_path' => (new Cropper($request, $crop = true))->make('cover_image')->saveTo("$this->folder/cover_images/$this->id/")->getPath()
             ]);
         }
+    }
+
+    public function cover_image()
+    {
+        return $this->cover_path ? asset('storage/' . $this->cover_path) : null;
+    }
+
+    public function scopeFree($query)
+    {
+        return $query->where('is_free', true);
     }
 }
