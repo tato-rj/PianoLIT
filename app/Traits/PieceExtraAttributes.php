@@ -129,7 +129,7 @@ trait PieceExtraAttributes
             $videos[$index] = $this->googleCloud . str_slug($this->composer->name) . '/' . $video . '.mp4';
         }
 
-        $videos = ['test'];
+        // $videos = ['test'];
 
         return $videos;
     }
