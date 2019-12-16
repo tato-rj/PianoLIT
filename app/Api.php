@@ -190,6 +190,7 @@ class Api
             $model->setAttribute('audio_rh', storage($model->audio_path_rh));
             $model->setAttribute('audio_lh', storage($model->audio_path_lh));
             $model->setAttribute('score', storage($model->score_path));
+            $model->setAttribute('background', null);
             $model->setAttribute('is_favorited', $model->isFavorited($user_id));
             $model->composer->setAttribute('alive_on', $model->composer->alive_on);
             $model->composer->setAttribute('short_name', $model->composer->short_name);
