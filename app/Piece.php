@@ -366,8 +366,8 @@ class Piece extends PianoLit
         return $query->where('is_free', true);
     }
 
-    // public function getBackgroundAttribute()
-    // {
-    //     return storage($this->cover_path);
-    // }
+    public function getBackground()
+    {
+        return storage($this->cover_path);
+    }
 }

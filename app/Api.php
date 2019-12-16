@@ -22,7 +22,7 @@ class Api
     {
         $collection = Piece::free()->exists() ? [Piece::free()->first()] : [Piece::first()];
 
-        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find'), 'withBackground' => true]);
 
         return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title]);
     }
@@ -160,7 +160,7 @@ class Api
             }
 
             // $subtitle = get_class($model) == 'App\Piece' ? $model->composer->short_name : $model->pieces_count.' '.'pieces';
-            $background = empty($args['background']) ? null : asset("pianolit/images/backgrounds/{$args['background']}.png");
+            $background = empty($args['withBackground']) ? null : $model->getBackground();
 
             $model->setAttribute('source', $args['source']);
             $model->setAttribute('type', $args['type'] ?? null);
@@ -190,7 +190,6 @@ class Api
             $model->setAttribute('audio_rh', storage($model->audio_path_rh));
             $model->setAttribute('audio_lh', storage($model->audio_path_lh));
             $model->setAttribute('score', storage($model->score_path));
-            $model->setAttribute('background', null);
             $model->setAttribute('is_favorited', $model->isFavorited($user_id));
             $model->composer->setAttribute('alive_on', $model->composer->alive_on);
             $model->composer->setAttribute('short_name', $model->composer->short_name);
