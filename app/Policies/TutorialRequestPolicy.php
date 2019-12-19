@@ -30,6 +30,8 @@ class TutorialRequestPolicy
      */
     public function create(User $user)
     {
+        return $this->deny('Testing now!');
+
         if ($user->pendingTutorialRequests()->exists())
             return $this->deny('You have a pending request, please wait until we publish it before making a new one!');
 

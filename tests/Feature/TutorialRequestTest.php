@@ -19,7 +19,7 @@ class TutorialRequestTest extends AppTest
     }
 
     /** @test */
-    public function a_user_cannot_make_a_new_request_while_it_as_one_pending()
+    public function a_user_cannot_make_a_new_request_while_one_is_pending()
     {
         $this->expectException('Illuminate\Auth\Access\AuthorizationException');
 
