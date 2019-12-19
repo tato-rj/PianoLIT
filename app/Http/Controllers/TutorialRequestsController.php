@@ -40,16 +40,16 @@ class TutorialRequestsController extends Controller
             'piece_id' => 'required|exists:pieces,id'
         ]);
 
-        // auth()->login(User::find($request->user_id));
+        auth()->login(User::find($request->user_id));
 
-        // $this->authorize('create', TutorialRequest::class);
-        $user = User::find($request->user_id);
+        $this->authorize('create', TutorialRequest::class);
+        // $user = User::find($request->user_id);
 
-        if ($user->pendingTutorialRequests()->exists())
-            return response()->json('You have a pending request, please wait until we publish it before making a new one!');
+        // if ($user->pendingTutorialRequests()->exists())
+        //     return response()->json('You have a pending request, please wait until we publish it before making a new one!');
 
-        if ($user->publishedTutorialRequests()->where('piece_id', $request->piece_id)->exists())
-            return response()->json('Looks like you have already made a request for this piece, please send us an email if you were looking for something else.');
+        // if ($user->publishedTutorialRequests()->where('piece_id', $request->piece_id)->exists())
+        //     return response()->json('Looks like you have already made a request for this piece, please send us an email if you were looking for something else.');
 
         TutorialRequest::create([
             'user_id' => $request->user_id,
