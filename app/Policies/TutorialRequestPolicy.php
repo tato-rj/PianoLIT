@@ -30,11 +30,13 @@ class TutorialRequestPolicy
      */
     public function create(User $user)
     {
+        // NOT BEING USED!
+        
         if ($user->pendingTutorialRequests()->exists())
-            return response()->json('You have a pending request, please wait until we publish it before making a new one!');
+            return $this->deny('You have a pending request, please wait until we publish it before making a new one!');
 
         if ($user->publishedTutorialRequests()->where('piece_id', request()->piece_id)->exists())
-            return response()->json('Looks like you have already made a request for this piece, please send us an email if you were looking for something else.');
+            return $this->deny('Looks like you have already made a request for this piece, please send us an email if you were looking for something else.');
 
         return true;
     }
