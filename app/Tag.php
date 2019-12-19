@@ -103,6 +103,6 @@ class Tag extends PianoLit
 
     public function getBackground()
     {
-        return asset('images/temp/'.$this->name.'.jpg');
+        return asset('images/temp/'.strtolower($this->name).'.jpg');
     }
 }
