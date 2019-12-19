@@ -83,8 +83,6 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 	Route::get('timeline', 'ResourcesController@timeline')->name('timeline');
 
-	Route::get('staff/{type?}', 'ResourcesController@staff')->name('staff');
-
 	Route::prefix('infographs')->name('infographs.')->group(function() {
 
 		Route::get('', 'ResourcesController@infographs')->name('index');
@@ -97,6 +95,8 @@ Route::prefix('resources')->name('resources.')->group(function() {
 });
 
 Route::prefix('tools')->name('tools.')->group(function() {
+
+	Route::get('staff/{type?}', 'ToolsController@staff')->name('staff');
 
 	Route::prefix('chord-finder')->name('chord-finder.')->group(function() {
 
@@ -124,13 +124,7 @@ Route::prefix('tools')->name('tools.')->group(function() {
 
 	});
 
-	Route::prefix('studio-policy')->name('studio-policy.')->group(function() {
-
-		Route::get('', 'StudioPoliciesController@index')->name('index');
-
-		Route::get('create', 'StudioPoliciesController@create')->middleware('auth:web')->name('create');
-
-	});
+	Route::get('studio-policies', 'ToolsController@studioPolicy')->name('studio-policies');
 
 });
 

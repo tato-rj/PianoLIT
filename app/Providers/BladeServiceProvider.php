@@ -27,6 +27,7 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.form.input');
         \Blade::include('components.form.label');
         \Blade::include('components.form.textarea');
+        \Blade::include('components.form.options');
         \Blade::include('components.form.error');
         \Blade::include('components.form.tinyeditor');
 

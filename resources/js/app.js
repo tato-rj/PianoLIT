@@ -10,3 +10,14 @@ $.ajaxSetup({
         'X-CSRF-TOKEN': app.csrfToken
     }
 });
+
+$(function(){
+    var requiredCheckboxes = $('.options-required :checkbox[required]');
+    requiredCheckboxes.change(function(){
+        if(requiredCheckboxes.is(':checked')) {
+            requiredCheckboxes.removeAttr('required');
+        } else {
+            requiredCheckboxes.attr('required', 'required');
+        }
+    });
+});

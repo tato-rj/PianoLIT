@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\{Registered, Verified};
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use App\Listeners\SubscribeUser;
+use App\Events\StudioPolicyCreated;
+use App\Listeners\{SubscribeUser, StudioPolicyCreatedListener};
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         Verified::class => [
             SubscribeUser::class,
+        ],
+        StudioPolicyCreated::class => [
+            StudioPolicyCreatedListener::class,
         ]
     ];
 

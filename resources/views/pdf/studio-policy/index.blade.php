@@ -25,6 +25,10 @@
 		font-weight: bold;
 	}
 
+	.m-0 {
+		margin: 0!important;
+	}
+
 	.mb-1 {
 		margin-bottom: .25rem!important;
 	}
@@ -33,12 +37,32 @@
 		margin-bottom: .5rem!important;
 	}
 
-	.m-0 {
-		margin: 0!important;
+	.mb-3 {
+	    margin-bottom: 1rem!important;
+	}
+
+	.p-0 {
+		padding: 0!important;
+	}
+
+	.pb-1 {
+		padding-bottom: .25rem!important;
+	}
+
+	.pb-2 {
+		padding-bottom: .5rem!important;
+	}
+
+	.pb-3 {
+	    padding-bottom: 1rem!important;
 	}
 
 	.text-center {
 		text-align: center;
+	}
+
+	.text-left {
+		text-align: left;
 	}
 
 	.list-style-none {
@@ -67,27 +91,17 @@
 		border-radius: .25rem!important;
 		padding: .8rem 2rem;
 	}
+
+	.border-bottom {
+	    border-bottom: 1px solid #dee2e6!important;
+	}
 </style>
 @endpush
 
 @section('content')
 
-@include('pdf.agreement.sections.header')
-
-@include('pdf.agreement.sections.overview')
-
-@include('pdf.agreement.sections.recitals')
-
-@include('pdf.agreement.sections.tuition')
-
-@include('pdf.agreement.sections.scheduling')
-
-@include('pdf.agreement.sections.make-ups')
-
-@include('pdf.agreement.sections.withdrawal')
-
-@include('pdf.agreement.sections.instrument')
-
-@include('pdf.agreement.sections.signatures')
+@foreach(['header', 'general', 'performances', 'lessons', 'materials', 'scheduling', 'makeups', 'withdrawal', 'instrument', 'signatures'] as $section)
+	@include("pdf.studio-policy.sections.$section")
+@endforeach
 
 @endsection

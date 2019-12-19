@@ -86,6 +86,10 @@
             letter-spacing: .025em;
         }
 
+        .navbar-nav .nav-link {
+            white-space: nowrap;
+        }
+
         .navbar-light .navbar-toggler {
             border: 0;
         }

@@ -14,6 +14,6 @@
 	</div>
 
 	<div class="col-12 text-center">
-		<a href="{{route('youtube')}}" target="_blank" class="btn btn-primary btn-wide shadow show-overlay"><i class="fab fa-lg fa-youtube mr-3"></i>Visit our channel</a>
+		<a href="{{route('youtube')}}" target="_blank" class="btn btn-primary btn-wide shadow"><i class="fab fa-lg fa-youtube mr-3"></i>Visit our channel</a>
 	</div>
 </div>

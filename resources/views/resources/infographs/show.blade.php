@@ -18,11 +18,7 @@
 		<div class="row">
 			<div class="col-lg-8 col-md-10 col-10 mx-auto">
 
-				<p class="mb-4">
-					<a href="{{route('resources.infographs.index')}}" class="link-blue">
-						<i class="fas fa-long-arrow-alt-left mr-1 align-middle"></i>return to main page
-					</a>
-				</p>
+				@include('components.return', ['url' => route('resources.infographs.index'), 'to' => 'Infographs page'])
 
 				<div class="row">
 					<div class="col-lg-6 col-md-6 col-sm-6 col-12">

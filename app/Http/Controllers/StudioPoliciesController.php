@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\StudioPolicy;
 use Illuminate\Http\Request;
+use App\Events\StudioPolicyCreated;
 
 class StudioPoliciesController extends Controller
 {
@@ -14,7 +15,7 @@ class StudioPoliciesController extends Controller
      */
     public function index()
     {
-        return view('studio-policies.index');
+        return view('users.studio-policies.index');
     }
 
     /**
@@ -24,7 +25,7 @@ class StudioPoliciesController extends Controller
      */
     public function create()
     {
-        return view('studio-policies.create.index');
+        return view('users.studio-policies.create.index');
     }
 
     /**
@@ -35,31 +36,15 @@ class StudioPoliciesController extends Controller
      */
     public function store(Request $request)
     {
-        // $data = [
-        //     'name' => $request->name,
-        //     'start_month' => $request->start_month,
-        //     'end_month' => $request->end_month,
-        //     'years' => [$request->start_year, $request->end_year],
-        //     'vacation_weeks' => 2,
-        //     'makeup_weeks' => 3,
-        //     'group_classes' => 3,
-        //     'student_agreement' => true,
-        //     'absence_notice' => 48,
-        // ];
-        
-        // $pdf = \PDF::loadView('pdf.agreement.index', compact('data'));
-
-        // return $pdf->download('my-policy.pdf');
-
-        // $request->validate(['data' => 'required']);
-
-        StudioPolicy::create([
+        $policy = StudioPolicy::create([
             'user_id' => auth()->user()->id,
             'data' => json_encode($request->except('_token')),
             'theme' => $request->theme ?? 'default'
         ]);
 
-        return back()->with('status', 'Your studio policy has been successfully created!');
+        event(new StudioPolicyCreated($policy));
+
+        return redirect(route('users.studio-policies.index'))->with('status', 'Your studio policy has been successfully created!');
     }
 
     /**
@@ -70,7 +55,12 @@ class StudioPoliciesController extends Controller
      */
     public function show(StudioPolicy $studioPolicy)
     {
-        //
+        try {
+            return $studioPolicy->download();
+        } catch (\Exception $e) {
+            // dd($e);
+            return back()->with('error', 'We had problems generating your policy. If this issue persists, please let us know at contact@pianolit.com.');
+        }
     }
 
     /**
@@ -81,7 +71,8 @@ class StudioPoliciesController extends Controller
      */
     public function edit(StudioPolicy $studioPolicy)
     {
-        //
+        // dd($studioPolicy->has('sickness_policy'));
+        return view('users.studio-policies.edit', compact('studioPolicy'));
     }
 
     /**

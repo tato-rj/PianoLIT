@@ -9,17 +9,6 @@ use App\Infograph\Topic as InfographTopic;
 
 class ResourcesController extends Controller
 {
-    public function staff($type = null)
-    {
-    	$files = ['blank', 'piano', 'treble', 'bass'];
-    	$size = request()->has('size') ? '-' . request('size') : null;
-
-	   	if (in_array($type, $files))
-	    	return response()->file('images/sheets/'.$type.$size.'.pdf');
-
-		return view('resources.staff.index', compact('files'));
-    }
-
     public function infographs()
     {
         $infographs = Infograph::published()->inRandomOrder()->newFirst();

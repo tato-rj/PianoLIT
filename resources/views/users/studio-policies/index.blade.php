@@ -16,28 +16,34 @@
 @endpush
 
 @section('content')
-@include('components.title', [
-	'version' => '1.0',
-	'title' => 'Studio Policy Generator', 
-	'subtitle' => 'Generate your studio policy in just a few seconds!'])
 
 <div class="container mb-4">
 	<div class="row mb-6">
-		<div class="col-lg-8 col-12 mx-auto mb-6">
-			<div class="mb-4">
-				<p>Are you looking to create a professionally looking policy for your studio? Do you want to dust off the one you have and improve it for your expanding studio? Then you're on the right place 🤗!</p>
-				<p>Just click on the button below, answer a few questions and we'll generate a <u>well crafted</u> and <u>straight forward</u> document in just a few steps.</p>
-			</div>
-			<a href="{{route('tools.studio-policy.create')}}" class="btn btn-primary shadow btn-block"><i class="fas fa-magic mr-2"></i>Create my Studio Policy now</a>
-		</div>
-		
-		@auth
-		
-		@else
 		<div class="col-lg-8 col-12 mx-auto">
-			<h6 class="text-center"><a href="" id="auth-only" class="link-blue">Log in</a> to view the policies you've created</h6>
+			<div class="mb-4">
+				<h4>My policies</h4>
+				<p>Here is the list of all the policies you have created.</p>
+			</div>
+			<div class="row"> 
+				@forelse(auth()->user()->studioPolicies as $policy)
+					@include('users.studio-policies.card')			
+				@empty
+				<div class="col-12">
+					<div class="border rounded px-3 py-5 my-4 text-center">
+						<h2 class="text-grey mb-1"><i class="far fa-folder-open"></i></h2>
+						<h5 class="text-grey m-0">You have not created a policy yet</h5>
+					</div>
+				</div>
+				@endforelse
+			</div>
 		</div>
-		@endauth
+	</div>
+
+	<div class="row mb-6">
+		<div class="col-lg-12 text-center">
+			<h5 class="mb-3">Do you want to create a new one?</h5>
+			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow"><i class="fas fa-magic mr-2"></i>Create a new policy now</a>
+		</div>
 	</div>
 	
 	<div class="row mb-6">
@@ -54,11 +60,15 @@
 	@include('components.sections.youtube')
 </div>
 
+@include('admin.components.modals/delete', ['model' => 'policy'])
 @endsection
 
 @push('scripts')
 @include('components.addthis')
 
 <script type="text/javascript">
+$('.delete').on('click', function (e) {
+  $('#delete-modal').find('form').attr('action', $(this).attr('data-url'));
+})
 </script>
 @endpush

@@ -62,4 +62,20 @@ class ToolsController extends Controller
         
         return view('tools.technique.results.arpeggios', compact('arpeggio'))->render();
     }
+
+    public function studioPolicy()
+    {        
+        return view('tools.studio-policies.index');
+    }
+
+    public function staff($type = null)
+    {
+        $files = ['blank', 'piano', 'treble', 'bass'];
+        $size = request()->has('size') ? '-' . request('size') : null;
+
+        if (in_array($type, $files))
+            return response()->file('images/sheets/'.$type.$size.'.pdf');
+
+        return view('tools.staff.index', compact('files'));
+    }
 }

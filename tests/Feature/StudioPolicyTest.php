@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\StudioPolicy;
+use App\Mail\NewStudioPolicyEmail;
+use App\Notifications\NewStudioPolicyNotification;
 
 class StudioPolicyTest extends AppTest
 {
@@ -24,6 +26,21 @@ class StudioPolicyTest extends AppTest
         $this->post(route('users.studio-policies.store'), $data);
 
         $this->assertDatabaseHas('studio_policies', ['data' => json_encode($data)]);
+    }
+
+    /** @test */
+    public function a_user_and_admins_are_notified_when_a_policy_is_generated()
+    {
+        \Mail::fake();
+        \Notification::fake();
+
+        $this->signIn($this->user);
+
+        $this->post(route('users.studio-policies.store'), make(StudioPolicy::class)->data);
+
+        \Mail::assertQueued(NewStudioPolicyEmail::class);
+
+        \Notification::assertSentTo($this->admin, NewStudioPolicyNotification::class);
     }
 
     /** @test */

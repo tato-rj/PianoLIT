@@ -1,5 +1,5 @@
 <div class="form-group">
-	@include('components.form.label')
+	@include('components.form.label', ['asterisk' => $asterisk ?? null])
 	<textarea 
 		class="form-control {{$classes ?? null}} {{validate($errors->$bag, $name)}}" 
 		{{$required ?? 'required'}}  
@@ -8,7 +8,7 @@
 		@if(! empty($limit))
 		maxlength="{{$limit}}"
 		@endif
-		placeholder="{{$placeholder ?? snake_str($name)}} {{! empty($limit) ? '(limite de ' . $limit . ' caracteres)' : null}}">{{$value ?? old($name)}}</textarea>
+		placeholder="{{$placeholder ?? snake_str($name, true)}} {{! empty($limit) ? '(limit of ' . $limit . ' characters)' : null}}">@if(old($name)){{old($name)}}@else{{$value ?? null}}@endif</textarea>
 
 	@include('components/form/error', ['bag' => $bag, 'field' => $name])
 </div>

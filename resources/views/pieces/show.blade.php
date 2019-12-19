@@ -20,7 +20,6 @@
 		<div class="row mb-2">
 			@if($piece->isPublicDomain)
 			<div class="col-lg-6 col-md-6 col-12">
-			
 				<div class="embed-responsive embed-responsive-a4 mb-4">
 					<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
 				</div>

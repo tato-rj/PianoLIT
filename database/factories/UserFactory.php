@@ -58,11 +58,35 @@ $factory->define(Membership::class, function (Faker $faker) {
 });
 
 $factory->define(StudioPolicy::class, function (Faker $faker) {
+    $data = [
+        // GENERAL
+        'name' => $faker->name,
+        'start_year' => 2018,
+        'end_year' => 2019,
+        'start_month' => 9,
+        'end_month' => 6,
+
+        // LESSONS
+        'lessons_length' => [30, 45, 60],
+
+        // SCHEDULING
+        'vacation_weeks' => 2,
+        'makeup_weeks' => 2,
+        'group_classes' => 1,
+        'recitals' => 1,
+
+        // COMMUNICATION
+        'absence_notice' => 48,
+
+        'parent_agreement' => true,
+        'student_agreement' => true,
+    ];
+
     return [
         'user_id' => function() {
             return create(User::class)->id;
         },
-        'data' => json_encode(['foo' => 'bar']),
+        'data' => json_encode($data),
         'theme' => 'default'
     ];
 });

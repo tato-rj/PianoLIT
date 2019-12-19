@@ -223,15 +223,15 @@ function storage($path)
 	return null;
 }
 
-function arrayToSentence($array)
+function arrayToSentence($array, $conjunction = 'and')
 {
 	$arrayCount = count($array);
 
 	if ($arrayCount == 1) {
-	    $sentence = $array[0] . '.';
+	    $sentence = $array[0];
 	} else {
 	    $partial = array_slice($array, 0, $arrayCount-1);
-	    $sentence = implode(', ', $partial) . ' and ' . $array[$arrayCount-1];
+	    $sentence = implode(', ', $partial) . " $conjunction " . $array[$arrayCount-1];
 	}
 
 	return $sentence;
@@ -242,8 +242,11 @@ function slug_str($slug)
     return ucwords(str_replace('-', ' ', $slug));
 }
 
-function snake_str($snake)
+function snake_str($snake, $ucfirst = false)
 {
+	if ($ucfirst)
+		return ucfirst(str_replace('_', ' ', $snake));
+    
     return ucwords(str_replace('_', ' ', $snake));
 }
 
@@ -363,4 +366,9 @@ function lookup($file)
 function percentage($num1, $num2)
 {
 	return (int)round(($num1 * 100) / $num2);
+}
+
+function str_ends_with($str, $chars)
+{
+	return in_array(substr($str, -1), $chars);
 }

@@ -21,6 +21,12 @@
           <label style="font-size: .9em" class="m-0 text-grey"><small>TECHNIQUE</small></label>
           <a class="nav-link p-0 mb-1 ml-1" href="{{route('tools.scales.index')}}">Scales</a>
           <a class="nav-link p-0 mb-1 ml-1" href="{{route('tools.arpeggios.index')}}">Arpeggios</a>
+          <div class="dropdown-divider"></div>
+          <label style="font-size: .9em" class="m-0 text-grey"><small>FOR TEACHERS</small></label>
+          @local
+          <a class="nav-link p-0 mb-1 ml-1" href="{{route('tools.studio-policies')}}">Studio Policy Generator</a>
+          @endlocal
+          <a class="nav-link p-0 ml-1" href="{{route('tools.staff')}}">Staff Generator</a>
         </div>
       </li>
       <li class="nav-item dropdown mx-2">
@@ -32,8 +38,7 @@
           <a class="nav-link p-0 ml-1" href="{{route('resources.pianists.index')}}">Great Pianists</a>
           <a class="nav-link p-0 ml-1" href="{{route('resources.podcasts')}}">Top Podcasts</a>
           <div class="dropdown-divider"></div>
-          <label style="font-size: .9em" class="m-0 text-grey"><small>TO USE</small></label>
-          <a class="nav-link p-0 ml-1" href="{{route('resources.staff')}}">Staff Generator</a>
+          <label style="font-size: .9em" class="m-0 text-grey"><small>TO LEARN</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.timeline')}}">Music Timeline</a>
           <a class="nav-link p-0 ml-1" href="{{route('resources.infographs.index')}}">Infographs</a>
         </div>
@@ -61,6 +66,10 @@
           <div class="dropdown-divider my-1"></div> --}}
           <a class="nav-link" style="white-space: nowrap;" href="{{route('users.profile')}}">My profile</a>
           <div class="dropdown-divider my-1"></div>
+          @if(auth()->user()->studioPolicies()->exists())
+          <a class="nav-link" style="white-space: nowrap;" href="{{route('users.studio-policies.index')}}">My Studio Policies</a>
+          <div class="dropdown-divider my-1"></div>
+          @endif
           <a class="nav-link" style="white-space: nowrap;" href="{{route('contact')}}">Help & Support</a>
           <div class="dropdown-divider my-1"></div>
           <a class="nav-link" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

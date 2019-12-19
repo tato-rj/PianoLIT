@@ -22,23 +22,21 @@
 @endpush
 
 @section('content')
-@include('components.title', [
-	'version' => '1.0',
-	'title' => 'Studio Policy Generator', 
-	'subtitle' => 'Generate your studio policy in just a few seconds!'])
-
 	<div class="container mb-4">
 		<div class="row mb-6">
 			<div class="col-lg-8 col-12 mx-auto">
+				<div class="mb-4">
+					<h4>Create a new policy</h4>
+					<p>Answer the questions below to generate you new policy</p>
+				</div>
+
 				<form method="POST" action="{{route('users.studio-policies.store')}}">
 					@csrf
 					<div class="accordion mb-4" id="steps">
-						@foreach(['general', 'tuition', 'communication'] as $step)
-						@include('studio-policies.create.steps.' . $step, ['loop' => $loop])
-						@endforeach
+						@include('users.studio-policies.create.form')
 					</div>
 					<div class="text-center">
-						<button class="btn btn-primary shadow"><i class="fas fa-save mr-2"></i>Save and download</button>
+						<button class="btn btn-primary shadow"><i class="fas fa-save mr-2"></i>Create my policy</button>
 					</div>
 				</form>
 			</div>
@@ -55,5 +53,8 @@ $('#steps').on('show.bs.collapse', function (step) {
 	$('#steps .card').removeClass('selected');
 	$(step.target).parent().addClass('selected');
 })
+</script>
+<script type="text/javascript">
+
 </script>
 @endpush
