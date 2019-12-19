@@ -19,12 +19,12 @@ class ApiController extends Controller
             $this->api->order(1)->composers('Composers'),
             $this->api->order(2)->latest('Latest pieces'),
             $this->api->order(3)->women('From women composers'),
+            $this->api->order(9)->periods('Periods'),
             $this->api->order(4)->levels('Levels'),
             $this->api->order(5)->ranking('rcm', 'Equivalent to the RCM levels'),
             $this->api->order(6)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
             $this->api->order(7)->improve('Improve your'),
             $this->api->order(8)->tag('Pieces that are'),
-            $this->api->order(9)->periods('Periods'),
         ]);
 
         if (request()->wantsJson() || request()->has('api'))

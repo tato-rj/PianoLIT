@@ -108,7 +108,7 @@ class Api
     {
         $collection = Tag::atLeast(5)->periods()->select('name')->withCount('pieces')->get();
 
-        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
+        $this->withAttributes($collection, ['source' => \URL::to('/api/search'), 'withBackground' => true]);
 
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
