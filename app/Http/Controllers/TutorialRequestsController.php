@@ -43,10 +43,10 @@ class TutorialRequestsController extends Controller
         $user = User::find($request->user_id);
 
         if ($user->pendingTutorialRequests()->exists())
-            return response()->json('You have a pending request, please wait until we publish it before making a new one!');
+            return response()->json('You have a pending request, please wait until we publish it before making a new one!', 403);
 
         if ($user->publishedTutorialRequests()->where('piece_id', $request->piece_id)->exists())
-            return response()->json('Looks like you have already made a request for this piece, please send us an email if you were looking for something else.');
+            return response()->json('Looks like you have already made a request for this piece, please send us an email if you were looking for something else.', 403);
 
         TutorialRequest::create([
             'user_id' => $request->user_id,
