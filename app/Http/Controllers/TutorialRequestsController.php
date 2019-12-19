@@ -49,7 +49,7 @@ class TutorialRequestsController extends Controller
             'piece_id' => $request->piece_id
         ]);
         
-        return response(200);
+        return response()->json(['message' => 'Your request has been received, we will send you an email when the tutorial is ready.']);
     }
 
     /**

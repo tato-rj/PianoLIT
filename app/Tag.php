@@ -100,4 +100,9 @@ class Tag extends PianoLit
     {
         return $query->where('name', 'famous');
     }
+
+    public function getBackground()
+    {
+        return asset('images/temp/'.$this->name.'.jpg');
+    }
 }
