@@ -23,9 +23,9 @@
           <a class="nav-link p-0 mb-1 ml-1" href="{{route('tools.arpeggios.index')}}">Arpeggios</a>
           <div class="dropdown-divider"></div>
           <label style="font-size: .9em" class="m-0 text-grey"><small>FOR TEACHERS</small></label>
-          @local
+          @env('local')
           <a class="nav-link p-0 mb-1 ml-1" href="{{route('tools.studio-policies')}}">Studio Policy Generator</a>
-          @endlocal
+          @endenv
           <a class="nav-link p-0 ml-1" href="{{route('tools.staff')}}">Staff Generator</a>
         </div>
       </li>
