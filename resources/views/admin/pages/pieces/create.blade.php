@@ -443,6 +443,9 @@ $('a.add-new-field').on('click', function() {
     $(inputs[0]).attr('name',  'videos['+number+'][title]');
     $(inputs[1]).attr('name',  'videos['+number+'][description]');
     $(inputs[2]).attr('name',  'videos['+number+'][filename]');
+    if ($('.videos-form:not(.original-type)').length == 0) {
+      $clone.find('.default-performance').show();
+    }
     $clone.removeClass('original-type').insertBefore($button).show();
 
   } else {
@@ -456,6 +459,7 @@ $('a.add-new-field').on('click', function() {
 ////////////////
 $(document).on('click', 'a.remove-field', function() {
   $(this).parent().remove();
+  $('.videos-form:not(.original-type)').first().find('.default-performance').show();
 });
 
 /////////////////////////////

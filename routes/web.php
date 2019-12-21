@@ -1,22 +1,5 @@
 <?php
 
-Route::get('fix-videos', function() {
-        $pieces = \App\Piece::all();
-
-        foreach ($pieces as $piece) {
-            $videos = $piece->videos_array_raw;
-            $newArray = [];
-	
-			if (is_array($videos)) {
-	            foreach ($videos as $video) {
-	                array_push($newArray, ['title' => null, 'description' => null, 'filename' => $video]);
-	            }
-
-	            $piece->update(['videos' => serialize($newArray)]);
-            }  
-        }
-});
-
 Route::resources([
     'subscriptions' => 'SubscriptionsController'
 ]);

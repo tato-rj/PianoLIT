@@ -173,5 +173,6 @@ $(document).on('change', '.input-tag', function() {
     });
   }
 });
+
 </script>
 @endsection

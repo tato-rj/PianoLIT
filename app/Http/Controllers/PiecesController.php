@@ -178,11 +178,6 @@ class PiecesController extends Controller
 
         $types = Tag::byTypes($except = ['levels', 'periods', 'lengths']);
 
-        // $original = ["te24E6V1dRQ","SP4tU8sC-Iw","-_zWKSUpkK0"];
-
-        // return $piece->videos_array;
-        // dd('test');
-// return $piece->videos_array;
         return view('admin.pages.pieces.edit', compact(['composers', 'piece', 'types']));
     }
 
