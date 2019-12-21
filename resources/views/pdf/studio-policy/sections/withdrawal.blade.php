@@ -1,12 +1,14 @@
 <section>
-	<p class="bold">WITHDRAWAL FROM LESSONS</p>
-	<p>If you need to withdraw from lessons, I appreciate as much notice as possible. To withdraw during the
-	school year (September-May), I charge a $50 fee in addition to the remainder of the current month’s
-	tuition. This is to partially cover the time I have reserved for you.</p>
-
-	<p class="bold">DISCONTINUATION</p>
-	<p>In an extreme situation, I reserve the right to discontinue lessons with a student at any time. Disrespect,
-	continual lateness or absenteeism, or an ongoing breach of any studio policy may result in discontinuation. In
-	this case, I will prorate the current month’s tuition and refund any portion that has not been used. The
-	registration fee is not refunded.</p>
+	<p class="section-title">Withdrawal from lessons</p>
+	<p>If you need to withdraw from lessons, please provide as much notice as possible.
+		@if($policy->has('withdrawal_fee'))
+		I charge a <strong>${{$policy->get('withdrawal_fee')}} fee</strong> for withdrawal requests
+			@if($policy->has('withdrawal_month'))
+			 <u>unless it is done during the month of {{getMonthName($policy->get('withdrawal_month'))}}</u>. In that case, you may request a withdrawal with no extra fee.
+			@else
+			regardless of when the request is made.
+			@endif
+		 This fee is necessary because it may be unlikely that the spot you reserved will be filled by someone else immediately following the withdrawal.
+		@endif
+	</p>
 </section>

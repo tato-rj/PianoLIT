@@ -1,5 +1,5 @@
 <section>
-	<p class="bold">MATERIALS</p>
+	<p class="section-title">Materials</p>
 	@if($policy->has('materials'))
 	<p>Each student uses {{arrayToSentence($policy->get('materials'))}}.</p> 
 	@endif

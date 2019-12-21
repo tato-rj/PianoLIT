@@ -8,7 +8,7 @@ $fields = [
 ];
 @endphp
 
-@component('users.studio-policies.create.steps.step', ['title' => 'Performances', 'loop' => $loop, 'count' => count($fields)])
+@component('users.studio-policies.create.steps.step', ['title' => 'Performances', 'loop' => $loop, 'count' => count($fields), 'isNew' => empty($studioPolicy)])
 
 	<div class="form-row"> 
 		<div class="col">

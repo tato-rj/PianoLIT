@@ -55,10 +55,13 @@ class StudioPoliciesController extends Controller
      */
     public function show(StudioPolicy $studioPolicy)
     {
+        if (request()->has('preview'))
+            return view('pdf.studio-policy.index', ['policy' => $studioPolicy]);
+
         try {
             return $studioPolicy->download();
         } catch (\Exception $e) {
-            // dd($e);
+            dd($e);
             return back()->with('error', 'We had problems generating your policy. If this issue persists, please let us know at contact@pianolit.com.');
         }
     }
@@ -71,7 +74,7 @@ class StudioPoliciesController extends Controller
      */
     public function edit(StudioPolicy $studioPolicy)
     {
-        // dd($studioPolicy->has('sickness_policy'));
+        // return $studioPolicy;
         return view('users.studio-policies.edit', compact('studioPolicy'));
     }
 

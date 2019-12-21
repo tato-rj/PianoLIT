@@ -438,8 +438,12 @@ $('a.add-new-field').on('click', function() {
     $clone.removeClass('original-type').insertBefore($button).show();
 
   } else if ($type == 'videos') {
-    $clone.find('input').attr('name',  'videos[]');
-    $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
+    number = $('.videos-form:not(.original-type)').length;
+    inputs = $clone.find('input');
+    $(inputs[0]).attr('name',  'videos['+number+'][title]');
+    $(inputs[1]).attr('name',  'videos['+number+'][description]');
+    $(inputs[2]).attr('name',  'videos['+number+'][filename]');
+    $clone.removeClass('original-type').insertBefore($button).show();
 
   } else {
     $clone.find('textarea').attr('name',  'tips[]');

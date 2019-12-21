@@ -5,7 +5,7 @@ $fields = [
 ]
 @endphp
 
-@component('users.studio-policies.create.steps.step', ['title' => 'Agreements', 'loop' => $loop, 'count' => count($fields)])
+@component('users.studio-policies.create.steps.step', ['title' => 'Agreements', 'loop' => $loop, 'count' => count($fields), 'isNew' => empty($studioPolicy)])
 	@options([
 		'label' => 'Require signature of the parent/guardian?', 
 		'type' => 'radio', 

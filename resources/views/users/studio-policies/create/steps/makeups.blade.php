@@ -2,11 +2,13 @@
 $fields = [
 	empty($studioPolicy) ? old('absence_notice') : $studioPolicy->get('absence_notice'),
 	empty($studioPolicy) ? old('makeup_policy') : $studioPolicy->get('makeup_policy'),
-	empty($studioPolicy) ? old('sickness_policy') : $studioPolicy->get('sickness_policy')
+	empty($studioPolicy) ? old('sickness_policy') : $studioPolicy->get('sickness_policy'),
+	empty($studioPolicy) ? old('teacher_absence') : $studioPolicy->get('teacher_absence'),
+	empty($studioPolicy) ? old('summer_policy') : $studioPolicy->get('summer_policy')
 ];
 @endphp
 
-@component('users.studio-policies.create.steps.step', ['title' => 'Make up lessons', 'loop' => $loop, 'count' => count($fields)])
+@component('users.studio-policies.create.steps.step', ['title' => 'Make up lessons', 'loop' => $loop, 'count' => count($fields), 'isNew' => empty($studioPolicy)])
 	<div class="form-group"> 
 		@include('components.form.label', [
 			'label' => 'You accept a cancellation up until', 
@@ -38,6 +40,24 @@ $fields = [
 		'value' => $fields[2], 
 		'options' => ['Yes and we will make up the lesson' => 'make up', 'Yes but I don\'t offer a make up' => 'no make up', 'No, it is up to them to make that decision' => 'null'], 
 		'name' => 'sickness_policy',
+		'bag' => 'default', 
+		'asterisk' => true])
+
+	@options([
+		'label' => 'Do you offer a make up if you have to cancel the lesson?',
+		'type' => 'radio', 
+		'value' => $fields[3], 
+		'options' => ['Yes' => 1, 'No, I offer a refund instead' => 0], 
+		'name' => 'teacher_absence',
+		'bag' => 'default', 
+		'asterisk' => true])
+
+	@options([
+		'label' => 'Do you enforce these rules during the summer months?',
+		'type' => 'radio', 
+		'value' => $fields[4], 
+		'options' => ['Yes' => 1, 'No' => 0], 
+		'name' => 'summer_policy',
 		'bag' => 'default', 
 		'asterisk' => true])
 @endcomponent

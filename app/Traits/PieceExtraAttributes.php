@@ -126,7 +126,7 @@ trait PieceExtraAttributes
             return null;
         
         foreach ($videos as $index => $video) {
-            $videos[$index] = $this->googleCloud . str_slug($this->composer->name) . '/' . $video . '.mp4';
+            $videos[$index]['video_url'] = $this->googleCloud . str_slug($this->composer->name) . '/' . $video['filename'] . '.mp4';
         }
 
         // $videos = [

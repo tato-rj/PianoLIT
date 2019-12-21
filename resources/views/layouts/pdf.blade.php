@@ -17,7 +17,7 @@
             $text = "{PAGE_NUM} of {PAGE_COUNT}";
             $font = $fontMetrics->get_font("serif", "light");
             $size = 10;
-            $color = array(0,0,0);
+            $color = #3b4044;
             $word_space = 0.0;  //  default
             $char_space = 0.0;  //  default
             $angle = 0.0;   //  default

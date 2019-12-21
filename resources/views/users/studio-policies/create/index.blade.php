@@ -18,6 +18,14 @@
 .card.selected h6.title {
 	color: #212529!important;
 }
+.theme-selected {
+	opacity: 1!important;
+    transform: scale(1.04);
+}
+
+.theme-selected .theme-check {
+	display: block!important;
+}
 </style>
 @endpush
 
@@ -33,7 +41,7 @@
 				<form method="POST" action="{{route('users.studio-policies.store')}}">
 					@csrf
 					<div class="accordion mb-4" id="steps">
-						@include('users.studio-policies.create.form')
+						@include('users.studio-policies.form')
 					</div>
 					<div class="text-center">
 						<button class="btn btn-primary shadow"><i class="fas fa-save mr-2"></i>Create my policy</button>
@@ -55,6 +63,10 @@ $('#steps').on('show.bs.collapse', function (step) {
 })
 </script>
 <script type="text/javascript">
-
+$('.theme-option').on('click', function() {
+	$('.theme-option').removeClass('theme-selected');
+	$(this).addClass('theme-selected');
+	$(this).siblings('input[type="radio"]').prop('checked', true);
+});
 </script>
 @endpush

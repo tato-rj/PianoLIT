@@ -1,0 +1,67 @@
+/*'#2da2a9', '#f8e9a1', '#def2f1'*/
+
+body {
+	font-family: 'OpenSans-Regular', sans-serif;
+	color: #595f64;
+}
+
+header > div {
+    border: 4px solid #f8e9a1;
+    margin-bottom: 2em;
+    border-bottom: none;
+}
+
+header #pdf-title {
+	margin-bottom: .5rem!important;
+	text-align: center;
+	padding-top: 1.2rem;
+}
+
+header #pdf-title h2 {
+	font-size: 1.8rem;
+	color: grey;
+}
+
+header #pdf-title h2 span {
+	color: #2da2a9;
+	padding-right: 8px;
+	border-right: 3px solid;
+}
+
+header #pdf-year {
+	background-color: #f8e9a1;
+	color: #bfa112;
+	text-align: center;
+	padding: 4px;
+}
+
+.section-title {
+	font-weight: bold;
+	text-transform: uppercase;
+	color: #e6c62a;
+	text-align: center;
+	border-bottom: 3px dotted #f8e9a1;
+	padding-bottom: 4px;
+}
+
+.highlight-box{
+	margin-bottom: 3rem; 
+	border: 6px solid #def2f1;
+	padding: .8rem 2rem;
+}
+
+.signature-box {
+	margin-bottom: 2rem;
+}
+
+.important > p:first-of-type {
+	padding-bottom: .5rem!important;
+	border-bottom: 3px solid #def2f1;
+}
+
+.signature {
+	border-top: 1px solid #3b4044; 
+	margin-top: 5rem; 
+	padding-top: .5rem;
+	width: 50%;
+}

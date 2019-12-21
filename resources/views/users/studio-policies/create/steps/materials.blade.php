@@ -6,7 +6,7 @@ $fields = [
 ]
 @endphp
 
-@component('users.studio-policies.create.steps.step', ['title' => 'Materials', 'loop' => $loop, 'count' => count($fields)])
+@component('users.studio-policies.create.steps.step', ['title' => 'Materials', 'loop' => $loop, 'count' => count($fields), 'isNew' => empty($studioPolicy)])
 
 	@options([
 		'label' => 'Select all (if any) types of materials you use', 

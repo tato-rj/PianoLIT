@@ -30,7 +30,7 @@ class LoginController extends Controller
 	            ->withErrors($validator);
         }
 
-		if (\Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->remember))
+		if (\Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $rememeber = true))
 			return redirect()->intended(route('admin.home'));
 
 		return $this->sendFailedLoginResponse($request);

@@ -8,7 +8,7 @@ $fields = [
 ]
 @endphp
 
-@component('users.studio-policies.create.steps.step', ['title' => 'Lessons & fees', 'loop' => $loop, 'count' => count($fields)])
+@component('users.studio-policies.create.steps.step', ['title' => 'Lessons & fees', 'loop' => $loop, 'count' => count($fields), 'isNew' => empty($studioPolicy)])
 	<div class="form-group">
 		@include('components.form.label', [
 			'label' => 'Choose the types of lesson you offer by specifying how much you charge'])
@@ -16,7 +16,7 @@ $fields = [
 		@foreach(\App\StudioPolicy::durations() as $duration)
 		<div class="input-group mb-2">
 		  <div class="input-group-prepend">
-		    <span class="input-group-text" id="addon-wrapping">{{$duration}} min</span>
+		    <span class="input-group-text bg-light" id="addon-wrapping">{{$duration}} min</span>
 		  </div>
 			<input class="form-control text-right {{validate($errors->default, 'lesson_fees[]')}}"
 				step="5" type="number" name="lesson_fees[]" max="500" min="0"

@@ -6,6 +6,12 @@ class StudioPolicy extends PianoLit
 {
 	protected $filename;
     protected $durations = [30, 45, 60];
+    protected $sections = ['general', 'performances', 'lessons', 'payments', 'methods', 'materials', 'scheduling', 'makeups', 'withdrawal', 'instrument', 'other', 'agreements'];
+    protected $themes = [
+        'simple' => ['colors' => ['#ff6855', '#CA7A14', '#E5E5E5'], 'description' => 'Serif font types with a straight foward clean layout'], 
+        'elegant' => ['colors' => ['#9b786f', '#5D8694', '#EDE9D0'], 'description' => 'Serif font types with more formal and serious style'], 
+        'modern' => ['colors' => ['#2da2a9', '#f8e9a1', '#def2f1'], 'description' => 'Sans serif font types with a more informal design']
+    ];
 
     public function user()
     {
@@ -15,6 +21,26 @@ class StudioPolicy extends PianoLit
     public function scopeDurations($query)
     {
         return $this->durations;
+    }
+
+    public function scopeSections($query)
+    {
+        return $this->sections;
+    }
+
+    public function scopeThemes($query)
+    {
+        return $this->themes;
+    }
+
+    public function style()
+    {
+        return asset('css/studio-policies/' . $this->theme . '.css');
+    }
+
+    public function colors()
+    {
+        return $this->themes[$this->theme]['colors'];
     }
 
     public function getDataAttribute($data)
@@ -32,6 +58,14 @@ class StudioPolicy extends PianoLit
     public function has($field)
     {
         return array_key_exists($field, $this->data) && !in_array($this->data[$field], ['null', null, '0']);
+    }
+
+    public function count($field)
+    {
+        if (! $this->has($field))
+            0;
+
+        return count($this->get($field));
     }
 
     public function download()

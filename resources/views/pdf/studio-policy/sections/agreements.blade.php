@@ -2,8 +2,8 @@
 <div class="page-break"></div>
 <section>
 	@if($policy->data['parent_agreement'])
-	<div class="box">
-		<h3 class="bold">Parent/Guardian Agreement</h3>
+	<div class="signature-box">
+		<h3 class="section-title">Parent/Guardian Agreement</h3>
 
 		<p><span class="square"></span>I have a copy of the Studio Policy Handbook. I have read it, and agree to adhere to all policies,
 		including:</p>
@@ -24,8 +24,8 @@
 	@endif
 
 	@if($policy->data['student_agreement'])
-	<div class="box">
-		<h3 class="bold">Student Agreement</h3>
+	<div class="signature-box">
+		<h3 class="section-title">Student Agreement</h3>
 
 		<p><span class="square"></span>Practice is my responsibility.</p>
 		<p><span class="square"></span>I agree to practice what is in my assignment book every day. This is

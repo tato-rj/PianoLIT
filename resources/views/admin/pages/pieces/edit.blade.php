@@ -274,11 +274,13 @@
             {{-- Videos --}}
             @component('admin.pages.pieces.videos.layout')
               @if($piece->videos_array)
-                @foreach($piece->videos_array_raw as $videos)
+                @foreach($piece->videos_array as $video)
                 @include('admin.pages.pieces.videos.input', [
-                  'value' => $videos,
-                  'type' => 'd-flex',
-                  'name' => 'videos[]'])
+                  'names' => ["videos[{$loop->index}][title]", "videos[{$loop->index}][description]", "videos[{$loop->index}][filename]"],
+                  'title' => $video['title'],
+                  'description' => $video['description'],
+                  'filename' => $video['filename'],
+                  'url' => $video['video_url']])
                 @endforeach
               @endif
             @endcomponent
@@ -388,8 +390,12 @@ $('a.add-new-field').on('click', function() {
     $clone.removeClass('original-type').insertBefore($button).show();
 
   } else if ($type == 'videos') {
-    $clone.find('input').attr('name',  'videos[]');
-    $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
+    number = $('.videos-form:not(.original-type)').length;
+    inputs = $clone.find('input');
+    $(inputs[0]).attr('name',  'videos['+number+'][title]');
+    $(inputs[1]).attr('name',  'videos['+number+'][description]');
+    $(inputs[2]).attr('name',  'videos['+number+'][filename]');
+    $clone.removeClass('original-type').insertBefore($button).show();
 
   }
 });
