@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\{User, Piece, Api};
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\ResetsPasswords;
 
 class UsersController extends Controller
 {
+    use ResetsPasswords;
+
     public function __construct()
     {
         $this->middleware('auth', ['except' => ['appLogin', 'gift']]);
@@ -159,6 +162,11 @@ class UsersController extends Controller
     {
         $this->authorize('update', $user);
 
+        $request->validate([
+            'email' => 'email',
+            'password' => 'confirmed|min:8|nullable'
+        ]);
+
         $subscription = $user->subscription;
 
         $user->update([
@@ -166,6 +174,9 @@ class UsersController extends Controller
             'last_name' => $request->last_name,
             'email' => $request->email
         ]);
+
+        if ($request->password)
+            $this->resetPassword($user, $request->password);
 
         if ($subscription)
             $subscription->update(['email' => $request->email]);

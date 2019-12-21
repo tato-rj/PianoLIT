@@ -14,12 +14,12 @@
 						@include('components.form.input', ['label' => 'Last name', 'bag' => 'default', 'name' => 'last_name', 'limit' => 200, 'value' => auth()->user()->last_name])
 					</div>
 				</div>
-				<div class="form-group">
-					@include('components.form.input', ['label' => 'Email', 'bag' => 'default', 'name' => 'email', 'limit' => 200, 'value' => auth()->user()->email, 'type' => 'email'])
-				</div>
-				<div class="form-group text-center">
-					<a href="{{ route('password.request') }}" class="link-blue"><strong>I want to change my password</strong></a>
-				</div>
+
+				@include('components.form.input', ['label' => 'Email', 'bag' => 'default', 'name' => 'email', 'limit' => 200, 'value' => auth()->user()->email, 'type' => 'email'])
+
+				@include('components.form.input', ['label' => 'Change your password', 'placeholder' => 'New password', 'bag' => 'default', 'name' => 'password', 'type' => 'password', 'required' => 'no'])
+				@include('components.form.input', ['placeholder' => 'Confirm your password', 'bag' => 'default', 'name' => 'password_confirmation', 'type' => 'password', 'required' => 'no'])
+
 				<div class="form-group">
 					<button class="btn btn-primary shadow btn-block">Save my changes</button>
 				</div>

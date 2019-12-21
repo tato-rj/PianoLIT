@@ -76,5 +76,10 @@ $(function(){
     window.location.hash = this.hash;
   });
 });
+
+$('#request-password-change').click(function() {
+  $(this).hide();
+  $('#change-password').show();
+});
 </script>
 @endpush
