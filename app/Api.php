@@ -14,7 +14,7 @@ class Api
 
     public function __construct()
     {
-        $this->colors = [null, null, 'yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', null, null, 'green'];
+        $this->colors = [null, null, 'darkblue', 'lightblue', 'teal', 'green', 'yellow', 'orange', 'red', 'darkpink', 'purple'];
         $this->limit = mt_rand(6,10);
     }
     
@@ -84,7 +84,7 @@ class Api
     {
         $collection = Tag::atLeast(5)->levels()->select('name')->withCount('pieces')->get();
 
-        $this->withAttributes($collection, ['source' => \URL::to('/api/search'), 'withBackground' => true]);
+        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
@@ -108,7 +108,7 @@ class Api
     {
         $collection = Tag::atLeast(5)->periods()->select('name')->withCount('pieces')->get();
 
-        $this->withAttributes($collection, ['source' => \URL::to('/api/search'), 'withBackground' => true]);
+        $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
