@@ -8,9 +8,21 @@ class StudioPolicy extends PianoLit
     protected $durations = [30, 45, 60];
     protected $sections = ['general', 'performances', 'lessons', 'payments', 'methods', 'materials', 'scheduling', 'makeups', 'withdrawal', 'instrument', 'other', 'agreements'];
     protected $themes = [
-        'simple' => ['colors' => ['#ff6855', '#CA7A14', '#E5E5E5'], 'description' => 'Serif font types with a straight foward clean layout'], 
-        'elegant' => ['colors' => ['#9b786f', '#5D8694', '#EDE9D0'], 'description' => 'Serif font types with more formal and serious style'], 
-        'modern' => ['colors' => ['#2da2a9', '#f8e9a1', '#def2f1'], 'description' => 'Sans serif font types with a more informal design']
+        'simple' => [
+            'colors' => ['#ff6855', '#CA7A14', '#E5E5E5'], 
+            'description' => 'Serif font types with a straight foward clean layout',
+            'thumbnail_path' => 'images/studio-policies/simple.jpg'
+        ], 
+        'elegant' => [
+            'colors' => ['#9b786f', '#5D8694', '#EDE9D0'], 
+            'description' => 'Serif font types with more formal and serious style',
+            'thumbnail_path' => 'images/studio-policies/elegant.jpg'
+        ], 
+        'informal' => [
+            'colors' => ['#2da2a9', '#f8e9a1', '#def2f1'], 
+            'description' => 'Sans serif font types with a more informal design',
+            'thumbnail_path' => 'images/studio-policies/informal.jpg'
+        ]
     ];
 
     public function user()

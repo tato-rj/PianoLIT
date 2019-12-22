@@ -37,7 +37,10 @@
 				@if(auth()->user()->studioPolicies()->exists())
 					<h6><a href="{{route('users.studio-policies.index')}}" class="link-blue">Click here</a> to view the policies you've created</h6>
 				@else
-					<h6>It looks like you haven't created any policies for your studio yet. Click on the button above to get started.</h6>
+					<div class="border rounded px-3 py-5 mt-4 text-center">
+						<h2 class="text-grey mb-1"><i class="far fa-folder-open"></i></h2>
+						<h5 class="text-grey m-0">You have not created a policy yet</h5>
+					</div>
 				@endif
 				@else
 				<h6><a href="{{route('users.studio-policies.index')}}" id="auth-only" class="link-blue">Log in</a> to view the policies you've created</h6>
