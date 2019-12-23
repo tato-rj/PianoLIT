@@ -4,6 +4,21 @@ namespace App\Traits;
 
 trait PieceExtraAttributes
 {
+    public function getAudioAttribute()
+    {
+        return storage($this->audio_path);
+    }
+
+    public function getAudioRhAttribute()
+    {
+        return storage($this->audio_path_rh);        
+    }
+    
+    public function getAudioLhAttribute()
+    {
+        return storage($this->audio_path_lh);        
+    }
+    
     public function getScoreAttribute()
     {
         return storage($this->score_path);
