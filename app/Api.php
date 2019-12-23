@@ -252,7 +252,7 @@ class Api
         }
         
         $pieces->each(function($result) use ($request) {
-            self::setCustomAttributes($result, $request->user_id);
+            // self::setCustomAttributes($result, $request->user_id);
         });
     }
 

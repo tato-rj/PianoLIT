@@ -37,7 +37,7 @@ class ApiController extends Controller
     {
         $inputArray = $this->api->prepareInput($request);
 
-        $results = Piece::search($inputArray, $request);
+        $results = Piece::with(['composer', 'tags'])->search($inputArray, $request);
 
         if ($request->has('count'))
             return response()->json(['count' => $results->count()]);
