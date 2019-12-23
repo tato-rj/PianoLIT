@@ -20,7 +20,7 @@ class Api
     
     public function free($title)
     {
-        $collection = Piece::free()->exists() ? [Piece::free()->first()] : [Piece::first()];
+        $collection = [Piece::free()->first()];
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find'), 'withBackground' => true]);
 
@@ -29,7 +29,7 @@ class Api
 
     public function latest($title)
     {
-        $collection = Piece::latest()->take($this->limit)->get();
+        $collection = Piece::with(['composer'])->latest()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
@@ -56,7 +56,7 @@ class Api
 
     public function women($title)
     {
-        $collection = Piece::byWomen()->shuffle();
+        $collection = Piece::with('composer')->byWomen()->shuffle();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
@@ -92,7 +92,7 @@ class Api
     public function tag($title)
     {
         $tag = Tag::mood()->has('pieces', '>', 20)->inRandomOrder()->pluck('name')->first();
-        $collection = Piece::for($tag)->inRandomOrder()->take($this->limit)->get();
+        $collection = Piece::with('composer')->for($tag)->inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
@@ -159,7 +159,6 @@ class Api
                 $subtitle = $number.' '.'pieces';
             }
 
-            // $subtitle = get_class($model) == 'App\Piece' ? $model->composer->short_name : $model->pieces_count.' '.'pieces';
             $background = empty($args['withBackground']) ? null : $model->getBackground();
 
             $model->setAttribute('source', $args['source']);

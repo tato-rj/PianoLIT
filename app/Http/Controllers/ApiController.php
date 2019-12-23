@@ -9,7 +9,7 @@ class ApiController extends Controller
 {
     public function __construct()
     {
-        $this->api = new Api;        
+        $this->api = new Api;
     }
 
     public function discover($pieces = null, $inputArray = null)
