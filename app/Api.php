@@ -222,13 +222,11 @@ class Api
                 // Bring every word to lower case
                 $pieceArray = array_map('mb_strtolower', $pieceArray);
                 // Prepare the tags array
-                $pieceTags = $piece->tags()->pluck('name');
-                // Prepares the composer name
-                $pieceComposer = mb_strtolower($piece->composer()->pluck('name')->first());
-                $composerGender = mb_strtolower($piece->composer()->pluck('gender')->first());
+                $pieceTags = $piece->tags->pluck('name');
                 // Merges piece relevant fields with tags and composer name
                 $pieceArray = $pieceTags->merge($pieceArray);
-                $pieceArray->push($pieceComposer)->push($composerGender);
+                $pieceArray->push(mb_strtolower($piece->composer->name))
+                           ->push(mb_strtolower($piece->composer->gender));
 
                 $matchesCount = 0;
 
@@ -250,7 +248,7 @@ class Api
         }
         
         $pieces->each(function($result) use ($request) {
-            self::setCustomAttributes($result, $request->user_id);
+            // self::setCustomAttributes($result, $request->user_id);
         });
     }
 
