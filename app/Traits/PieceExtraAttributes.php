@@ -4,6 +4,11 @@ namespace App\Traits;
 
 trait PieceExtraAttributes
 {
+    public function getScoreAttribute()
+    {
+        return storage($model->score_path);
+    }
+
     public function getLevelNameAttribute()
     {
         if ($this->level)
@@ -128,24 +133,6 @@ trait PieceExtraAttributes
         foreach ($videos as $index => $video) {
             $videos[$index]['video_url'] = $this->googleCloud . str_slug($this->composer->name) . '/' . $video['filename'] . '.mp4';
         }
-
-        // $videos = [
-        //     [
-        //         'title' => 'Performance',
-        //         'description' => 'Full length performance of the piece',
-        //         'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
-        //     ],
-        //     [
-        //         'title' => 'Tutorial',
-        //         'description' => 'Balance between right and left hand',
-        //         'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
-        //     ],
-        //     [
-        //         'title' => 'Tutorial',
-        //         'description' => 'Tips to get a full and rich tone',
-        //         'video_url' => 'https://storage.googleapis.com/pianolit-app/videos/cornelius-gurlitt/op205-no3-01.mp4'
-        //     ]
-        // ];
 
         return $videos;
     }
