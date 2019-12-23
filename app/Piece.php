@@ -28,7 +28,8 @@ class Piece extends PianoLit
         'score',
         'audio',
         'audio_rh',
-        'audio_lh'
+        'audio_lh',
+        'is_favorited'
     ];
     protected $report_by = 'medium_name_with_composer';
 
