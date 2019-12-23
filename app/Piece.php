@@ -15,8 +15,9 @@ class Piece extends PianoLit
     protected $folder = 'pieces';
     protected $withCount = ['views', 'tags'];
     protected $appends = [
-        'long_name', 
+        'short_name',
         'medium_name', 
+        'long_name', 
         'recordingsAvailable', 
         'is_public_domain', 
         'level_name', 
@@ -29,7 +30,7 @@ class Piece extends PianoLit
         'audio',
         'audio_rh',
         'audio_lh',
-        'is_favorited'
+        'favorited_by'
     ];
     protected $report_by = 'medium_name_with_composer';
 
@@ -43,9 +44,71 @@ class Piece extends PianoLit
         });
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function views()
+    {
+        return $this->hasMany(PieceView::class);
+    }
+
+    public function composer()
+    {
+        return $this->belongsTo(Composer::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsToThrough(Country::class, Composer::class);
+    }
+
+    public function playlists()
+    {
+        return $this->belongsToMany(Playlist::class);
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
     public function tutorialRequests()
     {
         return $this->hasMany(TutorialRequest::class);
+    }
+
+    public function getLevelAttribute()
+    {
+        return $this->tags()->where('type', 'level')->first();
+    }
+
+    public function getLengthAttribute()
+    {
+        return $this->tags()->where('type', 'length')->first();
+    }
+
+    public function getPeriodAttribute()
+    {
+        return $this->tags()->where('type', 'period')->first();
+    }
+
+    public function getRanking($ranking)
+    {
+        $ranking = $this->tags()->where('name', 'like', "$ranking%")->first();
+
+        return $ranking ? lastword($ranking->name) : null;   
+    }
+
+    public function mood()
+    {
+        return $this->tags()->where('type', 'mood')->get();
     }
 
     public function cloudUrlFor($name)
@@ -103,66 +166,9 @@ class Piece extends PianoLit
         return $copyright ?? 'This work is protected by copyright';
     }
 
-    public function creator()
-    {
-        return $this->belongsTo(Admin::class);
-    }
-
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class);
-    }
-
-    public function views()
-    {
-        return $this->hasMany(PieceView::class);
-    }
-
-    public function composer()
-    {
-    	return $this->belongsTo(Composer::class);
-    }
-
-    public function country()
-    {
-        return $this->belongsToThrough(Country::class, Composer::class);
-    }
-
-    public function playlists()
-    {
-        return $this->belongsToMany(Playlist::class);
-    }
-
     public function getTimelineUrlAttribute()
     {
         return route('api.pieces.timeline', $this->id);
-    }
-
-    public function getLevelAttribute()
-    {
-        return $this->tags()->where('type', 'level')->first();
-    }
-
-    public function getLengthAttribute()
-    {
-        return $this->tags()->where('type', 'length')->first();
-    }
-
-    public function getPeriodAttribute()
-    {
-        return $this->tags()->where('type', 'period')->first();
-    }
-
-    public function getRanking($ranking)
-    {
-        $ranking = $this->tags()->where('name', 'like', "$ranking%")->first();
-
-        return $ranking ? lastword($ranking->name) : null;   
-    }
-
-    public function mood()
-    {
-        return $this->tags()->where('type', 'mood')->get();
     }
 
     public function deleteFiles()
@@ -222,12 +228,9 @@ class Piece extends PianoLit
 
     public function isFavorited($user_id)
     {
-        $result = \DB::table('favorites')->where([
-            'user_id' => $user_id,
-            'piece_id' => $this->id
-        ])->first();
-
-        return $result ? true : false;
+        // return $this->favorited_by;
+        // return ! $this->favorited_by->where('user_id', $user_id)->isEmpty();
+        // return $this->favorites()->where('user_id', $user_id)->exists();
     }
 
     public function scopeFamous($query)
