@@ -6,7 +6,7 @@ trait PieceExtraAttributes
 {
     public function getScoreAttribute()
     {
-        return storage($model->score_path);
+        return storage($this->score_path);
     }
 
     public function getLevelNameAttribute()
