@@ -301,6 +301,7 @@ function gradient($color)
 		'lightpink' => ['#0078DEFF', '#4FAAF0FF'],
 		'lightblue' => ['#0078DEFF', '#4FAAF0FF'],
 		'darkblue' => ['#0048BBFF', '#2F77DDFF'],
+		'darkpink' => ['#F761A1', '#8C1BAB'],
 		'green' => ['#00A490FF', '#44D0B2FF'],
 		'teal' => ['#0098C3FF', '#34CAD2FF'],
 		'purple' => ['#4C22B9FF', '#7952E5FF'],
