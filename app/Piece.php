@@ -18,6 +18,8 @@ class Piece extends PianoLit
         'short_name',
         'medium_name', 
         'long_name', 
+        'catalogue',
+        'collection',
         'recordingsAvailable', 
         'is_public_domain', 
         'level_name', 
