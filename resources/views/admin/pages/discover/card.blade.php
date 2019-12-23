@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-between flex-column rounded bg-full text-white py-2 px-3" 
   		style="height: {{$height ?? '115px'}}; 
 		@if($model->background)
-  		background-image: url({{$model->background}}); background-size: cover;
+  		background-image: url({{$model->background}}); background-size: cover; background-position: center;
   		@else
   		background: linear-gradient(to right, {{gradient($model->color)[0]}}, {{gradient($model->color)[1]}});
   		@endif
