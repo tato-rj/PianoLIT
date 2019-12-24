@@ -37,7 +37,7 @@ class ApiController extends Controller
     {
         $inputArray = $this->api->prepareInput($request);
 
-        $results = Piece::with(['composer', 'tags'])->search($inputArray, $request);
+        $results = Piece::with(['composer', 'tags', 'favorites'])->search($inputArray, $request);
 
         if ($request->has('count'))
             return response()->json(['count' => $results->count()]);
@@ -70,7 +70,7 @@ class ApiController extends Controller
         //     $inputArray = [$level, $mood];
         // }
 
-        $pieces = Piece::with(['composer', 'tags'])->search($inputArray, $request)->get();
+        $pieces = Piece::with(['composer', 'tags', 'favorites'])->search($inputArray, $request)->get();
 
         if (! empty($inputArray))
             $this->api->prepare($request, $pieces, $inputArray);
@@ -87,7 +87,7 @@ class ApiController extends Controller
 
     public function piece(Request $request)
     {
-        $piece = Piece::with(['composer', 'tags'])->findOrFail($request->search);
+        $piece = Piece::with(['composer', 'tags', 'favorites'])->findOrFail($request->search);
 
         $this->api->setCustomAttributes($piece, $request->user_id);
 
@@ -110,9 +110,9 @@ class ApiController extends Controller
 
         $suggestions = $user->suggestions(10);
 
-        // $suggestions->each(function($piece) use ($user) {
-        //     $this->api->setCustomAttributes($piece, $user->id);
-        // });
+        $suggestions->each(function($piece) use ($user) {
+            $this->api->setCustomAttributes($piece, $user->id);
+        });
 
         return $suggestions;
     }
@@ -146,9 +146,9 @@ class ApiController extends Controller
     {
         $pieces = $playlist->pieces;
         
-        // $pieces->each(function($result) {
-        //     $this->api->setCustomAttributes($result, request()->user_id);
-        // });
+        $pieces->each(function($result) {
+            $this->api->setCustomAttributes($result, request()->user_id);
+        });
 
         return $pieces;
     }

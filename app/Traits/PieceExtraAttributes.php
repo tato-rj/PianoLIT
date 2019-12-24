@@ -24,11 +24,6 @@ trait PieceExtraAttributes
         return storage($this->score_path);
     }
 
-    public function getFavoritedByAttribute()
-    {
-        return $this->favorites()->pluck('user_id');
-    }
-
     public function getLevelNameAttribute()
     {
         if ($this->level)

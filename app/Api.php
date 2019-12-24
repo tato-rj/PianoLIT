@@ -170,11 +170,11 @@ class Api
         }
     }
 
-	public function setCustomAttributes($model, $user_id)
+	public function setCustomAttributes(Piece $piece, $user_id)
 	{
-        $classname = get_class($model);
+        $piece->setAttribute('is_favorited', $piece->isFavorited($user_id));
 
-        if ($classname == 'App\Piece') {
+        // if ($classname == 'App\Piece') {
             // $model->setAttribute('videos_array', $model->videos);
             // $model->setAttribute('level', $model->level_name);
             // $model->setAttribute('period', $model->period ? $model->period->name : null);
@@ -195,13 +195,13 @@ class Api
             // $model->composer->setAttribute('born_at', $model->composer->born_at);
             // $model->composer->setAttribute('died_at', $model->composer->died_at);
         
-        } else if ($classname == 'App\Composer') {        
+        // } else if ($classname == 'App\Composer') {        
             // $model->setAttribute('alive_on', $model->alive_on);
             // $model->setAttribute('born_at', $model->born_at);
             // $model->setAttribute('died_at', $model->died_at);
             // $model->setAttribute('short_name', $model->short_name);
             // $model->setAttribute('cover_image', storage($model->cover_path));
-        }
+        // }
 	}
 
     public function prepare($request, $pieces, $inputArray)
@@ -248,7 +248,7 @@ class Api
         }
         
         $pieces->each(function($result) use ($request) {
-            // self::setCustomAttributes($result, $request->user_id);
+            self::setCustomAttributes($result, $request->user_id);
         });
     }
 

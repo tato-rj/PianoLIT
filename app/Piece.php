@@ -230,9 +230,7 @@ class Piece extends PianoLit
 
     public function isFavorited($user_id)
     {
-        // return $this->favorited_by;
-        // return ! $this->favorited_by->where('user_id', $user_id)->isEmpty();
-        // return $this->favorites()->where('user_id', $user_id)->exists();
+        return ! $this->favorites->where('user_id', $user_id)->isEmpty();
     }
 
     public function scopeFamous($query)
