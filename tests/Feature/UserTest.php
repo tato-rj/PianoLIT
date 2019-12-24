@@ -47,7 +47,7 @@ class UserTest extends AppTest
     /** @test */
     public function a_users_favorites_are_removed_when_the_user_is_deleted()
     {
-    	$this->signIn();
+    	$this->signIn($this->user);
 
     	$userId = $this->user->id;
 
@@ -59,7 +59,7 @@ class UserTest extends AppTest
     /** @test */
     public function a_users_views_are_removed_when_the_user_is_deleted()
     {
-    	$this->signIn();
+    	$this->signIn($this->user);
     	
     	$userId = $this->user->id;
 
@@ -73,7 +73,7 @@ class UserTest extends AppTest
     /** @test */
     public function users_can_update_their_own_profile()
     {
-        $this->signIn(create(User::class), 'web');
+        $this->signIn(create(User::class));
 
         $name = auth()->user()->first_name;
 
@@ -89,7 +89,7 @@ class UserTest extends AppTest
     /** @test */
     public function a_users_subscription_is_automatically_updated_when_the_user_changes_the_password()
     {
-        $this->signIn(create(User::class), 'web');
+        $this->signIn(create(User::class));
 
         create(Subscription::class, ['email' => auth()->user()->email]);
 
@@ -110,7 +110,7 @@ class UserTest extends AppTest
     {
         $this->expectException('Illuminate\Auth\Access\AuthorizationException');
 
-        $this->signIn(create(User::class), 'web');
+        $this->signIn(create(User::class));
 
         $this->patch(route('users.update', $this->user->id), [
             'first_name' => 'NewName',
@@ -122,7 +122,7 @@ class UserTest extends AppTest
     /** @test */
     public function users_can_remove_their_own_profile()
     {
-        $this->signIn(create(User::class), 'web');
+        $this->signIn(create(User::class));
 
         $id = auth()->user()->id;
 
@@ -136,7 +136,7 @@ class UserTest extends AppTest
     {
         $this->expectException('Illuminate\Auth\Access\AuthorizationException');
         
-        $this->signIn(create(User::class), 'web');
+        $this->signIn(create(User::class));
 
         $this->delete(route('users.destroy', $this->user->id));
     }

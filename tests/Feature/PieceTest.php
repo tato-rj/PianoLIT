@@ -36,6 +36,34 @@ class PieceTest extends AppTest
     }
 
     /** @test */
+    public function an_admin_can_select_the_highlighted_piece_of_the_week()
+    {
+        $this->signIn();
+
+        $this->assertFalse($this->piece->is_free);
+
+        $this->patch(route('admin.pieces.highlight', $this->piece->id));
+
+        $this->assertTrue($this->piece->fresh()->is_free);
+    }
+
+    /** @test */
+    public function only_one_piece_is_highlighted_at_a_time()
+    {
+        $this->signIn();
+
+        $old = create(Piece::class, ['is_free' => true]);
+
+        $this->assertTrue($old->is_free);
+        $this->assertFalse($this->piece->is_free);
+
+        $this->patch(route('admin.pieces.highlight', $this->piece->id));
+
+        $this->assertFalse($old->fresh()->is_free);
+        $this->assertTrue($this->piece->fresh()->is_free);
+    }
+
+    /** @test */
     public function the_original_file_is_removed_when_a_new_one_is_uploaded()
     {
         \Storage::fake('public');

@@ -86,6 +86,7 @@ $factory->define(Piece::class, function (Faker $faker) {
             'audio_path_lh' => '',
             'itunes' => '',
             'videos' => '',
+            'is_free' => false,
             'score_path' => '',
             'score_editor' => '',
             'score_publisher' => '',

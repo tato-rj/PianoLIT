@@ -237,6 +237,8 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::patch('{piece}/update-tag', 'PiecesController@updateTag')->name('update-tag');
 
+	Route::patch('{piece}/highlight', 'HighlightsController@update')->name('highlight');
+
 	Route::get('{piece}/load-tags', 'PiecesController@loadTags')->name('load-tags');
 
 	Route::get('{piece}/load-levels', 'PiecesController@loadLevels')->name('load-levels');

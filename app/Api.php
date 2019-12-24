@@ -173,35 +173,6 @@ class Api
 	public function setCustomAttributes(Piece $piece, $user_id)
 	{
         $piece->setAttribute('is_favorited', $piece->isFavorited($user_id));
-
-        // if ($classname == 'App\Piece') {
-            // $model->setAttribute('videos_array', $model->videos);
-            // $model->setAttribute('level', $model->level_name);
-            // $model->setAttribute('period', $model->period ? $model->period->name : null);
-            // $model->setAttribute('itunes_array', $model->itunes);
-            // $model->setAttribute('catalogue', $model->catalogue);
-            // $model->setAttribute('collection', $model->collection);
-            // $model->setAttribute('tags_array', $model->tags_array);
-            // $model->setAttribute('short_name', $model->short_name);
-            // $model->setAttribute('medium_name', $model->medium_name);
-            // $model->setAttribute('long_name', $model->long_name);
-            // $model->setAttribute('audio', storage($model->audio_path));
-            // $model->setAttribute('audio_rh', storage($model->audio_path_rh));
-            // $model->setAttribute('audio_lh', storage($model->audio_path_lh));
-            // $model->setAttribute('score', storage($model->score_path));
-            // $model->setAttribute('is_favorited', $model->isFavorited($user_id));
-            // $model->composer->setAttribute('alive_on', $model->composer->alive_on);
-            // $model->composer->setAttribute('short_name', $model->composer->short_name);
-            // $model->composer->setAttribute('born_at', $model->composer->born_at);
-            // $model->composer->setAttribute('died_at', $model->composer->died_at);
-        
-        // } else if ($classname == 'App\Composer') {        
-            // $model->setAttribute('alive_on', $model->alive_on);
-            // $model->setAttribute('born_at', $model->born_at);
-            // $model->setAttribute('died_at', $model->died_at);
-            // $model->setAttribute('short_name', $model->short_name);
-            // $model->setAttribute('cover_image', storage($model->cover_path));
-        // }
 	}
 
     public function prepare($request, $pieces, $inputArray)

@@ -47,7 +47,18 @@
     </div>
   </td>
 
-  <td class="text-right" style="white-space: nowrap;">
+  <td class="text-right d-flex" style="white-space: nowrap;">
+    @if($piece->is_free)
+    <div>
+      <button class="border-0 p-0 bg-transparent text-success mr-2 align-middle" disabled><i class="fas fa-award"></i></button>
+    </div>
+    @else
+    <form method="POST" action="{{route('admin.pieces.highlight', $piece->id)}}">
+      @csrf
+      @method('PATCH')
+      <button type="submit" class="border-0 p-0 bg-transparent text-grey mr-2 align-middle" id="{{$piece->hasImage() ? null : 'missing-image'}}" title="Highlight this piece"><i class="fas fa-award"></i></button>
+    </form>
+    @endif    
     @created($piece)
     <a href="{{route('admin.pieces.edit', $piece->id)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>
     <a href="" data-name="{{$piece->name}}" data-url="{{route('admin.pieces.destroy', $piece->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>

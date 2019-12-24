@@ -73,10 +73,11 @@ class AppTest extends TestCase
         $this->playlist->pieces()->attach($this->piece);
 	}
 
-    protected function signIn($admin = null, $guard = 'admin')
+    protected function signIn($user = null)
     {
-        $admin = ($admin) ?: $this->admin;
-        return $this->actingAs($admin, $guard);
+        $user = $user ?? $this->admin;
+        $guard = get_class($user) == 'App\Admin' ? 'admin' : 'web';
+        return $this->actingAs($user, $guard);
     }
 
     protected function logout()

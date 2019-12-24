@@ -85,7 +85,7 @@ class PieceTest extends AppTest
         $completePiece = create(Piece::class, [
             'score_path' => 'score.pdf', 
             'audio_path' => 'audio.mp3',
-            'videos' => serialize(['videos']),
+            'videos' => serialize([['title' => 'foo', 'description' => 'bar', 'filename' => 'video']]),
             'itunes' => serialize(['itunes'])]);
 
         $completePiece->tags()->attach($this->tag);

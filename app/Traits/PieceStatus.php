@@ -48,4 +48,9 @@ trait PieceStatus
     {
         return $query->whereNull('score_url');
     }
+
+    public function hasImage()
+    {
+        return (bool) $this->cover_path;
+    }
 }

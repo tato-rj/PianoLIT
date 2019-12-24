@@ -70,6 +70,11 @@ small .custom-control-label::before, small .custom-control-label::after {
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
+$('button#missing-image').on('click', function(e) {
+  e.preventDefault();
+  alert('This piece has no cover image.');
+});
+
 $('.delete').on('click', function (e) {
   $piece = $(this);
   name = $piece.attr('data-name');

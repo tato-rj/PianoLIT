@@ -14,9 +14,12 @@ class PurchaseTest extends AppTest
     /** @test */
     public function a_purchase_is_saved_when_an_infograph_is_downloaded()
     {
-        $this->signIn($this->user);
+        $this->signIn();
 
         $infograph = $this->storeInfograph();
+
+        $this->logout();
+        $this->signIn($this->user);
 
         $this->get(route('infographs.download', $infograph->slug));
 
@@ -26,9 +29,12 @@ class PurchaseTest extends AppTest
     /** @test */
     public function the_same_infograph_purchase_is_not_saved_twice_in_the_same_instant()
     {
-        $this->signIn($this->user);
+        $this->signIn();
 
         $infograph = $this->storeInfograph();
+
+        $this->logout();
+        $this->signIn($this->user);
 
         $this->get(route('infographs.download', $infograph->slug));
         $this->get(route('infographs.download', $infograph->slug));
