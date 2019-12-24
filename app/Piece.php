@@ -22,7 +22,7 @@ class Piece extends PianoLit
         'collection',
         'recordingsAvailable', 
         'is_public_domain', 
-        // 'level_name', 
+        'level_name', 
         'timeline_url', 
         'period_name', 
         'rankings', 
@@ -88,7 +88,7 @@ class Piece extends PianoLit
 
     public function getLevelAttribute()
     {
-        return $this->tags()->where('type', 'level')->first()->name;
+        return $this->tags()->where('type', 'level')->first();
     }
 
     public function getLengthAttribute()
