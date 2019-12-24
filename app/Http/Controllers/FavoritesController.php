@@ -23,9 +23,9 @@ class FavoritesController extends Controller
 
         $favorites = $user->favorites;
         
-        $favorites->each(function($piece) use ($user) {
-            $this->api->setCustomAttributes($piece, $user->id);
-        });
+        // $favorites->each(function($piece) use ($user) {
+        //     $this->api->setCustomAttributes($piece, $user->id);
+        // });
 
         return $favorites;
     }
