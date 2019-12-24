@@ -16,7 +16,7 @@ class FavoritesController extends Controller
 
     public function show(Request $request)
     {
-        $user = User::find($request->user_id);
+        $user = User::with('composer')->find($request->user_id);
 
         if (! $user)
             return response()->json(['User not found']);
