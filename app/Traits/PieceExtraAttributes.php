@@ -29,13 +29,13 @@ trait PieceExtraAttributes
         return $this->favorites()->pluck('user_id');
     }
 
-    public function getLevelNameAttribute()
-    {
-        if ($this->level)
-            return $this->level->name;
+    // public function getLevelNameAttribute()
+    // {
+    //     if ($this->level)
+    //         return $this->level->name;
 
-        return null;
-    }
+    //     return null;
+    // }
 
     public function getRankingsAttribute()
     {
