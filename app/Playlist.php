@@ -21,7 +21,7 @@ class Playlist extends PianoLit
 
     public function pieces()
     {
-    	return $this->belongsToMany(Piece::class)->orderBy('order');
+    	return $this->belongsToMany(Piece::class)->with(['composer', 'tags'])->orderBy('order');
     }
 
     public function creator()

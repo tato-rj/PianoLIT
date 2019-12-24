@@ -146,9 +146,9 @@ class ApiController extends Controller
     {
         $pieces = $playlist->pieces;
         
-        $pieces->each(function($result) {
-            $this->api->setCustomAttributes($result, request()->user_id);
-        });
+        // $pieces->each(function($result) {
+        //     $this->api->setCustomAttributes($result, request()->user_id);
+        // });
 
         return $pieces;
     }
