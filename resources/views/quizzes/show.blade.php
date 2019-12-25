@@ -25,13 +25,6 @@
 }
 </style>
 <script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
-<script>
-    window.app = <?php echo json_encode([
-        'csrfToken' => csrf_token(),
-        'page_url' => url()->current(),
-        'page_id' => $quiz->slug
-    ]); ?>
-</script>
 @endpush
 
 @section('content')
