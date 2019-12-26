@@ -101,13 +101,24 @@ class Piece extends PianoLit
         return $this->tags->where('type', 'period')->first();
     }
 
-    public function getRanking($ranking)
+    public function getRanking($type, $complete = true)
     {
-        $ranking = $this->tags->filter(function($item) use ($ranking) {
-            return false !== stristr($item->name, $ranking);
+        $ranking = $this->tags->filter(function($item) use ($type) {
+            return false !== stristr($item->name, $type);
         })->first();
 
-        return $ranking ? lastword($ranking->name) : null;   
+        if ($ranking)
+            return lastword($ranking->name);
+
+        if ($complete) {
+            if ($type == 'rcm' && $this->level->name == 'elementary')
+                return 'PREP';
+
+            if ($type == 'rcm' && $this->level->name == 'advanced')
+                return 'GRAD';
+        }
+
+        return null;
     }
 
     public function mood()

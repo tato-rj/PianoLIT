@@ -34,14 +34,14 @@ trait PieceExtraAttributes
 
     public function getRankingsAttribute()
     {
-        $rcm = $this->getRanking('rcm');
-        $abrsm = $this->getRanking('abrsm');
+        $rcm = $this->getRanking('rcm', false);
+        $abrsm = $this->getRanking('abrsm', false);
 
         if (! $rcm) {
             if ($this->level_name == 'advanced') {
-                $rcmDefault = 'This piece is beyond all RCM levels';
+                $rcmDefault = 'Equivalent to RCM diploma level';
             } elseif ($this->level_name == 'elementary') {
-                $rcmDefault = 'This piece is easier than RCM level 1';                
+                $rcmDefault = 'Equivalent to RCM preparatory levels';                
             } else {
                 $rcmDefault = 'No RCM ranking available yet';
             }
