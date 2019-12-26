@@ -45,7 +45,7 @@ class RequestPublishedNotification extends Notification
         return [
             'title' => 'Tutorial published',
             'message' => $this->request->user->first_name . '\'s request has been published.',
-            'url' => route('admin.tutorial-requests.show', $this->request->id)
+            'url' => route('admin.tutorial-requests.index')
         ];
     }
 }

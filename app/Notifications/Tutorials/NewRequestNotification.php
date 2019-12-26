@@ -45,7 +45,7 @@ class NewRequestNotification extends Notification
         return [
             'title' => 'New tutorial requested',
             'message' => '<strong>' . $this->request->user->first_name . '</strong> requested a new tutorial.',
-            'url' => route('admin.tutorial-requests.show', $this->request->id)
+            'url' => route('admin.tutorial-requests.index')
         ];
     }
 }
