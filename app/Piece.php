@@ -103,7 +103,9 @@ class Piece extends PianoLit
 
     public function getRanking($ranking)
     {
-        $ranking = $this->tags->where('name', 'like', "$ranking%")->first();
+        $ranking = $this->tags->filter(function($item) use ($ranking) {
+            return false !== stristr($item->name, $ranking);
+        })->first();
 
         return $ranking ? lastword($ranking->name) : null;   
     }
