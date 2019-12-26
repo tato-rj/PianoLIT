@@ -19,9 +19,7 @@ class StudioPolicyCreatedListener
      */
     public function handle(StudioPolicyCreated $event)
     {
-        $user = $event->policy->user;
-
-        \Mail::to($user->email)->send(new NewStudioPolicyEmail($event->policy));
+        \Mail::to($event->policy->user->email)->send(new NewStudioPolicyEmail($event->policy));
 
         Admin::notifyAll(new NewStudioPolicyNotification($event->policy));
     }

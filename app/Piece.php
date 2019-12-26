@@ -123,7 +123,7 @@ class Piece extends PianoLit
 
     public function mood()
     {
-        return $this->tags->where('type', 'mood')->get();
+        return $this->tags->where('type', 'mood');
     }
 
     public function cloudUrlFor($name)

@@ -11,19 +11,19 @@
     <div class="row mb-3">
       <div class="col-12">
         <form method="POST" action="{{route('admin.tags.store')}}" class="form-inline">
-          {{csrf_field()}}
+          @csrf
           <input type="text" name="name" placeholder="Create a new tag here" class="form-control mr-2">
-            <select required class="form-control mr-2" name="type">
-              <option selected disabled>Type</option>
-             
-              @foreach(\App\Tag::labels() as $label => $options)
-                <optgroup label="{{ucfirst($label)}} tags">
-                  @foreach($options as $option)
-                  <option value="{{$option}}">{{ucfirst($option)}}</option>
-                  @endforeach
-                </optgroup>
-              @endforeach
-            </select>
+          <select required class="form-control mr-2" name="type">
+            <option selected disabled>Type</option>
+           
+            @foreach(\App\Tag::labels() as $label => $options)
+              <optgroup label="{{ucfirst($label)}} tags">
+                @foreach($options as $option)
+                <option value="{{$option}}">{{ucfirst($option)}}</option>
+                @endforeach
+              </optgroup>
+            @endforeach
+          </select>
           
           <button type="submit" class="btn btn-default">Save</button>
         </form>

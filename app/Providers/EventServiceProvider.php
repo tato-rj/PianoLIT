@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\{Registered, Verified};
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use App\Events\StudioPolicyCreated;
+use App\Events\{StudioPolicyCreated};
 use App\Listeners\{SubscribeUser, StudioPolicyCreatedListener};
 
 class EventServiceProvider extends ServiceProvider
@@ -25,6 +25,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         StudioPolicyCreated::class => [
             StudioPolicyCreatedListener::class,
+        ],
+        \App\Events\Tutorials\NewRequest::class => [
+            \App\Listeners\Tutorials\NewRequestListener::class,
+        ],
+        \App\Events\Tutorials\RequestPublished::class => [
+            \App\Listeners\Tutorials\RequestPublishedListener::class,
         ]
     ];
 

@@ -90,6 +90,7 @@ function camel_str($camel) {
 function emoji($type, $number)
 {
 	$emojis = [
+		'happy' => ['😃', '🤗'],
 		'birthday' => ['🎉', '👏', '🤗', '🎁', '🎂', '🍾', '😃', '🥳']
 	];
 
@@ -98,6 +99,7 @@ function emoji($type, $number)
 
 	$array = $emojis[$type];
 	shuffle($array);
+
 	return array_slice($array, 0, $number);
 }
 

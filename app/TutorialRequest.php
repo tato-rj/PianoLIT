@@ -13,4 +13,9 @@ class TutorialRequest extends PianoLit
     {
     	return $this->belongsTo(Piece::class);
     }
+
+    public function isPublished()
+    {
+    	return ! is_null($this->published_at);
+    }
 }
