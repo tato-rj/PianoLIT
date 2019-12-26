@@ -25,4 +25,15 @@ class PianoLit extends Model
     {
         return $query->where('id', '!=', $this->id);
     }
+
+    public function scopeOrderByMany($query, array $columns)
+    {
+        $result = $query;
+
+        foreach ($columns as $column) {
+            $result = $query->orderBy($column);
+        }
+
+        return $result;
+    }
 }

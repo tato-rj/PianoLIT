@@ -88,29 +88,29 @@ class Piece extends PianoLit
 
     public function getLevelAttribute()
     {
-        return $this->tags()->where('type', 'level')->first();
+        return $this->tags->where('type', 'level')->first();
     }
 
     public function getLengthAttribute()
     {
-        return $this->tags()->where('type', 'length')->first();
+        return $this->tags->where('type', 'length')->first();
     }
 
     public function getPeriodAttribute()
     {
-        return $this->tags()->where('type', 'period')->first();
+        return $this->tags->where('type', 'period')->first();
     }
 
     public function getRanking($ranking)
     {
-        $ranking = $this->tags()->where('name', 'like', "$ranking%")->first();
+        $ranking = $this->tags->where('name', 'like', "$ranking%")->first();
 
         return $ranking ? lastword($ranking->name) : null;   
     }
 
     public function mood()
     {
-        return $this->tags()->where('type', 'mood')->get();
+        return $this->tags->where('type', 'mood')->get();
     }
 
     public function cloudUrlFor($name)
