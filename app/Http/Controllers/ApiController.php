@@ -45,7 +45,7 @@ class ApiController extends Controller
             return response()->json(['count' => $pieces->count()]);
 
         // $pieces = $results->get();
-
+        $pieces->load(['tags', 'composer']);
         // $this->api->prepare($request, $pieces, $inputArray);
 
         if ($request->wantsJson() || $request->has('api'))
