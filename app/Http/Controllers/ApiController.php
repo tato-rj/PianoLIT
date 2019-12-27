@@ -61,7 +61,7 @@ class ApiController extends Controller
         //     $inputArray = [$level, $mood];
         // }
 
-        $pieces = Piece::search($request->search)->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+        $pieces = Piece::search($request->search)->get()->load(['tags', 'composer', 'favorites'])->shuffle()->each->isFavorited($request->user_id);
 
         if ($request->wantsJson() || $request->has('api'))
             return $pieces;
