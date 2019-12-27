@@ -52,6 +52,7 @@ class Piece extends PianoLit
     {
         $array = [
             'name' => $this->name,
+            'long_name' => $this->long_name,
             'nickname' => $this->nickname,
             'catalogue_name' => str_replace('Op.', 'Opus', $this->catalogue_name),
             'catalogue_number' => (integer) $this->catalogue_number,
