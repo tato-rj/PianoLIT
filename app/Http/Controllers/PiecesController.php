@@ -241,8 +241,8 @@ class PiecesController extends Controller
             $piece->save();
         }
 
-        $piece->searchable();
-
+        $piece->fresh()->searchable();
+        
         return redirect()->back()->with('status', "The piece has been successfully updated!");
     }
 

@@ -51,12 +51,19 @@ class Piece extends PianoLit
     public function toSearchableArray()
     {
         $array = [
-            'name' => $this->long_name,
+            'name' => $this->name,
+            'nickname' => $this->nickname,
+            'catalogue_name' => str_replace('Op.', 'Opus', $this->catalogue_name),
+            'catalogue_number' => (integer) $this->catalogue_number,
+            'collection_name' => $this->collection_name,
+            'collection_number' => (integer) $this->collection_number,
+            'movement_number' => (integer) $this->movement_number,
+            'key' => $this->key,
             'tags_array' => $this->tags_array,
             'composer_name' => $this->composer->name,
             'nationality' => $this->composer->nationality,
             'country' => $this->composer->country->name,
-            'rcm' => 'rcm ' . $this->getRanking('rcm', false)
+            // 'rcm' => 'rcm ' . $this->getRanking('rcm', false)
         ];
 
         return $array;
