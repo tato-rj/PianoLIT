@@ -139,18 +139,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function suggestions($limit)
     {
-        $tags = $this->tags();
-
-        $suggestions = Piece::with(['composer', 'tags'])->search($tags)->limit($limit)->get();
-
-        $suggestions->each(function($piece, $key) use ($suggestions) {
-            if ($this->favorites->contains($piece))
-                $suggestions->forget($key);
-
-            if (! $this->favorites()->exists() && $piece->tags->whereIn('name', $this->preferredMood)->isEmpty())
-                $suggestions->forget($key);
-
-        });
+        $suggestions = Piece::search(implode(' ', $this->tags()))->get()->filter(function($piece) {
+            return ! $piece->isFavorited($this->id);
+        })->load(['tags', 'composer', 'favorites'])->shuffle()->take($limit);
 
         return $suggestions;
     }

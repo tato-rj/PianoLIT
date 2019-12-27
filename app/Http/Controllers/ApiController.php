@@ -51,6 +51,11 @@ class ApiController extends Controller
         return view('admin.pages.search.index', compact(['pieces', 'tags']));
     }
 
+    /**
+     * Performs search for the tour tab on the app
+     * @param  Request $request
+     * @return Collection of pieces
+     */
     public function tour(Request $request)
     {
         $pieces = Piece::search($request->search)->get()->load(['tags', 'composer', 'favorites'])->shuffle()->each->isFavorited($request->user_id);
@@ -65,6 +70,11 @@ class ApiController extends Controller
         return view('admin.pages.tour.index', compact(['pieces', 'levels', 'lengths', 'moods']));
     }
 
+    /**
+     * Returns piece to the app
+     * @param  Request $request
+     * @return Array with one piece
+     */
     public function piece(Request $request)
     {
         $piece = Piece::with(['composer', 'tags', 'favorites'])->findOrFail($request->search);
@@ -81,16 +91,7 @@ class ApiController extends Controller
 
     public function suggestions(Request $request)
     {
-        $user = User::find($request->user_id);
-
-        if (! $user)
-            return response()->json(['User not found']);
-
-        $suggestions = $user->suggestions(10);
-
-        $suggestions->each(function($piece) use ($user) {
-            $this->api->setCustomAttributes($piece, $user->id);
-        });
+        $suggestions = User::findOrFail($request->user_id)->suggestions(10);
 
         return $suggestions;
     }
