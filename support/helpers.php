@@ -40,6 +40,11 @@ function calculateReadingTime($text)
     return intval(ceil(str_word_count(strip_tags($text)) / 124));
 }
 
+function avg(array $numbers)
+{
+	return intval(round(array_sum($numbers) / count($numbers)));
+}
+
 function production()
 {
 	return app()->environment() == 'production';

@@ -97,44 +97,45 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getPreferredLevelAttribute()
     {
-        $levels = ['none' => 'beginner', 'some' => 'intermediate', 'a lot' => 'advanced'];
+        $levels = ['elementary', 'beginner', 'intermediate', 'advanced'];
+        $preferences = ['none' => 1, 'some' => 3, 'a lot' => 4];
 
-        $level = array_key_exists($this->experience, $levels) ? $levels[$this->experience] : null;
+        $preferredLevel = array_key_exists($this->experience, $preferences) ? $preferences[$this->experience] : 0;
+        
+        $favoritesLevel = intval(round($this->favorites->avg('level_number')));
 
-        return $level;
+        $key = avg([$preferredLevel, $favoritesLevel]) - 1;
+
+        return array_key_exists($key, $levels) ? $levels[$key] : null;
     }
 
     public function getPreferredMoodAttribute()
     {
-        if (! $this->preferred_Piece)
+        if (! $this->preferred_piece)
             return null;
 
-        return $this->preferredPiece->tags->where('type', 'mood')->pluck('name');        
+        return $this->preferred_piece->tags->where('type', 'mood')->pluck('name');        
     }
 
     public function tags()
     {
         $tags = [];
 
-        if ($this->preferred_Piece) {
-            foreach ($this->preferred_piece->tags as $tag) {
-                array_push($tags, $tag->name);
-            }
-        }
-
-        if (! $this->favorites()->exists() && $this->preferredLevel)
-            array_push($tags, $this->preferredLevel, $this->preferredLevel, $this->preferredLevel, $this->preferredMood);
+        array_push($tags, $this->preferred_mood);
 
         foreach ($this->favorites as $piece) {
-            array_push($tags, $piece->tags->pluck('name'));
+            array_push($tags, $piece->tags->where('type', 'mood')->pluck('name'));
         }
 
         $tags = array_flatten($tags);
-        $orderedTags = array_count_values($tags);
-        
-        arsort($orderedTags);
 
-        return array_keys(array_slice($orderedTags, 0, 6));       
+        $tags = array_count_values($tags);
+        
+        arsort($tags);
+
+        $randomTag = randval(array_keys(array_slice($tags, 0, 3)));
+
+        return [$this->preferred_level, $randomTag];
     }
 
     public function suggestions($limit)

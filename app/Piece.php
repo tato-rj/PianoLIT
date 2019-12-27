@@ -26,6 +26,7 @@ class Piece extends PianoLit
         'recordingsAvailable', 
         'is_public_domain', 
         'level_name', 
+        'level_number',
         'timeline_url', 
         'period_name', 
         'rankings', 
@@ -161,6 +162,13 @@ class Piece extends PianoLit
         }
 
         return $url;
+    }
+
+    public function getLevelNumberAttribute()
+    {
+        $levels = ['elementary' => 1, 'beginner' => 2, 'intermediate' => 3, 'advanced' => 4];
+
+        return $levels[$this->level_name];
     }
 
     public function getTagsCountAttribute($count)

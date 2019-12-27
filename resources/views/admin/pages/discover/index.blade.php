@@ -14,9 +14,9 @@
     <a href="{{route('admin.api.discover', ['api'])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
   </div>
 
-{{--   <div class="row mx-3">
+  <div class="row mx-3">
     <div class="col-lg-6 col-md-8 col-10 mx-auto">
-      <form method="POST" action="{{route('api.users.suggestions')}}">
+      <form method="POST" action="{{route('api.users.suggestions')}}" target="_blank">
         @csrf
         <div class="form-group">
           <select name="user_id" class="form-control" onchange="this.form.submit()">
@@ -28,7 +28,7 @@
         </div>
       </form>
     </div>
-  </div> --}}
+  </div>
 
   <div class="row">
    <div class="col-lg-6 col-md-8 col-10 mx-auto mb-5">
