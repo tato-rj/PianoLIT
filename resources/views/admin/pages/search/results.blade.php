@@ -6,7 +6,7 @@
     {{-- The global field indicates a search using the text input --}}
     <input type="hidden" name="global">
     {{-- The search field is the one containing the user input --}}
-    <input type="hidden" name="search" value="{{implode(' ', $inputArray)}}">
+    <input type="hidden" name="search" value="{{$search}}">
     <button type="submit" class="btn btn-sm btn-link">See JSON response</button>
   </form>
 </div>

@@ -38,6 +38,11 @@ class Tag extends PianoLit
         return $this->belongsToMany(Piece::class);
     }
 
+    public function scopeName($query, $search)
+    {
+        return $query->where('name', $search);
+    }
+
     public function scopeLabels($query)
     {
         return $this->labels;

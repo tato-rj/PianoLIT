@@ -35,9 +35,12 @@ class ApiController extends Controller
 
     public function search(Request $request)
     {
-        $inputArray = [];
+        $search = $request->search;
 
-        $pieces = Piece::search($request->search)->get();
+        if (Tag::name($search)->exists())
+            $search = '"'.$search.'"';
+
+        $pieces = Piece::search($search)->get();
 
         if ($request->has('count'))
             return response()->json(['count' => $pieces->count()]);
@@ -53,7 +56,7 @@ class ApiController extends Controller
 
         $tags = Tag::display()->pluck('name');
         
-        return view('admin.pages.search.index', compact(['pieces', 'inputArray', 'tags']));
+        return view('admin.pages.search.index', compact(['pieces', 'search', 'tags']));
     }
 
     public function tour(Request $request)

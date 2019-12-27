@@ -63,7 +63,6 @@ class Piece extends PianoLit
             'composer_name' => $this->composer->name,
             'nationality' => $this->composer->nationality,
             'country' => $this->composer->country->name,
-            // 'rcm' => 'rcm ' . $this->getRanking('rcm', false)
         ];
 
         return $array;
