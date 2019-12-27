@@ -241,6 +241,8 @@ class PiecesController extends Controller
             $piece->save();
         }
 
+        $piece->searchable();
+
         return redirect()->back()->with('status', "The piece has been successfully updated!");
     }
 
@@ -249,6 +251,8 @@ class PiecesController extends Controller
         $piece->tags()->detach($request->old_level_id);
         $piece->tags()->attach($request->new_level_id);
 
+        $piece->searchable();
+
         return response()->json(['level_name' => ucfirst($piece->level->name), 'level_id' => $piece->level->id]);
     }
 
@@ -256,6 +260,8 @@ class PiecesController extends Controller
     {
         $piece->tags()->toggle($request->id);
 
+        $piece->searchable();
+        
         return response()->json(['count' => $piece->fresh()->tags_count]);
     }
 

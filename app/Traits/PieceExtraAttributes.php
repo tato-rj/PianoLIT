@@ -18,6 +18,11 @@ trait PieceExtraAttributes
     {
         return storage($this->audio_path_lh);        
     }
+
+    public function getTagsListAttribute()
+    {
+        return $this->tags->implode('name', ',');
+    }
     
     public function getScoreAttribute()
     {
@@ -119,7 +124,7 @@ trait PieceExtraAttributes
         $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
         $name .= $this->isTranscription() ? " (piano transcription)" : '';
         
-        return rm_whitespaces($name);
+        return str_replace('Op.', 'Opus ', rm_whitespaces($name));
     }
 
     public function getMediumNameWithComposerAttribute()

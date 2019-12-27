@@ -35,22 +35,24 @@ class ApiController extends Controller
 
     public function search(Request $request)
     {
-        $inputArray = $this->api->prepareInput($request);
+        $inputArray = [];
+        // $inputArray = $this->api->prepareInput($request);
 
-        $results = Piece::with(['composer', 'tags', 'favorites'])->search($inputArray, $request);
+        $pieces = Piece::search($request->search)->get();
+        // $results = Piece::with(['composer', 'tags', 'favorites'])->search($inputArray, $request);
 
         if ($request->has('count'))
-            return response()->json(['count' => $results->count()]);
+            return response()->json(['count' => $pieces->count()]);
 
-        $pieces = $results->get();
+        // $pieces = $results->get();
 
-        $this->api->prepare($request, $pieces, $inputArray);
+        // $this->api->prepare($request, $pieces, $inputArray);
 
         if ($request->wantsJson() || $request->has('api'))
             return $pieces;
 
-        if ($request->has('discover'))
-            return $this->discover($pieces, $inputArray);
+        // if ($request->has('discover'))
+        //     return $this->discover($pieces, $inputArray);
 
         $tags = Tag::display()->pluck('name');
         

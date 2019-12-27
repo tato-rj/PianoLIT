@@ -2,8 +2,10 @@
 
 namespace App;
 
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Builder;
-use App\Traits\{PieceExtraAttributes, PieceStatus, Searchable};
+use App\Traits\{PieceExtraAttributes, PieceStatus};
+// use App\Traits\{PieceExtraAttributes, PieceStatus, Searchable};
 use Illuminate\Http\Request;
 use App\Tools\Cropper;
 
@@ -32,7 +34,7 @@ class Piece extends PianoLit
         'score',
         'audio',
         'audio_rh',
-        'audio_lh',
+        'audio_lh'
     ];
     protected $report_by = 'medium_name_with_composer';
 
@@ -44,6 +46,19 @@ class Piece extends PianoLit
             $piece->tags()->detach();
             $piece->deleteFiles();
         });
+    }
+
+    public function toSearchableArray()
+    {
+        $array = [
+            'name' => $this->long_name,
+            'tags_array' => $this->tags_array,
+            'composer_name' => $this->composer->name,
+            'nationality' => $this->composer->nationality,
+            'country' => $this->composer->country->name,
+        ];
+
+        return $array;
     }
 
     public function creator()

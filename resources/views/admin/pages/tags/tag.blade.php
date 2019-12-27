@@ -8,7 +8,4 @@
 	 data-toggle="modal" 
 	 data-target="#tag-modal">
   <p class="m-0">{{$tag->name}}</p>
-  @if(\App\Tag::special()->get()->contains($tag))
-  <i class="fas fa-star text-warning ml-2 fa-xs" style="margin-right: -10px"></i>
-  @endif
 </div>

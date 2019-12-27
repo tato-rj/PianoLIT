@@ -64,6 +64,19 @@ class TagTest extends AppTest
     }
 
     /** @test */
+    public function all_tags_relationships_are_removed_when_the_tag_is_deleted()
+    {
+        $tagId = $this->tag->id;
+
+        $this->signIn();
+
+        $this->delete(route('admin.tags.destroy', $this->tag->id));
+
+        $this->assertDatabaseMissing('tags', ['id' => $tagId]);
+        $this->assertDatabaseMissing('piece_tag', ['tag_id' => $tagId]);
+    }
+
+    /** @test */
     public function unauthorized_admins_cannot_delete_tags()
     {
         $this->expectException('Illuminate\Auth\Access\AuthorizationException');

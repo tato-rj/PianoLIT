@@ -14,7 +14,20 @@ class Tag extends PianoLit
     ];
 
     private $specialTags = ['dreamy', 'elegant', 'flashy', 'crazy', 'melancholic', 'happy'];
-    
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::updated(function($tag) {
+            $tag->pieces()->searchable();
+        });
+
+        self::deleting(function($tag) {
+            $tag->pieces()->detach();
+        });
+    }
+
     public function creator()
     {
         return $this->belongsTo(Admin::class);
