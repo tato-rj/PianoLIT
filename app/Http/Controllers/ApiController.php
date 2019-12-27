@@ -68,7 +68,7 @@ class ApiController extends Controller
     public function piece(Request $request)
     {
         $piece = Piece::with(['composer', 'tags', 'favorites'])->findOrFail($request->search);
-
+dd('test');
         $piece->isFavorited($request->user_id);
 
         return [$piece];
