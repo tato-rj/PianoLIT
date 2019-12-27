@@ -36,9 +36,7 @@ class ApiController extends Controller
 
     public function search(Request $request)
     {
-        $search = $request->search;
-
-        $pieces = Piece::search($search)->get();
+        $pieces = Piece::search($request->search)->get();
 
         if ($request->has('count'))
             return response()->json(['count' => $pieces->count()]);
@@ -50,15 +48,12 @@ class ApiController extends Controller
 
         $tags = Tag::display()->pluck('name');
         
-        return view('admin.pages.search.index', compact(['pieces', 'search', 'tags']));
+        return view('admin.pages.search.index', compact(['pieces', 'tags']));
     }
 
     public function tour(Request $request)
     {
-        $inputArray = $this->api->prepareInput($request);
-
         // if (! empty($inputArray)) {
-            
         //     $level = array_shift($inputArray);
         //     dd($inputArray);
         //     $mood = $inputArray[array_rand($inputArray, 1)];
@@ -66,10 +61,7 @@ class ApiController extends Controller
         //     $inputArray = [$level, $mood];
         // }
 
-        $pieces = Piece::with(['composer', 'tags', 'favorites'])->search($inputArray, $request)->get();
-
-        if (! empty($inputArray))
-            $this->api->prepare($request, $pieces, $inputArray);
+        $pieces = Piece::search($request->search)->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 
         if ($request->wantsJson() || $request->has('api'))
             return $pieces;
@@ -78,7 +70,7 @@ class ApiController extends Controller
         $lengths = Tag::lengths()->get();
         $moods = Tag::special()->get();
                 
-        return view('admin.pages.tour.index', compact(['pieces', 'inputArray', 'levels', 'lengths', 'moods']));
+        return view('admin.pages.tour.index', compact(['pieces', 'levels', 'lengths', 'moods']));
     }
 
     public function piece(Request $request)

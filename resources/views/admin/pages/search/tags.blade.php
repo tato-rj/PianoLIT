@@ -1,11 +1,11 @@
 <form method="GET" action="{{route('admin.api.search')}}" class="p-3">
   {{-- The search field is the one containing the user input --}}
-  <input type="hidden" id="search" name="search" value="{{$search}}">
+  <input type="hidden" id="search" name="search" value="{{request('search')}}">
   <div class="d-flex flex-wrap mb-3" id="tags-search">
     @foreach($tags as $tag)
     <span 
       class="tag rounded-pill 
-      {{$tag == str_rm($search,'"') ? 'selected-tag random-pill-'.rand(1,4) : 'bg-light'}} 
+      {{$tag == str_rm(request('search'),'"') ? 'selected-tag random-pill-'.rand(1,4) : 'bg-light'}} 
       px-3 py-1 m-1 cursor-pointer"
       style="-moz-user-select: none; 
           -webkit-user-select: none; 
