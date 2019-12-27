@@ -15,9 +15,11 @@
 
     <div class="row">
       <div class="col-12 mb-2">
-        <div class="mb-4">
+        @env('local')
+        <div>
         @include('admin.pages.requests.simulate')
         </div>
+        @endenv
         <div>
         
         </div>
