@@ -53,14 +53,6 @@ class ApiController extends Controller
 
     public function tour(Request $request)
     {
-        // if (! empty($inputArray)) {
-        //     $level = array_shift($inputArray);
-        //     dd($inputArray);
-        //     $mood = $inputArray[array_rand($inputArray, 1)];
-
-        //     $inputArray = [$level, $mood];
-        // }
-
         $pieces = Piece::search($request->search)->get()->load(['tags', 'composer', 'favorites'])->shuffle()->each->isFavorited($request->user_id);
 
         if ($request->wantsJson() || $request->has('api'))
@@ -77,11 +69,9 @@ class ApiController extends Controller
     {
         $piece = Piece::with(['composer', 'tags', 'favorites'])->findOrFail($request->search);
 
-        $this->api->setCustomAttributes($piece, $request->user_id);
+        $piece->isFavorited($request->user_id);
 
-        $result[0] = $piece;
-
-        return $result;
+        return [$piece];
     }
 
     public function user(Request $request)
