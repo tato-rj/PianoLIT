@@ -102,7 +102,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $preferredLevel = array_key_exists($this->experience, $preferences) ? $preferences[$this->experience] : 0;
         
-        $favoritesLevel = intval(round($this->favorites->avg('level_number')));
+        $favoritesLevel = intval(floor($this->favorites->avg('level_number')));
 
         $key = avg([$preferredLevel, $favoritesLevel]) - 1;
 
