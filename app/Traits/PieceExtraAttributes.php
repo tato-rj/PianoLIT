@@ -124,7 +124,7 @@ trait PieceExtraAttributes
         $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
         $name .= $this->isTranscription() ? " (piano transcription)" : '';
         
-        return str_replace('Op.', 'Opus ', rm_whitespaces($name));
+        return rm_whitespaces($name);
     }
 
     public function getMediumNameWithComposerAttribute()
