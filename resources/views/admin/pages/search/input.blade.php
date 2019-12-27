@@ -11,7 +11,7 @@
       name="search" 
       placeholder="Search here..."
       style="border-bottom: 1px solid lightgrey !important;"
-      value="{{$search}}" 
+      value="{{str_rm($search, '"')}}" 
       required 
       class="form-control border-0 rounded-0">
     <button class="btn btn-sm btn-default ml-2">Search</button>

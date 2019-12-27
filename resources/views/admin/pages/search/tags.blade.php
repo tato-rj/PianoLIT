@@ -5,7 +5,7 @@
     @foreach($tags as $tag)
     <span 
       class="tag rounded-pill 
-      {{$tag == $search ? 'selected-tag random-pill-'.rand(1,4) : 'bg-light'}} 
+      {{$tag == str_rm($search,'"') ? 'selected-tag random-pill-'.rand(1,4) : 'bg-light'}} 
       px-3 py-1 m-1 cursor-pointer"
       style="-moz-user-select: none; 
           -webkit-user-select: none; 

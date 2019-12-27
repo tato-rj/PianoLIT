@@ -10,6 +10,7 @@ class ApiController extends Controller
     public function __construct()
     {
         $this->api = new Api;
+        $this->middleware('search.exact')->only('search');
     }
 
     public function discover($pieces = null, $inputArray = null)
@@ -37,9 +38,6 @@ class ApiController extends Controller
     {
         $search = $request->search;
 
-        if (Tag::name($search)->exists())
-            $search = '"'.$search.'"';
-
         $pieces = Piece::search($search)->get();
 
         if ($request->has('count'))
@@ -47,9 +45,11 @@ class ApiController extends Controller
 
         $pieces->load(['tags', 'composer', 'favorites']);
 
-        foreach ($pieces as $piece) {
-            $piece->setAttribute('is_favorited', $piece->isFavorited($request->user_id));
-        }
+        $pieces->each->isFavorited($request->user_id);
+        // foreach ($pieces as $piece) {
+        //     $piece->setAttribute('is_favorited', $piece->isFavorited($request->user_id));
+        //     $piece->setAttribute('foo', 'bar');
+        // }
 
         if ($request->wantsJson() || $request->has('api'))
             return $pieces;

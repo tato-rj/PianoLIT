@@ -375,3 +375,8 @@ function str_ends_with($str, $chars)
 {
 	return in_array(substr($str, -1), $chars);
 }
+
+function str_rm($str, $remove)
+{
+	return str_replace($remove, '', $str);
+}

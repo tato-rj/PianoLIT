@@ -266,7 +266,11 @@ class Piece extends PianoLit
 
     public function isFavorited($user_id)
     {
-        return ! $this->favorites->where('user_id', $user_id)->isEmpty();
+        $status = ! $this->favorites->where('user_id', $user_id)->isEmpty();
+
+        $this->is_favorited = $status;
+
+        return $status;
     }
 
     public function scopeFamous($query)
