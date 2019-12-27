@@ -46,6 +46,10 @@ class ApiController extends Controller
 
         // $pieces = $results->get();
         $pieces->load(['tags', 'composer']);
+
+        foreach ($pieces as $piece) {
+            $piece->setAttribute('is_favorited', $piece->isFavorited($request->user_id));
+        }
         // $this->api->prepare($request, $pieces, $inputArray);
 
         if ($request->wantsJson() || $request->has('api'))
