@@ -1,7 +1,4 @@
 <?php
-Route::get('php-info', function() {
-	dd(phpinfo());
-});
 
 Route::resources([
     'subscriptions' => 'SubscriptionsController'
