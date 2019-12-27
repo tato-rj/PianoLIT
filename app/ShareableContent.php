@@ -91,9 +91,9 @@ abstract class ShareableContent extends PianoLit
         return $query->whereNotBetween('published_at', [now()->copy()->subWeek(), now()]);
     }
 
-    public function scopeSuggestions($query, $number)
+    public function scopeSuggestions($query, $number = 4)
     {
-        return $query->inRandomOrder()->published()->take(4);
+        return $query->inRandomOrder()->published()->take($number);
     }
 
     public function scopeSearch($query, array $columns, $input)
