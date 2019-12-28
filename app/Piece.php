@@ -344,13 +344,13 @@ class Piece extends PianoLit
     {
         foreach (['Notebook for Anna Magdalena Bach'] as $collection) {
             if ($this->collection_name == $collection)
-                return Piece::exceptThis()->where(['collection_name' => $collection])
+                return Piece::exceptThis()->with(['composer', 'tags'])->where(['collection_name' => $collection])
                     ->orderByRaw('cast(collection_number as unsigned)')
                     ->orderByRaw('cast(movement_number as unsigned)')
                     ->get();
         }
 
-        $pieces = Piece::exceptThis()
+        $pieces = Piece::exceptThis()->with(['composer', 'tags'])
                     ->where(['composer_id' => $this->composer_id, 'collection_name' => $this->collection_name, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
                     ->orderByRaw('cast(collection_number as unsigned)')
                     ->orderByRaw('cast(movement_number as unsigned)')
@@ -368,7 +368,7 @@ class Piece extends PianoLit
     {
         $mood = $this->mood()->pluck('id');
 
-        $similar = Piece::exceptThis()->whereHas('tags', function(Builder $query) use ($mood) {
+        $similar = Piece::exceptThis()->with(['tags', 'composer'])->whereHas('tags', function(Builder $query) use ($mood) {
             $query->whereIn('id', $mood);
         })->get();
 

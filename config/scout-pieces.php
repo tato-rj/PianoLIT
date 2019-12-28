@@ -182,7 +182,10 @@ return [
     'synonyms' => [
         ['sharp', '#'],
         ['flat', 'flat'],
-        ['etude', 'study', 'etudes', 'studies']
+        ['etude', 'study', 'etudes', 'studies'],
+        ['easy', 'beginner'],
+        ['easy', 'elementary'],
+        ['difficult', 'advanced']
     ],
     'separatorsToIndex' => '#',
 ];
