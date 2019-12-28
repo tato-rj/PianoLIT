@@ -143,7 +143,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function suggestions($limit)
     {
         return Piece::search($this->tags($string = true))
-                    ->generic()
+                    // ->generic()
                     ->get()
                     ->favorited(false, $this->id)
                     ->load(['tags', 'composer', 'favorites'])
