@@ -145,9 +145,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return Piece::search($this->tags($string = true))
                     ->generic()
                     ->get()
-                    ->favorited(false, $this->id)
+                    // ->favorited(false, $this->id)
                     ->load(['tags', 'composer', 'favorites'])
-                    ->scoutRelevance()
+                    // ->scoutRelevance()
                     ->take($limit);
     }
 
