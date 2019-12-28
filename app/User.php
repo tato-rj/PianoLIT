@@ -117,7 +117,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->preferred_piece->tags->where('type', 'mood')->pluck('name');        
     }
 
-    public function tags()
+    public function tags($string = false)
     {
         $tags = [];
 
@@ -133,18 +133,22 @@ class User extends Authenticatable implements MustVerifyEmail
         
         arsort($tags);
 
-        $randomTag = randval(array_keys(array_slice($tags, 0, 3)));
+        $tags = array_keys(array_slice($tags, 0, 3));
 
-        return [$this->preferred_level, $randomTag];
+        array_push($tags, $this->preferred_level);
+
+        return $string ? implode(' ', $tags) : $tags;
     }
 
     public function suggestions($limit)
     {
-        $suggestions = Piece::search(implode(' ', $this->tags()))->get()->filter(function($piece) {
-            return ! $piece->isFavorited($this->id);
-        })->load(['tags', 'composer', 'favorites'])->shuffle()->take($limit);
-
-        return $suggestions;
+        return Piece::search($this->tags(true))
+                    ->generic()
+                    ->get()
+                    ->favorited(false, $this->id)
+                    ->load(['tags', 'composer', 'favorites'])
+                    ->scoutRelevance()
+                    ->take($limit);
     }
 
     public function getFullNameAttribute()

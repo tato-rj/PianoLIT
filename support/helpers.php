@@ -42,7 +42,7 @@ function calculateReadingTime($text)
 
 function avg(array $numbers)
 {
-	return intval(floor(array_sum($numbers) / count($numbers)));
+	return intval(round(array_sum($numbers) / count($numbers)));
 }
 
 function production()

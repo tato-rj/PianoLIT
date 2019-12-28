@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Infograph\Infograph;
+use Illuminate\Support\Collection;
+use Laravel\Scout\Builder;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +39,26 @@ class AppServiceProvider extends ServiceProvider
 
         \Blade::if('env', function ($environment) {
             return app()->environment($environment);
+        });
+
+        Builder::macro('generic', function() {
+            $this->callback = function($algolia, $query, $options) {
+                return $algolia->search($query, ['optionalWords' => $query, 'getRankingInfo' => true]);
+            };
+
+            return $this;
+        });
+
+        Collection::macro('scoutRelevance', function() {
+            return $this->sortByDesc(function($piece, $key) {
+                return $piece->scoutMetadata()['_rankingInfo']['words'];
+            })->values();
+        });
+
+        Collection::macro('favorited', function($bool, $user_id) {
+            return $this->filter(function($piece) use ($bool, $user_id) {
+                return $bool ? $piece->isFavorited($user_id) : ! $piece->isFavorited($user_id);
+            });
         });
     }
 }
