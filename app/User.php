@@ -97,16 +97,16 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getPreferredLevelAttribute()
     {
-        // $levels = ['elementary', 'beginner', 'intermediate', 'advanced'];
-        // $preferences = ['none' => 1, 'some' => 3, 'a lot' => 4];
+        $levels = ['elementary', 'beginner', 'intermediate', 'advanced'];
+        $preferences = ['none' => 1, 'some' => 3, 'a lot' => 4];
 
-        // $preferredLevel = array_key_exists($this->experience, $preferences) ? $preferences[$this->experience] : 0;
+        $preferredLevel = array_key_exists($this->experience, $preferences) ? $preferences[$this->experience] : 0;
         
-        // $favoritesLevel = intval(floor($this->favorites->avg('level_number')));
+        $favoritesLevel = intval(floor($this->favorites->avg('level_number')));
 
-        // $key = avg([$preferredLevel, $favoritesLevel]) - 1;
+        $key = avg([$preferredLevel, $favoritesLevel]) - 1;
 
-        return 'advanced';//array_key_exists($key, $levels) ? $levels[$key] : null;
+        return array_key_exists($key, $levels) ? $levels[$key] : null;
     }
 
     public function getPreferredMoodAttribute()
