@@ -178,5 +178,6 @@ return [
         'custom',
     ],
     'typoTolerance' => 'true',
+    'hitsPerPage' => 1000,
 ];
 
