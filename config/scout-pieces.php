@@ -179,5 +179,11 @@ return [
     ],
     'typoTolerance' => 'true',
     'hitsPerPage' => 1000,
+    'synonyms' => [
+        ['sharp', '#'],
+        ['flat', 'flat'],
+        ['etude', 'study', 'etudes', 'studies']
+    ],
+    'separatorsToIndex' => '#',
 ];
 
