@@ -133,7 +133,7 @@ class User extends Authenticatable implements MustVerifyEmail
         
         arsort($tags);
 
-        $tags = array_keys(array_slice($tags, 0, 3));
+        $tags = array_keys(array_slice($tags, 0, 2));
 
         array_push($tags, $this->preferred_level);
 
@@ -143,7 +143,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function suggestions($limit)
     {
         return Piece::search($this->tags($string = true))
-                    // ->generic()
+                    ->generic()
                     ->get()
                     ->favorited(false, $this->id)
                     ->load(['tags', 'composer', 'favorites'])
