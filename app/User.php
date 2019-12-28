@@ -120,35 +120,57 @@ class User extends Authenticatable implements MustVerifyEmail
     public function tags($string = false)
     {
         $tags = [];
-
-        array_push($tags, $this->preferred_mood);
-
-        foreach ($this->favorites as $piece) {
-            array_push($tags, $piece->tags->where('type', 'mood')->pluck('name'));
+        if ($this->preferred_Piece) {
+            foreach ($this->preferred_piece->tags as $tag) {
+                array_push($tags, $tag->name);
+            }
         }
-
+        if (! $this->favorites()->exists() && $this->preferredLevel)
+            array_push($tags, $this->preferredLevel, $this->preferredLevel, $this->preferredLevel, $this->preferredMood);
+        foreach ($this->favorites as $piece) {
+            array_push($tags, $piece->tags->pluck('name'));
+        }
         $tags = array_flatten($tags);
-
-        $tags = array_count_values($tags);
+        $orderedTags = array_count_values($tags);
         
-        arsort($tags);
+        arsort($orderedTags);
+        return array_keys(array_slice($orderedTags, 0, 6));    
 
-        $tags = array_keys(array_slice($tags, 0, 2));
+        //////////////////
+        // NEEDS REVIEW //
+        //////////////////
+        // $tags = [];
 
-        array_push($tags, $this->preferred_level);
+        // array_push($tags, $this->preferred_mood);
 
-        return $string ? implode(' ', $tags) : $tags;
+        // foreach ($this->favorites as $piece) {
+        //     array_push($tags, $piece->tags->where('type', 'mood')->pluck('name'));
+        // }
+
+        // $tags = array_flatten($tags);
+
+        // $tags = array_count_values($tags);
+        
+        // arsort($tags);
+
+        // $tags = array_keys(array_slice($tags, 0, 2));
+
+        // array_push($tags, $this->preferred_level);
+
+        // return $string ? implode(' ', $tags) : $tags;
     }
 
     public function suggestions($limit)
     {
-        return Piece::search($this->tags($string = true))
-                    ->generic()
-                    ->get()
-                    // ->favorited(false, $this->id)
-                    ->load(['tags', 'composer', 'favorites'])
-                    // ->scoutRelevance()
-                    ->take($limit);
+        $tags = $this->tags();
+        $suggestions = Piece::localSearch($tags)->with(['tags', 'composer'])->limit($limit)->get();
+        $suggestions->each(function($piece, $key) use ($suggestions) {
+            if ($this->favorites->contains($piece))
+                $suggestions->forget($key);
+            if (! $this->favorites()->exists() && $piece->tags->whereIn('name', $this->preferredMood)->isEmpty())
+                $suggestions->forget($key);
+        });
+        return $suggestions;
     }
 
     public function getFullNameAttribute()
