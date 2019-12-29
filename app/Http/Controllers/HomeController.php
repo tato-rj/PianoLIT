@@ -24,18 +24,18 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $collections = collect([
-            $this->api->order(0)->latest('Latest pieces'),
-            $this->api->order(1)->composers('Most famous composers'),
-            $this->api->order(2)->women('Women composers'),
-            $this->api->order(3)->levels('Levels'),
-            $this->api->order(4)->ranking('rcm', 'Equivalent to the RCM levels'),
-            $this->api->order(5)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
-            $this->api->order(6)->improve('Improve your'),
-            $this->api->order(7)->tag('Pieces that are '),
-            $this->api->order(8)->periods('Periods'),
-        ]);
-
+        // $collections = collect([
+        //     $this->api->order(0)->latest('Latest pieces'),
+        //     $this->api->order(1)->composers('Most famous composers'),
+        //     $this->api->order(2)->women('Women composers'),
+        //     $this->api->order(3)->levels('Levels'),
+        //     $this->api->order(4)->ranking('rcm', 'Equivalent to the RCM levels'),
+        //     $this->api->order(5)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
+        //     $this->api->order(6)->improve('Improve your'),
+        //     $this->api->order(7)->tag('Pieces that are '),
+        //     $this->api->order(8)->periods('Periods'),
+        // ]);
+        $collections = collect();
         $tags = Tag::display()->inRandomOrder()->get();
 
         return view('welcome.index', compact(['collections', 'tags']));

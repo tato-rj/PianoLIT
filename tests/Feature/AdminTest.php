@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\{Admin, Subscription};
+use App\{Admin, Subscription, User};
 use Tests\AppTest;
 use App\Mail\Newsletter\Welcome as WelcomeToNewsletter;
 
@@ -85,5 +85,36 @@ class AdminTest extends AppTest
         $this->assertEquals(3, Subscription::count());
 
         \Mail::assertNotQueued(WelcomeToNewsletter::class);
+    }
+
+    /** @test */
+    public function guests_cannot_impersonate_users()
+    {
+        $this->expectException('Symfony\Component\HttpKernel\Exception\HttpException');
+
+        $this->get(route('impersonate', $this->user))->assertStatus(403);
+    }
+
+    /** @test */
+    public function users_cannot_impersonate_users()
+    {
+        $this->signIn(create(User::class));
+
+        $this->expectException('Symfony\Component\HttpKernel\Exception\HttpException');
+
+        $this->get(route('impersonate', $this->user))->assertStatus(403);
+    }
+
+    /** @test */
+    public function admins_can_impersonate_users()
+    {
+        $this->signIn();
+
+        $this->assertEquals(get_class(auth()->user()), get_class($this->admin));
+
+        $this->get(route('impersonate', $this->user));
+
+        $this->assertEquals(get_class(auth()->user()), get_class($this->user));
+        $this->assertEquals(auth()->user()->email, $this->user->email);
     }
 }

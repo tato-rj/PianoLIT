@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\{User, Piece, Api};
+use App\{User, Piece, Api, Admin};
+use App\Notifications\User\AccountDeleted;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
@@ -193,8 +194,12 @@ class UsersController extends Controller
     public function destroy(User $user)
     {
         $this->authorize('update', $user);
-        
+
         $user->delete();
+
+        session()->flush();
+
+        Admin::notifyAll(new AccountDeleted($user));
 
         return back()->with('status', 'The user has been successfully deleted');
     }

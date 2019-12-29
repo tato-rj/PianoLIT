@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\AppTest;
 use Tests\Traits\ManageDatabase;
 use App\{User, Subscription};
+use App\Notifications\User\AccountDeleted;
 
 class UserTest extends AppTest
 {
@@ -129,6 +130,18 @@ class UserTest extends AppTest
         $this->delete(route('users.destroy', auth()->user()->id));
 
         $this->assertDatabaseMissing('users', ['id' => $id]);
+    }
+
+    /** @test */
+    public function admins_are_notified_when_a_user_removes_their_profile()
+    {
+        \Notification::fake();
+
+        $this->signIn(create(User::class));
+
+        $this->delete(route('users.destroy', auth()->user()));
+
+        \Notification::assertSentTo($this->admin, AccountDeleted::class);
     }
 
     /** @test */

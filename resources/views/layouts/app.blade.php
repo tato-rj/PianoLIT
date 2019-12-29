@@ -159,6 +159,10 @@
 
         <main style="overflow-x: hidden">
             @yield('content')
+            
+            @if(session()->has('impersonator'))
+            <div class="alert alert-warning fixed-bottom-right"><i class="fas fa-exclamation-triangle mr-2"></i>You are impersonating {{possessive(auth()->user()->first_name)}} account</div>
+            @endif
         </main>
         @include('components.overlays.search.form')
 

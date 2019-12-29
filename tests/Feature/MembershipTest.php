@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\User;
 use Tests\AppTest;
 use App\Services\Apple\Sandbox\Membership as AppleMembership;
+
 class MembershipTest extends AppTest
 {
     /** @test */

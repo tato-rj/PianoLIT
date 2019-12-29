@@ -5,7 +5,6 @@ namespace App;
 use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Builder;
 use App\Traits\{PieceExtraAttributes, PieceStatus};
-// use App\Traits\{PieceExtraAttributes, PieceStatus, Searchable};
 use Illuminate\Http\Request;
 use App\Tools\Cropper;
 

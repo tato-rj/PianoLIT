@@ -36,12 +36,12 @@ class ApiController extends Controller
 
     public function search(Request $request)
     {
-        $pieces = Piece::search($request->search)->get();
+        $pieces = Piece::search($request->search);
 
         if ($request->has('count'))
             return response()->json(['count' => $pieces->count()]);
 
-        $pieces->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+        $pieces = $pieces->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 
         if ($request->wantsJson() || $request->has('api'))
             return $pieces;

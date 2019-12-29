@@ -71,6 +71,8 @@ class Subscription extends PianoLit
         $this->validateList($list);
 
         $this->update([$list => ! $this->$list]);
+
+        return $this;
     }
 
     public function scopeByEmail($query, $email)

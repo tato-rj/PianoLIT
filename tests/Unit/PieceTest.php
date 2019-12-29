@@ -65,9 +65,9 @@ class PieceTest extends AppTest
 		$this->piece->tags()->attach($length);
 		$this->piece->tags()->attach($period);
 
-		$this->assertNotNull($this->piece->level);
-		$this->assertNotNull($this->piece->length);
-		$this->assertNotNull($this->piece->period);
+		$this->assertNotNull($this->piece->fresh()->level);
+		$this->assertNotNull($this->piece->fresh()->length);
+		$this->assertNotNull($this->piece->fresh()->period);
 	}
 
     /** @test */
@@ -147,7 +147,7 @@ class PieceTest extends AppTest
         $pieceAlsoNotSimilar = create(Piece::class);
         $pieceAlsoNotSimilar->tags()->attach([$baroque->id, $advanced->id, $meditative->id]);
 
-        $this->assertCount(1, $piece->similar());
-        $this->assertEquals($piece->similar()->first()->id, $pieceSimilar->id);
+        $this->assertCount(1, $piece->fresh()->similar());
+        $this->assertEquals($piece->fresh()->similar()->first()->id, $pieceSimilar->id);
     }
 }
