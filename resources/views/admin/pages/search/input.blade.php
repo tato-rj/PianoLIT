@@ -3,8 +3,7 @@
     <div class="input-group-prepend">
       <i class="fas fa-lightbulb bg-white text-brand border-0 input-group-text" style="line-height: 1.5"></i>
     </div>
-    {{-- The global field indicates a search using the text input --}}
-    <input type="hidden" name="global">
+    <input type="hidden" name="lazy-load">
     {{-- The search field is the one containing the user input --}}
     <input 
       type="text" 

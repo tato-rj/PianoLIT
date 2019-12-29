@@ -41,9 +41,9 @@ class AppServiceProvider extends ServiceProvider
             return app()->environment($environment);
         });
 
-        Builder::macro('generic', function() {
-            $this->callback = function($algolia, $query, $options) {
-                return $algolia->search($query, ['optionalWords' => $query, 'getRankingInfo' => true]);
+        Builder::macro('options', function($params) {
+            $this->callback = function($algolia, $query, $options) use ($params) {
+                return $algolia->search($query, $params);
             };
 
             return $this;

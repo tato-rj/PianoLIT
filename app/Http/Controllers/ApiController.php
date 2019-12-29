@@ -37,20 +37,38 @@ class ApiController extends Controller
     public function search(Request $request)
     {
         if ($request->has('search')) {
-            $pieces = Piece::search($request->search);
+            $options = $request->has('lazy-load') ? ['hitsPerPage' => 5, 'page' => $request->page ?? 0] : [];
+
+            $pieces = Piece::search($request->search)->options($options);
+            $total = $pieces->count();
 
             if ($request->has('count'))
-                return response()->json(['count' => $pieces->count()]);
+                return response()->json(['count' => $total]);
 
             $pieces = $pieces->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 
             if ($request->wantsJson() || $request->has('api'))
                 return $pieces;
+
+            if ($request->has('rendered'))
+                return view('admin.pages.search.result-rows', compact('pieces'))->render();
         }
+
+        // if ($request->has('search')) {
+        //     $pieces = Piece::search($request->search);
+
+        //     if ($request->has('count'))
+        //         return response()->json(['count' => $pieces->count()]);
+
+        //     $pieces = $pieces->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+
+        //     if ($request->wantsJson() || $request->has('api'))
+        //         return $pieces;
+        // }
 
         $tags = Tag::display()->pluck('name');
         
-        return view('admin.pages.search.index', ['pieces' => $pieces ?? [], 'tags' => $tags]);
+        return view('admin.pages.search.index', ['pieces' => $pieces ?? [], 'total' => $total ?? null, 'tags' => $tags]);
     }
 
     /**

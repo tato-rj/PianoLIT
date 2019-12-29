@@ -67,6 +67,25 @@ $('#tags-search .tag').on('click', function() {
 </script>
 
 <script type="text/javascript">
+var page = 0;
+$('button#load-more').on('click', function() {
+  let $button = $(this);
+  let url = $button.attr('data-url');
+
+  $button.prop('disabled', true).text('LOADING...');
+
+  $.get(url, {page: page += 1}, function(response) {
+    console.log('Loading page: ' + page);
+    if (response) {
+      $button.prev('.list-group').append(response);
+      $(response).insertAfter($('.result-row').last());
+      $button.prop('disabled', false).text('Load more');
+    } else {
+      $button.prop('disabled', false).text('No more pieces to show');      
+    }
+  });
+});
+
 $('.delete').on('click', function (e) {
   $piece = $(this);
   name = $piece.attr('data-name');

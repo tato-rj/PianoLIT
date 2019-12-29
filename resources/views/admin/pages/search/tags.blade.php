@@ -1,6 +1,6 @@
 <form method="GET" action="{{route('admin.api.search')}}" class="p-3">
-  {{-- The search field is the one containing the user input --}}
   <input type="hidden" id="search" name="search" value="{{request('search')}}">
+  <input type="hidden" name="lazy-load">
   <div class="d-flex flex-wrap mb-3" id="tags-search">
     @foreach($tags as $tag)
     <span 
