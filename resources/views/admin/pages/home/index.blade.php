@@ -30,25 +30,25 @@
           'color' => 'advanced',
           'icon' => 'music',
           'label' => $pieces_count . ' Pieces',
-          'url' => route('admin.stats.pieces')])
+          'url' => route('admin.pieces.index')])
 
         @include('admin.pages.home.card', [
           'color' => 'beginner',
           'icon' => 'address-card',
           'label' => $composers_count . ' Composers',
-          'url' => route('admin.stats.composers')])
+          'url' => route('admin.composers.index')])
 
         @include('admin.pages.home.card', [
           'color' => 'elementary',
           'icon' => 'book-open',
           'label' => $quiz_results_count . ' Quiz results',
-          'url' => route('admin.stats.quizzes')])
+          'url' => route('admin.quizzes.index')])
 
         @include('admin.pages.home.card', [
           'color' => 'intermediate',
           'icon' => 'users',
           'label' => $users_count . ' Users',
-          'url' => route('admin.stats.users')])
+          'url' => route('admin.users.index')])
 
         @include('admin.pages.home.card', [
           'color' => 'beginner',
@@ -60,7 +60,7 @@
           'color' => 'advanced',
           'icon' => 'newspaper',
           'label' => $blog_count . ' Blog posts',
-          'url' => route('admin.stats.blog')])
+          'url' => route('admin.posts.index')])
         </div>
   
         <div class="col-lg-6 col-md-6 col-12 row no-gutters">

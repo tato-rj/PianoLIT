@@ -11,6 +11,15 @@ small .custom-control-label::before, small .custom-control-label::after {
 .dropdown-toggle:after {
   display: none!important;
 }
+.dataTables_wrapper > .row:nth-of-type(2) {
+  overflow-x: auto;
+}
+div.dataTables_paginate li.previous a:before, div.dataTables_paginate li.next a:after {
+  content: none;
+}
+div.dataTables_paginate li.previous > a, div.dataTables_paginate li.next > a {
+  padding: .5rem .75rem!important;
+}
 </style>
 @endsection
 
@@ -23,19 +32,17 @@ small .custom-control-label::before, small .custom-control-label::after {
     'description' => 'Manage the pieces'])
 
     <div class="row">
-      <div class="col-12 d-flex justify-content-between">
-        <div>
-          <a href="{{route('admin.pieces.create')}}" class="btn btn-sm btn-default">
-            <i class="fas fa-plus mr-2"></i>Add a new piece
-          </a>
-        </div>
-        <div>
-          @include('admin.components.filters.pieces')
-        </div>
+      <div class="col-lg-4 col-md-4 col-12 mb-3 hide-on-sm">
+        <a href="{{route('admin.pieces.create')}}" class="btn btn-sm btn-default">
+          <i class="fas fa-plus mr-2"></i>Add a new piece
+        </a>
+      </div>
+      <div class="col-lg-8 col-md-8 col-12 mb-3">
+        @include('admin.components.filters.pieces')
       </div>
     </div>
 
-    <div class="row my-3">
+    <div class="row mb-3">
       <div class="col-12">
         <table class="table table-hover" id="pieces-table" style="display: none;">
           <thead>
@@ -84,8 +91,14 @@ $('.delete').on('click', function (e) {
 
 $(document).ready( function () {
   $('#pieces-table').DataTable({
-    'aaSorting': [],
-    'ordering': false,
+    aaSorting: [],
+    ordering: false,
+    language: {
+      paginate: {
+        next: '&#8594;', // or '→'
+        previous: '&#8592;' // or '←' 
+      }
+    }
     // 'columnDefs': [ { 'orderable': false, 'targets': [0, 4] } ],
   });
 

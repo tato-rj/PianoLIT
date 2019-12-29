@@ -8,7 +8,7 @@
         <div class="mr-5">{{$label}}</div>
       </div>
       <a class="card-footer color-inherit clearfix small z-1" href="{{$url}}">
-        <span class="float-left">See JSON response</span>
+        <span class="float-left">More details</span>
         <span class="float-right">
           <i class="fa fa-angle-right"></i>
         </span>

@@ -9,14 +9,14 @@
         <a href="{{route('pieces.show', $piece->id)}}" target="_blank" class="dropdown-item">Score</a>
       </div>
     </div>
-    <div class="d-flex">
+    <div class="d-flex hide-on-sm">
       <span class="{{$piece->curiosity ? 'text-primary' : 'text-muted'}}" title="{{$piece->curiosity}}"><i class="fas fa-info-circle mr-1"></i></span>
       @include('admin.components.play', ['audio' => storage($piece->audio_path)])
       <span class="mx-1 {{$piece->videos_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$piece->videos_count}}</span>
       <span class="{{$piece->itunes_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$piece->itunes_count}}</span>
     </div>
   </td>
-  <td>{{$piece->long_name}}
+  <td style="min-width: 260px">{{$piece->long_name}}
     @if(! $piece->hasAudio())
     <a href="{{youtube($piece->long_name . ' by ' . $piece->composer->name)}}" target="_blank" class="link-blue"><i class="fas fa-external-link-alt ml-1 fa-xs"></i></a>
     @endif
@@ -32,7 +32,7 @@
   </td>
   <td class="position-relative">
     <span class="badge badge-light badge-popup cursor-pointer" id="badge-tag-{{$piece->id}}">{{$piece->tags_count}}</span>
-    <div class="position-absolute bg-white shadow-sm border p-2 rounded popup mb-3" data-url="{{route('admin.pieces.load-tags', $piece->id)}}" style="top: 10px; display: none; z-index: 2; right: 0; width: 720px">
+    <div class="position-absolute bg-white shadow-sm border p-2 rounded popup mb-3 tags-quick-edit" data-url="{{route('admin.pieces.load-tags', $piece->id)}}" style="top: 10px; display: none; z-index: 2; right: 0; width: 720px">
       @include('admin.pages.pieces.popups.content')
     </div>
   </td>

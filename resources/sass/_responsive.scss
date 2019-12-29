@@ -55,7 +55,15 @@
 			justify-content: center;
 		}
 	}
-	
+
+	.tags-quick-edit {
+		width: 580px!important;
+	}
+
+	.dataTables_filter label {
+		width: 100%!important;
+	}
+
 	#blog-post {
 		h1 {
 			font-size: 2.25rem !important;

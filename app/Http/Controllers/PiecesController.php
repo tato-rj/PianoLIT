@@ -14,7 +14,7 @@ class PiecesController extends Controller
      */
     public function index()
     {
-        $pieces = Piece::with(['tags', 'composer'])->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path'])->orderBy('updated_at', 'desc')->get();
+        $pieces = Piece::with(['tags', 'composer'])->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])->orderBy('updated_at', 'desc')->get();
 
         return view('admin.pages.pieces.index', compact('pieces'));
     }
