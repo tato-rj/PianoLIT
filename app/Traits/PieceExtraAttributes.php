@@ -132,6 +132,11 @@ trait PieceExtraAttributes
         return $this->medium_name . ' by ' . $this->composer->short_name;
     }
 
+    public function getLongNameWithComposerAttribute()
+    {
+        return $this->long_name . ' by ' . $this->composer->short_name;
+    }
+
     public function getTimelineNameAttribute()
     {
         if ($this->nickname)

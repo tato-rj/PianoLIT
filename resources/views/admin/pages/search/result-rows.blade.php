@@ -6,6 +6,6 @@
     display: inline-block;
     border-radius: 50%;
 "></span>
-	{{$piece->medium_name_with_composer}}
+	{{$piece->long_name_with_composer}}
 </small></a>
 @endforeach
