@@ -7,7 +7,7 @@ use App\{Piece, Tag, Api};
 
 class SearchController extends Controller
 {
-    protected $pieces, $total;
+    protected $pieces;
 
     public function __construct()
     {
@@ -55,10 +55,10 @@ class SearchController extends Controller
     {
         $query = Piece::search($request->search)->options($this->options);
 
-        $this->total = $query->count();
+       = $query->count();
 
         if ($request->has('count'))
-            return response()->json(['count' => $total]);
+            return response()->json(['count' =]);
 
         $this->pieces = $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 
