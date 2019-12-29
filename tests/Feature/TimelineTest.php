@@ -40,7 +40,7 @@ class TimelineTest extends AppTest
 
         $oldYear = $this->timeline->year;
 
-        $this->patch(route('admin.timelines.update', $this->timeline->id), make(Timeline::class)->toArray());
+        $this->patch(route('admin.timelines.update', $this->timeline->id), make(Timeline::class, ['year' => 1000])->toArray());
 
         $this->assertNotEquals($oldYear, $this->timeline->fresh()->year);
     }

@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between">
-  <p class="text-center btn-sm">We found {{$total}} {{str_plural('result', $total)}} out of {{\App\Piece::count()}} pieces</p>
+  <p class="text-center btn-sm">We found a total of {{$total}} {{str_plural('result', $total)}} out of {{\App\Piece::count()}} pieces</p>
   <form method="GET" action="{{route('admin.api.search')}}" target="_blank">
     <input type="hidden" name="api">
     <input type="hidden" name="search" value="{{request('search')}}">

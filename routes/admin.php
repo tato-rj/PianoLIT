@@ -160,7 +160,7 @@ Route::prefix('api')->name('api.')->group(function() {
 
 	Route::get('discover', 'ApiController@discover')->name('discover');
 
-	Route::get('search', 'ApiController@search')->name('search');
+	Route::get('search', 'SearchController@search')->name('search');
 
 	Route::get('tour', 'ApiController@tour')->name('tour');
 

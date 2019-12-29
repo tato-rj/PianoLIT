@@ -7,9 +7,12 @@ use App\{Piece, Tag, Api};
 
 class SearchController extends Controller
 {
+    protected $pieces, $total;
+
     public function __construct()
     {
-        $this->api = new Api;      
+        $this->api = new Api;
+        $this->options = request()->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => request()->page ?? 0] : [];
     }
 
     public function index(Request $request)
@@ -42,12 +45,41 @@ class SearchController extends Controller
 
     public function search(Request $request)
     {
-        $inputArray = $this->api->prepareInput($request);
+        if ($request->has('search'))
+            return $this->handle($request);
 
-        $pieces = Piece::search($inputArray, $request)->get();
+        return $this->toAdmin();
+    }
 
-        $this->api->prepare($request, $pieces, $inputArray);
+    public function handle(Request $request)
+    {
+        $query = Piece::search($request->search)->options($this->options);
 
-        return $pieces;
+        $this->total = $query->count();
+
+        if ($request->has('count'))
+            return response()->json(['count' => $total]);
+
+        $this->pieces = $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+
+        return $this->next($request);
+    }
+
+    public function toAdmin()
+    {
+        $tags = Tag::display()->pluck('name');
+        
+        return view('admin.pages.search.index', ['pieces' => $this->pieces ?? [], 'total' => $this->total ?? null, 'tags' => $tags]);
+    }
+
+    public function next(Request $request)
+    {
+        if ($request->wantsJson() || $request->has('api'))
+            return $pieces;
+
+        if ($request->has('rendered'))
+            return view('admin.pages.search.result-rows', ['pieces' => $this->pieces])->render();
+
+        return $this->toAdmin();
     }
 }
