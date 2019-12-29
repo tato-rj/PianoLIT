@@ -10,9 +10,14 @@
     <button type="submit" class="btn btn-sm btn-link">See JSON response</button>
   </form>
 </div>
-
-<div class="list-group list-group-flush mx-2">
+<div class="text-center alert-warning rounded p-2 mb-3">
+  <small><i class="fas fa-stopwatch mr-1"></i>This query took <strong>{{ number_format((microtime(true) - LARAVEL_START), 1) }}</strong> seconds to load</small>
+</div>
+<div class="list-group">
   @foreach($pieces as $piece)
-  <a href="{{route('admin.pieces.edit', $piece->id)}}" title="Click to edit" class="list-group-item list-group-item-action">{{$piece->LongName}}</a>
+  <a href="{{route('admin.pieces.edit', $piece->id)}}" title="Click to edit" class="py-2 border-0 list-group-item list-group-item-action"><small>
+    <span class="badge alert-teal mr-1 badge-pill">{{$loop->iteration}}</span>
+    {{$piece->LongName}}
+  </small></a>
   @endforeach
 </div>
