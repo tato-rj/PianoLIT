@@ -41,7 +41,7 @@ class ApiController extends Controller
         if ($request->has('count'))
             return response()->json(['count' => $pieces->count()]);
 
-        $pieces = $pieces->get()->each->isFavorited($request->user_id);
+        $pieces = $pieces->get()->load(['tags', 'composer', 'favorites']);
 
         if ($request->wantsJson() || $request->has('api'))
             return $pieces;
