@@ -13,7 +13,7 @@
     @include('admin.pages.search.result-rows')
 </div>
 @if(request()->has('lazy-load'))
-<button class="btn btn-block btn-outline-secondary" id="load-more" 
+<button class="btn btn-block btn-outline-secondary mt-3" id="load-more" 
   data-url="{{route('admin.api.search', [
     'search' => request('search'),
     'lazy-load', 'rendered'

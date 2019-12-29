@@ -4,7 +4,6 @@
       <i class="fas fa-lightbulb bg-white text-brand border-0 input-group-text" style="line-height: 1.5"></i>
     </div>
     <input type="hidden" name="lazy-load">
-    {{-- The search field is the one containing the user input --}}
     <input 
       type="text" 
       name="search" 
