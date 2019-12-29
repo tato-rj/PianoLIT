@@ -75,7 +75,7 @@ class SearchController extends Controller
     public function next(Request $request)
     {
         if ($request->wantsJson() || $request->has('api'))
-            return $pieces;
+            return $this->pieces;
 
         if ($request->has('rendered'))
             return view('admin.pages.search.result-rows', ['pieces' => $this->pieces])->render();
