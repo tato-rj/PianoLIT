@@ -42,7 +42,7 @@ class ApiController extends Controller
             if ($request->has('count'))
                 return response()->json(['count' => $pieces->count()]);
 
-            $pieces = $pieces->get();
+            $pieces = $pieces->paginate(20);
 dd(number_format((microtime(true) - LARAVEL_START), 1));
             if ($request->wantsJson() || $request->has('api'))
                 return $pieces;
