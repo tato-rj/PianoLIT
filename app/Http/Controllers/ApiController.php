@@ -36,19 +36,21 @@ class ApiController extends Controller
 
     public function search(Request $request)
     {
-        $pieces = Piece::search($request->search);
+        if ($request->has('search')) {
+            $pieces = Piece::search($request->search);
 
-        if ($request->has('count'))
-            return response()->json(['count' => $pieces->count()]);
+            if ($request->has('count'))
+                return response()->json(['count' => $pieces->count()]);
 
-        $pieces = $pieces->get()->load(['tags', 'composer', 'favorites']);
+            $pieces = $pieces->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 
-        if ($request->wantsJson() || $request->has('api'))
-            return $pieces;
+            if ($request->wantsJson() || $request->has('api'))
+                return $pieces;
+        }
 
         $tags = Tag::display()->pluck('name');
         
-        return view('admin.pages.search.index', compact(['pieces', 'tags']));
+        return view('admin.pages.search.index', ['pieces' => $pieces ?? [], 'tags' => $tags]);
     }
 
     /**
