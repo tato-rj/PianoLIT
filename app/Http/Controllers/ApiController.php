@@ -42,8 +42,8 @@ class ApiController extends Controller
             if ($request->has('count'))
                 return response()->json(['count' => $pieces->count()]);
 
-            $pieces = $pieces->paginate(20);
-dd(number_format((microtime(true) - LARAVEL_START), 1));
+            $pieces = $pieces->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+
             if ($request->wantsJson() || $request->has('api'))
                 return $pieces;
         }
