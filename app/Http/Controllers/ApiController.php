@@ -38,7 +38,7 @@ class ApiController extends Controller
     {
         if ($request->has('search')) {
             $pieces = Piece::search($request->search);
-
+dd(number_format((microtime(true) - LARAVEL_START), 1));
             if ($request->has('count'))
                 return response()->json(['count' => $pieces->count()]);
 

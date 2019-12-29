@@ -14,10 +14,10 @@
   <small><i class="fas fa-stopwatch mr-1"></i>This query took <strong>{{ number_format((microtime(true) - LARAVEL_START), 1) }}</strong> seconds to load</small>
 </div>
 <div class="list-group">
-{{--   @foreach($pieces as $piece)
+  @foreach($pieces as $piece)
   <a href="{{route('admin.pieces.edit', $piece->id)}}" title="Click to edit" class="py-2 border-0 list-group-item list-group-item-action"><small>
     <span class="badge alert-teal mr-1 badge-pill">{{$loop->iteration}}</span>
     {{$piece->medium_name_with_composer}}
   </small></a>
-  @endforeach --}}
+  @endforeach
 </div>
