@@ -55,10 +55,10 @@ class SearchController extends Controller
     {
         $query = Piece::search($request->search)->options($this->options);
 
-       = $query->count();
+        $total = $query->count();
 
         if ($request->has('count'))
-            return response()->json(['count' =]);
+            return response()->json(['count' => $total]);
 
         $this->pieces = $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 
