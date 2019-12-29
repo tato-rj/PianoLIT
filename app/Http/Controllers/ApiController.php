@@ -37,7 +37,7 @@ class ApiController extends Controller
     public function search(Request $request)
     {
         if ($request->has('search')) {
-            $options = $request->has('lazy-load') ? ['hitsPerPage' => 5, 'page' => $request->page ?? 0] : [];
+            $options = $request->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => $request->page ?? 0] : [];
 
             $pieces = Piece::search($request->search)->options($options);
             $total = $pieces->count();
