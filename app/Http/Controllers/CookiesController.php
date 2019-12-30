@@ -31,5 +31,7 @@ class CookiesController extends Controller
 
 		    \Redis::hmset("visitor.$visitorId", $data);
     	}
+
+    	return \Redis::hgetall('visitor.' . $visitorId);
     }
 }
