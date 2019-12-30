@@ -24,11 +24,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // $visitor = \Redis::hgetall('visitor.' . request()->cookie('visitor_id'));
-        // $visits = collect(json_decode($visitor['visits']));
-        // $info = collect(json_decode($visitor['info']));
+        $visitor = \Redis::hgetall('visitor.' . request()->cookie('visitor_id'));
+        $visits = collect(json_decode($visitor['visits']));
+        $info = collect(json_decode($visitor['info']));
 
-        // return $visits;
+        return $visits;
         
         $collections = collect();
         $tags = Tag::display()->inRandomOrder()->get();
