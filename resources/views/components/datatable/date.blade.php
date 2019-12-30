@@ -1,0 +1,1 @@
+<td class="text-nowrap">{{$date->toFormattedDateString()}}</td>

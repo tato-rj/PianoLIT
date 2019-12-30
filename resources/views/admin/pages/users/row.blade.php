@@ -1,17 +1,23 @@
 <tr>
   <td style="width: 16px">
     <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input check-user" data-id="{{$user->id}}" id="check-user-{{$user->id}}">
-      <label class="custom-control-label" for="check-user-{{$user->id}}"></label>
+      <input type="checkbox" class="custom-control-input check-user" data-id="{{$item->id}}" id="check-user-{{$item->id}}">
+      <label class="custom-control-label" for="check-user-{{$item->id}}"></label>
     </div>
   </td>
-  <td style="white-space: nowrap;">{{$user->created_at->toFormattedDateString()}}</td>
-  <td title="Subscribed at {{$user->created_at->format('g:i:s a')}}">{{$user->full_name}}</td>
-  <td class="text-truncate">{{$user->origin}}</td>
+
+  @include('components.datatable.date', ['date' => $item->created_at])
+  
+  <td title="Subscribed at {{$item->created_at->format('g:i:s a')}}" class="dataTables_main_column">{{$item->full_name}}</td>
+  
+  <td class="text-truncate" title="{{ucfirst($item->origin)}}">
+    <i class="fas text-muted fa-{{$item->origin_icon}}"></i><span class="position-absolute invisible">{{$item->origin_icon}}</span>
+  </td>
+  
   <td class="text-truncate">
-    @if($user->membership()->exists())
-      @if($user->membership->expired())
-      <span class="text-muted"><i><small>validated {{$user->membership->validated_at->diffForHumans()}}</small></i></span>
+    @if($item->membership()->exists())
+      @if($item->membership->expired())
+      <span class="text-muted"><i><small>validated {{$item->membership->validated_at->diffForHumans()}}</small></i></span>
       @else
       <div><i class="fas fa-credit-card"></i></div>
       @endif
@@ -19,11 +25,17 @@
       Guest
     @endif
   </td>
-  <td>@include('admin.components.toggle.super-user')</td>
-  <td class="text-right" style="white-space: nowrap;">
-    <a href="mailto:{{$user->email}}" title="Send an email to {{$user->first_name}}" target="_blank" class="text-muted mr-2"><i class="far fa-envelope align-middle"></i></a>
-    <a href="{{route('admin.users.show', $user)}}" title="View details" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
-    <a href="{{route('impersonate', $user)}}" title="Impersonate user" target="_blank" class="text-muted mr-2"><i class="fas fa-user-secret align-middle"></i></a>
-    <a href="#" data-name="{{$user->full_name}}" title="Delete user" data-url="{{route('admin.users.destroy', $user)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-danger"><i class="far fa-trash-alt align-middle"></i></a>
+  
+  <td>
+    @toggle(['toggle' => $item->super_user, 'route' => route('admin.users.super-status', $item->id)])
   </td>
+
+  @include('components.datatable.actions', ['actions' => [
+      'other' => [
+        ['route' => "mailto:$item->email", 'title' => "Send an email to $item->first_name", 'icon' => 'envelope'],
+        ['route' => route('impersonate', $item), 'title' => "Impersonate user", 'icon' => 'user-secret']
+      ],
+      'edit' => route('admin.users.show', $item),
+      'delete' => route('admin.users.destroy', $item)
+  ]])
 </tr>

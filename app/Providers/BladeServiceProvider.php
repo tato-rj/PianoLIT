@@ -30,6 +30,8 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.form.options');
         \Blade::include('components.form.error');
         \Blade::include('components.form.tinyeditor');
+        \Blade::include('components.form.toggle');
+        \Blade::include('components.datatable.layout', 'datatable');
 
         \Blade::directive('popup', function ($card) {
             return view('components.overlays.subscribe.model-2');

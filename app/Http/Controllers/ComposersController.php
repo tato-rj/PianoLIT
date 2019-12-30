@@ -125,7 +125,7 @@ class ComposersController extends Controller
     {
         $composer->update(['is_famous' => ! $composer->is_famous]);
 
-        return response(200);
+        return response()->json(['status' => 'The composer has been updated.']);
     }
 
     /**

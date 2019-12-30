@@ -331,6 +331,12 @@ $('.no-click').bind('contextmenu', function(e) {
 }); 
 </script>
 
+<script type="text/javascript">
+$(document).ready(function() {
+    $.post("{{ route('cookies.store') }}");
+});
+</script>
+
     @stack('scripts')
 
 </body>

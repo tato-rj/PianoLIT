@@ -1,18 +1,26 @@
 <tr>
-	<td>{{$infograph->name}}</td>
-	<td>{{$infograph->downloads}}</td>
-	<td>{{$infograph->score}}</td>
+	@include('components.datatable.date', ['date' => $item->created_at])
+
+	<td class="dataTables_main_column">{{$item->name}}</td>
+
+	<td>{{$item->downloads}} {{str_plural('time', $item->downloads)}}</td>
+
+	<td>{{$item->score}} {{str_plural('point', $item->score)}}</td>
+	
 	<td>
-		@include('admin.components.toggle.infograph', ['attribute' => 'published_at'])
+		@toggle(['toggle' => $item->published_at, 'route' => route('admin.infographs.update-status', ['infograph' => $item->slug, 'attribute' => 'published_at'])])
 	</td>
+
 	<td>
-		@include('admin.components.toggle.infograph', ['attribute' => 'giftable_at'])
+		@toggle(['toggle' => $item->giftable_at, 'route' => route('admin.infographs.update-status', ['infograph' => $item->slug, 'attribute' => 'giftable_at'])])
 	</td>
-	<td class="text-right" style="white-space: nowrap;">
-		<a href="#" data-toggle="modal" data-thumbnail="{{storage($infograph->thumbnail_path)}}" data-image="{{storage($infograph->cover_path)}}" data-target="#infograph-preview" class="text-muted mr-2"><i class="fas fa-eye align-middle"></i></a>
-		<a href="{{route('admin.infographs.edit', $infograph->slug)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>
-		@can('update', $infograph)
-		<a href="" data-name="{{$infograph->name}}" data-url="{{route('admin.infographs.destroy', $infograph->slug)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
-		@endcan
-	</td>
+
+  @component('components.datatable.actions', ['actions' => [
+      'edit' => route('admin.infographs.edit', $item->slug),
+      'delete' => route('admin.infographs.destroy', $item->slug)
+  ]])
+	<a href="#" data-toggle="modal" title="Preview this infograph" data-thumbnail="{{storage($item->thumbnail_path)}}" data-image="{{storage($item->cover_path)}}" data-target="#item-preview" class="text-muted mr-2">
+		<i class="fas fa-eye align-middle"></i>
+	</a>
+  @endcomponent
 </tr>

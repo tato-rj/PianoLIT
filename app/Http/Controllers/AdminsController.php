@@ -18,7 +18,6 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        // return \Auth::logout();
         $pieces_count = Piece::count();
         $composers_count = Composer::count();
         $users_count = User::count();
@@ -36,7 +35,9 @@ class AdminsController extends Controller
 
     public function notifications()
     {
-        return view('admin.pages.notifications.index');
+        $notifications = auth()->user()->notifications;
+
+        return view('admin.pages.notifications.index', compact('notifications'));
     }
 
     /**
@@ -46,9 +47,9 @@ class AdminsController extends Controller
      */
     public function blog()
     {
-        $posts = Post::latest()->get();
+        $blog = Post::latest()->get();
 
-        return view('admin.pages.blog.index', compact('posts'));
+        return view('admin.pages.blog.index', compact('blog'));
     }
 
     /**

@@ -7,6 +7,9 @@ require('./helpers/display');
 require('./helpers/extensions');
 require('./helpers/charts');
 require('./cropper/SimpleCropper');
+require('./datatable/DataTable');
+require('./components/delete');
+require('./components/toggle');
 
 $.ajaxSetup({
     headers: {

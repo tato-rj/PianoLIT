@@ -41,11 +41,11 @@
 
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-      @include('admin.pages.timeline.create')
+      @include('admin.pages.timelines.create')
       </div>
     </div>
 
-    <div class="row my-3">
+    <div class="row">
       <div class="col-12 text-center mb-4">
         <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
           @foreach($centuries as $century => $array)
@@ -53,68 +53,20 @@
           @endforeach
         </div>
       </div>
-
-      <div class="col-12">
-        <table class="table table-hover" id="blog-table">
-          <thead>
-            <tr>
-              <th class="border-0" scope="col">Year</th>
-              <th class="border-0" scope="col">Type</th>
-              <th class="border-0" scope="col">Event</th>
-              <th class="border-0" scope="col">Creator</th>
-              <th class="border-0" scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($timelines as $timeline)
-            <tr>
-              <td>{{$timeline->year}}</td>
-              <td style="white-space: nowrap;">{{slug_str($timeline->type)}}</td>
-              <td>
-                @if($timeline->url)
-                <a href="{{$timeline->url}}" target="_blank" class="link-blue mr-1"><i class="fas fa-{{$timeline->getIcon($timeline->type)['icon']}}"></i></a>
-                @endif
-                {{$timeline->event}}
-              </td>
-              <td class="text-muted" style="white-space: nowrap;"><i><small>Created by {{$timeline->creator->name}}</small></i></td>
-              <td class="text-right" style="white-space: nowrap;">
-                <a href="#" 
-                  data-toggle="modal" 
-                  data-target="#event-modal" 
-                  data-type="{{$timeline->type}}" 
-                  data-year="{{$timeline->year}}" 
-                  data-event="{{$timeline->event}}" 
-                  data-url="{{$timeline->url}}" 
-                  data-edit-url="{{route('admin.timelines.update', $timeline->id)}}" 
-                  class="text-muted cursor-pointer mr-2 event"><i class="far fa-edit align-middle"></i></a>
-                <a href="#" data-name="{{$timeline->event}}" data-url="{{route('admin.timelines.destroy', $timeline->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete text-muted"><i class="far fa-trash-alt align-middle"></i></a>
-              </td>
-            </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-
     </div>
+
+    @datatable(['model' => 'timelines', 'columns' => ['Year', 'Type', 'Event', 'Creator', '']])
+
   </div>
 </div>
 
-@include('admin.pages.timeline.edit')
-@include('admin.components.modals.delete', ['model' => 'timeline'])
+@include('admin.pages.timelines.edit')
+@include('admin.components.modals.delete')
 @endsection
 
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-
-$('.delete').on('click', function (e) {
-  let $post = $(this);
-  let name = $post.attr('data-name');
-  let url = $post.attr('data-url');
-
-  $('#delete-modal').find('form').attr('action', url);
-});
-
 $('.event').on('click', function (e) {
   let $event = $(this);
   let year = $event.attr('data-year');
@@ -128,13 +80,12 @@ $('.event').on('click', function (e) {
   $('#event-modal').find('input#url').val(url);
   $('#event-modal').find('textarea#event').val(event);
   $('#event-modal').find('select#type option[value="'+type+'"]').prop('selected', true);
-})
+});
 
-$(document).ready( function () {
-    $('#blog-table').DataTable({
-      'pageLength': 50,
-      'order': [[0, 'asc']],
-    });
-} );
+(new DataTable({
+  table: '#timelines-table', 
+  options: {pageLength: 50, order: [[0, 'asc']]}
+})).create();
+
 </script>
 @endsection

@@ -9,7 +9,7 @@
         <div class="input-group">
           <select name="type" class="form-control">
             <option selected disabled>Type</option>
-            @include('admin.pages.timeline.types')
+            @include('admin.pages.timelines.types')
           </select>
         </div>
       </div>

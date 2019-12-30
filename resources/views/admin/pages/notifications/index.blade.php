@@ -13,34 +13,8 @@
     'title' => 'Notifications',
     'description' => 'Manage the notifications'])
 
-    <div class="row my-3">
-      <div class="col-12">
-        <table class="table table-hover" id="blog-table">
-          <thead>
-            <tr>
-              <th class="border-0" scope="col">Date</th>
-              <th class="border-0" scope="col">Notification</th>
-              <th class="border-0" scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach(auth()->user()->notifications as $notification)
-              <tr class="{{($notification->read_at) ? 'opacity-4' : null}}">
-                <td style="white-space: nowrap; vertical-align: inherit;">{{$notification->created_at->toFormattedDateString()}}</td>
-                <td style="vertical-align: inherit;" title="This happened at {{$notification->created_at->format('g:i:s a')}}">{!! $notification->data['message'] !!}</td>
-                <td class="text-right" style="white-space: nowrap;">
-                  <button class="btn btn-sm btn-outline-secondary m-0 mark-notification" style="display: {{$notification->read_at ? 'inline-block' : 'none'}}" 
-                    data-url="{{route('admin.notifications.unread', ['ids' => [$notification->id]])}}">Mark as unread</button>
+    @datatable(['model' => 'notifications', 'columns' => ['Date', 'Notification', '']])
 
-                  <button class="btn btn-sm btn-outline-success m-0 mark-notification" style="display: {{$notification->read_at ? 'none' : 'inline-block'}}" 
-                    data-url="{{route('admin.notifications.read', ['ids' => [$notification->id]])}}">Mark as read</button>
-                </td>
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -68,10 +42,7 @@ console.log($button.attr('data-url'));
   });
 });
 
-$(document).ready( function () {
-    $('#blog-table').DataTable({
-    'ordering': false,
-    });
-} );
+(new DataTable({table: '#notifications-table'})).create();
+
 </script>
 @endsection

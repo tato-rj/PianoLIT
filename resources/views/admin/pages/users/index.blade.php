@@ -13,7 +13,7 @@
     'title' => 'Users',
     'description' => 'View detailed information about the users'])
 
-    <div class="row">
+    <div class="row mb-4">
       <div class="col-12 d-flex justify-content-between align-items-center">
         <div>
           <form method="GET" action="{{route('admin.memberships.validate.all')}}">
@@ -40,61 +40,18 @@
       </div>
     </div>
 
-    <div class="row my-3">
-      <div class="col-12">
-        <table class="table table-hover" id="users-table">
-          <thead>
-            <tr>
-              <th class="border-0" scope="col"></th>
-              <th class="border-0" scope="col">Date</th>
-              <th class="border-0" scope="col">Name</th>
-              <th class="border-0" scope="col">Origin</th>
-              <th class="border-0" scope="col">Status</th>
-              <th class="border-0" scope="col">Super User</th>
-              <th class="border-0" scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @each('admin.pages.users.row', $users, 'user')
-          </tbody>
-        </table>
-      </div>
-    </div>
+    @datatable(['model' => 'users', 'columns' => ['', 'Date', 'Name', 'Origin', 'Status', 'Super User', '']])
+
   </div>
 </div>
 
-@include('admin.components.modals.delete', ['model' => 'user'])
+@include('admin.components.modals.delete')
 @endsection
 
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-$(document).ready( function () {
-    $('#users-table').DataTable({
-    // 'responsive': true,
-    'aaSorting': [],
-    'columnDefs': [ { 'orderable': false, 'targets': [0, 5, 6] } ],
-    });
-} );
-</script>
-<script type="text/javascript">
-$('input.status-toggle').on('change', function() {
-  let $input = $(this);
-
-  $.ajax({
-    url: $input.attr('data-url'),
-    type: 'PATCH',
-    success: function(response) {
-      alert(response.status);
-    }
-  });
-});
-</script>
-<script type="text/javascript">
-$('#delete-modal').on('shown.bs.modal', function(e) {
-  let url = $(e.relatedTarget).attr('data-url');
-  $(this).find('form').attr('action', url);
-});
+(new DataTable({table: '#users-table', dontSortFirst: true})).create();
 </script>
 <script type="text/javascript">
 $('.check-user').on('change', function() {

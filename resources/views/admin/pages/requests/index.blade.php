@@ -14,7 +14,7 @@
     'description' => 'Manage requests for tutorials'])
 
     <div class="row">
-      <div class="col-12 mb-2">
+      <div class="col-12 mb-4">
         @env('local')
         <div>
         @include('admin.pages.requests.simulate')
@@ -26,24 +26,8 @@
       </div>
     </div>
 
-    <div class="row my-3">
-      <div class="col-12">
-        <table class="table table-hover" id="requests-table">
-          <thead>
-            <tr>
-              <th class="border-0" scope="col">Requested on</th>
-              <th class="border-0" scope="col">Published on</th>
-              <th class="border-0" scope="col">Piece</th>
-              <th class="border-0" scope="col">User</th>
-              <th class="border-0" scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            @each('admin.pages.requests.row', $requests, 'request')
-          </tbody>
-        </table>
-      </div>
-    </div>
+    @datatable(['model' => 'requests', 'columns' => ['Date requested', 'Date published', 'Piece', 'User', 'Status']])
+
   </div>
 </div>
 
@@ -61,12 +45,7 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-$(document).ready( function () {
-    $('#requests-table').DataTable({
-    // 'responsive': true,
-    'aaSorting': [],
-    });
-} );
+(new DataTable({table: '#requests-table', sortLast: true})).create();
 </script>
 <script type="text/javascript">
 $('#modal-publish-tutorial').on('shown.bs.modal', function(e) {

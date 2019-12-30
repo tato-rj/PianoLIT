@@ -14,7 +14,7 @@
     'description' => 'Manage the composers'])
 
     <div class="row">
-      <div class="col-12 d-flex justify-content-between align-items-center">
+      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
         <div>
           <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target="#add-modal">
             <i class="fas fa-plus mr-2"></i>Add a new composer
@@ -28,29 +28,12 @@
       </div>
     </div>
 
-    <div class="row my-3">
-      <div class="col-12">
-        <table class="table table-hover" id="composers-table">
-          <thead>
-            <tr>
-              <th class="border-0" scope="col">Name</th>
-              <th class="border-0" scope="col">Is Famous</th>
-              <th class="border-0" scope="col">Pieces count</th>
-              <th class="border-0" scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($composers as $composer)
-            @include('admin.pages.composers.row')
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    </div>
+    @datatable(['model' => 'composers', 'columns' => ['Name', 'Famous', 'Pieces count', '']])
+
   </div>
 </div>
 
-@include('admin.components.modals.delete', ['model' => 'composer'])
+@include('admin.components.modals.delete')
 @include('admin.pages.composers.birthdays')
 
 @component('admin.components.modals.add', ['model' => 'composer'])
@@ -118,39 +101,12 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
-$('input.famous-toggle').on('change', function() {
-  let $input = $(this);
-
-  $.ajax({
-    url: $input.attr('data-url'),
-    type: 'PATCH',
-    success: function(res) {
-      alert('Your update was successful!');
-    },
-    error: function(xhr,status,error) {
-      alert('Something went wrong: ' + error);
-    }
-  });
-});
-
-$('.delete').on('click', function (e) {
-  $composer = $(this);
-  name = $composer.attr('data-name');
-  url = $composer.attr('data-url');
-  $('#delete-modal').find('form').attr('action', url);
-})
-
 var bornIn = document.getElementById("born-in");
 var diedIn = document.getElementById("died-in");
 
-$(document).ready(function(){
-  $('#composers-table').DataTable({
-    'aaSorting': [],
-    'columnDefs': [ { 'orderable': false, 'targets': [2] } ],
+$(bornIn).inputmask("99/99/9999");
+$(diedIn).inputmask("99/99/9999");
 
-  });
-  $(bornIn).inputmask("99/99/9999");
-  $(diedIn).inputmask("99/99/9999");
-});
+(new DataTable({table: '#composers-table'})).create();
 </script>
 @endsection

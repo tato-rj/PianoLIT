@@ -25,7 +25,7 @@ class TimelinesController extends Controller
             $timelines = Timeline::whereBetween('year', [$start, $end])->orderBy('year')->get();
         }
 
-        return view('admin.pages.timeline.index', compact(['timelines', 'centuries']));
+        return view('admin.pages.timelines.index', compact(['timelines', 'centuries']));
     }
 
     /**

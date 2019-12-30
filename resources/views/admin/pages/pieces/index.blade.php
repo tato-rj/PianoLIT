@@ -8,18 +8,6 @@ small .custom-control-label::before, small .custom-control-label::after {
     top: 0.10rem;
     left: -1.34rem;
 }
-.dropdown-toggle:after {
-  display: none!important;
-}
-.dataTables_wrapper > .row:nth-of-type(2) {
-  overflow-x: auto;
-}
-div.dataTables_paginate li.previous a:before, div.dataTables_paginate li.next a:after {
-  content: none;
-}
-div.dataTables_paginate li.previous > a, div.dataTables_paginate li.next > a {
-  padding: .5rem .75rem!important;
-}
 </style>
 @endsection
 
@@ -42,36 +30,15 @@ div.dataTables_paginate li.previous > a, div.dataTables_paginate li.next > a {
       </div>
     </div>
 
-    <div class="row mb-3">
-      <div class="col-12">
-        <table class="table table-hover" id="pieces-table" style="display: none;">
-          <thead>
-            <tr>
-              <th class="border-0" scope="col"></th>
-              <th class="border-0" scope="col">Piece</th>
-              <th class="border-0" scope="col">Composer</th>
-              <th class="border-0" scope="col">Rankings</th>
-              <th class="border-0" scope="col">Tags</th>
-              <th class="border-0" scope="col">Level</th>
-              <th class="border-0" scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($pieces as $piece)
-            @include('admin.pages.pieces.row')
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    </div>
+    @datatable(['model' => 'pieces', 'columns' => ['', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', '']])
 
   </div>
 </div>
 
-@include('admin.components.modals.delete', ['model' => 'piece'])
-
+@include('admin.components.modals.delete')
 @include('admin.pages.pieces.rankings', ['ranking' => 'abrsm'])
 @include('admin.pages.pieces.rankings', ['ranking' => 'rcm'])
+
 @endsection
 
 @section('scripts')
@@ -82,28 +49,7 @@ $('button#missing-image').on('click', function(e) {
   alert('This piece has no cover image.');
 });
 
-$('.delete').on('click', function (e) {
-  $piece = $(this);
-  name = $piece.attr('data-name');
-  url = $piece.attr('data-url');
-  $('#delete-modal').find('form').attr('action', url);
-});
-
-$(document).ready( function () {
-  $('#pieces-table').DataTable({
-    aaSorting: [],
-    ordering: false,
-    language: {
-      paginate: {
-        next: '&#8594;', // or '→'
-        previous: '&#8592;' // or '←' 
-      }
-    }
-    // 'columnDefs': [ { 'orderable': false, 'targets': [0, 4] } ],
-  });
-
-  $('#pieces-table').fadeIn();
-});
+(new DataTable({table: '#pieces-table', dontSortFirst: false})).create();
 </script>
 
 <script type="text/javascript">

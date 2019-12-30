@@ -14,7 +14,7 @@
     'description' => 'Manage the subscription list'])
 
     <div class="row">
-      <div class="col-12 mb-2">
+      <div class="col-12 mb-4">
         <div class="mb-4">
         @include('admin.pages.subscriptions.create')
         </div>
@@ -24,62 +24,18 @@
       </div>
     </div>
 
-    <div class="row my-3">
-      <div class="col-12">
-        <table class="table table-hover" id="blog-table">
-          <thead>
-            <tr>
-              <th class="border-0" scope="col">Date</th>
-              <th class="border-0" scope="col">Email</th>
-              <th class="border-0" scope="col">Origin</th>
-              @foreach(\App\Subscription::lists() as $list)
-              <th class="border-0" scope="col">{{snake_str($list)}}</th>
-              @endforeach
-              <th class="border-0" scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @each('admin.pages.subscriptions.row', $subscriptions, 'subscription')
-          </tbody>
-        </table>
-      </div>
-    </div>
+    @datatable(['model' => 'subscriptions', 'columns' => ['Date', 'Email', 'Origin', 'Newsletter', 'Birthday', '']])
+
   </div>
 </div>
 
-@include('admin.components.modals.delete', ['model' => 'subscription'])
+@include('admin.components.modals.delete')
 
 @endsection
 
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-$('input.status-toggle').on('change', function() {
-  let $input = $(this);
-
-  $.ajax({
-    url: $input.attr('data-url'),
-    type: 'PATCH',
-    success: function(res) {
-      alert('Your update was successful!');
-    },
-    error: function(xhr,status,error) {
-      alert('Something went wrong: ' + error);
-    }
-  });
-});
-
-$('.delete').on('click', function (e) {
-  $post = $(this);
-  name = $post.attr('data-name');
-  url = $post.attr('data-url');
-  $('#delete-modal').find('form').attr('action', url);
-});
-
-$(document).ready( function () {
-    $('#blog-table').DataTable({
-    'ordering': false,
-    });
-} );
+(new DataTable({table: '#subscriptions-table'})).create();
 </script>
 @endsection

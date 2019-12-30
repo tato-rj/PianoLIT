@@ -14,7 +14,7 @@
     'description' => 'Manage the pianists'])
 
     <div class="row">
-      <div class="col-12 d-flex justify-content-between align-items-center">
+      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
         <div>
           <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target="#add-modal">
             <i class="fas fa-plus mr-2"></i>Add a new pianist
@@ -23,28 +23,12 @@
       </div>
     </div>
 
-    <div class="row my-3">
-      <div class="col-12">
-        <table class="table table-hover" id="pianists-table">
-          <thead>
-            <tr>
-              <th class="border-0" scope="col">Name</th>
-              <th class="border-0" scope="col">Nationality</th>
-              <th class="border-0" scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($pianists as $pianist)
-            @include('admin.pages.pianists.row')
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-    </div>
+    @datatable(['model' => 'pianists', 'columns' => ['Name', 'Nationality', '']])
+
   </div>
 </div>
 
-@include('admin.components.modals/delete', ['model' => 'pianist'])
+@include('admin.components.modals/delete')
 
 @component('admin.components.modals/add', ['model' => 'pianist'])
 <form method="POST" action="{{route('admin.pianists.store')}}" enctype="multipart/form-data">
@@ -97,24 +81,11 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
-$('.delete').on('click', function (e) {
-  $pianist = $(this);
-  name = $pianist.attr('data-name');
-  url = $pianist.attr('data-url');
-  $('#delete-modal').find('form').attr('action', url);
-})
-
 var bornIn = document.getElementById("born-in");
 var diedIn = document.getElementById("died-in");
+$(bornIn).inputmask("99/99/9999");
+$(diedIn).inputmask("99/99/9999");
 
-$(document).ready(function(){
-  $('#pianists-table').DataTable({
-    'aaSorting': [],
-    'columnDefs': [ { 'orderable': false, 'targets': [2] } ],
-
-  });
-  $(bornIn).inputmask("99/99/9999");
-  $(diedIn).inputmask("99/99/9999");
-});
+(new DataTable({table: '#pianists-table'})).create();
 </script>
 @endsection

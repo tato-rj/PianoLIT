@@ -158,7 +158,10 @@
           <div class="bg-light rounded px-3 py-2 mb-3">
             <div class="d-flex justify-content-between">
               <div>Is this piece in public domain?</div>
-              @include('admin.components.toggle.copyright', ['is_public' => true])
+              <label class="switch cursor-pointer">
+                <input class="status-toggle" name="is_public" type="checkbox" checked>
+                <span class="slider round"></span>
+              </label>
             </div>
             <div class="is-public mt-3">
               <div class="form-group">

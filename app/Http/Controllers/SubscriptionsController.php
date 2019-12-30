@@ -97,7 +97,7 @@ class SubscriptionsController extends Controller
     {
         $subscription->toggleStatusFor($request->list);
 
-        return response()->json(['status' => 'The subscription is now ' . $subscription->getStatusFor($request->list) . '.']);
+        return response()->json(['status' => 'This subscription has been updated.']);
     }
 
     public function unsubscribe(Request $request)

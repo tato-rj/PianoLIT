@@ -157,4 +157,11 @@ Route::get('infographs/{infograph}/download', 'InfographsController@download')->
 Route::post('infographs/{infograph}/update-score', 'InfographsController@updateScore')->name('infographs.update-score');
 
 Route::get('terms-of-service', 'HomeController@terms')->name('terms');
+
 Route::get('privacy-policy', 'HomeController@privacy')->name('privacy');
+
+Route::prefix('cookies')->name('cookies.')->group(function() {
+
+	Route::post('', 'CookiesController@store')->name('store');
+
+});

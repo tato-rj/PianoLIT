@@ -69,7 +69,7 @@ class PlaylistsController extends Controller
     {
         $pieces = Piece::orderBy('updated_at', 'desc')->get();
 
-        return view('admin.pages.playlists.edit', compact(['playlist', 'pieces']));
+        return view('admin.pages.playlists.edit.index', compact(['playlist', 'pieces']));
     }
 
     /**

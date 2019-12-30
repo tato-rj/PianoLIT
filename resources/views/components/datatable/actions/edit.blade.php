@@ -1,0 +1,1 @@
+<a href="{{$action}}" title="Edit" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>

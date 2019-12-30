@@ -2,13 +2,13 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Delete</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        Delete this {{$model}}?
+        Are you sure you want to delete this?
         <p class="text-danger"><small>This action cannot be undone</small></p>
       </div>
       <div class="modal-footer">

@@ -18,7 +18,7 @@
             <div class="col">
               <select id="type" name="type" class="form-control mr-2">
                 <option selected disabled>Type</option>
-                @include('admin.pages.timeline.types')
+                @include('admin.pages.timelines.types')
               </select>
             </div>
           </div>

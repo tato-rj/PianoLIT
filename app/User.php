@@ -207,4 +207,21 @@ class User extends Authenticatable implements MustVerifyEmail
 
         return route('register', ['referral' => $code]);
     }
+
+    public function getOriginIconAttribute()
+    {
+        switch ($this->origin) {
+            case 'web':
+                return 'laptop';
+                break;
+
+            case 'app':
+                return 'mobile';
+                break;
+
+            default:
+                return $this->origin ?? 'question';
+                break;
+        }
+    }
 }

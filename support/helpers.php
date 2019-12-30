@@ -277,7 +277,7 @@ function dateToDatabase($date)
 
 function carbon($string)
 {
-	return \Carbon\Carbon::parse($string);
+	return \Carbon\Carbon::parse($string)->setTimezone(config('app.timezone'));
 }
 
 function validate($errors, $input)
