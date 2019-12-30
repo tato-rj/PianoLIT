@@ -12,12 +12,11 @@ class CookiesController extends Controller
         $records = \Redis::scan('0', 'match', 'visitor.*', 'count', '100')[1];
 
         foreach ($records as $record) {
-        	$visitor = \Redis::hgetall($record);
-	        dd($visitor);
-	        foreach ($visitor as $index => $data) {
-	        	$visitor[$index]['info'] = collect(json_decode($data['info']));
-	        	$visitor[$index]['visits'] = collect(json_decode($data['visits']));
-	        }
+        	$data = \Redis::hgetall($record);
+        	
+        	$visitor['id'] = $data['id'];
+        	$visitor['info'] = collect(json_decode($data['info']));
+        	$visitor['visits'] = collect(json_decode($data['visits']));
 
 	        array_push($visitors, $visitor);
         }
