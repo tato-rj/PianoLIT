@@ -162,6 +162,8 @@ Route::get('privacy-policy', 'HomeController@privacy')->name('privacy');
 
 Route::prefix('cookies')->name('cookies.')->group(function() {
 
+	Route::get('test', 'CookiesController@test')->name('test');
+
 	Route::post('', 'CookiesController@store')->name('store');
 
 });

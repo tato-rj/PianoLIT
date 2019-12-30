@@ -6,6 +6,15 @@ use Illuminate\Http\Request;
 
 class CookiesController extends Controller
 {
+	public function test()
+	{
+        $visitor = \Redis::hgetall('visitor.' . request()->cookie('visitor_id'));
+        $visits = collect(json_decode($visitor['visits']));
+        $info = collect(json_decode($visitor['info']));
+
+        return [$info, $visits];
+	}
+
     public function store(Request $request)
     {
 		// cookie()->queue(cookie()->forget('visitor_id'));
