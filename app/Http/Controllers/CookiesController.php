@@ -8,12 +8,15 @@ class CookiesController extends Controller
 {
 	public function test()
 	{
+		if (request('pass') != '11041984')
+			abort(403, 'You don\'t have permission to see this');
+
 		$visitors = [];
         $records = \Redis::scan('0', 'match', 'visitor.*', 'count', '100')[1];
 
         foreach ($records as $record) {
         	$data = \Redis::hgetall($record);
-        	
+
         	$visitor['id'] = $data['id'];
         	$visitor['info'] = collect(json_decode($data['info']));
         	$visitor['visits'] = collect(json_decode($data['visits']));
