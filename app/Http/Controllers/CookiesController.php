@@ -8,6 +8,8 @@ class CookiesController extends Controller
 {
 	public function test()
 	{
+		return request()->ip();
+		
         $visitor = \Redis::hgetall('visitor.' . request()->cookie('visitor_id'));
         $visits = collect(json_decode($visitor['visits']));
         $info = collect(json_decode($visitor['info']));
