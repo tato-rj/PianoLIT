@@ -27,7 +27,7 @@
   </td>
   @php($lastActive = $item->lastActive())
   <td class="{{! is_null($lastActive) && $lastActive->isAfter(now()->subHours(12)) ? 'text-success' : null}}">
-    <span class="position-absolute invisible">{{$lastActive->timestamp}}</span>
+    <span class="position-absolute invisible">{{! is_null($lastActive) ? $lastActive->timestamp : 0}}</span>
     {{$lastActive ? $lastActive->diffForHumans() : 'Never'}}
   </td>
 
