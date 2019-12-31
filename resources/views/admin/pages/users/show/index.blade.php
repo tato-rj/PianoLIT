@@ -67,8 +67,15 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTable({table: '#log-app-table'})).create();
-(new DataTable({table: '#log-web-table'})).create();
+(new DataTable({
+  table: '#log-app-table', 
+  options: {pageLength: 5, order: [[0, 'asc']]}
+})).create();
+
+(new DataTable({
+  table: '#log-web-table', 
+  options: {pageLength: 5, order: [[0, 'asc']]}
+})).create();
 </script>
 
 <script type="text/javascript">
