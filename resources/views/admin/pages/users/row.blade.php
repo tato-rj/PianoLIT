@@ -41,7 +41,7 @@
       'other' => [
         ['route' => "mailto:$item->email", 'title' => "Send an email to $item->first_name", 'icon' => 'envelope'],
         ['route' => route('impersonate', $item), 'title' => "Impersonate user", 'icon' => 'user-secret'],
-        ['route' => route('admin.users.show', $item), 'title' => "More details", 'icon' => 'eye', 'stay' => true]
+        ['route' => route('admin.users.show', $item), 'title' => "More details", 'icon' => 'eye', 'target' => 'stay']
       ],
       'delete' => route('admin.users.destroy', $item)
   ]])
