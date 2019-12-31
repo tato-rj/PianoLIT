@@ -17,7 +17,7 @@
           <td class="dataTables_main_column">{{$event->url}}</td>
 
           <td>
-            @if(count($event->data) > 1)
+            @if(count(json_decode($event->data)) > 1)
             {{slug_str($event->data[0])}} - <strong>{{$event->data[1]}}</strong>
             @endif
           </td>
