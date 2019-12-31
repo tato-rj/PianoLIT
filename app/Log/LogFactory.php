@@ -45,9 +45,11 @@ class LogFactory
 
 		foreach ($this->types as $type) {
 			$data = $this->redisToArray($key, $type);
-			$time = array_key_first($data);
-			if ($time)
-				array_push($recent, $time);		
+			if (! empty($data)) {
+				$time = key($data);
+				if ($time)
+					array_push($recent, $time);		
+			}
 		}
 
 		if (empty($recent))
