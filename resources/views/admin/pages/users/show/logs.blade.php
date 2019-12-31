@@ -49,7 +49,7 @@
                 data-toggle="modal" 
                 data-target="#modal-log-data"
               @endif
-              class="bg-transparent border-0 {{empty($event->data) ? 'text-grey' : 'text-success'}}">
+              class="bg-transparent border-0 {{empty($event->data) ? 'text-grey' : 'text-success'}}" title="{{empty($event->data) ? 'Nothing to show' : 'More details'}}">
               <i class="fas fa-archive"></i>
             </button>
           </td>
