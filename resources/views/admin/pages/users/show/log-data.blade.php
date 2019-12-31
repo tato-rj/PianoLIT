@@ -1,5 +1,5 @@
 <table class="table table-borderless">
-  <thead>
+  <thead class="thead-light">
     <tr>
       <th class="py-2 rounded-left" scope="col">Key</th>
       <th class="py-2 rounded-right" scope="col">Value</th>
