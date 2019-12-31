@@ -17,10 +17,7 @@
           <td class="dataTables_main_column">{{$event->url}}</td>
 
           <td>
-            @if($event->data)
-            @php($key = key((array) $event->data))
-            {{slug_str($key)}} - <strong>{{$event->data[$key]}}</strong>
-            @endif
+            {{json_encode($event->data)}}
           </td>
         </tr>
         @endforeach
