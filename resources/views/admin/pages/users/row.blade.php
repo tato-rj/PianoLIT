@@ -30,7 +30,7 @@
   @php($lastActive = $item->lastActive())
   <td class="{{! is_null($lastActive) && $lastActive->isAfter(now()->subHours(12)) ? 'text-success' : null}}">
     <span class="position-absolute invisible">{{! is_null($lastActive) ? $lastActive->timestamp : 0}}</span>
-    {{$lastActive ? $lastActive->diffForHumans() : 'Never'}}
+    {{$lastActive ? $lastActive->diffForHumans() : null}}
   </td>
 
   <td>
