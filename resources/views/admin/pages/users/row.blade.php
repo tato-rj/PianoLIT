@@ -25,7 +25,9 @@
       Guest
     @endif
   </td>
-  
+  @php($lastActive = $item->lastActive())
+  <td class="{{! is_null($lastActive) && $lastActive->isAfter(now()->subHour()) ? 'text-success' : null}}">{{$lastActive ? $lastActive->diffForHumans() : 'Never'}}</td>
+
   <td>
     @toggle(['toggle' => $item->super_user, 'route' => route('admin.users.super-status', $item->id)])
   </td>

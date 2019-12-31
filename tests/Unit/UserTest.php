@@ -91,4 +91,16 @@ class UserTest extends AppTest
 
 		$this->assertEquals(count($this->user->log()->app), 1);
 	}
+
+	/** @test */
+	public function it_knows_when_was_its_last_activity()
+	{
+		$this->signIn($this->user);
+
+		$this->assertNull($this->user->lastActive());
+
+		$this->get(route('home'));
+
+		$this->assertInstanceOf(\Carbon\Carbon::class, $this->user->lastActive());
+	}
 }

@@ -256,3 +256,5 @@ Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function()
 	Route::patch('{tutorialRequest}/publish', 'TutorialRequestsController@publish')->name('publish');
 
 });
+
+Route::get('logs/data', 'LogsController@data')->name('log.data');

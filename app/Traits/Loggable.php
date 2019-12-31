@@ -10,4 +10,9 @@ trait Loggable
 	{
 		return (new LogFactory)->get($this->id, $type);
 	}
+
+	public function lastActive($type = null)
+	{
+		return (new LogFactory)->last($this->id, $type);		
+	}
 }

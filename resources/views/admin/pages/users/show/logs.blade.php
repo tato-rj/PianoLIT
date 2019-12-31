@@ -42,10 +42,24 @@
 
           <td class="dataTables_main_column">{{$event->url}}</td>
 
-          <td>{{json_encode($event->data)}}</td>
+          <td>
+            <button  
+              @if(! empty($event->data))
+                data="{{json_encode($event->data)}}"
+                data-toggle="modal" 
+                data-target="#modal-log-data"
+              @endif
+              class="bg-transparent border-0 {{empty($event->data) ? 'text-grey' : 'text-success'}}">
+              <i class="fas fa-archive"></i>
+            </button>
+          </td>
         </tr>
         @endforeach
       </tbody>
     </table>
   </div>
 </div>
+
+@modal(['title' => 'Log data', 'size' => 'lg'])
+<div id="data-container"></div>
+@endmodal

@@ -163,9 +163,12 @@ $('#membership-history').on('hidden.bs.modal', function (e) {
 });
 </script>
 <script type="text/javascript">
-$('#delete-modal').on('shown.bs.modal', function(e) {
-  let url = $(e.relatedTarget).attr('data-url');
-  $(this).find('form').attr('action', url);
+$('#modal-log-data').on('show.bs.modal', function (e) {
+  let data = $(e.relatedTarget).attr('data');
+
+  $.get("{{route('admin.log.data')}}", {data: data}, function(data, status) {
+    $('#modal-log-data #data-container').html(data);
+  });
 });
 </script>
 @endsection
