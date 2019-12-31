@@ -69,12 +69,12 @@
 <script type="text/javascript">
 (new DataTable({
   table: '#log-app-table', 
-  options: {pageLength: 5, order: [[0, 'asc']]}
+  options: {pageLength: 5}
 })).create();
 
 (new DataTable({
   table: '#log-web-table', 
-  options: {pageLength: 5, order: [[0, 'asc']]}
+  options: {pageLength: 5}
 })).create();
 </script>
 
