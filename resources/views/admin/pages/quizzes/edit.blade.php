@@ -15,11 +15,6 @@
   @include('admin.components.breadcrumb', [
     'title' => 'Quiz',
     'description' => 'Edit the quiz'])
-    
-    <div class="d-flex justify-content-end">
-      <div class="text-{{$quiz->published_at ? 'success' : 'warning'}} mr-3 status-text">{{ucfirst($quiz->status)}}</div>
-      @include('admin.components.toggle.quiz')
-    </div>
 
       <form class="row my-3" method="POST" action="{{route('admin.quizzes.update', $quiz->slug)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
@@ -104,24 +99,6 @@
 <script type="text/javascript">
 $('#image-input').on('change', function() {
   $(this).attr('name', 'cover_image');
-});
-
-$('input.status-toggle').on('change', function() {
-  let $input = $(this);
-  let $label = $('.status-text');
-
-  $label.addClass('text-muted').removeClass('text-warning text-success');
-  $.ajax({
-    url: $input.attr('data-url'),
-    type: 'PATCH',
-    success: function(res) {
-      if ($input.is(':checked')) {
-        $label.text('Published').toggleClass('text-muted text-success');
-      } else {
-        $label.text('Unpublished').toggleClass('text-muted text-warning');
-      }
-    }
-  });
 });
 </script>
 <script type="text/javascript">
