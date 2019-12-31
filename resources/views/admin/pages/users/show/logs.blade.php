@@ -17,7 +17,15 @@
           <td class="dataTables_main_column">{{$event->url}}</td>
 
           <td>
-            {{json_encode($event->data)}}
+            <button  
+              @if(! empty($event->data))
+                data="{{json_encode($event->data)}}"
+                data-toggle="modal" 
+                data-target="#modal-log-data"
+              @endif
+              class="bg-transparent border-0 {{empty($event->data) ? 'text-grey' : 'text-success'}}" title="{{empty($event->data) ? 'Nothing to show' : 'More details'}}">
+              <i class="fas fa-archive"></i>
+            </button>
           </td>
         </tr>
         @endforeach
