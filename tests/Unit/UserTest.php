@@ -69,4 +69,26 @@ class UserTest extends AppTest
 		$this->assertInstanceOf(Purchase::class, $this->user->purchases->first());
 		$this->assertInstanceOf(Infograph::class, $this->user->purchases->first()->item);
 	}
+
+	/** @test */
+	public function it_knows_its_logs_from_the_web()
+	{
+		$this->signIn($this->user);
+
+		$this->assertEquals(count($this->user->log()->web), 0);
+
+		$this->get(route('home'));
+
+		$this->assertEquals(count($this->user->log()->web), 1);
+	}
+
+	/** @test */
+	public function it_knows_its_logs_from_the_app()
+	{
+		$this->assertEquals(count($this->user->log()->app), 0);
+
+		$this->get(route('api.search', ['user_id' => $this->user->id, 'search' => 'foo bar']));
+
+		$this->assertEquals(count($this->user->log()->app), 1);
+	}
 }

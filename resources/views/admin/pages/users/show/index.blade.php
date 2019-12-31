@@ -1,5 +1,10 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
+@endsection
+
 @section('content')
 <div class="content-wrapper">
   <div class="container-fluid">
@@ -24,6 +29,9 @@
         <a class="nav-link {{request('section') == 'behavior' ? 'active show' : null}}" name="behavior" id="behavior-tab" data-toggle="tab" href="#behavior" role="tab" aria-controls="behavior" aria-selected="false">Behavior</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{request('section') == 'logs' ? 'active show' : null}}" name="logs" id="logs-tab" data-toggle="tab" href="#logs" role="tab" aria-controls="logs" aria-selected="false">Logs</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{request('section') == 'manage' ? 'active show' : null}}" name="manage" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage</a>
       </li>
       @if(app()->environment() == 'local')
@@ -40,6 +48,8 @@
 
       @include('admin.pages.users.show.behavior')
 
+      @include('admin.pages.users.show.logs')
+
       @include('admin.pages.users.show.manage')
 
       @if(app()->environment() == 'local')
@@ -49,13 +59,18 @@
   </div>
 </div>
 
-@include('admin.components.modals.delete', ['model' => 'user'])
-@include('admin.components.modals.favorites')
+@include('admin.components.modals.delete')
 @include('admin.components.modals.history')
 
 @endsection
 
 @section('scripts')
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+<script type="text/javascript">
+(new DataTable({table: '#log-app-table'})).create();
+(new DataTable({table: '#log-web-table'})).create();
+</script>
+
 <script type="text/javascript">
 $('input.status-toggle').on('change', function() {
   let $input = $(this);

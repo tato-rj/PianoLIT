@@ -14,7 +14,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->api = new Api;      
+        $this->api = new Api;
     }
 
     /**
@@ -23,7 +23,7 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
-    {        
+    {
         $collections = collect();
         $tags = Tag::display()->inRandomOrder()->get();
 

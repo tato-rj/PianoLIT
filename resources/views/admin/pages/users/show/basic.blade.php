@@ -32,7 +32,7 @@
       <div>
         <label class="text-brand m-0"><small>Super user status</small></label>
         <div>
-          @include('admin.components.toggle.super-user')
+          @toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id)])
         </div>
       </div>
     </div>

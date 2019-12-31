@@ -8,12 +8,17 @@ use App\Infograph\Topic as InfographTopic;
 use App\Quiz\Quiz;
 use App\Quiz\Topic as QuizTopic;
 use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist, Subscription, Timeline, Pianist};
+use Tests\Traits\CustomAssertions;
 
 class AppTest extends TestCase
 {
+    use CustomAssertions;
+    
 	public function setUp() : void
 	{
 		parent::setUp();
+
+        $this->redisPrefix = config('database.redis.prefix');
 
         $this->admin = create(Admin::class);
 
@@ -71,6 +76,10 @@ class AppTest extends TestCase
         $this->infograph->topics()->attach($this->infograph_topic);
 
         $this->playlist->pieces()->attach($this->piece);
+        
+        $this->beforeApplicationDestroyed(function () {
+            $this->artisan('redis:flush ' . $this->redisPrefix);
+        });
 	}
 
     protected function signIn($user = null)

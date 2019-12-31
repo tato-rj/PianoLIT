@@ -60,7 +60,9 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'search.exact' => \App\Http\Middleware\Search\CheckForExactMatches::class
+        'search.exact' => \App\Http\Middleware\Search\CheckForExactMatches::class,
+        'log.web' => \App\Http\Middleware\Logs\RecordWebLog::class,
+        'log.app' => \App\Http\Middleware\Logs\RecordAppLog::class,
     ];
 
     /**

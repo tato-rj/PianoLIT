@@ -57,7 +57,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware('web')
+        Route::middleware(['web', 'log.web'])
              ->namespace($this->namespace)
              ->group(base_path('routes/web.php'));
     }
@@ -134,7 +134,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapUserRoutes()
     {
         Route::prefix('my-profile')
-             ->middleware(['web', 'auth:web'])
+             ->middleware(['web', 'auth:web', 'log.web'])
              ->name('users.')
              ->namespace($this->namespace)
              ->group(base_path('routes/user.php'));

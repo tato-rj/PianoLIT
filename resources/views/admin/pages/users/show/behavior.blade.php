@@ -3,7 +3,6 @@
     <div class="col-lg-6 col-sm-10 col-12 p-3">
       <p class="text-muted">
         <strong>{{$user->first_name}} has {{$user->favorites->count()}} {{str_plural('favorite', $user->favorites->count())}}</strong> | <a class="link-default" href="" data-toggle="modal" data-target="#edit-favorites"><small>Edit selections</small></a>
-
       </p>
       @if($user->favorites->count() > 0)
       <ul class="list-style-none pl-2">
@@ -35,13 +34,13 @@
       </div>
       
       <ul class="list-style-none pl-2">
-        @foreach($user->suggestions(10) as $piece)
+{{--         @foreach($user->suggestions(10) as $piece)
         <li class="mb-2">
           <a href="{{route('admin.pieces.edit', $piece->id)}}">
             <i class="fas fa-caret-right mr-2"></i>{{$piece->long_name}}
           </a>
         </li>
-        @endforeach
+        @endforeach --}}
       </ul>
     </div>
   </div>

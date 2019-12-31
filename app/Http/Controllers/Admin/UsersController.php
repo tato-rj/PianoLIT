@@ -20,13 +20,7 @@ class UsersController extends Controller
         if (request('format') == 'json')
             return $user->membership;
 
-        $pieces = Piece::orderBy('name')->get();
-
-        $pieces->each(function($piece) use ($user) {
-            (new Api)->setCustomAttributes($piece, $user->id);
-        });
-
-        return view('admin.pages.users.show.index', compact(['user', 'pieces']));
+        return view('admin.pages.users.show.index', ['user' => $user->load('favorites')]);
     }
 
     public function destroy(User $user)

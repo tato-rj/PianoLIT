@@ -11,10 +11,11 @@ class ApiController extends Controller
     {
         $this->api = new Api;
         $this->middleware('search.exact')->only('search');
+        $this->middleware('log.app');
     }
 
     public function discover($pieces = null, $inputArray = null)
-    {        
+    {
         $collection = collect([
             $this->api->order(0)->free('Free weekly pick'),
             $this->api->order(1)->composers('Composers'),

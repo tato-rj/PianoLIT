@@ -13,6 +13,7 @@ class SearchController extends Controller
     {
         $this->api = new Api;
         $this->options = request()->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => request()->page ?? 0] : [];
+        $this->middleware('log.app')->only('search');
     }
 
     public function index(Request $request)
@@ -65,12 +66,6 @@ class SearchController extends Controller
         return $this->next($request);
     }
 
-    public function toAdmin()
-    {
-        $tags = Tag::byTypes(['genre', 'length', 'ranking']);
-        return view('admin.pages.search.index', ['pieces' => $this->pieces ?? [], 'total' => $this->total ?? null, 'tags' => $tags]);
-    }
-
     public function next(Request $request)
     {
         if ($request->wantsJson() || $request->has('api'))
@@ -80,5 +75,11 @@ class SearchController extends Controller
             return view('admin.pages.search.result-rows', ['pieces' => $this->pieces])->render();
 
         return $this->toAdmin();
+    }
+
+    public function toAdmin()
+    {
+        $tags = Tag::byTypes(['genre', 'length', 'ranking']);
+        return view('admin.pages.search.index', ['pieces' => $this->pieces ?? [], 'total' => $this->total ?? null, 'tags' => $tags]);
     }
 }

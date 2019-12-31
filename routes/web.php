@@ -159,11 +159,3 @@ Route::post('infographs/{infograph}/update-score', 'InfographsController@updateS
 Route::get('terms-of-service', 'HomeController@terms')->name('terms');
 
 Route::get('privacy-policy', 'HomeController@privacy')->name('privacy');
-
-Route::prefix('cookies')->name('cookies.')->group(function() {
-
-	Route::get('test', 'CookiesController@test')->name('test');
-
-	Route::post('', 'CookiesController@store')->name('store');
-
-});
