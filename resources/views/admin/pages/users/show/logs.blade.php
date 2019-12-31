@@ -17,8 +17,9 @@
           <td class="dataTables_main_column">{{$event->url}}</td>
 
           <td>
-            @if(count($event->data) > 1)
-            {{slug_str($event->data[0])}} - <strong>{{$event->data[1]}}</strong>
+            @if($event->data)
+            @php($key = key((array) $event->data))
+            {{slug_str($key)}} - <strong>{{$event->data[$key]}}</strong>
             @endif
           </td>
         </tr>
