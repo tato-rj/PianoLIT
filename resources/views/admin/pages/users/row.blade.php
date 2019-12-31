@@ -11,7 +11,7 @@
   <td title="Subscribed at {{$item->created_at->format('g:i:s a')}}" class="dataTables_main_column">{{$item->full_name}}</td>
   
   <td class="text-truncate" title="{{ucfirst($item->origin)}}">
-    <i class="fas text-muted fa-{{$item->origin_icon}}"></i><span class="position-absolute invisible">{{$item->origin_icon}}</span>
+    <i class="fas text-muted fa-{{$item->origin_icon}}"></i><span class="position-absolute invisible">{{$item->origin_icon}} {{$item->origin == 'ios'? 'iOS' : ucfirds($item->origin)}}</span>
   </td>
   
   <td class="text-truncate">

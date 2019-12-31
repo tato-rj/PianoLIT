@@ -215,7 +215,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 return 'laptop';
                 break;
 
-            case 'app':
+            case 'ios':
                 return 'mobile';
                 break;
 
