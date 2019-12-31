@@ -11,7 +11,10 @@
 	              @foreach(\App\Subscription::lists() as $list)
 					<tr>
 						<td class="p-0 align-middle"><h6 class="m-0"><i class="fas fa-mail-bulk mr-2"></i>{{snake_str($list)}}</h6></td>
-						<td class="p-0 text-center align-middle">@include('admin.components.toggle.subscription', ['list' => $list, 'subscription' => auth()->user()->subscription])</td>
+						<td class="p-0 text-center align-middle">
+							@toggle(['toggle' => auth()->user()->subscription->getStatusFor($list, $boolean = true), 
+             					'route' => route('subscriptions.toggle-status', ['subscription' => auth()->user()->email, 'list' => $list])])
+						</td>
 					</tr>
 					<tr>
 						<td colspan="2" class="pt-0 pb-3 text-muted"><small>{{config('mail.lists.' . $list)}}</small></td>
