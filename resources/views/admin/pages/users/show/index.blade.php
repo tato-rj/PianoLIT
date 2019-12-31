@@ -164,10 +164,13 @@ $('#membership-history').on('hidden.bs.modal', function (e) {
 </script>
 <script type="text/javascript">
 $('#modal-log-data').on('show.bs.modal', function (e) {
+  let $container = $('#modal-log-data #data-container');
   let data = $(e.relatedTarget).attr('data');
 
+  $container.html('<h5 class="text-grey text-center py-4">Loading...</h5>');
+
   $.get("{{route('admin.log.data')}}", {data: data}, function(data, status) {
-    $('#modal-log-data #data-container').html(data);
+    $container.html(data);
   });
 });
 </script>
