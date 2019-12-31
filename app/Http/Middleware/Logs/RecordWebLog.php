@@ -17,7 +17,7 @@ class RecordWebLog
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->guard('web')->check())
+        if (! auth()->guard('admin')->check() && auth()->guard('web')->check())
             (new WebLog)->push();
     
         return $next($request);
