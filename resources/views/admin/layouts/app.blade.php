@@ -47,12 +47,16 @@
     </head>
 <body class="fixed-nav sticky-footer bg-dark" id="page-top">
 
+  @if(! request()->has('bodyonly'))
   @include('admin/layouts/menu')
+  @endif
 
   @yield('content')
 
+  @if(! request()->has('bodyonly'))
   @include('admin/layouts/footer')
   @include('admin/components/modals/logout')
+  @endif
 
   @if($message = session('status'))
     @include('components/alerts/success')
