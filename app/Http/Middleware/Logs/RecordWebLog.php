@@ -5,6 +5,7 @@ namespace App\Http\Middleware\Logs;
 use Closure;
 use App\User;
 use App\Log\Loggers\WebLog;
+use App\Tools\Traffic;
 
 class RecordWebLog
 {
@@ -17,7 +18,7 @@ class RecordWebLog
      */
     public function handle($request, Closure $next)
     {
-        if (! auth()->guard('admin')->check() && auth()->guard('web')->check())
+        if (! auth()->guard('admin')->check() && auth()->guard('web')->check() && (new Traffic)->isRealUser(auth()->user()->id))
             (new WebLog)->push();
     
         return $next($request);
