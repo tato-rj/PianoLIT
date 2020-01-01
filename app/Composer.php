@@ -51,6 +51,11 @@ class Composer extends Person
         return \DB::table('composers')->selectRaw('period, count(*) as count')->groupBy('period')->get();
     }
 
+    public function scopeName($query, $name)
+    {
+        return $query->where('name', $name);
+    }
+
     public function getPeriodAttribute($period)
     {
         return ucfirst($period);

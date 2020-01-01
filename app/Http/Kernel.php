@@ -61,6 +61,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'search.exact' => \App\Http\Middleware\Search\CheckForExactMatches::class,
+        'search.driver' => \App\Http\Middleware\Search\CheckForLocalQueries::class,
         'log.web' => \App\Http\Middleware\Logs\RecordWebLog::class,
         'log.app' => \App\Http\Middleware\Logs\RecordAppLog::class,
     ];

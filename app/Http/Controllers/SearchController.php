@@ -13,7 +13,7 @@ class SearchController extends Controller
     {
         $this->api = new Api;
         $this->options = request()->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => request()->page ?? 0] : [];
-        $this->middleware('log.app')->only('search');
+        $this->middleware(['log.app', 'search.driver'])->only('search');
     }
 
     public function index(Request $request)
@@ -54,7 +54,11 @@ class SearchController extends Controller
 
     public function handle(Request $request)
     {
-        $query = Piece::search($request->search)->options($this->options);
+        if ($model = $request->model) {
+            $query = (new $model)->name($request->search)->first()->pieces();
+        } else {
+            $query = Piece::search($request->search)->options($this->options);            
+        }
 
         $this->total = $query->count();
 
