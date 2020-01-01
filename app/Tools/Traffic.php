@@ -19,6 +19,6 @@ class Traffic
 
 	public function isRealUser($id)
 	{
-		return ! in_array(request()->ip(), $this->ignoreID);
+		return ! in_array($id, $this->ignoreID);
 	}
 }
