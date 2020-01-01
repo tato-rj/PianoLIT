@@ -15,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        \View::composer('*', function($view) {
+            $view->with(['full' => ! request()->has('bodyonly')]);
+        });
     }
 
     /**
