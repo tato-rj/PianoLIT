@@ -157,7 +157,7 @@
         </header>
         @endif
 
-        <main style="overflow-x: hidden">
+        <main style="overflow-x: hidden" class="{{$full ? null: 'mt-5'}}">
             @yield('content')
             
             @if(session()->has('impersonator'))
