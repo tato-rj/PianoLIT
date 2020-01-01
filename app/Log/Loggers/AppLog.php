@@ -13,6 +13,6 @@ class AppLog extends Logger
 
 	public function getData()
 	{
-		return json_encode(['url' => url()->current(), 'data' => request()->except(['user_id', '_method', '_token'])]);		
+		return json_encode(['url' => url()->current(), 'data' => $this->cleanRequest(['user_id', '_method', '_token'])]);		
 	}
 }

@@ -13,6 +13,6 @@ class WebLog extends Logger
 
 	public function getData()
 	{
-		return json_encode(['url' => url()->current(), 'data' => request()->except(['_method', '_token'])]);	
+		return json_encode(['url' => url()->current(), 'data' => $this->cleanRequest(['_method', '_token'])]);	
 	}
 }

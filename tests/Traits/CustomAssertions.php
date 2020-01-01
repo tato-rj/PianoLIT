@@ -14,6 +14,16 @@ trait CustomAssertions
         $this->assertTrue($log[array_key_first($log)]->data->$logKey == $logValue, 'This log does not have the value ' . $logValue . '.');
 	}
 
+	public function assertRedisNotContains($redisKey, $logKey, $logValue)
+	{
+        $log = array_map('json_decode', \Redis::hgetall($this->redisPrefix . $redisKey));
+
+        krsort($log);
+
+        $this->assertFalse(isset($log[array_key_first($log)]->data->$logKey), 'This log has the key ' . $logKey . '.');
+        $this->assertFalse($log[array_key_first($log)]->data->$logKey == $logValue, 'This log has the key ' . $logKey . '.');
+	}
+
 	public function assertRedisHas($key)
 	{
 		$exists = (bool) \Redis::exists($this->redisPrefix . $key);
