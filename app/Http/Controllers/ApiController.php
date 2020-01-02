@@ -106,7 +106,7 @@ class ApiController extends Controller
 
     public function playlists($group)
     {
-        return \Cache::remember('app.tags.all', weeks(1), function() {
+        return \Cache::remember('app.playlists.all', weeks(1), function() {
             return Playlist::journey()->sorted()->get();
         });
     }
