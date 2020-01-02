@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Events\REgistered;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Subscription;
@@ -15,10 +15,8 @@ class SubscribeUser
      * @param  object  $event
      * @return void
      */
-    public function handle(Verified $event)
+    public function handle(Registered $event)
     {
-        $event->user->origin_url = route('verification.verified');
-
         Subscription::createOrActivate($event->user, $notifyUser = false);
     }
 }

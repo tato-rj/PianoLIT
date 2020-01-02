@@ -150,6 +150,9 @@
     @stack('header')
 </head>
 <body>
+    @if(auth()->guard('web')->check() && ! auth()->user()->confirmed)
+    @include('auth.alerts.unconfirmed')
+    @endif
     <div id="app">
         @if($full ?? true)
         <header class="container">

@@ -16,6 +16,7 @@ class CreateQuizResultsTable extends Migration
         Schema::create('quiz_results', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedInteger('quiz_id');
+            $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('score');
             $table->timestamps();
         });

@@ -28,21 +28,11 @@ class UserTest extends AppTest
     }
 
     /** @test */
-    public function users_are_subscribed_after_confirming_their_email()
+    public function users_are_subscribed_after_registering()
     {
-        \Mail::fake();
-
         $this->register();
-        
-        $user = User::latest()->first();
 
-        $this->assertDatabaseMissing('subscriptions', ['email' => $user->email]);
-
-        if ($user->markEmailAsVerified()) {
-            event(new \Illuminate\Auth\Events\Verified($user));
-        }
-
-        $this->assertDatabaseHas('subscriptions', ['email' => $user->email]);
+        $this->assertDatabaseHas('subscriptions', ['email' => auth()->user()->email]);
     }
 
     /** @test */

@@ -228,4 +228,9 @@ class User extends Authenticatable implements MustVerifyEmail
                 break;
         }
     }
+
+    public function getConfirmedAttribute()
+    {
+        return ! is_null($this->email_verified_at);
+    }
 }

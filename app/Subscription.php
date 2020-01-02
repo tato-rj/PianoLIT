@@ -89,7 +89,7 @@ class Subscription extends PianoLit
 
         $subscriber = $this->create([
             'email' => strtolower($form->email),
-            'origin_url' => $form->origin_url
+            'origin_url' => $form->origin_url ?? route('register')
         ]);
 
         if ($notifyUser)

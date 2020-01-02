@@ -113,7 +113,10 @@ class QuizzesController extends Controller
         $feedback = $quiz->evaluate($request->answers);
 
         if (traffic()->isRealVisitor()) {
-            $quiz->results()->create(['score' => $feedback['score']]);
+            $quiz->results()->create([
+                'score' => $feedback['score'],
+                'user_id' => auth()->guard('web')->check() ? auth()->user()->id : null
+            ]);
 
             Admin::notifyAll(new QuizCompleted($quiz));
         }
