@@ -82,7 +82,9 @@ class ApiController extends Controller
 
     public function tags()
     {
-        return Tag::display()->orderBy('name')->cached(weeks(1), 'get');
+        return \Cache::remember('tags.all', weeks(1), function() {
+            return Tag::display()->orderBy('name')->get();
+        });
     }
 
     public function composers()
