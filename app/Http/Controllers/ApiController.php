@@ -16,18 +16,20 @@ class ApiController extends Controller
 
     public function discover($pieces = null, $inputArray = null)
     {
-        $collection = collect([
-            $this->api->order(0)->free('Free weekly pick'),
-            $this->api->order(1)->composers('Composers'),
-            $this->api->order(2)->latest('Latest pieces'),
-            $this->api->order(3)->women('From women composers'),
-            $this->api->order(4)->tag('Pieces that are'),
-            $this->api->order(5)->improve('Improve your'),
-            $this->api->order(6)->levels('Levels'),
-            $this->api->order(7)->ranking('rcm', 'Equivalent to the RCM levels'),
-            $this->api->order(8)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
-            $this->api->order(9)->periods('Periods'),
-        ]);
+        $collection = \Cache::remember('app.discover', days(1), function() {
+            return collect([
+                $this->api->order(0)->free('Free weekly pick'),
+                $this->api->order(1)->composers('Composers'),
+                $this->api->order(2)->latest('Latest pieces'),
+                $this->api->order(3)->women('From women composers'),
+                $this->api->order(4)->tag('Pieces that are'),
+                $this->api->order(5)->improve('Improve your'),
+                $this->api->order(6)->levels('Levels'),
+                $this->api->order(7)->ranking('rcm', 'Equivalent to the RCM levels'),
+                $this->api->order(8)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
+                $this->api->order(9)->periods('Periods'),
+            ]);
+        });
 
         if (request()->wantsJson() || request()->has('api'))
             return $collection->toArray();
@@ -82,7 +84,7 @@ class ApiController extends Controller
 
     public function tags()
     {
-        return \Cache::remember('tags.all', weeks(1), function() {
+        return \Cache::remember('app.tags.all', weeks(1), function() {
             return Tag::display()->orderBy('name')->get();
         });
     }
@@ -104,7 +106,9 @@ class ApiController extends Controller
 
     public function playlists($group)
     {
-        return Playlist::journey()->sorted()->cached(weeks(1), 'get');
+        return \Cache::remember('app.tags.all', weeks(1), function() {
+            return Playlist::journey()->sorted()->get();
+        });
     }
 
     public function playlist(Playlist $playlist)

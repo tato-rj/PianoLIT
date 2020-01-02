@@ -13,7 +13,9 @@ class Controller extends BaseController
 
     public function __construct()
     {
-    	$gift = \App\Infograph\Infograph::gifts()->inRandomOrder()->cached(minutes(5), 'first');
+        $gift = \Cache::remember('infographs.gift', minutes(2), function() {
+            return \App\Infograph\Infograph::gifts()->inRandomOrder()->first();
+        });
 
     	\View::share('gift', $gift);
     }
