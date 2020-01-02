@@ -84,7 +84,7 @@ class ApiController extends Controller
 
     public function tags()
     {
-        return \Cache::remember('app.tags.all', weeks(1), function() {
+        $gift = \Cache::remember('app.tags.all', weeks(1), function() {
             return Tag::display()->orderBy('name')->get();
         });
     }
@@ -106,9 +106,7 @@ class ApiController extends Controller
 
     public function playlists($group)
     {
-        return \Cache::remember('app.playlists.all', weeks(1), function() {
-            return Playlist::journey()->sorted()->get();
-        });
+        return Playlist::journey()->sorted()->get();
     }
 
     public function playlist(Playlist $playlist)

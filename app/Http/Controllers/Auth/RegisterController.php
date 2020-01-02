@@ -76,7 +76,7 @@ class RegisterController extends Controller
 
         Admin::notifyAll(new NewUser($user));
 
-        $this->guard()->login($user);
+        $this->guard()->login($user, $remember = true);
 
         return $this->registered($request, $user);
     }

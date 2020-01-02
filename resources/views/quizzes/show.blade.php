@@ -59,7 +59,7 @@
 			<div class="bg-light rounded px-5 py-4 text-center mt-5 mb-7">
 				<p>This quiz has <strong>{{count($quiz->questions)}}</strong> questions and it shouldn't take more than <u>{{$quiz->duration}}</u> to complete.</p>
 				<h5 class="mb-3">Are you ready to start?</h5>
-				<button class="btn btn-primary btn-wide" id="start-quiz"><strong>Yes, let's do this!</strong></button>
+				<button class="btn btn-primary btn-wide" id="{{auth()->guard('web')->check() ? 'start-quiz' : 'auth-only'}}"><strong>Yes, let's do this!</strong></button>
 			</div>
 			<div id="quiz-content" class="blog-font mb-6" style="display: none;">
 				@include('quizzes.questions')

@@ -38,4 +38,11 @@ class LoginController extends Controller
 
         return redirect(route('home'));
     }
+
+    protected function attemptLogin(Request $request)
+    {
+        return $this->guard()->attempt(
+            $this->credentials($request), $remember = true
+        );
+    }
 }
