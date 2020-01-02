@@ -82,7 +82,7 @@ class ApiController extends Controller
 
     public function tags()
     {
-        return Tag::display()->orderBy('name')->get();
+        return Tag::display()->orderBy('name')->cached(weeks(1), 'get');
     }
 
     public function composers()
@@ -102,7 +102,7 @@ class ApiController extends Controller
 
     public function playlists($group)
     {
-        return Playlist::journey()->sorted()->get();
+        return Playlist::journey()->sorted()->cached(weeks(1), 'get');
     }
 
     public function playlist(Playlist $playlist)

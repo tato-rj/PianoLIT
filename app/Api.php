@@ -20,7 +20,7 @@ class Api
     
     public function free($title)
     {
-        $collection = [Piece::free()->first()];
+        $collection = [Piece::free()->cached(days(1), 'first')];
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find'), 'withBackground' => true]);
 
@@ -29,7 +29,7 @@ class Api
 
     public function latest($title)
     {
-        $collection = Piece::with(['composer'])->latest()->take($this->limit)->get();
+        $collection = Piece::with(['composer'])->latest()->take($this->limit)->cached(days(3), 'get');
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
@@ -38,7 +38,7 @@ class Api
 
     public function composers($title)
     {
-        $collection = Composer::inRandomOrder()->atLeast(15)->withCount('pieces')->get();
+        $collection = Composer::inRandomOrder()->atLeast(15)->withCount('pieces')->cached(days(3), 'get');
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
@@ -47,7 +47,7 @@ class Api
 
     public function improve($title)
     {
-        $collection = Tag::inRandomOrder()->atLeast(5)->improve()->select('name')->withCount('pieces')->get();
+        $collection = Tag::inRandomOrder()->atLeast(5)->improve()->select('name')->withCount('pieces')->cached(days(1), 'get');
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
@@ -70,8 +70,8 @@ class Api
 
     public function ranking($ranking, $title)
     {
-        $collection = Tag::atLeast(5)->ranking($ranking)->select('name')->withCount('pieces')->get();
-        // route('search.index', ['global', 'search' => $ranking])
+        $collection = Tag::atLeast(5)->ranking($ranking)->select('name')->withCount('pieces')->cached(days(2), 'get');
+
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, [
@@ -82,7 +82,7 @@ class Api
 
     public function levels($title)
     {
-        $collection = Tag::atLeast(5)->levels()->select('name')->withCount('pieces')->get();
+        $collection = Tag::atLeast(5)->levels()->select('name')->withCount('pieces')->cached(days(5), 'get');
 
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
@@ -106,7 +106,7 @@ class Api
 
     public function periods($title)
     {
-        $collection = Tag::atLeast(5)->periods()->select('name')->withCount('pieces')->get();
+        $collection = Tag::atLeast(5)->periods()->select('name')->withCount('pieces')->cached(days(5), 'get');
 
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 

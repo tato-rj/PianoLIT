@@ -18,12 +18,20 @@ class RecordAppLog
      */
     public function handle($request, Closure $next)
     {
-        if (! auth()->guard('admin')->check() && $request->has('user_id') && (new Traffic)->isRealUser($request->user_id))
+        if ($this->shouldContinue($request))
             (new AppLog)->push();
 
         if (testing())
             return redirect('/');
 
         return $next($request);
+    }
+
+    public function shouldContinue($request)
+    {
+        $isNotAdmin = ! auth()->guard('admin')->check();
+        $isUser = $request->has('user_id') && (new Traffic)->isRealUser($request->user_id);
+        
+        return $isNotAdmin && $isUser;
     }
 }

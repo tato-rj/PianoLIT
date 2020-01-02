@@ -6,7 +6,7 @@ use App\{ShareableContent, Admin};
 use App\Contracts\Merchandise;
 
 class Infograph extends ShareableContent implements Merchandise
-{    
+{
     protected $folder = 'infograph';
     protected $report_by = 'name';
 

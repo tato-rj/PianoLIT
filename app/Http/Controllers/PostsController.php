@@ -15,7 +15,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::published()->latest()->paginate(12);
+        $posts = Post::published()->latest()->cached(weeks(1), 'paginate', 12);
 
         return view('blog.index', compact('posts'));
     }

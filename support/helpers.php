@@ -1,5 +1,25 @@
 <?php
 
+function minutes($count)
+{
+	return 60 * $count;
+}
+
+function hours($count)
+{
+	return minutes(60) * $count;
+}
+
+function days($count)
+{
+	return hours(24) * $count;
+}
+
+function weeks($count)
+{
+	return days(7) * $count;
+}
+
 function possessive($str)
 {
 	if (str_ends_with($str, ['s']))

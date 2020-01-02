@@ -13,6 +13,8 @@ class Controller extends BaseController
 
     public function __construct()
     {
-    	\View::share('gift', \App\Infograph\Infograph::gifts()->inRandomOrder()->first());
+    	$gift = \App\Infograph\Infograph::gifts()->inRandomOrder()->cached(minutes(5), 'first');
+
+    	\View::share('gift', $gift);
     }
 }

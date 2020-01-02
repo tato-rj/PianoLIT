@@ -18,9 +18,17 @@ class RecordWebLog
      */
     public function handle($request, Closure $next)
     {
-        if (! auth()->guard('admin')->check() && auth()->guard('web')->check() && (new Traffic)->isRealUser(auth()->user()->id))
+        if ($this->shouldContinue())
             (new WebLog)->push();
     
         return $next($request);
+    }
+
+    public function shouldContinue()
+    {
+        $isNotAdmin = ! auth()->guard('admin')->check();
+        $isUser = auth()->guard('web')->check() && (new Traffic)->isRealUser(auth()->user()->id);
+
+        return $isNotAdmin && $isUser;
     }
 }
