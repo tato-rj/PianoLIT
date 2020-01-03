@@ -15,9 +15,6 @@
 	@if($policy->acceptCancellations())
 	<p>No-show or cancellation with less than {{$policy->get('absence_notice')}} hours’ notice: You have forfeited the lesson and it will not be
 	made up.</p>
-	<p>Advance reschedule or cancellation: I provide one Student Make Up Day per semester (see Studio
-		Calendar). I can sometimes facilitate a conversation between students to switch times with each other, but
-	this is at my discretion and not guaranteed.</p>
 	@endif
 
 	<p><u>Teacher cancellation</u></p>
@@ -25,7 +22,7 @@
 	
 	@if($policy->has('sickness_policy'))
 	<p><u>Sickness</u></p> 
-	<p>Please do not come to your lesson sick. Many students share the piano during the day.
+	<p>Please do not come to your lesson sick, as many students share the piano during the day.
 		{!! $policy->get('sickness_policy') == 'make up' ? 
 			'If the student is sick <strong>we will add a make up</strong> lesson.' :
 			'We <strong>will not add a make up</strong> for the missed lesson in this case.' !!}

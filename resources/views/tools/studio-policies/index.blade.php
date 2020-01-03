@@ -4,7 +4,7 @@
 		'keywords' => 'studio policy,private studio agreement,private teacher,music teacher policy',
 		'title' => 'Studio Policy Generator',
 		'description' => 'Generate your studio policy in just a few seconds!',
-		'thumbnail' => asset('images/misc/thumbnails/staff.jpg'),
+		'thumbnail' => asset('images/misc/thumbnails/studio-policy.jpg'),
 		'created_at' => carbon('13-12-2019'),
 		'updated_at' => carbon('13-12-2019')
 	]])

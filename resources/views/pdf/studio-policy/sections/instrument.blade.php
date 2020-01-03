@@ -8,7 +8,7 @@
 
 		@if(in_array('digital_piano', $policy->get('instrument_type')))
 			<p>{{in_array('acoustic_piano', $policy->get('instrument_type')) ? 'If an acoustic piano is not an option at the moment, I can also' : 'I'}} recommend a good digital piano. They have come a long way in recent years and may be good substitutes for an acoustic piano.</p>
-			<p><u>Why a digital pianos might be good choice?</u></p>
+			<p><u>Why digital pianos might be good choice?</u></p>
 			<ul>
 				<li>They take up less space if compared to a grand or even upright piano.</li>
 				<li>They are are more affordable: 1K to 5K as opposed to 10K for a baby grand piano, for example.</li>
@@ -26,7 +26,7 @@
 				<li>Set on a sturdy stand or table at proper height (about 28” from floor)</li>
 				<li>Bench at a height that keeps forearms level while playing</li>
 			</ul>
-			<p>A digital piano that doesn’t meet these requirements doesn’t work for piano lessons.</p>
+			<p>A digital piano that doesn't meet these requirements will <u>not</u> work for piano lessons.</p>
 		@endif
 	@endif
 

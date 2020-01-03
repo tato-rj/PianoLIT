@@ -14,7 +14,7 @@
 		@if($policy->has('summer_description'))
 		<p>{{$policy->get('summer_description')}}{{str_ends_with($policy->get('summer_description'), ['.', '!']) ? null : '.'}}</p>
 		@else
-		<p>We decide what is the best schedule and payment method for the summer months at the end of each year.</p>
+		<p>We will discuss what is the best schedule and payment method for the summer months at the end of each year.</p>
 		@endif
 	@else
 		<p><u>I do not teach during the summer months.</u></p>

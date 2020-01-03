@@ -30,29 +30,6 @@ $fields = [
 			@endforeach
 			<option value="0">No, there are no such months</option>
 		</select>
-	</div> 
-
-{{-- 	@options([
-		'label' => '',
-		'type' => 'radio', 
-		'value' => $fields[1], 
-		'options' => ['Yes' => 'make up', 'I offer a refund' => 'refund', 'I offer both' => 'both', 'I dont\'t offer either one' => 'none'], 
-		'name' => 'makeup_policy',
-		'bag' => 'default', 
-		'asterisk' => true]) --}}
-
-{{-- 	<div class="form-group"> 
-		@include('components.form.label', [
-			'label' => 'You accept a cancellation up until', 
-			'asterisk' => true])
-		<select class="form-control" name="absence_notice" required>
-			<option disabled>Select an option</option>
-			<option value="24" {{$fields[0] == 24 ? 'selected' : null}}>24hs in advance</option>
-			<option value="48" {{$fields[0] == 48 ? 'selected' : null}}>48hs in advance</option>
-			<option value="72" {{$fields[0] == 72 + 1 ? 'selected' : null}}>72hs in advance</option>
-			<option value="always" {{$fields[0] == 'always' ? 'selected' : null}}>I accept cancellations at any time</option>
-			<option value="never" {{$fields[0] == 'never' ? 'selected' : null}}>I don't accept cancellations</option>
-		</select>
-	</div> --}}
+	</div>
 
 @endcomponent

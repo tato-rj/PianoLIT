@@ -14,7 +14,7 @@
 	@endif
 	
 	@if($policy->has('materials') && in_array('assignment notebooks', $policy->get('materials')))
-	<p>The assignment notebook is where I will write what we did in each class and what the student needs to practice during the week at home. I will check on the assignment notebook at each meeting to follow up on what we worked on in the previous lesson.</p>
+	<p>The assignment notebook is where I will write what we did in each lesson and what the student needs to practice during the week at home. I will check on the assignment notebook at each meeting to follow up on what we worked on in the previous lesson.</p>
 	@endif
 </section>
 @endif
