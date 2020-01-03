@@ -25,13 +25,13 @@
 <div class="container mb-4">
 	<div class="row mb-6">
 		<div class="col-lg-8 col-12 mx-auto">
-			<div class="mb-3">
+			<div class="mb-1">
 				<h4>Update my policy</h4>
 				<div class="d-flex d-apart flex-wrap">
-					<p class="text-right text-muted m-0">
+					<p class="text-right text-muted mb-2">
 						<small><i class="fas fa-calendar-alt mr-1"></i>last updated on {{$studioPolicy->updated_at->toFormattedDateString()}} at {{$studioPolicy->updated_at->format('g:i A')}}</small>
 					</p>
-					<div>
+					<div class="mb-2">
 						<a class="btn btn-sm btn-teal-outline" href="{{route('users.studio-policies.show', $studioPolicy->id)}}">
 							<i class="fas fa-file-download mr-2"></i>Download policy
 						</a>
