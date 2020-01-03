@@ -2,14 +2,13 @@
 	<p class="section-title">Absence & make up policy</p>
 	<p>Please take special note of this policy in order to avoid any misunderstanding.</p>
 
-	<div class="highlight-box mb-3 important"> 
-		<p class="text-center"><strong>IMPORTANT</strong></p>
+	<div class="highlight-box mb-3 important page-break-sometimes"> 
 		@if($policy->get('absence_notice') == 'always')
-		<p class="text-center m-0">ANY MISSED LESSONS WILL BE OFFERED A {{strtoupper($policy->cancellationOffers())}}</p>
+		<p class="m-0"><strong>IMPORTANT</strong>: ANY MISSED LESSONS WILL BE OFFERED A {{strtoupper($policy->cancellationOffers())}}</p>
 		@elseif($policy->get('absence_notice') == 'never')
-		<p class="text-center m-0">MISSED LESSONS WILL <strong>NOT</strong> BE OFFERED A REFUND OR A MAKE UP</p>
+		<p class="m-0"><strong>IMPORTANT</strong>: MISSED LESSONS WILL <strong>NOT</strong> BE OFFERED A REFUND OR A MAKE UP</p>
 		@else
-		<p class="text-center m-0">MISSED LESSONS WILL BE OFFERED A {{strtoupper($policy->cancellationOffers())}} <u>IF CANCELLED WITH MORE THAN {{strtoupper($policy->get('absence_notice'))}} HOURS NOTICE</u></p>
+		<p class="m-0"><strong>IMPORTANT</strong>: MISSED LESSONS WILL BE OFFERED A {{strtoupper($policy->cancellationOffers())}} <u>IF CANCELLED WITH MORE THAN {{strtoupper($policy->get('absence_notice'))}} HOURS NOTICE</u></p>
 		@endif
 	</div>
 

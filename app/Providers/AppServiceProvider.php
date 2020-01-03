@@ -35,6 +35,13 @@ class AppServiceProvider extends ServiceProvider
             return auth()->guard('admin')->user()->role == 'editor';
         });
 
+        \Blade::if('confirmed', function (bool $state = true) {
+            if (! auth()->guard('web')->check())
+                return false;
+
+            return $state ? auth()->user()->confirmed : ! auth()->user()->confirmed;
+        });
+
         \Blade::if('created', function ($model) {
             return auth()->guard('admin')->user()->id == $model->creator_id || auth()->guard('admin')->user()->role == 'manager';
         });

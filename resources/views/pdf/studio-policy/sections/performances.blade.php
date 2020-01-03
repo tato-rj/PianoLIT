@@ -1,10 +1,10 @@
 <section>
-	@if($policy->has('group_classes'))
+	@if($policy->has('group_classes_description'))
 	<p class="section-title">Group classes</p>
 	<p>{{$policy->get('group_classes_description')}}</p>
 	@endif
 
-	@if($policy->has('recitals'))
+	@if($policy->has('recitals_description'))
 	<p class="section-title">Recitals</p>
 	<p>{{$policy->get('recitals_description')}}</p>
 	@endif

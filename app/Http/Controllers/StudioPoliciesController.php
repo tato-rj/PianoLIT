@@ -74,7 +74,6 @@ class StudioPoliciesController extends Controller
      */
     public function edit(StudioPolicy $studioPolicy)
     {
-        // return $studioPolicy;
         return view('users.studio-policies.edit', compact('studioPolicy'));
     }
 
@@ -88,8 +87,6 @@ class StudioPoliciesController extends Controller
     public function update(Request $request, StudioPolicy $studioPolicy)
     {
         $this->authorize('update', $studioPolicy);
-
-        // $request->validate(['data' => 'required']);
 
         $studioPolicy->update([
             'data' => json_encode($request->except('_token')),

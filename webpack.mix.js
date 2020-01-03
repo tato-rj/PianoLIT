@@ -15,6 +15,10 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/admin.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .sass('resources/sass/admin.scss', 'public/css')
+    .sass('resources/sass/studio-policies/layout.scss', 'public/css/studio-policies')
+    .sass('resources/sass/studio-policies/simple.scss', 'public/css/studio-policies')
+    .sass('resources/sass/studio-policies/elegant.scss', 'public/css/studio-policies')
+    .sass('resources/sass/studio-policies/informal.scss', 'public/css/studio-policies')
     .styles([
       'resources/sass/vendor/theme.min.css',
       'resources/sass/vendor/tables.css',

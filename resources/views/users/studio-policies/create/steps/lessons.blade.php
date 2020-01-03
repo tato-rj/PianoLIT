@@ -20,11 +20,16 @@ $fields = [
 		  </div>
 			<input class="form-control text-right {{validate($errors->default, 'lesson_fees[]')}}"
 				step="5" type="number" name="lesson_fees[]" max="500" min="0"
-				value="{{$fields[0][$duration][0]}}"style="max-width: 72px">
+				value="{{$fields[0][$duration][0] ?? null}}"style="max-width: 72px">
 			  <div class="input-group-append">
 			  	<select class="form-control" name="lesson_duration[]" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+			  		@if(in_array($duration, $fields[0]))
 			  		<option value="hour" {{$fields[0][$duration][1] == 'hour' ? 'selected' : null}}>/hour</option>
 			  		<option value="month" {{$fields[0][$duration][1] == 'month' ? 'selected' : null}}>/month</option>
+			  		@else
+			  		<option value="hour">/hour</option>
+			  		<option value="month">/month</option>
+			  		@endif
 			  	</select>
 			  </div>
 		</div>

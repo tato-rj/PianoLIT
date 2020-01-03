@@ -30,8 +30,13 @@ $fields = [
 	@options([
 		'label' => 'Do you buy the materials yourself?', 
 		'type' => 'radio', 
+		'classes' => 'd-block',
 		'value' => $fields[2], 
-		'options' => ['Yes, I buy the books and bill the student' => 1, 'No, students buy their own books' => 0], 
+		'options' => [
+			'Yes, I buy the books and bill the student' => 'I purchase the materials in advance and include the cost in the monthly invoice', 
+			'No, students buy their own books' => 'Students are responsible for buying their own materials',
+			'This is not relevant' => 'null'
+		], 
 		'name' => 'materials_buyer', 
 		'bag' => 'default', 
 		'asterisk' => true])

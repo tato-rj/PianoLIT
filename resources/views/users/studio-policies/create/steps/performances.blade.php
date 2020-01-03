@@ -12,16 +12,6 @@ $fields = [
 
 	<div class="form-row"> 
 		<div class="col">
-		@input([
-			'label' => 'Number of group classes per year', 
-			'value' => $fields[0],
-			'name' => 'group_classes', 
-			'bag' => 'default', 
-			'type' => 'number', 
-			'limit' => 24, 
-			'asterisk' => true])
-		</div>
-		<div class="col">
 			@input([
 				'label' => 'Number of recitals per year', 
 				'value' => $fields[1],
@@ -30,6 +20,16 @@ $fields = [
 				'type' => 'number', 
 				'limit' => 24, 
 				'asterisk' => true])
+		</div>
+		<div class="col">
+		@input([
+			'label' => 'Number of group classes per year', 
+			'value' => $fields[0],
+			'name' => 'group_classes', 
+			'bag' => 'default', 
+			'type' => 'number', 
+			'limit' => 24, 
+			'asterisk' => true])
 		</div>
 	</div>
 

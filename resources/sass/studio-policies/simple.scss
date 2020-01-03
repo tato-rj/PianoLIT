@@ -1,0 +1,47 @@
+/*'#ff6855', '#CA7A14', '#E5E5E5'*/
+
+header > div {
+	border-bottom: 6px solid #E5E5E5;
+	margin-bottom: 1rem;
+	padding-bottom: 1rem;
+}
+
+header #pdf-title {
+	margin-bottom: .5rem!important;
+}
+
+header #pdf-title h2 {
+	font-size: 1.8rem;
+	color: grey;
+}
+
+header #pdf-title h2 span {
+	color: #ff6855;
+}
+
+header #pdf-year {
+	margin: 0;
+}
+
+.section-title {
+	font-weight: bold;
+	text-transform: uppercase;
+	color: #CA7A14;
+}
+
+.highlight-box, .signature-box {
+	margin-bottom: 3rem; 
+	text-align: center;
+}
+
+.important > p:first-of-type {
+	padding-bottom: .5rem!important;
+	border-bottom: 3px solid #E5E5E5;
+}
+
+.signature {
+	border-top: 1px solid #3b4044; 
+	margin-top: 5rem; 
+	padding-top: .5rem;
+	width: 50%;
+}

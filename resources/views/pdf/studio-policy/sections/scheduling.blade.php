@@ -11,8 +11,8 @@
 	@if($policy->has('summer_teaching'))
 		<p>The summer schedule starts in {{getMonthName($policy->get('end_month') + 1)}} and goes until {{getMonthName($policy->get('start_month') - 1)}}.</p>
 
-		@if($policy->has('summer_policy'))
-		<p>{{$policy->get('summer_policy')}}{{str_ends_with($policy->get('summer_policy'), ['.', '!']) ? null : '.'}}</p>
+		@if($policy->has('summer_description'))
+		<p>{{$policy->get('summer_description')}}{{str_ends_with($policy->get('summer_description'), ['.', '!']) ? null : '.'}}</p>
 		@else
 		<p>We decide what is the best schedule and payment method for the summer months at the end of each year.</p>
 		@endif

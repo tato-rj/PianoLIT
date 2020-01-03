@@ -4,7 +4,7 @@ $fields = [
 	empty($studioPolicy) ? old('makeup_weeks') : $studioPolicy->get('makeup_weeks'),
 	empty($studioPolicy) ? old('provide_calendar') : $studioPolicy->get('provide_calendar'),
 	empty($studioPolicy) ? old('summer_teaching') : $studioPolicy->get('summer_teaching'),
-	empty($studioPolicy) ? old('summer_policy') : $studioPolicy->get('summer_policy'),
+	empty($studioPolicy) ? old('summer_description') : $studioPolicy->get('summer_description'),
 ];
 @endphp
 
@@ -54,7 +54,7 @@ $fields = [
 	@textarea([
 		'label' => 'If so, describe below how you schedule and charge for those lessons', 
 		'value' => $fields[4], 
-		'name' => 'summer_policy', 
+		'name' => 'summer_description', 
 		'bag' => 'default', 
 		'required' => 'not-required', 
 		'limit' => 480, 

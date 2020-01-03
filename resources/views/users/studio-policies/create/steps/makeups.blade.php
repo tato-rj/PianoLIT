@@ -14,7 +14,7 @@ $fields = [
 			'label' => 'You accept a cancellation up until', 
 			'asterisk' => true])
 		<select class="form-control" name="absence_notice" required>
-			<option disabled>Select an option</option>
+			<option selected disabled>Select an option</option>
 			<option value="24" {{$fields[0] == 24 ? 'selected' : null}}>24hs in advance</option>
 			<option value="48" {{$fields[0] == 48 ? 'selected' : null}}>48hs in advance</option>
 			<option value="72" {{$fields[0] == 72 + 1 ? 'selected' : null}}>72hs in advance</option>
@@ -44,7 +44,7 @@ $fields = [
 		'asterisk' => true])
 
 	@options([
-		'label' => 'Do you offer a make up if you have to cancel the lesson?',
+		'label' => 'Do you offer a make up if <u>you</u> have to cancel the lesson?',
 		'type' => 'radio', 
 		'value' => $fields[3], 
 		'options' => ['Yes' => 1, 'No, I offer a refund instead' => 0], 
