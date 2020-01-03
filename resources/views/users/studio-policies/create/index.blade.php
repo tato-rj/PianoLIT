@@ -54,8 +54,6 @@
 @endsection
 
 @push('scripts')
-@include('components.addthis')
-
 <script type="text/javascript">
 $('#steps').on('show.bs.collapse', function (step) {
 	$('#steps .card').removeClass('selected');
