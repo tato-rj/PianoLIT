@@ -1,13 +1,4 @@
-@extends('layouts.app', [
-	'title' => 'Studio Policy Generator | ' . config('app.name'),
-	'shareable' => [
-		'keywords' => 'studio policy,private studio agreement,private teacher,music teacher policy',
-		'title' => 'Studio Policy Generator',
-		'description' => 'Generate your studio policy in just a few seconds!',
-		'thumbnail' => asset('images/misc/thumbnails/staff.jpg'),
-		'created_at' => carbon('13-12-2019'),
-		'updated_at' => carbon('13-12-2019')
-	]])
+@extends('layouts.app', ['title' => 'Studio Policy Generator | ' . config('app.name')])
 
 @push('header')
 <style type="text/css">
@@ -50,7 +41,7 @@
 		<div class="col-lg-8 col-12 mx-auto">
 			<p><strong>Why do I need a studio policy?</strong></p>
 			<p>An effective studio policy is one of the most important tools a piano teacher has for creating a private studio. Designing your piano studio policy gives you the opportunity to reflect on what you hope to accomplish in your studio and how you will handle the tricky situations that are certain to arise.</p>
-			<p><a href="" class="link-blue">Click here</a> if you want to learn more.</p>
+			{{-- <p><a href="" class="link-blue">Click here</a> if you want to learn more.</p> --}}
 		</div>
 	</div>
 </div>
@@ -64,8 +55,6 @@
 @endsection
 
 @push('scripts')
-@include('components.addthis')
-
 <script type="text/javascript">
 $('.delete').on('click', function (e) {
   $('#delete-modal').find('form').attr('action', $(this).attr('data-url'));

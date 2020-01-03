@@ -1,13 +1,4 @@
-@extends('layouts.app', [
-	'title' => 'Studio Policy Generator | ' . config('app.name'),
-	'shareable' => [
-		'keywords' => 'studio policy,private studio agreement,private teacher,music teacher policy',
-		'title' => 'Studio Policy Generator',
-		'description' => 'Generate your studio policy in just a few seconds!',
-		'thumbnail' => asset('images/misc/thumbnails/staff.jpg'),
-		'created_at' => carbon('13-12-2019'),
-		'updated_at' => carbon('13-12-2019')
-	]])
+@extends('layouts.app', ['title' => 'Studio Policy Generator | ' . config('app.name'),])
 
 @push('header')
 <style type="text/css">
