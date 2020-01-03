@@ -5,11 +5,7 @@
 			<p class="text-muted mb-1">{{$policy->get('start_year')}}/{{$policy->get('end_year')}}</p>
 			<p class="text-muted m-0"><small>from <strong>{{$policy->created_at->toFormattedDateString()}}</strong></small></p>
 		</div>
-		<div class="border-bottom mb-2 pb-3">
-		<a class="btn btn-teal btn-block text-left" href="{{route('users.studio-policies.show', $policy->id)}}">
-			<i class="fas fa-file-download mr-2"></i>Download</a>
-		</div>
-		<div class="d-flex">
+		<div class="d-flex mb-3">
 			<div class="w-50 text-center">
 				<a class="link-grey" title="Edit" href="{{route('users.studio-policies.edit', $policy->id)}}">
 					<small class="d-block">EDIT</small>
@@ -22,6 +18,11 @@
 					<i class="fas fa-lg fa-trash-alt"></i>
 				</a>
 			</div>
+		</div>
+		<div>
+			<a class="btn btn-teal btn-block text-left" href="{{route('users.studio-policies.show', $policy->id)}}">
+				<i class="fas fa-file-download mr-2"></i>Download
+			</a>
 		</div>
 	</div>
 </div>
