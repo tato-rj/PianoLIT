@@ -56,7 +56,7 @@ $fields = [
 	@options([
 		'label' => 'How involved do you expect the parent/guardian of a young student to be during the lessons?', 
 		'type' => 'radio', 
-		'value' => $fields[4], 
+		'value' => $fields[3], 
 		'options' => [
 			'They must always be present and take notes of what we did in class' => 'Parents/guardians are required to observe every lesson and take notes. Their participation in the practice sessions at home are be very important in the student\'s development.', 
 			'They can observe if they want to, but it is not required' => 'Parents/guardians are welcome to observe the lesson, but are not required to do so. The students are fully responsible for keeping track of their homework and being prepared to every class.',
