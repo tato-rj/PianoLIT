@@ -29,14 +29,20 @@ header #pdf-year {
 	color: #CA7A14;
 }
 
-.highlight-box, .signature-box {
+.highlight-box {
 	margin-bottom: 3rem; 
 	text-align: center;
 }
 
-.important > p:first-of-type {
+.signature-box {
+	margin-bottom: 3rem;
+}
+
+.important {
 	padding-bottom: .5rem!important;
 	border-bottom: 3px solid #E5E5E5;
+	padding-top: .5rem!important;
+	border-top: 3px solid #E5E5E5;
 }
 
 .signature {

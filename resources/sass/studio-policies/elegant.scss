@@ -55,9 +55,11 @@ header #pdf-year::before {
 	text-align: center;
 }
 
-.highlight-box > p:first-of-type {
-	color: #9b786f;
-	font-size: 120%;
+.highlight-box {
+	padding-bottom: .5rem!important;
+	border-bottom: 3px solid #ede9d042;
+	padding-top: .5rem!important;
+	border-top: 3px solid #ede9d042;
 }
   
 .signature-box {
