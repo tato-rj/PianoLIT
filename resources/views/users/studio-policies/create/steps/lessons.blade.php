@@ -23,7 +23,7 @@ $fields = [
 				value="{{$fields[0][$duration][0] ?? null}}"style="max-width: 72px">
 			  <div class="input-group-append">
 			  	<select class="form-control" name="lesson_duration[]" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
-			  		@if(in_array($duration, $fields[0]))
+			  		@if(is_array($fields[0]) && in_array($duration, $fields[0]))
 			  		<option value="hour" {{$fields[0][$duration][1] == 'hour' ? 'selected' : null}}>/hour</option>
 			  		<option value="month" {{$fields[0][$duration][1] == 'month' ? 'selected' : null}}>/month</option>
 			  		@else
