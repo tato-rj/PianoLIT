@@ -15,7 +15,7 @@ $fields = [
 			@input([
 				'value' => $fields[0],
 				'name' => 'vacation_weeks', 
-				'label' => 'Number of vacation weeks per year', 
+				'label' => 'Number of vacation weeks per year (including holidays such as Christmas break, etc)', 
 				'bag' => 'default', 
 				'type' => 'number', 
 				'limit' => 24, 
@@ -52,7 +52,7 @@ $fields = [
 		'asterisk' => true])
 
 	@textarea([
-		'label' => 'If so, describe below how you schedule and charge for those lessons', 
+		'label' => 'If so, you may describe below how you schedule and charge for those lessons', 
 		'value' => $fields[4], 
 		'name' => 'summer_description', 
 		'bag' => 'default', 

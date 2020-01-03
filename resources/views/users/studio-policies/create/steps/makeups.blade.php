@@ -44,7 +44,7 @@ $fields = [
 		'asterisk' => true])
 
 	@options([
-		'label' => 'Do you offer a make up if <u>you</u> have to cancel the lesson?',
+		'label' => 'Do you offer a make up if YOU have to cancel the lesson?',
 		'type' => 'radio', 
 		'value' => $fields[3], 
 		'options' => ['Yes' => 1, 'No, I offer a refund instead' => 0], 

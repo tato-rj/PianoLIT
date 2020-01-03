@@ -10,7 +10,7 @@
 		  @if(!empty($value) || $value == 0) {{! is_null($value) && $value == $option ? 'checked' : null}} @endif
 		  @endif
 		  class="custom-control-input {{validate($errors->$bag, $name)}}" {{$required ?? 'required'}}>
-		  <label class="custom-control-label" for="{{"$name.$loop->iteration"}}">{!! $label !!}</label>
+		  <label class="custom-control-label" for="{{"$name.$loop->iteration"}}">{{ $label }}</label>
 		</div>
 		@endforeach
 	</div>

@@ -3,7 +3,6 @@ $fields = [
 	empty($studioPolicy) ? old('lesson_fees[]') : $studioPolicy->lessonFees(),
 	empty($studioPolicy) ? old('hide_fees') : $studioPolicy->get('hide_fees'),
 	empty($studioPolicy) ? old('extra_fees') : $studioPolicy->get('extra_fees'),
-	empty($studioPolicy) ? old('expectations') : $studioPolicy->get('expectations'),
 	empty($studioPolicy) ? old('observation') : $studioPolicy->get('observation'),
 ]
 @endphp
@@ -53,21 +52,9 @@ $fields = [
 		'required' => 'not-required', 
 		'limit' => 280, 
 		'rows' => 3])
-	
-	@options([
-		'label' => 'Which requirements (if any) do you want to include?', 
-		'type' => 'checkbox', 
-		'values' => $fields[3], 
-		'options' => [
-			'Daily practice' => 'Daily Practice: this is the key to a successful and fulfilling learning experience.', 
-			'Attendance' => 'Attendance: Regular and on-time attendance is required.', 
-			'Short finger nails' => 'Short finger nails: all finger nails need to be kept short to allow for good technique.'], 
-		'name' => 'expectations', 
-		'required' => 'not-required',
-		'bag' => 'default'])
 
 	@options([
-		'label' => 'How involved do you expect the parent/guardian to be during the lessons?', 
+		'label' => 'How involved do you expect the parent/guardian of a young student to be during the lessons?', 
 		'type' => 'radio', 
 		'value' => $fields[4], 
 		'options' => [
