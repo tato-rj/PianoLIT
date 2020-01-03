@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'Studio Policy Generator | ' . config('app.name'),])
+@extends('layouts.app')
 
 @push('header')
 <style type="text/css">
