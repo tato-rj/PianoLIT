@@ -1,4 +1,4 @@
-<div class="col-lg-4 col-md-6 col-12">
+<div class="col-lg-4 col-6">
 	<div class="rounded p-3 border">
 		<div class="mb-2">
 			<h6 class="m-0">{{$policy->get('nickname')}}</h6>
