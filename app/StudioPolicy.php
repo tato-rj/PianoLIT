@@ -107,7 +107,7 @@ class StudioPolicy extends PianoLit
                 $fees[$duration] = [$this->get('lesson_fees')[$key], $this->get('lesson_duration')[$key]];
         }
 
-        return $fees;
+        return empty($fees) ? null : $fees;
     }
 
     public function acceptCancellations()
