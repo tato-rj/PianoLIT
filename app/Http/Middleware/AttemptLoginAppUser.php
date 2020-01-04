@@ -17,7 +17,8 @@ class AttemptLoginAppUser
     public function handle($request, Closure $next)
     {
         try {
-            auth()->login(User::findOrFail($request->user_id));   
+            if ($request->has('user_id'))
+                auth()->login(User::findOrFail($request->user_id));   
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
         }
