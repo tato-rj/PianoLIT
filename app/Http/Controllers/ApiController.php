@@ -85,7 +85,7 @@ class ApiController extends Controller
     public function tags()
     {
         // $gift = \Cache::remember('app.tags.all', weeks(1), function() {
-            return Tag::display()->orderBy('name')->get();
+            return Tag::display()->orsderBy('name')->get();
         // });
     }
 
