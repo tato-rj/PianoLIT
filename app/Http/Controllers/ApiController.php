@@ -16,7 +16,7 @@ class ApiController extends Controller
 
     public function discover($pieces = null, $inputArray = null)
     {
-        $collection = \Cache::remember('app.discover', days(1), function() {
+        $collectdion = \Cache::remember('app.discover', days(1), function() {
             return collect([
                 $this->api->order(0)->free('Free weekly pick'),
                 $this->api->order(1)->composers('Composers'),
@@ -85,7 +85,7 @@ class ApiController extends Controller
     public function tags()
     {
         // $gift = \Cache::remember('app.tags.all', weeks(1), function() {
-            return Tag::display()->orsderBy('name')->get();
+            return Tag::display()->orderBy('name')->get();
         // });
     }
 
