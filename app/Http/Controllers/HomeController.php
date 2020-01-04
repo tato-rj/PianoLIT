@@ -26,6 +26,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        Bugsnag::notifyException(new RuntimeException("Test error"));
         $collections = collect();
         $tags = Tag::display()->inRandomOrder()->get();
 
