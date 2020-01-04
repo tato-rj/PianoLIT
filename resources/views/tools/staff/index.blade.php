@@ -33,8 +33,8 @@
 					<img src="{{asset('images/sheets/' . $file . '.png')}}" class="w-100 rounded shadow-sm border cursor-pointer staff">
 					<div class="controls position-absolute w-100 h-100" style="display: none; top: 0; left: 0; background-color: rgba(255,255,255,0.6)">
 						<div class="d-flex flex-center flex-column w-100 h-100">
-							<a href="{{route('resources.staff', ['type' => $file])}}" target="_blank" class="btn btn-teal mb-2 animated fadeInUp shadow" style="display: none;"><i class="fas fa-cloud-download-alt mr-2"></i>Normal</a>
-							<a href="{{route('resources.staff', ['type' => $file, 'size' => 'xl'])}}" target="_blank" class="btn btn-teal animated fadeInUp shadow" style="display: none; animation-delay: .15s"><i class="fas fa-cloud-download-alt mr-2"></i>Extra large</a>
+							<a href="{{route('tools.staff', ['type' => $file])}}" target="_blank" class="btn btn-teal mb-2 animated fadeInUp shadow" style="display: none;"><i class="fas fa-cloud-download-alt mr-2"></i>Normal</a>
+							<a href="{{route('tools.staff', ['type' => $file, 'size' => 'xl'])}}" target="_blank" class="btn btn-teal animated fadeInUp shadow" style="display: none; animation-delay: .15s"><i class="fas fa-cloud-download-alt mr-2"></i>Extra large</a>
 						</div>
 					</div>
 				</div>
