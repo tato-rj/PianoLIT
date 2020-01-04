@@ -169,6 +169,7 @@ return [
          * Package Service Providers...
          */
         Laravel\Scout\ScoutServiceProvider::class,
+        Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
         /*
          * Application Service Providers...
          */
