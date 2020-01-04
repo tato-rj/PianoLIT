@@ -16,7 +16,7 @@ class ApiController extends Controller
 
     public function discover($pieces = null, $inputArray = null)
     {
-        auth()->login(request()->user_id);
+        auth()->login(User::findOrFail(request()->user_id));
         $collectsion = \Cache::remember('app.discover', days(1), function() {
             return collect([
                 $this->api->order(0)->free('Free weekly pick'),
