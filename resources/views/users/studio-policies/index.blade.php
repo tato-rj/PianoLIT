@@ -33,7 +33,7 @@
 	<div class="row mb-6">
 		<div class="col-lg-12 text-center">
 			<h5 class="mb-3">Do you want to create a new one?</h5>
-			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow"><i class="fas fa-magic mr-2"></i>Create a new policy now</a>
+			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow"><i class="fas fa-magic mr-2"></i>Start a new policy now</a>
 		</div>
 	</div>
 	
