@@ -238,6 +238,7 @@ return [
         // CUSTOM ALIASES
         
         'Genderize' => Pixelpeter\Genderize\Facades\Genderize::class,
+        'Bugsnag' => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
     ],
 
 ];
