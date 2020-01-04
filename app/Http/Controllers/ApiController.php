@@ -16,7 +16,6 @@ class ApiController extends Controller
 
     public function discover($pieces = null, $inputArray = null)
     {
-        auth()->login(User::findOrFail(request()->user_id));
         $collection = \Cache::remember('app.discover', days(1), function() {
             return collect([
                 $this->api->order(0)->free('Free weekly pick'),
@@ -66,7 +65,7 @@ class ApiController extends Controller
     {
         $piece = Piece::with(['composer', 'tags', 'favorites'])->findOrFail($request->search);
 
-        $piece->isFavoritded($request->user_id);
+        $piece->isFavorited($request->user_id);
 
         return [$piece];
     }
