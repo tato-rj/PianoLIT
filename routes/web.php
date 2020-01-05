@@ -4,7 +4,8 @@ Route::get('teens', function() {
 	$prodigies = collect();
 	$pieces->each(function($piece) use ($prodigies) {
 		if ($piece->composed_in && $piece->composer->date_of_birth) {
-			if ($piece->composed_in - $piece->composer->date_of_birth->year < 20)
+			$age = $piece->composed_in - $piece->composer->date_of_birth->year;
+			if ($age < 20 && $age > 10)
 				$prodigies->push($piece);
 		}
 	});
