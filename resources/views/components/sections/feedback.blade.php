@@ -1,3 +1,4 @@
+@if($full ?? true)
 	<div class="row">
 		<div class="col-lg-8 mx-auto border-top border-bottom mb-6 text-center p-5">
 			<div style="max-width: 400px" class="mx-auto">
@@ -7,3 +8,4 @@
 			</div>
 		</div>
 	</div>
+@endif

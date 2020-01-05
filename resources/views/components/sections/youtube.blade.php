@@ -1,3 +1,4 @@
+@if($full ?? true)
 <div class="row mb-4 t-2" id="youtube-previews" style="opacity: 0">
 	<div class="col-12">
 		<p class="text-center mx-auto">Subscribe to our <a href="{{route('youtube')}}" target="_blank" class="link-blue">Youtube Channel</a> and enjoy daily videos of awesome piano pieces and tips!</p>
@@ -17,3 +18,4 @@
 		<a href="{{route('youtube')}}" target="_blank" class="btn btn-primary btn-wide shadow"><i class="fab fa-lg fa-youtube mr-3"></i>Visit our channel</a>
 	</div>
 </div>
+@endif

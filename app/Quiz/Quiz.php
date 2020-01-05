@@ -111,7 +111,7 @@ class Quiz extends ShareableContent
         return percentage($average, count($this->questions));
     }
 
-    public function evaluate(array $answers)
+    public function evaluate($answers)
     {
     	$outcome = [];
     	$score = 0;
