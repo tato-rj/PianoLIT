@@ -21,7 +21,9 @@
     </div>
 </div>
 
+@if($full ?? true)
 <div class="container mb-6">
     @include('components.sections.youtube')
 </div>
+@endif
 @endsection
