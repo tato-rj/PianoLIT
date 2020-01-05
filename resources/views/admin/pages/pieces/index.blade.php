@@ -62,7 +62,7 @@ $('.popup').on('click', function(event) {
   event.stopPropagation();
 });
 
-$('.badge-popup').on('click', function(event) {
+$(document).on('click', '.badge-popup', function(event) {
   let $popup = $(this).next('div');
   let url = $popup.attr('data-url');
   event.stopPropagation();
