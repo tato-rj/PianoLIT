@@ -25,7 +25,7 @@
 	<div class="row mb-6">
 		<div class="col-lg-8 col-12 mx-auto mb-6">
 			<div class="mb-4">
-				<p>Are you looking to create a professionally looking policy for your studio? Do you want to dust off the one you have and improve it for your expanding studio? Then you're on the right place 🤗!</p>
+				<p>Are you looking to create a professionally-looking policy for your studio? Do you want to dust off the one you have and improve it for your expanding studio? Then you're in the right place 🤗!</p>
 				<p>Just click on the button below, answer a few questions and we'll generate a <u>well crafted</u> and <u>straight forward</u> document in just a few steps.</p>
 			</div>
 			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow btn-block"><i class="fas fa-magic mr-2"></i>Create a Studio Policy now</a>

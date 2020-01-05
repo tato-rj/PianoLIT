@@ -1,4 +1,16 @@
 <?php
+Route::get('teens', function() {
+	$pieces = \App\Piece::all();
+	$prodigies = collect();
+	$pieces->each(function($piece) use ($prodigies) {
+		if ($piece->composed_in && $piece->composer->date_of_birth) {
+			if ($piece->composed_in - $piece->composer->date_of_birth->year < 20)
+				$prodigies->push($piece);
+		}
+	});
+
+	return $prodigies;
+});
 
 Route::resources([
     'subscriptions' => 'SubscriptionsController'
