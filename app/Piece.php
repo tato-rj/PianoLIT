@@ -25,6 +25,7 @@ class Piece extends PianoLit
         'recordingsAvailable', 
         'is_public_domain', 
         'level_name', 
+        'level_id', 
         'level_number',
         'timeline_url', 
         'period_name', 

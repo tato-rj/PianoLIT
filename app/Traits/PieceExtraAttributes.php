@@ -37,6 +37,14 @@ trait PieceExtraAttributes
         return null;
     }
 
+    public function getLevelIdAttribute()
+    {
+        if ($this->level)
+            return $this->level->id;
+
+        return null;
+    }
+
     public function getRankingsAttribute()
     {
         $rcm = $this->getRanking('rcm', false);
