@@ -100,7 +100,7 @@ class StudioPolicy extends PianoLit
 
     public function feesPer($period = null)
     {
-        if (! $period)
+        if (! $period || ! $this->get('per_'.$period.'_fees'))
             return null;
 
         $fees = [];
