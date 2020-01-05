@@ -5,7 +5,7 @@ namespace App;
 class StudioPolicy extends PianoLit
 {
 	protected $filename;
-    protected $durations = [30, 45, 60];
+    protected $durations = ['30 min', '45 min', '60 min'];
     protected $sections = ['general', 'performances', 'lessons', 'payments', 'methods', 'materials', 'scheduling', 'makeups', 'withdrawal', 'instrument', 'other', 'agreements'];
     protected $themes = [
         'simple' => [
@@ -98,16 +98,30 @@ class StudioPolicy extends PianoLit
         return array_values(array_filter([$groups, $recitals]));
     }
 
-    public function lessonFees()
+    public function feesPer($period = null)
     {
+        if (! $period)
+            return null;
+
         $fees = [];
 
         foreach ($this->durations as $key => $duration) {
-            if ($this->get('lesson_fees')[$key])
-                $fees[$duration] = [$this->get('lesson_fees')[$key], $this->get('lesson_duration')[$key]];
+            if (! array_key_exists($key, $this->get('per_'.$period.'_fees')))
+                continue;
+
+            if ($this->get('per_'.$period.'_fees')[$key])
+                $fees[$duration] = $this->get('per_'.$period.'_fees')[$key];
         }
 
         return empty($fees) ? null : $fees;
+    }
+
+    public function fees()
+    {
+        $lesson = $this->feesPer('lesson') ?? [];
+        $month = $this->feesPer('month') ?? [];
+
+        return array_merge($lesson, $month);
     }
 
     public function acceptCancellations()

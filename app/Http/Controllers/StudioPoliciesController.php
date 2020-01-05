@@ -61,8 +61,8 @@ class StudioPoliciesController extends Controller
         try {
             return $studioPolicy->download();
         } catch (\Exception $e) {
-            dd($e);
-            return back()->with('error', 'We had problems generating your policy. If this issue persists, please let us know at contact@pianolit.com.');
+            bugreport($e);
+            return back()->with('error', 'We had problems generating your policy. This problem has been reported and will be addressed as soon as possible.');
         }
     }
 

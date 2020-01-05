@@ -43,14 +43,14 @@
 					</div>
 				</div>
 			</div>
-			<form method="POST" action="{{route('users.studio-policies.update', $studioPolicy->id)}}">
+			<form id="policy-form" method="POST" action="{{route('users.studio-policies.update', $studioPolicy->id)}}">
 				@method('PATCH')
 				@csrf
 				<div class="accordion mb-4" id="steps">
 					@include('users.studio-policies.form')
 				</div>
 				<div class="text-center">
-					<button class="btn btn-primary shadow"><i class="fas fa-save mr-2"></i>Save my changes</button>
+					<button class="btn btn-primary shadow" type="submit"><i class="fas fa-save mr-2"></i>Save my changes</button>
 					<div class="mt-3">
 						@include('components.return', ['url' => route('users.studio-policies.index'), 'to' => 'my policies page'])
 					</div>
@@ -68,6 +68,12 @@
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$('input[required], select[required], textarea[required]').on('invalid', function(event) {
+    $(event.target).closest('.collapse').prev().click();
+});
+</script>
+
 <script type="text/javascript">
 $('#steps').on('show.bs.collapse', function (step) {
 	$('#steps .card').removeClass('selected');

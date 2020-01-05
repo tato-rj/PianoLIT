@@ -1,15 +1,26 @@
 <section>
-	@if(! $policy->has('hide_fees'))
-	<p class="section-title">Tuition & fees</p>
-	<ul>
-		@foreach($policy->lessonFees() as $duration => $fee)
-		<li>{{$duration}}-minute lessons: ${{"$fee[0]/$fee[1]"}}</li>
-		@endforeach
-	</ul>
+	@if($policy->fees())
+		<p class="section-title">Tuition & fees</p>
+		@if($policy->feesPer('lesson'))
+		<p>My rates per lesson are</p>
+		<ul>
+			@foreach($policy->feesPer('lesson') as $duration => $fee)
+			<li>{{$duration}} lessons: ${{"$fee"}}/lesson</li>
+			@endforeach
+		</ul>
+		@endif
+		@if($policy->feesPer('month'))
+		<p>My rates per month are</p>
+		<ul>
+			@foreach($policy->feesPer('month') as $duration => $fee)
+			<li>{{$duration}} lessons: ${{"$fee"}}/month</li>
+			@endforeach
+		</ul>
+		@endif
 	@endif
 	
 	@if($policy->has('extra_fees'))
-		@if($policy->has('hide_fees'))
+		@if(! $policy->fees())
 		<p class="section-title">Tuition & fees</p>
 		@endif
 		<p>{{$policy->get('extra_fees')}}</p>

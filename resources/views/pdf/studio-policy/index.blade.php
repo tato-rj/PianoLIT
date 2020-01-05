@@ -16,7 +16,6 @@
 @endpush
 
 @section('content')
-
 @foreach(\App\StudioPolicy::sections() as $section)
 	@include("pdf.studio-policy.sections.$section")
 @endforeach

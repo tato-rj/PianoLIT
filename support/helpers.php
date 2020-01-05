@@ -1,5 +1,10 @@
 <?php
 
+function bugreport($e)
+{
+	return \Bugsnag::notifyException($e);
+}
+
 function minutes($count)
 {
 	return 60 * $count;

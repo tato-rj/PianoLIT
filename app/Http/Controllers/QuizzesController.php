@@ -110,7 +110,10 @@ class QuizzesController extends Controller
 
     public function feedback(Request $request, Quiz $quiz)
     {
-        $feedback = $quiz->evaluate($request->answers);
+        if (! is_array($request->answers))
+            return view('components.feedbacks.error')->render();
+
+        $feedback = $quiz->evaluate($request->answers);        
 
         if (traffic()->isRealVisitor()) {
             $quiz->results()->create([
