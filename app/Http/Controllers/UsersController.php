@@ -41,8 +41,8 @@ class UsersController extends Controller
     public function profile()
     {
         if (request()->has('user_id') && request()->has('bodyonly'))
-            auth()->login(User::find(request()->user_id));
-        
+            auth()->login(User::findOrFail(request()->user_id));
+
         return view('users.profile.index');
     }
 
