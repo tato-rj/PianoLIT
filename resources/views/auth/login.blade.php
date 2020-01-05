@@ -21,7 +21,7 @@
     </div>
 </div>
 
-@if($full ?? true)
+@if(! request()->has('bodyonly'))
 <div class="container mb-6">
     @include('components.sections.youtube')
 </div>
