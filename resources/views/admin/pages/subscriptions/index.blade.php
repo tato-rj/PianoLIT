@@ -19,12 +19,17 @@
         @include('admin.pages.subscriptions.create')
         </div>
         <div>
-          <a href="{{route('admin.subscriptions.export', ['type' => 'txt'])}}" target="_blank" class="btn btn-light" name="export-list" data-type="text"><i class="fas fa-file-alt"></i></a>
+          <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
+            @csrf
+            <input type="hidden" name="type" value="txt">
+            <input type="hidden" name="ids">
+            <button type="submit" class="btn btn-light"><i class="fas fa-file-alt mr-2"></i>Export emails</button>
+          </form>
         </div>
       </div>
     </div>
 
-    @datatable(['model' => 'subscriptions', 'columns' => ['Date', 'Email', 'Origin', 'Newsletter', 'Birthday', '']])
+    @datatable(['model' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', 'Newsletter', 'Birthday', '']])
 
   </div>
 </div>
@@ -36,6 +41,26 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTable({table: '#subscriptions-table'})).create();
+(new DataTable({table: '#subscriptions-table', dontSortFirst: true})).create();
+</script>
+<script type="text/javascript">
+$('#check-all-datatable').change(function() {
+  $('.check-datatable').prop('checked', $(this).is(':checked'));
+  getIds();
+});
+
+$('.check-datatable').on('change', function() {
+  getIds();
+});
+
+function getIds()
+{
+  let ids = $('.check-datatable:checked').map(function() {
+    return $(this).attr('data-id');
+  }).toArray();
+  console.log(ids);
+
+  $('form#export-form input[name="ids"]').val(JSON.stringify(ids));  
+}
 </script>
 @endsection

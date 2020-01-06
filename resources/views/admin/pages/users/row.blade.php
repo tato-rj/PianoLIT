@@ -1,10 +1,5 @@
 <tr>
-  <td style="width: 16px">
-    <div class="custom-control custom-checkbox">
-      <input type="checkbox" class="custom-control-input check-user" data-id="{{$item->id}}" id="check-user-{{$item->id}}">
-      <label class="custom-control-label" for="check-user-{{$item->id}}"></label>
-    </div>
-  </td>
+  @include('components.datatable.checkbox', ['type' => 'user'])
 
   @include('components.datatable.date', ['date' => $item->created_at])
   

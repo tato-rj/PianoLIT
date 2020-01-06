@@ -1,4 +1,6 @@
 <tr>
+  @include('components.datatable.checkbox')
+
   @include('components.datatable.date', ['date' => $item->created_at])
  
   <td class="dataTables_main_column" title="Subscribed at {{$item->created_at->format('g:i:s a')}}">{{$item->email}}</td>

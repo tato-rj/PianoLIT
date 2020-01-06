@@ -35,7 +35,13 @@ class SubscriptionsController extends Controller
         if (! request()->has('type'))
             abort(422, 'Please specify which format you need.');
 
-        $emails = Subscription::activeList('newsletter_list')->get()->pluck('email')->toArray();
+        $ids = json_decode(request('ids'));
+
+        if ($ids) {
+            $emails = Subscription::find($ids)->pluck('email')->toArray();
+        } else {
+            $emails = Subscription::activeList('newsletter_list')->get()->pluck('email')->toArray();
+        }
 
         return view('admin.pages.subscriptions.exports.txt', compact('emails'));
     }
