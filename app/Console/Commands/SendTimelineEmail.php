@@ -34,7 +34,7 @@ class SendTimelineEmail extends Command
      */
     public function handle()
     {
-        if ($this->composer->exists()) {
+        if ($this->composer) {
             foreach (Subscription::activeList('birthday_list')->get() as $subscriber) {
                 \Mail::to($subscriber->email)->send(new OnThisDay($this->composer, $subscriber));
             }
