@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    @datatable(['model' => 'users', 'columns' => ['', 'Date', 'Name', 'Origin', 'Status', 'Last Active', 'Super User', '']])
+    @datatable(['model' => 'users', 'columns' => ['checkbox', 'Date', 'Name', 'Origin', 'Status', 'Last Active', 'Super User', '']])
 
   </div>
 </div>
