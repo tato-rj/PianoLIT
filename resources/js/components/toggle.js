@@ -5,7 +5,7 @@ $('input.status-toggle').on('change', function() {
     url: $input.attr('data-url'),
     type: 'PATCH',
     success: function(response) {
-      alert(response.status);
+      console.log(response.status);
     },
     error: function(xhr,status,error) {
       alert('Something went wrong: ' + error);
