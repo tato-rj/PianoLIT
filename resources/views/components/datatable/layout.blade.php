@@ -18,3 +18,4 @@
   <tbody>
   </tbody>
 </table>
+<div class="datatable-loading text-center text-muted">Loading</div>

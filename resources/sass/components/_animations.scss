@@ -1,3 +1,23 @@
+@keyframes overlay-pulse
+{
+     0% {
+          background: rgba(255, 255, 255, 0.4);
+     }
+     50% {
+          background: rgba(255, 255, 255, 0.7);
+     }
+     100% {
+          background: rgba(255, 255, 255, 0.4);
+     }
+}
+
+.overlay-pulse
+{
+    width: 100%;
+    height: 100%;
+    animation: overlay-pulse .8s infinite;
+}
+
 /*START WORKERS*/
 .place_balk_workers {
 	width: 437px;

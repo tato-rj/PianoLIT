@@ -27,18 +27,12 @@ class DataTable
 	        processing: true,
 	        serverSide: true,
 	        aaSorting: obj._sortBy(),
-	        language: {
-	          processing: `
-	          <div class="d-flex flex-center w-100 h-100">
-		          <div class="spinner-border" role="status">
-		          	<span class="sr-only">Loading...</span>
-		          </div>
-	          </div>`
-	        },
+	        language: {processing: `<div class="overlay-pulse"></div>`},
 	        ajax: window.location.href,
 	        columns: obj.columns,
 	        initComplete: function(settings, json) {
 	          obj.$table.find('thead').removeClass('invisible');
+	          $('.datatable-loading').remove();
 	        }
 	    });
 	}
