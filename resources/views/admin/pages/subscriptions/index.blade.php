@@ -46,10 +46,10 @@
 (new DataTable('#subscriptions-table')).columns([
   {data: 'checkbox', orderable: false, searchable: false},
   {data: 'created_at', class: 'text-nowrap', sort: true},
-  {data: 'email'},
-  {data: 'origin_url'},
-  {data: 'newsletter'},
-  {data: 'birthday'},
+  {data: 'email', name: 'subscriptions.email'},
+  {data: 'origin_url', name: 'subscriptions.origin_url'},
+  {data: 'newsletter', name: 'subscriptions.newsletter_list'},
+  {data: 'birthday', name: 'subscriptions.birthday_list'},
   {data: 'action', orderable: false, searchable: false},
 ]).create();
 </script>

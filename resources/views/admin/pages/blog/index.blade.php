@@ -40,9 +40,9 @@
 <script type="text/javascript">
 (new DataTable('#blog-table')).columns([
   {data: 'created_at', class: 'text-nowrap'},
-  {data: 'title', class: 'dataTables_main_column'},
-  {data: 'reading_time'},
-  {data: 'published'},
+  {data: 'title', name: 'posts.title', class: 'dataTables_main_column'},
+  {data: 'reading_time', name: 'posts.reading_time'},
+  {data: 'published', name: 'posts.published_at'},
   {data: 'action', orderable: false, searchable: false},
 ]).create();
 </script>

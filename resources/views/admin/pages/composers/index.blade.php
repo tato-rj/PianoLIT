@@ -108,10 +108,10 @@ $(bornIn).inputmask("99/99/9999");
 $(diedIn).inputmask("99/99/9999");
 
 (new DataTable('#composers-table')).columns([
-  {data: 'name', class: 'dataTables_main_column'},
-  {data: 'famous'},
-  {data: 'pieces_count'},
+  {data: 'name', name: 'composers.name', class: 'dataTables_main_column'},
+  {data: 'famous', searchable: false},
+  {data: 'pieces_count', searchable: false},
   {data: 'actions', orderable: false, searchable: false},
-]).create();
+]).order('asc').create();
 </script>
 @endsection

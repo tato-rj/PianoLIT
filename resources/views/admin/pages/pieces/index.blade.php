@@ -51,11 +51,11 @@ $('button#missing-image').on('click', function(e) {
 
 (new DataTable('#pieces-table')).columns([
   {data: 'info', orderable: false, searchable: false},
-  {data: 'name', class: 'dataTables_main_column'},
-  {data: 'composer.short_name'},
-  {data: 'tags'},
-  {data: 'level'},
-  {data: 'ranking'},
+  {data: 'name', name: 'pieces.name', class: 'dataTables_main_column'},
+  {data: 'composer.short_name', name: 'composer.name', class: 'text-nowrap'},
+  {data: 'tags', name: 'tags.name', orderable: false},
+  {data: 'level', name: 'tags.name', orderable: false},
+  {data: 'ranking', name: 'tags.name', orderable: false},
   {data: 'actions', orderable: false, searchable: false},
 ]).dontSort().create();
 </script>

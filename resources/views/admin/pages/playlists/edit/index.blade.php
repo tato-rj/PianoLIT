@@ -70,10 +70,10 @@ $('#playlist-pieces').sortable({
 </script>
 <script type="text/javascript">
 (new DataTable('#pieces-table')).columns([
-  {data: 'name', class: 'dataTables_main_column'},
-  {data: 'composer.short_name'},
-  {data: 'level'},
-  {data: 'ranking'},
+  {data: 'name', name: 'pieces.name', class: 'dataTables_main_column'},
+  {data: 'composer.short_name', name: 'composer.name', class: 'text-nowrap'},
+  {data: 'level', name: 'tags.name', orderable: false},
+  {data: 'ranking', name: 'tags.name', orderable: false},
   {data: 'actions', orderable: false, searchable: false},
 ]).dontSort().create();
 </script>

@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    @datatable(['table' => 'requests', 'columns' => ['Date requested', 'Date published', 'Piece', 'User', 'Status']])
+    @datatable(['table' => 'requests', 'columns' => ['Date requested', 'Date published', 'Piece', 'User', '']])
 
   </div>
 </div>
@@ -49,9 +49,9 @@
 
 (new DataTable('#requests-table')).columns([
   {data: 'created_at', class: 'text-nowrap'},
-  {data: 'published_at', class: 'text-nowrap'},
-  {data: 'piece.medium_name_with_composer', class: 'dataTables_main_column'},
-  {data: 'user.full_name'},
+  {data: 'published_at', name: 'tutorial_requests.published_at', class: 'text-nowrap'},
+  {data: 'piece.medium_name_with_composer', name: 'piece.name', class: 'dataTables_main_column'},
+  {data: 'user.full_name', name: 'user.first_name'},
   {data: 'action', orderable: false, searchable: false},
 ]).create();
 

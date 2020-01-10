@@ -2,7 +2,8 @@ class DataTable
 {
 	constructor(table) {
 		this.$table = $(table);
-		this.sortBy = [ 0, "desc" ];
+		this.sortBy = 0;
+		this.orderBy = 'desc';
 	}
 
 	columns(array) {
@@ -11,7 +12,7 @@ class DataTable
 
 		array.some( function(element, index) {
 			if (element.hasOwnProperty('sort')) {
-				obj.sortBy = [ index, "desc" ];
+				obj.sort = index;
 				return true;
 			}
 		});
@@ -21,11 +22,11 @@ class DataTable
 
 	create() {
 		let obj = this;
-		console.log('Sorting by column ' + obj.sortBy);
+
 	    obj.$table.DataTable({
 	        processing: true,
 	        serverSide: true,
-	        aaSorting: obj.sortBy,
+	        aaSorting: obj._sortBy(),
 	        language: {
 	          processing: `
 	          <div class="d-flex flex-center w-100 h-100">
@@ -42,10 +43,24 @@ class DataTable
 	    });
 	}
 
+	order(orderBy) {
+		this.orderBy = orderBy;
+
+		return this;
+	}
+
 	dontSort() {
-		this.sortBy = [];
+		this.sortBy = null;
+		this.orderBy = null;
 
 		return this;	
+	}
+
+	_sortBy() {
+		if (this.orderBy)
+			return [this.sortBy, this.orderBy];
+
+		return [];
 	}
 }
 

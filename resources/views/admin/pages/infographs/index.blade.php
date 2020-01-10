@@ -54,11 +54,11 @@ $('#item-preview').on('show.bs.modal', function (e) {
 
 (new DataTable('#infographs-table')).columns([
   {data: 'created_at', class: 'text-nowrap'},
-  {data: 'name', class: 'dataTables_main_column'},
-  {data: 'downloads'},
-  {data: 'score'},
-  {data: 'published'},
-  {data: 'gift'},
+  {data: 'name', name: 'infographs.name', class: 'dataTables_main_column'},
+  {data: 'downloads', name: 'infographs.downloads'},
+  {data: 'score', name: 'infographs.score'},
+  {data: 'published', name: 'infographs.published_at'},
+  {data: 'gift', name: 'infographs.giftable_at'},
   {data: 'action', orderable: false, searchable: false},
 ]).create();
 </script>

@@ -45,9 +45,9 @@
 <script type="text/javascript">
 (new DataTable('#quizzes-table')).columns([
   {data: 'created_at', class: 'text-nowrap'},
-  {data: 'title', class: 'dataTables_main_column'},
-  {data: 'questions'},
-  {data: 'published'},
+  {data: 'title', name: 'quizzes.title', class: 'dataTables_main_column'},
+  {data: 'questions', orderable: false, searchable: false},
+  {data: 'published', orderable: false, searchable: false},
   {data: 'action', orderable: false, searchable: false},
 ]).create();
 </script>

@@ -44,7 +44,7 @@
   {data: 'created_at'},
   {data: 'name', class: 'dataTables_main_column'},
   {data: 'group'},
-  {data: 'pieces_count'},
+  {data: 'pieces_count', orderable: false, searchable: false},
   {data: 'actions', orderable: false, searchable: false},
 ]).dontSort().create();
 </script>

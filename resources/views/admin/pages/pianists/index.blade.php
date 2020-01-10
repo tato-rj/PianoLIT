@@ -87,9 +87,9 @@ $(bornIn).inputmask("99/99/9999");
 $(diedIn).inputmask("99/99/9999");
 
 (new DataTable('#pianists-table')).columns([
-  {data: 'name', class: 'dataTables_main_column'},
-  {data: 'nationality'},
+  {data: 'name', name: 'pianists.name', class: 'dataTables_main_column'},
+  {data: 'nationality', searchable: false},
   {data: 'actions', orderable: false, searchable: false},
-]).create();
+]).order('asc').create();
 </script>
 @endsection
