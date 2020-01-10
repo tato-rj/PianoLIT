@@ -23,7 +23,7 @@ class DataTable
 	create() {
 		let obj = this;
 
-	    obj.$table.DataTable({
+	    let table = obj.$table.DataTable({
 	        processing: true,
 	        serverSide: true,
 	        aaSorting: obj._sortBy(),
@@ -32,9 +32,11 @@ class DataTable
 	        columns: obj.columns,
 	        initComplete: function(settings, json) {
 	          obj.$table.find('thead').removeClass('invisible');
-	          $('.datatable-loading').remove();
+	          $('.dataTables_wrapper').removeClass('table-loading');
 	        }
 	    });
+
+	    $(table.table().container()).addClass('table-loading');
 	}
 
 	order(orderBy) {
