@@ -15,9 +15,10 @@ class TutorialRequestsController extends Controller
      */
     public function index()
     {
-        $requests = TutorialRequest::latest()->with(['user', 'piece.composer'])->get();
+        if (request()->ajax())
+            return TutorialRequest::datatable();
 
-        return view('admin.pages.requests.index', compact('requests'));
+        return view('admin.pages.requests.index');
     }
 
     /**

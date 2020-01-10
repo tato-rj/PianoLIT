@@ -19,7 +19,7 @@
       </div>
     </div>
 
-    @datatable(['model' => 'infographs', 'columns' => ['Date', 'Name', 'Downloads', 'Score', 'Published', 'Gift', '']])
+    @datatable(['table' => 'infographs', 'columns' => ['Date', 'Name', 'Downloads', 'Score', 'Published', 'Gift', '']])
   
   </div>
 </div>
@@ -52,6 +52,14 @@ $('#item-preview').on('show.bs.modal', function (e) {
   });
 });
 
-(new DataTable({table: '#infographs-table'})).create();
+(new DataTable('#infographs-table')).columns([
+  {data: 'created_at', class: 'text-nowrap'},
+  {data: 'name', class: 'dataTables_main_column'},
+  {data: 'downloads'},
+  {data: 'score'},
+  {data: 'published'},
+  {data: 'gift'},
+  {data: 'action', orderable: false, searchable: false},
+]).create();
 </script>
 @endsection

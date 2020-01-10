@@ -15,18 +15,11 @@ class ComposersController extends Controller
      */
     public function index()
     {
-        $filters = ['name', 'date_of_birth', 'pieces_count'];
-        
-        $sort = ['name', 'asc'];
+        if (request()->ajax())
+            return Composer::datatable();
 
-        if (request()->has('sort') && in_array(request('sort'), $filters))
-            $sort[0] = request('sort');
-
-        if (request()->has('order') && in_array(request('order'), ['asc', 'desc']))
-            $sort[1] = request('order');
-
+        $composers = Composer::famous()->get();
         $countries = Country::orderBy('nationality')->get();
-        $composers = Composer::orderBy($sort[0], $sort[1])->get();
 
         return view('admin.pages.composers.index', compact(['composers', 'countries']));
     }

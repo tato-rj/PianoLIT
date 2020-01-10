@@ -30,7 +30,7 @@ small .custom-control-label::before, small .custom-control-label::after {
       </div>
     </div>
 
-    @datatable(['model' => 'pieces', 'columns' => ['', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', '']])
+    @datatable(['table' => 'pieces', 'columns' => ['', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', '']])
 
   </div>
 </div>
@@ -49,7 +49,15 @@ $('button#missing-image').on('click', function(e) {
   alert('This piece has no cover image.');
 });
 
-(new DataTable({table: '#pieces-table', dontSortFirst: false})).create();
+(new DataTable('#pieces-table')).columns([
+  {data: 'info', orderable: false, searchable: false},
+  {data: 'name', class: 'dataTables_main_column'},
+  {data: 'composer.short_name'},
+  {data: 'tags'},
+  {data: 'level'},
+  {data: 'ranking'},
+  {data: 'actions', orderable: false, searchable: false},
+]).dontSort().create();
 </script>
 
 <script type="text/javascript">

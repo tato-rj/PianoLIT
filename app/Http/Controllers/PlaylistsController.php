@@ -14,6 +14,9 @@ class PlaylistsController extends Controller
      */
     public function index()
     {
+        if (request()->ajax())
+            return Playlist::sorted()->datatable();
+
         $playlists = Playlist::sorted()->get();
 
         return view('admin.pages.playlists.index', compact('playlists'));
@@ -67,9 +70,10 @@ class PlaylistsController extends Controller
      */
     public function edit(Playlist $playlist)
     {
-        $pieces = Piece::orderBy('updated_at', 'desc')->get();
+        if (request()->ajax())
+            return Piece::with(['tags', 'composer'])->orderBy('updated_at', 'desc')->datatable(view('admin.pages.playlists.edit.table.actions'));
 
-        return view('admin.pages.playlists.edit.index', compact(['playlist', 'pieces']));
+        return view('admin.pages.playlists.edit.index', compact(['playlist']));
     }
 
     /**

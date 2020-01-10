@@ -40,4 +40,14 @@ class Post extends ShareableContent
             $q->where('slug', $topic->slug);
         });
     }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->withBlade([
+            'title' => view('admin.pages.blog.table.title'),
+            'reading_time' => view('admin.pages.blog.table.duration'),
+            'published' => view('admin.pages.blog.table.published'),
+            'action' => view('admin.pages.blog.table.actions')
+        ])->make();
+    }
 }

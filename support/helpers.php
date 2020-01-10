@@ -1,5 +1,10 @@
 <?php
 
+function datatable($data)
+{
+	return new \App\Resources\DataTables\Builder($data);
+}
+
 function bugreport($e)
 {
 	return \Bugsnag::notifyException($e);

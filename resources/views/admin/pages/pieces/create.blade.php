@@ -456,6 +456,11 @@ $('a.add-new-field').on('click', function() {
     $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
   }
 });
+$(document).on('click', '.default-performance', function() {
+  let $button = $(this);
+  $button.siblings('.video-title').val($button.attr('data-title'));
+  $button.siblings('.video-description').val($button.attr('data-description'));
+})
 
 ////////////////
 // REMOVE TIP //

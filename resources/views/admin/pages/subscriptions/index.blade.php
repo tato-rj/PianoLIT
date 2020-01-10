@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    @datatable(['model' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', 'Newsletter', 'Birthday', '']])
+    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', 'Newsletter', 'Birthday', '']])
 
   </div>
 </div>
@@ -40,9 +40,20 @@
 
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+
 <script type="text/javascript">
-(new DataTable({table: '#subscriptions-table', dontSortFirst: true})).create();
+
+(new DataTable('#subscriptions-table')).columns([
+  {data: 'checkbox', orderable: false, searchable: false},
+  {data: 'created_at', class: 'text-nowrap'},
+  {data: 'email'},
+  {data: 'origin_url'},
+  {data: 'newsletter'},
+  {data: 'birthday'},
+  {data: 'action', orderable: false, searchable: false},
+]).create();
 </script>
+
 <script type="text/javascript">
 $('#check-all-datatable').change(function() {
   $('.check-datatable').prop('checked', $(this).is(':checked'));

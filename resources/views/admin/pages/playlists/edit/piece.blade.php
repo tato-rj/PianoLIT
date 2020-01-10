@@ -1,5 +1,5 @@
 <div class="edit-control border d-flex align-items-center selected-piece ordered t-2 rounded bg-white hover-shadow-light mb-2" style="padding: .375rem 0;">
-  <div class="ml-2 text-muted opacity-4">{{$loop->iteration}}</div>
+  <div class="ml-2 text-muted opacity-4">{{! empty($loop) ? $loop->iteration : null}}</div>
   <div class="sort-handle cursor-pointer flex-grow d-flex">
     {{-- SORT HANDLE --}}
     <div class="px-2">

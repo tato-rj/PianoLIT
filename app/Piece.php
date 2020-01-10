@@ -35,7 +35,8 @@ class Piece extends PianoLit
         'score',
         'audio',
         'audio_rh',
-        'audio_lh'
+        'audio_lh',
+        'medium_name_with_composer'
     ];
     protected $report_by = 'medium_name_with_composer';
 
@@ -431,5 +432,17 @@ class Piece extends PianoLit
             
         });
         return $results;
+    }
+
+    public function scopeDatatable($query, $actions = null)
+    {
+        return datatable($query)->withDate()->withBlade([
+            'info' => view('admin.pages.pieces.table.info'),
+            'level' => view('admin.pages.pieces.table.level'),
+            'name' => view('admin.pages.pieces.table.name'),
+            'ranking' => view('admin.pages.pieces.table.ranking'),
+            'tags' => view('admin.pages.pieces.table.tags'),
+            'actions' => $actions ?? view('admin.pages.pieces.table.actions'),
+        ])->make();
     }
 }

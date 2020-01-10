@@ -49,7 +49,7 @@ class Quiz extends ShareableContent
 
     public function getQuestionsAttribute($questions)
     {
-        return array_values(unserialize($questions));        
+        return $questions ? array_values(unserialize($questions)) : [];        
     }
 
     public function getAverageScoreAttribute()
@@ -139,5 +139,13 @@ class Quiz extends ShareableContent
             'feedback' => $feedback['sentence'],
             'gif' => $feedback['gif']
     	];
+    }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->withCount(['questions'])->withBlade([
+            'published' => view('admin.pages.quizzes.table.published'),
+            'action' => view('admin.pages.quizzes.table.actions')
+        ])->make();
     }
 }

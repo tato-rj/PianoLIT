@@ -12,17 +12,19 @@
   
   <td class="text-muted text-nowrap"><i><small>Created by {{$item->creator->name}}</small></i></td>
   
-  @component('components.datatable.actions', ['actions' => [
-      'delete' => route('admin.timelines.destroy', $item->id)
-  ]])
-    <a href="#" 
-    data-toggle="modal" 
-    data-target="#event-modal" 
-    data-type="{{$item->type}}" 
-    data-year="{{$item->year}}" 
-    data-event="{{$item->event}}" 
-    data-url="{{$item->url}}" 
-    data-edit-url="{{route('admin.timelines.update', $item->id)}}" 
-    class="text-muted cursor-pointer mr-2 event" title="Edit"><i class="far fa-edit align-middle"></i></a>
-  @endcomponent
+  <td>
+    @component('components.datatable.actions', ['actions' => [
+        'delete' => route('admin.timelines.destroy', $item->id)
+    ]])
+      <a href="#" 
+      data-toggle="modal" 
+      data-target="#event-modal" 
+      data-type="{{$item->type}}" 
+      data-year="{{$item->year}}" 
+      data-event="{{$item->event}}" 
+      data-url="{{$item->url}}" 
+      data-edit-url="{{route('admin.timelines.update', $item->id)}}" 
+      class="text-muted cursor-pointer mr-2 event" title="Edit"><i class="far fa-edit align-middle"></i></a>
+    @endcomponent
+  </td>
 </tr>

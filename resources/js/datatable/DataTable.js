@@ -1,26 +1,51 @@
 class DataTable
 {
-	constructor(params) {
-		this.$table = $(params.table);
-		this.dontSortFirst = params.hasOwnProperty('dontSortFirst') ? 0 : null;
-		this.sortLast = params.hasOwnProperty('sortLast') ? null : $(params.table + ' th').last().index();
-		this.options = params.hasOwnProperty('options') ? params.options : {};		
+	constructor(table) {
+		this.$table = $(table);
+		this.sortBy = [ 0, "desc" ];
+	}
+
+	columns(array) {
+		let obj = this;
+		obj.columns = array;
+
+		array.some( function(element, index) {
+			if (element.hasOwnProperty('sort')) {
+				obj.sortBy = [ index, "desc" ];
+				return true;
+			}
+		});
+
+		return this;
 	}
 
 	create() {
 		let obj = this;
-		let defaultOptions = {
-		  aaSorting: [],
-		  columnDefs: [ { 'orderable': false, 'targets': [obj.dontSortFirst, obj.sortLast] } ],
-		  language: {
-		    paginate: {
-		      next: '&#8594;',
-		      previous: '&#8592;'
-		    }
-		  }
-		};
+		console.log('Sorting by column ' + obj.sortBy);
+	    obj.$table.DataTable({
+	        processing: true,
+	        serverSide: true,
+	        aaSorting: obj.sortBy,
+	        language: {
+	          processing: `
+	          <div class="d-flex flex-center w-100 h-100">
+		          <div class="spinner-border" role="status">
+		          	<span class="sr-only">Loading...</span>
+		          </div>
+	          </div>`
+	        },
+	        ajax: window.location.href,
+	        columns: obj.columns,
+	        initComplete: function(settings, json) {
+	          obj.$table.find('thead').removeClass('invisible');
+	        }
+	    });
+	}
 
-		this.$table.DataTable({...defaultOptions, ...obj.options});
+	dontSort() {
+		this.sortBy = [];
+
+		return this;	
 	}
 }
 

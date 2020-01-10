@@ -1,3 +1,16 @@
+div.dataTables_wrapper {
+  margin-bottom: 1rem;
+}
+
+div.dataTables_wrapper div.dataTables_processing {
+  width: 100%!important;
+  margin: 0!important;
+  left: 0!important;
+  height: 100%!important;
+  top: 0!important;
+  background: rgba(255,255,255,0.5)!important;
+}
+
 table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before, table.dataTable thead .sorting_desc:before, table.dataTable thead .sorting_asc_disabled:before, table.dataTable thead .sorting_desc_disabled:before {
     content: none !important;
 }

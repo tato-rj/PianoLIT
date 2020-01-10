@@ -38,4 +38,11 @@ class Playlist extends PianoLit
 	{
 		return $query->whereIn('name', ['Basic 1', 'Basic 2', 'Basic 3']);
 	}
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->withBlade([
+            'actions' => view('admin.pages.playlists.table.actions')
+        ])->make();
+    }
 }

@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    @datatable(['model' => 'playlists', 'columns' => ['Date', 'Name', 'Group', 'Number of pieces', '']])
+    @datatable(['table' => 'playlists', 'columns' => ['Date', 'Name', 'Group', 'Number of pieces', '']])
 
   </div>
 </div>
@@ -40,6 +40,12 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTable({table: '#playlist-table'})).create();
+(new DataTable('#playlists-table')).columns([
+  {data: 'created_at'},
+  {data: 'name', class: 'dataTables_main_column'},
+  {data: 'group'},
+  {data: 'pieces_count'},
+  {data: 'actions', orderable: false, searchable: false},
+]).dontSort().create();
 </script>
 @endsection

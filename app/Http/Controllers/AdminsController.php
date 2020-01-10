@@ -35,9 +35,15 @@ class AdminsController extends Controller
 
     public function notifications()
     {
-        $notifications = auth()->user()->notifications;
+        if (request()->ajax()) {
+            return datatable(auth()->user()->notifications())->withDate()->withBlade([
+                'action' => view('admin.pages.notifications.actions')
+            ])->withClass(function($element) {
+                return $element->read_at ? 'opacity-4' : null;
+            })->escape(['data.message'])->make();
+        }
 
-        return view('admin.pages.notifications.index', compact('notifications'));
+        return view('admin.pages.notifications.index');
     }
 
     /**
@@ -47,9 +53,10 @@ class AdminsController extends Controller
      */
     public function blog()
     {
-        $blog = Post::latest()->get();
+        if (request()->ajax())
+            return Post::datatable();
 
-        return view('admin.pages.blog.index', compact('blog'));
+        return view('admin.pages.blog.index');
     }
 
     /**
@@ -59,10 +66,12 @@ class AdminsController extends Controller
      */
     public function quiz()
     {
-        $quizzes = Quiz::latest()->get();
+        if (request()->ajax())
+            return Quiz::datatable();
+
         $levels = Level::all();
 
-        return view('admin.pages.quizzes.index', compact(['quizzes', 'levels']));
+        return view('admin.pages.quizzes.index', compact(['levels']));
     }
 
     public function quizTopics()
@@ -79,8 +88,9 @@ class AdminsController extends Controller
      */
     public function subscriptions()
     {
-        $subscriptions = Subscription::latest()->get();
+        if (request()->ajax())
+            return Subscription::datatable();
 
-        return view('admin.pages.subscriptions.index', compact('subscriptions'));
+        return view('admin.pages.subscriptions.index');
     }
 }

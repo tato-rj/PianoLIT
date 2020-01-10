@@ -119,4 +119,13 @@ class Subscription extends PianoLit
         if (! \Schema::hasColumn($this->getTable(), $list))
             abort(403, 'The list ' . $list . ' does not exist.');
     }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->withBlade([
+            'newsletter' => view('admin.pages.subscriptions.toggles.newsletter'),
+            'birthday' => view('admin.pages.subscriptions.toggles.birthday'),
+            'action' => view('admin.pages.subscriptions.actions')
+        ])->checkable()->make();
+    }
 }

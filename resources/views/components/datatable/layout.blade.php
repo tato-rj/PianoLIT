@@ -1,5 +1,5 @@
-<table class="table table-hover w-100" id="{{$model}}-table">
-  <thead>
+<table class="table table-hover w-100 " id="{{$table}}-table">
+  <thead class="invisible">
     <tr>
       @foreach($columns as $column)
       @if($column == 'checkbox')
@@ -16,8 +16,5 @@
     </tr>
   </thead>
   <tbody>
-    @foreach(eval("return $$model;") as $item)
-    @include(empty($rows) ? "admin.pages.$model.row" : $rows)
-    @endforeach
   </tbody>
 </table>

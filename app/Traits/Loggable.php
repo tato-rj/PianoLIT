@@ -15,4 +15,9 @@ trait Loggable
 	{
 		return (new LogFactory)->last($this->id, $type);		
 	}
+
+	public function getLastActiveAtAttribute()
+	{
+		return (new LogFactory)->last($this->id);
+	}
 }

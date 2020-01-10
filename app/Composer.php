@@ -75,4 +75,13 @@ class Composer extends Person
     {
         return storage($this->cover_path);
     }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->withBlade([
+            'name' => view('admin.pages.composers.table.name'),
+            'famous' => view('admin.pages.composers.table.famous'),
+            'actions' => view('admin.pages.composers.table.actions'),
+        ])->make();
+    }
 }

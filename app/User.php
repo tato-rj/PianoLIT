@@ -20,7 +20,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active' => 'boolean',
         'super_user' => 'boolean'
     ];
-    protected $dates = ['trial_ends_at', 'email_verified_at'];
+    protected $dates = ['trial_ends_at', 'email_verified_at', 'last_active_at'];
+    protected $appends = ['full_name', 'last_active_at'];
 
     protected static function boot()
     {
@@ -232,5 +233,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getConfirmedAttribute()
     {
         return ! is_null($this->email_verified_at);
+    }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->withBlade([
+            'origin' => view('admin.pages.users.table.origin'),
+            'status' => view('admin.pages.users.table.status'),
+            'activity' => view('admin.pages.users.table.activity'),
+            'super_user' => view('admin.pages.users.table.super-user'),
+            'action' => view('admin.pages.users.table.actions')
+        ])->checkable()->make();
     }
 }

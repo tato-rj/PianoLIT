@@ -27,7 +27,7 @@
 	    			<label><strong>Select pieces here</strong></label>
 	    		</div>
 
-   				@datatable(['model' => 'pieces', 'rows' => 'admin.pages.playlists.edit.row', 'columns' => ['Piece', 'Composer', 'Level', '']])
+   				@datatable(['table' => 'pieces', 'rows' => 'admin.pages.playlists.edit.row', 'columns' => ['Piece', 'Composer', 'Level', 'Ranking', '']])
 
 	    	</div>
 	    </div>
@@ -44,7 +44,7 @@ $(document).on('click', '.selected-piece .remove', function(event) {
 	$(this).parent('.edit-control').remove();
 });
 
-$('.add-piece').on('click', function(event) {
+$(document).on('click', '.add-piece', function(event) {
 	event.preventDefault();
 	let $container = $('#playlist-pieces');
 	let $piece = $(this).find('.selected-piece').clone();
@@ -69,8 +69,12 @@ $('#playlist-pieces').sortable({
 });
 </script>
 <script type="text/javascript">
-
-(new DataTable({table: '#pieces-table'})).create();
-
+(new DataTable('#pieces-table')).columns([
+  {data: 'name', class: 'dataTables_main_column'},
+  {data: 'composer.short_name'},
+  {data: 'level'},
+  {data: 'ranking'},
+  {data: 'actions', orderable: false, searchable: false},
+]).dontSort().create();
 </script>
 @endsection

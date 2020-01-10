@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    @datatable(['model' => 'timelines', 'columns' => ['Year', 'Type', 'Event', 'Creator', '']])
+    @datatableRaw(['model' => 'timelines', 'columns' => ['Year', 'Type', 'Event', 'Creator', '']])
 
   </div>
 </div>
@@ -82,7 +82,7 @@ $('.event').on('click', function (e) {
   $('#event-modal').find('select#type option[value="'+type+'"]').prop('selected', true);
 });
 
-(new DataTable({
+(new DataTableRaw({
   table: '#timelines-table', 
   options: {pageLength: 50, order: [[0, 'asc']]}
 })).create();

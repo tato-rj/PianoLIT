@@ -8,6 +8,7 @@ require('./helpers/extensions');
 require('./helpers/charts');
 require('./cropper/SimpleCropper');
 require('./datatable/DataTable');
+require('./datatable/DataTableRaw');
 require('./components/delete');
 require('./components/toggle');
 

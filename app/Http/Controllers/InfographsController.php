@@ -23,10 +23,12 @@ class InfographsController extends Controller
      */
     public function index()
     {
-        $infographs = Infograph::latest()->get();
+        if (request()->ajax())
+            return Infograph::datatable();
+
         $topics = Topic::ordered()->get();
 
-        return view('admin.pages.infographs.index', compact(['infographs', 'topics']));
+        return view('admin.pages.infographs.index', compact('topics'));
     }
 
     public function topics()

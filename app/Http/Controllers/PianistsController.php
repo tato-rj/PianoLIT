@@ -15,20 +15,12 @@ class PianistsController extends Controller
      */
     public function index()
     {
-        $filters = ['name', 'date_of_birth', 'pieces_count'];
-        
-        $sort = ['name', 'asc'];
-
-        if (request()->has('sort') && in_array(request('sort'), $filters))
-            $sort[0] = request('sort');
-
-        if (request()->has('order') && in_array(request('order'), ['asc', 'desc']))
-            $sort[1] = request('order');
+        if (request()->ajax())
+            return Pianist::datatable();
 
         $countries = Country::orderBy('nationality')->get();
-        $pianists = Pianist::orderBy($sort[0], $sort[1])->get();
         
-        return view('admin.pages.pianists.index', compact(['pianists', 'countries']));
+        return view('admin.pages.pianists.index', compact(['countries']));
     }
 
     /**

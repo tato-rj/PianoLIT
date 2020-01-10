@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    @datatable(['model' => 'pianists', 'columns' => ['Name', 'Nationality', '']])
+    @datatable(['table' => 'pianists', 'columns' => ['Name', 'Nationality', '']])
 
   </div>
 </div>
@@ -86,6 +86,10 @@ var diedIn = document.getElementById("died-in");
 $(bornIn).inputmask("99/99/9999");
 $(diedIn).inputmask("99/99/9999");
 
-(new DataTable({table: '#pianists-table'})).create();
+(new DataTable('#pianists-table')).columns([
+  {data: 'name', class: 'dataTables_main_column'},
+  {data: 'nationality'},
+  {data: 'actions', orderable: false, searchable: false},
+]).dontSort().create();
 </script>
 @endsection

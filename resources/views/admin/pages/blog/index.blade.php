@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    @datatable(['model' => 'blog', 'columns' => ['Date', 'Title', 'Reading Time', 'Published', '']])
+    @datatable(['table' => 'blog', 'columns' => ['Date', 'Title', 'Reading Time', 'Published', '']])
 
   </div>
 </div>
@@ -38,6 +38,12 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTable({table: '#blog-table'})).create();
+(new DataTable('#blog-table')).columns([
+  {data: 'created_at', class: 'text-nowrap'},
+  {data: 'title', class: 'dataTables_main_column'},
+  {data: 'reading_time'},
+  {data: 'published'},
+  {data: 'action', orderable: false, searchable: false},
+]).create();
 </script>
 @endsection

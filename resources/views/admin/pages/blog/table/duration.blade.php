@@ -1,0 +1,1 @@
+{{$item->reading_time}} min
