@@ -112,6 +112,6 @@ $(diedIn).inputmask("99/99/9999");
   {data: 'famous'},
   {data: 'pieces_count'},
   {data: 'actions', orderable: false, searchable: false},
-]).dontSort().create();
+]).create();
 </script>
 @endsection

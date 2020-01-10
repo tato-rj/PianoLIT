@@ -90,6 +90,6 @@ $(diedIn).inputmask("99/99/9999");
   {data: 'name', class: 'dataTables_main_column'},
   {data: 'nationality'},
   {data: 'actions', orderable: false, searchable: false},
-]).dontSort().create();
+]).create();
 </script>
 @endsection

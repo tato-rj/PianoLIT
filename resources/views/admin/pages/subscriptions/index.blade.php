@@ -45,7 +45,7 @@
 
 (new DataTable('#subscriptions-table')).columns([
   {data: 'checkbox', orderable: false, searchable: false},
-  {data: 'created_at', class: 'text-nowrap'},
+  {data: 'created_at', class: 'text-nowrap', sort: true},
   {data: 'email'},
   {data: 'origin_url'},
   {data: 'newsletter'},
