@@ -417,7 +417,7 @@ $(document).on('click', '.default-performance', function() {
 $(document).on('change', 'select[data-name="tutorial-description"]', function() {
   let $button = $(this);
 
-  $button.closest('.quick-fill').siblings('.video-title').val('Tutorial');
+  $button.closest('.quick-fill').siblings('.video-title').val($button.attr('data-title'));
   $button.closest('.quick-fill').siblings('.video-description').val($button.val());
 });
 
