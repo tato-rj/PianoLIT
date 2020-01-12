@@ -10,6 +10,7 @@
 				<optgroup label="Technique">
 					<option data-title="Tutorial" value='How to avoid unwanted accents when playing longer melodic lines'>Avoiding accents</option>
 					<option data-title="Tutorial" value='Exercises to increase dexterity and play fast scales with a clean and even sound'>Fast scales</option>
+					<option data-title="Tutorial" value='How to play fast staccato notes, strengthening hands and fingers'>Staccato and finger strength</option>
 					<option data-title="Tutorial" value='Using your arm and the concept of "free-fall" to create a consistent solid sound'>Free-fall</option>
 					<option data-title="Tutorial" value='Learn how to play full scales with even and clean sound'>Learning scales</option>
 					<option data-title="Tutorial" value='Using gestures to improve rhythm and give a natural shape to musica lines'>Musical gestures</option>
@@ -20,7 +21,8 @@
 					<option data-title="Tutorial" value="How to group notes into phrases and shape your lines with dynamic control">Dynamics and phrasing</option>
 					<option data-title="Tutorial" value='How to balance the sound between your hands'>Hands balance</option>
 					<option data-title="Tutorial" value="Playing with clarity without over-holding notes">Over-holding</option>
-					<option data-title="Tutorial" value="The importance of controlling the sound of your thumb">Thumb control</option>					
+					<option data-title="Tutorial" value="The importance of controlling the sound of your thumb">Thumb control</option>
+					<option data-title="Tutorial" value="How to project the top note of chords and why this matters">Voicing chords</option>
 				</optgroup>
 				<optgroup label="Theory">
 					<option data-title="Tutorial" value="What is a minuet? Let's learn about the form and why it matters">Minuets 101</option>
