@@ -456,11 +456,19 @@ $('a.add-new-field').on('click', function() {
     $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
   }
 });
+
 $(document).on('click', '.default-performance', function() {
   let $button = $(this);
-  $button.siblings('.video-title').val($button.attr('data-title'));
-  $button.siblings('.video-description').val($button.attr('data-description'));
-})
+  $button.closest('.quick-fill').siblings('.video-title').val($button.attr('data-title'));
+  $button.closest('.quick-fill').siblings('.video-description').val($button.attr('data-description'));
+});
+
+$(document).on('change', 'select[data-name="tutorial-description"]', function() {
+  let $button = $(this);
+
+  $button.closest('.quick-fill').siblings('.video-title').val('Tutorial');
+  $button.closest('.quick-fill').siblings('.video-description').val($button.val());
+});
 
 ////////////////
 // REMOVE TIP //

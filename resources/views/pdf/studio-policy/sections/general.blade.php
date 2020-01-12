@@ -25,7 +25,7 @@
 		@if($weeks)
 		<p>Piano students receive {{$weeks - $policy->get('vacation_weeks') - $policy->get('makeup_weeks')}} scheduled weekly lessons from {{getMonthName($policy->get('start_month'))}} through {{getMonthName($policy->get('end_month'))}}{{count($policy->events()) > 0 ? ' with ' . arrayToSentence($policy->events()) : null}}.{{$policy->get('provide_calendar') ? ' Please see the Studio Calendar for this year’s complete list of lessons, recitals and other important dates.' : null}}</p>
 		@endif
-	
+
 		@if($policy->fees())
 		<p>Lessons are {{arrayToSentence(array_keys($policy->fees()), 'or')}} long.
 		@endif
