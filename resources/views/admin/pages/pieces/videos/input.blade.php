@@ -13,6 +13,7 @@
 					<option data-title="Tutorial" value='Using your arm and the concept of "free-fall" to create a consistent solid sound'>Free-fall</option>
 					<option data-title="Tutorial" value='Learn how to play full scales with even and clean sound'>Learning scales</option>
 					<option data-title="Tutorial" value='Improve the accuracy of your jumbs with the "stop and prepare" technique'>Stop and prepare</option>
+					<option data-title="Tutorial" value='Using gestures to improve rhythm and give a natural shape to musica lines'>Musical gestures</option>
 				</optgroup>
 				<optgroup label="Sound">
 					<option data-title="Tutorial" value='Softening the edges of your phrases and creating that "arc-shape" sound'>Arc-shape sound</option>
