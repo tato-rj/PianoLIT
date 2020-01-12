@@ -8,13 +8,16 @@
 					<option data-title="Slow performance" value="Practice along with a slow video recording of this piece">Slow performance</option>					
 				</optgroup>
 				<optgroup label="Technique">
+					<option data-title="Tutorial" value='How to avoid unwanted accents when playing longer melodic lines'>Avoiding accents</option>
 					<option data-title="Tutorial" value='Using your arm and the concept of "free-fall" to create a consistent solid sound'>Free-fall</option>
-					<option data-title="Tutorial" value='Improve the accuracy of your jumbs with the "stop and prepare" technique'>Stop and prepare</option>					
+					<option data-title="Tutorial" value='Improve the accuracy of your jumbs with the "stop and prepare" technique'>Stop and prepare</option>
+					<option data-title="Tutorial" value='Exercises to increase dexterity and play fast scales with a clean and even sound'>Fast scales</option>
 				</optgroup>
 				<optgroup label="Sound">
 					<option data-title="Tutorial" value='Softening the edges of your phrases and creating that "arc-shape" sound'>Arc-shape sound</option>
 					<option data-title="Tutorial" value="How to group notes into phrases and shape your lines with dynamic control">Dynamics and phrasing</option>
 					<option data-title="Tutorial" value='How to balance the sound between your hands'>Hands balance</option>
+					<option data-title="Tutorial" value="Playing with clarity without over-holding notes">Over-holding</option>
 					<option data-title="Tutorial" value="The importance of controlling the sound of your thumb">Thumb control</option>					
 				</optgroup>
 			</select>
