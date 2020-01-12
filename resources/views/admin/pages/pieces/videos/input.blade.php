@@ -23,6 +23,7 @@
 					<option data-title="Tutorial" value='How to balance the sound between your hands'>Hands balance</option>
 					<option data-title="Tutorial" value="Playing with clarity without over-holding notes">Over-holding</option>
 					<option data-title="Tutorial" value="The importance of controlling the sound of your thumb">Thumb control</option>
+					<option data-title="Tutorial" value="Understanding how to phrase a musical gesture">Two-note slur</option>
 					<option data-title="Tutorial" value="How to project the top note of chords and why this matters">Voicing chords</option>
 				</optgroup>
 				<optgroup label="Theory">
