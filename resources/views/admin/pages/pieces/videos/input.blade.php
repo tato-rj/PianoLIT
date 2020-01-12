@@ -18,6 +18,7 @@
 				</optgroup>
 				<optgroup label="Sound">
 					<option data-title="Tutorial" value='Softening the edges of your phrases and creating that "arc-shape" sound'>Arc-shape sound</option>
+					<option data-title="Tutorial" value="Vertical lines: what it is and why we need to avoid them">Avoiding vertical lines</option>
 					<option data-title="Tutorial" value="How to group notes into phrases and shape your lines with dynamic control">Dynamics and phrasing</option>
 					<option data-title="Tutorial" value='How to balance the sound between your hands'>Hands balance</option>
 					<option data-title="Tutorial" value="Playing with clarity without over-holding notes">Over-holding</option>
