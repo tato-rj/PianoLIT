@@ -6,7 +6,7 @@
 				<h3 class="m-0">POLICY HANDBOOK FOR STUDENTS & FAMILIES</h3>
 			</div>
 		</div>
-		<h3 id="pdf-year">{{$policy->data['start_year']}}/{{$policy->data['end_year']}}</h3>
+		<h3 id="pdf-year">{{$policy->has('start_year') ? $policy->data['start_year'].'/' : 'until'}} {{$policy->has('end_year') ? $policy->data['end_year'] : 'current season'}}</h3>
 	</div>
 
 	@if($policy->has('welcome'))
@@ -16,7 +16,7 @@
 
 <section>
 	<p class="section-title">Lessons overview</p>
-	@php($weeks = carbon($policy->get('start_month') . '-1-' . $policy->get('start_year'))->diffInWeeks(carbon($policy->get('end_month') + 1 . '-1-' . $policy->get('end_year'))))
+	@php($weeks = carbon($policy->get('start_month') . '-1-2000')->diffInWeeks(carbon($policy->get('end_month') + 1 . '-1-2001')))
 
 	<p>
 		Piano students receive {{$weeks - $policy->get('vacation_weeks') - $policy->get('makeup_weeks')}} scheduled weekly lessons from {{getMonthName($policy->get('start_month'))}} through {{getMonthName($policy->get('end_month'))}}{{count($policy->events()) > 0 ? ' with ' . arrayToSentence($policy->events()) : null}}.{{$policy->get('provide_calendar') ? ' Please see the Studio Calendar for this year’s complete list of lessons, recitals and other important dates.' : null}} 
