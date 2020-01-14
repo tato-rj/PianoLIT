@@ -11,7 +11,7 @@
     <div class="d-flex hide-on-sm">
       <span class="{{$item->curiosity ? 'text-primary' : 'text-muted'}}" title="{{$item->curiosity}}"><i class="fas fa-info-circle mr-1"></i></span>
       @include('admin.components.play', ['audio' => storage($item->audio_path)])
-      <span class="mx-1 {{$item->videos_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$item->videos_count}}</span>
-      <span class="{{$item->itunes_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$item->itunes_count}}</span>
+      <span class="text-nowrap mx-1 {{$item->videos_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i>{{$item->videos_count}}</span>
+      <span class="text-nowrap {{$item->itunes_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-itunes mr-1"></i>{{$item->itunes_count}}</span>
     </div>
   </div>
