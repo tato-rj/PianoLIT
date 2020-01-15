@@ -78,7 +78,7 @@ iframe {
 				<ul class="pl-4">
 					<small>
 						@foreach($post->referencesArray as $reference)
-							<li>{{$reference}}</li>
+							<li><div>{{$reference}}</div></li>
 						@endforeach
 					</small>
 				</ul>
