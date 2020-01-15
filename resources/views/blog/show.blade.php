@@ -28,7 +28,14 @@ iframe {
 	margin: 0 3rem;
 	font-style: italic;
 }
-
+.vglnk {
+    margin-left: 3px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
+	display: block;
+}
 </style>
 <script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
 <script>
@@ -78,7 +85,7 @@ iframe {
 				<ul class="pl-4">
 					<small>
 						@foreach($post->referencesArray as $reference)
-							<li>{{strip_tags($reference)}}</li>
+							<li><div class="d-flex">{{$reference}}</div></li>
 						@endforeach
 					</small>
 				</ul>

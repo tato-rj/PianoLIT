@@ -75,6 +75,7 @@ class PostsController extends Controller
      */
     public function show(Post $post)
     {
+        // return $post->referencesArray;
         $suggestions = Post::exclude([$post->id])->suggestions(4)->get();
 
         if (! $post->published_at) {
