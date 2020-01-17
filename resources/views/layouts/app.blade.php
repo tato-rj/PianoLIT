@@ -231,9 +231,9 @@
         }
     });
 
-    $(function() {
-        FastClick.attach(document.body);
-    });
+    // $(function() {
+    //     FastClick.attach(document.body);
+    // });
     
     $(window).bind('load', function() {
         $('#load-screen').fadeOut(function() {
