@@ -25,6 +25,12 @@
             <input type="hidden" name="ids">
             <button type="submit" class="btn btn-light"><i class="fas fa-file-alt mr-2"></i>Export emails</button>
           </form>
+          <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
+            @csrf
+            <input type="hidden" name="type" value="txt">
+            <input type="hidden" name="all" value="1">
+            <button type="submit" class="btn btn-light"><i class="fas fa-file-alt mr-2"></i>Export ALL emails</button>
+          </form>
         </div>
       </div>
     </div>

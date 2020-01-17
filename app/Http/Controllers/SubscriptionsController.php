@@ -39,6 +39,8 @@ class SubscriptionsController extends Controller
 
         if ($ids) {
             $emails = Subscription::find($ids)->pluck('email')->toArray();
+        } elseif (request()->has('all')) {
+            $emails = Subscription::all()->pluck('email')->toArray();
         } else {
             $emails = Subscription::activeList('newsletter_list')->get()->pluck('email')->toArray();
         }
