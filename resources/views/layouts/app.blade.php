@@ -185,7 +185,7 @@
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
-    <script type='application/javascript' src="{{asset('js/vendor/fastclick.js')}}"></script>
+    {{-- <script type='application/javascript' src="{{asset('js/vendor/fastclick.js')}}"></script> --}}
     <script type="text/javascript">
     $(document).ready(function(){
         $.get('https://www.googleapis.com/youtube/v3/channels', {
