@@ -185,7 +185,7 @@
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
-    {{-- <script type='application/javascript' src="{{asset('js/vendor/fastclick.js')}}"></script> --}}
+    <script type='application/javascript' src="{{asset('js/vendor/fastclick.js')}}"></script>
     <script type="text/javascript">
     $(document).ready(function(){
         $.get('https://www.googleapis.com/youtube/v3/channels', {
@@ -231,9 +231,9 @@
         }
     });
 
-    // $(function() {
-    //     FastClick.attach(document.body);
-    // });
+    $(function() {
+        FastClick.attach(document.body);
+    });
     
     $(window).bind('load', function() {
         $('#load-screen').fadeOut(function() {
@@ -291,27 +291,27 @@
         return parseInt(piece * 100 / total);
     }
 
-    // let showScrollProgressBar = function(content) {
-    //     let body = document.body,
-    //         html = document.documentElement;
+    let showScrollProgressBar = function(content) {
+        let body = document.body,
+            html = document.documentElement;
 
-    //     let pageHeight = Math.max( body.scrollHeight, body.offsetHeight, 
-    //                            html.clientHeight, html.scrollHeight, html.offsetHeight);
+        let pageHeight = Math.max( body.scrollHeight, body.offsetHeight, 
+                               html.clientHeight, html.scrollHeight, html.offsetHeight);
 
-    //     let offset = content.offset().top;
-    //     let height = content.height();
+        let offset = content.offset().top;
+        let height = content.height();
 
-    //     let proportion = (height/pageHeight) + 1;
+        let proportion = (height/pageHeight) + 1;
 
-    //     let $progressbar = $('#page-progress .progress-bar');
+        let $progressbar = $('#page-progress .progress-bar');
         
-    //     if ($progressbar.length) {
-    //         $(window).scroll(function() {
-    //             let scrollTop = $(this).scrollTop();
-    //             $progressbar.css('width', percentage(scrollTop - offset*4, height)*proportion + '%');
-    //         });
-    //     }
-    // };
+        if ($progressbar.length) {
+            $(window).scroll(function() {
+                let scrollTop = $(this).scrollTop();
+                $progressbar.css('width', percentage(scrollTop - offset*4, height)*proportion + '%');
+            });
+        }
+    };
     </script>
 
 <script type="text/javascript">
