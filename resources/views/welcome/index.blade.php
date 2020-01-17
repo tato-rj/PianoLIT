@@ -197,6 +197,7 @@ $('#tags-search-container .tag').on('click', function() {
   let $label = $('#pieces-label');
 
   $container.parent().addClass('opacity-4');
+  
   $.get("{{route('load-pieces')}}", {'ids': ids, 'names': names}, function(response) {
     $container.html(response.view); 
     $container.parent().removeClass('opacity-4');

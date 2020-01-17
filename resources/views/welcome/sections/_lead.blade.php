@@ -22,8 +22,8 @@
 			</div> --}}
 		</div>
 
-		<div id="phone-display" class="col-12 text-center">
-			<img src="{{asset('images/mockup/main.png')}}" style="max-width: 720px">
+		<div id="phone-display" class="col-12 text-center d-flex flex-center">
+			<img src="{{asset('images/mockup/main-view.png')}}" style="max-width: 720px">
 		</div>
 	</div>
 </section>

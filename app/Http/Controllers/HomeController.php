@@ -36,15 +36,6 @@ class HomeController extends Controller
 
     public function loadPieces(Request $request)
     {
-        // $query = Piece::whereHas('tags', function($query) use ($request) {
-        //     foreach ($request->ids as $id) {
-        //         $query->where('id', $id);                
-        //     }
-        // })->with(['composer', 'tags']);
-
-        // $total = $query->count();
-        // $pieces = $query->inRandomOrder()->take(8)->get();
-
         if ($request->names) {
             $query = Piece::search(implode(' ', $request->names))->get();
             $total = $query->count();

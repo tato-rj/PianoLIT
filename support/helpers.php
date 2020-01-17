@@ -435,7 +435,7 @@ function testimonials()
         [
             'title' => 'Looking forward to it!',
             'content' => 'I tested the app and saw a lot of potential it in, great content for beginner pianists like me, looking forward to the release.',
-            'author' => 'Cliff Bailey'
+            'author' => 'Andrea Petrică'
         ],
         [
             'title' => 'Super sick!',
@@ -460,7 +460,7 @@ function testimonials()
         [
             'title' => 'Very helpful',
             'content' => 'This app has been super helpful to guide my progress and show me pieces at my level that actually sound nice, keep it up!!',
-            'author' => 'Edward Hoffer'
+            'author' => 'Marcos Madeira'
         ],
     ];
 }
