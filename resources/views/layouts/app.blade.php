@@ -185,7 +185,6 @@
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
-    <script src="https://jsconsole.com/js/remote.js?dd36d38d-81f0-4a4f-bc13-09886c925a8b"></script>
     <script type='application/javascript' src="{{asset('js/vendor/fastclick.js')}}"></script>
     <script type="text/javascript">
     $(document).ready(function(){
