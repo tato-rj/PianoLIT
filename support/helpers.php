@@ -423,3 +423,44 @@ function str_rm($str, $remove)
 {
 	return str_replace($remove, '', $str);
 }
+
+function testimonials()
+{
+	return  [
+        [
+            'title' => 'Amazing idea',
+            'content' => 'This app helped me find so many great pieces I had never heard of, keep it up guys!',
+            'author' => 'William Olson'
+        ],
+        [
+            'title' => 'Looking forward to it!',
+            'content' => 'I tested the app and saw a lot of potential it in, great content for beginner pianists like me, looking forward to the release.',
+            'author' => 'Cliff Bailey'
+        ],
+        [
+            'title' => 'Super sick!',
+            'content' => 'If you have an Apple device you should really try it out. Thanks for the awesome work, keep going!',
+            'author' => 'Anonymous'
+        ],
+        [
+            'title' => 'Nice app',
+            'content' => 'I\'ve been looking for something like this for a while, it has helped me a lot! Love the playlists:)',
+            'author' => 'Patricia Palmer'
+        ],
+        [
+            'title' => 'Very cool',
+            'content' => 'Love this app!!!',
+            'author' => 'Barbara Estep'
+        ],
+        [
+            'title' => 'Great app!',
+            'content' => 'I am a teacher and this app helps me find pieces to my students, highly recommend this!',
+            'author' => 'Anonymous'
+        ],
+        [
+            'title' => 'Very helpful',
+            'content' => 'This app has been super helpful to guide my progress and show me pieces at my level that actually sound nice, keep it up!!',
+            'author' => 'Edward Hoffer'
+        ],
+    ];
+}

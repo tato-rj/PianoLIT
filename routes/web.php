@@ -50,6 +50,8 @@ Route::get('youtube', function() {
 
 Route::get('/', 'HomeController@index')->name('home');
 
+Route::get('/load-pieces', 'HomeController@loadPieces')->name('load-pieces');
+
 Route::prefix('true-or-false')->name('true-or-false.')->group(function() {
 
 	Route::get('', function() {

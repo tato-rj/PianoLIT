@@ -1,7 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light py-5">
   <a class="navbar-brand" href="{{route('home')}}">
-      <img src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 20%; width: 50px" class="mr-2">
-      <h3 class="font-primary align-middle m-0 d-none d-sm-inline-block"><span>PianoLIT</span></h3>
+      <img src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 20%; width: 60px">
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>

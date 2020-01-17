@@ -2,8 +2,15 @@
 
 @push('header')
 <style type="text/css">
-.result-piece:hover > div {
+/*.result-piece:hover > div {
   width: 228px!important;
+}*/
+.result-card:hover .card-content {
+  transform: translateY(-120%);
+}
+
+.result-card:hover .card-action {
+  bottom: 0 !important;
 }
 
 #svg-searching {
@@ -70,9 +77,11 @@
 @section('content')
 
 	@include('welcome.sections._lead')
+  @include('welcome.sections.highlights')
+  @include('welcome.sections.bar')
+  @include('welcome.sections.tags')
 	@include('welcome.sections.composition')
-	@include('welcome.sections.tags')
-	@include('components.overlays.tags')
+  @include('welcome.sections.youtube')
 	@include('welcome.sections.testimonials')
 
   @include('components.overlays.subscribe.paper-plane')
@@ -87,45 +96,45 @@ $('.search-suggestion').click(function() {
   $('input[name="search"]').val($(this).text());
 });
 
-$(function() {
-  var counter = 0;
-  var isDragging = false;
-  $(document)
-  .on('mousedown', '.result-card', function(e) {
-      $(window).mousemove(function() {
-          isDragging = true;
-          $(window).unbind("mousemove");
-      });
-  })
-  .on('mouseup', '.result-card', function(element) {
-      let target = element.target;
-      var wasDragging = isDragging;
-      isDragging = false;
-      $(window).unbind("mousemove");
+// $(function() {
+//   var counter = 0;
+//   var isDragging = false;
+//   $(document)
+//   .on('mousedown', '.result-card', function(e) {
+//       $(window).mousemove(function() {
+//           isDragging = true;
+//           $(window).unbind("mousemove");
+//       });
+//   })
+//   .on('mouseup', '.result-card', function(element) {
+//       let target = element.target;
+//       var wasDragging = isDragging;
+//       isDragging = false;
+//       $(window).unbind("mousemove");
 
-      if (!wasDragging) {
-          goTo($(target).closest('.result-card').attr('data-url'));
-      }
-  });
-});
+//       if (!wasDragging) {
+//           goTo($(target).closest('.result-card').attr('data-url'));
+//       }
+//   });
+// });
 
-$('#show-more button').on('click', function() {
-  let $button = $(this);
-  let url = $button.attr('data-url');
-  let tags = $('.result-row span.tag').textToArray();
+// $('#show-more button').on('click', function() {
+//   let $button = $(this);
+//   let url = $button.attr('data-url');
+//   let tags = $('.result-row span.tag').textToArray();
 
-  $button.prop('disabled', true).text('LOADING...');
+//   $button.prop('disabled', true).text('LOADING...');
 
-  $.get(url, {tags: tags}, function(response) {
-    if (response) {
-      $(response).insertAfter($('.result-row').last());
-      $button.prop('disabled', false).text('SHOW MORE');
-    } else {
-      $button.prop('disabled', false).text('NO MORE TAGS TO SHOW');      
-    }
-    dragscroll.reset();
-  });
-});
+//   $.get(url, {tags: tags}, function(response) {
+//     if (response) {
+//       $(response).insertAfter($('.result-row').last());
+//       $button.prop('disabled', false).text('SHOW MORE');
+//     } else {
+//       $button.prop('disabled', false).text('NO MORE TAGS TO SHOW');      
+//     }
+//     dragscroll.reset();
+//   });
+// });
 </script>
 
 <script type="text/javascript">
@@ -174,29 +183,29 @@ $(window).scroll(function() {
 });
 </script>
 <script type="text/javascript">
-$('#tags-search-button').on('click', function() {
-  let url = $(this).attr('data-url');
-  let $searching = $('#results-overlay .searching');
-  let $positive = $('#results-overlay .positive-results');
-  let $empty = $('#results-overlay .empty-results');
-  let input = $('.selected-tag').text();
+function attrToArray(attr)
+{
+  return $('#tags-search-container .selected-tag').map(function() {
+    return $(this).attr(attr);
+  }).toArray();
+}
 
-  $searching.show();
-  $positive.hide();
-  $empty.hide();
-  
-  $.get(url, {'search': input}, function(response) {
-    setTimeout(function(){
-      if (response.count > 0) {
-        $positive.find('.results-count').text(response.count);
-        $searching.hide();
-        $positive.show();
-      } else {
-        $searching.hide();
-        $empty.show();   
-      }
-    }, 2000);
-  });
+$('#tags-search-container .tag').on('click', function() {
+  let ids = attrToArray('data-id');
+  let names = attrToArray('data-name');
+  let $container = $('#pieces-container');
+  let $label = $('#pieces-label');
+
+  if (ids.length > 0) {
+    $container.parent().addClass('opacity-4');
+    $.get("{{route('load-pieces')}}", {'ids': ids, 'names': names}, function(response) {
+      let label = 'Showing ' + response.count + ' of ' + response.total + ' pieces found';
+
+      $container.html(response.view); 
+      $container.parent().removeClass('opacity-4');
+      $label.text(response.count > 0 ? label : null);
+    });
+  }
 });
 
 $("#subscribe-overlay").showAfter(5);

@@ -1,21 +1,37 @@
+.border-elementary {
+	border-color: lighten($elementary, 40) !important;
+}
+
+.border-beginner {
+	border-color: lighten($beginner, 40) !important;
+}
+
+.border-intermediate {
+	border-color: lighten($intermediate, 35) !important;
+}
+
+.border-advanced {
+	border-color: lighten($advanced, 35) !important;
+}
+
 .bg-elementary {
-	background: lighten($elementary, 35) !important;
+	background: lighten($elementary, 40) !important;
 	color: darken($elementary, 12);
 }
 
 .bg-beginner {
-	background: lighten($beginner, 25) !important;
-	color: darken($beginner, 15);
+	background: lighten($beginner, 40) !important;
+	color: darken($beginner, 8);
 }
 
 .bg-intermediate {
-	background: lighten($intermediate, 25) !important;
+	background: lighten($intermediate, 35) !important;
 	color: darken($intermediate, 5);
 }
 
 .bg-advanced {
-	background: lighten($advanced, 40) !important;
-	color: lighten($advanced, 10);
+	background: lighten($advanced, 35) !important;
+	color: darken($advanced, 5);
 }
 
 .text-elementary {

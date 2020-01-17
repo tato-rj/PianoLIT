@@ -57,7 +57,7 @@ class SearchController extends Controller
         if ($model = $request->model) {
             $query = (new $model)->name($request->search)->first()->pieces();
         } else {
-            $query = Piece::search($request->search)->options($this->options);            
+            $query = Piece::search($request->search)->options($this->options);
         }
 
         $this->total = $query->count();

@@ -105,7 +105,7 @@
         .accent-bottom::after {
             content: '';
             display: block;
-            background-color: #1876f6;
+            background-color: #0055fe;
             width: 100px;
             border-radius: 2px;
             height: 7px;

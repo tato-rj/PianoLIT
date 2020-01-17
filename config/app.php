@@ -14,10 +14,14 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    
     'emails' => [
         'general' => 'contact@pianolit.com'
     ],
 
+    'stores' => [
+        'ios' => ''
+    ],
     /*
     |--------------------------------------------------------------------------
     | Application Environment
