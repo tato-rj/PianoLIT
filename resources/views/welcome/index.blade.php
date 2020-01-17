@@ -196,16 +196,12 @@ $('#tags-search-container .tag').on('click', function() {
   let $container = $('#pieces-container');
   let $label = $('#pieces-label');
 
-  if (ids.length > 0) {
-    $container.parent().addClass('opacity-4');
-    $.get("{{route('load-pieces')}}", {'ids': ids, 'names': names}, function(response) {
-      let label = 'Showing ' + response.count + ' of ' + response.total + ' pieces found';
-
-      $container.html(response.view); 
-      $container.parent().removeClass('opacity-4');
-      $label.text(response.count > 0 ? label : null);
-    });
-  }
+  $container.parent().addClass('opacity-4');
+  $.get("{{route('load-pieces')}}", {'ids': ids, 'names': names}, function(response) {
+    $container.html(response.view); 
+    $container.parent().removeClass('opacity-4');
+    $label.text(response.label);
+  });
 });
 
 $("#subscribe-overlay").showAfter(5);

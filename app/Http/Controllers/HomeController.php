@@ -45,15 +45,23 @@ class HomeController extends Controller
         // $total = $query->count();
         // $pieces = $query->inRandomOrder()->take(8)->get();
 
-        $query = Piece::search(implode(' ', $request->names))->get();
-
-        $total = $query->count();
-        $pieces = $query->shuffle()->take(8);
+        if ($request->names) {
+            $query = Piece::search(implode(' ', $request->names))->get();
+            $total = $query->count();
+            $pieces = $query->shuffle()->take(8);
+            $label = 'Showing ' . $pieces->count() . ' of ' . $total . ' ' . str_plural('piece', $total) . ' found';
+        } else {
+            $query = Piece::latest()->with(['composer', 'tags']);
+            $total = $query->count();
+            $pieces = $query->take(8)->get();
+            $label = 'Latest pieces';
+        }
         
         return [
             'view' => ! $pieces->isEmpty() ? view('components.pieces.display', compact('pieces'))->render() : view('components.pieces.empty')->render(),
             'total' => $total,
-            'count' => $pieces->count()
+            'count' => $pieces->count(),
+            'label' => $label
         ];
     }
 
