@@ -30,8 +30,6 @@ trait HasMembership
 
     public function getStatus($callApple = false)
     {
-        return 'active';
-        
         if ($this->super_user)
             return 'active';
         
