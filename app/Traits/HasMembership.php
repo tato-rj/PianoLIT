@@ -30,7 +30,7 @@ trait HasMembership
 
     public function getStatus($callApple = false)
     {
-        // REMOVE ME
+        // REMOVE HERE
         if ($this->id != 260)
             return 'active';
         // STOP HERE
