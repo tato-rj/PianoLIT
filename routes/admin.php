@@ -176,17 +176,23 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::prefix('lists')->name('lists.')->group(function() {
 
-		Route::get('lists', 'Admin\EmailsController@lists')->name('index');
+		Route::get('lists', 'Admin\EmailListsController@index')->name('index');
 
-		Route::get('preview/{list}', 'Admin\EmailsController@preview')->name('preview');
+		Route::get('preview/{list}', 'Admin\EmailListsController@preview')->name('preview');
 
-		Route::get('send/{list}/to', 'Admin\EmailsController@sendTo')->name('send-to');
+		Route::get('send/{list}/to', 'Admin\EmailListsController@sendTo')->name('send-to');
 
-		Route::get('send/{list}', 'Admin\EmailsController@send')->name('send');
+		Route::get('send/{list}', 'Admin\EmailListsController@send')->name('send');
 
-		Route::get('{list}', 'Admin\EmailsController@list')->name('show');
+		Route::get('{list}/edit', 'Admin\EmailListsController@edit')->name('edit');
 
-		Route::post('lists', 'Admin\EmailsController@list')->name('store');
+		Route::patch('{list}', 'Admin\EmailListsController@update')->name('update');
+
+		Route::patch('{list}/status', 'Admin\EmailListsController@status')->name('status');
+
+		Route::post('lists', 'Admin\EmailListsController@store')->name('store');
+
+		Route::delete('{list}', 'Admin\EmailListsController@destroy')->name('destroy');
 
 	});
 

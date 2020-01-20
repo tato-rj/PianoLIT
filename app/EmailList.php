@@ -5,6 +5,16 @@ namespace App;
 class EmailList extends PianoLit
 {
 	protected $dates = ['last_sent_at'];
+	protected $withCount = ['subscribers'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function($list) {
+            $list->subscribers()->detach();
+        });
+    }
 
 	public function send()
 	{
@@ -26,5 +36,13 @@ class EmailList extends PianoLit
     public function subscribers()
     {
     	return $this->belongsToMany(Subscription::class);
+    }
+
+    public function scopeDatatable($query, EmailList $list)
+    {
+        return datatable(Subscription::query())->withDate()->withBlade([
+            'status' => view('admin.pages.subscriptions.toggles.status', compact('list')),
+            'action' => view('admin.pages.subscriptions.actions')
+        ])->checkable()->make();
     }
 }
