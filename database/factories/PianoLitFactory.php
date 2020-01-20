@@ -1,6 +1,6 @@
 <?php
 
-use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist};
+use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist, EmailList};
 use App\Infograph\Infograph;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -127,5 +127,12 @@ $factory->define(Tag::class, function (Faker $faker) {
         'creator_id' => function() {
             return create(Admin::class)->id;
         },
+    ];
+});
+
+$factory->define(EmailList::class, function(Faker $faker) {
+    return [
+        'name' => $faker->word,
+        'description' => $faker->sentence,
     ];
 });

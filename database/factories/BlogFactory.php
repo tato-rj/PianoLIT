@@ -14,7 +14,7 @@ $factory->define(Post::class, function (Faker $faker) {
         'description' => $faker->paragraph(2),
         'content' => $faker->paragraph,
         'gift_path' => $faker->sentence,
-        'cover_path' => $faker->image(),
+        'cover_path' => 'image.jpg',
         'cover_credits' => $faker->sentence,
         'views' => $faker->numberBetween(0,500),
         'reading_time' => $faker->numberBetween(0,10),

@@ -5,6 +5,11 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
     box-sizing: border-box;
 }
 
+.bg-elementary {background: rgb(52,199,89);}
+.bg-beginner {background: rgb(255,204,0);}
+.bg-intermediate {background: rgb(255,59,48);}
+.bg-advanced {background: rgb(175,82,222);}
+
 body {
     background-color: #f8f9fa;
     color: #74787E;
@@ -236,8 +241,8 @@ img {
 .button-blue,
 .button-primary {
     color: white !important;
-    background-color: #1876f6;
-    border-color: #1876f6;
+    background-color: #0055fe;
+    border-color: #0055fe;
 }
 
 .button-green,

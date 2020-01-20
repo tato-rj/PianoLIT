@@ -174,6 +174,22 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::post('', 'Admin\SubscriptionsController@store')->name('store');
 
+	Route::prefix('lists')->name('lists.')->group(function() {
+
+		Route::get('lists', 'Admin\EmailsController@lists')->name('index');
+
+		Route::get('preview/{list}', 'Admin\EmailsController@preview')->name('preview');
+
+		Route::get('send/{list}/to', 'Admin\EmailsController@sendTo')->name('send-to');
+
+		Route::get('send/{list}', 'Admin\EmailsController@send')->name('send');
+
+		Route::get('{list}', 'Admin\EmailsController@list')->name('show');
+
+		Route::post('lists', 'Admin\EmailsController@list')->name('store');
+
+	});
+
 });
 
 Route::prefix('statistics')->name('stats.')->group(function() {

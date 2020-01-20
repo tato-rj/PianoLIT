@@ -48,6 +48,8 @@ class AppTest extends TestCase
 
         $this->tag = create(Tag::class, ['creator_id' => $this->admin->id]);
 
+        $this->level = create(Tag::class, ['type' => 'level']);
+
         $this->pianist = create(Pianist::class, [
             'creator_id' => $this->admin->id,
             'country_id' => $this->country->id
@@ -66,6 +68,7 @@ class AppTest extends TestCase
         $this->user->favorites()->attach($this->piece);
 
         $this->piece->tags()->attach($this->tag);
+        $this->piece->tags()->attach($this->level);
 
         $this->piece->views()->create(['user_id' => $this->user->id]);
 

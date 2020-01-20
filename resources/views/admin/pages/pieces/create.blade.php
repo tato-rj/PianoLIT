@@ -151,7 +151,11 @@
           </div>
           {{-- Did you know? --}}
           <div class="form-group">
-            <textarea class="form-control" rows="3" name="curiosity" placeholder="Enter a curiosity here">{{old('score_editor')}}</textarea>
+            <textarea class="form-control" rows="3" name="curiosity" placeholder="Enter a curiosity here">{{old('curiosity')}}</textarea>
+          </div>
+          {{-- Description --}}
+          <div class="form-group">
+            <textarea class="form-control" rows="5" name="description" placeholder="Enter a description here">{{old('description')}}</textarea>
           </div>
           @manager
           {{-- Score Info --}}

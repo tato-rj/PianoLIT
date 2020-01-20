@@ -21,6 +21,27 @@
                 width: 100% !important;
             }
         }
+
+        .mb-4 {
+            margin-bottom: 1.5rem!important;
+        }
+
+        .divider {
+            width: 100%;
+            height: 2px;
+            margin: 12px 0;
+            margin: 0 auto;
+            margin-bottom: 42px;
+            margin-top: 42px;
+        }
+
+        .divider-blue {
+            background-color: #0055fe;
+        }
+
+        .text-blue {
+            color: #0055fe;
+        }
     </style>
 
     <table class="wrapper" width="100%" cellpadding="0" cellspacing="0">

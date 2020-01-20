@@ -163,6 +163,11 @@
             <label class="text-brand"><small>Did you know?</small></label>
             <textarea class="form-control" rows="3" name="curiosity" placeholder="Enter a curiosity here">{{ $piece->curiosity }}</textarea>
           </div>
+          {{-- Did you know? --}}
+          <div class="form-group">
+            <label class="text-brand"><small>Description</small></label>
+            <textarea class="form-control" rows="5" name="description" placeholder="Enter a description here">{{ $piece->description }}</textarea>
+          </div>
           @manager
           {{-- Score Info --}}
           <div class="bg-light rounded px-3 py-2">

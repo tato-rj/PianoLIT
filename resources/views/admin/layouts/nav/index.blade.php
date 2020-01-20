@@ -58,8 +58,13 @@
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
         'dropdown' => [
           ['name' => 'Profiles', 'route' => route('admin.users.index')],
-          ['name' => 'Subscriptions', 'route' => route('admin.subscriptions.index')],
           ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')]
+        ]])
+
+        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Subscriptions', 'icon' => 'envelope',
+        'dropdown' => [
+          ['name' => 'Subscribers', 'route' => route('admin.subscriptions.index')],
+          ['name' => 'Email lists', 'route' => route('admin.subscriptions.emails.lists')]
         ]])
 
         @include('admin.layouts.nav.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list-ul'])
