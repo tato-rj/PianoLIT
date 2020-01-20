@@ -64,7 +64,7 @@
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Subscriptions', 'icon' => 'envelope',
         'dropdown' => [
           ['name' => 'Subscribers', 'route' => route('admin.subscriptions.index')],
-          ['name' => 'Email lists', 'route' => route('admin.subscriptions.emails.lists')]
+          ['name' => 'Email lists', 'route' => route('admin.subscriptions.lists.index')]
         ]])
 
         @include('admin.layouts.nav.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list-ul'])

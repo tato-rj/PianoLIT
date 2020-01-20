@@ -1,4 +1,4 @@
-<form method="POST" action="{{route('admin.subscriptions.emails.lists.store')}}" class="form-row">
+<form method="POST" action="{{route('admin.subscriptions.lists.store')}}" class="form-row">
   @csrf
   <div class="col-lg-3 col-md-4 col-12">
     <div class="form-group">
