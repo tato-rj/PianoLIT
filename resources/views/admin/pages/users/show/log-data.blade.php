@@ -13,6 +13,7 @@
       @php($value = \App\Piece::findOrFail($value)->medium_name)
       @endif
       <td style="width: 76%">{{is_array($value) ? arrayToSentence($value) : $value}}</td>
+      <td>{{$url}}</td>
     </tr>
     @endforeach
   </tbody>
