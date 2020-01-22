@@ -10,10 +10,9 @@
     <tr>
       <th scope="row">{{snake_str($key)}}</th>
       @if($url == route('api.pieces.find'))
-      @php($value = \App\Piece::findOrFail($value)->medium_name)
+      @php($value = \App\Piece::findOrFail($value)->medium_name_with_composer)
       @endif
       <td style="width: 76%">{{is_array($value) ? arrayToSentence($value) : $value}}</td>
-      <td>{{$url}}</td>
     </tr>
     @endforeach
   </tbody>
