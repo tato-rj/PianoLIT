@@ -30,6 +30,7 @@
 					<option data-title="Tutorial" value="What is a minuet? Let's learn about the form and why it matters">Minuets 101</option>
 					<option data-title="Tutorial" value="The basics of sonata-form you need to know and why it matters">Sonata-form</option>
 					<option data-title="Tutorial" value="Explore the harmony to find out how to shape musical lines">Expressive harmony</option>
+					<option data-title="Tutorial" value="A full harmonic analysis of this piece, one measure at a time">Harmonic analysis</option>
 				</optgroup>
 			</select>
 		</div>

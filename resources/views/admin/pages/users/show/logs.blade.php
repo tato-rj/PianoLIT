@@ -54,6 +54,7 @@
             <button  
               @if(! empty($event->data))
                 data="{{json_encode($event->data)}}"
+                data-url="{{json_encode($event->url)}}"
                 data-toggle="modal" 
                 data-target="#modal-log-data"
               @endif
