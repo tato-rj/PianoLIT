@@ -7,72 +7,56 @@ use App\Notifications\Subscriptions\NewSubscriber;
 
 class Subscription extends PianoLit
 {    
-    protected $lists = ['newsletter_list', 'birthday_list'];
-	protected $casts = ['newsletter_list' => 'boolean', 'birthday_list' => 'boolean'];
     protected $appends = ['report_name'];
     protected $report_by = 'email';
-
-    public function scopeAdmin($query)
-    {
-        return $query->where('email', 'arthurvillar@gmail.com')->first();
-    }
-
-    public function scopeLists($query, $list = null)
-    {
-        if (is_null($list))
-            return $this->lists;
-
-        $this->validateList($list);
-
-        return [$list];
-    }
 
     public function getRouteKeyName()
     {
         return 'email';
     }
 
-    public function getStatusFor($list, $boolean = false)
+    public function scopeAdmin($query)
     {
-        $this->validateList($list);
-
-        $results = $boolean ? [true, false] : ['subscribed', 'unsubscribed'];
-
-        return $this->$list ? $results[0] : $results[1];
+        return $query->where('email', 'arthurvillar@gmail.com')->first();
     }
 
-    public function reactivate($list)
+    public function scopeLists($query)
     {
-        $this->validateList($list);
-
-    	$this->update([$list => true]);
-
-        return $this;
+        return $this->belongsToMany(EmailList::class);
     }
 
-    public function reactivateAll()
+    public function join(EmailList $list)
     {
-        foreach ($this->lists as $list) {
-            $this->reactivate($list);
+        return $this->lists()->attach($list);
+    }
+
+    public function joinAll()
+    {
+        foreach (EmailList::all() as $list) {
+            $this->lists()->attach($list);
         }
-
-        return $this;
     }
 
-    public function deactivate($list)
+    public function leave(EmailList $list)
     {
-        $this->validateList($list);
-
-    	$this->update([$list => false]);
+        return $this->lists()->detach($list);
     }
 
-    public function toggleStatusFor($list)
+    public function leaveAll(EmailList $list)
     {
-        $this->validateList($list);
+        foreach (EmailList::all() as $list) {
+            $this->lists()->detach($list);
+        }
+    }
 
-        $this->update([$list => ! $this->$list]);
+    public function in(EmailList $list)
+    {
+        return $this->lists()->byName($list->name)->exists();
+    }
 
-        return $this;
+    public function getStatusFor($list)
+    {
+        return EmailList::byName($list)->has($this->email);
     }
 
     public function scopeByEmail($query, $email)
@@ -85,12 +69,14 @@ class Subscription extends PianoLit
     	$record = $query->byEmail($form->email);
 
     	if ($record->exists())
-    		return $record->first()->reactivateAll();
+    		return $record->first()->joinAll();
 
         $subscriber = $this->create([
             'email' => strtolower($form->email),
             'origin_url' => $form->origin_url ?? route('register')
         ]);
+
+        $subscriber->joinAll();
 
         if ($notifyUser)
             \Mail::to($form->email)->send(new Welcome($subscriber));
@@ -100,31 +86,9 @@ class Subscription extends PianoLit
         return $subscriber;
     }
 
-    public function scopeActiveList($query, $list)
-    {
-        $this->validateList($list);
-
-        return $query->where($list, true);
-    }
-
-    public function scopeInactiveList($query, $list)
-    {
-        $this->validateList($list);
-
-        return $query->where($list, false);
-    }
-
-    public function validateList($list)
-    {
-        if (! \Schema::hasColumn($this->getTable(), $list))
-            abort(403, 'The list ' . $list . ' does not exist.');
-    }
-
     public function scopeDatatable($query)
     {
         return datatable($query)->withDate()->withBlade([
-            'newsletter' => view('admin.pages.subscriptions.toggles.newsletter'),
-            'birthday' => view('admin.pages.subscriptions.toggles.birthday'),
             'action' => view('admin.pages.subscriptions.actions')
         ])->checkable()->make();
     }

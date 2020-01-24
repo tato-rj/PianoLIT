@@ -1,4 +1,5 @@
 <?php
+
 Route::get('teens', function() {
 	$pieces = \App\Piece::all();
 	$prodigies = collect();
@@ -19,7 +20,7 @@ Route::resources([
 
 Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
-	Route::patch('{subscription}/status', 'SubscriptionsController@toggleStatus')->name('toggle-status');
+	Route::delete('{subscription}/unsubscribe/{list}', 'SubscriptionsController@unsubscribe')->name('unsubscribe');
 
 });
 

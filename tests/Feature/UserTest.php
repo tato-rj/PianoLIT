@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use Tests\Traits\ManageDatabase;
-use App\{User, Subscription};
+use App\{User, Subscription, EmailList};
 use App\Notifications\User\AccountDeleted;
 
 class UserTest extends AppTest
@@ -28,11 +28,14 @@ class UserTest extends AppTest
     }
 
     /** @test */
-    public function users_are_subscribed_after_registering()
+    public function users_are_subscribed_to_all_lists_after_registering()
     {
         $this->register();
 
         $this->assertDatabaseHas('subscriptions', ['email' => auth()->user()->email]);
+
+        $this->assertTrue(EmailList::newsletter()->has(auth()->user()->email));
+        $this->assertTrue(EmailList::freepick()->has(auth()->user()->email));
     }
 
     /** @test */
@@ -78,7 +81,7 @@ class UserTest extends AppTest
     }
 
     /** @test */
-    public function a_users_subscription_is_automatically_updated_when_the_user_changes_the_password()
+    public function a_users_subscription_is_automatically_updated_when_the_user_changes_the_email()
     {
         $this->signIn(create(User::class));
 

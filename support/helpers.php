@@ -1,5 +1,15 @@
 <?php
 
+function tutorials()
+{
+	return [
+		[
+			'piece' => 'Andantino by Khachaturian',
+			'title' => 'Working on double notes',
+			'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.'],
+	];
+}
+
 function datatable($data)
 {
 	return new \App\Resources\DataTables\Builder($data);

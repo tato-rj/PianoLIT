@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{User, Piece, Api, Admin};
+use App\{User, Piece, Api, Admin, EmailList};
 use App\Notifications\User\AccountDeleted;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\ResetsPasswords;
@@ -183,6 +183,13 @@ class UsersController extends Controller
             $subscription->update(['email' => $request->email]);
 
         return back()->with(['status' => 'Update successful.']);
+    }
+
+    public function updateSubscription(EmailList $list)
+    {
+        $list->toggle(auth()->user()->subscription);
+        
+        return response()->json(['status' => 'This subscription has been updated.']);
     }
 
     /**

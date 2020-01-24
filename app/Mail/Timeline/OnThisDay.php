@@ -4,7 +4,7 @@ namespace App\Mail\Timeline;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use App\Timeline;
+use App\{Timeline, EmailList};
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -12,16 +12,17 @@ class OnThisDay extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $composer, $history, $subscriber;
+    public $composer, $history, $subscription, $list;
 
-    public function __construct($composer, $subscriber)
+    public function __construct($composer, $subscription)
     {
         if (! $composer)
             abort(413, 'No composer was born today.');
 
         $this->composer = $composer;
         $this->history = Timeline::aroundYear($composer->born_in, 5)->get();
-        $this->subscriber = $subscriber;
+        $this->subscription = $subscription;
+        $this->list = EmailList::birthdays();
     }
 
     /**

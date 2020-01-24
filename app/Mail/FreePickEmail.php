@@ -6,17 +6,20 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Piece;
+use App\{Piece, EmailList};
+use App\Mail\Traits\Trackable;
 
 class FreePickEmail extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, Trackable;
 
-    public $piece;
+    public $piece, $subscription, $list;
 
-    public function __construct()
+    public function __construct($subscription = null)
     {
         $this->piece = Piece::free()->first();
+        $this->subscription = $subscription;
+        $this->list = EmailList::freepick();
     }
 
     /**
@@ -26,6 +29,8 @@ class FreePickEmail extends Mailable implements ShouldQueue
      */
     public function build()
     {
+        $this->track($this->list, $this->subscription);
+
         return $this->subject('Free weekly pick')->markdown('emails.lists.freepick');
     }
 }

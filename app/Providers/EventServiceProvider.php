@@ -33,6 +33,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         \App\Events\Tutorials\RequestPublished::class => [
             \App\Listeners\Tutorials\RequestPublishedListener::class,
+        ],
+        \App\Events\Emails\EmailListSent::class => [
+            \App\Listeners\Emails\EmailListSentListener::class
+        ],
+        \App\Events\Emails\Unsubscribed::class => [
+            \App\Listeners\Emails\UnsubscribedListener::class
         ]
     ];
 

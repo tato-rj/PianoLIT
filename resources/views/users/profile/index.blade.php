@@ -59,7 +59,6 @@ $('input.status-toggle').on('change', function() {
     url: $input.attr('data-url'),
     type: 'PATCH',
     success: function(res) {
-      alert('Your update was successful!');
     },
     error: function(xhr,status,error) {
     	alert('Something went wrong: ' + error);

@@ -7,7 +7,7 @@ Here is your gift, we hope you enjoy it:)
 <img src="{{asset('images/emails/gift-white.png')}}" style="margin-right: 12px; width: 16px">We have a gift for you!
 @endcomponent
 
-Thanks<br>
+Best<br>
 Elena from {{ config('app.name') }}
 @endcomponent
 

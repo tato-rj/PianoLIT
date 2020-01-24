@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Admin, User, Piece, Tag, Composer, Subscription, Api};
+use App\{Admin, User, Piece, Tag, Composer, Subscription, EmailList, Api};
 use App\Quiz\{Quiz, Level, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Blog\Post;
@@ -21,7 +21,7 @@ class AdminsController extends Controller
         $pieces_count = Piece::count();
         $composers_count = Composer::count();
         $users_count = User::count();
-        $subscriptions_count = Subscription::activeList('newsletter_list')->count() - 2;
+        $subscriptions_count = EmailList::newsletter()->subscribers()->count() - 2;
         $quiz_results_count = QuizResult::count();
         $blog_count = Post::count();
 

@@ -8,16 +8,15 @@
 			</div>
 			<table class="table table-borderless w-100">
 				<tbody>
-	              @foreach(\App\Subscription::lists() as $list)
+	              @foreach(\App\EmailList::all() as $list)
 					<tr>
-						<td class="p-0 align-middle"><h6 class="m-0"><i class="fas fa-mail-bulk mr-2"></i>{{snake_str($list)}}</h6></td>
+						<td class="p-0 align-middle"><h6 class="m-0"><i class="fas fa-mail-bulk mr-2"></i>{{$list->name}}</h6></td>
 						<td class="p-0 text-center align-middle">
-							@toggle(['toggle' => auth()->user()->subscription->getStatusFor($list, $boolean = true), 
-             					'route' => route('subscriptions.toggle-status', ['subscription' => auth()->user()->email, 'list' => $list])])
+							@toggle(['toggle' => auth()->user()->subscription->in($list), 'route' => route('users.subscriptions.update-list', $list)])
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2" class="pt-0 pb-3 text-muted"><small>{{config('mail.lists.' . $list)}}</small></td>
+						<td colspan="2" class="pt-0 pb-3 text-muted"><small>{{$list->description}}</small></td>
 					</tr>
 	              @endforeach
 				</tbody>

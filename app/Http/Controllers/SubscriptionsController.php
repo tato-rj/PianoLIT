@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Subscription;
+use App\{Subscription, EmailList};
 use App\Http\Requests\SubscriptionForm;
 use App\Mail\Gift;
 use Illuminate\Http\Request;
@@ -39,10 +39,10 @@ class SubscriptionsController extends Controller
 
         if ($ids) {
             $emails = Subscription::find($ids)->pluck('email')->toArray();
-        } elseif (request()->has('all')) {
-            $emails = Subscription::all()->pluck('email')->toArray();
+        } elseif (request()->has('list_id')) {
+            $emails = EmailList::find(request('list_id'))->subscribers->pluck('email')->toArray();
         } else {
-            $emails = Subscription::activeList('newsletter_list')->get()->pluck('email')->toArray();
+            $emails = Subscription::all()->pluck('email')->toArray();
         }
 
         return view('admin.pages.subscriptions.exports.txt', compact('emails'));
@@ -56,7 +56,7 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
-        if (Subscription::activeList('newsletter_list')->byEmail($form->email)->exists() && ! $request->gift_url)
+        if (EmailList::newsletter()->has($form->email) && ! $request->gift_url)
             return redirect()->back()->with('error', 'We already have this email in our subscription list.');
 
         $subscriber = Subscription::createOrActivate($form);
@@ -67,7 +67,6 @@ class SubscriptionsController extends Controller
         } else {
             $message = 'Thanks for subscribing!';
         }
-
 
         return redirect()->back()->with('status', $message);
     }
@@ -94,25 +93,11 @@ class SubscriptionsController extends Controller
         return view('subscriptions.edit', compact('subscription'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Subscription  $subscription
-     * @return \Illuminate\Http\Response
-     */
-    public function toggleStatus(Request $request, Subscription $subscription)
+    public function unsubscribe(Subscription $subscription, EmailList $list)
     {
-        $subscription->toggleStatusFor($request->list);
+        $list->remove($subscription);
 
-        return response()->json(['status' => 'This subscription has been updated.']);
-    }
-
-    public function unsubscribe(Request $request)
-    {
-        Subscription::byEmail($request->email)->firstOrFail()->deactivate($request->list);
-
-        return redirect()->back()->with('status', 'We\'re sorry to see you go!');
+        return view('subscriptions.unsubscribed');
     }
 
     /**

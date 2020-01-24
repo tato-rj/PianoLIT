@@ -11,6 +11,7 @@ require('./datatable/DataTable');
 require('./datatable/DataTableRaw');
 require('./components/delete');
 require('./components/toggle');
+require('./components/forms');
 
 $.ajaxSetup({
     headers: {

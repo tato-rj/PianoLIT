@@ -41,8 +41,14 @@
                 </div>
                 
                 <div>
-                    @if(isset($email))
-                    <p>You have received this email as a subscriber of PianoLIT.com<br>You can <a href="{{route('subscriptions.edit', ['subscription' => $email, 'list' => $list ?? null])}}" target="_blank" class="link-none"><strong>unsubscribe</strong></a> from these emails here<br>(Don't worry, we won't take it personally).</p>
+                    @if(isset($subscription))
+                    <form method="POST" action="{{route('subscriptions.unsubscribe', [$subscription, $list])}}" target="_blank">
+                        @csrf
+                        @method('DELETE')
+                        <p>You have received this email as a subscriber of PianoLIT.com<br>You can 
+                            <button type="submit" style="padding: 0; border: 0; background: transparent; color: grey; cursor: pointer;"><strong>unsubscribe</strong></button> 
+                            from these emails here<br>(Don't worry, we won't take it personally).</p>
+                    </form>
                     @endif
                     <p>© {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')</p>
                 </div>

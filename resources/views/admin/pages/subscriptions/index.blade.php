@@ -25,17 +25,11 @@
             <input type="hidden" name="ids">
             <button type="submit" class="btn btn-light"><i class="fas fa-file-alt mr-2"></i>Export emails</button>
           </form>
-          <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
-            @csrf
-            <input type="hidden" name="type" value="txt">
-            <input type="hidden" name="all" value="1">
-            <button type="submit" class="btn btn-light"><i class="fas fa-file-alt mr-2"></i>Export ALL emails</button>
-          </form>
         </div>
       </div>
     </div>
 
-    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', 'Newsletter', 'Birthday', '']])
+    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', '']])
 
   </div>
 </div>
@@ -54,8 +48,6 @@
   {data: 'created_at', class: 'text-nowrap', sort: true},
   {data: 'email', name: 'subscriptions.email'},
   {data: 'origin_url', name: 'subscriptions.origin_url'},
-  {data: 'newsletter', name: 'subscriptions.newsletter_list'},
-  {data: 'birthday', name: 'subscriptions.birthday_list'},
   {data: 'action', orderable: false, searchable: false},
 ]).create();
 </script>

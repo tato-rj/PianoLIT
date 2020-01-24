@@ -17,7 +17,8 @@ class CreateEmailListsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('description');
-            $table->timestamp('last_send_at')->nullable();
+            $table->timestamp('last_sent_at')->nullable();
+            $table->boolean('previewable')->default(false);
             $table->timestamps();
         });
 

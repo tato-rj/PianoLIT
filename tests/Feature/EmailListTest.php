@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Tests\AppTest;
 use App\{EmailList, Subscription, Piece};
 use App\Mail\FreePickEmail;
-use App\Mail\Newsletter\Welcome as WelcomeToNewsletter;
+use App\Notifications\Emails\EmailListSentNotification;
 
 class EmailListTest extends AppTest
 {
@@ -27,16 +27,6 @@ class EmailListTest extends AppTest
     }
 
     /** @test */
-    public function guests_receive_an_email_upon_subscription()
-    {
-        \Mail::fake();
-
-        $this->subscribe();
-        
-        \Mail::assertQueued(WelcomeToNewsletter::class);
-    }
-
-    /** @test */
     public function admins_can_send_out_the_free_pick_email_to_all_subscribers()
     {
     	$this->signIn();
@@ -46,6 +36,20 @@ class EmailListTest extends AppTest
     	$this->get(route('admin.subscriptions.lists.send', $this->freePickList));
 
         \Mail::assertQueued(FreePickEmail::class, 2);
+
+        $this->assertNotNull($this->freePickList->fresh()->last_sent_at);
+    }
+
+    /** @test */
+    public function admins_are_notified_when_an_email_list_is_sent()
+    {
+        $this->signIn();
+
+        \Notification::fake();
+
+        $this->get(route('admin.subscriptions.lists.send', $this->freePickList));
+
+        \Notification::assertSentTo($this->admin, EmailListSentNotification::class);
     }
 
     /** @test */
@@ -69,7 +73,7 @@ class EmailListTest extends AppTest
     }
 
     /** @test */
-    public function admins_can_edit_email_lists()
+    public function admins_can_add_and_remove_emails_from_the_lists()
     {
         $this->signIn();
 
@@ -85,7 +89,7 @@ class EmailListTest extends AppTest
     }
 
     /** @test */
-    public function admins_can_remove_email_lists()
+    public function admins_can_delete_lists()
     {
         $this->signIn();
 

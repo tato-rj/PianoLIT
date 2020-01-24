@@ -2,24 +2,55 @@
 
 namespace Tests\Unit;
 
-use App\Subscription;
+use App\{Subscription, EmailList};
 use Tests\AppTest;
 
 class SubscriptionTest extends AppTest
 {
+    public function setUp() : void
+    {
+        parent::setUp();
+
+		$this->subscription = create(Subscription::class);
+		create(EmailList::class, ['name' => 'Newsletter']);
+		create(EmailList::class, ['name' => 'Free Pick']);
+    }
+
 	/** @test */
-	public function it_knows_how_to_deactivate_and_reactivate_a_subscriber()
+	public function it_belongs_to_many_lists()
 	{
-		$subscription = create(Subscription::class);
+		$this->subscription->join(EmailList::newsletter());
 
-		$this->assertTrue($subscription->getStatusFor('newsletter_list', true));
+		$this->assertInstanceOf(EmailList::class, $this->subscription->lists()->first());
+	}
 
-		$subscription->deactivate('newsletter_list');
+	/** @test */
+	public function it_knows_how_to_join_or_leave_an_email_list()
+	{
+		$this->subscription->join(EmailList::newsletter());
 
-		$this->assertFalse($subscription->fresh()->getStatusFor('newsletter_list', true));
+		$this->assertCount(1, $this->subscription->lists()->get());
+		
+		$this->subscription->join(EmailList::freepick());
 
-		$subscription->reactivate('newsletter_list');
+		$this->assertCount(2, $this->subscription->lists()->get());
 
-		$this->assertTrue($subscription->fresh()->getStatusFor('newsletter_list', true));
+		$this->subscription->leave(EmailList::newsletter());
+		
+		$this->assertCount(1, $this->subscription->lists()->get());
+		
+		$this->subscription->leave(EmailList::freepick());
+
+		$this->assertCount(0, $this->subscription->lists()->get());
+	}
+
+	/** @test */
+	public function it_knows_if_it_is_in_a_given_list()
+	{
+		$this->assertFalse($this->subscription->in(EmailList::newsletter()));
+	
+		$this->subscription->join(EmailList::newsletter());
+
+		$this->assertTrue($this->subscription->in(EmailList::newsletter()));		 
 	}
 }

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\{Composer, Subscription};
+use App\{Composer, EmailList};
 use App\Mail\Timeline\OnThisDay;
 
 class SendTimelineEmail extends Command
@@ -35,7 +35,7 @@ class SendTimelineEmail extends Command
     public function handle()
     {
         if ($this->composer) {
-            foreach (Subscription::activeList('birthday_list')->get() as $subscriber) {
+            foreach (EmailList::birthdays()->subscribers as $subscriber) {
                 \Mail::to($subscriber->email)->send(new OnThisDay($this->composer, $subscriber));
             }
         }

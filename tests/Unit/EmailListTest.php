@@ -29,4 +29,48 @@ class EmailListTest extends AppTest
 		$this->list->subscribers()->attach($this->subscription);
 		$this->list->subscribers()->attach($this->subscription); 
 	}
+
+	/** @test */
+	public function it_knows_how_to_add_an_email_to_its_list()
+	{
+		$this->assertFalse($this->list->has($this->subscription->email));
+
+		$this->list->add($this->subscription);
+
+		$this->assertTrue($this->list->has($this->subscription->email));
+	}
+
+	/** @test */
+	public function it_knows_how_to_remove_an_email_to_its_list()
+	{
+		$this->list->add($this->subscription);
+
+		$this->assertTrue($this->list->has($this->subscription->email));
+
+		$this->list->remove($this->subscription);
+
+		$this->assertFalse($this->list->has($this->subscription->email));
+	}
+
+	/** @test */
+	public function it_knows_how_to_toggle_an_email_to_its_list()
+	{
+		$this->list->toggle($this->subscription);
+
+		$this->assertTrue($this->list->has($this->subscription->email));
+
+		$this->list->toggle($this->subscription);
+
+		$this->assertFalse($this->list->has($this->subscription->email));
+	}
+
+	/** @test */
+	public function it_knows_if_it_has_an_email_in_a_given_list()
+	{
+		$this->assertFalse($this->list->has($this->subscription->email));
+
+		$this->list->toggle($this->subscription);
+		
+		$this->assertTrue($this->list->has($this->subscription->email));
+	}
 }

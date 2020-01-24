@@ -4,6 +4,7 @@ require('./helpers/display');
 require('./helpers/extensions');
 require('./helpers/url');
 require('./helpers/string');
+require('./components/forms');
 
 $.ajaxSetup({
     headers: {

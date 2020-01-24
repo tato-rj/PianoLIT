@@ -1,4 +1,4 @@
-@component('mail::message')
+@component('mail::message', ['subscription' => $subscription, 'list' => $list])
 <h1 style="color: #3D4852;
     font-size: 34px;
     font-weight: bold;
@@ -17,7 +17,7 @@
 	</div>
 </div>
 <h1><strong>About this piece</strong></h1>
-<p>{{$piece->description}}</p>
+{{$piece->description}}
 
 @component('mail::button', ['url' => ''])
 Check this week's FREE pick
@@ -38,15 +38,15 @@ Check this week's FREE pick
 @endcomponent
 
 @component('mail::promotion')
-<h1><strong>Learn more about the composer</strong></h1>
+<h1 style="text-align: center"><strong>Learn more about the composer</strong></h1>
 <img src="{{storage($piece->composer->cover_path)}}" style="width: 160px; border-radius: 50%; display: block; margin: 0 auto" class="mb-4">
-<p style="text-align: left;">{{$piece->composer->biography}}</p>
+{{$piece->composer->biography}}
 @endcomponent
 
 @component('mail::button', ['url' => ''])
 Check this week's FREE pick
 @endcomponent
 
-Thanks,<br>
-{{ config('app.name') }}
+Best,<br>
+Elena from {{ config('app.name') }}
 @endcomponent

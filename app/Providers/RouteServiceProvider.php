@@ -46,6 +46,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapMailRoutes();
 
         $this->mapUserRoutes();
+
+        $this->mapWebhooksRoutes();
     }
 
     /**
@@ -138,5 +140,19 @@ class RouteServiceProvider extends ServiceProvider
              ->name('users.')
              ->namespace($this->namespace)
              ->group(base_path('routes/user.php'));
+    }
+
+    /**
+     * Define the "user" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapWebhooksRoutes()
+    {
+        Route::prefix('webhooks')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/webhooks.php'));
     }
 }

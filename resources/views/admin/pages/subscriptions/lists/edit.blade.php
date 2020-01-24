@@ -14,7 +14,34 @@
     'description' => 'Manage the ' . $list->name . ' list'])
     
     @include('components.return', ['url' => route('admin.subscriptions.lists.index'), 'to' => 'email lists'])
-    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', 'Status', '']])
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <form method="POST" action="{{route('admin.subscriptions.lists.update', $list)}}" class="form-row">
+          @csrf
+          @method('PATCH')
+          <div class="col-lg-3 col-md-6 col-12">
+            <div class="form-group">
+              <input type="text" class="form-control" name="name" placeholder="List name" required value="{{$list->name}}">
+            </div>
+            <button type="submit" class="btn btn-default btn-block">Update list</button>
+          </div>
+          <div class="col-lg-9 col-md-6 col-12">
+            <div class="form-group h-100">
+              <textarea class="form-control h-100" name="description" required placeholder="Describe the list here">{{$list->description}}</textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row mb-2">
+      <div class="col-12">
+        <div class="alert alert-warning text-center"><i class="fas fa-users"></i> This list has a total of <strong>{{$list->subscribers_count}}</strong> {{str_plural('subscriber', $list->subscribers_count)}}</div>
+      </div>
+    </div>
+
+    @datatable(['table' => 'subscriptions', 'columns' => ['Date', 'Email', 'Origin', 'Status']])
 
   </div>
 </div>
@@ -29,12 +56,10 @@
 <script type="text/javascript">
 
 (new DataTable('#subscriptions-table')).columns([
-  {data: 'checkbox', orderable: false, searchable: false},
   {data: 'created_at', class: 'text-nowrap', sort: true},
   {data: 'email', name: 'subscriptions.email'},
   {data: 'origin_url', name: 'subscriptions.origin_url'},
-  {data: 'status', name: 'subscriptions.email_lists'},
-  {data: 'action', orderable: false, searchable: false},
+  {data: 'status', name: 'subscriptions.email_lists'}
 ]).create();
 </script>
 

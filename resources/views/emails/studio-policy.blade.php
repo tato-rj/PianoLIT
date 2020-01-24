@@ -7,7 +7,7 @@ Thank you for creating your Studio Policy with us. To download your policy just 
 Download my Studio Policy
 @endcomponent
 
-Thanks<br>
+Best<br>
 Elena from {{ config('app.name') }}
 @endcomponent
 
