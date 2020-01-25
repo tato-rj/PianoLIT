@@ -30,7 +30,7 @@ class LatestTutorialsEmail extends Mailable
     {
         $this->track($this->list, $this->subscription);
         
-        return $this->subject('Latest tutorials')->markdown('emails.lists.tutorials');
+        return $this->subject('Our latest tutorials')->markdown('emails.lists.tutorials');
     }
 
     public function tags()

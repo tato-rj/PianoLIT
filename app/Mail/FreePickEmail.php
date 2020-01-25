@@ -31,7 +31,7 @@ class FreePickEmail extends Mailable implements ShouldQueue
     {
         $this->track($this->list, $this->subscription);
 
-        return $this->subject('Free weekly pick')->markdown('emails.lists.freepick');
+        return $this->subject('Your free pick this week')->markdown('emails.lists.freepick');
     }
 
     public function tags()
