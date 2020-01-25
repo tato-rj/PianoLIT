@@ -34,16 +34,10 @@ Check this week's FREE pick
 
 <div class="divider divider-vertical"></div>
 
-@php($videos_count = 1)
 @foreach($piece->videos_array as $tutorial)
-
-<div class="badge badge-pill alert-yellow" style="margin-bottom: 6px">
-	{{strtoupper($tutorial['title'])}} {{strtolower($tutorial['title']) == 'tutorial' ? $videos_count : null }}
-</div>
+<div class="badge badge-pill alert-yellow" style="margin-bottom: 6px">{{strtoupper($tutorial['title'])}}</div>
 
 <p style="margin-left: 4px">{{$tutorial['description']}}</p>
-
-@php($videos_count += 1)
 @endforeach
 
 <div class="divider divider-vertical"></div>
