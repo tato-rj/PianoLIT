@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Mail\Traits\Trackable;
 use App\EmailList;
 
-class LatestTutorialsEmail extends Mailable
+class LatestTutorialsEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels, Trackable;
 
