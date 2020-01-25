@@ -32,6 +32,19 @@ Check this week's FREE pick
 	<p style="margin-bottom: 6px">{{hex('check')}} <strong>Find top performances on Apple Music</strong></p>
 </div>
 
+@php($videos_count = 1)
+@foreach($piece->videos_array as $tutorial)
+@if(strtolower($tutorial['title']) == 'tutorial')
+
+<div class="badge badge-pill alert-yellow" style="margin-bottom: 6px">TUTORIAL {{$videos_count}}</div>
+<p style="margin-left: 4px">{{$tutorial['description']}}</p>
+
+@php($videos_count += 1)
+@endif
+@endforeach
+
+<div class="divider divider-vertical"></div>
+
 @component('mail::panel')
 <h1>Did you know?</h1>
 {{$piece->curiosity}}

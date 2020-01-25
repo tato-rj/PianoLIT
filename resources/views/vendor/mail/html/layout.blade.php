@@ -33,7 +33,12 @@
             margin: 0 auto;
             margin-bottom: 42px;
             margin-top: 42px;
+            background-color: rgba(0,0,0,0.3);
         }
+
+        .divider-vertical {width: 1px; height: 62px;}
+
+        .divider-horizontal {width: 100%; height: 2px;}
 
         .divider-blue {
             background-color: #0055fe;
