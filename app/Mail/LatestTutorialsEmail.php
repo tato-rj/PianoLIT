@@ -32,4 +32,9 @@ class LatestTutorialsEmail extends Mailable
         
         return $this->subject('Latest tutorials')->markdown('emails.lists.tutorials');
     }
+
+    public function tags()
+    {
+        return ['email lists', 'latest tutorials'];
+    }
 }

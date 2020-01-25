@@ -27,11 +27,7 @@ class EmailList extends PianoLit
 	public function send()
 	{
 		foreach ($this->subscribers as $subscriber) {
-            try {
-                \Mail::to($subscriber->email)->send($this->mailable($subscriber));
-            } catch (\Exception $e) {
-                //
-            }
+            \Mail::to($subscriber->email)->queue($this->mailable($subscriber));
 		}
 
         $this->update(['last_sent_at' => now()]);
@@ -92,7 +88,8 @@ class EmailList extends PianoLit
 
     public function add(Subscription $subscription)
     {
-        return $this->subscribers()->attach($subscription);
+        if (! $this->has($subscription->email))
+            return $this->subscribers()->attach($subscription);        
     }
 
     public function remove(Subscription $subscription)

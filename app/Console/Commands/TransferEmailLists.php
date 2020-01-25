@@ -41,15 +41,18 @@ class TransferEmailLists extends Command
         $newsletter = EmailList::byName('newsletter');
         $birthdays = EmailList::byName('birthdays');
         $freepick = EmailList::byName('free pick');
+        $tutorials = EmailList::byName('latest tutorials');
 
         foreach (Subscription::all() as $subscriber) {
-            if ($subscriber->getStatusFor('newsletter_list', $boolean = true)) {
-                $newsletter->subscribers()->attach($subscriber->id);
-                $freepick->subscribers()->attach($subscriber->id);
+            if ($subscriber->newsletter_list == 1) {
+                $newsletter->add($subscriber);
+                $freepick->add($subscriber);
+                $tutorials->add($subscriber);
             }
 
-            if ($subscriber->getStatusFor('birthday_list', $boolean = true))
-                $birthdays->subscribers()->attach($subscriber->id);
+            if ($subscriber->birthday_list == 1) {
+                $birthdays->add($subscriber);
+            }
         }
 
         $this->info('All emails were successfully transfered.');

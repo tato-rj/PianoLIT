@@ -29,5 +29,7 @@ class MailgunWebhookController extends Controller
                 $email->update(["{$data['event']}_at" => now()]);
             }
         }
+
+        return response(200);
     }
 }
