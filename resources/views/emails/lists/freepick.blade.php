@@ -32,6 +32,8 @@ Check this week's FREE pick
 	<p style="margin-bottom: 6px">{{hex('check')}} <strong>Find top performances on Apple Music</strong></p>
 </div>
 
+<div class="divider divider-vertical"></div>
+
 @php($videos_count = 1)
 @foreach($piece->videos_array as $tutorial)
 @if(strtolower($tutorial['title']) == 'tutorial')
