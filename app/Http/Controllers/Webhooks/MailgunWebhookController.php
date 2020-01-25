@@ -30,6 +30,6 @@ class MailgunWebhookController extends Controller
             }
         }
 
-        return $data['event'];
+        return response(200);
     }
 }

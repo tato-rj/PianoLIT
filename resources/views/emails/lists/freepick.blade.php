@@ -19,7 +19,7 @@
 <h1><strong>About this piece</strong></h1>
 {{$piece->description}}
 
-@component('mail::button', ['url' => ''])
+@component('mail::button', ['url' => config('app.stores.ios')])
 Check this week's FREE pick
 @endcomponent
 
@@ -43,7 +43,7 @@ Check this week's FREE pick
 {{$piece->composer->biography}}
 @endcomponent
 
-@component('mail::button', ['url' => ''])
+@component('mail::button', ['url' => config('app.stores.ios')])
 Check this week's FREE pick
 @endcomponent
 

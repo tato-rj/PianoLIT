@@ -9,7 +9,7 @@
 <h2 style="margin: 0">{{$tutorial['title']}}</h2>
 {{$tutorial['description']}}
 
-<a href="" class="button button-primary" style="display: block; font-size: .9rem;" target="_blank">Open the app</a>
+<a href="{{config('app.stores.ios')}}" class="button button-primary" style="display: block; font-size: .9rem;" target="_blank">Open the app</a>
 @endcomponent
 @endforeach
 </div>
