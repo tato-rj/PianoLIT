@@ -36,13 +36,14 @@ Check this week's FREE pick
 
 @php($videos_count = 1)
 @foreach($piece->videos_array as $tutorial)
-@if(strtolower($tutorial['title']) == 'tutorial')
 
-<div class="badge badge-pill alert-yellow" style="margin-bottom: 6px">TUTORIAL {{$videos_count}}</div>
+<div class="badge badge-pill alert-yellow" style="margin-bottom: 6px">
+	{{strtoupper($tutorial['title'])}} {{strtolower($tutorial['title']) == 'tutorial' ? $videos_count : null }}
+</div>
+
 <p style="margin-left: 4px">{{$tutorial['description']}}</p>
 
 @php($videos_count += 1)
-@endif
 @endforeach
 
 <div class="divider divider-vertical"></div>
