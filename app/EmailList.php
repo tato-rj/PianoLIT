@@ -94,9 +94,11 @@ class EmailList extends PianoLit
 
     public function remove(Subscription $subscription)
     {
-        $this->subscribers()->detach($subscription);
+        if ($this->has($subscription->email)) {
+            $this->subscribers()->detach($subscription);
 
-        event(new Unsubscribed($this, $subscription));
+            event(new Unsubscribed($this, $subscription));
+        }
     }
 
     public function toggle(Subscription $subscription)
