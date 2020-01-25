@@ -229,7 +229,7 @@ img {
     -webkit-text-size-adjust: none;
     border: 1px solid transparent;
     padding: .375rem 1.5rem;
-    font-size: 1rem;
+    font-size: 16px;
     line-height: 1.5;
     border-radius: 0.25rem;
     -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;

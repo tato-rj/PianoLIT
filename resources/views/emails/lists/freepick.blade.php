@@ -7,8 +7,8 @@
     text-align: center;
     "><span class="text-blue">Free pick</span> of the week</h1>
 
-<div style="width: 100%; height: 180px; background: url({{$piece->getBackground()}}); background-position: center; background-size: cover; position: relative;" class="mb-4">
-	<div style="position: absolute; bottom: 15px; left: 20px; max-width: 60%">
+<div style="width: 100%; background: url({{$piece->getBackground()}}); background-position: center; background-size: cover; position: relative;" class="mb-4">
+	<div style="max-width: 60%; padding-left: 16px; padding-bottom: 16px; padding-top: 80px;">
 		<h1 style="color: white; margin: 0; font-size: 24px">{{$piece->medium_name}}</h1>
 		<p style="color: white; margin-bottom: 4px">by {{$piece->composer->name}}</p>
 		<p style="color:white; font-size: 12px; margin: 0">
