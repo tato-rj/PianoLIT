@@ -61,7 +61,7 @@ class SubscriptionTest extends AppTest
 
         $this->assertTrue($subscription->in(EmailList::newsletter()));
 
-        $this->delete(route('subscriptions.unsubscribe', [$subscription, EmailList::newsletter()]));
+        $this->get(route('subscriptions.unsubscribe', [$subscription, EmailList::newsletter()]));
 
         $this->assertDatabaseHas('subscriptions', ['email' => $subscription->email]);
 
@@ -77,7 +77,7 @@ class SubscriptionTest extends AppTest
 
         $subscription->join(EmailList::newsletter());
 
-        $this->delete(route('subscriptions.unsubscribe', [$subscription, EmailList::newsletter()]));
+        $this->get(route('subscriptions.unsubscribe', [$subscription, EmailList::newsletter()]));
 
         \Notification::assertSentTo($this->admin, UnsubscribedNotification::class);
     }

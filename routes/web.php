@@ -20,7 +20,7 @@ Route::resources([
 
 Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
-	Route::delete('{subscription}/unsubscribe/{list}', 'SubscriptionsController@unsubscribe')->name('unsubscribe');
+	Route::get('{subscription}/unsubscribe/{list}', 'SubscriptionsController@unsubscribe')->name('unsubscribe');
 
 });
 
