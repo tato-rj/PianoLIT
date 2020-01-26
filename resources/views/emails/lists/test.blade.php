@@ -1,4 +1,4 @@
-@component('mail::message', ['email' => $subscriber->email])
+@component('mail::message', ['subscription' => $subscription, 'list' => $list])
 # Hi there!
 
 This is just a test.

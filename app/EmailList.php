@@ -73,6 +73,11 @@ class EmailList extends PianoLit
         return $query->where('name', 'Latest Tutorials')->first();
     }
 
+    public function scopeTest($query)
+    {
+        return $query->where('name', 'Test')->first();
+    }
+
     public function scopeDatatable($query, EmailList $list)
     {
         return datatable(Subscription::query())->withDate()->withBlade([
