@@ -26,7 +26,7 @@ function tutorials()
 			'title' => 'Better accuracy with the "stop and prepare" technique',
 			'description' => 'Rahbee is an incredible contemporary composer with a vast amount of compositions that range from elementary to advanced levels. "Snowflakes gently falling" is a wonderful piece for beginners to explore fine nuances of sound and move along a large section of the keyboard. We\'ll learn the "stop and prepare" technique that will help you move your arms and change positions with good balance and accuracy.',
 			'level' => 'elementary'
-		],
+		]
 	];
 }
 
