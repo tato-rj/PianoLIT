@@ -334,27 +334,32 @@ img {
 }
 
 .alert-yellow {
-background: #ffe4e3!important;
-    color: #ff2317;
-
-}
-
-.bg-intermediate {
     background: #ffe4e3!important;
     color: #ff2317;
 }
 
-.bg-advanced {
+.alert-grey {
+    color: #5e7083;
+    background-color: #f3f5f7;
+    border-color: #d0d6dd;
+}
+
+.alert-intermediate {
+    background: #ffe4e3!important;
+    color: #ff2317;
+}
+
+.alert-advanced {
     background: #f4e8fb!important;
     color: #a53dda;
 }
 
-.bg-beginner {
+.alert-beginner {
     background: #fff5cc!important;
     color: #d6ab00;
 }
 
-.bg-elementary {
+.alert-elementary {
     background: #d3f4dc!important;
     color: #279643;
 }

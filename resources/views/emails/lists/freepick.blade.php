@@ -35,7 +35,7 @@ Check this week's FREE pick
 <div class="divider divider-vertical"></div>
 
 @foreach($piece->videos_array as $tutorial)
-<div class="badge badge-pill alert-yellow" style="margin-bottom: 6px">{{strtoupper($tutorial['title'])}}</div>
+<div class="badge badge-pill alert-grey" style="margin-bottom: 6px">{{strtoupper($tutorial['title'])}}</div>
 
 <p style="margin-left: 4px">{{$tutorial['description']}}</p>
 @endforeach
