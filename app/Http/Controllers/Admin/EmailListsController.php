@@ -34,7 +34,7 @@ class EmailListsController extends Controller
 
     public function preview(EmailList $list)
     {
-    	return $list->mailable();
+    	return $list->mailable('preview');
     }
 
     public function store(Request $request)
