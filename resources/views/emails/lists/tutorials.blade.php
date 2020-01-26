@@ -10,8 +10,8 @@
 Here is quick recap of the tutorials we published this week! If you need help with any piece found in our app, just tap the <span class="text-blue"><strong>Request Tutorial</strong></span> button on the videos tab to submit your request.
 
 <div class="divider divider-vertical"></div>
-
-@foreach(tutorials() as $tutorial)
+@php($tutorials = (new \App\Mail\Traits\Tutorials)->get())
+@foreach($tutorials as $tutorial)
 @component('mail::panel')
 <div style="text-align: center; border-bottom: 1px solid #d0d6dd; margin-bottom: 8px; padding-bottom: 8px; font-size: 16px"><strong><small>{{$tutorial['piece']}}</small></strong></div>
 <h1 style="text-align: center; margin-bottom: 8px">{{$tutorial['title']}}</h1>
