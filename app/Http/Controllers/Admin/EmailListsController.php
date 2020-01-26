@@ -27,7 +27,7 @@ class EmailListsController extends Controller
     
     public function sendTo(Request $request, EmailList $list)
     {
-    	\Mail::to($request->email)->send($list->mailable(Subscription::byEmail($request->email)->first()));
+    	\Mail::to($request->email)->send($list->mailable($list->listId(), Subscription::byEmail($request->email)->first()));
 
     	return back()->with('status', 'A preview was sent to ' . $request->email);
     }

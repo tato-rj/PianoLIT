@@ -13,17 +13,18 @@ class TestEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels, Trackable;
 
-    public $subscription, $list;
+    public $subscription, $list, $list_id;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($subscription = null)
+    public function __construct($list_id, $subscription = null)
     {
         $this->list = EmailList::test();
         $this->subscription = $subscription;
+        $this->list_id = $list_id;
     }
 
     /**
@@ -33,7 +34,7 @@ class TestEmail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        $this->track($this->list, $this->subscription);
+        $this->track($this->list, $this->list_id, $this->subscription);
 
         return $this->subject('Test email')->markdown('emails.lists.test');
     }

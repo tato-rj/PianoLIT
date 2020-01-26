@@ -26,19 +26,21 @@ class EmailList extends PianoLit
 
 	public function send()
 	{
+        $list_id = $this->listId();
+
 		foreach ($this->subscribers as $subscriber) {
-            \Mail::to($subscriber->email)->queue($this->mailable($subscriber));
+            \Mail::to($subscriber->email)->queue($this->mailable($list_id, $subscriber));
 		}
 
         $this->update(['last_sent_at' => now()]);
 	}
 
-	public function mailable($subscription = null)
+	public function mailable($list_id, $subscription = null)
 	{
 		$model = '\App\Mail\\' . str_replace(' ', '', $this->name) . 'Email';
 
 		if (class_exists($model))
-			return new $model($subscription);
+			return new $model($list_id, $subscription);
 
 		abort(404, "The mail class {$model} does not exist");
 	}
@@ -76,6 +78,11 @@ class EmailList extends PianoLit
     public function scopeTest($query)
     {
         return $query->where('name', 'Test')->first();
+    }
+
+    public function listId()
+    {
+        return  str_slug($this->name) . '.' . now()->timestamp;
     }
 
     public function scopeDatatable($query, EmailList $list)

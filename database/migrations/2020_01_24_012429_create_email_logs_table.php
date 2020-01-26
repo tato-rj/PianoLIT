@@ -16,6 +16,7 @@ class CreateEmailLogsTable extends Migration
         Schema::create('email_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('message_id')->index();
+            $table->string('list_id')->nullable();
             $table->morphs('sender');
             $table->string('recipient');
             $table->dateTime('delivered_at')->nullable();
