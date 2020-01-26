@@ -5,7 +5,7 @@
     margin-top: -34px;
     margin-bottom: 16px;
     text-align: center;
-    "><span class="text-blue">Free pick</span> of the week</h1>
+    "><span class="text-blue">Free</span> pick of the week</h1>
 
 <div style="width: 100%; background: url({{$piece->getBackground()}}); background-position: center; background-size: cover; position: relative;" class="mb-4">
 	<div style="max-width: 60%; padding-left: 16px; padding-bottom: 16px; padding-top: 80px;">

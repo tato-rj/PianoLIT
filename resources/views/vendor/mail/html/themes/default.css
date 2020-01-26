@@ -217,7 +217,7 @@ img {
     -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     display: inline-block;
-    font-weight: 400;
+    font-weight: 700;
     color: #212529;
     text-align: center;
     vertical-align: middle;
@@ -334,7 +334,27 @@ img {
 }
 
 .alert-yellow {
-    color: #5e7083;
-    background-color: #f3f5f7;
-    border-color: #d0d6dd;
+background: #ffe4e3!important;
+    color: #ff2317;
+
+}
+
+.bg-intermediate {
+    background: #ffe4e3!important;
+    color: #ff2317;
+}
+
+.bg-advanced {
+    background: #f4e8fb!important;
+    color: #a53dda;
+}
+
+.bg-beginner {
+    background: #fff5cc!important;
+    color: #d6ab00;
+}
+
+.bg-elementary {
+    background: #d3f4dc!important;
+    color: #279643;
 }
