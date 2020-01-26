@@ -16,7 +16,7 @@ Here is quick recap of the tutorials we published this week! If you need help wi
 <div style="text-align: center; border-bottom: 1px solid #d0d6dd; margin-bottom: 8px; padding-bottom: 8px; font-size: 16px"><strong><small>{{$tutorial['piece']}}</small></strong></div>
 <h1 style="text-align: center; margin-bottom: 8px">{{$tutorial['title']}}</h1>
 <div style="display: block; margin: 0 auto; text-align: center;">
-<div class="badge badge-pill bg-intermediate" style=" margin-bottom: 8px" data-test="">{{json_encode($tutorial)}}</div>
+<div class="badge badge-pill bg-{{$tutorial['level']}}" style=" margin-bottom: 8px">{{strtoupper($tutorial['level'])}}</div>
 </div>
 {{$tutorial['description']}}
 
