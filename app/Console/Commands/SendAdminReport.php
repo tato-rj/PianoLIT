@@ -70,5 +70,7 @@ class SendAdminReport extends Command
         foreach ($this->recipients as $recipient) {
             \Mail::to($recipient->email)->send(new AdminReport($this->reports, $recipient));
         }
+
+        return $this->info('The report emails were sent successfully.');
     }
 }
