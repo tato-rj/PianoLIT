@@ -16,14 +16,14 @@ class MailgunWebhook
     public function handle($request, Closure $next)
     {
         if (!$request->isMethod('post')) {
-            abort(Response::HTTP_FORBIDDEN, 'Only POST requests are allowed.');
+            abort(404, 'Only POST requests are allowed.');
         }
 
         if ($this->verify($request)) {
             return $next($request);
         }
 
-        abort(Response::HTTP_FORBIDDEN);
+        abort(404);
     }
 
     private function buildSignature($request)
