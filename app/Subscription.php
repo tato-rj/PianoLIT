@@ -33,7 +33,8 @@ class Subscription extends PianoLit
     public function joinAll()
     {
         foreach (EmailList::all() as $list) {
-            $this->lists()->attach($list);
+            if (! $list->has($this->email))
+                $this->lists()->attach($list);
         }
     }
 

@@ -83,6 +83,16 @@ class SubscriptionTest extends AppTest
     }
 
     /** @test */
+    public function new_users_are_subscribed_to_all_email_lists()
+    {
+        $this->register();
+
+        foreach (EmailList::all() as $list) {
+            $this->assertTrue($list->subscribers()->byEmail(auth()->user()->email)->exists());            
+        }         
+    }
+
+    /** @test */
     public function users_can_toggle_their_own_email_from_the_subscription_lists()
     {
         $this->register();

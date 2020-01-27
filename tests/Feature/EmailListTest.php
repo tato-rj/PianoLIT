@@ -16,7 +16,7 @@ class EmailListTest extends AppTest
         $freePick = create(Piece::class, ['is_free' => true]);
         $freePick->tags()->attach($this->tag);
         $freePick->tags()->attach($this->level);
-        $freePick->update(['videos' => serialize(['tutorial'])]);
+        $freePick->update(['videos' => serialize([['title' => 'Foo', 'description' => 'bar', 'filename' => 'video']])]);
         
         $this->subscriber1 = create(Subscription::class);
         $this->subscriber2 = create(Subscription::class);
@@ -46,7 +46,7 @@ class EmailListTest extends AppTest
         $this->signIn();
 
         \Notification::fake();
-
+        
         $this->get(route('admin.subscriptions.lists.send', $this->freePickList));
 
         \Notification::assertSentTo($this->admin, EmailListSentNotification::class);
