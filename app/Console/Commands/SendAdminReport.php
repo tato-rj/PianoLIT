@@ -68,7 +68,7 @@ class SendAdminReport extends Command
     public function handle()
     {
         foreach ($this->recipients as $recipient) {
-            \Mail::to($recipient->email)->send(new AdminReport($this->reports, $recipient));
+            \Mail::to($recipient->email)->queue(new AdminReport($this->reports, $recipient));
         }
 
         return $this->info('The report emails were sent successfully.');
