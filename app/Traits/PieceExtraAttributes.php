@@ -108,6 +108,8 @@ trait PieceExtraAttributes
         $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental', 'Atonal'])) ? ' in ' . $this->key : null;
         $name .= $this->catalogue_name || $this->collection_number ? " {$this->catalogue}" : $key;
 
+        $name = str_replace(' major', '', $name);
+
         return rm_whitespaces($name);
     }
 
