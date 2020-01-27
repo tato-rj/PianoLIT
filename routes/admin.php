@@ -1,6 +1,6 @@
 <?php
 Route::get('/test', function() {
-	return Admin::managers()->get();
+	return \App\Admin::managers()->get();
 });
 
 Route::get('', 'AdminsController@home')->name('home');
