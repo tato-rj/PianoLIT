@@ -35,9 +35,14 @@ class SendTimelineEmail extends Command
     public function handle()
     {
         if ($this->composer) {
-            foreach (EmailList::birthdays()->subscribers as $subscriber) {
-                \Mail::to($subscriber->email)->send(new OnThisDay($this->composer, $subscriber));
-            }
+            EmailList::birthdays()->send();
+            // foreach (->subscribers as $subscriber) {
+            //     \Mail::to($subscriber->email)->send(new OnThisDay($this->composer, $subscriber));
+            // }
+
+            return $this->info('The birthday email was sent successfully.');
         }
+
+        return $this->info('There are no birthdays today.');
     }
 }

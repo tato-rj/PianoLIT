@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use Tests\AppTest;
-use App\Mail\Timeline\OnThisDay;
-use App\{Composer, EmailList, Subscription};
+use App\Mail\BirthdaysEmail;
+use App\{Composer, EmailList, Subscription, EmailLog};
 
 class ArtisanCommandsTest extends AppTest
 {
@@ -17,10 +17,22 @@ class ArtisanCommandsTest extends AppTest
 
         $composer = create(Composer::class, ['is_famous' => true, 'date_of_birth' => now()->subYear()]);
 
-        foreach (EmailList::birthdays()->subscribers as $subscriber) {
-            \Mail::to($subscriber->email)->send(new OnThisDay($composer, $subscriber));
-        }
+        EmailList::birthdays()->send();
 
-        \Mail::assertQueued(OnThisDay::class);
+        \Mail::assertQueued(BirthdaysEmail::class);
+    }
+
+    /** @test */
+    public function birthday_emails_create_logs_for_tracking()
+    {
+        $this->assertFalse(EmailLog::exists());
+
+        create(Subscription::class)->join(create(EmailList::class, ['name' => 'Birthdays']));
+
+        $composer = create(Composer::class, ['is_famous' => true, 'date_of_birth' => now()->subYear()]);
+
+        EmailList::birthdays()->send();
+         
+        $this->assertTrue(EmailLog::exists());
     }
 }

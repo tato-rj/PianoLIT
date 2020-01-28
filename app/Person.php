@@ -34,7 +34,7 @@ abstract class Person extends PianoLit
 
     public function scopeBornToday($query)
     {
-        return $query->whereRaw('DATE_ADD(date_of_birth, INTERVAL YEAR(CURDATE())-YEAR(date_of_birth) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_birth),1,0) YEAR) = CURDATE()');
+        return $query->where('date_of_birth', 'LIKE', '%'.now()->month.'-'.now()->day.'%');
     }
 
     public function scopeUpcomingBirthdays($query, $days)

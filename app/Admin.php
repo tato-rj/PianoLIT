@@ -23,6 +23,11 @@ class Admin extends Authenticatable
         });
     }
 
+    public function emailLog()
+    {
+        return $this->morphOne(EmailLog::class, 'sender');
+    }
+
     public function scopeNotifyAll($query, $notification)
     {
         return $query->get()->each(function($admin) use ($notification) {
