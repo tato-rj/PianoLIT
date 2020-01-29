@@ -196,6 +196,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $query->whereNotIn('id', $ids);
     }
+
+    public function scopeUnconfirmed($query)
+    {
+        return $query->whereNull('email_verified_at');
+    }
     
     public function referralUrl()
     {

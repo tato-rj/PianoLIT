@@ -1,1 +1,1 @@
-<td class="text-nowrap">{{$date->toFormattedDateString()}}</td>
+<td class="text-nowrap position-relative" data-sort="{{$date->timestamp}}">{{$date->toFormattedDateString()}}</td>

@@ -9,9 +9,7 @@ use App\Quiz\{Quiz, QuizResult};
 use App\Mail\Admin\AdminReport;
 
 class SendAdminReport extends Command
-{
-    protected $recipients, $reports;
-    
+{    
     protected $signature = 'pianolit:admin-report';
     
     protected $description = 'Send weekly reports to admins with relevant data such as new subscribers, pieces and more.';
@@ -36,12 +34,6 @@ class SendAdminReport extends Command
     public function __construct()
     {
         parent::__construct();
-        
-        if (testing())
-            return null;
-
-        $this->recipients = Admin::managers()->get();
-        $this->reports = $this->generateReports();
     }
 
     public function generateReports()
@@ -67,8 +59,10 @@ class SendAdminReport extends Command
      */
     public function handle()
     {
-        foreach ($this->recipients as $recipient) {
-            \Mail::to($recipient->email)->queue(new AdminReport($this->reports, $recipient));
+        $reports = $this->generateReports();
+
+        foreach (Admin::managers()->get() as $recipient) {
+            \Mail::to($recipient->email)->queue(new AdminReport($reports, $recipient));
         }
 
         return $this->info('The report emails were sent successfully.');
