@@ -92,7 +92,8 @@ trait ManageDatabase
             'experience' => $user['experience'] ?? 'Little',
             'preferred_piece_id' => $user['preferred_piece_id'] ?? create('App\Piece')->id,
             'occupation' => $user['occupation'] ?? 'Teacher',
-            'origin' => 'test'
+            'origin' => 'test',
+            'middle_name' => null
         ]);     
     }
 }
