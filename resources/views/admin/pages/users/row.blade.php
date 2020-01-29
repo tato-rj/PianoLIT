@@ -4,7 +4,7 @@
 
   @include('components.datatable.date', ['date' => $item->created_at])
   
-  <td title="Subscribed at {{$item->created_at->format('g:i:s a')}}" class="dataTables_main_column">
+  <td title="{{$top_user ? $item->first_name . ' is our fan!'}}" class="dataTables_main_column">
     {{$item->full_name}}{!! $top_user ? '<i class="fas fa-trophy ml-2 text-success"></i>' : null !!}
   </td>
   
