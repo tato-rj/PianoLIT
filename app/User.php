@@ -201,6 +201,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $query->whereNull('email_verified_at');
     }
+
+    public function getEmailConfirmedAttribute()
+    {
+        return is_null($this->email_verified_at);
+    }
     
     public function referralUrl()
     {
