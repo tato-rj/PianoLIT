@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'Name', 'Origin', 'Status', 'Last Active', 'Super User', '']])
+    @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'Name', 'Visits', 'Origin', 'Status', 'Last Active', 'Super User', '']])
 
   </div>
 </div>
@@ -51,7 +51,7 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTableRaw({table: '#users-table', dontSortFirst: true, options: {order: [[5, 'desc']]}})).create();
+(new DataTableRaw({table: '#users-table', dontSortFirst: true, options: {order: [[6, 'desc']]}})).create();
 </script>
 <script type="text/javascript">
 $('.check-user').on('change', function() {

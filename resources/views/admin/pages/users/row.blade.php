@@ -1,12 +1,14 @@
-@php($top_user = $item->isTopUser($logs_count))
+@php($top_user = $item->isTopUser($logs_total_count, $item->logs_count))
 <tr style="background-color: {{$top_user ? '#d7f3e33d' : null}};">
   @include('components.datatable.checkbox', ['type' => 'user'])
 
   @include('components.datatable.date', ['date' => $item->created_at])
   
-  <td title="{{$top_user ? "$item->first_name has visited us $top_user times!" : null}}" class="dataTables_main_column">
+  <td title="{{$top_user ? "$item->first_name is a our fan!" : null}}" class="dataTables_main_column">
     {{$item->full_name}}{!! $top_user ? '<i class="fas fa-trophy ml-2 text-success"></i>' : null !!}
   </td>
+
+  <td class="{{$top_user ? 'font-weight-bold' : null}}">{{$item->logs_count}}</td>
   
   <td class="text-truncate {{$item->email_confirmed ? 'text-blue' : 'text-muted'}}" title="{{$item->email_confirmed ? 'Confirmed email' : 'Unconfirmed email'}}">
     <i class="{{$item->origin_icon}}" style="font-size: {{$item->origin == 'ios'? '130%' : null}}"></i>

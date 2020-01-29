@@ -26,9 +26,9 @@ trait Loggable
 		return (new LogFactory)->count($this->id);
 	}
 
-	public function isTopUser($total)
+	public function isTopUser($total, $userCount = null)
 	{
-		$count = $this->logs_count;
+		$count = $userCount ?? $this->logs_count;
 
 		if ($count == 0)
 			return 0;

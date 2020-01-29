@@ -21,7 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'super_user' => 'boolean'
     ];
     protected $dates = ['trial_ends_at', 'email_verified_at', 'last_active_at'];
-    protected $appends = ['full_name', 'last_active_at'];
+    protected $appends = ['full_name', 'last_active_at', 'logs_count'];
 
     protected static function boot()
     {
