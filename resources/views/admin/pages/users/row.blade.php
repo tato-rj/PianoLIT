@@ -5,7 +5,7 @@
   
   <td title="Subscribed at {{$item->created_at->format('g:i:s a')}}" class="dataTables_main_column">{{$item->full_name}}</td>
   
-  <td class="text-truncate {{$item->email_confirmed ? 'text-success' : 'text-muted'}}">
+  <td class="text-truncate {{$item->email_confirmed ? 'text-success' : 'text-muted'}}" title="{{$item->email_confirmed ? 'Confirmed email' : 'Unconfirmed email'}}">
     <i class="{{$item->origin_icon}}" style="font-size: {{$item->origin == 'ios'? '130%' : null}}"></i>
     <small class="ml-1">{{$item->origin == 'ios'? 'iOS' : ucfirst($item->origin)}}</small>
   </td>
