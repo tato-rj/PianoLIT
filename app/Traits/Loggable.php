@@ -31,7 +31,7 @@ trait Loggable
 		$count = $this->logs_count;
 
 		if ($count > 0)
-			return ($count * 100 / $total) >= 50;
+			return ($count * 100 / $total) >= 20;
 	
 		return false;
 	}
