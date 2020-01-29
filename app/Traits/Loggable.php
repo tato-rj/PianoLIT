@@ -20,4 +20,19 @@ trait Loggable
 	{
 		return (new LogFactory)->last($this->id);
 	}
+
+	public function getLogsCountAttribute()
+	{
+		return (new LogFactory)->count($this->id);
+	}
+
+	public function isTopUser($total)
+	{
+		$count = $this->logs_count;
+
+		if ($count > 0)
+			return ($count * 100 / $total) >= 50;
+	
+		return false;
+	}
 }

@@ -11,7 +11,9 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::latest()->get();
-        return view('admin.pages.users.index', compact('users'));
+        $logs_count = ((new \App\Log\LogFactory)->total());
+
+        return view('admin.pages.users.index', compact(['users', 'logs_count']));
     }
 
     public function show(User $user)

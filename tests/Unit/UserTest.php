@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\{Membership, Piece, Subscription, StudioPolicy, TutorialRequest};
+use App\{Membership, Piece, Subscription, StudioPolicy, TutorialRequest, User};
 use Tests\AppTest;
 use App\Merchandise\Purchase;
 use App\Infograph\Infograph;

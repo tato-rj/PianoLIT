@@ -37,6 +37,22 @@ class LogFactory
 		return $log;
 	}
 
+	public function count($userId, $type = null)
+	{
+		$key = $this->prefix . 'user:' . $userId . ':';
+
+		if ($type)
+			return count($this->redisToArray($key, $type));
+		
+		$count = 0;
+
+		foreach ($this->types as $type) {
+			$count += count($this->redisToArray($key, $type));
+		}
+
+		return $count;
+	}
+
 	public function last($userId, $type = null)
 	{
 		$key = $this->prefix . 'user:' . $userId . ':';
@@ -67,5 +83,10 @@ class LogFactory
 		krsort($log);
 
 		return $log;
+	}
+
+	public function total($type = 'user')
+	{
+		return count(\Redis::keys($type . ':*'));
 	}
 }

@@ -1,11 +1,14 @@
-<tr>
+@php($top_user = $item->isTopUser($logs_count))
+<tr style="background-color: {{$top_user ? '#d7f3e33d' : null}};">
   @include('components.datatable.checkbox', ['type' => 'user'])
 
   @include('components.datatable.date', ['date' => $item->created_at])
   
-  <td title="Subscribed at {{$item->created_at->format('g:i:s a')}}" class="dataTables_main_column">{{$item->full_name}}</td>
+  <td title="Subscribed at {{$item->created_at->format('g:i:s a')}}" class="dataTables_main_column">
+    {{$item->full_name}}{!! $top_user ? '<i class="fas fa-trophy ml-2 text-success"></i>' : null !!}
+  </td>
   
-  <td class="text-truncate {{$item->email_confirmed ? 'text-success' : 'text-muted'}}" title="{{$item->email_confirmed ? 'Confirmed email' : 'Unconfirmed email'}}">
+  <td class="text-truncate {{$item->email_confirmed ? 'text-blue' : 'text-muted'}}" title="{{$item->email_confirmed ? 'Confirmed email' : 'Unconfirmed email'}}">
     <i class="{{$item->origin_icon}}" style="font-size: {{$item->origin == 'ios'? '130%' : null}}"></i>
     <small class="ml-1">{{$item->origin == 'ios'? 'iOS' : ucfirst($item->origin)}}</small>
   </td>
