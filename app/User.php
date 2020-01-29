@@ -204,7 +204,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getEmailConfirmedAttribute()
     {
-        return is_null($this->email_verified_at);
+        return ! is_null($this->email_verified_at);
     }
     
     public function referralUrl()
