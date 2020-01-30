@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\{EmailList, Subscription};
+use App\{EmailList, Subscription, EmailLog};
 use App\Events\Emails\{EmailListSent, Unsubscribed};
 
 class EmailListsController extends Controller
@@ -14,6 +14,18 @@ class EmailListsController extends Controller
         $lists = EmailList::all();
 
         return view('admin.pages.subscriptions.lists.index', compact('lists'));
+    }
+
+    public function reports()
+    {
+        $reports = EmailLog::generate()->get();
+
+        return view('admin.pages.reports.index', compact('reports'));
+    }
+
+    public function report($list)
+    {
+        return EmailLog::byList($list)->get();
     }
 
     public function send(EmailList $list)

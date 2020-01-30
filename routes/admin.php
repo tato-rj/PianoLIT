@@ -176,7 +176,7 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::prefix('lists')->name('lists.')->group(function() {
 
-		Route::get('lists', 'Admin\EmailListsController@index')->name('index');
+		Route::get('', 'Admin\EmailListsController@index')->name('index');
 
 		Route::get('preview/{list}', 'Admin\EmailListsController@preview')->name('preview');
 
@@ -190,12 +190,19 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 		Route::patch('{list}/status', 'Admin\EmailListsController@status')->name('status');
 
-		Route::post('lists', 'Admin\EmailListsController@store')->name('store');
+		Route::post('', 'Admin\EmailListsController@store')->name('store');
 
 		Route::delete('{list}', 'Admin\EmailListsController@destroy')->name('destroy');
 
 	});
 
+	Route::prefix('reports')->name('reports.')->group(function() {
+
+		Route::get('', 'Admin\EmailListsController@reports')->name('index');
+
+		Route::get('{list}', 'Admin\EmailListsController@report')->name('show');
+
+	});
 });
 
 Route::prefix('statistics')->name('stats.')->group(function() {

@@ -1,4 +1,4 @@
-      <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+      <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
         <div class="rounded border p-3 h-100 d-flex flex-column justify-content-between">
           <div class="mb-3">
             <h5 class="m-0"><strong>{{$list->name}}</strong></h5>
