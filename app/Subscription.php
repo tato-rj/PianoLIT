@@ -36,6 +36,8 @@ class Subscription extends PianoLit
             if (! $list->has($this->email))
                 $this->lists()->attach($list);
         }
+
+        return $this;
     }
 
     public function leave(EmailList $list)
