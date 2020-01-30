@@ -20,9 +20,13 @@ class CreateEmailLogsTable extends Migration
             $table->morphs('sender');
             $table->string('recipient');
             $table->dateTime('delivered_at')->nullable();
+            $table->tinyInteger('unique_delivered')->default(0);
             $table->dateTime('failed_at')->nullable();
+            $table->tinyInteger('unique_failed')->default(0);
             $table->integer('opened')->default(0);
+            $table->tinyInteger('unique_opened')->default(0);
             $table->integer('clicked')->default(0);
+            $table->tinyInteger('unique_clicked')->default(0);
             $table->timestamps();
         });
     }

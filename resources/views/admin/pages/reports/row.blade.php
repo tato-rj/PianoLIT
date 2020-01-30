@@ -6,6 +6,10 @@
   
   <td>{{$item->emails_count}}</td>
 
+  <td>{{$item->delivered_count}}</td>
+
+  <td>{{$item->failed_count}}</td>
+
   <td>{{$item->opens_count}}</td>
 
   <td>{{$item->clicks_count}}</td>

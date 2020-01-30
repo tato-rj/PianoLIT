@@ -42,7 +42,12 @@ class EmailLog extends PianoLit
     public function scopeGenerate($query)
     {
     	return $query->whereNotNull('list_id')
-    				 ->selectRaw('list_id, count(*) emails_count, sum(opened) opens_count, sum(clicked) clicks_count')
+    				 ->selectRaw('list_id, 
+                                  count(*) emails_count, 
+                                  sum(unique_delivered) delivered_count, 
+                                  sum(unique_failed) failed_count, 
+                                  sum(unique_opened) opens_count, 
+                                  sum(unique_clicked) clicks_count')
     				 ->groupBy('list_id')
     				 ->orderBy('list_id', 'DESC');
     }

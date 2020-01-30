@@ -13,7 +13,7 @@
     'title' => 'Reports',
     'description' => 'View reports from our email lists'])
 
-    @datatableRaw(['model' => 'reports', 'columns' => ['Date', 'Name', 'Emails', 'Opened', 'Clicked', '']])
+    @datatableRaw(['model' => 'reports', 'columns' => ['Date', 'Name', 'Emails', 'Delivered', 'Failed', 'Opened', 'Clicked', '']])
 
   </div>
 </div>
