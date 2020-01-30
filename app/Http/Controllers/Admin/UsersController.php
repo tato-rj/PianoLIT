@@ -20,7 +20,7 @@ class UsersController extends Controller
     {
         if (request('format') == 'json')
             return $user->membership;
-        
+        return $user->suggestions(10);
         return view('admin.pages.users.show.index', ['user' => $user->load('favorites')]);
     }
 
