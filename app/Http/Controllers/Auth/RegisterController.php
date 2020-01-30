@@ -56,6 +56,7 @@ class RegisterController extends Controller
             'last_name' => 'required|max:255',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|string|min:8|confirmed',
+            'origin' => 'required'
         ]);
     }
 
@@ -98,10 +99,10 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => \Hash::make($data['password']),
             'locale' => 'unknown',
-            // 'age_range' => array_key_exists('age_range', $data) ? strtolower($data['age_range']) : null,
-            // 'experience' => array_key_exists('experience', $data) ? strtolower($data['experience']) : null,
-            // 'preferred_piece_id' => array_key_exists('preferred_piece_id', $data) ? $data['preferred_piece_id'] : null,
-            // 'occupation' => array_key_exists('occupation', $data) ? strtolower($data['occupation']) : null,
+            'age_range' => array_key_exists('age_range', $data) ? strtolower($data['age_range']) : null,
+            'experience' => array_key_exists('experience', $data) ? strtolower($data['experience']) : null,
+            'preferred_piece_id' => array_key_exists('preferred_piece_id', $data) ? $data['preferred_piece_id'] : null,
+            'occupation' => array_key_exists('occupation', $data) ? strtolower($data['occupation']) : null,
             'origin' => $data['origin'],
             'gender' => gender($data['first_name'])
         ]);
