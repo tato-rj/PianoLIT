@@ -1,41 +1,45 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
-<h1 style="color: #3D4852;
-    font-size: 34px;
-    font-weight: bold;
-    margin-top: -34px;
-    margin-bottom: 16px;
-    text-align: center;
-    ">This week's tutorials & tips</h1>
+<h1 class="mail-title">This week's tutorials & tips</h1>
+Here is quick recap of the tutorials we published this week! If you need help with any piece found in the app, just tap the <span class="text-blue"><strong>Request Tutorial</strong></span> button on the videos tab to submit your request.
 
-Here is quick recap of the tutorials we published this week! If you need help with any piece found in our app, just tap the <span class="text-blue"><strong>Request Tutorial</strong></span> button on the videos tab to submit your request.
+<h1 class="text-center">Don't have the app yet? What are you waiting for?</h1>
+@component('mail::button', ['url' => config('app.stores.ios')])
+Download the iOS App now
+@endcomponent
 
-<div class="divider divider-vertical"></div>
+@include('mail::divider', ['orientation' => 'vertical'])
+
 @php($tutorials = (new \App\Mail\Traits\Tutorials)->get())
 @foreach($tutorials as $tutorial)
 @component('mail::panel')
-<div style="text-align: center; border-bottom: 1px solid #d0d6dd; margin-bottom: 8px; padding-bottom: 8px; font-size: 16px"><strong><small>{{$tutorial['piece']}}</small></strong></div>
-<h1 style="text-align: center; margin-bottom: 8px">{{$tutorial['title']}}</h1>
-<div style="display: block; margin: 0 auto; text-align: center;">
-<div class="badge badge-pill alert-{{$tutorial['level']}}" style=" margin-bottom: 8px">{{strtoupper($tutorial['level'])}}</div>
+<div class="text-center mb-2 pb-2 border-bottom">
+	<strong><small>{{$tutorial['piece']}}</small></strong>
+</div>
+<h1 class="text-center mb-2">{{$tutorial['title']}}</h1>
+<div class="text-center">
+	<div class="badge badge-pill alert-{{$tutorial['level']}} mb-2">{{strtoupper($tutorial['level'])}}</div>
 </div>
 {{$tutorial['description']}}
-
-{{-- <a href="{{config('app.stores.ios')}}" class="button button-primary" style="display: block; font-size: .9rem;" target="_blank">Watch video in the app</a> --}}
 @endcomponent
 @endforeach
 
-<div class="divider divider-vertical"></div>
+@include('mail::divider', ['orientation' => 'vertical'])
 
-<h1 style="font-size: 24px;">How can I find these videos in the app?</h1>
-<p><span style="font-size: 20px; margin-right: 4px"><strong>1</strong></span> Open the <strong class="text-blue">app</strong></p>
-<p><span style="font-size: 20px; margin-right: 4px"><strong>2</strong></span> Search for the piece on the <strong class="text-blue">search</strong> tab</p>
-<p><span style="font-size: 20px; margin-right: 4px"><strong>3</strong></span> You'll find them under the <strong class="text-blue">video</strong> tab</p>
-<p><span style="font-size: 20px; margin-right: 4px"><strong>4</strong></span> Enjoy!</p>
+<h1 class="text-lg">How can I find these videos in the app?</h1>
+@include('mail::lists.numbered', ['items' => [
+	'Open the <strong class="text-blue">APP</strong>',
+	'Search for the piece on the <strong class="text-blue">SEARCH</strong> tab',
+	'You\'ll find them under the <strong class="text-blue">VIDEO</strong> tab',
+	'Enjoy!'
+]])
+
+@component('mail::button', ['url' => config('app.stores.ios')])
+Open the APP
+@endcomponent
 
 <div class="divider divider-vertical"></div>
 
 If you have any suggestions or special requests, don't hesitate to send us a note. We'll love to hear from you!
 
-Best,<br>
-Elena from {{ config('app.name') }}
+@include('mail::signature')
 @endcomponent

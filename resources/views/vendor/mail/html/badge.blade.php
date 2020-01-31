@@ -1,0 +1,1 @@
+<div class="badge badge-pill alert-{{$color}}" style="margin-bottom: 6px">{{$text}}</div>

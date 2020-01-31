@@ -1,0 +1,1 @@
+Best, {{$name ?? 'Elena'}} from {{ config('app.name') }}

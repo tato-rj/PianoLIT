@@ -1,21 +1,14 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
-<h1 style="color: #3D4852;
-    font-size: 34px;
-    font-weight: bold;
-    margin-top: -34px;
-    margin-bottom: 16px;
-    text-align: center;
-    "><span class="text-blue">Free</span> pick of the week</h1>
+<h1 class="mail-title"><span class="text-blue">Free</span> pick of the week</h1>
 
-<div style="width: 100%; background: url({{$piece->getBackground()}}); background-position: center; background-size: cover; position: relative;" class="mb-4">
-	<div style="padding-left: 16px; padding-right: 16px; padding-bottom: 16px; padding-top: 80px;">
-		<h1 style="color: white; margin: 0; font-size: 24px">{{$piece->medium_name}}</h1>
-		<p style="color: white; margin-bottom: 4px">by {{$piece->composer->name}}</p>
-		<p style="color:white; font-size: 12px; margin: 0">
-			<span style="width: 9px; height: 9px; display: inline-block; border-radius: 50%" class="bg-{{$piece->level->name}}"></span> {{strtoupper($piece->level->name)}}
-		</p>
-	</div>
-</div>
+@component('mail::highlights.cover', ['background' => $piece->getBackground()])
+<h1 class="text-white m-0 text-lg">{{$piece->medium_name}}</h1>
+<p class="text-white mb-1">by {{$piece->composer->name}}</p>
+<p class="text-white m-0 text-sm">
+	<span class="dot bg-{{$piece->level->name}}"></span> {{strtoupper($piece->level->name)}}
+</p>
+@endcomponent
+
 <h1><strong>About this piece</strong></h1>
 {{$piece->description}}
 
@@ -23,24 +16,20 @@
 Check this week's FREE pick
 @endcomponent
 
-<div style="width: 330px; margin: 0 auto; margin-bottom: 42px">
-	<p style="margin-bottom: 6px">{{hex('check')}} <strong>Get the score</strong></p>
-	<p style="margin-bottom: 6px">{{hex('check')}} <strong>Watch a video performance</strong></p>
-	<p style="margin-bottom: 6px">{{hex('check')}} <strong>Watch {{count($piece->videosArrayRaw) - 1}} video tutorials</strong></p>
-	<p style="margin-bottom: 6px">{{hex('check')}} <strong>Speed up/slow down the audio</strong></p>
-	<p style="margin-bottom: 6px">{{hex('check')}} <strong>Discover similar pieces</strong></p>
-	<p style="margin-bottom: 6px">{{hex('check')}} <strong>Find top performances on Apple Music</strong></p>
-</div>
+@include('mail::lists.check', ['items' => [
+	'Get the score', 
+	'Watch a video performance',
+	'Watch ' . (count($piece->videosArrayRaw) - 1) . ' video tutorials',
+	'Speed up/slow down the audio',
+	'Discover similar pieces',
+	'Find top performances on Apple Music'
+]])
 
-<div class="divider divider-vertical"></div>
+@include('mail::divider', ['orientation' => 'vertical'])
 
-@foreach($piece->videos_array as $tutorial)
-<div class="badge badge-pill alert-grey" style="margin-bottom: 6px">{{strtoupper($tutorial['title'])}}</div>
+@include('mail::lists.badge', ['tutorials' => $piece->videos_array])
 
-<p style="margin-left: 4px">{{$tutorial['description']}}</p>
-@endforeach
-
-<div class="divider divider-vertical"></div>
+@include('mail::divider', ['orientation' => 'vertical'])
 
 @component('mail::panel')
 <h1>Did you know?</h1>
@@ -48,8 +37,8 @@ Check this week's FREE pick
 @endcomponent
 
 @component('mail::promotion')
-<h1 style="text-align: center"><strong>Learn more about the composer</strong></h1>
-<img src="{{storage($piece->composer->cover_path)}}" style="width: 160px; border-radius: 50%; display: block; margin: 0 auto" class="mb-4">
+<h1 class="text-center"><strong>Learn more about the composer</strong></h1>
+@include('mail::avatar', ['image' => storage($piece->composer->cover_path)])
 {{$piece->composer->biography}}
 @endcomponent
 
@@ -57,6 +46,5 @@ Check this week's FREE pick
 Check this week's FREE pick
 @endcomponent
 
-Best,<br>
-Elena from {{ config('app.name') }}
+@include('mail::signature')
 @endcomponent

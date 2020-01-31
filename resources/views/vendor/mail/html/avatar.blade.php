@@ -1,0 +1,1 @@
+<img src="{{ $image }}" style="width: 160px; border-radius: 50%; display: block; margin: 0 auto" class="mb-4">
