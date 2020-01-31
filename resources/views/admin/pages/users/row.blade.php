@@ -15,16 +15,8 @@
     <small class="ml-1">{{$item->origin == 'ios'? 'iOS' : ucfirst($item->origin)}}</small>
   </td>
   
-  <td class="text-truncate">
-    @if($item->membership()->exists())
-      @if($item->membership->expired())
-      <span class="text-muted"><i><small>validated {{$item->membership->validated_at->diffForHumans()}}</small></i></span>
-      @else
-      <div><i class="fas fa-credit-card"></i></div>
-      @endif
-    @else
-      Guest
-    @endif
+  <td class="text-truncate" title="{{$item->membership()->exists() ? 'Membership validated ' . $item->membership->validated_at->diffForHumans() : 'Never subscribed with Apple'}}">
+    {!! $item->membership_status == 'Member' ? '<div><i class="fas fa-credit-card"></i></div>' : $item->membership_status !!}
   </td>
   @php($lastActive = $item->lastActive())
   <td class="{{! is_null($lastActive) && $lastActive->isAfter(now()->subHours(12)) ? 'text-success' : null}}">

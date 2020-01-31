@@ -96,4 +96,18 @@ trait HasMembership
 
         return $users;
     }
+
+    public function getMembershipStatusAttribute()
+    {
+        if ($this->super_user)
+            return 'Super user';
+
+        if (! $this->membership()->exists())
+            return 'Guest';
+
+        if ($this->membership->expired())
+            return 'Membership expired';
+
+        return 'Member';
+    }
 }
