@@ -16,6 +16,8 @@ class MembershipsController extends Controller
      */
     public function store(Request $request, VerifySubscriptionForm $form)
     {
+        \App\MembershipLog::create(['data' => json_encode($request->all())]);
+
         $form->user->subscribe($request);
 
         // CREATE ANE EVENT AND ALERT ADMINS ABOUT THIS!
