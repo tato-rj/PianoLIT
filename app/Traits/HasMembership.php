@@ -61,7 +61,7 @@ trait HasMembership
 
         $response = app()->environment() != 'production' 
             ? (new FakeMembership)->generate() 
-            : $client->post('https://sandbox.itunes.apple.com/verifyReceipt', ['body' => $payload])->getBody();
+            : $client->post('https://buy.itunes.apple.com/verifyReceipt', ['body' => $payload])->getBody();
 
         return $response;
     }
