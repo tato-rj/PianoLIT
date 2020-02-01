@@ -20,7 +20,7 @@ class MembershipsController extends Controller
 
         $form->user->subscribe($request);
 
-        // CREATE ANE EVENT AND ALERT ADMINS ABOUT THIS!
+        // CREATE ANE EVENT AND ALERT ADMINS ABOUT THIS!!
 
         if (app()->environment() == 'local')
             return redirect()->back()->with('status', "A susbcription was requested to {$form->user->first_name}'s profile.");
