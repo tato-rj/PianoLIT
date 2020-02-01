@@ -10,7 +10,7 @@ class UsersController extends Controller
 {
     public function index()
     {
-        $users = User::exclude([260, 284])->latest()->get();
+        $users = User::latest()->get();
         $logs_total_count = ((new \App\Log\LogFactory)->total());
 
         return view('admin.pages.users.index', compact(['users', 'logs_total_count']));
