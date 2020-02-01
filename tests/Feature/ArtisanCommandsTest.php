@@ -11,34 +11,6 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 class ArtisanCommandsTest extends AppTest
 {
     /** @test */
-    public function birthday_emails_are_sent_if_there_is_a_famous_birthday_email_on_this_day()
-    {
-        \Mail::fake();
-
-        create(Subscription::class)->join(create(EmailList::class, ['name' => 'Birthdays']));
-
-        $composer = create(Composer::class, ['is_famous' => true, 'date_of_birth' => now()->subYear()]);
-
-        $this->artisan('pianolit:timeline-email');
-
-        \Mail::assertQueued(BirthdaysEmail::class);
-    }
-
-    /** @test */
-    public function birthday_emails_create_logs_for_tracking()
-    {
-        $this->assertFalse(EmailLog::exists());
-
-        create(Subscription::class)->join(create(EmailList::class, ['name' => 'Birthdays']));
-
-        $composer = create(Composer::class, ['is_famous' => true, 'date_of_birth' => now()->subYear()]);
-
-        $this->artisan('pianolit:timeline-email');
-         
-        $this->assertTrue(EmailLog::exists());
-    }
-
-    /** @test */
     public function admins_receive_weekly_report_emails()
     {
         \Mail::fake();
