@@ -58,7 +58,7 @@ trait HasMembership
             'password' => $password,
             'exclude-old-transactions' => false
         ]);
-dd('test');
+
         $response = app()->environment() != 'production' 
             ? (new FakeMembership)->generate() 
             : $client->post('https://buy.itunes.apple.com/verifyReceipt', ['body' => $payload])->getBody();
