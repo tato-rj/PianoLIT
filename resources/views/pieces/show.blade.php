@@ -77,18 +77,10 @@
 
 	<div class="col-lg-8 col-md-9 col-sm-10 col-12 mx-auto border-top pt-5" id="screens-composition">
 		<div class="text-center">
-			<p class="mb-2 text-muted">Looking for more resources?</p>
-			<h4>We're working on an iOS app for that!</h4>
+			<h4 class="mb-4">Looking for more resources?</h4>
+			@include('components.buttons.download')
 		</div>
 		@include('components.app.screens')
-
-		<div class="text-center">
-			<div style="max-width: 400px" class="mx-auto">
-				<h4 class="mb-3">Coming out soon</h4>
-				<p>Subscribe to our newletter and be the first one to know when the app is out!</p>
-				@include('components.form.subscription')
-			</div>
-		</div>
 	</div>
 </div>
 
