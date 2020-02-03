@@ -48,6 +48,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapUserRoutes();
 
         $this->mapWebhooksRoutes();
+
+        $this->mapRedirectsRoutes();
     }
 
     /**
@@ -154,5 +156,18 @@ class RouteServiceProvider extends ServiceProvider
         Route::prefix('webhooks')
              ->namespace($this->namespace)
              ->group(base_path('routes/webhooks.php'));
+    }
+
+    /**
+     * Define the "user" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapRedirectsRoutes()
+    {
+        Route::namespace($this->namespace)
+             ->group(base_path('routes/redirects.php'));
     }
 }

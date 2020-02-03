@@ -45,10 +45,6 @@ Route::prefix('campaigns')->group(function() {
 
 });
 
-Route::get('youtube', function() {
-	return redirect(config('services.channels.youtube'));
-})->name('youtube');
-
 Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/load-pieces', 'HomeController@loadPieces')->name('load-pieces');
