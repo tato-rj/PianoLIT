@@ -62,7 +62,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        if ($request->origin == 'web' && $request->middle_name)
+        if ($request->origin == 'web' && $request->middle_name && carbon($request->started_at)->lte(now()->subSeconds(3)))
             abort(401, 'You can\'t do this!');
 
         $validator = $this->validator($request->all());
