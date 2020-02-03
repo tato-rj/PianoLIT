@@ -18,7 +18,7 @@
     <input required type="password" name="password_confirmation" placeholder="Confirm your password" class="form-control w-100 input-light" value="{{ old('password') }}">
     @include('components/form/error', ['field' => 'password'])
 </div>
-<input type="hidden" name="middle_name">
+
 <input type="hidden" name="started_at" value="{{now()}}">
 <input type="hidden" name="origin" value="web">
 {{-- <input type="hidden" name="referral" value="{{request('referral')}}"> --}}
