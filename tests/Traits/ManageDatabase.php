@@ -79,7 +79,7 @@ trait ManageDatabase
         return $updatedPiece;
     }
 
-    protected function register($user = null)
+    protected function register($user = null, $bot = null)
     {
         return $this->post(route('api.users.store'), [
             'first_name' => $user['first_name'] ?? 'John',
@@ -92,8 +92,9 @@ trait ManageDatabase
             'experience' => $user['experience'] ?? 'Little',
             'preferred_piece_id' => $user['preferred_piece_id'] ?? create('App\Piece')->id,
             'occupation' => $user['occupation'] ?? 'Teacher',
-            'origin' => 'test',
-            'middle_name' => null
+            'origin' => 'web',
+            'middle_name' => $bot,
+            'started_at' => ! $bot ? now()->subSeconds(5) : now()
         ]);     
     }
 }

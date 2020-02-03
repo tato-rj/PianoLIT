@@ -51,20 +51,30 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
+        $is_valid =  Validator::make($data, [
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|string|min:8|confirmed',
             // 'origin' => 'required'
         ]);
+
+        $this->checkForBot($data);
+
+        return $is_valid;
+    }
+
+    public function checkForBot(array $data)
+    {
+        if ($data['origin'] == 'web') {
+            if ($data['middle_name'] || carbon($data['started_at'])->gte(now()->subSeconds(5))) {
+                throw new \Illuminate\Auth\Access\AuthorizationException;
+            }
+        }
     }
 
     public function register(Request $request)
     {
-        if ($request->origin == 'web' && carbon($request->started_at)->gte(now()->subSeconds(3)))
-            abort(401, 'You can\'t do this!');
-
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {

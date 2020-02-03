@@ -28,6 +28,16 @@ class UserTest extends AppTest
     }
 
     /** @test */
+    public function a_bot_cannot_register()
+    {
+        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
+
+        $this->register(null, 'bot');
+        
+        $this->assertDatabaseMissing('users', ['first_name' => 'John']); 
+    }
+
+    /** @test */
     public function users_are_subscribed_to_all_lists_after_registering()
     {
         $this->register();

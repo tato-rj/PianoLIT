@@ -25,6 +25,20 @@ class SubscriptionTest extends AppTest
     }
 
     /** @test */
+    public function a_bot_is_denied_access_to_the_subscription()
+    {
+        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
+
+        $email = make(Subscription::class)->email;
+
+        $this->subscribe($email, 'bot', false);
+
+        $this->assertDatabaseMissing('subscriptions', ['email' => $email]);
+
+        $this->assertFalse(EmailList::newsletter()->subscribers()->byEmail($email)->exists());
+    }
+
+    /** @test */
     public function guests_receive_an_email_upon_subscription()
     {
         \Mail::fake();
