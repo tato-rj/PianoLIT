@@ -30,13 +30,12 @@
         <div class="modal-body text-center px-5">
           <h5 class="mb-4 border-bottom border-blue d-inline-block px-3 pb-2 border-1x">Sign up for PianoLIT</h5>
           <p>Before accessing this resource, just sign in or create an account!</p>
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" id="register-form">
                 @csrf
                 @include('auth.fields.register')
 
                 <div class="form-group text-center">
-                    <button type="submit" class="btn btn-primary shadow btn-block mb-2">Register</button>
-                    <div class="mb-4"><small>By continuing you indicate that you've read and agree to our <a href="{{route('terms')}}" target="_blank" class="link-blue">Terms of Service</a> and <a href="{{route('privacy')}}" target="_blank" class="link-blue">Privacy Policy</a>.</small></div>
+                    @include('auth.fields.register-button')
                 </div>
             </form>
         </div>

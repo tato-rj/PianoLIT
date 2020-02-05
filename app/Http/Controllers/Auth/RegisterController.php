@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
+use App\Rules\Recaptcha;
 
 class RegisterController extends Controller
 {
@@ -49,33 +50,20 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $data, Recaptcha $recaptcha)
     {
-        $is_valid =  Validator::make($data, [
+        return Validator::make($data, [
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|string|min:8|confirmed',
-            // 'origin' => 'required'
+            'g-recaptcha-response' => ['sometimes', $recaptcha]
         ]);
-
-        $this->checkForBot($data);
-
-        return $is_valid;
     }
 
-    public function checkForBot(array $data)
-    {
-        if ($data['origin'] == 'web') {
-            if ($data['middle_name'] || carbon($data['started_at'])->gte(now()->subSeconds(5))) {
-                throw new \Illuminate\Auth\Access\AuthorizationException;
-            }
-        }
-    }
-
-    public function register(Request $request)
-    {
-        $validator = $this->validator($request->all());
+    public function register(Request $request, Recaptcha $recaptcha)
+    {       
+        $validator = $this->validator($request->all(), $recaptcha);
 
         if ($validator->fails()) {
             if ($request->origin == 'web')
@@ -83,7 +71,7 @@ class RegisterController extends Controller
 
             return response()->json($validator->messages(), 403);
         }
-        
+
         $user = $this->create($request->all());
 
         event(new Registered($user));

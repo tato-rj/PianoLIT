@@ -9,6 +9,7 @@ use App\Quiz\Quiz;
 use App\Quiz\Topic as QuizTopic;
 use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist, Subscription, Timeline, Pianist, EmailList};
 use Tests\Traits\CustomAssertions;
+use App\Rules\Recaptcha;
 
 class AppTest extends TestCase
 {
@@ -17,6 +18,12 @@ class AppTest extends TestCase
 	public function setUp() : void
 	{
 		parent::setUp();
+
+        app()->singleton(Recaptcha::class, function() {
+            $mock = \Mockery::mock(Recaptcha::class);
+            $mock->shouldReceive('passes')->once()->andReturn(true);
+            return $mock;
+        });
 
         $this->redisPrefix = config('database.redis.prefix');
 

@@ -51,6 +51,11 @@ return [
         'twitter' => 'https://twitter.com/LitPiano',
         'pinterest' => 'https://www.pinterest.com/pianolit/',
         'instagram' => 'https://www.instagram.com/pianolit_music/'
+    ],
+
+    'recaptcha' => [
+        'key' => env('RECAPTCHA_KEY'),
+        'secret' => env('RECAPTCHA_SECRET'),
     ]
 
 ];

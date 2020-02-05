@@ -6,6 +6,7 @@ use Tests\AppTest;
 use Tests\Traits\ManageDatabase;
 use App\{User, Subscription, EmailList};
 use App\Notifications\User\AccountDeleted;
+use App\Rules\Recaptcha;
 
 class UserTest extends AppTest
 {
@@ -28,11 +29,11 @@ class UserTest extends AppTest
     }
 
     /** @test */
-    public function a_bot_cannot_register()
+    public function registration_forms_require_a_recaptcha_if_present()
     {
-        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
+        unset(app()[Recaptcha::class]);
 
-        $this->register(null, 'bot');
+        $this->register()->assertSessionHas('error');
         
         $this->assertDatabaseMissing('users', ['first_name' => 'John']); 
     }

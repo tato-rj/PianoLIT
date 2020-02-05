@@ -94,7 +94,8 @@ trait ManageDatabase
             'occupation' => $user['occupation'] ?? 'Teacher',
             'origin' => 'web',
             'middle_name' => $bot,
-            'started_at' => ! $bot ? now()->subSeconds(5) : now()
+            'started_at' => ! $bot ? now()->subSeconds(5) : now(),
+            'g-recaptcha-response' => 'test'
         ]);     
     }
 }
