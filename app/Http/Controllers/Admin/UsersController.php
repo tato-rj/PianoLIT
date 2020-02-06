@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\{Admin, User, Piece, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Log\Loggers\DailyLog;
 
 class UsersController extends Controller
 {
     public function index()
     {
+        $logger = new DailyLog;
         $users = User::latest()->get();
         $logs_total_count = ((new \App\Log\LogFactory)->total());
+        $latest_logs = $logger->latest(6);
 
-        return view('admin.pages.users.index', compact(['users', 'logs_total_count']));
+        return view('admin.pages.users.index', compact(['users', 'logs_total_count', 'latest_logs']));
     }
 
     public function show(User $user)

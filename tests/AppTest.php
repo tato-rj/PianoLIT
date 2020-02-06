@@ -21,7 +21,7 @@ class AppTest extends TestCase
 
         app()->singleton(Recaptcha::class, function() {
             $mock = \Mockery::mock(Recaptcha::class);
-            $mock->shouldReceive('passes')->once()->andReturn(true);
+            $mock->shouldReceive('passes')->andReturn(true);
             return $mock;
         });
 

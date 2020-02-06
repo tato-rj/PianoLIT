@@ -16,6 +16,8 @@ function onSubmit(token) {
  document.getElementById("register-form").submit();
 }
 </script>
+<style type="text/css">
+</style>
 @endpush
 
 @section('content')
@@ -24,7 +26,7 @@ function onSubmit(token) {
 		<div class="row">
 			<div class="col-lg-8 col-md-10 col-10 mx-auto">
 
-				@include('components.return', ['url' => route('resources.infographs.index'), 'to' => 'Infographs page'])
+				@include('components.return', ['url' => route('resources.infographs.index'), 'to' => 'Infographics page'])
 
 				<div class="row">
 					<div class="col-lg-6 col-md-6 col-sm-6 col-12">
@@ -51,8 +53,7 @@ function onSubmit(token) {
 							</div>
 							<div style="line-height: 1.2" class="mb-3">
 								<div><small><strong>Dimensions</strong></small></div>
-								<div><small>This design is in A4 size paper 8.27 x 11.69 inches.</small></div>
-								<div><small>The file format is JPG with 1800 x 2547 resolution.</small></div>
+								<div><small>The file format is JPG with {{$infograph->width}} x {{$infograph->height}} pixels in resolution.</small></div>
 							</div>
 							<div style="line-height: 1.2" class="mb-3">
 								<div><small><strong>PianoLIT License</strong></small></div>
@@ -75,7 +76,8 @@ function onSubmit(token) {
 				@if(! $related->isEmpty())
 				<div class="mt-5">
 					<h5 class="mb-4">More like this</h5>
-					<div class="row">
+					<div class="grid">
+						<div class="grid-sizer"></div>
 						@foreach($related as $infograph)
 						@include('resources.infographs.card')
 						@endforeach
@@ -95,6 +97,21 @@ function onSubmit(token) {
 @push('scripts')
 @include('components.addthis')
 <script>
+function setLayout() {
+	let $grid = $('.grid');
+
+	$grid.masonry({
+		itemSelector: '.grid-item',
+		columnWidth: '.grid-sizer',
+		percentPosition: true,
+	});
+	$grid.css('opacity', 1);
+}
+
+$(document).ready(function() {
+	setLayout();
+});
+
 $('.infograph-type-btn').on('click', function() {
 	let $button = $(this);
 	let type = $button.attr('data-target');

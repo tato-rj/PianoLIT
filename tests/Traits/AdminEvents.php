@@ -58,7 +58,9 @@ trait AdminEvents
             'name' => $infograph->name,
             'description' => $infograph->description,
             'tags' => $infograph->tags,
-            'cover_image' => $infograph->cover_image
+            'cover_image' => $infograph->cover_image,
+            'width' => 100,
+            'height' => 100
         ]);
 
         return Infograph::where('name', $infograph->name)->first();

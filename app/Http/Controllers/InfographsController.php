@@ -67,6 +67,8 @@ class InfographsController extends Controller
             'creator_id' => auth()->guard('admin')->user()->id,
             'name' => $form->name,
             'description' => $form->description,
+            'width' => $form->width,
+            'height' => $form->height,
             'slug' => str_slug($form->name),
             'published_at' => now()
         ]);
@@ -139,7 +141,9 @@ class InfographsController extends Controller
         $infograph->update([
             'slug' => str_slug($form->name),
             'name' => $form->name,
-            'description' => $form->description
+            'description' => $form->description,
+            'width' => $form->width,
+            'height' => $form->height
         ]);
 
         $infograph->topics()->sync($request->topics);

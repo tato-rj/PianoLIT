@@ -13,7 +13,9 @@ $factory->define(Infograph::class, function (Faker $faker) {
         'description' => $faker->sentence,
         'slug' => str_slug($faker->sentence),
         'cover_path' => $faker->url,
-        'score' => 0
+        'score' => 0,
+        'width' => 1000,
+        'height' => 1000
     ];
 });
 

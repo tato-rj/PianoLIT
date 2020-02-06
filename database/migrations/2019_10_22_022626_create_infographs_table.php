@@ -18,6 +18,8 @@ class CreateInfographsTable extends Migration
             $table->string('name');
             $table->string('slug');
             $table->string('description');
+            $table->string('width');
+            $table->string('height');
             $table->string('cover_path')->nullable();
             $table->unsignedInteger('downloads')->default(0);
             $table->integer('score')->default(0);

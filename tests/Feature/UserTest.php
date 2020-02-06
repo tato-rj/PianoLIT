@@ -33,7 +33,7 @@ class UserTest extends AppTest
     {
         unset(app()[Recaptcha::class]);
 
-        $this->register()->assertSessionHas('error');
+        $this->register(null, $bot = true)->assertSessionHas('error');
         
         $this->assertDatabaseMissing('users', ['first_name' => 'John']); 
     }

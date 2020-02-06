@@ -3,6 +3,7 @@
 namespace App\Log;
 
 use Carbon\Carbon;
+use App\Log\Loggers\DailyLog;
 
 class LogFactory
 {
@@ -15,10 +16,13 @@ class LogFactory
 
 	public function push(Logger $logger)
 	{
+		$timestamp = now()->timestamp;
 		$key = $this->prefix . $logger->getKey();
-		$value = [now()->timestamp => $logger->getData()];
+		$value = [$timestamp => $logger->getData()];
 
 		\Redis::hmset($key, $value);
+
+		(new DailyLog)->getDate($timestamp)->increment($key);
 	}
 
 	public function get($userId, $type = null)

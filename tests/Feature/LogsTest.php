@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\AppTest;
+use App\Log\Loggers\DailyLog;
 
 class LogsTest extends AppTest
 {
@@ -84,5 +85,51 @@ class LogsTest extends AppTest
         $this->get(route('api.search', ['user_id' => $this->user->id, 'search' => 'foo bar']));
 
         $this->assertRedisEmpty();
+    }
+
+    /** @test */
+    public function daily_logs_count_can_be_stored_on_redis_retroactively()
+    {
+        $logger = new DailyLog;
+
+        $key = 'user:'.$this->user->id.':app';
+        
+        $this->signIn($this->user);
+
+        $this->assertRedisEmpty();
+
+        $this->get(route('home'));
+
+        $this->get(route('api.discover', ['user_id' => $this->user->id]));
+
+
+        $count = $logger->sum($logger->all());
+
+        $this->artisan('redis:refresh-daily-logs');
+
+        $this->assertRedisHas($key);
+
+        $this->assertEquals($count, $logger->sum($logger->all()));
+    }
+
+    /** @test */
+    public function daily_logs_count_are_automatically_updated()
+    {
+        $logger = new DailyLog;
+
+        $this->signIn($this->user);
+
+        $this->assertRedisEmpty();
+
+        $this->get(route('home'));
+
+        $this->get(route('api.discover', ['user_id' => $this->user->id]));
+
+        $key = 'logs:daily:'.now()->format('Y-m-d');
+
+        $this->assertRedisHas($key . ':web');
+        $this->assertRedisHas($key . ':app');
+
+        $this->assertEquals($logger->sum($logger->all()), 2);
     }
 }

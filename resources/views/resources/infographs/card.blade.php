@@ -1,4 +1,4 @@
-<div class="col-lg-3 col-md-4 col-6 mb-3
+<div class="p-1 grid-item
 	@foreach($infograph->topics as $topic)
 	thumbnail-{{$topic->slug}}
 	@endforeach

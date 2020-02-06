@@ -31,13 +31,13 @@
           Resources
         </a>
         <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
+          <label style="font-size: .9em" class="m-0 text-grey"><small>TO LEARN</small></label>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.infographs.index')}}">Infographics</a>
+          <a class="nav-link p-0 ml-1" href="{{route('resources.timeline')}}">Music Timeline</a>
+          <div class="dropdown-divider"></div>
           <label style="font-size: .9em" class="m-0 text-grey"><small>TO HEAR</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.pianists.index')}}">Great Pianists</a>
           <a class="nav-link p-0 ml-1" href="{{route('resources.podcasts')}}">Top Podcasts</a>
-          <div class="dropdown-divider"></div>
-          <label style="font-size: .9em" class="m-0 text-grey"><small>TO LEARN</small></label>
-          <a class="nav-link p-0 ml-1" href="{{route('resources.timeline')}}">Music Timeline</a>
-          <a class="nav-link p-0 ml-1" href="{{route('resources.infographs.index')}}">Infographs</a>
         </div>
       </li>
       <li class="nav-item dropdown mx-2">

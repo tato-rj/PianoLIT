@@ -39,6 +39,18 @@
         </div>
       </div>
     </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+          <div class="border py-4 px-3">
+            <div class="ml-2 mb-4">
+              <h4 class="mb-1"><strong>Activity logs</strong></h4>
+              <p class="text-muted">Activity over the last 7 days</p>
+            </div>
+            <canvas id="logs-chart" class="w-100" height="300" data-records="{{json_encode($latest_logs)}}"></canvas>
+          </div>
+        </div>
+    </div>
 
     @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'Name', 'Visits', 'Origin', 'Status', 'Last Active', 'Super User', '']])
 
@@ -72,5 +84,63 @@ $('.check-user').on('change', function() {
     $container.hide();
   }
 });
+</script>
+
+<script type="text/javascript">
+let graph = document.getElementById("logs-chart").getContext('2d');
+let graphData = JSON.parse($('#logs-chart').attr('data-records'));
+let labels = [];
+let app = [];
+let web = [];
+
+for (var i=0; i < graphData.length; i++) {
+  labels.push(graphData[i].day);
+  app.push(graphData[i].app + 4);
+  web.push(graphData[i].web + 4);
+}
+
+let piecesGraph = new Chart(graph, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'App logs',
+          backgroundColor: '#5eb58a',
+          borderColor: '#5eb58a',
+          data: app,
+          fill: false,
+        },
+        {
+          label: 'Web logs',
+          backgroundColor: '#f5c86d',
+          borderColor: '#f5c86d',
+          data: web,
+          fill: false,
+        }
+      ]
+    },
+
+    options: {
+      scales: {
+          yAxes: [{
+              ticks: {
+                  beginAtZero: true,
+                  stepSize: stepSize()
+              }
+          }],
+          xAxes: [{
+              // ticks: {
+              //   autoSkip: false
+              // }
+          }]
+      }
+    }
+});
+
+function stepSize()
+{
+  return Math.ceil(Math.max(...[Math.max(...app), Math.max(...web)])/5);
+}
 </script>
 @endsection

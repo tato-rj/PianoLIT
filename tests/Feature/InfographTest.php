@@ -62,7 +62,9 @@ class InfographTest extends AppTest
         $this->patch(route('admin.infographs.update', $infograph->slug), [
             'name' => $update->name,
             'description' => $update->description,
-            'topics' => $update->topics
+            'topics' => $update->topics,
+            'width' => $update->width,
+            'height' => $update->height
         ]);
 
         $this->assertNotEquals($name, $infograph->fresh()->name);       

@@ -81,7 +81,7 @@ trait ManageDatabase
 
     protected function register($user = null, $bot = null)
     {
-        return $this->post(route('api.users.store'), [
+        $request = [
             'first_name' => $user['first_name'] ?? 'John',
             'last_name' => $user['last_name'] ?? 'Doe',
             'email' => $user['email'] ?? 'doe@email.com',
@@ -95,7 +95,11 @@ trait ManageDatabase
             'origin' => 'web',
             'middle_name' => $bot,
             'started_at' => ! $bot ? now()->subSeconds(5) : now(),
-            'g-recaptcha-response' => 'test'
-        ]);     
+        ];
+
+        if ($bot)
+            $request = $request + ['g-recaptcha-response' => 'test'];
+
+        return $this->post(route('api.users.store'), $request);     
     }
 }

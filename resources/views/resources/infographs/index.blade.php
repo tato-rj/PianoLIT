@@ -1,10 +1,10 @@
 @extends('layouts.app', [
-	'title' => 'Infographs | ' . config('app.name'),
+	'title' => 'Infographics | ' . config('app.name'),
 	'noclicks' => true,
 	'shareable' => [
-		'keywords' => 'infograph,learn music,music theory,music sheet,piano sheet,treble sheet,bass sheet',
-		'title' => 'Infographs',
-		'description' => 'Cool infographs about all music things related',
+		'keywords' => 'infographic,infograph,learn music,music theory,music sheet,piano sheet,treble sheet,bass sheet',
+		'title' => 'Infographics',
+		'description' => 'Cool infographics about all music things related',
 		'thumbnail' => asset('images/misc/thumbnails/infographs.jpg'),
 		'created_at' => carbon('28-08-2019'),
 		'updated_at' => carbon('28-08-2019')
@@ -26,10 +26,10 @@
 
 @section('content')
 @include('components.title', [
-	'title' => 'Infographs', 
-	'subtitle' => 'Cool infographs about all music things related'])
+	'title' => 'Infographics', 
+	'subtitle' => 'Cool infographics about all music things related'])
 
-<div class="container mb-5">
+<div class="container mb-5" style="overflow-y: hidden">
 	<div class="row mb-3">
 		<div class="col-lg-6 col-md-7 col-10 mx-auto">
 			<div class="search-bar position-relative">
@@ -45,7 +45,8 @@
 			<button data-target=".thumbnail-{{$topic->slug}}" class="infograph-type-btn m-1 btn border-0 rounded-pill btn-teal-outline">{{$topic->name}}</button>
 		@endforeach
 	</div>
-	<div class="row m-0">
+	<div class="grid m-0">
+		<div class="grid-sizer"></div>
 		@foreach($infographs as $infograph)
 		@include('resources.infographs.card')
 		@endforeach
@@ -58,6 +59,22 @@
 
 @push('scripts')
 @include('components.addthis')
+<script type="text/javascript">
+function setLayout() {
+	let $grid = $('.grid');
+
+	$grid.masonry({
+		itemSelector: '.grid-item',
+		columnWidth: '.grid-sizer',
+		percentPosition: true,
+	});
+	$grid.css('opacity', 1);
+}
+
+$(document).ready(function() {
+	setLayout();
+});
+</script>
 <script>
 $('.thumbnail').hover(function() {
     $(this).siblings().addClass('opacity-6');
@@ -110,6 +127,8 @@ $('.infograph-type-btn').on('click', function() {
 	$('.thumbnail').hide();
 	$(type).show();
 
+	setLayout();
+
 	$('input#search-infograph').val('');
 });
 
@@ -154,6 +173,8 @@ $('input#search-infograph').on('keyup', function() {
 		$('.infograph-card').show();
 		$('.infograph-type-btn').first().removeClass('btn-teal-outline').addClass('btn-teal');
 	}
+
+	setLayout();
 });
 
 $("#subscribe-overlay").showAfter(5);

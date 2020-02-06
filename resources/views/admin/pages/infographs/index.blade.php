@@ -34,6 +34,19 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
+$('input#customFile').change(function() {
+    var fr = new FileReader;
+    fr.onload = function() {
+        var img = new Image;
+        img.onload = function() {
+          $('input[name="width"]').val(img.width);
+          $('input[name="height"]').val(img.height);
+        };
+        img.src = fr.result;
+    };
+    fr.readAsDataURL(this.files[0]);
+});
+
 $('#item-preview').on('show.bs.modal', function (e) {
   let image = $(e.relatedTarget).attr('data-image');
   let thumbnail = $(e.relatedTarget).attr('data-thumbnail');

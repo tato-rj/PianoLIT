@@ -59,6 +59,9 @@
 				<div class="form-group text-right">
 					<button type="submit" class="btn btn-sm btn-default">Update infograph</button>
 				</div>
+
+				<input type="hidden" name="width" value="{{$infograph->width}}">
+				<input type="hidden" name="height" value="{{$infograph->height}}">
 			</form>
 		</div>
 	</div>
@@ -69,6 +72,17 @@
 
 @section('scripts')
 <script type="text/javascript">
-
+$('input#customFile').change(function() {
+    var fr = new FileReader;
+    fr.onload = function() {
+        var img = new Image;
+        img.onload = function() {
+          $('input[name="width"]').val(img.width);
+          $('input[name="height"]').val(img.height);
+        };
+        img.src = fr.result;
+    };
+    fr.readAsDataURL(this.files[0]);
+});
 </script>
 @endsection

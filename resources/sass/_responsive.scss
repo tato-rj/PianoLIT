@@ -126,9 +126,13 @@
 			height: 18px !important;
 		}
 	}
+
+	.grid-sizer, .grid-item { width: 50% !important; }
 }
 
 @include media-breakpoint-down(md) {
+	.grid-sizer, .grid-item { width: 25%; }
+
 	.inline-on-collapse {
 		display: inline-block !important;
 	}

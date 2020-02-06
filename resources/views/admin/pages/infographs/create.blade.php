@@ -34,4 +34,7 @@
 	<div class="form-group text-right">
 		<button type="submit" class="btn btn-sm btn-default">Create infograph</button>
 	</div>
+
+	<input type="hidden" name="width">
+	<input type="hidden" name="height">
 </form>
