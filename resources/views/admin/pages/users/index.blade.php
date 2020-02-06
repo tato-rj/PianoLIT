@@ -95,8 +95,8 @@ let web = [];
 
 for (var i=0; i < graphData.length; i++) {
   labels.push(graphData[i].day);
-  app.push(graphData[i].app + 4);
-  web.push(graphData[i].web + 4);
+  app.push(graphData[i].app);
+  web.push(graphData[i].web);
 }
 
 let piecesGraph = new Chart(graph, {
