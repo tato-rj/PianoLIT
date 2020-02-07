@@ -41,7 +41,7 @@ class InfographsController extends Controller
     public function show(Infograph $infograph)
     {
         $related = $infograph->related();
-return $related;
+
         return view('resources.infographs.show', compact(['infograph', 'related']));
     }
 
