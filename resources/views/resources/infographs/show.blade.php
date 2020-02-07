@@ -96,34 +96,6 @@ function onSubmit(token) {
 @push('scripts')
 @include('components.addthis')
 <script>
-function setLayout() {
-	let $grid = $('.grid');
-
-	$grid.masonry({
-		itemSelector: '.grid-item',
-		columnWidth: '.grid-sizer',
-		percentPosition: true,
-	});
-	$grid.css('opacity', 1);
-}
-
-$(document).ready(function() {
-	setLayout();
-});
-
-$('.infograph-type-btn').on('click', function() {
-	let $button = $(this);
-	let type = $button.attr('data-target');
-
-	$button.removeClass('btn-teal-outline').addClass('btn-teal');
-	$button.siblings().addClass('btn-teal-outline').removeClass('btn-teal');
-
-	$('.thumbnail').hide();
-	$(type).show();
-
-	$('input#search-infograph').val('');
-});
-
 $('.review').click(function() {vote($(this))});
 
 function vote($hand) {
