@@ -6,6 +6,11 @@ use App\Log\LogFactory;
 
 trait Loggable
 {
+	public function redisKey(string $type)
+	{
+		return config('database.redis.prefix') . 'user:' . $this->id . ':' . $type;	
+	}
+
 	public function log($type = null)
 	{
 		return (new LogFactory)->get($this->id, $type);

@@ -88,6 +88,24 @@ class LogsTest extends AppTest
     }
 
     /** @test */
+    public function individual_logs_can_be_removed()
+    {        
+        $this->signIn($this->user);
+
+        $this->assertRedisEmpty();
+
+        $this->get(route('home'));
+
+        $key = 'user:'.auth()->user()->id.':web';
+
+        $this->assertRedisHas($key);
+
+        $this->artisan('redis:delete ' . $this->user->id);
+
+        $this->assertRedisMissing($key);
+    }
+
+    /** @test */
     public function daily_logs_count_can_be_stored_on_redis_retroactively()
     {
         $logger = new DailyLog;
