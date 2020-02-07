@@ -145,9 +145,11 @@ function vote($hand) {
 $('input#search-infograph').on('keyup', function() {
 	let input = searchable($(this).val());
 	let $container = $('#infographics-container');
+	let searching = false;
 
-	if (input.length > 2) {
+	if (input.length > 2 && ! searching) {
 		setTimeout(function() {
+			searching = true;
 			console.log('Find infographs with: '+input);
 			$container.addClass('opacity-4');
 
@@ -163,6 +165,7 @@ $('input#search-infograph').on('keyup', function() {
 			})
 			.always(function() {
 				$container.removeClass('opacity-4');
+				searching = false;
 			});			
 		}, 200);
 	}
