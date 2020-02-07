@@ -39,7 +39,7 @@
 		</div>
 	</div>
 
-	<div class="d-flex flex-wrap flex-center mb-4">
+	<div class="d-flex flex-wrap flex-center mb-4" id="infographs-types">
 		<a href="{{route('resources.infographs.index')}}" class="m-1 border-0 rounded-pill btn btn-teal">View all</a>
 		@foreach($topics as $topic)
 			<button data-topic="{{$topic->slug}}" class="infograph-type-btn m-1 btn border-0 rounded-pill btn-teal-outline">{{$topic->name}}</button>
@@ -114,7 +114,7 @@ $('.infograph-type-btn').on('click', function() {
 		$('#pagination-links').hide();
 	})
 	.fail(function(response, status, error) {
-		//
+		console.log(response);
 	})
 	.always(function() {
 		$container.removeClass('opacity-4');
@@ -143,29 +143,29 @@ function vote($hand) {
 }
 
 $('input#search-infograph').on('keyup', function() {
-	let val = searchable($(this).val());
+	let input = searchable($(this).val());
+	let $container = $('#infographics-container');
 
-	if (val.length > 2) {
-		console.log('Find infographs with: '+val);
-		$('.infograph-card').each(function() {
-			let $element = $(this);
-			let name = searchable($element.attr('data-name'));
+	if (input.length > 2) {
+		setTimeout(function() {
+			console.log('Find infographs with: '+input);
+			$container.addClass('opacity-4');
 
-			if (name.includes(val)) {
-				$element.show();
-			} else {
-				$element.hide();
-			}
-
-			$('.infograph-type-btn').addClass('btn-teal-outline').removeClass('btn-teal');
-		});
-	} else {
-		console.log('Show all');
-		$('.infograph-card').show();
-		$('.infograph-type-btn').first().removeClass('btn-teal-outline').addClass('btn-teal');
+			$('#infographs-types').children().addClass('btn-teal-outline').removeClass('btn-teal');
+			
+			$.get("{{route('resources.infographs.search')}}", {search: input})
+			.done(function(html) {
+				$container.html(html);
+				$('#pagination-links').hide();
+			})
+			.fail(function(response, status, error) {
+				console.log(response);
+			})
+			.always(function() {
+				$container.removeClass('opacity-4');
+			});			
+		}, 200);
 	}
-
-	setLayout();
 });
 
 $("#subscribe-overlay").showAfter(5);

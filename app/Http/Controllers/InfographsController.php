@@ -38,6 +38,13 @@ class InfographsController extends Controller
         return view('resources.infographs.load', compact('infographs'))->render();
     }
 
+    public function search(Request $request)
+    {
+        $infographs = Infograph::search(['name', 'description'], $request->search)->get();
+
+        return view('resources.infographs.load', compact('infographs'))->render();
+    }
+
     public function topics()
     {
         $topics = Topic::ordered()->get();

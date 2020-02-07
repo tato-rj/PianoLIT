@@ -76,4 +76,11 @@ class Infograph extends ShareableContent implements Merchandise
             'action' => view('admin.pages.infographs.actions')
         ])->make();
     }
+
+    // public function scopeSearch($query, $input)
+    // {
+    //     return $query->where('name', 'LIKE', "%$input%")
+    //                  ->orWhere('descrpition', 'LIKE', "%$input%")
+    //                  ->latest();
+    // }
 }
