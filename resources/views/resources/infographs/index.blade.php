@@ -71,7 +71,7 @@ function setLayout() {
 	$grid.css('opacity', 1);
 }
 
-$(document).ready(function() {
+$(window).on('load', function() {
 	setLayout();
 });
 </script>
