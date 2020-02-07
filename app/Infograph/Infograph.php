@@ -38,7 +38,7 @@ class Infograph extends ShareableContent implements Merchandise
             $related->push($topic->infographs()->where('id', '!=', $this->id)->published()->get());
         }
 
-        return $related->flatten()->unique()->shuffle()->take(8);
+        return $related->flatten()->unique('id')->shuffle()->take(8);
     }
 
     public function scopeGifts($query)

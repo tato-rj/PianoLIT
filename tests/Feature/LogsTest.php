@@ -93,7 +93,7 @@ class LogsTest extends AppTest
         $logger = new DailyLog;
 
         $key = 'user:'.$this->user->id.':app';
-        
+
         $this->signIn($this->user);
 
         $this->assertRedisEmpty();
@@ -101,7 +101,6 @@ class LogsTest extends AppTest
         $this->get(route('home'));
 
         $this->get(route('api.discover', ['user_id' => $this->user->id]));
-
 
         $count = $logger->sum($logger->all());
 
@@ -125,10 +124,13 @@ class LogsTest extends AppTest
 
         $this->get(route('api.discover', ['user_id' => $this->user->id]));
 
-        $key = 'logs:daily:'.now()->format('Y-m-d');
+        $dailykey = 'logs:daily:'.now()->format('Y-m-d');
 
-        $this->assertRedisHas($key . ':web');
-        $this->assertRedisHas($key . ':app');
+        $userkey = 'user:'.auth()->user()->id.':web';
+
+        $this->assertRedisHas($userkey);
+        $this->assertRedisHas($dailykey . ':web');
+        $this->assertRedisHas($dailykey . ':app');
 
         $this->assertEquals($logger->sum($logger->all()), 2);
     }
