@@ -11,7 +11,7 @@ class ResourcesController extends Controller
 {
     public function infographs()
     {
-        $infographs = Infograph::published()->latest()->paginate(8);
+        $infographs = Infograph::published()->latest()->paginate(12);
         $topics = InfographTopic::has('infographs', '>', 0)->ordered()->get();
 
 		return view('resources.infographs.index', compact(['infographs', 'topics']));
