@@ -33,7 +33,7 @@ class InfographsController extends Controller
 
     public function load(Request $request)
     {
-        $infographs = Topic::bySlug($request->topic)->infographs;
+        $infographs = Topic::bySlug($request->topic)->infographs()->latest()->get();
 
         return view('resources.infographs.load', compact('infographs'))->render();
     }
