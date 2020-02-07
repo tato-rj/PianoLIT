@@ -76,8 +76,7 @@ function onSubmit(token) {
 				@if(! $related->isEmpty())
 				<div class="mt-5">
 					<h5 class="mb-4">More like this</h5>
-					<div class="grid">
-						<div class="grid-sizer"></div>
+					<div class="card-columns">
 						@foreach($related as $infograph)
 						@include('resources.infographs.card')
 						@endforeach

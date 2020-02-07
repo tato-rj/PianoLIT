@@ -99,6 +99,8 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 		Route::get('', 'ResourcesController@infographs')->name('index');
 
+		Route::get('load', 'InfographsController@load')->name('load');
+
 		Route::get('{infograph}', 'InfographsController@show')->name('show');
 
 	});

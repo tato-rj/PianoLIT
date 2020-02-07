@@ -40,17 +40,17 @@
 	</div>
 
 	<div class="d-flex flex-wrap flex-center mb-4">
-		<button data-target=".thumbnail" class="infograph-type-btn m-1 border-0 rounded-pill btn btn-teal">View all</button>
+		<a href="{{route('resources.infographs.index')}}" class="m-1 border-0 rounded-pill btn btn-teal">View all</a>
 		@foreach($topics as $topic)
-			<button data-target=".thumbnail-{{$topic->slug}}" class="infograph-type-btn m-1 btn border-0 rounded-pill btn-teal-outline">{{$topic->name}}</button>
+			<button data-topic="{{$topic->slug}}" class="infograph-type-btn m-1 btn border-0 rounded-pill btn-teal-outline">{{$topic->name}}</button>
 		@endforeach
 	</div>
-	<div class="grid m-0">
-		<div class="grid-sizer"></div>
-		@foreach($infographs as $infograph)
-		@include('resources.infographs.card')
-		@endforeach
+
+	<div id="infographics-container" class="card-columns mb-4">
+		@include('resources.infographs.load')
 	</div>
+
+  	@pagination(['collection' => $infographs])
 </div>
 
 
@@ -59,55 +59,33 @@
 
 @push('scripts')
 @include('components.addthis')
-<script type="text/javascript">
-function setLayout() {
-	let $grid = $('.grid');
-
-	$grid.masonry({
-		itemSelector: '.grid-item',
-		columnWidth: '.grid-sizer',
-		percentPosition: true,
-	});
-	$grid.css('opacity', 1);
-}
-
-$(window).on('load', function() {
-	setLayout();
-});
-</script>
 <script>
-$('.thumbnail').hover(function() {
-    $(this).siblings().addClass('opacity-6');
-}, function() {
-    $(this).siblings().removeClass('opacity-6');
-});
+// $('#infograph-modal').on('show.bs.modal', function (e) {
+// 	let $modal = $(e.target);
+// 	let $infograph = $(e.relatedTarget);
+// 	let $topicsContainer = $modal.find('.topics');
+// 	let downloads = $infograph.attr('data-downloads');
+// 	let topics = JSON.parse($infograph.attr('data-topics'));
 
-$('#infograph-modal').on('show.bs.modal', function (e) {
-	let $modal = $(e.target);
-	let $infograph = $(e.relatedTarget);
-	let $topicsContainer = $modal.find('.topics');
-	let downloads = $infograph.attr('data-downloads');
-	let topics = JSON.parse($infograph.attr('data-topics'));
+// 	$modal.find('.review').attr('data-url', $infograph.attr('data-review-url'));
 
-	$modal.find('.review').attr('data-url', $infograph.attr('data-review-url'));
+// 	$modal.find('.preview').attr('src', $infograph.attr('data-image'));
+// 	$modal.find('.name').text($infograph.attr('data-name'));
+// 	$modal.find('.description').text($infograph.attr('data-description'));
 
-	$modal.find('.preview').attr('src', $infograph.attr('data-image'));
-	$modal.find('.name').text($infograph.attr('data-name'));
-	$modal.find('.description').text($infograph.attr('data-description'));
+// 	$topicsContainer.html('');
 
-	$topicsContainer.html('');
+// 	topics.forEach(function(topic) {
+// 		$topicsContainer.append('<span class="badge type badge-light mb-2 mr-2">'+topic+'</span>');
+// 	});
 
-	topics.forEach(function(topic) {
-		$topicsContainer.append('<span class="badge type badge-light mb-2 mr-2">'+topic+'</span>');
-	});
-
-	if (downloads > 10) {
-		$('#downloads-count span').text(downloads);
-		$('#downloads-count').show();
-	} else {
-		$('#downloads-count').hide();		
-	}
-});
+// 	if (downloads > 10) {
+// 		$('#downloads-count span').text(downloads);
+// 		$('#downloads-count').show();
+// 	} else {
+// 		$('#downloads-count').hide();		
+// 	}
+// });
 
 $('#infograph-modal').on('hidden.bs.modal', function (e) {
   let $modal = $(e.target);
@@ -119,15 +97,28 @@ $('#infograph-modal').on('hidden.bs.modal', function (e) {
 
 $('.infograph-type-btn').on('click', function() {
 	let $button = $(this);
-	let type = $button.attr('data-target');
 
+	if ($button.hasClass('btn-teal'))
+		return;
+
+	let topic = $button.attr('data-topic');
+	let $container = $('#infographics-container');
+
+	$container.addClass('opacity-4');
 	$button.removeClass('btn-teal-outline').addClass('btn-teal');
 	$button.siblings().addClass('btn-teal-outline').removeClass('btn-teal');
-
-	$('.thumbnail').hide();
-	$(type).show();
-
-	setLayout();
+	
+	$.get("{{route('resources.infographs.load')}}", {topic: topic})
+	.done(function(html) {
+		$container.html(html);
+		$('#pagination-links').hide();
+	})
+	.fail(function(response, status, error) {
+		//
+	})
+	.always(function() {
+		$container.removeClass('opacity-4');
+	});
 
 	$('input#search-infograph').val('');
 });

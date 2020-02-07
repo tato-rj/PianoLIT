@@ -28,7 +28,6 @@ mix.js('resources/js/app.js', 'public/js')
     .scripts([
       'public/js/app.js',
       'node_modules/swiper/dist/js/swiper.min.js',
-      'node_modules/masonry-layout/dist/masonry.pkgd.min.js',
       ], 'public/js/app.js')
     .scripts([
       'public/js/admin.js',

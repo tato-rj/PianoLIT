@@ -31,6 +31,13 @@ class InfographsController extends Controller
         return view('admin.pages.infographs.index', compact('topics'));
     }
 
+    public function load(Request $request)
+    {
+        $infographs = Topic::bySlug($request->topic)->infographs;
+
+        return view('resources.infographs.load', compact('infographs'))->render();
+    }
+
     public function topics()
     {
         $topics = Topic::ordered()->get();

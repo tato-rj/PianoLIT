@@ -17,11 +17,7 @@
 
 	</div>
 
-  <div class="row">
-    <div class="col-12 d-flex justify-content-center">
-      {{ $posts->links() }}
-    </div>
-  </div>
+  @pagination(['collection' => $posts])
 </section>
 
 @include('components.overlays.subscribe.model-2')
