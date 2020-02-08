@@ -45,7 +45,8 @@ class UsersController extends Controller
 
     public function purge(User $user)
     {
-        \Artisan::call('redis:delete', ['user_id' => $user->id]);
+        \Redis::del($user->redisKey('app'));
+        \Redis::del($user->redisKey('web'));
         \Artisan::call('redis:refresh-daily-logs');
 
         $user->delete();
