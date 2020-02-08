@@ -38,6 +38,6 @@ class Recaptcha implements Rule
      */
     public function message()
     {
-        return 'The reCaptcha has failed. If this problem persists, please let us know at contact@pianolit.com.';
+        return 'Please check the "I\'m not a robot" box to continue! If this problem persists, let us know at contact@pianolit.com.';
     }
 }
