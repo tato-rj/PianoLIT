@@ -10,6 +10,15 @@ class Subscription extends PianoLit
     protected $appends = ['report_name'];
     protected $report_by = 'email';
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function($subscription) {
+            $subscription->lists()->sync([]);
+        });
+    }
+
     public function getRouteKeyName()
     {
         return 'email';

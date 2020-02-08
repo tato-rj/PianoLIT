@@ -28,10 +28,10 @@ class UsersController extends Controller
     }
 
     public function destroy(User $user)
-    {        
+    {
         $user->delete();
 
-        return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted');
+        return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted.');
     }
 
     public function destroyMany(Request $request)
@@ -40,6 +40,16 @@ class UsersController extends Controller
             User::findOrFail($id)->delete();
         }
 
-        return redirect(route('admin.users.index'))->with('status', 'The users have been successfully deleted');
+        return redirect(route('admin.users.index'))->with('status', 'The users have been successfully deleted.');
+    }
+
+    public function purge(User $user)
+    {
+        \Artisan::call('redis:delete', ['user_id' => $user->id]);
+        \Artisan::call('redis:refresh-daily-logs');
+
+        $user->delete();
+
+        return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted and its logs removed.');
     }
 }

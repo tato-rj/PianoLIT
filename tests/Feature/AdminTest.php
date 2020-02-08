@@ -69,6 +69,34 @@ class AdminTest extends AppTest
     }
 
     /** @test */
+    public function admins_can_purge_a_users_account_along_with_all_its_logs()
+    {
+        $this->signIn($this->user);
+
+        Subscription::createOrActivate($this->user, $notifyUser = false);
+
+        $user_id = $this->user->id;
+        $user_email = $this->user->email;
+        $subscription_id = $this->user->subscription->id;
+
+        $this->get(route('users.profile'));
+        
+        $this->assertRedisHas('user:'.auth()->user()->id.':web');
+        $this->assertDatabaseHas('users', ['id' => $user_id]);
+        $this->assertDatabaseHas('subscriptions', ['email' => $user_email]);
+        $this->assertDatabaseHas('email_list_subscription', ['subscription_id' => $subscription_id]);
+
+        $this->signIn();
+
+        $this->delete(route('admin.users.purge', $user_id));
+
+        $this->assertRedisEmpty();
+        $this->assertDatabaseMissing('users', ['id' => $user_id]);
+        $this->assertDatabaseMissing('subscriptions', ['email' => $user_id]);
+        $this->assertDatabaseMissing('email_list_subscription', ['subscription_id' => $user_id]);
+    }
+
+    /** @test */
     public function admins_can_subscribe_multiple_emails_at_the_same_time()
     {
         \Mail::fake();

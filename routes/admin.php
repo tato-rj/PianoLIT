@@ -233,7 +233,8 @@ Route::prefix('users')->name('users.')->group(function() {
 	Route::delete('destroy-many', 'Admin\UsersController@destroyMany')->name('destroy-many');
 
 	Route::delete('{user}', 'Admin\UsersController@destroy')->name('destroy');
-
+	
+	Route::delete('{user}/purge', 'Admin\UsersController@purge')->name('purge');
 });
 
 Route::prefix('memberships')->name('memberships.')->group(function() {
