@@ -62,7 +62,10 @@ class RegisterController extends Controller
     }
 
     public function register(Request $request, Recaptcha $recaptcha)
-    {       
+    {
+        if ($request->origin == 'web' && ! $request->has('g-recaptcha-response'))
+            abort(401, 'You can\'t do this!');
+
         $validator = $this->validator($request->all(), $recaptcha);
 
         if ($validator->fails()) {
