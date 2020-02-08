@@ -59,7 +59,7 @@
   {data: 'created_at', class: 'text-nowrap', sort: true},
   {data: 'email', name: 'subscriptions.email'},
   {data: 'origin_url', name: 'subscriptions.origin_url'},
-  {data: 'status', name: 'subscriptions.email_lists'}
+  {data: 'status'}
 ]).create();
 </script>
 
