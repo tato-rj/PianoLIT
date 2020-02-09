@@ -14,7 +14,7 @@ class UsersController extends Controller
         $logger = new DailyLog;
         $users = User::latest()->get();
         $logs_total_count = ((new \App\Log\LogFactory)->total());
-        $latest_logs = $logger->latest(22);
+        $latest_logs = $logger->latest(request()->has('logs_limit') ? request('logs_limit') : 6);
 
         return view('admin.pages.users.index', compact(['users', 'logs_total_count', 'latest_logs']));
     }
