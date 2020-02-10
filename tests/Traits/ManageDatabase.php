@@ -93,8 +93,7 @@ trait ManageDatabase
             'preferred_piece_id' => $user['preferred_piece_id'] ?? create('App\Piece')->id,
             'occupation' => $user['occupation'] ?? 'Teacher',
             'origin' => 'web',
-            'middle_name' => $bot,
-            'started_at' => ! $bot ? now()->subSeconds(5) : now(),
+            'g-recaptcha-response' => 'token',
         ];
 
         if ($bot)

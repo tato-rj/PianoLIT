@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\Log\Loggers\DailyLog;
+use App\User;
 
 class LogsTest extends AppTest
 {
@@ -127,6 +128,40 @@ class LogsTest extends AppTest
         $this->assertRedisHas($key);
 
         $this->assertEquals($count, $logger->sum($logger->all()));
+    }
+
+    /** @test */
+    public function logs_with_no_existing_user_can_be_removed()
+    {
+        $logger = new DailyLog;
+        $first_user = $this->user;
+        $second_user = create(User::class);
+
+        $this->signIn($first_user);
+
+        $this->get(route('home'));
+
+        $this->get(route('api.discover', ['user_id' => $first_user->id]));
+
+        $first_key = 'user:'.$first_user->id.':app';
+
+        $this->signIn($second_user);
+
+        $this->get(route('home'));
+
+        $this->get(route('api.discover', ['user_id' => $second_user->id]));
+
+        $second_key = 'user:'.$second_user->id.':app';
+
+        $this->assertRedisHas($first_key);
+        $this->assertRedisHas($second_key);
+
+        $this->delete(route('users.destroy', $second_user->id));
+
+        $this->artisan('redis:clean-logs');
+
+        $this->assertRedisHas($first_key);
+        $this->assertRedisMissing($second_key);
     }
 
     /** @test */
