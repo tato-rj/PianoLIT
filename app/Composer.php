@@ -35,7 +35,7 @@ class Composer extends Person
         
         } else if ($event == 'publication') {
         
-            if ($year <= $this->died_in) {
+            if ($year <= $this->died_in || ! $this->died_in) {
                 $string = 'when ' . $this->short_name . ' was ' . ($year - $this->born_in) . ' years old';
             } else {
                 $string = ($year - $this->died_in) . ' years after ' . $this->short_name . ' died';
