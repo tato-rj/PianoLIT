@@ -18,7 +18,7 @@ class EmailListsController extends Controller
 
     public function reports()
     {
-        $reports = EmailLog::latest()->generate()->get();
+        $reports = EmailLog::generate()->get();
 
         return view('admin.pages.reports.index', compact('reports'));
     }

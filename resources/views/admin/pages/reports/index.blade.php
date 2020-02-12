@@ -24,7 +24,10 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
-(new DataTableRaw({table: '#reports-table'})).create();
+(new DataTableRaw({
+	table: '#reports-table',
+	options: {order: [[0, 'desc']]}
+})).create();
 </script>
 
 @endsection

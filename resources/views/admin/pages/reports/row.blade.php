@@ -1,6 +1,6 @@
 <tr>
 
-  <td>{{carbon($item->sent_at)->toFormattedDateString()}}</td>
+  <td data-order="{{carbon($item->sent_at)->timestamp}}">{{carbon($item->sent_at)->toFormattedDateString()}}</td>
   
   <td class="text-truncate">{{$item->name}}</td>
   
