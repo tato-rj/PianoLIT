@@ -14,20 +14,11 @@
     <a href="{{route('admin.api.discover', ['api'])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
   </div>
 
-  <div class="row mx-3">
-    <div class="col-lg-6 col-md-8 col-10 mx-auto">
-      <form method="POST" action="{{route('api.users.suggestions')}}" target="_blank">
-        @csrf
-        <div class="form-group">
-          <select name="user_id" class="form-control" onchange="this.form.submit()">
-            <option selected disabled>See suggestions for...</option>
-            @foreach(\App\User::all() as $user)
-            <option value="{{$user->id}}">{{$user->full_name}}</option>
-            @endforeach
-          </select>
-        </div>
-      </form>
-    </div>
+  <div class="text-center">
+    <form method="POST" action="{{route('redis.update', 'app.discover')}}">
+      @csrf
+      <button class="btn btn-outline-success btn-sm"><i class="fas fa-sync-alt mr-1"></i>Refresh discover page</button>
+    </form>
   </div>
 
   <div class="row">

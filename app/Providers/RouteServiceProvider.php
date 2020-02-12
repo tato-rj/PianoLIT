@@ -50,6 +50,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapWebhooksRoutes();
 
         $this->mapRedirectsRoutes();
+
+        $this->mapRedisRoutes();
     }
 
     /**
@@ -169,5 +171,21 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::namespace($this->namespace)
              ->group(base_path('routes/redirects.php'));
+    }
+
+    /**
+     * Define the "user" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapRedisRoutes()
+    {
+        Route::middleware(['web', 'auth:admin'])
+             ->prefix('redis')
+             ->name('redis.')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/redis.php'));
     }
 }

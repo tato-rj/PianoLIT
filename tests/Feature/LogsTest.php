@@ -133,35 +133,57 @@ class LogsTest extends AppTest
     /** @test */
     public function logs_with_no_existing_user_can_be_removed()
     {
+        User::truncate();
         $logger = new DailyLog;
-        $first_user = $this->user;
+
+        $first_user = create(User::class);
         $second_user = create(User::class);
+        $third_user = create(User::class);
 
         $this->signIn($first_user);
 
+        // First user ads 2 events
         $this->get(route('home'));
-
         $this->get(route('api.discover', ['user_id' => $first_user->id]));
 
         $first_key = 'user:'.$first_user->id.':app';
 
         $this->signIn($second_user);
 
+        // // Second user ads 2 events
         $this->get(route('home'));
-
         $this->get(route('api.discover', ['user_id' => $second_user->id]));
 
         $second_key = 'user:'.$second_user->id.':app';
 
+        $this->signIn($third_user);
+
+        // // Third user ads 3 events
+        $this->get(route('home'));
+        $this->get(route('api.discover', ['user_id' => $third_user->id]));
+
+        $third_key = 'user:'.$third_user->id.':app';
+
         $this->assertRedisHas($first_key);
         $this->assertRedisHas($second_key);
+        $this->assertRedisHas($third_key);
 
+        $this->signIn($second_user);
+
+        // Second user ads 1 event
         $this->delete(route('users.destroy', $second_user->id));
+
+        $this->assertEquals($logger->sum($logger->all()), 7);
 
         $this->artisan('redis:clean-logs');
 
         $this->assertRedisHas($first_key);
         $this->assertRedisMissing($second_key);
+        $this->assertRedisHas($third_key);
+
+        $this->artisan('redis:refresh-daily-logs');
+        
+        $this->assertEquals($logger->sum($logger->all()), 4);
     }
 
     /** @test */

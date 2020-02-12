@@ -14,9 +14,11 @@ class ApiController extends Controller
         $this->middleware('log.app');
     }
 
-    public function discover($pieces = null, $inputArray = null)
+    public function discover()
     {
-        $collection = \Cache::remember('app.discover-pg', days(1), function() {
+        $key = \Redis::get('app.discover') ?? 'app.discover-pg';
+
+        $collection = \Cache::remember($key, days(1), function() {
             return collect([
                 $this->api->order(0)->free('Free weekly pick'),
                 $this->api->order(1)->composers('Composers'),
@@ -34,7 +36,7 @@ class ApiController extends Controller
         if (request()->wantsJson() || request()->has('api'))
             return $collection->toArray();
 
-        return view('admin.pages.discover.index', compact(['collection', 'pieces', 'inputArray']));
+        return view('admin.pages.discover.index', compact(['collection']));
     }
 
     /**

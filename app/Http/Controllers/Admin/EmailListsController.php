@@ -25,7 +25,13 @@ class EmailListsController extends Controller
 
     public function report($list)
     {
-        return EmailLog::byList($list)->get();
+        if (request()->ajax())
+            return EmailLog::datatable();
+
+        $report = EmailLog::byList($list)->get();
+        $event = EmailLog::generate($list)->first();
+
+        return view('admin.pages.reports.show.index', compact(['report', 'event']));
     }
 
     public function send(EmailList $list)
@@ -93,5 +99,12 @@ class EmailListsController extends Controller
         $list->delete();
 
         return back()->with('status', 'The list has been deleted');
+    }
+
+    public function destroyReport($list_id)
+    {
+        EmailLog::byList($list_id)->delete();
+
+        return redirect(route('admin.subscriptions.reports.index'))->with('status', 'The list has been deleted');
     }
 }

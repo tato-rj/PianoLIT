@@ -202,6 +202,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 		Route::get('{list}', 'Admin\EmailListsController@report')->name('show');
 
+		Route::delete('{list}', 'Admin\EmailListsController@destroyReport')->name('destroy');
+
 	});
 });
 

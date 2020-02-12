@@ -39,21 +39,27 @@ class EmailLog extends PianoLit
     	return explode('.', $this->list_id)[$key];
     }
 
-    public function scopeGenerate($query)
+    public function scopeGenerate($query, $list = null)
     {
-    	return $query->whereNotNull('list_id')
-    				 ->selectRaw('list_id, 
+    	$report = $list ? $query->where('list_id', $list) : $query->whereNotNull('list_id');
+
+        return $report->selectRaw('list_id, 
                                   count(*) emails_count, 
                                   sum(unique_delivered) delivered_count, 
                                   sum(unique_failed) failed_count, 
                                   sum(unique_opened) opens_count, 
                                   sum(unique_clicked) clicks_count')
-    				 ->groupBy('list_id')
-    				 ->orderBy('list_id', 'DESC');
+                      ->groupBy('list_id')
+                      ->orderBy('list_id', 'DESC');
     }
 
     public function scopeByList($query, $listId)
     {
         return $query->where('list_id', $listId);
+    }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->make();
     }
 }
