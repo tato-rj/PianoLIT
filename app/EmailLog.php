@@ -49,8 +49,7 @@ class EmailLog extends PianoLit
                                   sum(unique_failed) failed_count, 
                                   sum(unique_opened) opens_count, 
                                   sum(unique_clicked) clicks_count')
-                      ->groupBy('list_id')
-                      ->orderBy('list_id', 'DESC');
+                      ->groupBy('list_id');
     }
 
     public function scopeByList($query, $listId)

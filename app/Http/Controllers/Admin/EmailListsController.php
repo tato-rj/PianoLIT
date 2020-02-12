@@ -11,14 +11,14 @@ class EmailListsController extends Controller
 {
     public function index()
     {
-        $lists = EmailList::latest()->get();
+        $lists = EmailList::all();
 
         return view('admin.pages.subscriptions.lists.index', compact('lists'));
     }
 
     public function reports()
     {
-        $reports = EmailLog::generate()->get();
+        $reports = EmailLog::latest()->generate()->get();
 
         return view('admin.pages.reports.index', compact('reports'));
     }
