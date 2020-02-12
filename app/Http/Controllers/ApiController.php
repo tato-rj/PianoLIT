@@ -16,7 +16,7 @@ class ApiController extends Controller
 
     public function discover()
     {
-        $key = \Redis::get('app.discover') ?? 'app.discover-pg';
+        $key = \Redis::get('app.discover');
 
         $collection = \Cache::remember($key, days(1), function() {
             return collect([
