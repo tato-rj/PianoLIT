@@ -63,7 +63,7 @@
 <script type="text/javascript">
 (new DataTable('#report-table')).columns([
   {data: 'recipient', name: 'email_logs.recipient', class: 'dataTables_main_column'},
-  {data: 'delivered_at'},
+  {data: 'delivered_at', sort: true},
   {data: 'failed_at'},
   {data: 'opened'},
   {data: 'clicked'},

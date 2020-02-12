@@ -11,7 +11,7 @@ class EmailListsController extends Controller
 {
     public function index()
     {
-        $lists = EmailList::all();
+        $lists = EmailList::latest()->get();
 
         return view('admin.pages.subscriptions.lists.index', compact('lists'));
     }
