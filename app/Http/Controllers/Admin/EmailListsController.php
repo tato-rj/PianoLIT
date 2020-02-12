@@ -26,7 +26,7 @@ class EmailListsController extends Controller
     public function report($list)
     {
         if (request()->ajax())
-            return EmailLog::datatable();
+            return EmailLog::datatable($list);
 
         $report = EmailLog::byList($list)->get();
         $event = EmailLog::generate($list)->first();

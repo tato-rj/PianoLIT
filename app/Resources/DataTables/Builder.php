@@ -38,6 +38,19 @@ class Builder
         return $this;
     }
 
+    public function withTime($dates = [])
+    {
+        foreach ($dates as $date) {
+            $this->datatable = $this->datatable->editColumn($date, function ($model) use ($date) {
+               return $model->$date ? $this->addSort($model->$date->timestamp).$model->$date->format('h:i A') : null;
+            });
+        }
+
+        $this->escape($dates);
+
+        return $this;
+    }
+
     public function withCount(array $fields)
     {
         foreach ($fields as $field) {
