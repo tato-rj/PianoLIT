@@ -49,7 +49,7 @@
 		</div>
 	</div>
 	
-    @datatable(['table' => 'report', 'columns' => ['Recipient', 'Delivered at', 'Failed at', 'Opened', 'Clicked']])
+    @datatable(['table' => 'report', 'columns' => ['Status', 'Recipient', 'Delivered at', 'Failed at', 'Opened', 'Clicked']])
 
   </div>
 </div>
@@ -62,8 +62,9 @@
 
 <script type="text/javascript">
 (new DataTable('#report-table')).columns([
+  {data: 'status'},
   {data: 'recipient', name: 'email_logs.recipient', class: 'dataTables_main_column'},
-  {data: 'delivered_at', sort: true},
+  {data: 'delivered_at'},
   {data: 'failed_at'},
   {data: 'opened'},
   {data: 'clicked'},

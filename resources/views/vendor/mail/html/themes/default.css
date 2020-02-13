@@ -352,6 +352,21 @@ img {
     background-color: #ff7043;
 }
 
+.badge-yellow {
+    color: white;
+    background-color: #ffb74d;
+}
+
+.badge-pink {
+    color: white;
+    background-color: #f06292;
+}
+
+.badge-green {
+    color: white;
+    background-color: #81c784;
+}
+
 .alert-yellow {
     background: #ffe4e3!important;
     color: #ff2317;
@@ -451,6 +466,10 @@ img {
     font-size: 150%;
 }
 
+.text-md {
+    font-size: 108%;
+}
+
 .text-sm {
     font-size: 75%;
 }
@@ -467,7 +486,7 @@ img {
 
 .divider-vertical {width: 1px; height: 62px;}
 
-.divider-horizontal {width: 100%; height: 2px;}
+.divider-horizontal {width: 10%; height: 2px;}
 
 .divider-blue {
     background-color: #0055fe;
