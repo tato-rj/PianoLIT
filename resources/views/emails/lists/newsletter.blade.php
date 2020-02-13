@@ -76,10 +76,9 @@ Let me try!
 	'<strong>B to F is a perfect fifth:</strong> TRUE | FALSE'
 ]])
 
-<p class="text-center mt-4">Find the answers at the bottom of the newsletter!</p>
+<div class="text-center mt-4">Find the answers at the bottom of the newsletter!</div>
 
 @include('mail::divider', ['orientation' => 'horizontal'])
-
 
 <h1 class="text-lg mb-4">4 things worth sharing this month:</h1>
 @component('mail::panel')
@@ -92,8 +91,8 @@ On January 1, 2020, <a href="#" target="_blank">works from 1924 will enter the U
 <a href="#" target="_blank">Watch Kobe Bryant playing the Moonlight Sonata</a>, the first movement. He was a basketball star and... a pianist. He loved music and played. 👏👏👏👏👏
 @endcomponent
 
-<p class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. FALSE, 3. TRUE, 4. FALSE</p>
+<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. FALSE, 3. TRUE, 4. FALSE</div>
 
-<p>Got any questions? Feel free to reply to this email, there are real people behind it and we'd love to hear from you :)</p>
+<div>Got any questions? Feel free to reply to this email, there are real people behind it and we'd love to hear from you :)</div>
 @include('mail::signature')
 @endcomponent
