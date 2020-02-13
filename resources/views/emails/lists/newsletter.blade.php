@@ -2,7 +2,10 @@
 
 @include('mail::newsletter.quote', ['quote' => 'I live in music like a fish in water.', 'author' => 'Camille Saint-Saëns'])
 
-As many of you already know, we launched the PianoLIT app on January 17th. We appreciate your enthusiasm and hope your experience will keep improving while we'll do our best to serve you the greatest and rarest piano gems out there! Stay tuned as more tutorials and free picks are on their way!
+<h1 class="text-center">Don't have the app yet? What are you waiting for?</h1>
+@component('mail::button', ['url' => config('app.stores.ios')])
+Download the iOS App now
+@endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => ['name' => 'watch', 'color' => 'orange'],
