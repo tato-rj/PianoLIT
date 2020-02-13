@@ -8,28 +8,28 @@ class Tutorials
 	{
 		return [
 			[
-				'piece' => 'Clair de Lune by C. Debussy',
-				'title' => 'Debussy\'s use of syncopations in the main theme',
-				'description' => 'In this video, we explore how Debussy uses syncopations to shape the main theme of this iconic piece. The expressive qualities of this music are largely defined by how the 8th notes are anticipated, creating harmonic and rhythmic suspension. The end result is a gentle theme that has captivated audiences ever since it was composed.',
+				'piece' => 'III. Presto from Sonata Op.27 No.2 "Moonlight" by L.V. Beethoven',
+				'title' => 'How to play fast repeated notes without accumulating tension on your wrists',
+				'description' => 'The stormy final movement is in unexpected and powerful contrast to the sonata\'s intimate beginning. An effective performance of this movement demands lively and skillful playing, great stamina, and is significantly more demanding technically than the 1st and 2nd movements. In this tutorial, we explore the last theme of the third movement, where both hands play fast repeated chords. This is something that every pianist struggles with as it easily accumulates tension making your arm and wrists tired. We talk in detail how to practice this part to develop accuracy and avoid stiff movements.',
 				'level' => 'advanced'
 			],
 			[
-				'piece' => 'Les Barricades Mistérieuses by F. Couperin',
-				'title' => 'Musical form and contrasts between sections',
-				'description' => 'We fell in love with this piece and certainly you will too! Learn about the Rondo, one of the most famous musical forms in baroque French music that made its way into the Classical period and beyond. We\'ll also explore how Couperin created contrasts between the sections through harmonic and thematic development.',
+				'piece' => 'Autumn sketch from 24 Lyric Preludes in Romantic Style by W. Gillock',
+				'title' => 'How to balance the sound between your hands',
+				'description' => 'Using this romantic piece by Gillock, we analyze the melodic lines and how to improve on them by balancing the sound between hands, carefully discerning the sound produced by your right hand (bearer of the melody) from the one produced by your left hand (accompaniment).',
 				'level' => 'intermediate'
 			],
 			[
-				'piece' => 'Little waltz Op.205 No.10 by C. Gurlitt',
-				'title' => 'A complete harmonic analysis',
-				'description' => 'Let\'s dive into the harmony and understand the name and functions of each chord. Measure by measure, we\'ll investigate each chord as we go along and this will help you understand some of the expressive content you\'ll find in this music, which is intrinsically related to its harmonic progressions.',
+				'piece' => 'The bear from Op.69 No.3 by D. Shostakovich',
+				'title' => 'Polishing repeated notes and improve the accuracy of your jumps with the "stop and prepare" technique',
+				'description' => 'In this tutorial, we review a couple of fundamental tips: polishing repeated notes and jumps accuracy. Let\'s learn how to improve your musical phrase when playing repeated notes by avoiding an overly percussive sound. Review the "stop and prepare" technique and understand how it can help us perform this piece fluently.',
 				'level' => 'beginner'
 			],
 			[
-				'piece' => 'Snowflakes gently falling by D.G. Rahbee',
-				'title' => 'Better accuracy with the "stop and prepare" technique',
-				'description' => 'Rahbee is an incredible contemporary composer with a vast amount of compositions that range from elementary to advanced levels. "Snowflakes gently falling" is a wonderful piece for beginners to explore fine nuances of sound and move along a large section of the keyboard. We\'ll learn the "stop and prepare" technique that will help you move your arms and change positions with good balance and accuracy.',
-				'level' => 'elementary'
+				'piece' => 'Short Story by H. Lichner',
+				'title' => 'Learn how to play full scales with even and clean sound',
+				'description' => 'We use this beginner piece to talk about a common topic in piano playing: scales. And specifically one of the fundamentals about scales, which is keeping an even and clean sound during the ascending and descending motion. We review the basics regarding the passage of the thumb and a good exercise for thumb mobility.',
+				'level' => 'beginner'
 			]
 		];
 	}

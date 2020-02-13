@@ -6,4 +6,3 @@ This is just a test.
 Best<br>
 Elena from {{ config('app.name') }}
 @endcomponent
-

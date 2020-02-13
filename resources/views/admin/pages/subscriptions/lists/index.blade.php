@@ -33,6 +33,8 @@
 
 @section('scripts')
 <script type="text/javascript">
-
+$(document).on('keyup', 'input[name="subject-input"]', function() {
+  $('input[name="subject"]').val($(this).val());
+});
 </script>
 @endsection
