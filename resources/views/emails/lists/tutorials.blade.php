@@ -17,7 +17,7 @@ Download the iOS App now
 <div class="text-center">
 	<div class="badge badge-pill alert-advanced mb-2">{{strtoupper('advanced')}}</div>
 </div>
-The stormy final movement is in unexpected and powerful contrast to the sonata's intimate beginning. An effective performance of this movement demands lively and skillful playing, great stamina, and is significantly more demanding technically than the 1st and 2nd movements. In this tutorial, we explore the last theme of the third movement, where both hands play fast repeated chords. This is something that every pianist struggles with as it easily accumulates tension making your arm and wrists tired. We talk in detail how to practice this part to develop accuracy and avoid stiff movements.
+The stormy final movement is in unexpected and powerful contrast to the sonata's more intimate beginning. In this tutorial, we explore the last theme of the third movement, where both hands play fast repeated chords. This is something that every pianist struggles with as it easily accumulates tension making your arm and wrists tired. We talk in detail how to practice this part to develop accuracy and avoid stiff movements.
 @endcomponent
 
 @component('mail::panel')
