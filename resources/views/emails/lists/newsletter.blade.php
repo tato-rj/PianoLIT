@@ -1,6 +1,5 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
-
-Test paragraph, is this also too small?
+@include('mail::newsletter.quote', ['quote' => 'I live in music like a fish in water.', 'author' => 'Camille Saint-Saëns'])
 
 @component('mail::newsletter.section', [
 	'badge' => [
@@ -93,6 +92,6 @@ On January 1, 2020, <a href="#" target="_blank">works from 1924 will enter the U
 
 <div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. FALSE, 3. TRUE, 4. FALSE</div>
 
-<div>Got any questions? Feel free to reply to this email, there are real people behind it and we'd love to hear from you :)</div>
+<p>Got any questions? Feel free to reply to this email, there are real people behind it and we'd love to hear from you :)</p>
 @include('mail::signature')
 @endcomponent
