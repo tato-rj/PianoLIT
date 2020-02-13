@@ -2,6 +2,8 @@
 
 @include('mail::newsletter.quote', ['quote' => 'I live in music like a fish in water.', 'author' => 'Camille Saint-Saëns'])
 
+Test paragraph, is this also too small?
+
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'watch', 
