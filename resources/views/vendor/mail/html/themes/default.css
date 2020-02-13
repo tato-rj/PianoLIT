@@ -463,15 +463,15 @@ img {
 }
 
 .text-lg {
-    font-size: 150%;
+    font-size: 24px;
 }
 
 .text-md {
-    font-size: 108%;
+    font-size: 18px;
 }
 
 .text-sm {
-    font-size: 75%;
+    font-size: 14.5px;
 }
 
 .divider {
