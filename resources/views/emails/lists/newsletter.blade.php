@@ -1,5 +1,4 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
-@include('mail::newsletter.quote', ['quote' => 'I live in music like a fish in water.', 'author' => 'Camille Saint-Saëns'])
 
 Test paragraph, is this also too small?
 
