@@ -505,6 +505,10 @@ img {
     text-align: center;
 }
 
+.text-italic {
+    font-style: italic;
+}
+
 .text-center {
     text-align: center;
 }

@@ -16,7 +16,7 @@
 
 <p><a href="" class="text-md"><strong>Élévation from 6 Songs Without Words Op. 76 by C. Chaminade, watch on YouTube</strong></a></p>
 
-<p class="text-md"><i><strong>FUN FACT</strong>: In 1913, Chaminade was awarded the Légion d'Honneur, a first for a female composer.</i></p>
+<p class="text-md text-italic"><strong>FUN FACT</strong>: In 1913, Chaminade was awarded the Légion d'Honneur, a first for a female composer.</p>
 @endcomponent
 
 @component('mail::newsletter.section', [
@@ -46,7 +46,7 @@
 
 <p>How many you can guess???</p>
 
-<p class="text-md"><i><strong>DISCLAIMER:</strong> This quiz is very hard, so far it has an average score of 5 out of 9! Can you beat that?</i></p>
+<p class="text-md text-italic"><strong>DISCLAIMER:</strong> This quiz is very hard, so far it has an average score of 5 out of 9! Can you beat that?</p>
 
 @component('mail::button', ['url' => '#'])
 Let me try!
@@ -76,7 +76,7 @@ Let me try!
 	'<strong>B to F is a perfect fifth:</strong> TRUE | FALSE'
 ]])
 
-<div class="text-center mt-4">Find the answers at the bottom of the newsletter!</div>
+<p class="text-center mt-4">Find the answers at the bottom of the newsletter!</p>
 
 @include('mail::divider', ['orientation' => 'horizontal'])
 
@@ -92,7 +92,7 @@ On January 1, 2020, <a href="#" target="_blank">works from 1924 will enter the U
 <a href="#" target="_blank">Watch Kobe Bryant playing the Moonlight Sonata</a>, the first movement. He was a basketball star and... a pianist. He loved music and played. 👏👏👏👏👏
 @endcomponent
 
-<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. FALSE, 3. TRUE, 4. FALSE</div>
+<p class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. FALSE, 3. TRUE, 4. FALSE</p>
 
 <p>Got any questions? Feel free to reply to this email, there are real people behind it and we'd love to hear from you :)</p>
 @include('mail::signature')
