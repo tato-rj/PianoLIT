@@ -38,7 +38,7 @@ class Api
 
     public function composers($title)
     {
-        $collection = Composer::inRandomOrder()->atLeast(4)->withCount('pieces')->get();
+        $collection = Composer::inRandomOrder()->atLeast(4)->withCount('pieces')->take(16)->get();
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
