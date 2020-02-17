@@ -94,6 +94,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $item;
     }
 
+    public function getGender()
+    {
+        try {
+            $gender = \Genderize::name($this->first_name)->get()->result[0]->gender;
+            $this->update(['gender' => $gender]);            
+        } catch (\Exception $e) {
+            //
+        }
+    }
+
     public function getPreferredPieceAttribute()
     {
         return Piece::find($this->preferred_piece_id);

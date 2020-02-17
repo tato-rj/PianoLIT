@@ -16,37 +16,24 @@
     <div class="row"> 
         <div class="col-12 p-3">
             <div class="border py-4 px-3">
-                <div id="carouselRecords" class="carousel carousel-fade">
+                <div id="stats-signups" class="carousel carousel-fade">
                     <div class="d-flex justify-content-between mb-4">
                         <h4 class="text-center"><strong>Flow of users over time</strong></h4>
                         <div class="select-btn-group btn-group btn-group-sm">
-                          <button data-target="#carouselRecords" data-slide-to="0" class="btn btn-blue">Daily</button>
-                          <button data-target="#carouselRecords" data-slide-to="1"  class="btn btn-light">Monthly</button>
-                          <button data-target="#carouselRecords" data-slide-to="2"  class="btn btn-light">Yearly</button>
+                          <button data-model="users" data-canvas="chart-signups" data-type="daily" class="btn btn-secondary">Daily</button>
+                          <button data-model="users" data-canvas="chart-signups" data-type="monthly" class="btn btn-outline-secondary" style="border-left: 0; border-right: 0;">Monthly</button>
+                          <button data-model="users" data-canvas="chart-signups" data-type="yearly" class="btn btn-outline-secondary">Yearly</button>
                         </div>
                     </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <canvas id="day-chart" 
-                                    data-records="{{json_encode($usersDaily)}}" height="100"></canvas>
-                        </div>
-
-                        <div class="carousel-item">
-                            <canvas id="month-chart" 
-                                    data-records="{{json_encode($usersMonthly)}}" height="100"></canvas>
-                        </div>
-
-                        <div class="carousel-item">
-                            <canvas id="year-chart" 
-                                    data-records="{{json_encode($usersYearly)}}" height="100"></canvas>
-                        </div>
+                    <div>
+                        <canvas id="chart-signups" height="100"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row"> 
+{{--     <div class="row"> 
       @include('admin.pages.stats.row', [
         'title' => 'Age groups',
         'subtitle' => 'Number of users per age group.',
@@ -67,24 +54,11 @@
         'id' => 'experienceChart',
         'col' => '4',
         'data' => $usersExperience])
-{{--       @include('admin.pages.stats.row', [
-        'title' => 'Levels',
-        'subtitle' => 'Number of pieces per level.',
-        'id' => 'levelsChart',
-        'col' => '4',
-        'data' => $levelsStats])
+    </div> --}}
 
-      @include('admin.pages.stats.row', [
-        'title' => 'Recordings count',
-        'subtitle' => 'Pieces by number of recordings.',
-        'id' => 'recChart',
-        'col' => '4',
-        'data' => $recStats]) --}}
-    </div>
-
-    <div class="row">
+{{--     <div class="row">
         @include('admin.pages.stats.users.ranking')
-    </div>
+    </div> --}}
 
   </div>
 </div>
@@ -105,15 +79,98 @@ $(document).ready( function () {
 } );
 </script>
 <script type="text/javascript">
-$('.select-btn-group .btn').on('click', function() {
-    $(this).siblings().removeClass('btn-blue').addClass('btn-light');
-    $(this).removeClass('btn-light').addClass('btn-blue');
+$(document).ready(function() {
+    getChartData('chart-signups', "{{route('admin.stats.users')}}", 'users', 'daily');
 });
 
-createLineChart('day');
-createLineChart('month');
-createLineChart('year');
+$('.select-btn-group .btn').on('click', function() {
+    let $button = $(this);
+    let canvas = $button.attr('data-canvas');
+    $button.siblings().removeClass('btn-secondary').addClass('btn-outline-secondary');
+    $button.removeClass('btn-outline-secondary').addClass('btn-secondary');
+
+    getChartData(canvas, "{{route('admin.stats.users')}}", $button.attr('data-model'), $button.attr('data-type'));
+});
 </script>
+
+<script type="text/javascript">
+getChartData = function(canvas, route, model, type) {
+    $('#'+canvas).addClass('opacity-4');
+    $.get(route, {model: model, type: type}, function(data) {
+        createLineChart(canvas, data);
+        $('#'+canvas).removeClass('opacity-4');
+    });
+}
+createLineChart = function(element, data) {
+    var chart = document.getElementById(element);
+    var ctx = chart.getContext('2d');
+    // var activeRecords = JSON.parse(data);
+    // var deletedRecords = JSON.parse(chart.getAttribute('data-deleted-records'));
+
+    console.log(data);
+    // var activeData = [];
+    // // var deletedData = [];
+    // var fields = [];
+
+    // for (var i = 0; i < activeRecords.length; i++) {
+    //     if (type == 'day') {
+    //         fields.push(activeRecords[i].month+" "+activeRecords[i].day);
+    //     } else if (type == 'month') {
+    //         fields.push(activeRecords[i].month);
+    //     } else {
+    //         fields.push(activeRecords[i].year);
+    //     }
+
+    //     activeData.push(activeRecords[i].count);
+    //     // deletedData.push(deletedRecords[i].count);
+    // }
+
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [
+            {
+                label: 'New sign ups',
+                data: data.records,
+                pointBackgroundColor: 'rgba(52, 144, 220, 0.2)',
+                pointBorderColor: 'rgba(52, 144, 220, 1)',
+                backgroundColor: 'rgba(52, 144, 220, 0.2)',
+                borderColor: 'rgba(52,144,220,1)',
+                borderWidth: 1
+            },
+            // {
+            //     label: 'Deleted accounts',
+            //     data: deletedData,
+            //     pointBackgroundColor: 'rgba(158, 158, 158, 0.2)',
+            //     pointBorderColor: 'rgba(158, 158, 158, 1)',
+            //     backgroundColor: 'rgba(158, 158, 158, 0.2)',
+            //     borderColor: 'rgba(158, 158, 158, 1)',
+            //     borderWidth: 1
+            // }
+        ]},
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        beginAtZero: true,
+                        callback: function(value, index, values) {
+                            if (Math.floor(value) === value) {
+                                return value;
+                            }
+                        }
+                    }
+                }]
+            }
+        }
+    }); 
+}
+</script>
+
+
+
+{{-- NEEDS UPDATE --}}
 <script type="text/javascript">
 var colors = ['#5eb58a', '#f5c86d', '#f3686f', '#9a40d5', '#e3342f', '#f6993f', '#38c172', '#4dc0b5', '#3490dc', '#6574cd', '#9561e2', '#f66d9b'];
 function getRandom(arr, n = 1) {

@@ -4,5 +4,5 @@
     
     {{Illuminate\Mail\Markdown::parse($slot)}}
 
-    @include('mail::divider', ['orientation' => 'horizontal'])
+    @include('mail::divider', ['orientation' => 'vertical'])
 </div>

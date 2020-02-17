@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Stats\Stats;
 use App\Blog\{Post, Topic};
 use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
@@ -13,16 +14,14 @@ class StatsController extends Controller
 {
     public function users()
     {
-    	$usersDaily = User::stats()->daily();
-        $usersMonthly = User::stats()->monthly();
-        $usersYearly = User::stats()->yearly();
+        if (request()->ajax())
+            return (new Stats)->for(request('model'))->query(request('type'))->get();
 
-        $usersAge = User::stats()->age();
-        $usersOccupation = User::stats()->occupation();
-        $usersExperience = User::stats()->experience();
         $users = User::withCount(['favorites', 'views'])->latest()->get();
+    	// $sDaily = (new Stats)->for('users')->make('daily');
+     //    $sGender = (new Stats)->for('users')->make('gender');
 
-        return view('admin.pages.stats.users.index', compact(['usersDaily', 'usersMonthly', 'usersYearly', 'usersAge', 'usersOccupation', 'usersExperience', 'users']));
+        return view('admin.pages.stats.users.index', compact(['users']));
     }
 
     public function pieces()

@@ -1,20 +1,24 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
-@include('mail::newsletter.quote', ['quote' => 'I live in music like a fish in water.', 'author' => 'Camille Saint-Saëns'])
+@include('mail::newsletter.quote', [
+	'quote' => 'I live in music like a fish in water.', 
+	'author' => 'Camille Saint-Saëns'
+])
 
 @component('mail::newsletter.section', [
 	'badge' => [
-		'name' => 'watch', 
-		'color' => 'orange',
+		'name' => 'listen', 
+		'color' => 'green',
 		'link' => '#'
 	],
 	'title' => 'Rising with music'])
 
-<p>This piece by C. Chaminade is perfect for a late-intermediate/early-advanced romantic level. It has a reflective and dreamy quality to it that will make you fall in love right away. The upwards motion of the melody perfectly reflect its title. <a href="">Get the score here</a>  👈</p>
-
-<p>The level of this piece is equivalent to <span class="text-orange"><strong>ABRSM 8</strong></span> - <span class="text-orange"><strong>RCM 9</strong></span></p>
+<p>asdnajnsdkj sadkjnsjksa</p>
+<p>jsadhsad iauduiash</p>
 
 <p><a href="" class="text-md"><strong>Élévation from 6 Songs Without Words Op. 76 by C. Chaminade, watch on YouTube</strong></a></p>
-
+@component('mail::button', ['url' => '#'])
+ASDJNASKJn
+@endcomponent
 <p class="text-md text-italic"><strong>FUN FACT</strong>: In 1913, Chaminade was awarded the Légion d'Honneur, a first for a female composer.</p>
 @endcomponent
 
@@ -77,12 +81,18 @@ Let me try!
 
 <div class="text-center mt-4">Find the answers at the bottom of the newsletter!</div>
 
-@include('mail::divider', ['orientation' => 'horizontal'])
+@include('mail::divider', ['orientation' => 'vertical'])
 
 <h1 class="text-lg mb-4">4 things worth sharing this month:</h1>
+
 @component('mail::panel')
 People went wild at Franz Liszt’s concerts. No exaggeration. With his long hair and theatrical style, Liszt played with intensity and passion, revolutionizing the way classical music was performed. And <a href="'#" target="_blank">Lisztomania</a> swept across Europe in the 19th century. <a href="#" target="_blank">Watch this video to learn more</a>
 @endcomponent
+
+@component('mail::panel')
+ASNJKN askjdnaskdjns asudhduhishiASD
+@endcomponent
+
 @component('mail::panel')
 On January 1, 2020, <a href="#" target="_blank">works from 1924 will enter the US public domain</a>, where they will be free for all to use and build upon, without permission or fee. These works include George Gershwin’s <i>Rhapsody in Blue</i>, silent films by Buster Keaton and Harold Lloyd, and books such as Thomas Mann’s <i>The Magic Mountain</i>, E. M. Forster’s <i>A Passage to India</i>, and A. A. Milne’s <i>When We Were Very Young</i>.
 @endcomponent
