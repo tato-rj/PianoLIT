@@ -28,6 +28,7 @@ class Stats {
 	public function daily()
 	{
 		$this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M %D") label, count(*) count')
+					->where('origin', 'ios')
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
@@ -37,6 +38,7 @@ class Stats {
 	public function monthly()
 	{
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M") label, count(*) count')
+					->where('origin', 'ios')
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
@@ -46,6 +48,7 @@ class Stats {
 	public function yearly()
 	{
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%Y") label, count(*) count')
+					->where('origin', 'ios')
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
