@@ -87,7 +87,7 @@ class Stats {
 	{
 		$this->title = 'Users by gender';
 		$this->colors = [$this->color['pink'], $this->color['blue']];
-        $this->data = $this->table->selectRaw('gender as label, count(*) count')
+        $this->data = $this->table->whereNotNull('gender')->selectRaw('gender as label, count(*) count')
                     ->groupBy('label')
                     ->orderBy('label')
                     ->get();
