@@ -19,14 +19,75 @@
                 <div id="stats-signups" class="carousel carousel-fade">
                     <div class="d-flex justify-content-between mb-4">
                         <h4 class="text-center"><strong>Flow of users over time</strong></h4>
-                        <div class="select-btn-group btn-group btn-group-sm">
-                          <button data-model="users" data-canvas="chart-signups" data-type="daily" class="btn btn-secondary">Daily</button>
-                          <button data-model="users" data-canvas="chart-signups" data-type="monthly" class="btn btn-outline-secondary" style="border-left: 0; border-right: 0;">Monthly</button>
-                          <button data-model="users" data-canvas="chart-signups" data-type="yearly" class="btn btn-outline-secondary">Yearly</button>
+                        <div class="d-flex">
+                            <div class="select-btn-group btn-group btn-group-sm mx-1">
+                              <button data-model="users" data-type="daily" class="btn btn-secondary" selected>Daily</button>
+                              <button data-model="users" data-type="monthly" class="btn btn-outline-secondary" style="border-left: 0; border-right: 0;">Monthly</button>
+                              <button data-model="users" data-type="yearly" class="btn btn-outline-secondary">Yearly</button>
+                            </div>
+                            <div class="form-group-sm mx-1">
+                                <select class="chart-select form-control" data-parent="#stats-signups" name="origin">
+                                    <option value="">Any origin</option>
+                                    <option value="ios">iOS</option>
+                                    <option value="web">Website</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div>
-                        <canvas id="chart-signups" height="100"></canvas>
+                        <canvas id="chart-signups" data-model="users" data-type="daily" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row"> 
+        <div class="col-4 p-3">
+            <div class="border py-4 px-3">
+                <div id="stats-gender">
+                    <div class="d-flex justify-content-between mb-4">
+                        <h4 class="text-center"><strong>Gender</strong></h4>
+                          <div class="form-group-sm mx-1">
+                            <select class="chart-select form-control" data-parent="#stats-gender" name="origin">
+                                <option value="">Any origin</option>
+                                <option value="ios">iOS</option>
+                                <option value="web">Website</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <canvas id="chart-gender" data-model="users" data-type="gender" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 p-3">
+            <div class="border py-4 px-3">
+                <div id="stats-confirmed">
+                    <div class="d-flex justify-content-between mb-4">
+                        <h4 class="text-center"><strong>Email status</strong></h4>
+                          <div class="form-group-sm mx-1">
+                            <select class="chart-select form-control" data-parent="#stats-confirmed" name="origin">
+                                <option value="">Any origin</option>
+                                <option value="ios">iOS</option>
+                                <option value="web">Website</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <canvas id="chart-confirmed" data-model="users" data-type="confirmed" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 p-3">
+            <div class="border py-4 px-3">
+                <div id="stats-favorites">
+                    <div class="d-flex justify-content-between mb-4">
+                        <h4 class="text-center"><strong>Favorites</strong></h4>
+                    </div>
+                    <div>
+                        <canvas id="chart-favorites" data-model="users" data-type="favorites" height="200"></canvas>
                     </div>
                 </div>
             </div>
@@ -80,50 +141,79 @@ $(document).ready( function () {
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
-    getChartData('chart-signups', "{{route('admin.stats.users')}}", 'users', 'daily');
+    makeChart('line', '#stats-signups', "{{route('admin.stats.users')}}", {
+        model: 'users', 
+        type: 'daily'
+    });
+
+    makeChart('pie', '#stats-gender', "{{route('admin.stats.users')}}", {
+        model: 'users', 
+        type: 'gender'
+    });
+
+    makeChart('pie', '#stats-confirmed', "{{route('admin.stats.users')}}", {
+        model: 'users', 
+        type: 'confirmed'
+    });
+
+    makeChart('pie', '#stats-favorites', "{{route('admin.stats.users')}}", {
+        model: 'users', 
+        type: 'favorites'
+    });
 });
 
 $('.select-btn-group .btn').on('click', function() {
     let $button = $(this);
-    let canvas = $button.attr('data-canvas');
-    $button.siblings().removeClass('btn-secondary').addClass('btn-outline-secondary');
-    $button.removeClass('btn-outline-secondary').addClass('btn-secondary');
+    let $option = getSelectedOptionFrom('#stats-signups');
+    let $canvas = $('#stats-signups').find('canvas');
 
-    getChartData(canvas, "{{route('admin.stats.users')}}", $button.attr('data-model'), $button.attr('data-type'));
+    $button.siblings().removeClass('btn-secondary').addClass('btn-outline-secondary').toggleAttr('selected');
+    $button.removeClass('btn-outline-secondary').addClass('btn-secondary').toggleAttr('selected');
+
+    $canvas.attr({
+        'data-model': $button.attr('data-model'), 
+        'data-type': $button.attr('data-type')
+    });
+
+    makeChart('line', '#stats-signups', "{{route('admin.stats.users')}}", {
+        model: $canvas.attr('data-model'), 
+        type: $canvas.attr('data-type'),
+        origin: $option.val()
+    });
 });
+
+$('.chart-select').on('change', function() {
+    let $option = $(this);
+    let type = $option.attr('data-chart');
+    let container = $option.attr('data-parent');
+
+    makeChart('pie', container, "{{route('admin.stats.users')}}", {
+        model: $(container).find('canvas').attr('data-model'), 
+        type: $(container).find('canvas').attr('data-type'),
+        origin: $option.val()
+    });
+});
+
+function getSelectedOptionFrom(elem) {
+    return $(elem).find('.chart-select option:selected');
+}
 </script>
 
 <script type="text/javascript">
-getChartData = function(canvas, route, model, type) {
-    $('#'+canvas).addClass('opacity-4');
-    $.get(route, {model: model, type: type}, function(data) {
-        createLineChart(canvas, data);
-        $('#'+canvas).removeClass('opacity-4');
+makeChart = function(type, container, route, params) {
+    let $canvas = $(container).find('canvas');
+    
+    $canvas.addClass('opacity-4');
+
+    $.get(route, params, function(data) {
+        nameToMethod(type, $canvas.attr('id'), data);
+        $canvas.removeClass('opacity-4');
     });
 }
+
 createLineChart = function(element, data) {
     var chart = document.getElementById(element);
     var ctx = chart.getContext('2d');
-    // var activeRecords = JSON.parse(data);
-    // var deletedRecords = JSON.parse(chart.getAttribute('data-deleted-records'));
-
-    console.log(data);
-    // var activeData = [];
-    // // var deletedData = [];
-    // var fields = [];
-
-    // for (var i = 0; i < activeRecords.length; i++) {
-    //     if (type == 'day') {
-    //         fields.push(activeRecords[i].month+" "+activeRecords[i].day);
-    //     } else if (type == 'month') {
-    //         fields.push(activeRecords[i].month);
-    //     } else {
-    //         fields.push(activeRecords[i].year);
-    //     }
-
-    //     activeData.push(activeRecords[i].count);
-    //     // deletedData.push(deletedRecords[i].count);
-    // }
 
     var myChart = new Chart(ctx, {
         type: 'line',
@@ -131,23 +221,14 @@ createLineChart = function(element, data) {
             labels: data.labels,
             datasets: [
             {
-                label: 'New sign ups',
+                label: data.title,
                 data: data.records,
-                pointBackgroundColor: 'rgba(52, 144, 220, 0.2)',
-                pointBorderColor: 'rgba(52, 144, 220, 1)',
-                backgroundColor: 'rgba(52, 144, 220, 0.2)',
-                borderColor: 'rgba(52,144,220,1)',
+                pointBackgroundColor: convertHex(data.colors[0], 5),
+                pointBorderColor: data.colors[0],
+                backgroundColor: convertHex(data.colors[0], 5),
+                borderColor: data.colors[0],
                 borderWidth: 1
             },
-            // {
-            //     label: 'Deleted accounts',
-            //     data: deletedData,
-            //     pointBackgroundColor: 'rgba(158, 158, 158, 0.2)',
-            //     pointBorderColor: 'rgba(158, 158, 158, 1)',
-            //     backgroundColor: 'rgba(158, 158, 158, 0.2)',
-            //     borderColor: 'rgba(158, 158, 158, 1)',
-            //     borderWidth: 1
-            // }
         ]},
         options: {
             scales: {
@@ -166,28 +247,57 @@ createLineChart = function(element, data) {
         }
     }); 
 }
+
+createPieChart = function(element, data) {
+    var chart = document.getElementById(element);
+    var ctx = chart.getContext('2d');
+
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data.records,
+                backgroundColor: data.colors
+            }]
+        },
+        options: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                padding: 20
+              }
+            }
+        }
+    }); 
+}
+
+nameToMethod = function(name, element, data) {
+    let method = 'create' + ucfirst(name) + 'Chart';
+    return window[method](element, data);
+}
+
+ucfirst = function(s) {
+  if (typeof s !== 'string') return ''
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+convertHex = function(hex,opacity){
+    hex = hex.replace('#','');
+    r = parseInt(hex.substring(0,2), 16);
+    g = parseInt(hex.substring(2,4), 16);
+    b = parseInt(hex.substring(4,6), 16);
+
+    result = 'rgba('+r+','+g+','+b+','+opacity/100+')';
+    return result;
+}
 </script>
 
 
 
 {{-- NEEDS UPDATE --}}
 <script type="text/javascript">
-var colors = ['#5eb58a', '#f5c86d', '#f3686f', '#9a40d5', '#e3342f', '#f6993f', '#38c172', '#4dc0b5', '#3490dc', '#6574cd', '#9561e2', '#f66d9b'];
-function getRandom(arr, n = 1) {
-    var requests = n;
-    var result = new Array(n),
-        len = arr.length,
-        taken = new Array(len);
-    if (n > len)
-        throw new RangeError("getRandom: more elements taken than available");
-    while (n--) {
-        var x = Math.floor(Math.random() * len);
-        result[n] = arr[x in taken ? taken[x] : x];
-        taken[x] = --len in taken ? taken[len] : len;
-    }
-
-    return requests == 1 ? result[0] : result;
-}
 function getElements(arr, n) {
     return arr.slice(0, n);
 }

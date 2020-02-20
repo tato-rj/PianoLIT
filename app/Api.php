@@ -3,7 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
-use App\{Piece, Composer, Tag, Api, Country, Playlist};
+use App\{Piece, Composer, Tag, Api, Country, Playlist, User};
 use App\Traits\{Backgrounds, Dictionary};
 
 class Api
@@ -30,6 +30,17 @@ class Api
     public function latest($title)
     {
         $collection = Piece::with(['composer'])->latest()->take($this->limit)->get();
+
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+
+        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title]);
+    }
+
+    public function suggestions($title)
+    {
+        $user = User::find(request('user_id'));
+
+        $collection = $user ? $user->suggestions(10) : Piece::inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 

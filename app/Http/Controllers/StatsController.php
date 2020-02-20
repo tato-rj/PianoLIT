@@ -15,11 +15,9 @@ class StatsController extends Controller
     public function users()
     {
         if (request()->ajax())
-            return (new Stats)->for(request('model'))->query(request('type'))->get();
+            return (new Stats)->for(request('model'))->origin(request('origin'))->query(request('type'))->get();
 
         $users = User::withCount(['favorites', 'views'])->latest()->get();
-    	// $sDaily = (new Stats)->for('users')->make('daily');
-     //    $sGender = (new Stats)->for('users')->make('gender');
 
         return view('admin.pages.stats.users.index', compact(['users']));
     }

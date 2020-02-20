@@ -2,8 +2,20 @@
 
 namespace App\Stats;
 
+use App\User;
+
 class Stats {
-	protected $table, $data;
+	protected $table, $data, $title, $colors;
+	protected $color = [
+	    'purple' => '#9561e2', 
+	    'red' => '#e3342f', 
+	    'orange' => '#f6993f', 
+	    'green' => '#38c172', 
+	    'cyan' => '#4dc0b5', 
+	    'blue' => '#3490dc', 
+	    'pink' => '#f66d9b',
+	    'grey' => '#cecccc'
+	];
 
 	public function for($table)
 	{
@@ -22,13 +34,27 @@ class Stats {
 
 	public function get()
 	{
-		return ['labels' => $this->data->pluck('label'), 'records' => $this->data->pluck('count')];
+		return [
+			'title' => $this->title, 
+			'labels' => $this->data->pluck('label'), 
+			'records' => $this->data->pluck('count'),
+			'colors' => $this->colors
+		];
+	}
+
+	public function origin($origin)
+	{
+		if ($origin)
+			$this->table = $this->table->where('origin', $origin);
+
+		return $this;
 	}
 
 	public function daily()
 	{
-		$this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M %D") label, count(*) count')
-					->where('origin', 'ios')
+		$this->title = 'New sign ups';
+		$this->colors = [$this->color['blue']];
+		$this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M %D") as label, count(*) as count')
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
@@ -37,8 +63,9 @@ class Stats {
 
 	public function monthly()
 	{
-        $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M") label, count(*) count')
-					->where('origin', 'ios')
+		$this->title = 'New sign ups';
+		$this->colors = [$this->color['green']];
+        $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M") as label, count(*) as count')
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
@@ -47,8 +74,9 @@ class Stats {
 
 	public function yearly()
 	{
-        $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%Y") label, count(*) count')
-					->where('origin', 'ios')
+		$this->title = 'New sign ups';
+		$this->colors = [$this->color['orange']];
+        $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%Y") as label, count(*) as count')
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
@@ -57,9 +85,54 @@ class Stats {
 
 	public function gender()
 	{
-        $this->data = $this->table->selectRaw('gender, count(*) count')
-                    ->groupBy('gender')
+		$this->title = 'Users by gender';
+		$this->colors = [$this->color['pink'], $this->color['blue']];
+        $this->data = $this->table->selectRaw('gender as label, count(*) count')
+                    ->groupBy('label')
+                    ->orderBy('label')
                     ->get();
+        return $this;
+	}
+
+	public function confirmed()
+	{
+		$this->title = 'Email confirmed';
+		$this->colors = [$this->color['cyan'], $this->color['grey']];
+		$total = $this->table->count();
+		$verified = $this->table->whereNotNull('email_verified_at')->count();
+
+        $this->data = collect([
+			[
+				'label' => 'verified',
+				'count' => $verified
+			],
+			[
+				'label' => 'not verified',
+				'count' => $total - $verified
+			]
+        ]);
+
+        return $this;
+	}
+
+	public function favorites()
+	{
+		$this->title = 'Favorites';
+		$this->colors = [$this->color['red'], $this->color['grey']];
+		$total = User::count();
+		$hasFavs = User::has('favorites')->count();
+
+        $this->data = collect([
+			[
+				'label' => 'with favorites',
+				'count' => $hasFavs
+			],
+			[
+				'label' => 'no favorites',
+				'count' => $total - $hasFavs
+			]
+        ]);
+
         return $this;
 	}
 }
