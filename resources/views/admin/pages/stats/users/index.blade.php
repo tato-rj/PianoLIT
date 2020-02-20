@@ -26,7 +26,7 @@
                               <button data-model="users" data-type="yearly" class="btn btn-outline-secondary">Yearly</button>
                             </div>
                             <div class="form-group-sm mx-1">
-                                <select class="chart-select form-control" data-parent="#stats-signups" name="origin">
+                                <select class="chart-select form-control" data-chart="line" data-parent="#stats-signups" name="origin">
                                     <option value="">Any origin</option>
                                     <option value="ios">iOS</option>
                                     <option value="web">Website</option>
@@ -48,7 +48,7 @@
                     <div class="d-flex justify-content-between mb-4">
                         <h4 class="text-center"><strong>Gender</strong></h4>
                           <div class="form-group-sm mx-1">
-                            <select class="chart-select form-control" data-parent="#stats-gender" name="origin">
+                            <select class="chart-select form-control" data-chart="pie" data-parent="#stats-gender" name="origin">
                                 <option value="">Any origin</option>
                                 <option value="ios">iOS</option>
                                 <option value="web">Website</option>
@@ -67,7 +67,7 @@
                     <div class="d-flex justify-content-between mb-4">
                         <h4 class="text-center"><strong>Email status</strong></h4>
                           <div class="form-group-sm mx-1">
-                            <select class="chart-select form-control" data-parent="#stats-confirmed" name="origin">
+                            <select class="chart-select form-control" data-chart="pie" data-parent="#stats-confirmed" name="origin">
                                 <option value="">Any origin</option>
                                 <option value="ios">iOS</option>
                                 <option value="web">Website</option>
@@ -187,7 +187,7 @@ $('.chart-select').on('change', function() {
     let type = $option.attr('data-chart');
     let container = $option.attr('data-parent');
 
-    makeChart('pie', container, "{{route('admin.stats.users')}}", {
+    makeChart(type, container, "{{route('admin.stats.users')}}", {
         model: $(container).find('canvas').attr('data-model'), 
         type: $(container).find('canvas').attr('data-type'),
         origin: $option.val()
@@ -205,7 +205,9 @@ makeChart = function(type, container, route, params) {
     
     $canvas.addClass('opacity-4');
 
+
     $.get(route, params, function(data) {
+        new Chart($canvas).destroy();
         nameToMethod(type, $canvas.attr('id'), data);
         $canvas.removeClass('opacity-4');
     });
