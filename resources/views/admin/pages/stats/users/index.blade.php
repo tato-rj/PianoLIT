@@ -13,113 +13,22 @@
     'title' => 'Users statistics',
     'description' => 'Data analytics for the users'])
 
-    <div class="row"> 
-        <div class="col-12 p-3">
-            <div class="border py-4 px-3">
-                <div id="stats-signups" class="carousel carousel-fade">
-                    <div class="d-flex justify-content-between mb-4">
-                        <h4 class="text-center"><strong>Flow of users over time</strong></h4>
-                        <div class="d-flex">
-                            <div class="select-btn-group btn-group btn-group-sm mx-1">
-                              <button data-model="users" data-type="daily" class="btn btn-secondary" selected>Daily</button>
-                              <button data-model="users" data-type="monthly" class="btn btn-outline-secondary" style="border-left: 0; border-right: 0;">Monthly</button>
-                              <button data-model="users" data-type="yearly" class="btn btn-outline-secondary">Yearly</button>
-                            </div>
-                            <div class="form-group-sm mx-1">
-                                <select class="chart-select form-control" data-chart="line" data-parent="#stats-signups" name="origin">
-                                    <option value="">Any origin</option>
-                                    <option value="ios">iOS</option>
-                                    <option value="web">Website</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <canvas id="chart-signups" data-model="users" data-type="daily" height="100"></canvas>
-                    </div>
-                </div>
-            </div>
+    <ul class="nav nav-pills justify-content-center mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="pills-logs-tab" data-toggle="pill" href="#pills-logs" role="tab" aria-controls="pills-logs" aria-selected="true">Logs</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="pills-data-tab" data-toggle="pill" href="#pills-data" role="tab" aria-controls="pills-data" aria-selected="false">Data</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-logs" role="tabpanel" aria-labelledby="pills-logs-tab">
+            @include('admin.pages.stats.users.sections.logs')
+        </div>
+        <div class="tab-pane fade" id="pills-data" role="tabpanel" aria-labelledby="pills-data-tab">
+            @include('admin.pages.stats.users.sections.data')
         </div>
     </div>
-    <div class="row"> 
-        <div class="col-4 p-3">
-            <div class="border py-4 px-3">
-                <div id="stats-gender">
-                    <div class="d-flex justify-content-between mb-4">
-                        <h4 class="text-center"><strong>Gender</strong></h4>
-                          <div class="form-group-sm mx-1">
-                            <select class="chart-select form-control" data-chart="pie" data-parent="#stats-gender" name="origin">
-                                <option value="">Any origin</option>
-                                <option value="ios">iOS</option>
-                                <option value="web">Website</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <canvas id="chart-gender" data-model="users" data-type="gender" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-4 p-3">
-            <div class="border py-4 px-3">
-                <div id="stats-confirmed">
-                    <div class="d-flex justify-content-between mb-4">
-                        <h4 class="text-center"><strong>Email status</strong></h4>
-                          <div class="form-group-sm mx-1">
-                            <select class="chart-select form-control" data-chart="pie" data-parent="#stats-confirmed" name="origin">
-                                <option value="">Any origin</option>
-                                <option value="ios">iOS</option>
-                                <option value="web">Website</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <canvas id="chart-confirmed" data-model="users" data-type="confirmed" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-4 p-3">
-            <div class="border py-4 px-3">
-                <div id="stats-favorites">
-                    <div class="d-flex justify-content-between mb-4">
-                        <h4 class="text-center"><strong>Favorites</strong></h4>
-                    </div>
-                    <div>
-                        <canvas id="chart-favorites" data-model="users" data-type="favorites" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-{{--     <div class="row"> 
-      @include('admin.pages.stats.row', [
-        'title' => 'Age groups',
-        'subtitle' => 'Number of users per age group.',
-        'id' => 'ageChart',
-        'col' => '4',
-        'data' => $usersAge])
-
-      @include('admin.pages.stats.row', [
-        'title' => 'Occupation',
-        'subtitle' => 'Number of users by occupation.',
-        'id' => 'occupationChart',
-        'col' => '4',
-        'data' => $usersOccupation])
-
-      @include('admin.pages.stats.row', [
-        'title' => 'Experience',
-        'subtitle' => 'Number of users by experience.',
-        'id' => 'experienceChart',
-        'col' => '4',
-        'data' => $usersExperience])
-    </div> --}}
-
-{{--     <div class="row">
-        @include('admin.pages.stats.users.ranking')
-    </div> --}}
 
   </div>
 </div>
@@ -129,15 +38,64 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-$(document).ready( function () {
-    $('#users-table').DataTable({
-        aaSorting: [],
-        columnDefs: [{
-                    targets: [3],
-                    orderable: false
-                }]
-    });
-} );
+(new DataTableRaw({table: '#users-table', options: {order: [[6, 'desc']]}})).create();
+</script>
+<script type="text/javascript">
+let graph = document.getElementById("logs-chart").getContext('2d');
+let graphData = JSON.parse($('#logs-chart').attr('data-records'));
+let labels = [];
+let app = [];
+let web = [];
+
+for (var i=0; i < graphData.length; i++) {
+  labels.push(graphData[i].day);
+  app.push(graphData[i].app);
+  web.push(graphData[i].web);
+}
+
+let piecesGraph = new Chart(graph, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'App logs',
+          backgroundColor: '#5eb58a',
+          borderColor: '#5eb58a',
+          data: app,
+          fill: false,
+        },
+        {
+          label: 'Web logs',
+          backgroundColor: '#f5c86d',
+          borderColor: '#f5c86d',
+          data: web,
+          fill: false,
+        }
+      ]
+    },
+
+    options: {
+      scales: {
+          yAxes: [{
+              ticks: {
+                  beginAtZero: true,
+                  stepSize: stepSize()
+              }
+          }],
+          xAxes: [{
+              // ticks: {
+              //   autoSkip: false
+              // }
+          }]
+      }
+    }
+});
+
+function stepSize()
+{
+  return Math.ceil(Math.max(...[Math.max(...app), Math.max(...web)])/5);
+}
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -200,24 +158,22 @@ function getSelectedOptionFrom(elem) {
 </script>
 
 <script type="text/javascript">
+var charts = [];
+
 makeChart = function(type, container, route, params) {
     let $canvas = $(container).find('canvas');
     
     $canvas.addClass('opacity-4');
 
-
     $.get(route, params, function(data) {
-        new Chart($canvas).destroy();
-        nameToMethod(type, $canvas.attr('id'), data);
+        destroy($canvas);
+        draw(type, $canvas, data);
         $canvas.removeClass('opacity-4');
     });
 }
 
-createLineChart = function(element, data) {
-    var chart = document.getElementById(element);
-    var ctx = chart.getContext('2d');
-
-    var myChart = new Chart(ctx, {
+line = function(canvas, data) {
+    return new Chart(canvas, {
         type: 'line',
         data: {
             labels: data.labels,
@@ -250,11 +206,8 @@ createLineChart = function(element, data) {
     }); 
 }
 
-createPieChart = function(element, data) {
-    var chart = document.getElementById(element);
-    var ctx = chart.getContext('2d');
-
-    var myChart = new Chart(ctx, {
+pie = function(canvas, data) {
+    return new Chart(canvas, {
         type: 'pie',
         data: {
             labels: data.labels,
@@ -275,14 +228,21 @@ createPieChart = function(element, data) {
     }); 
 }
 
-nameToMethod = function(name, element, data) {
-    let method = 'create' + ucfirst(name) + 'Chart';
-    return window[method](element, data);
+draw = function(method, canvas, data) {
+    let chart = window[method](canvas, data);
+    let id = canvas.attr('id');
+    let $label = $('span[data-origin="'+id+'"]');
+
+    charts[id] = chart;
+    $label.text(data.records.reduce(arraySum));
+    $label.parent().show();
 }
 
-ucfirst = function(s) {
-  if (typeof s !== 'string') return ''
-  return s.charAt(0).toUpperCase() + s.slice(1)
+destroy = function(canvas) {
+    let chart = charts[canvas.attr('id')];
+
+    if (chart)
+        chart.destroy();
 }
 
 convertHex = function(hex,opacity){
@@ -294,106 +254,9 @@ convertHex = function(hex,opacity){
     result = 'rgba('+r+','+g+','+b+','+opacity/100+')';
     return result;
 }
-</script>
 
-
-
-{{-- NEEDS UPDATE --}}
-<script type="text/javascript">
-function getElements(arr, n) {
-    return arr.slice(0, n);
+arraySum = function (total, num) {
+  return total + num;
 }
-</script>
-
-<script type="text/javascript">
-let ageRecords = JSON.parse($('#ageChart').attr('data-records'));
-let ages = [];
-let age_users_count = [];
-
-for (var i=0; i < ageRecords.length; i++) {
-  ages.push(ageRecords[i].age);
-  age_users_count.push(ageRecords[i].count);
-}
-
-var ageChartElement = document.getElementById("ageChart").getContext('2d');
-var ageChart = new Chart(ageChartElement,{
-    type: 'pie',
-    data: {
-        labels: ages,
-        datasets: [{
-            data: age_users_count,
-            backgroundColor: getRandom(colors, 6)
-        }]
-    },
-    options: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            padding: 20
-          }
-        }
-    }
-});
-
-let occupationRecords = JSON.parse($('#occupationChart').attr('data-records'));
-let occupations = [];
-let occupation_users_count = [];
-
-for (var i=0; i < occupationRecords.length; i++) {
-  occupations.push(occupationRecords[i].occupation);
-  occupation_users_count.push(occupationRecords[i].count);
-}
-
-var occupationChartElement = document.getElementById("occupationChart").getContext('2d');
-var occupationChart = new Chart(occupationChartElement,{
-    type: 'pie',
-    data: {
-        labels: occupations,
-        datasets: [{
-            data: occupation_users_count,
-            backgroundColor: getRandom(colors, 6)
-        }]
-    },
-    options: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            padding: 20
-          }
-        }
-    }
-});
-
-let experienceRecords = JSON.parse($('#experienceChart').attr('data-records'));
-let experiences = [];
-let experience_users_count = [];
-
-for (var i=0; i < experienceRecords.length; i++) {
-  experiences.push(experienceRecords[i].experience);
-  experience_users_count.push(experienceRecords[i].count);
-}
-
-var experienceChartElement = document.getElementById("experienceChart").getContext('2d');
-var experienceChart = new Chart(experienceChartElement,{
-    type: 'pie',
-    data: {
-        labels: experiences,
-        datasets: [{
-            data: experience_users_count,
-            backgroundColor: getRandom(colors, 6)
-        }]
-    },
-    options: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            padding: 20
-          }
-        }
-    }
-});
 </script>
 @endsection

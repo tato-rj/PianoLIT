@@ -9,6 +9,7 @@ use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
 use App\{User, Piece, Tag, Composer, Country};
 use Illuminate\Http\Request;
+use App\Log\Loggers\DailyLog;
 
 class StatsController extends Controller
 {
@@ -17,9 +18,11 @@ class StatsController extends Controller
         if (request()->ajax())
             return (new Stats)->for(request('model'))->origin(request('origin'))->query(request('type'))->get();
 
-        $users = User::withCount(['favorites', 'views'])->latest()->get();
+        $latest_logs = (new DailyLog)->latest(request()->has('logs_limit') ? request('logs_limit') : 6);
+        $users = User::latest()->get();
+        $logs_total_count = ((new \App\Log\LogFactory)->total());
 
-        return view('admin.pages.stats.users.index', compact(['users']));
+        return view('admin.pages.stats.users.index', compact(['latest_logs', 'users', 'logs_total_count']));
     }
 
     public function pieces()
