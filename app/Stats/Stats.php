@@ -119,8 +119,8 @@ class Stats {
 	{
 		$this->title = 'Favorites';
 		$this->colors = [$this->color['red'], $this->color['grey']];
-		$total = User::count();
-		$hasFavs = User::has('favorites')->count();
+		$total = User::where('origin', 'ios')->count();
+		$hasFavs = User::where('origin', 'ios')->has('favorites')->count();
 
         $this->data = collect([
 			[
