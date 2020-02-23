@@ -32,7 +32,7 @@ class MembershipsController extends Controller
     {
         $this->authorize('validate', Membership::class);
 
-        $users = User::exclude([284, 260, 249, 196])->expired();
+        $users = User::exclude([284, 260, 249, 196])->noSuperUsers()->expired();
 
         if ($users->isEmpty())
             return redirect()->back()->with('error', "We found no expired subscriptions.");

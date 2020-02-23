@@ -261,4 +261,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return ! is_null($this->email_verified_at);
     }
+
+    public function scopeNoSuperUsers($query)
+    {
+        return $query->where('super_user', false);
+    }
 }
