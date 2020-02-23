@@ -99,6 +99,10 @@ trait HasMembership
 
     public function getMembershipStatusAttribute()
     {
+        // THIS IS JILL, THE USER WHO SIGNED UP FOR THE YEAR
+        if ($this->id == 287)
+            return view('admin.components.users.status.member');
+
         if ($this->super_user)
             return view('admin.components.users.status.superuser');
 
@@ -107,10 +111,9 @@ trait HasMembership
 
         if ($this->membership->expired())
             return view('admin.components.users.status.expired');
-        
+
         if ($this->membership->created_at->diffInDays($this->membership->renews_at) <= 7)
             return view('admin.components.users.status.trial');
-
 
         return view('admin.components.users.status.member');
     }
