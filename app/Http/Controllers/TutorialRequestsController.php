@@ -21,6 +21,16 @@ class TutorialRequestsController extends Controller
         return view('admin.pages.requests.index');
     }
 
+    public function api(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (! $user)
+            return null;
+
+        return $user->tutorialRequests->load(['piece']);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

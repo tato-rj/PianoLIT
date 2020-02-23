@@ -57,7 +57,7 @@ $('button#missing-image').on('click', function(e) {
   {data: 'tags', name: 'tags.name', orderable: false},
   {data: 'level', name: 'tags.name', orderable: false},
   {data: 'ranking', name: 'tags.name', orderable: false},
-  {data: 'favorited', searchable: false},
+  {data: 'favorited', orderable: false, searchable: false},
   {data: 'actions', orderable: false, searchable: false},
 ]).dontSort().create();
 </script>

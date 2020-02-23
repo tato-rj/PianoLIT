@@ -86,14 +86,16 @@ Route::prefix('memberships')->name('memberships.')->group(function() {
 
 });
 
-Route::get('/discover', 'ApiController@discover')->name('discover');
+Route::get('discover', 'ApiController@discover')->name('discover');
 
-Route::get('/search', 'SearchController@search')->name('search');
+Route::get('search', 'SearchController@search')->name('search');
 
-Route::get('/tour', 'ApiController@tour')->name('tour');
+Route::get('tour', 'ApiController@tour')->name('tour');
 
-Route::get('/tags', 'ApiController@tags')->name('tags');
+Route::get('tags', 'ApiController@tags')->name('tags');
 
-Route::get('/composers', 'ApiController@composers')->name('composers');
+Route::get('composers', 'ApiController@composers')->name('composers');
 
-Route::get('/users', 'ApiController@users')->name('users');
+Route::get('users', 'ApiController@users')->name('users');
+
+Route::get('tutorial-requests', 'TutorialRequestsController@api')->name('tutorial-requests');
