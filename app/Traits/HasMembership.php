@@ -100,14 +100,17 @@ trait HasMembership
     public function getMembershipStatusAttribute()
     {
         if ($this->super_user)
-            return 'Super user';
+            return view('admin.components.users.status.superuser');
 
         if (! $this->membership()->exists())
-            return 'Guest';
+            return view('admin.components.users.status.guest');
+
+        if ($this->membership->created_at->diffInDays($this->membership->renews_at) <= 7)
+            return view('admin.components.users.status.trial');
 
         if ($this->membership->expired())
-            return 'Membership expired';
+            return view('admin.components.users.status.expired');
 
-        return 'Member';
+        return view('admin.components.users.status.member');
     }
 }

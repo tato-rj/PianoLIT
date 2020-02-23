@@ -38,7 +38,7 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTableRaw({table: '#users-table', options: {order: [[6, 'desc']]}})).create();
+(new DataTableRaw({table: '#users-table'})).create();
 </script>
 <script type="text/javascript">
 let graph = document.getElementById("logs-chart").getContext('2d');

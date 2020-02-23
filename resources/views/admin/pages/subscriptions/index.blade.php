@@ -42,7 +42,6 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
-
 (new DataTable('#subscriptions-table')).columns([
   {data: 'checkbox', orderable: false, searchable: false},
   {data: 'created_at', class: 'text-nowrap', sort: true},

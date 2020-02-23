@@ -25,4 +25,4 @@
         </div>
     </div>
 
-    @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'Name', 'Visits', 'Origin', 'Status', 'Last Active', 'Super User', '']])
+    @datatableRaw(['model' => 'users', 'rows' => 'admin.pages.stats.users.row', 'columns' => ['Date', 'Name', 'Visits', 'Origin', 'Status', 'Last Active', '']])

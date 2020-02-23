@@ -46,7 +46,7 @@
           'color' => 'intermediate',
           'icon' => 'users',
           'label' => $users_count . ' Users',
-          'url' => route('admin.users.index')])
+          'url' => route('admin.stats.users')])
 
         @include('admin.pages.home.card', [
           'color' => 'beginner',

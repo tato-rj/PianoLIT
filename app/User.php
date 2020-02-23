@@ -261,15 +261,4 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return ! is_null($this->email_verified_at);
     }
-
-    public function scopeDatatable($query)
-    {
-        return datatable($query)->withDate()->withBlade([
-            'origin' => view('admin.pages.users.table.origin'),
-            'status' => view('admin.pages.users.table.status'),
-            'activity' => view('admin.pages.users.table.activity'),
-            'super_user' => view('admin.pages.users.table.super-user'),
-            'action' => view('admin.pages.users.table.actions')
-        ])->checkable()->make();
-    }
 }
