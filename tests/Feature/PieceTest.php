@@ -114,6 +114,18 @@ class PieceTest extends AppTest
     }
 
     /** @test */
+    public function all_favorited_relationships_are_removed_when_a_piece_is_removed()
+    {
+        $this->signIn();
+
+        $piece_id = $this->piece->id;
+
+        $this->delete(route('admin.pieces.destroy', $this->piece->id));
+
+        $this->assertDatabaseMissing('favorites', ['piece_id' => $piece_id]);
+    }
+
+    /** @test */
     public function all_related_files_are_removed_when_a_piece_is_deleted()
     {
         \Storage::fake('public');

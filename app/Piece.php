@@ -14,7 +14,7 @@ class Piece extends PianoLit
     
     protected $googleCloud = 'https://storage.googleapis.com/pianolit-app/videos/';
     protected $folder = 'pieces';
-    protected $withCount = ['views', 'tags'];
+    protected $withCount = ['views', 'tags', 'favorites'];
     protected $casts = ['is_free' => 'boolean'];
     protected $appends = [
         'short_name',
@@ -46,6 +46,7 @@ class Piece extends PianoLit
 
         self::deleting(function($piece) {
             $piece->tags()->detach();
+            $piece->favorites()->delete();
             $piece->deleteFiles();
         });
     }
@@ -442,6 +443,7 @@ class Piece extends PianoLit
             'name' => view('admin.pages.pieces.table.name'),
             'ranking' => view('admin.pages.pieces.table.ranking'),
             'tags' => view('admin.pages.pieces.table.tags'),
+            'favorited' => view('admin.pages.pieces.table.favorited'),
             'actions' => $actions ?? view('admin.pages.pieces.table.actions'),
         ])->make();
     }
