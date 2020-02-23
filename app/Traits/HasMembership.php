@@ -105,11 +105,12 @@ trait HasMembership
         if (! $this->membership()->exists())
             return view('admin.components.users.status.guest');
 
+        if ($this->membership->expired())
+            return view('admin.components.users.status.expired');
+        
         if ($this->membership->created_at->diffInDays($this->membership->renews_at) <= 7)
             return view('admin.components.users.status.trial');
 
-        if ($this->membership->expired())
-            return view('admin.components.users.status.expired');
 
         return view('admin.components.users.status.member');
     }
