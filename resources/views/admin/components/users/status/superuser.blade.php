@@ -1,1 +1,1 @@
-<i class="fas fa-heart text-red mr-2"></i>Super user
+<i class="fas fa-user-shield text-blue mr-2"></i>Super user
