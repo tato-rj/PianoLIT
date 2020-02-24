@@ -15,7 +15,7 @@ class Api
     public function __construct()
     {
         $this->colors = [null, null, 'yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', 'green'];
-        $this->limit = mt_rand(6,10);
+        $this->limit = mt_rand(16,24);
     }
     
     public function free($title)
@@ -49,7 +49,7 @@ class Api
 
     public function composers($title)
     {
-        $collection = Composer::inRandomOrder()->atLeast(4)->withCount('pieces')->take(16)->get();
+        $collection = Composer::inRandomOrder()->atLeast(4)->withCount('pieces')->take($this->limit)->get();
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
