@@ -19,8 +19,8 @@
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <canvas id="chart-signups" class="w-100" data-model="users" data-type="daily" height="300"></canvas>
+                    <div style="height: 40vh">
+                        <canvas id="chart-signups" class="w-100" data-model="users" data-type="daily"></canvas>
                     </div>
                 </div>
             </div>

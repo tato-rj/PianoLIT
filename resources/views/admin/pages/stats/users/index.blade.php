@@ -189,6 +189,7 @@ line = function(canvas, data) {
             },
         ]},
         options: {
+        maintainAspectRatio: false,
             scales: {
                 yAxes: [{
                     ticks: {
