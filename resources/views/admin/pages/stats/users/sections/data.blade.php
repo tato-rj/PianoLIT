@@ -2,7 +2,7 @@
         <div class="col-12 p-3">
             <div class="border py-4 px-3">
                 <div id="stats-signups" class="carousel carousel-fade">
-                    <div class="d-flex justify-content-between mb-4">
+                    <div class="d-flex flex-wrap justify-content-between mb-4">
                         <h4 class="text-center"><strong>Flow of users over time</strong></h4>
                         <div class="d-flex">
                             <div class="select-btn-group btn-group btn-group-sm mx-1">
@@ -20,17 +20,17 @@
                         </div>
                     </div>
                     <div>
-                        <canvas id="chart-signups" data-model="users" data-type="daily" height="100"></canvas>
+                        <canvas id="chart-signups" class="w-100" data-model="users" data-type="daily" height="300"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="row"> 
-        <div class="col-4 p-3">
+        <div class="col-lg-4 col-md-4 col-12 p-3">
             <div class="border py-4 px-3">
                 <div id="stats-gender">
-                    <div class="d-flex justify-content-between mb-2">
+                    <div class="d-flex flex-wrap justify-content-between mb-2">
                         <h4 class="text-center m-0"><strong>Gender</strong></h4>
                         <div class="form-group-sm mx-1">
                             <select class="chart-select form-control form-control-sm" data-chart="pie" data-parent="#stats-gender" name="origin">
@@ -49,10 +49,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-4 p-3">
+        <div class="col-lg-4 col-md-4 col-12 p-3">
             <div class="border py-4 px-3">
                 <div id="stats-confirmed">
-                    <div class="d-flex justify-content-between mb-2">
+                    <div class="d-flex flex-wrap justify-content-between mb-2">
                         <h4 class="text-center"><strong>Email status</strong></h4>
                           <div class="form-group-sm mx-1">
                             <select class="chart-select form-control form-control-sm" data-chart="pie" data-parent="#stats-confirmed" name="origin">
@@ -71,10 +71,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-4 p-3">
+        <div class="col-lg-4 col-md-4 col-12 p-3">
             <div class="border py-4 px-3">
                 <div id="stats-favorites">
-                    <div class="d-flex justify-content-between mb-2">
+                    <div class="d-flex flex-wrap justify-content-between mb-2">
                         <h4 class="text-center"><strong>Favorites</strong></h4>
                     </div>
                     <div class="text-center mb-2 text-muted" style="display: none;">

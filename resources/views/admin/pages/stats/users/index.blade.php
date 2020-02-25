@@ -10,7 +10,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
   @include('admin.components.breadcrumb', [
-    'title' => 'Users statistics',
+    'title' => 'Statistics',
     'description' => 'Data analytics for the users'])
 
     <ul class="nav nav-pills justify-content-center mb-3" id="pills-tab" role="tablist">
