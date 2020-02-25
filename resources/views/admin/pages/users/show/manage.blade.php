@@ -1,19 +1,6 @@
 @include('admin.pages.users.show.title', ['title' => 'Manage Account'])
 
 <div class="row">
-  @if(in_array($user->getStatus(), ['trial', 'expired']))
-  <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
-    <a href="" data-toggle="modal" data-target="#trial-modal" class="link-none">
-      <div class="bg-pastel p-4 rounded">
-        <p class="mb-2">
-          <strong><i class="fas fa-calendar-alt mr-2"></i>{{$user->getStatus() == 'trial' ? 'Extend' : 'Restart'}} Trial</strong>
-        </p>
-        <span><small>Add +1 week of free trial</small></span>
-      </div>
-    </a>
-  </div>
-  @endif
-
   <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
     <a href="mailto:{{$user->email}}" class="link-none">
       <div class="bg-elementary p-4 rounded">
