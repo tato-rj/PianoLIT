@@ -39,13 +39,21 @@ $('.load-more').on('click', function() {
   let $button = $(this);
   let type = $button.attr('data-type');
   let limit = $button.closest('tr').siblings().length;
+  $button.text('LOADING...');
+  $button.prop('disabled', true);
 
   $.get("{{route('admin.users.load-logs', $user->id)}}", {start_at: limit, type: type}, function(data) {
     if (data) {
       $(data).insertBefore($button.closest('tr'));
+      $button.text('LOAD MORE');
     } else {
-      $button.prop('disabled', true).text('NO MORE LOGS');
+      $button.text('NO MORE LOGS');
     }
+    $button.prop('disabled', false);
+  })
+  .fail(function() {
+    alert('Something went wrong...');
+    $button.text('NOT WORKING');
   });
 });
 </script>
