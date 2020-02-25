@@ -106,7 +106,7 @@ trait HasMembership
         if ($this->super_user)
             return view('admin.components.users.status.superuser');
 
-        if (! $this->membership()->exists())
+        if (! $this->membership)
             return view('admin.components.users.status.guest');
 
         if ($this->membership->expired())

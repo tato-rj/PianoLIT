@@ -15,11 +15,11 @@ class StatsController extends Controller
 {
     public function users()
     {
-        if (request()->ajax())
-            return (new Stats)->for(request('model'))->origin(request('origin'))->query(request('type'))->get();
+        // if (request()->ajax())
+        //     return (new Stats)->for(request('model'))->origin(request('origin'))->query(request('type'))->get();
 
         $latest_logs = (new DailyLog)->latest(request()->has('logs_limit') ? request('logs_limit') : 6);
-        $users = User::latest()->get();
+        $users = User::latest()->with(['membership'])->get();
         $logs_total_count = ((new \App\Log\LogFactory)->total());
 
         return view('admin.pages.stats.users.index', compact(['latest_logs', 'users', 'logs_total_count']));

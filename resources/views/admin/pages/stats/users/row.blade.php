@@ -17,6 +17,7 @@
   <td class="text-truncate">
     {!! $item->membership_status == 'Member' ? '<div><i class="fas fa-credit-card"></i></div>' : $item->membership_status !!}
   </td>
+  
   @php($lastActive = $item->lastActive())
   <td class="{{! is_null($lastActive) && $lastActive->isAfter(now()->subHours(12)) ? 'text-success' : null}}" style="white-space: nowrap;">
     <span class="position-absolute invisible">{{! is_null($lastActive) ? $lastActive->timestamp : 0}}</span>
