@@ -15,47 +15,18 @@
     <div class="text-center">
       <a href="{{route('api.users.show', ['user_id' => $user->id])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
     </div>  
-   
-    @include('admin.pages.users.show.basic')
 
-    <ul class="nav nav-tabs mb-2" id="user-menu" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link {{request('section') == 'profile' || ! request()->has('section') ? 'active show' : null}}" name="profile" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Profile</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{request('section') == 'membership' ? 'active show' : null}}" name="membership" id="membership-tab" data-toggle="tab" href="#membership" role="tab" aria-controls="membership" aria-selected="false">Membership</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{request('section') == 'behavior' ? 'active show' : null}}" name="behavior" id="behavior-tab" data-toggle="tab" href="#behavior" role="tab" aria-controls="behavior" aria-selected="false">Behavior</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{request('section') == 'logs' ? 'active show' : null}}" name="logs" id="logs-tab" data-toggle="tab" href="#logs" role="tab" aria-controls="logs" aria-selected="false">Logs</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{request('section') == 'manage' ? 'active show' : null}}" name="manage" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage</a>
-      </li>
-      @if(app()->environment() == 'local')
-      <li class="nav-item">
-        <a class="nav-link {{request('section') == 'sandbox' ? 'active show' : null}}" name="sandbox" id="sandbox-tab" data-toggle="tab" href="#sandbox" role="tab" aria-controls="sandbox" aria-selected="false">Sandbox</a>
-      </li>
-      @endif
-    </ul>
+    @include('admin.pages.users.show.profile')
 
-    <div class="tab-content">
-      @include('admin.pages.users.show.profile')
+    @include('admin.pages.users.show.logs')
 
-      @include('admin.pages.users.show.membership.section')
+    @include('admin.pages.users.show.membership')
 
-      @include('admin.pages.users.show.behavior')
+    @include('admin.pages.users.show.manage')
 
-      @include('admin.pages.users.show.logs')
-
-      @include('admin.pages.users.show.manage')
-
-      @if(app()->environment() == 'local')
-      @include('admin.pages.users.show.sandbox')
-      @endif
-  </div>
+    @if(app()->environment() == 'local')
+    @include('admin.pages.users.show.sandbox')
+    @endif
   </div>
 </div>
 

@@ -22,6 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
     protected $dates = ['trial_ends_at', 'email_verified_at', 'last_active_at'];
     protected $appends = ['full_name', 'last_active_at', 'logs_count'];
+    protected $withCount = ['favorites'];
 
     protected static function boot()
     {
@@ -265,5 +266,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeNoSuperUsers($query)
     {
         return $query->where('super_user', false);
+    }
+
+    public function getFormattedOriginAttribute()
+    {
+        return $this->origin == 'ios' ? 'iOS' : ucfirst($this->origin);
     }
 }

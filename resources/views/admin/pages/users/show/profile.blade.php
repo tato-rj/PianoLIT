@@ -1,28 +1,22 @@
-<div class="tab-pane fade {{request('section') == 'profile' || ! request()->has('section') ? 'show active' : null}} m-3" id="profile">
-  <div class="row">
-    <div class="col-lg-6 col-md-6 col-sm-12 col-12 p-3">
-      <div class="text-center rounded bg-light px-3 py-2">
-        <p class="text-muted mb-2 pb-2 border-bottom"><strong>My age range is...</strong></p>
-        <p class="m-0">{{$user->age_range ?? 'Unknown'}}</p>          
-      </div>
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-12 col-12 p-3">
-      <div class="text-center rounded bg-light px-3 py-2">
-        <p class="text-muted mb-2 pb-2 border-bottom"><strong>I consider my piano experience to be...</strong></p>
-        <p class="m-0">{{$user->experience ? ucfirst($user->experience) : 'Unknown'}} {{$user->experience ? "($user->preferredLevel)" : null}}</p>          
-      </div>
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-12 col-12 p-3">
-      <div class="text-center rounded bg-light px-3 py-2">
-        <p class="text-muted mb-2 pb-2 border-bottom"><strong>The piece I like the most is...</strong></p>
-        <p class="m-0 clamp-1">{{$user->preferred_piece ? $user->preferred_piece->medium_name : 'Unknown'}}</p>          
-      </div>        
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-12 col-12 p-3">
-      <div class="text-center rounded bg-light px-3 py-2">
-        <p class="text-muted mb-2 pb-2 border-bottom"><strong>I came to PianoLit because I'm a...</strong></p>
-        <p class="m-0">{{$user->occupation ? ucfirst($user->occupation) : 'Unknown'}}</p>          
-      </div>            
-    </div>
+@component('admin.pages.users.show.title', ['title' => 'Basic Information'])
+<span class="text-muted mr-3">Super user status</span>@toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id)])
+@endcomponent
+
+<div class="row">
+  <div class="col-12">
+    @include('components.table', [
+      'content' => [
+        'Name' => $user->full_name,
+        'Email' => $user->email_confirmed ? 
+          $user->email . ' <span class="badge alert-green">confirmed on ' . $user->email_verified_at->toFormattedDateString() . '</span>' :
+          $user->email . ' <span class="badge badge-light">not yet confirmed</span>',
+        'Gender' => ucfirst($user->gender),
+        'Origin' => $user->formattedOrigin,
+        'Status' => $user->membership_status,
+        'Favorites' => $user->favorites_count,
+        'Logs' => $user->logs_count,
+        'Member since' => $user->created_at->toFormattedDateString()
+      ]
+    ])
   </div>
 </div>
