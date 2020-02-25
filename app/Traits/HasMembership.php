@@ -100,8 +100,8 @@ trait HasMembership
     public function getMembershipStatusAttribute()
     {
         // THIS IS JILL, THE USER WHO SIGNED UP FOR THE YEAR
-        if ($this->id == 287)
-            return view('admin.components.users.status.member');
+        // if ($this->id == 287)
+        //     return view('admin.components.users.status.member');
 
         if ($this->super_user)
             return view('admin.components.users.status.superuser');
