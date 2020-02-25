@@ -1,8 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('head')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
 @endsection
 
 @section('content')
@@ -36,17 +34,20 @@
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTable({
-  table: '#log-app-table', 
-  options: {pageLength: 5}
-})).create();
+$('.load-more').on('click', function() {
+  let $button = $(this);
+  let type = $button.attr('data-type');
+  let limit = $button.closest('tr').siblings().length;
 
-(new DataTable({
-  table: '#log-web-table', 
-  options: {pageLength: 5}
-})).create();
+  $.get("{{route('admin.users.load-logs', $user->id)}}", {start_at: limit, type: type}, function(data) {
+    if (data) {
+      $(data).insertBefore($button.closest('tr'));
+    } else {
+      $button.prop('disabled', true).text('NO MORE LOGS');
+    }
+  });
+});
 </script>
 
 <script type="text/javascript">
@@ -61,50 +62,6 @@ $('input.status-toggle').on('change', function() {
     }
   });
 });
-</script>
-<script type="text/javascript">
-$('.piece').on('click', function() {
-  $piece = $(this);
-  $heart = $piece.find('.fa-heart');
-
-  $heart.toggleClass('fas far');
-
-  $.post($piece.attr('data-url'), {'piece_id': $piece.attr('data-id'), 'user_id': $piece.attr('data-user_id')}, 
-    function(response){
-      console.log(response);
-    if(response.passes) {
-      // console.log(response);
-    } else {
-      // console.log('We couldn\'t save your feedback right now.');
-    }
-  });
-});
-</script>
-<script type="text/javascript">
-// Explicitly save/update a url parameter using HTML5's replaceState().
-function updateUrl(key, value) {
-  baseUrl = [location.protocol, '//', location.host, location.pathname].join('');
-  urlQueryString = document.location.search;
-  var newParam = key + '=' + value,
-  params = '?' + newParam;
-
-  // If the "search" string exists, then build params from it
-  if (urlQueryString) {
-    keyRegex = new RegExp('([\?&])' + key + '[^&]*');
-    // If param exists already, update it
-    if (urlQueryString.match(keyRegex) !== null) {
-      params = urlQueryString.replace(keyRegex, "$1" + newParam);
-    } else { // Otherwise, add it to end of query string
-      params = urlQueryString + '&' + newParam;
-    }
-  }
-  window.history.replaceState({}, "", baseUrl + params);
-}
-
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-  var name = $(e.target).attr('name');
-  updateUrl('section', name);
-})
 </script>
 
 <script type="text/javascript">

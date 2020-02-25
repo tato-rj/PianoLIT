@@ -31,6 +31,15 @@ class UsersController extends Controller
         return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted.');
     }
 
+    public function loadLogs(User $user, Request $request)
+    {
+        $type = $request->type;
+
+        $logs = array_slice($user->log()->$type, $request->start_at);
+
+        return view('admin.pages.users.show.logs.' . $type . '.rows', ['logs' => $logs])->render();
+    }
+
     public function destroyMany(Request $request)
     {        
         foreach (json_decode($request->ids) as $id) {
