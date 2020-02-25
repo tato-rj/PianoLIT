@@ -28,7 +28,7 @@ class TutorialRequestsController extends Controller
         if (! $user)
             return null;
 
-        $requests = $user->tutorialRequests->load(['piece'])->reverse();
+        $requests = $user->tutorialRequests;
 
         $requests->each(function($request, $index) use ($requests) {
             $requests[$index]->piece->request_published_at = $request->published_at ? $request->published_at->toFormattedDateString() : null;

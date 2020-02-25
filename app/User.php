@@ -69,7 +69,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function tutorialRequests()
     {
-        return $this->hasMany(TutorialRequest::class);
+        return $this->hasMany(TutorialRequest::class)->with('piece')->orderBy('created_at', 'DESC');
     }
 
     public function pendingTutorialRequests()
