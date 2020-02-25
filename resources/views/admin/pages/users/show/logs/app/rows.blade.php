@@ -20,7 +20,7 @@
   </tr>
   @else
     @if(!empty($more))
-    @include('admin.pages.users.show.logs.more', ['type' => 'web'])
+    @include('admin.pages.users.show.logs.more', ['type' => 'app'])
     @endif
     @break
   @endif
