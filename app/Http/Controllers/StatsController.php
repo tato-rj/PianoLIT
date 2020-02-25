@@ -15,8 +15,8 @@ class StatsController extends Controller
 {
     public function users()
     {
-        // if (request()->ajax())
-        //     return (new Stats)->for(request('model'))->origin(request('origin'))->query(request('type'))->get();
+        if (request()->ajax())
+            return (new Stats)->for(request('model'))->origin(request('origin'))->query(request('type'))->get();
 
         $latest_logs = (new DailyLog)->latest(request()->has('logs_limit') ? request('logs_limit') : 6);
         $users = User::latest()->with(['membership'])->get();
