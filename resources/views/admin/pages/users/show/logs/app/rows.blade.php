@@ -19,7 +19,9 @@
     </td>
   </tr>
   @else
+    @if(!empty($more))
     @include('admin.pages.users.show.logs.more', ['type' => 'web'])
+    @endif
     @break
   @endif
 @endforeach

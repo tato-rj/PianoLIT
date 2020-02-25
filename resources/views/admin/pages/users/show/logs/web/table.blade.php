@@ -9,7 +9,7 @@
           </tr>
         </thead>
         <tbody>
-          @include('admin.pages.users.show.logs.web.rows', ['logs' => $user->log()->web, 'limit' => 5])
+          @include('admin.pages.users.show.logs.web.rows', ['logs' => $user->log()->web, 'limit' => 5, 'more' => true])
         </tbody>
       </table>
     </div>
