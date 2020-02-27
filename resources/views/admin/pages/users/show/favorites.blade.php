@@ -1,4 +1,4 @@
-@include('admin.pages.users.show.title', ['title' => 'Favorites (' . $user->favorites_count . ')'])
+@include('admin.pages.users.show.title', ['title' => 'Favorites (' . $user->favorites_count . ')', 'icon' => 'heart'])
 
 <div class="row">
   <div class="col-12">

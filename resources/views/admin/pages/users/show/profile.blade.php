@@ -1,4 +1,4 @@
-@component('admin.pages.users.show.title', ['title' => 'Basic Information'])
+@component('admin.pages.users.show.title', ['title' => 'Basic Information', 'icon' => 'address-card'])
 <span class="text-muted mr-3">Super user status</span>@toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id)])
 @endcomponent
 

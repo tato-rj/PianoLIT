@@ -1,4 +1,4 @@
-@include('admin.pages.users.show.title', ['title' => 'Manage Account'])
+@include('admin.pages.users.show.title', ['title' => 'Manage Account', 'icon' => 'tools'])
 
 <div class="row">
   <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
