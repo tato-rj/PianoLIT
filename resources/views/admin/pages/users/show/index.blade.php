@@ -50,7 +50,7 @@ $('.load-more').on('click', function() {
       $(data).insertBefore($button.closest('tr'));
       $button.text('LOAD MORE');
     } else {
-      $button.text('NO MORE LOGS');
+      $button.text('NO MORE RESULTS');
     }
     $button.prop('disabled', false);
   })
