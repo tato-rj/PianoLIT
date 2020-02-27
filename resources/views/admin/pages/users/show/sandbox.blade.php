@@ -1,4 +1,5 @@
 @include('admin.pages.users.show.title', ['title' => 'Sandbox'])
+
 <div class="row">
   @if($user->membership()->exists())
   <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">

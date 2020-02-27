@@ -18,6 +18,8 @@
 
     @include('admin.pages.users.show.logs')
 
+    @include('admin.pages.users.show.favorites')
+
     @include('admin.pages.users.show.membership')
 
     @include('admin.pages.users.show.manage')
@@ -39,10 +41,11 @@ $('.load-more').on('click', function() {
   let $button = $(this);
   let type = $button.attr('data-type');
   let limit = $button.closest('tr').siblings().length;
+  let url = $button.attr('data-url');
   $button.text('LOADING...');
   $button.prop('disabled', true);
 
-  $.get("{{route('admin.users.load-logs', $user->id)}}", {start_at: limit, type: type}, function(data) {
+  $.get(url, {start_at: limit, type: type}, function(data) {
     if (data) {
       $(data).insertBefore($button.closest('tr'));
       $button.text('LOAD MORE');

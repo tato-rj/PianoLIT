@@ -40,6 +40,13 @@ class UsersController extends Controller
         return view('admin.pages.users.show.logs.' . $type . '.rows', ['logs' => $logs, 'limit' => 5])->render();
     }
 
+    public function loadFavorites(User $user, Request $request)
+    {
+        $pieces = $user->favorites->slice($request->start_at);
+
+        return view('admin.pages.users.show.favorites.row', ['pieces' => $pieces, 'limit' => 5])->render();
+    }
+
     public function destroyMany(Request $request)
     {        
         foreach (json_decode($request->ids) as $id) {
