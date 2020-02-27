@@ -3,6 +3,8 @@
     <thead>
       <tr>
         <th class="border-0" scope="col">Piece</th>
+        <th class="border-0" scope="col">Composer</th>
+        <th class="border-0" scope="col">Level</th>
       </tr>
     </thead>
     <tbody>
