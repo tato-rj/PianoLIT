@@ -1,4 +1,4 @@
-@include('admin.pages.users.show.title', ['title' => 'Activity Logs'])
+@include('admin.pages.users.show.title', ['title' => 'Activity Logs (' . $user->logs_count . ')'])
 
 <div class="row">
   <div class="col-12">

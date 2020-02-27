@@ -1,4 +1,4 @@
-@include('admin.pages.users.show.title', ['title' => 'Favorites'])
+@include('admin.pages.users.show.title', ['title' => 'Favorites (' . $user->favorites_count . ')'])
 
 <div class="row">
   <div class="col-12">
