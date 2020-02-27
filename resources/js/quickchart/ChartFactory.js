@@ -30,7 +30,7 @@ class ChartFactory
 		return datasets;
 	}
 
-	line() {
+	line() {        
 		return new Chart(this.canvas, {
 	        type: 'line',
 	        data: {

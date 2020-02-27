@@ -149,11 +149,12 @@ $('.chart-select').on('change', function() {
     let container = $option.attr('data-parent');
     let chart = $option.attr('data-chart');
     let type = $(container).find('canvas').attr('data-type');
-    let origin = $option.val();
+    let key = $option.attr('name');
+    let value = $option.val();
 
     quickchart.setup({
       element: container, 
-      url: "{{route('admin.stats.users')}}?type="+type+"&origin="+origin
+      url: "{{route('admin.stats.users')}}?type="+type+"&"+key+"="+value
     }).make(chart);
 });
 

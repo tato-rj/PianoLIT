@@ -134,7 +134,7 @@ class UserStats extends StatsFactory
     {
         $this->title = 'Activity logs';
         $this->colors = [$this->color['cyan'], $this->color['orange']];    
-        $this->data = (new DailyLog)->latest(request()->has('logs_limit') ? request('logs_limit') : 6);
+        $this->data = (new DailyLog)->latest($where['logs_limit'] ?? 6);
 
         return $this;
     }
