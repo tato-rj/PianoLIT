@@ -40,63 +40,6 @@
 <script type="text/javascript">
 (new DataTableRaw({table: '#users-table', options: {order: [[5, 'desc']]}})).create();
 </script>
-<script type="text/javascript">
-// let graph = document.getElementById("logs-chart").getContext('2d');
-// let graphData = JSON.parse($('#logs-chart').attr('data-records'));
-// let labels = [];
-// let app = [];
-// let web = [];
-
-// for (var i=0; i < graphData.length; i++) {
-//   labels.push(graphData[i].day);
-//   app.push(graphData[i].app);
-//   web.push(graphData[i].web);
-// }
-
-// let piecesGraph = new Chart(graph, {
-//     type: 'line',
-//     data: {
-//       labels: labels,
-//       datasets: [
-//         {
-//           label: 'App logs',
-//           backgroundColor: '#5eb58a',
-//           borderColor: '#5eb58a',
-//           data: app,
-//           fill: false,
-//         },
-//         {
-//           label: 'Web logs',
-//           backgroundColor: '#f5c86d',
-//           borderColor: '#f5c86d',
-//           data: web,
-//           fill: false,
-//         }
-//       ]
-//     },
-
-//     options: {
-//       scales: {
-//           yAxes: [{
-//               ticks: {
-//                   beginAtZero: true,
-//                   stepSize: stepSize()
-//               }
-//           }],
-//           xAxes: [{
-//               // ticks: {
-//               //   autoSkip: false
-//               // }
-//           }]
-//       }
-//     }
-// });
-
-// function stepSize()
-// {
-//   return Math.ceil(Math.max(...[Math.max(...app), Math.max(...web)])/5);
-// }
-</script>
 
 <script type="text/javascript">
 var quickchart = new QuickChart;
