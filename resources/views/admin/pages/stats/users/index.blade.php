@@ -41,67 +41,72 @@
 (new DataTableRaw({table: '#users-table', options: {order: [[5, 'desc']]}})).create();
 </script>
 <script type="text/javascript">
-let graph = document.getElementById("logs-chart").getContext('2d');
-let graphData = JSON.parse($('#logs-chart').attr('data-records'));
-let labels = [];
-let app = [];
-let web = [];
+// let graph = document.getElementById("logs-chart").getContext('2d');
+// let graphData = JSON.parse($('#logs-chart').attr('data-records'));
+// let labels = [];
+// let app = [];
+// let web = [];
 
-for (var i=0; i < graphData.length; i++) {
-  labels.push(graphData[i].day);
-  app.push(graphData[i].app);
-  web.push(graphData[i].web);
-}
+// for (var i=0; i < graphData.length; i++) {
+//   labels.push(graphData[i].day);
+//   app.push(graphData[i].app);
+//   web.push(graphData[i].web);
+// }
 
-let piecesGraph = new Chart(graph, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: 'App logs',
-          backgroundColor: '#5eb58a',
-          borderColor: '#5eb58a',
-          data: app,
-          fill: false,
-        },
-        {
-          label: 'Web logs',
-          backgroundColor: '#f5c86d',
-          borderColor: '#f5c86d',
-          data: web,
-          fill: false,
-        }
-      ]
-    },
+// let piecesGraph = new Chart(graph, {
+//     type: 'line',
+//     data: {
+//       labels: labels,
+//       datasets: [
+//         {
+//           label: 'App logs',
+//           backgroundColor: '#5eb58a',
+//           borderColor: '#5eb58a',
+//           data: app,
+//           fill: false,
+//         },
+//         {
+//           label: 'Web logs',
+//           backgroundColor: '#f5c86d',
+//           borderColor: '#f5c86d',
+//           data: web,
+//           fill: false,
+//         }
+//       ]
+//     },
 
-    options: {
-      scales: {
-          yAxes: [{
-              ticks: {
-                  beginAtZero: true,
-                  stepSize: stepSize()
-              }
-          }],
-          xAxes: [{
-              // ticks: {
-              //   autoSkip: false
-              // }
-          }]
-      }
-    }
-});
+//     options: {
+//       scales: {
+//           yAxes: [{
+//               ticks: {
+//                   beginAtZero: true,
+//                   stepSize: stepSize()
+//               }
+//           }],
+//           xAxes: [{
+//               // ticks: {
+//               //   autoSkip: false
+//               // }
+//           }]
+//       }
+//     }
+// });
 
-function stepSize()
-{
-  return Math.ceil(Math.max(...[Math.max(...app), Math.max(...web)])/5);
-}
+// function stepSize()
+// {
+//   return Math.ceil(Math.max(...[Math.max(...app), Math.max(...web)])/5);
+// }
 </script>
 
 <script type="text/javascript">
 var quickchart = new QuickChart;
 
 $(document).ready(function() {
+    quickchart.setup({
+      element: '#stats-logs', 
+      url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
+    }).make('line');
+
     quickchart.setup({
       element: '#stats-signups', 
       url: "{{route('admin.stats.users', ['type' => 'daily'])}}"
@@ -150,48 +155,10 @@ $('.chart-select').on('change', function() {
       element: container, 
       url: "{{route('admin.stats.users')}}?type="+type+"&origin="+origin
     }).make(chart);
-    
-    // makeChart(type, container, "{{route('admin.stats.users')}}", {
-    //     model: $(container).find('canvas').attr('data-model'), 
-    //     type: $(container).find('canvas').attr('data-type'),
-    //     origin: $option.val()
-    // });
 });
 
 function getSelectedOptionFrom(elem) {
     return $(elem).find('.chart-select option:selected');
 }
-</script>
-
-<script type="text/javascript">
-// makeChart = function(type, container, route, params) {
-//     let $canvas = $(container).find('canvas');
-    
-//     $canvas.addClass('opacity-4');
-
-//     $.get(route, params, function(data) {
-//         destroy($canvas);
-//         draw(type, $canvas, data);
-//         $canvas.removeClass('opacity-4');
-//     });
-// }
-
-// draw = function(method, canvas, data) {
-//     let chart = window[method](canvas, data);
-//     let id = canvas.attr('id');
-//     let $label = $('span[data-origin="'+id+'"]');
-
-//     charts[id] = chart;
-//     $label.text(data.records.reduce(arraySum));
-//     $label.parent().show();
-// }
-
-// destroy = function(canvas) {
-//     let chart = charts[canvas.attr('id')];
-
-//     if (chart)
-//         chart.destroy();
-// }
-
 </script>
 @endsection

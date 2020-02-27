@@ -12,22 +12,31 @@ class ChartFactory
 		}
 	}
 
+	_getLineData() {
+		let datasets = [];
+
+		for (i=0; i < this.data.datasets.length; i++) {
+			datasets.push({
+                label: this.data.datasets[i].title,
+                data: this.data.datasets[i].records,
+                pointBackgroundColor: convertHex(this.data.datasets[i].colors[i], 5),
+                pointBorderColor: this.data.datasets[i].colors[i],
+                backgroundColor: convertHex(this.data.datasets[i].colors[i], 5),
+                borderColor: this.data.datasets[i].colors[i],
+                borderWidth: 1,
+			});
+		}
+
+		return datasets;
+	}
+
 	line() {
 		return new Chart(this.canvas, {
 	        type: 'line',
 	        data: {
 	            labels: this.data.labels,
-	            datasets: [
-	            {
-	                label: this.data.title,
-	                data: this.data.records,
-	                pointBackgroundColor: convertHex(this.data.colors[0], 5),
-	                pointBorderColor: this.data.colors[0],
-	                backgroundColor: convertHex(this.data.colors[0], 5),
-	                borderColor: this.data.colors[0],
-	                borderWidth: 1
-	            },
-	        ]},
+	            datasets: this._getLineData()
+	        },
 	        options: {
 	        maintainAspectRatio: false,
 	            scales: {
@@ -47,15 +56,25 @@ class ChartFactory
 	    });
 	}
 
+	_getPieData() {
+		let datasets = [];
+
+		this.data.datasets.forEach(function(data) {
+			datasets.push({
+	                data: data.records,
+	                backgroundColor: data.colors
+	            });
+		});
+
+		return datasets;
+	}
+
 	pie() {
 	    return new Chart(this.canvas, {
 	        type: 'pie',
 	        data: {
 	            labels: this.data.labels,
-	            datasets: [{
-	                data: this.data.records,
-	                backgroundColor: this.data.colors
-	            }]
+	            datasets: this._getPieData()
 	        },
 	        options: {
 	            legend: {

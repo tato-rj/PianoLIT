@@ -52,9 +52,9 @@ class DailyLog
 			$date = now()->subDays($i);
 			$log = $this->all(now()->subDays($i));
 
-			$records[$i]['day'] = carbon($date)->format('D');
-			$records[$i]['app'] = 0;
-			$records[$i]['web'] = 0;
+			$records[$i]['label'] = carbon($date)->format('D');
+			$records[$i]['datasets']['app'] = 0;
+			$records[$i]['datasets']['web'] = 0;
 			
 			foreach (array_values($log->all()) as $events) {
 				foreach ($events as $event) {
@@ -67,7 +67,7 @@ class DailyLog
 			}
 		}
 
-		return array_values($records);
+		return collect(array_values($records));
 	}
 
     public function getOrigin($log)

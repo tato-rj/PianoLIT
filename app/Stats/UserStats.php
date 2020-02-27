@@ -3,6 +3,7 @@
 namespace App\Stats;
 
 use App\User;
+use App\Log\Loggers\DailyLog;
 
 class UserStats extends StatsFactory
 {
@@ -14,10 +15,8 @@ class UserStats extends StatsFactory
     public function get()
     {
         return [
-            'title' => $this->title, 
-            'labels' => $this->data->pluck('label'), 
-            'records' => $this->data->pluck('count'),
-            'colors' => $this->colors
+            'labels' => $this->data->pluck('label'),
+            'datasets' => $this->getDatasets()
         ];
     }
 
@@ -41,6 +40,7 @@ class UserStats extends StatsFactory
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
+
         return $this;
     }
 
@@ -54,6 +54,7 @@ class UserStats extends StatsFactory
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
+
         return $this;
     }
 
@@ -67,6 +68,7 @@ class UserStats extends StatsFactory
                     ->groupBy('label')
                     ->orderByRaw('min(created_at)')
                     ->get();
+
         return $this;
     }
 
@@ -80,6 +82,7 @@ class UserStats extends StatsFactory
                     ->groupBy('label')
                     ->orderBy('label')
                     ->get();
+
         return $this;
     }
 
@@ -123,6 +126,15 @@ class UserStats extends StatsFactory
                 'count' => $total - $hasFavs
             ]
         ]);
+
+        return $this;
+    }
+
+    public function logs($where = null)
+    {
+        $this->title = 'Activity logs';
+        $this->colors = [$this->color['cyan'], $this->color['orange']];    
+        $this->data = (new DailyLog)->latest(request()->has('logs_limit') ? request('logs_limit') : 6);
 
         return $this;
     }
