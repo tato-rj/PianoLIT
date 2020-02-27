@@ -97,27 +97,30 @@ function stepSize()
   return Math.ceil(Math.max(...[Math.max(...app), Math.max(...web)])/5);
 }
 </script>
+
 <script type="text/javascript">
+var quickchart = new QuickChart;
+
 $(document).ready(function() {
-    makeChart('line', '#stats-signups', "{{route('admin.stats.users')}}", {
-        model: 'users', 
-        type: 'daily'
-    });
+    quickchart.setup({
+      element: '#stats-signups', 
+      url: "{{route('admin.stats.users', ['type' => 'daily'])}}"
+    }).make('line');
 
-    makeChart('pie', '#stats-gender', "{{route('admin.stats.users')}}", {
-        model: 'users', 
-        type: 'gender'
-    });
+    quickchart.setup({
+      element: '#stats-gender', 
+      url: "{{route('admin.stats.users', ['type' => 'gender'])}}"
+    }).make('pie');
 
-    makeChart('pie', '#stats-confirmed', "{{route('admin.stats.users')}}", {
-        model: 'users', 
-        type: 'confirmed'
-    });
+    quickchart.setup({
+      element: '#stats-confirmed', 
+      url: "{{route('admin.stats.users', ['type' => 'confirmed'])}}"
+    }).make('pie');
 
-    makeChart('pie', '#stats-favorites', "{{route('admin.stats.users')}}", {
-        model: 'users', 
-        type: 'favorites'
-    });
+    quickchart.setup({
+      element: '#stats-favorites', 
+      url: "{{route('admin.stats.users', ['type' => 'favorites'])}}"
+    }).make('pie');
 });
 
 $('.select-btn-group .btn').on('click', function() {
@@ -128,28 +131,31 @@ $('.select-btn-group .btn').on('click', function() {
     $button.siblings().removeClass('btn-secondary').addClass('btn-outline-secondary').toggleAttr('selected');
     $button.removeClass('btn-outline-secondary').addClass('btn-secondary').toggleAttr('selected');
 
-    $canvas.attr({
-        'data-model': $button.attr('data-model'), 
-        'data-type': $button.attr('data-type')
-    });
+    $canvas.attr('data-type', $button.attr('data-type'));
 
-    makeChart('line', '#stats-signups', "{{route('admin.stats.users')}}", {
-        model: $canvas.attr('data-model'), 
-        type: $canvas.attr('data-type'),
-        origin: $option.val()
-    });
+    quickchart.setup({
+      element: '#stats-signups', 
+      url: "{{route('admin.stats.users')}}?type="+$canvas.attr('data-type')+"&origin="+$option.val()
+    }).make('line');
 });
 
 $('.chart-select').on('change', function() {
     let $option = $(this);
-    let type = $option.attr('data-chart');
     let container = $option.attr('data-parent');
+    let chart = $option.attr('data-chart');
+    let type = $(container).find('canvas').attr('data-type');
+    let origin = $option.val();
 
-    makeChart(type, container, "{{route('admin.stats.users')}}", {
-        model: $(container).find('canvas').attr('data-model'), 
-        type: $(container).find('canvas').attr('data-type'),
-        origin: $option.val()
-    });
+    quickchart.setup({
+      element: container, 
+      url: "{{route('admin.stats.users')}}?type="+type+"&origin="+origin
+    }).make(chart);
+    
+    // makeChart(type, container, "{{route('admin.stats.users')}}", {
+    //     model: $(container).find('canvas').attr('data-model'), 
+    //     type: $(container).find('canvas').attr('data-type'),
+    //     origin: $option.val()
+    // });
 });
 
 function getSelectedOptionFrom(elem) {
@@ -158,106 +164,34 @@ function getSelectedOptionFrom(elem) {
 </script>
 
 <script type="text/javascript">
-var charts = [];
-
-makeChart = function(type, container, route, params) {
-    let $canvas = $(container).find('canvas');
+// makeChart = function(type, container, route, params) {
+//     let $canvas = $(container).find('canvas');
     
-    $canvas.addClass('opacity-4');
+//     $canvas.addClass('opacity-4');
 
-    $.get(route, params, function(data) {
-        destroy($canvas);
-        draw(type, $canvas, data);
-        $canvas.removeClass('opacity-4');
-    });
-}
+//     $.get(route, params, function(data) {
+//         destroy($canvas);
+//         draw(type, $canvas, data);
+//         $canvas.removeClass('opacity-4');
+//     });
+// }
 
-line = function(canvas, data) {
-    return new Chart(canvas, {
-        type: 'line',
-        data: {
-            labels: data.labels,
-            datasets: [
-            {
-                label: data.title,
-                data: data.records,
-                pointBackgroundColor: convertHex(data.colors[0], 5),
-                pointBorderColor: data.colors[0],
-                backgroundColor: convertHex(data.colors[0], 5),
-                borderColor: data.colors[0],
-                borderWidth: 1
-            },
-        ]},
-        options: {
-        maintainAspectRatio: false,
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        min: 0,
-                        beginAtZero: true,
-                        callback: function(value, index, values) {
-                            if (Math.floor(value) === value) {
-                                return value;
-                            }
-                        }
-                    }
-                }]
-            }
-        }
-    }); 
-}
+// draw = function(method, canvas, data) {
+//     let chart = window[method](canvas, data);
+//     let id = canvas.attr('id');
+//     let $label = $('span[data-origin="'+id+'"]');
 
-pie = function(canvas, data) {
-    return new Chart(canvas, {
-        type: 'pie',
-        data: {
-            labels: data.labels,
-            datasets: [{
-                data: data.records,
-                backgroundColor: data.colors
-            }]
-        },
-        options: {
-            legend: {
-              display: true,
-              position: 'bottom',
-              labels: {
-                padding: 20
-              }
-            }
-        }
-    }); 
-}
+//     charts[id] = chart;
+//     $label.text(data.records.reduce(arraySum));
+//     $label.parent().show();
+// }
 
-draw = function(method, canvas, data) {
-    let chart = window[method](canvas, data);
-    let id = canvas.attr('id');
-    let $label = $('span[data-origin="'+id+'"]');
+// destroy = function(canvas) {
+//     let chart = charts[canvas.attr('id')];
 
-    charts[id] = chart;
-    $label.text(data.records.reduce(arraySum));
-    $label.parent().show();
-}
+//     if (chart)
+//         chart.destroy();
+// }
 
-destroy = function(canvas) {
-    let chart = charts[canvas.attr('id')];
-
-    if (chart)
-        chart.destroy();
-}
-
-convertHex = function(hex,opacity){
-    hex = hex.replace('#','');
-    r = parseInt(hex.substring(0,2), 16);
-    g = parseInt(hex.substring(2,4), 16);
-    b = parseInt(hex.substring(4,6), 16);
-
-    result = 'rgba('+r+','+g+','+b+','+opacity/100+')';
-    return result;
-}
-
-arraySum = function (total, num) {
-  return total + num;
-}
 </script>
 @endsection

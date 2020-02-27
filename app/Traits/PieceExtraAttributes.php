@@ -226,4 +226,9 @@ trait PieceExtraAttributes
     {
         return $this->tags->pluck('name');
     }
+
+    public function getComposerGenderAttribute()
+    {
+        return $this->composer->gender;
+    }
 }

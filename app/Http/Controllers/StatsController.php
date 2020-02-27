@@ -16,7 +16,7 @@ class StatsController extends Controller
     public function users()
     {
         if (request()->ajax())
-            return (new Stats)->for(request('model'))->origin(request('origin'))->query(request('type'))->get();
+            return (new Stats)->for('users')->query(request('type'), ['origin' => request('origin')])->get();
 
         $latest_logs = (new DailyLog)->latest(request()->has('logs_limit') ? request('logs_limit') : 6);
         $users = User::latest()->with(['membership'])->get();
@@ -27,23 +27,18 @@ class StatsController extends Controller
 
     public function pieces()
     {
-        $tagStats = Tag::whereIn('type', ['mood', 'technique'])->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
-        $tagsCount = Tag::count();
+        if (request()->ajax())
+            return (new Stats)->for('pieces')->query(request('type'))->get();
         
-        $levelsStats = Tag::levels()->withCount('pieces')->get();
-        $periodsStats = Tag::periods()->withCount('pieces')->get();
-        $genderStats = Piece::byGender();
-        $pieces = Piece::withCount('tags')->get();
-        $tagsPiecesStats = $pieces->groupBy('tags_count');
+        // $levelsStats = Tag::levels()->withCount('pieces')->get();
+        // $periodsStats = Tag::periods()->withCount('pieces')->get();
+        // $pieces = Piece::withCount(['tags'])->get();
 
-        $publicDomainCount = Piece::inPublicDomain()->count();
-        $videosCount = Piece::withVideos()->count();
-        $itunesCount = Piece::withiTunes()->count();
+        // $publicDomainCount = Piece::inPublicDomain()->count();
+        // $videosCount = Piece::withVideos()->count();
+        // $itunesCount = Piece::withiTunes()->count();
 
-        return view('admin.pages.stats.pieces.index', compact([
-            'tagStats', 'tagsCount', 'levelsStats', 'genderStats', 'periodsStats', 'pieces', 
-            'videosCount', 'itunesCount', 'tagsPiecesStats', 'publicDomainCount'
-        ]));
+        return view('admin.pages.stats.pieces.index', compact([]));
     }
 
     public function composers()

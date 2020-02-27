@@ -32,6 +32,7 @@ class TutorialRequestsController extends Controller
 
         $requests->each(function($request, $index) use ($requests) {
             $requests[$index]->piece->request_published_at = $request->published_at ? $request->published_at->toFormattedDateString() : null;
+            $requests[$index]->piece->request_created_at = $request->created_at->toFormattedDateString();
         });
 
         return $requests->pluck('piece');

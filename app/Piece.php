@@ -249,12 +249,10 @@ class Piece extends PianoLit
         });
     }
     
-    public function scopeByGender($query)
+    public function scopeByGender($query, $gender)
     {
-        return $query->get()->groupBy(function($piece) {
-            $piece->composer->gender;
-        })->each(function($gender) {
-            $gender['count'] = $gender->count();
+        return $query->whereHas('composer', function($query) use ($gender) {
+            return $query->where('gender', $gender);
         });
     }
 
