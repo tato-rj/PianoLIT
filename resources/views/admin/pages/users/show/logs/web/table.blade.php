@@ -1,5 +1,5 @@
     <div>
-      <h6 class="bg-light rounded w-100 p-3 mb-4"><strong>Web Logs</strong></h6>
+      <h6 class="bg-light rounded w-100 p-3 mb-4"><strong>Web Logs ({{((new \App\Log\LogFactory)->count($user->id, 'web'))}})</strong></h6>
       <table class="table table-hover border w-100" id="log-web-table">
         <thead>
           <tr>

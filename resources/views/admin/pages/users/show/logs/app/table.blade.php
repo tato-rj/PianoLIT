@@ -1,5 +1,5 @@
     <div class="mb-4">
-      <h6 class="bg-light rounded w-100 p-3 mb-4"><strong>App Logs</strong></h6>
+      <h6 class="bg-light rounded w-100 p-3 mb-4"><strong>App Logs ({{((new \App\Log\LogFactory)->count($user->id, 'app'))}})</strong></h6>
       <table class="table table-hover w-100 border" id="log-app-table">
         <thead>
           <tr>
