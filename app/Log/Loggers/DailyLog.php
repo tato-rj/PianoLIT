@@ -59,10 +59,10 @@ class DailyLog
 			foreach (array_values($log->all()) as $events) {
 				foreach ($events as $event) {
 					if (array_key_exists('app', $event))
-						$records[$i]['app'] = $event['app'];
+						$records[$i]['datasets']['app'] = $event['app'];
 
 					if (array_key_exists('web', $event))
-						$records[$i]['web'] = $event['web'];
+						$records[$i]['datasets']['web'] = $event['web'];
 				}
 			}
 		}
