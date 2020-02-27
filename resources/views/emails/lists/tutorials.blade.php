@@ -1,6 +1,6 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
-<h1 class="mail-title">This week's tutorials & tips</h1>
-Here is quick recap of the tutorials we published this week! If you need help with any piece found in the app, just tap the <span class="text-blue"><strong>Request Tutorial</strong></span> button on the videos tab to submit your request.
+<h1 class="mail-title">Latest tutorials & tips</h1>
+Here is quick recap of our latest tutorials and teaching tips! If you need help with any piece found in the app, just tap the <span class="text-blue"><strong>Request Tutorial</strong></span> button on the videos tab to submit your request.
 
 <h1 class="text-center">Don't have the app yet? What are you waiting for?</h1>
 @component('mail::button', ['url' => config('app.stores.ios')])
@@ -11,46 +11,46 @@ Download the iOS App now
 
 @component('mail::panel')
 <div class="text-center mb-2 pb-2 border-bottom">
-	<strong><small>III. Presto from Sonata Op.27 No.2 "Moonlight" by L.V. Beethoven</small></strong>
+	<strong><small>Tango Romantico by T. Brown</small></strong>
 </div>
-<h1 class="text-center mb-2">How to play fast repeated notes without accumulating tension on your wrists</h1>
-<div class="text-center">
-	<div class="badge badge-pill alert-advanced mb-2">{{strtoupper('advanced')}}</div>
-</div>
-The stormy final movement is in unexpected and powerful contrast to the sonata's more intimate beginning. In this tutorial, we explore the last theme of the third movement, where both hands play fast repeated chords. This is something that every pianist struggles with as it easily accumulates tension making your arm and wrists tired. We talk in detail how to practice this part to develop accuracy and avoid stiff movements.
-@endcomponent
-
-@component('mail::panel')
-<div class="text-center mb-2 pb-2 border-bottom">
-	<strong><small>Autumn sketch from 24 Lyric Preludes in Romantic Style by W. Gillock</small></strong>
-</div>
-<h1 class="text-center mb-2">How to balance the sound between your hands</h1>
+<h1 class="text-center mb-2">Playing octaves in the lower register of the piano with a lean and clear sound</h1>
 <div class="text-center">
 	<div class="badge badge-pill alert-intermediate mb-2">{{strtoupper('intermediate')}}</div>
 </div>
-Using this romantic piece by Gillock, we analyze the melodic lines and how to improve on them by balancing the sound between hands, carefully discerning the sound produced by your right hand (bearer of the melody) from the one produced by your left hand (accompaniment).
+Playing octaves is an essential part of piano playing. The lower region of the piano offers specific challenges when it comes to playing octaves, and that has to do with resonance. Let's see some exercises to play clean octaves on the left hand by highlighting the thumb and playing the bottom notes much softer.
 @endcomponent
 
 @component('mail::panel')
 <div class="text-center mb-2 pb-2 border-bottom">
-	<strong><small>The bear from Op.69 No.3 by D. Shostakovich</small></strong>
+	<strong><small>Doctor Gradus Ad Parnassum L 113 by C. Debussy</small></strong>
 </div>
-<h1 class="text-center mb-2">Polishing repeated notes and improve the accuracy of your jumps with the "stop and prepare" technique</h1>
+<h1 class="text-center mb-2">Using gestures to shape your musical lines</h1>
 <div class="text-center">
-	<div class="badge badge-pill alert-beginner mb-2">{{strtoupper('beginner')}}</div>
+	<div class="badge badge-pill alert-advanced mb-2">{{strtoupper('advanced')}}</div>
 </div>
-In this tutorial, we review a couple of fundamental tips: polishing repeated notes and jumps accuracy. Let's learn how to improve your musical phrase when playing repeated notes by avoiding an overly percussive sound. Review the "stop and prepare" technique and understand how it can help us perform this piece fluently.
+Here we'll explore some ideas to practice the running notes on the right hand in the main theme of this piece. Most often, a technical challenge can be overcome with a simple musical gesture and, in this case, coordinating your fingers with the motion of your wrist is essential to get the flowing character this theme requires.
 @endcomponent
 
 @component('mail::panel')
 <div class="text-center mb-2 pb-2 border-bottom">
-	<strong><small>Short Story by H. Lichner</small></strong>
+	<strong><small>The Goblin and the Mosquito by F. Price</small></strong>
 </div>
-<h1 class="text-center mb-2">Learn how to play full scales with even and clean sound</h1>
+<h1 class="text-center mb-2">Playing different musical ideas at the piano</h1>
 <div class="text-center">
-	<div class="badge badge-pill alert-beginner mb-2">{{strtoupper('beginner')}}</div>
+	<div class="badge badge-pill alert-intermediate mb-2">{{strtoupper('intermediate')}}</div>
 </div>
-We use this beginner piece to talk about a common topic in piano playing: scales. And specifically one of the fundamentals about scales, which is keeping an even and clean sound during the ascending and descending motion. We review the basics regarding the passage of the thumb and a good exercise for thumb mobility.
+Once we know what we want each character to sound like, the next question is: how do we do this? What tools or skills can we use to communicate the music we want? Here are some ideas on how to bring a musical idea to life and, by doing that, making your performance much more effective!
+@endcomponent
+
+@component('mail::panel')
+<div class="text-center mb-2 pb-2 border-bottom">
+	<strong><small>A B C D E F G by D. Rahbee</small></strong>
+</div>
+<h1 class="text-center mb-2">The basics of two-part form and what we can do to highlight this structure</h1>
+<div class="text-center">
+	<div class="badge badge-pill alert-elementary mb-2">{{strtoupper('elementary')}}</div>
+</div>
+Most pieces we play at this level are in two-part form or, as it is also referred to, an A-B form. We often overlook these simple forms, but understanding them is crucial for a good performance. In this lesson, we'll talk about why knowing this matters and how we can leverage it to make the music more engaging and expressive.
 @endcomponent
 
 @include('mail::divider', ['orientation' => 'vertical'])
