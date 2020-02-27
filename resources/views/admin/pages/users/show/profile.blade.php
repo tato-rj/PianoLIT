@@ -13,8 +13,8 @@
         'Gender' => ucfirst($user->gender),
         'Origin' => $user->formattedOrigin,
         'Status' => $user->membership_status,
-        'Favorites' => $user->favorites_count,
-        'Logs' => $user->logs_count,
+        'Favorites' => $user->favorites_count . ' ' . str_plural('piece', $user->favorites_count),
+        'Logs' => 'App ' . (new \App\Log\LogFactory)->count($user->id, 'app') . ' | Web ' . (new \App\Log\LogFactory)->count($user->id, 'web'),
         'Member since' => $user->created_at->toFormattedDateString()
       ]
     ])
