@@ -6,7 +6,7 @@
       </tr>
     </thead>
     <tbody>
-      @include('admin.pages.users.show.favorites.rows', ['pieces' => $user->favorites, 'limit' => 5, 'more' => true])
+      @include('admin.pages.users.show.favorites.rows', ['pieces' => $user->favorites->take(5), 'limit' => 5, 'more' => true])
     </tbody>
   </table>
 </div>
