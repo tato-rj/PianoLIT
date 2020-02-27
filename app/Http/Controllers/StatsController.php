@@ -15,7 +15,7 @@ class StatsController extends Controller
 {
     public function users()
     {
-        // if (request()->ajax())
+        if (request()->ajax())
             return (new Stats)->for('users')->query(request('type'), request()->except('type'))->get();
 
         $users = User::latest()->with(['membership'])->get();
