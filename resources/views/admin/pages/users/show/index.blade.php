@@ -36,6 +36,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://www.w3schools.com/lib/w3.js"></script>
 <script type="text/javascript">
 $('.load-more').on('click', function() {
   let $button = $(this);
