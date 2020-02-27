@@ -44,7 +44,7 @@ class UsersController extends Controller
     {
         $pieces = $user->favorites->slice($request->start_at);
 
-        return view('admin.pages.users.show.favorites.row', ['pieces' => $pieces, 'limit' => 5])->render();
+        return view('admin.pages.users.show.favorites.rows', ['pieces' => $pieces, 'limit' => 5])->render();
     }
 
     public function destroyMany(Request $request)
