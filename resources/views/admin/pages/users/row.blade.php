@@ -5,6 +5,11 @@
 
   <td class="dataTables_main_column">{{$item->full_name}}</td>
     
+  <td class="text-truncate {{$item->email_confirmed ? 'text-blue' : 'text-muted'}}" title="{{$item->email_confirmed ? 'Confirmed email on ' . $item->email_verified_at->toFormattedDateString() : 'Unconfirmed email'}}">
+    <i class="{{$item->origin_icon}}" style="font-size: {{$item->origin == 'ios'? '130%' : null}}"></i>
+    <small class="ml-1">{{$item->origin == 'ios'? 'iOS' : ucfirst($item->origin)}}</small>
+  </td>
+
   <td class="text-truncate" title="{{$item->membership()->exists() ? 'Membership validated ' . $item->membership->validated_at->diffForHumans() : 'Never subscribed with Apple'}}">
     {!! $item->membership_status == 'Member' ? '<div><i class="fas fa-credit-card"></i></div>' : $item->membership_status !!}
   </td>

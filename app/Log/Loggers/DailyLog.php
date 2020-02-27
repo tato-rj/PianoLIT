@@ -52,7 +52,7 @@ class DailyLog
 			$date = now()->subDays($i);
 			$log = $this->all(now()->subDays($i));
 
-			$records[$i]['label'] = carbon($date)->format('D');
+			$records[$i]['label'] = carbon($date)->format('D jS');
 			$records[$i]['datasets']['app'] = 0;
 			$records[$i]['datasets']['web'] = 0;
 			

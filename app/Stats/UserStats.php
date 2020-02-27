@@ -23,7 +23,7 @@ class UserStats extends StatsFactory
     public function where($conditions = [])
     {
         foreach ($conditions as $key => $condition) {
-            if ($condition)
+            if ($key && $condition)
                 $this->table = $this->table->where($key, $condition);        
         }
 

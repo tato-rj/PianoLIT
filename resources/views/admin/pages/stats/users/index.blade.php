@@ -71,38 +71,51 @@ $(document).ready(function() {
     }).make('pie');
 });
 
-$('.select-btn-group .btn').on('click', function() {
+$('.chart-btn').on('click', function() {
     let $button = $(this);
-    let $option = getSelectedOptionFrom('#stats-signups');
-    let $canvas = $('#stats-signups').find('canvas');
+    let container = $button.attr('data-parent');
+    let chart = $(container).attr('data-chart');
 
-    $button.siblings().removeClass('btn-secondary').addClass('btn-outline-secondary').toggleAttr('selected');
-    $button.removeClass('btn-outline-secondary').addClass('btn-secondary').toggleAttr('selected');
-
-    $canvas.attr('data-type', $button.attr('data-type'));
-
-    quickchart.setup({
-      element: '#stats-signups', 
-      url: "{{route('admin.stats.users')}}?type="+$canvas.attr('data-type')+"&origin="+$option.val()
-    }).make('line');
-});
-
-$('.chart-select').on('change', function() {
-    let $option = $(this);
-    let container = $option.attr('data-parent');
-    let chart = $option.attr('data-chart');
-    let type = $(container).find('canvas').attr('data-type');
-    let key = $option.attr('name');
-    let value = $option.val();
+    selectBtn($button);
 
     quickchart.setup({
       element: container, 
-      url: "{{route('admin.stats.users')}}?type="+type+"&"+key+"="+value
+      url: buildURL(container)
     }).make(chart);
 });
 
-function getSelectedOptionFrom(elem) {
-    return $(elem).find('.chart-select option:selected');
+$('.chart-select').on('change', function() {
+    let container = $(this).attr('data-parent');
+    let chart = $(container).attr('data-chart');
+
+    quickchart.setup({
+      element: container, 
+      url: buildURL(container)
+    }).make(chart);
+});
+
+function selectBtn($button) {
+    $button.siblings().removeClass('btn-secondary').addClass('btn-outline-secondary').removeAttr('selected');
+    $button.removeClass('btn-outline-secondary').addClass('btn-secondary').attr('selected', true);
+}
+
+function buildURL(container) {
+  let params = [];
+  let url = $(container).attr('data-url') + '?';
+  let $form = $(container).find('.chart-btn[selected], .chart-select option:selected');
+
+  $form.each(function() {
+    params.push({key: $(this).attr('name'), value: $(this).val()});
+  });
+
+  console.log(params);
+
+  params.forEach(function(query) {
+    if (query.key != null && query.value != null)
+      url += query.key + '=' + query.value + '&';
+  });
+
+  return url;
 }
 </script>
 @endsection
