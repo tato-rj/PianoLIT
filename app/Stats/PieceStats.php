@@ -14,7 +14,7 @@ class PieceStats extends StatsFactory
     public function period()
     {
         $this->title = 'Pieces by period';
-        $this->colors = [$this->color['cyan'], $this->color['pink'], $this->color['red'], $this->color['orange']];
+        $this->colors = [$this->color['cyan'], $this->color['pink'], $this->color['red'], $this->color['orange'], $this->color['blue'], $this->color['green'], $this->color['purple']];
         $this->data = collect([
             [
                 'label' => 'baroque',

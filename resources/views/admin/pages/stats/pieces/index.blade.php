@@ -27,7 +27,7 @@
             'type' => 'gender',
             'title' => 'Gender',
             'subtitle' => 'Pieces by composers gender',
-            'height' => 'auto'
+            'height' => '35vh'
           ])
         </div>
         <div class="col-lg-4 col-md-4 col-12 mb-4">
@@ -37,7 +37,7 @@
             'type' => 'level',
             'title' => 'Level',
             'subtitle' => 'Pieces by level',
-            'height' => 'auto'
+            'height' => '35vh'
           ])
         </div>
         <div class="col-lg-4 col-md-4 col-12 mb-4">
@@ -47,7 +47,7 @@
             'type' => 'period',
             'title' => 'Periods',
             'subtitle' => 'Pieces by period',
-            'height' => 'auto'
+            'height' => '35vh'
           ])
         </div>
     </div>

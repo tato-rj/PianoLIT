@@ -27,7 +27,7 @@
             'type' => 'gender',
             'title' => 'Gender',
             'subtitle' => 'Users by gender',
-            'height' => 'auto',
+            'height' => '30vh',
             'select' => [
               'origin' => [
                 ['label' => 'Any origin', 'value' => null],
@@ -44,7 +44,7 @@
             'type' => 'confirmed',
             'title' => 'Email status',
             'subtitle' => 'Users who confirmed their emails',
-            'height' => 'auto',
+            'height' => '30vh',
             'select' => [
               'origin' => [
                 ['label' => 'Any origin', 'value' => null],
@@ -61,7 +61,7 @@
             'type' => 'favorites',
             'title' => 'Favorites',
             'subtitle' => 'Users with favorited pieces',
-            'height' => 'auto',
+            'height' => '30vh',
           ])
         </div>
     </div>

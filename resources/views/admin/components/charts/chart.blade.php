@@ -30,7 +30,7 @@
       @endif
     </div>
   </div>
-  <div style="height: {{$height ?? '40vh'}}">
-    <canvas id="chart-{{$type}}" class="w-100"></canvas>
+  <div class="position-relative">
+    <canvas id="chart-{{$type}}" class="w-100" style="height: {{$height ?? '40vh'}}"></canvas>
   </div>
 </div>
