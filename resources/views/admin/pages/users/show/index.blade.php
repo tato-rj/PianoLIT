@@ -11,7 +11,7 @@
     'description' => "$user->first_name's profile"])
 
     <div class="text-center">
-      <a href="{{route('api.users.show', ['user_id' => $user->id])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
+      <a href="{{route('api.users.show', $user->id)}}" target="_blank" class="link-default"><small>See JSON response</small></a>
     </div>  
 
     @include('admin.pages.users.show.profile')

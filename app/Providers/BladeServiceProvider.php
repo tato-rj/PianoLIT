@@ -35,6 +35,7 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.datatable.raw', 'datatableRaw');
         \Blade::component('components.overlays.modal');
         \Blade::include('components.pagination');
+        \Blade::include('admin.components.charts.chart');
 
         \Blade::directive('popup', function ($card) {
             return view('components.overlays.subscribe.model-2');

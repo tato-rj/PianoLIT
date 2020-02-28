@@ -2,6 +2,7 @@ class QuickChart
 {
 	constructor() {
 		this.instances = [];
+		new ChartBootstrap(this).init();
 	}
 
 	setup(params) {

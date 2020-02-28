@@ -70,52 +70,5 @@ $(document).ready(function() {
       url: "{{route('admin.stats.users', ['type' => 'favorites'])}}"
     }).make('pie');
 });
-
-$('.chart-btn').on('click', function() {
-    let $button = $(this);
-    let container = $button.attr('data-parent');
-    let chart = $(container).attr('data-chart');
-
-    selectBtn($button);
-
-    quickchart.setup({
-      element: container, 
-      url: buildURL(container)
-    }).make(chart);
-});
-
-$('.chart-select').on('change', function() {
-    let container = $(this).attr('data-parent');
-    let chart = $(container).attr('data-chart');
-
-    quickchart.setup({
-      element: container, 
-      url: buildURL(container)
-    }).make(chart);
-});
-
-function selectBtn($button) {
-    $button.siblings().removeClass('btn-secondary').addClass('btn-outline-secondary').removeAttr('selected');
-    $button.removeClass('btn-outline-secondary').addClass('btn-secondary').attr('selected', true);
-}
-
-function buildURL(container) {
-  let params = [];
-  let url = $(container).attr('data-url') + '?';
-  let $form = $(container).find('.chart-btn[selected], .chart-select option:selected');
-
-  $form.each(function() {
-    params.push({key: $(this).attr('name'), value: $(this).val()});
-  });
-
-  console.log(params);
-
-  params.forEach(function(query) {
-    if (query.key != null && query.value != null)
-      url += query.key + '=' + query.value + '&';
-  });
-
-  return url;
-}
 </script>
 @endsection

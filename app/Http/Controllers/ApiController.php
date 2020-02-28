@@ -74,9 +74,9 @@ class ApiController extends Controller
         return [$piece];
     }
 
-    public function user(Request $request)
+    public function user(User $user)
     {
-        return $request->all();
+        return $user;
     }
 
     public function suggestions(Request $request)
