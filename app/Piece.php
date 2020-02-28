@@ -263,6 +263,13 @@ class Piece extends PianoLit
         });
     }
 
+    public function scopeByPeriod($query, $period)
+    {
+        return $query->whereHas('tags', function($query) use ($period) {
+            return $query->where('name', $period);
+        });
+    }
+
     public function scopeByWomen($query)
     {
         $name;

@@ -11,22 +11,42 @@ class PieceStats extends StatsFactory
         $this->table = \DB::table('pieces');
     }
 
-    public function videos()
+    public function period()
     {
-        $this->title = 'Pieces by videos';
-        $this->colors = [$this->color['pink'], $this->color['grey']];
+        $this->title = 'Pieces by period';
+        $this->colors = [$this->color['cyan'], $this->color['pink'], $this->color['red'], $this->color['orange']];
         $this->data = collect([
             [
-                'label' => 'has videos',
-                'count' => Piece::where('videos', '!=', null)->orWhere('videos', '!=', 'b:0;')->count()
+                'label' => 'baroque',
+                'count' => Piece::byPeriod('baroque')->count()
             ],
             [
-                'label' => 'no videos',
-                'count' => Piece::where('videos', null)->orWhere('videos', 'b:0;')->count()
+                'label' => 'classical',
+                'count' => Piece::byPeriod('classical')->count()
+            ],
+            [
+                'label' => 'romantic',
+                'count' => Piece::byPeriod('romantic')->count()
+            ],
+            [
+                'label' => 'impressionist',
+                'count' => Piece::byPeriod('impressionist')->count()
+            ],
+            [
+                'label' => 'modern',
+                'count' => Piece::byPeriod('modern')->count()
+            ],
+            [
+                'label' => 'jazz',
+                'count' => Piece::byPeriod('jazz')->count()
+            ],
+            [
+                'label' => 'contemporary',
+                'count' => Piece::byPeriod('contemporary')->count()
             ]
         ]);
         
-        return $this;
+        return $this;   
     }
 
     public function level()

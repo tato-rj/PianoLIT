@@ -44,9 +44,9 @@
           @chart([
             'url' => route('admin.stats.pieces'),
             'chart' => 'pie',
-            'type' => 'videos',
-            'title' => 'Videos',
-            'subtitle' => 'Pieces by videos',
+            'type' => 'period',
+            'title' => 'Periods',
+            'subtitle' => 'Pieces by period',
             'height' => 'auto'
           ])
         </div>
@@ -133,8 +133,8 @@ $(document).ready(function() {
     }).make('pie');
 
     quickchart.setup({
-      element: '#stats-videos', 
-      url: "{{route('admin.stats.pieces', ['type' => 'videos'])}}"
+      element: '#stats-period', 
+      url: "{{route('admin.stats.pieces', ['type' => 'period'])}}"
     }).make('pie');
 });
 </script>
