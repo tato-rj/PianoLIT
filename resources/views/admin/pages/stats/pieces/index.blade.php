@@ -19,6 +19,38 @@
     'title' => 'Pieces statistics',
     'description' => 'Charts and graphs on the pieces and their level, period and tags'])
 
+    <div class="row"> 
+        <div class="col-lg-4 col-md-4 col-12 mb-4">
+          @chart([
+            'url' => route('admin.stats.pieces'),
+            'chart' => 'pie',
+            'type' => 'gender',
+            'title' => 'Gender',
+            'subtitle' => 'Pieces by composers gender',
+            'height' => 'auto'
+          ])
+        </div>
+        <div class="col-lg-4 col-md-4 col-12 mb-4">
+          @chart([
+            'url' => route('admin.stats.pieces'),
+            'chart' => 'pie',
+            'type' => 'level',
+            'title' => 'Level',
+            'subtitle' => 'Pieces by level',
+            'height' => 'auto'
+          ])
+        </div>
+        <div class="col-lg-4 col-md-4 col-12 mb-4">
+          @chart([
+            'url' => route('admin.stats.pieces'),
+            'chart' => 'pie',
+            'type' => 'videos',
+            'title' => 'Videos',
+            'subtitle' => 'Pieces by videos',
+            'height' => 'auto'
+          ])
+        </div>
+    </div>
 {{--     <div class="row"> 
       @include('admin.pages.stats.row', [
         'title' => 'Periods',
@@ -79,11 +111,31 @@
 
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
-<script type="text/javascript">
+{{-- <script type="text/javascript">
 $(document).ready( function () {
     $('#pieces-table').DataTable({
     'order': [[1, 'desc']],
     });
 } );
+</script> --}}
+<script type="text/javascript">
+var quickchart = new QuickChart;
+
+$(document).ready(function() {
+    quickchart.setup({
+      element: '#stats-gender', 
+      url: "{{route('admin.stats.pieces', ['type' => 'gender'])}}"
+    }).make('pie');
+
+    quickchart.setup({
+      element: '#stats-level', 
+      url: "{{route('admin.stats.pieces', ['type' => 'level'])}}"
+    }).make('pie');
+
+    quickchart.setup({
+      element: '#stats-videos', 
+      url: "{{route('admin.stats.pieces', ['type' => 'videos'])}}"
+    }).make('pie');
+});
 </script>
 @endsection

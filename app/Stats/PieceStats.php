@@ -11,14 +11,48 @@ class PieceStats extends StatsFactory
         $this->table = \DB::table('pieces');
     }
 
-    public function get()
+    public function videos()
     {
-        return [
-            'title' => $this->title, 
-            'labels' => $this->data->pluck('label'), 
-            'records' => $this->data->pluck('count'),
-            'colors' => $this->colors
-        ];
+        $this->title = 'Pieces by videos';
+        $this->colors = [$this->color['pink'], $this->color['grey']];
+        $this->data = collect([
+            [
+                'label' => 'has videos',
+                'count' => Piece::where('videos', '!=', null)->orWhere('videos', '!=', 'b:0;')->count()
+            ],
+            [
+                'label' => 'no videos',
+                'count' => Piece::where('videos', null)->orWhere('videos', 'b:0;')->count()
+            ]
+        ]);
+        
+        return $this;
+    }
+
+    public function level()
+    {
+        $this->title = 'Pieces by level';
+        $this->colors = [$this->color['green'], $this->color['blue'], $this->color['orange'], $this->color['purple']];
+        $this->data = collect([
+            [
+                'label' => 'elementary',
+                'count' => Piece::byLevel('elementary')->count()
+            ],
+            [
+                'label' => 'beginner',
+                'count' => Piece::byLevel('beginner')->count()
+            ],
+            [
+                'label' => 'intermediate',
+                'count' => Piece::byLevel('intermediate')->count()
+            ],
+            [
+                'label' => 'advanced',
+                'count' => Piece::byLevel('advanced')->count()
+            ]
+        ]);
+        
+        return $this;   
     }
 
     public function gender()

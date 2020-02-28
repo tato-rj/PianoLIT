@@ -14,8 +14,14 @@ abstract class StatsFactory
 	    'pink' => '#f66d9b',
 	    'grey' => '#cecccc'
 	];
-
-	abstract public function get();
+    
+    public function get()
+    {
+        return [
+            'labels' => $this->data->pluck('label'),
+            'datasets' => $this->getDatasets()
+        ];
+    }
 
 	public function getDatasets()
 	{

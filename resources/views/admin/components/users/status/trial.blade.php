@@ -1,1 +1,0 @@
-<i class="fas fa-credit-card text-warning mr-2"></i>On trial

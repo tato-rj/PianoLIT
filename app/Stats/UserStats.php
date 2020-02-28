@@ -12,14 +12,6 @@ class UserStats extends StatsFactory
         $this->table = \DB::table('users');
     }
 
-    public function get()
-    {
-        return [
-            'labels' => $this->data->pluck('label'),
-            'datasets' => $this->getDatasets()
-        ];
-    }
-
     public function where($conditions = [])
     {
         foreach ($conditions as $key => $condition) {

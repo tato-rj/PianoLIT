@@ -2,7 +2,7 @@
 
 <div class="row">
   @if($user->membership()->exists())
-  <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
+  <div class="col-lg-4 col-md-4 col-sm-8 col-12 p-3">
     <form method="POST" action="{{route('admin.memberships.destroy', $user->id)}}">
       @csrf
       @method('DELETE')
@@ -15,7 +15,7 @@
     </form>
   </div>
   @else
-  <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
+  <div class="col-lg-4 col-md-4 col-sm-8 col-12 p-3">
     <form method="POST" action="{{route('api.memberships.store')}}">
       <input type="hidden" name="receipt_data" value="fake-receipt-data">
       <input type="hidden" name="password" value="fake-password">

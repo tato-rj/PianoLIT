@@ -97,24 +97,24 @@ trait HasMembership
         return $users;
     }
 
-    public function getMembershipStatusAttribute()
+    public function statusElements()
     {
         // THIS IS JILL, THE USER WHO SIGNED UP FOR THE YEAR
         // if ($this->id == 287)
         //     return view('admin.components.users.status.member');
 
         if ($this->super_user)
-            return view('admin.components.users.status.superuser');
+            return ['icon' => 'user-shield', 'color' => 'blue', 'label' => 'Super user'];
 
         if (! $this->membership)
-            return view('admin.components.users.status.guest');
+            return ['icon' => 'ghost', 'color' => 'grey', 'label' => 'Guest'];
 
         if ($this->membership->expired())
-            return view('admin.components.users.status.expired');
+            return ['icon' => 'credit-card', 'color' => 'grey', 'label' => 'Expired'];
 
         if ($this->membership->created_at->diffInDays($this->membership->renews_at) <= 7)
-            return view('admin.components.users.status.trial');
+            return ['icon' => 'credit-card', 'color' => 'yellow', 'label' => 'On trial'];
 
-        return view('admin.components.users.status.member');
+        return ['icon' => 'credit-card', 'color' => 'green', 'label' => 'Member'];
     }
 }

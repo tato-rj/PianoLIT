@@ -10,8 +10,8 @@
     <small class="ml-1">{{$item->origin == 'ios'? 'iOS' : ucfirst($item->origin)}}</small>
   </td>
 
-  <td class="text-truncate" title="{{$item->membership()->exists() ? 'Membership validated ' . $item->membership->validated_at->diffForHumans() : 'Never subscribed with Apple'}}">
-    {!! $item->membership_status == 'Member' ? '<div><i class="fas fa-credit-card"></i></div>' : $item->membership_status !!}
+  <td class="text-truncate">
+    @include('admin.components.users.status.sm', ['elements' => $item->statusElements()])
   </td>
 
   <td>

@@ -17,7 +17,7 @@
   </td>
   
   <td class="text-truncate">
-    {!! $item->membership_status == 'Member' ? '<div><i class="fas fa-credit-card"></i></div>' : $item->membership_status !!}
+    @include('admin.components.users.status.sm', ['elements' => $item->statusElements()])
   </td>
   
   @php($lastActive = $item->lastActive())

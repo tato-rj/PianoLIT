@@ -1,1 +1,0 @@
-<i class="fas fa-user-shield text-blue mr-2"></i>Super user

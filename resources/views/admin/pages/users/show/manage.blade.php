@@ -1,7 +1,7 @@
 @include('admin.pages.users.show.title', ['title' => 'Manage Account', 'icon' => 'tools'])
 
-<div class="row">
-  <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
+<div class="row mb-4">
+  <div class="col-lg-4 col-md-4 col-sm-8 col-12 p-3">
     <a href="mailto:{{$user->email}}" class="link-none">
       <div class="bg-elementary p-4 rounded">
         <p class="mb-2">
@@ -12,7 +12,7 @@
     </a>
   </div>
 
-  <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
+  <div class="col-lg-4 col-md-4 col-sm-8 col-12 p-3">
     <a href="" data-name="{{$user->full_name}}" data-url="{{route('admin.users.destroy', $user->id)}}" data-toggle="modal" data-target="#delete-modal" class="link-none">
       <div class="bg-intermediate p-4 rounded">
         <p class="mb-2">
@@ -23,7 +23,7 @@
     </a>
   </div>
 
-  <div class="col-lg-4 col-md-4 col-sm-8 col-8 p-3">
+  <div class="col-lg-4 col-md-4 col-sm-8 col-12 p-3">
     <a href="" data-name="{{$user->full_name}}" data-url="{{route('admin.users.purge', $user->id)}}" data-toggle="modal" data-target="#delete-modal" class="link-none">
       <div class="bg-advanced p-4 rounded">
         <p class="mb-2">

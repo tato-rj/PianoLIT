@@ -27,7 +27,7 @@ class StatsController extends Controller
     public function pieces()
     {
         if (request()->ajax())
-            return (new Stats)->for('pieces')->query(request('type'))->get();
+            return (new Stats)->for('pieces')->query(request('type'), request()->except('type'))->get();
         
         // $levelsStats = Tag::levels()->withCount('pieces')->get();
         // $periodsStats = Tag::periods()->withCount('pieces')->get();

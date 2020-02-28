@@ -1,1 +1,0 @@
-<i class="fas fa-ghost text-grey mr-2"></i><span class="text-muted">Guest</span>
