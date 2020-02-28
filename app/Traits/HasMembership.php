@@ -34,7 +34,7 @@ trait HasMembership
             return 'active';
         
         if (! $this->membership()->exists())
-            return 'expired';
+            return 'guest';
 
         if (! $this->membership->expired())
             return 'active';
