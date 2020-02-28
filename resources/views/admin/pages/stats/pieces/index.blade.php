@@ -1,14 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('head')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
-
-<script>
-    window.pieces = <?php echo json_encode([
-        'count' => 0//$pieces->count()
-    ]); ?>
-</script>
 @endsection
 
 @section('content')
@@ -50,6 +42,12 @@
             'height' => '35vh'
           ])
         </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-12">
+        
+      </div>
     </div>
 {{--     <div class="row"> 
       @include('admin.pages.stats.row', [
@@ -110,14 +108,6 @@
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
-{{-- <script type="text/javascript">
-$(document).ready( function () {
-    $('#pieces-table').DataTable({
-    'order': [[1, 'desc']],
-    });
-} );
-</script> --}}
 <script type="text/javascript">
 var quickchart = new QuickChart;
 

@@ -1,7 +1,7 @@
 <div>
   <table class="table table-hover w-100 border" id="favorites-table">
     <thead>
-      <tr>
+      <tr class="{{!empty($sortable) && $sortable == true ? 'table-sortable' : null }}">
         <th onclick="w3.sortHTML('#favorites-table', '.sortable', 'td:nth-child(1)')" style="cursor:pointer" class="border-0" scope="col">
           Piece <i class="fas fa-sort"></i></th>
         <th onclick="w3.sortHTML('#favorites-table', '.sortable', 'td:nth-child(2)')" style="cursor:pointer" class="border-0" scope="col">

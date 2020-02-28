@@ -1,3 +1,9 @@
+.table.table-sortable {
+	thead th {
+		cursor: pointer;
+	}
+}
+
 .border-elementary {
 	border-color: lighten($elementary, 40) !important;
 }

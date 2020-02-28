@@ -2,7 +2,7 @@
 
 <div class="row">
   <div class="col-lg-6 col-md-6 col-12 mb-4">
-    @include('components.table', [
+    @list([
       'content' => [
         'Name' => $user->full_name,
         'Email' => $user->email_confirmed ? 

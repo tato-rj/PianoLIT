@@ -81,7 +81,7 @@ class ChartFactory
 	              display: true,
 	              position: 'bottom',
 	              labels: {
-	                padding: 20
+	                // padding: 20
 	              }
 	            }
 	        }

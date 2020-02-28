@@ -2,8 +2,18 @@
 
 <div class="row">
   <div class="col-12 mb-4">
-    @include('admin.pages.users.show.logs.app.table')
-    @include('admin.pages.users.show.logs.web.table')
+  	@table([
+  		'id' => 'log-app-table',
+  		'title' => 'App Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'app')) . ')',
+  		'headers' => ['Date', 'Api call', 'Data'],
+  		'rows' => view('admin.pages.users.show.logs.app-rows', ['user' => $user, 'limit' => 5, 'more' => true])
+  	])
+  	@table([
+  		'id' => 'log-web-table',
+  		'title' => 'Web Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'web')) . ')',
+  		'headers' => ['Date', 'Api call', 'Data'],
+  		'rows' => view('admin.pages.users.show.logs.web-rows', ['user' => $user, 'limit' => 5, 'more' => true])
+  	])
   </div>
 </div>
 

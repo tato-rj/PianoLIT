@@ -1,4 +1,4 @@
-@foreach($logs as $date => $event)
+@foreach($user->log()->app as $date => $event)
 @if($loop->iteration <= $limit)
   <tr>
     <td class="text-nowrap">{{carbon($date)->format('M j\\, Y \\a\\t h:i A')}}</td>
