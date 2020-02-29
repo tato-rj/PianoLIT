@@ -37,11 +37,24 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="text-brand">Cover image</label>
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" name="cover" id="customFile">
-            <label class="custom-file-label truncate" for="customFile">Upload</label>
+        <div class="form-row form-group">
+          <div class="col">
+            <label class="text-brand">Cover image</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" name="cover" id="customFile">
+              <label class="custom-file-label truncate" for="customFile">Upload</label>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label class="text-brand">Period</label>
+              <select class="form-control" name="period">
+                <option selected disabled>Period</option>
+                @foreach(\App\Tag::periods()->get() as $period)
+                <option value="{{$period->name}}" {{(strtolower($composer->period) == $period->name) ? 'selected' : ''}}>{{ucfirst($period->name)}}</option>
+                @endforeach
+              </select>
+            </div>
           </div>
         </div>
         {{-- Nationality and period --}}
@@ -57,11 +70,11 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="text-brand">Period</label>
-              <select class="form-control" name="period">
-                <option selected disabled>Period</option>
-                @foreach(\App\Tag::periods()->get() as $period)
-                <option value="{{$period->name}}" {{(strtolower($composer->period) == $period->name) ? 'selected' : ''}}>{{ucfirst($period->name)}}</option>
+              <label class="text-brand">Ethnicity</label>
+              <select class="form-control" name="ethnicity">
+                <option selected disabled>Ethnicity</option>
+                @foreach(ethnicities() as $ethnicity)
+                <option value="{{$ethnicity}}" {{(strtolower($composer->ethnicity) == $ethnicity) ? 'selected' : ''}}>{{ucfirst($ethnicity)}}</option>
                 @endforeach
               </select>
             </div>

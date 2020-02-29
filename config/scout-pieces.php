@@ -161,8 +161,8 @@ return [
     */
     'allowTyposOnNumericTokens' => true,
     'advancedSyntax' => true,
-    'optionalWords' => ['composer', 'composers', 'piece', 'pieces'],
-    'disableTypoToleranceOnWords' => [],
+    'optionalWords' => ['composer', 'composers', 'piece', 'pieces', 'by', 'from'],
+    'disableTypoToleranceOnWords' => ['black'],
     'disableExactOnAttributes' => [],
     'ranking' => [
         'asc(catalogue_number)',

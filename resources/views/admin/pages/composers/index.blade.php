@@ -56,10 +56,21 @@
   <div class="form-group">
     <textarea class="form-control" rows="3" name="curiosity" placeholder="Did you know?">{{ old('curiosity') }}</textarea>
   </div>
-  <div class="form-group">
-    <div class="custom-file">
-      <input type="file" class="custom-file-input" name="cover" id="customFile">
-      <label class="custom-file-label truncate" for="customFile">Cover image</label>
+  <div class="form-row form-group">
+    <div class="col">
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" name="cover" id="customFile">
+        <label class="custom-file-label truncate" for="customFile">Cover image</label>
+      </div>
+    </div>
+    <div class="col">
+      <select class="form-control {{$errors->has('period') ? 'is-invalid' : ''}}" name="period" >
+        <option selected disabled>Period</option>
+        @foreach(\App\Tag::periods()->get() as $period)
+        <option value="{{$period->name}}" {{ old('period') == $period->name ? 'selected' : ''}}>{{ucfirst($period->name)}}</option>
+        @endforeach
+      </select>
+      @include('admin.components.feedback', ['field' => 'period'])
     </div>
   </div>
   {{-- Nationality and period --}}
@@ -74,13 +85,13 @@
       @include('admin.components.feedback', ['field' => 'nationality'])
     </div>
     <div class="col">
-      <select class="form-control {{$errors->has('period') ? 'is-invalid' : ''}}" name="period" >
-        <option selected disabled>Period</option>
-        @foreach(\App\Tag::periods()->get() as $period)
-        <option value="{{$period->name}}" {{ old('period') == $period->name ? 'selected' : ''}}>{{ucfirst($period->name)}}</option>
+      <select class="form-control {{$errors->has('ethnicity') ? 'is-invalid' : ''}}" name="ethnicity" >
+        <option selected disabled>Ethnicity</option>
+        @foreach(ethnicities() as $ethnicity)
+        <option value="{{$ethnicity}}" {{ old('ethnicity') == $ethnicity ? 'selected' : ''}}>{{ucfirst($ethnicity)}}</option>
         @endforeach
       </select>
-      @include('admin.components.feedback', ['field' => 'period'])
+      @include('admin.components.feedback', ['field' => 'ethnicity'])
     </div>
   </div>
   {{-- Dates --}}

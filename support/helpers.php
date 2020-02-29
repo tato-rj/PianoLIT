@@ -373,6 +373,11 @@ function periods()
 	return ['baroque', 'classical', 'romantic', 'impressionist', 'modern', 'contemporary'];
 }
 
+function ethnicities()
+{
+	return ['white', 'black', 'asian', 'latin american'];
+}
+
 function nationalities()
 {
 	return ['german', 'czech', 'american', 'italian', 'spanish', 'french', 'russian', 'austrian'];

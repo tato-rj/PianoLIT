@@ -47,6 +47,7 @@ class ComposersController extends Controller
             'biography' => $form->biography,
             'cover_path' => $form->file('cover')->store('app/composers', 'public'),
             'gender' => $form->gender,
+            'ethnicity' => $form->ethnicity,
             'curiosity' => $form->curiosity,
             'country_id' => $form->country_id,
             'period' => $form->period,
@@ -99,6 +100,7 @@ class ComposersController extends Controller
             'date_of_death' => $request->date_of_death ? carbon($request->date_of_death)->format('Y-m-d') : null,
             'biography' => $request->biography,
             'gender' => $request->gender,
+            'ethnicity' => $request->ethnicity,
             'curiosity' => $request->curiosity,
             'country_id' => $request->country_id,
             'period' => strtolower($request->period)
