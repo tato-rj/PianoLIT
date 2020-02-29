@@ -42,6 +42,16 @@
             'height' => '35vh'
           ])
         </div>
+        <div class="col-lg-4 col-md-4 col-12 mb-4">
+          @chart([
+            'url' => route('admin.stats.pieces'),
+            'chart' => 'pie',
+            'type' => 'ethnicity',
+            'title' => 'Ethnicity',
+            'subtitle' => 'Pieces by ethnicity',
+            'height' => '35vh'
+          ])
+        </div>
     </div>
 
     <div class="row">
@@ -125,6 +135,11 @@ $(document).ready(function() {
     quickchart.setup({
       element: '#stats-period', 
       url: "{{route('admin.stats.pieces', ['type' => 'period'])}}"
+    }).make('pie');
+
+    quickchart.setup({
+      element: '#stats-ethnicity', 
+      url: "{{route('admin.stats.pieces', ['type' => 'ethnicity'])}}"
     }).make('pie');
 });
 </script>

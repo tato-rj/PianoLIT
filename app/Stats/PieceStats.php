@@ -92,4 +92,20 @@ class PieceStats extends StatsFactory
         
         return $this;
     }
+
+    public function ethnicity()
+    {
+        $this->title = 'Pieces by ethnicity';
+        $this->colors = [$this->color['cyan'], $this->color['purple'], $this->color['orange'], $this->color['pink']];
+        $this->data = collect();
+
+        foreach (ethnicities() as $ethnicity) {
+            $this->data->push([
+                'label' => $ethnicity,
+                'count' => Piece::byEthnicity($ethnicity)->count()
+            ]);
+        }
+        
+        return $this;
+    }
 }
