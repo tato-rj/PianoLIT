@@ -1,4 +1,4 @@
-@foreach($user->favorites as $piece)
+@foreach($pieces as $piece)
   @if($loop->iteration <= $limit)
   <tr class="sortable">
     <td class="dataTables_main_column">{{$piece->medium_name}}</td>

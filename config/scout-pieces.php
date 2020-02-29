@@ -161,7 +161,7 @@ return [
     */
     'allowTyposOnNumericTokens' => true,
     'advancedSyntax' => true,
-    'optionalWords' => [],
+    'optionalWords' => ['composer', 'composers', 'piece', 'pieces'],
     'disableTypoToleranceOnWords' => [],
     'disableExactOnAttributes' => [],
     'ranking' => [
@@ -188,5 +188,6 @@ return [
         ['difficult', 'advanced']
     ],
     'separatorsToIndex' => '#',
+    'removeWordsIfNoResults' => 'lastWords'
 ];
 
