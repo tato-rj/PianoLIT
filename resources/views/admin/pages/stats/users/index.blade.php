@@ -46,6 +46,11 @@ var quickchart = new QuickChart;
 
 $(document).ready(function() {
     quickchart.setup({
+      element: '#stats-logs', 
+      url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
+    }).make('line');
+
+    quickchart.setup({
       element: '#stats-signups', 
       url: "{{route('admin.stats.users', ['type' => 'daily'])}}"
     }).make('line');
@@ -64,11 +69,6 @@ $(document).ready(function() {
       element: '#stats-favorites', 
       url: "{{route('admin.stats.users', ['type' => 'favorites'])}}"
     }).make('pie');
-
-    quickchart.setup({
-      element: '#stats-logs', 
-      url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
-    }).make('line');
 });
 </script>
 @endsection
