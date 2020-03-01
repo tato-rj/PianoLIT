@@ -45,10 +45,10 @@
 var quickchart = new QuickChart;
 
 $(document).ready(function() {
-    quickchart.setup({
-      element: '#stats-logs', 
-      url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
-    }).make('line');
+    // quickchart.setup({
+    //   element: '#stats-logs', 
+    //   url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
+    // }).make('line');
 
     quickchart.setup({
       element: '#stats-gender', 
