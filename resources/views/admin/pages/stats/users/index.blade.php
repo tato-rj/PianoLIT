@@ -51,11 +51,6 @@ $(document).ready(function() {
     }).make('line');
 
     quickchart.setup({
-      element: '#stats-signups', 
-      url: "{{route('admin.stats.users', ['type' => 'daily'])}}"
-    }).make('line');
-
-    quickchart.setup({
       element: '#stats-gender', 
       url: "{{route('admin.stats.users', ['type' => 'gender'])}}"
     }).make('pie');
@@ -69,6 +64,11 @@ $(document).ready(function() {
       element: '#stats-favorites', 
       url: "{{route('admin.stats.users', ['type' => 'favorites'])}}"
     }).make('pie');
+
+    quickchart.setup({
+      element: '#stats-signups', 
+      url: "{{route('admin.stats.users', ['type' => 'daily'])}}"
+    }).make('line');
 });
 </script>
 @endsection

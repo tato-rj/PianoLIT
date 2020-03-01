@@ -43,7 +43,7 @@
             'chart' => 'pie',
             'type' => 'confirmed',
             'title' => 'Email status',
-            'subtitle' => 'Users who confirmed their emails',
+            'subtitle' => 'Users with confirmed emails',
             'height' => '30vh',
             'select' => [
               'origin' => [

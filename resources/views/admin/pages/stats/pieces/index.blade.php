@@ -48,7 +48,7 @@
             'chart' => 'pie',
             'type' => 'ethnicity',
             'title' => 'Ethnicity',
-            'subtitle' => 'Pieces by ethnicity',
+            'subtitle' => 'Pieces by composers ethnicity',
             'height' => '35vh'
           ])
         </div>
