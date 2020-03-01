@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\{Composer, EmailList};
 use App\Mail\Timeline\OnThisDay;
+use App\Events\Emails\EmailListSent;
 
 class SendTimelineEmail extends Command
 {
@@ -29,8 +30,11 @@ class SendTimelineEmail extends Command
      */
     public function handle()
     {
-        if (Composer::famous()->bornToday()->exists())
-            EmailList::birthdays()->send();
+        if (Composer::famous()->bornToday()->exists()) {
+            $list = EmailList::birthdays();
+            $list->send();
+            event(new EmailListSent($list));
+        }
 
         return $this->info('The birthday email has been processed for today.');
     }
