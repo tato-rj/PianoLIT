@@ -1,4 +1,3 @@
-<hr style="opacity: 0.3; margin: 3rem 0;">
 <strong style="text-align: center; width: 100%;"><span style="margin-right: .25em">🧐</span>Also in that time...</strong>
 @component('mail::panel')
 @foreach($history->sortBy('year') as $event)
