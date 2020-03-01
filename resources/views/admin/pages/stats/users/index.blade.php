@@ -45,10 +45,10 @@
 var quickchart = new QuickChart;
 
 $(document).ready(function() {
-    // quickchart.setup({
-    //   element: '#stats-logs', 
-    //   url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
-    // }).make('line');
+    quickchart.setup({
+      element: '#stats-signups', 
+      url: "{{route('admin.stats.users', ['type' => 'daily'])}}"
+    }).make('line');
 
     quickchart.setup({
       element: '#stats-gender', 
@@ -66,8 +66,8 @@ $(document).ready(function() {
     }).make('pie');
 
     quickchart.setup({
-      element: '#stats-signups', 
-      url: "{{route('admin.stats.users', ['type' => 'daily'])}}"
+      element: '#stats-logs', 
+      url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
     }).make('line');
 });
 </script>
