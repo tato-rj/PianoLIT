@@ -82,7 +82,6 @@ class Api
     public function ranking($ranking, $title)
     {
         $collection = Tag::atLeast(5)->ranking($ranking)->select('name')->withCount('pieces')->get();
-        // route('search.index', ['global', 'search' => $ranking])
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, [
@@ -93,7 +92,7 @@ class Api
 
     public function levels($title)
     {
-        $collection = Tag::atLeast(5)->levels()->select('name')->withCount('pieces')->get();
+        $collection = Tag::extendedLevels()->select('name')->withCount('pieces')->get();
 
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 

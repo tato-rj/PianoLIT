@@ -1,4 +1,5 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
+
 @include('mail::newsletter.quote', [
 	'quote' => 'I live in music like a fish in water.', 
 	'author' => 'Camille Saint-Saëns'
@@ -10,7 +11,8 @@
 		'color' => 'green',
 		'link' => '#'
 	],
-	'title' => 'Rising with music'])
+	'title' => 'Rising with music'
+])
 
 <p>asdnajnsdkj sadkjnsjksa</p>
 <p>jsadhsad iauduiash</p>
@@ -19,6 +21,7 @@
 @component('mail::button', ['url' => '#'])
 ASDJNASKJn
 @endcomponent
+
 <p class="text-md text-italic"><strong>FUN FACT</strong>: In 1913, Chaminade was awarded the Légion d'Honneur, a first for a female composer.</p>
 @endcomponent
 
@@ -87,10 +90,6 @@ Let me try!
 
 @component('mail::panel')
 People went wild at Franz Liszt’s concerts. No exaggeration. With his long hair and theatrical style, Liszt played with intensity and passion, revolutionizing the way classical music was performed. And <a href="'#" target="_blank">Lisztomania</a> swept across Europe in the 19th century. <a href="#" target="_blank">Watch this video to learn more</a>
-@endcomponent
-
-@component('mail::panel')
-ASNJKN askjdnaskdjns asudhduhishiASD
 @endcomponent
 
 @component('mail::panel')

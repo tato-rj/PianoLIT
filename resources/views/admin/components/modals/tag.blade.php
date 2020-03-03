@@ -25,6 +25,7 @@
               </optgroup>
               <optgroup label="Core tags">
                 <option value="level">Level</option>
+                <option value="sublevel">Sublevel</option>
                 <option value="period">Period</option>
                 <option value="length">Length</option>
               </optgroup>

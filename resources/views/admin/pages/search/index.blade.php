@@ -8,7 +8,11 @@
     'title' => 'Search',
     'description' => 'Explore the search api',
     'path' => 'pieces/search'])
-    
+
+    <div class="text-center mb-2">
+      <a href="{{route('api.tags')}}" target="_blank" class="link-default"><small>See JSON response</small></a>
+    </div>
+
     <div class="row my-3">
       <div class="col-lg-6 col-md-8 col-10 mx-auto">
 

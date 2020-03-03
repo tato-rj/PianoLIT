@@ -10,7 +10,7 @@ class Tag extends PianoLit
     
     protected $labels = [
         'search' => ['mood', 'technique', 'genre', 'ranking'],
-        'core' => ['level', 'period', 'length']
+        'core' => ['level', 'sublevel', 'period', 'length']
     ];
 
     private $specialTags = ['dreamy', 'elegant', 'flashy', 'crazy', 'melancholic', 'happy'];
@@ -58,6 +58,11 @@ class Tag extends PianoLit
     	return $query->where('type', 'level');
     }
     
+    public function scopeExtendedLevels($query)
+    {
+        return $query->whereIn('type', ['level', 'sublevel'])->whereNotIn('name', ['beginner', 'intermediate'])->orderBy('order');
+    }
+    
     public function scopeMood($query)
     {
         return $query->where('type', 'mood');
@@ -95,7 +100,7 @@ class Tag extends PianoLit
 
     public function scopeDisplay($query)
     {
-        return $query->whereNotIn('type', ['ranking', 'lengths']);
+        return $query->whereNotIn('type', ['ranking', 'length', 'period', 'level', 'sublevel'])->orderBy('name');
     }
 
     public function scopeImprove($query)

@@ -58,6 +58,17 @@ class AppServiceProvider extends ServiceProvider
             return $this;
         });
 
+        Collection::macro('insertBefore', function ($index, $element) {
+            if ($index > 0)
+                return $this->splice($index - 1, 0, $element);
+
+            return $this;
+        });
+
+        Collection::macro('insertAfter', function ($index, $element) {
+            return $this->splice($index + 1, 0, $element);
+        });
+
         Collection::macro('scoutRelevance', function() {
             return $this->sortByDesc(function($piece, $key) {
                 return $piece->scoutMetadata()['_rankingInfo']['words'];

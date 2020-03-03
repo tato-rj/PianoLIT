@@ -18,6 +18,7 @@ class CreateTagsTable extends Migration
             $table->string('type')->nullable();
             $table->string('name');
             $table->unsignedInteger('creator_id')->nullable();
+            $table->unsignedInteger('order')->default(0);
             $table->timestamps();
         });
 
