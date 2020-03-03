@@ -64,8 +64,14 @@ $('button#missing-image').on('click', function(e) {
 
 <script type="text/javascript">
 
-$(window).click(function() {
-  $('.popup').hide(); 
+$(window).click(function(e) {
+  if(e.target.class == "input-tag")
+    return;
+
+  if($(e.target).closest('.tags-quick-edit').length)
+    return; 
+
+  $('.popup').hide();
 });
 
 $('.popup').on('click', function(event) {
