@@ -113,9 +113,19 @@ class Piece extends PianoLit
         return $this->hasMany(TutorialRequest::class);
     }
 
+    public function getSubLevelAttribute()
+    {
+        return $this->tags->where('type', 'sublevel')->first();
+    }
+
     public function getLevelAttribute()
     {
         return $this->tags->where('type', 'level')->first();
+    }
+
+    public function getExtendedLevelAttribute()
+    {
+        return $this->sublevel ?? $this->level; 
     }
 
     public function getLengthAttribute()
