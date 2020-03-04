@@ -19,6 +19,7 @@
       @csrf
       <button class="btn btn-outline-success btn-sm"><i class="fas fa-sync-alt mr-1"></i>Refresh discover page</button>
     </form>
+    <p>{{$key}}</p>
   </div>
 
   <div class="row">

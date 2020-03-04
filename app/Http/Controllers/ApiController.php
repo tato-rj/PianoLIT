@@ -37,8 +37,8 @@ class ApiController extends Controller
 
         if (request()->wantsJson() || request()->has('api'))
             return $collection->toArray();
-
-        return view('admin.pages.discover.index', compact(['collection']));
+// return $key;
+        return view('admin.pages.discover.index', compact(['collection', 'key']));
     }
 
     /**

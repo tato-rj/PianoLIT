@@ -9,7 +9,7 @@ class RedisController extends Controller
 {
     public function update($key)
     {
-    	\Redis::append($key, $key . '-' . now()->timestamp);
+    	\Redis::set($key, $key . '-' . now()->timestamp);
     	
     	return back()->with('status', 'The discover page has been refreshed. It will now reload each day at ' . now()->format('h:i'));
     }
