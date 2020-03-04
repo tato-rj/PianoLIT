@@ -13,7 +13,7 @@ class ComposerForm extends FormRequest
      */
     public function authorize()
     {
-        $this->date_of_birth = carbon($this->date_of_birth)->format('Y-m-d');
+        $this->date_of_birth = $this->date_of_birth ? carbon($this->date_of_birth)->format('Y-m-d') : null;
         $this->date_of_death = $this->date_of_death ? carbon($this->date_of_death)->format('Y-m-d') : null;
         $this->period = strtolower($this->period);
 
@@ -33,8 +33,7 @@ class ComposerForm extends FormRequest
             'cover' => 'required',
             'gender' => 'required',
             'country_id' => 'required',
-            'period' => 'required',
-            'date_of_birth' => 'required'
+            'period' => 'required'
         ];
     }
 }

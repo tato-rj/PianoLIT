@@ -24,12 +24,12 @@ abstract class Person extends PianoLit
 
     public function wasBornToday()
     {
-        return $this->date_of_birth->isBirthday(now());
+        return $this->date_of_birth ? $this->date_of_birth->isBirthday(now()) : null;
     }
 
     public function hasDiedToday()
     {
-        return $this->date_of_death->isBirthday(now());
+        return $this->date_of_death ? $this->date_of_death->isBirthday(now()) : null;
     }
 
     public function scopeBornToday($query)
