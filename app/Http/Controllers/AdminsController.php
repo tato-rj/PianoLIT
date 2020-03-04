@@ -18,7 +18,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return Tag::name('advanced')->first()->pieces();
+        return Tag::where('name', 'advanced')->first()->pieces();
         $pieces_count = Piece::count();
         $composers_count = Composer::count();
         $users_count = User::count();
