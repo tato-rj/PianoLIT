@@ -9,6 +9,7 @@ class ChartFactory
 		switch (type) {
 			case "line": return this.line(); break;
 			case "pie": return this.pie(); break;
+			case "bar": return this.bar(); break;
 		}
 	}
 
@@ -83,6 +84,34 @@ class ChartFactory
 	              labels: {
 	                // padding: 20
 	              }
+	            }
+	        }
+	    }); 
+	}
+
+	_getBarData() {
+		let datasets = [];
+
+		this.data.datasets.forEach(function(data) {
+			datasets.push({
+	                data: data.records,
+	                backgroundColor: data.colors
+	            });
+		});
+		
+		return datasets;
+	}
+
+	bar() {
+	    return new Chart(this.canvas, {
+	        type: 'bar',
+	        data: {
+	            labels: this.data.labels,
+	            datasets: this._getBarData()
+	        },
+	        options: {
+	            legend: {
+	              display: false
 	            }
 	        }
 	    }); 

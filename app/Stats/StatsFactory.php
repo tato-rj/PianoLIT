@@ -12,7 +12,8 @@ abstract class StatsFactory
 	    'cyan' => '#4dc0b5', 
 	    'blue' => '#3490dc', 
 	    'pink' => '#f66d9b',
-	    'grey' => '#cecccc'
+	    'grey' => '#cecccc',
+        'yellow' => '#f6e978'
 	];
     
     public function get()
@@ -49,4 +50,19 @@ abstract class StatsFactory
 
         return array_values($records);
 	}
+
+    public function getColor($color)
+    {
+        return $this->color[$color];
+    }
+
+    public function where($conditions = [])
+    {
+        foreach ($conditions as $key => $condition) {
+            if ($key && $condition)
+                $this->table = $this->table->where($key, $condition);        
+        }
+
+        return $this;
+    }
 }

@@ -12,6 +12,23 @@
     'description' => 'Charts and graphs on the pieces and their level, period and tags'])
 
     <div class="row"> 
+        <div class="col-12 mb-4">
+          @chart([
+            'url' => route('admin.stats.pieces'),
+            'chart' => 'bar',
+            'type' => 'level',
+            'title' => 'Level',
+            'subtitle' => 'Pieces by level',
+            'height' => '35vh',
+            'select' => [
+              'gender' => [
+                ['label' => 'Any gender', 'value' => null],
+                ['label' => 'Male', 'value' => 'male'],
+                ['label' => 'Female', 'value' => 'female']
+              ]
+            ],
+          ])
+        </div>
         <div class="col-lg-4 col-md-4 col-12 mb-4">
           @chart([
             'url' => route('admin.stats.pieces'),
@@ -19,16 +36,6 @@
             'type' => 'gender',
             'title' => 'Gender',
             'subtitle' => 'Pieces by composers gender',
-            'height' => '35vh'
-          ])
-        </div>
-        <div class="col-lg-4 col-md-4 col-12 mb-4">
-          @chart([
-            'url' => route('admin.stats.pieces'),
-            'chart' => 'pie',
-            'type' => 'level',
-            'title' => 'Level',
-            'subtitle' => 'Pieces by level',
             'height' => '35vh'
           ])
         </div>
@@ -130,7 +137,7 @@ $(document).ready(function() {
     quickchart.setup({
       element: '#stats-level', 
       url: "{{route('admin.stats.pieces', ['type' => 'level'])}}"
-    }).make('pie');
+    }).make('bar');
 
     quickchart.setup({
       element: '#stats-period', 

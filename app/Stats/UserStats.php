@@ -12,16 +12,6 @@ class UserStats extends StatsFactory
         $this->table = \DB::table('users');
     }
 
-    public function where($conditions = [])
-    {
-        foreach ($conditions as $key => $condition) {
-            if ($key && $condition)
-                $this->table = $this->table->where($key, $condition);        
-        }
-
-        return $this;
-    }
-
     public function daily($where = null)
     {
         $this->where($where);

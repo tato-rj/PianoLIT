@@ -49,22 +49,39 @@ class PieceStats extends StatsFactory
         return $this;   
     }
 
-    public function level()
+    public function level($where = null)
     {
+        $this->where($where);
+        
         $this->title = 'Pieces by level';
-        $this->colors = [$this->color['green'], $this->color['blue'], $this->color['orange'], $this->color['purple']];
+        $this->colors = [
+            $this->getColor('yellow'), 
+            $this->getColor('pink'), 
+            $this->getColor('green'), 
+            $this->getColor('blue'), 
+            $this->getColor('orange'), 
+            $this->getColor('purple')
+        ];
         $this->data = collect([
             [
                 'label' => 'elementary',
                 'count' => Piece::byLevel('elementary')->count()
             ],
             [
-                'label' => 'beginner',
-                'count' => Piece::byLevel('beginner')->count()
+                'label' => 'early beginner',
+                'count' => Piece::byLevel('early beginner')->count()
             ],
             [
-                'label' => 'intermediate',
-                'count' => Piece::byLevel('intermediate')->count()
+                'label' => 'late beginner',
+                'count' => Piece::byLevel('late beginner')->count()
+            ],
+            [
+                'label' => 'early intermediate',
+                'count' => Piece::byLevel('early intermediate')->count()
+            ],
+            [
+                'label' => 'late intermediate',
+                'count' => Piece::byLevel('late intermediate')->count()
             ],
             [
                 'label' => 'advanced',
