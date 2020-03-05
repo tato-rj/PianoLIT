@@ -2,7 +2,7 @@
 
 namespace App\Stats;
 
-use App\{Piece, Composer, Tag};
+use App\{Piece, Composer};
 
 class PieceStats extends StatsFactory
 {
@@ -52,7 +52,7 @@ class PieceStats extends StatsFactory
     public function level($where = null)
     {
         $this->where($where);
-
+        
         $this->title = 'Pieces by level';
         $this->colors = [
             $this->getColor('yellow'), 
@@ -65,27 +65,27 @@ class PieceStats extends StatsFactory
         $this->data = collect([
             [
                 'label' => 'elementary',
-                'count' => Tag::name('elementary')->withCount('pieces')->first()->pieces_count
+                'count' => Piece::byLevel('elementary')->count()
             ],
             [
                 'label' => 'early beginner',
-                'count' => Tag::name('early beginner')->withCount('pieces')->first()->pieces_count
+                'count' => Piece::byLevel('early beginner')->count()
             ],
             [
                 'label' => 'late beginner',
-                'count' => Tag::name('late beginner')->withCount('pieces')->first()->pieces_count
+                'count' => Piece::byLevel('late beginner')->count()
             ],
             [
                 'label' => 'early intermediate',
-                'count' => Tag::name('early intermediate')->withCount('pieces')->first()->pieces_count
+                'count' => Piece::byLevel('early intermediate')->count()
             ],
             [
                 'label' => 'late intermediate',
-                'count' => Tag::name('late intermediate')->withCount('pieces')->first()->pieces_count
+                'count' => Piece::byLevel('late intermediate')->count()
             ],
             [
                 'label' => 'advanced',
-                'count' => Tag::name('advanced')->withCount('pieces')->first()->pieces_count
+                'count' => Piece::byLevel('advanced')->count()
             ]
         ]);
         
