@@ -87,7 +87,7 @@ class ApiController extends Controller
 
     public function tags()
     {
-        return Tag::display();
+        return Tag::display()->shuffle();
     }
 
     public function composers()
