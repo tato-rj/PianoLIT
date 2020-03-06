@@ -26,9 +26,12 @@ class ApiController extends Controller
                 $this->api->order(4)->women('From women composers'),
                 $this->api->order(5)->tag('Pieces that are'),
                 $this->api->order(7)->levels('Levels'),
+                $this->api->order(11)->similar('Like today\'s free pick: ', Piece::free()->first()),
                 $this->api->order(6)->improve('Improve your'),
-                $this->api->order(8)->ranking('rcm', 'Equivalent to the RCM levels'),
-                $this->api->order(9)->ranking('abrsm', 'Equivalent to the ABRSM levels')
+                $this->api->order(8)->for('Great for'),
+                $this->api->order(9)->ranking('rcm', 'Equivalent to the RCM levels'),
+                $this->api->order(10)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
+                $this->api->order(11)->similar('If you like', Piece::famous()->inRandomOrder()->first()),
             ]);
         });
 

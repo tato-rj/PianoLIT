@@ -14,7 +14,7 @@ class Api
 
     public function __construct()
     {
-        $this->colors = [null, null, 'yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', 'green'];
+        $this->colors = [null, null, 'yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', 'green', 'yellow', 'orange'];
         $this->limit = mt_rand(16,24);
     }
     
@@ -114,6 +114,22 @@ class Api
         ]);
     }
 
+    public function for($title)
+    {
+        $tag = Tag::extendedLevels()->pluck('name')->shuffle()->first();
+
+        $collection = Piece::with('composer')->for($tag)->inRandomOrder()->take($this->limit)->get();
+
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+
+        return $this->createPlaylist($collection, [
+            'type' => 'piece', 
+            'title' => $title . ' ' . $tag . ' levels', 
+            'tag' => $tag,
+            'url' => route('search.index', ['global', 'search' => $tag])
+        ]);
+    }
+
     public function periods($title)
     {
         $collection = Tag::atLeast(5)->periods()->select('name')->withCount('pieces')->get();
@@ -123,9 +139,8 @@ class Api
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
 
-    public function similar()
+    public function similar($title, $piece)
     {
-        $piece = Piece::famous()->inRandomOrder()->first();
         $collection = $piece->similar()->take($this->limit);
         $name = $piece->nickname ?? $piece->simple_name;
 
@@ -133,7 +148,7 @@ class Api
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
-            'title' => 'If you like', 
+            'title' => $title . ' ' . $piece->medium_name_with_composer, 
             'tag' => $piece->composer->last_name . '\'s ' . $name,
             'url' => route('search.index', ['global', 'search' => $name])
         ]);
