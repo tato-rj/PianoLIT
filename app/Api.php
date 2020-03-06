@@ -139,16 +139,17 @@ class Api
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
 
-    public function similar($title, $piece)
+    public function similar($title, $piece, $showName)
     {
         $collection = $piece->similar()->take($this->limit);
         $name = $piece->nickname ?? $piece->simple_name;
+        $title = $showName ? $title . ' ' . $piece->medium_name_with_composer : $title;
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
             'type' => 'piece', 
-            'title' => $title . ' ' . $piece->medium_name_with_composer, 
+            'title' => $title,
             'tag' => $piece->composer->last_name . '\'s ' . $name,
             'url' => route('search.index', ['global', 'search' => $name])
         ]);
