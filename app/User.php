@@ -135,20 +135,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public function tags($string = false)
     {
         $tags = [];
-        if ($this->preferred_Piece) {
-            foreach ($this->preferred_piece->tags as $tag) {
-                array_push($tags, $tag->name);
-            }
-        }
-        if (! $this->favorites()->exists() && $this->preferredLevel)
-            array_push($tags, $this->preferredLevel, $this->preferredLevel, $this->preferredLevel, $this->preferredMood);
+
         foreach ($this->favorites as $piece) {
             array_push($tags, $piece->tags->pluck('name'));
         }
+
         $tags = array_flatten($tags);
+
         $orderedTags = array_count_values($tags);
         
         arsort($orderedTags);
+
         return array_keys(array_slice($orderedTags, 0, 6));    
 
         //////////////////
@@ -183,12 +180,12 @@ class User extends Authenticatable implements MustVerifyEmail
             return Piece::orderBy('views_count', 'DESC')->take($limit)->get();
 
         $suggestions = Piece::localSearch($tags)->with(['tags', 'composer'])->limit($limit)->get();
+
         $suggestions->each(function($piece, $key) use ($suggestions) {
             if ($this->favorites->contains($piece))
                 $suggestions->forget($key);
-            if (! $this->favorites()->exists() && $piece->tags->whereIn('name', $this->preferredMood)->isEmpty())
-                $suggestions->forget($key);
         });
+        
         return $suggestions;
     }
 
