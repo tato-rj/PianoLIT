@@ -9,9 +9,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Blog statistics',
-    'description' => 'Charts and graphs on blog posts and their topics'])
 
     <div class="row"> 
       @include('admin.pages.stats.row', [

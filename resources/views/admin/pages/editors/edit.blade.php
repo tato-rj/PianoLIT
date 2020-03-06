@@ -4,10 +4,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Editors',
-    'description' => "Edit {$editor->name}'s profile"])
-
     <div class="row my-5 mx-2">
       <form id="edit-form" method="POST" action="{{route('admin.editors.update', $editor->id)}}" class="col-lg-6 col-sm-10 col-12 mx-auto">
         @csrf

@@ -230,6 +230,8 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::get('', 'Admin\UsersController@index')->name('index');
 
+	Route::get('logs', 'Admin\UsersController@logs')->name('logs');
+
 	Route::get('{user}', 'Admin\UsersController@show')->name('show');
 
 	Route::get('{user}/load-logs', 'Admin\UsersController@loadLogs')->name('load-logs');

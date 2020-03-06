@@ -9,9 +9,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Playlists',
-    'description' => 'Manage the playlists'])
     <div class="text-center mb-2">
       <a href="{{route('api.playlists.all', 'journey')}}" target="_blank" class="link-default"><small>See JSON response</small></a>
     </div>

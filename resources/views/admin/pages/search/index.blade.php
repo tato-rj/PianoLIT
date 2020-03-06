@@ -4,10 +4,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Search',
-    'description' => 'Explore the search api',
-    'path' => 'pieces/search'])
 
     <div class="text-center mb-2">
       <a href="{{route('api.tags')}}" target="_blank" class="link-default"><small>See JSON response</small></a>

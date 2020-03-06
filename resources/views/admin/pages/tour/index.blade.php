@@ -3,13 +3,6 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Tour',
-    'description' => 'Explore the tour with the api',
-    'path' => 'pieces/tour'])
-    
-  </div>
 
   <div class="row">
     <div class="col-lg-6 col-md-8 col-10 mx-auto mb-5">

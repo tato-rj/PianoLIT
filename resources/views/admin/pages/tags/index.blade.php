@@ -4,9 +4,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Tags',
-    'description' => 'Manage the tags'])
     
     <div class="row mb-3">
       <div class="col-12">

@@ -18,24 +18,13 @@ class StatsController extends Controller
         if (request()->ajax())
             return (new Stats)->for('users')->query(request('type'), request()->except('type'))->get();
 
-        $users = User::latest()->with(['membership'])->get();
-        $logs_total_count = ((new \App\Log\LogFactory)->total());
-
-        return view('admin.pages.stats.users.index', compact(['users', 'logs_total_count']));
+        return view('admin.pages.stats.users.index');
     }
 
     public function pieces()
     {
         if (request()->ajax())
             return (new Stats)->for('pieces')->query(request('type'), request()->except('type'))->get();
-        
-        // $levelsStats = Tag::levels()->withCount('pieces')->get();
-        // $periodsStats = Tag::periods()->withCount('pieces')->get();
-        // $pieces = Piece::withCount(['tags'])->get();
-
-        // $publicDomainCount = Piece::inPublicDomain()->count();
-        // $videosCount = Piece::withVideos()->count();
-        // $itunesCount = Piece::withiTunes()->count();
 
         return view('admin.pages.stats.pieces.index', compact([]));
     }

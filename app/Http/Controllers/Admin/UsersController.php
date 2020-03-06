@@ -31,6 +31,17 @@ class UsersController extends Controller
         return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted.');
     }
 
+    public function logs()
+    {
+        if (request()->ajax())
+            return (new Stats)->for('users')->query(request('type'), request()->except('type'))->get();
+
+        $users = User::latest()->with(['membership'])->get();
+        $logs_total_count = ((new \App\Log\LogFactory)->total());
+
+        return view('admin.pages.users.logs.index', compact(['users', 'logs_total_count']));        
+    }
+
     public function loadLogs(User $user, Request $request)
     {
         $type = $request->type;

@@ -33,9 +33,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Quiz',
-    'description' => 'Manage the audio used in the quizzes'])
     
     <div class="row mb-3">
       <div class="col-12">

@@ -58,6 +58,7 @@
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
         'dropdown' => [
           ['name' => 'Profiles', 'route' => route('admin.users.index')],
+          ['name' => 'Activity Logs', 'route' => route('admin.users.logs')],
           ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')]
         ]])
 

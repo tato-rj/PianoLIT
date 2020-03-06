@@ -10,9 +10,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Tutorial Requests',
-    'description' => 'Manage requests for tutorials'])
     
     <div class="text-center mb-2">
       <a href="{{route('api.tutorial-requests', ['user_id' => 383])}}" target="_blank" class="link-default"><small>See JSON response</small></a>

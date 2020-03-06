@@ -4,9 +4,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('projects/pianolit/components/breadcrumb', [
-    'title' => 'Statistics',
-    'description' => 'See how are the pieces and their tags being used across the database'])
 
     <div class="row"> 
       @include('projects.pianolit.pieces.statistics.row', [

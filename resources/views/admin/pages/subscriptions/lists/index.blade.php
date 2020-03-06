@@ -7,9 +7,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Emails lists',
-    'description' => 'Manage the emails lists'])
 
     <div class="row">
       <div class="col-12 mb-4">

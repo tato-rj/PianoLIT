@@ -13,11 +13,7 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Blog',
-    'description' => 'Add a new post'])
-    
+  <div class="container-fluid">    
       <form id="create-post" class="row my-3" method="POST" action="{{route('admin.posts.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-12">

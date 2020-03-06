@@ -2,14 +2,7 @@
 
 @section('content')
 
-<div class="content-wrapper">
-  <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Discover',
-    'description' => 'Explore the playlists with the api',
-    'path' => 'api/discover'])
-  </div>
-  
+<div class="content-wrapper">  
   <div class="text-center mb-2">
     <a href="{{route('admin.api.discover', ['api'])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
   </div>

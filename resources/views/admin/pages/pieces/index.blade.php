@@ -16,10 +16,6 @@ small .custom-control-label::before, small .custom-control-label::after {
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Pieces',
-    'description' => 'Manage the pieces'])
-
     <div class="row">
       <div class="col-lg-4 col-md-4 col-12 mb-3 hide-on-sm">
         <a href="{{route('admin.pieces.create')}}" class="btn btn-sm btn-default">

@@ -9,9 +9,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Email list',
-    'description' => 'Manage the ' . $list->name . ' list'])
     
     @include('components.return', ['url' => route('admin.subscriptions.lists.index'), 'to' => 'email lists'])
 

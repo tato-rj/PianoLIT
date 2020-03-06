@@ -9,9 +9,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Composers statistics',
-    'description' => 'Charts and graphs on the composers'])
 
     <div class="row">
       <div class="col-lg-6 col-md-6 col-12 p-3">

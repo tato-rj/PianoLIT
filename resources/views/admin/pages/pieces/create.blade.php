@@ -4,10 +4,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Pieces',
-    'description' => 'Add a new piece'])
-
     <div class="row mb-3">
       <div class="col-12">
         <div class="d-flex justify-content-end">

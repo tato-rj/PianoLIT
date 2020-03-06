@@ -12,9 +12,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Quiz',
-    'description' => 'Add a new quiz'])
     
       <form id="create-quiz" class="row my-3" method="POST" action="{{route('admin.quizzes.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf

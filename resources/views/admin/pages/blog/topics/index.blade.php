@@ -3,11 +3,7 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Topics',
-    'description' => 'Manage the blog topics'])
-    
+  <div class="container-fluid">    
     <div class="row mb-3">
       <div class="col-12">
         <form method="POST" action="{{route('admin.topics.store')}}" class="form-inline">

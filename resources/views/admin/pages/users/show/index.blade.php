@@ -6,9 +6,6 @@
 @section('content')
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Users',
-    'description' => "$user->first_name's profile"])
 
     @include('admin.pages.users.show.profile')
 

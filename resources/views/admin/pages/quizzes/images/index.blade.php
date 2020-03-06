@@ -10,9 +10,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Images',
-    'description' => 'Manage the images used in quizzes'])
     
     <div class="row mb-3">
       <div class="col-12">

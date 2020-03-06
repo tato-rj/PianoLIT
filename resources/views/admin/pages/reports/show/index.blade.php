@@ -22,9 +22,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Email Report',
-    'description' => 'View report from the ' . $report->first()->name . ' list'])
 
 	<div class="d-flex justify-content-between mb-4">
 		<div class="d-flex">

@@ -32,11 +32,7 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Images',
-    'description' => 'Manage the images used in blog posts and emails'])
-    
+  <div class="container-fluid">    
     <div class="row mb-3">
       <div class="col-12">
         <form action="{{route('admin.posts.gifts.store')}}" class="dropzone" id="filesDropzone"></form>

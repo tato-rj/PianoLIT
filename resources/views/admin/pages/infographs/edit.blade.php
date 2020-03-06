@@ -7,9 +7,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Infographs',
-    'description' => 'Edit the infographs'])
 
 	<div class="row mb-5">
 		<div class="col-4">

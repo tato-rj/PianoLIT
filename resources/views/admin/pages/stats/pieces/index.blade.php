@@ -7,9 +7,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Pieces statistics',
-    'description' => 'Charts and graphs on the pieces and their level, period and tags'])
 
     <div class="row"> 
         <div class="col-12 mb-4">

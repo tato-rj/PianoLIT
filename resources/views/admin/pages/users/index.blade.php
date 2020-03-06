@@ -9,9 +9,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Users',
-    'description' => 'View detailed information about the users'])
 
     <div class="row mb-4">
       <div class="col-12 d-flex justify-content-between align-items-center">

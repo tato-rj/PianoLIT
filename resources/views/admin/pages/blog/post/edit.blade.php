@@ -13,11 +13,7 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Blog',
-    'description' => 'Edit the post'])
-  
+  <div class="container-fluid">  
       <form class="row my-3" method="POST" action="{{route('admin.posts.update', $post->slug)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         @method('PATCH')

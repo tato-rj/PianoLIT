@@ -10,10 +10,6 @@
 <div class="content-wrapper">
   <div class="container-fluid">
 
-  @include('admin.components.breadcrumb', [
-    'title' => 'Notifications',
-    'description' => 'Manage the notifications'])
-
     @datatable(['table' => 'notifications', 'columns' => ['Date', 'Notification', '']])
 
   </div>

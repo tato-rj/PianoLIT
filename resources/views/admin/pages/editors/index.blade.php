@@ -4,10 +4,6 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Editors',
-    'description' => 'Manage the editors'])
-
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center">
         <div>
