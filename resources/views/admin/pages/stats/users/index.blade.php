@@ -15,7 +15,6 @@
             'type' => 'signups',
             'title' => 'Sign ups',
             'subtitle' => 'Flow of users over time',
-            'height' => '30vh',
             'select' => [
               'origin' => [
                 ['label' => 'Any origin', 'value' => null],
