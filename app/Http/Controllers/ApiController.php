@@ -28,8 +28,7 @@ class ApiController extends Controller
                 $this->api->order(7)->levels('Levels'),
                 $this->api->order(6)->improve('Improve your'),
                 $this->api->order(8)->ranking('rcm', 'Equivalent to the RCM levels'),
-                $this->api->order(9)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
-                $this->api->order(10)->periods('Periods'),
+                $this->api->order(9)->ranking('abrsm', 'Equivalent to the ABRSM levels')
             ]);
         });
 
@@ -88,9 +87,7 @@ class ApiController extends Controller
 
     public function tags()
     {
-        // $gift = \Cache::remember('app.tags.all', weeks(1), function() {
-            return Tag::display()->orderBy('name')->get();
-        // });
+        return Tag::display();
     }
 
     public function composers()

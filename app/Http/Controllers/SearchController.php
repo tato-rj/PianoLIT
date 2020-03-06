@@ -83,7 +83,7 @@ class SearchController extends Controller
 
     public function toAdmin()
     {
-        $tags = Tag::display()->get()->groupBy('type');
+        $tags = Tag::display()->groupBy('type');
 
         return view('admin.pages.search.index', ['pieces' => $this->pieces ?? [], 'total' => $this->total ?? null, 'tags' => $tags]);
     }
