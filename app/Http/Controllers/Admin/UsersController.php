@@ -37,7 +37,7 @@ class UsersController extends Controller
 
         $logs = array_slice($user->log()->$type, $request->start_at);
 
-        return view('admin.pages.users.show.logs.' . $type . '.rows', ['user' => $user, 'logs' => $logs, 'limit' => 5])->render();
+        return view('admin.pages.users.show.logs.' . $type . '-rows', ['user' => $user, 'logs' => $logs, 'limit' => 5])->render();
     }
 
     public function loadFavorites(User $user, Request $request)
