@@ -113,19 +113,20 @@ class ChartFactory
 	            legend: {
 	              display: false
 	            },
-	        scales: {
-	            yAxes: [{
-	                ticks: {
-	                    beginAtZero: true,
-	                    stepSize: 20
-	                }
-	            }],
-	            xAxes: [{
-	                ticks: {
-	                  autoSkip: false
-	                }
-	            }]
-	        },
+		        maintainAspectRatio: false,
+		        scales: {
+		            yAxes: [{
+		                ticks: {
+		                    beginAtZero: true,
+		                    stepSize: 20
+		                }
+		            }],
+		            xAxes: [{
+		                ticks: {
+		                  autoSkip: false
+		                }
+		            }]
+		        },
 	        }
 	    }); 
 	}

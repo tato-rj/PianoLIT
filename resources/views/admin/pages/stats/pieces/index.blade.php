@@ -19,14 +19,7 @@
             'type' => 'level',
             'title' => 'Level',
             'subtitle' => 'Pieces by level',
-            'height' => '35vh',
-            'select' => [
-              'gender' => [
-                ['label' => 'Any gender', 'value' => null],
-                ['label' => 'Male', 'value' => 'male'],
-                ['label' => 'Female', 'value' => 'female']
-              ]
-            ],
+            'height' => '35vh'
           ])
         </div>
         <div class="col-lg-4 col-md-4 col-12 mb-4">
