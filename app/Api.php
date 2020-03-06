@@ -116,7 +116,7 @@ class Api
 
     public function for($title)
     {
-        $tag = Tag::extendedLevels()->pluck('name')->shuffle()->first();
+        $tag = Tag::extendedLevels()->except('name', 'advanced')->pluck('name')->shuffle()->first();
 
         $collection = Piece::with('composer')->for($tag)->inRandomOrder()->take($this->limit)->get();
 
@@ -139,11 +139,10 @@ class Api
         return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
     }
 
-    public function similar($title, $piece, $showName)
+    public function similar($title, $piece)
     {
         $collection = $piece->similar()->take($this->limit);
         $name = $piece->nickname ?? $piece->simple_name;
-        $title = $showName ? $title . ' ' . $piece->medium_name_with_composer : $title;
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 

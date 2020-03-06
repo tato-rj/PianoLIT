@@ -26,7 +26,10 @@ class StatsController extends Controller
         if (request()->ajax())
             return (new Stats)->for('pieces')->query(request('type'), request()->except('type'))->get();
 
-        return view('admin.pages.stats.pieces.index', compact([]));
+        $favorites = Piece::orderBy('favorites_count', 'DESC')->take(10)->get();
+        $views = Piece::orderBy('views_count', 'DESC')->take(10)->get();
+
+        return view('admin.pages.stats.pieces.index', compact(['favorites', 'views']));
     }
 
     public function composers()

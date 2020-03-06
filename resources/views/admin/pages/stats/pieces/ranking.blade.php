@@ -1,4 +1,7 @@
-<div class="col-12 p-3">
+
+
+
+{{-- <div class="col-12 p-3">
   <div class="border py-4 px-3">
     <div class="ml-2 mb-4">
       <h4 class="mb-1"><strong>Views</strong></h4>
@@ -25,4 +28,4 @@
       </table>
     </div>
   </div>
-</div>
+</div> --}}

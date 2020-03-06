@@ -43,7 +43,7 @@
           'color' => 'intermediate',
           'icon' => 'users',
           'label' => $users_count . ' Users',
-          'url' => route('admin.stats.users')])
+          'url' => route('admin.users.logs')])
 
         @include('admin.pages.home.card', [
           'color' => 'beginner',

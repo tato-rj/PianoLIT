@@ -52,8 +52,27 @@
     </div>
 
     <div class="row">
-      <div class="col-lg-6 col-md-6 col-12">
-        
+      <div class="col-lg-6 col-md-6 col-12 mb-4">
+          @ranking([
+            'url' => route('admin.stats.pieces'),
+            'type' => 'favorites',
+            'title' => 'Top favorited',
+            'subtitle' => '10 most favorited pieces',
+            'headers' => ['Count', 'Piece'],
+            'collection' => $favorites,
+            'row' => 'admin.pages.stats.pieces.rows.favorites'
+          ])
+      </div>
+      <div class="col-lg-6 col-md-6 col-12 mb-4">
+          @ranking([
+            'url' => route('admin.stats.pieces'),
+            'type' => 'views',
+            'title' => 'Top viewed',
+            'subtitle' => '10 most viewed pieces',
+            'headers' => ['Count', 'Piece'],
+            'collection' => $views,
+            'row' => 'admin.pages.stats.pieces.rows.views'
+          ])
       </div>
     </div>
 {{--     <div class="row"> 
