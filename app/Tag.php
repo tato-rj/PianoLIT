@@ -103,8 +103,7 @@ class Tag extends PianoLit
         $tags = $query->whereNotIn('type', ['ranking', 'length'])
                       ->whereNotIn('name', ['beginner', 'intermediate'])
                       ->orderBy('order')
-                      ->orderBy('type')
-                      // ->orderBy('name')
+                      ->orderBy('name')
                       ->get();
         
         $tags->where('type', 'sublevel')->transform(function($item, $key) {
