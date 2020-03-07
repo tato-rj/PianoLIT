@@ -23,6 +23,8 @@ class ApiController extends Controller
             $this->api->order(2)->latest('Latest pieces'),
             $this->api->order(4)->women('From women composers'),
             $this->api->order(5)->tag('Pieces that are'),
+            $this->api->order(7)->levels('Levels'),
+            $this->api->order(11)->similar('Like today\'s free pick', Piece::free()->first()),
         ]);
         $collection = \Cache::remember($key, days(1), function() {
             return collect([
