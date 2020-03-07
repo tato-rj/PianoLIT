@@ -17,8 +17,8 @@ class ApiController extends Controller
     public function discover()
     {
         $key = \Redis::get('app.discover');
-        return $this->api->order(8)->for('Great for');
-        $collection = \Cache::remember($key, days(1), function() {
+
+        // $collection = \Cache::remember($key, days(1), function() {
             return collect([
                 $this->api->order(0)->free('Free weekly pick'),
                 $this->api->order(1)->composers('Composers'),
@@ -32,7 +32,7 @@ class ApiController extends Controller
                 $this->api->order(9)->ranking('rcm', 'Equivalent to the RCM levels'),
                 $this->api->order(10)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
             ]);
-        });
+        // });
 
         $collection->splice(3, 0, [$this->api->order(3)->suggestions('For you')]);
 
