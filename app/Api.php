@@ -116,7 +116,7 @@ class Api
 
     public function for($title)
     {
-        $tag = Tag::extendedLevels()->except('name', 'advanced')->pluck('name')->shuffle()->first();
+        $tag = Tag::extendedLevels()->pluck('name')->shuffle()->first();
 dd($tag);
         $collection = Piece::with('composer')->for($tag)->inRandomOrder()->take($this->limit)->get();
 
