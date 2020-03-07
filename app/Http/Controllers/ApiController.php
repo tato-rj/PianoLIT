@@ -17,7 +17,7 @@ class ApiController extends Controller
     public function discover()
     {
         $key = \Redis::get('app.discover');
-        return $this->api->free('Free weekly pick');
+        return collect([$this->api->free('Free weekly pick')]);
         $collection = \Cache::remember($key, days(1), function() {
             return collect([
                 $this->api->order(0)->free('Free weekly pick'),
