@@ -20,6 +20,9 @@ class ApiController extends Controller
         return collect([
             $this->api->order(0)->free('Free weekly pick'),
             $this->api->order(1)->composers('Composers'),
+            $this->api->order(2)->latest('Latest pieces'),
+            $this->api->order(4)->women('From women composers'),
+            $this->api->order(5)->tag('Pieces that are'),
         ]);
         $collection = \Cache::remember($key, days(1), function() {
             return collect([
