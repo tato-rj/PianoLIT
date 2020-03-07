@@ -16,20 +16,20 @@ class ApiController extends Controller
 
     public function discover()
     {
-        // $key = \Redis::get('app.discover');
-            return collect([
+        $key = \Redis::get('app.discover');
+              return collect([
                 $this->api->order(0)->free('Free weekly pick'),
                 $this->api->order(1)->composers('Composers'),
                 $this->api->order(2)->latest('Latest pieces'),
                 $this->api->order(4)->women('From women composers'),
                 $this->api->order(5)->tag('Pieces that are'),
-                $this->api->order(6)->levels('Levels'),
-                $this->api->order(7)->similar('Like today\'s free pick', Piece::free()->first()),
-                $this->api->order(8)->improve('Improve your'),
-                $this->api->order(9)->for('Great for'),
-                $this->api->order(10)->ranking('rcm', 'Equivalent to the RCM levels'),
-                $this->api->order(11)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
-            ]);    
+                $this->api->order(7)->levels('Levels'),
+                $this->api->order(11)->similar('Like today\'s free pick', Piece::free()->first()),
+                $this->api->order(6)->improve('Improve your'),
+                $this->api->order(8)->for('Great for'),
+                $this->api->order(9)->ranking('rcm', 'Equivalent to the RCM levels'),
+                $this->api->order(10)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
+            ]);      
         $collection = \Cache::remember($key, days(1), function() {
             return collect([
                 $this->api->order(0)->free('Free weekly pick'),
@@ -37,12 +37,12 @@ class ApiController extends Controller
                 $this->api->order(2)->latest('Latest pieces'),
                 $this->api->order(4)->women('From women composers'),
                 $this->api->order(5)->tag('Pieces that are'),
-                $this->api->order(6)->levels('Levels'),
-                $this->api->order(7)->similar('Like today\'s free pick', Piece::free()->first()),
-                $this->api->order(8)->improve('Improve your'),
-                $this->api->order(9)->for('Great for'),
-                $this->api->order(10)->ranking('rcm', 'Equivalent to the RCM levels'),
-                $this->api->order(11)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
+                $this->api->order(7)->levels('Levels'),
+                $this->api->order(11)->similar('Like today\'s free pick', Piece::free()->first()),
+                $this->api->order(6)->improve('Improve your'),
+                $this->api->order(8)->for('Great for'),
+                $this->api->order(9)->ranking('rcm', 'Equivalent to the RCM levels'),
+                $this->api->order(10)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
             ]);
         });
 
