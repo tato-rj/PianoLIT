@@ -117,7 +117,7 @@ class Api
     public function for($title)
     {
         $tag = Tag::extendedLevels()->except('name', 'advanced')->pluck('name')->shuffle()->first();
-
+dd($tag);
         $collection = Piece::with('composer')->for($tag)->inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
