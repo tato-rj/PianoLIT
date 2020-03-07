@@ -16,7 +16,7 @@ class ApiController extends Controller
 
     public function discover()
     {
-        $key = \Redis::get('app.discover');
+        // $key = \Redis::get('app.discover');
             return collect([
                 $this->api->order(0)->free('Free weekly pick'),
                 $this->api->order(1)->composers('Composers'),
