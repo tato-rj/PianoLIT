@@ -100,15 +100,21 @@ class Tag extends PianoLit
 
     public function scopeDisplay($query)
     {
-        $tags = $query->whereNotIn('type', ['ranking', 'length'])
+        $tags = $query->whereNotIn('type', ['ranking', 'length', 'level', 'sublevel'])
                       ->whereNotIn('name', ['beginner', 'intermediate'])
-                      ->orderBy('order')
                       ->orderBy('name')
                       ->get();
+
+        $levels = Tag::whereIn('type', ['level', 'sublevel'])
+                      ->whereNotIn('name', ['beginner', 'intermediate'])
+                      ->orderBy('order')
+                      ->get();
         
-        $tags->where('type', 'sublevel')->transform(function($item, $key) {
+        $levels->where('type', 'sublevel')->transform(function($item, $key) {
             $item->type = 'level';
         });
+
+        $tags = $levels->merge($tags);
 
         return $tags;
     }
