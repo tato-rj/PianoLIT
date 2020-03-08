@@ -19,7 +19,7 @@ class CreateComposersTable extends Migration
             $table->text('biography');
             $table->string('cover_path');
             $table->string('gender');
-            $table->string('ethniticy')->nullable();
+            $table->string('ethnicity')->nullable();
             $table->text('curiosity')->nullable();
             $table->string('period');
             $table->unsignedInteger('country_id')->nullable();

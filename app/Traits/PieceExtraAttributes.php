@@ -37,6 +37,14 @@ trait PieceExtraAttributes
         return null;
     }
 
+    public function getExtendedLevelNameAttribute()
+    {
+        if ($this->level)
+            return $this->extendedLevel->name;
+
+        return null;
+    }
+
     public function getLevelIdAttribute()
     {
         if ($this->level)
