@@ -35,7 +35,7 @@ What's next? We're already working to add more cool features plus... anything th
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'read', 
-		'color' => 'green',
+		'color' => 'orange',
 		'link' => 'https://pianolit.com/blog/how-much-money-did-chopin-make-with-his-compositions'
 	],
 	'title' => 'How much money did Chopin make with his compositions?'
