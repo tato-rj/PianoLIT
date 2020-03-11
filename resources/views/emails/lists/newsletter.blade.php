@@ -48,7 +48,7 @@ What's next? We're already working to add more cool features plus... anything th
 
 <p>🎁 <strong>We have a gift for you!</strong> While reading the blog post, you can download the FREE infographic of Chopin's life.</p>
 
-<p class="text-md"><a href="https://pianolit.com/blog/how-much-money-did-chopin-make-with-his-compositions" target="_blank">Learn more about it!</a> 🤓</p>
+<p><a href="https://pianolit.com/blog/how-much-money-did-chopin-make-with-his-compositions" class="text-md" target="_blank">Learn more about it!</a> 🤓</p>
 @endcomponent
 
 @component('mail::newsletter.section', [
@@ -82,7 +82,7 @@ Let me try!
 
 <p>The <strong>1870s</strong> was one of the most active decades in music history, with many major compositions and important events. <strong>Download the infographic</strong>  to visualize the list on a timeline graph. </p>
 
-<p class="text-md"><a href="https://pianolit.com/resources/infographs/1870s-a-musical-decade" target="_blank">Download the infographic, click HERE</a></p>
+<p><a href="https://pianolit.com/resources/infographs/1870s-a-musical-decade" class="text-md" target="_blank">Download the infographic, click HERE</a></p>
 @endcomponent
 
 <h1 class="text-lg mb-4">True or False: Women composers edition</h1>
