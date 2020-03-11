@@ -16,6 +16,8 @@ As always, you can expect an original Free Pick every week and new pieces and tu
 
 What's next? We're already working to add more cool features plus... anything that you think we should implement! We're here for you, so please feel free to drop us a note by replying to this newsletter!
 
+@include('mail::divider', ['orientation' => 'vertical'])
+
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'listen', 
