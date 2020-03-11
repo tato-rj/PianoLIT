@@ -1,6 +1,7 @@
 <?php
 
 use App\{User, Admin, Membership, Subscription, StudioPolicy, TutorialRequest, Piece};
+use App\CrashCourse\{CrashCourse, CrashCourseLesson, CrashCourseSubscription};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -101,3 +102,37 @@ $factory->define(TutorialRequest::class, function (Faker $faker) {
         },
     ];
 });
+
+$factory->define(CrashCourse::class, function (Faker $faker) {
+    return [
+        'slug' => str_slug($faker->sentence(8)),
+        'creator_id' => function() {
+            return create(Admin::class)->id;
+        },
+        'title' => $faker->sentence,
+        'description' => $faker->sentence,
+    ];
+});
+
+$factory->define(CrashCourseLesson::class, function (Faker $faker) {
+    return [
+        'crash_course_id' => function() {
+            return create(CrashCourse::class)->id;
+        },
+        'subject' => $faker->sentence,
+        'body' => $faker->sentence,
+    ];
+});
+
+$factory->define(CrashCourseSubscription::class, function (Faker $faker) {
+    return [
+        'first_name' => $faker->firstName,
+        'subscriber_id' => function() {
+            return create(Subscription::class)->id;
+        },
+        'crash_course_id' => function() {
+            return create(CrashCourse::class)->id;
+        }
+    ];
+});
+

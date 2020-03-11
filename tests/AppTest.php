@@ -123,4 +123,13 @@ class AppTest extends TestCase
             'password' => $membership->withRequest()->password
         ]);
     }
+
+    public function postCrashCourse($crashcourse, $args = ['first_name' => 'John', 'email' => 'test@crashcourse.com'])
+    {
+        return $this->post(route('crashcourses.signup', $crashcourse), [
+            'first_name' => $args['first_name'], 
+            'email' => $args['email'],
+            'origin_url' => 'testing'
+        ]);
+    }
 }

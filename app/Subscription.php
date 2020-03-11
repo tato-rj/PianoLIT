@@ -54,7 +54,7 @@ class Subscription extends PianoLit
         return $this->lists()->detach($list);
     }
 
-    public function leaveAll(EmailList $list)
+    public function leaveAll()
     {
         foreach (EmailList::all() as $list) {
             $this->lists()->detach($list);
@@ -76,7 +76,7 @@ class Subscription extends PianoLit
     	return $query->where('email', $email);
     }
 
-    public function scopeCreateOrActivate($query, $form, $notifyUser = true)
+    public function scopeCreateOrActivate($query, $form, $notifyUser = true, $joinAll = true)
     {
     	$record = $query->byEmail($form->email);
 
@@ -88,7 +88,8 @@ class Subscription extends PianoLit
             'origin_url' => $form->origin_url ?? route('register')
         ]);
 
-        $subscriber->joinAll();
+        if ($joinAll)
+            $subscriber->joinAll();
 
         if ($notifyUser)
             \Mail::to($form->email)->send(new Welcome($subscriber));

@@ -166,6 +166,12 @@ Route::prefix('quizzes')->name('quizzes.')->group(function() {
 
 });
 
+Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
+
+	Route::post('{crashcourse}/signup', 'CrashCoursesController@signup')->name('signup');
+
+});
+
 Route::get('gift', 'UsersController@gift')->name('gift');
 
 Route::get('infographs/{infograph}/download', 'InfographsController@download')->name('infographs.download')->middleware('auth');
