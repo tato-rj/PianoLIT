@@ -46,7 +46,9 @@ class UsersController extends Controller
     {
         $type = $request->type;
 
-        $logs = array_slice($user->log()->$type, $request->start_at, true);
+        $array = $user->log()->$type;
+
+        $logs = array_slice($array, $request->start_at, count($array), true);
 
         return view('admin.pages.users.show.logs.' . $type . '-rows', ['user' => $user, 'logs' => $logs, 'limit' => 5])->render();
     }
