@@ -21,7 +21,7 @@ class UsersController extends Controller
         if (request('format') == 'json')
             return $user->membership;
 
-        return $user->log()->app;
+        return array_slice($user->log()->app, 4);
         return view('admin.pages.users.show.index', ['user' => $user->load('favorites')]);
     }
 
