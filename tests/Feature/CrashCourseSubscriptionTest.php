@@ -4,9 +4,10 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\Subscription;
-use App\CrashCourse\{CrashCourse, CrashCourseLesson};
+use App\CrashCourse\{CrashCourse, CrashCourseLesson, CrashCourseSubscription};
 use App\Mail\Newsletter\Welcome as NewsletterWelcomeEmail;
-use App\Mail\CrashCourseEmail;
+use App\Mail\{CrashCourseEmail, CrashCourseFeedback};
+use App\Notifications\CrashCourse\{CrashCourseSignUpNotification, CrashCourseCancelledNotification};
 
 class CrashCourseSubscriptionTest extends AppTest
 {
@@ -15,12 +16,9 @@ class CrashCourseSubscriptionTest extends AppTest
         parent::setUp();
 		
 		$this->crashcourse = create(CrashCourse::class);
-		$this->crashcourse->lessons()->save(create(CrashCourseLesson::class, [
-            'subject' => 'You\'re awesome [first_name]!',
-            'body' => 'First email'
-        ]));
-		$this->crashcourse->lessons()->save(create(CrashCourseLesson::class, ['body' => 'Second email']));
-		$this->crashcourse->lessons()->save(create(CrashCourseLesson::class, ['body' => 'Final email']));
+		$this->crashcourse->lessons()->save(create(CrashCourseLesson::class, ['subject' => 'You\'re awesome [first_name]!', 'body' => 'First email']));
+		$this->crashcourse->lessons()->save(create(CrashCourseLesson::class));
+		$this->crashcourse->lessons()->save(create(CrashCourseLesson::class));
     }
 
     /** @test */
@@ -30,9 +28,22 @@ class CrashCourseSubscriptionTest extends AppTest
 
         $this->assertCount(0, Subscription::all());
 
-        $this->postCrashCourse($this->crashcourse);
+        $this->signUpToCrashCourse($this->crashcourse);
 
         $this->assertCount(1, Subscription::all());
+    }
+
+    /** @test */
+    public function admins_are_notified_on_a_new_crash_course_signup()
+    {
+        \Notification::fake();
+
+        $this->signUpToCrashCourse($this->crashcourse);
+        
+        \Notification::assertSentTo(
+            [$this->admin], CrashCourseSignUpNotification::class
+        );
+
     }
 
     /** @test */
@@ -40,7 +51,7 @@ class CrashCourseSubscriptionTest extends AppTest
     {
     	\Mail::fake();
 
-        $this->postCrashCourse($this->crashcourse);
+        $this->signUpToCrashCourse($this->crashcourse);
 
         \Mail::assertNotQueued(NewsletterWelcomeEmail::class);
     }
@@ -48,7 +59,7 @@ class CrashCourseSubscriptionTest extends AppTest
     /** @test */
     public function a_subscriber_is_not_subscribed_to_others_email_lists_upon_signing_up_for_a_crash_course()
     {
-        $this->postCrashCourse($this->crashcourse);
+        $this->signUpToCrashCourse($this->crashcourse);
 
         $this->assertEmpty($this->crashcourse->subscriptions->first()->subscriber->lists()->get());
     }
@@ -60,7 +71,7 @@ class CrashCourseSubscriptionTest extends AppTest
 
         $this->subscribe(make(Subscription::class)->email);
 
-        $this->postCrashCourse($this->crashcourse, ['first_name' => 'Jane', 'email' => Subscription::first()->email]);
+        $this->signUpToCrashCourse($this->crashcourse, ['first_name' => 'Jane', 'email' => Subscription::first()->email]);
 
         $this->assertNotEmpty($this->crashcourse->subscriptions()->get());
     }
@@ -70,7 +81,7 @@ class CrashCourseSubscriptionTest extends AppTest
     {
     	\Mail::fake();
 
-        $this->postCrashCourse($this->crashcourse);
+        $this->signUpToCrashCourse($this->crashcourse);
 
         \Mail::assertQueued(CrashCourseEmail::class, function($mail) {
             $this->assertEquals($mail->lesson->body, 'First email');
@@ -81,20 +92,69 @@ class CrashCourseSubscriptionTest extends AppTest
     /** @test */
     public function after_the_first_email_all_subsequent_are_sent_in_the_correct_order()
     {
+        $this->signUpToCrashCourse($this->crashcourse);
+
+        $subscription = $this->crashcourse->subscriptions->first();
+        
+        $this->assertEquals($subscription->upcomingLesson, $this->crashcourse->lessons->get(1));
+
+        $subscription->continue();
+        
+        $this->assertEquals($subscription->upcomingLesson, $this->crashcourse->lessons->get(2));
+        
+        $subscription->continue();
+
+        $this->assertEquals($subscription->upcomingLesson, null);
+    }
+
+    /** @test */
+    public function admins_are_notified_when_a_user_cancels_their_crash_course()
+    {
+        \Notification::fake();
+
+        $this->crashcourse->subscriptions()->save(create(CrashCourseSubscription::class));
+
+        $this->delete(route('crashcourses.cancel', $this->crashcourse->subscriptions->first()));
+        
+        \Notification::assertSentTo(
+            [$this->admin], CrashCourseCancelledNotification::class
+        );
+    }
+
+    /** @test */
+    public function the_app_knows_how_to_automatically_send_the_correct_lesson()
+    {
         \Mail::fake();
 
-        $this->postCrashCourse($this->crashcourse);
-        
-        \Mail::assertQueued(CrashCourseEmail::class, function($mail) {
-            $this->assertEquals($mail->lesson->body, 'First email');
-            return true;
-        });
+        // First lesson
+        $this->signUpToCrashCourse($this->crashcourse);
 
+        // Second lesson
         $this->crashcourse->subscriptions->first()->continue();
 
-        \Mail::assertQueued(CrashCourseEmail::class, function($mail) {
-            $this->assertEquals($mail->lesson->body, 'Second email');
-            return true;
-        });
+        $this->assertInstanceOf(CrashCourseLesson::class, $this->crashcourse->subscriptions()->first()->upcomingLesson);
+
+        // Final lesson
+        $this->artisan('crashcourse:send');
+
+        \Mail::assertQueued(CrashCourseEmail::class);
+
+        $this->assertNull($this->crashcourse->subscriptions()->first()->upcomingLesson);
+    }
+
+    /** @test */
+    public function a_feedback_email_is_sent_when_any_course_ends()
+    {
+        \Mail::fake();
+
+        $this->signUpToCrashCourse($this->crashcourse);
+        
+        $this->artisan('crashcourse:send');
+        
+        $this->artisan('crashcourse:send');
+        
+        $this->artisan('crashcourse:send');         
+    
+        \Mail::assertQueued(CrashCourseFeedback::class);
     }
 }

@@ -103,7 +103,7 @@ class CrashCourseSubscriptionTest extends AppTest
     }
 
     /** @test */
-    public function it_knows_how_to_finish()
+    public function it_knows_when_to_finish()
     {
     	$this->course_susbcription->start();
 
@@ -111,7 +111,8 @@ class CrashCourseSubscriptionTest extends AppTest
 
     	$this->assertNull($this->course_susbcription->completed_at);
 
-    	$this->course_susbcription->finish();
+    	$this->course_susbcription->continue();
+        $this->course_susbcription->continue();
 
     	$this->assertNotNull($this->course_susbcription->completed_at);
     }
@@ -129,17 +130,5 @@ class CrashCourseSubscriptionTest extends AppTest
 
     	$this->assertNull($this->course_susbcription->completed_at);
     	$this->assertNotNull($this->course_susbcription->cancelled_at);    	 
-    }
-
-    /** @test */
-    public function its_lessons_know_how_to_add_the_susbcriber_name_in_the_title_if_needed()
-    {
-        $lesson = create(CrashCourseLesson::class, ['subject' => 'Thank you [first_name]!']);
-
-        $this->crashcourse->lessons()->save($lesson);
-
-        $subscriber = $this->crashcourse->subscriptions->first();
-
-        $this->assertEquals('Thank you ' . $subscriber->first_name . '!', $subscriber->subject($lesson));
     }
 }

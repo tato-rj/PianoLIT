@@ -8,7 +8,7 @@
     </div>
     @if(!empty($dropdown))
     <div>
-      <i class="fas fa-caret-down"></i>
+      <i class="fas fa-caret-down ml-1"></i>
     </div>
     @endif
   </a>

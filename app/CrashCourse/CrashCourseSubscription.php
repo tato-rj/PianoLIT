@@ -3,7 +3,8 @@
 namespace App\CrashCourse;
 
 use App\{PianoLit, Subscription};
-use App\Mail\CrashCourseEmail;
+use App\Events\CrashCourses\{CrashCourseCancelled, CrashCourseFinished};
+use App\Mail\{CrashCourseEmail, CrashCourseFeedback};
 
 class CrashCourseSubscription extends PianoLit
 {
@@ -23,6 +24,14 @@ class CrashCourseSubscription extends PianoLit
 	public function previousLesson()
 	{
 		return $this->belongsTo(CrashCourseLesson::class, 'last_sent_lesson_id');
+	}
+
+	public function scopeActive()
+	{
+		return $this->where([
+    		['completed_at', null], 
+    		['cancelled_at', null]
+    	]);
 	}
 
 	public function getUpcomingLessonAttribute()
@@ -51,25 +60,40 @@ class CrashCourseSubscription extends PianoLit
 		return $this->lessons->search($this->previousLesson);
 	}
 
-	public function run()
+	public function start()
 	{
-		if (!$this->started_at)
-			$this->update(['started_at' => now()]);
-
-		if ($this->upcomingLesson)
-        	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this));
-
-		return $this->previousLesson()->associate($this->upcomingLesson);
+		$this->update(['started_at' => now()]);
+		$this->send();
 	}
 
-	public function finish()
+	public function continue()
 	{
-		return $this->update(['completed_at' => now()]);
+		return $this->upcomingLesson ? $this->send() : $this->finish();
+	}
+
+	public function send()
+	{
+    	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this));
+
+    	$this->update(['last_sent_at' => now()]);
+    	
+    	$this->previousLesson()->associate($this->upcomingLesson)->save();
 	}
 
 	public function cancel()
 	{
+        event(new CrashCourseCancelled($this));
+
 		return $this->update(['cancelled_at' => now()]);
+	}
+
+	public function finish()
+	{
+        \Mail::to($this->subscriber->email)->queue(new CrashCourseFeedback($this));
+
+        event(new CrashCourseFinished($this));
+
+		return $this->update(['completed_at' => now()]);		
 	}
 
 	public function getRemainingLessonsCountAttribute()

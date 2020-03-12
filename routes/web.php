@@ -170,6 +170,8 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 	Route::post('{crashcourse}/signup', 'CrashCoursesController@signup')->name('signup');
 
+	Route::delete('{crashcourse}/cancel', 'CrashCoursesController@cancel')->name('cancel');
+
 });
 
 Route::get('gift', 'UsersController@gift')->name('gift');

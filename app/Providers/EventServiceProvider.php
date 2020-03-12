@@ -42,6 +42,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         \App\Events\CrashCourses\CrashCourseSignUp::class => [
             \App\Listeners\CrashCourses\CrashCourseSignUpListener::class
+        ],
+        \App\Events\CrashCourses\CrashCourseCancelled::class => [
+            \App\Listeners\CrashCourses\CrashCourseCancelledListener::class
+        ],
+        \App\Events\CrashCourses\CrashCourseFinished::class => [
+            \App\Listeners\CrashCourses\CrashCourseFinishedListener::class
         ]
     ];
 

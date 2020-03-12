@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\CrashCourse\CrashCourse;
+use App\CrashCourse\{CrashCourse, CrashCourseSubscription};
 use App\Subscription;
 use Illuminate\Http\Request;
 
@@ -83,6 +83,11 @@ class CrashCoursesController extends Controller
     public function update(Request $request, CrashCourse $crashCourse)
     {
         //
+    }
+
+    public function cancel(CrashCourseSubscription $subscription)
+    {
+        $subscription->cancel();
     }
 
     /**

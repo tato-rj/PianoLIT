@@ -295,4 +295,42 @@ Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function()
 
 });
 
+Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
+
+	Route::get('', 'Admin\CrashCoursesController@index')->name('index');
+
+	Route::post('', 'Admin\CrashCoursesController@store')->name('store');
+
+	Route::prefix('topics')->name('topics.')->group(function() {
+
+		Route::get('', 'Admin\CrashCourseTopicsController@index')->name('index');
+
+		Route::post('', 'Admin\CrashCourseTopicsController@store')->name('store');
+
+		Route::patch('{topic}', 'Admin\CrashCourseTopicsController@update')->name('update');
+
+		Route::delete('{topic}', 'Admin\CrashCourseTopicsController@destroy')->name('destroy');
+
+	});
+
+	Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
+
+		Route::get('', 'Admin\CrashCoursesController@subscriptions')->name('index');
+
+	});
+
+	Route::get('create', 'Admin\CrashCoursesController@create')->name('create');
+
+	Route::get('{crashcourse}', 'Admin\CrashCoursesController@show')->name('show');
+
+	Route::get('{crashcourse}/edit', 'Admin\CrashCoursesController@edit')->name('edit');
+
+	Route::patch('{crashcourse}', 'Admin\CrashCoursesController@update')->name('update');
+
+	Route::patch('{crashcourse}/status', 'Admin\CrashCoursesController@updateStatus')->name('update-status');
+
+	Route::delete('{crashcourse}', 'Admin\CrashCoursesController@destroy')->name('destroy');
+	
+});
+
 Route::get('logs/data', 'LogsController@data')->name('log.data');

@@ -15,6 +15,7 @@ class Post extends ShareableContent
 
         self::deleting(function($post) {
             $post->topics()->detach();
+            
             \Storage::disk('public')->delete($post->cover_path);
         });
     }

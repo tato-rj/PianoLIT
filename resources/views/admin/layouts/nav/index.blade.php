@@ -1,21 +1,10 @@
   <div class="collapse navbar-collapse" id="navbarResponsive">
     <ul class="navbar-nav navbar-sidenav">
 
-      @include('admin.layouts.nav.item', ['route' => route('admin.home'), 'name' => 'Dashboard', 'icon' => 'tachometer-alt'])
-
       @editor
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'My profile', 'icon' => 'pencil-alt'])
       @endeditor
   
-      @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Statistics', 'icon' => 'chart-line',
-      'dropdown' => [
-        ['name' => 'Users', 'route' => route('admin.stats.users')],
-        ['name' => 'Pieces', 'route' => route('admin.stats.pieces')],
-        ['name' => 'Composers', 'route' => route('admin.stats.composers')],
-        ['name' => 'Blog', 'route' => route('admin.stats.blog')],
-        ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],
-      ]])
-
       @manager
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
         'dropdown' => [
@@ -23,6 +12,33 @@
           ['route' => route('admin.api.search'), 'name' => 'Search'],
           ['route' => route('admin.api.tour'), 'name' => 'Tour'],
         ]])
+
+        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Statistics', 'icon' => 'chart-line',
+        'dropdown' => [
+          ['name' => 'Users', 'route' => route('admin.stats.users')],
+          ['name' => 'Pieces', 'route' => route('admin.stats.pieces')],
+          ['name' => 'Composers', 'route' => route('admin.stats.composers')],
+          ['name' => 'Blog', 'route' => route('admin.stats.blog')],
+          ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],
+        ]])
+        
+        <div class="dropdown-divider"></div>
+        
+        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
+        'dropdown' => [
+          ['name' => 'Profiles', 'route' => route('admin.users.index')],
+          ['name' => 'Activity Logs', 'route' => route('admin.users.logs')],
+          ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')]
+        ]])
+
+        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Subscriptions', 'icon' => 'envelope',
+        'dropdown' => [
+          ['name' => 'Subscribers', 'route' => route('admin.subscriptions.index')],
+          ['name' => 'Email lists', 'route' => route('admin.subscriptions.lists.index')],
+          ['name' => 'Reports', 'route' => route('admin.subscriptions.reports.index')]
+        ]])
+
+        <div class="dropdown-divider"></div>
 
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Repertoire', 'icon' => 'music',
         'dropdown' => [
@@ -49,26 +65,19 @@
           ['route' => route('admin.quizzes.media.images'), 'name' => 'Images'],
         ]])
 
-        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Infographs', 'icon' => 'pencil-ruler',
+        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Infographics', 'icon' => 'pencil-ruler',
         'dropdown' => [
           ['route' => route('admin.infographs.index'), 'name' => 'Designs'],
           ['route' => route('admin.infographs.topics.index'), 'name' => 'Topics'],
         ]])
 
-        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
+        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Crash Courses', 'icon' => 'graduation-cap',
         'dropdown' => [
-          ['name' => 'Profiles', 'route' => route('admin.users.index')],
-          ['name' => 'Activity Logs', 'route' => route('admin.users.logs')],
-          ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')]
+          ['name' => 'Courses', 'route' => route('admin.crashcourses.index')],
+          ['name' => 'Topics', 'route' => route('admin.crashcourses.topics.index')],
+          ['name' => 'Subscriptions', 'route' => route('admin.crashcourses.subscriptions.index')]
         ]])
-
-        @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Subscriptions', 'icon' => 'envelope',
-        'dropdown' => [
-          ['name' => 'Subscribers', 'route' => route('admin.subscriptions.index')],
-          ['name' => 'Email lists', 'route' => route('admin.subscriptions.lists.index')],
-          ['name' => 'Reports', 'route' => route('admin.subscriptions.reports.index')]
-        ]])
-
+        
         @include('admin.layouts.nav.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list-ul'])
       @endmanager
 

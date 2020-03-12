@@ -124,7 +124,7 @@ class AppTest extends TestCase
         ]);
     }
 
-    public function postCrashCourse($crashcourse, $args = ['first_name' => 'John', 'email' => 'test@crashcourse.com'])
+    public function signUpToCrashCourse($crashcourse, $args = ['first_name' => 'John', 'email' => 'test@crashcourse.com'])
     {
         return $this->post(route('crashcourses.signup', $crashcourse), [
             'first_name' => $args['first_name'], 
