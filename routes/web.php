@@ -168,6 +168,8 @@ Route::prefix('quizzes')->name('quizzes.')->group(function() {
 
 Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
+	Route::get('', 'CrashCoursesController@index')->name('index');
+
 	Route::post('{crashcourse}/signup', 'CrashCoursesController@signup')->name('signup');
 
 	Route::delete('{subscription}/cancel', 'CrashCoursesController@cancel')->name('cancel');

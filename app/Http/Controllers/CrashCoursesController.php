@@ -15,7 +15,9 @@ class CrashCoursesController extends Controller
      */
     public function index()
     {
-        //
+        $crashcourses = CrashCourse::published()->latest()->paginate(12);
+
+        return view('crashcourses.index', compact('crashcourses'));
     }
 
     /**
@@ -57,9 +59,14 @@ class CrashCoursesController extends Controller
             'email' => 'required|email|max:255'
         ]);
 
+        if ($crashcourse->hasActive($request->email))
+            return redirect()->back()->with('error', 'You are already signed up for this course!');
+
         $subscription = Subscription::createOrActivate($request, $notifyUser = false, $joinAll = false);
 
         $crashcourse->signup($subscription, $request->first_name);
+
+        return redirect()->back()->with('status', 'Thanks for signing up!');
     }
 
     /**

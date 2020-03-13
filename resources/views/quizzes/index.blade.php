@@ -1,8 +1,6 @@
 @extends('layouts.app', ['title' => 'PianoLIT Quizzes'])
 
 @push('header')
-  <!-- END Twitter Card -->
-  <meta name="apple-itunes-app" content="app-id=00000000" />
 @endpush
 
 @section('content')

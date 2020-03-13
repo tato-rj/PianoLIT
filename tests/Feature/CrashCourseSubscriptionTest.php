@@ -77,6 +77,18 @@ class CrashCourseSubscriptionTest extends AppTest
     }
 
     /** @test */
+    public function a_subscriber_cannot_signup_for_the_same_course_while_it_is_active()
+    {
+        $this->signUpToCrashCourse($this->crashcourse);
+
+        $email = $this->crashcourse->subscriptions->first()->subscriber->email;
+
+        $this->signUpToCrashCourse($this->crashcourse, ['first_name' => 'John', 'email' => $email]);
+
+        $this->assertEquals(1, $this->crashcourse->subscriptions()->count());
+    }
+
+    /** @test */
     public function a_new_subscriber_receives_the_first_lesson_right_away_upon_signing_up_for_a_crash_course()
     {
     	\Mail::fake();

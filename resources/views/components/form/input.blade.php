@@ -2,6 +2,7 @@
 	@include('components.form.label', ['asterisk' => $asterisk ?? null])
 	<input 
 		class="form-control {{$classes ?? null}} {{validate($errors->$bag, $name)}}" 
+		style="{{$styles ?? null}}" 
 		{{$required ?? 'required'}} 
 		type="{{$type ?? 'text'}}" 
 		@if(! empty($type) && $type == 'number')

@@ -44,7 +44,7 @@ class NewSubscriber extends Notification
     {
         return [
             'title' => 'New subscriber',
-            'message' => '<strong>' . $this->subscriber->email . '</strong> subscribed to our newsletter.',
+            'message' => '<strong>' . $this->subscriber->email . '</strong> just subscribed.',
             'url' => route('admin.subscriptions.index')
         ];
     }

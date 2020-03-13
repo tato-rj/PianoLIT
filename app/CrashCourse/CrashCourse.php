@@ -29,6 +29,16 @@ class CrashCourse extends ShareableContent
         return $this->belongsToMany(CrashCourseTopic::class, 'crash_course_crash_course_topic', 'crash_course_id', 'topic_id');
     }
 
+    public function hasActive($email)
+    {
+        return $this->subscriptions()->where([
+            ['completed_at', null], 
+            ['cancelled_at', null]
+        ])->whereHas('subscriber', function($query) use ($email) {
+            $query->where('email', $email);
+        })->exists();
+    }
+
     public function getActiveSubscriptionsAttribute()
     {
     	return $this->subscriptions()->where([
