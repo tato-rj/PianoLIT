@@ -28,12 +28,12 @@
 
     <table class="" width="100%" cellpadding="0" cellspacing="0">
         <tr>
-            <td align="center">
+            <td align="left">
                 <table class="" width="100%" cellpadding="0" cellspacing="0">
                     <!-- Email Body -->
                     <tr>
                         <td class="" width="100%" cellpadding="0" cellspacing="0">
-                            <table class="main-body" align="center" width="570" cellpadding="0" cellspacing="0">
+                            <table class="main-body" align="left" width="100%" cellpadding="0" cellspacing="0">
                                 <!-- Body content -->
                                 <tr>
                                     <td class="">
@@ -46,7 +46,7 @@
 
                     <tr>
                         <td class="" width="100%" cellpadding="0" cellspacing="0">
-                            <table class="main-body" align="center" width="570" cellpadding="0" cellspacing="0">
+                            <table class="main-body" align="left" width="100%" cellpadding="0" cellspacing="0">
                                 <!-- Body content -->
                                 <tr>
                                     <td class="">
