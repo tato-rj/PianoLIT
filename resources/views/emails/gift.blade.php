@@ -10,4 +10,3 @@ Here is your gift, we hope you enjoy it:)
 Best<br>
 Elena from {{ config('app.name') }}
 @endcomponent
-

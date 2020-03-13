@@ -29,27 +29,27 @@ class CrashCourse extends ShareableContent
         return $this->belongsToMany(CrashCourseTopic::class, 'crash_course_crash_course_topic', 'crash_course_id', 'topic_id');
     }
 
-    public function activeSubscriptions()
+    public function getActiveSubscriptionsAttribute()
     {
     	return $this->subscriptions()->where([
     		['completed_at', null], 
     		['cancelled_at', null]
-    	]);
+    	])->get();
     }
 
-    public function cancelledSubscriptions()
+    public function getCancelledSubscriptionsAttribute()
     {
-    	return $this->subscriptions()->whereNotNull('cancelled_at');
+    	return $this->subscriptions()->whereNotNull('cancelled_at')->get();
     }
 
-    public function completedSubscriptions()
+    public function getCompletedSubscriptionsAttribute()
     {
-    	return $this->subscriptions()->whereNotNull('completed_at');
+    	return $this->subscriptions()->whereNotNull('completed_at')->get();
     }
 
     public function lessons()
     {
-    	return $this->hasMany(CrashCourseLesson::class, 'crash_course_id');
+    	return $this->hasMany(CrashCourseLesson::class, 'crash_course_id')->orderBy('order');
     }
 
     public function signup(Subscription $subscription, $name = null)
@@ -67,7 +67,7 @@ class CrashCourse extends ShareableContent
 
     public function scopeDatatable($query)
     {
-        return datatable($query)->withDate()->withCount(['lessons'])->withBlade([
+        return datatable($query)->withDate()->withCount(['lessons', 'active_subscriptions'])->withBlade([
             'published' => view('admin.pages.crashcourses.table.published'),
             'action' => view('admin.pages.crashcourses.table.actions')
         ])->make();

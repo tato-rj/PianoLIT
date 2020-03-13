@@ -321,6 +321,26 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 	Route::get('create', 'Admin\CrashCoursesController@create')->name('create');
 
+	Route::prefix('{crashcourse}/lessons')->name('lessons.')->group(function() {
+
+		Route::get('', 'Admin\CrashCourseLessonsController@create')->name('create');
+
+		Route::patch('reorder', 'Admin\CrashCourseLessonsController@reorder')->name('reorder');
+		
+		Route::get('{lesson}', 'Admin\CrashCourseLessonsController@edit')->name('edit');
+
+		Route::get('{lesson}/preview', 'Admin\CrashCourseLessonsController@preview')->name('preview');
+
+		Route::get('{lesson}/send-to', 'Admin\CrashCourseLessonsController@sendTo')->name('send-to');
+
+		Route::post('', 'Admin\CrashCourseLessonsController@store')->name('store');
+
+		Route::patch('{lesson}', 'Admin\CrashCourseLessonsController@update')->name('update');
+
+		Route::delete('{lesson}', 'Admin\CrashCourseLessonsController@destroy')->name('destroy');
+
+	});
+
 	Route::get('{crashcourse}', 'Admin\CrashCoursesController@show')->name('show');
 
 	Route::get('{crashcourse}/edit', 'Admin\CrashCoursesController@edit')->name('edit');

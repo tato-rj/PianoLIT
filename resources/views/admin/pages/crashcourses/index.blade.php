@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    @datatable(['table' => 'crash_courses', 'columns' => ['Date', 'Title', 'Number of lessons', 'Status', '']])
+    @datatable(['table' => 'crash_courses', 'columns' => ['Date', 'Title', 'Number of lessons', 'Active subscriptions', 'Status', '']])
 
   </div>
 </div>
@@ -33,6 +33,7 @@
   {data: 'created_at', class: 'text-nowrap'},
   {data: 'title', name: 'crash_courses.title', class: 'dataTables_main_column'},
   {data: 'lessons', orderable: false, searchable: false},
+  {data: 'active_subscriptions', orderable: false, searchable: false},
   {data: 'published', orderable: false, searchable: false},
   {data: 'action', orderable: false, searchable: false},
 ]).create();

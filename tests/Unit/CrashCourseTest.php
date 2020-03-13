@@ -55,27 +55,27 @@ class CrashCourseTest extends AppTest
     /** @test */
     public function it_knows_the_status_of_its_subscriptions()
     {
-    	$this->assertCount(1, $this->crashcourse->activeSubscriptions()->get());
-    	$this->assertCount(0, $this->crashcourse->cancelledSubscriptions()->get());
-    	$this->assertCount(0, $this->crashcourse->completedSubscriptions()->get());
+    	$this->assertCount(1, $this->crashcourse->activeSubscriptions);
+    	$this->assertCount(0, $this->crashcourse->cancelledSubscriptions);
+    	$this->assertCount(0, $this->crashcourse->completedSubscriptions);
 
     	$this->crashcourse->subscriptions->first()->cancel();
 
-    	$this->assertCount(0, $this->crashcourse->activeSubscriptions()->get());
-    	$this->assertCount(1, $this->crashcourse->cancelledSubscriptions()->get());
-    	$this->assertCount(0, $this->crashcourse->completedSubscriptions()->get());
+    	$this->assertCount(0, $this->crashcourse->activeSubscriptions);
+    	$this->assertCount(1, $this->crashcourse->cancelledSubscriptions);
+    	$this->assertCount(0, $this->crashcourse->completedSubscriptions);
 
     	$this->crashcourse->subscriptions->first()->update(['cancelled_at' => null]);
     	
-    	$this->assertCount(1, $this->crashcourse->activeSubscriptions()->get());
-    	$this->assertCount(0, $this->crashcourse->cancelledSubscriptions()->get());
-    	$this->assertCount(0, $this->crashcourse->completedSubscriptions()->get());
+    	$this->assertCount(1, $this->crashcourse->activeSubscriptions);
+    	$this->assertCount(0, $this->crashcourse->cancelledSubscriptions);
+    	$this->assertCount(0, $this->crashcourse->completedSubscriptions);
     	
     	$this->crashcourse->subscriptions->first()->continue();
         $this->crashcourse->subscriptions->first()->continue();
 
-    	$this->assertCount(0, $this->crashcourse->activeSubscriptions()->get());
-    	$this->assertCount(0, $this->crashcourse->cancelledSubscriptions()->get());
-    	$this->assertCount(1, $this->crashcourse->completedSubscriptions()->get());
+    	$this->assertCount(0, $this->crashcourse->activeSubscriptions);
+    	$this->assertCount(0, $this->crashcourse->cancelledSubscriptions);
+    	$this->assertCount(1, $this->crashcourse->completedSubscriptions);
     }
 }

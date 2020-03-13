@@ -14,3 +14,9 @@ return this.map(function(){
      return $.trim($(this).text());
   }).get();
 };
+
+jQuery.fn.attrToArray = function(attr) {
+return this.map(function(){
+     return $.trim($(this).attr(attr));
+  }).get();
+};

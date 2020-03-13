@@ -39,6 +39,7 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('admin.components.charts.ranking');
         \Blade::include('components.tables.list');
         \Blade::include('components.tables.full', 'table');
+        \Blade::include('components.return');
 
         \Blade::directive('popup', function ($card) {
             return view('components.overlays.subscribe.model-2');

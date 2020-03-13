@@ -42,7 +42,9 @@ class CreateCrashCoursesTable extends Migration
             $table->unsignedInteger('crash_course_id');
             $table->string('subject');
             $table->text('body');
+            $table->unsignedInteger('reading_time');
             $table->unsignedInteger('views')->default(0);
+            $table->unsignedInteger('order')->default(0);
             $table->timestamps();
         });
     }

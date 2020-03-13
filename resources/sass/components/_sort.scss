@@ -1,0 +1,7 @@
+.sort-handle {
+	cursor: grab;
+}
+
+.sort-handle:active {
+	cursor: grabbing;
+}

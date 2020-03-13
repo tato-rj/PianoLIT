@@ -12,18 +12,16 @@ class CrashCourseEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subscriber, $lesson, $subject;
+    public $subscription, $lesson;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(CrashCourseSubscription $subscription)
+    public function __construct($model)
     {
-        $this->subscriber = $subscription->subscriber;
-        $this->lesson = $subscription->upcomingLesson;
-        $this->subject = $this->makeSubject($subscription, $subscription->upcomingLesson);
+        $this->manageData($model);
     }
 
     /**
@@ -33,20 +31,20 @@ class CrashCourseEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject($this->subject)->markdown('emails.crashcourse');
+        return $this->subject($this->lesson->dynamic('subject', $this->subscription))
+                    ->markdown('emails.crashcourse');
     }
 
-    public function makeSubject(CrashCourseSubscription $subscription, CrashCourseLesson $lesson)
+    public function manageData($model)
     {
-        if (! strhas($lesson->subject, '['))
-            return $lesson->subject;
-        
-        preg_match_all("/\[([^\]]*)\]/", $lesson->subject, $matches);
-        
-        $placeholder = $matches[0][0];
-        
-        $key = $matches[1][0];
-
-        return str_replace($placeholder, $subscription->$key, $lesson->subject);
+        if (get_class($model) == CrashCourseSubscription::class) {
+            $this->subscription = $model;
+            $this->lesson = $this->subscription->upcomingLesson; 
+        } else if (get_class($model) == CrashCourseLesson::class) {
+            $this->subscription = null;
+            $this->lesson = $model; 
+        } else {
+            throw new \Exception('You must pass either a lesson or a subscription to this email', 404);
+        }
     }
 }

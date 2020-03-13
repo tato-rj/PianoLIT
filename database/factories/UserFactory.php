@@ -121,6 +121,8 @@ $factory->define(CrashCourseLesson::class, function (Faker $faker) {
         },
         'subject' => $faker->sentence,
         'body' => $faker->sentence,
+        'reading_time' => 1,
+        'order' => 0
     ];
 });
 

@@ -6,22 +6,23 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\CrashCourse\CrashCourseSubscription;
+use App\CrashCourse\{CrashCourseSubscription, CrashCourseLesson};
 
-class CrashCourseFeedback extends Mailable
+class CrashCourseEmailPreview extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subscription;
+    public $lesson, $subscription;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(CrashCourseSubscription $subscription)
+    public function __construct(CrashCourseLesson $lesson)
     {
-        $this->subscription = $subscription;
+        $this->subscription = null;
+        $this->lesson = $lesson;
     }
 
     /**
@@ -31,6 +32,7 @@ class CrashCourseFeedback extends Mailable
      */
     public function build()
     {
-        return $this->subject('Crash course completed 🤗')->markdown('emails.crashcourse-feedback');
+        return $this->subject($this->lesson->dynamic('subject', $this->subscription))
+                    ->markdown('emails.crashcourse');
     }
 }

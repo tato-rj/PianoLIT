@@ -12,8 +12,9 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+      @return(['url' => route('admin.crashcourses.index'), 'to' => 'view all courses'])
     
-      <form id="create-quiz" class="row my-3" method="POST" action="{{route('admin.crashcourses.store')}}" autocomplete="off" enctype="multipart/form-data">
+      <form id="create-quiz" class="row" method="POST" action="{{route('admin.crashcourses.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-lg-4 col-md-6 col-12 mb-4">
           @image(['name' => 'cover_image', 'image' => asset('images/misc/placeholder-image.png'), 'empty' => true])
@@ -34,7 +35,7 @@
           @textarea(['bag' => 'default', 'name' => 'description', 'placeholder' => 'Course description', 'limit' => 238])
         </div>
         <div class="col-12 text-right">
-          <button type="submit" id="submit-button" class="btn btn-default">Save and continue</button>
+          <button type="submit" id="submit-button" class="btn btn-default">Save and continue<i class="fas fa-long-arrow-alt-right ml-2"></i></button>
         </div>
       </form>
 
