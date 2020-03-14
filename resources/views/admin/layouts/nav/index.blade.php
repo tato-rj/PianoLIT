@@ -22,7 +22,7 @@
           ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],
         ]])
         
-        <div class="dropdown-divider"></div>
+        <div class="dropdown-divider hide-on-sm"></div>
         
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
         'dropdown' => [
@@ -38,7 +38,7 @@
           ['name' => 'Reports', 'route' => route('admin.subscriptions.reports.index')]
         ]])
 
-        <div class="dropdown-divider"></div>
+        <div class="dropdown-divider hide-on-sm"></div>
 
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Repertoire', 'icon' => 'music',
         'dropdown' => [
