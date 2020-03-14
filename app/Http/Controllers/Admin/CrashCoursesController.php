@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\CrashCourse\{CrashCourse, CrashCourseTopic};
+use App\Mail\CrashCourseFeedbackEmail;
 
 class CrashCoursesController extends Controller
 {
@@ -43,6 +44,18 @@ class CrashCoursesController extends Controller
         $crashcourse->uploadCoverImage($request);
 
         return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', 'The crashcourse has been successfuly created!');
+    }
+
+    public function feedbackPreview(CrashCourse $crashcourse)
+    {
+        return new CrashCourseFeedbackEmail($crashcourse, auth()->user()->first_name);
+    }
+
+    public function feedbackSendTo(Request $request, CrashCourse $crashcourse)
+    {
+        \Mail::to($request->email)->send(new CrashCourseFeedbackEmail($crashcourse, auth()->user()->first_name));
+
+        return back()->with('status', 'A preview was sent to ' . $request->email);
     }
 
     public function edit(CrashCourse $crashcourse)

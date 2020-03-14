@@ -11,7 +11,7 @@
   <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-          <a href="{{route('admin.crashcourses.create')}}" class="btn btn-sm btn-default">
+          <a href="{{route('admin.crashcourses.create')}}" class="btn btn-sm btn-default mr-2">
             <i class="fas fa-plus mr-2"></i>Create a new Crash Course
           </a>
         </div>

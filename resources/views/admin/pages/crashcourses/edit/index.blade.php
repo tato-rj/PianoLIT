@@ -21,35 +21,15 @@
         </div>
       </div>
       <div class="col-lg-4 col-md-6 col-12 mb-4">
-        <form method="POST" action="{{route('admin.crashcourses.update', $crashcourse)}}" autocomplete="off" enctype="multipart/form-data">
-          @csrf
-          @method('PATCH')
-            @image(['name' => null, 'image' => $crashcourse->cover_image(), 'empty' => true])
-            <div class="rounded bg-light px-3 py-2 mb-3">
-              <p class="text-brand border-bottom pb-1 mb-1"><strong>TOPICS</strong></p>
-              <div class="d-flex flex-wrap">
-                  @foreach($topics as $topic)
-                  <div class="custom-control custom-checkbox mx-2 mb-2">
-                    <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($crashcourse->topics->contains($topic->id)) ? 'checked' : ''}}>
-                    <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
-                  </div>
-                  @endforeach
-              </div>
-            </div>
 
-            @input(['bag' => 'default', 'value' => $crashcourse->title, 'name' => 'title', 'placeholder' => 'Crash Course title', 'limit' => 120])
-            @textarea(['bag' => 'default', 'value' => $crashcourse->description, 'name' => 'description', 'placeholder' => 'Crash Course description', 'limit' => 238])
-
-            <div>
-              <button type="submit" id="submit-button" class="btn btn-default">Update course</button>
-              @include('admin.components.creator', ['model' => $crashcourse, 'type' => 'course'])
-            </div>
-        </form>
+        @include('admin.pages.crashcourses.edit.form')
+      
       </div>
       <div class="col-lg-8 col-md-6 col-12 mb-4">
         <div class="alert bg-light mb-4 text-center text-brand position-relative">
           <strong>COURSE LESSONS</strong>
-          <a href="{{route('admin.crashcourses.lessons.create', $crashcourse)}}" class="btn btn-sm btn-default position-absolute" style="top: 50%; right: 12px; transform: translateY(-50%);">
+          <a href="{{route('admin.crashcourses.lessons.create', $crashcourse)}}" class="btn btn-sm btn-default position-absolute" 
+            style="top: 50%; right: 12px; transform: translateY(-50%);">
             <i class="fas fa-plus mr-2"></i><strong>NEW</strong>
           </a>
         </div>
@@ -61,6 +41,13 @@
           @empty
           <h2 class="text-center mt-6 text-grey"><strong>No lessons yet...</strong></h2>
           @endforelse
+        </div>
+        <div>
+          @if($crashcourse->lessons_count > 0)
+
+            @include('admin.pages.crashcourses.edit.preview-card')
+          
+          @endif
         </div>
       </div>
     </div>

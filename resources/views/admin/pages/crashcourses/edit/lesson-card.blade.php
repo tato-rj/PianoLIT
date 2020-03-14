@@ -14,7 +14,7 @@
     </div>
     <div class="d-flex justify-content-between">
       <div class="">
-        @include('admin.pages.crashcourses.lessons.actions')
+        @include('admin.pages.crashcourses.lessons.actions', ['id' => $lesson->id])
         <a href="{{route('admin.crashcourses.lessons.edit', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-warning">
           <i class="far fa-edit mr-2"></i>Edit
         </a>

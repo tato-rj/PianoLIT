@@ -4,7 +4,7 @@ namespace App\CrashCourse;
 
 use App\{PianoLit, Subscription};
 use App\Events\CrashCourses\{CrashCourseCancelled, CrashCourseFinished};
-use App\Mail\{CrashCourseEmail, CrashCourseFeedback};
+use App\Mail\{CrashCourseEmail, CrashCourseFeedbackEmail};
 
 class CrashCourseSubscription extends PianoLit
 {
@@ -89,7 +89,7 @@ class CrashCourseSubscription extends PianoLit
 
 	public function finish()
 	{
-        \Mail::to($this->subscriber->email)->queue(new CrashCourseFeedback($this));
+        \Mail::to($this->subscriber->email)->queue(new CrashCourseFeedbackEmail($this->crashcourse, $this));
 
         event(new CrashCourseFinished($this));
 

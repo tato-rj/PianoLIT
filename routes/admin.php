@@ -345,6 +345,10 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 	Route::get('{crashcourse}/edit', 'Admin\CrashCoursesController@edit')->name('edit');
 
+	Route::get('{crashcourse}/feedback/preview', 'Admin\CrashCoursesController@feedbackPreview')->name('feedback.preview');
+
+	Route::get('{crashcourse}/feedback/send-to', 'Admin\CrashCoursesController@feedbackSendTo')->name('feedback.send-to');
+	
 	Route::patch('{crashcourse}', 'Admin\CrashCoursesController@update')->name('update');
 
 	Route::patch('{crashcourse}/status', 'Admin\CrashCoursesController@updateStatus')->name('update-status');

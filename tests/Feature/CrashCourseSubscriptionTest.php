@@ -6,7 +6,7 @@ use Tests\AppTest;
 use App\Subscription;
 use App\CrashCourse\{CrashCourse, CrashCourseLesson, CrashCourseSubscription};
 use App\Mail\Newsletter\Welcome as NewsletterWelcomeEmail;
-use App\Mail\{CrashCourseEmail, CrashCourseFeedback};
+use App\Mail\{CrashCourseEmail, CrashCourseFeedbackEmail};
 use App\Notifications\CrashCourse\{CrashCourseSignUpNotification, CrashCourseCancelledNotification};
 
 class CrashCourseSubscriptionTest extends AppTest
@@ -167,6 +167,6 @@ class CrashCourseSubscriptionTest extends AppTest
         
         $this->artisan('crashcourse:send');         
     
-        \Mail::assertQueued(CrashCourseFeedback::class);
+        \Mail::assertQueued(CrashCourseFeedbackEmail::class);
     }
 }

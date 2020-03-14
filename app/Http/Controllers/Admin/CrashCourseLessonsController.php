@@ -52,7 +52,7 @@ class CrashCourseLessonsController extends Controller
     {
         return new CrashCourseEmail($lesson);
     }
-    
+
     /**
      * Display the specified resource.
      *
