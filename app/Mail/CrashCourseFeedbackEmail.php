@@ -19,7 +19,7 @@ class CrashCourseFeedbackEmail extends Mailable
      *
      * @return void
      */
-    public function __construct($crashcourse, $model)
+    public function __construct($crashcourse, $model = null)
     {
         $this->crashcourse = $crashcourse;
         $this->manageData($model);
@@ -37,14 +37,10 @@ class CrashCourseFeedbackEmail extends Mailable
 
     public function manageData($model)
     { 
-        if (is_string($model)) {
-            $this->subscription = null;
-            $this->first_name = $model; 
-        } else if (get_class($model) == CrashCourseSubscription::class) {
+        if (get_class($model) == CrashCourseSubscription::class) {
             $this->subscription = $model;
-            $this->first_name = $this->subscription->first_name; 
         } else {
-            throw new \Exception('You must pass either a name or a subscription to this email', 404);
+            $this->subscription = null;
         }
     }
 }

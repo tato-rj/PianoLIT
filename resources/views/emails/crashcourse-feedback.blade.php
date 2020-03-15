@@ -1,5 +1,5 @@
 @component('mail::raw', compact('subscription'))
-<p>Hey {{$first_name}}!</p>
+<p>Hey there!</p>
 
 <p>Thanks for taking the <strong>{{$crashcourse->title}}</strong> crash course, we hope you enjoyed.</p>
 

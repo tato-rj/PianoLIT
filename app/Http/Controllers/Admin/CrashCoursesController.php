@@ -48,7 +48,7 @@ class CrashCoursesController extends Controller
 
     public function feedbackPreview(CrashCourse $crashcourse)
     {
-        return new CrashCourseFeedbackEmail($crashcourse, auth()->user()->first_name);
+        return new CrashCourseFeedbackEmail($crashcourse);
     }
 
     public function feedbackSendTo(Request $request, CrashCourse $crashcourse)
