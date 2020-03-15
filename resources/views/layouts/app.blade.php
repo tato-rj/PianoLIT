@@ -167,13 +167,13 @@
     @endconfirmed
     
     <div id="app">
-        @if($full ?? true)
+        @if(empty($raw))
         <header class="container">
             @include('layouts.menu')
         </header>
         @endif
 
-        <main style="overflow-x: hidden" class="{{$full ? null: 'mt-5'}}">
+        <main style="overflow-x: hidden">
             @yield('content')
             
             @if(session()->has('impersonator'))
@@ -184,7 +184,7 @@
 
         @include('auth.modal')
         
-        @if($full ?? true)
+        @if(empty($raw))
         @include('layouts.footer')
         @endif
 

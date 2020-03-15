@@ -1,5 +1,5 @@
 @extends('layouts.app', [
-	'full' => false,
+	'raw' => true,
 	'title' => 'Your favorite composer\'s birthday in your mailbox',
     'shareable' => [
         'keywords' => 'composer birthday,beethoven birthday,chopin birthday,mozart birthday, classical birthday',

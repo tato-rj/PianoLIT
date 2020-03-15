@@ -47,9 +47,9 @@ class CrashCoursesController extends Controller
      * @param  \App\CrashCourse  $crashCourse
      * @return \Illuminate\Http\Response
      */
-    public function show(CrashCourse $crashCourse)
+    public function show(CrashCourse $crashcourse)
     {
-        //
+        return view('crashcourses.show', compact('crashcourse'));
     }
 
     public function signup(Request $request, CrashCourse $crashcourse)
