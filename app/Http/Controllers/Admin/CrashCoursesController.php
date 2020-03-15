@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\CrashCourse\{CrashCourse, CrashCourseTopic};
+use App\CrashCourse\{CrashCourse, CrashCourseTopic, CrashCourseSubscription};
 use App\Mail\CrashCourseFeedbackEmail;
 
 class CrashCoursesController extends Controller
