@@ -80,8 +80,8 @@ class Subscription extends PianoLit
     {
     	$record = $query->byEmail($form->email);
 
-    	if ($record->exists() && $joinAll)
-    		return $record->first()->joinAll();
+    	if ($record->exists())
+    		return $joinAll ? $record->first()->joinAll() : $record->first();
 
         $subscriber = $this->create([
             'email' => strtolower($form->email),
