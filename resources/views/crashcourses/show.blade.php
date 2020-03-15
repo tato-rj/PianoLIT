@@ -38,6 +38,7 @@ p {letter-spacing: 1px;}
         <div class="mb-4">
           <p class="text-warning text-uppercase" style="opacity: 0.9; font-size: 90%; letter-spacing: 1.4px"><strong>...by signing up to this {{$crashcourse->lessons_count}}-day course you'll learn about:</strong></p>
           <h4 style="letter-spacing: 1px">{{$crashcourse->title}}</h4>
+          <p class="m-0 text-muted"><i class="fas fa-envelope-open-text mr-2"></i>This course has {{$crashcourse->lessons_count}} {{ str_plural('lesson', $crashcourse->lessons_count) }}</p>
           {{-- <p class="m-0 text-muted">{{$crashcourse->description}}</p> --}}
         </div>
 
