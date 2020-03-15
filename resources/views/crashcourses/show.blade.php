@@ -36,7 +36,7 @@ p {letter-spacing: 1px;}
       </div>
       <div class="bg-white pt-6 pr-6 pb-4" style="padding-left: 160px;">
         <div class="mb-4">
-          <p class="text-warning" style="opacity: 0.9"><strong>...by signing up to this {{$crashcourse->lessons_count}}-day course you'll learn about:</strong></p>
+          <p class="text-warning text-uppercase" style="opacity: 0.9; font-size: 90%; letter-spacing: 1.4px"><strong>...by signing up to this {{$crashcourse->lessons_count}}-day course you'll learn about:</strong></p>
           <h4 style="letter-spacing: 1px">{{$crashcourse->title}}</h4>
           {{-- <p class="m-0 text-muted">{{$crashcourse->description}}</p> --}}
         </div>
