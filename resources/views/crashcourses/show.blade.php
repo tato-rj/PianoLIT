@@ -34,7 +34,7 @@ p {letter-spacing: 1px;}
       <div class="position-absolute" style="max-width: 312px; transform: rotate(-8deg); left: 40px; top: 32px">
         <img src="{{asset('images/mockup/crashcourse.png')}}" class="w-100">
       </div>
-      <div class="bg-white pt-6 pr-6 pb-4" style="padding-left: 160px;">
+      <div class="bg-white pt-6 pr-6 pb-4 rounded-top" style="padding-left: 160px;">
         <div class="mb-4">
           <p class="text-warning text-uppercase" style="opacity: 0.9; font-size: 90%; letter-spacing: 1.4px"><strong>...by signing up to this {{$crashcourse->lessons_count}}-day course you'll learn about:</strong></p>
           <h4 style="letter-spacing: 1px">{{$crashcourse->title}}</h4>
@@ -53,7 +53,7 @@ p {letter-spacing: 1px;}
                 @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
               </div>
             </div>
-            <div class="">
+            <div class="my-2">
               <button type="submit" class="btn btn-primary shadow btn-wide mb-2"><strong>START FREE COURSE!</strong></button>
               <div class="text-muted"><small>Ps: we'll never share your email with anyone</small></div>
             </div>
