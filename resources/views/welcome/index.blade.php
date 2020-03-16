@@ -84,7 +84,7 @@
   @include('welcome.sections.youtube')
 	@include('welcome.sections.testimonials')
 
-  @include('components.overlays.subscribe.paper-plane')
+  {{-- @include('components.overlays.subscribe.paper-plane') --}}
 	
 @endsection
 
