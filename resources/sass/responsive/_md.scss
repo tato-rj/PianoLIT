@@ -1,0 +1,43 @@
+////////////////////////////////////////////////
+// FIRST BREAKPOINT: between 992px and 1200px //
+////////////////////////////////////////////////
+@include media-breakpoint-between(md, lg) {
+	.cc-hero {
+		h1 {
+		    font-size: 96px !important;
+		}
+
+		h2 {
+		    margin-top: 0 !important;
+		}
+	}
+}
+
+/////////////////////////////////////////
+// ALL UNDER TABLESTS: less than 992px //
+/////////////////////////////////////////
+// REPEAT FIRST BREAKPOINT IF IT IS TO PERSIST
+
+@include media-breakpoint-down(md) {
+	.inline-on-collapse {
+		display: inline-block !important;
+	}
+
+	.hide-on-collapse {
+		display: none !important;
+	}
+
+	.notifications-count {
+		transform: translate(-50%, -50%);
+	}
+
+	.cc-card {
+		max-width: 100% !important;
+	}
+
+	.cc-hero {
+		h2 {
+		    margin-top: 0 !important;
+		}
+	}
+}

@@ -1,0 +1,8 @@
+/////////////////
+// ALL SCREENS //
+/////////////////
+@include media-breakpoint-down(xl) {
+	.card-columns {
+	    column-count: 4;
+	}
+}
