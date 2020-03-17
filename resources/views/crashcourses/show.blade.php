@@ -22,7 +22,7 @@
 <div class="cc-container container-fluid p-4">
   <div class="position-relative d-flex d-apart flex-column">
     <div class="position-absolute bg-white rounded-circle d-flex flex-center cc-icon">
-      <img src="{{asset('images/brand/app-icon.svg')}}">
+      <a target="_blank" href="{{route('home')}}"><img src="{{asset('images/brand/app-icon.svg')}}"></a>
     </div>
 
     <div class="text-center cc-hero w-100">
