@@ -63,7 +63,7 @@ class CrashCoursesController extends Controller
     public function video(Request $request)
     {
         // revolutionary/lesson-1-01.mp4
-        $video = $this->googleCloud . $request->file;
+        $video = $this->googleCloud . $request->path;
 
         return view('crashcourses.video', compact('video'));
     }
