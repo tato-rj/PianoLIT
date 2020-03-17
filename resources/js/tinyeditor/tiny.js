@@ -5,7 +5,7 @@ tinymce.init({
     relative_urls: false,
     remove_script_host: false,
     convert_urls: false,
-    document_base_url: 'https://www.pianolit.com/',
+    document_base_url: 'https://pianolit.com/',
     plugins: 'lists link image media tinydrive',
     toolbar: 'formatselect | bold italic strikethrough forecolor backcolor | link image media subscribeButton | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent',
     content_css: "/css/admin.css",
