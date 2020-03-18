@@ -40,7 +40,7 @@ class CrashCourseSignUpNotification extends Notification
         return [
             'title' => 'Crash Course signup',
             'message' => $this->subscription->first_name . ' <span class="text-success">signed up</span> for the <strong>' . $this->subscription->crashcourse->title . '</strong> crash course.',
-            'url' => route('admin.crashcourses.show', $this->subscription->crashcourse)
+            'url' => route('admin.crashcourses.index', $this->subscription->crashcourse)
         ];
     }
 }

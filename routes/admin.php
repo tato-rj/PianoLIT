@@ -301,6 +301,8 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 	Route::post('', 'Admin\CrashCoursesController@store')->name('store');
 
+	Route::get('create', 'Admin\CrashCoursesController@create')->name('create');
+
 	Route::prefix('topics')->name('topics.')->group(function() {
 
 		Route::get('', 'Admin\CrashCourseTopicsController@index')->name('index');
@@ -313,13 +315,14 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 	});
 
-	Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
+	Route::prefix('susbcriptions')->name('subscriptions.')->group(function() {
 
-		Route::get('', 'Admin\CrashCoursesController@subscriptions')->name('index');
+		Route::get('', 'Admin\CrashCourseSubscriptionsController@index')->name('index');
 
+		Route::post('{subscription}/next', 'Admin\CrashCourseSubscriptionsController@next')->name('next');
+
+		Route::post('{subscription}/cancel', 'Admin\CrashCourseSubscriptionsController@cancel')->name('cancel');
 	});
-
-	Route::get('create', 'Admin\CrashCoursesController@create')->name('create');
 
 	Route::prefix('{crashcourse}/lessons')->name('lessons.')->group(function() {
 
@@ -340,8 +343,6 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 		Route::delete('{lesson}', 'Admin\CrashCourseLessonsController@destroy')->name('destroy');
 
 	});
-
-	Route::get('{crashcourse}', 'Admin\CrashCoursesController@show')->name('show');
 
 	Route::get('{crashcourse}/edit', 'Admin\CrashCoursesController@edit')->name('edit');
 

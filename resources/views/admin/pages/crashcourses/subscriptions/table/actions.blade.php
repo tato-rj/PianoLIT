@@ -1,0 +1,21 @@
+<div class="text-right">
+  @component('components.datatable.actions', ['actions' => []])
+	
+	@if(! $item->isCompleted && ! $item->isCancelled)
+  	<a href="#" 
+  		data-url="{{route('admin.crashcourses.subscriptions.next', $item)}}" 
+		data-action="send the next lesson to {{$item->email}}"
+  		title="Send next lesson" data-toggle="modal" data-target="#confirm-modal" class="btn btn-sm btn-outline-secondary mr-2">
+  		<i class="fas fa-forward mr-2"></i>Send next
+  	</a>
+
+  	<a href="#" 
+  		data-url="{{route('admin.crashcourses.subscriptions.cancel', $item)}}" 
+		data-action="stop {{$item->first_name}}'s subscription"
+  		title="Stop subscription" data-toggle="modal" data-target="#confirm-modal" class="btn btn-sm btn-danger">
+  		<i class="fas fa-stop-circle mr-2"></i>Stop
+  	</a>
+  	@endif
+
+  @endcomponent
+</div>

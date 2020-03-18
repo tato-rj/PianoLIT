@@ -127,14 +127,19 @@ $factory->define(CrashCourseLesson::class, function (Faker $faker) {
 });
 
 $factory->define(CrashCourseSubscription::class, function (Faker $faker) {
+    $crashcourse = create(CrashCourse::class);
+    $subscription = create(Subscription::class);
+
     return [
         'first_name' => $faker->firstName,
-        'subscriber_id' => function() {
-            return create(Subscription::class)->id;
+        'email' => $subscription->email,
+        'subscriber_id' => function() use ($subscription) {
+            return $subscription->id;
         },
-        'crash_course_id' => function() {
-            return create(CrashCourse::class)->id;
-        }
+        'crash_course_id' => function() use ($crashcourse) {
+            return $crashcourse->id;
+        },
+        'crash_course_title' => $crashcourse->title,
     ];
 });
 

@@ -111,6 +111,8 @@ class CrashCoursesController extends Controller
     public function cancel(CrashCourseSubscription $subscription)
     {
         $subscription->cancel();
+
+        return 'You will no longer receive these emails';
     }
 
     /**

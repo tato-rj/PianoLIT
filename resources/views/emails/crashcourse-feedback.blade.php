@@ -1,4 +1,4 @@
-@component('mail::raw', compact('subscription'))
+@component('mail::raw')
 <p>Hey there!</p>
 
 <p>Thanks for taking the <strong>{{$crashcourse->title}}</strong> crash course, we hope you enjoyed.</p>

@@ -40,7 +40,7 @@ class CrashCourseCancelledNotification extends Notification
         return [
             'title' => 'Crash Course cancelled',
             'message' => $this->subscription->first_name . ' cancelled the <strong>' . $this->subscription->crashcourse->title . '</strong> crash course.',
-            'url' => route('admin.crashcourses.show', $this->subscription->crashcourse)
+            'url' => route('admin.crashcourses.index', $this->subscription->crashcourse)
         ];
     }
 }

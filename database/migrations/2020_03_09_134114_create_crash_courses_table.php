@@ -27,6 +27,8 @@ class CreateCrashCoursesTable extends Migration
         Schema::create('crash_course_subscriptions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('first_name');
+            $table->string('email');
+            $table->string('crash_course_title');
             $table->unsignedInteger('subscriber_id');
             $table->unsignedInteger('crash_course_id');
             $table->unsignedInteger('last_sent_lesson_id')->nullable();

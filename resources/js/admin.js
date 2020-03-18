@@ -12,7 +12,7 @@ require('./quickchart/ChartFactory');
 require('./quickchart/QuickChart');
 require('./datatable/DataTable');
 require('./datatable/DataTableRaw');
-require('./components/delete');
+require('./components/modals');
 require('./components/toggle');
 require('./components/forms');
 

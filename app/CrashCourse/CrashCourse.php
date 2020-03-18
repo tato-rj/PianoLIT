@@ -67,7 +67,9 @@ class CrashCourse extends ShareableContent
 		$subscription = CrashCourseSubscription::create([
             'first_name' => $name,
 			'crash_course_id' => $this->id,
-			'subscriber_id' => $subscription->id
+			'subscriber_id' => $subscription->id,
+            'crash_course_title' => $this->title,
+            'email' => $subscription->email
 		]);
 
         event(new CrashCourseSignUp($subscription));

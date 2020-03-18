@@ -40,7 +40,7 @@ class CrashCourseFinishedNotification extends Notification
         return [
             'title' => 'Crash Course completed',
             'message' => $this->subscription->first_name . ' has completed the <strong>' . $this->subscription->crashcourse->title . '</strong> crash course.',
-            'url' => route('admin.crashcourses.show', $this->subscription->crashcourse)
+            'url' => route('admin.crashcourses.index', $this->subscription->crashcourse)
         ];
     }
 }

@@ -9,7 +9,7 @@ use App\Mail\{CrashCourseEmail, CrashCourseFeedbackEmail};
 class CrashCourseSubscription extends PianoLit
 {
 	protected $dates = ['started_at', 'last_sent_at', 'completed_at', 'cancelled_at'];
-	protected $with = ['crashcourse'];
+	protected $with = ['crashcourse', 'subscriber'];
 
 	public function crashcourse()
 	{
@@ -60,6 +60,16 @@ class CrashCourseSubscription extends PianoLit
 		return $this->lessons->search($this->previousLesson);
 	}
 
+	public function getIsCancelledAttribute()
+	{
+		return ! is_null($this->cancelled_at);
+	}
+
+	public function getIsCompletedAttribute()
+	{
+		return ! is_null($this->completed_at);
+	}
+
 	public function start()
 	{
 		$this->update(['started_at' => now()]);
@@ -103,4 +113,14 @@ class CrashCourseSubscription extends PianoLit
 
 		return $this->lessons_count - ($this->previousLessonIndex + 1);
 	}
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()
+        ->withBlade([
+            'status' => view('admin.pages.crashcourses.subscriptions.table.status'),
+            'action' => view('admin.pages.crashcourses.subscriptions.table.actions')
+        ])
+        ->make();
+    }
 }

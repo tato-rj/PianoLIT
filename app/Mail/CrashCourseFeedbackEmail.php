@@ -12,7 +12,7 @@ class CrashCourseFeedbackEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subscription, $first_name, $crashcourse;
+    public $subscription, $first_name, $crashcourse, $cancel_url;
 
     /**
      * Create a new message instance.
@@ -22,7 +22,10 @@ class CrashCourseFeedbackEmail extends Mailable
     public function __construct($crashcourse, $model = null)
     {
         $this->crashcourse = $crashcourse;
+        
         $this->manageData($model);
+
+        $this->cancel_url = $this->subscription ? route('crashcourses.cancel', $this->subscription) : null;
     }
 
     /**
@@ -37,7 +40,7 @@ class CrashCourseFeedbackEmail extends Mailable
 
     public function manageData($model)
     { 
-        if (get_class($model) == CrashCourseSubscription::class) {
+        if ($model && get_class($model) == CrashCourseSubscription::class) {
             $this->subscription = $model;
         } else {
             $this->subscription = null;

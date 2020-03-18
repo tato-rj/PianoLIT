@@ -151,6 +151,17 @@
 		}
 	}
 
+	.cc-video {
+		.player {
+			height: auto !important;
+		}
+
+		.credits {
+			height: auto !important;
+			margin-top: 40px;
+		}
+	}
+
 	.cc-card {
 		overflow-y: visible !important;
 		padding: 0 20px !important;
