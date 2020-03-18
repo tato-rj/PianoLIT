@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('pianolit:timeline-email')->dailyAt('7:00');
+        // $schedule->command('pianolit:timeline-email')->dailyAt('7:00');
         $schedule->command('pianolit:admin-report')->weeklyOn(7, '20:30');
         $schedule->command('pianolit:unconfirmed-emails')->weeklyOn(2, '10:00');
         $schedule->command('crashcourse:send')->hourly();
