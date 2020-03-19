@@ -108,11 +108,6 @@ class CrashCoursesController extends Controller
         //
     }
 
-    public function test()
-    {
-        return CrashCourseSubscription::active()->first()->send();
-    }
-
     public function cancel(Request $request)
     {
         $subscription = CrashCourseSubscription::byEmail($request->email)->active();
