@@ -23,7 +23,6 @@ class CrashCourseEmail extends Mailable
     {
         $this->manageData($model);
         $this->lesson->email = $email;
-        dd($this->lesson->email);
     }
 
     /**
