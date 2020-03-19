@@ -22,8 +22,8 @@ class CrashCourseEmail extends Mailable
     public function __construct($model, $email = null)
     {
         $this->manageData($model);
-        dd($this->lesson);
         $this->lesson->email = $email;
+        dd($this->lesson->email);
     }
 
     /**
