@@ -12,7 +12,7 @@ class CrashCourseEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subscription, $lesson, $email;
+    public $subscription, $lesson, $email, $foo;
 
     /**
      * Create a new message instance.
@@ -23,6 +23,7 @@ class CrashCourseEmail extends Mailable
     {
         $this->manageData($model);
         $this->email = $email;
+        $this->foo = 'bar';
     }
 
     /**

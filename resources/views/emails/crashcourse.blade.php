@@ -1,4 +1,5 @@
 @component('mail::raw')
+{{$foo}}
 {!! $lesson->dynamic('body', $subscription) !!}
 
 <div>
