@@ -22,7 +22,7 @@ class CrashCourseEmail extends Mailable
     public function __construct($model, $email = null)
     {
         $this->manageData($model);
-        $this->lesson->cancel_url = route('crashcourses.cancel', ['email' => $email]);
+        $this->lesson->email = $email;
     }
 
     /**
