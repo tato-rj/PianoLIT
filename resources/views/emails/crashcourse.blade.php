@@ -1,6 +1,6 @@
 @component('mail::raw')
 <h1>EMAIL: {{$email}}</h1>
-
+{{-- {!! $lesson->dynamic('body', $subscription) !!} --}}
 
 <div>
 
