@@ -19,10 +19,10 @@ class CrashCourseEmail extends Mailable
      *
      * @return void
      */
-    public function __construct($model, $email = '')
+    public function __construct($model, $email = null)
     {
         $this->manageData($model);
-        $this->email = $email;
+        $this->lesson->email = $email;
     }
 
     /**
