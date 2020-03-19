@@ -172,12 +172,12 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 	Route::get('video', 'CrashCoursesController@video')->name('video');
 
+	Route::delete('cancel', 'CrashCoursesController@cancel')->name('cancel');
+
 	Route::get('{crashcourse}', 'CrashCoursesController@show')->name('show');
 
 	Route::post('{crashcourse}/signup', 'CrashCoursesController@signup')->name('signup');
-
-	Route::delete('{subscription}/cancel', 'CrashCoursesController@cancel')->name('cancel');
-
+	
 });
 
 Route::get('gift', 'UsersController@gift')->name('gift');

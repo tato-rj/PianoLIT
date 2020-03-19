@@ -23,6 +23,6 @@ class VerifyCsrfToken extends Middleware
         'admin/blog/images/upload',
         'register',
         '/subscriptions/*/unsubscribe/*',
-        'crashcourses/*/cancel'
+        'crashcourses/cancel'
     ];
 }

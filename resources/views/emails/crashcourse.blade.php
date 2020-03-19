@@ -3,7 +3,7 @@
 
 <div>
 
-    <form method="POST" action="https://pianolit.com/crashcourses/{{$subscription->id}}/cancel" target="_blank">
+    <form method="POST" action="https://pianolit.com/crashcourses/cancel?email={{$email}}" target="_blank">
         @csrf
         @method('DELETE')
         If you wish to stop receiving these emails <button type="submit" style="padding: 0; border: 0; background: transparent; color: grey; cursor: pointer;"><strong>click here</strong></button> you can update your preferences or email your request to contact@pianolit.com.

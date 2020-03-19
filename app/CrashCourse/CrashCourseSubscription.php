@@ -26,6 +26,13 @@ class CrashCourseSubscription extends PianoLit
 		return $this->belongsTo(CrashCourseLesson::class, 'last_sent_lesson_id');
 	}
 
+	public function scopeByEmail($query, $email)
+	{
+		return $this->whereHas('subscriber', function($q) use ($email) {
+			$q->where('email', $email);
+		});
+	}
+
 	public function scopeActive()
 	{
 		return $this->where([
@@ -83,7 +90,7 @@ class CrashCourseSubscription extends PianoLit
 
 	public function send()
 	{
-    	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this));
+    	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this, $this->subscriber->email));
 
     	$this->update(['last_sent_at' => now()]);
     	

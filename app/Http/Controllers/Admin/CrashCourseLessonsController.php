@@ -61,7 +61,7 @@ class CrashCourseLessonsController extends Controller
      */
     public function sendTo(Request $request, CrashCourse $crashcourse, CrashCourseLesson $lesson)
     {
-        \Mail::to($request->email)->send(new CrashCourseEmail($lesson));
+        \Mail::to($request->email)->send(new CrashCourseEmail($lesson, $request->email));
 
         return back()->with('status', 'A preview was sent to ' . $request->email);
     }

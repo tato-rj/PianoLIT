@@ -108,11 +108,16 @@ class CrashCoursesController extends Controller
         //
     }
 
-    public function cancel(CrashCourseSubscription $subscription)
+    public function cancel(Request $request)
     {
-        $subscription->cancel();
+        $subscription = CrashCourseSubscription::byEmail($request->email)->active();
 
-        return 'You will no longer receive these emails';
+        if (! $subscription->exists())
+            return 'You are no longer receiving emails from this course';
+
+        $subscription->first()->cancel();
+
+        return 'Sorry to see you go! You will no longer receive these emails';
     }
 
     /**
