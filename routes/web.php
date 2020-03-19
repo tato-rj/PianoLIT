@@ -168,6 +168,8 @@ Route::prefix('quizzes')->name('quizzes.')->group(function() {
 
 Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
+	Route::get('test', 'CrashCoursesController@test');
+
 	Route::get('', 'CrashCoursesController@index')->name('index');
 
 	Route::get('video', 'CrashCoursesController@video')->name('video');
