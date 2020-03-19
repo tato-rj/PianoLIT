@@ -90,7 +90,9 @@ class CrashCourseSubscription extends PianoLit
 
 	public function send()
 	{
-    	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this, $this->subscriber->email));
+		$email = $this->subscriber->email;
+
+    	\Mail::to($email)->queue(new CrashCourseEmail($this, $email));
 
     	// $this->update(['last_sent_at' => now()]);
     	
