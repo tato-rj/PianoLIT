@@ -21,7 +21,7 @@ class CrashCourseEmail extends Mailable
      */
     public function __construct($model, $email = null)
     {
-        $this->manageData($model);
+        $this->manageData($model, $email);
     }
 
     /**
@@ -35,7 +35,7 @@ class CrashCourseEmail extends Mailable
                     ->markdown('emails.crashcourse');
     }
 
-    public function manageData($model)
+    public function manageData($model, $email = null)
     {
         if (get_class($model) == CrashCourseSubscription::class) {
             $this->subscription = $model;
