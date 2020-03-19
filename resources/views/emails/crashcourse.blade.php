@@ -1,7 +1,7 @@
 @component('mail::raw')
-{{$foo}}
-{!! $lesson->dynamic('body', $subscription) !!}
 
+{!! $lesson->dynamic('body', $subscription) !!}
+{{$foo}}
 <div>
 
     <form method="POST" action="UGH" target="_blank">
