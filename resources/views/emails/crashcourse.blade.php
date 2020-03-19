@@ -2,7 +2,7 @@
 {!! $lesson->dynamic('body', $subscription) !!}
 
 <div>
-
+<h1>{{$lesson->cancel_url}}</h1>
     <form method="POST" action="{{$lesson->cancel_url}}" target="_blank">
         @csrf
         @method('DELETE')
