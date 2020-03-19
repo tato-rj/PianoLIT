@@ -33,8 +33,7 @@ class CrashCourseEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject('test')
-                    ->markdown('emails.crashcourse');
+        return $this->markdown('emails.crashcourse');
     }
 
     public function manageData($model)
