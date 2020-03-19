@@ -2,13 +2,7 @@
 
 {!! $lesson->dynamic('body', $subscription) !!}
 
-<div>
-
-    <form method="POST" action="{{$action}}" target="_blank">
-        @csrf
-        @method('DELETE')
-        If you wish to stop receiving these emails <button type="submit" style="padding: 0; border: 0; background: transparent; color: grey; cursor: pointer;"><strong>click here</strong></button> you can update your preferences or email your request to contact@pianolit.com.
-    </form>
-
-</div>
+<p>
+    If you wish to stop receiving these emails <a href="{{$action}}" target="_blank">click here</a> you can update your preferences or email your request to contact@pianolit.com.
+</p>
 @endcomponent

@@ -174,7 +174,7 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 	Route::get('video', 'CrashCoursesController@video')->name('video');
 
-	Route::delete('cancel', 'CrashCoursesController@cancel')->name('cancel');
+	Route::get('cancel', 'CrashCoursesController@cancel')->name('cancel');
 
 	Route::get('{crashcourse}', 'CrashCoursesController@show')->name('show');
 
