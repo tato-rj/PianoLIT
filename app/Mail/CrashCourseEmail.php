@@ -21,9 +21,8 @@ class CrashCourseEmail extends Mailable
      */
     public function __construct($model, $email = null)
     {
-        $this->email = $email;
-        // $this->manageData($model);
-        // $this->lesson->email = $email;
+        $this->manageData($model);
+        $this->lesson->email = $email;
     }
 
     /**
@@ -33,7 +32,7 @@ class CrashCourseEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject('test')
+        return $this->subject($this->lesson->dynamic('subject', $this->subscription))
                     ->markdown('emails.crashcourse');
     }
 
