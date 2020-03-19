@@ -21,6 +21,7 @@ class CrashCourseEmail extends Mailable
      */
     public function __construct($model, $email = null)
     {
+        dd('IS QUEUE: ' . $email);
         $this->manageData($model);
         $this->lesson->email = $email;
     }
