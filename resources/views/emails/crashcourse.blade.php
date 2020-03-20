@@ -1,4 +1,4 @@
-@component('mail::raw', ['action' => $action])
+@component('mail::raw')
 
 {!! $lesson->dynamic('body', $subscription) !!}
 

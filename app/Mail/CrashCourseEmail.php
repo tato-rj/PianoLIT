@@ -22,8 +22,7 @@ class CrashCourseEmail extends Mailable
     public function __construct($model, $email = null)
     {
         $this->manageData($model);
-        
-        $this->action = $email ? route('crashcourses.cancel', ['email' => $email]) : null;
+        $this->email = $email;
     }
 
     /**
@@ -33,6 +32,8 @@ class CrashCourseEmail extends Mailable
      */
     public function build()
     {
+        $this->action = $this->email ? route('crashcourses.cancel', ['email' => $this->email]) : null;
+
         return $this->subject($this->lesson->dynamic('subject', $this->subscription))
                     ->markdown('emails.crashcourse');
     }
