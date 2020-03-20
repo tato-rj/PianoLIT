@@ -12,7 +12,8 @@ class CrashCourseEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subscription, $lesson, $action;
+    public $subscription, $lesson;
+    public $action;
 
     /**
      * Create a new message instance.
@@ -22,7 +23,7 @@ class CrashCourseEmail extends Mailable
     public function __construct($model, $email = null)
     {
         $this->manageData($model);
-        $this->email = $email;
+        $this->action = $email ? route('crashcourses.cancel', ['email' => $email]) : null;
     }
 
     /**
@@ -32,8 +33,6 @@ class CrashCourseEmail extends Mailable
      */
     public function build()
     {
-        $this->action = $this->email ? route('crashcourses.cancel', ['email' => $this->email]) : null;
-
         return $this->subject($this->lesson->dynamic('subject', $this->subscription))
                     ->markdown('emails.crashcourse');
     }
