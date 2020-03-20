@@ -12,8 +12,7 @@ class CrashCourseEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subscription, $lesson;
-    public $action;
+    public $subscription, $lesson, $action;
 
     /**
      * Create a new message instance.
