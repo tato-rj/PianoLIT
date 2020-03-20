@@ -24,7 +24,7 @@ Chopin's Revoultionary Étude is an extraordiary musical and technical exercise 
 <div class="text-center mb-2 pb-2 border-bottom">
 	<strong><small>Tambourin by Elisabetta de Gambarini</small></strong>
 </div>
-<h1 class="text-center mb-2">Explore the harmony to find out how to work on dynamics and shape musical lines</h1>
+<h1 class="text-center mb-2">Explore the harmony and how it creates musical humor</h1>
 <div class="text-center">
 	<div class="badge badge-pill alert-intermediate mb-2">{{strtoupper('early intermediate')}}</div>
 </div>
