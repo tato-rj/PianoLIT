@@ -22,6 +22,7 @@ class CrashCourseEmail extends Mailable
     public function __construct($model, $email = null)
     {
         $this->manageData($model);
+        
         $this->action = $email ? route('crashcourses.cancel', ['email' => $email]) : null;
     }
 

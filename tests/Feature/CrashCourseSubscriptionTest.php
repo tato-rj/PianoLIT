@@ -126,7 +126,7 @@ class CrashCourseSubscriptionTest extends AppTest
 
         $this->crashcourse->subscriptions()->save(create(CrashCourseSubscription::class));
 
-        $this->delete(route('crashcourses.cancel', $this->crashcourse->subscriptions->first()));
+        $this->get(route('crashcourses.cancel', ['email' => $this->crashcourse->subscriptions->first()->email]));
         
         \Notification::assertSentTo(
             [$this->admin], CrashCourseCancelledNotification::class
