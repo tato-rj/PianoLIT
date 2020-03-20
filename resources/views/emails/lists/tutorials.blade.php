@@ -11,46 +11,46 @@ Download the iOS App now
 
 @component('mail::panel')
 <div class="text-center mb-2 pb-2 border-bottom">
-	<strong><small>Tango Romantico by T. Brown</small></strong>
+	<strong><small>Revolutionary Étude by F. Chopin</small></strong>
 </div>
-<h1 class="text-center mb-2">Playing octaves in the lower register of the piano with a lean and clear sound</h1>
-<div class="text-center">
-	<div class="badge badge-pill alert-intermediate mb-2">{{strtoupper('intermediate')}}</div>
-</div>
-Playing octaves is an essential part of piano playing. The lower region of the piano offers specific challenges when it comes to playing octaves, and that has to do with resonance. Let's see some exercises to play clean octaves on the left hand by highlighting the thumb and playing the bottom notes much softer.
-@endcomponent
-
-@component('mail::panel')
-<div class="text-center mb-2 pb-2 border-bottom">
-	<strong><small>Doctor Gradus Ad Parnassum L 113 by C. Debussy</small></strong>
-</div>
-<h1 class="text-center mb-2">Using gestures to shape your musical lines</h1>
+<h1 class="text-center mb-2">Using gestures to improve rhythm and give a natural shape to musical lines</h1>
 <div class="text-center">
 	<div class="badge badge-pill alert-advanced mb-2">{{strtoupper('advanced')}}</div>
 </div>
-Here we'll explore some ideas to practice the running notes on the right hand in the main theme of this piece. Most often, a technical challenge can be overcome with a simple musical gesture and, in this case, coordinating your fingers with the motion of your wrist is essential to get the flowing character this theme requires.
+Chopin's Revoultionary Étude is an extraordiary musical and technical exercise for the left hand. Let's look at the main elements Chopin uses throughout this piece, explore different strategies to tackle the technical challenges and learn how we can use musical gestures to make this music come to life.
 @endcomponent
 
 @component('mail::panel')
 <div class="text-center mb-2 pb-2 border-bottom">
-	<strong><small>The Goblin and the Mosquito by F. Price</small></strong>
+	<strong><small>Tambourin by Elisabetta de Gambarini</small></strong>
 </div>
-<h1 class="text-center mb-2">Playing different musical ideas at the piano</h1>
+<h1 class="text-center mb-2">Explore the harmony to find out how to work on dynamics and shape musical lines</h1>
 <div class="text-center">
-	<div class="badge badge-pill alert-intermediate mb-2">{{strtoupper('intermediate')}}</div>
+	<div class="badge badge-pill alert-intermediate mb-2">{{strtoupper('early intermediate')}}</div>
 </div>
-Once we know what we want each character to sound like, the next question is: how do we do this? What tools or skills can we use to communicate the music we want? Here are some ideas on how to bring a musical idea to life and, by doing that, making your performance much more effective!
+Gambarini lived during the transition between the Baroque and Classical periods and, like other composers of her generation, played with harmony to bring humor into her music. In this video we explore just that!
 @endcomponent
 
 @component('mail::panel')
 <div class="text-center mb-2 pb-2 border-bottom">
-	<strong><small>A B C D E F G by D. Rahbee</small></strong>
+	<strong><small>Gavotte en Rondeau by J.S. Bach</small></strong>
 </div>
-<h1 class="text-center mb-2">The basics of two-part form and what we can do to highlight this structure</h1>
+<h1 class="text-center mb-2">The basics of rondo-form you need to know and why it matters</h1>
 <div class="text-center">
-	<div class="badge badge-pill alert-elementary mb-2">{{strtoupper('elementary')}}</div>
+	<div class="badge badge-pill alert-beginner mb-2">{{strtoupper('late beginner')}}</div>
 </div>
-Most pieces we play at this level are in two-part form or, as it is also referred to, an A-B form. We often overlook these simple forms, but understanding them is crucial for a good performance. In this lesson, we'll talk about why knowing this matters and how we can leverage it to make the music more engaging and expressive.
+Rondos were very common througout the Baroque and Classical periods. This genre is all about contrast between the main recurring theme and each episode. Learn how you can find in the music all the clues you need to understand just how contrasting each episode can be.
+@endcomponent
+
+@component('mail::panel')
+<div class="text-center mb-2 pb-2 border-bottom">
+	<strong><small>"Minute" Waltz by F. Chopin</small></strong>
+</div>
+<h1 class="text-center mb-2">How to play the left hand accompaniment, keeping it light and well controlled</h1>
+<div class="text-center">
+	<div class="badge badge-pill alert-intermediate mb-2">{{strtoupper('late intermediate')}}</div>
+</div>
+The left hand you will find in this piece is made up of a very common pattern in romantic music. Learning how to coordinate and controll it well is the key to playing this type of music well. Here are some exercises to help you loosen up the left hand and play this piece like a pro!
 @endcomponent
 
 @include('mail::divider', ['orientation' => 'vertical'])
