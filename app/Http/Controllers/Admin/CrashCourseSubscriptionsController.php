@@ -25,7 +25,12 @@ class CrashCourseSubscriptionsController extends Controller
 
     public function resend(CrashCourseSubscription $subscription)
     {
-        $subscription->resend();
+        try {
+            $subscription->resend();        
+        } catch (\Exception $e) {
+            dd($e);
+            // return redirect()->back()->with('error', );            
+        }
 
         return redirect()->back()->with('status', 'The current lesson has been resent to ' . $subscription->email . '.');
     }
