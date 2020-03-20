@@ -21,4 +21,9 @@ class CrashCourseLesson extends PianoLit
 
         return str_replace($placeholder, $value, $this->$attribute);
 	}
+
+    public function cancelUrl($subscription = null)
+    {
+        return $subscription ? route('crashcourses.cancel', ['email' => $subscription->email]) : null;   
+    }
 }
