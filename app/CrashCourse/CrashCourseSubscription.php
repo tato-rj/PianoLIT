@@ -88,6 +88,13 @@ class CrashCourseSubscription extends PianoLit
 		return $this->upcomingLesson ? $this->send() : $this->finish();
 	}
 
+	public function resend()
+	{
+    	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this, $this->subscriber->email, $this->previousLesson));
+
+    	$this->update(['last_sent_at' => now()]);
+	}
+
 	public function send()
 	{
     	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this, $this->subscriber->email));

@@ -2,6 +2,13 @@
   @component('components.datatable.actions', ['actions' => []])
 	
 	@if(! $item->isCompleted && ! $item->isCancelled)
+    <a href="#" 
+      data-url="{{route('admin.crashcourses.subscriptions.resend', $item)}}" 
+    data-action="resend the last lesson to {{$item->email}}"
+      title="Resend last lesson" data-toggle="modal" data-target="#confirm-modal" class="btn btn-sm btn-outline-secondary mr-2">
+      <i class="fas fa-redo-alt mr-2"></i>Resend
+    </a>
+
   	<a href="#" 
   		data-url="{{route('admin.crashcourses.subscriptions.next', $item)}}" 
 		data-action="send the next lesson to {{$item->email}}"

@@ -23,6 +23,13 @@ class CrashCourseSubscriptionsController extends Controller
         return redirect()->back()->with('status', 'The next lesson has been sent to ' . $subscription->email . '.');
     }
 
+    public function resend(CrashCourseSubscription $subscription)
+    {
+        $subscription->resed();
+
+        return redirect()->back()->with('status', 'The current lesson has been resent to ' . $subscription->email . '.');
+    }
+
     public function cancel(CrashCourseSubscription $subscription)
     {
         $subscription->cancel();
