@@ -17,7 +17,7 @@ Download the iOS App now
 <div class="text-center">
 	<div class="badge badge-pill alert-advanced mb-2">{{strtoupper('advanced')}}</div>
 </div>
-Chopin's Revoultionary Étude is an extraordiary musical and technical exercise for the left hand. Let's look at the main elements Chopin uses throughout this piece, explore different strategies to tackle the technical challenges and learn how we can use musical gestures to make this music come to life.
+Chopin's Revoultionary Étude is an extraordinary musical and technical exercise for the left hand. Let's look at the main elements Chopin uses throughout this piece, explore different strategies to tackle the technical challenges and learn how we can use musical gestures to make this music come to life.
 @endcomponent
 
 @component('mail::panel')
@@ -39,7 +39,7 @@ Gambarini lived during the transition between the Baroque and Classical periods 
 <div class="text-center">
 	<div class="badge badge-pill alert-beginner mb-2">{{strtoupper('late beginner')}}</div>
 </div>
-Rondos were very common througout the Baroque and Classical periods. This genre is all about contrast between the main recurring theme and each episode. Learn how you can find in the music all the clues you need to understand just how contrasting each episode can be.
+Rondos were very common throughout the Baroque and Classical periods. This genre is all about the contrast between the main recurring theme and each episode. Learn how you can find in the music all the clues you need to understand just how contrasting each episode can be.
 @endcomponent
 
 @component('mail::panel')
@@ -50,7 +50,7 @@ Rondos were very common througout the Baroque and Classical periods. This genre 
 <div class="text-center">
 	<div class="badge badge-pill alert-intermediate mb-2">{{strtoupper('late intermediate')}}</div>
 </div>
-The left hand you will find in this piece is made up of a very common pattern in romantic music. Learning how to coordinate and controll it well is the key to playing this type of music well. Here are some exercises to help you loosen up the left hand and play this piece like a pro!
+The left hand you will find in this piece is made up of a very common pattern in romantic music. Learning how to coordinate and control it well is the key to playing this type of music well. Here are some exercises to help you loosen up the left hand and play this piece like a pro!
 @endcomponent
 
 @include('mail::divider', ['orientation' => 'vertical'])
