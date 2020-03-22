@@ -115,6 +115,8 @@ class CrashCourseSubscription extends PianoLit
 	{
         \Mail::to($this->subscriber->email)->queue(new CrashCourseFeedbackEmail($this->crashcourse, $this));
 
+        $this->subscriber->joinAll();
+
         event(new CrashCourseFinished($this));
 
 		return $this->update(['completed_at' => now()]);		

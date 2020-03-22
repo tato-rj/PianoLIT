@@ -162,11 +162,23 @@ class CrashCourseSubscriptionTest extends AppTest
         $this->signUpToCrashCourse($this->crashcourse);
         
         $this->artisan('crashcourse:send');
-        
+        $this->artisan('crashcourse:send');        
         $this->artisan('crashcourse:send');
-        
-        $this->artisan('crashcourse:send');         
     
         \Mail::assertQueued(CrashCourseFeedbackEmail::class);
+    }
+
+    /** @test */
+    public function at_the_end_of_a_crash_course_the_subscriber_joins_all_newsletter_lists()
+    {
+        $this->signUpToCrashCourse($this->crashcourse);
+
+        $this->assertEquals(0, $this->crashcourse->subscriptions->first()->subscriber->lists()->count());
+
+        $this->artisan('crashcourse:send');
+        $this->artisan('crashcourse:send');
+        $this->artisan('crashcourse:send');
+
+        $this->assertNotEquals(0, $this->crashcourse->subscriptions->first()->subscriber->lists()->count());
     }
 }
