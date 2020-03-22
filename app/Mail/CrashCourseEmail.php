@@ -19,9 +19,9 @@ class CrashCourseEmail extends Mailable
      *
      * @return void
      */
-    public function __construct($model)
+    public function __construct($model, $next = true)
     {
-        $this->manageData($model);
+        $this->manageData($model, $next);
     }
 
     /**
@@ -35,14 +35,14 @@ class CrashCourseEmail extends Mailable
                     ->markdown('emails.crashcourse');
     }
 
-    public function manageData($model)
+    public function manageData($model, $next)
     {
         if (get_class($model) == CrashCourseSubscription::class) {
             $this->subscription = $model;
-            $this->lesson = $lesson ?? $this->subscription->upcomingLesson;
+            $this->lesson = $next ? $this->subscription->upcomingLesson : $this->subscription->previousLesson;
         } else if (get_class($model) == CrashCourseLesson::class) {
             $this->subscription = null;
-            $this->lesson = $lesson ?? $model;
+            $this->lesson = $model;
         } else {
             throw new \Exception('You must pass either a lesson or a subscription to this email', 404);
         }

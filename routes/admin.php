@@ -319,9 +319,9 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 		Route::get('', 'Admin\CrashCourseSubscriptionsController@index')->name('index');
 
-		Route::post('{subscription}/next', 'Admin\CrashCourseSubscriptionsController@next')->name('next');
-
 		Route::post('{subscription}/resend', 'Admin\CrashCourseSubscriptionsController@resend')->name('resend');
+		
+		Route::post('{subscription}/next', 'Admin\CrashCourseSubscriptionsController@next')->name('next');
 
 		Route::post('{subscription}/cancel', 'Admin\CrashCourseSubscriptionsController@cancel')->name('cancel');
 	});
