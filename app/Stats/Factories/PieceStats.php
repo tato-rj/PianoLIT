@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Stats;
+namespace App\Stats\Factories;
 
 use App\{Piece, Composer};
 
-class PieceStats extends StatsFactory
+class PieceStats extends Factory
 {
     public function __construct()
     {

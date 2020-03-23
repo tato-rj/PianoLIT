@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Stats;
+namespace App\Stats\Factories;
 
-abstract class StatsFactory
+abstract class Factory
 {
 	protected $color = [
 	    'purple' => '#9561e2', 

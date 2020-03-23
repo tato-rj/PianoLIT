@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Stats;
+namespace App\Stats\Factories;
 
 use App\User;
 use App\Log\Loggers\DailyLog;
 
-class UserStats extends StatsFactory
+class SubscriptionStats extends Factory
 {
     public function __construct()
     {
-        $this->table = \DB::table('users');
+        $this->table = \DB::table('subscriptions');
     }
 
     public function daily($where = null)
     {
         $this->where($where);
 
-        $this->title = 'New sign ups';
+        $this->title = 'New susbcribers';
         $this->colors = [$this->color['blue']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M %D") as label, count(*) as count')
                     ->groupBy('label')
@@ -30,7 +30,7 @@ class UserStats extends StatsFactory
     {
         $this->where($where);
 
-        $this->title = 'New sign ups';
+        $this->title = 'New susbcribers';
         $this->colors = [$this->color['green']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M") as label, count(*) as count')
                     ->groupBy('label')
@@ -44,7 +44,7 @@ class UserStats extends StatsFactory
     {
         $this->where($where);
 
-        $this->title = 'New sign ups';
+        $this->title = 'New susbcribers';
         $this->colors = [$this->color['orange']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%Y") as label, count(*) as count')
                     ->groupBy('label')

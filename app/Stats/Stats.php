@@ -2,11 +2,14 @@
 
 namespace App\Stats;
 
+use App\Stats\Factories\{UserStats, PieceStats, SubscriptionStats};
+
 class Stats {
 	protected $factory;
 	protected $factories = [
 		'users' => UserStats::class,
-		'pieces' => PieceStats::class
+		'subscriptions' => SubscriptionStats::class,
+		'pieces' => PieceStats::class,
 	];
 
 	public function for($table)

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Stats\Stats;
 use App\Blog\{Post, Topic};
@@ -8,8 +8,9 @@ use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
 use App\{User, Piece, Tag, Composer, Country};
-use Illuminate\Http\Request;
 use App\Log\Loggers\DailyLog;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class StatsController extends Controller
 {
@@ -30,6 +31,16 @@ class StatsController extends Controller
         $views = Piece::orderBy('views_count', 'DESC')->take(10)->get();
 
         return view('admin.pages.stats.pieces.index', compact(['favorites', 'views']));
+    }
+
+    public function subscriptions()
+    {
+        // return (new Stats)->for('subscriptions')->query('daily', [])->get();
+
+        if (request()->ajax())
+            return (new Stats)->for('subscriptions')->query(request('type'), request()->except('type'))->get();
+
+        return view('admin.pages.stats.subscriptions.index');
     }
 
     public function composers()

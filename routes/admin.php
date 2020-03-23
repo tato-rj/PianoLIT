@@ -209,19 +209,19 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 Route::prefix('statistics')->name('stats.')->group(function() {
 
-	Route::get('users', 'StatsController@users')->name('users');
+	Route::get('users', 'Admin\StatsController@users')->name('users');
 
-	Route::get('subscriptions', 'StatsController@subscriptions')->name('subscriptions');
+	Route::get('subscriptions', 'Admin\StatsController@subscriptions')->name('subscriptions');
 
-	Route::get('pieces', 'StatsController@pieces')->name('pieces');
+	Route::get('pieces', 'Admin\StatsController@pieces')->name('pieces');
 
-	Route::get('composers', 'StatsController@composers')->name('composers');
+	Route::get('composers', 'Admin\StatsController@composers')->name('composers');
 
-	Route::get('blog', 'StatsController@blog')->name('blog');
+	Route::get('blog', 'Admin\StatsController@blog')->name('blog');
 
-	Route::get('quizzes', 'StatsController@quizzes')->name('quizzes');
+	Route::get('quizzes', 'Admin\StatsController@quizzes')->name('quizzes');
 
-	Route::get('infographs', 'StatsController@infographs')->name('infographs');
+	Route::get('infographs', 'Admin\StatsController@infographs')->name('infographs');
 
 });
 
