@@ -5,7 +5,7 @@
 <h1 class="text-white m-0 text-lg">{{$piece->medium_name}}</h1>
 <p class="text-white mb-1">by {{$piece->composer->name}}</p>
 <p class="text-white m-0 text-sm">
-	<span class="dot bg-{{$piece->level->name}}"></span> {{strtoupper($piece->level->extended_level_name)}}
+	<span class="dot bg-{{$piece->level->name}}"></span> {{strtoupper($piece->extended_level_name)}}
 </p>
 @endcomponent
 
