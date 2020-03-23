@@ -25,7 +25,7 @@
             }
         }
 
-        ol {
+        ol, ul {
             font-size: 16px;
             color: #3D4852;
         }
