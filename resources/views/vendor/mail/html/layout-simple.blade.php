@@ -24,6 +24,11 @@
                 width: 100% !important;
             }
         }
+
+        ol {
+            font-size: 16px;
+            color: #3D4852;
+        }
     </style>
 
     <table class="" width="100%" cellpadding="0" cellspacing="0">
