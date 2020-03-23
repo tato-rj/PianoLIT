@@ -21,11 +21,12 @@ class AdminsController extends Controller
         $pieces_count = Piece::count();
         $composers_count = Composer::count();
         $users_count = User::count();
-        $subscriptions_count = EmailList::newsletter()->subscribers()->count() - 2;
+        $subscriptions_count = Subscription::count();
         $quiz_results_count = QuizResult::count();
         $blog_count = Post::count();
 
         $birthdays = Composer::bornToday()->get();
+        return $birthdays;
         $deathdays = Composer::diedToday()->get();
 
         $stats = (new Stats)->model(Subscription::class);

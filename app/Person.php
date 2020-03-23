@@ -34,7 +34,8 @@ abstract class Person extends PianoLit
 
     public function scopeBornToday($query)
     {
-        return $query->whereRaw('DATE_ADD(date_of_birth, INTERVAL YEAR(CURDATE())-YEAR(date_of_birth) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_birth),1,0) YEAR) = CURDATE()');
+        return $query->whereRaw('DAY(date_of_birth) = ' . now()->day)
+                     ->whereRaw('MONTH(date_of_birth) = ' . now()->month);
     }
 
     public function scopeUpcomingBirthdays($query, $days)
@@ -46,7 +47,8 @@ abstract class Person extends PianoLit
 
     public function scopeDiedToday($query)
     {
-        return $query->whereRaw('DATE_ADD(date_of_death, INTERVAL YEAR(CURDATE())-YEAR(date_of_death) + IF(DAYOFYEAR(CURDATE()) > DAYOFYEAR(date_of_death),1,0) YEAR) = CURDATE()');
+        return $query->whereRaw('DAY(date_of_death) = ' . now()->day)
+                     ->whereRaw('MONTH(date_of_death) = ' . now()->month);
     }
 
     public function scopeUpcomingDeathdays($query, $days)
