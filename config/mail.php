@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@pianolit.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'contact@pianolit.com'),
         'name' => env('MAIL_FROM_NAME', 'PianoLIT'),
     ],
 
