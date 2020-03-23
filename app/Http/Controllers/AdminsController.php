@@ -26,7 +26,6 @@ class AdminsController extends Controller
         $blog_count = Post::count();
 
         $birthdays = Composer::bornToday()->get();
-        return $birthdays;
         $deathdays = Composer::diedToday()->get();
 
         $stats = (new Stats)->model(Subscription::class);
