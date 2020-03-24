@@ -3,7 +3,6 @@ class ChartFactory
 	constructor(params) {
 		this.canvas = params.canvas;
 		this.data = params.data;
-
 		this.options = params.options;
 	}
 
@@ -56,7 +55,7 @@ class ChartFactory
 	                }],
 	                xAxes: [{
 		                ticks: {
-		                    display: this.options ? this.options.xAxis : true
+		                    display: this.options.hasOwnProperty('xAxis') ? this.options.xAxis : true
 		                }
 		            }]
 	            }
