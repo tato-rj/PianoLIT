@@ -16,6 +16,7 @@ class Piece extends PianoLit
     protected $folder = 'pieces';
     protected $withCount = ['views', 'tags', 'favorites'];
     protected $casts = ['is_free' => 'boolean'];
+    protected $dates = ['highlighted_at'];
     protected $appends = [
         'short_name',
         'medium_name', 
@@ -433,6 +434,11 @@ class Piece extends PianoLit
     public function scopeFree($query)
     {
         return $query->where('is_free', true);
+    }
+
+    public function scopeFreepicks($query)
+    {
+        return $query->whereNotNull('highlighted_at');
     }
 
     public function getBackground()

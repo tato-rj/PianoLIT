@@ -35,8 +35,6 @@ class StatsController extends Controller
 
     public function subscriptions()
     {
-        // return (new Stats)->for('subscriptions')->query('daily', [])->get();
-
         if (request()->ajax())
             return (new Stats)->for('subscriptions')->query(request('type'), request()->except('type'))->get();
 

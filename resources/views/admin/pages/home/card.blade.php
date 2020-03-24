@@ -1,4 +1,4 @@
-<div class="col-lg-6 col-12 p-2">
+<div class="col-lg-4 col-md-6 col-12 p-2">
   <div class="">
     <div class="card bg-{{$color}} o-hidden h-100">
       <div class="card-body">

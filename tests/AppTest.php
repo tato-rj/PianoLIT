@@ -129,7 +129,9 @@ class AppTest extends TestCase
         return $this->post(route('crashcourses.signup', $crashcourse), [
             'first_name' => $args['first_name'], 
             'email' => $args['email'],
-            'origin_url' => 'testing'
+            'origin_url' => 'testing',
+            'subscription_name' => null,
+            'started_at' => now()->subSeconds(5)
         ]);
     }
 }

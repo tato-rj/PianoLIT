@@ -12,6 +12,16 @@
         <div class="col-12 mb-4">
           @chart([
             'url' => route('admin.stats.pieces'),
+            'chart' => 'line',
+            'type' => 'freepick',
+            'title' => 'Freepick',
+            'subtitle' => 'Views from the freepicks',
+            'height' => '35vh'
+          ])
+        </div>
+        <div class="col-12 mb-4">
+          @chart([
+            'url' => route('admin.stats.pieces'),
             'chart' => 'bar',
             'type' => 'level',
             'title' => 'Level',
@@ -138,6 +148,11 @@
 var quickchart = new QuickChart;
 
 $(document).ready(function() {
+    quickchart.setup({
+      element: '#stats-freepick', 
+      url: "{{route('admin.stats.pieces', ['type' => 'freepick'])}}"
+    }).make('line');
+
     quickchart.setup({
       element: '#stats-gender', 
       url: "{{route('admin.stats.pieces', ['type' => 'gender'])}}"

@@ -49,10 +49,28 @@ class PieceStats extends Factory
         return $this;   
     }
 
+    public function freepick($where = null)
+    {
+        $this->where($where);
+
+        $this->title = 'Number of views';
+        $this->colors = [$this->getColor('yellow')];
+        $this->data = collect();
+
+        foreach (Piece::freepicks()->latest()->take(5)->get() as $piece) {
+            $this->data->push([
+                'label' => $piece->short_name,
+                'count' => $piece->views_count
+            ]);
+        }
+
+        return $this;
+    }
+
     public function level($where = null)
     {
         $this->where($where);
-        
+
         $this->title = 'Pieces by level';
         $this->colors = [
             $this->getColor('yellow'), 
