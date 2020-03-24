@@ -44,6 +44,7 @@
 
         <form method="POST" action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">
           @csrf
+          @include('components.form.subscription.hidden')
           <input type="hidden" name="origin_url" value="{{url()->current()}}">
             <div class="form-row">
               <div class="col-lg-6 col-md-6 col-sm-6 col-12"> 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CrashCourse\{CrashCourse, CrashCourseSubscription};
+use App\Http\Requests\CrashCourseForm;
 use App\Subscription;
 use Illuminate\Http\Request;
 
@@ -68,13 +69,8 @@ class CrashCoursesController extends Controller
         return view('crashcourses.video', compact('video'));
     }
 
-    public function signup(Request $request, CrashCourse $crashcourse)
+    public function signup(Request $request, CrashCourse $crashcourse, CrashCourseForm $form)
     {
-        $request->validate([
-            'first_name' => 'required|max:255',
-            'email' => 'required|email|max:255'
-        ]);
-
         if ($crashcourse->hasActive($request->email))
             return redirect()->back()->with('error', 'You are already signed up for this course!');
 
