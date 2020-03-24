@@ -16,7 +16,14 @@
             'type' => 'freepick',
             'title' => 'Freepick',
             'subtitle' => 'Views from the freepicks',
-            'height' => '35vh'
+            'height' => '35vh',
+            'select' => [
+              'take' => [
+                ['label' => 'Last 5', 'value' => 5],
+                ['label' => 'Last 10', 'value' => '10'],
+                ['label' => 'Last 15', 'value' => '15']
+              ]
+            ],
           ])
         </div>
         <div class="col-12 mb-4">
@@ -150,7 +157,7 @@ var quickchart = new QuickChart;
 $(document).ready(function() {
     quickchart.setup({
       element: '#stats-freepick', 
-      url: "{{route('admin.stats.pieces', ['type' => 'freepick'])}}"
+      url: "{{route('admin.stats.pieces', ['type' => 'freepick', 'take' => 5])}}"
     }).make('line');
 
     quickchart.setup({
