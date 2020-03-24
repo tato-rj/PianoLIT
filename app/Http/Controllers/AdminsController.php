@@ -18,6 +18,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
+        $freepick = Piece::free()->first();
         $pieces_count = Piece::count();
         $composers_count = Composer::count();
         $users_count = User::count();
@@ -30,7 +31,7 @@ class AdminsController extends Controller
 
         $stats = (new Stats)->model(Subscription::class);
 
-        return view('admin.pages.home.index', compact('pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays'));
+        return view('admin.pages.home.index', compact('pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays', 'freepick'));
     }
 
     public function notifications()
