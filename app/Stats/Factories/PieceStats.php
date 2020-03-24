@@ -54,7 +54,7 @@ class PieceStats extends Factory
         $this->where($where);
 
         $this->title = 'Number of views';
-        $this->colors = [$this->getColor('yellow')];
+        $this->colors = [$this->getColor('blue')];
         $this->data = collect();
 
         foreach (Piece::freepicks()->take(5)->get()->reverse() as $piece) {
