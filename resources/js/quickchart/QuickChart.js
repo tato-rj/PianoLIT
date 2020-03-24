@@ -12,7 +12,7 @@ class QuickChart
 		return this;
 	}
 
-	make(type) {
+	make(type, options = []) {
 		let obj = this;
 		let $canvas = $(obj.elem).find('canvas');
 
@@ -20,7 +20,7 @@ class QuickChart
 
 		$.get(obj.url, function(data) {
 		    obj._destroy($canvas);
-		    obj._save($canvas, (new ChartFactory({canvas: $canvas, data: data})).get(type));
+		    obj._save($canvas, (new ChartFactory({canvas: $canvas, data: data, options: options})).get(type));
 		    obj._loading($canvas, false);
 		});
 	}

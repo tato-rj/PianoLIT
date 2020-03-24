@@ -3,6 +3,8 @@ class ChartFactory
 	constructor(params) {
 		this.canvas = params.canvas;
 		this.data = params.data;
+
+		this.options = params.options;
 	}
 
 	get(type) {
@@ -51,7 +53,12 @@ class ChartFactory
 	                            }
 	                        }
 	                    }
-	                }]
+	                }],
+	                xAxes: [{
+		                ticks: {
+		                    display: this.options ? this.options.xAxis : true
+		                }
+		            }]
 	            }
 	        }
 	    });

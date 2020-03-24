@@ -158,7 +158,7 @@ $(document).ready(function() {
     quickchart.setup({
       element: '#stats-freepick', 
       url: "{{route('admin.stats.pieces', ['type' => 'freepick', 'take' => 5])}}"
-    }).make('line');
+    }).make('line', {xAxis: false});
 
     quickchart.setup({
       element: '#stats-gender', 
