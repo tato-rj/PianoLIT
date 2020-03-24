@@ -57,7 +57,7 @@ class PieceStats extends Factory
         $this->colors = [$this->getColor('yellow')];
         $this->data = collect();
 
-        foreach (Piece::freepicks()->latest()->take(5)->get() as $piece) {
+        foreach (Piece::freepicks()->take(5)->get() as $piece) {
             $this->data->push([
                 'label' => $piece->short_name,
                 'count' => $piece->views_count

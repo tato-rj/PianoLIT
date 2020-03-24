@@ -438,7 +438,7 @@ class Piece extends PianoLit
 
     public function scopeFreepicks($query)
     {
-        return $query->whereNotNull('highlighted_at');
+        return $query->whereNotNull('highlighted_at')->orderBy('highlighted_at', 'DESC');
     }
 
     public function getBackground()
