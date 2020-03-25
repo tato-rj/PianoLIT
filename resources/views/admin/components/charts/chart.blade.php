@@ -20,7 +20,7 @@
       @if(! empty($select))
       @foreach($select as $name => $inputs)
       <div class="mx-1 form-group-sm">
-        <select class="chart-select form-control form-control-sm" data-parent="#stats-{{$type}}">
+        <select class="chart-select form-control form-control-sm" data-xaxis="{{$xAxis ?? null}}" data-parent="#stats-{{$type}}">
           @foreach($inputs as $input)
           <option name="{{$name}}" value="{{$input['value']}}">{{$input['label']}}</option>
           @endforeach

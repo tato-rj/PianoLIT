@@ -11,23 +11,25 @@ class ChartBootstrap
 		    let $button = $(this);
 		    let container = $button.attr('data-parent');
 		    let chart = $(container).attr('data-chart');
+		    let xAxis = $(this).attr('data-xaxis');
 
 		    obj._selectBtn($button);
 
 		    obj.factory.setup({
 		      element: container, 
 		      url: obj._buildURL(container)
-		    }).make(chart);
+		    }).make(chart, {xAxis: xAxis});
 		});
 
 		$('.chart-select').on('change', function() {
 		    let container = $(this).attr('data-parent');
 		    let chart = $(container).attr('data-chart');
+		    let xAxis = $(this).attr('data-xaxis');
 
 		    obj.factory.setup({
 		      element: container, 
 		      url: obj._buildURL(container)
-		    }).make(chart);
+		    }).make(chart, {xAxis: xAxis});
 		});
 	}
 

@@ -17,6 +17,7 @@
             'title' => 'Freepick',
             'subtitle' => 'Views from the freepicks',
             'height' => '35vh',
+            'xAxis' => 'hide',
             'select' => [
               'take' => [
                 ['label' => 'Last 5', 'value' => 5],
@@ -158,7 +159,7 @@ $(document).ready(function() {
     quickchart.setup({
       element: '#stats-freepick', 
       url: "{{route('admin.stats.pieces', ['type' => 'freepick', 'take' => 5])}}"
-    }).make('line', {xAxis: false});
+    }).make('line', {xAxis: 'hide'});
 
     quickchart.setup({
       element: '#stats-gender', 

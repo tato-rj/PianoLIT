@@ -55,7 +55,7 @@ class ChartFactory
 	                }],
 	                xAxes: [{
 		                ticks: {
-		                    display: this.options.hasOwnProperty('xAxis') ? this.options.xAxis : true
+		                    display: this.options.hasOwnProperty('xAxis') && this.options.xAxis == 'hide' ? false : true
 		                }
 		            }]
 	            }
