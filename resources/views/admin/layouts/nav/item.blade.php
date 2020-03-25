@@ -1,6 +1,6 @@
 <li class="nav-item">
   <a class="nav-link {{!empty($dropdown) ? 'nav-link-collapse collapsed' : null}}" 
-    data-toggle="{{!empty($dropdown) ? 'collapse' : null}}" 
+    data-toggle="{{!empty($dropdown) ? 'collapse' : null}}"  
     href="{{!empty($dropdown) ? '#'.str_slug($name) : $route}}">
     <div>
       <i class="fas fa-{{$icon}} fa-fw"></i>
@@ -16,7 +16,7 @@
   <ul class="sidenav-second-level collapse collapsed" id="{{str_slug($name)}}" data-parent="#navbarResponsive">
     @foreach($dropdown as $link)
     <li>
-      <a class="py-2" href="{{$link['route']}}">{{$link['name']}}</a>
+      <a class="py-2" href="{{$link['route']}}" target="{{$link['target'] ?? null}}">{{$link['name']}}</a>
     </li>
     @endforeach
   </ul>
