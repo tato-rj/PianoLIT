@@ -18,7 +18,7 @@ class Membership extends PianoLit
 	public function reactivate($receipt)
 	{
 		try {
-			$latest_receipt_info = $receipt->in_app[0];
+			$latest_receipt_info = json_encode($receipt->in_app[0]);
 		} catch (\Exception $e) {
 			$latest_receipt_info = null;
 		}
