@@ -14,16 +14,27 @@ trait HasMembership
 
         $response = json_decode($json);
 
-        $latest_receipt = $response->receipt->in_app[0];
+        try {
+            $latest_receipt = $response->receipt->in_app[0];
 
-        $record = $this->membership()->create([
-            'plan' => $latest_receipt->product_id,
-            'latest_receipt' => $request->receipt_data,
-            'latest_receipt_info' => json_encode($latest_receipt),
-            'password' => $request->password,
-            'renews_at' => carbon($latest_receipt->expires_date)->timezone(config('app.timezone')),
-            'validated_at' => now()
-        ]);
+            $record = $this->membership()->create([
+                'plan' => $latest_receipt->product_id,
+                'latest_receipt' => $request->receipt_data,
+                'latest_receipt_info' => json_encode($latest_receipt),
+                'password' => $request->password,
+                'renews_at' => carbon($latest_receipt->expires_date)->timezone(config('app.timezone')),
+                'validated_at' => now()
+            ]);            
+        } catch (\Exception $e) {
+            $record = $this->membership()->create([
+                'plan' => null,
+                'latest_receipt' => $request->receipt_data,
+                'latest_receipt_info' => json_encode([]),
+                'password' => $request->password,
+                'renews_at' => null,
+                'validated_at' => now()
+            ]);
+        }
 
         return $record;
     }

@@ -44,6 +44,9 @@ trait Apple
 
 	public function expired()
 	{
+		if (! $this->renews_at)
+			return false;
+		
 		return ! now()->lte($this->renews_at);
 	}
 
