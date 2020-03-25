@@ -59,7 +59,7 @@ class MembershipsController extends Controller
             return redirect()->back()->with('error', "Sorry, we couldn't find the user");
 
         $request = $user->callApple($user->membership->latest_receipt, $user->membership->password);
-
+dd(json_decode($request));
         $user->membership->validate($request);
     
         return redirect()->back()->with('success', "The has been successfully re-validated.");

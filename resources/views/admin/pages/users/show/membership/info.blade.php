@@ -1,5 +1,5 @@
 <div class="col-6">
-{{-- 	<table class="table table-striped table-borderless">
+	<table class="table table-striped table-borderless">
 	  <tbody>
 		@include('admin.pages.users.show.list-item', 
 			['title' => 'Membership ID', 'value' => $user->membership->latest_receipt_info ? $user->membership->latest_receipt_info->original_transaction_id : null])
@@ -10,7 +10,7 @@
 		@include('admin.pages.users.show.list-item',
 			['title' => 'Next due date', 'value' => $user->membership->renews_at ? $user->membership->renews_at->toDayDateTimeString() : '-'])
 	  </tbody>
-	</table> --}}
+	</table>
 </div>
 <div class="col-6">
 	@if($user->membership->expired() || ! $user->membership->renews_at)
