@@ -29,7 +29,7 @@ trait HasMembership
             $record = $this->membership()->create([
                 'plan' => null,
                 'latest_receipt' => $request->receipt_data,
-                'latest_receipt_info' => json_encode([]),
+                'latest_receipt_info' => null,
                 'password' => $request->password,
                 'renews_at' => null,
                 'validated_at' => now()
