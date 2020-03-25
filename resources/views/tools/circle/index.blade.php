@@ -132,6 +132,8 @@ g.key {
 
 @push('scripts')
 @include('components.addthis')
+
+<script type="text/javascript" src="{{mix('js/tone.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
 
 <script type="text/javascript">
