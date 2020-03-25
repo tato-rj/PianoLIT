@@ -29,7 +29,8 @@
         'dropdown' => [
           ['name' => 'Profiles', 'route' => route('admin.users.index')],
           ['name' => 'Activity Logs', 'route' => route('admin.users.logs')],
-          ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')]
+          ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')],
+          ['name' => 'Memberships logs', 'route' => route('admin.memberships.logs')]
         ]])
 
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Subscriptions', 'icon' => 'envelope',

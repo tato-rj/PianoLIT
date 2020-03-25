@@ -14,7 +14,7 @@ trait HasMembership
 
         $response = json_decode($json);
 
-        $latest_receipt = $response->receipt->in_app[0] ?? null;
+        $latest_receipt = $response->receipt->in_app[0];
 
         $record = $this->membership()->create([
             'plan' => $latest_receipt->product_id,

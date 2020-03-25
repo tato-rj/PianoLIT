@@ -363,3 +363,4 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 });
 
 Route::get('logs/data', 'LogsController@data')->name('log.data');
+Route::get('memberships/logs', 'MembershipsController@logs')->name('memberships.logs');
