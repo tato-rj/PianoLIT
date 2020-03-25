@@ -29,8 +29,7 @@ class Membership extends PianoLit
         $request = json_decode($request);
 
         if (empty($request->receipt) || empty($request->latest_receipt_info))
-        	dd('test');
-        	//abort(400, $this->appleError($request->status));
+        	abort(400, $this->appleError($request->status));
 
 		$latest_receipt = array_key_exists('expires_date', $request->latest_receipt_info) ? 
 			$request->latest_receipt_info : 
