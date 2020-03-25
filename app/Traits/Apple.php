@@ -19,7 +19,7 @@ trait Apple
 	public function appleError($number)
 	{
 		if (! array_key_exists($number, $this->errors))
-			return 'Unknown error.';
+			return 'Unknown error. Please contact Apple if this issue persists.';
 
 		return $this->errors[$number];
 	}
