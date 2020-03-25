@@ -17,16 +17,10 @@ class Membership extends PianoLit
 	
 	public function reactivate($receipt)
 	{
-		try {
-			$latest_receipt_info = json_encode($receipt->in_app[0]);
-		} catch (\Exception $e) {
-			$latest_receipt_info = null;
-		}
-
 		return $this->update([
 			'plan' => $receipt->product_id,
 			'renews_at' => carbon($receipt->expires_date)->timezone(config('app.timezone')),
-			'latest_receipt_info' => $latest_receipt_info
+			'latest_receipt_info' => json_encode($receipt)
 		]);
 	}
 
