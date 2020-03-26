@@ -18,6 +18,10 @@ class AppServiceProvider extends ServiceProvider
         \View::composer('*', function($view) {
             $view->with(['full' => ! request()->has('bodyonly')]);
         });
+
+        \View::composer('components/overlays/subscribe/crashcourse', function($view) {
+            $view->with(['highlightedCrashcourse' => \App\CrashCourse\CrashCourse::published()->first()]);
+        });
     }
 
     /**
