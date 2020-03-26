@@ -1,9 +1,5 @@
 <?php
 
-Route::get('test-overlay', function() {
-	return $highlightedCrashcourse;
-});
-
 Route::resources([
     'subscriptions' => 'SubscriptionsController'
 ]);
