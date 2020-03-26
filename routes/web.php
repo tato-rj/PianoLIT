@@ -1,17 +1,7 @@
 <?php
 
-Route::get('teens', function() {
-	$pieces = \App\Piece::all();
-	$prodigies = collect();
-	$pieces->each(function($piece) use ($prodigies) {
-		if ($piece->composed_in && $piece->composer->date_of_birth) {
-			$age = $piece->composed_in - $piece->composer->date_of_birth->year;
-			if ($age < 20 && $age > 10)
-				$prodigies->push($piece);
-		}
-	});
-
-	return $prodigies;
+Route::get('test-overlay', function() {
+	return \App\CrashCourse\CrashCourse::all();
 });
 
 Route::resources([
