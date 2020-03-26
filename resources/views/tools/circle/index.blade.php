@@ -127,7 +127,7 @@ g.key {
 @include('tools.circle.info.neighbors')
 @include('tools.circle.info.functional')
 
-@include('components.overlays.subscribe.model-2')
+@include('components.overlays.subscribe.crashcourse')
 @endsection
 
 @push('scripts')
@@ -377,7 +377,7 @@ g.key {
   init();
 
 }).call(this);
-$("#gift-overlay").showAfter(4);
+$("#crashcourse-overlay").showAfter(4);
 </script>
 
 @endpush

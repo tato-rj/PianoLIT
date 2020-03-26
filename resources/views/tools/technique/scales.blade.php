@@ -118,9 +118,13 @@
 </div>
 
 @include('tools.chords.error')
+@include('components.overlays.subscribe.crashcourse')
 @endsection
 
 @push('scripts')
 @include('components.addthis')
 @include('tools.technique.js')
+<script type="text/javascript">
+$("#crashcourse-overlay").showAfter(5);
+</script>
 @endpush

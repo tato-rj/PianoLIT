@@ -13,7 +13,7 @@
 	</table>
 </div>
 <div class="col-6">
-	{{-- @if($user->membership->expired() || ! $user->membership->renews_at) --}}
+	@if($user->membership->expired() || ! $user->membership->renews_at)
 		<div class="mb-3">
 			<form method="POST" action="{{route('admin.memberships.validate.user', $user->id)}}">
 				@csrf
@@ -21,7 +21,7 @@
 				<button class="btn btn-sm btn-danger">Validate membership</button>
 			</form>
 		</div>
-	{{-- @endif --}}
+	@endif
 	<a href="" data-toggle="modal" data-target="#membership-history" class="link-default">
 		<div class="mb-2">Request receipts history</div>
 	</a>

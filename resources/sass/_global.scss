@@ -4,6 +4,10 @@
 	}
 }
 
+.bg-lightest-primary {
+	background: lighten($brand-primary, 46) !important;
+}
+
 .border-elementary {
 	border-color: lighten($elementary, 40) !important;
 }

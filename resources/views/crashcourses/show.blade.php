@@ -20,7 +20,7 @@
 @section('content')
 
 <div class="cc-container container-fluid p-4">
-  <div class="position-relative d-flex d-apart flex-column">
+  <div class="bg-lightest-primary position-relative d-flex d-apart flex-column">
     <div class="position-absolute bg-white rounded-circle d-flex flex-center cc-icon">
       <a target="_blank" href="{{route('home')}}"><img src="{{asset('images/brand/app-icon.svg')}}"></a>
     </div>
@@ -30,38 +30,7 @@
       <h2>Daily lessons delivered to your email</h2>
     </div>
 
-    <div class="mx-auto position-relative cc-card">
-      <div class="position-absolute cc-phone">
-        <img src="{{asset('images/mockup/crashcourse.png')}}" class="w-100">
-      </div>
-      <div class="bg-white pt-6 pr-6 pb-4 rounded-top cc-body">
-        <div class="mb-4">
-          <p class="text-warning text-uppercase"><strong>...by signing up to this {{$crashcourse->lessons_count}}-day course you'll learn about:</strong></p>
-          <h4>{{$crashcourse->title}}</h4>
-          <p class="m-0 text-muted"><i class="fas fa-envelope-open-text mr-2"></i>This course has {{$crashcourse->lessons_count}} {{ str_plural('lesson', $crashcourse->lessons_count) }}</p>
-          {{-- <p class="m-0 text-muted">{{$crashcourse->description}}</p> --}}
-        </div>
-
-        <form method="POST" action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">
-          @csrf
-          @include('components.form.subscription.hidden')
-          <input type="hidden" name="origin_url" value="{{url()->current()}}">
-            <div class="form-row">
-              <div class="col-lg-6 col-md-6 col-sm-6 col-12"> 
-                @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
-              </div>
-              <div class="col-lg-6 col-md-6 col-sm-6 col-12"> 
-                @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
-              </div>
-            </div>
-            <div class="my-2">
-              <button type="submit" class="btn btn-primary btn-sm-block shadow btn-wide mb-2"><strong>START FREE COURSE!</strong></button>
-              <div class="text-muted"><small>Ps: we'll never share your email with anyone</small></div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+    @include('crashcourses.card', ['hidePhoneOnOverflow' => true])
   </div>
 </div>
 

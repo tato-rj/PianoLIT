@@ -54,7 +54,7 @@
 </div>
 
 
-@include('components.overlays.subscribe.paper-plane')
+@include('components.overlays.subscribe.crashcourse')
 @endsection
 
 @push('scripts')
@@ -171,6 +171,6 @@ $('input#search-infograph').on('keyup', function() {
 	}
 });
 
-$("#subscribe-overlay").showAfter(5);
+$("#crashcourse-overlay").showAfter(5);
 </script>
 @endpush

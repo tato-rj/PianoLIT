@@ -3,10 +3,6 @@
 		letter-spacing: 1px;
 	}
 
-	> div:first-of-type {
-		background-color: rgba(222,237,249,0.8);
-	}
-
 	.cc-icon {
 		width: 140px; 
 		height: 140px; 
@@ -39,13 +35,11 @@
 	.cc-card {
 		max-width: 1020px; 
 		padding: 0 182px; 
-		overflow-y: hidden;
 
 		.cc-phone {
 			max-width: 312px; 
 			transform: rotate(-8deg); 
 			left: 40px; 
-			top: 32px;
 		}
 
 		.cc-body {
