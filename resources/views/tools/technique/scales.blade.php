@@ -125,6 +125,6 @@
 @include('components.addthis')
 @include('tools.technique.js')
 <script type="text/javascript">
-$("#crashcourse-overlay").showAfter(5);
+$("#crashcourse-overlay").showAfter(4);
 </script>
 @endpush

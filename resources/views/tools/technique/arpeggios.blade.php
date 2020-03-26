@@ -54,9 +54,13 @@
 </div>
 
 @include('tools.chords.error')
+@include('components.overlays.subscribe.crashcourse')
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$("#crashcourse-overlay").showAfter(3);
+</script>
 @include('components.addthis')
 @include('tools.technique.js')
 @endpush

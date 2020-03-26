@@ -94,11 +94,13 @@
 </div>
 @include('components.games.results', ['button' => 'Review my answers'])
 @include('components.overlays.subscribe.model-3')
+@include('components.overlays.subscribe.crashcourse')
 @endsection
 
 @push('scripts')
 @include('components.addthis')
 <script type="text/javascript">
+$("#crashcourse-overlay").showAfter(4);
 
 $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
