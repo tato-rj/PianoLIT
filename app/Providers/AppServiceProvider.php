@@ -20,7 +20,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         \View::composer('components/overlays/subscribe/crashcourse', function($view) {
-            $view->with(['highlightedCrashcourse' => \App\CrashCourse\CrashCourse::published()->first()]);
+            $highlightedCrashcourse = \Cache::remember('highlightedCrashcourse', days(7), function() {
+                return \App\CrashCourse\CrashCourse::published()->first();
+            });
+
+            $view->with(['highlightedCrashcourse' => $highlightedCrashcourse]);
         });
     }
 
