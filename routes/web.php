@@ -1,7 +1,7 @@
 <?php
 
 Route::get('test-overlay', function() {
-	return \App\CrashCourse\CrashCourse::all();
+	return \App\CrashCourse\CrashCourse::published()->first();
 });
 
 Route::resources([
