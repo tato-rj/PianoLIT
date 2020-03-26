@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\Recaptcha;
 
 class CrashCourseForm extends FormRequest
 {
@@ -25,7 +26,8 @@ class CrashCourseForm extends FormRequest
     {
         return [
             'first_name' => 'required|max:255',
-            'email' => 'required|email|max:255'
+            'email' => 'required|email|max:255',
+            'g-recaptcha-response' => [new Recaptcha]
         ];
     }
 }

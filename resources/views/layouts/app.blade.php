@@ -8,6 +8,7 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-KJW7XGP');</script>
     <!-- End Google Tag Manager -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137232556-1"></script>
@@ -18,7 +19,12 @@
 
       gtag('config', 'UA-137232556-1');
     </script>
-
+    <script>
+    function onSubmit(token) {
+        document.getElementById("register-form").submit();
+        document.getElementById("crashcourse-form").submit();
+    }
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <meta name="p:domain_verify" content="0e0049943817b0a70c40da75d3783d3a"/>
