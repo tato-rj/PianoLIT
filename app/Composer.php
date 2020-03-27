@@ -8,7 +8,7 @@ class Composer extends Person
 {
     use HasLimit;
     
-    protected $casts = ['is_famous' => 'boolean'];
+    protected $casts = ['is_famous' => 'boolean', 'is_pedagogical' => 'boolean'];
     protected $appends = ['cover_image', 'alive_on', 'short_name', 'born_at', 'died_at'];
     protected $withCount = ['pieces'];
 

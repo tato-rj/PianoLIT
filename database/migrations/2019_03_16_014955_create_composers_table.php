@@ -24,6 +24,7 @@ class CreateComposersTable extends Migration
             $table->string('period');
             $table->unsignedInteger('country_id')->nullable();
             $table->boolean('is_famous')->default(false);
+            $table->boolean('is_pedagogical')->default(false);
             $table->date('date_of_birth')->nullable();
             $table->date('date_of_death')->nullable();
             $table->unsignedInteger('creator_id')->nullable();

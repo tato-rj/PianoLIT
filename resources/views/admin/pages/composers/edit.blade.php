@@ -87,6 +87,15 @@
           </div>
         </div>
 
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" name="is_famous" id="famous-check" {{$composer->is_famous ? 'checked' : null}}>
+          <label class="custom-control-label" for="famous-check">Is this composer famous?</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" name="is_pedagogical" id="pedagogical-check" {{$composer->is_pedagogical ? 'checked' : null}}>
+          <label class="custom-control-label" for="pedagogical-check">Is this mostly a pedagogical composer?</label>
+        </div>
+
         @can('update', $composer)
         <div class="text-center mt-5">
           <button type="submit" class="btn btn-block btn-default">Save changes</button>

@@ -24,6 +24,7 @@ class ComposerTest extends AppTest
             'period' => $composer->period,
             'country_id' => $composer->country_id,
             'is_famous' => $composer->is_famous,
+            'is_pedagogical' => $composer->is_pedagogical,
             'date_of_birth' => $composer->date_of_birth,
             'date_of_death' => $composer->date_of_death,
         ]);

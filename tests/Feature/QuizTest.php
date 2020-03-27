@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\Quiz\Quiz;
+use App\CrashCourse\CrashCourse;
 use Tests\Traits\AdminEvents;
 use Illuminate\Support\Facades\Storage;
 
@@ -90,6 +91,7 @@ class QuizTest extends AppTest
     /** @test */
     public function a_quiz_automatically_increments_its_view_each_time_it_is_viewed()
     {
+        create(CrashCourse::class, ['published_at' => now()]);
         $quiz = create(Quiz::class, ['published_at' => now()]);
 
         $views = $quiz->views;

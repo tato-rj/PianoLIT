@@ -42,6 +42,7 @@ $factory->define(Composer::class, function(Faker $faker) {
                 return create(Country::class)->id;
             },
             'is_famous' => $faker->boolean(),
+            'is_pedagogical' => $faker->boolean(),
             'date_of_birth' => $faker->date(),
             'date_of_death' => $faker->date(),
             'creator_id' => function() {

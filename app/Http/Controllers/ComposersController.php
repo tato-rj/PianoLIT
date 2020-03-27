@@ -51,6 +51,8 @@ class ComposersController extends Controller
             'curiosity' => $form->curiosity,
             'country_id' => $form->country_id,
             'period' => $form->period,
+            'is_famous' => $form->is_famous ? 1 : 0,
+            'is_pedagogical' => $form->is_pedagogical ? 1 : 0,
             'date_of_birth' => $form->date_of_birth,
             'date_of_death' => $form->date_of_death,
             'creator_id' => auth()->guard('admin')->user()->id
@@ -102,6 +104,8 @@ class ComposersController extends Controller
             'gender' => $request->gender,
             'ethnicity' => $request->ethnicity,
             'curiosity' => $request->curiosity,
+            'is_famous' => $request->is_famous ? 1 : 0,
+            'is_pedagogical' => $request->is_pedagogical ? 1 : 0,
             'country_id' => $request->country_id,
             'period' => strtolower($request->period)
         ]);

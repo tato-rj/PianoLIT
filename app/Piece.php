@@ -322,6 +322,13 @@ class Piece extends PianoLit
         });
     }
 
+    public function scopePedagogical($query)
+    {
+        return $query->whereHas('tags', function($q) {
+            $q->where('name', 'pedagogical');
+        });
+    }
+
     public function scopeFlashy($query)
     {
         $results = $query->whereHas('tags', function($q) {
