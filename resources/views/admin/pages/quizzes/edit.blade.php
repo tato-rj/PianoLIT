@@ -12,6 +12,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+     @return(['url' => route('admin.quizzes.index'), 'to' => 'view all quizzes'])
 
       <form class="row my-3" method="POST" action="{{route('admin.quizzes.update', $quiz->slug)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf

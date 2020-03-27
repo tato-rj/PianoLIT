@@ -13,7 +13,9 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">  
+  <div class="container-fluid">
+      @return(['url' => route('admin.posts.index'), 'to' => 'view all posts'])
+  
       <form class="row my-3" method="POST" action="{{route('admin.posts.update', $post->slug)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         @method('PATCH')

@@ -4,6 +4,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @return(['url' => route('admin.composers.index'), 'to' => 'view all composers'])
+
     <div class="row my-5 mx-2">
       <form id="edit-form" method="POST" action="{{route('admin.composers.update', $composer->id)}}" enctype="multipart/form-data" class="col-lg-6 col-sm-10 col-12 mx-auto">
         @csrf

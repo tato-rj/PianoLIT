@@ -45,7 +45,7 @@ class NewUser extends Notification
         return [
             'title' => 'New user',
             'message' => '<strong>' . $this->user->first_name . '</strong> just signed up.',
-            'url' => route('admin.users.index')
+            'url' => route('admin.users.logs')
         ];
     }
 }
