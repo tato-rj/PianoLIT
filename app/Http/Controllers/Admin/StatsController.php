@@ -7,7 +7,7 @@ use App\Blog\{Post, Topic};
 use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
-use App\{User, Piece, Tag, Composer, Country};
+use App\{User, Piece, Tag, Composer, Country, Membership};
 use App\Log\Loggers\DailyLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -39,6 +39,17 @@ class StatsController extends Controller
             return (new Stats)->for('subscriptions')->query(request('type'), request()->except('type'))->get();
 
         return view('admin.pages.stats.subscriptions.index');
+    }
+
+    public function memberships()
+    {
+        if (request()->ajax())
+            return (new Stats)->for('memberships')->query(request('type'), request()->except('type'))->get();
+
+        $trials = Membership::trial()->get();
+        $members = Membership::member()->get();
+
+        return view('admin.pages.stats.memberships.index', compact(['trials', 'members']));
     }
 
     public function composers()

@@ -211,6 +211,8 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 
 	Route::get('users', 'Admin\StatsController@users')->name('users');
 
+	Route::get('memberships', 'Admin\StatsController@memberships')->name('memberships');
+
 	Route::get('subscriptions', 'Admin\StatsController@subscriptions')->name('subscriptions');
 
 	Route::get('pieces', 'Admin\StatsController@pieces')->name('pieces');

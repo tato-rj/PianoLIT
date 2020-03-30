@@ -113,6 +113,13 @@ function class_str($class, $plural = false)
 	return $str; 
 }
 
+function truncate($string, $limit)
+{
+	$truncated = mb_substr($string, 0, $limit);
+
+	return strlen($string) == strlen($truncated) ? $string : rtrim($truncated, ' ') . '...';
+}
+
 function preview($text, $length)
 {
     $text = strip_tags($text);

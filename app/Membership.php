@@ -49,4 +49,14 @@ class Membership extends PianoLit
 
         return 'active';
 	}
+
+	public function scopeTrial($query)
+	{
+		return $query->whereRaw('renews_at >= NOW() AND created_at >= renews_at - INTERVAL 7 DAY');
+	}
+
+	public function scopeMember($query)
+	{
+		return $query->whereRaw('renews_at >= NOW() AND created_at < renews_at - INTERVAL 7 DAY');
+	}
 }

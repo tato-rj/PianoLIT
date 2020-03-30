@@ -16,8 +16,9 @@
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Statistics', 'icon' => 'chart-line',
         'dropdown' => [
           ['name' => 'Users', 'route' => route('admin.stats.users')],
-          ['name' => 'Pieces', 'route' => route('admin.stats.pieces')],
+          ['name' => 'Memberships', 'route' => route('admin.stats.memberships')],
           ['name' => 'Subscriptions', 'route' => route('admin.stats.subscriptions')],
+          ['name' => 'Pieces', 'route' => route('admin.stats.pieces')],
           ['name' => 'Composers', 'route' => route('admin.stats.composers')],
           ['name' => 'Blog', 'route' => route('admin.stats.blog')],
           ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],
