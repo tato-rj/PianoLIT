@@ -66,6 +66,11 @@ class Composer extends Person
         return $query->where('is_famous', true);
     }
 
+    public function scopeNonPedagogical($query)
+    {
+        return $query->where('is_pedagogical', false);        
+    }
+
     public function getCoverImageAttribute()
     {
         return storage($this->cover_path);

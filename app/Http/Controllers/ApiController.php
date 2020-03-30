@@ -89,9 +89,7 @@ class ApiController extends Controller
 
     public function tags()
     {
-        // return \Cache::remember('tags.tab', days(1), function() {
-            return Tag::display();
-        // });
+        return Tag::display();
     }
 
     public function composers()

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\{Pianist, Country};
 use App\Http\Requests\PianistForm;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class PianistsController extends Controller
 {

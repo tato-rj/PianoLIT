@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\{Composer, Country};
 use App\Http\Requests\ComposerForm;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ComposersController extends Controller
 {

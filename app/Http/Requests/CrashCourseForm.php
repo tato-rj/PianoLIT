@@ -27,7 +27,7 @@ class CrashCourseForm extends FormRequest
         return [
             'first_name' => 'required|max:255',
             'email' => 'required|email|max:255',
-            'g-recaptcha-response' => ['required', new Recaptcha]
+            'g-recaptcha-response' => ['sometimes', new Recaptcha]
         ];
     }
 }

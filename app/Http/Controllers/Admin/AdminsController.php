@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\{Admin, User, Piece, Tag, Composer, Subscription, EmailList, Api};
 use App\Quiz\{Quiz, Level, QuizResult};
@@ -8,6 +8,7 @@ use App\Quiz\Topic as QuizTopic;
 use App\Blog\Post;
 use App\Tools\Stats;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class AdminsController extends Controller
 {

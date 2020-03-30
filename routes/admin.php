@@ -1,25 +1,25 @@
 <?php
 
-Route::get('', 'AdminsController@home')->name('home');
+Route::get('', 'Admin\AdminsController@home')->name('home');
 
 Route::post('logout', 'Auth\Admin\LoginController@logout')->name('logout');
 
 Route::resources([
-    'pieces' => 'PiecesController',
-    'composers' => 'ComposersController',
-    'tags' => 'TagsController',
-    'topics' => 'TopicsController',
-    'editors' => 'EditorsController',
-    'timelines' => 'TimelinesController',
-    'pianists' => 'PianistsController',
-    'playlists' => 'PlaylistsController'
+    'pieces' => 'Admin\PiecesController',
+    'composers' => 'Admin\ComposersController',
+    'tags' => 'Admin\TagsController',
+    'topics' => 'Admin\TopicsController',
+    'editors' => 'Admin\EditorsController',
+    'timelines' => 'Admin\TimelinesController',
+    'pianists' => 'Admin\PianistsController',
+    'playlists' => 'Admin\PlaylistsController'
 ]);
 
 Route::patch('composers/{composer}/toggle-famous', 'ComposersController@toggleFamous')->name('composers.toggle-famous');
 
 Route::prefix('notifications')->name('notifications.')->group(function() {
 
-	Route::get('', 'AdminsController@notifications')->name('index');
+	Route::get('', 'Admin\AdminsController@notifications')->name('index');
 
 	Route::get('read', 'NotificationsController@read')->name('read');
 
@@ -58,7 +58,7 @@ Route::prefix('infographs')->name('infographs.')->group(function() {
 
 Route::prefix('blog')->name('posts.')->group(function() {
 
-	Route::get('', 'AdminsController@blog')->name('index');
+	Route::get('', 'Admin\AdminsController@blog')->name('index');
 
 	Route::get('create', 'PostsController@create')->name('create');
 
@@ -110,7 +110,7 @@ Route::prefix('blog')->name('posts.')->group(function() {
 
 Route::prefix('quiz')->name('quizzes.')->group(function() {
 
-	Route::get('', 'AdminsController@quiz')->name('index');
+	Route::get('', 'Admin\AdminsController@quiz')->name('index');
 
 	Route::get('create', 'QuizzesController@create')->name('create');
 
@@ -136,7 +136,7 @@ Route::prefix('quiz')->name('quizzes.')->group(function() {
 
 	Route::prefix('topics')->name('topics.')->group(function() {
 	
-		Route::get('', 'AdminsController@quizTopics')->name('index');
+		Route::get('', 'Admin\AdminsController@quizTopics')->name('index');
 
 		Route::post('store', 'QuizzesController@topicStore')->name('store');
 
@@ -168,7 +168,7 @@ Route::prefix('api')->name('api.')->group(function() {
 
 Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
-	Route::get('', 'AdminsController@subscriptions')->name('index');
+	Route::get('', 'Admin\AdminsController@subscriptions')->name('index');
 
 	Route::get('export', 'SubscriptionsController@export')->name('export');
 

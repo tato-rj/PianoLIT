@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Blog\Topic;
+use App\Tag;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
-class TopicsController extends Controller
+class TagsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,11 +15,11 @@ class TopicsController extends Controller
      */
     public function index()
     {
-        $this->authorize('create', Topic::class);
+        $this->authorize('create', Tag::class);
 
-        $topics = Topic::all();
+        $types = Tag::with(['pieces', 'creator'])->byTypes();
 
-        return view('admin.pages.blog.topics.index', compact('topics'));
+        return view('admin.pages.tags.index', compact('types'));
     }
 
     /**
@@ -39,28 +40,29 @@ class TopicsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', Topic::class);
+        $this->authorize('create', Tag::class);
 
         $request->validate([
-            'name' => 'required|unique:topics|max:255',
+            'name' => 'required|unique:tags|max:255',
+            'type' => 'required'
         ]);
 
-        Topic::create([
-            'slug' => str_slug($request->name),
+        Tag::create([
             'name' => $request->name,
-            'creator_id' => auth()->guard('admin')->user()->id
+            'creator_id' => auth()->guard('admin')->user()->id,
+            'type' => $request->type
         ]);
 
-        return redirect()->back()->with('status', "The topic has been successfully added!");
+        return redirect()->back()->with('status', "The tag has been successfully added!");
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Blog\Topic  $topic
+     * @param  \App\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function show(Topic $topic)
+    public function show(Tag $tag)
     {
         //
     }
@@ -68,10 +70,10 @@ class TopicsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Blog\Topic  $topic
+     * @param  \App\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function edit(Topic $topic)
+    public function edit(Tag $tag)
     {
         //
     }
@@ -80,37 +82,37 @@ class TopicsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Blog\Topic  $topic
+     * @param  \App\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Topic $topic)
+    public function update(Request $request, Tag $tag)
     {
-        $this->authorize('create', Topic::class);
+        $this->authorize('create', Tag::class);
 
         $request->validate([
             'name' => 'required|max:255',
         ]);
 
-        $topic->update([
-            'slug' => str_slug($request->name),
-            'name' => $request->name
+        $tag->update([
+            'name' => $request->name,
+            'type' => $request->type,
         ]);
 
-        return redirect()->back()->with('status', "The topic has been successfully updated!");
+        return redirect()->back()->with('status', "The tag has been successfully updated!");
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Blog\Topic  $topic
+     * @param  \App\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Topic $topic)
+    public function destroy(Tag $tag)
     {
-        $this->authorize('create', Topic::class);
+        $this->authorize('create', Tag::class);
 
-        $topic->delete();
+        $tag->delete();
 
-        return redirect()->back()->with('status', "The topic has been successfully deleted!");
+        return redirect()->back()->with('status', "The tag has been successfully deleted!");
     }
 }
