@@ -4,12 +4,13 @@
     <td style="width: 10%">{{truncate($membership->user->full_name, 10)}}</td>
     <td class="text-nowrap d-flex" style="width: 100%">
       <div class="flex-grow-1">
-        <div class="h-100 alert-yellow rounded-left px-2" style="width: {{percentage($membership->created_at->diffInDays($membership->renews_at), 7)}}%; border-right: 2px solid #918300;">
+        <div class="h-100 d-flex d-apart alert-yellow rounded-left px-2" style="width: {{percentage($membership->created_at->diffInDays($membership->renews_at), 7)}}%; border-right: 1px solid #918300;">
           <small class="align-text-bottom"><strong>{{$membership->created_at->format('D jS')}}</strong></small>
+          <small class="align-text-bottom"><strong>{{percentage($membership->created_at->diffInDays($membership->renews_at), 7)}}%</strong></small>
         </div>
       </div>
       <div>
-        <div class="rounded-right px-2 alert-green" style="border-left: 2px solid #2d995b;">
+        <div class="rounded-right px-2 alert-green" style="border-left: 1px solid #2d995b;">
           <small class="align-text-bottom"><strong>{{$membership->renews_at->format('D jS')}}</strong></small>
         </div>
       </div>
