@@ -21,14 +21,14 @@
     </div>
     <div class="row">
       <div class="col-12">
-        @table([
+{{--         @table([
           'id' => 'members-table',
           'title' => 'Members',
           'hoverable' => 'no',
           'borderless' => true,
           'headers' => ['User <i class="fas fa-sort"></i>', 'Progress <i class="fas fa-sort"></i></th>'],
           'rows' => view('admin.pages.stats.memberships.trials', ['memberships' => $members, 'limit' => 10, 'more' => true])
-        ])
+        ]) --}}
       </div>
     </div>
   </div>
