@@ -271,17 +271,17 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::get('datatable', 'PiecesController@datatable')->name('datatable');
 
-	Route::get('alerts/show', 'PiecesController@alerts')->name('alerts');
+	Route::get('alerts/show', 'Admin\PiecesController@alerts')->name('alerts');
 
-	Route::patch('{piece}/update-level', 'PiecesController@updateLevel')->name('update-level');
+	Route::patch('{piece}/update-level', 'Admin\PiecesController@updateLevel')->name('update-level');
 
-	Route::patch('{piece}/update-tag', 'PiecesController@updateTag')->name('update-tag');
+	Route::patch('{piece}/update-tag', 'Admin\PiecesController@updateTag')->name('update-tag');
 
 	Route::patch('{piece}/highlight', 'HighlightsController@update')->name('highlight');
 
-	Route::get('{piece}/load-tags', 'PiecesController@loadTags')->name('load-tags');
+	Route::get('{piece}/load-tags', 'Admin\PiecesController@loadTags')->name('load-tags');
 
-	Route::get('{piece}/load-levels', 'PiecesController@loadLevels')->name('load-levels');
+	Route::get('{piece}/load-levels', 'Admin\PiecesController@loadLevels')->name('load-levels');
 
 });
 
