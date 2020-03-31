@@ -47,7 +47,7 @@ class StatsController extends Controller
             return (new Stats)->for('memberships')->query(request('type'), request()->except('type'))->get();
 
         $trials = Membership::trial()->newest()->get();
-        $members = Membership::member()->lastRenewed()->get();
+        $members = Membership::member()->newest()->get();
         $expired = Membership::expired()->lastRenewed('DESC')->get();
 
         return view('admin.pages.stats.memberships.index', compact(['trials', 'members', 'expired']));
