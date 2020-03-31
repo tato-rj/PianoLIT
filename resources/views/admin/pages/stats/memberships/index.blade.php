@@ -13,6 +13,7 @@
           'id' => 'trials-table',
           'title' => 'Trials',
           'hoverable' => 'no',
+          'minWidth' => 820,
           'borderless' => true,
           'headers' => ['User <i class="fas fa-sort"></i>', 'Progress <i class="fas fa-sort"></i></th>'],
           'rows' => view('admin.pages.stats.memberships.trials', ['memberships' => $trials, 'limit' => 10, 'more' => true])
