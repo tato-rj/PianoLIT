@@ -60,6 +60,19 @@ class Membership extends PianoLit
 		return $query->whereRaw('renews_at >= NOW() AND created_at < renews_at - INTERVAL 7 DAY');
 	}
 
+	public function scopeExpired($query)
+	{
+		return $query->has('user')->whereRaw('renews_at < NOW()');
+	}
+
+	public function getNeedsValidationAttribute()
+	{
+		if (! $this->renews_at)
+			return true;
+
+		return now()->gt($this->renews_at) && $this->validated_at->lte($this->renews_at);
+	}
+
 	public function getPlanNameAttribute()
 	{
 		return ucfirst(str_rm(str_end($this->plan, '.'), 'plan') . 'ly');

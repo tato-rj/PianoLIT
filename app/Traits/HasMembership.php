@@ -47,7 +47,7 @@ trait HasMembership
         if (! $this->membership()->exists())
             return 'expired';
 
-        if (! $this->membership->expired())
+        if (! $this->membership->isExpired())
             return 'active';
 
         if (! $callApple)
@@ -101,7 +101,7 @@ trait HasMembership
         $users = $query->has('membership')->get();
 
         foreach ($users as $index => $user) {
-            if (! $user->membership->expired())
+            if (! $user->membership->isExpired())
                 $users->forget($index);
         }
 
@@ -120,7 +120,7 @@ trait HasMembership
         if (! $this->membership)
             return ['icon' => 'ghost', 'color' => 'grey', 'label' => 'Guest'];
 
-        if ($this->membership->expired())
+        if ($this->membership->isExpired())
             return ['icon' => 'credit-card', 'color' => 'grey', 'label' => 'Expired'];
 
         if ($this->membership->created_at->diffInDays($this->membership->renews_at) <= 7)

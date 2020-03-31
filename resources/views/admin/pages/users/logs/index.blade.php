@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    @datatableRaw(['model' => 'users', 'rows' => 'admin.pages.stats.users.row', 'columns' => ['Date', 'Name', 'Visits', 'Favorites', 'Origin', 'Status', 'Last Active', '']])
+    @datatableRaw(['model' => 'users', 'rows' => 'admin.pages.stats.users.row', 'columns' => ['Date', 'ID', 'Name', 'Visits', 'Favorites', 'Origin', 'Status', 'Last Active', '']])
 
   </div>
 </div>

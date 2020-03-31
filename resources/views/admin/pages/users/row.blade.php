@@ -3,6 +3,8 @@
 
   @include('components.datatable.date', ['date' => $item->created_at])
 
+  <td>{{$item->id}}</td>
+
   <td class="dataTables_main_column">{{$item->full_name}}</td>
     
   <td class="text-truncate {{$item->email_confirmed ? 'text-blue' : 'text-muted'}}" title="{{$item->email_confirmed ? 'Confirmed email on ' . $item->email_verified_at->toFormattedDateString() : 'Unconfirmed email'}}">

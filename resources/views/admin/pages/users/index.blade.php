@@ -37,7 +37,7 @@
       </div>
     </div>
     
-    @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'Name', 'Origin', 'Status', 'Super User', '']])
+    @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'ID', 'Name', 'Origin', 'Status', 'Super User', '']])
 
   </div>
 </div>

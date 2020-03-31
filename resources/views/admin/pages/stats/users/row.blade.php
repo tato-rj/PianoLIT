@@ -2,6 +2,8 @@
 <tr style="background-color: {{$top_user ? '#d7f3e33d' : null}};">
 
   @include('components.datatable.date', ['date' => $item->created_at])
+
+  <td>{{$item->id}}</td>
   
   <td title="{{$top_user ? "$item->first_name is a our fan!" : null}}" class="dataTables_main_column">
     {{$item->full_name}}{!! $top_user ? '<i class="fas fa-trophy ml-2 text-success"></i>' : null !!}

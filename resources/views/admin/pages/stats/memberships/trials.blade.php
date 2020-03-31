@@ -11,7 +11,7 @@
       </div>
     </td>
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}} pl-0" style="width: 10%">
-      <div class="rounded-right px-2 alert-green" style="border-left: 1px solid #2d995b;">
+      <div class="rounded-right px-2 alert-green text-nowrap" style="border-left: 1px solid #2d995b;">
         <small class="align-text-bottom"><strong>{{$membership->renews_at->format('D jS')}}</strong></small>
       </div>
     </td>

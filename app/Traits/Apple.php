@@ -42,7 +42,7 @@ trait Apple
 		return $reasons[$this->expiration_intent];
 	}
 
-	public function expired()
+	public function isExpired()
 	{
 		if (! $this->renews_at)
 			return false;
