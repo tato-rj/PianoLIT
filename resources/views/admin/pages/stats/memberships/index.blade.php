@@ -11,7 +11,7 @@
       <div class="col-12">
         @table([
           'id' => 'trials-table',
-          'title' => '<i class="fas fa-hourglass-half mr-2 text-warning"></i>Trials <strong>'.$trials->count().'</strong>',
+          'title' => '<i class="fas fa-hourglass-half mr-2 text-warning"></i>Trials ('.$trials->count().')',
           'hoverable' => 'no',
           'minWidth' => 820,
           'borderless' => true,
@@ -24,7 +24,7 @@
       <div class="col-12">
         @table([
           'id' => 'members-table',
-          'title' => '<i class="fas fa-credit-card mr-2 text-green"></i>Active memberships <strong>'.$members->count().'</strong>',
+          'title' => '<i class="fas fa-credit-card mr-2 text-green"></i>Active memberships ('.$members->count().')',
           'minWidth' => 820,
           'borderless' => true,
           'headers' => ['ID <i class="fas fa-sort"></i>', 'User <i class="fas fa-sort"></i>', 'Plan <i class="fas fa-sort"></i>', 'Time until next renewal <i class="fas fa-sort"></i>', 'Renews at <i class="fas fa-sort"></i>'],
@@ -36,7 +36,7 @@
       <div class="col-12">
         @table([
           'id' => 'expired-table',
-          'title' => '<i class="fas fa-credit-card mr-2 text-muted"></i>Expired memberships <strong>'.$expired->count().'</strong>',
+          'title' => '<i class="fas fa-credit-card mr-2 text-muted"></i>Expired memberships ('.$expired->count().')',
           'minWidth' => 820,
           'borderless' => true,
           'headers' => ['ID <i class="fas fa-sort"></i>', 'User <i class="fas fa-sort"></i>', 'Plan <i class="fas fa-sort"></i>', 'Time since last renewal <i class="fas fa-sort"></i>', 'Last renew at <i class="fas fa-sort"></i>'],
