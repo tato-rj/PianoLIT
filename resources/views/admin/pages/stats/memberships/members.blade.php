@@ -4,7 +4,10 @@
     <td class="" style="width: 10%">
       <div class="text-truncate">{{$membership->user->full_name}}</div>
     </td>
-    <td class=" pr-0" style="width: 80%; vertical-align: inherit;">
+    <td class="" style="width: 10%">
+      <div class="text-truncate">{{$membership->plan_name}}</div>
+    </td>
+    <td class=" pr-0" style="width: 70%; vertical-align: inherit;">
       <div class="text-{{$membership->renewal_color}}">
         <strong>{{$membership->renews_at->diffForHumans()}}</strong>
       </div>

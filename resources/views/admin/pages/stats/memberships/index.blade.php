@@ -28,7 +28,7 @@
           'hoverable' => 'no',
           'minWidth' => 820,
           'borderless' => true,
-          'headers' => ['User <i class="fas fa-sort"></i>', 'Time until next renewal <i class="fas fa-sort"></i></th>', 'Renews at <i class="fas fa-sort"></i></th>'],
+          'headers' => ['User <i class="fas fa-sort"></i>', 'Plan <i class="fas fa-sort"></i>', 'Time until next renewal <i class="fas fa-sort"></i></th>', 'Renews at <i class="fas fa-sort"></i></th>'],
           'rows' => view('admin.pages.stats.memberships.members', ['memberships' => $members, 'limit' => 10, 'more' => true])
         ])
       </div>
