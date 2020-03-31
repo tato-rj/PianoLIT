@@ -65,9 +65,9 @@ class Membership extends PianoLit
 		return $query->has('user')->whereRaw('renews_at < NOW()');
 	}
 
-	public function scopeLastRenewed($query)
+	public function scopeLastRenewed($query, $order = 'ASC')
 	{
-		return $query->orderBy('renews_at', 'DESC');
+		return $query->orderBy('renews_at', $order);
 	}
 
 	public function getNeedsValidationAttribute()
