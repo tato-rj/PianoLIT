@@ -11,6 +11,11 @@ class PianoLit extends Model
 	
 	protected $guarded = [];
 
+    public function scopeNewest($query)
+    {
+        return $query->orderBy('created_at');
+    }
+
     public function scopeExclude($query, $ids)
     {
         return $query->whereNotIn('id', $ids);

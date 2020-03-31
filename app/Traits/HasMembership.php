@@ -126,6 +126,6 @@ trait HasMembership
         if ($this->membership->created_at->diffInDays($this->membership->renews_at) <= 7)
             return ['icon' => 'credit-card', 'color' => 'yellow', 'label' => 'On trial'];
 
-        return ['icon' => 'credit-card', 'color' => 'green', 'label' => 'Member'];
+        return ['icon' => 'credit-card', 'color' => 'green', 'label' => 'Member (' . $this->membership->plan_name . ')'];
     }
 }

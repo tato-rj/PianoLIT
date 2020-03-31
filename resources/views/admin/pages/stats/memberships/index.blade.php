@@ -15,21 +15,22 @@
           'hoverable' => 'no',
           'minWidth' => 820,
           'borderless' => true,
-          'headers' => ['User <i class="fas fa-sort"></i>', 'Progress <i class="fas fa-sort"></i></th>'],
+          'headers' => ['User <i class="fas fa-sort"></i>', 'Progress <i class="fas fa-sort"></i></th>', 'Ends at <i class="fas fa-sort"></i></th>'],
           'rows' => view('admin.pages.stats.memberships.trials', ['memberships' => $trials, 'limit' => 10, 'more' => true])
         ])
       </div>
     </div>
     <div class="row">
       <div class="col-12">
-{{--         @table([
+        @table([
           'id' => 'members-table',
-          'title' => 'Members',
+          'title' => 'Memberships',
           'hoverable' => 'no',
+          'minWidth' => 820,
           'borderless' => true,
-          'headers' => ['User <i class="fas fa-sort"></i>', 'Progress <i class="fas fa-sort"></i></th>'],
-          'rows' => view('admin.pages.stats.memberships.trials', ['memberships' => $members, 'limit' => 10, 'more' => true])
-        ]) --}}
+          'headers' => ['User <i class="fas fa-sort"></i>', 'Time until next renewal <i class="fas fa-sort"></i></th>', 'Renews at <i class="fas fa-sort"></i></th>'],
+          'rows' => view('admin.pages.stats.memberships.members', ['memberships' => $members, 'limit' => 10, 'more' => true])
+        ])
       </div>
     </div>
   </div>

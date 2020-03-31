@@ -46,8 +46,8 @@ class StatsController extends Controller
         if (request()->ajax())
             return (new Stats)->for('memberships')->query(request('type'), request()->except('type'))->get();
 
-        $trials = Membership::trial()->latest()->get();
-        $members = Membership::member()->latest()->get();
+        $trials = Membership::trial()->newest()->get();
+        $members = Membership::member()->newest()->get();
 
         return view('admin.pages.stats.memberships.index', compact(['trials', 'members']));
     }
