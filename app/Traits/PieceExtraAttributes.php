@@ -4,6 +4,11 @@ namespace App\Traits;
 
 trait PieceExtraAttributes
 {
+    public function getIsNewAttribute()
+    {
+        return $this->created_at->gte(now()->subDay());    
+    }
+
     public function getAudioAttribute()
     {
         return storage($this->audio_path);
