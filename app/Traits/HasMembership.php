@@ -115,7 +115,7 @@ trait HasMembership
 
         $diff = $this->membership->created_at->diffInDays($this->membership->renews_at);
 
-        return $diff <= 7 && $diff > 0;
+        return $diff <= 7;
     }
 
     public function statusElements()
