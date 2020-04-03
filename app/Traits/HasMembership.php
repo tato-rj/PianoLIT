@@ -108,6 +108,14 @@ trait HasMembership
         return $users;
     }
 
+    public function getIsOnTrialAttribute()
+    {
+        if (! $this->membership()->exists())
+            return false;
+
+        return $this->membership->created_at->diffInDays($this->membership->renews_at) <= 7;
+    }
+
     public function statusElements()
     {
         // THIS IS JILL, THE USER WHO SIGNED UP FOR THE YEAR
@@ -123,7 +131,7 @@ trait HasMembership
         if ($this->membership->isExpired())
             return ['icon' => 'credit-card', 'color' => 'grey', 'label' => 'Expired'];
 
-        if ($this->membership->created_at->diffInDays($this->membership->renews_at) <= 7)
+        if ($this->isOnTrial)
             return ['icon' => 'credit-card', 'color' => 'yellow', 'label' => 'On trial'];
 
         return ['icon' => 'credit-card', 'color' => 'green', 'label' => 'Member (' . $this->membership->plan_name . ')'];

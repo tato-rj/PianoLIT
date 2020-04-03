@@ -24,7 +24,8 @@ class TutorialRequest extends PianoLit
     public function scopeDatatable($query)
     {
         return datatable($query->with(['user', 'piece.composer']))->withDate(['created_at', 'published_at'])->withBlade([
-            'action' => view('admin.pages.requests.actions')
+            'user' => view('admin.pages.requests.table.users'),
+            'action' => view('admin.pages.requests.table.actions')
         ])->make();
     }
 }

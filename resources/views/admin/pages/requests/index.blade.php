@@ -52,7 +52,7 @@
   {data: 'created_at', class: 'text-nowrap'},
   {data: 'published_at', name: 'tutorial_requests.published_at', class: 'text-nowrap'},
   {data: 'piece.medium_name_with_composer', name: 'piece.name', class: 'dataTables_main_column'},
-  {data: 'user.full_name', name: 'user.first_name'},
+  {data: 'user'},
   {data: 'action', orderable: false, searchable: false},
 ]).create();
 
