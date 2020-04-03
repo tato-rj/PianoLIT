@@ -19,7 +19,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return User::find(587)->isOnTrial;
+        dd(User::find(587)->isOnTrial);
         $pieces_count = Piece::count();
         $composers_count = Composer::count();
         $users_count = User::count();
