@@ -242,6 +242,8 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::get('{user}/load-favorites', 'Admin\UsersController@loadFavorites')->name('load-favorites');
 
+	Route::get('{user}/load-requests', 'Admin\UsersController@loadRequests')->name('load-requests');
+
 	Route::delete('destroy-many', 'Admin\UsersController@destroyMany')->name('destroy-many');
 
 	Route::delete('{user}', 'Admin\UsersController@destroy')->name('destroy');

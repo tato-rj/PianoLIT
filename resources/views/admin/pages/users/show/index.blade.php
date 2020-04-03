@@ -13,6 +13,8 @@
 
     @include('admin.pages.users.show.favorites')
 
+    @include('admin.pages.users.show.requests')
+
     @include('admin.pages.users.show.membership')
 
     @include('admin.pages.users.show.manage')
