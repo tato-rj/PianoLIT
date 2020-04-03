@@ -110,7 +110,7 @@ trait HasMembership
 
     public function getIsOnTrialAttribute()
     {
-        if (! $this->membership()->exists() || $this->membership->isExpired())
+        if (! $this->membership()->exists())
             return false;
 
         $diff = $this->membership->created_at->diffInDays($this->membership->renews_at);
