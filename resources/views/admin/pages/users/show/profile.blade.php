@@ -11,7 +11,7 @@
         'Gender' => ucfirst($user->gender),
         'Origin' => $user->formattedOrigin,
         'Favorites' => $user->favorites_count . ' ' . str_plural('piece', $user->favorites_count),
-        'Tutorial Requests' => $user->tutorialRequests()->count() . ' ' . str_plural('piece', $user->tutorialRequests()->count()),
+        'Tutorial Requests' => $user->tutorialRequests()->count() . ' ' . str_plural('request', $user->tutorialRequests()->count()),
         'Logs' => 'App ' . (new \App\Log\LogFactory)->count($user->id, 'app') . ' | Web ' . (new \App\Log\LogFactory)->count($user->id, 'web'),
         'Member since' => $user->created_at->toFormattedDateString()
       ]
