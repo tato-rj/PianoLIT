@@ -6,6 +6,7 @@
 @section('content')
 <div class="content-wrapper">
   <div class="container-fluid">
+    @return(['url' => route('admin.users.index'), 'to' => 'view all users'])
 
     @include('admin.pages.users.show.profile')
 
