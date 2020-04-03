@@ -1,18 +1,26 @@
 @include('admin.pages.users.show.title', ['title' => 'Activity Logs', 'icon' => 'clipboard-check'])
 
 <div class="row">
-  <div class="col-12 mb-4">
+  <div class="col-12">
   	@table([
   		'id' => 'log-app-table',
   		'title' => 'App Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'app')) . ')',
   		'headers' => ['Date', 'Api call', 'Data'],
-  		'rows' => view('admin.pages.users.show.logs.app-rows', ['user' => $user, 'logs' => $user->log()->app, 'limit' => 5, 'more' => true])
+      'more' => route('admin.users.load-logs', ['user' => $user->id, 'type' => 'app']),
+  		'rows' => view('admin.pages.users.show.logs.app-rows', [
+        'user' => $user, 
+        'logs' => collect($user->log()->app)->take(5),
+      ])
   	])
   	@table([
   		'id' => 'log-web-table',
   		'title' => 'Web Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'web')) . ')',
   		'headers' => ['Date', 'Api call', 'Data'],
-  		'rows' => view('admin.pages.users.show.logs.web-rows', ['user' => $user, 'logs' => $user->log()->web, 'limit' => 5, 'more' => true])
+      'more' => route('admin.users.load-logs', ['user' => $user->id, 'type' => 'web']),
+  		'rows' => view('admin.pages.users.show.logs.web-rows', [
+        'user' => $user, 
+        'logs' => collect($user->log()->web)->take(5)
+      ])
   	])
   </div>
 </div>

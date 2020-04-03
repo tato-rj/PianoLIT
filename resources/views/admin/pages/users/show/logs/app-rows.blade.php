@@ -1,5 +1,4 @@
 @foreach($logs as $date => $event)
-@if($loop->iteration <= $limit)
   <tr>
     <td class="text-nowrap">{{carbon($date)->format('M j\\, Y \\a\\t h:i A')}}</td>
 
@@ -18,10 +17,4 @@
       </button>
     </td>
   </tr>
-  @else
-    @if(!empty($more))
-    @include('admin.pages.users.show.logs.more', ['type' => 'app'])
-    @endif
-    @break
-  @endif
 @endforeach

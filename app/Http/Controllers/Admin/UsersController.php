@@ -48,16 +48,16 @@ class UsersController extends Controller
 
         $array = $user->log()->$type;
 
-        $logs = array_slice($array, $request->start_at, count($array), true);
+        $logs = collect(array_slice($array, $request->start_at, count($array), true))->take(5);
 
-        return view('admin.pages.users.show.logs.' . $type . '-rows', ['user' => $user, 'logs' => $logs, 'limit' => 5])->render();
+        return view('admin.pages.users.show.logs.' . $type . '-rows', ['logs' => $logs])->render();
     }
 
     public function loadFavorites(User $user, Request $request)
     {
-        $pieces = $user->favorites->slice($request->start_at);
+        $pieces = $user->favorites->slice($request->start_at)->take(5);
 
-        return view('admin.pages.users.show.favorites.rows', ['user' => $user, 'pieces' => $pieces, 'limit' => 5])->render();
+        return view('admin.pages.users.show.favorites.rows', ['pieces' => $pieces])->render();
     }
 
     public function destroyMany(Request $request)

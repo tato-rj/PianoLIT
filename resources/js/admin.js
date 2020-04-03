@@ -13,6 +13,7 @@ require('./quickchart/QuickChart');
 require('./datatable/DataTable');
 require('./datatable/DataTableRaw');
 require('./components/modals');
+require('./components/tables');
 require('./components/toggle');
 require('./components/forms');
 

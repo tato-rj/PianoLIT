@@ -29,31 +29,7 @@
 @endsection
 
 @section('scripts')
-<script src="https://www.w3schools.com/lib/w3.js"></script>
-<script type="text/javascript">
-$('.load-more').on('click', function() {
-  let $button = $(this);
-  let type = $button.attr('data-type');
-  let limit = $button.closest('tr').siblings().length;
-  let url = $button.attr('data-url');
-  $button.text('LOADING...');
-  $button.prop('disabled', true);
-
-  $.get(url, {start_at: limit, type: type}, function(data) {
-    if (data) {
-      $(data).insertBefore($button.closest('tr'));
-      $button.text('LOAD MORE');
-    } else {
-      $button.text('NO MORE RESULTS');
-    }
-    $button.prop('disabled', false);
-  })
-  .fail(function() {
-    alert('Something went wrong...');
-    $button.text('NOT WORKING');
-  });
-});
-</script>
+{{-- <script src="https://www.w3schools.com/lib/w3.js"></script> --}}
 
 <script type="text/javascript">
 $('input.status-toggle').on('change', function() {

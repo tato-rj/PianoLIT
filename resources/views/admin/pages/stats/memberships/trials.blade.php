@@ -1,6 +1,6 @@
 @foreach($memberships as $membership)
   @if($loop->iteration <= $limit)
-  <tr class="sortable">
+  <tr>
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 5%">
       <div class="text-truncate">{{$membership->user->id}}</div>
     </td>
