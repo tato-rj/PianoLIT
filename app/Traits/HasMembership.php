@@ -113,7 +113,9 @@ trait HasMembership
         if (! $this->membership()->exists())
             return false;
 
-        return $this->membership->created_at->diffInDays($this->membership->renews_at) <= 7;
+        $diff = $this->membership->created_at->diffInDays($this->membership->renews_at);
+
+        return $diff <= 7 && $diff > 0;
     }
 
     public function statusElements()
