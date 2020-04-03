@@ -80,21 +80,21 @@ Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::prefix('audio')->name('audio.')->group(function() {
 	
-		Route::get('', 'BlogMediaController@audio')->name('index');
+		Route::get('', 'Admin\BlogMediaController@audio')->name('index');
 
-		Route::post('store', 'BlogMediaController@storeAudio')->name('store');
+		Route::post('store', 'Admin\BlogMediaController@storeAudio')->name('store');
 		
-		Route::delete('destroy', 'BlogMediaController@destroyAudio')->name('destroy');
+		Route::delete('destroy', 'Admin\BlogMediaController@destroyAudio')->name('destroy');
 
 	});
 
 	Route::prefix('gifts')->name('gifts.')->group(function() {
 	
-		Route::get('', 'BlogMediaController@gifts')->name('index');
+		Route::get('', 'Admin\BlogMediaController@gifts')->name('index');
 
-		Route::post('store', 'BlogMediaController@storeGift')->name('store');
+		Route::post('store', 'Admin\BlogMediaController@storeGift')->name('store');
 		
-		Route::delete('destroy', 'BlogMediaController@destroyGift')->name('destroy');
+		Route::delete('destroy', 'Admin\BlogMediaController@destroyGift')->name('destroy');
 
 	});
 

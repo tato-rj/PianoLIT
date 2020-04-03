@@ -16,7 +16,7 @@
           'minWidth' => 820,
           'borderless' => true,
           'sortable' => true,
-          'headers' => ['ID <i class="fas fa-sort"></i>', 'User <i class="fas fa-sort"></i>', 'Progress <i class="fas fa-sort"></i>', 'Ends at <i class="fas fa-sort"></i>'],
+          'headers' => ['ID <i class="fas fa-sort"></i>', 'User <i class="fas fa-sort"></i>', 'Plan <i class="fas fa-sort"></i>', 'Progress <i class="fas fa-sort"></i>', 'Ends at <i class="fas fa-sort"></i>'],
           'rows' => view('admin.pages.stats.memberships.trials', ['memberships' => $trials, 'limit' => 10, 'more' => true])
         ])
       </div>
