@@ -2,23 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\{Api, Tag, Piece};
+use App\{Tag, Piece};
 use Illuminate\Http\Request;
 use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
 use RuntimeException;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->api = new Api;
-    }
-
     /**
      * Show the application dashboard.
      *

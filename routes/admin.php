@@ -29,7 +29,7 @@ Route::prefix('notifications')->name('notifications.')->group(function() {
 
 Route::prefix('infographs')->name('infographs.')->group(function() {
 	
-	Route::get('', 'InfographsController@index')->name('index');
+	Route::get('', 'Admin\InfographicsController@index')->name('index');
 
 	Route::get('create', 'InfographsController@create')->name('create');
 
@@ -37,7 +37,7 @@ Route::prefix('infographs')->name('infographs.')->group(function() {
 
 	Route::prefix('topics')->name('topics.')->group(function() {
 	
-		Route::get('', 'InfographsController@topics')->name('index');
+		Route::get('', 'Admin\InfographicsController@topics')->name('index');
 
 		Route::post('store', 'InfographsController@topicStore')->name('store');
 
@@ -158,11 +158,13 @@ Route::prefix('quiz')->name('quizzes.')->group(function() {
 
 Route::prefix('api')->name('api.')->group(function() {
 
-	Route::get('discover', 'ApiController@discover')->name('discover');
+	Route::get('discover', 'Admin\ApiController@discover')->name('discover');
 
-	Route::get('search', 'SearchController@search')->name('search');
+	Route::get('search', 'Admin\ApiController@search')->middleware(['search.driver'])->name('search');
 
-	Route::get('tour', 'ApiController@tour')->name('tour');
+	Route::get('tour', 'Admin\ApiController@tour')->name('tour');
+
+	Route::get('endpoints', 'Admin\ApiController@endpoints')->name('endpoints');
 
 });
 
@@ -281,7 +283,7 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::patch('{piece}/update-tag', 'Admin\PiecesController@updateTag')->name('update-tag');
 
-	Route::patch('{piece}/highlight', 'HighlightsController@update')->name('highlight');
+	Route::patch('{piece}/highlight', 'Admin\PiecesController@highlight')->name('highlight');
 
 	Route::get('{piece}/load-tags', 'Admin\PiecesController@loadTags')->name('load-tags');
 
@@ -367,4 +369,5 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 });
 
 Route::get('logs/data', 'Admin\LogsController@data')->name('log.data');
+
 Route::get('memberships/logs', 'MembershipsController@logs')->name('memberships.logs');

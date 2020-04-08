@@ -24,27 +24,6 @@ class CrashCoursesController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  \App\CrashCourse  $crashCourse
@@ -81,29 +60,6 @@ class CrashCoursesController extends Controller
         return redirect()->back()->with('status', 'Thanks for signing up!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\CrashCourse  $crashCourse
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(CrashCourse $crashCourse)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\CrashCourse  $crashCourse
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, CrashCourse $crashCourse)
-    {
-        //
-    }
-
     public function cancel(Request $request)
     {
         $subscription = CrashCourseSubscription::byEmail($request->email)->active();
@@ -114,16 +70,5 @@ class CrashCoursesController extends Controller
         $subscription->first()->cancel();
 
         return 'Sorry to see you go! You will no longer receive these emails';
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\CrashCourse  $crashCourse
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(CrashCourse $crashCourse)
-    {
-        //
     }
 }

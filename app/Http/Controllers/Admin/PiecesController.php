@@ -240,6 +240,15 @@ class PiecesController extends Controller
         return response()->json(['count' => $piece->fresh()->tags_count]);
     }
 
+    public function highlight(Piece $piece)
+    {
+        Piece::free()->update(['is_free' => false]);
+        
+        $piece->update(['is_free' => true]);
+
+        return back()->with(['status' => 'The highlighted piece has been successfully updated!']);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

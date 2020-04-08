@@ -16,21 +16,6 @@ class InfographsController extends Controller
         $this->middleware('throttle:2')->only('updateScore');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        if (request()->ajax())
-            return Infograph::datatable();
-
-        $topics = Topic::ordered()->get();
-
-        return view('admin.pages.infographs.index', compact('topics'));
-    }
-
     public function load(Request $request)
     {
         $infographs = Topic::bySlug($request->topic)->infographs()->latest()->get();
@@ -45,28 +30,11 @@ class InfographsController extends Controller
         return view('resources.infographs.load', compact('infographs'))->render();
     }
 
-    public function topics()
-    {
-        $topics = Topic::ordered()->get();
-
-        return view('admin.pages.infographs.topics.index', compact('topics'));
-    }
-
     public function show(Infograph $infograph)
     {
         $related = $infograph->related();
 
         return view('resources.infographs.show', compact(['infograph', 'related']));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**

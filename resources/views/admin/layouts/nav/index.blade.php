@@ -11,6 +11,7 @@
           ['route' => route('admin.api.discover'), 'name' => 'Discover'],
           ['route' => route('admin.api.search'), 'name' => 'Search'],
           ['route' => route('admin.api.tour'), 'name' => 'Tour'],
+          ['route' => route('admin.api.endpoints'), 'name' => 'Endpoints'],
         ]])
 
         @include('admin.layouts.nav.item', ['route' => null, 'name' => 'Statistics', 'icon' => 'chart-line',

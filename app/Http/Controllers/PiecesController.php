@@ -30,23 +30,23 @@ class PiecesController extends Controller
      */
     public function collection(Piece $piece)
     {
-        $pieces = $piece->siblings();
+        // $pieces = $piece->siblings();
         
-        $pieces->each(function($result) {
-            (new Api)->setCustomAttributes($result, request('user_id'));
-        });
+        // $pieces->each(function($result) {
+        //     (new Api)->setCustomAttributes($result, request('user_id'));
+        // });
 
-        return $pieces;
+        // return $pieces;
     }
 
     public function similar(Piece $piece)
     {
-        $pieces = $piece->similar();
+        // $pieces = $piece->similar();
         
-        $pieces->each(function($result) {
-            (new Api)->setCustomAttributes($result, request('user_id'));
-        });
+        // $pieces->each(function($result) {
+        //     (new Api)->setCustomAttributes($result, request('user_id'));
+        // });
         
-        return $pieces;
+        // return $pieces;
     }
 }

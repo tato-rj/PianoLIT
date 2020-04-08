@@ -21,23 +21,6 @@ class TutorialRequestsController extends Controller
         return view('admin.pages.requests.index');
     }
 
-    public function api(Request $request)
-    {
-        $user = User::find($request->user_id);
-
-        if (! $user)
-            return null;
-
-        $requests = $user->tutorialRequests;
-
-        $requests->each(function($request, $index) use ($requests) {
-            $requests[$index]->piece->request_published_at = $request->published_at ? $request->published_at->toFormattedDateString() : null;
-            $requests[$index]->piece->request_created_at = $request->created_at->toFormattedDateString();
-        });
-
-        return $requests->pluck('piece');
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -48,12 +31,6 @@ class TutorialRequestsController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -90,27 +67,7 @@ class TutorialRequestsController extends Controller
         if (production())
             abort(403);
 
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'piece_id' => 'required|exists:pieces,id'
-        ]);
-
-        $user = User::find($request->user_id);
-
-        if ($user->pendingTutorialRequests()->exists())
-            return back()->with('error', 'You have a pending request, please wait until we publish it before making a new one!');
-
-        if ($user->publishedTutorialRequests()->where('piece_id', $request->piece_id)->exists())
-            return back()->with('error', 'Looks like you have already made a request for this piece, please send us an email if you were looking for something else.');
-
-        $tutorial = TutorialRequest::create([
-            'user_id' => $request->user_id,
-            'piece_id' => $request->piece_id
-        ]);
-
-        event(new NewRequest($tutorial));
-        
-        return back()->with('status', 'Your request has been received, we will send you an email when the tutorial is ready.');
+        return $this->store($request);
     }
     /**
      * Display the specified resource.

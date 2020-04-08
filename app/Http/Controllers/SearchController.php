@@ -12,8 +12,8 @@ class SearchController extends Controller
     public function __construct()
     {
         $this->api = new Api;
-        $this->options = request()->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => request()->page ?? 0] : [];
-        $this->middleware(['log.app', 'search.driver'])->only('search');
+        // $this->options = request()->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => request()->page ?? 0] : [];
+        // $this->middleware(['log.app', 'search.driver'])->only('search');
     }
 
     public function index(Request $request)
@@ -46,45 +46,45 @@ class SearchController extends Controller
 
     public function search(Request $request)
     {
-        if ($request->has('search'))
-            return $this->handle($request);
+        // if ($request->has('search'))
+        //     return $this->handle($request);
 
-        return $this->toAdmin();
+        // return $this->toAdmin();
     }
 
     public function handle(Request $request)
     {
-        if ($model = $request->model) {
-            $query = (new $model)->name($request->search)->first()->pieces();
-        } else {
-            $query = Piece::search($request->search)->options($this->options);
-        }
+        // if ($model = $request->model) {
+        //     $query = (new $model)->name($request->search)->first()->pieces();
+        // } else {
+        //     $query = Piece::search($request->search)->options($this->options);
+        // }
 
-        $this->total = $query->count();
+        // $this->total = $query->count();
 
-        if ($request->has('count'))
-            return response()->json(['count' => $this->total]);
+        // if ($request->has('count'))
+        //     return response()->json(['count' => $this->total]);
 
-        $this->pieces = $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+        // $this->pieces = $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 
-        return $this->next($request);
+        // return $this->next($request);
     }
 
     public function next(Request $request)
     {
-        if ($request->wantsJson() || $request->has('api'))
-            return $this->pieces;
+        // if ($request->wantsJson() || $request->has('api'))
+        //     return $this->pieces;
 
-        if ($request->has('rendered'))
-            return view('admin.pages.search.result-rows', ['pieces' => $this->pieces])->render();
+        // if ($request->has('rendered'))
+        //     return view('admin.pages.search.result-rows', ['pieces' => $this->pieces])->render();
 
-        return $this->toAdmin();
+        // return $this->toAdmin();
     }
 
     public function toAdmin()
     {
-        $tags = Tag::display()->groupBy('type');
+        // $tags = Tag::display()->groupBy('type');
 
-        return view('admin.pages.search.index', ['pieces' => $this->pieces ?? [], 'total' => $this->total ?? null, 'tags' => $tags]);
+        // return view('admin.pages.search.index', ['pieces' => $this->pieces ?? [], 'total' => $this->total ?? null, 'tags' => $tags]);
     }
 }

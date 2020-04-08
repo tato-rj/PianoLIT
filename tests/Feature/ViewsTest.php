@@ -12,7 +12,7 @@ class ViewsTest extends AppTest
     {
         $this->piece->views()->delete();
 
-        $this->post(route('api.pieces.views.store'), [
+        $this->post(route('api.pieces.increment-views'), [
             'user_id' => $this->user->id,
             'piece_id' => $this->piece->id]);
 

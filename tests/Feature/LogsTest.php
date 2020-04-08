@@ -69,7 +69,7 @@ class LogsTest extends AppTest
     {
         $this->get(route('api.search', ['user_id' => $this->user->id, 'search' => 'foo bar']));
 
-        $key = 'user:'.$this->user->id.':app';
+        $key = 'user:' . $this->user->id . ':app';
 
         $this->assertRedisContains($key, 'search', 'foo bar');
 

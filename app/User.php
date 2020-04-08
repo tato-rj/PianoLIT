@@ -269,4 +269,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->origin == 'ios' ? 'iOS' : ucfirst($this->origin);
     }
+
+    public function scopeTester($query)
+    {
+        return $query->where('email', 'test@email.com')->first();
+    }
 }
