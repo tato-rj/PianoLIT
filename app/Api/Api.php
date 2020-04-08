@@ -40,10 +40,10 @@ class Api extends Factory
         } else {
             $query = Piece::search($request->search)->options($options);
         }
-dd($request->all());
+
         if ($request->has('count'))
             return response()->json(['count' => $query->count()]);
-		
+
 		return $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 	}
 }
