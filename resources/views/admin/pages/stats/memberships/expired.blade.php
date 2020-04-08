@@ -1,12 +1,7 @@
 @foreach($memberships as $membership)
   @if($loop->iteration <= $limit)
   <tr class="sortable">
-    <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 5%">
-      <div class="text-truncate">{{$membership->user->id}}</div>
-    </td>
-    <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 10%">
-      <div class="text-truncate">{{$membership->user->full_name}}</div>
-    </td>
+    @include('admin.pages.stats.memberships.table.user')
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 10%">
       <div class="text-truncate">{{$membership->plan_name}}</div>
     </td>
