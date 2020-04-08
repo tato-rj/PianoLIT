@@ -33,6 +33,9 @@ class Api extends Factory
 
 	public function search($request)
 	{
+        if (! $request->has('search'))
+            return [];
+        
 		$options = $request->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => $request->page ?? 0] : [];
 
         if ($model = $request->model) {
