@@ -33,7 +33,6 @@ class ApiController extends Controller
     {
         $tags = Tag::display()->groupBy('type');
 
-        dd('test');
         $pieces = $api->search($request);
 
         if ($request->has('rendered'))
