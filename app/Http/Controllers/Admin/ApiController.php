@@ -34,7 +34,7 @@ class ApiController extends Controller
         $tags = Tag::display()->groupBy('type');
 
         $pieces = $api->search($request);
-
+dd($pieces);
         if ($request->has('rendered'))
             return view('admin.pages.search.result-rows', compact('pieces'))->render();
 
