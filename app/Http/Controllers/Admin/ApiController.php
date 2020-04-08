@@ -31,9 +31,9 @@ class ApiController extends Controller
 
     public function search(Api $api, Request $request)
     {
-        dd('test');
         $tags = Tag::display()->groupBy('type');
 
+        dd('test');
         $pieces = $api->search($request);
 
         if ($request->has('rendered'))
