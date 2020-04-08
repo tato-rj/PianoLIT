@@ -1,7 +1,16 @@
 @foreach($memberships as $membership)
   @if($loop->iteration <= $limit)
   <tr>
-    @include('admin.pages.stats.memberships.table.user')
+    <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 5%">
+      <div class="text-truncate">{{$membership->user_id}}</div>
+    </td>
+    <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 10%">
+      @if($membership->user()->exists())
+      <div class="text-truncate">{{$membership->user->full_name}}</div>
+      @else
+      <div class="text-truncate text-muted"><i>account deleted</i></div>
+      @endif
+    </td>
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 10%">
       <div class="text-truncate">{{$membership->plan_name}}</div>
     </td>
