@@ -44,7 +44,7 @@ abstract class Factory
     {
         $user = User::find(request('user_id'));
 
-        $collection = $user ? $user->suggestions(10) : Piece::inRandomOrder()->take($this->limit)->get();
+        $collection = $user ? $user->suggestions(10)->shuffle() : Piece::inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 

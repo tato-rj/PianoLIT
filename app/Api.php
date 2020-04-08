@@ -42,8 +42,6 @@ class Api
 
         $collection = $user ? $user->suggestions(10) : Piece::inRandomOrder()->take($this->limit)->get();
 
-        $collection->shuffle();
-
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title]);
