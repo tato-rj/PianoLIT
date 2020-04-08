@@ -34,13 +34,13 @@ class Api extends Factory
 	public function search($request)
 	{
 		$options = $request->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => $request->page ?? 0] : [];
-dd($request->all());
+
         if ($model = $request->model) {
             $query = (new $model)->name($request->search)->first()->pieces();
         } else {
             $query = Piece::search($request->search)->options($options);
         }
-
+dd($request->all());
         if ($request->has('count'))
             return response()->json(['count' => $query->count()]);
 		
