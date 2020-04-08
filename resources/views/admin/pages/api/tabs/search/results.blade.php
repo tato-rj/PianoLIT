@@ -10,7 +10,7 @@
   <small><i class="fas fa-stopwatch mr-1"></i>This query took <strong>{{ number_format((microtime(true) - LARAVEL_START), 1) }}</strong> seconds to load</small>
 </div>
 <div class="list-group">
-    @include('admin.pages.search.result-rows')
+    @include('admin.pages.api.tabs.search.result-rows')
 </div>
 @if(request()->has('lazy-load'))
 <button class="btn btn-block btn-outline-secondary mt-3" id="load-more" 

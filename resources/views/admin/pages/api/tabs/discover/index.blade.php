@@ -1,11 +1,23 @@
 @extends('admin.layouts.app')
 
-@section('content')
+@section('head')
+<style type="text/css">
+.btn-nav {
+  color: #5e7083;
+  border: none;
+  border-bottom: 2px solid transparent;
+}
+.btn-nav[selected] {
+  color: #212529 !important;
+  font-weight: bold;
+  border-bottom: 2px solid #0055fe;
+}
+</style>
+@endsection
 
-<div class="content-wrapper">  
-  <div class="text-center mb-2">
-    <a href="{{route('admin.api.discover', ['api'])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
-  </div>
+@section('content')
+<div class="content-wrapper">
+  @include('admin.pages.api.tabs.nav')
 
   <div class="text-center">
     <form method="POST" action="{{route('redis.update', 'app.discover')}}" class="mb-2">
@@ -32,7 +44,7 @@
               <input type="hidden" name="global">
               <input type="hidden" name="api">
               <input type="hidden" name="discover">
-              @include('admin.pages.discover.card', ['model' => $playlist['content'][0], 'width' => '100%', 'height' => '151px'])
+              @include('admin.pages.api.tabs.discover.card', ['model' => $playlist['content'][0], 'width' => '100%', 'height' => '151px'])
             </form>
           </div>    
       </section>
@@ -46,9 +58,9 @@
               <input type="hidden" name="api">
               <input type="hidden" name="discover">
               @if($playlist['type'] == 'composer')
-              @include('admin.pages.discover.composer')
+              @include('admin.pages.api.tabs.discover.composer')
               @else
-              @include('admin.pages.discover.card')
+              @include('admin.pages.api.tabs.discover.card')
               @endif
             </form>
           @endforeach

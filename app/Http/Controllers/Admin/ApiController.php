@@ -15,7 +15,7 @@ class ApiController extends Controller
 
     	$collection = $api->discover()->toArray();
 
-        return view('admin.pages.discover.index', compact(['collection', 'key']));
+        return view('admin.pages.api.tabs.discover.index', compact(['collection', 'key']));
     }
 
     public function tour(Api $api, Request $request)
@@ -26,7 +26,7 @@ class ApiController extends Controller
 
     	$pieces = $api->search($request);
                 
-        return view('admin.pages.tour.index', compact(['pieces', 'levels', 'lengths', 'moods']));
+        return view('admin.pages.api.tabs.tour.index', compact(['pieces', 'levels', 'lengths', 'moods']));
     }
 
     public function search(Api $api, Request $request)
@@ -36,9 +36,9 @@ class ApiController extends Controller
         $pieces = $api->search($request);
 
         if ($request->has('rendered'))
-            return view('admin.pages.search.result-rows', compact('pieces'))->render();
+            return view('admin.pages.api.tabs.search.result-rows', compact('pieces'))->render();
 
-        return view('admin.pages.search.index', compact(['pieces', 'tags']));
+        return view('admin.pages.api.tabs.search.index', compact(['pieces', 'tags']));
     }
 
     public function endpoints()

@@ -1,20 +1,29 @@
 @extends('admin.layouts.app')
-
+@section('head')
+<style type="text/css">
+.btn-nav {
+  color: #5e7083;
+  border: none;
+  border-bottom: 2px solid transparent;
+}
+.btn-nav[selected] {
+  color: #212529 !important;
+  font-weight: bold;
+  border-bottom: 2px solid #0055fe;
+}
+</style>
+@endsection
 @section('content')
 
 <div class="content-wrapper">
+  @include('admin.pages.api.tabs.nav')
   <div class="container-fluid">
-
-    <div class="text-center mb-2">
-      <a href="{{route('api.tags')}}" target="_blank" class="link-default"><small>See JSON response</small></a>
-    </div>
-
     <div class="row my-3">
       <div class="col-lg-6 col-md-8 col-10 mx-auto">
 
-        @include('admin.pages.search.input')
+        @include('admin.pages.api.tabs.search.input')
 
-        @include('admin.pages.search.tags')
+        @include('admin.pages.api.tabs.search.tags')
      
       </div>
     </div>
@@ -23,7 +32,7 @@
 
 @if(! empty($pieces) && request()->has('search'))
 @component('admin.components.modals.results')
-  @include('admin.pages.search.results')
+  @include('admin.pages.api.tabs.search.results')
 @endcomponent
 @endif
 
