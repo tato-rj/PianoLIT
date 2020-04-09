@@ -24,6 +24,9 @@
         {{$membership->renews_at->toFormattedDateString()}}
       </div>
     </td>
+{{--     <td>
+      <a href="{{}}" class="btn btn-sm btn-warning"><i class="fas fa-sync-alt mr-1"></i>Validate</a>
+    </td> --}}
   </tr>
   @else
     @if(!empty($more))

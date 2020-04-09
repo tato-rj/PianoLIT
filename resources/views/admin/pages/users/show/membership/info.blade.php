@@ -13,7 +13,7 @@
 	</table>
 </div>
 <div class="col-6">
-	@if($user->membership->expired() || ! $user->membership->renews_at)
+	@if($user->membership->isExpired() || ! $user->membership->renews_at)
 		<div class="mb-3">
 			<form method="POST" action="{{route('admin.memberships.validate.user', $user->id)}}">
 				@csrf
