@@ -6,7 +6,7 @@
     </td>
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 10%">
       @if($membership->user()->exists())
-      <div class="text-truncate">{{$membership->user->full_name}}</div>
+      <div class="text-truncate"><a href="{{route('admin.users.show', $membership->user)}}" class="link-blue">{{$membership->user->full_name}}</a></div>
       @else
       <div class="text-truncate text-muted"><i>account deleted</i></div>
       @endif
