@@ -4,24 +4,34 @@ namespace Tests\Feature;
 
 use App\User;
 use Tests\AppTest;
+use App\Events\Memberships\NewTrial;
 use App\Services\Apple\Sandbox\Membership as AppleMembership;
+use App\Notifications\Memberships\NewTrialNotification;
 
 class MembershipTest extends AppTest
 {
     /** @test */
     public function a_user_can_subscribe()
     {
-        $membership = new AppleMembership;
-
         $user = create(User::class);
 
         $this->assertFalse($user->membership()->exists());
 
-        $this->postMembership($user, $membership);
+        $this->postMembership($user, new AppleMembership);
 
         $this->assertTrue($user->membership()->exists());
 
         $this->assertEquals('active', $user->getStatus());
+    }
+
+    /** @test */
+    public function admins_are_notified_when_a_user_becomes_a_member()
+    {
+        \Notification::fake();
+
+        $this->postMembership(create(User::class), new AppleMembership);
+
+        \Notification::assertSentTo($this->admin, NewTrialNotification::class);
     }
 
     /** @test */

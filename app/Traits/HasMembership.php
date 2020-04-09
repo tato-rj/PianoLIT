@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use App\Events\Memberships\NewTrial;
 use App\Services\Apple\Sandbox\Membership as FakeMembership;
 
 trait HasMembership
@@ -35,6 +36,8 @@ trait HasMembership
                 'validated_at' => now()
             ]);
         }
+
+        event(new NewTrial($this));
 
         return $record;
     }

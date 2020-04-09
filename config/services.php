@@ -56,6 +56,11 @@ return [
     'recaptcha' => [
         'key' => env('RECAPTCHA_KEY'),
         'secret' => env('RECAPTCHA_SECRET'),
+    ],
+
+    'googlecloud' => [
+        'videos' => 'https://storage.googleapis.com/pianolit-app/videos/',
+        'crashcourses' => 'https://storage.googleapis.com/pianolit-app/crashcourses/'
     ]
 
 ];

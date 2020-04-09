@@ -4,10 +4,6 @@ use App\Mail\Welcome;
 use App\Mail\Timeline\OnThisDay;
 use App\{Composer, Subscription};
 
-Route::get('welcome', function() {
-	return new Welcome;
-})->name('welcome');
-
 Route::prefix('birthday')->name('birthday.')->group(function() {
 
 	Route::get('', function () {
@@ -23,4 +19,5 @@ Route::prefix('birthday')->name('birthday.')->group(function() {
 
 	    return $email;
 	})->name('mail');
+	
 });

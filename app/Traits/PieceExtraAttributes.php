@@ -180,7 +180,7 @@ trait PieceExtraAttributes
             return null;
         
         foreach ($videos as $index => $video) {
-            $videos[$index]['video_url'] = $this->googleCloud . str_slug($this->composer->name) . '/' . $video['filename'] . '.mp4';
+            $videos[$index]['video_url'] = config('services.googlecloud.videos') . str_slug($this->composer->name) . '/' . $video['filename'] . '.mp4';
         }
 
         return $videos;

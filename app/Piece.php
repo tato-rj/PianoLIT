@@ -12,7 +12,6 @@ class Piece extends PianoLit
 {
     use PieceExtraAttributes, PieceStatus, Searchable;
     
-    protected $googleCloud = 'https://storage.googleapis.com/pianolit-app/videos/';
     protected $folder = 'pieces';
     protected $withCount = ['views', 'tags', 'favorites'];
     protected $casts = ['is_free' => 'boolean'];

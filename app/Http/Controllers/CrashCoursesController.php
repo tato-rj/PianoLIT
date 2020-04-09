@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 
 class CrashCoursesController extends Controller
 {
-    protected $googleCloud = 'https://storage.googleapis.com/pianolit-app/crashcourses/';
-
     /**
      * Display a listing of the resource.
      *
@@ -43,7 +41,7 @@ class CrashCoursesController extends Controller
     public function video(Request $request)
     {
         // revolutionary/lesson-1-01.mp4
-        $video = $this->googleCloud . $request->path;
+        $video = config('services.googlecloud.crashcourses') . $request->path;
 
         return view('crashcourses.video', compact('video'));
     }

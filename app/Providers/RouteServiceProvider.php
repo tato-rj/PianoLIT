@@ -65,7 +65,9 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::middleware(['web', 'log.web'])
              ->namespace($this->namespace)
-             ->group(base_path('routes/web.php'));
+             ->group(function() {
+                $this->getFolder('routes/web');
+             });
     }
 
     /**
@@ -129,7 +131,9 @@ class RouteServiceProvider extends ServiceProvider
              ->name('api.')
              ->middleware('api')
              ->namespace($this->namespace)
-             ->group(base_path('routes/api.php'));
+             ->group(function() {
+                $this->getFolder('routes/api');
+             });
     }
 
     /**
