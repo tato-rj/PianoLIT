@@ -71,9 +71,9 @@ class Infograph extends ShareableContent implements Merchandise
     public function scopeDatatable($query)
     {
         return datatable($query)->withDate()->withBlade([
-            'published' => view('admin.pages.infographs.toggles.published'),
-            'gift' => view('admin.pages.infographs.toggles.gift'),
-            'action' => view('admin.pages.infographs.actions')
+            'published' => view('admin.pages.infographics.toggles.published'),
+            'gift' => view('admin.pages.infographics.toggles.gift'),
+            'action' => view('admin.pages.infographics.actions')
         ])->make();
     }
 

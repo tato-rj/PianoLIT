@@ -7,6 +7,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @return(['url' => route('admin.infographs.index'), 'to' => 'view all infographics'])
 
 	<div class="row mb-5">
 		<div class="col-4">

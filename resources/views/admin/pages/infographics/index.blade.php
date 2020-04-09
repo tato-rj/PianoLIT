@@ -12,7 +12,7 @@
 
     <div class="row">
       <div class="col-12 mb-4">
-      @include('admin.pages.infographs.create')
+      @include('admin.pages.infographics.create')
       </div>
     </div>
 
@@ -23,7 +23,7 @@
 
 @include('admin.components.modals.delete')
 
-@include('admin.pages.infographs.preview')
+@include('admin.pages.infographics.preview')
 
 @endsection
 

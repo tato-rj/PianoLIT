@@ -95,7 +95,9 @@ class RouteServiceProvider extends ServiceProvider
              ->prefix('admin')
              ->name('admin.')
              ->namespace($this->namespace)
-             ->group(base_path('routes/admin.php'));
+             ->group(function() {
+                $this->getFolder('routes/admin');
+             });
     }
 
     /**
@@ -187,5 +189,12 @@ class RouteServiceProvider extends ServiceProvider
              ->name('redis.')
              ->namespace($this->namespace)
              ->group(base_path('routes/redis.php'));
+    }
+
+    public function getFolder($path)
+    {
+        foreach (dirToArray($path) as $route) {
+            require base_path($path . '/' . $route);
+        }
     }
 }

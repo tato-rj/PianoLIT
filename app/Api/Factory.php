@@ -33,7 +33,7 @@ abstract class Factory
 
     public function latest($title)
     {
-        $collection = Piece::with(['composer'])->latest()->take($this->limit)->get();
+        $collection = Piece::with(['composer'])->withVideos()->latest()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 

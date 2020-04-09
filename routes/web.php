@@ -85,11 +85,11 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 		Route::get('', 'ResourcesController@infographs')->name('index');
 
-		Route::get('load', 'InfographsController@load')->name('load');
+		Route::get('load', 'InfographicsController@load')->name('load');
 
-		Route::get('search', 'InfographsController@search')->name('search');
+		Route::get('search', 'InfographicsController@search')->name('search');
 
-		Route::get('{infograph}', 'InfographsController@show')->name('show');
+		Route::get('{infograph}', 'InfographicsController@show')->name('show');
 
 	});
 
@@ -168,9 +168,9 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 Route::get('gift', 'UsersController@gift')->name('gift');
 
-Route::get('infographs/{infograph}/download', 'InfographsController@download')->name('infographs.download')->middleware('auth');
+Route::get('infographs/{infograph}/download', 'InfographicsController@download')->name('infographs.download')->middleware('auth');
 
-Route::post('infographs/{infograph}/update-score', 'InfographsController@updateScore')->name('infographs.update-score');
+Route::post('infographs/{infograph}/update-score', 'InfographicsController@updateScore')->name('infographs.update-score');
 
 Route::get('terms-of-service', 'HomeController@terms')->name('terms');
 

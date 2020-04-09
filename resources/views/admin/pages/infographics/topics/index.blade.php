@@ -26,7 +26,7 @@
       </div>
       <div class="col-12">
         <div class="d-flex flex-wrap mb-2">
-          @each('admin.pages.infographs.topics.topic', $topics, 'topic')
+          @each('admin.pages.infographics.topics.topic', $topics, 'topic')
         </div>
       </div>
     </div>

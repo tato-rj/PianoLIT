@@ -1,5 +1,10 @@
 <?php
 
+function dirToArray($path)
+{
+	return array_slice(scandir(base_path($path)), 2);
+}
+
 function datatable($data)
 {
 	return new \App\Resources\DataTables\Builder($data);
