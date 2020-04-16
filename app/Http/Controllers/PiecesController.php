@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\{Piece, Composer, Tag, Api};
+use App\Piece;
 use Illuminate\Http\Request;
 
 class PiecesController extends Controller

@@ -166,7 +166,7 @@ class SubscriptionTest extends AppTest
 
         $this->signIn();
 
-        $this->delete(route('subscriptions.destroy', $subscription->email));
+        $this->delete(route('admin.subscriptions.destroy', $subscription->email));
 
         $this->assertDatabaseMissing('subscriptions', ['email' => $subscription->email]);
 

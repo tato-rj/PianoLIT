@@ -13,9 +13,9 @@ class PlaylistsController extends Controller
         $this->middleware('log.app');
     }
     
-    public function index($group)
+    public function index($group = null)
     {
-        return Playlist::journey()->sorted()->get();
+        return Playlist::byGroup($group)->sorted()->get();
     }
 
     public function show(Request $request, Playlist $playlist)

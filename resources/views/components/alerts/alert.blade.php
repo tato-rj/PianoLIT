@@ -1,8 +1,12 @@
-<div class="alert-container d-flex justify-content-center w-100 z-20" style="position: fixed; top: 24px; left: 0;">
-	<div class="alert alert-{{$alert}} alert-dismissible fade show" role="alert">
-		{{$message}}
+<div class="alert-container {{! empty($temporary) ? 'alert-temporary' : null}} d-flex justify-content-center w-100 alert-{{! empty($floating) ? $floating : null}}">
+	<div class="alert {{! empty($fullX) ? 'w-100' : null}} {{! empty($floating) ? 'm-0' : null}} alert-{{$color}} {{! empty($dismissible) ? 'alert-dismissible' : null}} fade show" role="alert">
+		
+		{!! $message !!}
+
+		@isset($dismissible)
 		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 			<span aria-hidden="true">&times;</span>
 		</button>
+		@endisset
 	</div>  
 </div>

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Subscription;
+use App\{Subscription, EmailList};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -28,8 +28,33 @@ class SubscriptionsController extends Controller
     	return back()->with('status', 'We subscribed or re-activated a total of ' . $count . ' ' . str_plural('email', $count) . '.');
     }
 
+    public function export()
+    {
+        if (! request()->has('type'))
+            abort(422, 'Please specify which format you need.');
+
+        $ids = json_decode(request('ids'));
+
+        if ($ids) {
+            $emails = Subscription::find($ids)->pluck('email')->toArray();
+        } elseif (request()->has('list_id')) {
+            $emails = EmailList::find(request('list_id'))->subscribers->pluck('email')->toArray();
+        } else {
+            $emails = Subscription::all()->pluck('email')->toArray();
+        }
+
+        return view('admin.pages.subscriptions.exports.txt', compact('emails'));
+    }
+    
     public function clean($emails)
     {
     	return explode(',', preg_replace('/\s+/', '', $emails));
+    }
+
+    public function destroy(Subscription $subscription)
+    {
+        $subscription->delete();
+
+        return redirect()->back()->with('status', 'The email has been removed.');
     }
 }

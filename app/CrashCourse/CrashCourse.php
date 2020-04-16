@@ -7,6 +7,7 @@ use App\Events\CrashCourses\CrashCourseSignUp;
 
 class CrashCourse extends ShareableContent
 {
+    protected $searchableColumns = ['title', 'description'];
 	protected $withCount = ['lessons', 'subscriptions'];
     
     protected static function boot()

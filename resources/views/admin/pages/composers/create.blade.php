@@ -21,7 +21,7 @@
   <div class="form-row form-group">
     <div class="col">
       <div class="custom-file">
-        <input type="file" class="custom-file-input" name="cover" id="customFile">
+        <input type="file" class="custom-file-input {{$errors->has('cover') ? 'is-invalid' : ''}}" name="cover" id="customFile">
         <label class="custom-file-label truncate" for="customFile">Cover image</label>
       </div>
     </div>

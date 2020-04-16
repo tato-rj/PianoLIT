@@ -6,6 +6,15 @@ jQuery.fn.showAfter = function(time) {
     }, time * 1000);
 };
 
+jQuery.fn.fadeAfter = function(time) {
+  let element = this;
+    setTimeout(function() {
+      element.fadeOut(function() {
+        $(this).remove();
+      });
+    }, time * 1000);
+};
+
 jQuery.fn.toggleCssBetween = function(style, options) {
 	let element = this;
       if (element.css(style) == options[0]) {
@@ -13,4 +22,10 @@ jQuery.fn.toggleCssBetween = function(style, options) {
       } else {
         element.css(style, options[0]);
       }
+};
+
+jQuery.fn.toggleSelect = function(classname) {
+  this.on('click', function() {
+    $(this).toggleClass(classname);  
+  });
 };

@@ -2,7 +2,7 @@
 
 Route::prefix('pieces')->name('pieces.')->group(function() {
 
-	Route::post('/views', 'Api\PiecesController@incrementViews')->name('increment-views'); // MOVE AWAY FROM HERE
+	Route::post('/views', 'Api\PiecesController@incrementViews')->name('increment-views');
 
 	Route::get('/find', 'Api\PiecesController@show')->name('find');
 

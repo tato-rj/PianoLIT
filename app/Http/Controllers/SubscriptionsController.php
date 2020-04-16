@@ -21,34 +21,6 @@ class SubscriptionsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    public function export()
-    {
-        if (! request()->has('type'))
-            abort(422, 'Please specify which format you need.');
-
-        $ids = json_decode(request('ids'));
-
-        if ($ids) {
-            $emails = Subscription::find($ids)->pluck('email')->toArray();
-        } elseif (request()->has('list_id')) {
-            $emails = EmailList::find(request('list_id'))->subscribers->pluck('email')->toArray();
-        } else {
-            $emails = Subscription::all()->pluck('email')->toArray();
-        }
-
-        return view('admin.pages.subscriptions.exports.txt', compact('emails'));
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -72,17 +44,6 @@ class SubscriptionsController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Subscription  $subscription
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Subscription $subscription)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Subscription  $subscription
@@ -98,18 +59,5 @@ class SubscriptionsController extends Controller
         $list->remove($subscription);
 
         return view('subscriptions.unsubscribed');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Subscription  $subscription
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Subscription $subscription)
-    {
-        $subscription->delete();
-
-        return redirect()->back()->with('status', 'The email has been removed.');
     }
 }

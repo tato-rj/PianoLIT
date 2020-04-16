@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\{Admin, User, Piece, Tag, Composer, Subscription, EmailList, Api};
+use App\{User, Piece, Composer, Subscription};
 use App\Quiz\{Quiz, Level, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Blog\Post;
@@ -14,8 +14,6 @@ class AdminsController extends Controller
 {
     /**
      * Display the home page.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function home()
     {
@@ -31,9 +29,12 @@ class AdminsController extends Controller
 
         $stats = (new Stats)->model(Subscription::class);
 
-        return view('admin.pages.home.index', compact('pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays'));
+        return view('admin.pages.home.index', compact(['pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays']));
     }
 
+    /**
+     * Show all admin notifications.
+     */
     public function notifications()
     {
         if (request()->ajax()) {
@@ -48,9 +49,7 @@ class AdminsController extends Controller
     }
 
     /**
-     * Display the blog page.
-     *
-     * @return \Illuminate\Http\Response
+     * Display the blog index page.
      */
     public function blog()
     {
@@ -61,9 +60,7 @@ class AdminsController extends Controller
     }
 
     /**
-     * Display the quiz page.
-     *
-     * @return \Illuminate\Http\Response
+     * Display the quiz index page.
      */
     public function quiz()
     {
@@ -75,6 +72,9 @@ class AdminsController extends Controller
         return view('admin.pages.quizzes.index', compact(['levels']));
     }
 
+    /**
+     * Display the quiz index page.
+     */
     public function quizTopics()
     {
         $topics = QuizTopic::all();
@@ -83,9 +83,7 @@ class AdminsController extends Controller
     }
 
     /**
-     * Display the subscriptions page.
-     *
-     * @return \Illuminate\Http\Response
+     * Display the subscriptions index page.
      */
     public function subscriptions()
     {

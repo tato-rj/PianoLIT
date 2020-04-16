@@ -110,11 +110,9 @@ class InfographicsController extends Controller
         return redirect()->back()->with('status', 'The infograph has been successfuly updated!');    
     }
 
-    public function updateStatus(Request $request, Infograph $infograph)
+    public function updateStatus(Infograph $infograph)
     {
-        $infograph->updateStatus($request->attribute);
-
-        return response()->json(['status' => 'The infograph has been updated.']);
+        return $this->updateStatusFor($infograph);
     }
 
     public function destroy(Infograph $infograph)

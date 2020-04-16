@@ -6,7 +6,15 @@ $(document).on('change', 'input.status-toggle',function() {
     url: $input.attr('data-url'),
     type: 'PATCH',
     success: function(response) {
-      console.log(response.status);
+      $('.alert-container').remove();
+
+      $('body').append(response);
+      
+      setTimeout(function() {
+        $('.alert-temporary').fadeOut(function() {
+          $(this).remove();
+        });
+      }, 2000);
       $input.closest('label').css('pointer-events', 'all');
     },
     error: function(xhr,status,error) {

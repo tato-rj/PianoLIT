@@ -1,0 +1,15 @@
+.notifications-count {
+  width: 16px; 
+  height: 16px; 
+  font-size: .58em; 
+  display: none;
+}
+.notifications-link.active i {
+  color: #38c172;
+}
+.notifications-link.active .notifications-count {
+  display: flex !important;
+}
+.notification-bell {
+  font-size: 1.16em;
+}

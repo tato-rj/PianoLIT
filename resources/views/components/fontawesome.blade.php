@@ -1,0 +1,1 @@
+<i class="fa{{$type ?? 's'}} fa-{{$icon}} text-{{$color ?? null}} fa-{{$size ?? null}} mr-{{$mr ?? 2}} ml-{{$ml ?? null}} {{$classes ?? null}}"></i>

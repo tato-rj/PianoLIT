@@ -1,24 +1,13 @@
 @extends('admin.layouts.app')
 
-@section('head')
-@endsection
-
 @section('content')
 
   <div class="content-wrapper">
     <div class="container-fluid mb-3">
-      
-      <div>
-        @foreach($birthdays as $composer)
-        @include('admin.pages.home.alerts.birthday')
-        @endforeach
-        @foreach($deathdays as $composer)
-        @include('admin.pages.home.alerts.deathday')
-        @endforeach
-      </div>
+
+      @include('admin.pages.home.onthisday')
 
       @manager
-      <!-- Icon Cards-->
       <div class="row mb-3">
         @include('admin.pages.home.card', [
           'color' => 'advanced',
@@ -71,10 +60,4 @@
       </div>
       @endmanager
     </div>
-@endsection
-
-@section('scripts')
-<script type="text/javascript">
-
-</script>
 @endsection

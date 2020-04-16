@@ -113,7 +113,7 @@ function class_str($class, $plural = false)
 	$str = ucwords(camel_str(str_replace('\\', '', substr($class, strrpos($class, '\\')))));
 	
 	if ($plural)
-		return str_plural($str, 2);
+		return str_plural($str, $plural);
 
 	return $str; 
 }

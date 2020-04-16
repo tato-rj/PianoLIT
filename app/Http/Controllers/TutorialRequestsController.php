@@ -3,32 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\{TutorialRequest, User};
-use App\Events\Tutorials\{NewRequest, RequestPublished};
+use App\Events\Tutorials\NewRequest;
 use Illuminate\Http\Request;
 
 class TutorialRequestsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function simulate(Request $request)
     {
-        if (request()->ajax())
-            return TutorialRequest::datatable();
+        if (production())
+            abort(403);
 
-        return view('admin.pages.requests.index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return $this->store($request);
     }
 
     public function store(Request $request)
@@ -53,80 +38,6 @@ class TutorialRequestsController extends Controller
 
         event(new NewRequest($tutorial));
         
-        return response()->json('Your request has been received, we will send you an email when the tutorial is ready.');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function simulate(Request $request)
-    {
-        if (production())
-            abort(403);
-
-        return $this->store($request);
-    }
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\TutorialRequest  $tutorialRequest
-     * @return \Illuminate\Http\Response
-     */
-    public function show(TutorialRequest $tutorialRequest)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\TutorialRequest  $tutorialRequest
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(TutorialRequest $tutorialRequest)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\TutorialRequest  $tutorialRequest
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, TutorialRequest $tutorialRequest)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\TutorialRequest  $tutorialRequest
-     * @return \Illuminate\Http\Response
-     */
-    public function publish(TutorialRequest $tutorialRequest)
-    {
-        $tutorialRequest->update(['published_at' => now()]);
-
-        event(new RequestPublished($tutorialRequest));
-
-        return back()->with('status', 'The request has been published!');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\TutorialRequest  $tutorialRequest
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(TutorialRequest $tutorialRequest)
-    {
-        //
+        return response()->json('Your request has been received, we\'ll start working on it right away and it will be published within a few days. You\'ll receive an email when it is ready.');
     }
 }

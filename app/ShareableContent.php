@@ -10,6 +10,7 @@ abstract class ShareableContent extends PianoLit
 {
 	use FindBySlug;	
 
+    protected $searchableColumns = ['title'];
     protected $thumbnailFolder = 'thumbnails';
 	protected $dates = ['published_at'];
 
@@ -96,8 +97,10 @@ abstract class ShareableContent extends PianoLit
         return $query->inRandomOrder()->published()->take($number);
     }
 
-    public function scopeSearch($query, array $columns, $input)
+    public function scopeSearch($query, $input)
     {
+        $columns = $this->searchableColumns;
+
         return $query->where(function($q) use ($columns, $input) {
             $q->where(array_shift($columns), 'LIKE', '%'.$input.'%');
             foreach ($columns as $column) {

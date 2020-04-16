@@ -64,11 +64,9 @@ class BlogController extends Controller
         return redirect()->back()->with('status', 'The post has been successfuly updated!');
     }
 
-    public function updateStatus(Request $request, Post $post)
+    public function updateStatus(Post $post)
     {
-        $post->updateStatus();
-
-        return response()->json(['status' => 'The post has been ' . $post->status . '.']);
+        return $this->updateStatusFor($post);
     }
 
     public function uploadImage(Request $request)

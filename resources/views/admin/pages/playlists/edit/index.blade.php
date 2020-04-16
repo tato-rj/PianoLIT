@@ -9,9 +9,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    	<div class="text-center mb-2">
-    		<a href="{{route('api.playlists.show', $playlist->id)}}" target="_blank" class="link-default"><small>See JSON response</small></a>
-    	</div>
+	    @return(['url' => route('admin.playlists.index'), 'to' => 'view all playlists'])
+
 	    <div class="row mb-4">
 	      <div class="col-12">
 			@include('admin.pages.playlists.edit.form')

@@ -4,9 +4,11 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::get('', 'Admin\AdminsController@subscriptions')->name('index');
 
-	Route::get('export', 'SubscriptionsController@export')->name('export');
+	Route::get('export', 'Admin\SubscriptionsController@export')->name('export');
 
 	Route::post('', 'Admin\SubscriptionsController@store')->name('store');
+
+	Route::delete('{subscription}', 'Admin\SubscriptionsController@destroy')->name('destroy');
 
 	Route::prefix('lists')->name('lists.')->group(function() {
 

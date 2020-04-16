@@ -1,3 +1,19 @@
+.alert-top {
+	position: fixed; 
+	top: 24px; 
+	left: 0; 
+	z-index: 100000;
+	padding: 0 12px;
+}
+
+.alert-bottom-right {
+	position: fixed; 
+	bottom: 24px; 
+	z-index: 100000;
+	padding: 0 12px;
+	justify-content: flex-end !important;
+}
+
 .table.table-sortable {
 	thead th {
 		cursor: pointer;
@@ -98,40 +114,18 @@ a:hover {
 	background: darken($brand-primary, 3);
 }
 
-.alert-container {
-	z-index: 10000;
-	position: fixed;
-	top: 1em;
-	left: 0;
-}
-
 .text-brand {
 	color: $brand-primary;
-}
-
-/* width */
-.custom-scroll::-webkit-scrollbar {
-    height: 6px;
-}
-
-/* Track */
-.custom-scroll::-webkit-scrollbar-track {
-    background: transparent; 
-}
- 
-/* Handle */
-.custom-scroll::-webkit-scrollbar-thumb {
-    background: #e5e7e9;
-    border-radius: 2px;
-}
-
-/* Handle on hover */
-.custom-scroll::-webkit-scrollbar-thumb:hover {
-    background: #e0dfdf; 
 }
 
 .list-style-none {
 	li {
 		list-style-type: none;
 	}
+}
+
+.btn-teal:disabled {
+  color: #fff !important;
+  background-color: #4dc0b5;
+  border-color: #4dc0b5;
 }

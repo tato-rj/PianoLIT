@@ -1,0 +1,24 @@
+.dragscroll {
+	cursor: grab;
+}
+
+.dragscroll-horizontal {
+	overflow-x: scroll;
+}
+
+.custom-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: transparent; 
+}
+ 
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #e5e7e9;
+    border-radius: 2px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #e0dfdf; 
+}

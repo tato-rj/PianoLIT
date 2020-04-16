@@ -284,18 +284,7 @@
 <script type="text/javascript" src="{{asset('js/vendor/jquery.ba-throttle-debounce.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/vendor/lookup.js')}}"></script>
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
-<script type="text/javascript">
-// $(document).on('click', '.youtube-to-mp3', function(event) {
-//   event.preventDefault();
-//   let $modal = $('#modal-youtube-to-mp3');
-//   let id = $(this).parent().siblings('input').val();
-//   if (id) {
-//     window.open("https://www.yt-download.org/@api/button/mp3/"+id, "_blank");
-//   } else {
-//     alert('You forgot to include the ID!');
-//   }
-// });
-</script>
+
 <script type="text/javascript">
   $('input[name="alerts[]"]').on('click', function() {
     let alerts = [];

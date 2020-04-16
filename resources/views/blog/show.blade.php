@@ -39,11 +39,8 @@ iframe {
 </style>
 <script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
 <script>
-    window.app = <?php echo json_encode([
-        'csrfToken' => csrf_token(),
-        'page_url' => url()->current(),
-        'page_id' => $post->slug
-    ]); ?>
+    window.app.page_url = <?php echo json_encode(url()->current()); ?>;
+    window.app.page_id = <?php echo json_encode($post->slug); ?>;
 </script>
 @endpush
 
@@ -73,7 +70,7 @@ iframe {
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
 				<div class="border-bottom mb-3 pb-3 text-center">
-					<p class="m-0 text-muted">Want a heads up when a new story comes out? <span class="text-blue cursor-pointer btn-subscribe">Subscribe here</span></p>
+					<p class="m-0 text-muted">Want a heads up when a new story comes out? <span class="text-blue cursor-pointer show-overlay" data-target="#subscribe-overlay">Subscribe here</span></p>
 				</div>
 			</div>
 			<div id="blog-content" class="blog-font">

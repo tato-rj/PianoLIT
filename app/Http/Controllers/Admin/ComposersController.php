@@ -112,7 +112,6 @@ class ComposersController extends Controller
         ]);
 
         if ($request->hasFile('cover')) {
-
             \Storage::disk('public')->delete($composer->cover_path);
             
             $composer->update(['cover_path' => $request->file('cover')->store('app/composers', 'public')]);

@@ -6,6 +6,7 @@ use App\{ShareableContent, Admin};
 
 class Post extends ShareableContent
 {
+    protected $searchableColumns = ['title', 'content'];
     protected $folder = 'blog';
     protected $report_by = 'title';
 

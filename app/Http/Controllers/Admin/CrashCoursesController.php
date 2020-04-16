@@ -86,11 +86,9 @@ class CrashCoursesController extends Controller
         return redirect()->back()->with('status', 'The course has been successfuly updated!');
     }
 
-    public function updateStatus(Request $request, CrashCourse $crashcourse)
+    public function updateStatus(CrashCourse $crashcourse)
     {
-        $crashcourse->updateStatus();
-
-        return response()->json(['status' => 'The Crash Course has been ' . $crashcourse->status . '.']);
+        return $this->updateStatusFor($crashcourse);
     }
 
     public function destroy(CrashCourse $crashcourse)

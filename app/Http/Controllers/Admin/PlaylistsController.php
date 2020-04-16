@@ -15,9 +15,6 @@ class PlaylistsController extends Controller
      */
     public function index()
     {
-        if (request()->ajax())
-            return Playlist::sorted()->datatable();
-
         $playlists = Playlist::sorted()->get();
 
         return view('admin.pages.playlists.index', compact('playlists'));
@@ -45,7 +42,8 @@ class PlaylistsController extends Controller
             'creator_id' => auth()->user()->id,
             'name' => $request->name,
             'subtitle' => $request->subtitle,
-            'group' => strtolower($request->group),
+            'cover_path' => $request->hasFile('cover') ? $request->file('cover')->store('app/playlists', 'public') : null,
+            'group' => $request->group ?? null,
             'description' => $request->description
         ]);
 
@@ -89,7 +87,7 @@ class PlaylistsController extends Controller
         $playlist->update([
             'name' => $request->name,
             'subtitle' => $request->subtitle,
-            'group' => strtolower($request->group),
+            'group' => $request->group ?? null,
             'description' => $request->description
         ]);
 
@@ -99,6 +97,12 @@ class PlaylistsController extends Controller
             foreach ($request->pieces as $order => $piece) {
                 $playlist->pieces()->attach($piece, ['order' => $order]);
             }
+        }
+
+        if ($request->hasFile('cover')) {
+            \Storage::disk('public')->delete($playlist->cover_path);
+            
+            $playlist->update(['cover_path' => $request->file('cover')->store('app/playlists', 'public')]);
         }
 
         return redirect()->back()->with('status', 'The playlist has been successfully updated');

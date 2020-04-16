@@ -17,9 +17,3 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 	Route::post('/unsubscribe', 'SubscriptionsController@unsubscribe')->name('unsubscribe'); // MOVE AWAY FROM HERE
 
 });
-
-Route::prefix('blog')->name('blog.')->group(function() {
-
-	Route::get('/search', 'PostsController@search')->name('search'); // MOVE AWAY FROM HERE
-
-});

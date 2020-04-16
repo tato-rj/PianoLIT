@@ -8,6 +8,7 @@ class Playlist extends PianoLit
 {
     use Sortable;
     
+    protected $appends = ['cover_image'];
     protected $withCount = ['pieces'];
 
     public static function boot()
@@ -16,6 +17,7 @@ class Playlist extends PianoLit
 
         self::deleting(function($playlist) {
             $playlist->pieces()->detach();
+            \Storage::disk('public')->delete($playlist->cover_path);
         });
     }
 
@@ -29,20 +31,18 @@ class Playlist extends PianoLit
         return $this->belongsTo(Admin::class);
     }
 
-    public function scopeJourney($query)
+    public function getCoverImageAttribute()
     {
-        return $query->where('group', 'journey');        
+        return storage($this->cover_path);
+    }
+
+    public function scopeByGroup($query, $group)
+    {
+        return $query->where('group', $group);        
     }
     
 	public function scopeFoundation($query)
 	{
 		return $query->whereIn('name', ['Basic 1', 'Basic 2', 'Basic 3']);
 	}
-
-    public function scopeDatatable($query)
-    {
-        return datatable($query)->withDate()->withBlade([
-            'actions' => view('admin.pages.playlists.table.actions')
-        ])->make();
-    }
 }

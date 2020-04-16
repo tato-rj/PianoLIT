@@ -16,6 +16,10 @@ require('./components/modals');
 require('./components/tables');
 require('./components/toggle');
 require('./components/forms');
+require('./components/triggers');
+require('./components/audio');
+
+require('./startup');
 
 $.ajaxSetup({
     headers: {

@@ -10,6 +10,7 @@ class Quiz extends ShareableContent
 {
     use Feedback, Filterable;
 
+    protected $searchableColumns = ['title', 'description'];
     protected $folder = 'quiz';
     protected $withCount = ['results'];
     protected $appends = ['questions'];

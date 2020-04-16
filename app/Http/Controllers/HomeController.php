@@ -21,7 +21,7 @@ class HomeController extends Controller
         $testimonials = testimonials();
         shuffle($testimonials);
 
-        return view('welcome.index', compact(['latest', 'tags', 'testimonials']));
+        return view('home.index', compact(['latest', 'tags', 'testimonials']));
     }
 
     public function loadPieces(Request $request)

@@ -2,12 +2,12 @@
 
 Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function() {
 
-	Route::get('', 'TutorialRequestsController@index')->name('index');
+	Route::get('', 'Admin\TutorialRequestsController@index')->name('index');
 
 	Route::post('simulate', 'TutorialRequestsController@simulate')->name('simulate');
 	
-	Route::get('{tutorialRequest}', 'TutorialRequestsController@show')->name('show');
+	Route::get('{tutorialRequest}', 'Admin\TutorialRequestsController@show')->name('show');
 
-	Route::patch('{tutorialRequest}/publish', 'TutorialRequestsController@publish')->name('publish');
+	Route::patch('{tutorialRequest}/publish', 'Admin\TutorialRequestsController@publish')->name('publish');
 
 });

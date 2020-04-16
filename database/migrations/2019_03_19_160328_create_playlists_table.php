@@ -17,6 +17,7 @@ class CreatePlaylistsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedInteger('creator_id');
             $table->string('group')->nullable();
+            $table->string('cover_path')->nullable();
             $table->string('name');
             $table->string('subtitle');
             $table->string('description');

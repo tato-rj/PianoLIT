@@ -117,7 +117,13 @@
         'type' => 'GET', 
         'route' => route('api.playlists.index', ['group' => 'journey']), 
         'args' => [],
-        'title' => 'View all playlists'])
+        'title' => 'View follow a path playlists'])
+
+      @include('admin.pages.api.endpoints.card', [
+        'type' => 'GET', 
+        'route' => route('api.playlists.index'), 
+        'args' => [],
+        'title' => 'View general playlists'])
 
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 

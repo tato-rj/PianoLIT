@@ -18,8 +18,6 @@ Route::prefix('users')->name('users.')->group(function() {
 
 		Route::post('', 'TutorialRequestsController@store')->name('store');
 
-		Route::delete('cancel', 'TutorialRequestsController@destroy')->name('destroy'); // DO WE NEED THIS?
-
 	});
 
 	Route::post('', 'Auth\RegisterController@register')->name('store');

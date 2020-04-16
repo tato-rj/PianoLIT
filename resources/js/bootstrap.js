@@ -5,6 +5,7 @@ window.moment = require('moment');
 window.Calendar = require('fullcalendar');
 window.Trix = require('trix');
 window.Cropper = require('cropperjs');
+window.axios = require('axios').default;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
