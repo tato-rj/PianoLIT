@@ -11,7 +11,7 @@ class ToolsController extends Controller
 {
     public function chordFinder()
     {
-		return view('tools.chords.index');
+		return view('tools.chord-finder.index');
     }
 
     public function analyseChord()
@@ -23,14 +23,14 @@ class ToolsController extends Controller
 		if (request()->has('dev'))
 			return $request;
 		
-		return view('tools.chords.results.index', compact(['request', 'json']))->render();
+		return view('tools.chord-finder.results.index', compact(['request', 'json']))->render();
     }
 
     public function circleOfFifths()
     {
 		$keys = new CircleOfFifths;
 
-		return view('tools.circle.index', compact('keys'));
+		return view('tools.circle-of-fifths.index', compact('keys'));
     }
 
     public function scales()

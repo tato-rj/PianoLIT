@@ -20,7 +20,7 @@ formatBytes = function(bytes,decimals) {
    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-const ucfirst = (s) => {
-  if (typeof s !== 'string') return ''
-  return s.charAt(0).toUpperCase() + s.slice(1)
+ucfirst = function(str) {
+  if (typeof str !== 'string') return ''
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }

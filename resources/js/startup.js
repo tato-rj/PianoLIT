@@ -20,3 +20,7 @@ $(window).bind('load', function() {
         $(this).remove();
     });
 });
+
+$(document).on('click', '#reload', function() {
+    window.location = window.location.href.split("?")[0];
+});

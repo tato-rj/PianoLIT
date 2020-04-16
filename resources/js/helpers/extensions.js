@@ -2,6 +2,14 @@ jQuery.fn.cleanVal = function() {
 	return this.val().replace(/\D/g,'');
 };
 
+jQuery.fn.disable = function() {
+    return this.attr('disabled', true);
+};
+
+jQuery.fn.enable = function() {
+    return this.attr('disabled', false);
+};
+
 jQuery.fn.toggleAttr = function(attr) {
 	return this.each(function() {
 		var $this = $(this);

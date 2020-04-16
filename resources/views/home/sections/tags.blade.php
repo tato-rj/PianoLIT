@@ -16,12 +16,7 @@
 						    <button 
 						    	data-name="{{$tag->name}}"
 						    	data-id="{{$tag->id}}"
-						      class="tag btn btn-light badge-pill m-2 px-3 py-1 text-nowrap"
-						      style="-moz-user-select: none; 
-						          -webkit-user-select: none; 
-						               -ms-user-select:none; 
-						                   user-select:none;
-						                -o-user-select:none;">
+						      class="tag btn btn-light badge-pill m-2 px-3 py-1 text-nowrap">
 						      {{$tag->name}}
 						    </button>
 							@endforeach
@@ -34,7 +29,7 @@
 
 		<div class="col-12">
 			<h5 class="ml-2 mb-3" id="pieces-label">Latest pieces</h5>
-			<div class="row" id="pieces-container">
+			<div class="row" id="pieces-container" data-url="{{route('load-pieces')}}">
 				@include('components.pieces.display', ['pieces' => $latest])
 			</div>
 		</div>
