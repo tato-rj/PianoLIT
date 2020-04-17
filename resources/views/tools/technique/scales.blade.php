@@ -10,84 +10,6 @@
 	]])
 
 @push('header')
-<style type="text/css">
-.fadeInUp {
-	animation-duration: .2s;
-}
-
-@-webkit-keyframes heartBeat {
-  0% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-
-  14% {
-    -webkit-transform: scale(1.3);
-    transform: scale(1.3);
-  }
-
-  28% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-
-  42% {
-    -webkit-transform: scale(1.3);
-    transform: scale(1.3);
-  }
-
-  70% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-}
-
-@keyframes heartBeat {
-  0% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-
-  14% {
-    -webkit-transform: scale(1.3);
-    transform: scale(1.3);
-  }
-
-  28% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-
-  42% {
-    -webkit-transform: scale(1.3);
-    transform: scale(1.3);
-  }
-
-  70% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-}
-
-.heartBeat {
-  -webkit-animation-name: heartBeat;
-  animation-name: heartBeat;
-  -webkit-animation-duration: .75s;
-  animation-duration: .75s;
-  -webkit-animation-timing-function: ease-in-out;
-  animation-timing-function: ease-in-out;
-}
-
-
-#pills-tab .nav-link {
-	color: #b8c2cc;
-}
-
-#pills-tab .active {
-	color: #343a40!important;
-	font-weight: bold;
-}
-</style>
 @endpush
 
 @section('content')
@@ -118,13 +40,15 @@
 </div>
 
 @include('tools.chord-finder.error')
-@include('components.overlays.subscribe.crashcourse')
+@include('components.overlays.subscribe.model-2')
 @endsection
 
 @push('scripts')
 @include('components.addthis')
-@include('tools.technique.js')
+<script type="text/javascript" src="{{mix('js/tone.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/components/play-keyboard.js')}}"></script>
 <script type="text/javascript">
-$("#crashcourse-overlay").showAfter(4);
+$("#gift-overlay").showAfter(4);
 </script>
 @endpush

@@ -1,12 +1,3 @@
-<script type="text/javascript" src="{{mix('js/tone.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
-<script type="text/javascript">
-$(document).on('click', '#reload', function() {
-    window.location = window.location.href.split("?")[0];
-});
-
-</script>
-<script type="text/javascript">
 //////////////////////
 // GLOBAL VARIABLES //
 //////////////////////
@@ -213,11 +204,12 @@ function submit(url) {
 	let key = getInput();
 	console.log('Sending: ' + key);
 
-	$.get(url, {key: key}, function(response) {
-		$('#key-container').html(response);
+	axios.get(url, {params: {key: key}
+    }).then(function(response) {
+		$('#key-container').html(response.data);
         $('html,body').scrollTop(0);
-	}).fail(function(response) {
-        showError(response.responseJSON.message);
+    }).fail(function(error) {
+        showError(error.response.data.message);
 	});
 }
 
@@ -269,9 +261,3 @@ function missingNote() {
 function missingType() {
 	return ! $('#key-type-options .btn-teal').length;
 }
-
-const ucfirst = (s) => {
-  if (typeof s !== 'string') return ''
-  return s.charAt(0).toUpperCase() + s.slice(1)
-}
-</script>

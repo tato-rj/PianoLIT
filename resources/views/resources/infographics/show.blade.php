@@ -10,14 +10,6 @@
 	]])
 
 @push('header')
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<script>
-function onSubmit(token) {
- document.getElementById("register-form").submit();
-}
-</script>
-<style type="text/css">
-</style>
 @endpush
 
 @section('content')
@@ -78,7 +70,7 @@ function onSubmit(token) {
 					<h5 class="mb-4">More like this</h5>
 					<div class="card-columns">
 						@foreach($related as $infograph)
-						@include('resources.infographs.card')
+						@include('resources.infographics.card')
 						@endforeach
 					</div>
 				</div>

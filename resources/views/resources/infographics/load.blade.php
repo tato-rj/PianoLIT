@@ -1,3 +1,3 @@
 @foreach($infographs as $infograph)
-@include('resources.infographs.card')
+@include('resources.infographics.card')
 @endforeach

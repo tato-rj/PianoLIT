@@ -14,7 +14,7 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 	Route::prefix('infographs')->name('infographs.')->group(function() {
 
-		Route::get('', 'ResourcesController@infographs')->name('index');
+		Route::get('', 'InfographicsController@index')->name('index');
 
 		Route::get('load', 'InfographicsController@load')->name('load');
 

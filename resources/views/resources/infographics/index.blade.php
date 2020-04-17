@@ -47,14 +47,12 @@
 	</div>
 
 	<div id="infographics-container" class="card-columns mb-4">
-		@include('resources.infographs.load')
+		@include('resources.infographics.load')
 	</div>
 
   	@pagination(['collection' => $infographs])
 </div>
 
-
-@include('components.overlays.subscribe.crashcourse')
 @endsection
 
 @push('scripts')
@@ -171,6 +169,6 @@ $('input#search-infograph').on('keyup', function() {
 	}
 });
 
-$("#crashcourse-overlay").showAfter(5);
+$("#gift-overlay").showAfter(5);
 </script>
 @endpush

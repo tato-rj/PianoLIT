@@ -10,15 +10,6 @@
 	]])
 
 @push('header')
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<script>
-function onSubmit(token) {
- document.getElementById("register-form").submit();
-}
-</script>
-<style type="text/css">
-
-</style>
 @endpush
 
 @section('content')
@@ -69,5 +60,4 @@ function onSubmit(token) {
 
 @push('scripts')
 @include('components.addthis')
-
 @endpush

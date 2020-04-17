@@ -10,20 +10,6 @@
 	]])
 
 @push('header')
-<style type="text/css">
-.fadeInUp {
-	animation-duration: .2s;
-}
-
-#pills-tab .nav-link {
-	color: #b8c2cc;
-}
-
-#pills-tab .active {
-	color: #343a40!important;
-	font-weight: bold;
-}
-</style>
 @endpush
 
 @section('content')
@@ -54,13 +40,15 @@
 </div>
 
 @include('tools.chord-finder.error')
-@include('components.overlays.subscribe.crashcourse')
+@include('components.overlays.subscribe.model-2')
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
-$("#crashcourse-overlay").showAfter(3);
-</script>
 @include('components.addthis')
-@include('tools.technique.js')
+<script type="text/javascript" src="{{mix('js/tone.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/components/play-keyboard.js')}}"></script>
+<script type="text/javascript">
+$("#gift-overlay").showAfter(4);
+</script>
 @endpush

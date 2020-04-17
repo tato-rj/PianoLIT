@@ -9,14 +9,6 @@ use App\Infograph\Topic as InfographTopic;
 
 class ResourcesController extends Controller
 {
-    public function infographs()
-    {
-        $infographs = Infograph::published()->latest()->paginate(12);
-        $topics = InfographTopic::has('infographs', '>', 0)->ordered()->get();
-
-		return view('resources.infographs.index', compact(['infographs', 'topics']));
-    }
-
     public function podcasts()
     {
         return view('resources.podcasts.index');

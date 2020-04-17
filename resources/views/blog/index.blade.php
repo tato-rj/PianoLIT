@@ -20,12 +20,12 @@
   @pagination(['collection' => $posts])
 </section>
 
-@include('components.overlays.subscribe.crashcourse')
+@include('components.overlays.subscribe.model-2')
 @endsection
 
 @push('scripts')
 <script type="text/javascript">
-$("#crashcourse-overlay").showAfter(3);
+$("#gift-overlay").showAfter(3);
 
 $('.card-title').each(function() {
   $clamp(this, {clamp: 2});
