@@ -53,7 +53,7 @@
 	@include('components.sections.youtube')
 </div>
 
-@include('tools.chords.error')
+@include('tools.chord-finder.error')
 @include('components.overlays.subscribe.crashcourse')
 @endsection
 
