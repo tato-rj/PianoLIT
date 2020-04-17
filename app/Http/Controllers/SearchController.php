@@ -28,7 +28,7 @@ class SearchController extends Controller
             $query = $searchable::published()->search($request->search);
 
             if ($query->count())
-                $results->push(['model' => strtolower(class_basename($searchable)), 'data' => $query->get()]);
+                $results->push(['model' => class_basename($searchable), 'data' => $query->get()]);
         }
 
         return view('components.search.results.global.index', compact('results'))->render();   
