@@ -1,0 +1,9 @@
+.card-overlay {
+	background: rgb(0,0,0);
+	background: -moz-linear-gradient(0deg, rgba(0,0,0,0.7514356084230567) 0%, rgba(0,212,255,0) 87%);
+	background: -webkit-linear-gradient(0deg, rgba(0,0,0,0.7514356084230567) 0%, rgba(0,212,255,0) 87%);
+	background: linear-gradient(0deg, rgba(0,0,0,0.7514356084230567) 0%, rgba(0,212,255,0) 87%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#00d4ff",GradientType=1);
+	bottom: 0; 
+	right: 0;
+}

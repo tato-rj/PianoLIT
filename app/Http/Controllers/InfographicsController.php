@@ -32,7 +32,7 @@ class InfographicsController extends Controller
 
     public function search(Request $request)
     {
-        $infographs = Infograph::search(['name', 'description'], $request->search)->get();
+        $infographs = Infograph::search($request->search)->get();
 
         return view('resources.infographics.load', compact('infographs'))->render();
     }

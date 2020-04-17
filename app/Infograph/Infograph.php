@@ -7,6 +7,7 @@ use App\Contracts\Merchandise;
 
 class Infograph extends ShareableContent implements Merchandise
 {
+    protected $searchableColumns = ['name', 'description'];
     protected $folder = 'infograph';
     protected $report_by = 'name';
 
