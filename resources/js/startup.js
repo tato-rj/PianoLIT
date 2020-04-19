@@ -13,6 +13,10 @@ $(document).ready(function() {
       if ($(this).find('.is-invalid')[0])
         $(this).modal('show');
     });
+
+    $('.btn-subscribe').on('click', function() {
+        $("#subscribe-overlay").fadeIn('fast');
+    });
 });
 
 $(window).bind('load', function() {

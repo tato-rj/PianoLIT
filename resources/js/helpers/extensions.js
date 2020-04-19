@@ -1,3 +1,32 @@
+jQuery.fn.filterableBy = function(elem) {
+    let $container = this;
+    let $cards = $(this.attr('data-cards'));
+
+    $(elem).on('keyup', function() {
+        let needle = $(this).val().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        $cards.unmark();
+
+        if (needle.length > 2) {
+            console.log('Find elements with: '+needle);
+            $cards.each(function() {
+                let haystack = $(this).text().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                if (haystack.includes(needle)) {
+                    $(this).show();
+                    $(this).mark(needle);
+                } else {
+                    $(this).hide();
+                }
+            });
+        } else {
+            console.log('Show all');
+            $cards.show();
+        }
+    });
+
+    return this;
+};
+
 jQuery.fn.cleanVal = function() {
 	return this.val().replace(/\D/g,'');
 };
@@ -21,6 +50,12 @@ jQuery.fn.textToArray = function() {
 return this.map(function(){
      return $.trim($(this).text());
   }).get();
+};
+
+jQuery.fn.clamp = function(lines) {
+    return this.each(function() {
+      $clamp(this, {clamp: lines});
+    });
 };
 
 jQuery.fn.attrToArray = function(attr) {

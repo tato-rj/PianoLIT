@@ -46,21 +46,11 @@
 @push('scripts')
 <script type="text/javascript">
 $('#filters button').on('click', function() {
-  let href = $(this).attr('data-href');
-  
-  if ($(this).hasClass('btn-teal')) {
-    window.location = window.location.href.split("?")[0];
-  } else {
-    window.location = href;
-  }
+  return $(this).hasClass('btn-teal') ? 
+    resetParams() : 
+    goTo($(this).attr('data-href'));
 });
-
-$('.card-title').each(function() {
-  $clamp(this, {clamp: 2});
-});
-
-$('.card-text').each(function() {
-  $clamp(this, {clamp: 4});
-});
+$('.card-title').clamp(2);
+$('.card-text').clamp(4);
 </script>
 @endpush

@@ -21,6 +21,7 @@ class CreatePlaylistsTable extends Migration
             $table->string('name');
             $table->string('subtitle');
             $table->string('description');
+            $table->string('featured')->nullable();
             $table->unsignedInteger('order')->default(0);
             $table->timestamps();
         });

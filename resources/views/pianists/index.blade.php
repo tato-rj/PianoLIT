@@ -10,20 +10,10 @@
 		]])
 		
 @push('header')
-<style type="text/css">
-.mark, mark {
-	padding: 0!important;
-}
-
-.fadeInUp {
-	animation-duration: .2s;
-}
-
-</style>
 @endpush
 
 @section('content')
-@include('resources.pianists.powered')
+@include('pianists.powered')
 
 @include('components.title', [
 	'title' => 'Great Pianists', 
@@ -38,10 +28,8 @@
 			</div>
 		</div>
 	</div>
-	<div class="row" id="pianists">		
-		@foreach($pianists as $pianist)
-		@include('resources.pianists.card')
-		@endforeach
+	<div class="row" id="pianists" data-cards=".pianist-card">
+		@each('pianists.card', $pianists, 'pianist')
 	</div>
 </div>
 
@@ -54,32 +42,7 @@
 
 @push('scripts')
 @include('components.addthis')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.es6.min.js"></script>
 <script type="text/javascript">
-var marker = new Mark('div#pianists');
-
-$('input#search-pianist').on('keyup', function() {
-	let val = $(this).val().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-	$('.pianist-card').unmark();
-
-	if (val.length > 2) {
-		console.log('Find names with: '+val);
-		$('.name').each(function() {
-			let $element = $(this);
-			let name = $element.text().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-			let country = $element.next('p').text().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-			if (name.includes(val) || country.includes(val)) {
-				$element.parent().parent().show();
-				$element.parent().mark(val);
-			} else {
-				$element.parent().parent().hide();
-			}
-		});
-	} else {
-		console.log('Show all');
-		$('#pianists .pianist-card').show();
-	}
-});
+$('div#pianists').filterableBy('input#search-pianist');
 </script>
 @endpush

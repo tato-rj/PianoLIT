@@ -9,27 +9,12 @@
 	]])
 
 @push('header')
-<style type="text/css">
-.blog-font p, .blog-font h4, .blog-font iframe {
-	margin-bottom: 1.75rem;
-}
-.question-overlay {
-	width: 100%; 
-	height: 100%; 
-	position: absolute; 
-	top: 0; 
-	left: 0; 
-	display: none; 
-	background: rgba(255,255,255,0.5);
-    z-index: 100;
-}
-</style>
 <script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
 @endpush
 
 @section('content')
 @include('components.progressbar')
-<section id="quiz" class="container mb-5">
+<section id="quiz" data-url="{{route('quizzes.feedback', $quiz->slug)}}" class="container mb-5">
 	<div class="row mb-6" id="main-content">
 		<div class="col-lg-8 col-12 mx-auto">
 			@if(! empty($preview))
@@ -97,75 +82,8 @@
 
 @push('scripts')
 @include('components.addthis')
+<script type="text/javascript" src="{{asset('js/views/quizzes.js')}}"></script>
 <script type="text/javascript">
-
-$('.card-title').each(function() {
-  $clamp(this, {clamp: 2});
-});
-
-$('.btn-subscribe').on('click', function() {
-	$("#subscribe-overlay").fadeIn('fast');
-});
-</script>
-<script type="text/javascript">
-var answers = [];
-
-$('#start-quiz').click(function() {
-	$(this).parent().remove();
-	$('#quiz-content').show();
-	showScrollProgressBar($('#main-content'));
-});
-
-$('.quiz-answers button').on('click', function() {
-	$button = $(this);
-	$parent = $button.parent();
-	
-	stopAll();
-	
-	$($button.attr('data-overlay')).show();
-
-	$button.addClass('selected');
-	
-	getAnswers();
-
-	console.log(answers);
-
-	$parent.find('button[correct]').toggleClass('list-group-item-action alert-green').find('.fas').show();
-
-	if (! $button.is('[correct]'))
-		$button.toggleClass('list-group-item-action alert-red').find('.fas').show();
-
-	if (! answers.includes(null))
-		submit();
-});
-
-function getAnswers()
-{
-	answers = [];
-	
-	$('.quiz-answers').each(function(index) {
-		selection = $(this).find('button.selected').index();
-		answers.push(selection >= 0 ? selection : null);
-	});
-}
-
-function submit() {
-	$.get('{{route('quizzes.feedback', $quiz->slug)}}', {answers: answers}, function(response) {
-		$('#game-feedback').html(response);
-		$('#game-results').modal('show');
-	}).fail(function(response) {
-        console.log(response);
-	});
-}
-
-function stopAll() {
-    var media = document.getElementsByClassName('audio'),
-        i = media.length;
-
-    while (i--) {
-        media[i].pause();
-        media[i].currentTime = 0;
-    }
-}
+$('.card-title').clamp(2);
 </script>
 @endpush

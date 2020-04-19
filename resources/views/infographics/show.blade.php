@@ -70,7 +70,7 @@
 					<h5 class="mb-4">More like this</h5>
 					<div class="card-columns">
 						@foreach($related as $infograph)
-						@include('resources.infographics.card')
+						@include('infographics.card')
 						@endforeach
 					</div>
 				</div>

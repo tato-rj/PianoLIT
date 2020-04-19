@@ -8,7 +8,7 @@ class Playlist extends PianoLit
 {
     use Sortable;
     
-    protected $appends = ['cover_image'];
+    protected $appends = ['cover_image', 'is_featured'];
     protected $withCount = ['pieces'];
 
     public static function boot()
@@ -29,6 +29,16 @@ class Playlist extends PianoLit
     public function creator()
     {
         return $this->belongsTo(Admin::class);
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->whereNotNull('featured');
+    }
+
+    public function getIsFeaturedAttribute()
+    {
+        return ! is_null($this->featured);
     }
 
     public function getCoverImageAttribute()

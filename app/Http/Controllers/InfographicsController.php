@@ -20,28 +20,28 @@ class InfographicsController extends Controller
         $infographs = Infograph::published()->latest()->paginate(12);
         $topics = Topic::has('infographs', '>', 0)->ordered()->get();
 
-        return view('resources.infographics.index', compact(['infographs', 'topics']));        
+        return view('infographics.index', compact(['infographs', 'topics']));        
     }
 
     public function load(Request $request)
     {
         $infographs = Topic::bySlug($request->topic)->infographs()->latest()->get();
 
-        return view('resources.infographics.load', compact('infographs'))->render();
+        return view('infographics.load', compact('infographs'))->render();
     }
 
     public function search(Request $request)
     {
         $infographs = Infograph::search($request->search)->get();
 
-        return view('resources.infographics.load', compact('infographs'))->render();
+        return view('infographics.load', compact('infographs'))->render();
     }
 
     public function show(Infograph $infograph)
     {
         $related = $infograph->related();
 
-        return view('resources.infographics.show', compact(['infograph', 'related']));
+        return view('infographics.show', compact(['infograph', 'related']));
     }
 
     public function download(Infograph $infograph)

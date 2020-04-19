@@ -4,13 +4,13 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 	Route::prefix('great-pianists')->name('pianists.')->group(function() {
 
-		Route::get('', 'ResourcesController@pianists')->name('index');
+		Route::get('', 'PianistsController@index')->name('index');
 
-		Route::get('{pianist}', 'ResourcesController@pianist')->name('show');
+		Route::get('{pianist}', 'PianistsController@show')->name('show');
 
 	});
 
-	Route::get('timeline', 'ResourcesController@timeline')->name('timeline');
+	Route::get('timeline', 'TimelineController@index')->name('timeline');
 
 	Route::prefix('infographs')->name('infographs.')->group(function() {
 
@@ -24,5 +24,4 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 	});
 
-	Route::get('top-podcasts', 'ResourcesController@podcasts')->name('podcasts');
 });

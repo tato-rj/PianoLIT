@@ -25,3 +25,7 @@ insertParam = function(key, value)
 goTo = function(url) {
     window.location.href = url;
 }
+
+resetParams = function() {
+    window.location = window.location.href.split("?")[0];
+}

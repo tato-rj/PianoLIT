@@ -7,7 +7,7 @@
   </div>
   <div id="timeline-{{$decade}}" class="collapse mb-2" data-parent>
     @foreach($events as $event)
-    @include('resources/timeline/event')
+    @include('timeline.event')
     @endforeach
   </div>
 </div>

@@ -9,34 +9,6 @@
 	]])
 
 @push('header')
-<style type="text/css">
-p img {
-	max-width: 100%;
-	height: auto;
-}
-
-.blog-font p, .blog-font h4, .blog-font iframe {
-	margin-bottom: 1.75rem;
-}
-
-iframe {
-	display: block;
-    margin: 0 auto;
-}
-
-.mce-excerpt {
-	margin: 0 3rem;
-	font-style: italic;
-}
-.vglnk {
-    margin-left: 3px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	width: 100%;
-	display: block;
-}
-</style>
 <script async defer data-pin-hover="true" data-pin-tall="true" src="//assets.pinterest.com/js/pinit.js"></script>
 <script>
     window.app.page_url = <?php echo json_encode(url()->current()); ?>;
@@ -129,6 +101,7 @@ iframe {
 
 @push('scripts')
 @include('components.addthis')
+<script type="text/javascript" src="{{asset('js/components/disqus.js')}}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	showScrollProgressBar($('#main-content'));
@@ -139,27 +112,8 @@ $(document).on('click', "button#gift", function() {
 	$button.find('i').removeClass('animated');
 	$('#gift-post-overlay').fadeIn();
 });
-</script>
 
-<script type="text/javascript">
-$('.card-title').each(function() {
-  $clamp(this, {clamp: 2});
-});
-
+$('.card-title').clamp(2);
 $('#inner-subscribe').html($('#inner-subscribe-model > div'));
-</script>
-
-<script type="text/javascript">
-var disqus_config = function () {
-this.page.url = app.page_url;
-this.page.identifier = app.page_id;
-};
-
-(function() { // DON'T EDIT BELOW THIS LINE
-var d = document, s = d.createElement('script');
-s.src = 'https://pianolit.disqus.com/embed.js';
-s.setAttribute('data-timestamp', +new Date());
-(d.head || d.body).appendChild(s);
-})();
 </script>
 @endpush

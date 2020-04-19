@@ -5,6 +5,7 @@ window.moment = require('moment');
 window.Calendar = require('fullcalendar');
 window.Trix = require('trix');
 window.Cropper = require('cropperjs');
+window.Mark = require('mark.js/dist/jquery.mark.min.js');
 window.axios = require('axios').default;
 
 /**

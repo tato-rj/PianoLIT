@@ -36,7 +36,7 @@
 	</div>
 
 	<div id="infographics-container" data-url-load="{{route('resources.infographs.load')}}" data-url-search="{{route('resources.infographs.search')}}" class="card-columns mb-4">
-		@include('resources.infographics.load')
+		@include('infographics.load')
 	</div>
 
   	@pagination(['collection' => $infographs])

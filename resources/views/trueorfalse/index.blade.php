@@ -114,10 +114,11 @@ $('#level input[type="checkbox"]').on('change', function() {
 });
 
 function submit(score, count) {
-	$.get('{{route('true-or-false.feedback')}}', {score: score, count: count}, function(response) {
-		$('#game-feedback').html(response);
+	axios.get('{{route('true-or-false.feedback')}}', {params: {score: score, count: count}})
+	.then(function(response) {
+		$('#game-feedback').html(response.data);
 		$('#game-results').modal('show');
-	}).fail(function(response) {
+	}).catch(function(response) {
         console.log(response);
 	});
 }

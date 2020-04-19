@@ -37,7 +37,6 @@
           <div class="dropdown-divider"></div>
           <label style="font-size: .9em" class="m-0 text-grey"><small>TO HEAR</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.pianists.index')}}">Great Pianists</a>
-          <a class="nav-link p-0 ml-1" href="{{route('resources.podcasts')}}">Top Podcasts</a>
         </div>
       </li>
       <li class="nav-item dropdown mx-2">
