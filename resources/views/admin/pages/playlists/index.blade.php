@@ -21,8 +21,15 @@
       </div>
     </div>
 
-    @datatableRaw(['model' => 'playlists', 'columns' => ['Date', 'Name', 'Group', 'Number of pieces', '']])
-
+    <div class="row">
+      <div class="col-12">
+        @include('components.tabs', [
+          'name' => 'playlists',
+          'headers' => ['General', 'Journey'],
+          'views' => ['admin.pages.playlists.rows.general', 'admin.pages.playlists.rows.journey']
+        ])
+      </div>
+    </div>
   </div>
 </div>
 
@@ -31,8 +38,33 @@
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTableRaw({table: '#playlists-table'})).create();
+$('div.playlist-container').each(function() {
+  let $tab = $(this);
+  $tab.sortable({
+    handle: '.sort-handle',
+    update: function(element) {
+      let url = $tab.attr('data-url-reorder');
+      let ids = $tab.find('.ordered').attrToArray('data-id');
+console.log(ids);
+      axios.patch(url, {ids: ids})
+      .then(function(response) {
+        $('.alert-container').remove();
+
+        $('body').append(response.data);
+        
+        setTimeout(function() {
+          $('.alert-temporary').fadeOut(function() {
+            $(this).remove();
+          });
+        }, 2000);
+      })
+      .catch(function(error) {
+        alert('Something went wrong...');
+        console.log(error)
+      })
+    }
+  });
+});
 </script>
 @endsection

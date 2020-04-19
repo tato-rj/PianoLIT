@@ -15,19 +15,10 @@ class PlaylistsController extends Controller
      */
     public function index()
     {
-        $playlists = Playlist::sorted()->get();
+        $journey = Playlist::byGroup('journey')->sorted()->get();
+        $general = Playlist::byGroup(null)->sorted()->get();
 
-        return view('admin.pages.playlists.index', compact('playlists'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return view('admin.pages.playlists.index', compact(['journey', 'general']));
     }
 
     /**
@@ -110,6 +101,21 @@ class PlaylistsController extends Controller
         }
 
         return redirect()->back()->with('status', 'The playlist has been successfully updated');
+    }
+
+    public function reorder(Request $request)
+    {
+        foreach ($request->ids as $order => $id) {
+            Playlist::find($id)->update(['order' => $order]);
+        }
+
+        return view('components.alerts.alert', [
+            'color' => 'green',
+            'message' => '<i class="fas fa-check-circle mr-2"></i>The order has been updated',
+            'temporary' => true,
+            'dismissible' => true,
+            'floating' => 'top'
+        ])->render();
     }
 
     /**

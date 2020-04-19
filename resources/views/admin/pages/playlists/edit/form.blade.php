@@ -26,13 +26,13 @@
 						</div>
 					</div>
 				</div>
-				<textarea name="description" placeholder="Description" class="form-control" rows="6" maxlength="255" required>{{$playlist->description}}</textarea>
+				<textarea name="description" placeholder="Description" class="form-control" rows="5" maxlength="255" required>{{$playlist->description}}</textarea>
 			</div>
 			<div class="col-7">
 				<label class="text-muted">Pieces</label>
 				<div id="playlist-pieces" class=""> 
 					@foreach($playlist->pieces as $piece)
-					@include('admin.pages.playlists.edit.piece', ['is_model' => false])
+					@include('admin.pages.playlists.edit.piece')
 					@endforeach
 				</div>
 			</div>

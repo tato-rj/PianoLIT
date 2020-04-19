@@ -57,12 +57,7 @@ $(document).on('click', '.add-piece', function(event) {
 
 </script>
 <script type="text/javascript">
-$('#playlist-pieces').sortable({
-	handle: '.sort-handle',
-	update: function() {
-
-	}
-});
+$('#playlist-pieces').sortable({handle: '.sort-handle'});
 </script>
 <script type="text/javascript">
 (new DataTable('#pieces-table')).columns([
