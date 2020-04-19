@@ -32,7 +32,7 @@
 </div>
 
 <div class="container mt-4 mb-5">
-	<div id="api-results" class="row">
+	<div id="api-results" data-itunes="{{$pianist->itunes_id}}" class="row">
 		<div class="col-12"><h5 class="text-grey my-6 text-center">Loading...</h5></div>
 	</div>
 </div>
@@ -49,6 +49,6 @@
 @include('components.addthis')
 <script type="text/javascript" src="{{asset('js/views/pianists.js')}}"></script>
 <script type="text/javascript">
-$("#gift-overlay").showAfter(5);
+  $("#gift-overlay").showAfter(5);
 </script>
 @endpush

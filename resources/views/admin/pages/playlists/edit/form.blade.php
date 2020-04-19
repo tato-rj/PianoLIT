@@ -11,7 +11,7 @@
 			<div class="col-5">
 				<label class="text-muted">Basic information</label>
 				<input type="text" name="name" placeholder="Name" class="form-control mb-2" value="{{$playlist->name}}" required>
-				<input type="text" name="subtitle" placeholder="Subtitle" class="form-control mb-2" value="{{$playlist->subtitle}}" required>
+				<input type="text" name="subtitle" maxlength="72" placeholder="Subtitle" class="form-control mb-2" value="{{$playlist->subtitle}}" required>
 				<div class="form-row">
 					<div class="col">
 						<select name="group" class="form-control mb-2" required>

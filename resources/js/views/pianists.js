@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  axios.get('https://itunes.apple.com/lookup', {params: {id: '{{$pianist->itunes_id}}', entity: 'album', limit: 200}})
+  axios.get('https://itunes.apple.com/lookup', {params: {id: $('#api-results').attr('data-itunes'), entity: 'album', limit: 200}})
     .then(function(response) {
       showAlbums(response.data.results);
     })
@@ -42,7 +42,5 @@ function showAlbums(albums) {
 
   $('#api-results').html(html);
 
-  $('.album-title').each(function() {
-    $clamp(this, {clamp: 2});
-  });
+  $('.album-title').clamp(2);
 }

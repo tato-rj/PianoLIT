@@ -103,11 +103,11 @@ class PlaylistsController extends Controller
         return redirect()->back()->with('status', 'The playlist has been successfully updated');
     }
 
-    public function reorder(Request $request, $group = null)
+    public function reorder(Request $request)
     {
-        foreach ($request->ids as $order => $id) {
-            Playlist::find($id)->update(['order' => $order]);
-        }
+        $request->validate(['ids' => 'required']);
+
+        Playlist::sort($request->ids);
 
         return view('components.alerts.alert', [
             'color' => 'green',

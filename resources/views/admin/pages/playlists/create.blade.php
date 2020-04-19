@@ -5,7 +5,7 @@
     <div class="form-row mb-2">
       <div class="col">
         <input type="text" name="name" placeholder="Name" class="form-control mb-2" value="{{old('name')}}" required>
-        <input type="text" name="subtitle" placeholder="Subtitle" class="form-control mb-2" value="{{old('subtitle')}}" required>
+        <input type="text" name="subtitle" maxlength="72" placeholder="Subtitle" class="form-control mb-2" value="{{old('subtitle')}}" required>
         <div class="form-row">
           <div class="col">
             <select name="group" class="form-control">

@@ -72,6 +72,24 @@ class PlaylistTest extends AppTest
     }
 
     /** @test */
+    public function playlists_can_be_reordered()
+    {
+        $this->signIn();
+        
+        Playlist::truncate();
+
+        $first = create(Playlist::class, ['group' => 'test', 'order' => 0]);
+        $second = create(Playlist::class, ['group' => 'test', 'order' => 1]);
+        $third = create(Playlist::class, ['group' => 'test', 'order' => 2]);
+
+        $this->assertEquals([$first->id, $second->id, $third->id], Playlist::byGroup('test')->sorted()->pluck('id')->toArray());
+
+        $this->patch(route('admin.playlists.reorder', ['ids' => [2, 3, 1]]));
+
+        $this->assertEquals([$second->id, $third->id, $first->id], Playlist::byGroup('test')->sorted()->pluck('id')->toArray());
+    }
+
+    /** @test */
     public function all_related_pieces_are_removed_when_a_playlist_is_removed()
     {
         $this->signIn();

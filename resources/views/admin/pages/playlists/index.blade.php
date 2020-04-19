@@ -16,12 +16,6 @@
     </div>
 
     <div class="row">
-      <div class="col-12 mb-4">
-        <button data-toggle="modal" data-target="#playlists-overview" class="btn btn-sm btn-warning">Overview</button>
-      </div>
-    </div>
-
-    <div class="row">
       <div class="col-12">
         @include('components.tabs', [
           'name' => 'playlists',
@@ -46,7 +40,7 @@ $('div.playlist-container').each(function() {
     update: function(element) {
       let url = $tab.attr('data-url-reorder');
       let ids = $tab.find('.ordered').attrToArray('data-id');
-console.log(ids);
+
       axios.patch(url, {ids: ids})
       .then(function(response) {
         $('.alert-container').remove();
