@@ -286,16 +286,6 @@
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
 <script type="text/javascript">
-$(document).on('keyup', 'input.itunes-link', function() {
-  // https://music.apple.com/us/album/childrens-corner-i-doctor-gradus-ad-parnassum/299388906?i=299388959
-  axios.get('https://api.music.apple.com/v1/catalog/us/songs/900032829')
-       .then(function(response) {console.log(resopnse.data)})
-       .catch(function(error) {console.log(error)});
-
-});
-</script>
-
-<script type="text/javascript">
   $('input[name="alerts[]"]').on('click', function() {
     let alerts = [];
     let $alertsContainer = $('#alerts-container');

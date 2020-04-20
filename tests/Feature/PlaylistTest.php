@@ -44,34 +44,6 @@ class PlaylistTest extends AppTest
     }
 
     /** @test */
-    public function two_playlists_cannot_be_featured_at_the_same_time()
-    {
-        $this->signIn();
-
-        $featuredPlaylist = create(Playlist::class, ['featured' => 'featured']);
-
-        $this->patch(route('admin.playlists.update', $this->playlist->id), [
-            'name' => $this->playlist->name, 
-            'group' => $this->playlist->group, 
-            'description' => $this->playlist->description,
-            'subtitle' => $this->playlist->subtitle,
-            'featured' => 'should fail']);
-
-        $this->assertFalse($this->playlist->fresh()->is_featured);
-
-        $featuredPlaylist->update(['featured' => null]);
-
-        $this->patch(route('admin.playlists.update', $this->playlist->id), [
-            'name' => $this->playlist->name, 
-            'group' => $this->playlist->group, 
-            'description' => $this->playlist->description,
-            'subtitle' => $this->playlist->subtitle,
-            'featured' => 'should work']);
-
-        $this->assertTrue($this->playlist->fresh()->is_featured);
-    }
-
-    /** @test */
     public function playlists_can_be_reordered()
     {
         $this->signIn();

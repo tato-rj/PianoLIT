@@ -6,20 +6,14 @@
       <div class="col">
         <input type="text" name="name" placeholder="Name" class="form-control mb-2" value="{{old('name')}}" required>
         <input type="text" name="subtitle" maxlength="72" placeholder="Subtitle" class="form-control mb-2" value="{{old('subtitle')}}" required>
-        <div class="form-row">
-          <div class="col">
-            <select name="group" class="form-control">
-              <option selected disabled>Select the group</option>
-              <option value="" {{ old('group') == '' ? 'selected' : ''}}>General</option>
-              <option value="journey" {{ old('group') == 'journey' ? 'selected' : ''}}>Journey</option>
-            </select>
-          </div>
-          <div class="col">
-            <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('cover') ? 'is-invalid' : ''}}" name="cover" id="customFile">
-              <label class="custom-file-label truncate" for="customFile">Cover image</label>
-            </div>
-          </div>
+        <input type="text" name="featured" maxlength="16" placeholder="Featured tag (optional)" class="form-control mb-2" value="{{old('featured')}}">
+        <div class="custom-file mb-2">
+          <input type="file" class="custom-file-input {{$errors->has('cover') ? 'is-invalid' : ''}}" name="cover" id="customFile">
+          <label class="custom-file-label truncate" for="customFile">Cover image</label>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="group" value="journey" class="custom-control-input" id="is_journey" {{old('group') == 'journey' ? 'checked' : null}}>
+          <label class="custom-control-label" for="is_journey">Is this playlist part of the "Follow a path"?</label>
         </div>
       </div>
       <div class="col">

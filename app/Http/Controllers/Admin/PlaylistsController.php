@@ -35,7 +35,9 @@ class PlaylistsController extends Controller
             'subtitle' => $request->subtitle,
             'cover_path' => $request->hasFile('cover') ? $request->file('cover')->store('app/playlists', 'public') : null,
             'group' => $request->group ?? null,
-            'description' => $request->description
+            'description' => $request->description,
+            'featured' => $request->featured ?? null,
+            'order' => Playlist::byGroup($request->group)->count()
         ]);
 
         return redirect()->back()->with('status', 'The playlist has been created');
@@ -75,13 +77,9 @@ class PlaylistsController extends Controller
      */
     public function update(Request $request, Playlist $playlist)
     {
-        if (Playlist::featured()->exists() && ! $playlist->is_featured)
-            return redirect()->back()->with('error', Playlist::featured()->first()->title . ' is already featured.');
-
         $playlist->update([
             'name' => $request->name,
             'subtitle' => $request->subtitle,
-            'group' => $request->group ?? null,
             'description' => $request->description,
             'featured' => $request->featured ?? null
         ]);

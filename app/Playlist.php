@@ -33,12 +33,12 @@ class Playlist extends PianoLit
 
     public function scopeFeatured($query)
     {
-        return $query->whereNotNull('featured');
+        return $query->where('order', 0);
     }
 
     public function getIsFeaturedAttribute()
     {
-        return ! is_null($this->featured);
+        return $this->order == 0;
     }
 
     public function getCoverImageAttribute()

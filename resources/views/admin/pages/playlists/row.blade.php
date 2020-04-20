@@ -1,7 +1,7 @@
 @component('components.draggable.cards.small', ['model' => $playlist])
 
 @if($playlist->is_featured)
-<span class="badge badge-pill badge-teal mr-2">{{$playlist->featured}}</span>
+@fa(['icon' => 'star', 'color' => 'teal'])
 @endif
 <span>{{$playlist->name}} <small class="text-muted">&middot; {{$playlist->pieces_count}} pieces</small></span>
 
