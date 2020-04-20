@@ -38,7 +38,7 @@ class Playlist extends PianoLit
 
     public function getIsFeaturedAttribute()
     {
-        return $this->order == 0;
+        return is_null($this->group) && $this->order == 0;
     }
 
     public function getCoverImageAttribute()
