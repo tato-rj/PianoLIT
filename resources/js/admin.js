@@ -7,6 +7,7 @@ require('./helpers/display');
 require('./helpers/extensions');
 require('./helpers/charts');
 require('./cropper/SimpleCropper');
+require('./search/Search');
 require('./quickchart/ChartBootstrap');
 require('./quickchart/ChartFactory');
 require('./quickchart/QuickChart');

@@ -2,7 +2,8 @@ $(document).ready(function() {
 	$('.alert-temporary').fadeAfter(2);
 	$('[data-toggle="popover"]').popover();
 
-	(new YoutubeV3).init();
+    if (app.youtube_key)
+    	(new YoutubeV3).init();
 
     (new Search).listenTo('#global-search-input')
                 .feedbackIn('#global-search-feedback')
