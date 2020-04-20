@@ -1,5 +1,4 @@
 @foreach($memberships as $membership)
-  @if($loop->iteration <= $limit)
   <tr>
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 5%">
       <div class="text-truncate">{{$membership->user_id}}</div>
@@ -26,16 +25,4 @@
       </div>
     </td>
   </tr>
-  @else
-    @if(!empty($more))
-    <tr>
-      <td colspan="3" class="p-0">
-        <button data-url="" class="btn border-0 btn-light rounded-0 btn-block load-more">
-          LOAD MORE
-        </button>
-      </td>
-    </tr>
-    @endif
-    @break
-  @endif
 @endforeach
