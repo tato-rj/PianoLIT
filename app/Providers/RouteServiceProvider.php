@@ -35,6 +35,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        $this->mapWebAppRoutes();
+
         $this->mapApiRoutes();
 
         $this->mapAuthRoutes();
@@ -52,6 +54,24 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapRedirectsRoutes();
 
         $this->mapRedisRoutes();
+    }
+
+    /**
+     * Define the "user" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapWebAppRoutes()
+    {
+        Route::domain('my.'.config('app.short_url'))
+             ->middleware(['web', 'auth:web'])
+             ->name('webapp.')
+             ->namespace($this->namespace)
+             ->group(function() {
+                $this->getFolder('routes/webapp');
+             });
     }
 
     /**

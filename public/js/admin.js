@@ -95468,6 +95468,10 @@ $(document).on('change', 'input.status-toggle', function () {
 /***/ "./resources/js/components/triggers.js":
 /***/ (function(module, exports) {
 
+$('[save-query]').click(function (e) {
+	window.location.hash = this.hash;
+});
+
 $('.no-click').bind('contextmenu', function (e) {
 	return false;
 });

@@ -1,12 +1,6 @@
 @extends('layouts.app')
 
 @push('header')
-<style type="text/css">
-.list-group-item.active {
-	color: #495057 !important;
-	background-color: #f3f5f7;
-}
-</style>
 @endpush
 
 @section('content')
@@ -52,30 +46,6 @@
 
 @push('scripts')
 <script type="text/javascript">
-$('input.status-toggle').on('change', function() {
-  let $input = $(this);
-
-  $.ajax({
-    url: $input.attr('data-url'),
-    type: 'PATCH',
-    success: function(res) {
-    },
-    error: function(xhr,status,error) {
-    	alert('Something went wrong: ' + error);
-    }
-  });
-});
-</script>
-<script type="text/javascript">
-$(function(){
-  var hash = window.location.hash;
-  hash && $('.list-group .list-group-item[href="' + hash + '"]').tab('show');
-
-  $('.list-group-item').click(function (e) {
-    window.location.hash = this.hash;
-  });
-});
-
 $('#request-password-change').click(function() {
   $(this).hide();
   $('#change-password').show();

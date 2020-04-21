@@ -1,3 +1,7 @@
+$('[save-query]').click(function (e) {
+	window.location.hash = this.hash;
+});
+
 $('.no-click').bind('contextmenu', function(e) {
     return false;
 }); 

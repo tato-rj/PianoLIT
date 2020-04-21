@@ -1,4 +1,4 @@
-<div class="tab-pane fade" id="list-preferences" role="tabpanel" aria-labelledby="list-preferences-list">
+<div class="tab-pane fade" id="list-email-preferences" role="tabpanel" aria-labelledby="list-email-preferences-list">
 	<div class="row">
 		<div class="col-lg-8 col-md-10 col-12">
 			@if(auth()->user()->subscription()->exists())

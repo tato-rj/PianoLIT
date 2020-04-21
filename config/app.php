@@ -63,6 +63,8 @@ return [
 
     'url' => env('APP_URL', 'http://pianolit.test'),
 
+    'short_url' => preg_replace('#^https?://#', '', rtrim(env('APP_URL', 'http://pianolit.test'),'/')),
+
     'asset_url' => env('ASSET_URL', null),
 
     /*

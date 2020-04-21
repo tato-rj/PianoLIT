@@ -91417,6 +91417,7 @@ __webpack_require__("./resources/js/components/triggers.js");
 __webpack_require__("./resources/js/components/overlays.js");
 __webpack_require__("./resources/js/components/progressbar.js");
 __webpack_require__("./resources/js/components/auth.js");
+__webpack_require__("./resources/js/components/toggle.js");
 __webpack_require__("./resources/js/youtube/YoutubeV3.js");
 __webpack_require__("./resources/js/search/Search.js");
 
@@ -91556,8 +91557,42 @@ showScrollProgressBar = function showScrollProgressBar(content) {
 
 /***/ }),
 
+/***/ "./resources/js/components/toggle.js":
+/***/ (function(module, exports) {
+
+$(document).on('change', 'input.status-toggle', function () {
+  var $input = $(this);
+  $input.closest('label').css('pointer-events', 'none');
+
+  $.ajax({
+    url: $input.attr('data-url'),
+    type: 'PATCH',
+    success: function success(response) {
+      $('.alert-container').remove();
+
+      $('body').append(response);
+
+      setTimeout(function () {
+        $('.alert-temporary').fadeOut(function () {
+          $(this).remove();
+        });
+      }, 2000);
+      $input.closest('label').css('pointer-events', 'all');
+    },
+    error: function error(xhr, status, _error) {
+      alert('Something went wrong: ' + _error);
+    }
+  });
+});
+
+/***/ }),
+
 /***/ "./resources/js/components/triggers.js":
 /***/ (function(module, exports) {
+
+$('[save-query]').click(function (e) {
+	window.location.hash = this.hash;
+});
 
 $('.no-click').bind('contextmenu', function (e) {
 	return false;
