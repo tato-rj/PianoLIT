@@ -8,17 +8,17 @@
 				@method('PATCH')
 				<div class="form-row">
 					<div class="col-lg-6 col-md-6 col-12">
-						@include('components.form.input', ['label' => 'First name', 'bag' => 'default', 'name' => 'first_name', 'limit' => 200, 'value' => auth()->user()->first_name])
+						@input(['label' => 'First name', 'bag' => 'default', 'name' => 'first_name', 'limit' => 200, 'value' => auth()->user()->first_name])
 					</div>
 					<div class="col-lg-6 col-md-6 col-12">
-						@include('components.form.input', ['label' => 'Last name', 'bag' => 'default', 'name' => 'last_name', 'limit' => 200, 'value' => auth()->user()->last_name])
+						@input(['label' => 'Last name', 'bag' => 'default', 'name' => 'last_name', 'limit' => 200, 'value' => auth()->user()->last_name])
 					</div>
 				</div>
 
-				@include('components.form.input', ['label' => 'Email', 'bag' => 'default', 'name' => 'email', 'limit' => 200, 'value' => auth()->user()->email, 'type' => 'email'])
+				@input(['label' => 'Email', 'bag' => 'default', 'name' => 'email', 'limit' => 200, 'value' => auth()->user()->email, 'type' => 'email'])
 
-				@include('components.form.input', ['label' => 'Change your password', 'placeholder' => 'New password', 'bag' => 'default', 'name' => 'password', 'type' => 'password', 'required' => 'no'])
-				@include('components.form.input', ['placeholder' => 'Confirm your password', 'bag' => 'default', 'name' => 'password_confirmation', 'type' => 'password', 'required' => 'no'])
+				@input(['label' => 'Change your password', 'placeholder' => 'New password', 'bag' => 'default', 'name' => 'password', 'type' => 'password', 'required' => 'no'])
+				@input(['placeholder' => 'Confirm your password', 'bag' => 'default', 'name' => 'password_confirmation', 'type' => 'password', 'required' => 'no'])
 
 				<div class="form-group">
 					<button class="btn btn-primary shadow btn-block">Save my changes</button>

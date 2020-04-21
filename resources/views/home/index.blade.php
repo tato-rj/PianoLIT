@@ -5,13 +5,13 @@
 
 @section('content')
 
-	@include('home.sections._lead')
-  @include('home.sections.highlights')
-  @include('home.sections.bar')
-  @include('home.sections.tags')
-	@include('home.sections.composition')
-  @include('home.sections.youtube')
-	@include('home.sections.testimonials')
+@include('home.sections._lead')
+@include('home.sections.highlights')
+@include('home.sections.bar')
+@include('home.sections.tags')
+@include('home.sections.composition')
+@include('home.sections.youtube')
+@include('home.sections.testimonials')
 	
 @endsection
 

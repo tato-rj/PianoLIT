@@ -25,7 +25,7 @@ class Api extends Factory
                 $this->order(11)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
             ]);
         });
-
+        
         $collection->splice(3, 0, [$this->order(3)->suggestions('For you')]);
 
         return $collection;

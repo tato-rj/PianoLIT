@@ -19,7 +19,7 @@ abstract class Factory
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find'), 'withBackground' => true]);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title]);
+        return $this->createPlaylist($collection, ['row' => 'freepick', 'type' => 'piece', 'title' => $title]);
     }
 
     public function composers($title)
@@ -28,7 +28,7 @@ abstract class Factory
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
-        return $this->createPlaylist($collection, ['type' => 'composer', 'title' => $title]);
+        return $this->createPlaylist($collection, ['row' => 'composers', 'type' => 'composer', 'title' => $title]);
     }
 
     public function latest($title)
@@ -37,7 +37,7 @@ abstract class Factory
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title]);
+        return $this->createPlaylist($collection, ['row' => 'gallery', 'type' => 'piece', 'title' => $title]);
     }
 
     public function suggestions($title)
@@ -48,7 +48,7 @@ abstract class Factory
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
-        return $this->createPlaylist($collection, ['type' => 'piece', 'title' => $title]);
+        return $this->createPlaylist($collection, ['row' => 'gallery', 'type' => 'piece', 'title' => $title]);
     }
 
     public function women($title)
@@ -58,6 +58,7 @@ abstract class Factory
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
+            'row' => 'gallery', 
             'type' => 'piece', 
             'title' => $title, 
             'tag' => 'women composers', 
@@ -73,6 +74,7 @@ abstract class Factory
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
+            'row' => 'gallery', 
             'type' => 'piece', 
             'title' => $title . ' ' . $tag, 
             'tag' => $tag,
@@ -86,7 +88,7 @@ abstract class Factory
 
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
-        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
+        return $this->createPlaylist($collection, ['row' => 'gallery', 'type' => 'collection', 'title' => $title]);
     }
 
     public function similar($title, $piece)
@@ -97,6 +99,7 @@ abstract class Factory
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
+            'row' => 'gallery', 
             'type' => 'piece', 
             'title' => $title,
             'tag' => $piece->composer->last_name . '\'s ' . $name,
@@ -110,7 +113,7 @@ abstract class Factory
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
-        return $this->createPlaylist($collection, ['type' => 'collection', 'title' => $title]);
+        return $this->createPlaylist($collection, ['row' => 'gallery', 'type' => 'collection', 'title' => $title]);
     }
 
     public function for($title)
@@ -122,6 +125,7 @@ abstract class Factory
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
         return $this->createPlaylist($collection, [
+            'row' => 'gallery', 
             'type' => 'piece', 
             'title' => $title . ' ' . $tag . ' levels', 
             'tag' => $tag,
@@ -135,6 +139,7 @@ abstract class Factory
         $this->withAttributes($collection, ['source' => \URL::to('/api/search')]);
 
         return $this->createPlaylist($collection, [
+            'row' => 'gallery', 
             'type' => 'collection', 
             'title' => $title 
         ]);
