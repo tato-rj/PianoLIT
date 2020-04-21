@@ -47,7 +47,7 @@
     <div id="webapp" class="container pb-5">
 
         <div class="row">
-            <div class="col-lg-6 col-md-8 col-12 mx-auto">
+            <div class="col-lg-8 col-md-10 col-12 mx-auto">
 
             @include('webapp.layouts.header')
 
