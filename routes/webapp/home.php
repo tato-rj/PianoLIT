@@ -1,7 +1,7 @@
 <?php
 
 Route::get('', function() {
-	return 'YAY!';
+	return 'Subdomain configured';
 });
 
 Route::get('foo', function() {
