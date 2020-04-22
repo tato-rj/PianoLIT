@@ -4,11 +4,9 @@
 @endpush
 
 @section('content')
-<div class="text-center mb-4">
-	<h1>Discover</h1>
-	<p style="max-width: 80%" class="mx-auto">Take a quick tour to find the perfect piece for you</p>
+@component('webapp.layouts.header', ['title' => 'Discover', 'subtitle' => 'Take a quick tour to find the perfect piece for you'])
 	<button class="btn btn-wide rounded-pill btn-outline-secondary">FIND YOUR MATCH</button>
-</div>
+@endcomponent
 
 @foreach($rows as $row)
 	@include('webapp.discover.rows.' . $row['row'])

@@ -83,7 +83,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware(['web', 'log.web'])
+        Route::domain(config('app.short_url'))
+             ->middleware(['web', 'log.web'])
              ->namespace($this->namespace)
              ->group(function() {
                 $this->getFolder('routes/web');

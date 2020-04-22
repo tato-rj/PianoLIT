@@ -44,12 +44,10 @@
     @include('auth.alerts.unconfirmed')
     @endconfirmed
     
-    <div id="webapp" class="container pb-5">
+    <div id="webapp" class="container">
 
         <div class="row">
             <div class="col-lg-8 col-md-10 col-12 mx-auto">
-
-            @include('webapp.layouts.header')
 
             <main>
                 
@@ -71,6 +69,9 @@
 
     <script src="{{ mix('js/app.js') }}"></script>
 
+    <script type="text/javascript">
+    $('main').css('margin-bottom', $('#menu').height() + 20);
+    </script>
     @stack('scripts')
 
 </body>

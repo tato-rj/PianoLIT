@@ -31,6 +31,6 @@ class TabsController extends Controller
 
     public function tags()
     {
-        return Tag::display();    	
+        return Tag::display();
     }
 }

@@ -80,6 +80,22 @@
 	color: darken($advanced, 40);
 }
 
+.color-elementary {
+	color: $elementary;
+}
+
+.color-beginner {
+	color: $beginner;
+}
+
+.color-intermediate {
+	color: $intermediate;
+}
+
+.color-advanced {
+	color: $advanced;
+}
+
 textarea {
 	overflow-x: hidden;
 }
