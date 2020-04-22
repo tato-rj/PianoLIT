@@ -42,6 +42,7 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.tables.full', 'table');
         \Blade::include('components.return');
         \Blade::include('components.fontawesome', 'fa');
+        \Blade::include('components.pill');
 
         \Blade::directive('popup', function ($card) {
             return view('components.overlays.subscribe.model-2');

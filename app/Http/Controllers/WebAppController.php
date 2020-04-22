@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Api\Api;
-use App\Tag;
+use App\{Tag, Playlist};
 use Illuminate\Http\Request;
 
 class WebAppController extends Controller
@@ -24,7 +24,10 @@ class WebAppController extends Controller
 
     public function playlists()
     {
-    	return view('webapp.playlists.index');
+        $playlists = Playlist::byGroup(null)->has('pieces', '>', 5)->sorted()->get();
+        $journey = Playlist::byGroup('journey')->has('pieces', '>', 5)->sorted()->get();
+
+    	return view('webapp.playlists.index', compact(['playlists', 'journey']));
     }
 
     public function myPieces()

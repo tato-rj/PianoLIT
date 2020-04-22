@@ -14,7 +14,7 @@
 	  <a href="{{config('app.url')}}" target="_blank" class="list-group-item py-4 rounded-0 list-group-item-action">Visit the website</a>
 	  <a href="{{route('terms')}}" target="_blank" class="list-group-item py-4 rounded-0 list-group-item-action">Terms of service</a>
 	  <a href="{{route('privacy')}}" target="_blank" class="list-group-item py-4 rounded-0 list-group-item-action">Privacy policy</a>
-	  <a href="#" class="list-group-item py-4 rounded-0 list-group-item-action">Version 1.3.1</a>
+	  <a href="#" class="list-group-item py-4 rounded-0 list-group-item-action">Version 1.0</a>
 	  <a href="" class="list-group-item py-4 rounded-0 list-group-item-action" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 		<form id="logout-form" action="{{ route('webapp.logout') }}" method="POST" style="display: none;">@csrf</form>Log out
 	  </a>
