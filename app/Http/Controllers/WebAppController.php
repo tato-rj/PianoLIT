@@ -29,12 +29,20 @@ class WebAppController extends Controller
 
     public function myPieces()
     {
-    	return route('posts.index');
     	return view('webapp.my-pieces.index');
     }
 
     public function settings()
     {
     	return view('webapp.settings.index');
+    }
+
+    public function logout(Request $request)
+    {
+        \Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+
+        return redirect(config('app.url'));
     }
 }
