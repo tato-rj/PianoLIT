@@ -1,0 +1,1 @@
+@each('webapp.components.piece', auth()->user()->favorites, 'piece')

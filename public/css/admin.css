@@ -20986,6 +20986,32 @@ mark {
   color: #bf5af2;
 }
 
+.bg-elementary-raw {
+  color: white;
+  background: #30d158;
+}
+
+.bg-beginner-raw {
+  color: white;
+  background: #ffd60a;
+}
+
+.bg-intermediate-raw {
+  color: white;
+  background: #ff453a;
+}
+
+.bg-advanced-raw {
+  color: white;
+  background: #bf5af2;
+}
+
+button.btn-raw {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
 textarea {
   overflow-x: hidden;
 }

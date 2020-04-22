@@ -48,8 +48,12 @@
 </div>
 @endcomponent
     <div class="tab-content" id="nav-tabContent">
-      <div class="tab-pane fade show active" id="list-tutorials" role="tabpanel" aria-labelledby="list-home-list">TUTORIALS</div>
-      <div class="tab-pane fade" id="list-favorites" role="tabpanel" aria-labelledby="list-profile-list">FAVORITES</div>
+      <div class="tab-pane fade show active" id="list-tutorials" role="tabpanel" aria-labelledby="list-home-list">
+		@include('webapp.my-pieces.tutorials')
+      </div>
+      <div class="tab-pane fade" id="list-favorites" role="tabpanel" aria-labelledby="list-profile-list">
+		@include('webapp.my-pieces.favorites')
+      </div>
     </div>
 @endsection
 
