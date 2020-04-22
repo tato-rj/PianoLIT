@@ -25,7 +25,6 @@
 @import "responsive";
 @import "variables";
 @import "global";
-@import "theme-custom";
 
 h1 {
 	font-size: 2.75rem;
@@ -112,6 +111,10 @@ button:focus {outline:0;}
 
 .text-primary {
 	color: $brand-primary !important;
+}
+
+.bg-primary {
+	background: $brand-primary !important;
 }
 
 .btn-primary {
