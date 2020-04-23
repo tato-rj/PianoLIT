@@ -40,4 +40,18 @@ class WebAppTest extends AppTest
 
         $this->get('http://pianolit.com/foo')->assertStatus(404);
     }
+
+    /** @test */
+    public function users_can_toggle_favorited_pieces()
+    {
+        $this->signIn($this->user);
+
+        $favorite = $this->user->favorites->first();
+
+        $this->assertTrue($favorite->isFavorited($this->user->id));
+
+        $this->post(route('webapp.users.favorites.toggle', $favorite));
+
+        $this->assertFalse($favorite->fresh()->isFavorited($this->user->id));        
+    }
 }

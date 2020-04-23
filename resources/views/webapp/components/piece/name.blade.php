@@ -1,0 +1,1 @@
+<h6 class="m-0">{{$piece->long_name}}</h6>

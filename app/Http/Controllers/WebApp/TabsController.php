@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebApp;
 
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Api\Api;
 use App\{Tag, Playlist};
-use Illuminate\Http\Request;
 
-class WebAppController extends Controller
+class TabsController extends Controller
 {
     public function discover(Api $api)
     {
@@ -20,6 +21,15 @@ class WebAppController extends Controller
     	$categories = Tag::display()->groupBy('type');
 
     	return view('webapp.explore.index', compact('categories'));
+    }
+
+
+    public function search(Api $api, Request $request)
+    {
+        if ($request->wantsJson())
+            return view('webapp.search.results', ['pieces' =>  $api->search($request)])->render();
+
+        return view('webapp.search.index');
     }
 
     public function playlists()
@@ -38,14 +48,5 @@ class WebAppController extends Controller
     public function settings()
     {
     	return view('webapp.settings.index');
-    }
-
-    public function logout(Request $request)
-    {
-        \Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        return redirect(config('app.url'));
     }
 }

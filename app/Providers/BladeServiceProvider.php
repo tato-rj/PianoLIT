@@ -34,7 +34,6 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.alerts.alert');
         \Blade::include('components.datatable.layout', 'datatable');
         \Blade::include('components.datatable.raw', 'datatableRaw');
-        \Blade::component('components.overlays.modal');
         \Blade::include('components.pagination');
         \Blade::include('admin.components.charts.chart');
         \Blade::include('admin.components.charts.ranking');
@@ -42,7 +41,9 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.tables.full', 'table');
         \Blade::include('components.return');
         \Blade::include('components.fontawesome', 'fa');
+        \Blade::include('components.button');
         \Blade::include('components.pill');
+        \Blade::include('components.modal');
 
         \Blade::directive('popup', function ($card) {
             return view('components.overlays.subscribe.model-2');

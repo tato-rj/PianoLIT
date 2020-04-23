@@ -1,0 +1,1 @@
+<p>{{$piece->composer->name}}</p>

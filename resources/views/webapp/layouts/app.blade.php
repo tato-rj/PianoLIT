@@ -70,6 +70,27 @@
     <script src="{{ mix('js/app.js') }}"></script>
 
     <script type="text/javascript">
+    $(document).on('click', 'button[data-manage="favorite"]', function(event) {
+        event.preventDefault();
+        let $button = $(this);
+        let $heart = $button.find('i');
+
+        $button.disable().addClass('opacity-6');
+
+        axios.post($button.attr('data-url-toggle'))
+            .then(function(response) {
+                $heart.toggleClass('fas far');
+            })
+            .catch(function(error) {
+                alert('Sorry, we couldn\'t update your favorite at this time.');
+            })
+            .then(function() {
+                $button.enable().removeClass('opacity-6');
+            });
+    });
+    </script>
+
+    <script type="text/javascript">
     $('main').css('margin-bottom', $('#menu').height() + 20);
     </script>
     @stack('scripts')

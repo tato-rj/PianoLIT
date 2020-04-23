@@ -1,0 +1,1 @@
+<div class="mb-2 text-uppercase">@pill(['label' => $piece->extended_level_name, 'color' => $piece->level_name.'-raw'])</div>
