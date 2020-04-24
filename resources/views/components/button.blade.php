@@ -1,4 +1,5 @@
 <button
+	type="{{$type ?? null}}"
 	{{$attr ?? null}}
 	@if(!empty($modal))
 	data-toggle="modal" data-target="#{{$modal}}"

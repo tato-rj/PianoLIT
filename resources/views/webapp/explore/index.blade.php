@@ -36,6 +36,7 @@ function showBottomPopup(html) {
 <script type="text/javascript">
 $('#tags-search .tag').on('click', function() {
 	$('#tags-search button').disable();
+	$('#tags-search .tag').not(this).removeClass('btn-teal');
 	$(this).toggleClass('btn-teal');
 	
 	let tags = $('#tags-search .tag.btn-teal').attrToArray('data-name');
