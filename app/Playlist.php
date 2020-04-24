@@ -33,9 +33,18 @@ class Playlist extends PianoLit
 
     public function scopeComplete($query)
     {
-        return $query->whereHas('pieces', function($q) {
-            $q->whereNotNull('videos');
+        $playlists = $query->with('pieces')->get();
+
+        $playlists->each(function($playlist) {
+            $playlist->pieces->each(function($piece, $index) use ($playlist) {
+                if (! $piece->hasVideos()) {
+                    $playlist->pieces->forget($index);
+                    $playlist->pieces_count = $playlist->pieces_count - 1;
+                }
+            });
         });
+
+        return $playlists;
     }
 
     public function scopeFeatured($query)
