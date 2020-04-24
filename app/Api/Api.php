@@ -47,6 +47,10 @@ class Api extends Factory
         if ($request->has('count'))
             return response()->json(['count' => $query->count()]);
 
-		return $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+        if ($options) {
+    		return $query->paginate($options['hitsPerPage'])->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+        } else {
+            return $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);            
+        }
 	}
 }
