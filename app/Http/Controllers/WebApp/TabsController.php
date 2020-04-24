@@ -23,13 +23,20 @@ class TabsController extends Controller
     	return view('webapp.explore.index', compact('categories'));
     }
 
-
     public function search(Api $api, Request $request)
     {
         if ($request->wantsJson())
             return view('webapp.search.results', ['pieces' =>  $api->search($request)])->render();
 
         return view('webapp.search.index');
+    }
+
+    public function count(Api $api, Request $request)
+    {
+        if ($api->search($request))
+            return view('webapp.explore.count', ['query' => $request->search, 'count' => $api->search($request)->getData()->count])->render();
+
+        return abort(416, 'Empty search');
     }
 
     public function playlists()

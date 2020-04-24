@@ -6,6 +6,7 @@ Route::namespace('WebApp')->group(function() {
 	Route::get('explore', 'TabsController@explore')->name('explore');
 	
 	Route::get('search', 'TabsController@search')->middleware('search.driver')->name('search');
+	Route::get('search/count', 'TabsController@count')->middleware('search.driver')->name('search.count');
 
 	Route::get('playlists', 'TabsController@playlists')->name('playlists');
 	

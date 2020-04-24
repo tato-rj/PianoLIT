@@ -23,6 +23,7 @@
 @endsection
 
 @push('scripts')
+{{-- TOUR --}}
 <script type="text/javascript">
 function resetTour() {
 	$('#tour-modal #questions-count').text($('#tour-modal #questions h5').length);
@@ -76,6 +77,7 @@ function average(array) {
 }
 </script>
 
+{{-- TRIGGER LINK ON CLICK, NOT WHILE DRAGGING --}}
 <script type="text/javascript">
  $(function() {
     var isDragging = false;
