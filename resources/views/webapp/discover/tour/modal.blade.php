@@ -20,37 +20,37 @@
 @slot('body')
 <div id="options">
 @include('webapp.discover.tour.options', ['options' => [
-	'Just started',
-	'Between one and three years',
-	'More than three years',
-	'More than eight years']])
+	'Just started' => '0',
+	'Between one and three years' => '1',
+	'More than three years' => '2',
+	'More than eight years' => '3']])
 
 @include('webapp.discover.tour.options', ['options' => [
-	'Can\'t really read either clef',
-	'May be able to read treble or bass clef',
-	'Can red treble and bass clefs together',
-	'Fully understand all musical notation']])
+	'Can\'t really read either clef' => '0',
+	'May be able to read treble or bass clef' => '1',
+	'Can red treble and bass clefs together' => '2',
+	'Fully understand all musical notation' => '3']])
 
 @include('webapp.discover.tour.options', ['options' => [
-	'Playful',
-	'Dreamy',
-	'Elegant',
-	'Crazy',
-	'Melancholic',
-	'Passionate']])
+	'Playful' => 'playful',
+	'Dreamy' => 'dreamy',
+	'Elegant' => 'elegant',
+	'Crazy' => 'crazy',
+	'Melancholic' => 'melancholic',
+	'Passionate' => 'passionate']])
 
 @include('webapp.discover.tour.options', ['options' => [
-	'Mozart',
-	'Bach',
-	'Beethoven',
-	'Chopin',
-	'Debussy',
-	'Bartók']])
+	'Mozart' => 'classical',
+	'Bach' => 'baroque',
+	'Beethoven' => 'romantic',
+	'Chopin' => 'romantic',
+	'Debussy' => 'romantic',
+	'Bartók' => 'modern']])
 </div>
 @endslot
 
 @slot('footerRaw')
-<button class="btn btn-block btn-green py-4 rounded-bottom" id="next" style="border-radius: 0">NEXT</button>
+<button class="btn btn-block btn-green py-4 rounded-bottom" id="next" data-url="{{route('webapp.search')}}" style="border-radius: 0">NEXT</button>
 @endslot
 
 @endcomponent

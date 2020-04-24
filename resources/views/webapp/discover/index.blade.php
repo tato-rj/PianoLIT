@@ -52,7 +52,13 @@ $('#tour-modal #options button').on('click', function() {
 
 $('#tour-modal button#next').on('click', function() {
 	if ($('#tour-modal #questions h5:visible').is(':last-child')) {
-		alert('DONE!');
+		let levelNames = ['elementary', 'beginner', 'intermediate', 'advanced'];
+		let levelsArray = $('#tour-modal #options .list-group .selected').slice(0,2).attrToArray('data-tag');
+		let tags = $('#tour-modal #options .list-group .selected').slice(2).attrToArray('data-tag');
+		tags.push(levelNames[average(levelsArray)]);
+		let url = $(this).attr('data-url') + '?search=' + tags.join(' ');
+		
+		goTo(url);
 	} else {
 		$('#tour-modal #options .list-group:visible').hide().next().show();
 		$('#tour-modal #questions h5:visible').hide().next().show();
@@ -60,6 +66,14 @@ $('#tour-modal button#next').on('click', function() {
 		$('#tour-modal button#next').disable();
 	}
 });
+
+function average(array) {
+  let total = 0;
+  for(var i = 0; i < array.length; i++) {
+      total += parseInt(array[i]);
+  }
+  return Math.floor(total / array.length);
+}
 </script>
 
 <script type="text/javascript">

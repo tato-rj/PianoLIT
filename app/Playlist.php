@@ -31,6 +31,13 @@ class Playlist extends PianoLit
         return $this->belongsTo(Admin::class);
     }
 
+    public function scopeComplete($query)
+    {
+        return $query->whereHas('pieces', function($q) {
+            $q->whereNotNull('videos');
+        });
+    }
+
     public function scopeFeatured($query)
     {
         return $query->where('order', 0);

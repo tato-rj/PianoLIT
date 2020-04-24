@@ -15,7 +15,7 @@ class PlaylistsController extends Controller
     
     public function index($group = null)
     {
-        return Playlist::byGroup($group)->has('pieces', '>', 5)->sorted()->get();
+        return Playlist::byGroup($group)->has('pieces', '>', 5)->complete()->sorted()->get();
     }
 
     public function show(Request $request, Playlist $playlist)
