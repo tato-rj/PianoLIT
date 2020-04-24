@@ -47,7 +47,7 @@ class Playlist extends PianoLit
                 $playlists->forget($index);
         });
 
-        return $playlists;
+        return $playlists->values();
     }
 
     public function scopeFeatured($query)
