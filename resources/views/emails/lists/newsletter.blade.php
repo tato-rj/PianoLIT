@@ -1,5 +1,67 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
 
+<h1 class="text-center m-2" style="font-size: 160%">Exciting new <u>update</u> to the PianoLIT app!</h1>
+<p class="text-center">Checkout the new playlists tab with lots of exciting themes and moods to help you find your next favorite piece</p>
+
+@component('mail::button', ['url' => config('app.stores.ios')])
+Download the APP
+@endcomponent
+
+<div class="text-center">
+<img src="{{asset('images/playlists.jpg')}}" style="width: 400px;">
+</div>
+
+@include('mail::divider', ['orientation' => 'vertical'])
+
+<h1 class="text-lg">How can I find these playlists in the app?</h1>
+@include('mail::lists.numbered', ['items' => [
+	'If you already have PianoLIT, <strong class="text-blue">UPDATE</strong> the app in the apple store',
+	'Open the <strong class="text-blue">APP</strong>',
+	'Go to the <strong class="text-blue">PLAYLISTS</strong> tab',
+	'Enjoy!'
+]])
+
+@component('mail::button', ['url' => config('app.stores.ios')])
+Open the APP
+@endcomponent
+@include('mail::signature')
+@endcomponent
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{-- @component('mail::message', ['subscription' => $subscription, 'list' => $list])
+
 @include('mail::newsletter.quote', [
 	'quote' => 'Ceaseless work, analysis, reflection, writing much, endless self-correction, that is my secret.',
 	'author' => 'Johann Sebastian Bach'
@@ -120,3 +182,4 @@ Have you ever noticed how Darth Vader Imperial March is very similar to Chopin's
 <p>Got any questions? Feel free to reply to this email, there are real people behind it and we'd love to hear from you :)</p>
 @include('mail::signature')
 @endcomponent
+ --}}
