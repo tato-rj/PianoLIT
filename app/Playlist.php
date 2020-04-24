@@ -35,7 +35,7 @@ class Playlist extends PianoLit
     {
         $playlists = $query->with('pieces')->get();
 
-        $playlists->each(function($playlist, $index) {
+        $playlists->each(function($playlist, $index) use ($playlists) {
             $playlist->pieces->each(function($piece, $index) use ($playlist) {
                 if (! $piece->hasVideos()) {
                     $playlist->pieces->forget($index);
