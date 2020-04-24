@@ -20,10 +20,10 @@ class PlaylistsController extends Controller
 
     public function show(Request $request, Playlist $playlist)
     {
-        $pieces = $playlist->pieces;
+        $pieces = $playlist->pieces->where('videos_array', '!=', null);
         
         $pieces->each->isFavorited($request->user_id);
 
-        return $pieces;
+        return $pieces->values();
     }
 }
