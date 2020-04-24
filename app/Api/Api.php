@@ -36,7 +36,7 @@ class Api extends Factory
         if (! $request->has('search'))
             return [];
         
-		$options = $request->has('lazy-load') ? ['hitsPerPage' => 20, 'page' => $request->page ?? 0] : [];
+		$options = $request->has('lazy-load') ? ['hitsPerPage' => 10, 'page' => $request->page ?? 0] : [];
 
         if ($model = $request->model) {
             $query = (new $model)->name($request->search)->first()->pieces();
@@ -47,6 +47,6 @@ class Api extends Factory
         if ($request->has('count'))
             return response()->json(['count' => $query->count()]);
 
-		return $query->get()->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
+		return $query->paginate($options ? $options['hitsPerPage'] : null)->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);
 	}
 }
