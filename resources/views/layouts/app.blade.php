@@ -53,7 +53,7 @@
         @include('layouts.footer')
 
         @include('auth.modal')        
-        @include('components/alerts/http')
+        @include('components.alerts.http')
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>

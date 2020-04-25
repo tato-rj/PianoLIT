@@ -1,12 +1,42 @@
 @extends('webapp.layouts.app')
 
 @push('header')
+<style type="text/css">
+.input-icon {
+	position: relative;
+}
+
+.input-icon i:first-of-type {
+	position: absolute;
+	left: 12px;
+	bottom: 16px;
+}
+
+.input-icon i:last-of-type {
+	position: absolute;
+	right: 10px;
+	bottom: 16px;
+}
+
+.input-icon input {
+	padding-left: 44px !important;
+	padding-right: 44px !important;
+}
+</style>
 @endpush
 
 @section('content')
-@component('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Search or explore the repertoire by moods, genres, levels and more'])
-	<button class="btn btn-wide rounded-pill btn-outline-secondary">@fa(['icon' => 'algolia', 'fa_type' => 'b'])SEARCH HERE</button>
-@endcomponent
+@include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Search or explore the repertoire by moods, genres, levels and more'])
+
+<section class="mb-4">
+	<form method="GET" action="{{route('webapp.search.results', ['lazy-load'])}}">
+	  <div class="input-icon">
+	    @fa(['icon' => 'search', 'color' => 'grey', 'size' => 'lg'])
+	    <input type="text" name="search" class="form-control border-bottom p-4 rounded-0 bg-transparent border-grey w-100" style="border: 0;" placeholder="Search here...">
+	    @fa(['icon' => 'algolia', 'fa_type' => 'b', 'color' => 'grey', 'size' => 'lg'])
+	  </div>
+	</form>
+</section>
 
 <section id="tags-search">
 @foreach($categories as $title => $category)

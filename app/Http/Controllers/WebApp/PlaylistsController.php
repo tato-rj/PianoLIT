@@ -10,6 +10,6 @@ class PlaylistsController extends Controller
 {
     public function show(Playlist $playlist)
     {
-    	return view('webapp.playlists.show.index', compact('playlist'));
+    	return view('webapp.playlists.show', compact('playlist'));
     }
 }
