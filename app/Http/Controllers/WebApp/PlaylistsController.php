@@ -10,7 +10,6 @@ class PlaylistsController extends Controller
 {
     public function show(Playlist $playlist)
     {
-    	return auth()->user()->favorites;
     	return view('webapp.playlists.show.index', compact('playlist'));
     }
 }

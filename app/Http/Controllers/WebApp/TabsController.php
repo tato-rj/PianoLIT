@@ -25,7 +25,7 @@ class TabsController extends Controller
 
     public function playlists()
     {
-        $playlists = Playlist::byGroup(null)->has('pieces', '>', 5)->sorted()->get();
+        $playlists = Playlist::byGroup(null)->has('pieces', '>', 5)->sorted()->complete();
         $journey = Playlist::byGroup('journey')->has('pieces', '>', 5)->sorted()->get();
 
     	return view('webapp.playlists.index', compact(['playlists', 'journey']));
