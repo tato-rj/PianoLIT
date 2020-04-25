@@ -42,7 +42,7 @@ function loadResults() {
 	window.loading = true;
 
 	if (! window.done) {
-		axios.get(window.location.href + '&lazy-load&page=' + window.page)
+		axios.get(window.location.href)
 		.then(function(response) {
 			window.loading = false;
 			window.done = response.data == '';
