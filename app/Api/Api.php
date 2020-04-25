@@ -39,9 +39,9 @@ class Api extends Factory
 		$options = $request->has('lazy-load') ? ['hitsPerPage' => 10, 'page' => $request->page ?? 0] : [];
 
         if ($model = $request->model) {
-            $query = (new $model)->name($request->search)->first()->pieces();
+            $query = (new $model)->name($request->search)->first()->pieces()->latest();
         } else {
-            $query = Piece::search($request->search);
+            $query = Piece::search($request->search)->latest();
         }
 
         if ($request->has('count'))
