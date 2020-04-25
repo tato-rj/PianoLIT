@@ -10,6 +10,7 @@ class SearchController extends Controller
 {
     public function results(Api $api, Request $request)
     {
+        return $api->search($request);
         if ($request->wantsJson())
             return view('webapp.search.results', ['pieces' =>  $api->search($request)])->render();
 
