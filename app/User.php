@@ -49,7 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function favorites()
     {
-        return $this->belongsToMany(Piece::class, 'favorites', 'user_id', 'piece_id')->with(['composer', 'favorites']);
+        return $this->belongsToMany(Piece::class, 'favorites', 'user_id', 'piece_id')->with(['composer', 'favorites'])->latest();
     }
 
     public function views()
