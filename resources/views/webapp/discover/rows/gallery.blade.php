@@ -4,7 +4,7 @@
 		<div class="d-flex pb-2" style="height: 144px;">
 			@foreach($row['content'] as $card)
 				<div class="mr-3 cursor-pointer rounded h-100 d-flex align-items-end p-3 {{$row['type'] == 'piece' ? 'piece' : 'search'}}-card position-relative" 
-				data-url="{{$row['type'] == 'piece' ? null : route('webapp.search', ['search' => $card->name])}}"
+				data-url="{{$row['type'] == 'piece' ? null : route('webapp.search.results', ['search' => $card->name])}}"
 				style="background: linear-gradient(to right, {{gradient($card->color)[0]}}, {{gradient($card->color)[1]}});">
 					@pill(['label' => 'NEW', 'color' => 'white', 'text' => 'danger', 'pos' => 'top-right', 'if' => $row['type'] == 'piece' && $card->is_new])
 					<div class="text-white" style="width: 164px">

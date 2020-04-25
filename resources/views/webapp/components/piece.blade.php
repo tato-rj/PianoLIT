@@ -1,4 +1,4 @@
-<div class="border-bottom py-2">
+<div class="border-bottom py-2 piece-result">
 	<a href="" class="link-none">
 		@include('webapp.components.piece.level')
 		@include('webapp.components.piece.name')

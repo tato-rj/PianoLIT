@@ -6,6 +6,6 @@
 
 <div class="text-center mb-4">
 	<h1>{{$title ?? null}}</h1>
-	<p style="max-width: 80%" class="mx-auto">{!! $subtitle !!}</p>
+	<p style="max-width: 80%" class="mx-auto">{!! $subtitle ?? null !!}</p>
 	{{$slot ?? null}}
 </div>

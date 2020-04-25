@@ -13,7 +13,7 @@
 	@button(['label' => 'FIND YOUR MATCH', 'wide' => true, 'theme' => 'outline-secondary', 'classes' => 'rounded-pill', 'modal' => 'tour-modal'])
 @endcomponent
 
-<section id="discover-rows" data-search-url="{{route('webapp.search')}}">
+<section id="discover-rows">
 @foreach($rows as $row)
 	@include('webapp.discover.rows.' . $row['row'])
 @endforeach
@@ -57,7 +57,7 @@ $('#tour-modal button#next').on('click', function() {
 		let levelsArray = $('#tour-modal #options .list-group .selected').slice(0,2).attrToArray('data-tag');
 		let tags = $('#tour-modal #options .list-group .selected').slice(2).attrToArray('data-tag');
 		tags.push(levelNames[average(levelsArray)]);
-		let url = $(this).attr('data-url') + '?search=' + tags.join(' ');
+		let url = window.urls.search + '?search=' + tags.join(' ');
 		
 		goTo(url);
 	} else {

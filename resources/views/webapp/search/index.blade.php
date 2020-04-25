@@ -10,7 +10,7 @@ window.loading = window.done = false;
 @section('content')
 @include('webapp.layouts.header', ['subtitle' => 'Results for <i>"' . request('search') . '"</i>'])
 
-<section id="search-results" data-query="{{request('search')}}">
+<section id="search-results">
 	<div id="spinner" class="text-center text-grey pt-5">
 		<p><strong>Loading results...</strong></p>
 		<div class="spinner-border" role="status">
@@ -49,7 +49,7 @@ function loadResults() {
 
 			if (window.done) {
 				console.log(window.page);
-				$('#empty strong').text(window.page == 1 ? 'Sorry, nothing to show!' : 'End of results')
+				$('#empty strong').text(window.page == 1 ? 'Sorry, nothing to show!' : 'We found a total of '+$('.piece-result').length+' results')
 				$('#empty').show();
 			} else {
 				$('#search-results').append(response.data);

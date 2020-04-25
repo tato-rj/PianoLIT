@@ -18,7 +18,12 @@
     <link href="{{ asset('css/primer.css') }}" rel="stylesheet">
 
     @include('layouts.html.js-app')
-
+    <script type="text/javascript">
+        window.urls = <?php echo json_encode([
+            'search' => route('webapp.search.results'),
+            'searchCount' => route('webapp.search.count', ['count'])
+        ]); ?>
+    </script>
     <style type="text/css">
         #webapp .menu-link {
             text-decoration: none;
