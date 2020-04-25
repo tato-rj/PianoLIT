@@ -8,13 +8,13 @@
 
 .input-icon i:first-of-type {
 	position: absolute;
-	left: 12px;
+	left: 10.8px;
 	bottom: 16px;
 }
 
 .input-icon i:last-of-type {
 	position: absolute;
-	right: 10px;
+	right: 4px;
 	bottom: 16px;
 }
 
