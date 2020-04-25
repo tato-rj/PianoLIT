@@ -41,7 +41,7 @@ class Api extends Factory
         if ($model = $request->model) {
             $query = (new $model)->name($request->search)->first()->pieces()->latest();
         } else {
-            $query = Piece::search($request->search)->latest();
+            $query = Piece::search($request->search);
         }
 
         if ($request->has('count'))
