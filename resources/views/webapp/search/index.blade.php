@@ -7,6 +7,7 @@
 <script type="text/javascript">
 window.page = 1;
 window.loading = window.done = false;
+window.filters = [];
 </script>
 @endpush
 
@@ -51,11 +52,11 @@ $(document).ready(function() {
 	});
 });
 
-function loadResults(options = null) {
+function loadResults() {
 	window.loading = true;
 
 	if (! window.done) {
-		axios.get(url(), {params: options})
+		axios.get(url(), {params: {filters: window.filters}})
 		.then(function(response) {
 			window.loading = false;
 			window.done = response.data == '';
@@ -89,7 +90,7 @@ $('#filters-container input[type="checkbox"]').change(function() {
 		if (arr.length)
 			filters.push(arr);
 	});
-console.log(filters);
+
 	reset();
 
     applyFilters(filters);
@@ -110,8 +111,9 @@ function reset() {
 function applyFilters(filters) {
 	window.page = 1;
 	window.loading = window.done = false;
+	window.filters = filters;
 
-	loadResults({filters: filters});
+	loadResults();
 }
 </script>
 @endpush
