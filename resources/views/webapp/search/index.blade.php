@@ -1,6 +1,17 @@
 @extends('webapp.layouts.app')
 
 @push('header')
+<style type="text/css">
+.options-columns > div:not(:last-child) {
+	margin-right: 1.5rem;
+	padding-right: 1.5rem;
+	border-right: 1px solid lightgrey;
+}
+
+.options-columns > div:last-child {
+	padding-right: 2rem;
+}
+</style>
 <script type="text/javascript">
 window.page = 1;
 window.loading = window.done = false;
@@ -9,6 +20,15 @@ window.loading = window.done = false;
 
 @section('content')
 @include('webapp.layouts.header', ['subtitle' => 'Results for <i>"' . request('search') . '"</i>'])
+<div class="mb-2 d-flex justify-content-end" style="display: none;" id="options">
+	@button(['disabled' => true, 'label' => '<i class="fas fa-sort mr-1"></i> Sort by', 'attr' => 'data-target=#sort-container', 'size' => 'sm', 'theme' => 'outline-secondary', 'classes' => 'mr-2'])
+	@button(['disabled' => true, 'label' => '<i class="fas fa-filter mr-1"></i> Filter by', 'attr' => 'data-target=#filters-container', 'size' => 'sm', 'theme' => 'outline-secondary'])
+</div>
+
+<div>
+	@include('webapp.search.options.sort.index')
+	@include('webapp.search.options.filters.index')
+</div>
 
 <section id="search-results">
 	<div id="spinner" class="text-center text-grey pt-5">
@@ -61,8 +81,35 @@ function loadResults() {
 		})
 		.then(function() {
 			$('#spinner').remove();
+			$('#options button').enable();
 		});
 	}
 };
+</script>
+
+<script type="text/javascript">
+$('#options button').click(function() {
+	$($(this).attr('data-target')).fadeToggle('fast').siblings().hide();
+});
+</script>
+
+<script type="text/javascript">
+$('#sort-container input[type="radio"]').click(function() {
+	sort($(this).data('filter'), $(this).val());
+});
+
+function sort(filter, direction = 'asc')
+{
+    let results = $('.piece-result');
+
+    results.sort(function(a, b){ 
+    	let first = $(a).data("sort-" + filter);
+    	let second = $(b).data("sort-" + filter);
+
+    	return direction == 'asc' ? first - second : second - first;
+    });
+
+    $("#search-results").html(results);
+}
 </script>
 @endpush
