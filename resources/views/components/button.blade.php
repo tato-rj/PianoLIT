@@ -14,9 +14,9 @@
 	data-toggle="tab" data-target="#{{$tab}}"
 	@endif
 
-	@isset($disabled)
+	@if(!empty($disabled) && $disabled)
 	disabled
-	@endisset
+	@endif
 
 	@empty($raw)
 	class="btn btn-{{$size ?? null}} btn-{{!empty($wide) ? 'wide' : null}} btn-{{$theme ?? null}} bg-{{$color ?? null}} text-{{$text ?? null}} {{$classes ?? null}}"

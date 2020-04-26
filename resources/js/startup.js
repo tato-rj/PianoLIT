@@ -18,6 +18,14 @@ $(document).ready(function() {
     $('.btn-subscribe').on('click', function() {
         $("#subscribe-overlay").fadeIn('fast');
     });
+
+    $('#options button').click(function() {
+        $($(this).attr('data-target')).fadeToggle('fast').siblings().hide();
+    });
+
+    $('#sort-container input[type="radio"]').click(function() {
+        $('#pieces-list').sortChildrenBy(this);
+    });
 });
 
 $(window).bind('load', function() {

@@ -1,3 +1,18 @@
+jQuery.fn.sortChildrenBy = function(button) {
+    let filter = $(button).data('filter');
+    let direction = $(button).val() ? $(button).val() : 'asc';
+    let results = this.children();
+
+    results.sort(function(a, b){ 
+        let first = $(a).data("sort-" + filter);
+        let second = $(b).data("sort-" + filter);
+
+        return direction == 'asc' ? first - second : second - first;
+    });
+
+    this.html(results);
+};
+
 jQuery.fn.filterableBy = function(elem) {
     let $container = this;
     let $cards = $(this.attr('data-cards'));

@@ -14,7 +14,12 @@
 	<p>{{$playlist->description}}</p>
 </div>
 
+@include('webapp.components.sorting', ['disabled' => false])
+
+<section id="pieces-list">
 @each('webapp.components.piece', $playlist->pieces, 'piece')
+</section>
+
 @endsection
 
 @push('scripts')

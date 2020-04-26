@@ -1,0 +1,9 @@
+.options-columns > div:not(:last-child) {
+	margin-right: 1.5rem;
+	padding-right: 1.5rem;
+	border-right: 1px solid lightgrey;
+}
+
+.options-columns > div:last-child {
+	padding-right: 2rem;
+}
