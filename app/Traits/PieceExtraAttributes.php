@@ -64,9 +64,9 @@ trait PieceExtraAttributes
             return null;
 
         if (strhas($this->extended_level_name, 'early')) {
-            $diff = -0.5;
+            $diff = -0.25;
         } elseif (strhas($this->extended_level_name, 'late')) {
-            $diff = 0.5;
+            $diff = 0.25;
         } else {
             $diff = 0;
         }
