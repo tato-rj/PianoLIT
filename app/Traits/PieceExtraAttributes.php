@@ -58,6 +58,22 @@ trait PieceExtraAttributes
         return null;
     }
 
+    public function getLevelOrderAttribute()
+    {
+        if (! $this->level)
+            return null;
+
+        if (strhas($this->extended_level_name, 'early')) {
+            $diff = -0.5;
+        } elseif (strhas($this->extended_level_name, 'late')) {
+            $diff = 0.5;
+        } else {
+            $diff = 0;
+        }
+
+        return $this->level->id + $diff;
+    }
+
     public function getRankingsAttribute()
     {
         $rcm = $this->getRanking('rcm', false);
