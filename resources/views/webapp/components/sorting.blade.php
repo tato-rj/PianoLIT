@@ -4,6 +4,6 @@
 </div>
 
 <div>
-	@include('webapp.search.options.sort.index')
-	@include('webapp.search.options.filters.index')
+	@include('webapp.components.sorting.sort')
+	@include('webapp.components.sorting.filter')
 </div>

@@ -6,6 +6,8 @@ use App\Piece;
 
 class Api extends Factory
 {
+    protected $results, $request, $query, $options;
+
 	public function discover()
 	{
         $key = \Redis::get('app.discover');
@@ -31,24 +33,8 @@ class Api extends Factory
         return $collection;
 	}
 
-	public function search($request)
-	{
-        if (! $request->has('search') || $request->search == '')
-            return [];
-        
-		$options = $request->has('lazy-load') ? ['hitsPerPage' => 10, 'page' => $request->page ?? 0] : [];
-
-        if ($model = $request->model) {
-            $query = (new $model)->name($request->search)->first()->pieces()->latest();
-        } else {
-            $query = Piece::search($request->search);
-        }
-
-        if ($request->has('count'))
-            return response()->json(['count' => $query->count()]);
-
-        $results = $request->has('lazy-load') ? $query->paginate($options['hitsPerPage']) : $query->get();
-
-        return $results->load(['tags', 'composer', 'favorites'])->each->isFavorited($request->user_id);            
-	}
+    public function search($request)
+    {
+        return (new Search($request))->query();
+    }
 }

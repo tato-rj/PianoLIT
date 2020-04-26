@@ -1,0 +1,20 @@
+.input-icon {
+	position: relative;
+}
+
+.input-icon i:first-of-type {
+	position: absolute;
+	left: 10.8px;
+	bottom: 16px;
+}
+
+.input-icon i:last-of-type {
+	position: absolute;
+	right: 4px;
+	bottom: 16px;
+}
+
+.input-icon input {
+	padding-left: 44px !important;
+	padding-right: 44px !important;
+}

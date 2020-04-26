@@ -2,26 +2,7 @@
 
 @push('header')
 <style type="text/css">
-.input-icon {
-	position: relative;
-}
 
-.input-icon i:first-of-type {
-	position: absolute;
-	left: 10.8px;
-	bottom: 16px;
-}
-
-.input-icon i:last-of-type {
-	position: absolute;
-	right: 4px;
-	bottom: 16px;
-}
-
-.input-icon input {
-	padding-left: 44px !important;
-	padding-right: 44px !important;
-}
 </style>
 @endpush
 
@@ -29,13 +10,7 @@
 @include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Search or explore the repertoire by moods, genres, levels and more'])
 
 <section class="mb-4">
-	<form method="GET" action="{{route('webapp.search.results', ['lazy-load'])}}">
-	  <div class="input-icon">
-	    @fa(['icon' => 'search', 'color' => 'grey', 'size' => 'lg'])
-	    <input type="text" name="search" class="form-control border-bottom p-4 rounded-0 bg-transparent border-grey w-100" style="border: 0;" placeholder="Search here...">
-	    @fa(['icon' => 'algolia', 'fa_type' => 'b', 'color' => 'grey', 'size' => 'lg', 'title' => 'Powered by Algolia'])
-	  </div>
-	</form>
+	@include('webapp.search.form')
 </section>
 
 <section id="tags-search">

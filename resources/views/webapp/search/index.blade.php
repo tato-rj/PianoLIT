@@ -13,16 +13,22 @@ window.loading = window.done = false;
 @section('content')
 @include('webapp.layouts.header', ['subtitle' => 'Results for <i>"' . request('search') . '"</i>'])
 
+<section class="mb-4">
+	@include('webapp.search.form')
+</section>
+
 @include('webapp.components.sorting', ['disabled' => true])
 
 <section id="pieces-list">
-	<div id="spinner" class="text-center text-grey pt-5">
-		<p><strong>Loading results...</strong></p>
-		<div class="spinner-border" role="status">
-			<span class="sr-only">Loading...</span>
-		</div>
-	</div>
 </section>
+
+<div id="spinner" class="text-center text-grey pt-5">
+	<p><strong>Loading results...</strong></p>
+	<div class="spinner-border" role="status">
+		<span class="sr-only">Loading...</span>
+	</div>
+</div>
+
 <div id="empty" class="text-grey text-center pt-5 pb-4" style="display: none;">
 	@fa(['icon' => 'box-open', 'mr' => 0, 'size' => 'lg'])
 	<div><strong></strong></div>
@@ -45,11 +51,11 @@ $(document).ready(function() {
 	});
 });
 
-function loadResults() {
+function loadResults(options = null) {
 	window.loading = true;
 
 	if (! window.done) {
-		axios.get(window.location.href + '&lazy-load&page=' + window.page)
+		axios.get(url(), {params: options})
 		.then(function(response) {
 			window.loading = false;
 			window.done = response.data == '';
@@ -66,14 +72,46 @@ function loadResults() {
 			console.log(error);
 		})
 		.then(function() {
-			$('#spinner').remove();
-			$('#options button').enable();
+			$('#spinner').hide();
+			$('#options button, .options-columns input').enable();
 		});
 	}
 };
 </script>
 
 <script type="text/javascript">
+$('#filters-container input[type="checkbox"]').change(function() {
+	let filters = [];
 
+	$('#filters-container .options-columns > div').each(function(index) {
+		let arr = $(this).find('input[type="checkbox"]:checked').attrToArray('value');
+
+		if (arr.length)
+			filters.push(arr);
+	});
+console.log(filters);
+	reset();
+
+    applyFilters(filters);
+});
+</script>
+<script type="text/javascript">
+function url() {
+	return window.location.href + '&lazy-load&page=' + window.page;
+}
+
+function reset() {
+	$('#spinner').show();
+	$('#options button, .options-columns input').disable();
+	$('#pieces-list').empty();
+	$('#empty').hide();
+}
+
+function applyFilters(filters) {
+	window.page = 1;
+	window.loading = window.done = false;
+
+	loadResults({filters: filters});
+}
 </script>
 @endpush

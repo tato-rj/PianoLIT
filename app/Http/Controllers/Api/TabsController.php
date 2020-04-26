@@ -21,12 +21,12 @@ class TabsController extends Controller
 
     public function tour(Api $api, Request $request)
     {
-    	return $api->search($request);
+        return $api->search($request)->get();
     }
 
     public function search(Api $api, Request $request)
     {
-        return $api->search($request);
+        return $api->search($request)->get();
     }
 
     public function tags()
