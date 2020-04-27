@@ -32,7 +32,7 @@ class Piece extends PianoLit
         'period_name', 
         'rankings', 
         'videos_array', 
-        'itunes_array', 
+        'itunes_array',
         'score',
         'audio',
         'audio_rh',

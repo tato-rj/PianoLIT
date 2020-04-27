@@ -7,6 +7,7 @@ use App\Piece;
 class Search
 {
 	protected $request, $options, $query;
+	protected $lateFilter = false;
 
     public function __construct($request)
     {
@@ -38,10 +39,14 @@ class Search
 		if (! $this->request->filters)
 			return $this;
 
-		foreach ($this->request->filters as $list) {
-			$this->query->whereHas('tags', function($q) use ($list) {
-				return $q->whereIn('name', json_decode($list));
-			});	
+		if ($this->query instanceof \Algolia\ScoutExtended\Builder) {
+			$this->lateFilter = true;
+		} else {
+			foreach ($this->request->filters as $list) {
+				$this->query->whereHas('tags', function($q) use ($list) {
+					return $q->whereIn('name', json_decode($list));
+				});	
+			}
 		}
 
 		return $this;
@@ -57,6 +62,24 @@ class Search
 
         $pieces = $this->options ? $this->query->paginate($this->options['hitsPerPage']) : $this->query->get();
 
-        return $pieces->load(['tags', 'composer', 'favorites'])->each->isFavorited($this->request->user_id);
+        $pieces = $pieces->load(['tags', 'composer', 'favorites']);
+
+        if ($this->lateFilter) {
+        	foreach ($pieces as $index => $piece) {
+        		$validPiece = true;
+
+        		foreach ($this->request->filters as $list) {
+	        		if ($piece->tags_array->intersect(json_decode($list))->isEmpty()) {
+	        			$validPiece = false;
+	        			break;
+	        		}
+        		}
+
+        		if (! $validPiece)
+	        		$pieces->forget($index);
+        	}
+        }
+
+        return $pieces->each->isFavorited($this->request->user_id);
     }
 }
