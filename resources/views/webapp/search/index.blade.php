@@ -14,7 +14,7 @@ window.filters = [];
 @section('content')
 @include('webapp.layouts.header', ['subtitle' => 'Results for <i>"' . request('search') . '"</i>'])
 
-<section class="mb-4">
+<section class="mb-2">
 	@include('webapp.search.form')
 </section>
 
@@ -37,6 +37,21 @@ window.filters = [];
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$(document).ready(function() {
+	let $optionsContainer = $('#options-container');
+
+	$(window).on('scroll', function() {
+		let scrollTop = $(window).scrollTop();
+
+		if ($optionsContainer.offset().top - scrollTop <= 0) {
+			$optionsContainer.addClass('border-bottom');
+		} else {
+			$optionsContainer.removeClass('border-bottom');			
+		}
+	});
+});
+</script>
 <script type="text/javascript">
 $(document).ready(function() {
 	loadResults();
