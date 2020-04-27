@@ -164,19 +164,6 @@ return [
     'optionalWords' => ['composer', 'composers', 'piece', 'pieces', 'by', 'from'],
     'disableTypoToleranceOnWords' => ['black'],
     'disableExactOnAttributes' => [],
-    'ranking' => [
-        'asc(catalogue_number)',
-        'asc(collection_number)',
-        'asc(movement_number)',
-        'typo',
-        'geo',
-        'words',
-        'filters',
-        'proximity',
-        'attribute',
-        'exact',
-        'custom',
-    ],
     'typoTolerance' => 'true',
     'hitsPerPage' => 1000,
     'synonyms' => [
@@ -190,4 +177,3 @@ return [
     'separatorsToIndex' => '#',
     'removeWordsIfNoResults' => 'lastWords'
 ];
-

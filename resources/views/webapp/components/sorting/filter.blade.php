@@ -23,6 +23,7 @@
 			'Romantic' => 'romantic',
 			'Impressionist' => 'impressionist',
 			'Modern' => 'modern',
+			'Contemporary' => 'contemporary',
 		],
 	])
 
