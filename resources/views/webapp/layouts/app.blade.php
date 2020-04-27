@@ -94,7 +94,21 @@
             });
     });
     </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        let $optionsContainer = $('#options-container');
 
+        $(window).on('scroll', function() {
+            let scrollTop = $(window).scrollTop();
+
+            if ($optionsContainer.offset().top - scrollTop <= 0) {
+                $optionsContainer.addClass('border-bottom');
+            } else {
+                $optionsContainer.removeClass('border-bottom');         
+            }
+        });
+    });
+    </script>
     <script type="text/javascript">
     $('main').css('margin-bottom', $('#menu').height() + 20);
     </script>
