@@ -69,7 +69,7 @@ class Piece extends PianoLit
             'composer_name' => $this->composer->name,
             'nationality' => $this->composer->nationality,
             'country' => $this->composer->country->name,
-            'ethnicity' => $this->composer->ethnicity
+            'views_count' => $this->views_count
         ];
 
         return $array;
