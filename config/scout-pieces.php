@@ -161,7 +161,7 @@ return [
     */
     'allowTyposOnNumericTokens' => true,
     'advancedSyntax' => true,
-    'optionalWords' => ['composer', 'composers', 'piece', 'pieces', 'by', 'from'],
+    'optionalWords' => ['composer', 'composers', 'piece', 'pieces', 'by', 'from', 'the'],
     'disableTypoToleranceOnWords' => ['black'],
     'disableExactOnAttributes' => [],
     'typoTolerance' => 'true',
