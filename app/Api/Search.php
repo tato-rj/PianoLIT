@@ -69,6 +69,7 @@ class Search
         		$validPiece = true;
 
         		foreach ($this->request->filters as $list) {
+        			dd(json_decode($list));
 	        		if ($piece->tags_array->intersect(json_decode($list))->isEmpty()) {
 	        			$validPiece = false;
 	        			break;
