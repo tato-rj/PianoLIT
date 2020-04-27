@@ -33,7 +33,7 @@ return [
     */
 
     'customRanking' => [
-        'desc(views)',
+        'desc(created_at)',
         'desc(catalogue_number)',
         'desc(collection_number)',
         'desc(movement_number)',
