@@ -98,15 +98,18 @@
     $(document).ready(function() {
         let $optionsContainer = $('#options-container');
 
-        $(window).on('scroll', function() {
-            let scrollTop = $(window).scrollTop();
+        if ($optionsContainer) {
+            $(window).on('scroll', function() {
+                let scrollTop = $(window).scrollTop();
 
-            if ($optionsContainer.offset().top - scrollTop <= 0) {
-                $optionsContainer.addClass('border-bottom');
-            } else {
-                $optionsContainer.removeClass('border-bottom');         
-            }
-        });
+                if ($optionsContainer.offset().top - scrollTop <= 0) {
+                    $optionsContainer.addClass('border-bottom');
+                } else {
+                    $optionsContainer.removeClass('border-bottom');         
+                }
+            });
+        }
+
     });
     </script>
     <script type="text/javascript">
