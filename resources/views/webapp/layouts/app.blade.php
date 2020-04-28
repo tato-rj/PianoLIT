@@ -98,7 +98,7 @@
     $(document).ready(function() {
         let $optionsContainer = $('#options-container');
 
-        if ($optionsContainer) {
+        if ($optionsContainer.length) {
             $(window).on('scroll', function() {
                 let scrollTop = $(window).scrollTop();
 
