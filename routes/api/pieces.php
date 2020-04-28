@@ -8,7 +8,7 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::post('/find', 'Api\PiecesController@show'); // REMOVE THIS
 
-	Route::get('{piece}/timeline', 'Api\PiecesController@timeline')->name('timeline'); // DO WE NEED THIS?
+	Route::get('{piece}/timeline', 'Api\PiecesController@timeline')->name('timeline');
 
 	Route::get('{piece}/collection', 'Api\PiecesController@collection')->name('collection');
 

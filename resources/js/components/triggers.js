@@ -10,7 +10,7 @@ $('[full-load]').on('click', function() {
 	$('#loading-overlay').show();
 });
 
-$('a[data-toggle="fixed-panel"]').on('click', function() {
+$('[data-toggle="fixed-panel"]').on('click', function() {
 	let $link = $(this);
 	let $panel = $($link.attr('data-target'));
 	$link.removeClass('active');

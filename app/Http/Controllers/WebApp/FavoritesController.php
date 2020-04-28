@@ -10,6 +10,8 @@ class FavoritesController extends Controller
 {
 	public function toggle(Piece $piece)
 	{
-		return auth()->user()->favorites()->toggle($piece);
+		$status = auth()->user()->favorites()->toggle($piece);
+
+		return response()->json(auth()->user()->favorites->contains($piece) ? 'Remove from favorites' : 'Add to favorites');
 	}
 }

@@ -79,12 +79,14 @@
         event.preventDefault();
         let $button = $(this);
         let $heart = $button.find('i');
+        let $label = $(this).siblings('span.favorite-label');
 
         $button.disable().addClass('opacity-6');
 
         axios.post($button.attr('data-url-toggle'))
             .then(function(response) {
                 $heart.toggleClass('fas far');
+                $label.text(response.data);
             })
             .catch(function(error) {
                 alert('Sorry, we couldn\'t update your favorite at this time.');

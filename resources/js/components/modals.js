@@ -11,7 +11,7 @@ $('#confirm-modal').on('show.bs.modal', function(e) {
   $(this).find('form').attr('action', url);
 });
 
-$('div[data-toggle="panel"]').on('click', function() {
+$('[data-toggle="panel"]').on('click', function() {
     let target = $(this).attr('href');
     let parent = $(this).attr('href-parent');
     $(parent).add(target).toggle();
