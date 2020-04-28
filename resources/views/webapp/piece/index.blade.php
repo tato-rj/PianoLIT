@@ -2,7 +2,8 @@
 
 @push('header')
 <style type="text/css">
-.btn-outline {border-width: 1.4px !important;}
+.btn-outline {border-width: 1.4px;}
+.btn-default {padding: .6em 2.8em;}
 </style>
 @endpush
 
@@ -12,7 +13,7 @@
 <section class="text-center mb-5">
 	@include('webapp.components.piece.level')
 	<h4 class="mt-2 mb-1">{{$piece->medium_name}}</h4>
-	<p>{{$piece->composer->name}}</p>
+	<p class="text-muted">{{$piece->composer->name}}</p>
 </section>
 
 <section id="tabs-container">
