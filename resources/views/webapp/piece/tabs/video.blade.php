@@ -1,6 +1,6 @@
 <div class="tab-pane fade" id="tab-video">
 	@if($piece->hasVideos())
-	<div class="mb-4">
+	<div class="mb-5">
 		<h5 class="mb-4">PianoLIT videos</h5>
 		@each('webapp.piece.components.video', $piece->videos_array, 'video')
 	</div>

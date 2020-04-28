@@ -6,7 +6,7 @@
 @section('content')
 @include('webapp.layouts.header')
 
-<section class="text-center mb-4">
+<section class="text-center mb-5">
 	@include('webapp.components.piece.level')
 	<h4 class="mt-2 mb-1">{{$piece->medium_name}}</h4>
 	<p>{{$piece->composer->name}}</p>
