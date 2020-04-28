@@ -1,4 +1,4 @@
-<div class="mb-2">
+<div class="mb-3">
 	<div class="d-flex mb-2">
 		<div class="mr-4" style="width: 60px; min-width: 60px">
 			<img src="{{asset('images/webapp/icons/apple-music.svg')}}" class="w-100">
