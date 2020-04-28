@@ -4,7 +4,7 @@
 	data-sort-name="{{ord($piece->long_name)}}"
 	data-sort-composer="{{ord($piece->composer->name)}}"
 	data-sort-views="{{$piece->views_count}}">
-	<a href="" class="link-none">
+	<a href="{{route('webapp.pieces.show', $piece)}}" class="link-none">
 		@include('webapp.components.piece.level')
 		@include('webapp.components.piece.name')
 		@include('webapp.components.piece.composer')
