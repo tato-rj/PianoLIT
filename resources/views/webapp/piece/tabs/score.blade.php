@@ -9,9 +9,11 @@
 
 	@if($piece->isPublicDomain)
 	<div class="text-center">
-		<div class="embed-responsive embed-responsive-a4 mb-4">
+<iframe src="http://docs.google.com/viewer?url=https://pianolit.com/storage/app/score/39qJigTzwJiCgBEFYl3zeQaMKik4YKTVMvLdfir2.pdf&embedded=true" style="border: none;" height="780" width="600">
+</iframe>
+{{-- 		<div class="embed-responsive embed-responsive-a4 mb-4">
 			<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
-		</div>
+		</div> --}}
 		<a href="{{storage($piece->score_path)}}" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</a>
 	</div>
 	@endif
