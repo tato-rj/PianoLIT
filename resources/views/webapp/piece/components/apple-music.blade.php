@@ -10,6 +10,6 @@
 		</div>
 	</div>
 	<div class="text-center">
-		<a href="{{$itunes['link']}}" target="_blank" class="btn btn-sm btn-wide btn-purple-outline" style="border-width: 1.4px;">Find on @fa(['icon' => 'apple', 'fa_type' => 'b', 'mr' => 0]) Music</a>
+		<a href="{{$itunes['link']}}" target="_blank" class="btn btn-sm btn-wide btn-purple-outline btn-outline">Find on @fa(['icon' => 'apple', 'fa_type' => 'b', 'mr' => 0]) Music</a>
 	</div>
 </div>

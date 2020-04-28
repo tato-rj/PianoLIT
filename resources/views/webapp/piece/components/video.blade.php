@@ -9,6 +9,6 @@
 		</div>
 	</div>
 	<div class="text-center">
-		<button class="btn btn-sm btn-wide btn-pink-outline" style="border-width: 1.4px;">Watch now</button>
+		<button class="btn btn-sm btn-wide btn-pink-outline btn-outline">Watch now</button>
 	</div>
 </div>

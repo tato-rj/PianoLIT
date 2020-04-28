@@ -1,6 +1,9 @@
 @extends('webapp.layouts.app')
 
 @push('header')
+<style type="text/css">
+.btn-outline {border-width: 1.4px !important;}
+</style>
 @endpush
 
 @section('content')
