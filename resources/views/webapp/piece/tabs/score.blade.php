@@ -9,7 +9,7 @@
 
 	@if($piece->isPublicDomain)
 	<div class="text-center">
-<iframe src="http://docs.google.com/viewer?url=https://pianolit.com/storage/app/score/39qJigTzwJiCgBEFYl3zeQaMKik4YKTVMvLdfir2.pdf&embedded=true" style="border: none;" height="780" width="600">
+<iframe src="http://docs.google.com/viewer?url={{storage($piece->score_path)}}&embedded=true" style="border: none;" height="780" width="600">
 </iframe>
 {{-- 		<div class="embed-responsive embed-responsive-a4 mb-4">
 			<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
