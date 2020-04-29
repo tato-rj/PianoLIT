@@ -18,7 +18,7 @@
 		@else
 			<div class="text-center text-grey">
 				<h1>@fa(['icon' => 'itunes-note', 'fa_type' => 'b'])</h1>
-				<p><small>No available recordings on @fa(['icon' => 'apple', 'fa_type' => 'b'])Music.</small></p>
+				<p>No available recordings on @fa(['icon' => 'apple', 'fa_type' => 'b'])Music.</p>
 			</div>
 		@endif
 	</div>

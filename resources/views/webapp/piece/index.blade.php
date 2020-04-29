@@ -37,17 +37,12 @@
 		@include('webapp.piece.tabs.video')
 		@include('webapp.piece.tabs.score')
 		@include('webapp.piece.tabs.timeline')
-		@include('webapp.piece.components.panel')
 	</div>
 
 </section>
 
+@include('webapp.piece.components.panel')
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
-$('a.toggle-favorite span').click(function() {
-	$(this).siblings('button').click();
-});
-</script>
 @endpush

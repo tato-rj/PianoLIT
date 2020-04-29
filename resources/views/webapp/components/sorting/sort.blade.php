@@ -40,6 +40,16 @@
 	])
 
 	@include('webapp.components.sorting.option', [
+		'label' => 'SORT BY PERIOD',
+		'type' => 'radio',
+		'name' => 'period',
+		'options' => [
+			'Old to modern' => 'asc',
+			'Modern to old' => 'desc'
+		],
+	])
+
+	@include('webapp.components.sorting.option', [
 		'label' => 'SORT BY VIEWS',
 		'type' => 'radio',
 		'name' => 'views',

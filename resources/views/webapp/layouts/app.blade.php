@@ -115,6 +115,11 @@
     });
     </script>
     <script type="text/javascript">
+    $('a.toggle-favorite span').click(function() {
+        $(this).siblings('button').click();
+    });
+    </script>
+    <script type="text/javascript">
     $('main').css('margin-bottom', $('#menu').height() + 20);
     </script>
     @stack('scripts')

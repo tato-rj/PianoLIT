@@ -1,4 +1,4 @@
-@include('webapp.components.sorting', ['disabled' => false])
+@include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
 
 <section id="pieces-list"> 
 @forelse(auth()->user()->favorites as $piece)

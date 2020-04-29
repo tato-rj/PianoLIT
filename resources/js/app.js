@@ -1,4 +1,4 @@
-require('./bootstrap');
+require('./bootstrap/app');
 require('dragscroll/dragscroll.js');
 require('./vendor/clamp');
 require('./helpers/display');

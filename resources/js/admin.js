@@ -1,4 +1,4 @@
-require('./bootstrap');
+require('./bootstrap/admin');
 require('inputmask/dist/jquery.inputmask.bundle.js');
 require('./helpers/cookie');
 require('./helpers/time');

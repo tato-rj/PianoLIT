@@ -1,8 +1,10 @@
 <div class="border-bottom py-2 piece-result {{str_slug($piece->long_name)}}" 
+	data-tags="{{$piece->tags->pluck('name')->implode(' ')}}"
 	data-sort-level="{{$piece->level_order}}"
 	data-sort-catalogue="{{ord($piece->catalogue_full_name).''.$piece->catalogue_number.''.$piece->collection_number}}"
 	data-sort-name="{{ord($piece->long_name)}}"
 	data-sort-composer="{{ord($piece->composer->name)}}"
+	data-sort-period="{{$piece->period->id}}"
 	data-sort-views="{{$piece->views_count}}">
 	<a href="{{route('webapp.pieces.show', $piece)}}" class="link-none">
 		@include('webapp.components.piece.level')

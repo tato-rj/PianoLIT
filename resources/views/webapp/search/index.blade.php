@@ -57,7 +57,7 @@ function loadResults() {
 	window.loading = true;
 
 	if (! window.done) {
-		axios.get(url(), {params: {filters: window.filters}})
+		axios.get(makeUrl(), {params: {filters: window.filters}})
 		.then(function(response) {
 			window.loading = false;
 			window.done = response.data == '';
@@ -82,10 +82,10 @@ function loadResults() {
 </script>
 
 <script type="text/javascript">
-$('#filters-container input[type="checkbox"]').change(function() {
+$('#server-filter input[type="checkbox"]').change(function() {
 	let filters = [];
 
-	$('#filters-container .options-columns > div').each(function(index) {
+	$('#server-filter .options-columns > div').each(function(index) {
 		let arr = $(this).find('input[type="checkbox"]:checked').attrToArray('value');
 
 		if (arr.length)
@@ -98,7 +98,7 @@ $('#filters-container input[type="checkbox"]').change(function() {
 });
 </script>
 <script type="text/javascript">
-function url() {
+function makeUrl() {
 	return window.location.href + '&lazy-load&page=' + window.page;
 }
 

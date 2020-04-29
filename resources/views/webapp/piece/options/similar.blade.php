@@ -6,20 +6,21 @@
 @section('content')
 @include('webapp.layouts.header')
 
-<div class="text-center mb-3">
-	@if($playlist->cover_image)
-	<img src="{{$playlist->cover_image}}" style="width: 180px" class="rounded mb-4">
-	@endif
-	<h3>{{$playlist->name}}</h3>
-	<p>{{$playlist->description}}</p>
+@include('webapp.piece.options.header')
+
+<div class="text-center">
+	<p class="mb-1">We found {{$similar->count()}} {{str_plural('piece', $similar->count())}} similar to</p>
+	<h5 class="m-0">{{$piece->medium_name}}</h5>
+	<p class="text-muted">by {{$piece->composer->name}}</p>
 </div>
 
 @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
 
 <section id="pieces-list">
-@each('webapp.components.piece', $playlist->pieces, 'piece')
+@each('webapp.components.piece', $similar, 'piece')
 </section>
 
+@include('webapp.piece.components.panel')
 @endsection
 
 @push('scripts')

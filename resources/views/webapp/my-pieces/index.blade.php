@@ -59,6 +59,44 @@
 
 @push('scripts')
 <script type="text/javascript">
+$('#local-filter input[type="checkbox"]').change(function() {
+	let filters = [];
+
+	$('#local-filter .options-columns > div').each(function(index) {
+		let arr = $(this).find('input[type="checkbox"]:checked').attrToArray('value');
+
+		if (arr.length)
+			filters.push(arr);
+	});
+
+	reset();
+
+	if (filters.length)
+	    applyFilters(filters);
+});
+
+function reset() {
+	$('.piece-result').show();
+}
+
+function applyFilters(filters) {
+	$('.piece-result').hide();
+
+	$('.piece-result').each(function() {
+		let tags = $(this).data('tags');
+		let valid = 0;
+
+		for (i=0; i < filters.length; i++) {
+			if (filters[i].some(tags.includes.bind(tags)))
+				valid += 1;
+		}
+
+		if (valid == filters.length) $(this).show();
+	});
+}
+</script>
+
+<script type="text/javascript">
 jQuery.fn.match = function(element) {
 	let pos = element.index() * 160;
 	return this.css({

@@ -14,4 +14,23 @@ class PiecesController extends Controller
 
     	return view('webapp.piece.index', compact(['piece', 'timeline']));
     }
+
+    public function about(Piece $piece)
+    {
+    	$siblings = $piece->siblings()->each->isFavorited(auth()->user()->id);
+
+    	return view('webapp.piece.options.about', compact(['piece', 'siblings']));
+    }
+
+    public function composer(Piece $piece)
+    {
+    	return view('webapp.piece.options.composer', compact('piece'));
+    }
+
+    public function similar(Piece $piece)
+    {
+    	$similar = $piece->similar()->each->isFavorited(auth()->user()->id);
+
+    	return view('webapp.piece.options.similar', compact(['piece', 'similar']));
+    }
 }
