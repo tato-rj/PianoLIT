@@ -33,4 +33,9 @@ class PiecesController extends Controller
 
     	return view('webapp.piece.options.similar', compact(['piece', 'similar']));
     }
+
+    public function audio(Piece $piece)
+    {
+        return view('webapp.piece.audio.player', compact('piece'))->render();
+    }
 }

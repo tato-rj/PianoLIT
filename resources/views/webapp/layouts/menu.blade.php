@@ -8,11 +8,11 @@
 			@include('webapp.layouts.menu-item', ['url' => route('webapp.settings'), 'icon' => 'cog', 'label' => 'Settings'])
 		</div>
 	</div>
+
 	<div id="bottom-popup" style="display: none; z-index: 9" class="position-relative">
 		<div class="position-absolute" style="bottom: 90px; left: 50%; transform: translateX(-50%);">
 			<div class="animated fadeInUp">
-				<div id="bottom-popup-content" class="bg-white rounded p-4 shadow-center">
-				</div>
+				<div id="bottom-popup-content" class="bg-white rounded shadow-center"></div>
 			</div>
 		</div>
 	</div>

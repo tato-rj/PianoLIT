@@ -112,6 +112,7 @@
             });
         }
 
+        $('#bottom-popup > div').css('bottom', $('#bottom-popup').siblings('.row').outerHeight() + 14);
     });
     </script>
     <script type="text/javascript">

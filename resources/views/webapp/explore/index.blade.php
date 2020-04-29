@@ -32,13 +32,6 @@
 
 @push('scripts')
 <script type="text/javascript">
-function showBottomPopup(html) {
-	$('#bottom-popup > div').css('bottom', $('#bottom-popup').siblings('.row').outerHeight() + 14);
-	$('#bottom-popup-content').html(html);
-	$('#bottom-popup').show();
-}
-</script>
-<script type="text/javascript">
 $('#tags-search .tag').on('click', function() {
 	$('#tags-search button').disable();
 	$('#tags-search .tag').not(this).removeClass('btn-teal');
@@ -48,7 +41,8 @@ $('#tags-search .tag').on('click', function() {
 
   	axios.get(window.urls.searchCount, {params: {search: tags.join(' ')}})
   		.then(function(response) {
-  			showBottomPopup(response.data);
+  			$('#bottom-popup-content').html(response.data)
+  			$('#bottom-popup').show();
   		})
   		.catch(function(error) {
   			$('#bottom-popup').fadeOut('fast');

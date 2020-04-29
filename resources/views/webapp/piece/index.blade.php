@@ -2,6 +2,11 @@
 
 @push('header')
 <style type="text/css">
+.mirror {
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+}
+
 .btn-outline {border-width: 1.4px;}
 .btn-default {padding: .6em 2.8em;}
 
@@ -45,4 +50,46 @@
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$(document).on('change', 'input#audio-speed', function() {
+	let speed = $(this).val();
+	let label = speed != 1 ? speed + 'x ' : null;
+	document.getElementById('audio-control').playbackRate = speed;
+	$('#speed-label').text(label);
+
+});
+
+$(document).on('click', '#close-player', function() {
+	let player = document.getElementById($(this).data('player'));
+	console.log(player);
+	player.pause();
+	player.currentTime = 0;
+
+	$('#bottom-popup').fadeOut('fast');
+});
+
+$(document).on('click', '#toggle-player', function() {
+	$('#player-body').toggle();
+	$(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
+});
+</script>
+<script type="text/javascript">
+$('button#launch-audio').click(function() {
+	let $btn = $(this);
+	$btn.disable();
+
+	axios.get($btn.data('url'))
+		.then(function(response) {
+  			$('#bottom-popup-content').html(response.data)
+  			$('#bottom-popup-content > div').width($('main').width());
+  			$('#bottom-popup').show();
+		})
+  		.catch(function(error) {
+  			$('#bottom-popup').fadeOut('fast');
+  		})
+  		.then(function() {
+  			$btn.enable();
+  		});
+});
+</script>
 @endpush

@@ -1,4 +1,4 @@
-<div class="text-center">
+<div class="text-center p-4">
 	<p class="m-0 text-nowrap">We found <strong>{{$count}} {{ str_plural('piece', $count) }}</strong></p>
 	@if($count)
 	<form class="mt-3" method="GET" action="{{route('webapp.search.results')}}">

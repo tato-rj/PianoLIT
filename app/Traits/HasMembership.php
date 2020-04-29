@@ -61,6 +61,11 @@ trait HasMembership
         return $this->membership->validate($request);
     }
 
+    public function isAuthorized()
+    {
+        return in_array($this->getStatus(), ['active', 'trial']);
+    }
+
     public function callApple($receipt_data, $password)
     {
         $client = new Client([

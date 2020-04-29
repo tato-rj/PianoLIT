@@ -65,6 +65,7 @@ class Kernel extends HttpKernel
         'search.driver' => \App\Http\Middleware\Search\CheckForLocalQueries::class,
         'log.web' => \App\Http\Middleware\Logs\RecordWebLog::class,
         'log.app' => \App\Http\Middleware\Logs\RecordAppLog::class,
+        'member' => \App\Http\Middleware\CheckForMembership::class,
     ];
 
     /**
