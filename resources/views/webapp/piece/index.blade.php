@@ -51,6 +51,11 @@
 
 @push('scripts')
 <script type="text/javascript">
+$(window).blur(function() {
+    stopAudio();
+});
+</script>
+<script type="text/javascript">
 $(document).on('change', 'input#audio-speed', function() {
 	let speed = $(this).val();
 	let label = speed != 1 ? speed + 'x ' : null;
@@ -60,15 +65,11 @@ $(document).on('change', 'input#audio-speed', function() {
 });
 
 $(document).on('click', '#close-player', function() {
-	let player = document.getElementById($(this).data('player'));
-	console.log(player);
-	player.pause();
-	player.currentTime = 0;
-
+	stopAudio();
 	$('#bottom-popup').fadeOut('fast');
 });
 
-$(document).on('click', '#toggle-player', function() {
+$(document).on('click', '#player-header', function() {
 	$('#player-body').toggle();
 	$(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
 });
@@ -91,5 +92,13 @@ $('button#launch-audio').click(function() {
   			$btn.enable();
   		});
 });
+
+function stopAudio() {
+	let players = document.getElementsByTagName('audio');
+	for (i=0; i<players.length; i++) {
+		players[i].pause();
+		players[i].currentTime = 0;
+	}
+}
 </script>
 @endpush
