@@ -14,6 +14,11 @@ trait PieceStatus
         return (bool) $this->audio_path;
     }
 
+    public function hasSeparateHandsAudio()
+    {
+        return (bool) $this->audio_rh && $this->audio_lh;        
+    }
+
     public function hasTags()
     {
         return $this->tags()->exists();

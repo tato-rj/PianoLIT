@@ -1,4 +1,4 @@
-@if($piece->audio_lh && $piece->audio_rh)
+@if($piece->hasSeparateHandsAudio())
 <div class="d-flex align-items-center mr-3" id="select-hand">
 	<button class="btn-raw text-muted opacity-4" data-target="#lh-player" title="Left hand only">
 		<div>@fa(['size' => 'lg', 'icon' => 'hand-paper', 'classes' => 'mirror', 'mr' => 0])</div>

@@ -36,6 +36,6 @@ class PiecesController extends Controller
 
     public function audio(Piece $piece)
     {
-        return view('webapp.piece.audio.player', compact('piece'))->render();
+        return view('webapp.piece.components.audio', compact('piece'))->render();
     }
 }

@@ -1,6 +1,7 @@
 @extends('webapp.layouts.app')
 
 @push('header')
+<link rel="stylesheet" href="https://cdn.plyr.io/3.6.1/plyr.css" />
 <style type="text/css">
 .mirror {
 	-webkit-transform: scaleX(-1);
@@ -52,6 +53,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.plyr.io/3.6.1/plyr.js"></script>
 <script type="text/javascript">
 $(document).on('click', '#select-hand button', function() {
 	$('#select-hand button').disable();
@@ -155,6 +157,26 @@ function showPlayer(player) {
 </script>
 
 <script type="text/javascript">
+$('button[data-action="video"]').on('click', function() {
+	stopVideo();
+	let videoId = $(this).data('target');
+	let player = new Plyr(videoId);
+	$(this).find('> div:first-of-type').hide();
+	$(videoId).show();
+});
+
+function stopVideo() {
+	$('video').each(function() {
+		let $video = $(this);
+		$video.get(0).pause();
+		$video.get(0).currentTime = 0;
+		$video.hide();
+		$video.closest('.video-container').find('div').show();
+	});
+}
+</script>
+
+<script type="text/javascript">
 var hidden, visibilityChange; 
 if (typeof document.hidden !== "undefined") {
   hidden = "hidden";
@@ -168,7 +190,10 @@ if (typeof document.hidden !== "undefined") {
 }
 
 function handleVisibilityChange() {
-  if (document[hidden]) stopAudio();
+  if (document[hidden]) {
+  	stopAudio();
+  	stopVideo();
+  }
 }
 
 if (typeof document.addEventListener === "undefined" || hidden === undefined) {

@@ -2,7 +2,9 @@
 	@if($piece->hasVideos())
 	<div class="mb-5">
 		<h5 class="mb-4">PianoLIT videos</h5>
-		@each('webapp.piece.components.video', $piece->videos_array, 'video')
+		@foreach($piece->videos_array as $video)
+			@include('webapp.piece.components.video')
+		@endforeach
 	</div>
 	@else
 	<div class="text-center py-4">
