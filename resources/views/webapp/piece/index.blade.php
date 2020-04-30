@@ -7,6 +7,8 @@
 	transform: scaleX(-1);
 }
 
+.hands-lg {font-size: 240%;}
+
 .btn-outline {border-width: 1.4px;}
 .btn-default {padding: .6em 2.8em;}
 
@@ -97,9 +99,16 @@ $(document).on('click', '#close-player', function() {
 	$('#bottom-popup').fadeOut('fast');
 });
 
-$(document).on('click', '#player-header > div:first-of-type, #toggle-player', function() {
+$(document).on('click', '#player-header > .flex-grow, #toggle-player', function() {
 	$('#player-body').toggle();
-	$(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
+	$('#toggle-player i').toggleClass('fa-chevron-down fa-chevron-up');
+});
+
+$(document).on('click', '#expand-player', function() {
+	$(this).find('i').toggleClass('fa-expand fa-compress');
+	$('#player-body > div:first-of-type').toggleClass('flex-column align-items-center');
+	$('#select-hand').toggleClass('mr-3 mb-3 hands-lg');
+	$('#select-hand button').toggleClass('mx-2').find('>div:last-of-type').toggle();
 });
 </script>
 <script type="text/javascript">
