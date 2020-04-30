@@ -54,25 +54,23 @@
 $(document).on('click', '#select-hand button', function() {
 	let $player = null;
 	let $hand = $(this);
-	
-	stopAudio();
-
-	resetSpeed();
 
 	$hand.toggleClass('text-muted opacity-4 text-teal');
 
 	let rh = $hand.hasClass('text-teal');
-	let lh = $hand.siblings('button').hasClass('text-teal');
+	let lh = $hand.siblings('button').hasClass('text-teal');	
+	
+	stopAudio();
+	resetSpeed();
+	hidePlayers();
 
-	$('.audio-control').addClass('d-none');
-
-	if (rh == lh) {
+	if (rh === lh) {
 		$player = $('#full-player');
 	} else {
 		$player = $($hand.data('target'));		
 	}
 
-	$player.removeClass('d-none');
+	showPlayer($player);
 
 	if (rh || lh)
 		$player.get(0).play();
@@ -129,6 +127,14 @@ function resetSpeed() {
 		$(this).get(0).playbackRate = 1;
 	});
 }
+
+function hidePlayers() {
+	$('.audio-control').addClass('d-none');
+}
+
+function showPlayer(player) {
+	player.removeClass('d-none');	
+} 
 </script>
 
 <script type="text/javascript">
