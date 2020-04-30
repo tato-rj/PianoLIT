@@ -52,28 +52,36 @@
 @push('scripts')
 <script type="text/javascript">
 $(document).on('click', '#select-hand button', function() {
-	let $player = null;
-	let $hand = $(this);
+	$('#select-hand button').disable();
 
-	$hand.toggleClass('text-muted opacity-4 text-teal');
+	if ($('audio:visible').get(0).readyState > 0) {
+		let $player = null;
+		let $hand = $(this);
 
-	let rh = $hand.hasClass('text-teal');
-	let lh = $hand.siblings('button').hasClass('text-teal');	
-	
-	stopAudio();
-	resetSpeed();
-	hidePlayers();
+		$hand.toggleClass('text-muted opacity-4 text-teal');
 
-	if (rh === lh) {
-		$player = $('#full-player');
-	} else {
-		$player = $($hand.data('target'));		
+		let rh = $hand.hasClass('text-teal');
+		let lh = $hand.siblings('button').hasClass('text-teal');	
+		
+		stopAudio();
+		resetSpeed();
+		hidePlayers();
+
+		if (rh == lh) {
+			$player = $('#full-player');
+		} else {
+			$player = $($hand.data('target'));		
+		}
+
+		showPlayer($player);
+
+		if (rh || lh) {
+			$player.get(0).load();
+			$player.get(0).play();
+		}
+
+		$('#select-hand button').enable();
 	}
-
-	showPlayer($player);
-
-	if (rh || lh)
-		$player.get(0).play();
 });
 
 $(document).on('change', 'input#audio-speed', function() {
@@ -129,11 +137,11 @@ function resetSpeed() {
 }
 
 function hidePlayers() {
-	$('.audio-control').hide();
+	$('.audio-control').addClass('d-none');
 }
 
 function showPlayer(player) {
-	player.show();	
+	player.removeClass('d-none');	
 } 
 </script>
 
