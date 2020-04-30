@@ -69,7 +69,7 @@ $(document).on('click', '#select-hand button', function() {
 	}
 
 	if (rh || lh)
-		player.play();
+		// player.play();
 });
 
 $(document).on('change', 'input#audio-speed', function() {
