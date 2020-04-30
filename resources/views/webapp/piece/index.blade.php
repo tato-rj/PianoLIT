@@ -76,12 +76,12 @@ $(document).on('click', '#select-hand button', function() {
 	
 	$player.get(0).load();
 	
-	// if (rh || lh)
-	// 	$player.get(0).play();
+	if (rh || lh)
+		$player.get(0).play();
 
-	$player.get(0).onloadeddata = function() {
-	    // $('#select-hand button').enable();
-	};
+	setTimeout(function() {
+		$('#select-hand button').enable();
+	}, 500);
 });
 
 $(document).on('change', 'input#audio-speed', function() {
