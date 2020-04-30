@@ -79,7 +79,7 @@ $(document).on('click', '#select-hand button', function() {
 	if (rh || lh)
 		$player.get(0).play();
 
-	$player.get(0).onloadeddata = function() {
+	$player.get(0).canplay = function() {
 	    $('#select-hand button').enable();
 	};
 });
