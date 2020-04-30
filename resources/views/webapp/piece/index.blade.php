@@ -54,34 +54,34 @@
 $(document).on('click', '#select-hand button', function() {
 	$('#select-hand button').disable();
 
-	if ($('audio:visible').get(0).readyState > 0) {
-		let $player = null;
-		let $hand = $(this);
+	let $player = null;
+	let $hand = $(this);
 
-		$hand.toggleClass('text-muted opacity-4 text-teal');
+	$hand.toggleClass('text-muted opacity-4 text-teal');
 
-		let rh = $hand.hasClass('text-teal');
-		let lh = $hand.siblings('button').hasClass('text-teal');	
-		
-		stopAudio();
-		resetSpeed();
-		hidePlayers();
+	let rh = $hand.hasClass('text-teal');
+	let lh = $hand.siblings('button').hasClass('text-teal');	
+	
+	stopAudio();
+	resetSpeed();
+	hidePlayers();
 
-		if (rh == lh) {
-			$player = $('#full-player');
-		} else {
-			$player = $($hand.data('target'));		
-		}
-
-		showPlayer($player);
-
-		if (rh || lh) {
-			$player.get(0).load();
-			$player.get(0).play();
-		}
-
-		$('#select-hand button').enable();
+	if (rh == lh) {
+		$player = $('#full-player');
+	} else {
+		$player = $($hand.data('target'));		
 	}
+
+	showPlayer($player);
+
+	if (rh || lh) {
+		$player.get(0).load();
+		$player.get(0).play();
+	}
+
+	$player.get(0).onloadeddata = function() {
+	    $('#select-hand button').enable();
+	};
 });
 
 $(document).on('change', 'input#audio-speed', function() {
