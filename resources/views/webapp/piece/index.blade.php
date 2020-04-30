@@ -73,11 +73,11 @@ $(document).on('click', '#select-hand button', function() {
 	}
 
 	showPlayer($player);
-
-	if (rh || lh) {
-		$player.get(0).load();
+	
+	$player.get(0).load();
+	
+	if (rh || lh)
 		$player.get(0).play();
-	}
 
 	$player.get(0).onloadeddata = function() {
 	    $('#select-hand button').enable();
