@@ -1,5 +1,5 @@
 <div class="mb-4">
-	<h5>Free weekly pick</h5>
+	<h5 class="mb-3">Free weekly pick</h5>
 	<div class="">
 		@foreach($row['content'] as $piece)
 		<div class=" cursor-pointer bg-align-center rounded d-flex d-apart flex-column p-3 piece-card" data-url="{{route('webapp.pieces.show', $piece)}}" style="background-image: url({{$piece->background}}); height: 200px">

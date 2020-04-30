@@ -4,7 +4,7 @@ namespace App;
 
 abstract class Person extends PianoLit
 {
-    protected $appends = ['last_name', 'short_name', 'month_of_birth', 'day_of_birth'];
+    protected $appends = ['last_name', 'first_name', 'short_name', 'month_of_birth', 'day_of_birth'];
     protected $dates = ['date_of_birth', 'date_of_death'];
     protected $with = ['country'];
 
@@ -132,6 +132,11 @@ abstract class Person extends PianoLit
     public function getLastNameAttribute()
     {
         return splitname($this->name)['last'];
+    }
+
+    public function getReverseNameAttribute()
+    {
+        return $this->last_name . ', ' . str_replace($this->last_name, '', $this->name);
     }
 
     public function scopeBornBetween($query, $years)

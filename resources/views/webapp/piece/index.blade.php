@@ -1,7 +1,6 @@
 @extends('webapp.layouts.app')
 
 @push('header')
-<link rel="stylesheet" href="https://cdn.plyr.io/3.6.1/plyr.css" />
 <style type="text/css">
 .mirror {
 	-webkit-transform: scaleX(-1);
@@ -53,7 +52,6 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.plyr.io/3.6.1/plyr.js"></script>
 <script type="text/javascript">
 $(document).on('click', '#select-hand button', function() {
 	$('#select-hand button').disable();

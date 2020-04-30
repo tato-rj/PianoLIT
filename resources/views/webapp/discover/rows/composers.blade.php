@@ -1,5 +1,8 @@
 <div class="mb-4">
-	<h5>Composers</h5>
+	<div class="d-flex d-apart mb-3">
+		<h5 class="m-0">Composers</h5>
+		<a href="{{route('webapp.composers.index')}}" class="link-blue">View all</a>
+	</div>
 	<div class="custom-scroll dragscroll dragscroll-horizontal">
 		<div class="d-flex pb-2">
 			@foreach($row['content'] as $composer)
