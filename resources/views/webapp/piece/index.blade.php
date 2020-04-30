@@ -55,15 +55,17 @@ $(document).on('click', '#select-hand button', function() {
 	let $hand = $(this);
 	let player = document.getElementById('audio-control');
 	
+	player.pause();
+
 	$hand.toggleClass('text-muted opacity-4 text-teal');
 
 	let rh = $hand.hasClass('text-teal');
 	let lh = $hand.siblings('button').hasClass('text-teal');
 
 	if (rh == lh) {
-		player.setAttribute('src', $('#select-hand').data('audio'));
+		player.src = $('#select-hand').data('audio');
 	} else {
-		player.setAttribute('src', $('#select-hand button.text-teal').data('audio'));
+		player.src = $('#select-hand button.text-teal').data('audio');
 	}
 
 	if (rh || lh)
