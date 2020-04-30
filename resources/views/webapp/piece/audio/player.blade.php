@@ -1,6 +1,6 @@
 <div id="audio-player">
 	<div id="player-header" class="d-flex px-3 py-2 cursor-pointer">
-		<div class="flex-grow">
+		<div class="flex-grow clamp-1">
 			<strong>{{$piece->medium_name}}</strong>
 			<span class="text-muted" id="speed-label"></span>
 		</div>
