@@ -51,11 +51,6 @@
 
 @push('scripts')
 <script type="text/javascript">
-$(window).blur(function() {
-    stopAudio();
-});
-</script>
-<script type="text/javascript">
 $(document).on('change', 'input#audio-speed', function() {
 	let speed = $(this).val();
 	let label = speed != 1 ? speed + 'x ' : null;
@@ -99,6 +94,30 @@ function stopAudio() {
 		players[i].pause();
 		players[i].currentTime = 0;
 	}
+}
+</script>
+
+<script type="text/javascript">
+var hidden, visibilityChange; 
+if (typeof document.hidden !== "undefined") {
+  hidden = "hidden";
+  visibilityChange = "visibilitychange";
+} else if (typeof document.msHidden !== "undefined") {
+  hidden = "msHidden";
+  visibilityChange = "msvisibilitychange";
+} else if (typeof document.webkitHidden !== "undefined") {
+  hidden = "webkitHidden";
+  visibilityChange = "webkitvisibilitychange";
+}
+
+function handleVisibilityChange() {
+  if (document[hidden]) stopAudio();
+}
+
+if (typeof document.addEventListener === "undefined" || hidden === undefined) {
+  console.log("This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.");
+} else {
+  document.addEventListener(visibilityChange, handleVisibilityChange, false);
 }
 </script>
 @endpush
