@@ -61,9 +61,9 @@ $(document).on('click', '#select-hand button', function() {
 	let lh = $hand.siblings('button').hasClass('text-teal');
 
 	if (rh == lh) {
-		player.src = $('#select-hand').data('audio');
+		player.setAttribute('src', $('#select-hand').data('audio'));
 	} else {
-		player.src = $('#select-hand button.text-teal').data('audio');
+		player.setAttribute('src', $('#select-hand button.text-teal').data('audio'));
 	}
 
 	if (rh || lh)
