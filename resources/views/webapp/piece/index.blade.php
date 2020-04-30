@@ -80,7 +80,7 @@ $(document).on('click', '#select-hand button', function() {
 	// 	$player.get(0).play();
 
 	$player.get(0).onloadeddata = function() {
-	    $('#select-hand button').enable();
+	    // $('#select-hand button').enable();
 	};
 });
 
