@@ -51,12 +51,30 @@
 
 @push('scripts')
 <script type="text/javascript">
+$(document).on('click', '#select-hand button', function() {
+	let $hand = $(this);
+	let player = document.getElementById('audio-control');
+	
+	$hand.toggleClass('text-muted opacity-4 text-teal');
+
+	let rh = $hand.hasClass('text-teal');
+	let lh = $hand.siblings('button').hasClass('text-teal');
+
+	if (rh == lh) {
+		player.src = $('#select-hand').data('audio');
+	} else {
+		player.src = $('#select-hand button.text-teal').data('audio');
+	}
+
+	if (rh || lh)
+		player.play();
+});
+
 $(document).on('change', 'input#audio-speed', function() {
 	let speed = $(this).val();
-	let label = speed != 1 ? speed + 'x ' : null;
+	let label = speed != 1 ? ' - ' + speed + 'x normal speed' : null;
 	document.getElementById('audio-control').playbackRate = speed;
 	$('#speed-label').text(label);
-
 });
 
 $(document).on('click', '#close-player', function() {
@@ -64,7 +82,7 @@ $(document).on('click', '#close-player', function() {
 	$('#bottom-popup').fadeOut('fast');
 });
 
-$(document).on('click', '#player-header', function() {
+$(document).on('click', '#player-header > div:first-of-type, #toggle-player', function() {
 	$('#player-body').toggle();
 	$(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
 });

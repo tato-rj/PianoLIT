@@ -1,12 +1,4 @@
 <div class="tab-pane fade" id="tab-score">
-	@if($piece->hasAudio())
-	<div class="mb-2">
-	<audio controls class="w-100">
-		<source src="{{storage($piece->audio_path)}}" type="audio/mp3">
-	</audio>
-	</div>
-	@endif
-
 	@if($piece->isPublicDomain)
 	<div class="text-center mb-4">
 		<div class="embed-responsive embed-responsive-a4 mb-4">
