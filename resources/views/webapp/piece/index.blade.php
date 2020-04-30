@@ -68,7 +68,7 @@ $(document).on('click', '#select-hand button', function() {
 		player.src = $('#select-hand button.text-teal').data('audio');
 	}
 
-	if (rh || lh)
+	// if (rh || lh)
 		// player.play();
 });
 
