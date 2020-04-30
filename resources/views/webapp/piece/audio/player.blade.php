@@ -25,7 +25,7 @@
 		</div>
 		<div>
 			@foreach($piece->audioArray as $key => $audio)
-			<audio preload controls class="w-100 audio-control {{$loop->first ? null : 'd-none'}}" id="{{$key}}-player">
+			<audio preload controls class="w-100 audio-control" style="display: {{$loop->first ? 'block' : 'none'}}" id="{{$key}}-player">
 				<source src="{{$audio}}" type="audio/mp3">
 			</audio>
 			@endforeach

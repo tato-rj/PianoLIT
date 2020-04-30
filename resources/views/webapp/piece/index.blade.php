@@ -129,11 +129,11 @@ function resetSpeed() {
 }
 
 function hidePlayers() {
-	$('.audio-control').addClass('d-none');
+	$('.audio-control').hide();
 }
 
 function showPlayer(player) {
-	player.removeClass('d-none');	
+	player.show();	
 } 
 </script>
 
