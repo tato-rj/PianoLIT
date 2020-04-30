@@ -52,30 +52,37 @@
 @push('scripts')
 <script type="text/javascript">
 $(document).on('click', '#select-hand button', function() {
+	let $player = null;
 	let $hand = $(this);
-	let player = document.getElementById('audio-control');
 	
-	player.pause();
+	stopAudio();
+
+	resetSpeed();
 
 	$hand.toggleClass('text-muted opacity-4 text-teal');
 
 	let rh = $hand.hasClass('text-teal');
 	let lh = $hand.siblings('button').hasClass('text-teal');
 
+	$('.audio-control').addClass('d-none');
+
 	if (rh == lh) {
-		player.src = $('#select-hand').data('audio');
+		$player = $('#full-player');
 	} else {
-		player.src = $('#select-hand button.text-teal').data('audio');
+		$player = $($hand.data('target'));		
 	}
 
-	// if (rh || lh)
-		// player.play();
+	$player.removeClass('d-none');
+
+	if (rh || lh)
+		$player.get(0).play();
 });
 
 $(document).on('change', 'input#audio-speed', function() {
 	let speed = $(this).val();
 	let label = speed != 1 ? ' - ' + speed + 'x normal speed' : null;
-	document.getElementById('audio-control').playbackRate = speed;
+
+	$('.audio-control:visible').get(0).playbackRate = speed;
 	$('#speed-label').text(label);
 });
 
@@ -109,11 +116,18 @@ $('button#launch-audio').click(function() {
 });
 
 function stopAudio() {
-	let players = document.getElementsByTagName('audio');
-	for (i=0; i<players.length; i++) {
-		players[i].pause();
-		players[i].currentTime = 0;
-	}
+	$('audio').each(function() {
+		$(this).get(0).pause();
+		$(this).get(0).currentTime = 0;
+	});
+}
+
+function resetSpeed() {
+	$('#audio-speed').val(1);
+	$('#speed-label').text('');
+	$('.audio-control').each(function() {
+		$(this).get(0).playbackRate = 1;
+	});
 }
 </script>
 

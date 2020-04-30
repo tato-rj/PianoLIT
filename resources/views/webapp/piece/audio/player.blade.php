@@ -12,9 +12,9 @@
 	<div id="player-body" class="p-3 border-top">
 		<div class="d-flex mb-3">
 			@if($piece->audio_lh && $piece->audio_rh)
-			<div class="d-flex align-items-center mr-3 pr-3 border-right" id="select-hand" data-audio="{{$piece->audio}}">
-				<button class="btn-raw text-muted opacity-4" data-audio="{{$piece->audio_lh}}" title="Left hand only">@fa(['size' => 'lg', 'icon' => 'hand-paper', 'classes' => 'mirror', 'mr' => 0])</button>
-				<button class="btn-raw text-muted opacity-4" data-audio="{{$piece->audio_rh}}" title="Right hand only">@fa(['size' => 'lg', 'icon' => 'hand-paper', 'mr' => 0, 'ml' => 2])</button>
+			<div class="d-flex align-items-center mr-3 pr-3 border-right" id="select-hand">
+				<button class="btn-raw text-muted opacity-4" data-target="#lh-player" title="Left hand only">@fa(['size' => 'lg', 'icon' => 'hand-paper', 'classes' => 'mirror', 'mr' => 0])</button>
+				<button class="btn-raw text-muted opacity-4" data-target="#rh-player" title="Right hand only">@fa(['size' => 'lg', 'icon' => 'hand-paper', 'mr' => 0, 'ml' => 2])</button>
 			</div>
 			@endif
 			<div class="flex-grow d-flex align-items-center">
@@ -24,9 +24,11 @@
 			</div>
 		</div>
 		<div>
-			<audio id="audio-control" controls src="{{$piece->audio}}" type="audio/mp3" class="w-100">
-
+			@foreach($piece->audioArray as $key => $audio)
+			<audio controls class="w-100 audio-control {{$loop->first ? null : 'd-none'}}" id="{{$key}}-player">
+				<source src="{{$audio}}" type="audio/mp3">
 			</audio>
+			@endforeach
 		</div>
 	</div>
 </div>

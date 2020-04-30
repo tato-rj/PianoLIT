@@ -24,6 +24,11 @@ trait PieceExtraAttributes
         return storage($this->audio_path_lh);        
     }
 
+    public function getAudioArrayAttribute()
+    {
+        return array_filter(['full' => $this->audio, 'rh' => $this->audio_rh, 'lh' => $this->audio_lh]);
+    }
+
     public function getTagsListAttribute()
     {
         return $this->tags->implode('name', ',');
