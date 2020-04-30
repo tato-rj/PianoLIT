@@ -79,9 +79,9 @@ $(document).on('click', '#select-hand button', function() {
 	if (rh || lh)
 		$player.get(0).play();
 
-	setTimeout(function() {
-		$('#select-hand button').enable();
-	}, 500);
+	$player.get(0).oncanplay = function() {
+	    $('#select-hand button').enable();
+	};
 });
 
 $(document).on('change', 'input#audio-speed', function() {
