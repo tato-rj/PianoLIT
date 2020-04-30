@@ -24,8 +24,8 @@
 			</div>
 		</div>
 		<div>
-			<audio id="audio-control" controls class="w-100">
-				<source src="{{$piece->audio}}" type="audio/mp3">
+			<audio id="audio-control" controls src="{{$piece->audio}}" type="audio/mp3" class="w-100">
+
 			</audio>
 		</div>
 	</div>
