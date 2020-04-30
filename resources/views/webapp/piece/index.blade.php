@@ -163,15 +163,19 @@ $('button[data-action="video"]').on('click', function() {
 	let player = new Plyr(videoId);
 	$(this).find('> div:first-of-type').hide();
 	$(videoId).show();
+	$(this).closest('.video-container').addClass('border rounded p-2');
 });
 
-function stopVideo() {
+function stopVideo(reset = true) {
 	$('video').each(function() {
 		let $video = $(this);
 		$video.get(0).pause();
-		$video.get(0).currentTime = 0;
-		$video.hide();
-		$video.closest('.video-container').find('div').show();
+
+		if (reset) {
+			$video.get(0).currentTime = 0;
+			$video.hide();
+			$video.closest('.video-container').removeClass('border rounded p-2 ').find('div').show();
+		}
 	});
 }
 </script>
@@ -192,7 +196,7 @@ if (typeof document.hidden !== "undefined") {
 function handleVisibilityChange() {
   if (document[hidden]) {
   	stopAudio();
-  	stopVideo();
+  	stopVideo(reset = false);
   }
 }
 
