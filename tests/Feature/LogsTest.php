@@ -89,6 +89,18 @@ class LogsTest extends AppTest
     }
 
     /** @test */
+    public function visits_on_webapp_are_stored_on_redis()
+    {
+        $this->signIn();
+
+        $this->get(route('webapp.discover'));
+
+        $key = 'user:'.$this->user->id.':webapp';
+
+        $this->assertRedisHas($key);
+    }
+
+    /** @test */
     public function individual_logs_can_be_removed()
     {        
         $this->signIn($this->user);

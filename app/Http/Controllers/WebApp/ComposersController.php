@@ -10,7 +10,7 @@ class ComposersController extends Controller
 {
     public function index()
     {
-    	$composers = Composer::all()->sortBy('last_name');
+    	$composers = Composer::atLeast(1)->get()->sortBy('last_name');
 
     	return view('webapp.composers.index', compact('composers'));
     }
