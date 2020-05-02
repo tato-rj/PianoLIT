@@ -19,7 +19,7 @@ class UsersController extends Controller
     public function show(User $user)
     {
         if (request('format') == 'json')
-            return $user->membership;
+            return $user->membership()->exists() ? $user->membership->source : null;
 
         return view('admin.pages.users.show.index', ['user' => $user->load('favorites')]);
     }

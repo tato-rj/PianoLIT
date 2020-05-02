@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Admin;
-use App\Membership;
+use App\Payments\Membership;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MembershipPolicy

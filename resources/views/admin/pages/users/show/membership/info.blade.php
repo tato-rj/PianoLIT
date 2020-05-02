@@ -2,18 +2,18 @@
 	<table class="table table-striped table-borderless">
 	  <tbody>
 		@include('admin.pages.users.show.list-item', 
-			['title' => 'Membership ID', 'value' => $user->membership->latest_receipt_info ? $user->membership->latest_receipt_info->original_transaction_id : null])
+			['title' => 'Membership ID', 'value' => $user->membership->source->latest_receipt_info ? $user->membership->source->latest_receipt_info->original_transaction_id : null])
 		@include('admin.pages.users.show.list-item', 
-			['title' => 'Plan', 'value' => $user->membership->latest_receipt_info ? ucfirst($user->membership->latest_receipt_info->product_id) : null])
+			['title' => 'Plan', 'value' => $user->membership->source->latest_receipt_info ? ucfirst($user->membership->source->latest_receipt_info->product_id) : null])
 		@include('admin.pages.users.show.list-item',
-			['title' => 'Start date', 'value' => $user->membership->created_at->toDayDateTimeString()])
+			['title' => 'Start date', 'value' => $user->membership->source->created_at->toDayDateTimeString()])
 		@include('admin.pages.users.show.list-item',
-			['title' => 'Next due date', 'value' => $user->membership->renews_at ? $user->membership->renews_at->toDayDateTimeString() : '-'])
+			['title' => 'Next due date', 'value' => $user->membership->source->renews_at ? $user->membership->source->renews_at->toDayDateTimeString() : '-'])
 	  </tbody>
 	</table>
 </div>
 <div class="col-6">
-	@if($user->membership->isExpired() || ! $user->membership->renews_at)
+	@if($user->membership->source->isExpired() || ! $user->membership->source->renews_at)
 		<div class="mb-3">
 			<form method="POST" action="{{route('admin.memberships.validate.user', $user->id)}}">
 				@csrf

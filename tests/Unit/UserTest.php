@@ -2,7 +2,9 @@
 
 namespace Tests\Unit;
 
-use App\{Membership, Piece, Subscription, StudioPolicy, TutorialRequest, User};
+use App\Payments\Membership;
+use App\Payments\Sources\Apple;
+use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User};
 use Tests\AppTest;
 use App\Merchandise\Purchase;
 use App\Infograph\Infograph;
@@ -13,6 +15,7 @@ class UserTest extends AppTest
 	public function it_has_a_membership()
 	{
 		$this->assertInstanceOf(Membership::class, $this->user->membership);
+		$this->assertInstanceOf(Apple::class, $this->user->membership->source);
 	}
 
 	/** @test */

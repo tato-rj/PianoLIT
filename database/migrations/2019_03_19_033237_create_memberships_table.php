@@ -16,12 +16,13 @@ class CreateMembershipsTable extends Migration
         Schema::create('memberships', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedInteger('user_id');
-            $table->string('plan')->nullable();
-            $table->text('latest_receipt');
-            $table->string('password');
-            $table->json('latest_receipt_info')->nullable();
-            $table->timestamp('renews_at')->nullable();
-            $table->timestamp('validated_at')->nullable();
+            $table->morphs('source');
+            // $table->string('plan')->nullable();
+            // $table->text('latest_receipt');
+            // $table->string('password');
+            // $table->json('latest_receipt_info')->nullable();
+            // $table->timestamp('renews_at')->nullable();
+            // $table->timestamp('validated_at')->nullable();
             $table->timestamps();
         });
     }

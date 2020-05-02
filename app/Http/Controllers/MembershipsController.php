@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\{User, Membership};
+use App\Payments\Membership;
+use App\User;
 use App\Http\Requests\VerifySubscriptionForm;
 use Illuminate\Http\Request;
+use App\Services\Apple\AppleValidator;
 
 class MembershipsController extends Controller
 {
@@ -37,10 +39,10 @@ class MembershipsController extends Controller
 
         foreach ($users as $user) {
 
-            $request = $user->callApple($user->membership->latest_receipt, $user->membership->password);  
+            $request = (new AppleValidator)->verify($user->membership->source->latest_receipt, $user->membership->source->password);  
 
             try {              
-                $user->membership->validate($request);   
+                $user->membership->source->validate($request);   
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', $e->getMessage());
             }
@@ -56,9 +58,9 @@ class MembershipsController extends Controller
         if (! $user)
             return redirect()->back()->with('error', "Sorry, we couldn't find the user");
 
-        $request = $user->callApple($user->membership->latest_receipt, $user->membership->password);
+        $request = (new AppleValidator)->verify($user->membership->source->latest_receipt, $user->membership->source->password);
 
-        $user->membership->validate($request);
+        $user->membership->source->validate($request);
     
         return redirect()->back()->with('success', "The has been successfully re-validated.");
     }
@@ -70,11 +72,13 @@ class MembershipsController extends Controller
      */
     public function history(Request $request)
     {
+        $validator = new AppleValidator;
+
         $user = User::findOrFail($request->user_id);
 
-        $receipt = $user->callApple($user->membership->latest_receipt, $user->membership->password);
+        $receipt = $validator->verify($user->membership->source->latest_receipt, $user->membership->source->password);
 
-        $history = $user->cleanReceipt($receipt);
+        $history = $validator->clean($receipt);
 
         return view('admin.pages.users.show.membership.history', compact('history'))->render();
     }

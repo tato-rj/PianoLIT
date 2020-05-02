@@ -1,17 +1,17 @@
 <div class="col-12">
 	@if($user->membership()->exists())
-		@if($user->membership->renews_at)
+		@if($user->membership->source->renews_at)
 
 		<div class="alert alert-green" role="alert"><i class="fas fa-check-circle mr-2"></i>
 			{{$user->first_name}}'s membership is active! 
-			The next auto-renewal date is in {{$user->membership->renews_at->diffForHumans()}} on <strong>{{$user->membership->renews_at->toFormattedDateString()}}</strong>.
+			The next auto-renewal date is in {{$user->membership->source->renews_at->diffForHumans()}} on <strong>{{$user->membership->source->renews_at->toFormattedDateString()}}</strong>.
 		</div>
 
-		@elseif($user->membership->expires_at)
+		@elseif($user->membership->source->expires_at)
 
 		<div class="alert alert-red" role="alert"><i class="fas fa-check-circle mr-2"></i>
 			{{$user->first_name}}'s membership is active, but the auto renewal is off. 
-			It is se to expire in {{$user->membership->expires_at->diffForHumans()}} on <strong>{{$user->membership->expires_at->toFormattedDateString()}}</strong>.
+			It is se to expire in {{$user->membership->source->expires_at->diffForHumans()}} on <strong>{{$user->membership->source->expires_at->toFormattedDateString()}}</strong>.
 		</div>
 			
 		@endif

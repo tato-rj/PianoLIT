@@ -25,7 +25,7 @@ class MembershipTest extends AppTest
     }
 
     /** @test */
-    public function admins_are_notified_when_a_user_becomes_a_member()
+    public function admins_are_notified_when_a_user_starts_a_trial()
     {
         \Notification::fake();
 
@@ -35,16 +35,30 @@ class MembershipTest extends AppTest
     }
 
     /** @test */
-    public function an_admin_can_verify_the_status_of_all_memberships()
+    public function an_admin_can_verify_the_status_of_all_apple_memberships()
     {
         $this->signIn();
 
-        $this->user->membership->update(['renews_at' => now()->copy()->subWeek()]);
+        $this->user->membership->source->update(['renews_at' => now()->copy()->subWeek()]);
         
-        $this->assertNull($this->user->membership->validated_at);
+        $this->assertNull($this->user->membership->source->validated_at);
 
         $this->get(route('admin.memberships.validate.all'));
 
-        $this->assertNotNull($this->user->membership->fresh()->validated_at);
+        $this->assertNotNull($this->user->membership->fresh()->source->validated_at);
+    }
+
+    /** @test */
+    public function an_admin_can_verify_the_status_of_a_specific_apple_member()
+    {
+        $this->signIn();
+
+        $this->user->membership->source->update(['renews_at' => now()->copy()->subWeek()]);
+        
+        $this->assertNull($this->user->membership->source->validated_at);
+
+        $this->post(route('admin.memberships.validate.user', ['user' => $this->user->id, 'user_id' => $this->user->id]));
+
+        $this->assertNotNull($this->user->membership->source->fresh()->validated_at);
     }
 }

@@ -7,7 +7,8 @@ use App\Infograph\Infograph;
 use App\Infograph\Topic as InfographTopic;
 use App\Quiz\Quiz;
 use App\Quiz\Topic as QuizTopic;
-use App\{Composer, Piece, Admin, Country, Tag, User, Membership, Playlist, Subscription, Timeline, Pianist, EmailList};
+use App\Payments\Membership;
+use App\{Composer, Piece, Admin, Country, Tag, User, Playlist, Subscription, Timeline, Pianist, EmailList};
 use Tests\Traits\CustomAssertions;
 use App\Rules\Recaptcha;
 

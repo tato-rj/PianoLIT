@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Membership;
+use App\Payments\Membership;
 
 class MembershipsController extends Controller
 {
@@ -17,14 +17,14 @@ class MembershipsController extends Controller
 
     public function loadMembers(Request $request)
     {
-        $memberships = Membership::member()->lastRenewed()->get()->slice($request->start_at)->take(5);
+        $memberships = Membership::member()->get()->sortBy('source.renews_at')->slice($request->start_at)->take(5);
 
         return view('admin.pages.stats.memberships.members', compact('memberships'))->render();
     }
 
     public function loadExpired(Request $request)
     {
-        $memberships = Membership::expired()->lastRenewed('DESC')->get()->slice($request->start_at)->take(5);
+        $memberships = Membership::expired()->get()->sortByDesc('source.renews_at')->slice($request->start_at)->take(5);
 
         return view('admin.pages.stats.memberships.expired', compact('memberships'))->render();
     }
