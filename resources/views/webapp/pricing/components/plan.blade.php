@@ -1,4 +1,4 @@
-<div class="col-lg-6 col-md-6 col-10 mx-auto p-2">
+<div class="col-lg-6 col-md-6 col-11 mx-auto p-2">
 	<div class="p-5 position-relative rounded border h-100 d-flex flex-column justify-content-between">
 		@isset($bestvalue)
 		<span class="px-3 py-1 bg-intermediate-raw position-absolute best-value"><strong>BEST VALUE</strong></span>
