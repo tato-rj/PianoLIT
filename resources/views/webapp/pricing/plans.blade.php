@@ -12,5 +12,4 @@
 			'description' => 'Try it out with the monthly plan. With this option, you can see if Blinkist is for you and you can cancel anytime.'
 		])
 	</div>
-	<p class="text-right text-muted"><small>All prices are listed in US Dollars</small></p>
 </section>
