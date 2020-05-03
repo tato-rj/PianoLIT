@@ -47,8 +47,13 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($this->onWebapp($request) && $this->is404($exception))
-            return redirect(route('webapp.discover'));
+        if ($this->onWebapp($request)) {
+            if ($this->codeIs(404, $exception))
+                return redirect(route('webapp.discover'));
+
+            if ($this->codeIs(402, $exception))
+                return redirect(route('webapp.membership.pricing'));
+        }
 
         return parent::render($request, $exception);
     }
@@ -84,8 +89,8 @@ class Handler extends ExceptionHandler
         return 'my' == explode('.', $request->getHttpHost())[0];
     }
 
-    public function is404($exception)
+    public function codeIs($code, $exception)
     {
-        return method_exists($exception, 'getStatusCode') && $exception->getStatusCode() == 404;
+        return method_exists($exception, 'getStatusCode') && $exception->getStatusCode() == $code;
     }
 }
