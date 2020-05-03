@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\Log\Loggers\DailyLog;
-use App\User;
+use App\{User, Piece};
 
 class LogsTest extends AppTest
 {
@@ -91,7 +91,9 @@ class LogsTest extends AppTest
     /** @test */
     public function visits_on_webapp_are_stored_on_redis()
     {
-        $this->signIn();
+        create(Piece::class, ['is_free' => true]);
+        
+        $this->signIn($this->user);
 
         $this->get(route('webapp.discover'));
 
