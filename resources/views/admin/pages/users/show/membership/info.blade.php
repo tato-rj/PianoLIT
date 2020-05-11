@@ -10,7 +10,7 @@
 			['title' => 'Next due date', 'value' => $user->membership->source->renews_at ? $user->membership->source->renews_at->toDayDateTimeString() : '-'])
 		@endif
 		@include('admin.pages.users.show.list-item',
-			['title' => 'Start date', 'value' => $user->membership->source->created_at->toDayDateTimeString()])
+			['title' => 'Start date', 'value' => $user->membership->created_at->toDayDateTimeString()])
 	  </tbody>
 	</table>
 </div>
