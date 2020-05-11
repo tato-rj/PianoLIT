@@ -168,4 +168,33 @@ class Apple extends PianoLit implements BillingSource
 	{
 		return ucfirst(str_rm(str_end($this->plan, '.'), 'plan') . 'ly');
 	}
+
+    public function getRenewalColorAttribute()
+    {
+        if ($this->planName == 'Monthly') {
+            $diff = $this->renews_at->diffInDays(now());
+
+            if ($diff > 10)
+                return 'green';
+
+            if ($diff <= 10 && $diff > 3)
+                return 'warning';
+
+            return 'danger';
+        }
+
+        if ($this->planName == 'Yearly') {
+            $diff = $this->renews_at->diffInDays(now());
+
+            if ($diff > 30)
+                return 'green';
+
+            if ($diff <= 30 && $diff > 7)
+                return 'warning';
+
+            return 'danger';
+        }
+
+        return null;
+    }
 }
