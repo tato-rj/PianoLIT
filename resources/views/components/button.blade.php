@@ -1,3 +1,13 @@
+@if(!empty($href))
+<a
+	href="{{$href}}"
+	{{$attr ?? null}}
+	class="btn btn-{{$size ?? null}} btn-{{!empty($wide) ? 'wide' : null}} btn-{{$theme ?? null}} bg-{{$color ?? null}} text-{{$text ?? null}} {{$classes ?? null}}">
+	{!! $label !!}
+</a>
+
+@else
+
 <button
 	type="{{$type ?? null}}"
 	{{$attr ?? null}}
@@ -22,4 +32,6 @@
 	class="btn btn-{{$size ?? null}} btn-{{!empty($wide) ? 'wide' : null}} btn-{{$theme ?? null}} bg-{{$color ?? null}} text-{{$text ?? null}} {{$classes ?? null}}"
 	@else
 	style="border: none; background: transparent; padding: 0"
-	@endempty>{!! $label !!}</button>
+	@endempty>{!! $label !!}
+</button>
+@endif

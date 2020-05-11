@@ -25,6 +25,8 @@
   </div>
 </div>
 
-@modal(['title' => 'Log data', 'size' => 'lg'])
+@component('components.modal', ['title' => 'Log data', 'size' => 'lg', 'id' => 'modal-log-data'])
+@slot('body')
 <div id="data-container"></div>
-@endmodal
+@endslot
+@endcomponent

@@ -2,25 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Payments\Membership;
+use App\Billing\Membership;
+use App\Events\Memberships\NewTrial;
 use App\User;
-use App\Http\Requests\VerifySubscriptionForm;
+use App\Http\Requests\AppleMembershipForm;
 use Illuminate\Http\Request;
 use App\Services\Apple\AppleValidator;
+use App\Billing\Sources\{Apple, Stripe};
 
 class MembershipsController extends Controller
 {
     /**
      * Checks the status of a subscription with Apple
-     * @param  Request       $request
-     * @param  VerifySubscriptionForm $form
+     * @param  Request $request
+     * @param  AppleMembershipForm $form
      * @return json        
      */
-    public function store(Request $request, VerifySubscriptionForm $form)
+    public function store(Request $request, AppleMembershipForm $form)
     {
         \App\MembershipLog::create(['data' => json_encode($request->all())]);
 
-        $form->user->subscribe($request);
+        Apple::subscribe($form->user, $request);
+
+        event(new NewTrial($form->user));
 
         if (app()->environment() == 'local')
             return redirect()->back()->with('status', "A susbcription was requested to {$form->user->first_name}'s profile.");

@@ -23,6 +23,7 @@
         "pixelpeter/laravel5-genderize-api-client": "^2.0",
         "predis/predis": "^1.1",
         "stevebauman/purify": "^2.0",
+        "stripe/stripe-php": "^7.31",
         "torann/geoip": "^1.0",
         "yajra/laravel-datatables": "^1.0"
     },

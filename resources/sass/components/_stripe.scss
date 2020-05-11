@@ -1,0 +1,18 @@
+.StripeElement {
+	padding: 10px 12px;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
+}
+
+i.spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: .20em;
+  margin-bottom: 1.6px;
+}

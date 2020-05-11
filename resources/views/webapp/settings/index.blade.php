@@ -8,16 +8,19 @@
 
 <div class="row">
 	<div class="col-lg-8 col-12 mx-auto p-0 list-group">
-	  <a href="{{route('webapp.membership.pricing')}}" class="list-group-item py-4 rounded-0 list-group-item-action">Subscribe @fa(['icon' => 'star', 'color' => 'yellow'])</a>
-	  <a href="{{route('users.profile')}}" target="_blank" class="list-group-item py-4 rounded-0 list-group-item-action">My profile</a>
-	  <a href="{{route('contact')}}" target="_blank" class="list-group-item py-4 rounded-0 list-group-item-action">Contact us</a>
-	  <a href="{{config('app.url')}}" target="_blank" class="list-group-item py-4 rounded-0 list-group-item-action">Visit the website</a>
-	  <a href="{{route('terms')}}" target="_blank" class="list-group-item py-4 rounded-0 list-group-item-action">Terms of service</a>
-	  <a href="{{route('privacy')}}" target="_blank" class="list-group-item py-4 rounded-0 list-group-item-action">Privacy policy</a>
-	  <a href="#" class="list-group-item py-4 rounded-0 list-group-item-action">Version 1.0</a>
-	  <a href="" class="list-group-item py-4 rounded-0 list-group-item-action" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-		<form id="logout-form" action="{{ route('webapp.logout') }}" method="POST" style="display: none;">@csrf</form>Log out
-	  </a>
+		@if(auth()->user()->hasMembershipWith(\App\Billing\Sources\Stripe::class) && ! auth()->user()->membership->source->isEnded())
+		@include('webapp.settings.item', ['url' => route('webapp.membership.edit'), 'label' => 'My membership ' . auth()->user()->membership->source->badge()])
+		@else
+		@include('webapp.settings.item', ['url' => route('webapp.membership.pricing'), 'label' => 'Subscribe <i class="fas fa-star text-yellow"></i>'])
+		@endif
+		@include('webapp.settings.item', ['url' => route('users.profile'), 'label' => 'My profile'])
+		@include('webapp.settings.item', ['url' => route('contact'), 'label' => 'Contact us'])
+		@include('webapp.settings.item', ['url' => config('app.url'), 'label' => 'Visit the website'])
+		@include('webapp.settings.item', ['url' => route('terms'), 'label' => 'Terms of service'])
+		@include('webapp.settings.item', ['url' => route('privacy'), 'label' => 'Privacy policy'])
+		<a href="" class="list-group-item py-4 rounded-0 list-group-item-action" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+			<form id="logout-form" action="{{ route('webapp.logout') }}" method="POST" style="display: none;">@csrf</form>Log out
+		</a>
 	</div>
 </div>
 

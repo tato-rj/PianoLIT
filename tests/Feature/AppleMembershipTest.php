@@ -8,7 +8,7 @@ use App\Events\Memberships\NewTrial;
 use App\Services\Apple\Sandbox\Membership as AppleMembership;
 use App\Notifications\Memberships\NewTrialNotification;
 
-class MembershipTest extends AppTest
+class AppleMembershipTest extends AppTest
 {
     /** @test */
     public function a_user_can_subscribe()

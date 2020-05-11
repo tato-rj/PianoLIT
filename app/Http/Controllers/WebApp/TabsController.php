@@ -38,6 +38,7 @@ class TabsController extends Controller
 
     public function settings()
     {
+        // return auth()->user()->membership->source->getStatus();
     	return view('webapp.settings.index');
     }
 }

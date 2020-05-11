@@ -4,7 +4,7 @@ Route::get('tutorial-requests', 'Api\TutorialRequestsController@show')->name('tu
 
 Route::prefix('memberships')->name('memberships.')->group(function() {
 
-	Route::post('', 'MembershipsController@store')->name('store'); // DO WE NEED THIS?
+	Route::post('', 'MembershipsController@store')->middleware(['membership.verify-status', 'membership.verify-apple'])->name('store');
 
 	Route::post('history', 'MembershipsController@history')->name('history'); // DO WE NEED THIS?
 

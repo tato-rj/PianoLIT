@@ -42,14 +42,6 @@ trait Apple
 		return $reasons[$this->expiration_intent];
 	}
 
-	public function isExpired()
-	{
-		if (! $this->renews_at)
-			return false;
-		
-		return ! now()->lte($this->renews_at);
-	}
-
 	public function scopeLocate($query, $subscriptionId)
 	{
 		return $query->where('original_transaction_id', $subscriptionId)->first();

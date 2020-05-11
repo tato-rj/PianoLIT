@@ -2,13 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class VerifySubscriptionForm extends FormRequest
+class StripeMembershipForm extends FormRequest
 {
-    public $user;
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -16,9 +13,7 @@ class VerifySubscriptionForm extends FormRequest
      */
     public function authorize()
     {
-        $this->user = User::find($this->request->get('user_id'));
-
-        return $this->user && ! $this->user->membership()->exists();
+        return auth()->check();
     }
 
     /**
@@ -29,9 +24,7 @@ class VerifySubscriptionForm extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required',
-            'receipt_data' => 'required',
-            'password' => 'required'
+            'stripeToken' => 'required',
         ];
     }
 }

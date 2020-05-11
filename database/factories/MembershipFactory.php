@@ -1,7 +1,7 @@
 <?php
 
-use App\Payments\Membership;
-use App\Payments\Sources\Apple;
+use App\Billing\Membership;
+use App\Billing\Sources\{Apple, Stripe};
 use App\User;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -25,5 +25,15 @@ $factory->define(Apple::class, function (Faker $faker) {
         'password' => \Hash::make('secret'),
         'latest_receipt_info' => '',
         'renews_at' => now()->copy()->addMonth()
+    ];
+});
+
+$factory->define(Stripe::class, function (Faker $faker) {
+    return [
+        'plan' => $faker->word,
+        'stripe_id' => $faker->md5,
+        'card_brand' => $faker->word,
+        'card_last_four' => '1234',
+        'status' => 'active'
     ];
 });

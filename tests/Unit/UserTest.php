@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
-use App\Payments\Membership;
-use App\Payments\Sources\Apple;
+use App\Billing\Membership;
+use App\Billing\Sources\Apple;
 use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User};
 use Tests\AppTest;
 use App\Merchandise\Purchase;

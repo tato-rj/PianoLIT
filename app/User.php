@@ -9,7 +9,7 @@ use App\Traits\{HasMembership, Reportable, Loggable};
 use App\Contracts\Merchandise;
 use App\Merchandise\Purchase;
 use App\Stats\User as UserStats;
-use App\Payments\Membership;
+use App\Billing\Membership;
 
 class User extends Authenticatable implements MustVerifyEmail
 {

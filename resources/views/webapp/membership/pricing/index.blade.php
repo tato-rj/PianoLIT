@@ -15,11 +15,11 @@
 @section('content')
 @include('webapp.layouts.header', ['title' => 'Go Premium', 'subtitle' => 'Get the best of PianoLIT and start your FREE trial now!'])
 
-@include('webapp.pricing.plans')
+@include('webapp.membership.pricing.plans')
 
-@include('webapp.pricing.features')
+@include('webapp.membership.pricing.features')
 
-@include('webapp.pricing.faq')
+@include('webapp.membership.pricing.faq')
 
 @endsection
 

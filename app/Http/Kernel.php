@@ -67,6 +67,9 @@ class Kernel extends HttpKernel
         'log.webapp' => \App\Http\Middleware\Logs\RecordWebAppLog::class,
         'log.app' => \App\Http\Middleware\Logs\RecordAppLog::class,
         'member' => \App\Http\Middleware\CheckForMembership::class,
+        'membership.verify-status' => \App\Http\Middleware\Membership\VerifyStatus::class,
+        'membership.verify-stripe' => \App\Http\Middleware\Membership\VerifyStripe::class,
+        'membership.verify-apple' => \App\Http\Middleware\Membership\VerifyApple::class,
     ];
 
     /**
