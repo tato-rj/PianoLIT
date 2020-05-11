@@ -18,7 +18,7 @@ trait HasMembership
             return 'active';
 
         if (! $this->membership()->exists())
-            return 'inactive';
+            return 'expired';
 
         return $this->membership->source->getStatus($callSource);
     }
