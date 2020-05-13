@@ -12,7 +12,7 @@ class StripeFactory
 
 	public function __construct()
 	{
-        Stripe::setApiKey(config('services.stripe.secret'));
+    Stripe::setApiKey(config('services.stripe.secret'));
 	}
 
   public function customer()
@@ -29,11 +29,6 @@ class StripeFactory
       $this->subscription = Subscription::retrieve($this->customer->subscriptions->data[0]->id);
 
       return $this;
-  }
-
-  public function get()
-  {
-    return $this;
   }
 
 	public function subscribe(Plan $plan, $stripeToken)

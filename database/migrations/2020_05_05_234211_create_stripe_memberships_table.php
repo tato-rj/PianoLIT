@@ -24,6 +24,7 @@ class CreateStripeMembershipsTable extends Migration
             $table->timestamp('renews_at')->nullable();
             $table->timestamp('paused_at')->nullable();
             $table->timestamp('canceled_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
             $table->timestamps();
         });
     }

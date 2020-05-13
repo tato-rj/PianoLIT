@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Events\Memberships\NewTrial;
 use App\Billing\{Membership, Plan};
 use App\Billing\Sources\Stripe as StripeMembership;
+use App\Billing\Sources\Apple;
 use App\Http\Requests\StripeMembershipForm;
 use App\Billing\Factories\StripeFactory;
 
@@ -23,6 +24,9 @@ class MembershipsController extends Controller
     {
         if (! auth()->user()->membership()->exists() || auth()->user()->membership->source->isEnded())
             return redirect(route('webapp.membership.pricing'));
+
+        if (auth()->user()->hasMembershipWith(Apple::class))
+            return view('webapp.membership.edit.apple');
 
         $plans = Plan::all()->reverse();
         

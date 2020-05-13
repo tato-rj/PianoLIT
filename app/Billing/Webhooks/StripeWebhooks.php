@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Stripe;
+namespace App\Billing\Webhooks;
 
 use App\Billing\Sources\Stripe;
 

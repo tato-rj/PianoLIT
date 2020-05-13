@@ -14,7 +14,9 @@ interface BillingSource
 	public function badge();
 	public function hasCard();
 	public function willRenew();
+	public function isActive();
 	public function isOnGracePeriod();
+	public function isOnTrial();
 	public function isPaused();
 	public function isExpired();
 	public function isCanceled();

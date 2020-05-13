@@ -5,7 +5,7 @@
 </div>
 
 <div class="text-center mb-4">
-	<h1>{{$title ?? null}}</h1>
+	<h2>{{$title ?? null}}</h2>
 	<p style="max-width: 80%" class="mx-auto">{!! $subtitle ?? null !!}</p>
 	{{$slot ?? null}}
 </div>

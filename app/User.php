@@ -98,6 +98,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getGender()
     {
+        if (testing())
+            return null;
+        
         try {
             $gender = \Genderize::name($this->first_name)->get()->result[0]->gender;
             $this->update(['gender' => $gender]);            

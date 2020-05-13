@@ -4,6 +4,25 @@ namespace App\Billing\Sources\Concerns;
 
 trait StripeStates
 {
+	protected $states = [
+		'active' => [
+			'trialing',
+			'active',
+		],
+		'inactive' => [
+			'incomplete',
+			'incomplete_expired',
+			'past_due',
+			'canceled',
+			'unpaid'			
+		]
+	];
+
+	public function isActive()
+	{
+		return ! $this->isPaused() && in_array($this->status, $this->states['active']);
+	}
+
 	public function isExpired()
 	{
 		if (! $this->renews_at && ! $this->membership_ends_at)
@@ -14,6 +33,11 @@ trait StripeStates
 
 		if ($this->membership_ends_at)
 			return ! now()->lte($this->membership_ends_at);
+	}
+
+	public function isOnTrial()
+	{
+		return $this->status == 'trialing';
 	}
 
 	public function isOnGracePeriod()

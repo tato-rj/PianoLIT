@@ -1,6 +1,6 @@
 <?php
 
-use App\Billing\Membership;
+use App\Billing\{Membership, Plan};
 use App\Billing\Sources\{Apple, Stripe};
 use App\User;
 use Illuminate\Support\Str;
@@ -35,5 +35,16 @@ $factory->define(Stripe::class, function (Faker $faker) {
         'card_brand' => $faker->word,
         'card_last_four' => '1234',
         'status' => 'active'
+    ];
+});
+
+$factory->define(Plan::class, function (Faker $faker) {
+    return [
+        'name' => $faker->word,
+        'price' => 1000,
+        'statement_descriptor' => $faker->sentence,
+        'description' => $faker->paragraph,
+        'interval' => $faker->word,
+        'trial_period_days' => 7
     ];
 });

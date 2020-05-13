@@ -1,9 +1,46 @@
 <?php
 
-namespace App\Services\Stripe;
+namespace App\Billing\Sandbox;
+
+use App\Billing\Sandbox\Traits\StripeEvents;
+use App\Billing\Factories\StripeFactory;
+use Stripe\{Stripe, Token};
 
 class StripeSandbox
 {
+	use StripeEvents;
+
+	protected $customerId;
+
+	public function customerId($customerId)
+	{
+		$this->customerId = $customerId;
+
+		return $this;
+	}
+
+	public function token()
+	{
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+	    return Token::create([
+	      'card' => [
+	        'number' => '4242424242424242',
+	        'exp_month' => 1,
+	        'exp_year' => now()->addYears(10)->year,
+	        'cvc' => 123
+	      ]
+	    ])->id;
+	}
+
+	public function getEvent($event)
+	{
+		if (method_exists($this, $event))
+			return $this->$event();
+
+		abort(404, 'The event ' . $event . ' does not exist');
+	}
+
 	public function getCustomer()
 	{
 		return json_decode('{

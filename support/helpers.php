@@ -1,4 +1,8 @@
 <?php
+function requestWith($params)
+{
+	return new \Illuminate\Http\Request($params);
+}
 
 function dirToArray($path)
 {

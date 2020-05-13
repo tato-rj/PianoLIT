@@ -44,23 +44,23 @@ trait StripeActions
 
 	public function updateStatus($payload)
 	{
-		$ended = (bool) $payload['ended_at'];
-		$scheduledEnd = (bool) $payload['cancel_at'];
-		$naturalEnd = (bool) $payload['cancel_at_period_end'];
+		$ended = isset($payload['ended_at']) && $payload['ended_at'];
+		$scheduledEnd = isset($payload['cancel_at']) && $payload['cancel_at'];
+		$naturalEnd = isset($payload['cancel_at_period_end']) && $payload['cancel_at_period_end'];
 		$willNotRenew = $ended || $scheduledEnd || $naturalEnd;
 
 		$this->update([
 			'status' => $payload['status'],
 			'plan' => $payload['plan']['id'],
 			'renews_at' => $willNotRenew ? null : $payload['current_period_end'],
-			'ended_at' => $payload['ended_at'],
+			'ended_at' => $payload['ended_at'] ?? null,
 			'membership_ends_at' => $scheduledEnd || $naturalEnd ? $payload['current_period_end'] : null,	
 		]);
 
-		$this->updateCollection($payload['pause_collection']);
+		$this->updateBillingStatus($payload['pause_collection'] ?? null);
 	}
 
-	public function updateCollection($record)
+	public function updateBillingStatus($record = null)
 	{
 		$stripeIsActive = is_null($record);
 		$localIsActive = is_null($this->paused_at);
@@ -92,8 +92,8 @@ trait StripeActions
 	{
 		$this->update([
 			'status' => $payload['status'],
-			'ended_at' => $payload['ended_at'],
-			'canceled_at' => $payload['canceled_at'],
+			'ended_at' => $payload['ended_at'] ?? null,
+			'canceled_at' => $payload['canceled_at'] ?? null,
 			'membership_ends_at' => null,
 			'paused_at' => null,
 			'card_brand' => null,

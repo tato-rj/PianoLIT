@@ -97,10 +97,15 @@ class Apple extends PianoLit implements BillingSource
 
     public function badge()
     {
-        //
+        return '<i class="fab fa-apple"></i>';
     }
 
     public function card()
+    {
+        //
+    }
+
+    public function isOnTrial()
     {
         //
     }
@@ -122,7 +127,12 @@ class Apple extends PianoLit implements BillingSource
 
     public function isEnded()
     {
-        //
+        return ! $this->isActive();
+    }
+
+    public function isActive()
+    {
+        return in_array($this->getStatus(), ['active', 'trial']);        
     }
 
     public function hasCard()
