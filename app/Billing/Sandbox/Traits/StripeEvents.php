@@ -54,10 +54,10 @@ trait StripeEvents
 		  "type" => "customer.subscription.updated",
 		  "data" => [
 		    "object" => [
-		      "cancel_at" => null,
+		      "cancel_at" => now()->addWeek()->timestamp,
 		      "cancel_at_period_end" => true,
-		      "canceled_at" => null,
-		      "current_period_end" => 1592017411,
+		      "canceled_at" => now()->timestamp,
+		      "current_period_end" => now()->addWeek()->timestamp,
 		      "customer" => $this->customerId,
 		      "ended_at" => null,
 		      "pause_collection" => null,
@@ -116,6 +116,7 @@ trait StripeEvents
 		  ]
 		];
 	}
+
 	public function subscriptionDeleted() {
 		return [
 		  "type" => "customer.subscription.deleted",
@@ -127,8 +128,27 @@ trait StripeEvents
 		      "customer" => $this->customerId,
 		      "canceled_at" => now()->timestamp,
 		      "status" => "canceled",
+		      "plan" => [
+		        "id" => "monthly",
+		      ],
+		      "pause_collection" => null,
 		    ],
 		  ]
+		];
+	}
+
+	public function cardUpdated()
+	{
+		return [
+			"data" => [
+				"object" => [
+					"id" => "card_1GiQH2GQzApYr7LG9EOmndIO",
+					"brand" => "MasterCard",
+					"customer" => $this->customerId,
+					"last4" => "4444",
+				]
+			],
+			"type" => "customer.source.created"
 		];
 	}
 }

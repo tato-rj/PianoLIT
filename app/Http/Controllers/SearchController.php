@@ -9,9 +9,9 @@ class SearchController extends Controller
 {
     public function index(Request $request)
     {
-    	$results = $this->search($request);
+    	// $results = $this->search($request);
 
-    	return view('search.index', compact('results'));
+    	// return view('search.index', compact('results'));
     }
 
     public function global(Request $request)

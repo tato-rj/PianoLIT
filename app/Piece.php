@@ -38,7 +38,7 @@ class Piece extends PianoLit
         'audio_rh',
         'audio_lh',
         'medium_name_with_composer',
-        'is_new'
+        'is_new',
     ];
     protected $report_by = 'medium_name_with_composer';
 

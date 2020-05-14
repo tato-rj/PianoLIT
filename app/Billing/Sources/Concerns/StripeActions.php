@@ -54,6 +54,7 @@ trait StripeActions
 			'plan' => $payload['plan']['id'],
 			'renews_at' => $willNotRenew ? null : $payload['current_period_end'],
 			'ended_at' => $payload['ended_at'] ?? null,
+			'canceled_at' => $payload['canceled_at'] ?? null,
 			'membership_ends_at' => $scheduledEnd || $naturalEnd ? $payload['current_period_end'] : null,	
 		]);
 
@@ -71,33 +72,33 @@ trait StripeActions
 		$this->update(['paused_at' => $stripeIsActive ? null : now()]);
 	}
 
-	public function updateCard($playload)
+	public function updateCard($card)
 	{
 		$this->update([
-			'card_brand' => $payload->sources->data[0]->brand,
-			'card_last_four' => $payload->sources->data[0]->last4
+			'card_brand' => $card['brand'],
+			'card_last_four' => $card['last4']
 		]);
 	}
 
-	public function cancelAtPeriodEnd($payload)
-	{
-		$this->update([
-			'status' => 'canceled',
-			'canceled_at' => now(),
-			'membership_ends_at' => $payload['current_period_end']
-		]);
-	}
+	// public function cancelAtPeriodEnd($payload)
+	// {
+	// 	$this->update([
+	// 		'status' => 'canceled',
+	// 		'canceled_at' => now(),
+	// 		'membership_ends_at' => $payload['current_period_end']
+	// 	]);
+	// }
 
-	public function cancel($payload)
-	{
-		$this->update([
-			'status' => $payload['status'],
-			'ended_at' => $payload['ended_at'] ?? null,
-			'canceled_at' => $payload['canceled_at'] ?? null,
-			'membership_ends_at' => null,
-			'paused_at' => null,
-			'card_brand' => null,
-			'card_last_four' => null
-		]);
-	}
+	// public function cancel($payload)
+	// {
+	// 	$this->update([
+	// 		'status' => $payload['status'],
+	// 		'ended_at' => $payload['ended_at'] ?? null,
+	// 		'canceled_at' => $payload['canceled_at'] ?? null,
+	// 		'membership_ends_at' => $payload['current_period_end'],
+	// 		'paused_at' => null,
+	// 		'card_brand' => null,
+	// 		'card_last_four' => null
+	// 	]);
+	// }
 }

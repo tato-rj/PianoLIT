@@ -15,7 +15,7 @@ class PiecesController extends Controller
 
     public function show(Request $request)
     {
-        $piece = Piece::with(['composer', 'tags', 'favorites'])->findOrFail($request->search);
+        $piece = Piece::with(['composer', 'tags', 'favorites'])->findOrFail($request->search)->setAppends(['number_of_pages', 'for_who']);
 
         $piece->isFavorited($request->user_id);
 

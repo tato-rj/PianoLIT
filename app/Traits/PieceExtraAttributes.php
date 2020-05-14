@@ -265,4 +265,90 @@ trait PieceExtraAttributes
     {
         return $this->composer->gender;
     }
+
+    public function getNumberOfPagesAttribute()
+    {
+        switch ($this->length->name) {
+            case 'short':
+                return '1-2 pages';
+                break;
+
+            case 'medium':
+                return '3-4 pages';
+                break;
+
+            case 'long':
+                return '5+ pages';
+                break;
+
+            default:
+                return '1 page';
+                break;
+        }
+    }
+
+    public function getForWhoAttribute()
+    {
+        $types = [
+            'pedagogical' => $this->composer->is_pedagogical,
+            'non-traditional' => in_array($this->period->name, ['modern', 'contemporary']),
+            'flashy' => $this->tags_array->contains('flashy'),
+            'relaxing' => $this->tags_array->intersect(['relaxing', 'dreamy', 'meditative'])
+        ];
+
+        $sentences = [
+            'elementary' => [
+                'pedagogical' => "This piece will inspire you to stay motivated and keep on learning.",
+                'non-traditional' => "Ideal for beginners who like original pieces with modern sounds and unique characters.",
+                'flashy' => "If you are starting out and want to wow your audience, this piece is for you!",
+                'relaxing' => "Great piece for beginners who like relaxing, dreamy pieces.",
+                'default' => "If you are just starting out and like pieces, you'll love this one!",
+            ],
+            'early beginner' => [
+                'pedagogical' => "Ideal for beginners looking for an inspiring and rewarding experience.",
+                'non-traditional' => "A modern piece with original sounds, ideal for beginners who like to explore different styles.",
+                'flashy' => "If you are a beginner and want to wow your audience, you'll love this piece!",
+                'relaxing' => "Ideal for beginners who like inspiring, relaxing and dreamy pieces.",
+                'default' => "A great piece for beginners who are polishing their technique.",
+            ],
+            'late beginner' => [
+                'pedagogical' => "Ideal for late beginner levels looking for a challenging and inspiring piece to play.",
+                'non-traditional' => "A very nice piece for those who like original and creative styles.",
+                'flashy' => "For beginners who are up for the challenge and want to wow their audience.",
+                'relaxing' => "If you are a beginner like relaxing, dreamy music and want a challenge, this piece is for you!",
+                'default' => "An excellent piece for beginners who are polishing their technique.",
+            ],
+            'early intermediate' => [
+                'pedagogical' => "This is an amazing piece that will keep you motivated and help you get into the intermediate level repertoire.",
+                'non-traditional' => "Ideal for intermediate level pianists who like original and non-traditional pieces.",
+                'flashy' => "For intermediate pianists looking for an extra challenge that will bring their technique up to the next level.",
+                'relaxing' => "Ideal for intermediate pianists who like inspiring, relaxing and dreamy pieces.",
+                'default' => "An excellent piece for intermediate level pianists who are working on their technique.",              
+            ],
+            'late intermediate' => [
+                'pedagogical' => "This piece is not as difficult as it sounds and is ideal to develop your technique get you ready for more demanding repertoire.",
+                'non-traditional' => "Ideal for intermediate pianists with a solid foundation that want to explore modern sounds and original styles.",
+                'flashy' => "This piece will wow your audience and give your the motivation you need to move on into the advanced repertoire.",
+                'relaxing' => "If you are at an intermediate level and enjoy playing like relaxing music, this piece will be a great challenge!",
+                'default' => "This is a great piece for intermediate level pianists with a solid foundation and strong technique.",
+            ],
+            'advanced' => [
+                'pedagogical' => "This piece is great for advanced level pianists looking for a rewarding experience from a piece that is not as difficult as it looks like.",
+                'non-traditional' => "Ideal for advanced pianists looking for a unique experience and want to learn new styles and techniques.",
+                'flashy' => "This piece will wow your audience and might well become your next favorite.",
+                'relaxing' => "An incredible piece for advanced pianists looking for a relaxing and inspiring piece to play.",
+                'default' => "Great piece for advanced pianists who want to expand their repertoire and learn more about the music of {$this->composer->last_name}.",
+            ]
+        ];
+
+        if (! in_array($this->extended_level_name, array_keys($sentences)))
+            return "A great piece for pianists who are polishing their technique and expanding their repertoire.";
+
+        foreach ($types as $type => $valid) {
+            if ($valid && array_key_exists($type, $sentences[$this->extended_level_name]))
+                return $sentences[$this->extended_level_name][$type];            
+        }
+
+        return $sentences[$this->extended_level_name]['default'];        
+    }
 }

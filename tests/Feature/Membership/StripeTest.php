@@ -35,14 +35,4 @@ class StripeTest extends AppTest
 
         $this->postStripeMembership($this->stripeUser);
     }
-    
-    /** @test */
-    public function a_users_account_is_deactivated_if_a_subscription_is_deleted_on_stripe()
-    {        
-        $this->assertFalse($this->stripeUser->membership->source->isEnded());
-
-        $this->fakeStripeWebhook($this->stripeUser, 'subscriptionDeleted');
-
-        $this->assertTrue($this->stripeUser->fresh()->membership->source->isEnded());
-    }
 }

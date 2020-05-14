@@ -62,7 +62,7 @@ trait StripeStates
 
 	public function isCanceled()
 	{
-		return $this->canceled_at && $this->canceled_at->lt(now());
+		return (bool) $this->canceled_at;
 	}
 
 	public function hasCard()

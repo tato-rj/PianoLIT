@@ -77,8 +77,6 @@ class RegisterController extends Controller
 
         $user = $this->create($request->all());
 
-        // $user->getGender();
-
         event(new Registered($user));
 
         Admin::notifyAll(new NewUser($user));
