@@ -342,7 +342,7 @@ trait PieceExtraAttributes
         ];
 
         if (! in_array($this->extended_level_name, array_keys($sentences)))
-            return "A great piece for pianists who are polishing their technique and expanding their repertoire.";
+            return "A great piece for {$this->level_name} pianists who are polishing their technique and expanding their repertoire.";
 
         foreach ($types as $type => $valid) {
             if ($valid && array_key_exists($type, $sentences[$this->extended_level_name]))
