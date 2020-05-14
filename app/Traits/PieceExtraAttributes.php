@@ -329,7 +329,7 @@ trait PieceExtraAttributes
                 'pedagogical' => "This piece is not as difficult as it sounds and is ideal to develop your technique get you ready for more demanding repertoire.",
                 'non-traditional' => "Ideal for intermediate pianists with a solid foundation that want to explore modern sounds and original styles.",
                 'flashy' => "This piece will wow your audience and give your the motivation you need to move on into the advanced repertoire.",
-                'relaxing' => "If you are at an intermediate level and enjoy playing like relaxing music, this piece will be a great challenge!",
+                'relaxing' => "If you are at an intermediate level and enjoy playing relaxing music, this piece will be a great challenge!",
                 'default' => "This is a great piece for intermediate level pianists with a solid foundation and strong technique.",
             ],
             'advanced' => [
