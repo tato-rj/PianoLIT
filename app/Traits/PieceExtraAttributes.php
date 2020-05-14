@@ -290,9 +290,9 @@ trait PieceExtraAttributes
     public function getForWhoAttribute()
     {
         $types = [
-            'pedagogical' => $this->composer->is_pedagogical,
             'non-traditional' => in_array($this->period->name, ['modern', 'contemporary']),
             'flashy' => $this->tags_array->contains('flashy'),
+            'pedagogical' => $this->composer->is_pedagogical,
             'relaxing' => $this->tags_array->intersect(['relaxing', 'dreamy', 'meditative'])
         ];
 
