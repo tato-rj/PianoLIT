@@ -81,7 +81,7 @@ Let me try!
 	'title' => 'Practical tips to practice Chopin\'s Revolutionary Etude'
 ])
 
-<p>This FREE crash course is dedicated to the ones that have a solid foundation and are looking to improve Chopin's Revolutionary Etude. And shock their audience with a seamless execution.</p>
+<p>This FREE crash course is dedicated to those with a solid foundation and looking to improve Chopin's Revolutionary Etude.</p>
 
 @component('mail::button', ['url' => 'https://pianolit.com/crashcourses/practical-tips-to-play-chopins-revolutionary-etude-better'])
 Sign up for FREE!
