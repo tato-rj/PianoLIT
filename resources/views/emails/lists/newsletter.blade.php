@@ -130,7 +130,7 @@ There are many great photos of Brahms, one of which is with his friend, the comp
 @endcomponent
 
 @component('mail::panel')
-We’re reading a very interesting book called “The ballad of blind Tom”. In this book, the author describes the life if Blind Tom Wiggins, a blind african-american composer with an astonishing musical gift, born into slavery in the US of the late 19th century. 
+We’re reading a very interesting book called “The ballad of blind Tom”. In this book, the author describes the life if Blind Tom Wiggins, a blind African-American composer with an astonishing musical gift, born into slavery in the US of the late 19th century. 
 
 We’ll be making a blog post of the book once finished, so stay tuned if you’re curios to know more about blind Tom and his incredible music! 
 
