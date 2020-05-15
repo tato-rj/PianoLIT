@@ -101,15 +101,15 @@ class MembershipsController extends Controller
         return back()->with('status', 'Your card has been successfully deleted');
     }   
 
-    public function updateCollection()
+    public function updateBillingStatus()
     {
         try {
-            $response = (new StripeFactory)->customer()->subscription()->updateCollection();
+            $response = (new StripeFactory)->customer()->subscription()->updateBillingStatus();
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
 
-        auth()->user()->membership->source->updateCollection($response->pause_collection);
+        auth()->user()->membership->source->updateBillingStatus($response->pause_collection);
 
         $status = auth()->user()->membership->source->paused_at ? 'stopped' : 'resumed';
 
@@ -119,13 +119,26 @@ class MembershipsController extends Controller
     public function cancel()
     {
         try {
-            $response = (new StripeFactory)->customer()->subscription()->cancel();
+            $payload = (new StripeFactory)->customer()->subscription()->cancel();
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
 
-        auth()->user()->membership->source->cancelAtPeriodEnd($response);
+        auth()->user()->membership->source->cancelAtPeriodEnd($payload);
 
         return back()->with('status', 'Your membership has been successfully canceled');
+    }
+
+    public function resume()
+    {
+        try {
+            $payload = (new StripeFactory)->customer()->subscription()->resume();
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        auth()->user()->membership->source->updateStatus($payload);
+
+        return back()->with('status', 'Your membership has been successfully resumed');
     }
 }

@@ -8,7 +8,7 @@
 
 @include('webapp.piece.options.header')
 
-<section class="mt-5">
+<section>
 	<div>
 		<div class="text-center">
 			<img src="{{$piece->composer->cover_image}}" style="width: 160px" class="rounded-circle shadow mb-3">
@@ -33,9 +33,6 @@
 		<div>
 			<p style="white-space: pre-wrap;">{{$piece->composer->biography}}</p>
 		</div>
-	</div>
-	<div class="col-lg-6 col-md-6 col-12 mb-4">
-
 	</div>
 </section>
 

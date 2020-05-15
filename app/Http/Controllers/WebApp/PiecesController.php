@@ -15,16 +15,21 @@ class PiecesController extends Controller
     	return view('webapp.piece.index', compact(['piece', 'timeline']));
     }
 
-    public function about(Piece $piece)
+    public function collection(Piece $piece)
     {
     	$siblings = $piece->siblings()->each->isFavorited(auth()->user()->id);
 
-    	return view('webapp.piece.options.about', compact(['piece', 'siblings']));
+    	return view('webapp.piece.options.collection', compact(['piece', 'siblings']));
     }
 
     public function composer(Piece $piece)
     {
     	return view('webapp.piece.options.composer', compact('piece'));
+    }
+
+    public function appleMusic(Piece $piece)
+    {
+        return view('webapp.piece.options.apple-music', compact('piece'));
     }
 
     public function similar(Piece $piece)

@@ -67,7 +67,7 @@ class StripeFactory
       ]);
     }
 
-    public function updateCollection()
+    public function updateBillingStatus()
     {
       return Subscription::update($this->subscription->id, 
         ['pause_collection' => ! is_null($this->subscription->pause_collection) ? '' : ['behavior' => 'void']]);
@@ -76,6 +76,11 @@ class StripeFactory
     public function cancel()
     {
       return Subscription::update($this->subscription->id, ['cancel_at_period_end' => true]);
+    }
+
+    public function resume()
+    {
+      return Subscription::update($this->subscription->id, ['cancel_at_period_end' => false]);
     }
 
     public function deleteCard()
@@ -105,9 +110,11 @@ class StripeFactory
 
     public function upcomingInvoice()
     {
-      $upcoming = Invoice::upcoming(["customer" => $this->customer->id]);
-
-      return $upcoming;
+      try {
+        return Invoice::upcoming(["customer" => $this->customer->id]);     
+      } catch (\Exception $e) {
+        return null;
+      }
     }
 
     public function pastInvoices()

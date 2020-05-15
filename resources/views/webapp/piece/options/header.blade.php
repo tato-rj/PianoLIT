@@ -1,4 +1,4 @@
-<section class="my-4 d-flex d-apart">
+<section class="my-4 pb-4 d-flex d-apart">
 	<a href="{{route('webapp.pieces.show', $piece)}}" class="btn-raw d-flex text-left align-items-center link-none">
 		<div style="font-size: 2em" class="mr-2">@fa(['icon' => 'chevron-left'])</div>
 		<div>

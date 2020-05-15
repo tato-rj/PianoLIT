@@ -1,82 +1,18 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
 
-<h1 class="text-center m-2" style="font-size: 160%">Exciting new <u>update</u> to the PianoLIT app!</h1>
-<p class="text-center">Checkout the new playlists tab with lots of exciting themes and moods to help you find your next favorite piece</p>
-
-@component('mail::button', ['url' => config('app.stores.ios')])
-Download the APP
-@endcomponent
-
-<div class="text-center">
-<img src="{{asset('images/playlists.jpg')}}" style="width: 400px;">
-</div>
-
-@include('mail::divider', ['orientation' => 'vertical'])
-
-<h1 class="text-lg">How can I find these playlists in the app?</h1>
-@include('mail::lists.numbered', ['items' => [
-	'If you already have PianoLIT, <strong class="text-blue">UPDATE</strong> the app in the apple store',
-	'Open the <strong class="text-blue">APP</strong>',
-	'Go to the <strong class="text-blue">PLAYLISTS</strong> tab',
-	'Enjoy!'
-]])
-
-@component('mail::button', ['url' => config('app.stores.ios')])
-Open the APP
-@endcomponent
-@include('mail::signature')
-@endcomponent
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{{-- @component('mail::message', ['subscription' => $subscription, 'list' => $list])
-
 @include('mail::newsletter.quote', [
-	'quote' => 'Ceaseless work, analysis, reflection, writing much, endless self-correction, that is my secret.',
-	'author' => 'Johann Sebastian Bach'
+	'quote' => 'The notes I handle no better than many pianists. But the pauses between the notes - ah, that is where the art resides!.',
+	'author' => 'Artur Schnabel'
 ])
 
-<p class="text-center m-0"><strong>We've rolled out an update to the PianoLIT app!</strong></p>
-<p class="text-center">What comes with this update?</p>
+We’re living through a once-in-a-generation event, and like you, we’ve been finding it difficult to make sense of it all. The coronavirus has obliterated many things about normal life, we are spending a whole lot of time at home with no excuses about not practicing!
 
-- You can now see the tutorials you've requested in a completely new section under the "My pieces" tab. Any previously published requests or the new one, are now easily accessible and neatly organized.
+It's clear we are going to be living like this for a while, so we might as well get the best out of it.
 
-- The "Explore" tab is arranged in subsections clarifying the scope of each tag and helping you find exactly what you're looking for.
-
-As always, you can expect an original Free Pick every week and new pieces and tutorials added daily.
-
-What's next? We're already working to add more cool features plus... anything that you think we should implement! We're here for you, so please feel free to drop us a note by replying to this newsletter!
+@component('mail::panel')
+# How do you think we're doing?
+If you’ve downloaded the PianoLIT app, please tell us what you think <a href="https://forms.gle/BLG89NvjmkWdwSVMA" target="_blank">here</a>! This helps us improve and provide you with the best tools for your musical journey.
+@endcomponent
 
 @include('mail::divider', ['orientation' => 'vertical'])
 
@@ -84,51 +20,49 @@ What's next? We're already working to add more cool features plus... anything th
 	'badge' => [
 		'name' => 'listen', 
 		'color' => 'green',
-		'link' => 'https://www.youtube.com/watch?v=vipdZu74I-4'
+		'link' => 'https://www.youtube.com/watch?v=HbCoekpDCKc'
 	],
-	'title' => 'Latin-American vibes 💃'
+	'title' => 'A Magical Music Box 🤗'
 ])
 
-<p>We all know the exotic Argentinian dance of tango which evolved from the lower-class districts of Buenos Aires to reach fame in fashionable European circles in 1915. The early tangos were spirited and lively, but later the music and lyrics became intensely melancholic. The word "tango" was often applied to dances in a 2/4 or 4/4 rhythm such as the one-step.</p>
+<p>We have just added this wonderful piece into our app’s “Playlists” tab, under the Hidden gems category. We literally fell in love with it. It’s probably because of the nostalgia it evokes as it feels like hearing to an old music box from the 1900 century.</p>
 
-<p>Timothy Brown takes the exuberance of the famous genre and translates it into a great piece for mid-intermediate pianists. One of the main challenges of this piece is to interpret correctly the piece's character by understanding what a tango should sound like.</p>
+<p>The composer Anatoly Lyadov was a Russian composer whose orchestral works and poetic, beautifully polished piano miniatures earned him a position of stature in Russian Romantic music.</p>
 
-<p><a href="https://www.youtube.com/watch?v=vipdZu74I-4" class="text-md"><strong>Tango Romantico in C minor, watch on YouTube</strong></a></p>
-<p><a href="https://www.amazon.com/Best-Recital-Solos-Book-6/dp/1619281023" class="text-md"><strong>You'll find the score here</strong></a></p>
+<p><a href="https://www.youtube.com/watch?v=HbCoekpDCKc" class="text-md"><strong>The Music Box Op.32, watch on YouTube</strong></a></p>
+<p><a href="https://pianolit.com/pieces/778" class="text-md"><strong>You'll find the score here</strong></a></p>
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'read', 
 		'color' => 'orange',
-		'link' => 'https://pianolit.com/blog/how-much-money-did-chopin-make-with-his-compositions'
+		'link' => 'https://pianolit.com/blog/tchaikovsky-vs-brahms-a-story-of-music-and-rivalry'
 	],
-	'title' => 'How much money did Chopin make with his compositions?'
+	'title' => 'Brahms vs Tchaikovsky: a story of music and rivalry'
 ])
 
-<p>If composers like Chopin were alive today they would certainly be making a lot of money, but that was not always the case in their lifetime. Chopin's letters give us a sneak peek into his finances and how much he actually made. </p>
+<p>Both composers, ironically born on the same day May 7th, never missed a chance to express their disdain for each other's music. Let's have a look at some of what they had to say!</p>
 
-<p>🎁 <strong>We have a gift for you!</strong> While reading the blog post, you can download the FREE infographic of Chopin's life.</p>
-
-<p><a href="https://pianolit.com/blog/how-much-money-did-chopin-make-with-his-compositions" class="text-md" target="_blank">Learn more about it!</a> 🤓</p>
+@component('mail::button', ['url' => 'https://pianolit.com/blog/tchaikovsky-vs-brahms-a-story-of-music-and-rivalry'])
+Read more about this
+@endcomponent
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'quiz', 
 		'color' => 'yellow',
-		'link' => 'https://pianolit.com/quizzes/lets-put-your-classical-music-world-history-knowledge-to-the-test'
+		'link' => 'https://pianolit.com/quizzes/would-you-recognize-your-favorite-composers-when-they-were-kids'
 	],
-	'title' => 'QUIZ: Let\'s put your classical music & world history knowledge to the test'
+	'title' => 'QUIZ: Would you recognize your favorite composers when they were kids?'
 ])
 
-<p>You're a music expert... What about world history? Test your knowledge of world history events that were happening during key moments in classical music.</p>
+<p>We know classical composers by their famous portraits, usually taken in the height of their careers. But how did they look like as kids? We did some research and collected some.</p>
 
-<p>How many you can guess???</p>
+<p>Let's see how many you can identify!</p>
 
-<p class="text-md text-italic"><strong>DISCLAIMER:</strong> This quiz is kinda difficult, so far it has an average score of 5 out of 8! Can you beat that?</p>
-
-@component('mail::button', ['url' => 'https://pianolit.com/quizzes/lets-put-your-classical-music-world-history-knowledge-to-the-test'])
+@component('mail::button', ['url' => 'https://pianolit.com/quizzes/would-you-recognize-your-favorite-composers-when-they-were-kids'])
 Let me try!
 @endcomponent
 @endcomponent
@@ -137,49 +71,74 @@ Let me try!
 	'badge' => [
 		'name' => 'infographics', 
 		'color' => 'pink',
-		'link' => 'https://pianolit.com/resources/infographs/1870s-a-musical-decade'
+		'link' => 'https://pianolit.com/resources/infographs/johannes-brahms'
 	],
-	'title' => '1870s: A Musical Decade'
+	'title' => 'Learn more about Brahms and Tchaikovsky'
 ])
 
-<p>The <strong>1870s</strong> was one of the most active decades in music history, with many major compositions and important events. <strong>Download the infographic</strong>  to visualize the list on a timeline graph. </p>
+<p>Both great composers’ birthday was few days ago on May 7. To learn more about their life and work download the PianoLIT infographic! Free to download here</p>
 
-<p><a href="https://pianolit.com/resources/infographs/1870s-a-musical-decade" class="text-md" target="_blank">Download the infographic, click HERE</a></p>
+<p><a href="https://pianolit.com/resources/infographs/johannes-brahms" class="text-md" target="_blank">Brahms infographic, click HERE</a></p>
+<p><a href="https://pianolit.com/resources/infographs/pytor-tchaikovsky" class="text-md" target="_blank">Tchaikovsky infographic, click HERE</a></p>
 @endcomponent
 
-<h1 class="text-lg mb-4">True or False: Women composers edition</h1>
+<h1 class="text-lg mb-4">True or False: Tchaikovsky & Brahms edition</h1>
 @include('mail::lists.numbered', ['items' => [
-	'<strong>Fanny Mendelssohn was encouraged by his family to pursue composition, but she wasn\'t as talented as her brother Felix:</strong> TRUE | FALSE',
-	'<strong>Clara Schumann was a child prodigy:</strong> TRUE | FALSE',
-	'<strong>Florence Price was the first African-American woman to have her music performed by a major symphony orchestra:</strong> TRUE | FALSE',
-	'<strong>Luise A. Le Beau studied with Clara Schumann only for a few months since the two did not get along so well:</strong> TRUE | FALSE'
+	'<strong>Tchaikovsky believed that music should primarily express our emotions:</strong> TRUE | FALSE',
+	'<strong>Brahms was a staunch conservative and classicist:</strong> TRUE | FALSE',
+	'<strong>Both Tchaikovsky and Brahms famously composed music for ballet:</strong> TRUE | FALSE',
+	'<strong>Brahms and Tchaikovsky never had the opportunity to actually meet in person:</strong> TRUE | FALSE'
 ]])
 
 <div class="text-center mt-4">Find the answers at the bottom of the newsletter!</div>
 
 @include('mail::divider', ['orientation' => 'vertical'])
 
-<h1 class="text-lg mb-4">4 things worth sharing this month:</h1>
+<h1 class="text-lg mb-4">Cool facts worth sharing this month:</h1>
 
 @component('mail::panel')
-In Taiwan, <a href="https://www.youtube.com/watch?v=U2WboF86sKQ" target="_blank">The Maiden Prayer</a> is played on garbage trucks, along with <a href="https://www.youtube.com/watch?v=h7DPXpqp9e4" target="_blank">Beethoven's Fur Elise</a>, to alert citizens of the presence of a nearby truck! After discovering this, a trip to Taiwan is a must.
+Ever wondered how Tchaikovsky voice might have sounded like? Well, there’s recording for that!
+
+The following recording of was made in Moscow in January 1890, by Julius Block on behalf of Thomas Edison. According to musicologist Leonid Sabaneyev, Tchaikovsky was not comfortable with being recorded for posterity and tried to shy away from it. Here below a transcription of what you’ll hearing this recording.
+
+Listen to the recording <a href="https://www.youtube.com/watch?v=7DEEdFLjUiw&feature=youtu.be" target="_blank">here</a>!
+
+Here's a transcription of the conversation:
+
+- Anton Rubinstein: What a wonderful thing.
+- J. Block: Certainly.
+- E. Lavrovskaya A disgusting...how he dares slyly to name me.
+- Vasily Safonov: (Sings).
+- P. Tchaikovsky: This trill could be better.
+- E. Lavrovskaya: (sings).
+- P. Tchaikovsky: Block is a good fellow, but Edison is even better.
+- E. Lavrovskaya: (sings) A-o, a-o.
+- V. Safonov: (In German) Peter Jurgenson in Moscow.
+- P. Tchaikovsky: Who just spoke? It seems to have been Safonov. (Whistles)
 @endcomponent
 
 @component('mail::panel')
-At first glance, this may not look like something that can be found at one of the most famous opera houses in the world, however, you might recognize it if you've ever seen Phantom of the Opera. The Paris Opera House lake resides underneath the foundations of the grandiose building due to the marshy area in which it was built. <a href="https://artsandculture.google.com/streetview/MAFGZDrEiCo04g?sv_pid=CAISFnd2bzRIXzdKSzhZQUFBR3VzbTVqTVE%3D&sv_f=90.0&sv_h=257.20039567333276&sv_p=-10.678604083237943&hl=en" target="_blank">Check it out for yourself</a> with this virtual tour. After touring the foundations, take a peak at the <a href="https://artsandculture.google.com/streetview/op%C3%A9ra-national-de-paris/MwFixmW5o_f5jw?sv_h=165.8677520751953&sv_p=-0.34783935546875&sv_pid=yhSFWB9ONtfp29xwyB2BTw&sv_lid=13356395696129231462&sv_lng=2.3316430726833914&sv_lat=48.87215089180122&sv_z=0.05254531846550925&hl=en" target="_blank">magnificent stage</a> and see the beautiful <a href="https://artsandculture.google.com/streetview/roofs-of-the-palais-garnier/MwHej74z895Uvg?sv_lng=2.331656506485047&sv_lat=48.87223414775861&sv_h=200.0053574099009&sv_p=2.110519683306009&sv_pid=N9hs0LHI4AAAAAGuvISryg&sv_z=1&hl=en" target="_blank">view from the roof</a>!
+There are many great photos of Brhams, one of which is with his friend, the composer Strauss. 
+
+<a href="https://www.gettyimages.com/detail/news-photo/german-composers-johann-strauss-and-johannes-brahms-circa-news-photo/164071334?adppopup=true" target="_blank">Check it out for yourself!</a>
 @endcomponent
 
 @component('mail::panel')
-If you wish to know more about American composer Edward MacDowell, look no further than this great study by Lawrence Gilman available to read FOR FREE at The Project Gutenberg website. Start reading it <a href="http://www.gutenberg.org/files/14109/14109-h/14109-h.htm#imgIX" target="_blank">here</a>.
+We’re reading a very interesting book called “The ballad of blind Tom”. In this book, the author describes the life if Blind Tom Wiggins, a blind african-american composer with an astonishing musical gift, born into slavery in the US of the late 19th century. 
+
+We’ll be making a blog post of the book once finished, so stay tuned if you’re curios to know more about blind Tom and his incredible music! 
+
+Find the book <a href="https://www.amazon.com/Ballad-Blind-Tom-Slave-Pianist-ebook/dp/B07RW44KW9/ref=sr_1_2?dchild=1&keywords=blind+tom&qid=1589513880&sr=8-2" target="_blank">here</a>.
 @endcomponent
 
-@component('mail::panel')
-Have you ever noticed how Darth Vader Imperial March is very similar to Chopin's Funeral March? We are convinced Darth Vader would've loved the reference.<br>(｡▼皿▼)
-@endcomponent
+<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. TRUE, 3. FALSE, 4. FALSE</div>
 
-<div class="mb-4 mt-4 text-center">Answers: 1. FALSE, 2. TRUE, 3. TRUE, 4. TRUE</div>
+<p>Here at pianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks our users for having such great ideas.</p>
+
+@component('mail::button', ['url' => config('app.stores.ios')])
+Download PianoLIT here
+@endcomponent
 
 <p>Got any questions? Feel free to reply to this email, there are real people behind it and we'd love to hear from you :)</p>
 @include('mail::signature')
 @endcomponent
- --}}

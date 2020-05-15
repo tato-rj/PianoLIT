@@ -7,16 +7,48 @@ trait StripeStates
 	protected $states = [
 		'active' => [
 			'trialing',
+			'trial',
 			'active',
 		],
 		'inactive' => [
 			'incomplete',
+			'paused',
+		],
+		'canceled' => [
+			'canceled',
+			'unpaid',
 			'incomplete_expired',
 			'past_due',
-			'canceled',
-			'unpaid'			
 		]
 	];
+
+	public function getColor()
+	{
+		if ($this->isOnGracePeriod())
+			return 'warning';
+
+		$status = $this->getStatus();
+
+		if (in_array($status, $this->states['active']))
+			return 'green';
+
+		if (in_array($status, $this->states['inactive']))
+			return 'secondary';
+
+		if (in_array($status, $this->states['canceled']))
+			return 'danger';
+	}
+
+	public function getStatus($callStripe = false)
+	{
+		if ($this->isPaused())
+			return 'paused';
+
+		if ($this->isOnTrial())
+			return 'trial';
+
+		return str_replace('_', ' ', $this->status);
+	}
 
 	public function isActive()
 	{

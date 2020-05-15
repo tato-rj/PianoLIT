@@ -80,14 +80,13 @@ trait StripeActions
 		]);
 	}
 
-	// public function cancelAtPeriodEnd($payload)
-	// {
-	// 	$this->update([
-	// 		'status' => 'canceled',
-	// 		'canceled_at' => now(),
-	// 		'membership_ends_at' => $payload['current_period_end']
-	// 	]);
-	// }
+	public function cancelAtPeriodEnd($payload)
+	{
+		$this->update([
+			'canceled_at' => now(),
+			'membership_ends_at' => $payload['current_period_end']
+		]);
+	}
 
 	// public function cancel($payload)
 	// {

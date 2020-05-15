@@ -235,6 +235,11 @@ trait PieceExtraAttributes
         return $catalogue;
     }
 
+    public function getHasSiblingsAttribute()
+    {
+        return $this->siblingsExist();
+    }
+
     public function getCollectionAttribute()
     {
         $collection = '';

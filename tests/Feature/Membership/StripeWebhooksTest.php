@@ -18,11 +18,14 @@ class StripeWebhooksTest extends AppTest
 
         $this->signIn($user);
 
+        $this->assertFalse($user->isAuthorized());
+
         $this->postStripeMembership($user);
 
         $this->fakeStripeWebhook($user, 'subscriptionRenewed');
 
         $this->assertTrue($user->membership->source->isActive());
+        $this->assertTrue($user->isAuthorized());
     }
 
     /** @test */
@@ -36,11 +39,13 @@ class StripeWebhooksTest extends AppTest
 
         $this->assertTrue($user->fresh()->membership->source->isActive());
         $this->assertFalse($user->fresh()->membership->source->isEnded());
+        $this->assertTrue($user->isAuthorized());
 
         $this->fakeStripeWebhook($user, 'subscriptionDidNotRenew');
 
         $this->assertFalse($user->fresh()->membership->source->isActive());
         $this->assertTrue($user->fresh()->membership->source->isEnded());
+        $this->assertFalse($user->fresh()->isAuthorized());
     }
 
     /** @test */
@@ -57,6 +62,7 @@ class StripeWebhooksTest extends AppTest
         $this->assertFalse($user->membership->source->isEnded());
         $this->assertTrue($user->membership->source->willRenew());
         $this->assertFalse($user->membership->source->isOnGracePeriod());
+        $this->assertTrue($user->isAuthorized());
 
         $this->fakeStripeWebhook($user, 'subscriptionWillNotRenew');
 
@@ -65,12 +71,23 @@ class StripeWebhooksTest extends AppTest
         $this->assertFalse($user->fresh()->membership->source->isEnded());
         $this->assertFalse($user->fresh()->membership->source->willRenew());
         $this->assertTrue($user->fresh()->membership->source->isOnGracePeriod());
+        $this->assertTrue($user->fresh()->isAuthorized());
     }
 
     /** @test */
     public function it_tracks_when_the_user_changes_their_plan()
     {
-        $this->assertTrue(true);
+        $user = create(User::class);
+
+        $this->signIn($user);
+
+        $this->postStripeMembership($user);
+
+        $originalPlan = $user->membership->source->plan;
+
+        $this->fakeStripeWebhook($user, 'planChanged');
+
+        $this->assertNotEquals($originalPlan, $user->fresh()->membership->source->plan);
     }
 
     /** @test */
@@ -84,6 +101,7 @@ class StripeWebhooksTest extends AppTest
 
         $this->assertTrue($user->membership->source->isActive());
         $this->assertFalse($user->membership->source->isPaused());
+        $this->assertTrue($user->isAuthorized());
 
         $this->fakeStripeWebhook($user, 'subscriptionPaused');
 
@@ -91,6 +109,7 @@ class StripeWebhooksTest extends AppTest
         $this->assertTrue($user->fresh()->membership->source->isPaused());
         $this->assertFalse($user->fresh()->membership->source->isEnded());
         $this->assertFalse($user->fresh()->membership->source->isOnGracePeriod());
+        $this->assertFalse($user->fresh()->isAuthorized());
 
         $this->fakeStripeWebhook($user, 'subscriptionResumed');
 
@@ -98,6 +117,7 @@ class StripeWebhooksTest extends AppTest
         $this->assertFalse($user->fresh()->membership->source->isPaused());
         $this->assertFalse($user->fresh()->membership->source->isEnded());
         $this->assertFalse($user->fresh()->membership->source->isOnGracePeriod());
+        $this->assertTrue($user->fresh()->isAuthorized());
     }
 
     /** @test */
@@ -112,12 +132,14 @@ class StripeWebhooksTest extends AppTest
         $this->assertTrue($user->membership->source->isActive());
         $this->assertFalse($user->membership->source->isCanceled());
         $this->assertFalse($user->membership->source->isEnded());
+        $this->assertTrue($user->isAuthorized());
 
         $this->fakeStripeWebhook($user, 'subscriptionDeleted');
 
         $this->assertFalse($user->fresh()->membership->source->isActive());
         $this->assertTrue($user->fresh()->membership->source->isCanceled());
         $this->assertTrue($user->fresh()->membership->source->isEnded());
+        $this->assertFalse($user->fresh()->isAuthorized());
     }
 
     /** @test */

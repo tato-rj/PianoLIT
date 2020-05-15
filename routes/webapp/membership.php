@@ -16,8 +16,10 @@ Route::namespace('WebApp')->prefix('membership')->name('membership.')->group(fun
 
 	Route::post('card/update', 'MembershipsController@updateCard')->name('update.card');
 
-	Route::post('status/update', 'MembershipsController@updateCollection')->name('update.collection');
+	Route::post('status/update', 'MembershipsController@updateBillingStatus')->name('update.billing-status');
 
 	Route::post('cancel', 'MembershipsController@cancel')->name('cancel');
+
+	Route::post('resume', 'MembershipsController@resume')->name('resume');
 
 });

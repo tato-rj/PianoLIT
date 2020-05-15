@@ -40,7 +40,8 @@ class Piece extends PianoLit
         'medium_name_with_composer',
         'is_new',
         'number_of_pages',
-        'for_who'
+        'for_who',
+        'has_siblings'
     ];
     protected $report_by = 'medium_name_with_composer';
 
@@ -165,6 +166,11 @@ class Piece extends PianoLit
     public function mood()
     {
         return $this->tags->where('type', 'mood');
+    }
+
+    public function technique()
+    {
+        return $this->tags->where('type', 'technique');
     }
 
     public function cloudUrlFor($name)
@@ -386,6 +392,13 @@ class Piece extends PianoLit
         }
 
         return $query;
+    }
+
+    public function siblingsExist()
+    {
+        return Piece::exceptThis()->with(['composer', 'tags'])
+                                  ->where(['composer_id' => $this->composer_id, 'collection_name' => $this->collection_name, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
+                                  ->exists();
     }
 
     public function siblings()

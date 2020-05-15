@@ -40,8 +40,8 @@
 <section id="tabs-container">
 	@include('webapp.piece.nav')
 	<div class="tab-content p-3">
-		@include('webapp.piece.tabs.audio')
-		@include('webapp.piece.tabs.video')
+		@include('webapp.piece.tabs.about')
+		@include('webapp.piece.tabs.media')
 		@include('webapp.piece.tabs.score')
 		@include('webapp.piece.tabs.timeline')
 	</div>

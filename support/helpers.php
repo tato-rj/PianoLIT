@@ -288,7 +288,9 @@ function arrayToSentence($array, $conjunction = 'and')
 {
 	$arrayCount = count($array);
 
-	if ($arrayCount == 1) {
+	if ($arrayCount == 0) {
+		return null;
+	} elseif ($arrayCount == 1) {
 	    $sentence = $array[0];
 	} else {
 	    $partial = array_slice($array, 0, $arrayCount-1);
