@@ -14,11 +14,6 @@ class Apple extends PianoLit implements BillingSource
 	protected $table = 'apple_memberships';
 	protected $dates = ['renews_at', 'validated_at'];
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
-
 	public function scopeSubscribe($query, User $user, $request)
 	{
         $json = (new AppleValidator)->verify($request->receipt_data, $request->password);

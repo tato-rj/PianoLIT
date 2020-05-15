@@ -41,7 +41,7 @@ class MembershipsController extends Controller
     public function purchase(Request $request, Plan $plan, StripeMembershipForm $form)
     {
         try {
-            $customer = (new StripeFactory)->customer()->subscribe($plan, $form->stripeToken);
+            $customer = (new StripeFactory)->customer()->withCoupon($form->coupon)->subscribe($plan, $form->stripeToken);
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -51,6 +51,17 @@ class MembershipsController extends Controller
         event(new NewTrial(auth()->user()));
 
         return redirect(route('webapp.membership.success'))->with('valid-success', true);
+    }
+
+    public function validateCoupon(Request $request)
+    {
+        try {
+            $coupon = (new StripeFactory)->getCoupon($request->coupon);
+        } catch (\Exception $e) {
+            return $e->getMessage();//'Sorry, this coupon was not found.';
+        }
+
+        return $coupon->valid ? 'The coupon is valid, you\'re good to go!' : 'Sorry, this coupon is no longer valid.';
     }
 
     public function success()

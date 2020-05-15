@@ -93,5 +93,15 @@ $(document).ready(function() {
     buttonIcon.classList.toggle('spinner-border');
   }
 });
+
+$('input[name="coupon"]').on('blur', function() {
+  axios.get("{{route('webapp.membership.validate-coupon')}}", {params: {coupon: $(this).val()}})
+      .then(function(response) {
+        console.log(response.data);
+      })
+      .catch(function(response) {
+        console.log(response.data);
+      });
+});
 </script>
 @endpush

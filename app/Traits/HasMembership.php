@@ -95,4 +95,9 @@ trait HasMembership
 
         return null;
     }
+
+    public function isSuperUser()
+    {
+        return $this->super_user;
+    }
 }

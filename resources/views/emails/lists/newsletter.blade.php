@@ -72,18 +72,22 @@ Let me try!
 @endcomponent
 @endcomponent
 
-{{-- @component('mail::newsletter.section', [
+@component('mail::newsletter.section', [
 	'badge' => [
-		'name' => 'infographics', 
+		'name' => 'crash course', 
 		'color' => 'pink',
-		'link' => 'https://pianolit.com/resources/infographs/johannes-brahms'
+		'link' => 'https://pianolit.com/crashcourses/practical-tips-to-play-chopins-revolutionary-etude-better'
 	],
-	'title' => 'Learn more about Brahms and Tchaikovsky'
+	'title' => 'Practical tips to practice Chopin\'s Revolutionary Etude'
 ])
 
+<p>This FREE crash course is dedicated to the ones that have a solid foundation and are looking to improve Chopin's Revolutionary Etude. And shock their audience with a seamless execution.</p>
 
+@component('mail::button', ['url' => 'https://pianolit.com/crashcourses/practical-tips-to-play-chopins-revolutionary-etude-better'])
+Sign up for FREE!
 @endcomponent
- --}}
+@endcomponent
+
 <h1 class="text-lg mb-4">True or False: Tchaikovsky & Brahms edition</h1>
 @include('mail::lists.numbered', ['items' => [
 	'<strong>Tchaikovsky believed that music should primarily express our emotions:</strong> TRUE | FALSE',

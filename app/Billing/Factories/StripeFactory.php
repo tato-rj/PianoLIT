@@ -2,13 +2,13 @@
 
 namespace App\Billing\Factories;
 
-use Stripe\{Stripe, Customer, Subscription, Invoice};
+use Stripe\{Stripe, Customer, Subscription, Invoice, Coupon};
 use Stripe\Plan as StripePlan;
 use App\Billing\Plan;
 
 class StripeFactory
 {
-  public $customer, $subscription, $newMember;
+  public $customer, $subscription, $newMember, $coupon;
 
 	public function __construct()
 	{
@@ -31,6 +31,18 @@ class StripeFactory
       return $this;
   }
 
+  public function withCoupon($coupon = null)
+  {
+    $this->coupon = $coupon;
+
+    return $this;
+  }
+
+  public function getCoupon($id)
+  {
+    return Coupon::retrieve($id);
+  }
+
 	public function subscribe(Plan $plan, $stripeToken)
 	{
     if ($this->newMember) {
@@ -39,7 +51,8 @@ class StripeFactory
           'email' => auth()->user()->email,
           'source' => $stripeToken,
           'plan' => $plan->name,
-          'trial_from_plan' => true
+          'trial_from_plan' => true,
+          'coupon' => $this->coupon
       ]);
     }
 

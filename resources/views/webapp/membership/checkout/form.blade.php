@@ -11,6 +11,7 @@
 			<div class="form-group">
 				<div id="card-element" class="form-control"></div>
 				<div id="card-errors" role="alert" class="invalid-feedback d-block"></div>
+				<input type="text" name="coupon" placeholder="Have a coupon?" class="form-control">
 				<div><small>By purchasing I agree to the <a href="" class="link-blue">Terms of Service</a>.</small></div>
 			</div>
 		</div>

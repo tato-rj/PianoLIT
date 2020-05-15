@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Billing\Membership;
+use App\Billing\{Membership, Payment};
 use App\Billing\Sources\Apple;
 use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User};
 use Tests\AppTest;
@@ -16,6 +16,14 @@ class UserTest extends AppTest
 	{
 		$this->assertInstanceOf(Membership::class, $this->user->membership);
 		$this->assertInstanceOf(Apple::class, $this->user->membership->source);
+	}
+
+	/** @test */
+	public function it_has_many_payments()
+	{
+		$this->user->payments()->create(['amount' => 999, 'charge_id' => 'ch_000000']);
+		
+		$this->assertInstanceOf(Payment::class, $this->user->payments()->first());
 	}
 
 	/** @test */

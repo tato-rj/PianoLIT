@@ -1,8 +1,8 @@
 <div class="tab-pane fade show active" id="overview-tab">
 	<div class="row"> 
 		<div class="col-lg-4 col-md-4 col-sm-6 col-12 mb-3">
-			<div class="d-flex flex-column shadow-light rounded px-3 text-center">
-				<div class="mb-2 mt-1 py-4 border-bottom flex-grow">
+			<div class="d-flex flex-column border rounded px-3 text-center">
+				<div class="mb-2 mt-1 py-3 border-bottom flex-grow">
 					<div class="mb-1"><small>You're currently on</small></div>
 					<h5 class="d-flex flex-center m-0 h-100">{{auth()->user()->membership->source->plan_name}} Plan</h5>
 				</div>

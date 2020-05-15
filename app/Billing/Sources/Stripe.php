@@ -6,6 +6,7 @@ use App\{PianoLit, User};
 use Illuminate\Http\Request;
 use App\Contracts\BillingSource;
 use Stripe\Customer;
+use App\Billing\Membership;
 use App\Billing\Sources\Concerns\{StripeStates, StripeActions, StripeElements};
 use App\Billing\Factories\StripeFactory;
 
@@ -21,11 +22,6 @@ class Stripe extends PianoLit implements BillingSource
 		'paused_at', 
 		'canceled_at'
 	];
-
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
 
     public function scopeByCustomerId($query, $customerId)
     {

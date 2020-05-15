@@ -6,7 +6,6 @@ use App\User;
 
 interface BillingSource
 {
-	public function user();
 	public function scopeSubscribe($query, User $user, $request);
 	public function getPlanNameAttribute();
 	public function getStatus($args = null);

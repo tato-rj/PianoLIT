@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Billing\Sources\Stripe;
-use App\Billing\{Membership, Plan};
+use App\Billing\{Membership, Plan, Payment};
 
 class RefreshStripe extends Command
 {
@@ -44,7 +44,9 @@ class RefreshStripe extends Command
 
         if ($this->confirm('This will delete all Stripe records in our database. Are you sure?')) {
             $this->flushRecords();
+            $this->flushPayments();
             $this->createPlans();
+            $this->createCoupon();
         }
 
     }
@@ -56,6 +58,13 @@ class RefreshStripe extends Command
         Membership::where('source_type', Stripe::class)->delete();
 
         return $this->info('All Stripe memberships have been deleted.');
+    }
+
+    public function flushPayments()
+    {
+        Payment::truncate();
+
+        return $this->info('All payment records have been deleted.');
     }
 
     public function createPlans()
@@ -82,5 +91,22 @@ class RefreshStripe extends Command
         }
 
         return $this->info('New plans have been created on Stripe.');
+    }
+
+    public function createCoupon()
+    {
+        try {
+            \Stripe\Coupon::create([
+                'id' => 'TEST-COUPON',
+                'name' => '50% OFF',
+                'percent_off' => 50,
+                'duration' => 'repeating',
+                'duration_in_months' => 3,
+            ]);   
+        } catch (\Exception $e) {
+            return $this->info($e->getMessage());            
+        }
+
+        return $this->info('A test coupon has been created on Stripe.');
     }
 }

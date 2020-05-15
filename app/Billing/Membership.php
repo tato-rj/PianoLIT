@@ -18,6 +18,11 @@ class Membership extends PianoLit
         return $this->morphTo();
     }
 
+    public function scopeBySource($query, $source)
+    {
+    	return $query->where(['source_type' => get_class($source), 'source_id' => $source->id])->firstOrFail();
+    }
+
     public function scopeHasSourceFor($query, $source, $user)
     {
     	return $query->where(['source_type' => $source, 'user_id' => $user->id])->exists();

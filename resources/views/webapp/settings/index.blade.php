@@ -8,7 +8,9 @@
 
 <div class="row">
 	<div class="col-lg-8 col-12 mx-auto p-0 list-group">
-		@if(auth()->user()->membership()->exists() && ! auth()->user()->membership->source->isEnded())
+		@if(auth()->user()->isSuperUser())
+		@include('webapp.settings.item', ['label' => 'You\'re a super user!'])
+		@elseif(auth()->user()->membership()->exists() && ! auth()->user()->membership->source->isEnded())
 		@include('webapp.settings.item', ['url' => route('webapp.membership.edit'), 'label' => 'My membership ' . auth()->user()->membership->source->badge()])
 		@else
 		@include('webapp.settings.item', ['url' => route('webapp.membership.pricing'), 'label' => 'Subscribe <i class="fas fa-star text-yellow"></i>'])

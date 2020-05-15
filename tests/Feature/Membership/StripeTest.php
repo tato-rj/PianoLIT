@@ -4,6 +4,7 @@ namespace Tests\Feature\Membership;
 
 use Tests\AppTest;
 use Tests\Traits\{BillingResources, InteractsWithStripe};
+use Stripe\Coupon;
 use App\User;
 
 class StripeTest extends AppTest
@@ -22,6 +23,18 @@ class StripeTest extends AppTest
         $this->postStripeMembership();
 
         $this->assertTrue($user->membership()->exists());
+    }
+
+    /** @test */
+    public function users_can_apply_a_coupon_when_subscribing_through_the_webapp()
+    {
+        $user = create(User::class);
+
+        $this->signIn($user);
+
+        $this->postStripeMembership($withCoupon = true);
+
+        $this->assertTrue($this->couponApplied());
     }
 
     /** @test */

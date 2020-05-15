@@ -87,17 +87,4 @@ trait StripeActions
 			'membership_ends_at' => $payload['current_period_end']
 		]);
 	}
-
-	// public function cancel($payload)
-	// {
-	// 	$this->update([
-	// 		'status' => $payload['status'],
-	// 		'ended_at' => $payload['ended_at'] ?? null,
-	// 		'canceled_at' => $payload['canceled_at'] ?? null,
-	// 		'membership_ends_at' => $payload['current_period_end'],
-	// 		'paused_at' => null,
-	// 		'card_brand' => null,
-	// 		'card_last_four' => null
-	// 	]);
-	// }
 }

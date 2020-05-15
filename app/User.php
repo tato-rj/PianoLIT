@@ -9,7 +9,7 @@ use App\Traits\{HasMembership, Reportable, Loggable};
 use App\Contracts\Merchandise;
 use App\Merchandise\Purchase;
 use App\Stats\User as UserStats;
-use App\Billing\Membership;
+use App\Billing\{Membership, Payment};
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -46,6 +46,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function membership()
     {
     	return $this->hasOne(Membership::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function favorites()

@@ -173,4 +173,19 @@ trait StripeEvents
 		  ]
 		];
 	}
+
+	public function chargeSucceeded()
+	{
+		return [
+		  "type" => "charge.succeeded",
+		  "data" => [
+		    "object" => [
+		      "id" => "ch_00000000000000",
+		      "amount" => 100,
+		      "amount_refunded" => 0,
+		      "customer" => $this->customerId,
+		    ]
+		  ]
+		];
+	}
 }

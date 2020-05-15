@@ -157,4 +157,20 @@ class StripeWebhooksTest extends AppTest
 
         $this->assertNotEquals($last4, $user->fresh()->membership->source->card_last_four);
     }
+
+    /** @test */
+    public function it_records_a_payment_when_a_charge_is_successful_on_stripe()
+    {
+        $user = create(User::class);
+
+        $this->signIn($user);
+
+        $this->postStripeMembership($user);
+
+        $this->assertCount(0, $user->payments);
+
+        $this->fakeStripeWebhook($user, 'chargeSucceeded');
+
+        $this->assertCount(1, $user->fresh()->payments);
+    }
 }
