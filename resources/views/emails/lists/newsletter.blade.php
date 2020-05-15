@@ -105,7 +105,7 @@ Sign up for FREE!
 @component('mail::panel')
 Ever wondered how Tchaikovsky voice might have sounded like? Well, there’s a recording for that!
 
-The following recording of was made in Moscow in January 1890, by Julius Block on behalf of Thomas Edison. According to musicologist Leonid Sabaneyev, Tchaikovsky was not comfortable with being recorded for posterity and tried to shy away from it. Here below a transcription of what you’ll hearing this recording.
+The following recording was made in Moscow in January 1890, by Julius Block on behalf of Thomas Edison. According to musicologist Leonid Sabaneyev, Tchaikovsky was not comfortable with being recorded for posterity and tried to shy away from it. Here below a transcription of what you’ll be hearing in this recording.
 
 Listen to the recording <a href="https://www.youtube.com/watch?v=7DEEdFLjUiw&feature=youtu.be" target="_blank">here</a>!
 
