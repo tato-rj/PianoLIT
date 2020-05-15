@@ -266,6 +266,13 @@ class Piece extends PianoLit
         return $query->whereNotNull('videos');
     }
 
+    public function scopeWithTutorials($query)
+    {
+        return $query->withVideos()->get()->filter(function($piece, $index) {
+            return $piece->videos_count > 2;
+        });
+    }
+
     public function scopebyRecordingsAvailable($query)
     {
         return $query->whereHas('tags', function($q) {

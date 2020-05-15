@@ -51,6 +51,15 @@ abstract class Factory
         return $this->createPlaylist($collection, ['row' => 'gallery', 'type' => 'piece', 'title' => $title]);
     }
 
+    public function tutorials($title)
+    {
+        $collection = Piece::with(['composer'])->withTutorials()->shuffle()->take($this->limit);
+
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+
+        return $this->createPlaylist($collection, ['row' => 'gallery', 'type' => 'piece', 'title' => $title]);
+    }
+
     public function women($title)
     {
         $collection = Piece::with('composer')->byWomen()->shuffle();

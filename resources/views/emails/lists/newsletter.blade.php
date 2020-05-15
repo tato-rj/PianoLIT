@@ -1,11 +1,11 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
 
 @include('mail::newsletter.quote', [
-	'quote' => 'The notes I handle no better than many pianists. But the pauses between the notes - ah, that is where the art resides!.',
+	'quote' => 'The notes I handle no better than many pianists. But the pauses between the notes - ah, that is where the art resides!',
 	'author' => 'Artur Schnabel'
 ])
 
-We’re living through a once-in-a-generation event, and like you, we’ve been finding it difficult to make sense of it all. The coronavirus has obliterated many things about normal life, we are spending a whole lot of time at home with no excuses about not practicing!
+We’re living through a once-in-a-generation event, and like you, we’ve been finding it difficult to make sense of it all. The coronavirus has obliterated many things about normal life, we are spending a whole lot of time at home and have no excuses about not practicing!
 
 It's clear we are going to be living like this for a while, so we might as well get the best out of it.
 
@@ -22,12 +22,12 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 		'color' => 'green',
 		'link' => 'https://www.youtube.com/watch?v=HbCoekpDCKc'
 	],
-	'title' => 'A Magical Music Box 🤗'
+	'title' => 'A Magical Music Box ✨'
 ])
 
-<p>We have just added this wonderful piece into our app’s “Playlists” tab, under the Hidden gems category. We literally fell in love with it. It’s probably because of the nostalgia it evokes as it feels like hearing to an old music box from the 1900 century.</p>
+<p>We've recently added this wonderful piece into our app’s “Playlists” tab, under the Hidden Gems category. We literally fell in love with it. It’s probably because of the nostalgia it evokes. It sounds like a music box playing an old charming tune.</p>
 
-<p>The composer Anatoly Lyadov was a Russian composer whose orchestral works and poetic, beautifully polished piano miniatures earned him a position of stature in Russian Romantic music.</p>
+<p>The composer Anatoly Lyadov was a Russian musician whose orchestral works and poetic polished piano miniatures earned him a position of stature in Russian Romantic music.</p>
 
 <p><a href="https://www.youtube.com/watch?v=HbCoekpDCKc" class="text-md"><strong>The Music Box Op.32, watch on YouTube</strong></a></p>
 <p><a href="https://pianolit.com/pieces/778" class="text-md"><strong>You'll find the score here</strong></a></p>
@@ -47,6 +47,11 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 @component('mail::button', ['url' => 'https://pianolit.com/blog/tchaikovsky-vs-brahms-a-story-of-music-and-rivalry'])
 Read more about this
 @endcomponent
+
+<p>To learn more about their life and work download the PianoLIT infographic! Free to download here</p>
+
+<p><a href="https://pianolit.com/resources/infographs/johannes-brahms" class="text-md" target="_blank">Brahms infographic, click HERE</a></p>
+<p><a href="https://pianolit.com/resources/infographs/pytor-tchaikovsky" class="text-md" target="_blank">Tchaikovsky infographic, click HERE</a></p>
 @endcomponent
 
 @component('mail::newsletter.section', [
@@ -67,7 +72,7 @@ Let me try!
 @endcomponent
 @endcomponent
 
-@component('mail::newsletter.section', [
+{{-- @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'infographics', 
 		'color' => 'pink',
@@ -76,12 +81,9 @@ Let me try!
 	'title' => 'Learn more about Brahms and Tchaikovsky'
 ])
 
-<p>Both great composers’ birthday was few days ago on May 7. To learn more about their life and work download the PianoLIT infographic! Free to download here</p>
 
-<p><a href="https://pianolit.com/resources/infographs/johannes-brahms" class="text-md" target="_blank">Brahms infographic, click HERE</a></p>
-<p><a href="https://pianolit.com/resources/infographs/pytor-tchaikovsky" class="text-md" target="_blank">Tchaikovsky infographic, click HERE</a></p>
 @endcomponent
-
+ --}}
 <h1 class="text-lg mb-4">True or False: Tchaikovsky & Brahms edition</h1>
 @include('mail::lists.numbered', ['items' => [
 	'<strong>Tchaikovsky believed that music should primarily express our emotions:</strong> TRUE | FALSE',
@@ -97,7 +99,7 @@ Let me try!
 <h1 class="text-lg mb-4">Cool facts worth sharing this month:</h1>
 
 @component('mail::panel')
-Ever wondered how Tchaikovsky voice might have sounded like? Well, there’s recording for that!
+Ever wondered how Tchaikovsky voice might have sounded like? Well, there’s a recording for that!
 
 The following recording of was made in Moscow in January 1890, by Julius Block on behalf of Thomas Edison. According to musicologist Leonid Sabaneyev, Tchaikovsky was not comfortable with being recorded for posterity and tried to shy away from it. Here below a transcription of what you’ll hearing this recording.
 
@@ -118,7 +120,7 @@ Here's a transcription of the conversation:
 @endcomponent
 
 @component('mail::panel')
-There are many great photos of Brhams, one of which is with his friend, the composer Strauss. 
+There are many great photos of Brahms, one of which is with his friend, the composer Johann Strauss. 
 
 <a href="https://www.gettyimages.com/detail/news-photo/german-composers-johann-strauss-and-johannes-brahms-circa-news-photo/164071334?adppopup=true" target="_blank">Check it out for yourself!</a>
 @endcomponent
@@ -133,7 +135,7 @@ Find the book <a href="https://www.amazon.com/Ballad-Blind-Tom-Slave-Pianist-ebo
 
 <div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. TRUE, 3. FALSE, 4. FALSE</div>
 
-<p>Here at pianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks our users for having such great ideas.</p>
+<p>Here at pianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks to our users for having such great ideas.</p>
 
 @component('mail::button', ['url' => config('app.stores.ios')])
 Download PianoLIT here
