@@ -92,7 +92,23 @@ class Apple extends PianoLit implements BillingSource
 
     public function badge()
     {
-        return '<i class="fab fa-apple"></i>';
+        $status = $this->getStatus();
+
+        switch ($status) {
+            case 'trial':
+                $color = 'warning';
+                break;
+
+            case 'active':
+                $color = 'green';
+                break;
+
+            default:
+                $color = 'secondary';
+                break;
+        }
+        
+        return '<span class="text-nowrap badge badge-pill alert-'.$color.'">'.strtoupper($status).'</span>';
     }
 
     public function card()
@@ -102,7 +118,12 @@ class Apple extends PianoLit implements BillingSource
 
     public function isOnTrial()
     {
-        //
+        if ($this->isExpired())
+            return false;
+
+        $diff = $this->created_at->diffInDays($this->renews_at);
+
+        return $diff <= 7;
     }
 
     public function isOnGracePeriod()

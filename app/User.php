@@ -237,6 +237,10 @@ class User extends Authenticatable implements MustVerifyEmail
                 return 'fas fa-laptop';
                 break;
 
+            case 'webapp':
+                return 'fas fa-bolt';
+                break;
+
             case 'ios':
                 return 'fab fa-apple';
                 break;

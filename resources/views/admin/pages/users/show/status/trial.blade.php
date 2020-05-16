@@ -4,6 +4,10 @@
 	</div>
 </div>
 
-@if($user->membership()->exists())
-@include('admin.pages.users.show.membership.info')
+@if($user->hasMembershipWith('App\Billing\Sources\Apple'))
+@include('admin.pages.users.show.membership.apple')
+@endif
+
+@if($user->hasMembershipWith('App\Billing\Sources\Stripe'))
+@include('admin.pages.users.show.membership.stripe')
 @endif

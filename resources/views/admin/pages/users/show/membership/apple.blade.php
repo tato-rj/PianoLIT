@@ -1,6 +1,8 @@
-<div class="col-6">
+<div>
 	<table class="table table-striped table-borderless">
 	  <tbody>
+		@include('admin.pages.users.show.list-item', 
+			['title' => 'Billing Source', 'value' => 'Apple In-App Purchases'])
 		@include('admin.pages.users.show.list-item', 
 			['title' => 'Membership ID', 'value' => $user->membership->source->latest_receipt_info ? $user->membership->source->latest_receipt_info->original_transaction_id : null])
 		@include('admin.pages.users.show.list-item', 
@@ -12,7 +14,8 @@
 	  </tbody>
 	</table>
 </div>
-<div class="col-6">
+
+<div>
 	@if($user->membership->source->isExpired() || ! $user->membership->source->renews_at)
 		<div class="mb-3">
 			<form method="POST" action="{{route('admin.memberships.validate.user', $user->id)}}">
@@ -25,5 +28,4 @@
 	<a href="" data-toggle="modal" data-target="#membership-history" class="link-default">
 		<div class="mb-2">Request receipts history</div>
 	</a>
-
 </div>

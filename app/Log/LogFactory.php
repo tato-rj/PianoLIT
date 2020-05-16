@@ -7,7 +7,7 @@ use App\Log\Loggers\DailyLog;
 
 class LogFactory
 {
-	protected $types = ['app', 'web'];
+	protected $types = ['app', 'web', 'webapp'];
 
 	public function __construct()
 	{

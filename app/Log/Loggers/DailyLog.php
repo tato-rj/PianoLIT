@@ -40,6 +40,9 @@ class DailyLog
             if (array_key_exists('web', $item))
                 $count += $item['web'];
 
+            if (array_key_exists('webapp', $item))
+                $count += $item['webapp'];
+
             return $count;
         });
 	}
@@ -55,6 +58,7 @@ class DailyLog
 			$records[$i]['label'] = carbon($date)->format('D jS');
 			$records[$i]['datasets']['app'] = 0;
 			$records[$i]['datasets']['web'] = 0;
+			$records[$i]['datasets']['webapp'] = 0;
 			
 			foreach (array_values($log->all()) as $events) {
 				foreach ($events as $event) {
@@ -63,6 +67,9 @@ class DailyLog
 
 					if (array_key_exists('web', $event))
 						$records[$i]['datasets']['web'] = $event['web'];
+
+					if (array_key_exists('webapp', $event))
+						$records[$i]['datasets']['webapp'] = $event['webapp'];
 				}
 			}
 		}

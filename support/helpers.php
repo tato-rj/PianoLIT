@@ -1,4 +1,10 @@
 <?php
+
+function subdomain()
+{
+	return strhas(url()->current(), 'my.pianolit') ? 'webapp' : 'web';
+}
+
 function requestWith($params)
 {
 	return new \Illuminate\Http\Request($params);

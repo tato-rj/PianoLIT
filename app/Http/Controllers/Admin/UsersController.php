@@ -6,6 +6,7 @@ use App\{Admin, User, Piece, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Log\Loggers\DailyLog;
+use App\Stats\Stats;
 
 class UsersController extends Controller
 {
@@ -32,7 +33,7 @@ class UsersController extends Controller
     }
 
     public function logs()
-    {
+    {        
         if (request()->ajax())
             return (new Stats)->for('users')->query(request('type'), request()->except('type'))->get();
 

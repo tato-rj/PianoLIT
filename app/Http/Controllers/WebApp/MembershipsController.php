@@ -41,7 +41,7 @@ class MembershipsController extends Controller
     public function purchase(Request $request, Plan $plan, StripeMembershipForm $form)
     {
         try {
-            $customer = (new StripeFactory)->customer()->withCoupon($form->coupon)->subscribe($plan, $form->stripeToken);
+            $customer = (new StripeFactory)->customer()->withCoupon(strtoupper($form->coupon))->subscribe($plan, $form->stripeToken);
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -56,12 +56,16 @@ class MembershipsController extends Controller
     public function validateCoupon(Request $request)
     {
         try {
-            $coupon = (new StripeFactory)->getCoupon($request->coupon);
+            $coupon = (new StripeFactory)->getCoupon(strtoupper($request->coupon));
         } catch (\Exception $e) {
-            return $e->getMessage();//'Sorry, this coupon was not found.';
+            return response()->json(['isValid' => false, 'message' => 'Sorry, this coupon was not found.']);
         }
 
-        return $coupon->valid ? 'The coupon is valid, you\'re good to go!' : 'Sorry, this coupon is no longer valid.';
+        $response = $coupon->valid ? 
+                    ['isValid' => true, 'message' => 'The coupon is valid, you\'re good to go! You\'ll get a discount of ' . $coupon->name . '.'] : 
+                    ['isValid' => false, 'message' => 'Sorry, this coupon is no longer valid.'];
+
+        return response()->json($response);
     }
 
     public function success()

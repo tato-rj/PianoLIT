@@ -94,14 +94,34 @@ $(document).ready(function() {
   }
 });
 
+$('input[name="coupon"]').on('keyup', function() {
+  $('#coupon-feedback').text('');
+});
+
 $('input[name="coupon"]').on('blur', function() {
-  axios.get("{{route('webapp.membership.validate-coupon')}}", {params: {coupon: $(this).val()}})
-      .then(function(response) {
-        console.log(response.data);
-      })
-      .catch(function(response) {
-        console.log(response.data);
-      });
+  let $input = $('#coupon-feedback');
+  
+
+  if ($(this).val().length > 4) {
+    $('#card-button').disable();
+    
+    axios.get("{{route('webapp.membership.validate-coupon')}}", {params: {coupon: $(this).val()}})
+        .then(function(response) {
+          if (response.data.isValid) {
+            $input.removeClass('invalid-feedback').addClass('valid-feedback');
+          } else {
+            $input.addClass('invalid-feedback').removeClass('valid-feedback');
+          }
+
+          $input.text(response.data.message).show();
+        })
+        .catch(function(response) {
+          $input.addClass('invalid-feedback').removeClass('valid-feedback').text(response.data.message).show();
+        })
+        .then(function() {
+          $('#card-button').enable();
+        });
+      }
 });
 </script>
 @endpush

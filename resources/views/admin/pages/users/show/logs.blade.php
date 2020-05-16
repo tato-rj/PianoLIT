@@ -12,6 +12,16 @@
         'logs' => collect($user->log()->app)->take(5),
       ])
   	])
+    @table([
+      'id' => 'log-webapp-table',
+      'title' => 'Webapp Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'webapp')) . ')',
+      'headers' => ['Date', 'Api call', 'Data'],
+      'more' => route('admin.users.load-logs', ['user' => $user->id, 'type' => 'webapp']),
+      'rows' => view('admin.pages.users.show.logs.web-rows', [
+        'user' => $user, 
+        'logs' => collect($user->log()->webapp)->take(5)
+      ])
+    ])
   	@table([
   		'id' => 'log-web-table',
   		'title' => 'Web Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'web')) . ')',

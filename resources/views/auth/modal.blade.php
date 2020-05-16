@@ -30,7 +30,7 @@
         <div class="modal-body text-center px-5">
           <h5 class="mb-4 border-bottom border-blue d-inline-block px-3 pb-2 border-1x">Sign up for PianoLIT</h5>
           <p>Before accessing this resource, just sign in or create an account!</p>
-            <form method="POST" action="{{ route('register') }}" id="register-form">
+            <form method="POST" action="{{ route('register') }}">
                 @csrf
                 @include('auth.fields.register')
 

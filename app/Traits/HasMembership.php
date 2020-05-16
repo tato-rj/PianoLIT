@@ -61,7 +61,13 @@ trait HasMembership
         if ($this->membership->source->isExpired())
             return ['icon' => 'credit-card', 'color' => 'grey', 'label' => 'Expired'];
 
-        if ($this->isOnTrial)
+        if ($this->membership->source->isPaused())
+            return ['icon' => 'pause', 'color' => 'grey', 'label' => 'Paused'];
+
+        if ($this->membership->source->isOnGracePeriod())
+            return ['icon' => 'hourglass-half', 'color' => 'yellow', 'label' => 'Grace period'];
+
+        if ($this->membership->source->isOnTrial())
             return ['icon' => 'credit-card', 'color' => 'yellow', 'label' => 'On trial'];
 
         return ['icon' => 'credit-card', 'color' => 'green', 'label' => 'Member (' . $this->membership->source->plan_name . ')'];

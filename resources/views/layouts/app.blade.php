@@ -52,7 +52,7 @@
         
         @include('layouts.footer')
 
-        @include('auth.modal')        
+        @include('auth.modal')
         @include('components.alerts.http')
     </div>
 

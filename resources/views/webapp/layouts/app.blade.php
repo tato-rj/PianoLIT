@@ -46,11 +46,7 @@
 </head>
 <body>
     @include('layouts.html.google.manager-body')
-
-    @confirmed(false)
-    @include('auth.alerts.unconfirmed')
-    @endconfirmed
-    
+   
     <div id="webapp" class="container">
 
         <div class="row">

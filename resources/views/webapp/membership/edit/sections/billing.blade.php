@@ -6,7 +6,7 @@
 					<div>
 						@fa(['icon' => 'exclamation-triangle'])Your membership was canceled on {{auth()->user()->membership->source->canceled_at->toFormattedDateString()}}
 					</div>
-					<form method="POST" action="{{route('webapp.membership.resume')}}">
+					<form method="POST" action="{{route('webapp.membership.resume')}}" disable-on-submit>
 						@csrf
 						<button type="submit" class="btn-link btn btn-sm alert-link">Don't cancel</button>
 					</form>

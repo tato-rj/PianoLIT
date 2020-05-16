@@ -20,8 +20,21 @@ trait InteractsWithStripe
         ));
 	}
 
-    public function couponApplied()
+    public function assertCouponApplied()
     {
-        return (new StripeFactory)->getCoupon('TEST-COUPON')->times_redeemed > 0;
+        try {
+            $coupon = (new StripeFactory)->customer()->upcomingInvoice()->discount->coupon->id;
+
+            $this->assertEquals($coupon, 'TEST-COUPON');   
+        } catch (\Exception $e) {
+            $this->fail('A coupon has not been applied to the customer');
+        }
+    }
+
+    public function assertCouponNotApplied()
+    {
+        $coupon = (new StripeFactory)->customer()->upcomingInvoice()->discount;
+
+        $this->assertNull($coupon);
     }
 }

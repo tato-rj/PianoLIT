@@ -16,7 +16,7 @@ class ChartFactory
 
 	_getLineData() {
 		let datasets = [];
-
+		console.log(this.data.datasets);
 		for (i=0; i < this.data.datasets.length; i++) {
 			datasets.push({
                 label: this.data.datasets[i].title,

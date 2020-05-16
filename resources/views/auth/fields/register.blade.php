@@ -19,4 +19,4 @@
     @include('components/form/error', ['field' => 'password'])
 </div>
 
-<input type="hidden" name="origin" value="web">
+<input type="hidden" name="origin" value="{{subdomain()}}">
