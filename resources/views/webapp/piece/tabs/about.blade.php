@@ -25,7 +25,9 @@
 
 	<div class="mb-4 pb-4 border-bottom">
 		<p><strong class="text-brand">MOOD:</strong> {{ ucfirst(arrayToSentence($piece->mood()->pluck('name')->toArray())) }}.</p>
+		@if($piece->technique()->exists())
 		<p class="m-0"><strong class="text-brand">TECHNIQUE:</strong> {{ ucfirst(arrayToSentence($piece->technique()->pluck('name')->toArray())) }}.</p>
+		@endif
 	</div>
 
 	<div class="mb-4 pb-4">
