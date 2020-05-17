@@ -53,6 +53,9 @@ class Handler extends ExceptionHandler
 
             if ($this->codeIs(402, $exception))
                 return redirect(route('webapp.membership.pricing'));
+
+            if ($this->codeIs(403, $exception) && $this->messageIs('You already have a membership account', $exception))
+                return redirect()->back()->with('error', 'Your account is already associated with an In-App Purchase subscription with Apple.');   
         }
 
         return parent::render($request, $exception);
@@ -92,5 +95,10 @@ class Handler extends ExceptionHandler
     public function codeIs($code, $exception)
     {
         return method_exists($exception, 'getStatusCode') && $exception->getStatusCode() == $code;
+    }
+
+    public function messageIs($message, $exception)
+    {
+        return method_exists($exception, 'getMessage') && $exception->getMessage() == $message;
     }
 }

@@ -2,11 +2,13 @@
 
 Route::prefix('pieces')->name('pieces.')->group(function() {
 
-	Route::post('/single-lookup', 'Admin\PiecesController@singleLookup')->name('single-lookup');
+	Route::post('single-lookup', 'Admin\PiecesController@singleLookup')->name('single-lookup');
 	
-	Route::post('/multi-lookup', 'Admin\PiecesController@multiLookup')->name('multi-lookup');
+	Route::post('multi-lookup', 'Admin\PiecesController@multiLookup')->name('multi-lookup');
 	
-	Route::post('/validate-name', 'Admin\PiecesController@validateName')->name('validate-name');
+	Route::post('validate-name', 'Admin\PiecesController@validateName')->name('validate-name');
+
+	Route::get('description/auto-complete', 'Admin\PiecesController@descriptionAutoComplete')->name('description-auto-complete');
 
 	Route::get('datatable', 'PiecesController@datatable')->name('datatable');
 

@@ -154,6 +154,9 @@
           </div>
           {{-- Description --}}
           <div class="form-group">
+            <div class="text-right">
+              <label class="text-brand cursor-pointer" id="description-auto-complete">@fa(['icon' => 'magic'])</label>
+            </div>
             <textarea class="form-control" rows="5" name="description" placeholder="Enter a description here">{{old('description')}}</textarea>
           </div>
           @manager
@@ -526,6 +529,27 @@ $('#submit-button').on('click', function(event) {
   } else {
     showAlert();
   }
+});
+</script>
+
+<script type="text/javascript">
+$('#description-auto-complete').click(function() {
+  let $textarea = $('textarea[name="description"]');
+  if (! $textarea.is(':disabled')) {
+    $textarea.disable();
+
+    axios.get("{{route('admin.pieces.description-auto-complete')}}")
+         .then(function(response) {
+          $('textarea[name="description"]').val(response.data);
+         })
+         .catch(function(response) {
+          console.log(response.data);
+          alert('Sorry, something went wrong...');
+         })
+         .then(function() {
+          $textarea.enable();
+         });
+     }
 });
 </script>
 @endsection

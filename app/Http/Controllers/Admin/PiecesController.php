@@ -90,6 +90,18 @@ class PiecesController extends Controller
         return view('admin.pages.pieces.validation', compact('results'))->render();        
     }
 
+    public function descriptionAutoComplete(Request $request)
+    {
+        if ($request->has('piece_id')) {
+            $similar = Piece::find($request->piece_id)->similar()->where('description', '!=', null);
+
+            if (! $similar->isEmpty())
+                return $similar->random()->description;
+        }
+
+        return Piece::whereNotNull('description')->inRandomOrder()->first()->description;
+    }
+
     /**
      * Store a newly created resource in storage.
      *

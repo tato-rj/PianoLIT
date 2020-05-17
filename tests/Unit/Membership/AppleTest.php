@@ -14,7 +14,7 @@ class AppleTest extends AppTest
 	/** @test */
 	public function it_cannot_have_two_apple_sources_at_the_same_time()
 	{
-		$this->expectException('Illuminate\Auth\Access\AuthorizationException');
+		$this->expectException('Symfony\Component\HttpKernel\Exception\HttpException');
 
 		$this->assertTrue($this->appleUser->membership()->exists());
 

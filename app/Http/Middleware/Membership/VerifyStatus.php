@@ -18,8 +18,8 @@ class VerifyStatus
     {
         $user = auth()->check() ? auth()->user() : User::findOrFail($request->user_id);
 
-        if ($user->isAuthorized())
-            throw new AuthorizationException('You already have an active membership');
+        if ($user->membership()->exists())
+            abort(403, 'You already have a membership account');
         
         return $next($request);
     }

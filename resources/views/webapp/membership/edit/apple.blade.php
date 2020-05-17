@@ -8,7 +8,7 @@
 @section('content')
 @include('webapp.layouts.header', ['title' => 'My Membership', 'subtitle' => 'Manage your account details here'])
 <section class="text-center">
-  <div class="d-inline-block shadow-light rounded py-4 px-5 mb-4">
+  <div class="d-inline-block border rounded py-4 px-5 mb-4">
     <p class="mb-2 lead">You have a membership with</p>
     <h4 class="m-0">@fa(['icon' => 'apple', 'fa_type' => 'b'])In-app Purchase</h4>
   </div>

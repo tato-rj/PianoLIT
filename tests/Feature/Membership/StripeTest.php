@@ -43,7 +43,7 @@ class StripeTest extends AppTest
     {
         $this->signIn($this->stripeUser);
 
-        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
+        $this->expectException('Symfony\Component\HttpKernel\Exception\HttpException');
 
         $this->assertTrue($this->stripeUser->membership()->exists());
 

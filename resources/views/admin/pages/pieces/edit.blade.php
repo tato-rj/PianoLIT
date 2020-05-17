@@ -164,7 +164,10 @@
           </div>
           {{-- Did you know? --}}
           <div class="form-group">
-            <label class="text-brand"><small>Description</small></label>
+            <div class="d-flex d-apart">
+              <label class="text-brand"><small>Description</small></label>
+              <label class="text-brand cursor-pointer" data-piece-id="{{$piece->id}}" id="description-auto-complete">@fa(['icon' => 'magic'])</label>
+            </div>
             <textarea class="form-control" rows="5" name="description" placeholder="Enter a description here">{{ $piece->description }}</textarea>
           </div>
           @manager
@@ -443,6 +446,27 @@ $('input[type="file"]').on('change', function(e) {
 
   $icon = $input.parent().siblings().find('i').addClass('text-success');
   $label.text(filename);
+});
+</script>
+
+<script type="text/javascript">
+$('#description-auto-complete').click(function() {
+  let $textarea = $('textarea[name="description"]');
+  if (! $textarea.is(':disabled')) {
+    $textarea.disable();
+
+    axios.get("{{route('admin.pieces.description-auto-complete')}}", {params: {piece_id: $(this).data('piece-id')}})
+         .then(function(response) {
+          $('textarea[name="description"]').val(response.data);
+         })
+         .catch(function(response) {
+          console.log(response.data);
+          alert('Sorry, something went wrong...');
+         })
+         .then(function() {
+          $textarea.enable();
+         });
+     }
 });
 </script>
 @endsection
