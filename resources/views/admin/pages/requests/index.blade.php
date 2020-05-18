@@ -16,17 +16,6 @@
   </div>
 </div>
 
-@component('components.modal', ['id' => 'request-types-modal', 'headerNoborder' => true, 'footerNoBorder' => true, 'size' => 'sm'])
-@slot('title')
-Types requested
-@endslot
-@slot('body')
-<div id="request-types-list">
-  
-</div>
-@endslot
-@endcomponent
-
 @component('components.overlays.modal', ['title' => 'Publish tutorial'])
 <p class="m-0">Are you ready to publish this tutorial?</p>
 <p class="mb-3"><u>The user will receive an email saying that the tutorial is ready.</u></p>
@@ -59,12 +48,17 @@ $('#modal-publish-tutorial').on('shown.bs.modal', function(e) {
 </script>
 
 <script type="text/javascript">
-$('#request-types-modal').on('show.bs.modal', function (e) {
- let types = $(e.relatedTarget).data('types');
- $('#request-types-list').html('');
- types.forEach(function(type, index) {
-  $('#request-types-list').append('<p class="mb-1">'+type+'</p>');
- });
+$(document).on('click', 'button.view-request-types', function() {
+  let newLine = "\r\n";
+  let types = $(this).data('types');
+  let msg = '';
+
+   types.forEach(function(type, index) {
+    msg += type;
+    msg += newLine;
+   });
+
+  alert(msg);
 });
 </script>
 @endsection
