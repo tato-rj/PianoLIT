@@ -19,9 +19,9 @@
         <div class="col-lg-6 col-md-12 col-12 shadow-light bg-light">
             <div class="d-flex flex-center h-100">
                 <div class="py-4">
-                    <div class="text-center">
-                        <h3 class="hide-on-sm">Find music that inspires you.</h3>
-                        <p class="text-muted mb-1" style="font-size: 110%">Where pianists discover new pieces and find inspiration<br>to play only what they love.</p>
+                    <div class="text-center px-2">
+                        <h3 class="hide-on-sm">Find music that inspires you</h3>
+                        <p class="text-muted mb-1" style="font-size: 110%">Discover new pieces and find inspiration to play only what you love.</p>
                     </div>
                     <img src="{{asset('images/webapp/devices.png')}}" class="w-100">
                 </div>
