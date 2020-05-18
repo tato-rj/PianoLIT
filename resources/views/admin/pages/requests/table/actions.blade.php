@@ -1,4 +1,4 @@
-<div class="d-flex">
+<div class="d-flex align-items-center">
 	<div class="mr-2">
 		<button class="btn btn-sm btn-outline-secondary" {{! $item->types ? 'disabled' : null}} data-toggle="modal" data-target="#request-types-modal" data-types="{{json_encode(unserialize($item->types))}}">Details</button>
 	</div>
