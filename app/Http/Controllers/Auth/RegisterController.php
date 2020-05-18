@@ -69,7 +69,7 @@ class RegisterController extends Controller
         $validator = $this->validator($request->all(), $recaptcha);
 
         if ($validator->fails()) {
-            if ($request->origin == 'web')
+            if (in_array($request->origin, ['web', 'webapp']))
                 return back()->with('error', $validator->messages()->first());
 
             return response()->json($validator->messages(), 403);
