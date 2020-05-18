@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light py-5">
-  <a class="navbar-brand" href="{{route('home')}}">
+  <a class="navbar-brand" href="{{config('app.url')}}">
       <img src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 20%; width: 60px">
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
