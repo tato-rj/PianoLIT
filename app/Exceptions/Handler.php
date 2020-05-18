@@ -47,7 +47,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($this->onWebapp($request)) {
+        if (onWebapp()) {
             if ($this->codeIs(404, $exception))
                 return redirect(route('webapp.discover'));
 
@@ -85,11 +85,6 @@ class Handler extends ExceptionHandler
         return $request->expectsJson()
                     ? response()->json(['message' => $exception->getMessage()], 401)
                     : redirect()->guest(route($login));
-    }
-
-    protected function onWebapp($request)
-    {
-        return 'my' == explode('.', $request->getHttpHost())[0];
     }
 
     public function codeIs($code, $exception)

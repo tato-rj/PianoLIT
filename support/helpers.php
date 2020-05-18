@@ -5,6 +5,11 @@ function subdomain()
 	return strhas(url()->current(), 'my.pianolit') ? 'webapp' : 'web';
 }
 
+function onWebapp()
+{
+	return 'my' == explode('.', request()->getHttpHost())[0];
+}
+
 function requestWith($params)
 {
 	return new \Illuminate\Http\Request($params);
