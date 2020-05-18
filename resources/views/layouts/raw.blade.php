@@ -27,6 +27,8 @@
 
     @yield('content')
 
+    @include('components.alerts.http')
+
     <script src="{{ mix('js/app.js') }}"></script>
 
     @stack('scripts')
