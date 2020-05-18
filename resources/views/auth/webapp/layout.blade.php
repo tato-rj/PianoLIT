@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="col-lg-6 col-md-12 col-12 shadow-light bg-light">
+        <div class="col-lg-6 col-md-12 col-12 bg-light">
             <div class="d-flex flex-center h-100">
                 <div class="py-4">
                     <div class="text-center px-2">
