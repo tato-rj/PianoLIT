@@ -24,6 +24,13 @@
                         <p class="text-muted mb-1" style="font-size: 110%">Discover new pieces and find inspiration to play only what you love.</p>
                     </div>
                     <img src="{{asset('images/webapp/devices.png')}}" class="w-100">
+                    @include('layouts.footer.social')
+                    <ul class="d-flex list-flat justify-content-center">
+                        <li class="m-2 text-muted"><a href="{{config('app.url')}}" class="link-inherit">Home</a></li>
+                        <li class="m-2 text-muted"><a href="{{route('privacy')}}" class="link-inherit">Privacy policy</a></li>
+                        <li class="m-2 text-muted"><a href="{{route('terms')}}" class="link-inherit">Terms of service</a></li>
+                        <li class="m-2 text-muted"><a href="{{route('contact')}}" class="link-inherit">Contact us</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
