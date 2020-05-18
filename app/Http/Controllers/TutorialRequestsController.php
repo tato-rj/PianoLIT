@@ -8,14 +8,6 @@ use Illuminate\Http\Request;
 
 class TutorialRequestsController extends Controller
 {
-    public function simulate(Request $request)
-    {
-        if (production())
-            abort(403);
-
-        return $this->store($request);
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -33,7 +25,8 @@ class TutorialRequestsController extends Controller
 
         $tutorial = TutorialRequest::create([
             'user_id' => $request->user_id,
-            'piece_id' => $request->piece_id
+            'piece_id' => $request->piece_id,
+            'types' => $request->video_types ? serialize($request->video_types) : null,
         ]);
 
         event(new NewRequest($tutorial));

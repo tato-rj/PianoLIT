@@ -17,6 +17,7 @@ class CreateTutorialRequestsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('piece_id');
+            $table->text('types')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });

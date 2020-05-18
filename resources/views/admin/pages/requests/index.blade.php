@@ -11,27 +11,21 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     
-    <div class="text-center mb-2">
-      <a href="{{route('api.tutorial-requests', ['user_id' => 383])}}" target="_blank" class="link-default"><small>See JSON response</small></a>
-    </div>
-
-    <div class="row">
-      <div class="col-12 mb-4">
-        @env('local')
-        <div>
-        @include('admin.pages.requests.simulate')
-        </div>
-        @endenv
-        <div>
-        
-        </div>
-      </div>
-    </div>
-
     @datatable(['table' => 'requests', 'columns' => ['Date requested', 'Date published', 'Piece', 'User', '']])
 
   </div>
 </div>
+
+@component('components.modal', ['id' => 'request-types-modal', 'headerNoborder' => true, 'footerNoBorder' => true, 'size' => 'sm'])
+@slot('title')
+Types requested
+@endslot
+@slot('body')
+<div id="request-types-list">
+  
+</div>
+@endslot
+@endcomponent
 
 @component('components.overlays.modal', ['title' => 'Publish tutorial'])
 <p class="m-0">Are you ready to publish this tutorial?</p>
@@ -61,6 +55,16 @@
 $('#modal-publish-tutorial').on('shown.bs.modal', function(e) {
   let url = $(e.relatedTarget).attr('data-url');
   $(this).find('form').attr('action', url);
+});
+</script>
+
+<script type="text/javascript">
+$('#request-types-modal').on('show.bs.modal', function (e) {
+ let types = $(e.relatedTarget).data('types');
+ $('#request-types-list').html('');
+ types.forEach(function(type, index) {
+  $('#request-types-list').append('<p class="mb-1">'+type+'</p>');
+ });
 });
 </script>
 @endsection
