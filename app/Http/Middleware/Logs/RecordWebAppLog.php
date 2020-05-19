@@ -3,7 +3,6 @@
 namespace App\Http\Middleware\Logs;
 
 use Closure;
-use App\User;
 use App\Log\Loggers\WebAppLog;
 use App\Tools\Traffic;
 
