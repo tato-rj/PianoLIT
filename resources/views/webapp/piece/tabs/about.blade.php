@@ -1,13 +1,13 @@
 <div class="tab-pane fade show active" id="tab-about">
-	<div class="mb-4 pb-4 border-bottom">
-		<div class="d-flex flex-center">
-			<div class="text-nowrap mr-4">
+	<div class="mb-3 pb-4 border-bottom">
+		<div class="d-flex flex-center flex-wrap">
+			<div class="text-nowrap mx-2 mb-1">
 				@fa(['icon' => 'file-alt', 'mr' => 1, 'color' => 'brand']){{$piece->number_of_pages}}
 			</div>
-			<div class="text-nowrap mr-4">
+			<div class="text-nowrap mx-2 mb-1">
 				@fa(['icon' => 'palette', 'mr' => 1, 'color' => 'brand']){{$piece->period_name}}
 			</div>
-			<div class="text-nowrap">
+			<div class="text-nowrap mx-2 mb-1">
 				@fa(['icon' => 'music', 'mr' => 1, 'color' => 'brand']){{$piece->key}}
 			</div>
 		</div>

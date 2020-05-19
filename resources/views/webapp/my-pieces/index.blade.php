@@ -43,8 +43,8 @@
 @section('content')
 @component('webapp.layouts.header', ['title' => 'My Pieces', 'subtitle' => 'Quickly access your favorites or see your tutorial requests'])
 <div class="list-group flex-row rounded-pill position-relative">
-	<button class="btn btn-wide rounded-pill list-group-item list-group-item-action active" data-toggle="list" href="#list-tutorials">TUTORIALS</button>
-	<button class="btn btn-wide rounded-pill list-group-item list-group-item-action" data-toggle="list" href="#list-favorites">FAVORITES</button>
+	<button class="btn btn-wide rounded-pill list-group-item list-group-item-action active" data-anchor="tutorials" data-toggle="list" href="#list-tutorials">TUTORIALS</button>
+	<button class="btn btn-wide rounded-pill list-group-item list-group-item-action" data-anchor="favorites" data-toggle="list" href="#list-favorites">FAVORITES</button>
 </div>
 @endcomponent
     <div class="tab-content" id="nav-tabContent">

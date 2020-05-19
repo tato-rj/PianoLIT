@@ -15,11 +15,11 @@
 		@else
 		@include('webapp.settings.item', ['url' => route('webapp.membership.pricing'), 'label' => 'Subscribe <i class="fas fa-star text-yellow"></i>'])
 		@endif
-		@include('webapp.settings.item', ['url' => route('users.profile'), 'label' => 'My profile'])
-		@include('webapp.settings.item', ['url' => route('contact'), 'label' => 'Contact us'])
-		@include('webapp.settings.item', ['url' => config('app.url'), 'label' => 'Visit the website'])
-		@include('webapp.settings.item', ['url' => route('terms'), 'label' => 'Terms of service'])
-		@include('webapp.settings.item', ['url' => route('privacy'), 'label' => 'Privacy policy'])
+		@include('webapp.settings.item', ['url' => route('users.profile'), 'external' => true, 'label' => 'My profile'])
+		@include('webapp.settings.item', ['url' => route('contact'), 'external' => true, 'label' => 'Contact us'])
+		@include('webapp.settings.item', ['url' => config('app.url'), 'external' => true, 'label' => 'Visit the website'])
+		@include('webapp.settings.item', ['url' => route('terms'), 'external' => true, 'label' => 'Terms of service'])
+		@include('webapp.settings.item', ['url' => route('privacy'), 'external' => true, 'label' => 'Privacy policy'])
 		<a href="" class="list-group-item py-4 rounded-0 list-group-item-action" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 			<form id="logout-form" action="{{ route('webapp.logout') }}" method="POST" style="display: none;">@csrf</form>Log out
 		</a>

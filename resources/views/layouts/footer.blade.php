@@ -10,11 +10,7 @@
 				</div>
 			</div>
 			<div class="mb-5">
-				<ul class="d-flex list-flat justify-content-center">
-					<li class="m-2 text-muted"><a href="{{route('privacy')}}" class="link-inherit">Privacy policy</a></li>
-					<li class="m-2 text-muted"><a href="{{route('terms')}}" class="link-inherit">Terms of service</a></li>
-					<li class="m-2 text-muted"><a href="{{route('contact')}}" class="link-inherit">Contact us</a></li>
-				</ul>
+				@include('layouts.footer.links')
 				@include('layouts.footer.social')
 			</div>
 			<p class="text-muted m-0"><small>MADE WITH ❤ BY LEFTLANE</small></p>

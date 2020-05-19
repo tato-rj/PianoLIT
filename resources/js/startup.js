@@ -37,3 +37,8 @@ $(window).bind('load', function() {
 $(document).on('click', '#reload', function() {
     window.location = window.location.href.split("?")[0];
 });
+
+$(document).on('click', '[data-anchor]', function() {
+    let anchor = $(this).attr('data-anchor');
+    window.location.hash = anchor;
+});
