@@ -16,5 +16,5 @@
 </div>
 
 <div>
-	<a href="https://dashboard.stripe.com/test/customers/{{$user->membership->source->stripe_id}}" class="link-default" target="_blank">@fa(['icon' => 'external-link-alt'])View user's profile on Stripe</a>
+	<a href="https://dashboard.stripe.com/customers/{{$user->membership->source->stripe_id}}" class="link-default" target="_blank">@fa(['icon' => 'external-link-alt'])View user's profile on Stripe</a>
 </div>
