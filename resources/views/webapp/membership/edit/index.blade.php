@@ -70,9 +70,6 @@ $(document).ready(function() {
   const card = elements.create('card', {hidePostalCode: true});
   const cardErrors = document.getElementById('card-errors');
 
-  const cardHolderName = document.getElementById('card-holder-name');
-  const nameErrors = document.getElementById('name-errors');
-
   const formButton = document.getElementById('card-button');
   const buttonIcon = formButton.querySelector('i');
 
@@ -83,10 +80,6 @@ $(document).ready(function() {
   /////////////////////
   card.addEventListener('change', function(event) {
     cardErrors.textContent = event.error ? event.error.message : '';
-  });
-
-  cardHolderName.addEventListener('change', function(event) {
-    nameErrors.textContent = '';
   });
 
   /////////////////
@@ -101,15 +94,9 @@ $(document).ready(function() {
     stripe.createToken(card).then(function(result) {
       if (result.error) {
         cardErrors.textContent = result.error.message;
-          enableSubmitButton();
+        enableSubmitButton();
       } else {
-        if (! cardHolderName.value) {
-          nameErrors.textContent = 'The name shown on the card is required';
-          enableSubmitButton();
-        } else {
-          nameErrors.textContent = '';
-          stripeTokenHandler(result.token);
-        }
+        stripeTokenHandler(result.token);
       }
     });
   });

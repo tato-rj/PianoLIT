@@ -5,11 +5,6 @@
 		@csrf
 		<div class="mb-4">
 			<div class="form-group">
-				<input class="form-control" id="card-holder-name" name="name_on_card" placeholder="Name on card" type="text">
-				<div id="name-errors" class="invalid-feedback d-block"></div>
-			</div>
-			
-			<div class="form-group">
 				<div id="card-element" class="form-control"></div>
 				<div id="card-errors" role="alert" class="invalid-feedback d-block"></div>
 			</div>
