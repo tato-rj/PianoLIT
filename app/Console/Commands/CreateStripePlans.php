@@ -44,8 +44,6 @@ class CreateStripePlans extends Command
     {
         \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
-        return $this->info(\Stripe\Plan::all());
-
         try {
             foreach (\App\Billing\Plan::all() as $plan) {
                 \Stripe\Plan::create([
