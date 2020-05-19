@@ -11,7 +11,7 @@ trait InteractsWithStripe
 {
 	public function postStripeMembership($withCoupon = false)
 	{
-        $this->post(route('webapp.membership.purchase',
+        return $this->post(route('webapp.membership.purchase',
             [
             	'stripeToken' => (new StripeSandbox)->token(), 
             	'plan' => create(Plan::class, ['name' => 'monthly']),

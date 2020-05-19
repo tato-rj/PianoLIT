@@ -2,17 +2,17 @@
 
 Route::namespace('WebApp')->prefix('membership')->name('membership.')->group(function() {
 
-	Route::get('pricing', 'MembershipsController@pricing')->middleware(['membership.verify-status', 'membership.verify-stripe'])->name('pricing');
+	Route::get('pricing', 'MembershipsController@pricing')->middleware(['non-members-only'])->name('pricing');
 
 	Route::get('edit', 'MembershipsController@edit')->name('edit');
 
 	Route::get('validate-coupon', 'MembershipsController@validateCoupon')->name('validate-coupon');
 
-	Route::get('{plan}/checkout', 'MembershipsController@checkout')->middleware(['membership.verify-status', 'membership.verify-stripe'])->name('checkout');
+	Route::get('{plan}/checkout', 'MembershipsController@checkout')->middleware(['non-members-only'])->name('checkout');
 
 	Route::get('welcome', 'MembershipsController@success')->name('success');
 
-	Route::post('{plan}/purchase', 'MembershipsController@purchase')->middleware(['membership.verify-status', 'membership.verify-stripe'])->name('purchase');
+	Route::post('{plan}/purchase', 'MembershipsController@purchase')->middleware(['non-members-only'])->name('purchase');
 
 	Route::post('plan/update', 'MembershipsController@updatePlan')->name('update.plan');
 

@@ -3,12 +3,10 @@
 namespace App\Http\Middleware\Membership;
 
 use Closure;
-use App\Billing\Membership;
-use App\Billing\Sources\Apple;
-use App\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use App\User;
 
-class VerifyApple
+class OneMembershipSourcePerUser
 {
     /**
      * Handle an incoming request.
@@ -19,9 +17,11 @@ class VerifyApple
      */
     public function handle($request, Closure $next)
     {
-        if (Membership::hasSourceFor(Apple::class, User::findOrFail($request->user_id)))
-            throw new AuthorizationException('You already have an expired or inactive membership account with Apple');
+        $user = auth()->check() ? auth()->user() : User::findOrFail($request->user_id);
 
+        if ($user->membership()->exists())
+            throw new AuthorizationException('You already have a membership associated with this account');
+            
         return $next($request);
     }
 }

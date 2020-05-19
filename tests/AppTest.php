@@ -59,7 +59,15 @@ class AppTest extends TestCase
 
         $this->tag = create(Tag::class, ['creator_id' => $this->admin->id]);
 
+        $this->tag_mood = create(Tag::class, ['type' => 'mood']);
+
+        $this->tag_technique = create(Tag::class, ['type' => 'technique']);
+
         $this->level = create(Tag::class, ['type' => 'level']);
+
+        $this->length = create(Tag::class, ['type' => 'length']);
+
+        $this->period = create(Tag::class, ['type' => 'period']);
 
         $this->pianist = create(Pianist::class, [
             'creator_id' => $this->admin->id,
@@ -80,6 +88,10 @@ class AppTest extends TestCase
 
         $this->piece->tags()->attach($this->tag);
         $this->piece->tags()->attach($this->level);
+        $this->piece->tags()->attach($this->period);
+        $this->piece->tags()->attach($this->tag_technique);
+        $this->piece->tags()->attach($this->tag_mood);
+        $this->piece->tags()->attach($this->length);
 
         $this->piece->views()->create(['user_id' => $this->user->id]);
 

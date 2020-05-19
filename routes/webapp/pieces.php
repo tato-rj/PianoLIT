@@ -1,6 +1,6 @@
 <?php
 
-Route::namespace('WebApp')->middleware('member')->prefix('pieces')->name('pieces.')->group(function() {
+Route::namespace('WebApp')->middleware('members-only')->prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::get('{piece}', 'PiecesController@show')->name('show');
 

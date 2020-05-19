@@ -47,16 +47,8 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if (onWebapp()) {
-            if ($this->codeIs(404, $exception))
-                return redirect(route('webapp.discover'));
-
-            if ($this->codeIs(402, $exception))
-                return redirect(route('webapp.membership.pricing'));
-
-            if ($this->codeIs(403, $exception) && $this->messageIs('You already have a membership account', $exception))
-                return redirect()->back()->with('error', 'Your account is already associated with an In-App Purchase subscription with Apple.');   
-        }
+        if (onWebapp() && $this->codeIs(404, $exception))
+            return redirect(route('webapp.discover'));
 
         return parent::render($request, $exception);
     }

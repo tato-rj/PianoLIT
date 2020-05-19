@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Http\Middleware\Membership;
 
 use Closure;
 
-class CheckForMembership
+class RedirectIfNotMember
 {
     /**
      * Handle an incoming request.
@@ -18,7 +18,10 @@ class CheckForMembership
         if (auth()->user()->isAuthorized() || $this->freepick($request))
             return $next($request);
 
-        abort(402, 'Members only');
+        if (auth()->user()->membership()->exists() && auth()->user()->membership->source->isPaused())
+            return redirect(route('webapp.membership.edit'));
+
+        return redirect(route('webapp.membership.pricing'));
     }
 
     public function freepick($request)

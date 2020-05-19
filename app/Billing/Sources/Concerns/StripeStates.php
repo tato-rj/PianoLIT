@@ -79,7 +79,7 @@ trait StripeStates
 
 	public function isPaused()
 	{
-		return (bool) $this->paused_at;
+		return (bool) $this->paused_at && ! $this->isEnded();
 	}
 
 	public function isEnded()

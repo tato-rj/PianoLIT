@@ -3,9 +3,8 @@
 namespace App\Http\Middleware\Membership;
 
 use Closure;
-use Illuminate\Auth\Access\AuthorizationException;
 
-class VerifyStatus
+class RedirectIfMembershipIsActive
 {
     /**
      * Handle an incoming request.
@@ -16,11 +15,9 @@ class VerifyStatus
      */
     public function handle($request, Closure $next)
     {
-        $user = auth()->check() ? auth()->user() : User::findOrFail($request->user_id);
+        if (auth()->user()->membership()->exists() && (auth()->user()->isAuthorized() || auth()->user()->membership->source->isPaused()))
+            return redirect(route('webapp.membership.edit'));
 
-        if ($user->membership()->exists())
-            abort(403, 'You already have a membership account');
-        
         return $next($request);
     }
 }

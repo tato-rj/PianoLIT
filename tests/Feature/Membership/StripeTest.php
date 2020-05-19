@@ -39,14 +39,12 @@ class StripeTest extends AppTest
     }
 
     /** @test */
-    public function it_cannot_have_two_stripe_sources_at_the_same_time()
+    public function a_user_cannot_have_two_stripe_sources_at_the_same_time()
     {
         $this->signIn($this->stripeUser);
 
-        $this->expectException('Symfony\Component\HttpKernel\Exception\HttpException');
-
         $this->assertTrue($this->stripeUser->membership()->exists());
 
-        $this->postStripeMembership($this->stripeUser);
+        $this->postStripeMembership($this->stripeUser)->assertRedirect(route('webapp.membership.edit'));
     }
 }
