@@ -44,24 +44,26 @@ class CreateStripePlans extends Command
     {
         \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
-        try {
-            foreach (\App\Billing\Plan::all() as $plan) {
-                \Stripe\Plan::create([
-                  'id' => $plan->name,
-                  'amount' => $plan->price,
-                  'currency' => 'usd',
-                  'interval' => $plan->interval,
-                  'trial_period_days' => $plan->trial_period_days,
-                  'nickname' => $plan->long_name,
-                  'product' => [
-                        'name' => $plan->long_name,
-                        'statement_descriptor' => $plan->statement_descriptor,
-                    ],
-                ]);
-            }   
-        } catch (\Exception $e) {
-            return $this->info($e->getMessage());
-        }
+        return $this->info(\Stripe\Plan::all());
+
+        // try {
+        //     foreach (\App\Billing\Plan::all() as $plan) {
+        //         \Stripe\Plan::create([
+        //           'id' => $plan->name,
+        //           'amount' => $plan->price,
+        //           'currency' => 'usd',
+        //           'interval' => $plan->interval,
+        //           'trial_period_days' => $plan->trial_period_days,
+        //           'nickname' => $plan->long_name,
+        //           'product' => [
+        //                 'name' => $plan->long_name,
+        //                 'statement_descriptor' => $plan->statement_descriptor,
+        //             ],
+        //         ]);
+        //     }   
+        // } catch (\Exception $e) {
+        //     return $this->info($e->getMessage());
+        // }
 
         return $this->info('New plans have been created on Stripe.');
     }
