@@ -42,6 +42,7 @@ class CreateStripePlans extends Command
 
     public function createPlans()
     {
+        return $this->info(config('services.stripe.secret'));
         \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
         return $this->info(\Stripe\Plan::all());
