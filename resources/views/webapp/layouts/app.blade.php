@@ -50,7 +50,7 @@
     <div id="webapp" class="container">
 
         <div class="row">
-            <div class="col-lg-8 col-md-10 col-12 mx-auto">
+            <div class="col-lg-8 col-md-12 mx-auto">
 
             <main>
                 

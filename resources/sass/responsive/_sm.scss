@@ -2,6 +2,22 @@
 // SECOND BREAKPOINT: less than 768px //
 ////////////////////////////////////////
 @include media-breakpoint-down(sm) {
+	.nav-tabs {
+		border: 0;
+		.nav-item {
+			width: 100%;
+
+			.nav-link.active {
+				border-bottom: 1px solid #dee2e6!important;
+				border-radius: 0.25rem;
+			}
+
+			.nav-link:hover:not(.active) {
+				border-color: transparent;
+			}
+		}
+	}
+
 	.card-columns {
 	    column-count: 2 !important;
 	}

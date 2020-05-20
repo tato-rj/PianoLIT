@@ -17,6 +17,11 @@ class StripeWebhooks
     	Stripe::byCustomerId($payload['data']['object']['customer'])->updateStatus($payload['data']['object']);
     }
 
+    public static function whenCustomerSubscriptionCreated($payload)
+    {
+        Stripe::byCustomerId($payload['data']['object']['customer'])->updateStatus($payload['data']['object']);
+    }
+
     public static function whenCustomerSourceCreated($payload)
     {
     	Stripe::byCustomerId($payload['data']['object']['customer'])->updateCard($payload['data']['object']);

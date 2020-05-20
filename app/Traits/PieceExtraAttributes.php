@@ -320,7 +320,7 @@ trait PieceExtraAttributes
                 'pedagogical' => "Ideal for late beginner levels looking for a challenging and inspiring piece to play.",
                 'non-traditional' => "A very nice piece for those who like original and creative styles.",
                 'flashy' => "For beginners who are up for the challenge and want to wow their audience.",
-                'relaxing' => "If you are a beginner like relaxing, dreamy music and want a challenge, this piece is for you!",
+                'relaxing' => "If you are a beginner and like relaxing, dreamy music, this piece will be a good challenge for you!",
                 'default' => "An excellent piece for beginners who are polishing their technique.",
             ],
             'early intermediate' => [
