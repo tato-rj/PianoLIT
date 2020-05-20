@@ -4,8 +4,11 @@ namespace App\Traits;
 
 trait PieceStatus
 {
-    public function hasScore()
+    public function hasScore($publicDomain = false)
     {
+        if ($publicDomain)
+            return (bool) $this->score_path;
+
         return (bool) $this->score_path || $this->score_url;
     }
 
