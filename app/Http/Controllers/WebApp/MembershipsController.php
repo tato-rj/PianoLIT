@@ -48,7 +48,8 @@ class MembershipsController extends Controller
         
         StripeMembership::subscribe(auth()->user(), $customer);
 
-        event(new NewTrial(auth()->user()));
+        if (auth()->user()->membership->source->isOnTrial())
+            event(new NewTrial(auth()->user()));
 
         return redirect(route('webapp.membership.success'))->with('valid-success', true);
     }

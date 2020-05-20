@@ -12,8 +12,8 @@
 		@include('webapp.components.piece.composer')
 	</a>
 	<div class="d-flex d-apart">
-		<div class="text-muted">
-			@fa(['icon' => 'eye', 'color' => 'muted']){{$piece->views_count}} {{ str_plural('view', $piece->views_count) }}
+		<div class="d-flex text-muted">
+			@include('webapp.components.piece.icons')
 		</div>
 		<div>
 			@empty($slot)

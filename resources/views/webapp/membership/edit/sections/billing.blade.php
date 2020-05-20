@@ -2,15 +2,18 @@
 	<div class="row">
 		@if(auth()->user()->membership->source->isCanceled())
 			<div class="col-12">
-				<div class="alert alert-warning d-flex d-apart">
-					<div>
-						@fa(['icon' => 'exclamation-triangle'])Your membership was canceled on {{auth()->user()->membership->source->canceled_at->toFormattedDateString()}}
-					</div>
+				<div class="alert alert-warning">
+					@fa(['icon' => 'exclamation-triangle'])Your membership was canceled on {{auth()->user()->membership->source->canceled_at->toFormattedDateString()}}
+				</div>
+	
+				<div class="mb-3">
+					<h6>Changed your mind?</h6>
 					<form method="POST" action="{{route('webapp.membership.resume')}}" disable-on-submit>
 						@csrf
-						<button type="submit" class="btn-link btn btn-sm alert-link">Don't cancel</button>
+						<button type="submit" class="btn btn btn-sm btn-warning">Yes, don't cancel anymore</button>
 					</form>
 				</div>
+
 				@if(auth()->user()->membership->source->isOnGracePeriod())
 				<p class="text-muted">Your current billing period ends on <strong>{{auth()->user()->membership->source->membership_ends_at->toFormattedDateString()}}</strong>. Until then, you will still have access to PianoLIT. If you have any questions, please email us at <a href="mailto:contact@pianolit.com" class="link-blue">contact@pianolit.com</a>.</p>
 				@endif

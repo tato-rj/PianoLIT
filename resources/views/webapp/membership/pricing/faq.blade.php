@@ -10,7 +10,9 @@
 
       <div id="collapse1" class="collapse" data-parent="#faq-accordion">
         <div class="pb-3">
-          Start your 7-day free trial by signing up for a Blinkist yearly plan. You are under no obligation to stay for the whole year and will not be charged until the 7-day free trial is over—just subscribe, learn to your heart’s content, and cancel any time before your 7 free days have passed. Please note that you may only start a trial once. If you have previously purchased a Blinkist subscription, you will not be able to start a new trial.
+          <p>The 7-day free trial starts when you sign up for any PianoLIT membership plan.</p>
+          <p>You will <u>not be charged until the 7-day free trial is over</u>.</p>
+          <p class="m-0">Just subscribe, try out the app, and you can cancel any time before your 7 free days have passed. Please note that you may only start a trial once. If you have previously purchased a PianoLIT subscription, you will not be able to start a new trial and your membership will start right away.</p>
         </div>
       </div>
     </div>
@@ -23,7 +25,7 @@
 
       <div id="collapse2" class="collapse" data-parent="#faq-accordion">
         <div class="pb-3">
-          If you purchase a yearly plan with a trial, you will be charged after the 7-day free trial is over. If you purchase a monthly plan, you’ll be charged immediately.
+          Whether you choose a monthly or yearly plan, you will only be charged after the 7-day free trial is over.
         </div>
       </div>
     </div>
@@ -36,7 +38,7 @@
 
       <div id="collapse3" class="collapse" data-parent="#faq-accordion">
         <div class="pb-3">
-          Your subscription will automatically renew on a monthly or yearly basis, depending on the plan you have chosen. If you cancel your plan, it will not renew at the end of your subscription cycle. It will end once the period you have paid for is over.
+          Yes, your subscription will automatically renew on a monthly or yearly basis, depending on the plan you have chosen. If you cancel your plan, it will not renew at the end of your billing cycle and it will end once the period you have paid for is over.
         </div>
       </div>
     </div>
@@ -49,7 +51,7 @@
 
       <div id="collapse4" class="collapse" data-parent="#faq-accordion">
         <div class="pb-3">
-          You can cancel your trial or subscription in your account settings. If you cancel during the trial period you will not be charged.
+          You can cancel your trial or subscription in your account settings <i class="text-muted">Billing -> Billing Status -> Cancel membership</i>. If you cancel during the trial period you will not be charged. Alternatively, you can also simply <strong>pause</strong> your billing status. Doing this will stop any future bills and your membership will be suspended until you chose to resume. 
         </div>
       </div>
     </div>
@@ -62,7 +64,7 @@
 
       <div id="collapse5" class="collapse" data-parent="#faq-accordion">
         <div class="pb-3">
-          It isn’t possible to switch between yearly and monthly plans, but you can subscribe to a different plan as soon as your current subscription is up.
+          Yes, you can switch between plans at any time. The new plan will take effect on your next billing cycle.
         </div>
       </div>
     </div>

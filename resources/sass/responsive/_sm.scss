@@ -2,7 +2,7 @@
 // SECOND BREAKPOINT: less than 768px //
 ////////////////////////////////////////
 @include media-breakpoint-down(sm) {
-	.nav-tabs {
+	.nav-tabs.nav-responsive {
 		border: 0;
 		.nav-item {
 			width: 100%;

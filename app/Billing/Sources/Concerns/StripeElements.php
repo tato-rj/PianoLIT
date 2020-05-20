@@ -9,9 +9,8 @@ trait StripeElements
 		$status = $this->getStatus();
 		$color = $this->getColor();
 		$icon = $this->isPaused() ? '<i class="fas fa-pause-circle mr-1"></i>' : null;
-		$append = $this->isOnGracePeriod() ? ' expires on ' . $this->membership_ends_at->format('n/j') : null;
 
-		return '<span class="text-nowrap badge badge-pill alert-'.$color.'">'.$icon.strtoupper($status).$append.'</span>';
+		return '<span class="badge badge-pill alert-'.$color.'">'.$icon.strtoupper($status).'</span>';
 	}
 
     public function card()

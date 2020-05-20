@@ -14,7 +14,7 @@
 @include('webapp.layouts.header', ['title' => 'My Membership', 'subtitle' => 'Manage your account details here'])
 
 <section class=" mb-5">
-	<ul class="nav nav-tabs mb-4" id="membership-tabs" role="tablist">
+	<ul class="nav nav-tabs nav-responsive mb-4" id="membership-tabs" role="tablist">
 		<li class="nav-item">
 			<a class="nav-link active" data-toggle="tab" href="#overview-tab">Overview</a>
 		</li>

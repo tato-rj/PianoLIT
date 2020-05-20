@@ -1,7 +1,13 @@
 <div class="tab-pane fade active show" id="list-card">
-	<div class="alert alert-green">
-		@fa(['fa_type' => 'b', 'icon' => 'cc-' . strtolower(auth()->user()->membership->source->card_brand)]){!! auth()->user()->membership->source->card() !!}
+	<div class="mb-3 pb-3 border-bottom">
+		@if(auth()->user()->membership->source->card())
+		<p class="mb-1"><small>Your current payment method is</small></p>
+		<div>{!! auth()->user()->membership->source->card() !!}</div>
+		@else
+		<p class="text-muted"><i>No card on file</i></p>
+		@endif
 	</div>
+
 	<p>Use the form below to update your card</p>
 	<form action="{{route('webapp.membership.update.card')}}" method="POST" id="update-card-form" class="mb-3">
 		@csrf

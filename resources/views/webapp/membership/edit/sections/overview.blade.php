@@ -5,6 +5,9 @@
 				<div class="mb-2 mt-1 py-3 border-bottom flex-grow">
 					<h6>{{auth()->user()->membership->source->plan_name}} Plan</h6>
 					<h4 class="m-0">{!! auth()->user()->membership->source->badge() !!}</h4>
+					@if(auth()->user()->membership->source->isOnGracePeriod())
+					<small class="text-danger">expires on {{auth()->user()->membership->source->membership_ends_at->format('n/j')}}</small>
+					@endif
 				</div>
 				<div class="pb-3">
 					<div><small>Last updated on</small></div>
