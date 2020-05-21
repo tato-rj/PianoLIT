@@ -9,7 +9,7 @@
 	@else
 	<div class="text-center mb-4">
 		<p class="text-muted">This piece is protected by copyrights. Click the button below and we'll show you where you can purchase the score!</p>
-		<a href="{{storage($piece->score_url)}}" class="btn rounded-pill btn-default">@fa(['icon' => 'shopping-basket'])Buy score</a>
+		<a href="{{$piece->score_url}}" target="_blank" class="btn rounded-pill btn-default">@fa(['icon' => 'shopping-basket'])Buy score</a>
 	</div>
 	@endif
 
