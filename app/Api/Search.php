@@ -66,16 +66,16 @@ class Search
 
         if ($this->lateFilter) {
         	foreach ($pieces as $index => $piece) {
-        		$validPiece = false;
+        		$notInList = false;
 
         		foreach ($this->request->filters as $list) {
-	        		if (! $piece->tags_array->intersect(json_decode($list))->isEmpty()) {
-	        			$validPiece = true;
+	        		if ($piece->tags_array->intersect(json_decode($list))->isEmpty()) {
+	        			$notInList = true;
 	        			break;
 	        		}
         		}
 
-        		if (! $validPiece)
+        		if ($notInList)
 	        		$pieces->forget($index);
         	}
         }

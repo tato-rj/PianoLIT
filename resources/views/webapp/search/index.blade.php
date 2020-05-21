@@ -55,7 +55,7 @@ $(document).ready(function() {
 
 function loadResults() {
 	window.loading = true;
-
+	
 	if (! window.done) {
 		axios.get(makeUrl(), {params: {filters: window.filters}})
 		.then(function(response) {
