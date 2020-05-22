@@ -1,6 +1,7 @@
 @extends('webapp.layouts.app')
 
 @push('header')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
 .mirror {
 	-webkit-transform: scaleX(-1);
@@ -52,6 +53,66 @@
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+const pdfurl = "{{storage($piece->score_path)}}";
+
+let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
+
+const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
+
+function renderPage(num) {
+	pageIsRendering = true;
+	pdfDoc.getPage(num).then(page => {
+		const viewport = page.getViewport({scale: scale});
+		canvas.height = viewport.height;
+		canvas.width = viewport.width;
+
+		page.render({
+			canvasContext: ctx,
+			viewport: viewport
+		}).promise.then(() => {
+			pageIsRendering = false;
+			if (pageNumIsPending !== null) {
+				renderPage(pageNumIsPending);
+				pageNumIsPending = null;
+			}
+		});
+	});
+}
+
+function queueRenderPage(num) {
+	if (pageIsRendering) {
+		pageNumIsPending = num;
+	} else {
+		renderPage(num);
+	}
+}
+
+function showPrevPage() {
+	if (pageNum <= 1)
+		return;
+
+	pageNum--;
+	queueRenderPage(pageNum);
+}
+
+function showNextPage() {
+	if (pageNum >= pdfDoc.numPages)
+		return;
+
+	pageNum++;
+	queueRenderPage(pageNum);
+}
+
+pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
+	pdfDoc = pdfDoc_;
+	renderPage(pageNum);
+}).catch(error => {
+	console.log('We could not load the score');
+	console.log(error);
+});
+</script>
+
 <script type="text/javascript">
 $(document).on('click', '#select-hand button', function() {
 	$('#select-hand button').disable();
