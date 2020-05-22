@@ -4,7 +4,7 @@
 		<div class="embed-responsive embed-responsive-a4 mb-4">
 			<object type="application/pdf" data="{{storage($piece->score_path)}}" class="embed-responsive-item"></object>
 		</div>
-		<a href="{{storage($piece->score_path)}}" target="_blank" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</a>
+		<a href="{{route('webapp.pieces.score', $piece)}}" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</a>
 	</div>
 	@else
 	<div class="text-center mb-4">
