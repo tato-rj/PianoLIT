@@ -74,7 +74,7 @@ class Apple extends PianoLit implements BillingSource
 		$latest_receipt = array_key_exists('expires_date', $request->latest_receipt_info) ? 
 			$request->latest_receipt_info : 
 			end($request->latest_receipt_info);
-
+dd($latest_receipt);
         $is_valid = carbon($latest_receipt->expires_date)->setTimezone(config('app.timezone')) >= now();
 
         $this->update(['validated_at' => now()]);

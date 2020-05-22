@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\{Tag, Piece};
 use Illuminate\Http\Request;
-use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
-use RuntimeException;
+use App\Jobs\UploadToCloud;
 
 class HomeController extends Controller
 {
@@ -13,11 +12,7 @@ class HomeController extends Controller
     {
         $file = $request->file('video');
 
-        $ext = $file->getClientOriginalExtension();
-
-        \Storage::disk('gcs')->put('yay.'.$ext, fopen($file, 'r+'));
-        
-        return response()->json(['status' => 'File uploaded']);
+        UploadToCloud::dispatchNow($file);
     }
     /**
      * Show the application dashboard.

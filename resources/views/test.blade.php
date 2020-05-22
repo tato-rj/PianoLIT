@@ -56,9 +56,13 @@ $(document).ready(function() {
 		uploadProgress: function(event, position, total, percentComplete) {
 			$progressFill.width(percentComplete + '%');
 			$progressText.text(percentComplete + '%');
+
+			if (percentComplete == 100) {
+				setTimeout(function(){ alert('Done! Your upload will being processed.') }, 500);
+			}
 		},
-		success: function(response) {
-			alert(response.status);
+		success: function() {
+
 		}
 	});	
 });
