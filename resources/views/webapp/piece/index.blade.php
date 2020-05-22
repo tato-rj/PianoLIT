@@ -59,18 +59,19 @@
 @push('scripts')
 <script type="text/javascript">
 $('#pdf-download').click(function() {
-if (navigator.share) {
-    navigator.share({
-      title: 'WebShare API Demo',
-      url: 'https://codepen.io/ayoisaiah/pen/YbNazJ'
-    }).then(() => {
-      console.log('Thanks for sharing!');
-    })
-    .catch(console.error);
-} else {
-	window.open($(this).data('url'), '_blank');
-}
-	
+	let url = $(this).data('url');
+
+	if (navigator.share) {
+	    navigator.share({
+	      title: "{{$piece->medium_name}}",
+	      url: url
+	    }).then(() => {
+	      console.log('Thanks for sharing!');
+	    })
+	    .catch(console.error);
+	} else {
+		window.open(url, '_blank');
+	}	
 });
 </script>
 <script type="text/javascript">
