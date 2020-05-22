@@ -60,10 +60,15 @@
 <script type="text/javascript">
 $('#pdf-download').click(function() {
 if (navigator.share) {
-  alert('ON IOS!');
+    navigator.share({
+      title: 'WebShare API Demo',
+      url: 'https://codepen.io/ayoisaiah/pen/YbNazJ'
+    }).then(() => {
+      console.log('Thanks for sharing!');
+    })
+    .catch(console.error);
 } else {
-	alert('NOT IOS');
-  window.open($(this).data('url'), '_blank');
+	window.open($(this).data('url'), '_blank');
 }
 	
 });
