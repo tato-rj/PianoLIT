@@ -46,6 +46,6 @@ class PiecesController extends Controller
 
     public function score(Piece $piece)
     {
-        return \Storage::disk('local')->download($piece->score_path);
+        return \Storage::disk('public')->download($piece->score_path);
     }
 }
