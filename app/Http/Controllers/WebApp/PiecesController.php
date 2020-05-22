@@ -43,9 +43,4 @@ class PiecesController extends Controller
     {
         return view('webapp.piece.components.audio', compact('piece'))->render();
     }
-
-    public function score(Piece $piece)
-    {
-        return asset(\Storage::download($piece->score_path));
-    }
 }
