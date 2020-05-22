@@ -3,6 +3,10 @@
 @push('header')
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
+#pdf-container .pdf-control:hover button {
+	opacity: .6 !important;
+}
+
 .mirror {
 	-webkit-transform: scaleX(-1);
 	transform: scaleX(-1);
@@ -58,7 +62,7 @@ const pdfurl = "{{storage($piece->score_path)}}";
 
 let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
-const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
+const scale = 2.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
 
 function renderPage(num) {
 	pageIsRendering = true;

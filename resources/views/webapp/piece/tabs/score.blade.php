@@ -1,17 +1,16 @@
 <div class="tab-pane fade" id="tab-score">
 	@if($piece->isPublicDomain)
 	<div class="text-center mb-4">
-	<div class="position-relative">
-		<canvas id="score-pdf" class="w-100 border"></canvas>
-		<div class="position-absolute w-100 d-flex d-apart" style="top: 50%; left: 0; transform: translateY(-50%);">
-			<button onclick="showPrevPage()">BACK</button>
-			<button onclick="showNextPage()">FORWARD</button>
+		<div class="position-relative" id="pdf-container">
+			<canvas id="score-pdf" class="w-100 border"></canvas>
+			<div class="pdf-control cursor-pointer position-absolute d-flex justify-content-start align-items-center px-2 h-100" style="top: 0; left: 0; width: 30%" onclick="showPrevPage()">
+				<button class="btn-raw text-grey t-2" style="opacity: .2">@fa(['icon' => 'arrow-alt-circle-left', 'mr' => 0, 'size' => '4x'])</button>
+			</div>
+			<div class="pdf-control cursor-pointer position-absolute d-flex justify-content-end align-items-center px-2 h-100" style="top: 0; right: 0; width: 30%" onclick="showNextPage()">
+				<button class="btn-raw text-grey t-2" style="opacity: .2">@fa(['icon' => 'arrow-alt-circle-right', 'mr' => 0, 'size' => '4x'])</button>
+			</div>
 		</div>
-	</div>
-{{-- 		<div class="embed-responsive embed-responsive-a4 mb-4">
-			<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
-		</div> --}}
-		<a href="{{storage($piece->score_path)}}" target="_blank" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</a>
+		<a href="{{route('webapp.pieces.score', $piece)}}" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</a>
 	</div>
 	@else
 	<div class="text-center mb-4">
