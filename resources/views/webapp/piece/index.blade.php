@@ -61,7 +61,7 @@
 $('#pdf-download').click(function() {
 	let url = $(this).data('url');
 
-	if (navigator.canShare && navigator.canShare({files: [{{\Storage::disk('public')->get($piece->score_path)}}]})) {
+	if (navigator.canShare) {
 	    navigator.share({
 	      title: "{{$piece->medium_name}}",
 	      files: [{{\Storage::disk('public')->get($piece->score_path)}}]
