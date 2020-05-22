@@ -44,6 +44,7 @@ class PiecesController extends Controller
         return view('webapp.piece.components.audio', compact('piece'))->render();
     }
 
+    // NOT BEING USED
     public function score(Piece $piece)
     {
         $storage = local() ? \Storage::disk('local') : \Storage::disk('public');

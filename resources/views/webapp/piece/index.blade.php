@@ -58,11 +58,22 @@
 
 @push('scripts')
 <script type="text/javascript">
+$('#pdf-download').click(function() {
+if (navigator.share) {
+  alert('ON IOS!');
+} else {
+	alert('NOT IOS');
+  window.open($(this).data('url'), '_blank');
+}
+	
+});
+</script>
+<script type="text/javascript">
 const pdfurl = "{{storage($piece->score_path)}}";
 
 let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
-const scale = 2.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
+const scale = 1, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
 
 function renderPage(num) {
 	pageIsRendering = true;
