@@ -9,6 +9,16 @@ use RuntimeException;
 
 class HomeController extends Controller
 {
+    public function filetest(Request $request)
+    {
+        $file = $request->file('video');
+
+        $ext = $file->getClientOriginalExtension();
+
+        \Storage::disk('gcs')->put('yay.'.$ext, fopen($file, 'r+'));
+        
+        return response()->json(['status' => 'File uploaded']);
+    }
     /**
      * Show the application dashboard.
      *

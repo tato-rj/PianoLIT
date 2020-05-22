@@ -1,6 +1,5 @@
 <div class="tab-pane fade" id="list-email-preferences" role="tabpanel" aria-labelledby="list-email-preferences-list">
-	<div class="row">
-		<div class="col-lg-8 col-md-10 col-12">
+	<div>
 			@if(auth()->user()->subscription()->exists())
 			<div class="mb-4">
 				<h5>My preferences</h5>
@@ -36,6 +35,6 @@
 				</form>
 			</div>
 			@endif
-		</div>
+
 	</div>
 </div>

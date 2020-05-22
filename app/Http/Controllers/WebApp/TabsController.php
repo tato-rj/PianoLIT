@@ -33,7 +33,7 @@ class TabsController extends Controller
 
     public function myPieces()
     {
-    	return view('webapp.my-pieces.index');
+    	return view('webapp.user.my-pieces.index');
     }
 
     public function settings()

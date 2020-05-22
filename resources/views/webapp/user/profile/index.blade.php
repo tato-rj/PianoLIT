@@ -1,10 +1,9 @@
-@extends('layouts.app')
-
-@push('header')
-@endpush
+@extends('webapp.layouts.app')
 
 @section('content')
-<div class="container mb-6">
+@include('webapp.layouts.header', ['title' => 'Hello ' . auth()->user()->first_name])
+
+<section>
 	<div class="row">
 	  <div class="col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
 		  @include('users.profile.menu')
@@ -17,14 +16,5 @@
   		</div>
 	  </div>
 	</div>
-</div>
+</section>
 @endsection
-
-@push('scripts')
-<script type="text/javascript">
-$('#request-password-change').click(function() {
-  $(this).hide();
-  $('#change-password').show();
-});
-</script>
-@endpush

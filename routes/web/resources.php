@@ -1,5 +1,11 @@
 <?php
 
+Route::get('test-upload', function() {
+	return view('test');
+});
+
+Route::post('test-upload', 'HomeController@filetest')->name('test-upload');
+
 Route::prefix('resources')->name('resources.')->group(function() {
 
 	Route::prefix('great-pianists')->name('pianists.')->group(function() {

@@ -1,6 +1,5 @@
 <div class="tab-pane fade show active" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
-	<div class="row">
-		<div class="col-lg-8 col-md-10 col-12">
+	<div>
 			<h5>My profile information</h5>
 			<p>Use the form below to edit your profile.</p>
 			<form method="POST" action="{{route('users.update', auth()->user()->id)}}">
@@ -21,9 +20,9 @@
 				@input(['placeholder' => 'Confirm your password', 'bag' => 'default', 'name' => 'password_confirmation', 'type' => 'password', 'required' => 'no'])
 
 				<div class="form-group">
-					<button class="btn btn-primary shadow btn-block">Save my changes</button>
+					<button class="btn btn-primary shadow btn-wide">@fa(['icon' => 'save'])Save my changes</button>
 				</div>
 			</form>
-		</div>
+
 	</div>
 </div>
