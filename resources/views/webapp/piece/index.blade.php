@@ -108,6 +108,14 @@ function showNextPage() {
 	queueRenderPage(pageNum);
 }
 
+function isLastPage() {
+	return pageNum <= 1;
+}
+
+function isFirstPage() {
+	return pageNum >= pdfDoc.numPages;
+}
+
 pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 	pdfDoc = pdfDoc_;
 	renderPage(pageNum);
