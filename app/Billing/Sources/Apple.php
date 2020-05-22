@@ -78,7 +78,7 @@ class Apple extends PianoLit implements BillingSource
             $first = current($request->latest_receipt_info);
             $last = end($request->latest_receipt_info);
 
-            dd($first->is_trial_period);
+            dd((bool) $first->is_trial_period);
         }
 
         $is_valid = carbon($latest_receipt->expires_date)->setTimezone(config('app.timezone')) >= now();
