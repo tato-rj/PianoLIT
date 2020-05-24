@@ -85,7 +85,7 @@ function validate(formData, jqForm, options) {
         return false; 
     }
 
-	return false;
+	return true;
 }
 
 function getExtension(filename) {
