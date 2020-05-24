@@ -68,7 +68,7 @@ function track(event, position, total, percentComplete) {
 
 function validate(formData, jqForm, options) {
     var video = jqForm[0].video;
-    
+
     if (! video.value) {
         alert('Please select the video to upload'); 
         return false; 
@@ -79,7 +79,13 @@ function validate(formData, jqForm, options) {
         return false; 
     }
 
-	return true;
+    if (video.files.item(0).size > {{config('filesystems.disks.gcs.max_sizes.video')}}) {
+    	console.log(video.files.item(0).size);
+        alert('File too large'); 
+        return false; 
+    }
+
+	return false;
 }
 
 function getExtension(filename) {

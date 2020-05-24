@@ -72,6 +72,7 @@ return [
             'path_prefix' => env('GOOGLE_CLOUD_STORAGE_PATH_PREFIX', null),
             'storage_api_uri' => env('GOOGLE_CLOUD_STORAGE_API_URI', null),
             'visibility' => 'public',
+            'max_sizes' => ['video' => 100000000]
         ],
     ],
 
