@@ -12,7 +12,7 @@ class HomeController extends Controller
     public function filetest(Request $request)
     {
         \Validator::make($request->all(), [
-            'video' => 'required|mimetypes:video/avi,video/mpeg,video/mp4,video/x-ms-wmv,video/x-msvideo|max:30000'
+            'video' => 'required|mimetypes:video/avi,video/mpeg,video/mp4,video/x-ms-wmv,video/x-msvideo,video/3gpp|max:30000'
         ],[
             'max' => 'The video size cannot exceed 30MB.',
         ])->validate();

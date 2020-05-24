@@ -68,6 +68,9 @@ function track(event, position, total, percentComplete) {
 
 function validate(formData, jqForm, options) {
     var video = jqForm[0].video;
+    
+    alert(getExtension(video.value));
+    return false;
 
     if (! video.value) {
         alert('Please select the video to upload'); 
