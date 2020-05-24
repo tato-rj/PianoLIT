@@ -50,22 +50,57 @@ let $progressFill = $('#progress-bar .progress-fill');
 let $progressText = $('#progress-bar .progress-text');
 $(document).ready(function() {
 	$('form').ajaxForm({
-		beforeSend: function() {
-
+		beforeSubmit: validate,
+		uploadProgress: track,
+		success: function(response) {
+			setTimeout(function(){ alert(response) }, 500);
 		},
-		uploadProgress: function(event, position, total, percentComplete) {
-			$progressFill.width(percentComplete + '%');
-			$progressText.text(percentComplete + '%');
-
-			if (percentComplete == 100) {
-				setTimeout(function(){ alert('Done! Your upload will being processed.') }, 500);
-			}
-		},
-		success: function() {
-
+		error: function(response) {
+			alert(response.responseJSON.errors.video);
 		}
 	});	
 });
+
+function track(event, position, total, percentComplete) {
+	$progressFill.width(percentComplete + '%');
+	$progressText.text(percentComplete + '%');
+}
+
+function validate(formData, jqForm, options) {
+    var video = jqForm[0].video;
+
+    if (! video.value) {
+        alert('Please select the video to upload'); 
+        return false; 
+    }
+
+    if (! isVideo(video.value)) {
+        alert('File format not supported'); 
+        return false; 
+    }
+
+	return true;
+}
+
+function getExtension(filename) {
+  var parts = filename.split('.');
+  return parts[parts.length - 1];
+}
+
+function isVideo(filename) {
+  var ext = getExtension(filename);
+  switch (ext.toLowerCase()) {
+    case 'm4v':
+    case 'avi':
+    case 'mpg':
+    case 'mp4':
+    case 'mov':
+    case '3gp':
+
+      return true;
+  }
+  return false;
+}
 
 // $('#upload-form').submit(function(event) {
 // 	event.preventDefault();

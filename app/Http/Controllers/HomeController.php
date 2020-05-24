@@ -5,14 +5,22 @@ namespace App\Http\Controllers;
 use App\{Tag, Piece};
 use Illuminate\Http\Request;
 use App\Jobs\UploadToCloud;
+use App\Rules\VideoLength;
 
 class HomeController extends Controller
 {
     public function filetest(Request $request)
     {
+        \Validator::make($request->all(), [
+            'video' => 'required|mimetypes:video/avi,video/mpeg,video/mp4,video/x-ms-wmv,video/x-msvideo|max:30000'
+        ],[
+            'max' => 'The video size cannot exceed 30MB.',
+        ])->validate();
+
         $file = $request->file('video');
 
-        UploadToCloud::dispatchNow($file);
+        return response()->json('Your video is being processed');
+        // UploadToCloud::dispatchNow($file);
     }
     /**
      * Show the application dashboard.
