@@ -462,7 +462,7 @@ class Piece extends PianoLit
 
     public function generateScoreName()
     {
-        return 'pianolit-' . str_slug($this->long_name) . '-' . lastnchar(now()->timestamp, 4);
+        return 'pianolit-' . str_slug($this->long_name) . '-' . lastnchar(now()->timestamp, 2) . lastnchar(rand(), 2);
     }
 
     public function renameScore()
