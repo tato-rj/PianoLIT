@@ -467,14 +467,18 @@ class Piece extends PianoLit
 
     public function renameScore()
     {
-        if (! \Storage::exists($this->score_path))
+        if (! \Storage::exists($this->score_path) && ! \Storage::disk('public')->exists($this->score_path))
             return null;
 
         $parts = pathinfo($this->score_path);
         
         $newname = $parts['dirname'] . '/' . $this->generateScoreName() . '.' . $parts['extension'];
 
-        \Storage::move($this->score_path, $newname);
+        if (\Storage::exists($this->score_path)) {
+           \Storage::move($this->score_path, $newname);
+        } else {
+           \Storage::disk('public')->move($this->score_path, $newname);            
+        }
 
         $this->update(['score_path' => $newname]);
 
