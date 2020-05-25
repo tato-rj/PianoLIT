@@ -25,7 +25,7 @@
                     </div>
                     <img src="{{asset('images/webapp/devices.png')}}" class="w-100">
                     @include('layouts.footer.social')
-                    @include('layouts.footer.links')
+                    {{-- @include('layouts.footer.links') --}}
                 </div>
             </div>
         </div>

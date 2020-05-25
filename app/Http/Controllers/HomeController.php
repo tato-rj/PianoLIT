@@ -17,10 +17,9 @@ class HomeController extends Controller
             'max' => 'The video size cannot exceed 100MB.',
         ])->validate();
 
-        $file = $request->file('video');
+        UploadToCloud::dispatchNow($request->file('video'));
 
-        return response()->json('Your video is being processed');
-        // UploadToCloud::dispatchNow($file);
+        return response(200);
     }
     /**
      * Show the application dashboard.

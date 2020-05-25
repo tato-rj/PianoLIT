@@ -33,6 +33,6 @@ class UploadToCloud implements ShouldQueue
     {
         $ext = $this->file->getClientOriginalExtension();
 
-        \Storage::disk('gcs')->put('yay.'.$ext, fopen($this->file, 'r+'));
+        \Storage::disk('gcs')->put('video_upload_' . substr(now()->timestamp, -4) . '.' . $ext, fopen($this->file, 'r+'));
     }
 }

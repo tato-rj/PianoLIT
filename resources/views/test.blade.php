@@ -52,9 +52,6 @@ $(document).ready(function() {
 	$('form').ajaxForm({
 		beforeSubmit: validate,
 		uploadProgress: track,
-		success: function(response) {
-			setTimeout(function(){ alert(response) }, 500);
-		},
 		error: function(response) {
 			alert(response.responseJSON.errors.video);
 		}
@@ -64,6 +61,10 @@ $(document).ready(function() {
 function track(event, position, total, percentComplete) {
 	$progressFill.width(percentComplete + '%');
 	$progressText.text(percentComplete + '%');
+
+	if (position == total) {
+		setTimeout(function(){ alert('Your video is being processed') }, 500);
+	}
 }
 
 function validate(formData, jqForm, options) {
