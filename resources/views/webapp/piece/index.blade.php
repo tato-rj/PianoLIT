@@ -77,7 +77,7 @@ $('#pdf-download').click(function() {
 <script type="text/javascript">
 $(document).ready(function() {
 	const pdfurl = "{{storage($piece->score_path)}}";
-alert(pdfurl);
+
 	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
 	const scale = 1, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
@@ -138,7 +138,7 @@ alert(pdfurl);
 		pdfDoc = pdfDoc_;
 		renderPage(pageNum);
 	}).catch(error => {
-		alert('We could not load the score');
+		// alert('We could not load the score');
 		console.log(error);
 	});
 });

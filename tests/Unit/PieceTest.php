@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\{Admin, Composer, Country, Tag, Playlist, Piece, PieceView, TutorialRequest};
 use Tests\Traits\ManageDatabase;
 use Tests\AppTest;
+use Illuminate\Http\UploadedFile;
 
 class PieceTest extends AppTest
 {
@@ -149,5 +150,11 @@ class PieceTest extends AppTest
 
         $this->assertCount(1, $piece->fresh()->similar());
         $this->assertEquals($piece->fresh()->similar()->first()->id, $pieceSimilar->id);
+    }
+
+    /** @test */
+    public function it_knows_which_name_its_score_should_have()
+    {
+        $this->assertTrue(strhas($this->piece->generateScoreName(), str_slug($this->piece->medium_name)));
     }
 }

@@ -87,6 +87,11 @@ function lastchar($string)
 	return substr($string, -1);
 }
 
+function lastnchar($string, $num)
+{
+	return substr($string, (-1 * $num));
+}
+
 function youtube($input)
 {
 	return "https://www.youtube.com/results?search_query={$input}";

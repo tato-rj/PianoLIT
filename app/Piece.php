@@ -460,6 +460,27 @@ class Piece extends PianoLit
         }
     }
 
+    public function generateScoreName()
+    {
+        return 'pianolit-' . str_slug($this->medium_name) . '-' . lastnchar(now()->timestamp, 4);
+    }
+
+    public function renameScore()
+    {
+        if (! \Storage::exists($this->score_path))
+            return null;
+
+        $parts = pathinfo($this->score_path);
+        
+        $newname = $parts['dirname'] . '/' . $this->generateScoreName() . '.' . $parts['extension'];
+
+        \Storage::move($this->score_path, $newname);
+
+        $this->update(['score_path' => $newname]);
+
+        return $this->score_path;
+    }
+
     public function cover_image()
     {
         return $this->cover_path ? asset('storage/' . $this->cover_path) : null;
