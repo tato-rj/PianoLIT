@@ -136,6 +136,7 @@ function isFirstPage() {
 pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 	pdfDoc = pdfDoc_;
 	renderPage(pageNum);
+	alert('Showing page');
 }).catch(error => {
 	alert('We could not load the score');
 	console.log(error);
