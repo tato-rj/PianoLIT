@@ -75,6 +75,7 @@ $('#pdf-download').click(function() {
 });
 </script>
 <script type="text/javascript">
+$(document).ready(function() {
 const pdfurl = "{{storage($piece->score_path)}}";
 
 let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
@@ -136,10 +137,10 @@ function isFirstPage() {
 pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 	pdfDoc = pdfDoc_;
 	renderPage(pageNum);
-	alert('Showing page');
 }).catch(error => {
 	alert('We could not load the score');
 	console.log(error);
+});
 });
 </script>
 
