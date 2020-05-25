@@ -76,71 +76,71 @@ $('#pdf-download').click(function() {
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
-const pdfurl = "{{storage($piece->score_path)}}";
+	const pdfurl = "{{storage($piece->score_path)}}";
+alert(pdfurl);
+	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
-let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
+	const scale = 1, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
 
-const scale = 1, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
+	function renderPage(num) {
+		pageIsRendering = true;
+		pdfDoc.getPage(num).then(page => {
+			const viewport = page.getViewport({scale: scale});
+			canvas.height = viewport.height;
+			canvas.width = viewport.width;
 
-function renderPage(num) {
-	pageIsRendering = true;
-	pdfDoc.getPage(num).then(page => {
-		const viewport = page.getViewport({scale: scale});
-		canvas.height = viewport.height;
-		canvas.width = viewport.width;
-
-		page.render({
-			canvasContext: ctx,
-			viewport: viewport
-		}).promise.then(() => {
-			pageIsRendering = false;
-			if (pageNumIsPending !== null) {
-				renderPage(pageNumIsPending);
-				pageNumIsPending = null;
-			}
+			page.render({
+				canvasContext: ctx,
+				viewport: viewport
+			}).promise.then(() => {
+				pageIsRendering = false;
+				if (pageNumIsPending !== null) {
+					renderPage(pageNumIsPending);
+					pageNumIsPending = null;
+				}
+			});
 		});
-	});
-}
-
-function queueRenderPage(num) {
-	if (pageIsRendering) {
-		pageNumIsPending = num;
-	} else {
-		renderPage(num);
 	}
-}
 
-function showPrevPage() {
-	if (pageNum <= 1)
-		return;
+	function queueRenderPage(num) {
+		if (pageIsRendering) {
+			pageNumIsPending = num;
+		} else {
+			renderPage(num);
+		}
+	}
 
-	pageNum--;
-	queueRenderPage(pageNum);
-}
+	function showPrevPage() {
+		if (pageNum <= 1)
+			return;
 
-function showNextPage() {
-	if (pageNum >= pdfDoc.numPages)
-		return;
+		pageNum--;
+		queueRenderPage(pageNum);
+	}
 
-	pageNum++;
-	queueRenderPage(pageNum);
-}
+	function showNextPage() {
+		if (pageNum >= pdfDoc.numPages)
+			return;
 
-function isLastPage() {
-	return pageNum <= 1;
-}
+		pageNum++;
+		queueRenderPage(pageNum);
+	}
 
-function isFirstPage() {
-	return pageNum >= pdfDoc.numPages;
-}
+	function isLastPage() {
+		return pageNum <= 1;
+	}
 
-pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
-	pdfDoc = pdfDoc_;
-	renderPage(pageNum);
-}).catch(error => {
-	alert('We could not load the score');
-	console.log(error);
-});
+	function isFirstPage() {
+		return pageNum >= pdfDoc.numPages;
+	}
+
+	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
+		pdfDoc = pdfDoc_;
+		renderPage(pageNum);
+	}).catch(error => {
+		alert('We could not load the score');
+		console.log(error);
+	});
 });
 </script>
 
