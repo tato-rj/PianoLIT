@@ -137,7 +137,7 @@ pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 	pdfDoc = pdfDoc_;
 	renderPage(pageNum);
 }).catch(error => {
-	console.log('We could not load the score');
+	alert('We could not load the score');
 	console.log(error);
 });
 </script>
