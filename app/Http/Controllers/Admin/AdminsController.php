@@ -53,12 +53,6 @@ class AdminsController extends Controller
      */
     public function blog()
     {
-        if (testing()) {
-            return 'test';
-        } else {
-            return 'prod';
-        }
-
         if (request()->ajax())
             return Post::datatable();
 
