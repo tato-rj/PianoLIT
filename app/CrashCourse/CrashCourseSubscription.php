@@ -99,11 +99,13 @@ class CrashCourseSubscription extends PianoLit
 
 	public function send()
 	{
-    	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this));
+		if ($this->subscriber()->exists()) {
+		    	\Mail::to($this->subscriber->email)->queue(new CrashCourseEmail($this));
 
-    	$this->update(['last_sent_at' => now()]);
-    	
-    	$this->previousLesson()->associate($this->upcomingLesson)->save();
+		    	$this->update(['last_sent_at' => now()]);
+	    	
+	    	$this->previousLesson()->associate($this->upcomingLesson)->save();
+	    }
 	}
 
 	public function cancel()
@@ -115,13 +117,15 @@ class CrashCourseSubscription extends PianoLit
 
 	public function finish()
 	{
-        \Mail::to($this->subscriber->email)->queue(new CrashCourseFeedbackEmail($this->crashcourse, $this));
+		if ($this->subscriber()->exists()) {
+	        \Mail::to($this->subscriber->email)->queue(new CrashCourseFeedbackEmail($this->crashcourse, $this));
 
-        $this->subscriber->joinAll();
+	        $this->subscriber->joinAll();
 
-        event(new CrashCourseFinished($this));
+	        event(new CrashCourseFinished($this));
 
-		return $this->update(['completed_at' => now()]);		
+			return $this->update(['completed_at' => now()]);		
+		}
 	}
 
 	public function getRemainingLessonsCountAttribute()

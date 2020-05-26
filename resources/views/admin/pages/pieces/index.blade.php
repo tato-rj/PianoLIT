@@ -27,7 +27,7 @@ small .custom-control-label::before, small .custom-control-label::after {
       </div>
     </div>
 
-    @datatable(['table' => 'pieces', 'columns' => ['', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']])
+    @datatable(['table' => 'pieces', 'columns' => ['', 'ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']])
 
   </div>
 </div>
@@ -48,6 +48,7 @@ $('button#missing-image').on('click', function(e) {
 
 (new DataTable('#pieces-table')).columns([
   {data: 'info', orderable: false, searchable: false},
+  {data: 'id', name: 'pieces.id'},
   {data: 'name', name: 'pieces.name', class: 'dataTables_main_column'},
   {data: 'composer.short_name', name: 'composer.name', class: 'text-nowrap'},
   {data: 'tags', name: 'tags.name', orderable: false},
