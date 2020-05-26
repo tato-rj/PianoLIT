@@ -143,10 +143,12 @@ class PiecesController extends Controller
             'audio_path' => $request->hasFile('audio') ? $request->file('audio')->store('app/audio', 'public') : null,
             'audio_path_rh' => $request->hasFile('audio_rh') ? $request->file('audio_rh')->store('app/audio_rh', 'public') : null,
             'audio_path_lh' => $request->hasFile('audio_lh') ? $request->file('audio_lh')->store('app/audio_lh', 'public') : null,
-            'score_path' => $request->hasFile('score') ? $request->file('score')->store('app/score', 'public') : null,
             'creator_id' => auth()->user()->id,
         ]);
 
+        if ($request->hasFile('score'))
+            $piece->saveScore($request->file('score'));
+        
         $piece->tags()->attach(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
         return redirect()->back()->with('status', "The piece has been successfully added!");
@@ -214,7 +216,7 @@ class PiecesController extends Controller
 
         $piece->uploadCoverImage($request);
 
-        $file_fields = ['audio_path', 'audio_path_rh', 'audio_path_lh', 'score_path'];
+        $file_fields = ['audio_path', 'audio_path_rh', 'audio_path_lh'];
 
         foreach ($file_fields as $field) {
             $filename = str_replace('_path', '', $field);
@@ -227,6 +229,9 @@ class PiecesController extends Controller
 
             $piece->save();
         }
+
+        if ($request->hasFile('score'))
+            $piece->saveScore($request->file('score'));
 
         $piece->fresh()->searchable();
         

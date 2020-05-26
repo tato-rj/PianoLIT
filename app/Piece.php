@@ -465,24 +465,14 @@ class Piece extends PianoLit
         return 'pianolit-' . str_slug($this->long_name) . '-' . lastnchar(mt_rand(), 4);
     }
 
-    public function renameScore()
+    public function saveScore($file)
     {
-        if (! \Storage::exists($this->score_path) && ! \Storage::disk('public')->exists($this->score_path))
-            return null;
+        if (\Storage::disk('public')->exists($this->score_path))
+            \Storage::disk('public')->delete($this->score_path);
 
-        $parts = pathinfo($this->score_path);
-        
-        $newname = $parts['dirname'] . '/' . $this->generateScoreName() . '.' . $parts['extension'];
+        $filename = $this->generateScoreName() . '.' . $file->extension();
 
-        if (\Storage::exists($this->score_path)) {
-           \Storage::move($this->score_path, $newname);
-        } else {
-           \Storage::disk('public')->move($this->score_path, $newname);            
-        }
-
-        $this->update(['score_path' => $newname]);
-
-        return $this->score_path;
+        return $this->update(['score_path' => $file->storeAs('app/score', $filename, 'public')]);
     }
 
     public function cover_image()
