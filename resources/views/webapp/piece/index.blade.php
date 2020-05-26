@@ -134,6 +134,10 @@ $(document).ready(function() {
 		return pageNum >= pdfDoc.numPages;
 	}
 
+	$('.pdf-control[left]').click(function() {showPrevPage()});
+
+	$('.pdf-control[right]').click(function() {showNextPage()});
+
 	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
 		renderPage(pageNum);
