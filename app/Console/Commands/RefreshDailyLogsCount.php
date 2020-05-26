@@ -22,7 +22,7 @@ class RefreshDailyLogsCount extends Command
         try {
             define('STDIN',fopen("php://stdin","r"));
         } catch (\Exception $e) {
-            
+            //
         }
 
         $this->redisPrefix = config('database.redis.prefix');

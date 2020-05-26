@@ -155,6 +155,6 @@ class PieceTest extends AppTest
     /** @test */
     public function it_knows_which_name_its_score_should_have()
     {
-        $this->assertTrue(strhas($this->piece->generateScoreName(), str_slug($this->piece->medium_name)));
+        $this->assertTrue(strhas($this->piece->generateScoreName(), str_slug($this->piece->long_name)));
     }
 }

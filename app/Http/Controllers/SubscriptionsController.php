@@ -20,6 +20,11 @@ class SubscriptionsController extends Controller
         $this->middleware('throttle:2')->only('store');
     }
 
+    public function index()
+    {
+        //
+    }
+
     /**
      * Store a newly created resource in storage.
      *
