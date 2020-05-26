@@ -53,6 +53,8 @@ class AdminsController extends Controller
      */
     public function blog()
     {
+        return app()->environment();
+        
         if (request()->ajax())
             return Post::datatable();
 
