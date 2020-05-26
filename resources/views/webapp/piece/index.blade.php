@@ -1,7 +1,7 @@
 @extends('webapp.layouts.app')
 
 @push('header')
-{{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script> --}}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
 #pdf-container .pdf-control:hover button {
 	opacity: .6 !important;
@@ -57,7 +57,6 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript" src="{{asset('js/vendor/pdf.js')}}"></script>
 <script type="text/javascript">
 $('#pdf-download').click(function() {
 	let url = $(this).data('url');
@@ -140,8 +139,6 @@ $(document).ready(function() {
 	$('.pdf-control[left]').click(function() {showPrevPage()});
 
 	$('.pdf-control[right]').click(function() {showNextPage()});
-
-	pdfjsLib.GlobalWorkerOptions.workerSrc = "{{asset('js/vendor/pdf.worker.js')}}";
 
 	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
