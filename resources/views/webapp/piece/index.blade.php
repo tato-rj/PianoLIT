@@ -80,10 +80,11 @@ $(document).ready(function() {
 
 	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
-	const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d');
+	const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
 
 	function renderPage(num) {
 		pageIsRendering = true;
+		$loading.show();
 		pdfDoc.getPage(num).then(page => {
 			const viewport = page.getViewport({scale: scale});
 			canvas.height = viewport.height;
@@ -94,6 +95,7 @@ $(document).ready(function() {
 				viewport: viewport
 			}).promise.then(() => {
 				pageIsRendering = false;
+				$loading.hide();
 				if (pageNumIsPending !== null) {
 					renderPage(pageNumIsPending);
 					pageNumIsPending = null;
