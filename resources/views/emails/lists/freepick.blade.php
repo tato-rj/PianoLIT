@@ -9,8 +9,10 @@
 </p>
 @endcomponent
 
-<h1><strong>About this piece</strong></h1>
+<h1 style="margin-bottom: 0"><strong>About this piece</strong></h1>
+<p style="white-space: pre-wrap;">
 {{$piece->description}}
+</p>
 
 @component('mail::button', ['url' => config('app.stores.ios')])
 Check this week's FREE pick
@@ -39,7 +41,10 @@ Check this week's FREE pick
 {{-- @component('mail::promotion') --}}
 <h1 class="text-center"><strong>Learn more about the composer</strong></h1>
 @include('mail::avatar', ['image' => storage($piece->composer->cover_path)])
+
+<p style="white-space: pre-wrap;">
 {{$piece->composer->biography}}
+</p>
 {{-- @endcomponent --}}
 
 @component('mail::button', ['url' => config('app.stores.ios')])
