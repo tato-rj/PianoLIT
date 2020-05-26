@@ -18,7 +18,12 @@ class RefreshDailyLogsCount extends Command
     public function __construct()
     {
         parent::__construct();
-        define('STDIN',fopen("php://stdin","r"));
+
+        try {
+            define('STDIN',fopen("php://stdin","r"));
+        } catch (\Exception $e) {
+            
+        }
 
         $this->redisPrefix = config('database.redis.prefix');
         $this->logs = \Redis::keys($this->redisPrefix . 'user:*');
