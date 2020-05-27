@@ -4,6 +4,8 @@ Route::namespace('WebApp')->middleware('members-only')->prefix('pieces')->name('
 
 	Route::get('{piece}', 'PiecesController@show')->name('show');
 
+	Route::get('{piece}/next', 'PiecesController@next')->name('next');
+
 	Route::get('{piece}/collection', 'PiecesController@collection')->name('collection');
 
 	Route::get('{piece}/composer', 'PiecesController@composer')->name('composer');
