@@ -269,16 +269,9 @@ $('button[data-action="video"]').on('click', function() {
 				$icon.hide();
 			 	$container.append(response.data);
 				$container.addClass('border rounded p-2');
-			 	alert('WHAT');
-			 	let player = new Plyr('#'+$(response.data).attr('id'));
-
-			 	if (player.ready) {
-			 		console.log('Ready to play');
-			 	} else {
-			 		console.log('Cannot play');
-			 	}
-
-
+				if (! new Plyr('#'+$(response.data).attr('id'))) {
+				 	alert('NOPE');
+				}
 			 })
 			 .catch(function(error) {
 			 	console.log(error);
