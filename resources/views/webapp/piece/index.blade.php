@@ -70,7 +70,7 @@ $('#pdf-share').click(function() {
 	    })
 	    .catch(alert('Sorry, sharing is not supported by this browser'));
 	} else {
-		alert('Sorry, sharing is not supported by this browser')
+		window.open(url, '_blank');
 	}	
 });
 </script>
