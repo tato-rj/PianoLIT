@@ -1,7 +1,7 @@
 @extends('webapp.layouts.app')
 
 @push('header')
-{{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script> --}}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
 #pdf-container .pdf-control:hover button {
 	opacity: .6 !important;
@@ -57,8 +57,6 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript" src="{{asset('js/vendor/pdf.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/vendor/pdf.worker.js')}}"></script>
 <script type="text/javascript">
 $('#pdf-download').click(function() {
 	let url = $(this).data('url');
@@ -78,17 +76,17 @@ $('#pdf-download').click(function() {
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
-	let pdfurl = "{{storage($piece->score_path)}}";
+	const pdfurl = "{{storage($piece->score_path)}}";
 
 	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
-	let scale = 0.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
+	const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
 
 	function renderPage(num) {
 		pageIsRendering = true;
 		$loading.show();
 		pdfDoc.getPage(num).then(page => {
-			let viewport = page.getViewport({scale: scale});
+			const viewport = page.getViewport({scale: scale});
 			canvas.height = viewport.height;
 			canvas.width = viewport.width;
 
@@ -142,7 +140,6 @@ $(document).ready(function() {
 
 	$('.pdf-control[right]').click(function() {showNextPage()});
 
-	pdfjsLib.disableStream = true;
 	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
 		renderPage(pageNum);
