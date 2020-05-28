@@ -1,9 +1,15 @@
 <div class="tab-pane fade" id="tab-score">
 	@if($piece->isPublicDomain)
-	<div class="text-center mb-4">
-		@include('webapp.components.pdfviewer')
+	<div class="non-ios" style="display: none;">
+		<div class="text-center mb-4">
+			@include('webapp.components.pdfviewer')
 
-		<button id="pdf-download" data-url="{{storage($piece->score_path)}}" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</button>
+			<button id="pdf-download" data-url="{{storage($piece->score_path)}}" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</button>
+		</div>
+	</div>
+	<div class="ios-only" style="display: none;">
+		<iframe src="{{storage($piece->score_path)}}">
+		</iframe>
 	</div>
 	@else
 	<div class="text-center mb-4">

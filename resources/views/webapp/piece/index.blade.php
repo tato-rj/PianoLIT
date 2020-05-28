@@ -79,8 +79,12 @@ $(document).ready(function() {
 	const pdfurl = "{{storage($piece->score_path)}}";
 
 	if (iOS()) {
-		alert('CANT SEE SCORE');
+		$('.ios-only').show();
+		$('.non-ios').hide();
 	} else {
+		$('.ios-only').hide();
+		$('.non-ios').show();
+		
 		let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
 		const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
@@ -97,9 +101,6 @@ $(document).ready(function() {
 					canvasContext: ctx,
 					viewport: viewport
 				}).promise.then(() => {
-					alert($('#score-pdf').get(0).getContext('2d').setTransform.length);
-					console.log($('#score-pdf').get(0).getContext('2d'));
-
 					pageIsRendering = false;
 					$loading.hide();
 					if (pageNumIsPending !== null) {
@@ -150,7 +151,6 @@ $(document).ready(function() {
 			pdfDoc = pdfDoc_;
 			renderPage(pageNum);
 		}).catch(error => {
-			// alert('We could not load the score');
 			console.log(error);
 		});
 	}
