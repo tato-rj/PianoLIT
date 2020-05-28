@@ -91,19 +91,19 @@
       
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
-        'route' => route('api.pieces.collection', ['pieceId' => \App\Piece::first()->id, 'user_id' => 1]),
+        'route' => route('api.pieces.collection', ['piece' => \App\Piece::first(), 'user_id' => 1]),
         'args' => ['user_id'], 
         'title' => 'Collection a piece belongs to'])
       
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
-        'route' => route('api.pieces.similar', ['pieceId' => \App\Piece::first()->id, 'user_id' => 1]),
+        'route' => route('api.pieces.similar', ['piece' => \App\Piece::first(), 'user_id' => 1]),
         'args' => ['user_id'],
         'title' => 'More like this'])
       
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
-        'route' => route('api.pieces.timeline', ['pieceId' => \App\Piece::first()->id]), 
+        'route' => route('api.pieces.timeline', ['piece' => \App\Piece::first()]), 
         'args' => [],
         'title' => 'Timeline for a piece'])
       
