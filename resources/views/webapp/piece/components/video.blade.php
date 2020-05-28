@@ -12,4 +12,8 @@
 		<source src="{{$video['video_url']}}" type="video/mp4">
 		Your browser does not support the video tag.
 	</video>
+	<video class="w-100" style="display: none;" id="video-{{$loop->iteration}}-fallback">
+		<source src="{{$video['video_url']}}" type="video/mp4">
+		Your browser does not support the video tag.
+	</video>
 </div>

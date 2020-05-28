@@ -261,6 +261,7 @@ $('button[data-action="video"]').on('click', function() {
 	if (player.ready) {
 		console.log('Video is ready to play');
 	} else {
+		videoId = videoId + '-fallback';
 		console.log('Cannot use this library to play video');
 	}
 	$(this).find('> div:first-of-type').hide();
