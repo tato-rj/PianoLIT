@@ -275,7 +275,7 @@ $('button[data-action="video"]').on('click', function() {
 				try {
 					new Plyr(videoId);
 				} catch(e) {
-					$(videoId).attr('controls', true);
+					$(videoId).attr('controls', true).attr('autoplay');
 					// let $clone = $(html).clone().removeAttr('id');
 					// $(html).remove();
 					// $clone.appendTo($container);
