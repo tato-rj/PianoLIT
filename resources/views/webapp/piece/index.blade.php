@@ -140,7 +140,7 @@ $(document).ready(function() {
 
 	$('.pdf-control[right]').click(function() {showNextPage()});
 
-	pdfjsLib.getDocument({url: pdfurl, disableFontFace: true}).promise.then(pdfDoc_ => {
+	pdfjsLib.getDocument({url: pdfurl, disableRange: true, disableStream: true}).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
 		renderPage(pageNum);
 	}).catch(error => {
