@@ -7,9 +7,10 @@
 			<button id="pdf-download" data-url="{{storage($piece->score_path)}}" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</button>
 		</div>
 	</div>
-	<div class="ios-only" style="display: none;">
-		<iframe src="{{storage($piece->score_path)}}" class="w-100">
-		</iframe>
+	<div class="ios-only w-100" style="display: none;">
+		<div class="embed-responsive embed-responsive-a4 mb-4">
+			<embed type="application/pdf" src="{{storage($piece->score_path)}}" class="embed-responsive-item" frameborder="0">
+		</div>
 	</div>
 	@else
 	<div class="text-center mb-4">
