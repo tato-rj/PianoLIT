@@ -17,9 +17,9 @@ class PiecesController extends Controller
 
     public function next(Piece $piece)
     {
-        $timeline = Timeline::for($piece->id, 4);
-
         $piece = Piece::where('id', '>', $piece->id)->orderBy('id')->first();
+     
+        $timeline = Timeline::for($piece->id, 4);
 
         return view('webapp.piece.index', compact(['piece', 'timeline']));
     }
