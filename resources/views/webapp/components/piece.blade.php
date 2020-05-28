@@ -7,7 +7,10 @@
 	data-sort-period="{{$piece->period->id}}"
 	data-sort-views="{{$piece->views_count}}">
 	<a href="{{route('webapp.pieces.show', $piece)}}" class="link-none">
-		@include('webapp.components.piece.level')
+		<div class="d-flex mb-2 align-items-center">
+			@include('webapp.components.piece.level')
+			@fa(['icon' => 'lock', 'color' => 'grey', 'ml' => 2, 'if' => ! auth()->user()->isAuthorized()])
+		</div>
 		@include('webapp.components.piece.name')
 		@include('webapp.components.piece.composer')
 	</a>
