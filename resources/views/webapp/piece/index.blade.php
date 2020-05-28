@@ -51,6 +51,7 @@
 		@include('webapp.piece.tabs.timeline')
 	</div>
 
+		@include('webapp.components.pdfviewer')
 </section>
 
 @include('webapp.piece.components.panel')

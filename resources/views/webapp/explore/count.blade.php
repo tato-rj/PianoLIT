@@ -3,7 +3,7 @@
 	@if($count)
 	<form class="mt-3" method="GET" action="{{route('webapp.search.results')}}">
 		<input type="hidden" name="search" value="{{$query}}">
-		<button type="submit" class="btn rounded-pill btn-primary btn-wide">@fa(['icon' => 'lightbulb'])See results</button>
+		<button type="submit" class="btn rounded-pill text-nowrap btn-primary btn-wide">@fa(['icon' => 'lightbulb'])See results</button>
 	</form>
 	@endif
 </div>
