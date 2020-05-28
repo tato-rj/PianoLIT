@@ -8,7 +8,7 @@
 		</div>
 	</div>
 	<div class="ios-only" style="display: none;">
-		<iframe src="{{storage($piece->score_path)}}">
+		<iframe src="{{storage($piece->score_path)}}" class="w-100">
 		</iframe>
 	</div>
 	@else
