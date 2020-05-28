@@ -269,8 +269,12 @@ $('button[data-action="video"]').on('click', function() {
 				$icon.hide();
 			 	$container.append(response.data);
 				$container.addClass('border rounded p-2');
-				if (! new Plyr('#'+$(response.data).attr('id'))) {
-				 	alert('NOPE');
+				try {
+					new Plyr('#'+$(response.data).attr('id'));
+				} catch(e) {
+					// statements
+					alert('NOPE!');
+					console.log(e);
 				}
 			 })
 			 .catch(function(error) {
