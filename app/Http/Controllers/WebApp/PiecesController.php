@@ -15,15 +15,6 @@ class PiecesController extends Controller
     	return view('webapp.piece.index', compact(['piece', 'timeline']));
     }
 
-    public function next(Piece $piece)
-    {
-        $piece = Piece::where('id', '>', $piece->id)->orderBy('id')->first();
-     
-        $timeline = Timeline::for($piece->id, 4);
-
-        return view('webapp.piece.index', compact(['piece', 'timeline']));
-    }
-
     public function collection(Piece $piece)
     {
     	$siblings = $piece->siblings()->each->isFavorited(auth()->user()->id);

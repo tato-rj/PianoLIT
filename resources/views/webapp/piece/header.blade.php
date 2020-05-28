@@ -8,7 +8,6 @@
 		@include('webapp.components.piece.level')
 		<h4 class="mt-2 mb-1">{{$piece->medium_name}}</h4>
 		<p class="text-muted">{{$piece->composer->name}}</p>
-		<a href="{{route('webapp.pieces.next', $piece)}}" class="btn btn-red mt-4">NEXT</a>
 	</div>
 
 	<button class="btn-raw position-absolute" type="More options"  
