@@ -89,7 +89,7 @@ $(document).ready(function() {
 			const viewport = page.getViewport({scale: scale});
 			canvas.height = viewport.height;
 			canvas.width = viewport.width;
-			alert(viewport);
+			
 			page.render({
 				canvasContext: ctx,
 				viewport: viewport
@@ -142,9 +142,10 @@ $(document).ready(function() {
 
 	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
+		alert(pdfDoc.numPages);
 		renderPage(pageNum);
 	}).catch(error => {
-		// alert('We could not load the score');
+		alert('We could not load the score');
 		console.log(error);
 	});
 });
