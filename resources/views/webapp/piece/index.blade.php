@@ -68,9 +68,9 @@ $('#pdf-share').click(function() {
 	    }).then(() => {
 	      console.log('Thanks for sharing!');
 	    })
-	    .catch(alert('Sorry, sharing is not supported by this browser'));
+	    .catch(console.log('Thanks for sharing!'));
 	} else {
-		window.open(url, '_blank');
+		alert('Sorry, sharing is not supported by this browser');
 	}	
 });
 </script>
