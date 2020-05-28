@@ -274,9 +274,10 @@ $('button[data-action="video"]').on('click', function() {
 				try {
 					new Plyr('#'+$(html).attr('id'));
 				} catch(e) {
-					let $clone = $(html).clone().removeAttr('id');
-					$(html).remove();
-					$clone.appendTo($container);
+					$(html).attr('controls', true);
+					// let $clone = $(html).clone().removeAttr('id');
+					// $(html).remove();
+					// $clone.appendTo($container);
 				}
 			 })
 			 .catch(function(error) {
