@@ -14,7 +14,7 @@ Route::namespace('WebApp')->middleware('members-only')->prefix('pieces')->name('
 
 	Route::get('{piece}/audio', 'PiecesController@audio')->name('audio');
 
-	Route::get('{piece}/video', 'PiecesController@video')->name('video');
+	Route::get('{piece}/video/{video}', 'PiecesController@video')->name('video');
 
 	Route::get('{piece}/score', 'PiecesController@score')->name('score');
 });
