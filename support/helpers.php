@@ -373,18 +373,18 @@ function keys()
 function gradient($color)
 {
 	$colors = [
-		'red' => ['#C40025FF', '#F72545FF'],
-		'orange' => ['#DA2D00FF', '#F0683BFF'],
-		'yellow' => ['#E68300FF', '#EFB600FF'],
-		'pink' => ['#D0277EFF', '#F167ABFF'],
-		'lightpink' => ['#0078DEFF', '#4FAAF0FF'],
-		'lightblue' => ['#0078DEFF', '#4FAAF0FF'],
-		'darkblue' => ['#0048BBFF', '#2F77DDFF'],
+		'red' => ['#C40025', '#F72545'],
+		'orange' => ['#DA2D00', '#F0683B'],
+		'yellow' => ['#E68300', '#EFB600'],
+		'pink' => ['#D0277E', '#F167AB'],
+		'lightpink' => ['#0078DE', '#4FAAF0'],
+		'lightblue' => ['#0078DE', '#4FAAF0'],
+		'darkblue' => ['#0048BB', '#2F77DD'],
 		'darkpink' => ['#F761A1', '#8C1BAB'],
-		'green' => ['#00A490FF', '#44D0B2FF'],
-		'teal' => ['#0098C3FF', '#34CAD2FF'],
-		'purple' => ['#4C22B9FF', '#7952E5FF'],
-		'blue' => ['#2960F7FF', '#008CF5FF']
+		'green' => ['#00A490', '#44D0B2'],
+		'teal' => ['#0098C3', '#34CAD2'],
+		'purple' => ['#4C22B9', '#7952E5'],
+		'blue' => ['#2960F7', '#008CF5']
 	];
 
 	if (array_key_exists($color, $colors))
