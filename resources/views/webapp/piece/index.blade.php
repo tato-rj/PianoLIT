@@ -142,7 +142,7 @@ $(document).ready(function() {
 
 	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
-		console.log(pdfDoc.fingerprint);
+		alert(pdfDoc.fingerprint);
 		renderPage(pageNum);
 	}).catch(error => {
 		// alert('We could not load the score');
