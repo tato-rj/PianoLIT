@@ -269,6 +269,7 @@ $('button[data-action="video"]').on('click', function() {
 				$icon.hide();
 			 	$container.append(response.data);
 				$container.addClass('border rounded p-2');
+			 	alert('WHAT');
 			 	let player = new Plyr('#'+$(response.data).attr('id'));
 
 			 	if (player.ready) {
@@ -277,7 +278,6 @@ $('button[data-action="video"]').on('click', function() {
 			 		console.log('Cannot play');
 			 	}
 
-			 	alert('WHAT');
 
 			 })
 			 .catch(function(error) {
