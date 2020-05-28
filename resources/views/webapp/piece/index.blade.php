@@ -58,7 +58,7 @@
 
 @push('scripts')
 <script type="text/javascript">
-$('#pdf-download').click(function() {
+$('#pdf-share').click(function() {
 	let url = $(this).data('url');
 
 	if (navigator.share) {
@@ -68,9 +68,9 @@ $('#pdf-download').click(function() {
 	    }).then(() => {
 	      console.log('Thanks for sharing!');
 	    })
-	    .catch(console.error);
+	    .catch(alert('Sorry, sharing is not supported by this browser'));
 	} else {
-		window.open(url, '_blank');
+		alert('Sorry, sharing is not supported by this browser')
 	}	
 });
 </script>
@@ -84,7 +84,7 @@ $(document).ready(function() {
 	} else {
 		$('.ios-only').hide();
 		$('.non-ios').show();
-		
+
 		let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
 		const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
