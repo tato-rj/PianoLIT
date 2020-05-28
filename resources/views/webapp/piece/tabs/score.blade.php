@@ -13,7 +13,7 @@
 			<div class="w-100 h-100 position-absolute d-flex flex-center" style="top: 0; left: 0; background-color: rgba(255,255,255,0.6)">
 				<div class="d-flex flex-column">
 					<a href="{{storage($piece->score_path)}}" target="_blank" class="btn rounded-pill btn-default shadow-center mb-2">@fa(['icon' => 'file-alt'])Download score</a>
-					<button id="pdf-share" data-url="{{storage($piece->score_path)}}" class="btn rounded-pill shadow-center btn-light">@fa(['icon' => 'share-square'])Share score</button>
+					<button id="pdf-share" data-url="{{storage($piece->score_path)}}" class="btn border rounded-pill shadow-center btn-light">@fa(['icon' => 'share-square'])Share score</button>
 				</div>
 			</div>
 		</div>
