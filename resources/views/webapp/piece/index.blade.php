@@ -75,13 +75,13 @@ $('#pdf-download').click(function() {
 });
 </script>
 <script type="text/javascript">
-const pdfurl = "{{storage($piece->score_path)}}";
-
-let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
-
-const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
-
 $(document).ready(function() {
+	const pdfurl = "{{storage($piece->score_path)}}";
+
+	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
+
+	const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
+
 	function renderPage(num) {
 		pageIsRendering = true;
 		$loading.show();
@@ -89,7 +89,7 @@ $(document).ready(function() {
 			const viewport = page.getViewport({scale: scale});
 			canvas.height = viewport.height;
 			canvas.width = viewport.width;
-			alert(page._pdfBug);
+
 			page.render({
 				canvasContext: ctx,
 				viewport: viewport
