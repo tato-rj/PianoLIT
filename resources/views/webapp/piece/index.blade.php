@@ -51,7 +51,6 @@
 		@include('webapp.piece.tabs.timeline')
 	</div>
 
-		@include('webapp.components.pdfviewer')
 </section>
 
 @include('webapp.piece.components.panel')
@@ -76,13 +75,12 @@ $('#pdf-download').click(function() {
 });
 </script>
 <script type="text/javascript">
+const pdfurl = "{{storage($piece->score_path)}}";
+
+const pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
+
+const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
 $(document).ready(function() {
-	const pdfurl = "{{storage($piece->score_path)}}";
-
-	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
-
-	const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
-
 	function renderPage(num) {
 		pageIsRendering = true;
 		$loading.show();
