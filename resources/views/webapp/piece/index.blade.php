@@ -94,7 +94,7 @@ $(document).ready(function() {
 				canvasContext: ctx,
 				viewport: viewport
 			}).promise.then(() => {
-				alert($('#score-pdf').get(0).getContext('2d').fillRule);
+				alert($('#score-pdf').get(0).getContext('2d').setTransform.length);
 				console.log($('#score-pdf').get(0).getContext('2d'));
 
 				pageIsRendering = false;
