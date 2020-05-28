@@ -266,15 +266,16 @@ $('button[data-action="video"]').on('click', function() {
 		axios.get($btn.data('url'))
 			 .then(function(response) {
 			 	let html = response.data;
+			 	let videoId = '#'+$(html).attr('id');
 
 			 	$btn.removeClass('opacity-4').enable();
 				$icon.hide();
 			 	$container.append(html);
 				$container.addClass('border rounded p-2');
 				try {
-					new Plyr('#'+$(html).attr('id'));
+					new Plyr(videoId);
 				} catch(e) {
-					$(html).attr('controls', true);
+					$(videoId).attr('controls', true);
 					// let $clone = $(html).clone().removeAttr('id');
 					// $(html).remove();
 					// $clone.appendTo($container);
