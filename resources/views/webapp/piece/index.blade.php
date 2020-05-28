@@ -94,6 +94,7 @@ $(document).ready(function() {
 				canvasContext: ctx,
 				viewport: viewport
 			}).promise.then(() => {
+				alert($('#score-pdf').get(0).getContext('2d').textBaseline);
 				pageIsRendering = false;
 				$loading.hide();
 				if (pageNumIsPending !== null) {
@@ -275,10 +276,7 @@ $('button[data-action="video"]').on('click', function() {
 				try {
 					new Plyr(videoId);
 				} catch(e) {
-					$(videoId).attr('controls', true).attr('autoplay', true);
-					// let $clone = $(html).clone().removeAttr('id');
-					// $(html).remove();
-					// $clone.appendTo($container);
+					$(videoId).attr('controls', true);
 				}
 			 })
 			 .catch(function(error) {
