@@ -94,7 +94,8 @@ $(document).ready(function() {
 				canvasContext: ctx,
 				viewport: viewport
 			}).promise.then(() => {
-				alert($('#score-pdf').get(0).getContext('2d').textBaseline);
+				alert($('#score-pdf').get(0).getContext('2d').globalAlpha);
+				alert($('#score-pdf').get(0).getContext('2d').font);
 				pageIsRendering = false;
 				$loading.hide();
 				if (pageNumIsPending !== null) {
