@@ -44,6 +44,14 @@ class PiecesController extends Controller
         return view('webapp.piece.components.audio', compact('piece'))->render();
     }
 
+    public function video(Request $request, Piece $piece)
+    {
+        $index = $request->video_index;
+        $url = $piece->videos_array[$index]['video_url'];
+
+        return view('webapp.piece.components.video.element', compact(['url', 'index']))->render();
+    }
+
     // NOT BEING USED
     public function score(Piece $piece)
     {

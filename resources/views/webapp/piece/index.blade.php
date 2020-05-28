@@ -254,20 +254,27 @@ function showPlayer(player) {
 
 <script type="text/javascript">
 $('button[data-action="video"]').on('click', function() {
-	stopVideo();
-	let videoId = $(this).data('target');
-	let player = new Plyr(videoId);
+	let $btn = $(this);
+	let $icon = $btn.find('> div:first-of-type');
 
-	if (player.ready) {
-		console.log('Video is ready to play');
-	} else {
-		videoId = videoId + '-fallback';
-		console.log('Cannot use this library to play video');
+	if ($icon.is(':visible')) {
+		stopVideo();
+		let $container = $btn.closest('.video-container');
+
+		$btn.addClass('opacity-4').disable();
+
+		axios.get($btn.data('url'))
+			 .then(function(response) {
+			 	$btn.removeClass('opacity-4').enable();
+				$icon.hide();
+			 	$container.append(response.data);
+				$container.addClass('border rounded p-2');
+			 	let player = new Plyr('#'+$(response.data).attr('id'));
+			 })
+			 .catch(function(error) {
+			 	console.log(error);
+			 });
 	}
-	
-	$(this).find('> div:first-of-type').hide();
-	$(videoId).show();
-	$(this).closest('.video-container').addClass('border rounded p-2');
 });
 
 function stopVideo(reset = true) {
@@ -277,8 +284,8 @@ function stopVideo(reset = true) {
 
 		if (reset) {
 			$video.get(0).currentTime = 0;
-			$video.hide();
 			$video.closest('.video-container').removeClass('border rounded p-2 ').find('div').show();
+			$video.remove();
 		}
 	});
 }
