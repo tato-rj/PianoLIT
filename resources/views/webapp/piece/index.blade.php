@@ -251,14 +251,20 @@ function showPlayer(player) {
 	player.removeClass('d-none');	
 } 
 </script>
-<script>
-alert(!!document.createElement('video').canPlayType);
-</script>
+
 <script type="text/javascript">
 $('button[data-action="video"]').on('click', function() {
 	stopVideo();
 	let videoId = $(this).data('target');
-	let player = new Plyr(videoId);
+	let player = new Plyr(videoId, {
+                    hideControls: true,
+                    autoplay: true,
+                    fullscreen: true,
+                    controls: [],
+                    clickToPlay: false,
+                    volume: 0,
+                    debug: true,
+                });
 	$(this).find('> div:first-of-type').hide();
 	$(videoId).show();
 	$(this).closest('.video-container').addClass('border rounded p-2');
