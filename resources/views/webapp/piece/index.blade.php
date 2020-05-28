@@ -94,6 +94,7 @@ $(document).ready(function() {
 				canvasContext: ctx,
 				viewport: viewport
 			}).promise.then(() => {
+				alert('hERE');
 				console.log($('#score-pdf').get(0).getContext('2d'));
 
 				pageIsRendering = false;
