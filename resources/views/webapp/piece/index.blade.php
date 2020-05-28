@@ -78,17 +78,17 @@ $('#pdf-download').click(function() {
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
-	const pdfurl = "{{storage($piece->score_path)}}";
+	let pdfurl = "{{storage($piece->score_path)}}";
 
 	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
-	const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
+	let scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
 
 	function renderPage(num) {
 		pageIsRendering = true;
 		$loading.show();
 		pdfDoc.getPage(num).then(page => {
-			const viewport = page.getViewport({scale: scale});
+			let viewport = page.getViewport({scale: scale});
 			canvas.height = viewport.height;
 			canvas.width = viewport.width;
 
@@ -142,6 +142,7 @@ $(document).ready(function() {
 
 	$('.pdf-control[right]').click(function() {showNextPage()});
 
+	pdfjsLib.disableStream = true;
 	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
 		renderPage(pageNum);
