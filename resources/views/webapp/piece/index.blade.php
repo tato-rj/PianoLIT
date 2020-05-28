@@ -297,6 +297,7 @@ function handleVisibilityChange() {
 }
 
 if (typeof document.addEventListener === "undefined" || hidden === undefined) {
+	alert('HEY');
   console.log("This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.");
 } else {
   document.addEventListener(visibilityChange, handleVisibilityChange, false);
