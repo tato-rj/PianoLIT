@@ -265,16 +265,18 @@ $('button[data-action="video"]').on('click', function() {
 
 		axios.get($btn.data('url'))
 			 .then(function(response) {
+			 	let html = response.data;
+
 			 	$btn.removeClass('opacity-4').enable();
 				$icon.hide();
-			 	$container.append(response.data);
+			 	$container.append(html);
 				$container.addClass('border rounded p-2');
 				try {
-					new Plyr('#'+$(response.data).attr('id'));
+					new Plyr('#'+$(html).attr('id'));
 				} catch(e) {
-					// statements
-					alert('NOPE!');
-					console.log(e);
+					let $clone = $(html).clone().removeAttr('id');
+					$(html).remove();
+					$clone.appendTo($container);
 				}
 			 })
 			 .catch(function(error) {
