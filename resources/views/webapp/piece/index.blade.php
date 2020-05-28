@@ -89,7 +89,7 @@ $(document).ready(function() {
 			const viewport = page.getViewport({scale: scale});
 			canvas.height = viewport.height;
 			canvas.width = viewport.width;
-
+			console.log(page);
 			page.render({
 				canvasContext: ctx,
 				viewport: viewport
