@@ -140,7 +140,7 @@ $(document).ready(function() {
 
 	$('.pdf-control[right]').click(function() {showNextPage()});
 
-	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
+	pdfjsLib.getDocument({url: pdfurl, maxImageSize: 1000000000000000000000000000000}).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
 		renderPage(pageNum);
 	}).catch(error => {
