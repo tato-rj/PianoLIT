@@ -270,7 +270,12 @@ $('button[data-action="video"]').on('click', function() {
 			 	$container.append(response.data);
 				$container.addClass('border rounded p-2');
 			 	let player = new Plyr('#'+$(response.data).attr('id'));
-			 	console.log(player.ready);
+
+			 	if (player.ready) {
+			 		console.log('Ready to play');
+			 	} else {
+			 		console.log('Cannot play');
+			 	}
 			 })
 			 .catch(function(error) {
 			 	console.log(error);
