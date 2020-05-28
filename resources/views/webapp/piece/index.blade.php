@@ -140,11 +140,11 @@ $(document).ready(function() {
 
 	$('.pdf-control[right]').click(function() {showNextPage()});
 
-	pdfjsLib.getDocument({url: pdfurl, disableCreateObjectURL: true}).promise.then(pdfDoc_ => {
+	pdfjsLib.getDocument({url: pdfurl}).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
 		renderPage(pageNum);
 	}).catch(error => {
-		alert('We could not load the score');
+		// alert('We could not load the score');
 		console.log(error);
 	});
 });
