@@ -4,7 +4,7 @@
 		<div class="text-center mb-4">
 			@include('webapp.components.pdfviewer')
 
-			<button id="pdf-download" data-url="{{storage($piece->score_path)}}" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</button>
+			<a href="{{storage($piece->score_path)}}" target="_blank" class="btn rounded-pill btn-default">@fa(['icon' => 'file-alt'])Download score</a>
 		</div>
 	</div>
 	<div class="ios-only w-100" style="display: none;">
