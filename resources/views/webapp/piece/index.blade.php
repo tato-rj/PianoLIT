@@ -257,7 +257,12 @@ $('button[data-action="video"]').on('click', function() {
 	stopVideo();
 	let videoId = $(this).data('target');
 	let player = new Plyr(videoId);
-	console.log(player.ready);
+
+	if (player.ready) {
+		console.log('Video is ready to play');
+	} else {
+		console.log('Cannot use this library to play video');
+	}
 	$(this).find('> div:first-of-type').hide();
 	$(videoId).show();
 	$(this).closest('.video-container').addClass('border rounded p-2');
