@@ -78,78 +78,82 @@ $('#pdf-download').click(function() {
 $(document).ready(function() {
 	const pdfurl = "{{storage($piece->score_path)}}";
 
-	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
+	if (iOS()) {
+		alert('CANT SEE SCORE');
+	} else {
+		let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
-	const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
+		const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
 
-	function renderPage(num) {
-		pageIsRendering = true;
-		$loading.show();
-		pdfDoc.getPage(num).then(page => {
-			const viewport = page.getViewport({scale: scale});
-			canvas.height = viewport.height;
-			canvas.width = viewport.width;
+		function renderPage(num) {
+			pageIsRendering = true;
+			$loading.show();
+			pdfDoc.getPage(num).then(page => {
+				const viewport = page.getViewport({scale: scale});
+				canvas.height = viewport.height;
+				canvas.width = viewport.width;
 
-			page.render({
-				canvasContext: ctx,
-				viewport: viewport
-			}).promise.then(() => {
-				alert($('#score-pdf').get(0).getContext('2d').setTransform.length);
-				console.log($('#score-pdf').get(0).getContext('2d'));
+				page.render({
+					canvasContext: ctx,
+					viewport: viewport
+				}).promise.then(() => {
+					alert($('#score-pdf').get(0).getContext('2d').setTransform.length);
+					console.log($('#score-pdf').get(0).getContext('2d'));
 
-				pageIsRendering = false;
-				$loading.hide();
-				if (pageNumIsPending !== null) {
-					renderPage(pageNumIsPending);
-					pageNumIsPending = null;
-				}
+					pageIsRendering = false;
+					$loading.hide();
+					if (pageNumIsPending !== null) {
+						renderPage(pageNumIsPending);
+						pageNumIsPending = null;
+					}
+				});
 			});
+		}
+
+		function queueRenderPage(num) {
+			if (pageIsRendering) {
+				pageNumIsPending = num;
+			} else {
+				renderPage(num);
+			}
+		}
+
+		function showPrevPage() {
+			if (pageNum <= 1)
+				return;
+
+			pageNum--;
+			queueRenderPage(pageNum);
+		}
+
+		function showNextPage() {
+			if (pageNum >= pdfDoc.numPages)
+				return;
+
+			pageNum++;
+			queueRenderPage(pageNum);
+		}
+
+		function isLastPage() {
+			return pageNum <= 1;
+		}
+
+		function isFirstPage() {
+			return pageNum >= pdfDoc.numPages;
+		}
+
+		$('.pdf-control[left]').click(function() {showPrevPage()});
+
+		$('.pdf-control[right]').click(function() {showNextPage()});
+
+		pdfjsLib.getDocument({url: pdfurl}).promise.then(pdfDoc_ => {
+			pdfDoc = pdfDoc_;
+			renderPage(pageNum);
+		}).catch(error => {
+			// alert('We could not load the score');
+			console.log(error);
 		});
 	}
-
-	function queueRenderPage(num) {
-		if (pageIsRendering) {
-			pageNumIsPending = num;
-		} else {
-			renderPage(num);
-		}
-	}
-
-	function showPrevPage() {
-		if (pageNum <= 1)
-			return;
-
-		pageNum--;
-		queueRenderPage(pageNum);
-	}
-
-	function showNextPage() {
-		if (pageNum >= pdfDoc.numPages)
-			return;
-
-		pageNum++;
-		queueRenderPage(pageNum);
-	}
-
-	function isLastPage() {
-		return pageNum <= 1;
-	}
-
-	function isFirstPage() {
-		return pageNum >= pdfDoc.numPages;
-	}
-
-	$('.pdf-control[left]').click(function() {showPrevPage()});
-
-	$('.pdf-control[right]').click(function() {showNextPage()});
-
-	pdfjsLib.getDocument({url: pdfurl}).promise.then(pdfDoc_ => {
-		pdfDoc = pdfDoc_;
-		renderPage(pageNum);
-	}).catch(error => {
-		// alert('We could not load the score');
-		console.log(error);
-	});
 });
 </script>
 
@@ -325,6 +329,26 @@ if (typeof document.addEventListener === "undefined" || hidden === undefined) {
   console.log("This requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.");
 } else {
   document.addEventListener(visibilityChange, handleVisibilityChange, false);
+}
+
+function iOS() {
+
+  var iDevices = [
+    'iPad Simulator',
+    'iPhone Simulator',
+    'iPod Simulator',
+    'iPad',
+    'iPhone',
+    'iPod'
+  ];
+
+  if (navigator.platform) {
+    while (iDevices.length) {
+      if (navigator.platform === iDevices.pop()){ return true; }
+    }
+  }
+
+  return false;
 }
 </script>
 @endpush
