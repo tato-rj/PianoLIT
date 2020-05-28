@@ -251,7 +251,9 @@ function showPlayer(player) {
 	player.removeClass('d-none');	
 } 
 </script>
-
+<script>
+alert(!!document.createElement('video').canPlayType);
+</script>
 <script type="text/javascript">
 $('button[data-action="video"]').on('click', function() {
 	stopVideo();
