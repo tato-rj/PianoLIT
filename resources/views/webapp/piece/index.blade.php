@@ -256,7 +256,9 @@ function showPlayer(player) {
 $('button[data-action="video"]').on('click', function() {
 	stopVideo();
 	let videoId = $(this).data('target');
-	let player = new Plyr(videoId);
+	let player = new Plyr(videoId, {
+                    debug: true,
+                });
 	$(this).find('> div:first-of-type').hide();
 	$(videoId).show();
 	$(this).closest('.video-container').addClass('border rounded p-2');
