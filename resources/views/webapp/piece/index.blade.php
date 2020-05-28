@@ -82,7 +82,7 @@ $(document).ready(function() {
 
 	let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
 
-	let scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
+	let scale = 1, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
 
 	function renderPage(num) {
 		pageIsRendering = true;
