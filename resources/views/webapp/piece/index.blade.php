@@ -142,10 +142,10 @@ $(document).ready(function() {
 
 	pdfjsLib.getDocument(pdfurl).promise.then(pdfDoc_ => {
 		pdfDoc = pdfDoc_;
-		alert(pdfDoc.numPages);
+		console.log(pdfDoc.fingerprint);
 		renderPage(pageNum);
 	}).catch(error => {
-		alert('We could not load the score');
+		// alert('We could not load the score');
 		console.log(error);
 	});
 });
