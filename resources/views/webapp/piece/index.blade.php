@@ -276,6 +276,8 @@ $('button[data-action="video"]').on('click', function() {
 			 	} else {
 			 		console.log('Cannot play');
 			 	}
+
+			 	console.log('WHAT');
 			 })
 			 .catch(function(error) {
 			 	console.log(error);
