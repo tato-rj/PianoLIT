@@ -1,6 +1,6 @@
 <a href="{{route('webapp.playlists.show', $playlist)}}" class="link-none mb-4 {{$loop->first ? 'col-12' : 'col-6'}}">
 	<div class="bg-align-center rounded mb-3 position-relative" style="background-image: url({{$playlist->cover_image}}); height: {{$loop->first ? '28vh' : '20vh'}}">
-		@fa(['icon' => 'lock', 'classes' => 'absolute-center opacity-4', 'size' => '3x', 'color' => 'white', 'if' => ! $playlist->isFeatured && ! auth()->user()->isAuthorized()])
+		@fa(['icon' => 'lock', 'classes' => 'absolute-center opacity-6', 'size' => '3x', 'color' => 'white', 'if' => ! $playlist->isFeatured && ! auth()->user()->isAuthorized()])
 		@pill(['label' => 'featured', 'color' => 'primary', 'text' => 'white', 'pos' => 'bottom-right', 'if' => $loop->first])
 	</div>
 	<div class="text-center">
