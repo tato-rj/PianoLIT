@@ -16,15 +16,15 @@ class WebAppCountdown
      */
     public function handle($request, Closure $next)
     {
-        if ($this->isCountdown($request) || $this->isMe($request))
+        if ($this->isCountdown($request) || $this->isMe())
             return $next($request);
         
         return redirect(route('webapp.countdown'));
     }
 
-    public function isMe($request)
+    public function isMe()
     {
-        return auth()->check() && ! (new Traffic)->isRealUser(auth()->user()->id);
+        return ! (new Traffic)->isRealVisitor();
     }
 
     public function isCountdown($request)
