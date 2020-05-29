@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Tools\Traffic;
 
 class WebAppCountdown
 {
@@ -16,16 +15,15 @@ class WebAppCountdown
      */
     public function handle($request, Closure $next)
     {
-        if ($this->isCountdown($request) || $this->isMe())
+        if ($this->isCountdown($request) || $this->isMe($request))
             return $next($request);
         
-        dd(auth()->user());
         return redirect(route('webapp.countdown'));
     }
 
-    public function isMe()
+    public function isMe($request)
     {
-        return auth()->check() && auth()->user()->id == 928;
+        return $request->has('itsme');
     }
 
     public function isCountdown($request)
