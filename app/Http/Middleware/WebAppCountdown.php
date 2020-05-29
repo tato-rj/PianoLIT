@@ -16,7 +16,7 @@ class WebAppCountdown
      */
     public function handle($request, Closure $next)
     {
-        if ($this->isCountdown($request) || $this->isMe())
+        if ($this->isCountdown($request))
             return $next($request);
         
         return redirect(route('webapp.countdown'));
