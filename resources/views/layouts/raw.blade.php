@@ -11,9 +11,13 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    @isset($shareable)
+        @include('layouts.html.shareable')
+    @endisset
+    
     @include('layouts.html.theme')
 
-    <title>{{local() ? '(local)' : null}} {{config('app.name')}}</title>
+    <title>{{local() ? '(local)' : null}} {{$title ?? config('app.name')}}</title>
 
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/primer.css') }}" rel="stylesheet">
