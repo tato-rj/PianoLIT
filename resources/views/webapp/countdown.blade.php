@@ -1,7 +1,7 @@
-@component('auth.webapp.layout', ['title' => 'Coming up soon', 'subtitle' => 'We will be launching our WebApp soon, stay tuned!'])
+@component('auth.webapp.layout', ['title' => 'Coming up soon', 'subtitle' => 'We will be launching our WebApp soon, stay tuned!', 'classes' => 'text-center'])
 
 <div class="text-center mb-3">
-	<div><small>save the date</small></div>
+	<div class="badge badge-pill alert-grey mb-2">save the date</div>
 	<h5>Monday June 1st</h5>
 </div>
 

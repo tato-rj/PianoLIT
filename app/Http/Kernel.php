@@ -70,6 +70,9 @@ class Kernel extends HttpKernel
         'non-members-only' => \App\Http\Middleware\Membership\RedirectIfMembershipIsActive::class,
         'members-only' => \App\Http\Middleware\Membership\RedirectIfNotMember::class,
 
+        ////////////////////////////////////////
+        // REMOVE THIS ON LAUNCH DAY JUNE 1ST //
+        ////////////////////////////////////////
         'countdown' => \App\Http\Middleware\WebAppCountdown::class,
     ];
 

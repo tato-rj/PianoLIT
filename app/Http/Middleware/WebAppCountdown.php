@@ -5,6 +5,10 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Tools\Traffic;
 
+////////////////////////////////////////
+// DELETE THIS ON LAUNCH DAY JUNE 1ST //
+////////////////////////////////////////
+
 class WebAppCountdown
 {
     /**
@@ -20,11 +24,6 @@ class WebAppCountdown
             return $next($request);
         
         return redirect(route('webapp.countdown'));
-    }
-
-    public function isMe()
-    {
-        return ! (new Traffic)->isRealVisitor();
     }
 
     public function isCountdown($request)
