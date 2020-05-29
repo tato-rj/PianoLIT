@@ -9,7 +9,7 @@
             		<img src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 20%; width: 60px">
             	</a>
                 <h3>{{$title}}</h3>
-                <p>{{$subtitle}}</p>
+                <p>{!! $subtitle !!}</p>
                 
                 {{$slot}}
 
