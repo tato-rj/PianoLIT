@@ -9,8 +9,8 @@ class Traffic
 		'24.215.182.64', 
 		'104.129.138.238'
 	];
-	// 284 -> Arthur, 260 -> Elena, 196 -> Mark Twain, 249 -> Tester
-	protected $ignoreID = [284, 260, 196, 249];
+	// 284 -> Arthur, 260 -> Elena, 196 -> Mark Twain, 249 -> Tester, 928 -> Krusty
+	protected $ignoreID = [284, 260, 196, 249, 928];
 
 	public function isRealVisitor()
 	{
