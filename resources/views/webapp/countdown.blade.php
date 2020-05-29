@@ -1,20 +1,20 @@
 @component('auth.webapp.layout', ['title' => 'Coming up soon', 'subtitle' => 'We will be launching our WebApp on <strong>Monday June 1st</strong>, stay tuned!'])
 <h6>Going live in...</h6>
-<div id="countdown" class="d-flex">
-	<div class="text-center bg-light rounded mr-2 p-3">
-		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.06); border-radius: 50%" id="days"></h5>
+<div id="countdown" class="d-flex flex-wrap">
+	<div class="text-center bg-light rounded mr-2 mb-2 p-3" style="width: 84px">
+		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.04); border-radius: 50%" id="days"></h5>
 		<div class="text-muted"><small><strong>days</strong></small></div>
 	</div>
-	<div class="text-center bg-light rounded mr-2 p-3">
-		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.06); border-radius: 50%" id="hours"></h5>
+	<div class="text-center bg-light rounded mr-2 mb-2 p-3" style="width: 84px">
+		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.04); border-radius: 50%" id="hours"></h5>
 		<div class="text-muted"><small><strong>hours</strong></small></div>
 	</div>
-	<div class="text-center bg-light rounded mr-2 p-3">
-		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.06); border-radius: 50%" id="minutes"></h5>
+	<div class="text-center bg-light rounded mr-2 mb-2 p-3" style="width: 84px">
+		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.04); border-radius: 50%" id="minutes"></h5>
 		<div class="text-muted"><small><strong>minutes</strong></small></div>
 	</div>
-	<div class="text-center bg-light rounded mr-2 p-3">
-		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.06); border-radius: 50%" id="seconds"></h5>
+	<div class="text-center bg-light rounded mr-2 mb-2 p-3" style="width: 84px">
+		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.04); border-radius: 50%" id="seconds"></h5>
 		<div class="text-muted"><small><strong>seconds</strong></small></div>
 	</div>
 </div>
