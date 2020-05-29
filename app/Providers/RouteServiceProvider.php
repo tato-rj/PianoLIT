@@ -66,7 +66,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebAppRoutes()
     {
         Route::domain('my.'.config('app.short_url'))
-             ->middleware(['web', 'auth:web', 'countdown', 'log.webapp'])
+             ->middleware(['web', 'countdown', 'auth:web', 'log.webapp'])
              ->name('webapp.')
              ->namespace($this->namespace)
              ->group(function() {
