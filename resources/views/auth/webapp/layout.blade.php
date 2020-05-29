@@ -3,7 +3,7 @@
         'keywords' => '',
         'title' => 'PianoLIT WebApp',
         'description' => 'Discover new pieces and find inspiration to play only what you love.',
-        'thumbnail' => asset('images/webapp/devices.png'),
+        'thumbnail' => asset('images/webapp/countdown.jpg'),
         'created_at' => carbon('5/28/2020')->format(DateTime::ISO8601),
         'updated_at' => carbon('5/28/2020')->format(DateTime::ISO8601)
     ]])
