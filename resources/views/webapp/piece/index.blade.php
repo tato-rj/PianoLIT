@@ -338,6 +338,7 @@ function iOS() {
     'iPhone Simulator',
     'iPod Simulator',
     'iPad',
+    'MacIntel',
     'iPhone',
     'iPod'
   ];
@@ -350,7 +351,5 @@ function iOS() {
 
   return false;
 }
-
-alert(navigator.platform);
 </script>
 @endpush
