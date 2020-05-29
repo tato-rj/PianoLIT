@@ -19,6 +19,7 @@ class WebAppCountdown
         if ($this->isCountdown($request) || $this->isMe())
             return $next($request);
         
+        dd(auth()->user());
         return redirect(route('webapp.countdown'));
     }
 
