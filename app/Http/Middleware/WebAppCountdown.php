@@ -24,7 +24,7 @@ class WebAppCountdown
 
     public function isMe()
     {
-        return (new Traffic)->isRealVisitor();
+        return ! (new Traffic)->isRealVisitor();
     }
 
     public function isCountdown($request)
