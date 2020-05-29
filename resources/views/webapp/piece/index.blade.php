@@ -331,6 +331,10 @@ if (typeof document.addEventListener === "undefined" || hidden === undefined) {
   document.addEventListener(visibilityChange, handleVisibilityChange, false);
 }
 
+if (iOS()) {
+	alert('IOS');
+}
+
 function iOS() {
 
   var iDevices = [
