@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Tools\Traffic;
 
 class WebAppCountdown
 {
@@ -23,7 +24,7 @@ class WebAppCountdown
 
     public function isMe($request)
     {
-        return $request->has('itsme');
+        return auth()->check() && ! (new Traffic)->isRealUser(auth()->user()->id);
     }
 
     public function isCountdown($request)
