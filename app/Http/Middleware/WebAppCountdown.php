@@ -24,7 +24,7 @@ class WebAppCountdown
 
     public function isMe()
     {
-        return auth()->check() && ! (new Traffic)->isRealUser(auth()->user()->id);
+        return auth()->check() && (new Traffic)->isRealUser(auth()->user()->id);
     }
 
     public function isCountdown($request)
