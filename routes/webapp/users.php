@@ -1,5 +1,9 @@
 <?php
 
+Route::get('coming-soon', function() {
+	return view('webapp.countdown');
+})->name('countdown');
+
 Route::namespace('WebApp')->name('users.')->group(function() {
 
 	Route::get('profile', 'UsersController@profile')->name('profile');

@@ -69,6 +69,8 @@ class Kernel extends HttpKernel
         'membership.single-source' => \App\Http\Middleware\Membership\OneMembershipSourcePerUser::class,
         'non-members-only' => \App\Http\Middleware\Membership\RedirectIfMembershipIsActive::class,
         'members-only' => \App\Http\Middleware\Membership\RedirectIfNotMember::class,
+
+        'countdown' => \App\Http\Middleware\WebAppCountdown::class,
     ];
 
     /**
