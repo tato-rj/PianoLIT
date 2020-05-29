@@ -1,21 +1,26 @@
-@component('auth.webapp.layout', ['title' => 'Coming up soon', 'subtitle' => 'We will be launching our WebApp on <strong>Monday June 1st</strong>, stay tuned!'])
-<h6>Going live in...</h6>
-<div id="countdown" class="d-flex flex-wrap">
-	<div class="text-center bg-light rounded mr-2 mb-2 p-3" style="width: 84px">
-		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.04); border-radius: 50%" id="days"></h5>
-		<div class="text-muted"><small><strong>days</strong></small></div>
+@component('auth.webapp.layout', ['title' => 'Coming up soon', 'subtitle' => 'We will be launching our WebApp soon, stay tuned!'])
+
+<div class="text-center mb-3">
+	<div><small>save the date</small></div>
+	<h5>Monday June 1st</h5>
+</div>
+
+<div id="countdown" class="d-flex flex-wrap justify-content-center">
+	<div class="text-center mr-2 mb-2" style="width: 80px">
+		<h5 class="d-flex flex-center mx-auto py-3 bg-light rounded-top m-0 border-top border-left border-right" style="height: 60px" id="days"></h5>
+		<div class="border bg-white py-2 rounded-bottom"><small><strong>days</strong></small></div>
 	</div>
-	<div class="text-center bg-light rounded mr-2 mb-2 p-3" style="width: 84px">
-		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.04); border-radius: 50%" id="hours"></h5>
-		<div class="text-muted"><small><strong>hours</strong></small></div>
+	<div class="text-center mr-2 mb-2" style="width: 80px">
+		<h5 class="d-flex flex-center mx-auto py-3 bg-light rounded-top m-0 border-top border-left border-right" style="height: 60px" id="hours"></h5>
+		<div class="border bg-white py-2 rounded-bottom"><small><strong>hours</strong></small></div>
 	</div>
-	<div class="text-center bg-light rounded mr-2 mb-2 p-3" style="width: 84px">
-		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.04); border-radius: 50%" id="minutes"></h5>
-		<div class="text-muted"><small><strong>minutes</strong></small></div>
+	<div class="text-center mr-2 mb-2" style="width: 80px">
+		<h5 class="d-flex flex-center mx-auto py-3 bg-light rounded-top m-0 border-top border-left border-right" style="height: 60px" id="minutes"></h5>
+		<div class="border bg-white py-2 rounded-bottom"><small><strong>minutes</strong></small></div>
 	</div>
-	<div class="text-center bg-light rounded mr-2 mb-2 p-3" style="width: 84px">
-		<h5 class="d-flex flex-center mx-auto" style="width: 44px; height: 44px; background-color: rgba(0,0,0,0.04); border-radius: 50%" id="seconds"></h5>
-		<div class="text-muted"><small><strong>seconds</strong></small></div>
+	<div class="text-center mr-2 mb-2" style="width: 80px">
+		<h5 class="d-flex flex-center mx-auto py-3 bg-light rounded-top m-0 border-top border-left border-right" style="height: 60px" id="seconds"></h5>
+		<div class="border bg-white py-2 rounded-bottom"><small><strong>seconds</strong></small></div>
 	</div>
 </div>
 
