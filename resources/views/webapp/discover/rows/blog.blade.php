@@ -1,4 +1,4 @@
-<div class="mb-4 pt-3">
+<div class="border-top border-bottom py-4 my-4">
 	<a href="{{route('webapp.blog.show', $post)}}" class="link-none">
 		<div class="row">
 			<div class="col-lg-3 col-md-4 col-12">
