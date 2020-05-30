@@ -17,6 +17,7 @@ class PiecesController extends Controller
     {
         if (request()->ajax())
             return Piece::with(['tags', 'composer'])
+                    ->whereNull('description')
                     ->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])
                     ->orderBy('updated_at', 'desc')
                     ->datatable();
