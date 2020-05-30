@@ -16,7 +16,7 @@
 <section id="discover-rows">
 @foreach($rows as $row)
 	@if($loop->index == $loop->count/2)
-	@include('webapp.discover.rows.blog', ['post' => \App\Blog\Post::published()->inRandomOrder()->first()])
+		@include('webapp.discover.rows.blog')
 	@endif
 
 	@include('webapp.discover.rows.' . $row['row'])

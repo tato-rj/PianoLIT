@@ -18,7 +18,7 @@ class PiecesController extends Controller
         if (request()->ajax())
             return Piece::with(['tags', 'composer'])
                     ->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])
-                    // ->orderBy('updated_at', 'desc')
+                    ->orderBy('updated_at', 'desc')
                     ->datatable();
 
         return view('admin.pages.pieces.index');

@@ -1,3 +1,3 @@
 <?php
 
-Route::post('key/{key}', 'Admin\RedisController@update')->name('update');
+Route::post('update/api', 'Admin\RedisController@update')->name('update');

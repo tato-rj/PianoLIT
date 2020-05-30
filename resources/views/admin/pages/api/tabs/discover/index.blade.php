@@ -20,7 +20,7 @@
   @include('admin.pages.api.tabs.nav')
 
   <div class="text-center">
-    <form method="POST" action="{{route('redis.update', 'app.discover')}}" class="mb-2">
+    <form method="POST" action="{{route('redis.update')}}" class="mb-2">
       @csrf
       <button class="btn btn-outline-success btn-sm"><i class="fas fa-sync-alt mr-1"></i>Refresh discover page</button>
     </form>

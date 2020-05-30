@@ -3,6 +3,7 @@
 namespace App\Api;
 
 use App\Piece;
+use App\Blog\Post;
 
 class Api extends Factory
 {
@@ -34,6 +35,17 @@ class Api extends Factory
 
         return $collection;
 	}
+
+    public function post()
+    {
+        $key = \Redis::get('app.post');
+
+        $post = \Cache::remember($key, days(1), function() {
+            return Post::published()->inRandomOrder()->first();
+        });
+
+        return $post;
+    }
 
     public function search($request)
     {
