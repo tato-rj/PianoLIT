@@ -27,6 +27,9 @@
         ]); ?>
     </script>
     <style type="text/css">
+        #blog-content img, #blog-content iframe {
+            max-width: 100%;
+        }
         .rounded {
             border-radius: 1rem!important;
         }

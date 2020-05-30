@@ -18,7 +18,7 @@
 	<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 </figure>
 
-<section class="blog-font w-100">
+<section id="blog-post" class="blog-font w-100">
 	{!! $post->content !!}
 </section>
 
