@@ -20,7 +20,7 @@ class RefreshStripe extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Delete all local records of stripe memberships and create new plans on Stripe server (local development only)';
 
     /**
      * Create a new command instance.

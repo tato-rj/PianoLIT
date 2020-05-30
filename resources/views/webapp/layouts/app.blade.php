@@ -27,6 +27,22 @@
         ]); ?>
     </script>
     <style type="text/css">
+        .rounded {
+            border-radius: 1rem!important;
+        }
+        .rounded-bottom, .rounded-left {
+            border-bottom-left-radius: 1rem!important;
+        }
+        .rounded-bottom, .rounded-right {
+            border-bottom-right-radius: 1rem!important;
+        }
+        .rounded-right, .rounded-top {
+            border-top-right-radius: 1rem!important;
+        }
+        .rounded-left, .rounded-top {
+            border-top-left-radius: 1rem!important;
+        }
+        
         #webapp .menu-link {
             text-decoration: none;
             color: #969ba0;

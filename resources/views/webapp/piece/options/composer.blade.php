@@ -14,8 +14,7 @@
 			<img src="{{$piece->composer->cover_image}}" style="width: 160px" class="rounded-circle shadow mb-3">
 			<h5 class="mb-3">{{$piece->composer->name}}</h5>
 		</div>
-		<div class="row">
-			<div class="col-lg-8 col-md-10 col-12 mx-auto mb-4">
+		<div class="mb-4">
 				<ul class="list-style-none p-0">
 					<li class="mb-1"><strong>Born:</strong> {{$piece->composer->born_at}}</li>
 					<li class="mb-1"><strong>Died:</strong> {{$piece->composer->died_at}}</li>
@@ -23,12 +22,10 @@
 					<li class="mb-1"><strong>Period:</strong> {{$piece->composer->period}}</li>
 				</ul>
 
-				<div class="bg-light rounded p-4 text-center w-100">
+				<div class="bg-light rounded p-4 text-center">
 					<h5 class="text-blue">Did you know?</h5>
 					<p class="text-blue">{{$piece->composer->curiosity}}</p>
-					{{-- <a href="" class="btn rounded-pill btn-blue btn-wide">SHARE</a> --}}
 				</div>
-			</div>
 		</div>
 		<div>
 			<p style="white-space: pre-wrap;">{{$piece->composer->biography}}</p>

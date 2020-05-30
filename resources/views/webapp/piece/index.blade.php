@@ -278,7 +278,7 @@ $('button[data-action="video"]').on('click', function() {
 			 	$btn.removeClass('opacity-4').enable();
 				$icon.hide();
 			 	$container.append(html);
-				$container.addClass('border rounded p-2');
+				$container.addClass('border p-2');
 				try {
 					new Plyr(videoId);
 				} catch(e) {
@@ -298,7 +298,7 @@ function stopVideo(reset = true) {
 
 		if (reset) {
 			$video.get(0).currentTime = 0;
-			$video.closest('.video-container').removeClass('border rounded p-2 ').find('div').show();
+			$video.closest('.video-container').removeClass('border p-2 ').find('div').show();
 			$video.remove();
 		}
 	});

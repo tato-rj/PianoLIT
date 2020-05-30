@@ -65,13 +65,23 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebAppRoutes()
     {
-        Route::domain('my.'.config('app.short_url'))
-             ->middleware(['countdown', 'web', /*'auth:web',*/ 'log.webapp'])
-             ->name('webapp.')
-             ->namespace($this->namespace)
-             ->group(function() {
-                $this->getFolder('routes/webapp');
-             });
+        if (local()) {
+            Route::domain('my.'.config('app.short_url'))
+                 ->middleware(['web', 'auth:web', 'log.webapp'])
+                 ->name('webapp.')
+                 ->namespace($this->namespace)
+                 ->group(function() {
+                    $this->getFolder('routes/webapp');
+                 });
+        } else {
+            Route::domain('my.'.config('app.short_url'))
+                 ->middleware(['countdown', 'web', 'log.webapp'])
+                 ->name('webapp.')
+                 ->namespace($this->namespace)
+                 ->group(function() {
+                    $this->getFolder('routes/webapp');
+                 });
+        }
     }
 
     /**

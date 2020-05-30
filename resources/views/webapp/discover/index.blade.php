@@ -15,6 +15,10 @@
 
 <section id="discover-rows">
 @foreach($rows as $row)
+	@if($loop->index == $loop->count/2)
+	@include('webapp.discover.rows.blog', ['post' => \App\Blog\Post::first()])
+	@endif
+
 	@include('webapp.discover.rows.' . $row['row'])
 @endforeach
 </section>
