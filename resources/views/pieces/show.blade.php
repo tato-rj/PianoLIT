@@ -59,7 +59,7 @@
 				<hr class="my-4">
 				<div class="text-center w-100 mb-4">
 					@if($piece->isPublicDomain)	
-						<a href="{{storage($piece->score_path)}}" class="btn btn-block btn-wide btn-teal"><i class="fas fa-cloud-download-alt mr-2"></i>Download score</a>
+						<a href="{{storage($piece->score_path)}}" target="_blank" class="btn btn-block btn-wide btn-teal"><i class="fas fa-cloud-download-alt mr-2"></i>Download score</a>
 					@else
 						<a href="{{$piece->score_url}}" target="_blank" class="btn btn-block btn-teal btn-wide"><i class="fas fa-shopping-bag mr-2"></i>Buy the score here</a>
 					@endif
