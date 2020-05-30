@@ -22,19 +22,6 @@
 	{!! $post->content !!}
 </section>
 
-@if($post->references)
-<div class="mb-5 pb-4 border-bottom text-muted">
-	<div class="mb-1"><strong>References</strong></div>
-	<ul class="pl-4">
-		<small>
-			@foreach($post->referencesArray as $reference)
-				<li><div class="d-flex">{{$reference}}</div></li>
-			@endforeach
-		</small>
-	</ul>
-</div>
-@endif
-
 @endsection
 
 @push('scripts')
