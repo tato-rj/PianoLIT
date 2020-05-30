@@ -30,6 +30,7 @@
         #blog-content img, #blog-content iframe {
             max-width: 100%;
         }
+
         .rounded {
             border-radius: 1rem!important;
         }
@@ -46,6 +47,23 @@
             border-top-left-radius: 1rem!important;
         }
         
+        
+        .rounded-sm {
+            border-radius: .25rem!important;
+        }
+        .rounded-sm-bottom, .rounded-sm-left {
+            border-bottom-left-radius: .25rem!important;
+        }
+        .rounded-sm-bottom, .rounded-sm-right {
+            border-bottom-right-radius: .25rem!important;
+        }
+        .rounded-sm-right, .rounded-sm-top {
+            border-top-right-radius: .25rem!important;
+        }
+        .rounded-sm-left, .rounded-sm-top {
+            border-top-left-radius: .25rem!important;
+        }
+
         #webapp .menu-link {
             text-decoration: none;
             color: #969ba0;

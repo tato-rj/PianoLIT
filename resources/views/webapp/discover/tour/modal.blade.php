@@ -50,7 +50,7 @@
 @endslot
 
 @slot('footerRaw')
-<button class="btn btn-block btn-green py-4 rounded-bottom" id="next" style="border-radius: 0">NEXT</button>
+<button class="btn btn-block btn-green py-4 rounded-sm-bottom" id="next" style="border-radius: 0">NEXT</button>
 @endslot
 
 @endcomponent

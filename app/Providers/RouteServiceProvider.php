@@ -65,7 +65,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebAppRoutes()
     {
-        if (local()) {
+        if (true) {
             Route::domain('my.'.config('app.short_url'))
                  ->middleware(['web', 'auth:web', 'log.webapp'])
                  ->name('webapp.')
