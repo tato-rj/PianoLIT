@@ -58,6 +58,10 @@
 
 @push('scripts')
 <script type="text/javascript">
+$('#composer-bio').clamp(4);
+</script>
+
+<script type="text/javascript">
 $('#pdf-share').click(function() {
 	let url = $(this).data('url');
 

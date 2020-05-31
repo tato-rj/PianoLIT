@@ -10,18 +10,16 @@
 
 <section>
 	<div>
-		<div class="text-center">
+		<div class="text-center mb-4">
 			<img src="{{$piece->composer->cover_image}}" style="width: 160px" class="rounded-circle shadow mb-3">
-			<h5 class="mb-3">{{$piece->composer->name}}</h5>
+			<h5 class="mb-0">{{$piece->composer->name}}</h5>
+			<div class="mb-1"><small>{{$piece->composer->born_at}} - {{$piece->composer->died_at}}</small></div>
+			<div>
+				<span class="flag-icon flag-icon-{{$piece->composer->country->flag_code}} rounded-sm shadow-center mr-1"></span>
+				<strong class="text-muted">{{$piece->composer->country->name}}</strong>
+			</div>
 		</div>
 		<div class="mb-4">
-				<ul class="list-style-none p-0">
-					<li class="mb-1"><strong>Born:</strong> {{$piece->composer->born_at}}</li>
-					<li class="mb-1"><strong>Died:</strong> {{$piece->composer->died_at}}</li>
-					<li class="mb-1"><strong>Nationality:</strong> {{$piece->composer->nationality}}</li>
-					<li class="mb-1"><strong>Period:</strong> {{$piece->composer->period}}</li>
-				</ul>
-
 				<div class="bg-light rounded p-4 text-center">
 					<h5 class="text-blue">Did you know?</h5>
 					<p class="text-blue">{{$piece->composer->curiosity}}</p>

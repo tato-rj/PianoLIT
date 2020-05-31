@@ -12,11 +12,19 @@
 			</div>
 		</div>
 	</div>
-
+	
+	@if($piece->description)
 	<div class="mb-4 pb-4 border-bottom">
 		<h5 class="mb-3">What's this piece like?</h5>
 		<div style="white-space: pre-wrap;">{{$piece->description}}</div>
 	</div>
+	@else
+	<div class="mb-4 pb-4 border-bottom">
+		<h5 class="mb-3">About the composer</h5>
+		<div id="composer-bio" class="mb-2">{{$piece->composer->biography}}</div>
+		<div>To learn more about {{$piece->composer->last_name}} <a href="{{route('webapp.pieces.composer', $piece)}}" class="link-blue">click here</a>.</div>
+	</div>
+	@endif
 
 	<div class="mb-4 pb-4 border-bottom">
 		<h5 class="mb-3">Who's this piece for?</h5>
