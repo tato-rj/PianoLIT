@@ -22,7 +22,7 @@ Check this week's FREE pick
 <h1><strong>Don't use an iPhone?</strong></h1>
 <p style="margin-bottom: 4px">Our WebApp is up and running! 🤗</p>
 <p style="margin-bottom: 12px">Available on all devices, tablets and computers.</p>
-<a href="{{config('app.stores.webapp')}}" target="_blank" class="text-center"><strong>Check the FREE pick on the WebApp</strong></a>
+<a href="https://my.pianolit.com/" target="_blank" class="text-center"><strong>Check the FREE pick on the WebApp</strong></a>
 @endcomponent
 
 
@@ -63,7 +63,7 @@ Check this week's FREE pick
 <h1><strong>Don't use an iPhone?</strong></h1>
 <p style="margin-bottom: 4px">Our WebApp is up and running! 🤗</p>
 <p style="margin-bottom: 12px">Available on all devices, tablets and computers.</p>
-<a href="{{config('app.stores.webapp')}}" target="_blank" class="text-center"><strong>Check the FREE pick on the WebApp</strong></a>
+<a href="https://my.pianolit.com/" target="_blank" class="text-center"><strong>Check the FREE pick on the WebApp</strong></a>
 @endcomponent
 
 @include('mail::signature')
