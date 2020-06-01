@@ -22,7 +22,8 @@ return [
     'appleId' => '1435702585',
 
     'stores' => [
-        'ios' => 'https://apps.apple.com/app/id1435702585'
+        'ios' => 'https://apps.apple.com/app/id1435702585',
+        'webapp' => 'https://my.pianolit.com'
     ],
     /*
     |--------------------------------------------------------------------------
