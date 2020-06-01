@@ -41,7 +41,7 @@
 }
 
 .border-advanced {
-	border-color: lighten($advanced, 35) !important;
+	border-color: lighten($advanced, 30) !important;
 }
 
 .bg-elementary {
@@ -60,7 +60,7 @@
 }
 
 .bg-advanced {
-	background: lighten($advanced, 35) !important;
+	background: lighten($advanced, 30) !important;
 	color: darken($advanced, 5);
 }
 
