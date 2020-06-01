@@ -6,6 +6,8 @@
 @section('content')
 @include('webapp.layouts.header')
 
+@include('webapp.blog.components.topics')
+
 <h2 class="mb-4">{{$post->title}}</h2>
 <p class="text-muted blog-font">{{$post->description}}</p>
 <div class="d-apart text-muted">
