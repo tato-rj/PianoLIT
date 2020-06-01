@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\Piece;
+use App\Blog\Post;
 
 class WebAppTest extends AppTest
 {
@@ -12,6 +13,7 @@ class WebAppTest extends AppTest
         parent::setUp();
         
         create(Piece::class, ['is_free' => true]);
+        create(Post::class, ['published_at' => now()]);
     }
 
     /** @test */

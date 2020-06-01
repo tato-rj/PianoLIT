@@ -44,6 +44,7 @@ class DeleteRecordFromRedis extends Command
         if (testing() || $this->confirm('This will delete all records from ' . $user->full_name . '. Are you sure?')) {
             \Redis::del($user->redisKey('app'));
             \Redis::del($user->redisKey('web'));
+            \Redis::del($user->redisKey('webapp'));
 
             return $this->info($user->first_name . '\'s logs have been removed.');
         }

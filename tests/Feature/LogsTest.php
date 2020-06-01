@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\AppTest;
 use App\Log\Loggers\DailyLog;
 use App\{User, Piece};
+use App\Blog\Post;
 
 class LogsTest extends AppTest
 {
@@ -153,33 +154,38 @@ class LogsTest extends AppTest
         $first_user = create(User::class);
         $second_user = create(User::class);
         $third_user = create(User::class);
+        create(Piece::class, ['is_free' => true]);
+        create(Post::class, ['published_at' => now()]);
 
         $this->signIn($first_user);
 
         // First user ads 2 events
-        $this->get(route('home'));
+        $this->get(route('users.profile'));
         $this->get(route('api.discover', ['user_id' => $first_user->id]));
 
         $first_key = 'user:'.$first_user->id.':app';
 
         $this->signIn($second_user);
 
-        // // Second user ads 2 events
-        $this->get(route('home'));
+        // // Second user ads 3 events
+        $this->get(route('users.profile'));
+        $this->get(route('webapp.discover'));
         $this->get(route('api.discover', ['user_id' => $second_user->id]));
 
         $second_key = 'user:'.$second_user->id.':app';
+        $second_key_webapp = 'user:'.$second_user->id.':webapp';
 
         $this->signIn($third_user);
 
-        // // Third user ads 3 events
-        $this->get(route('home'));
+        // // Third user ads 2 events
+        $this->get(route('users.profile'));
         $this->get(route('api.discover', ['user_id' => $third_user->id]));
 
         $third_key = 'user:'.$third_user->id.':app';
 
         $this->assertRedisHas($first_key);
         $this->assertRedisHas($second_key);
+        $this->assertRedisHas($second_key_webapp);
         $this->assertRedisHas($third_key);
 
         $this->signIn($second_user);
@@ -187,12 +193,13 @@ class LogsTest extends AppTest
         // Second user ads 1 event
         $this->delete(route('users.destroy', $second_user->id));
 
-        $this->assertEquals($logger->sum($logger->all()), 7);
+        $this->assertEquals($logger->sum($logger->all()), 8);
 
         $this->artisan('redis:clean-logs');
 
         $this->assertRedisHas($first_key);
         $this->assertRedisMissing($second_key);
+        $this->assertRedisMissing($second_key_webapp);
         $this->assertRedisHas($third_key);
 
         $this->artisan('redis:refresh-daily-logs');

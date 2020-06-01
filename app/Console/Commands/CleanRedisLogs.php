@@ -51,6 +51,7 @@ class CleanRedisLogs extends Command
                         if (! User::find($value)) {
                             \Redis::del($prefix . 'user:' . $value . ':app');
                             \Redis::del($prefix . 'user:' . $value . ':web');
+                            \Redis::del($prefix . 'user:' . $value . ':webapp');
                         }
 
                         break;
