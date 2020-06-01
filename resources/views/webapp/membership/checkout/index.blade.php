@@ -85,7 +85,7 @@ $('input[name="coupon"]').on('keyup', function() {
   $('#coupon-feedback').text('');
 });
 
-$('input[name="coupon"]').on('blur', function() {
+$('input[name="coupon"]').on('keyup', function() {
   let $input = $('#coupon-feedback');
   
 

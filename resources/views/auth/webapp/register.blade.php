@@ -1,5 +1,5 @@
 @component('auth.webapp.layout', ['title' => 'Sign up for free', 'subtitle' => 'Use the form below to sign up and get started. Enjoy!'])
-    <form method="POST" action="{{ route('register') }}" id="register-form">
+    <form method="POST" action="{{ route('register') }}" id="register-form" disable-on-submit>
         @csrf
 
         @include('auth.fields.register')
