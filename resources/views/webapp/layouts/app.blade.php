@@ -12,6 +12,11 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <meta property="og:site_name" content="PianoLIT" />
+    <meta property="og:title" content="PianoLIT WebApp" />
+    <meta property="og:url" content="{{url()->current()}}" />
+    <meta property="og:image" content="{{asset('images/webapp/thumbnail.jpg')}}" />
+
     @include('layouts.html.theme')
 
     <title>{{local() ? '(local)' : null}} {{config('app.name')}}</title>
