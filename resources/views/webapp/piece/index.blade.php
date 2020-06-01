@@ -89,7 +89,7 @@ $(document).ready(function() {
 		$('.ios-only').hide();
 		$('.non-ios').show();
 
-		let pdfDoc = null, pageNum = 1, padeIsRendering = false, pageNumIsPending = null;
+		let pdfDoc = null, pageNum = 1, numPages = 0, padeIsRendering = false, pageNumIsPending = null;
 
 		const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
 
@@ -124,6 +124,11 @@ $(document).ready(function() {
 		}
 
 		function showPrevPage() {
+			$('.pdf-control[right]').show();
+
+			if (pageNum <= 2)
+				$('.pdf-control[left]').hide();
+
 			if (pageNum <= 1)
 				return;
 
@@ -132,7 +137,12 @@ $(document).ready(function() {
 		}
 
 		function showNextPage() {
-			if (pageNum >= pdfDoc.numPages)
+			$('.pdf-control[left]').show();
+
+			if (pageNum >= numPages - 1)
+				$('.pdf-control[right]').hide();
+
+			if (pageNum >= numPages)
 				return;
 
 			pageNum++;
@@ -153,6 +163,11 @@ $(document).ready(function() {
 
 		pdfjsLib.getDocument({url: pdfurl}).promise.then(pdfDoc_ => {
 			pdfDoc = pdfDoc_;
+			numPages = pdfDoc.numPages;
+
+			if (numPages < 2)
+				$('.pdf-control').hide();
+
 			renderPage(pageNum);
 		}).catch(error => {
 			console.log(error);
