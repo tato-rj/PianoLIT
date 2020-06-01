@@ -26,7 +26,7 @@ $("#subscribe-overlay").showAfter(5);
 
 <script type="text/javascript">
 if (iOS()) {
-	$('.free-trial-launch').attr('href', $('.free-trial-launch').data('ios'));
+	$('.free-trial-launch').attr('href', "{{config('app.stores.ios')}}");
 }
 
 function iOS() {
