@@ -18,5 +18,6 @@
 		</div>
 		<button id="card-button" class="btn btn-block btn-default">@fa(['icon' => 'lock'])Subscribe now for ${{$plan->formattedPrice()}}</button>
 	</form>
-	<div class="text-muted"><small>Your free trial will start today and end on {{now()->addDays(7)->toFormattedDateString()}}. Unless you cancel during this duration, you’ll be charged ${{$plan->formattedPrice()}} after {{$plan->trial_period_days}} days. Afterwards your subscription will renew automatically every {{$plan->interval}}, but you can cancel anytime.</small></div>
+	<div class="text-muted mb-1"><small>Your free trial will start today and end on {{now()->addDays(7)->toFormattedDateString()}}. Unless you cancel during this duration, you’ll be charged ${{$plan->formattedPrice()}} after {{$plan->trial_period_days}} days. Afterwards your subscription will renew automatically every {{$plan->interval}}, but you can cancel anytime.</small></div>
+	<div class="text-muted"><small>All prices are listed in US Dollars</small></div>
 </div>
