@@ -14,7 +14,10 @@
 		<div class="panel-body px-2 py-3" style="overflow-y: auto; height: 85%;">
 			<div class="list-group">
 				<a href="{{route('webapp.pieces.composer', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Meet the composer @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+
+				@if($piece->itunes)
 				<a href="{{route('webapp.pieces.apple-music', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">On Apple Music @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+				@endif
 
 				@if($piece->hasSiblings)
 				<a href="{{route('webapp.pieces.collection', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">From the same collection @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
