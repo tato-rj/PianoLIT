@@ -22,6 +22,20 @@ abstract class Person extends PianoLit
         return $this->belongsTo(Country::class);
     }
 
+    public function getLifespanAttribute()
+    {
+        if ($this->born_at && $this->died_at)
+            return $this->born_at . ' - ' . $this->died_at;
+
+        if ($this->born_at)
+            return 'Born on ' . $this->born_at;
+
+        if ($this->died_at)
+            return 'Died on ' . $this->died_at;
+
+        return null;
+    }
+
     public function wasBornToday()
     {
         return $this->date_of_birth ? $this->date_of_birth->isBirthday(now()) : null;
