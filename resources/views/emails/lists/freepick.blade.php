@@ -33,19 +33,19 @@ Check this week's FREE pick
 
 @include('mail::divider', ['orientation' => 'vertical'])
 
-{{-- @component('mail::panel')
+@component('mail::panel')
 <h1>Did you know?</h1>
 {{$piece->curiosity}}
-@endcomponent --}}
+@endcomponent
 
-{{-- @component('mail::promotion') --}}
+@component('mail::promotion')
 <h1 class="text-center"><strong>Learn more about the composer</strong></h1>
 @include('mail::avatar', ['image' => storage($piece->composer->cover_path)])
 
 <p style="white-space: pre-wrap;">
 {{$piece->composer->biography}}
 </p>
-{{-- @endcomponent --}}
+@endcomponent
 
 @component('mail::button', ['url' => config('app.stores.ios')])
 Check this week's FREE pick
