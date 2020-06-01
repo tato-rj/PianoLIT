@@ -18,6 +18,14 @@
 Check this week's FREE pick
 @endcomponent
 
+@component('mail::panel')
+<h1><strong>Don't use an iPhone?</strong></h1>
+<p style="margin-bottom: 4px">Our WebApp is up and running! 🤗</p>
+<p style="margin-bottom: 12px">Available on all devices, tablets and computers.</p>
+<a href="{{route('webapp.pieces.show', $piece)}}" target="_blank" class="text-center"><strong>Check the FREE pick on the WebApp</strong></a>
+@endcomponent
+
+
 @include('mail::lists.check', ['items' => [
 	'Get the score', 
 	'Watch a video performance',
@@ -49,6 +57,13 @@ Check this week's FREE pick
 
 @component('mail::button', ['url' => config('app.stores.ios')])
 Check this week's FREE pick
+@endcomponent
+
+@component('mail::panel')
+<h1><strong>Don't use an iPhone?</strong></h1>
+<p style="margin-bottom: 4px">Our WebApp is up and running! 🤗</p>
+<p style="margin-bottom: 12px">Available on all devices, tablets and computers.</p>
+<a href="{{route('webapp.pieces.show', $piece)}}" target="_blank" class="text-center"><strong>Check the FREE pick on the WebApp</strong></a>
 @endcomponent
 
 @include('mail::signature')

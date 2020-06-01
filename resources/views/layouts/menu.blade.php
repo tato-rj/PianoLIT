@@ -52,6 +52,9 @@
       <li class="nav-item mx-2">
         <a class="nav-link" href="{{route('posts.index')}}">Blog</a>
       </li>
+      <li class="nav-item mx-2">
+        <a class="nav-link" href="{{route('webapp.discover')}}">WebApp</a>
+      </li>
       @auth
       <li class="nav-item dropdown mx-2">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
