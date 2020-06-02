@@ -385,6 +385,11 @@ class Piece extends PianoLit
     {
         return $this->tags_array->contains('transcription');
     }
+    
+    public function hasDescription()
+    {
+        return !is_null($this->description) && $this->description != 'We\'re updating our database, please check back in just a few days.';
+    }
 
     public function scopeFilters($query, $filters)
     {

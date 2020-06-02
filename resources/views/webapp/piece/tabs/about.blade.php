@@ -13,7 +13,7 @@
 		</div>
 	</div>
 	
-	@if($piece->description)
+	@if($piece->hasDescription())
 	<div class="mb-4 pb-4 border-bottom">
 		<h5 class="mb-3">What's this piece like?</h5>
 		<div style="white-space: pre-wrap;">{{$piece->description}}</div>
