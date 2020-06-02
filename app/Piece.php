@@ -45,8 +45,6 @@ class Piece extends PianoLit
     ];
     
     protected $report_by = 'medium_name_with_composer';
-    
-    protected $attributes = ['description' => 'We\'re updating our database, please check back in just a few days.'];
 
     public static function boot()
     {
@@ -387,6 +385,11 @@ class Piece extends PianoLit
     public function isTranscription()
     {
         return $this->tags_array->contains('transcription');
+    }
+
+    public function getDescriptionAttribute($description)
+    {
+        return $description ?? 'We\'re updating our database, please check back in just a few days.';
     }
 
     public function hasDescription()
