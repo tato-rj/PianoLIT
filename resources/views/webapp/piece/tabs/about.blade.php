@@ -36,9 +36,6 @@
 		@if($piece->technique()->isNotEmpty())
 		<p class="m-0 mt-2"><strong class="text-brand">TECHNIQUE:</strong> {{ ucfirst(arrayToSentence($piece->technique()->pluck('name')->toArray())) }}.</p>
 		@endif
-		@if($piece->genre()->isNotEmpty())
-		<p class="m-0 mt-2"><strong class="text-brand">GENRE:</strong> {{ ucfirst(arrayToSentence($piece->genre()->pluck('name')->toArray())) }}.</p>
-		@endif
 	</div>
 
 	<div class="mb-4 pb-4">
