@@ -43,7 +43,10 @@ class Piece extends PianoLit
         'for_who',
         'has_siblings'
     ];
+    
     protected $report_by = 'medium_name_with_composer';
+    
+    protected $attributes = ['description' => 'We\'re updating our database, please check back in just a few days.'];
 
     public static function boot()
     {
@@ -386,17 +389,12 @@ class Piece extends PianoLit
         return $this->tags_array->contains('transcription');
     }
 
-    public function getDescriptionAttribute()
-    {
-        return $this->description ?? 'We\'re updating our database, please check back in just a few days.';
-    }
-
     public function hasDescription()
     {
         if ($this->description == 'We\'re updating our database, please check back in just a few days.')
             return false;
 
-        return $this->description;
+        return (bool) $this->description;
     }
 
     public function scopeFilters($query, $filters)
