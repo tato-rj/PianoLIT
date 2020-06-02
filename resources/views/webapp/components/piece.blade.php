@@ -15,7 +15,7 @@
 		@include('webapp.components.piece.composer')
 	</a>
 	<div class="d-flex d-apart">
-		<div class="d-flex text-muted">
+		<div class="d-flex text-grey">
 			@include('webapp.components.piece.icons')
 		</div>
 		<div>

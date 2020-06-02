@@ -9,7 +9,7 @@
 <section>
 	<div class="list-group list-group-flush">
 		@foreach($composers as $composer)
-			<a href="{{route('webapp.search.results', ['search' => $composer->name])}}" class="list-group-item list-group-item-action">{{$composer->reverse_name}}</a>
+			<a href="{{route('webapp.search.results', ['search' => $composer->name])}}" class="list-group-item list-group-item-action">{{$composer->reverse_name}} ({{$composer->pieces_count}})</a>
 		@endforeach
 	</div>
 </section>
