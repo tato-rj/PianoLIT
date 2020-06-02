@@ -393,7 +393,10 @@ class Piece extends PianoLit
 
     public function hasDescription()
     {
-        return !is_null($this->description) || $this->description != 'We\'re updating our database, please check back in just a few days.';
+        if ($this->description == 'We\'re updating our database, please check back in just a few days.')
+            return false;
+
+        return $this->description;
     }
 
     public function scopeFilters($query, $filters)
