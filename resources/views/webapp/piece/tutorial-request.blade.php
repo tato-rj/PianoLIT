@@ -4,7 +4,7 @@ Request tutorial
 @endslot
 
 @slot('body')
-<form method="POST" action="{{route('webapp.users.tutorial-requests.store', $piece)}}" disable-on-submit>
+<form id="tutorial-request-form" method="POST" action="{{route('webapp.users.tutorial-requests.store', $piece)}}">
 	@csrf
 	<div class="mb-4">
 		<p>What type of videos are you looking for?</p>
@@ -22,6 +22,7 @@ Request tutorial
 			  <label class="custom-control-label" for="tips-request">Practicing tips</label>
 			</div>
 		</div>
+		<div id="tutorial-alert" class="text-red text-center" style="display: none;"><small>Please select at least one type of video</small></div>
 		<p class="text-muted text-center m-0"><small>These are custom made videos and it will take just a few days to make.</small></p>
 	</div>
 

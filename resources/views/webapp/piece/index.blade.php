@@ -325,6 +325,24 @@ function stopVideo(reset = true) {
 </script>
 
 <script type="text/javascript">
+$('form#tutorial-request-form button[type="submit"]').on('click', function(e) {
+	e.preventDefault();
+
+	let $form = $('form#tutorial-request-form');
+
+	checked = $form.find("input[type=checkbox]:checked").length;
+
+	if(!checked) {
+		$('#tutorial-alert').show();
+	} else {
+		$('#tutorial-alert').hide();
+		$(this).disable();
+		$form.submit();
+	}
+});
+</script>
+
+<script type="text/javascript">
 var hidden, visibilityChange; 
 if (typeof document.hidden !== "undefined") {
   hidden = "hidden";

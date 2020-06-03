@@ -3,10 +3,7 @@
 <div class="text-center text-white px-3">
 	<p class="mb-1"><small>QUESTION <span id="question-iteration"></span> OF <span id="questions-count"></span></small></p>
 	<div class="mb-4" id="dots" style="font-size:50%">
-		@fa(['icon' => 'circle', 'mr' => 1, 'ml' => 1, 'size' => 'xs', 'color' => 'white'])
-		@fa(['icon' => 'circle', 'mr' => 1, 'ml' => 1, 'size' => 'xs', 'color' => 'white'])
-		@fa(['icon' => 'circle', 'mr' => 1, 'ml' => 1, 'size' => 'xs', 'color' => 'white'])
-		@fa(['icon' => 'circle', 'mr' => 1, 'ml' => 1, 'size' => 'xs', 'color' => 'white'])
+		@include('components.carousel.dots', ['color' => 'white'])
 	</div>
 	<div id="questions">
 		<h5 class="mb-4">How long have you been playing piano?</h5>
