@@ -9,6 +9,6 @@ class PiecesController extends Controller
 {
     public function show(Piece $piece)
     {
-        return view('pieces.show', compact('piece'));
+        return redirect(route('webapp.pieces.show', $piece));
     }
 }
