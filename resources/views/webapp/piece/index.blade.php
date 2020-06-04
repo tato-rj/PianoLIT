@@ -177,37 +177,47 @@ $(document).ready(function() {
 </script>
 
 <script type="text/javascript">
+function toggleHand($hand) {
+	let play = false;
+	let $selected = null;
+	$hand.toggleClass('text-muted opacity-4 text-teal');
+	$selected = $('#select-hand').find('.text-teal');
+	play = $selected.length > 0;
+
+	if ($selected.length != 1) {
+		return {play: play, player: $('#full-player')};
+	} else {
+		return {play: play, player: $($selected.data('target'))};
+	}
+}
+
+function play(player) {
+	player.get(0).load();
+	
+	player.get(0).play();
+
+	player.get(0).oncanplay = function() {
+	    $('#select-hand button').enable();
+	};
+}
+
 $(document).on('click', '#select-hand button', function() {
 	$('#select-hand button').disable();
 
-	let $player = null;
 	let $hand = $(this);
-
-	$hand.toggleClass('text-muted opacity-4 text-teal');
-
-	let rh = $hand.hasClass('text-teal');
-	let lh = $hand.siblings('button').hasClass('text-teal');	
+	let selection = toggleHand($hand);
 	
 	stopAudio();
 	resetSpeed();
 	hidePlayers();
+	
+	showPlayer(selection.player);
 
-	if (rh == lh) {
-		$player = $('#full-player');
+	if (selection.play) {		
+		play(selection.player);
 	} else {
-		$player = $($hand.data('target'));		
+		$('#select-hand button').enable();
 	}
-
-	showPlayer($player);
-	
-	$player.get(0).load();
-	
-	if (rh || lh)
-		$player.get(0).play();
-
-	$player.get(0).oncanplay = function() {
-	    $('#select-hand button').enable();
-	};
 });
 
 $(document).on('change', 'input#audio-speed', function() {
