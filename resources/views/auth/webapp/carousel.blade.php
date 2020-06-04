@@ -7,7 +7,7 @@
   <div class="carousel-inner">
     <div class="carousel-item active">
       <div class="text-center px-2">
-          <h3>Our mission</h3>
+          <h3>Welcome to PianoLIT</h3>
           <p class="text-muted mb-1" style="font-size: 110%">We're here to help you find new and exciting pieces to play.</p>
       </div>
       <img src="{{asset('images/webapp/carousel/slide-1.png')}}" class="d-block w-100">

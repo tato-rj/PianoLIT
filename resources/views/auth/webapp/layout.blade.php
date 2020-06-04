@@ -54,7 +54,7 @@
                     @include('auth.webapp.carousel')
 
                     <div class="text-center" style="display: {{$animated ? 'block' : 'none'}}">
-                        <button id="get-started" class="btn btn-default btn-wide shadow-center rounded-pill">GET STARTED</button>
+                        <button id="get-started" class="btn btn-default btn-wide shadow rounded-pill">GET STARTED</button>
                     </div>
                 </div>
             </div>
@@ -72,6 +72,6 @@ $('button#get-started').click(function() {
 
 $('#onboarding').carousel({
   interval: 3000
-})
+});
 </script>
 @endpush
