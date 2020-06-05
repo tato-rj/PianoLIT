@@ -40,7 +40,7 @@ class Api extends Factory
     {
         $key = \Redis::get('app.post');
 
-        $post = \Cache::remember($key, days(3), function() {
+        $post = \Cache::remember($key, days(1), function() {
             return Post::published()->inRandomOrder()->first();
         });
 
