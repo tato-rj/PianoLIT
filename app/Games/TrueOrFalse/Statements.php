@@ -14,7 +14,7 @@ trait Statements
 		'<strong>P</strong> means soft' => true,
 		// PIANO
 		'The piano has <u>88 keys</u>' => true,
-		'The <strong>Damper Pedal</strong> makes the piano sound <u>softer</u>' => true,
+		'The <strong>Una Corda Pedal</strong> makes the piano sound <u>softer</u>' => true,
 		'The <strong>Sustain Pedal</strong> makes the notes sound <u>shorter</u>' => false,
 		'The piano has the <strong>widest range</strong> of tones of all instruments' => true,
 		// COMPOSERS

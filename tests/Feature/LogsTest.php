@@ -92,6 +92,7 @@ class LogsTest extends AppTest
     /** @test */
     public function visits_on_webapp_are_stored_on_redis()
     {
+        create(Post::class, ['published_at' => now()]);
         create(Piece::class, ['is_free' => true]);
         
         $this->signIn($this->user);
