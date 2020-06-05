@@ -2,11 +2,15 @@
 
 namespace App;
 
+use App\Traits\DatesUnknown;
+
 abstract class Person extends PianoLit
 {
     protected $appends = ['last_name', 'first_name', 'short_name', 'month_of_birth', 'day_of_birth'];
     protected $dates = ['date_of_birth', 'date_of_death'];
     protected $with = ['country'];
+
+    use DatesUnknown;
 
     public static function boot()
     {
@@ -109,11 +113,17 @@ abstract class Person extends PianoLit
 
     public function getBornAtAttribute()
     {
+        if ($date = $this->unknownBirthday())
+            return $date;
+
         return $this->date_of_birth ? $this->date_of_birth->toFormattedDateString() : null;
     }
 
     public function getDiedAtAttribute()
     {
+        if ($date = $this->unknownDeathday())
+            return $date;
+
         return $this->date_of_death ? $this->date_of_death->toFormattedDateString() : null;
     }
 
