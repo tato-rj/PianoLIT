@@ -66,7 +66,7 @@
 @push('scripts')
 <script type="text/javascript">
 $('button#get-started').click(function() {
-    $('#action').slideToggle('fast');
+    $('#action').slideToggle();
     $(this).hide();
 });
 
