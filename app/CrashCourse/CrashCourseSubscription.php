@@ -5,6 +5,7 @@ namespace App\CrashCourse;
 use App\{PianoLit, Subscription};
 use App\Events\CrashCourses\{CrashCourseCancelled, CrashCourseFinished};
 use App\Mail\{CrashCourseEmail, CrashCourseFeedbackEmail};
+use App\User;
 
 class CrashCourseSubscription extends PianoLit
 {
