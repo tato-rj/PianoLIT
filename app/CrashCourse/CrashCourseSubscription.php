@@ -149,6 +149,7 @@ class CrashCourseSubscription extends PianoLit
     {
         return datatable($query)->withDate()
         ->withBlade([
+            'email' => view('admin.pages.crashcourses.subscriptions.table.email'),
             'status' => view('admin.pages.crashcourses.subscriptions.table.status'),
             'action' => view('admin.pages.crashcourses.subscriptions.table.actions')
         ])
