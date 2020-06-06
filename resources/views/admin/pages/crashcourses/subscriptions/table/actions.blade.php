@@ -25,7 +25,7 @@
   	@endif
 
     @if($user = $item->user())
-    <a href="{{route('admin.users.show', $user)}}" class="text-nowrap btn btn-sm btn-danger">
+    <a href="{{route('admin.users.show', $user)}}" class="text-nowrap btn btn-sm btn-green ml-2 pl-2 border-left">
       <i class="fas fa-user mr-2"></i>User
     </a>
     @endif
