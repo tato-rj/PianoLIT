@@ -41,6 +41,14 @@ class CrashCourseSubscription extends PianoLit
     	]);
 	}
 
+	public function user()
+	{
+		if (User::byEmail($this->email)->exists())
+			return User::byEmail($this->email)->first();
+
+		return null;
+	}
+
 	public function getUpcomingLessonAttribute()
 	{
 		if (! $this->previousLesson)

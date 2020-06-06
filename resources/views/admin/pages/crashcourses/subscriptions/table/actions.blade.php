@@ -24,5 +24,11 @@
   	</a>
   	@endif
 
+    @if($user = $item->user())
+    <a href="{{route('admin.users.show', $user)}}" class="text-nowrap btn btn-sm btn-danger">
+      <i class="fas fa-user mr-2"></i>User
+    </a>
+    @endif
+
   @endcomponent
 </div>
