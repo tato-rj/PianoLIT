@@ -266,6 +266,13 @@ class PiecesController extends Controller
         return back()->with(['status' => 'The highlighted piece has been successfully updated!']);
     }
 
+    public function hijack(Piece $piece)
+    {        
+        $piece->update(['created_at' => now()]);
+
+        return back()->with(['status' => 'The piece has been successfully hijacked!']);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

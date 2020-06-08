@@ -20,6 +20,8 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::patch('{piece}/highlight', 'Admin\PiecesController@highlight')->name('highlight');
 
+	Route::patch('{piece}/hijack', 'Admin\PiecesController@hijack')->name('hijack');
+
 	Route::get('{piece}/load-tags', 'Admin\PiecesController@loadTags')->name('load-tags');
 
 	Route::get('{piece}/load-levels', 'Admin\PiecesController@loadLevels')->name('load-levels');
