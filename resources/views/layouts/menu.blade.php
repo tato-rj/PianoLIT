@@ -31,14 +31,14 @@
           Resources
         </a>
         <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
-          <label style="font-size: .9em" class="m-0 text-grey"><small>TO LEARN</small></label>
+          <label style="font-size: .9em" class="m-0 text-grey"><small>LEARN</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.infographs.index')}}">Infographics</a>
           <a class="nav-link p-0 ml-1" href="{{route('resources.timeline')}}">Music Timeline</a>
           <div class="dropdown-divider"></div>
-          <label style="font-size: .9em" class="m-0 text-grey"><small>TO HEAR</small></label>
+          <label style="font-size: .9em" class="m-0 text-grey"><small>LISTEN</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.pianists.index')}}">Great Pianists</a>
           <div class="dropdown-divider"></div>
-          <label style="font-size: .9em" class="m-0 text-grey"><small>TO PLAY</small></label>
+          <label style="font-size: .9em" class="m-0 text-grey"><small>GAMES</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('quizzes.index')}}">Quizzes</a>
           <a class="nav-link p-0 ml-1" href="{{route('true-or-false.index')}}">True or False</a>
           <a class="nav-link p-0 ml-1" href="{{route('riddles')}}">Riddles</a>
