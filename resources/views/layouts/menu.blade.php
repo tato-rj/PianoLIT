@@ -37,13 +37,7 @@
           <div class="dropdown-divider"></div>
           <label style="font-size: .9em" class="m-0 text-grey"><small>TO HEAR</small></label>
           <a class="nav-link p-0 ml-1" href="{{route('resources.pianists.index')}}">Great Pianists</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown mx-2">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Games
-        </a>
-        <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
+          <label style="font-size: .9em" class="m-0 text-grey"><small>TO PLAY</small></label>
           <a class="nav-link p-0 mb-2 ml-1" href="{{route('quizzes.index')}}">Quizzes</a>
           <a class="nav-link p-0 mb-2 ml-1" href="{{route('true-or-false.index')}}">True or False</a>
           <a class="nav-link p-0 ml-1" href="{{route('riddles')}}">Riddles</a>
