@@ -2,5 +2,9 @@
 // ALL UNDER DESKTOP: less then 1200px //
 /////////////////////////////////////////
 @include media-breakpoint-down(lg) {
-	//
+	.infograph-card {
+		> div {
+			max-height: 317px;
+		}
+	}
 }

@@ -5,4 +5,10 @@
 	.card-columns {
 	    column-count: 4;
 	}
+
+	.infograph-card {
+		> div {
+			max-height: 380px;
+		}
+	}
 }

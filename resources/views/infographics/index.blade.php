@@ -11,6 +11,9 @@
 	]])
 
 @push('header')
+<style type="text/css">
+
+</style>
 @endpush
 
 @section('content')
@@ -35,7 +38,7 @@
 		@endforeach
 	</div>
 
-	<div id="infographics-container" data-url-load="{{route('resources.infographs.load')}}" data-url-search="{{route('resources.infographs.search')}}" class="card-columns mb-4">
+	<div id="infographics-container" data-url-load="{{route('resources.infographs.load')}}" data-url-search="{{route('resources.infographs.search')}}" class="row no-gutters mb-4">
 		@include('infographics.load')
 	</div>
 

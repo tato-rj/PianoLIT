@@ -24,7 +24,7 @@ abstract class Factory
 
     public function composers($title)
     {
-        $collection = Composer::nonPedagogical()->inRandomOrder()->atLeast(4)->withCount('pieces')->take($this->limit)->get();
+        $collection = Composer::nonPedagogical()->inRandomOrder()->atLeast(2)->withCount('pieces')->take($this->limit)->get();
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 

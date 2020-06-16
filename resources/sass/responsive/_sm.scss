@@ -2,6 +2,12 @@
 // SECOND BREAKPOINT: less than 768px //
 ////////////////////////////////////////
 @include media-breakpoint-down(sm) {
+	.infograph-card {
+		> div {
+			max-height: 253px !important;
+		}
+	}
+
 	.nav-tabs.nav-responsive {
 		border: 0;
 		.nav-item {
