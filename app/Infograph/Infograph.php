@@ -36,7 +36,7 @@ class Infograph extends ShareableContent implements Merchandise
         $related = collect();
 
         foreach ($this->topics as $topic) {
-            $related->push($topic->infographs()->where('id', '!=', $this->id)->published()->get());
+            $related->push($topic->infographs()->whereNotIn('id', [$this->id, 53])->published()->get());
         }
 
         return $related->flatten()->unique('id')->shuffle()->take(8);

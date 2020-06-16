@@ -68,9 +68,9 @@
 				@if(! $related->isEmpty())
 				<div class="mt-5">
 					<h5 class="mb-4">More like this</h5>
-					<div class="card-columns">
+					<div class="row no-gutters">
 						@foreach($related as $infograph)
-						@include('infographics.card')
+						@include('infographics.card', ['sizes' => 'col-lg-3 col-md-4 col-6'])
 						@endforeach
 					</div>
 				</div>
