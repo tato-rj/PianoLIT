@@ -7,6 +7,7 @@ use App\Infograph\Infograph;
 use App\Infograph\Topic as InfographTopic;
 use App\Quiz\Quiz;
 use App\Quiz\Topic as QuizTopic;
+use App\Shop\{eBook, eBookTopic};
 use App\Billing\Membership;
 use App\{Composer, Piece, Admin, Country, Tag, User, Playlist, Subscription, Timeline, Pianist, EmailList};
 use Tests\Traits\CustomAssertions;
@@ -48,6 +49,10 @@ class AppTest extends TestCase
         $this->quiz = create(Quiz::class, ['creator_id' => $this->admin->id]);
 
         $this->quiz_topic = create(QuizTopic::class, ['creator_id' => $this->admin->id]);
+
+        $this->ebook = create(eBook::class);
+
+        $this->ebook_topic = create(eBookTopic::class);
 
         $this->membership = create(Membership::class);
 
@@ -96,6 +101,8 @@ class AppTest extends TestCase
         $this->piece->views()->create(['user_id' => $this->user->id]);
 
         $this->post->topics()->attach($this->topic);
+
+        $this->ebook->topics()->attach($this->ebook_topic);
 
         $this->quiz->topics()->attach($this->quiz_topic);
 

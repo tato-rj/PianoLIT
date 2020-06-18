@@ -28,9 +28,9 @@
 			</div>
 			@endif
 			<div class="mb-4">
-				<div class="d-flex flex-wrap mb-2">
-					@each('components.blog.topic', $post->topics, 'topic')
-				</div>
+				
+				@topics(['topics' => $post->topics, 'route' => 'posts.topic'])
+
 				<h1 class="mb-4">{{$post->title}}</h1>
 				<p class="text-muted blog-font">{{$post->description}}</p>
 				<div class="d-apart text-muted">

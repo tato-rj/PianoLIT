@@ -61,6 +61,10 @@
     <script type="text/javascript">
     if (iOS()) {
         $('.free-trial-launch').attr('href', "{{config('app.stores.ios')}}");
+    } else {
+        $(document).ready(function() {
+            setTimeout(function() {$('#webapp-banner').slideDown()}, 500);
+        });
     }
 
     function iOS() {

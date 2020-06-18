@@ -42,13 +42,14 @@ class MembershipsController extends Controller
             return redirect()->back()->with('error', "We found no expired subscriptions.");
 
         foreach ($users as $user) {
+            if ($user->hasMembershipWith(Apple::class)) {
+                $request = (new AppleValidator)->verify($user->membership->source->latest_receipt, $user->membership->source->password);  
 
-            $request = (new AppleValidator)->verify($user->membership->source->latest_receipt, $user->membership->source->password);  
-
-            try {              
-                $user->membership->source->validate($request);   
-            } catch (\Exception $e) {
-                return redirect()->back()->with('error', $e->getMessage());
+                try {              
+                    $user->membership->source->validate($request);   
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', $e->getMessage());
+                }
             }
         }
     

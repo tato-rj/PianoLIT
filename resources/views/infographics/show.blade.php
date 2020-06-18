@@ -15,6 +15,9 @@
 @section('content')
 
 	<div class="container mb-6">
+		
+		@include('components.ads.ebook')
+
 		<div class="row">
 			<div class="col-lg-8 col-md-10 col-10 mx-auto">
 
@@ -27,11 +30,9 @@
 					<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 						<div class="">
 							<div class="mb-4 pb-4 border-bottom">
-								<div class="topics">
-									@foreach($infograph->topics as $topic)
-									<span class="badge badge-light mb-2 mr-2">{{$topic->name}}</span>
-									@endforeach
-								</div>
+								
+								@topics(['topics' => $infograph->topics, 'route' => 'resources.infographs.topic'])
+
 								<h4 class="mb-1">{{$infograph->name}}</h4>
 								<p class="text-muted mb-4">{{$infograph->description}}</p>
 								<div>

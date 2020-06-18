@@ -44,6 +44,7 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.button');
         \Blade::include('components.pill');
         \Blade::include('components.modal');
+        \Blade::include('components.topics');
 
         \Blade::directive('popup', function ($card) {
             return view('components.overlays.subscribe.model-2');
