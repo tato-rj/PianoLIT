@@ -10,6 +10,13 @@ class eBooksController extends Controller
 {
     public function index()
     {
-    	return view('shop.ebooks.index');
+    	$ebooks = eBook::published()->get();
+
+    	return view('shop.ebooks.index', compact('ebooks'));
+    }
+
+    public function show(eBook $ebook)
+    {
+    	return view('shop.ebooks.show', compact('ebook'));    	
     }
 }

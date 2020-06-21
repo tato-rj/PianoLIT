@@ -27,4 +27,7 @@
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$('#inner-subscribe').html('');
+</script>
 @endpush

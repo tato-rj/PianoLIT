@@ -3,7 +3,7 @@
 namespace App\Infograph;
 
 use App\{ShareableContent, Admin};
-use App\Contracts\Merchandise;
+use App\Shop\Contract\Merchandise;
 
 class Infograph extends ShareableContent implements Merchandise
 {
@@ -67,6 +67,16 @@ class Infograph extends ShareableContent implements Merchandise
         $action = $liked ? 'increment' : 'decrement';
         
         return $this->$action('score');
+    }
+
+    public function getPriceInCentsAttribute()
+    {
+        return null;
+    }
+
+    public function isFree()
+    {
+        return true;
     }
 
     public function scopeDatatable($query)

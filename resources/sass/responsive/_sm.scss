@@ -2,6 +2,14 @@
 // SECOND BREAKPOINT: less than 768px //
 ////////////////////////////////////////
 @include media-breakpoint-down(sm) {
+	#flipbook-container, #ebook-loading {
+		display: none !important;
+	}
+
+	#pages-container {
+		display: block !important;
+	}
+
 	.infograph-card {
 		> div {
 			max-height: 253px !important;
@@ -213,6 +221,14 @@
 // Between 768px and 992px //
 /////////////////////////////
 @include media-breakpoint-between(sm, md) {
+	#flipbook-container, #ebook-loading {
+		display: none !important;
+	}
+
+	#pages-container {
+		display: block !important;
+	}
+
 	.cc-hero {
 		margin-bottom: 160px !important;
 		

@@ -6,7 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Traits\{HasMembership, Reportable, Loggable};
-use App\Contracts\Merchandise;
+use App\Shop\Contract\Merchandise;
 use App\Merchandise\Purchase;
 use App\Stats\User as UserStats;
 use App\Billing\{Membership, Payment};
@@ -95,8 +95,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function purchase(Merchandise $item)
     {
-        if (! $this->purchasesOf($item)->where('created_at', now())->exists())
-            $this->purchases()->create(['item_type' => get_class($item), 'item_id' => $item->id]);
+        if ($this->purchasesOf($item)->where('created_at', now())->exists())
+            return null;
+
+        if (! $item->isFree()) {
+            // Charge customer here
+        }
+
+        $this->purchases()->create(['item_type' => get_class($item), 'item_id' => $item->id]);
 
         return $item;
     }

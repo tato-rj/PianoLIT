@@ -23,6 +23,7 @@ class StripeTest extends AppTest
         $this->postStripeMembership();
 
         $this->assertTrue($user->membership()->exists());
+        
         $this->assertCouponNotApplied();
     }
 
