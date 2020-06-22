@@ -29,6 +29,8 @@
         @include('infographics.card', ['sizes' => 'col-lg-4 col-6'])
         @endforeach
       </div>
+
+      @pagination(['collection' => $infographs])
     </div>
 
 	</div>
