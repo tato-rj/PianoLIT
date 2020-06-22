@@ -10,6 +10,7 @@ class Infograph extends ShareableContent implements Merchandise
     protected $searchableColumns = ['name', 'description'];
     protected $folder = 'infograph';
     protected $report_by = 'name';
+    protected $price = 0;
 
     protected static function boot()
     {

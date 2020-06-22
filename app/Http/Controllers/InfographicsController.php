@@ -51,7 +51,7 @@ class InfographicsController extends Controller
 
             auth()->user()->purchase($infograph);
             
-            Admin::notifyAll(new InfographDownload($infograph));
+            // Admin::notifyAll(new InfographDownload($infograph));
         }
 
         $file = request('size') == 'lg' ? $infograph->cover_path : $infograph->thumbnail_path;

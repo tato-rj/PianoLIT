@@ -102,7 +102,11 @@ class User extends Authenticatable implements MustVerifyEmail
             // Charge customer here
         }
 
-        $this->purchases()->create(['item_type' => get_class($item), 'item_id' => $item->id]);
+        $this->purchases()->create([
+            'item_type' => get_class($item), 
+            'item_id' => $item->id,
+            'cost' => $item->price
+        ]);
 
         return $item;
     }

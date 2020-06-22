@@ -10,4 +10,14 @@ class Purchase extends PianoLit
     {
         return $this->morphTo();
     }
+
+    public function scopeFree($query)
+    {
+    	return $query->whereNull('cost');
+    }
+
+    public function scopePaid($query)
+    {
+    	return $query->whereNotNull('cost');
+    }
 }

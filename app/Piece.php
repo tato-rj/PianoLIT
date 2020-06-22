@@ -417,9 +417,17 @@ class Piece extends PianoLit
 
     public function siblingsExist()
     {
-        return Piece::exceptThis()->with(['composer', 'tags'])
-                                  ->where(['composer_id' => $this->composer_id, 'collection_name' => $this->collection_name, 'catalogue_name' => $this->catalogue_name, 'catalogue_number' => $this->catalogue_number])
-                                  ->exists();
+        if (! $this->collection_name && ! $this->catalogue_number)
+            return false;
+        
+        return Piece::with(['composer', 'tags'])
+                      ->where([
+                        'composer_id' => $this->composer_id, 
+                        'collection_name' => $this->collection_name, 
+                        'catalogue_name' => $this->catalogue_name, 
+                        'catalogue_number' => $this->catalogue_number])
+                      ->exceptThis()
+                      ->exists();
     }
 
     public function siblings()
