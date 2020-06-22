@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="col-lg-9 col-md-9 col-12">
-      <div class="row"> 
+      <div class="row mb-4"> 
         @foreach($infographs as $infograph)
         @include('infographics.card', ['sizes' => 'col-lg-4 col-6'])
         @endforeach
