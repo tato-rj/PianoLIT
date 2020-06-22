@@ -48,6 +48,13 @@ class Infograph extends ShareableContent implements Merchandise
         return $query->published()->whereNotNull('giftable_at');
     }
 
+    public function scopeByTopic($query, Topic $topic)
+    {
+        return $query->whereHas('topics', function($q) use ($topic) {
+            $q->where('slug', $topic->slug);
+        });
+    }
+
     public function scopeNewFirst($query)
     {
         $infographs = $query->get();

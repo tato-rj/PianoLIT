@@ -31,7 +31,7 @@
 						<div class="">
 							<div class="mb-4 pb-4 border-bottom">
 								
-								{{-- @topics(['topics' => $infograph->topics, 'route' => 'resources.infographs.topic']) --}}
+								@topics(['topics' => $infograph->topics, 'route' => 'resources.infographs.topic'])
 
 								<h4 class="mb-1">{{$infograph->name}}</h4>
 								<p class="text-muted mb-4">{{$infograph->description}}</p>

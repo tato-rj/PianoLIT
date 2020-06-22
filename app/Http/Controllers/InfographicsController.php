@@ -44,6 +44,14 @@ class InfographicsController extends Controller
         return view('infographics.show', compact(['infograph', 'related']));
     }
 
+    public function topic(Topic $topic)
+    {
+        $topics = Topic::exclude([$topic->id])->get();
+        $infographs = Infograph::published()->latest()->byTopic($topic)->paginate(12);
+
+        return view('infographics.topic', compact(['infographs', 'topics', 'topic']));
+    }
+
     public function download(Infograph $infograph)
     {
         if (traffic()->isRealVisitor()) {
