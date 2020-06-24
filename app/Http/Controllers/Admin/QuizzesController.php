@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuizForm;
 use App\Quiz\{Quiz, Level, Topic};
+use App\Files\Uploaders\ImageUpload;
 
 class QuizzesController extends Controller
 {
@@ -23,14 +24,18 @@ class QuizzesController extends Controller
             'creator_id' => auth()->guard('admin')->user()->id,
             'slug' => str_slug($form->title),
             'title' => $form->title,
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for(Quiz::class)
+                                                       ->name(str_slug($form->title))
+                                                       ->withThumbnail()
+                                                       ->cropped()
+                                                       ->upload(),
             'level_id' => $form->level_id,
             'description' => $form->description,
             'questions' => serialize($form->questions())
         ]);
 
         $quiz->topics()->attach($request->topics);
-
-        $quiz->uploadCoverImage($request);
 
         return redirect(route('admin.quizzes.index'))->with('status', 'The quiz has been successfuly created!');
     }
@@ -65,12 +70,16 @@ class QuizzesController extends Controller
             'title' => $form->title,
             'level_id' => $form->level_id,
             'description' => $form->description,
-            'questions' => serialize($form->questions())
+            'questions' => serialize($form->questions()),
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for($quiz)
+                                                       ->name(str_slug($form->title))
+                                                       ->withThumbnail()
+                                                       ->cropped()
+                                                       ->upload(),
         ]);
 
         $quiz->topics()->sync($request->topics);
-
-        $quiz->uploadCoverImage($request);
 
         return redirect()->back()->with('status', 'The quiz has been successfuly updated!');
     }

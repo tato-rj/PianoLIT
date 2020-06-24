@@ -6,6 +6,7 @@ use App\Blog\Post;
 use Tests\AppTest;
 use Tests\Traits\AdminEvents;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 
 class BlogTest extends AppTest
 {
@@ -31,7 +32,7 @@ class BlogTest extends AppTest
         $post = $this->storeBlogPost();
 
         $this->assertNotEquals($post->thumbnail_path, $post->cover_path);
-        
+
         $this->assertTrue(Storage::disk('public')->exists($post->cover_path));
 
         $this->assertTrue(Storage::disk('public')->exists($post->thumbnail_path));
@@ -60,9 +61,25 @@ class BlogTest extends AppTest
 
         $title = $post->title;
 
-        $this->patch(route('admin.posts.update', $post->slug), make(Post::class)->toArray());
+        $cover = $post->cover_path;
+        $thumbnail = $post->thumbnail_path;
 
-        $this->assertNotEquals($title, $post->fresh()->title);    	 
+        $update = make(Post::class, ['cover_image' => UploadedFile::fake()->image('cover.jpg')]);
+
+        $update->cropped_width = '200';
+        $update->cropped_height = '200';
+        $update->cropped_x = '0';
+        $update->cropped_y = '0';
+
+        $this->patch(route('admin.posts.update', $post->slug), $update->toArray());
+
+        $this->assertNotEquals($title, $post->fresh()->title);
+
+        $this->assertFalse(Storage::disk('public')->exists($cover));
+        $this->assertFalse(Storage::disk('public')->exists($thumbnail));
+
+        $this->assertTrue(Storage::disk('public')->exists($post->fresh()->cover_path));
+        $this->assertTrue(Storage::disk('public')->exists($post->fresh()->thumbnail_path));
     }
 
     /** @test */
@@ -77,6 +94,7 @@ class BlogTest extends AppTest
         $this->assertDatabaseMissing('posts', ['title' => $post->title]);
 
         Storage::disk('public')->assertMissing($post->cover_path);
+        Storage::disk('public')->assertMissing($post->thumbnail_path);
     }
 
     /** @test */

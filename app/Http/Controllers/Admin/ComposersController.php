@@ -6,6 +6,7 @@ use App\{Composer, Country};
 use App\Http\Requests\ComposerForm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Files\Uploaders\ImageUpload;
 
 class ComposersController extends Controller
 {
@@ -46,7 +47,10 @@ class ComposersController extends Controller
         $composer = Composer::create([
             'name' => $form->name,
             'biography' => $form->biography,
-            'cover_path' => $form->file('cover')->store('app/composers', 'public'),
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for(Composer::class)
+                                                       ->name(str_slug($form->name))
+                                                       ->upload(),
             'gender' => $form->gender,
             'ethnicity' => $form->ethnicity,
             'curiosity' => $form->curiosity,
@@ -108,14 +112,12 @@ class ComposersController extends Controller
             'is_famous' => $request->is_famous ? 1 : 0,
             'is_pedagogical' => $request->is_pedagogical ? 1 : 0,
             'country_id' => $request->country_id,
-            'period' => strtolower($request->period)
+            'period' => strtolower($request->period),
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for($composer)
+                                                       ->name(str_slug($request->name))
+                                                       ->upload(),
         ]);
-
-        if ($request->hasFile('cover')) {
-            \Storage::disk('public')->delete($composer->cover_path);
-            
-            $composer->update(['cover_path' => $request->file('cover')->store('app/composers', 'public')]);
-        }
 
         return redirect()->back()->with('status', "$request->name has been updated");
     }

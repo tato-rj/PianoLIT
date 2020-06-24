@@ -30,7 +30,7 @@ class ComposerForm extends FormRequest
         return [
             'name' => 'required|unique:composers|max:140',
             'biography' => 'required',
-            'cover' => 'required',
+            'cover_image' => 'required',
             'gender' => 'required',
             'country_id' => 'required',
             'period' => 'required'

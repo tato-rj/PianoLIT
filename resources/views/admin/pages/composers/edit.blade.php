@@ -39,7 +39,7 @@
           <div class="col">
             <label class="text-brand">Cover image</label>
             <div class="custom-file">
-              <input type="file" class="custom-file-input" name="cover" id="customFile">
+              <input type="file" class="custom-file-input" name="cover_image" id="customFile">
               <label class="custom-file-label truncate" for="customFile">Upload</label>
             </div>
           </div>

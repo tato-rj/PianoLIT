@@ -225,9 +225,9 @@ class PiecesController extends Controller
                 \Storage::disk('public')->delete($piece->$field);
                 
                 $piece->$field = $request->file($filename)->store("app/{$filename}", 'public');
-            }
 
-            $piece->save();
+                $piece->save();
+            }
         }
 
         if ($request->hasFile('score'))

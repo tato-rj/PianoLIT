@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Infograph\{Infograph, Topic};
+use App\Files\Uploaders\ImageUpload;
 use App\Http\Requests\InfographForm;
 
 class InfographicsController extends Controller
@@ -40,12 +41,15 @@ class InfographicsController extends Controller
             'width' => $form->width,
             'height' => $form->height,
             'slug' => str_slug($form->name),
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for(Infograph::class)
+                                                       ->name(str_slug($form->name))
+                                                       ->withThumbnail()
+                                                       ->upload(),
             'published_at' => now()
         ]);
 
         $infograph->topics()->attach($request->topics);
-
-        $infograph->uploadCoverImage($request, $crop = false);
 
         return redirect(route('admin.infographs.index'))->with('status', 'The infograph has been successfuly created!');
     }
@@ -99,13 +103,16 @@ class InfographicsController extends Controller
             'slug' => str_slug($form->name),
             'name' => $form->name,
             'description' => $form->description,
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for($infograph)
+                                                       ->name(str_slug($form->name))
+                                                       ->withThumbnail()
+                                                       ->upload(),
             'width' => $form->width,
             'height' => $form->height
         ]);
 
         $infograph->topics()->sync($request->topics);
-
-        $infograph->uploadCoverImage($request, $crop = false);
 
         return redirect()->back()->with('status', 'The infograph has been successfuly updated!');    
     }

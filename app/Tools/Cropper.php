@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class Cropper
 {
-	protected $request, $file, $image, $path, $filename, $thumbnail, $crop;
+	protected $request, $file, $image, $path, $filename, $thumbnail, $crop, $name;
 
 	public function __construct(Request $request, bool $crop)
 	{
@@ -61,18 +61,16 @@ class Cropper
 		return $this;
 	}
 
-	public function saveTo($folder, $withThumbnail = false)
+	public function saveTo($folder, $filename)
 	{
-		$this->path = $folder . $this->file->getClientOriginalName();
-
-		\Storage::disk('public')->put($this->path, (string) $this->image->encode());
+		\Storage::disk('public')->put($folder . $filename, (string) $this->image->encode());
         
         if ($this->thumbnail) {
-			$path = $folder . 'thumbnails/' . $this->file->getClientOriginalName();
+			$path = $folder . 'thumbnails/';
 
-			\Storage::disk('public')->put($path, (string) $this->thumbnail->encode());
+			\Storage::disk('public')->put($path . $filename, (string) $this->thumbnail->encode());
         }
 
-		return $this;
+		return $folder . $filename;
 	}
 }

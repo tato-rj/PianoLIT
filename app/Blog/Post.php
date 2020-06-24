@@ -18,6 +18,7 @@ class Post extends ShareableContent
             $post->topics()->detach();
             
             \Storage::disk('public')->delete($post->cover_path);
+            \Storage::disk('public')->delete($post->thumbnail_path);
         });
     }
 

@@ -32,6 +32,15 @@ class Infograph extends ShareableContent implements Merchandise
         return $this->morphMany('App\Merchandise\Purchase', 'item');
     }
 
+    public function notification()
+    {
+        return [
+            'title' => 'Infograph download',
+            'message' => 'New download for the <strong>' . $this->name . '</strong> infographic.',
+            'url' => route('admin.stats.infographs')
+        ];
+    }
+
     public function related()
     {
         $related = collect();

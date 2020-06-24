@@ -2,20 +2,26 @@
 
 namespace App\Notifications;
 
-use App\Infograph\Infograph;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+use App\Merchandise\Purchase;
 
-class InfographDownload extends Notification
+class NewPurchaseCompleted extends Notification
 {
     use Queueable;
 
-    protected $infograph;
+    protected $purchase;
 
-    public function __construct(Infograph $infograph)
+    /**
+     * Create a new notification instance.
+     *
+     * @return void
+     */
+    public function __construct(Purchase $purchase)
     {
-        $this->infograph = $infograph;
+        $this->purchase = $purchase;
     }
 
     /**
@@ -37,10 +43,6 @@ class InfographDownload extends Notification
      */
     public function toArray($notifiable)
     {
-        return [
-            'title' => 'Infograph download',
-            'message' => 'New download for the <strong>' . $this->infograph->name . '</strong> infograph.',
-            'url' => route('admin.stats.infographs')
-        ];
+        return $this->purchase->item->notification();
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostForm;
+use App\Files\Uploaders\ImageUpload;
 use App\Blog\{Topic, Post};
 
 class BlogController extends Controller
@@ -23,6 +24,12 @@ class BlogController extends Controller
             'creator_id' => auth()->guard('admin')->user()->id,
             'title' => $form->title,
             'description' => $form->description,
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for(Post::class)
+                                                       ->name(str_slug($form->title))
+                                                       ->withThumbnail()
+                                                       ->cropped()
+                                                       ->upload(),
             'content' => $form->content,
             'references' => $request->references ? serialize($request->references) : null,
             'gift_path' => $form->gift_path,
@@ -31,8 +38,6 @@ class BlogController extends Controller
         ]);
 
         $post->topics()->attach($request->topics);
-
-        $post->uploadCoverImage($request);
 
         return redirect(route('admin.posts.index'))->with('status', 'The post has been successfuly created!');
     }
@@ -51,6 +56,12 @@ class BlogController extends Controller
             'title' => $form->title,
             'description' => $form->description,
             'content' => $form->content,
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for($post)
+                                                       ->name(str_slug($form->title))
+                                                       ->withThumbnail()
+                                                       ->cropped()
+                                                       ->upload(),
             'references' => $request->references ? serialize($request->references) : null,
             'gift_path' => $form->gift_path,
             'reading_time' => calculateReadingTime($form->content),
@@ -58,8 +69,6 @@ class BlogController extends Controller
         ]);
 
         $post->topics()->sync($request->topics);
-
-        $post->uploadCoverImage($request);
 
         return redirect()->back()->with('status', 'The post has been successfuly updated!');
     }

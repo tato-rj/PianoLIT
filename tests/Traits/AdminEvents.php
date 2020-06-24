@@ -4,12 +4,29 @@ namespace Tests\Traits;
 
 use App\Blog\Post;
 use App\Quiz\Quiz;
+use App\Shop\eBook;
 use App\Infograph\Infograph;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 trait AdminEvents
 {
+    public function storeEBook()
+    {
+        Storage::fake('public');
+        
+        $ebook = make(eBook::class, [
+            'cover_image' => UploadedFile::fake()->image('cover.jpg'),
+            'shelf_cover_image' => UploadedFile::fake()->image('shelf_cover.jpg'),
+            'pdf_file' => UploadedFile::fake()->image('file.pdf'),
+            'epub_file' => UploadedFile::fake()->image('file.epub')
+        ]);
+
+        $this->post(route('admin.ebooks.store'), $ebook->toArray());
+
+        return eBook::byTitle($ebook->title);
+    }
+
     public function storeBlogPost()
     {
 		Storage::fake('public');

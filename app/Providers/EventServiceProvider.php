@@ -51,6 +51,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         \App\Events\Memberships\NewTrial::class => [
             \App\Listeners\Memberships\NewTrialListener::class
+        ],
+        \App\Events\PurchaseMade::class => [
+            \App\Listeners\NewPurchaseListener::class
         ]
     ];
 

@@ -1,5 +1,5 @@
   <div class="collapse navbar-collapse" id="navbarResponsive">
-    <ul class="navbar-nav navbar-sidenav">
+    <ul class="navbar-nav navbar-sidenav" style="overflow: hidden;">
 
       @editor
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'My profile', 'icon' => 'pencil-alt'])
@@ -59,7 +59,7 @@
           ['route' => route('admin.posts.gifts.index'), 'name' => 'Images'],
         ]])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Quizzes', 'icon' => 'book-open',
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Quizzes', 'icon' => 'question-circle',
         'dropdown' => [
           ['route' => route('admin.quizzes.index'), 'name' => 'Quizzes'],
           ['route' => route('admin.quizzes.topics.index'), 'name' => 'Topics'],
@@ -71,6 +71,12 @@
         'dropdown' => [
           ['route' => route('admin.infographs.index'), 'name' => 'Designs'],
           ['route' => route('admin.infographs.topics.index'), 'name' => 'Topics'],
+        ]])
+
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'eBooks', 'icon' => 'book-open',
+        'dropdown' => [
+          ['name' => 'Books', 'route' => route('admin.ebooks.index')],
+          ['name' => 'Topics', 'route' => route('admin.ebooks.topics.index')]
         ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Crash Courses', 'icon' => 'graduation-cap',

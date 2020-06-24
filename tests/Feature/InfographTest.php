@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\AppTest;
 use App\Infograph\{Infograph, Topic};
 use Tests\Traits\AdminEvents;
+use App\Notifications\{NewPurchaseCompleted, InfographVoted};
 
 class InfographTest extends AppTest
 {
@@ -101,6 +102,24 @@ class InfographTest extends AppTest
         $this->get(route('infographs.download', $infograph->slug));
 
         $this->assertNotEquals($downloads, $infograph->fresh()->downloads);
+    }
+
+    /** @test */
+    public function admins_are_notified_when_an_infographic_is_downloaded()
+    {
+        \Notification::fake();
+
+        $this->signIn();
+
+        $infograph = $this->storeInfograph();
+
+        $this->logout();
+        
+        $this->signIn($this->user);
+
+        $this->get(route('infographs.download', $infograph->slug));
+
+        \Notification::assertSentTo($this->admin, NewPurchaseCompleted::class);
     }
 
     /** @test */

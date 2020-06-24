@@ -6,7 +6,7 @@ use App\Admin;
 use App\Merchandise\Purchase;
 use App\Infograph\{Infograph, Topic};
 use Illuminate\Http\Request;
-use App\Notifications\{InfographDownload, InfographVoted};
+use App\Notifications\InfographVoted;
 
 class InfographicsController extends Controller
 {
@@ -58,8 +58,6 @@ class InfographicsController extends Controller
             $infograph->increment('downloads');
 
             auth()->user()->purchase($infograph);
-            
-            Admin::notifyAll(new InfographDownload($infograph));
         }
 
         $file = request('size') == 'lg' ? $infograph->cover_path : $infograph->thumbnail_path;

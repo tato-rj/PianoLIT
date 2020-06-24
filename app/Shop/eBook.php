@@ -12,6 +12,24 @@ class eBook extends ShareableContent implements Merchandise
 {
 	use FindBySlug;
 
+    protected $withCount = ['purchases'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function($ebook) {
+            $ebook->topics()->detach();
+            
+            \Storage::disk('public')->delete($ebook->cover_path);
+            \Storage::disk('public')->delete($ebook->shelf_cover_path);
+
+            foreach ($ebook->previews as $preview) {
+                $ebook->deletePreview($preview);        
+            }
+        });
+    }
+
     public function topics()
     {
         return $this->belongsToMany(eBookTopic::class);
@@ -20,6 +38,15 @@ class eBook extends ShareableContent implements Merchandise
     public function purchases()
     {
         return $this->morphMany(Purchase::class, 'item');
+    }
+
+    public function notification()
+    {
+        return [
+            'title' => 'eBook purchase',
+            'message' => 'New purchase for the <strong>' . $this->title . '</strong> eBook.',
+            'url' => ''
+        ];
     }
 
     public function similar()
@@ -81,5 +108,15 @@ class eBook extends ShareableContent implements Merchandise
     public function isFree()
     {
         return $this->price == 0;
+    }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->withBlade([
+            'title' => view('admin.pages.ebooks.table.title'),
+            'purchases_count' => view('admin.pages.ebooks.table.purchases'),
+            'published' => view('admin.pages.ebooks.table.published'),
+            'action' => view('admin.pages.ebooks.table.actions')
+        ])->make();
     }
 }
