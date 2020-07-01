@@ -19,6 +19,7 @@ class CreatePurchasesTable extends Migration
             $table->unsignedInteger('item_id');
             $table->string('item_type');
             $table->unsignedInteger('cost')->nullable();
+            $table->string('charge_id')->nullable();
             $table->timestamps();
         });
     }

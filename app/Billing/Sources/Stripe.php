@@ -28,6 +28,11 @@ class Stripe extends PianoLit implements BillingSource
     	return $query->where('stripe_id', $customerId)->firstOrFail();
     }
 
+    public function scopeCustomerExists($query, $customerId)
+    {
+    	return $query->where('stripe_id', $customerId)->exists();
+    }
+
 	public function getPlanNameAttribute()
 	{
 		return ucfirst($this->plan);

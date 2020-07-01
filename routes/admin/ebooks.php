@@ -8,6 +8,18 @@ Route::prefix('ebooks')->name('ebooks.')->group(function() {
 
 	Route::post('', 'Admin\eBooksController@store')->name('store');
 
+	Route::prefix('topics')->name('topics.')->group(function() {
+	
+		Route::get('', 'Admin\eBooksController@topics')->name('index');
+
+		Route::post('store', 'Admin\eBooksController@topicStore')->name('store');
+
+		Route::patch('{topic}/update', 'Admin\eBooksController@topicUpdate')->name('update');
+		
+		Route::delete('{topic}/destroy', 'Admin\eBooksController@topicDestroy')->name('destroy');
+
+	});
+
 	Route::get('{ebook}', 'Admin\eBooksController@show')->name('show');
 
 	Route::get('{ebook}/edit', 'Admin\eBooksController@edit')->name('edit');
@@ -23,18 +35,6 @@ Route::prefix('ebooks')->name('ebooks.')->group(function() {
 		Route::post('', 'Admin\eBooksController@uploadPreview')->name('upload');
 
 		Route::delete('', 'Admin\eBooksController@removePreview')->name('remove');
-
-	});
-
-	Route::prefix('topics')->name('topics.')->group(function() {
-	
-		Route::get('', 'Admin\eBooksController@topics')->name('index');
-
-		Route::post('store', 'Admin\eBooksController@topicStore')->name('store');
-
-		Route::patch('{topic}/update', 'Admin\eBooksController@topicUpdate')->name('update');
-		
-		Route::delete('{topic}/destroy', 'Admin\eBooksController@topicDestroy')->name('destroy');
 
 	});
 

@@ -2,7 +2,7 @@
 
 namespace App\Billing\Factories;
 
-use Stripe\{Stripe, Customer, Subscription, Invoice, Coupon};
+use Stripe\{Stripe, Customer, Subscription, Invoice, Coupon, Charge};
 use Stripe\Plan as StripePlan;
 use App\Billing\Plan;
 
@@ -15,6 +15,27 @@ class StripeFactory
     Stripe::setApiKey(config('services.stripe.secret'));
 	}
 
+  public function transaction($token)
+  {
+    if (auth()->user()->customer()->exists()) {
+      $this->customer = Customer::retrieve($token);
+    } else {
+      $this->customer = Customer::create([
+                            'description' => auth()->user()->full_name,
+                            'email' => auth()->user()->email,
+                            'source' => $token
+                        ]);
+
+      auth()->user()->customer()->create([
+        'stripe_id' => $this->customer->id,
+        'card_brand' => $this->customer->sources->data[0]->brand ?? null,
+        'card_last_four' => $this->customer->sources->data[0]->last4 ?? null
+      ]);
+    }
+
+    return $this;
+  }
+
   public function customer()
   {
     $this->newMember = ! auth()->user()->hasMembershipWith('App\Billing\Sources\Stripe');
@@ -22,6 +43,15 @@ class StripeFactory
     $this->customer = $this->newMember ? null : Customer::retrieve(auth()->user()->membership->source->stripe_id);
 
     return $this;
+  }
+
+  public function charge($item)
+  {
+    return Charge::create([
+      'customer' => $this->customer->id,
+      'amount' => $item->finalPrice($inCents = true),
+      'currency' => 'usd'
+    ]);
   }
 
   public function subscription()
@@ -135,5 +165,10 @@ class StripeFactory
       $past = Invoice::all(['customer' => $this->customer->id]);
 
       return $past->data;
+    }
+
+    public function getCharge($chargeId)
+    {
+      return Charge::retrieve($chargeId, []);
     }
 }

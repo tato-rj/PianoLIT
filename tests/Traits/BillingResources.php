@@ -33,10 +33,10 @@ trait BillingResources
         ]);
     }
 
-    public function fakeStripeWebhook($user, $event)
+    public function fakeStripeWebhook($stripeId, $event)
     {
         $event = $this->stripeSandbox
-                      ->customerId($user->membership->source->stripe_id)
+                      ->customerId($stripeId)
                       ->getEvent($event);
 
         $this->post(route('webhooks.stripe', $event));

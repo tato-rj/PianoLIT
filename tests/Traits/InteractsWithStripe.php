@@ -9,6 +9,15 @@ use App\Billing\Plan;
 
 trait InteractsWithStripe
 {
+    public function postStripePurchase($route, $withCoupon = false)
+    {
+        return $this->post($route,
+            [
+                'stripeToken' => (new StripeSandbox)->token(),
+                'coupon' => $withCoupon ? 'TEST-COUPON' : null
+            ]
+        );
+    }
 	public function postStripeMembership($withCoupon = false)
 	{
         return $this->post(route('webapp.membership.purchase',
@@ -36,5 +45,12 @@ trait InteractsWithStripe
         $coupon = (new StripeFactory)->customer()->upcomingInvoice()->discount;
 
         $this->assertNull($coupon);
+    }
+
+    public function assertChargeSucceeded($chargeId)
+    {
+        $charge = (new StripeFactory)->getCharge($chargeId);
+
+        $this->assertEquals($charge->status, 'succeeded');
     }
 }

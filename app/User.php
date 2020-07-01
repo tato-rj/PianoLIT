@@ -9,7 +9,8 @@ use App\Traits\{HasMembership, Reportable, Loggable};
 use App\Shop\Contract\Merchandise;
 use App\Merchandise\Purchase;
 use App\Stats\User as UserStats;
-use App\Billing\{Membership, Payment};
+use App\Billing\{Membership, Payment, Customer};
+use App\Billing\Sources\Stripe;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -46,6 +47,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function membership()
     {
     	return $this->hasOne(Membership::class);
+    }
+
+    public function customer()
+    {
+        return $this->hasOne(Customer::class);
     }
 
     public function payments()
@@ -93,19 +99,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->purchases()->where(['item_id' => $item->id, 'item_type' => get_class($item)]);
     }
 
-    public function purchase(Merchandise $item)
+    public function purchase(Merchandise $item, $chargeId = null)
     {
         if ($this->purchasesOf($item)->where('created_at', now())->exists())
             return null;
 
-        if (! $item->isFree()) {
-            // Charge customer here
-        }
-
         $this->purchases()->create([
             'item_type' => get_class($item), 
             'item_id' => $item->id,
-            'cost' => $item->price
+            'cost' => $item->finalPrice(),
+            'charge_id' => $chargeId
         ]);
 
         return $item;
@@ -288,5 +291,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeByEmail($query, $email)
     {
         return $query->where('email', $email);
+    }
+
+    public function stripeIds()
+    {
+        $membershipId = $this->hasMembershipWith(Stripe::class) ? $this->membership->source->stripe_id : null;
+        $customerId = $this->customer()->exists() ? $this->customer->stripe_id : null;
+
+        return [
+            Stripe::class => $membershipId, 
+            Customer::class => $customerId
+        ];
     }
 }

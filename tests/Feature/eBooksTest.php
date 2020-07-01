@@ -54,6 +54,25 @@ class eBooksTest extends AppTest
     }
 
     /** @test */
+    public function images_are_updated_only_if_a_new_one_is_selected()
+    {
+        $this->signIn();
+
+        $ebook = $this->storeEBook();
+
+        $originalTitle = $ebook->title;
+        $originalCover = $ebook->cover_path;
+
+        $update = make(eBook::class, ['cover_image' => null]);
+
+        $this->patch(route('admin.ebooks.update', $ebook), $update->toArray());
+
+        $this->assertNotEquals($originalTitle, $ebook->fresh()->title);
+        $this->assertEquals($originalCover, $ebook->fresh()->cover_path);
+        \Storage::disk('public')->assertExists($originalCover);
+    }
+
+    /** @test */
     public function an_admin_can_upload_multiple_preview_images()
     {
         $this->signIn();

@@ -12,8 +12,9 @@
 				</div>
 				
 				<div>
+					@include('shop.ebooks.components.price')
 					<div>
-						<a href="#" class="btn btn-sm btn-wide btn-primary mb-2">@fa(['icon' => 'shopping-cart'])Buy now for {{$ebook->price_to_humans}}</a>
+						@include('shop.ebooks.components.action')
 					</div>
 					<div>
 						<button data-toggle="modal" data-target="#preview-ebook" class="btn btn-sm btn-wide btn-outline-secondary mb-2">@fa(['icon' => 'book-open'])See a preview</a>
@@ -21,7 +22,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-6 col-md-6 col-12">
-			<img src="{{asset('images/ebook-template.png')}}" class="w-100">
+		<div class="col-lg-6 col-md-6 col-12 position-relative">
+			<img src="{{$ebook->cover_image()}}" class="w-100">
+			@include('shop.ebooks.components.discount-tag', ['position' => 'right'])
 		</div>
 	</div>

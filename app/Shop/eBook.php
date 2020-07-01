@@ -59,9 +59,27 @@ class eBook extends ShareableContent implements Merchandise
         return $this->price * 100;
     }
 
-    public function getPriceToHumansAttribute()
+    // public function getPriceToHumansAttribute()
+    // {
+    //     $final = $this->finalPrice();
+
+    //     if ($final == $this->price)
+
+    //     return $final == $this->price ? 
+    //         '$' . $this->price : 
+    //         '<del class="opacity-6">$' . $this->price . '</del> $' . $final;
+    // }
+
+    public function finalPrice($inCents = false)
     {
-        return '$' . $this->price;
+        $price = floor($this->price - $this->applyDiscount());
+
+        return $inCents ? $price * 100 : $price;
+    }
+
+    public function applyDiscount()
+    {
+        return $this->price * ($this->discount / 100);
     }
 
     public function getPreviewsAttribute($previews)
@@ -72,6 +90,18 @@ class eBook extends ShareableContent implements Merchandise
     public function getPreviewsCountAttribute()
     {
         return count($this->previews);
+    }
+
+    public function aspectRatio()
+    {
+        if ($this->previews_count == 0)
+            return 1;
+
+        $size = getimagesize(storage($this->previews[0]));
+        $width = $size[0];
+        $height = $size[1];
+
+        return $width / $height;
     }
 
     public function savePreview(UploadedFile $file)
@@ -107,7 +137,7 @@ class eBook extends ShareableContent implements Merchandise
 
     public function isFree()
     {
-        return $this->price == 0;
+        return $this->price == 0 || $this->discount == 100;
     }
 
     public function scopeDatatable($query)

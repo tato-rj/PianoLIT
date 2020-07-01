@@ -17,6 +17,13 @@ class eBooksController extends Controller
         return view('admin.pages.ebooks.index');
     }
 
+    public function topics()
+    {
+        $topics = eBookTopic::ordered()->get();
+
+        return view('admin.pages.ebooks.topics.index', compact('topics'));
+    }
+
     public function create()
     {
         $topics = eBookTopic::all();
@@ -52,6 +59,49 @@ class eBooksController extends Controller
         $ebook->topics()->attach($request->topics);
 
         return redirect(route('admin.ebooks.index'))->with('status', 'The eBook has been successfuly created!');
+    }
+
+    public function topicStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|unique:e_book_topics|max:255',
+        ]);
+
+        eBookTopic::create([
+            'slug' => str_slug($request->name),
+            'name' => $request->name,
+            'creator_id' => auth()->guard('admin')->user()->id
+        ]);
+
+        return redirect()->back()->with('status', "The topic has been successfully added!");
+    }
+
+    public function topicUpdate(Request $request, eBookTopic $topic)
+    {
+        $request->validate([
+            'name' => 'required|max:255',
+        ]);
+        
+        $topic->update([
+            'slug' => str_slug($request->name),
+            'name' => $request->name
+        ]);
+
+        return redirect()->back()->with('status', "The topic has been successfully updated!");
+    }
+
+    public function topicDestroy(eBookTopic $topic)
+    {
+        $topic->delete();
+
+        return redirect()->back()->with('status', "The topic has been successfully deleted!");
+    }
+
+    public function edit(eBook $ebook)
+    {
+        $topics = eBookTopic::ordered()->get();
+
+        return view('admin.pages.ebooks.edit', compact(['ebook', 'topics']));
     }
 
     public function update(Request $request, eBook $ebook)
@@ -102,7 +152,7 @@ class eBooksController extends Controller
     public function uploadPreview(Request $request, eBook $ebook)
     {
         $request->validate([
-            'preview_image' => 'required|mimes:jpeg,png'
+            'preview_image' => 'required|mimes:jpeg,png,jpg'
         ]);
 
         $ebook->savePreview($request->file('preview_image'));
@@ -114,7 +164,7 @@ class eBooksController extends Controller
     {
         $ebook->deletePreview($request->preview_path);
 
-        return response(200);
+        return back()->with('status', 'The preview image has been removed.');
     }
 
     public function destroy(eBook $ebook)

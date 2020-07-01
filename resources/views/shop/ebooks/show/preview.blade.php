@@ -10,28 +10,18 @@
     </div>
 
     <div id="flipbook-container" class="p-4">
-      <div id="flipbook-model" class="mx-auto" style="display: none;">
-        <div class="hard"><img src="{{asset('images/ebook-temp/cover.jpg')}}" class="w-100"></div>
-        <div class="hard"><img src="{{asset('images/ebook-temp/backcover.jpg')}}" class="w-100"></div>
-        <div><img src="{{asset('images/ebook-temp/content.jpg')}}" class="w-100"></div>
-        <div><img src="{{asset('images/ebook-temp/quote.jpg')}}" class="w-100"></div>
-        <div><img src="{{asset('images/ebook-temp/pag1.jpg')}}" class="w-100"></div>
-        <div><img src="{{asset('images/ebook-temp/pag2.jpg')}}" class="w-100"></div>
-        <div class="hard"><img src="{{asset('images/ebook-temp/last.jpg')}}" class="w-100"></div>
-        <div class="hard"><img src="{{asset('images/ebook-temp/backcover.jpg')}}" class="w-100"></div>
+      <div id="flipbook-model" class="mx-auto" data-ratio="{{$ebook->aspectRatio()}}" style="display: none;">
+        @foreach($ebook->previews as $preview)
+        <div class="{{$loop->iteration > 2 && $loop->remaining > 2 ? null : 'hard'}}"><img src="{{storage($preview)}}" class="w-100"></div>
+        @endforeach
       </div>
     </div>
 
     <div id="pages-container" class="position-relative" style="display: none;">
       <div id="ebook-pages">
-        <div class="mb-2 border"><img src="{{asset('images/ebook-temp/cover.jpg')}}" class="w-100"></div>
-        <div class="mb-2 border" style="display: none;"><img src="{{asset('images/ebook-temp/backcover.jpg')}}" class="w-100"></div>
-        <div class="mb-2 border" style="display: none;"><img src="{{asset('images/ebook-temp/content.jpg')}}" class="w-100"></div>
-        <div class="mb-2 border" style="display: none;"><img src="{{asset('images/ebook-temp/quote.jpg')}}" class="w-100"></div>
-        <div class="mb-2 border" style="display: none;"><img src="{{asset('images/ebook-temp/pag1.jpg')}}" class="w-100"></div>
-        <div class="mb-2 border" style="display: none;"><img src="{{asset('images/ebook-temp/pag2.jpg')}}" class="w-100"></div>
-        <div class="mb-2 border" style="display: none;"><img src="{{asset('images/ebook-temp/last.jpg')}}" class="w-100"></div>
-        <div class="mb-2 border" style="display: none;"><img src="{{asset('images/ebook-temp/backcover.jpg')}}" class="w-100"></div>
+        @foreach($ebook->previews as $preview)
+        <div class="mb-2 border" style="display: {{$loop->first ? 'block' : 'none'}};"><img src="{{storage($preview)}}" class="w-100"></div>
+        @endforeach
       </div>
       
       <div class="position-absolute w-100 h-100 d-flex d-apart" style="left: 0; top: 0">

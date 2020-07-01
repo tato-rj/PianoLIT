@@ -5,7 +5,7 @@
 		'keywords' => 'ebooks,ebook music,learn music,music theory,music sheet',
 		'title' => $ebook->title,
 		'description' => $ebook->subtitle,
-		'thumbnail' => asset('images/misc/thumbnails/infographs.jpg'),
+		'thumbnail' => $ebook->cover_image(),
 		'created_at' => $ebook->created_at,
 		'updated_at' => $ebook->created_at
 	]])
@@ -50,8 +50,9 @@
 <script type="text/javascript" src="{{asset('js/vendor/turn.min.js')}}"></script>
 
 <script type="text/javascript">
+$('#preview-ebook').modal({backdrop: 'static', show: false});
+
 $(document).ready(function() {
-	
 	let $flipbook;
 	let $flipbookContainer = $('#flipbook-container');
 	let $pagesContainer = $('#pages-container');
@@ -81,9 +82,11 @@ $(document).ready(function() {
 	});
 
 	function createFlipbook($flipbook, width) {
+		let height = width / $flipbook.data('ratio');
+
 		$flipbook.turn({
 			width: width,
-			height: width/2,
+			height: height/2,
 			autoCenter: true,
 			when: {
 				turning: function(event, page, pageObject) {

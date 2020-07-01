@@ -37,18 +37,18 @@
         </div>
         <div class="col">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'price', 'placeholder' => 'eBook price', 'limit' => 200])
-          @input(['bag' => 'default', 'type' => 'number', 'name' => 'discount', 'placeholder' => '% discount', 'limit' => 100, 'step' => 5])
+          @input(['bag' => 'default', 'type' => 'number', 'name' => 'discount', 'placeholder' => '% discount', 'limit' => 100, 'step' => 5, 'required' => false])
         </div>
         <div class="col">
           <div class="form-group">
             <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('cover_image') ? 'is-invalid' : ''}}" name="cover_image" id="cover-file">
+              <input type="file" required class="custom-file-input {{$errors->has('cover_image') ? 'is-invalid' : ''}}" name="cover_image" id="cover-file">
               <label class="custom-file-label truncate" for="cover-file">Cover image</label>
             </div>
           </div>
           <div class="form-group">
             <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('shelf_cover_image') ? 'is-invalid' : ''}}" name="shelf_cover_image" id="shelf-cover-file">
+              <input type="file" required class="custom-file-input {{$errors->has('shelf_cover_image') ? 'is-invalid' : ''}}" name="shelf_cover_image" id="shelf-cover-file">
               <label class="custom-file-label truncate" for="shelf-cover-file">Shelf image</label>
             </div>
           </div>
@@ -57,13 +57,13 @@
         <div class="col">
           <div class="form-group">
             <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('pdf_file') ? 'is-invalid' : ''}}" name="pdf_file" id="pdf-file">
+              <input type="file" required class="custom-file-input {{$errors->has('pdf_file') ? 'is-invalid' : ''}}" name="pdf_file" id="pdf-file">
               <label class="custom-file-label truncate" for="pdf-file">PDF file</label>
             </div>
           </div>
           <div class="form-group">
             <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('epub_file') ? 'is-invalid' : ''}}" name="epub_file" id="epub-file">
+              <input type="file" required class="custom-file-input {{$errors->has('epub_file') ? 'is-invalid' : ''}}" name="epub_file" id="epub-file">
               <label class="custom-file-label truncate" for="epub-file">EPUB file</label>
             </div>
           </div>

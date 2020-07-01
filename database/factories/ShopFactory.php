@@ -17,7 +17,7 @@ $factory->define(eBook::class, function (Faker $faker) {
         'pages_count' => 10,
         'pdf_path' => $faker->url,
         'epub_path' => $faker->url,
-        'price' => 50,
+        'price' => 500,
         'discount' => 25,
         'creator_id' => function() {
             return create(Admin::class)->id;

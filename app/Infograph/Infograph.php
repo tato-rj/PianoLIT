@@ -91,6 +91,11 @@ class Infograph extends ShareableContent implements Merchandise
         return null;
     }
 
+    public function finalPrice()
+    {
+        return null;
+    }
+
     public function isFree()
     {
         return true;

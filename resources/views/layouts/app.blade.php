@@ -32,9 +32,9 @@
 <body>
     @include('layouts.html.google.manager-body')
 
-    @confirmed(false)
+{{--     @confirmed(false)
     @include('auth.alerts.unconfirmed')
-    @endconfirmed
+    @endconfirmed --}}
     
     <div id="app">
 

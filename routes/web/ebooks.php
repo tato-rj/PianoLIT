@@ -7,5 +7,7 @@ Route::namespace('Shop')->prefix('ebooks')->name('ebooks.')->group(function() {
 	Route::get('{ebook}', 'eBooksController@show')->name('show');
 
 	Route::get('topics/{topic}', 'eBooksController@topic')->name('topic');
+
+	Route::post('{ebook}/purchase', 'eBooksController@purchase')->middleware('auth:web')->name('purchase');
 	
 });

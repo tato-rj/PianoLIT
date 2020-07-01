@@ -11,6 +11,15 @@ class Topic extends PianoLit
 
     protected $table = 'infograph_topics';
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function($topic) {
+            $topic->infographs()->detach();
+        });
+    }
+    
     public function creator()
     {
         return $this->belongsTo(Admin::class);
