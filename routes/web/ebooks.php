@@ -8,6 +8,12 @@ Route::namespace('Shop')->prefix('ebooks')->name('ebooks.')->group(function() {
 
 	Route::get('topics/{topic}', 'eBooksController@topic')->name('topic');
 
-	Route::post('{ebook}/purchase', 'eBooksController@purchase')->middleware('auth:web')->name('purchase');
+	Route::middleware('auth:web')->group(function() {
+
+		Route::get('{ebook}/checkout', 'eBooksController@checkout')->name('checkout');
+
+		Route::post('{ebook}/purchase', 'eBooksController@purchase')->name('purchase');
+	
+	});
 	
 });

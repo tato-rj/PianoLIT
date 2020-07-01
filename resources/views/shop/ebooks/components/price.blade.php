@@ -1,4 +1,4 @@
-<h4 class="{{$ebook->discount ? 'text-red' : null}}">
+<h4 class="{{$ebook->discount ? 'text-red' : null}} m-0">
 	@if($ebook->isFree())
 	FREE!
 	@else

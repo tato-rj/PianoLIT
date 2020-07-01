@@ -6,8 +6,6 @@ Route::namespace('WebApp')->prefix('membership')->name('membership.')->group(fun
 
 	Route::get('edit', 'MembershipsController@edit')->name('edit');
 
-	Route::get('validate-coupon', 'MembershipsController@validateCoupon')->name('validate-coupon');
-
 	Route::get('{plan}/checkout', 'MembershipsController@checkout')->middleware(['non-members-only'])->name('checkout');
 
 	Route::get('welcome', 'MembershipsController@success')->name('success');

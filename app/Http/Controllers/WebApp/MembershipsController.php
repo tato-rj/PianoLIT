@@ -54,21 +54,6 @@ class MembershipsController extends Controller
         return redirect(route('webapp.membership.success'))->with('valid-success', true);
     }
 
-    public function validateCoupon(Request $request)
-    {
-        try {
-            $coupon = (new StripeFactory)->getCoupon(strtoupper($request->coupon));
-        } catch (\Exception $e) {
-            return response()->json(['isValid' => false, 'message' => 'Sorry, this coupon was not found.']);
-        }
-
-        $response = $coupon->valid ? 
-                    ['isValid' => true, 'message' => 'The coupon is valid, you\'re good to go! You\'ll get a discount of ' . $coupon->name . '.'] : 
-                    ['isValid' => false, 'message' => 'Sorry, this coupon is no longer valid.'];
-
-        return response()->json($response);
-    }
-
     public function success()
     {
         if (session()->has('valid-success'))

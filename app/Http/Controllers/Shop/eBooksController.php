@@ -21,6 +21,11 @@ class eBooksController extends Controller
     	return view('shop.ebooks.show', compact('ebook'));    	
     }
 
+    public function checkout(eBook $ebook)
+    {
+        return view('shop.checkout.index', compact('ebook'));
+    }
+
     public function purchase(Request $request, eBook $ebook)
     {
         $chargeId = null;

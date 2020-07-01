@@ -8,7 +8,7 @@
 	<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
 		<div>
 			@topics(['topics' => \App\Blog\Post::first()->topics, 'route' => 'ebooks.topic'])
-			<div>
+			<div class="mb-2">
 				<h4 class=" clamp-2"><strong>{{$ebook->title}}</strong></h4>
 				<p>{{$ebook->subtitle}}</p>
 				@include('shop.ebooks.components.price')

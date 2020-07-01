@@ -12,7 +12,9 @@
 				</div>
 				
 				<div>
-					@include('shop.ebooks.components.price')
+					<div class="mb-2">
+						@include('shop.ebooks.components.price')
+					</div>
 					<div>
 						@include('shop.ebooks.components.action')
 					</div>
