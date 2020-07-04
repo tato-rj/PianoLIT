@@ -70,7 +70,7 @@ $('.recent-query').on('click', function() {
 function getRecent() {
 	let cookie = getCookie('pl_recent');
 
-	return cookie.length ? JSON.parse(cookie) : [];
+	return cookie && cookie.length ? JSON.parse(cookie) : [];
 }
 
 function showRecent() {
