@@ -52,4 +52,54 @@ $('#tags-search .tag').on('click', function() {
   		});
 });
 </script>
+
+<script type="text/javascript">
+let recent = getRecent();
+
+showRecent();
+
+$('#search-form').on('submit', function() {
+	let query = $(this).find('input[name="search"]').val();
+	saveRecent(query, recent);
+});
+
+$('.recent-query').on('click', function() {
+	submitRecent($(this).text());
+});
+
+function getRecent() {
+	let cookie = getCookie('pl_recent');
+
+	return cookie.length ? JSON.parse(cookie) : [];
+}
+
+function showRecent() {
+	if (recent.length) {
+		let $recentContainer = $('#most-recent');
+
+		for (let i=0; i< recent.length; i++) {
+			$recentContainer.find('> div').append('<span class="recent-query cursor-pointer m-1 rounded-pill border border-grey px-2"><small style="line-height: 2">'+recent[i]+'</small></span>');
+		}
+
+		$recentContainer.show();
+	}
+}
+
+function saveRecent(query, recent) {
+
+	if (! recent.includes(query))
+		recent.unshift(query);
+
+	if (recent.length > 5)
+		recent.pop();
+
+	setCookie('pl_recent', JSON.stringify(recent), 60);
+}
+
+function submitRecent(recent) {
+	let $form = $('#search-form');
+	$form.find('input[name="search"]').val(recent);
+	$form.submit();
+}
+</script>
 @endpush

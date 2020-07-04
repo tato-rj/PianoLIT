@@ -6,6 +6,7 @@ require('./helpers/array');
 require('./helpers/extensions');
 require('./helpers/url');
 require('./helpers/string');
+require('./helpers/cookie');
 require('./helpers/numbers');
 require('./components/modals');
 require('./components/forms');
