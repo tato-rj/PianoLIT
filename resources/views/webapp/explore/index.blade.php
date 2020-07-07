@@ -57,7 +57,9 @@ $('#tags-search .tag').on('click', function() {
 let recent = getRecent();
 
 showRecent();
-
+$('input[name="search"]').keyup(function() {
+	console.log($(this).val().length);
+})
 $('#search-form').on('submit', function() {
 	let query = $(this).find('input[name="search"]').val();
 	saveRecent(query, recent);
@@ -70,7 +72,10 @@ $('.recent-query').on('click', function() {
 function getRecent() {
 	let cookie = getCookie('pl_recent');
 
-	return cookie && cookie.length ? JSON.parse(cookie) : [];
+	if (typeof cookie === 'undefined' || cookie === null)
+		return [];
+
+	return cookie.length ? JSON.parse(cookie) : [];
 }
 
 function showRecent() {
@@ -86,14 +91,13 @@ function showRecent() {
 }
 
 function saveRecent(query, recent) {
-
-	if (! recent.includes(query))
+	if (! recent.includes(query) && query.length <= 18)
 		recent.unshift(query);
 
 	if (recent.length > 5)
 		recent.pop();
 
-	setCookie('pl_recent', JSON.stringify(recent), 60);
+	setCookie('pl_recent', JSON.stringify(recent), 30);
 }
 
 function submitRecent(recent) {
