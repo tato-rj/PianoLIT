@@ -49,6 +49,19 @@ class eBook extends ShareableContent implements Merchandise
         ];
     }
 
+    public function links()
+    {
+        $pdf = $this->pdf_path ? ['PDF' => encrypt($this->pdf_path)] : [];
+        $epub = $this->epub_path ? ['ePUB' => encrypt($this->epub_path)] : [];
+
+        return array_merge($pdf, $epub);
+    }
+
+    public function url()
+    {
+        return route('ebooks.show', $this);
+    }
+
     public function similar()
     {
         return [1,2,3,4];

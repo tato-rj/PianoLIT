@@ -41,6 +41,23 @@ class Infograph extends ShareableContent implements Merchandise
         ];
     }
 
+    public function getTitleAttribute()
+    {
+        return $this->name;
+    }
+
+    public function url()
+    {
+        return route('resources.infographs.show', $this);
+    }
+
+    public function links()
+    {
+        $extension = extension($this->cover_path) ?? 'download';
+
+        return [strtoupper($extension) => encrypt($this->cover_path)];
+    }
+
     public function related()
     {
         $related = collect();

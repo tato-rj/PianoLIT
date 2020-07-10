@@ -9,6 +9,7 @@ require('./helpers/string');
 require('./helpers/cookie');
 require('./helpers/numbers');
 require('./components/modals');
+require('./components/tables');
 require('./components/forms');
 require('./components/triggers');
 require('./components/overlays');

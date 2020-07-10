@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Merchandise\Purchase;
 use App\Billing\Factories\StripeFactory;
 
 class ShopController extends Controller
@@ -21,5 +22,14 @@ class ShopController extends Controller
                     ['isValid' => false, 'message' => 'Sorry, this coupon is no longer valid.'];
 
         return response()->json($response);
+    }
+
+    public function download(Request $request, Purchase $purchase)
+    {
+        try {
+            return $purchase->download(decrypt($request->path));   
+        } catch (\Exception $e) {
+            return back()->with('error', 'Your file could not be downloaded at this time. If this problem persists, please let us know at contact@pianolit.com');
+        }
     }
 }

@@ -1,5 +1,14 @@
 <?php
 
+function extension($path)
+{
+    try {
+        return pathinfo($path)['extension'];
+    } catch (\Exception $e) {
+        return null;
+    }
+}
+
 function subdomain()
 {
 	return strhas(url()->current(), 'my.pianolit') ? 'webapp' : 'web';

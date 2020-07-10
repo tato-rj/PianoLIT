@@ -71,7 +71,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function purchases()
     {
-        return $this->hasMany(Purchase::class);
+        return $this->hasMany(Purchase::class)->latest();
     }
 
     public function studioPolicies()
@@ -101,9 +101,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function purchase(Merchandise $item, $chargeId = null)
     {
-        if ($this->purchasesOf($item)->where('created_at', now())->exists())
-            return null;
-
         $this->purchases()->create([
             'item_type' => get_class($item), 
             'item_id' => $item->id,

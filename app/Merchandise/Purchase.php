@@ -35,4 +35,16 @@ class Purchase extends PianoLit
     {
     	return $query->whereNotNull('cost');
     }
+
+    public function getTypeAttribute()
+    {
+        $path = explode('\\', $this->item_type);
+
+        return end($path);
+    }
+
+    public function download($path)
+    {
+        return \Storage::disk('public')->download($path);
+    }
 }

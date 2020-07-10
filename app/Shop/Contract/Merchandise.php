@@ -9,4 +9,6 @@ interface Merchandise
 	public function isFree();
 	public function finalPrice();
 	public function notification();
+	public function url();
+	public function links();
 }

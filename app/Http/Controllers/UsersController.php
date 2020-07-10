@@ -31,6 +31,20 @@ class UsersController extends Controller
         return view('users.profile.index');
     }
 
+    public function purchases()
+    {
+        return view('users.purchases.index');
+    }
+
+    public function loadPurchases(Request $request)
+    {
+        $array = auth()->user()->purchases->toArray();
+
+        $purchases = $request->start_at ? collect(array_slice($array, $request->start_at, count($array), true))->take(5) : [];
+
+        return view('users.purchases.rows', compact('purchases'))->render();
+    }
+
     public function invite()
     {
         return view('users.invite');

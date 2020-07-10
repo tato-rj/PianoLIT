@@ -91,6 +91,16 @@ class UserTest extends AppTest
 	}
 
 	/** @test */
+	public function it_knows_if_it_has_purchased_an_item()
+	{
+		$this->assertFalse($this->user->purchasesOf($this->ebook)->exists());
+
+		$this->user->purchase($this->ebook);
+
+		$this->assertTrue($this->user->fresh()->purchasesOf($this->ebook)->exists());
+	}
+
+	/** @test */
 	public function it_knows_its_logs_from_the_web()
 	{
 		$this->signIn($this->user);

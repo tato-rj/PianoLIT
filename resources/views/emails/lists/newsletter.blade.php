@@ -1,13 +1,11 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
 
 @include('mail::newsletter.quote', [
-	'quote' => 'The notes I handle no better than many pianists. But the pauses between the notes - ah, that is where the art resides!',
-	'author' => 'Artur Schnabel'
+	'quote' => 'Life is a lot like jazz… It’s better when you improvise',
+	'author' => 'G. Gershwin'
 ])
 
-We’re living through a once-in-a-generation event, and like you, we’ve been finding it difficult to make sense of it all. The coronavirus has obliterated many things about normal life, we are spending a whole lot of time at home and have no excuses about not practicing!
-
-It's clear we are going to be living like this for a while, so we might as well get the best out of it.
+We are not really sure where the time went but we are officially halfway through 2020. And let’s admit this half-year has been all but what we would have expected.
 
 @component('mail::panel')
 # How do you think we're doing?
@@ -20,80 +18,76 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 	'badge' => [
 		'name' => 'listen', 
 		'color' => 'green',
-		'link' => 'https://www.youtube.com/watch?v=HbCoekpDCKc'
+		'link' => 'https://www.youtube.com/watch?v=g49mQTGI4jM'
 	],
-	'title' => 'A Magical Music Box ✨'
+	'title' => 'The ballad of Blind Tom'
 ])
 
-<p>We've recently added this wonderful piece into our app’s “Playlists” tab, under the Hidden Gems category. We literally fell in love with it. It’s probably because of the nostalgia it evokes. It sounds like a music box playing an old charming tune.</p>
+<p>Georgia 1849. Charity, a slave woman, gives birth to anywhere between her twelfth and twenty-first child. A blind boy is born, named Thomas. This is how the story of Thomas Wiggins and his incredible musical gift starts. Tom went to live until he was 61, dazzling audiences and composing wonderful music.</p>
 
-<p>The composer Anatoly Lyadov was a Russian musician whose orchestral works and poetic polished piano miniatures earned him a position of stature in Russian Romantic music.</p>
+<p>A great example is his “Sewing Song”, a piano lyrical piece inspired by the motions of a sewing machine. The writing is clean and very pianist, making this a great piece for late intermediate pianists.</p>
 
-<p><a href="https://www.youtube.com/watch?v=HbCoekpDCKc" class="text-md"><strong>The Music Box Op.32, watch on YouTube</strong></a></p>
-<p><a href="https://pianolit.com/pieces/778" class="text-md"><strong>You'll find the score here</strong></a></p>
+<p><a href="https://www.youtube.com/watch?v=g49mQTGI4jM" class="text-md"><strong>Sewing Song by Thomas Wiggins ("Blind" Tom), watch on YouTube</strong></a></p>
+<p><a href="https://pianolit.com/pieces/816" class="text-md"><strong>You'll find the score here</strong></a></p>
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'read', 
 		'color' => 'orange',
-		'link' => 'https://pianolit.com/blog/tchaikovsky-vs-brahms-a-story-of-music-and-rivalry'
+		'link' => 'https://pianolit.com/blog/i-will-close-now-it-is-growing-dark'
 	],
-	'title' => 'Brahms vs Tchaikovsky: a story of music and rivalry'
+	'title' => 'I will close now. It is growing dark...'
 ])
 
-<p>Both composers, ironically born on the same day May 7th, never missed a chance to express their disdain for each other's music. Let's have a look at some of what they had to say!</p>
+<p>In February 1854, Robert Schumann attempted suicide by jumping off a bridge over the Rhine river. The following is an account of this tragic event and the final years of one of the greatest composers of all time.</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/blog/tchaikovsky-vs-brahms-a-story-of-music-and-rivalry'])
+@component('mail::button', ['url' => 'https://pianolit.com/blog/i-will-close-now-it-is-growing-dark'])
 Read more about this
 @endcomponent
 
-<p>To learn more about their life and work download the PianoLIT infographic! Free to download here</p>
 
-<p><a href="https://pianolit.com/resources/infographs/johannes-brahms" class="text-md" target="_blank">Brahms infographic, click HERE</a></p>
-<p><a href="https://pianolit.com/resources/infographs/pytor-tchaikovsky" class="text-md" target="_blank">Tchaikovsky infographic, click HERE</a></p>
+{{-- <p><a href="https://pianolit.com/resources/infographs/johannes-brahms" class="text-md" target="_blank">Brahms infographic, click HERE</a></p> --}}
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'quiz', 
 		'color' => 'yellow',
-		'link' => 'https://pianolit.com/quizzes/would-you-recognize-your-favorite-composers-when-they-were-kids'
+		'link' => 'https://pianolit.com/quizzes/lets-put-your-classical-music-world-history-knowledge-to-the-test'
 	],
-	'title' => 'QUIZ: Would you recognize your favorite composers when they were kids?'
+	'title' => 'QUIZ: Let\'s put your classical music & world history knowledge to the test'
 ])
 
-<p>We know classical composers by their famous portraits, usually taken in the height of their careers. But how did they look like as kids? We did some research and collected some.</p>
+<p>You're a music expert... What about world history? Test your knowledge of world history events that were happening during key moments in classical music.</p>
 
-<p>Let's see how many you can identify!</p>
-
-@component('mail::button', ['url' => 'https://pianolit.com/quizzes/would-you-recognize-your-favorite-composers-when-they-were-kids'])
+@component('mail::button', ['url' => 'https://pianolit.com/quizzes/lets-put-your-classical-music-world-history-knowledge-to-the-test'])
 Let me try!
 @endcomponent
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
-		'name' => 'crash course', 
+		'name' => 'infographic', 
 		'color' => 'pink',
-		'link' => 'https://pianolit.com/crashcourses/practical-tips-to-play-chopins-revolutionary-etude-better'
+		'link' => 'https://pianolit.com/resources/infographs/instruments-range'
 	],
-	'title' => 'Practical tips to practice Chopin\'s Revolutionary Etude'
+	'title' => 'Instruments range'
 ])
 
-<p>This FREE crash course is dedicated to those with a solid foundation and looking to improve Chopin's Revolutionary Etude.</p>
+<p>This infographic was dictated from a personal need to find a more visually appealing representation of the range of the main orchestral instruments related to the 88 keys on the modern piano. Hope you like it, download it for FREE!</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/crashcourses/practical-tips-to-play-chopins-revolutionary-etude-better'])
-Sign up for FREE!
+@component('mail::button', ['url' => 'https://pianolit.com/resources/infographs/instruments-range'])
+Download the infographic for FREE!
 @endcomponent
 @endcomponent
 
-<h1 class="text-lg mb-4">True or False: Tchaikovsky & Brahms edition</h1>
+<h1 class="text-lg mb-4">True or False: American composers</h1>
 @include('mail::lists.numbered', ['items' => [
-	'<strong>Tchaikovsky believed that music should primarily express our emotions:</strong> TRUE | FALSE',
-	'<strong>Brahms was a staunch conservative and classicist:</strong> TRUE | FALSE',
-	'<strong>Both Tchaikovsky and Brahms famously composed music for ballet:</strong> TRUE | FALSE',
-	'<strong>Brahms and Tchaikovsky never had the opportunity to actually meet in person:</strong> TRUE | FALSE'
+	'<strong>George Gershwin only wrote Jazz style music:</strong> TRUE | FALSE',
+	'<strong>Thomas Wiggins, also known as Blind Tom, played for the famous writer Mark Twain:</strong> TRUE | FALSE',
+	'<strong>Aaron Copland is an Oscar-winning writer of film scores as well:</strong> TRUE | FALSE',
+	'<strong>Edward MacDowell is a pioneer of the modern atonal music:</strong> TRUE | FALSE'
 ]])
 
 <div class="text-center mt-4">Find the answers at the bottom of the newsletter!</div>
@@ -103,43 +97,28 @@ Sign up for FREE!
 <h1 class="text-lg mb-4">Cool facts worth sharing this month:</h1>
 
 @component('mail::panel')
-Ever wondered how Tchaikovsky voice might have sounded like? Well, there’s a recording for that!
+Ever wondered how Liszt may have looked like in real life? Sure there are paintings, daguerreotypes and even some late photos portraying him but the CG artist Had Karimi has really given us a window to the past with his reconstruction of the great composer.
 
-The following recording was made in Moscow in January 1890, by Julius Block on behalf of Thomas Edison. According to musicologist Leonid Sabaneyev, Tchaikovsky was not comfortable with being recorded for posterity and tried to shy away from it. Here below a transcription of what you’ll be hearing in this recording.
-
-Listen to the recording <a href="https://www.youtube.com/watch?v=7DEEdFLjUiw&feature=youtu.be" target="_blank">here</a>!
-
-Here's a transcription of the conversation:
-
-- Anton Rubinstein: What a wonderful thing.
-- J. Block: Certainly.
-- E. Lavrovskaya A disgusting...how he dares slyly to name me.
-- Vasily Safonov: (Sings).
-- P. Tchaikovsky: This trill could be better.
-- E. Lavrovskaya: (sings).
-- P. Tchaikovsky: Block is a good fellow, but Edison is even better.
-- E. Lavrovskaya: (sings) A-o, a-o.
-- V. Safonov: (In German) Peter Jurgenson in Moscow.
-- P. Tchaikovsky: Who just spoke? It seems to have been Safonov. (Whistles)
+Check it out <a href="https://cgsociety.org/c/featured/4x8y/franz-liszt" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-There are many great photos of Brahms, one of which is with his friend, the composer Johann Strauss. 
-
-<a href="https://www.gettyimages.com/detail/news-photo/german-composers-johann-strauss-and-johannes-brahms-circa-news-photo/164071334?adppopup=true" target="_blank">Check it out for yourself!</a>
+Watch <a href="https://www.youtube.com/watch?v=K0Vn9V-tRCo" target="_blank">THIS</a> excellent video explaining a problem in modern-day western music called by the narrator as “the death of Melody”. The concept is well laid out and demonstrated using examples from pop to movie to classical music.
 @endcomponent
 
 @component('mail::panel')
-We’re reading a very interesting book called “The ballad of blind Tom”. In this book, the author describes the life if Blind Tom Wiggins, a blind African-American composer with an astonishing musical gift, born into slavery in the US of the late 19th century. 
+Learn how famed director Leopold Stokowski rose to celebrity in the US and how he changed American taste for orchestra. This beautifully written article offers a glimpse through the artist's life, from his beginning in Cincinnati to his late years in England.
 
-We’ll be making a blog post of the book once finished, so stay tuned if you’re curios to know more about blind Tom and his incredible music! 
-
-Find the book <a href="https://www.amazon.com/Ballad-Blind-Tom-Slave-Pianist-ebook/dp/B07RW44KW9/ref=sr_1_2?dchild=1&keywords=blind+tom&qid=1589513880&sr=8-2" target="_blank">here</a>.
+Learn more about it <a href="http://www.listenmusicculture.com/recommended/matinee-idol-stokowski" target="_blank">here</a>.
 @endcomponent
 
-<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. TRUE, 3. FALSE, 4. FALSE</div>
+@component('mail::panel')
+The coronavirus has led to a historic reshuffling around the country as a lot of people have moved due to the pandemic. If you own a piano, moving is always an added stress! Read <a href="https://www.cnn.com/2020/02/11/americas/piano-fazioli-smashed-movers-intl-scli/index.html">HERE</a> how movers accidentally dropped Angela Hewitt Fazioli’s handmade piano.
+@endcomponent
 
-<p>Here at pianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks to our users for having such great ideas.</p>
+<div class="mb-4 mt-4 text-center">Answers: 1. FALSE, 2. TRUE, 3. TRUE, 4. FALSE</div>
+
+<p>Here at PianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks to our users for having such great ideas.</p>
 
 @component('mail::button', ['url' => config('app.stores.ios')])
 Download PianoLIT here

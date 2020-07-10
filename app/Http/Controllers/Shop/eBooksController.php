@@ -27,7 +27,7 @@ class eBooksController extends Controller
     }
 
     public function purchase(Request $request, eBook $ebook)
-    {
+    {    
         $chargeId = null;
 
     	if (! $ebook->isFree()) {
@@ -40,6 +40,14 @@ class eBooksController extends Controller
 
         auth()->user()->purchase($ebook, $chargeId);
 
-        return redirect('');
+        return redirect(route('ebooks.success', $ebook));
+    }
+
+    public function success(eBook $ebook)
+    {
+        if (! auth()->user()->purchasesOf($ebook)->exists())
+            return redirect(route('ebooks.checkout', $ebook));
+
+        return view('shop.success.index', compact('ebook'));        
     }
 }

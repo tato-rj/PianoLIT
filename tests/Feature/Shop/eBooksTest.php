@@ -12,6 +12,14 @@ class eBooksTest extends AppTest
 	use InteractsWithStripe;
 
     /** @test */
+    public function only_authorized_users_can_purchase_an_ebook()
+    {
+        $this->expectException('Illuminate\Auth\AuthenticationException');
+        
+        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));         
+    }
+
+    /** @test */
     public function an_ebook_purchase_hits_stripe_api_and_charges_the_customer()
     {
     	$this->signIn($this->user);

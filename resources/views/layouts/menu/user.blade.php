@@ -11,6 +11,10 @@
     <a class="nav-link" style="white-space: nowrap;" href="{{route('users.profile')}}">My profile</a>
   
     <div class="dropdown-divider my-1"></div>
+    
+    <a class="nav-link" style="white-space: nowrap;" href="{{route('users.purchases')}}">My downloads</a>
+  
+    <div class="dropdown-divider my-1"></div>
 
     <a class="nav-link" style="white-space: nowrap;" href="{{route('contact')}}">Help & Support</a>
   

@@ -13,6 +13,8 @@ Route::namespace('Shop')->prefix('ebooks')->name('ebooks.')->group(function() {
 		Route::get('{ebook}/checkout', 'eBooksController@checkout')->name('checkout');
 
 		Route::post('{ebook}/purchase', 'eBooksController@purchase')->name('purchase');
+
+		Route::get('{ebook}/purchase', 'eBooksController@success')->name('success');
 	
 	});
 	
