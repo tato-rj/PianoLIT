@@ -214,6 +214,7 @@ class PiecesController extends Controller
             'cover_path' => (new ImageUpload($request))->take('cover_image')
                                                        ->for($piece)
                                                        ->name(str_slug($piece->medium_name))
+                                                       ->cropped()
                                                        ->upload(),
         ]);
 
