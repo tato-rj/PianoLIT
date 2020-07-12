@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\{Piece, Composer, Tag, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Files\Uploaders\ImageUpload;
 
 class PiecesController extends Controller
 {
@@ -210,11 +211,15 @@ class PiecesController extends Controller
             'composer_id' => $request->composer_id,
             'composed_in' => $request->composed_in,
             'published_in' => $request->published_in,
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for($piece)
+                                                       ->name(str_slug($piece->medium_name))
+                                                       ->upload(),
         ]);
 
         $piece->tags()->sync(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
-        $piece->uploadCoverImage($request);
+        // $piece->uploadCoverImage($request);
 
         $file_fields = ['audio_path', 'audio_path_rh', 'audio_path_lh'];
 
