@@ -298,9 +298,9 @@ trait PieceExtraAttributes
             'non-traditional' => in_array($this->period->name, ['modern', 'contemporary']),
             'flashy' => $this->tags_array->contains('flashy'),
             'pedagogical' => $this->composer->is_pedagogical,
-            'relaxing' => in_array('relaxing', $this->tags_array) ||
-                          in_array('dreamy', $this->tags_array) ||
-                          in_array('meditative', $this->tags_array)
+            'relaxing' => in_array('relaxing', $this->tags_array->toArray()) ||
+                          in_array('dreamy', $this->tags_array->toArray()) ||
+                          in_array('meditative', $this->tags_array->toArray())
         ];
 
         $sentences = [
