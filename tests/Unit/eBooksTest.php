@@ -25,6 +25,8 @@ class eBooksTest extends AppTest
 	/** @test */
 	public function it_has_many_purchases()
 	{
+		$this->signIn();
+		
 		$this->user->purchase($this->ebook);
 		
 		$this->assertInstanceOf(Purchase::class, $this->ebook->purchases->first());

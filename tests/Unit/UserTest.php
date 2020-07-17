@@ -75,6 +75,8 @@ class UserTest extends AppTest
 	/** @test */
 	public function it_has_many_purchases()
 	{
+		$this->signIn();
+
 		$this->user->purchase($this->infograph);
 
 		$this->assertInstanceOf(Purchase::class, $this->user->purchases->first());
@@ -93,6 +95,8 @@ class UserTest extends AppTest
 	/** @test */
 	public function it_knows_if_it_has_purchased_an_item()
 	{
+		$this->signIn();
+		
 		$this->assertFalse($this->user->purchasesOf($this->ebook)->exists());
 
 		$this->user->purchase($this->ebook);

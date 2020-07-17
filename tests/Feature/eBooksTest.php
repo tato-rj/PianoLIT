@@ -138,6 +138,8 @@ class eBooksTest extends AppTest
     {
         \Notification::fake();
 
+        $this->signIn();
+
         $this->user->purchase($this->ebook);
 
         \Notification::assertSentTo($this->admin, NewPurchaseCompleted::class);

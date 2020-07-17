@@ -5,6 +5,8 @@ namespace Tests\Feature\Shop;
 use Tests\AppTest;
 use Tests\Traits\InteractsWithStripe;
 use App\Shop\eBook;
+use App\Mail\Shop\ConfirmPurchase;
+use App\Notifications\NewPurchaseCompleted;
 use App\User;
 
 class eBooksTest extends AppTest
@@ -50,6 +52,18 @@ class eBooksTest extends AppTest
     }
 
     /** @test */
+    public function admins_are_notified_when_a_purchase_has_been_made()
+    {
+        \Notification::fake();
+
+        $this->signIn($this->user);
+
+        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));
+
+        \Notification::assertSentTo($this->admin, NewPurchaseCompleted::class);
+    }
+
+    /** @test */
     public function a_user_receives_an_email_confirming_the_purchase_of_an_ebook_that_also_contains_the_url_to_download_the_product()
     {
         \Mail::fake();
@@ -58,6 +72,20 @@ class eBooksTest extends AppTest
 
         $this->postStripePurchase(route('ebooks.purchase', $this->ebook));
 
-        \Mail::assertQueued(ConfirmPurchase::class, 2);
+        \Mail::assertSent(ConfirmPurchase::class);
+    }
+
+    /** @test */
+    public function a_user_does_not_receive_a_confirmation_email_if_the_product_is_free()
+    {
+        \Mail::fake();
+
+        $ebook = create(eBook::class, ['price' => 0]);
+
+        $this->signIn($this->user);
+
+        $this->postStripePurchase(route('ebooks.purchase', $ebook));
+
+        \Mail::assertNotSent(ConfirmPurchase::class);
     }
 }
