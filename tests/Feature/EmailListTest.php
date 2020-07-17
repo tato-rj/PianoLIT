@@ -29,9 +29,9 @@ class EmailListTest extends AppTest
     /** @test */
     public function admins_can_send_out_the_free_pick_email_to_all_subscribers()
     {
-    	$this->signIn();
-
     	\Mail::fake();
+
+        $this->signIn();
 
     	$this->get(route('admin.subscriptions.lists.send', $this->freePickList));
 

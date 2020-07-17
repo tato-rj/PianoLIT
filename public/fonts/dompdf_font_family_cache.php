@@ -78,6 +78,6 @@
     'normal' => $rootDir . '/lib/fonts/DejaVuSerif',
   ),
   'baskervville-regular' => array(
-    'normal' => $fontDir . '/95724c0b786a173cbb10eaf0ed073ef0',
+    'normal' => $fontDir . '/baskervville-regular-normal_2f00e95dac556782151f6acb53d9345d',
   ),
 ) ?>

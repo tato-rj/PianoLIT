@@ -48,4 +48,16 @@ class eBooksTest extends AppTest
         
         $this->assertChargeSucceeded($purchase->charge_id);
     }
+
+    /** @test */
+    public function a_user_receives_an_email_confirming_the_purchase_of_an_ebook_that_also_contains_the_url_to_download_the_product()
+    {
+        \Mail::fake();
+
+        $this->signIn($this->user);
+
+        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));
+
+        \Mail::assertQueued(ConfirmPurchase::class, 2);
+    }
 }
