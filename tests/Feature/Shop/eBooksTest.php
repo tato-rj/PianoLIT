@@ -18,7 +18,7 @@ class eBooksTest extends AppTest
     {
         $this->expectException('Illuminate\Auth\AuthenticationException');
         
-        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));         
+        $this->postStripePurchase($this->ebook->purchaseRoute());         
     }
 
     /** @test */
@@ -26,7 +26,7 @@ class eBooksTest extends AppTest
     {
     	$this->signIn($this->user);
 
-        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));
+        $this->postStripePurchase($this->ebook->purchaseRoute());
 		
 		$purchase = auth()->user()->purchases()->latest()->first();
 
@@ -34,7 +34,7 @@ class eBooksTest extends AppTest
     }
 
     /** @test */
-    public function a_membership_customer_does_not_conflict_with_a_regular_customer()
+    public function a_member_can_make_purchases()
     {
         $user = create(User::class);
 
@@ -42,7 +42,25 @@ class eBooksTest extends AppTest
 
         $this->postStripeMembership();
          
-        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));
+        $this->postStripePurchase($this->ebook->purchaseRoute());
+        
+        $purchase = auth()->user()->purchases()->latest()->first();
+
+        $this->assertTrue($user->hasMembershipWith('App\Billing\Sources\Stripe'));
+        
+        $this->assertChargeSucceeded($purchase->charge_id);
+    }
+
+    /** @test */
+    public function a_customer_can_become_a_member()
+    {
+        $user = create(User::class);
+
+        $this->signIn($user);
+
+        $this->postStripePurchase($this->ebook->purchaseRoute());
+        
+        $this->postStripeMembership();
         
         $purchase = auth()->user()->purchases()->latest()->first();
 
@@ -58,7 +76,7 @@ class eBooksTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));
+        $this->postStripePurchase($this->ebook->purchaseRoute());
 
         \Notification::assertSentTo($this->admin, NewPurchaseCompleted::class);
     }
@@ -70,7 +88,7 @@ class eBooksTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));
+        $this->postStripePurchase($this->ebook->purchaseRoute());
 
         \Mail::assertSent(ConfirmPurchase::class);
     }
@@ -84,7 +102,7 @@ class eBooksTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->postStripePurchase(route('ebooks.purchase', $ebook));
+        $this->postStripePurchase($ebook->purchaseRoute());
 
         \Mail::assertNotSent(ConfirmPurchase::class);
     }

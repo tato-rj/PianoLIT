@@ -11,43 +11,18 @@ class eBooksController extends Controller
 {
     public function index()
     {
-    	$ebooks = eBook::published()->get();
+    	$products = eBook::published()->get();
 
-    	return view('shop.ebooks.index', compact('ebooks'));
+    	return view('shop.products.ebooks', compact('products'));
     }
 
     public function show(eBook $ebook)
     {
-    	return view('shop.ebooks.show', compact('ebook'));    	
+    	return view('shop.products.show', ['product' => $ebook]);    	
     }
 
     public function checkout(eBook $ebook)
     {
-        return view('shop.checkout.index', compact('ebook'));
-    }
-
-    public function purchase(Request $request, eBook $ebook)
-    {    
-        $chargeId = null;
-
-    	if (! $ebook->isFree()) {
-	        try {
-	            $chargeId = (new StripeFactory)->transaction($request->stripeToken)->withCoupon(strtoupper($request->coupon))->charge($ebook)->id;
-	        } catch (\Exception $e) {
-	            return back()->with('error', $e->getMessage());
-	        }
-	    }
-
-        auth()->user()->purchase($ebook, $chargeId);
-
-        return redirect(route('ebooks.success', $ebook));
-    }
-
-    public function success(eBook $ebook)
-    {
-        if (! auth()->user()->purchasesOf($ebook)->exists())
-            return redirect(route('ebooks.checkout', $ebook));
-
-        return view('shop.success.index', compact('ebook'));        
+        return view('shop.checkout.index', ['product' => $ebook]);
     }
 }

@@ -18,7 +18,7 @@ class StripeFactory
   public function transaction($token)
   {
     if (auth()->user()->customer()->exists()) {
-      $this->customer = Customer::retrieve($token);
+      $this->customer = Customer::retrieve(auth()->user()->customer->stripe_id);
     } else {
       $this->customer = Customer::create([
                             'description' => auth()->user()->full_name,

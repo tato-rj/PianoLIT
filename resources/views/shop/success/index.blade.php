@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'eBooks | ' . config('app.name')])
+@extends('layouts.app', ['title' => 'Thank you for your purchase!'])
 
 @push('header')
 <style type="text/css">

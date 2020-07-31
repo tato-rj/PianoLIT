@@ -44,7 +44,18 @@
         ]])
   
       @env('local')
-      @include('layouts.menu.link', ['label' => 'eBooks', 'url' => route('ebooks.index')])
+      @include('layouts.menu.dropdown', [
+        'label' => 'Shop',
+        'groups' => [
+          [
+            'links' => ['eBooks' => route('ebooks.index')]
+          ],
+          [
+            'links' => ['eScores' => route('escores.index')]
+          ],
+        ]])
+
+      {{-- @include('layouts.menu.link', ['label' => 'eBooks', 'url' => route('ebooks.index')]) --}}
       @endenv
 
       @include('layouts.menu.link', ['label' => 'Blog', 'url' => route('posts.index')])

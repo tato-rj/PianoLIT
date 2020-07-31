@@ -101,14 +101,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function purchase(Merchandise $item, $chargeId = null)
     {
-        $this->purchases()->create([
+        return $this->purchases()->create([
             'item_type' => get_class($item), 
             'item_id' => $item->id,
             'cost' => $item->finalPrice(),
             'charge_id' => $chargeId
         ]);
-
-        return $item;
     }
 
     public function getPreferredPieceAttribute()

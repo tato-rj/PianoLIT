@@ -3,16 +3,17 @@
 namespace App\Shop;
 
 use App\Traits\FindBySlug;
-use App\{ShareableContent, Admin};
-use App\Merchandise\Purchase;
+use App\Admin;
+use App\Merchandise\{Purchase, Product};
 use App\Shop\Contract\Merchandise;
 use Illuminate\Http\UploadedFile;
 
-class eBook extends ShareableContent implements Merchandise
+class eBook extends Product implements Merchandise
 {
 	use FindBySlug;
 
     protected $withCount = ['purchases'];
+    protected $successRoute = 'ebooks.success';
 
     protected static function boot()
     {
@@ -42,11 +43,28 @@ class eBook extends ShareableContent implements Merchandise
 
     public function notification()
     {
+        $icon = ! $this->isFree() ? '<i class="fas fa-money-bill-wave text-green mr-1"></i>' : null;
+     
         return [
             'title' => 'eBook purchase',
-            'message' => 'New purchase for the <strong>' . $this->title . '</strong> eBook.',
+            'message' => $icon . 'New purchase for the <strong>' . $this->title . '</strong> eBook.',
             'url' => ''
         ];
+    }
+
+    public function showRoute()
+    {
+        return route('ebooks.show', $this);
+    }
+
+    public function checkoutRoute()
+    {
+        return route('ebooks.checkout', $this);
+    }
+
+    public function downloadsView()
+    {
+        return view('components.shop.downloads.ebook', ['product' => $this]);
     }
 
     public function links()

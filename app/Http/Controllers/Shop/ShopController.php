@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Merchandise\Purchase;
 use App\Billing\Factories\StripeFactory;
+use App\Shop\Contract\Merchandise;
 
 class ShopController extends Controller
 {
@@ -31,5 +32,34 @@ class ShopController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Your file could not be downloaded at this time. If this problem persists, please let us know at contact@pianolit.com');
         }
+    }
+
+    public function purchase(Request $request, $model, $reference)
+    {
+        $product = $model::bySlug($reference);
+        $chargeId = null;
+
+        if (auth()->user()->purchasesOf($product)->exists())
+            return back()->with('error', 'You have already purchased this item. To view it, please head to My Downloads under the main menu');
+
+        if (! $product->isFree()) {
+            try {
+                $chargeId = (new StripeFactory)->transaction($request->stripeToken)->withCoupon(strtoupper($request->coupon))->charge($product)->id;
+            } catch (\Exception $e) {
+                return back()->with('error', $e->getMessage());
+            }
+        }
+
+        $purchase = auth()->user()->purchase($product, $chargeId);
+
+        return redirect(route('shop.success', $purchase));
+    }
+
+    public function success(Purchase $purchase)
+    {
+        if (! auth()->user()->purchasesOf($purchase->item)->exists())
+            return redirect($purchase->item->checkoutRoute());
+
+        return view('shop.success.index', compact('purchase'));        
     }
 }

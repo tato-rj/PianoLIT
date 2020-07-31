@@ -11,4 +11,6 @@ interface Merchandise
 	public function notification();
 	public function url();
 	public function links();
+	public function showRoute();
+	public function checkoutRoute();
 }

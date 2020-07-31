@@ -41,6 +41,15 @@
         ]])
 
         <div class="dropdown-divider hide-on-sm"></div>
+        
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Shop', 'icon' => 'shopping-cart',
+        'dropdown' => [
+          ['name' => 'eBooks', 'route' => route('admin.ebooks.index')],
+          ['name' => 'eBook Topics', 'route' => route('admin.ebooks.topics.index')],
+          [],
+          ['name' => 'eScores', 'route' => route('admin.escores.index')],
+          ['name' => 'eScore Topics', 'route' => route('admin.escores.topics.index')]
+        ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Repertoire', 'icon' => 'music',
         'dropdown' => [
@@ -71,12 +80,6 @@
         'dropdown' => [
           ['route' => route('admin.infographs.index'), 'name' => 'Designs'],
           ['route' => route('admin.infographs.topics.index'), 'name' => 'Topics'],
-        ]])
-
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'eBooks', 'icon' => 'book-open',
-        'dropdown' => [
-          ['name' => 'Books', 'route' => route('admin.ebooks.index')],
-          ['name' => 'Topics', 'route' => route('admin.ebooks.topics.index')]
         ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Crash Courses', 'icon' => 'graduation-cap',

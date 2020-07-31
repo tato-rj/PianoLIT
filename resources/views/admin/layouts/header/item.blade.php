@@ -15,9 +15,13 @@
   @if(!empty($dropdown))
   <ul class="sidenav-second-level collapse collapsed" id="{{str_slug($name)}}" data-parent="#navbarResponsive">
     @foreach($dropdown as $link)
+    @if(empty($link))
+    <div class="dropdown-divider hide-on-sm"></div>
+    @else
     <li>
       <a class="py-2" href="{{$link['route']}}" target="{{$link['target'] ?? null}}">{{$link['name']}}</a>
     </li>
+    @endif
     @endforeach
   </ul>
   @endif

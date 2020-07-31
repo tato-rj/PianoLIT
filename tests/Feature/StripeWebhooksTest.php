@@ -179,7 +179,7 @@ class StripeWebhooksTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->postStripePurchase(route('ebooks.purchase', $this->ebook));
+        $this->postStripePurchase($this->ebook->purchaseRoute());
 
         $this->assertEmpty($this->user->payments);
 

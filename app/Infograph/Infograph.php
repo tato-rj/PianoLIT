@@ -2,10 +2,11 @@
 
 namespace App\Infograph;
 
-use App\{ShareableContent, Admin};
+use App\Admin;
+use App\Merchandise\Product;
 use App\Shop\Contract\Merchandise;
 
-class Infograph extends ShareableContent implements Merchandise
+class Infograph extends Product implements Merchandise
 {
     protected $searchableColumns = ['name', 'description'];
     protected $folder = 'infograph';
@@ -30,6 +31,16 @@ class Infograph extends ShareableContent implements Merchandise
     public function purchases()
     {
         return $this->morphMany('App\Merchandise\Purchase', 'item');
+    }
+
+    public function showRoute()
+    {
+        return null;
+    }
+
+    public function checkoutRoute()
+    {
+        return null;
     }
 
     public function notification()

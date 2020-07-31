@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Collection;
 use Laravel\Scout\Builder;
+use App\Shop\Contract\Merchandise;
+use App\Shop\{eBook, eScore};
 
 class AppServiceProvider extends ServiceProvider
 {

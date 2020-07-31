@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'eBooks | ' . config('app.name')])
+@extends('layouts.app', ['title' => $product->title . ' | ' . config('app.name')])
 
 @push('header')
 <script src="https://js.stripe.com/v3/"></script>
@@ -13,8 +13,8 @@
 	  @include('shop.checkout.summary')
 
 	  @include('shop.checkout.form', [
-	    'action' => route('ebooks.purchase', $ebook),
-	    'label' => 'Buy now for $' . $ebook->finalPrice(),
+	    'action' => $product->purchaseRoute(),
+	    'label' => 'Buy now for $' . $product->finalPrice(),
 	    'comments' => 'After your payment is complete, you will receive an email with the link to download the eBook. You can also access it from your purchases page, located under the main menu.'
 	  ])
 	</div>
