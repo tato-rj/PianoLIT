@@ -34,6 +34,18 @@ class eScoresTest extends AppTest
     }
 
     /** @test */
+    public function the_same_escore_can_only_be_purchased_once_by_the_same_customer()
+    {
+        $this->signIn($this->user);
+
+        $this->postStripePurchase($this->escore->purchaseRoute());
+
+        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
+
+        $this->postStripePurchase($this->escore->purchaseRoute());
+    }
+
+    /** @test */
     public function a_member_can_make_purchases()
     {
         $user = create(User::class);
@@ -65,7 +77,7 @@ class eScoresTest extends AppTest
         $purchase = auth()->user()->purchases()->latest()->first();
 
         $this->assertTrue($user->hasMembershipWith('App\Billing\Sources\Stripe'));
-        
+
         $this->assertChargeSucceeded($purchase->charge_id);
     }
 

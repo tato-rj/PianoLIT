@@ -4,10 +4,27 @@
 	<form action="{{$action}}" method="POST" id="payment-form" class="mb-4" data-key="{{config('services.stripe.key')}}">
 		@csrf
 		<div class="mb-4">
+			@empty($hasCard)
 			<div class="form-group">
 				<div id="card-element" class="form-control"></div>
 				<div id="card-errors" role="alert" class="invalid-feedback d-block"></div>
 			</div>
+			@else
+			<div class="form-group">
+				<div class="custom-control custom-radio mb-2">
+					<input checked type="radio" id="current-card" name="payment-method" class="custom-control-input">
+					<label class="custom-control-label" for="current-card">Use {{auth()->user()->customer->card_brand}} {{auth()->user()->customer->card_last_four}}</label>
+				</div>
+				<div class="custom-control custom-radio mb-2">
+					<input type="radio" id="new-card" name="payment-method" class="custom-control-input">
+					<label class="custom-control-label" for="new-card">Use a different payment method</label>
+				</div>
+			</div>
+			<div id="card-fields" class="form-group" style="display: none;">
+				<div id="card-element" class="form-control"></div>
+				<div id="card-errors" role="alert" class="invalid-feedback d-block"></div>
+			</div>
+			@endempty
 
 			<div class="form-group">
 				<input type="text" name="coupon" placeholder="Have a coupon code?" class="form-control">

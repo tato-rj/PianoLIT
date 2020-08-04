@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Merchandise\Purchase;
 use App\Billing\Factories\StripeFactory;
 use App\Shop\Contract\Merchandise;
+use App\Http\Requests\PurchaseForm;
 
 class ShopController extends Controller
 {
@@ -25,6 +26,16 @@ class ShopController extends Controller
         return response()->json($response);
     }
 
+    public function removeCard()
+    {
+        if (! auth()->user()->customer()->exists())
+            return back()->with('error', 'We don\'t have a card from you on file');
+
+        auth()->user()->customer()->update(['card_last_four' => null, 'card_brand' => null]);
+
+        return back()->with('status', 'Your card has been removed');
+    }
+
     public function download(Request $request, Purchase $purchase)
     {
         try {
@@ -34,23 +45,22 @@ class ShopController extends Controller
         }
     }
 
-    public function purchase(Request $request, $model, $reference)
+    public function purchase(PurchaseForm $form, $model, $reference)
     {
-        $product = $model::bySlug($reference);
         $chargeId = null;
 
-        if (auth()->user()->purchasesOf($product)->exists())
-            return back()->with('error', 'You have already purchased this item. To view it, please head to My Downloads under the main menu');
-
-        if (! $product->isFree()) {
+        if (! $form->product->isFree()) {
             try {
-                $chargeId = (new StripeFactory)->transaction($request->stripeToken)->withCoupon(strtoupper($request->coupon))->charge($product)->id;
+                $chargeId = (new StripeFactory)->withCard($form->save_card)
+                                               ->withCoupon(strtoupper($form->coupon))
+                                               ->transaction($form->stripeToken)
+                                               ->charge($form->product)->id;
             } catch (\Exception $e) {
                 return back()->with('error', $e->getMessage());
             }
         }
 
-        $purchase = auth()->user()->purchase($product, $chargeId);
+        $purchase = auth()->user()->purchase($form->product, $chargeId);
 
         return redirect(route('shop.success', $purchase));
     }

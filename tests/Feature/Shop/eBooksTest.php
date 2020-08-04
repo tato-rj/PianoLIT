@@ -34,6 +34,18 @@ class eBooksTest extends AppTest
     }
 
     /** @test */
+    public function the_same_ebook_can_only_be_purchased_once_by_the_same_customer()
+    {
+        $this->signIn($this->user);
+
+        $this->postStripePurchase($this->ebook->purchaseRoute());
+
+        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
+
+        $this->postStripePurchase($this->ebook->purchaseRoute());
+    }
+
+    /** @test */
     public function a_member_can_make_purchases()
     {
         $user = create(User::class);

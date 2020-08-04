@@ -19,13 +19,13 @@ class StripeSandbox
 		return $this;
 	}
 
-	public function token()
+	public function token($card = '4242424242424242')
 	{
         Stripe::setApiKey(config('services.stripe.secret'));
 
 	    return Token::create([
 	      'card' => [
-	        'number' => '4242424242424242',
+	        'number' => $card,
 	        'exp_month' => 1,
 	        'exp_year' => now()->addYears(10)->year,
 	        'cvc' => 123

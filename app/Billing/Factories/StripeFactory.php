@@ -8,7 +8,7 @@ use App\Billing\Plan;
 
 class StripeFactory
 {
-  public $customer, $subscription, $newMember, $coupon;
+  public $customer, $subscription, $newMember, $coupon, $saveCard;
 
 	public function __construct()
 	{
@@ -19,18 +19,20 @@ class StripeFactory
   {
     if (auth()->user()->customer()->exists()) {
       $this->customer = Customer::retrieve(auth()->user()->customer->stripe_id);
+
+      if ($this->saveCard)
+        $this->updateCard($token);
     } else {
       $this->customer = Customer::create([
                             'description' => auth()->user()->full_name,
                             'email' => auth()->user()->email,
-                            'source' => $token
-                        ]);
+                            'source' => $token]);
+
 
       auth()->user()->customer()->create([
         'stripe_id' => $this->customer->id,
-        'card_brand' => $this->customer->sources->data[0]->brand ?? null,
-        'card_last_four' => $this->customer->sources->data[0]->last4 ?? null
-      ]);
+        'card_brand' => $this->saveCard ? $this->customer->sources->data[0]->brand : null,
+        'card_last_four' => $this->saveCard ? $this->customer->sources->data[0]->last4 : null]);
     }
 
     return $this;
@@ -126,6 +128,20 @@ class StripeFactory
       return Subscription::update($this->subscription->id, ['cancel_at_period_end' => false]);
     }
 
+    public function withCard($saveCard)
+    {
+      $this->saveCard = $saveCard;
+
+      return $this;
+    }
+
+    public function getCardsFor($customerId)
+    {
+      $customer = Customer::retrieve($customerId);
+
+       return $customer->sources->data;
+    }
+
     public function deleteCard()
     {
       if ($this->customer->sources->total_count > 0) {
@@ -148,7 +164,11 @@ class StripeFactory
     {
       $this->deleteCard();
 
-      return $this->createCard($stripeToken);
+      $card = $this->createCard($stripeToken);
+
+      return auth()->user()->customer()->update([
+        'card_brand' => $card->brand,
+        'card_last_four' => $card->last4]);
     }
 
     public function upcomingInvoice()

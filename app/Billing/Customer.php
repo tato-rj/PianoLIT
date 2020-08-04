@@ -15,4 +15,9 @@ class Customer extends PianoLit
     {
     	return $query->where('stripe_id', $customerId)->firstOrFail();
     }
+
+    public function hasCard()
+    {
+    	return $this->card_last_four && $this->card_brand;
+    }
 }

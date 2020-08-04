@@ -13,6 +13,7 @@
 	  @include('shop.checkout.summary')
 
 	  @include('shop.checkout.form', [
+	  	'hasCard' => auth()->user()->customer()->exists() && auth()->user()->customer->hasCard(),
 	    'action' => $product->purchaseRoute(),
 	    'label' => 'Buy now for $' . $product->finalPrice(),
 	    'comments' => 'After your payment is complete, you will receive an email with the link to download the eBook. You can also access it from your purchases page, located under the main menu.'
@@ -24,4 +25,14 @@
 
 @push('scripts')
 <script type="text/javascript" src="{{asset('js/views/checkout.js')}}"></script>
+
+<script type="text/javascript">
+$('input[name="payment-method"]').change(function() {
+	if ($('input#new-card').is(':checked')) {
+		$('#card-fields').show();
+	} else {
+		$('#card-fields').hide();		
+	}
+});
+</script>
 @endpush

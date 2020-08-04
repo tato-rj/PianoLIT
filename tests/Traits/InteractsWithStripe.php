@@ -9,12 +9,13 @@ use App\Billing\Plan;
 
 trait InteractsWithStripe
 {
-    public function postStripePurchase($route, $withCoupon = false)
+    public function postStripePurchase($route, $withCoupon = false, $saveCard = true)
     {
         return $this->post($route,
             [
                 'stripeToken' => (new StripeSandbox)->token(),
-                'coupon' => $withCoupon ? 'TEST-COUPON' : null
+                'coupon' => $withCoupon ? 'TEST-COUPON' : null,
+                'save_card' => $saveCard
             ]
         );
     }
@@ -52,5 +53,15 @@ trait InteractsWithStripe
         $charge = (new StripeFactory)->getCharge($chargeId);
 
         $this->assertEquals($charge->status, 'succeeded');
+    }
+
+    public function assertHasCard($stripe_id, $last4)
+    {
+        $cards = (new StripeFactory)->getCardsFor($stripe_id);
+
+        if (empty($cards))
+            $this->assertTrue(false);
+
+        $this->assertEquals($cards[0]->last4, $last4);
     }
 }
