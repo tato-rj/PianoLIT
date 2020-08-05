@@ -4,7 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Billing\Sources\Stripe;
-use App\Billing\{Membership, Plan, Payment};
+use App\Billing\{Membership, Plan, Payment, Customer};
+use App\Merchandise\Purchase;
 
 class RefreshStripe extends Command
 {
@@ -56,6 +57,8 @@ class RefreshStripe extends Command
         Stripe::truncate();
         
         Membership::where('source_type', Stripe::class)->delete();
+        Customer::truncate();
+        Purchase::truncate();
 
         return $this->info('All Stripe memberships have been deleted.');
     }

@@ -8,7 +8,7 @@ use App\Billing\Plan;
 
 class StripeFactory
 {
-  public $customer, $subscription, $newMember, $coupon, $saveCard;
+  public $customer, $subscription, $newMember, $coupon, $saveCard, $token, $quickCheckout;
 
 	public function __construct()
 	{
@@ -17,16 +17,21 @@ class StripeFactory
 
   public function transaction($token)
   {
+    $this->token = $token;
+
     if (auth()->user()->customer()->exists()) {
       $this->customer = Customer::retrieve(auth()->user()->customer->stripe_id);
 
+      if ($this->token && ! $this->saveCard)
+        $this->quickCheckout = true;
+
       if ($this->saveCard)
-        $this->updateCard($token);
+        $this->updateCard($this->token);
     } else {
       $this->customer = Customer::create([
                             'description' => auth()->user()->full_name,
                             'email' => auth()->user()->email,
-                            'source' => $token]);
+                            'source' => $this->token]);
 
 
       auth()->user()->customer()->create([
@@ -50,7 +55,8 @@ class StripeFactory
   public function charge($item)
   {
     return Charge::create([
-      'customer' => $this->customer->id,
+      'customer' => $this->quickCheckout ? null : $this->customer->id,
+      'source' => $this->quickCheckout ? $this->token : null,
       'amount' => $item->finalPrice($inCents = true),
       'currency' => 'usd'
     ]);

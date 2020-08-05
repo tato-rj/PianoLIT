@@ -20,4 +20,12 @@ class Customer extends PianoLit
     {
     	return $this->card_last_four && $this->card_brand;
     }
+
+    public function card()
+    {
+        if ($this->hasCard())
+            return ucfirst($this->card_brand) . ' &middot;&middot;&middot;&middot; ' . $this->card_last_four;
+
+        return null;
+    }
 }
