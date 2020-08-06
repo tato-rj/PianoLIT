@@ -10,8 +10,8 @@
 <section class="row">
 	@include('webapp.membership.checkout.summary')
 
-	@component('shop.checkout.forms.layout')
-		@include('shop.checkout.forms.new', [
+	@component('components.shop.forms.layout')
+		@include('components.shop.forms.new', [
 			'action' => route('webapp.membership.purchase', $plan),
 			'label' => 'Subscribe now for $' . $plan->formattedPrice(),
 			'comments' => 'Your free trial will start today and end on ' . now()->addDays(7)->toFormattedDateString() . '. Unless you cancel during this duration, you’ll be charged $' . $plan->formattedPrice() . ' after ' . $plan->trial_period_days . ' days. Afterwards your subscription will renew automatically every ' . $plan->interval . ', but you can cancel anytime.'

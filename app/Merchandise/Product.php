@@ -10,4 +10,9 @@ abstract class Product extends ShareableContent
 	{
 		return route('shop.purchase', ['model' => get_class($this), 'reference' => $this]);
 	}
+
+	public function shelf_image()
+	{
+		return storage($this->shelf_cover_path);
+	}
 }

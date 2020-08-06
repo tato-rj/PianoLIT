@@ -6,9 +6,6 @@ $(document).ready(function() {
   const card = elements.create('card', {hidePostalCode: true});
   const cardErrors = document.getElementById('card-errors');
 
-  const formButton = document.getElementById('card-button');
-  const buttonIcon = formButton.querySelector('i');
-
   card.mount('#card-element');
 
   /////////////////////
@@ -23,14 +20,15 @@ $(document).ready(function() {
   /////////////////
   var form = document.getElementById('payment-form');
   form.addEventListener('submit', function(event) {
+    let button = this.querySelector('button');
     event.preventDefault();
     
-    disableSubmitButton();
+    disableSubmitButton(button);
 
     stripe.createToken(card).then(function(result) {
       if (result.error) {
         cardErrors.textContent = result.error.message;
-        enableSubmitButton();
+        enableSubmitButton(button);
       } else {
         stripeTokenHandler(result.token);
       }
@@ -49,16 +47,12 @@ $(document).ready(function() {
     form.submit();
   }
 
-  function disableSubmitButton() {
-    formButton.disabled = true;
-    buttonIcon.classList.toggle('fa-lock');
-    buttonIcon.classList.toggle('spinner-border');
+  function disableSubmitButton(button) {
+    button.disabled = true;
   }
 
-  function enableSubmitButton() {
-    formButton.disabled = false;
-    buttonIcon.classList.toggle('fa-lock');
-    buttonIcon.classList.toggle('spinner-border');
+  function enableSubmitButton(button) {
+    button.disabled = false;
   }
 });
 
@@ -67,26 +61,32 @@ $('input[name="coupon"]').on('keyup', function() {
 });
 
 $('input[name="coupon"]').on('blur', function() {
-  let $input = $('#coupon-feedback');
+  let $input = $(this);
+  let $feedback = $input.closest('.form-group').find('.coupon-feedback');
+  let $validation = $input.closest('.form-group').find('.load-validation');
+  let $submitButton = $input.closest('form').find('button');
 
   if ($(this).val().length > 4) {
-    $('#card-button').disable();
-    
-    axios.get($input.data('url'), {params: {coupon: $(this).val()}})
+    $validation.fadeIn('fast');
+    $submitButton.disable();
+
+    axios.get($feedback.data('url'), {params: {coupon: $input.val()}})
         .then(function(response) {
           if (response.data.isValid) {
-            $input.removeClass('invalid-feedback').addClass('valid-feedback');
+            $feedback.removeClass('invalid-feedback').addClass('valid-feedback');
           } else {
-            $input.addClass('invalid-feedback').removeClass('valid-feedback');
+            $feedback.addClass('invalid-feedback').removeClass('valid-feedback');
           }
 
-          $input.text(response.data.message).show();
+          $feedback.text(response.data.message).show();
         })
         .catch(function(response) {
-          $input.addClass('invalid-feedback').removeClass('valid-feedback').text(response.data.message).show();
+          $feedback.addClass('invalid-feedback').removeClass('valid-feedback').text(response.data.message).show();
         })
         .then(function() {
-          $('#card-button').enable();
+          $validation.fadeOut('fast');
+          $submitButton.enable();
         });
       }
 });
+

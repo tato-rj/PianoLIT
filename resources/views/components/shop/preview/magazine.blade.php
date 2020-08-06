@@ -29,6 +29,12 @@
         <div class="h-100 product-turn cursor-pointer" style="width: 25%" data-direction="next"></div>
       </div>
     </div>
+
+    <div id="thumbnails-container" class="d-flex flex-center">
+      @foreach($product->previews as $preview)
+      <div class="m-1 border cursor-pointer {{$loop->first ? 'selected' : null}}" style="width: 30px"><img src="{{storage($preview)}}" class="w-100"></div>
+      @endforeach
+    </div>
   @endslot
   @slot('footer')
     <div class="d-flex flex-center w-100">

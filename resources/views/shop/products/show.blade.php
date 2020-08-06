@@ -12,6 +12,16 @@
 
 @push('header')
 <style type="text/css">
+#preview-product .modal-body {
+	overflow: hidden;
+}
+
+#thumbnails-container > div:not(.selected) {
+	opacity: 0.4;
+	-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(100%);
+}
+
 #magazine{
 	width: 800px;
 	height: 400px;
@@ -42,11 +52,7 @@
 				@topics(['topics' => \App\Blog\Post::first()->topics, 'route' => 'ebooks.topic'])
 				<div>
 					<h4 class="mb-4 clamp-2"><strong>{{$product->title}}</strong></h4>
-					<ul class="list-style-none p-0 mb-4">
-						<li class="lead">@fa(['icon' => 'check', 'color' => 'green'])Instant Digital Download</li>
-						<li class="lead">@fa(['icon' => 'check', 'color' => 'green'])Lifetime Access</li>
-						<li class="lead">@fa(['icon' => 'check', 'color' => 'green'])Easy one click payment</li>
-					</ul>
+					@include('components.shop.highlights')
 				</div>
 				
 				<div>
@@ -132,12 +138,29 @@ $(document).ready(function() {
 			autoCenter: true,
 			when: {
 				turning: function(event, page, pageObject) {
-					console.log(page);
+					highlightThumbnail(page - 1);
 				}
 			}
 		});
 
 		$flipbook.show();
+	}
+
+	$('#thumbnails-container > div').on('click', function() {
+		let index = $(this).index();
+		turnToPage(index);
+	});
+
+	function highlightThumbnail(index) {
+		$('#thumbnails-container > div').removeClass('selected');
+		$('#thumbnails-container > div').eq(index).addClass('selected');
+	}
+
+	function turnToPage(index) {
+		$flipbook.turn('page', index + 1);
+
+		$('#product-pages > div').hide();
+		$('#product-pages > div').eq(index).show();
 	}
 
 	function turnFlipbook(direction) {
@@ -146,15 +169,18 @@ $(document).ready(function() {
 
 	function turnPreviews(direction) {
 		let $current = $('#product-pages > div:visible');
+
 		if (direction == 'next') {
 			if ($current.next().length) {
 				$current.toggle();
 				$current.next().toggle();
+				turnToPage($current.next().index());
 			}
 		} else {
 			if ($current.prev().length) {
 				$current.toggle();
 				$current.prev().toggle();
+				turnToPage($current.prev().index());
 			}
 		}
 	}

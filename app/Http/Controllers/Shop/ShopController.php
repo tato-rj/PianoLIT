@@ -47,6 +47,7 @@ class ShopController extends Controller
 
     public function purchase(PurchaseForm $form, $model, $reference)
     {
+        return $form;
         $chargeId = null;
 
         if (! $form->product->isFree()) {

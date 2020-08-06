@@ -95,4 +95,26 @@ class ShopTest extends AppTest
 
         $this->assertEquals($this->user->customer->fresh()->card_last_four, '4242');
     }
+
+    /** @test */
+    public function a_customer_with_a_saved_card_can_charge_another_card_without_saving_it()
+    {
+        $this->signIn($this->user);
+
+        $this->postStripePurchase($this->ebook->purchaseRoute(), $coupon = false, $card = true);
+
+        $this->post($this->escore->purchaseRoute(),
+            [
+                'stripeToken' => (new StripeSandbox)->token('5555555555554444'),
+                'coupon' => null,
+                'save_card' => false
+            ]
+        );
+
+        $purchase = auth()->user()->purchases()->latest()->first();
+
+        $this->assertCardWasCharged($purchase->charge_id, '4444');
+        
+        $this->assertEquals($this->user->customer->fresh()->card_last_four, '4242');
+    }
 }

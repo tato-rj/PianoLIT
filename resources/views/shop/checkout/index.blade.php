@@ -12,8 +12,8 @@
 	<div class="row">
 	  @include('shop.checkout.summary')
 
-	  @component('shop.checkout.forms.layout')
-		  @include('shop.checkout.forms.returning', [
+	  @component('components.shop.forms.layout')
+		  @include('components.shop.forms.returning', [
 		    'comments' => 'After your payment is complete, you will receive an email with the link to download the eBook. You can also access it from your purchases page, located under the main menu.'
 		  ])
 	  @endcomponent
@@ -28,6 +28,8 @@
 <script type="text/javascript">
 $('input[name="payment-method"]').change(function() {
 	$('.payment-forms').hide();
+	$('.payment-forms input:visible').val('');
+	$('.coupon-feedback').html('');
 	$($(this).attr('target')).show();
 });
 </script>
