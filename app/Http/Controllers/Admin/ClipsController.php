@@ -64,7 +64,7 @@ class ClipsController extends Controller
             'url' => $request->url
         ]);
 
-        return back()->with('status', 'The clip has been updated!');
+        return redirect(route('admin.clips.edit', compact('clip')))->with('status', 'The clip has been updated!');
     }
 
     /**
