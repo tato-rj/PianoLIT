@@ -62,6 +62,13 @@ $('#composer-bio').clamp(4);
 </script>
 
 <script type="text/javascript">
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#tab-' + url.split('#')[1] + '"]').tab('show');
+    }
+</script>
+
+<script type="text/javascript">
 $('#pdf-share').click(function() {
 	let url = $(this).data('url');
 

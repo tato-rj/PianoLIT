@@ -20,14 +20,14 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 		'color' => 'green',
 		'link' => 'https://www.youtube.com/watch?v=RPFURmmnEHs'
 	],
-	'title' => '👩 A musical pioneer in the 18th century'
+	'title' => '👩 A musical pioneer of the 18th century'
 ])
 
 <p>Maria Teresa Agnesi was an accomplished Italian composer. Not much survived of what she did for keyboard, but this sonata is testimony to her great talent and capabilities. Does it sound just like something CPE Bach would have written? The early decades of the Classical period were marked by vibrant, bold, and optimistic music. The writing was simple and the texture clean, providing incredible contrast to the music of the Baroque period.</p>
 
 <p><a href="https://www.youtube.com/watch?v=RPFURmmnEHs" class="text-md"><strong>Sonata in F major by Maria Teresa Agnesi, watch on YouTube</strong></a></p>
 
-<p><a href="https://pianolit.com/pieces/828" class="text-md"><strong>You'll find the score here</strong></a></p>
+<p><a href="https://my.pianolit.com/pieces/828#score" class="text-md"><strong>You'll find the score here</strong></a></p>
 
 <p>This beautiful short sonata embodies the spirit of this generation and it will help you develop clean and even playing on the left hand, as well as nuanced scale passages on the right hand.</p>
 
