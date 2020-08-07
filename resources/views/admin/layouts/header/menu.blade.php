@@ -41,15 +41,6 @@
         ]])
 
         <div class="dropdown-divider hide-on-sm"></div>
-        
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Shop', 'icon' => 'shopping-cart',
-        'dropdown' => [
-          ['name' => 'eBooks', 'route' => route('admin.ebooks.index')],
-          ['name' => 'eBook Topics', 'route' => route('admin.ebooks.topics.index')],
-          [],
-          ['name' => 'eScores', 'route' => route('admin.escores.index')],
-          ['name' => 'eScore Topics', 'route' => route('admin.escores.topics.index')]
-        ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Repertoire', 'icon' => 'music',
         'dropdown' => [
@@ -58,6 +49,15 @@
           ['route' => route('admin.composers.index'), 'name' => 'Composers'],
           ['route' => route('admin.pianists.index'), 'name' => 'Pianists'],
           ['route' => route('admin.tags.index'), 'name' => 'Tags'],
+        ]])
+        
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Shop', 'icon' => 'shopping-cart',
+        'dropdown' => [
+          ['name' => 'eBooks', 'route' => route('admin.ebooks.index')],
+          ['name' => 'eBook Topics', 'route' => route('admin.ebooks.topics.index')],
+          [],
+          ['name' => 'eScores', 'route' => route('admin.escores.index')],
+          ['name' => 'eScore Topics', 'route' => route('admin.escores.topics.index')]
         ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Blog', 'icon' => 'newspaper',
