@@ -1,9 +1,6 @@
-<div class="row">
+<div class="row mb-5">
 	<div class="col-lg-6 col-md-6 col-12">
-		<div class="position-relative">
-			<img src="{{$product->cover_image()}}" class="w-100">
-			@include('components.shop.discount-tag', ['position' => 'left'])
-		</div>
+		@include('components.shop.cover')
 	</div>
 	<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
 		<div>

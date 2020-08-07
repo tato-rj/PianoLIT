@@ -21,7 +21,6 @@ class CreateEScoresTable extends Migration
             $table->text('description');
             $table->string('pdf_path')->nullable();
             $table->string('cover_path')->nullable();
-            $table->string('shelf_cover_path')->nullable();
             $table->text('previews')->nullable();
             $table->integer('score')->default(0);
             $table->unsignedInteger('pages_count')->default(0);

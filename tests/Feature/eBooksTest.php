@@ -22,10 +22,7 @@ class eBooksTest extends AppTest
         $this->assertDatabaseHas('e_books', ['title' => $ebook->title]);
 
         $this->assertNotNull($ebook->cover_path);
-        $this->assertNotNull($ebook->shelf_cover_path);
-        $this->assertNotEquals($ebook->cover_path, $ebook->shelf_cover_path);
         \Storage::disk('public')->assertExists($ebook->cover_path);
-        \Storage::disk('public')->assertExists($ebook->shelf_cover_path);
     }
 
     /** @test */
@@ -37,20 +34,16 @@ class eBooksTest extends AppTest
 
         $originalTitle = $ebook->title;
         $originalCover = $ebook->cover_path;
-        $originalShelfCover = $ebook->shelf_cover_path;
 
         $update = make(eBook::class, [
-            'cover_image' => UploadedFile::fake()->image('cover.jpg'), 
-            'shelf_cover_image' => UploadedFile::fake()->image('shelf.jpg')
+            'cover_image' => UploadedFile::fake()->image('cover.jpg')
         ]);
 
         $this->patch(route('admin.ebooks.update', $ebook), $update->toArray());
 
         $this->assertNotEquals($originalTitle, $ebook->fresh()->title);
         \Storage::disk('public')->assertMissing($originalCover);
-        \Storage::disk('public')->assertMissing($originalShelfCover);
         \Storage::disk('public')->assertExists($ebook->fresh()->cover_path);
-        \Storage::disk('public')->assertExists($ebook->fresh()->shelf_cover_path);
     }
 
     /** @test */
@@ -129,7 +122,6 @@ class eBooksTest extends AppTest
         $this->assertDatabaseMissing('posts', ['title' => $ebook->title]);
 
         \Storage::disk('public')->assertMissing($ebook->cover_path);
-        \Storage::disk('public')->assertMissing($ebook->shelf_cover_path);
         \Storage::disk('public')->assertMissing($preview);
     }
 

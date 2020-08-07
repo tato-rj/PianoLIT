@@ -23,7 +23,6 @@ class eBook extends Product implements Merchandise
             $ebook->topics()->detach();
             
             \Storage::disk('public')->delete($ebook->cover_path);
-            \Storage::disk('public')->delete($ebook->shelf_cover_path);
 
             foreach ($ebook->previews as $preview) {
                 $ebook->deletePreview($preview);        

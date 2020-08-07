@@ -46,12 +46,8 @@ class eScoresController extends Controller
                                                        ->for(eScore::class)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
-            'shelf_cover_path' => (new ImageUpload($request))->take('shelf_cover_image')
-                                                       ->for(eScore::class)
-                                                       ->name(str_slug($request->title).'-shelf')
-                                                       ->upload(),
             'pdf_path' => $request->hasFile('pdf_file') ? 
-            	$request->file('pdf_file')->storeAs('app/escores/pdf', str_slug($request->title).'.'.$request->file('pdf_file')->extension(), 'public') : null
+            	$request->file('pdf_file')->storeAs('app/escores/pdf', 'pianolit-'.str_slug($request->title).'-'.lastnchar(mt_rand(), 4).'.'.$request->file('pdf_file')->extension(), 'public') : null
         ]);
         
         $escore->topics()->attach($request->topics);
@@ -116,22 +112,16 @@ class eScoresController extends Controller
                                                        ->for($escore)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
-            'shelf_cover_path' => (new ImageUpload($request))->take('shelf_cover_image')
-                                                       ->for($escore)
-                                                       ->name(str_slug($request->title).'-shelf')
-                                                       ->upload(),
         ]);
 
-        $file_fields = ['pdf_file'];
+        $file_fields = ['pdf_path' => 'pdf_file'];
 
-        foreach ($file_fields as $field) {
-            $filetype = str_replace('_file', '', $field);
-            $filename = str_replace('_file', '_path', $field);
-
-            if ($request->hasFile($field)) {
-                \Storage::disk('public')->delete($escore->$filename);
-                
-                $escore->$field = $request->file($field)->storeAs('app/escores/'.$filetype, str_slug($request->title).'.'.$request->file($field)->extension(), 'public');
+        foreach ($file_fields as $field => $file) {
+            $filetype = str_replace('_path', '', $field);
+            if ($request->hasFile($file)) {
+                \Storage::disk('public')->delete($escore->$field);
+                $name = 'pianolit-'.str_slug($request->title) . '-' . lastnchar(mt_rand(), 4) . '.' . $request->file($file)->extension();
+                $escore->$field = $request->file($file)->storeAs('app/escores/'.$filetype, $name, 'public');
 
                 $escore->save();
             }

@@ -22,7 +22,6 @@ class CreateEBooksTable extends Migration
             $table->string('pdf_path')->nullable();
             $table->string('epub_path')->nullable();
             $table->string('cover_path')->nullable();
-            $table->string('shelf_cover_path')->nullable();
             $table->text('previews')->nullable();
             $table->integer('score')->default(0);
             $table->unsignedInteger('pages_count')->default(0);

@@ -26,6 +26,12 @@
 
     @include('layouts.html.js-app')
 
+    <style type="text/css">
+    .book-cover {
+        -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
+    }
+    </style>
     @stack('header')
 </head>
 

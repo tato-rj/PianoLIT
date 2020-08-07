@@ -1,9 +1,9 @@
 <div class="col-lg-10 col-12 mx-auto text-center">
 	<div class="mb-4">
-		<img src="{{storage($purchase->item->shelf_cover_path)}}" style="width: 200px" class="mb-2">
-		<h5>{{$purchase->item->title}}</h5>
+		@include('components.shop.cover', ['product' => $purchase->item])
 	</div>
-	<div>
+	<div class="text-center">
+		<p class="text-muted">Download your product below</p>
 		@foreach($purchase->item->links() as $label => $hash)
 		<a href="{{route('shop.download', ['purchase' => $purchase, 'path' => $hash])}}" class="btn btn-wide btn-outline-secondary" target="_blank">@fa(['icon' => 'cloud-download-alt']){{$label}}</a>
 		@endforeach

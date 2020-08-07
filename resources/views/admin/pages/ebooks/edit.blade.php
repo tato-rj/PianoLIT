@@ -97,17 +97,7 @@
             </div>
           </div>
         </div>
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <a class="input-group-text no-underline {{$ebook->shelf_cover_path ? 'text-success' : 'text-muted opacity-4'}}" href="{{storage($ebook->shelf_cover_path)}}" target="_blank">@fa(['icon' => 'file-image', 'mr' => 0])</a>
-            </div>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('shelf_cover_image') ? 'is-invalid' : ''}}" name="shelf_cover_image" id="shelf-cover-file">
-              <label class="custom-file-label truncate" for="shelf-cover-file">Shelf image</label>
-            </div>
-          </div>
-        </div>
+
       </div>
 
       <div class="col">

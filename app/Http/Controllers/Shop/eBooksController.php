@@ -18,7 +18,7 @@ class eBooksController extends Controller
 
     public function show(eBook $ebook)
     {
-    	return view('shop.products.show', ['product' => $ebook]);    	
+    	return view('shop.products.show.index', ['product' => $ebook]);    	
     }
 
     public function checkout(eBook $ebook)

@@ -46,12 +46,7 @@
               <label class="custom-file-label truncate" for="cover-file">Cover image</label>
             </div>
           </div>
-          <div class="form-group">
-            <div class="custom-file">
-              <input type="file" required class="custom-file-input {{$errors->has('shelf_cover_image') ? 'is-invalid' : ''}}" name="shelf_cover_image" id="shelf-cover-file">
-              <label class="custom-file-label truncate" for="shelf-cover-file">Shelf image</label>
-            </div>
-          </div>
+
         </div>
 
         <div class="col">

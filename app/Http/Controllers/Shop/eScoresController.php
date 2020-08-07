@@ -18,7 +18,7 @@ class eScoresController extends Controller
 
     public function show(eScore $escore)
     {
-    	return view('shop.products.show', ['product' => $escore]);    	
+    	return view('shop.products.show.index', ['product' => $escore]);    	
     }
 
     public function checkout(eScore $escore)

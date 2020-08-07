@@ -23,7 +23,6 @@ class eScore extends Product implements Merchandise
             $escore->topics()->detach();
             
             \Storage::disk('public')->delete($escore->cover_path);
-            \Storage::disk('public')->delete($escore->shelf_cover_path);
 
             foreach ($escore->previews as $preview) {
                 $escore->deletePreview($preview);        

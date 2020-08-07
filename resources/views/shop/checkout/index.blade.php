@@ -10,13 +10,17 @@
 
 <section class="container mb-5">
 	<div class="row">
-	  @include('shop.checkout.summary')
+		<div class="col-lg-7 col-md-5 col-12"> 
+	  		@include('shop.checkout.summary')
+	  	</div>
 
-	  @component('components.shop.forms.layout')
-		  @include('components.shop.forms.returning', [
-		    'comments' => 'After your payment is complete, you will receive an email with the link to download the eBook. You can also access it from your purchases page, located under the main menu.'
-		  ])
-	  @endcomponent
+		<div class="col-lg-5 col-md-7 col-12"> 
+		  @component('components.shop.forms.layout')
+			  @include('components.shop.forms.returning', [
+			    'comments' => 'After your payment is complete, you will receive an email with the link to download the eBook. You can also access it from your purchases page, located under the main menu.'
+			  ])
+		  @endcomponent
+		</div>
 	</div>
 </section>
 

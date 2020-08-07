@@ -46,14 +46,10 @@ class eBooksController extends Controller
                                                        ->for(eBook::class)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
-            'shelf_cover_path' => (new ImageUpload($request))->take('shelf_cover_image')
-                                                       ->for(eBook::class)
-                                                       ->name(str_slug($request->title).'-shelf')
-                                                       ->upload(),
             'pdf_path' => $request->hasFile('pdf_file') ? 
-            	$request->file('pdf_file')->storeAs('app/ebooks/pdf', str_slug($request->title).'.'.$request->file('pdf_file')->extension(), 'public') : null,
+            	$request->file('pdf_file')->storeAs('app/ebooks/pdf', 'pianolit-'.str_slug($request->title).'-'.lastnchar(mt_rand(), 4).'.'.$request->file('pdf_file')->extension(), 'public') : null,
             'epub_path' => $request->hasFile('epub_file') ? 
-            	$request->file('epub_file')->storeAs('app/ebooks/epub', str_slug($request->title).'.'.$request->file('epub_file')->extension(), 'public') : null,
+            	$request->file('epub_file')->storeAs('app/ebooks/epub', 'pianolit-'.str_slug($request->title).'-'.lastnchar(mt_rand(), 4).'.'.$request->file('epub_file')->extension(), 'public') : null,
         ]);
         
         $ebook->topics()->attach($request->topics);
@@ -118,22 +114,16 @@ class eBooksController extends Controller
                                                        ->for($ebook)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
-            'shelf_cover_path' => (new ImageUpload($request))->take('shelf_cover_image')
-                                                       ->for($ebook)
-                                                       ->name(str_slug($request->title).'-shelf')
-                                                       ->upload(),
         ]);
 
-        $file_fields = ['pdf_file', 'epub_file'];
+        $file_fields = ['pdf_path' => 'pdf_file','epub_path' => 'epub_file'];
 
-        foreach ($file_fields as $field) {
-            $filetype = str_replace('_file', '', $field);
-            $filename = str_replace('_file', '_path', $field);
-
-            if ($request->hasFile($field)) {
-                \Storage::disk('public')->delete($ebook->$filename);
-                
-                $ebook->$field = $request->file($field)->storeAs('app/ebooks/'.$filetype, str_slug($request->title).'.'.$request->file($field)->extension(), 'public');
+        foreach ($file_fields as $field => $file) {
+            $filetype = str_replace('_path', '', $field);
+            if ($request->hasFile($file)) {
+                \Storage::disk('public')->delete($ebook->$field);
+                $name = 'pianolit-'.str_slug($request->title) . '-' . lastnchar(mt_rand(), 4) . '.' . $request->file($file)->extension();
+                $ebook->$field = $request->file($file)->storeAs('app/ebooks/'.$filetype, $name, 'public');
 
                 $ebook->save();
             }
