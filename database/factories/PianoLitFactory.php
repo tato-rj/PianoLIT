@@ -1,6 +1,6 @@
 <?php
 
-use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist, EmailList};
+use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist, EmailList, Clip};
 use App\Infograph\Infograph;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -136,5 +136,13 @@ $factory->define(EmailList::class, function(Faker $faker) {
     return [
         'name' => $faker->word,
         'description' => $faker->sentence,
+    ];
+});
+
+$factory->define(Clip::class, function(Faker $faker) {
+    return [
+        'slug' => str_slug($faker->sentence),
+        'name' => $faker->word,
+        'url' => $faker->sentence,
     ];
 });

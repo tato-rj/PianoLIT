@@ -89,6 +89,11 @@
           ['name' => 'Subscriptions', 'route' => route('admin.crashcourses.subscriptions.index')]
         ]])
         
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'play-circle',
+        'dropdown' => [
+          ['route' => route('admin.clips.index'), 'name' => 'Clips'],
+        ]])
+
         @include('admin.layouts.header.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list-ul'])
       @endmanager
 
