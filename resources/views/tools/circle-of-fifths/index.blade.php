@@ -95,7 +95,7 @@
 <script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
 
 <script type="text/javascript">
-$("#crashcourse-overlay").showAfter(4);
+// $("#crashcourse-overlay").showAfter(4);
 </script>
 
 @endpush
