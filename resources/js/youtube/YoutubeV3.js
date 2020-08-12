@@ -11,7 +11,9 @@ class YoutubeV3
                 $.each(data.items, function(key, item) {
                     obj._getVideos(item.contentDetails.relatedPlaylists.uploads);
                 });
-            }).fail(function(response) {
+            }, 
+            {dataType: 'jsonp'},
+            ).fail(function(response) {
                 console.log('We coudldn\'t load youtube videos in this page.');
                 console.log(response);
             });
