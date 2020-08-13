@@ -11,7 +11,7 @@
 <div class="h-100vh d-flex flex-column cc-video">
   <div class="player" style="height: 84vh">
     <video id="clip" class="w-100 h-100" style="background-color: black" controls>
-      <source src="{{$clip->url}}" type="video/mp4">
+      <source src="{{$url}}" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
