@@ -217,6 +217,14 @@ trait PieceExtraAttributes
         return $this->videos_array ? count($this->videos_array) : 0;
     }
 
+    public function getPerformanceUrlAttribute()
+    {
+        if ($this->videos_count == 0 || $this->videos_array[0]['title'] != 'Performance')
+            return null;
+
+        return $this->videos_array[0]['video_url'];
+    }
+
     public function getItunesArrayAttribute()
     {
         return unserialize($this->itunes);
