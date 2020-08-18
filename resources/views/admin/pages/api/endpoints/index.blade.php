@@ -28,6 +28,12 @@
       
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
+        'route' => route('api.composers'), 
+        'args' => [],
+        'title' => 'View all composers'])
+
+      @include('admin.pages.api.endpoints.card', [
+        'type' => 'GET', 
         'route' => route('api.tour', ['search' => 'intermediate melancholic dreamy']),
         'args' => ['search'], 
         'title' => 'Tour results'])
