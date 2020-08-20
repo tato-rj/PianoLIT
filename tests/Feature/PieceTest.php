@@ -36,6 +36,75 @@ class PieceTest extends AppTest
     }
 
     /** @test */
+    public function a_new_tutorial_can_be_added()
+    {
+        $this->signIn();
+
+        $this->assertEquals(1, $this->piece->tutorials()->count());
+
+        $newTutorial = [
+            'type' => 'NEW TITLE',
+            'description' => 'NEW DESCRIPTION',
+            'filename' => 'NEW FILENAME'
+        ];
+
+        $this->updatePiece($this->piece, ['videos' => [$this->piece->tutorials->first()->toArray(), $newTutorial]]);
+
+        $this->assertEquals(2, $this->piece->tutorials()->count());
+    }
+
+    /** @test */
+    public function a_tutorial_can_be_edited()
+    {
+        $this->signIn();
+
+        $originalTutorial = $this->piece->tutorials->first();
+
+        $editedTutorials = [
+            'id' => $originalTutorial->id,
+            'type' => 'NEW TITLE',
+            'description' => $originalTutorial->description,
+            'filename' => $originalTutorial->filename
+        ];
+
+        $updatedPiece = $this->updatePiece($this->piece, ['videos' => [$editedTutorials]]);
+
+        $this->assertNotEquals($originalTutorial->type, $this->piece->tutorials->fresh()->first()->type);
+    }
+
+    /** @test */
+    public function a_tutorial_can_be_removed()
+    {
+        $this->signIn();
+
+        $newTutorial = [
+            'type' => 'NEW TITLE',
+            'description' => 'NEW DESCRIPTION',
+            'filename' => 'NEW FILENAME'
+        ];
+
+        $this->updatePiece($this->piece, ['videos' => [$this->piece->tutorials->first()->toArray(), $newTutorial]]);
+
+        $this->assertEquals(2, $this->piece->tutorials()->count());
+
+        $this->updatePiece($this->piece, ['videos' => [$newTutorial]]);
+
+        $this->assertEquals(1, $this->piece->tutorials()->count());
+    }
+
+    /** @test */
+    public function all_tutorials_can_be_removed()
+    {
+        $this->signIn();
+
+        $this->assertEquals(1, $this->piece->tutorials()->count());
+
+        $this->updatePiece($this->piece);
+
+        $this->assertEquals(0, $this->piece->tutorials()->count());
+    }
+
+    /** @test */
     public function an_admin_can_select_the_highlighted_piece_of_the_week()
     {
         $this->signIn();

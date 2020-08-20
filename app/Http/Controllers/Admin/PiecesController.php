@@ -131,7 +131,7 @@ class PiecesController extends Controller
             'movement_number' => $request->movement_number,
             'curiosity' => $request->curiosity,
             'description' => $request->description,
-            'videos' => $request->videos ? serialize($request->videos) : null,
+            // 'videos' => $request->videos ? serialize($request->videos) : null,
             'itunes' => $request->itunes ? serialize($request->itunes) : null,
             'key' => $request->key,
             'score_url' => $request->is_public ? null : $request->score_url,
@@ -149,6 +149,8 @@ class PiecesController extends Controller
 
         if ($request->hasFile('score'))
             $piece->saveScore($request->file('score'));
+
+        $piece->saveTutorials($request->videos);
         
         $piece->tags()->attach(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
@@ -190,7 +192,7 @@ class PiecesController extends Controller
             'length' => 'required',
             'level' => 'required'
         ]);
-
+        
         $piece->update([
             'name' => $request->name,
             'nickname' => $request->nickname,
@@ -201,7 +203,7 @@ class PiecesController extends Controller
             'movement_number' => $request->movement_number,
             'curiosity' => $request->curiosity,
             'description' => $request->description,
-            'videos' => $request->videos ? serialize($request->videos) : null,
+            // 'videos' => $request->videos ? serialize($request->videos) : null,
             'itunes' => $request->itunes ? serialize($request->itunes) : null,
             'key' => $request->key,
             'score_url' => $request->is_public ? null : $request->score_url,
@@ -220,7 +222,7 @@ class PiecesController extends Controller
 
         $piece->tags()->sync(array_merge($request->tags ?? [], $request->level ?? [], $request->length ?? [], $request->period ?? []));
 
-        // $piece->uploadCoverImage($request);
+        $piece->saveTutorials($request->videos);
 
         $file_fields = ['audio_path', 'audio_path_rh', 'audio_path_lh'];
 

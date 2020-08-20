@@ -1,6 +1,6 @@
 <?php
 
-use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist, EmailList, Clip};
+use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist, EmailList, Clip, Tutorial};
 use App\Infograph\Infograph;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -24,6 +24,15 @@ $factory->define(Playlist::class, function (Faker $faker) {
         'name' => $faker->word,
         'subtitle' => $faker->word,
         'description' => $faker->sentence,
+    ];
+});
+
+$factory->define(Tutorial::class, function (Faker $faker) {
+    return [
+        'piece_id' => 1,
+        'type' => $faker->word,
+        'description' => $faker->sentence,
+        'filename' => $faker->word,
     ];
 });
 

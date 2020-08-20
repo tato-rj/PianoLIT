@@ -9,12 +9,10 @@
 	</div>
 	@endif
 
-	@if($piece->hasVideos())
+	@if($piece->tutorials()->exists())
 	<div class="mb-5">
 		<h5 class="mb-4">Videos and Tutorials</h5>
-		@foreach($piece->videos_array as $video)
-			@include('webapp.piece.components.video')
-		@endforeach
+		@each('webapp.piece.components.video', $piece->tutorials, 'tutorial')
 	</div>
 	@else
 	<div class="text-center py-4">
@@ -24,7 +22,7 @@
 	</div>
 	@endif
 
-	@if(! $piece->hasVideos() || count($piece->videos_array) == 1)
+	@if($piece->tutorials()->count() <= 1)
 	<div class="row">
 		<div class="col-lg-7 col-md-10 col-12 mx-auto text-center border-top mt-3 pt-3">
 			<p class="text-muted">Curious about this piece? Request video tutorials to learn more</p>

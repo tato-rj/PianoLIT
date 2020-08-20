@@ -45,7 +45,7 @@ trait ManageDatabase
         return Piece::latest()->first();
 	}
 
-    protected function updatePiece($piece)
+    protected function updatePiece($piece, $attr = [])
     {
         $model = make(Piece::class);
 
@@ -73,8 +73,8 @@ trait ManageDatabase
             'audio' => UploadedFile::fake()->create('new-audio.mp3'),
             'score' => UploadedFile::fake()->create('new-score.pdf'),
         ];
-
-        $this->patch(route('admin.pieces.update', $piece->id), $updatedPiece);
+        
+        $this->patch(route('admin.pieces.update', $piece->id), array_merge($updatedPiece, $attr));
 
         return $updatedPiece;
     }

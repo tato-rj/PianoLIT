@@ -9,7 +9,7 @@ use App\Quiz\Quiz;
 use App\Quiz\Topic as QuizTopic;
 use App\Shop\{eBook, eBookTopic, eScore, eScoreTopic};
 use App\Billing\Membership;
-use App\{Composer, Piece, Admin, Country, Tag, User, Playlist, Subscription, Timeline, Pianist, EmailList};
+use App\{Composer, Piece, Admin, Country, Tag, User, Playlist, Subscription, Timeline, Pianist, EmailList, Tutorial};
 use Tests\Traits\CustomAssertions;
 use App\Rules\Recaptcha;
 
@@ -78,6 +78,8 @@ class AppTest extends TestCase
 
         $this->period = create(Tag::class, ['type' => 'period']);
 
+        $this->tutorial = create(Tutorial::class);
+
         $this->pianist = create(Pianist::class, [
             'creator_id' => $this->admin->id,
             'country_id' => $this->country->id
@@ -101,6 +103,7 @@ class AppTest extends TestCase
         $this->piece->tags()->attach($this->tag_technique);
         $this->piece->tags()->attach($this->tag_mood);
         $this->piece->tags()->attach($this->length);
+        $this->piece->tutorials()->save($this->tutorial);
 
         $this->piece->views()->create(['user_id' => $this->user->id]);
 

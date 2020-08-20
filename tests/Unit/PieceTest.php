@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\{Admin, Composer, Country, Tag, Playlist, Piece, PieceView, TutorialRequest};
+use App\{Admin, Composer, Country, Tag, Playlist, Piece, PieceView, TutorialRequest, Tutorial};
 use Tests\Traits\ManageDatabase;
 use Tests\AppTest;
 use Illuminate\Http\UploadedFile;
@@ -28,6 +28,12 @@ class PieceTest extends AppTest
 	{
 		$this->assertInstanceOf(Country::class, $this->piece->country);
 	}
+
+    /** @test */
+    public function it_has_many_tutorials()
+    {
+        $this->assertInstanceOf(Tutorial::class, $this->piece->tutorials()->first());
+    }
 
 	/** @test */
 	public function it_has_many_tags()

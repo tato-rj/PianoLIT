@@ -251,10 +251,8 @@
             </div>
           </div>
           @manager
-          {{-- iTunes --}}
-          @include('admin.pages.pieces.itunes.layout')
           {{-- Videos --}}
-          @include('admin.pages.pieces.videos.layout', ['subject' => 'VIDEOS'])
+          @include('admin.pages.pieces.videos.layout')
           @endmanager
 
           <div class="text-center my-5">
@@ -427,41 +425,27 @@ $('a.add-new-field').on('click', function() {
   $type = $button.attr('data-type');
   $clone = $button.siblings('.original-type').clone();
 
-  if ($type == 'itunes') {
-    number = $('.itunes-form:not(.original-type)').length;
-    inputs = $clone.find('input');
-    $(inputs[0]).attr('name',  'itunes['+number+'][album]');
-    $(inputs[1]).attr('name',  'itunes['+number+'][artist]');
-    $(inputs[2]).attr('name',  'itunes['+number+'][link]');
-    $clone.removeClass('original-type').insertBefore($button).show();
-
-  } else if ($type == 'videos') {
-    number = $('.videos-form:not(.original-type)').length;
-    inputs = $clone.find('input');
-    $(inputs[0]).attr('name',  'videos['+number+'][title]');
-    $(inputs[1]).attr('name',  'videos['+number+'][description]');
-    $(inputs[2]).attr('name',  'videos['+number+'][filename]');
-    if ($('.videos-form:not(.original-type)').length == 0) {
-      $clone.find('.default-performance').show();
-    }
-    $clone.removeClass('original-type').insertBefore($button).show();
-
-  } else {
-    $clone.find('textarea').attr('name',  'tips[]');
-    $clone.removeClass('original-type').insertBefore($button).addClass('d-flex');
+  number = $('.videos-form:not(.original-type)').length;
+  inputs = $clone.find('input');
+  $(inputs[0]).attr('name',  'videos['+number+'][type]');
+  $(inputs[1]).attr('name',  'videos['+number+'][description]');
+  $(inputs[2]).attr('name',  'videos['+number+'][filename]');
+  if ($('.videos-form:not(.original-type)').length == 0) {
+    $clone.find('.default-performance').show();
   }
+  $clone.removeClass('original-type').insertBefore($button).show();
 });
 
 $(document).on('click', '.default-performance', function() {
   let $button = $(this);
-  $button.closest('.quick-fill').siblings('.video-title').val($button.attr('data-title'));
+  $button.closest('.quick-fill').siblings('.video-type').val($button.attr('data-type'));
   $button.closest('.quick-fill').siblings('.video-description').val($button.attr('data-description'));
 });
 
 $(document).on('change', 'select[data-name="tutorial-description"]', function() {
   let $button = $(this);
 
-  $button.closest('.quick-fill').siblings('.video-title').val('Tutorial');
+  $button.closest('.quick-fill').siblings('.video-type').val('Tutorial');
   $button.closest('.quick-fill').siblings('.video-description').val($button.val());
 });
 

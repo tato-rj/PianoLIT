@@ -4,7 +4,7 @@ namespace App\Http\Controllers\WebApp;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\{Piece, Timeline};
+use App\{Piece, Timeline, Tutorial};
 
 class PiecesController extends Controller
 {
@@ -44,12 +44,9 @@ class PiecesController extends Controller
         return view('webapp.piece.components.audio', compact('piece'))->render();
     }
 
-    public function video(Piece $piece, $video)
+    public function tutorial(Piece $piece, Tutorial $tutorial)
     {
-        $index = $video - 1;
-        $url = $piece->videos_array[$index]['video_url'];
-
-        return view('webapp.piece.components.video.element', compact(['url', 'index']))->render();
+        return view('webapp.piece.components.video.element', compact('tutorial'))->render();
     }
 
     // NOT BEING USED

@@ -10,11 +10,11 @@ Route::namespace('WebApp')->middleware('members-only')->prefix('pieces')->name('
 
 	Route::get('{piece}/similar', 'PiecesController@similar')->name('similar');
 
+	Route::get('{piece}/tutorial/{tutorial}', 'PiecesController@tutorial')->name('tutorial');
+	
 	Route::get('{piece}/appleMusic', 'PiecesController@appleMusic')->name('apple-music');
 
 	Route::get('{piece}/audio', 'PiecesController@audio')->name('audio');
-
-	Route::get('{piece}/video/{video}', 'PiecesController@video')->name('video');
 
 	Route::get('{piece}/score', 'PiecesController@score')->name('score');
 });

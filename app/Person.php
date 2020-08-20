@@ -158,7 +158,7 @@ abstract class Person extends PianoLit
         return splitname($this->name)['last'];
     }
 
-    public function getReverseNameAttribute()
+    public function getReversedNameAttribute()
     {
         return $this->last_name . ', ' . str_replace($this->last_name, '', $this->name);
     }

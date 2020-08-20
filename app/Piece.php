@@ -13,7 +13,7 @@ class Piece extends PianoLit
     use PieceExtraAttributes, PieceStatus, Searchable;
     
     protected $folder = 'pieces';
-    protected $withCount = ['views', 'tags', 'favorites'];
+    protected $withCount = ['views', 'tags', 'favorites', 'tutorials'];
     protected $casts = ['is_free' => 'boolean'];
     protected $dates = ['highlighted_at'];
     protected $appends = [
@@ -117,6 +117,39 @@ class Piece extends PianoLit
     public function tutorialRequests()
     {
         return $this->hasMany(TutorialRequest::class);
+    }
+
+    public function tutorials()
+    {
+        return $this->hasMany(Tutorial::class);
+    }
+
+    public function saveTutorials($videos)
+    {        
+        $this->syncTutorials($videos);
+
+        if ($videos) {
+            foreach ($videos as $video) {
+                $array = [
+                    'type' => $video['type'],
+                    'description' => $video['description'],
+                    'filename' => $video['filename']
+                ];
+
+                if (array_key_exists('id', $video)) {
+                    $this->tutorials()->find($video['id'])->update($array);
+                } else {
+                    $this->tutorials()->create($array);
+                }
+            }
+        }
+    }
+
+    public function syncTutorials($videos)
+    {
+        $ids = $videos ? array_column($videos, 'id') : [];
+
+        $this->tutorials()->whereIn('id', $this->tutorials()->pluck('id')->diff(collect($ids)))->delete();
     }
 
     public function getSubLevelAttribute()
