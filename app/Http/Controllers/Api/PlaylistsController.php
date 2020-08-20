@@ -20,7 +20,7 @@ class PlaylistsController extends Controller
 
     public function show(Request $request, Playlist $playlist)
     {
-        $pieces = $playlist->pieces->where('videos_array', '!=', null);
+        $pieces = $playlist->pieces()->has('tutorials')->get();
         
         $pieces->each->isFavorited($request->user_id);
 
