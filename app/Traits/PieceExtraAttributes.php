@@ -195,16 +195,7 @@ trait PieceExtraAttributes
     
     public function getVideosArrayAttribute()
     {
-        $videos = unserialize($this->videos);
-
-        if (! $videos)
-            return null;
-        
-        foreach ($videos as $index => $video) {
-            $videos[$index]['video_url'] = config('services.googlecloud.videos') . str_slug($this->composer->name) . '/' . $video['filename'] . '.mp4';
-        }
-
-        return $videos;
+        return $this->tutorials->toArray();
     }
 
     public function getVideosArrayRawAttribute()
@@ -214,15 +205,14 @@ trait PieceExtraAttributes
 
     public function getVideosCountAttribute()
     {
-        return $this->videos_array ? count($this->videos_array) : 0;
+        return 0;
     }
 
     public function getPerformanceUrlAttribute()
     {
-        if ($this->videos_count == 0 || $this->videos_array[0]['title'] != 'Performance')
-            return null;
+        $tutorial = $this->tutorials()->where('type', 'Performance')->first();
 
-        return $this->videos_array[0]['video_url'];
+        return $tutorial ? $tutorial->video_url : null;
     }
 
     public function getItunesArrayAttribute()

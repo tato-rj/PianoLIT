@@ -41,8 +41,8 @@ class UpdateTutorials extends Command
         $pieces = Piece::withVideos()->get();
 
         foreach ($pieces as $piece) {
-            if ($piece->videos_array) {
-                foreach ($piece->videos_array as $video) {
+            if ($videos = unserialize($piece->videos)) {
+                foreach ($videos as $video) {
                     $piece->tutorials()->create([
                         'type' => $video['title'] ?? 'MISSING',
                         'description' => $video['description'] ?? 'MISSING',

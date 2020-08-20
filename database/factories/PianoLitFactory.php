@@ -33,6 +33,7 @@ $factory->define(Tutorial::class, function (Faker $faker) {
         'type' => $faker->word,
         'description' => $faker->sentence,
         'filename' => $faker->word,
+        'video_url' => $faker->url,
     ];
 });
 

@@ -49,7 +49,7 @@ trait PieceStatus
 
     public function isComplete()
     {
-    	return $this->hasScore() && $this->hasAudio() && $this->hasTags() && $this->hasITunes() && $this->hasVideos();
+    	return $this->hasScore() && $this->hasAudio() && $this->hasTags() && $this->hasITunes();
     }
 
     public function scopeInPublicDomain($query)

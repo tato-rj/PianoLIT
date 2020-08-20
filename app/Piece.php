@@ -133,7 +133,7 @@ class Piece extends PianoLit
                 $array = [
                     'type' => $video['type'],
                     'description' => $video['description'],
-                    'filename' => $video['filename']
+                    'filename' => $video['filename'],
                 ];
 
                 if (array_key_exists('id', $video)) {

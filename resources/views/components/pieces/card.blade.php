@@ -13,7 +13,7 @@
 						@if($piece->hasItunes())
 						<div style="line-height: 1.3"><small><i class="fab fa-itunes"></i> iTunes recordings</small></div>
 						@endif
-						@if($piece->hasVideos())
+						@if($piece->tutorials()->exists())
 						<div style="line-height: 1.3"><small><i class="fab fa-youtube"></i> Video available</small></div>
 						@endif
 						@if($piece->hasAudio())

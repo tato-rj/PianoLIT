@@ -19,6 +19,7 @@ class CreateTutorialsTable extends Migration
             $table->string('type');
             $table->string('description');
             $table->string('filename');
+            $table->string('video_url')->nullable();
             $table->timestamps();
         });
     }

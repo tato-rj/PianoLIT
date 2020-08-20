@@ -92,7 +92,6 @@ class PieceTest extends AppTest
         $completePiece = create(Piece::class, [
             'score_path' => 'score.pdf', 
             'audio_path' => 'audio.mp3',
-            'videos' => serialize([['title' => 'foo', 'description' => 'bar', 'filename' => 'video']]),
             'itunes' => serialize(['itunes'])]);
 
         $completePiece->tags()->attach($this->tag);
@@ -107,10 +106,7 @@ class PieceTest extends AppTest
     	$this->assertTrue($completePiece->hasTags());    	 
 
     	$this->assertFalse($incompletePiece->hasITunes());
-    	$this->assertTrue($completePiece->hasITunes());    	 
-
-    	$this->assertFalse($incompletePiece->hasVideos());
-    	$this->assertTrue($completePiece->hasVideos());    	 
+    	$this->assertTrue($completePiece->hasITunes());
 
     	$this->assertFalse($incompletePiece->isComplete());
     	$this->assertTrue($completePiece->isComplete());    	 
