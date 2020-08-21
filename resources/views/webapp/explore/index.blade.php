@@ -83,7 +83,7 @@ function showRecent() {
 		let $recentContainer = $('#most-recent');
 
 		for (let i=0; i< recent.length; i++) {
-			$recentContainer.find('> div').append('<span class="recent-query cursor-pointer m-1 rounded-pill border border-grey px-2"><small style="line-height: 2">'+recent[i]+'</small></span>');
+			$recentContainer.find('> div').append('<span class="recent-query cursor-pointer m-1 rounded-pill border border-grey px-2"><small style="line-height: 2"><i class="fas fa-search fa-sm text-muted mr-1"></i>'+recent[i]+'</small></span>');
 		}
 
 		$recentContainer.show();
