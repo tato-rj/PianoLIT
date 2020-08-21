@@ -14,6 +14,8 @@
 </section>
 
 <section id="tags-search">
+@env('local')
+@else
 @foreach($categories as $title => $category)
 	<div class="mb-3">
 		<h5>{{ucfirst($title)}}</h5>
@@ -26,6 +28,7 @@
 		</div>
 	</div>
 @endforeach
+@endenv
 </section>
 
 @endsection
