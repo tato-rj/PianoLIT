@@ -33,8 +33,8 @@
     </script>
     <style type="text/css">
         .animate-bottom {
-          position: relative;
-          animation: animatebottom 0.4s;
+          position: relative !important;
+          animation: animatebottom 0.4s !important;
         }
 
         @keyframes animatebottom {
@@ -48,7 +48,7 @@
             opacity: 1;
           }
         }
-        
+
         #blog-content img, #blog-content iframe {
             max-width: 100%;
         }
