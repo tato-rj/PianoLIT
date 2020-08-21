@@ -49,13 +49,13 @@ class Api extends Factory
 
     public function composersList()
     {
-        // $key = \Redis::get('app.composersList');
+        $key = \Redis::get('app.allcomposers');
 
-        // $composers = \Cache::remember($key, days(1), function() {
-            return Composer::atLeast(1)->get()->sortBy('last_name');
-        // });
+        $composers = \Cache::remember($key, days(1), function() {
+            return Composer::atLeast(1)->get()->sortBy('last_name')->values();
+        });
 
-        // return $composers;
+        return $composers;
     }
 
     public function search($request)
