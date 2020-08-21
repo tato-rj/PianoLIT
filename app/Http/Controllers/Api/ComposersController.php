@@ -10,6 +10,6 @@ class ComposersController extends Controller
 {
     public function index()
     {
-    	return Composer::atLeast(1)->get()->sortBy('last_name');
+    	return Composer::atLeast(1)->get()->sortBy('last_name')->values();
     }
 }
