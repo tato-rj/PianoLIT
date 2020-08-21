@@ -32,23 +32,6 @@
         ]); ?>
     </script>
     <style type="text/css">
-        .animate-bottom {
-          position: relative !important;
-          animation: animatebottom 0.4s !important;
-        }
-
-        @keyframes animatebottom {
-          from {
-            bottom: -300px;
-            opacity: 0;
-          }
-
-          to {
-            bottom: 0;
-            opacity: 1;
-          }
-        }
-
         #blog-content img, #blog-content iframe {
             max-width: 100%;
         }

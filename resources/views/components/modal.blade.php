@@ -1,6 +1,6 @@
 <div class="modal fade" id="{{$id}}">
   <div class="modal-dialog modal-{{$size ?? null}}">
-    <div class="modal-content animate-bottom border-0">
+    <div class="modal-content border-0">
       <div class="modal-header bg-{{$headerBg ?? null}} {{!empty($headerNoborder) ? 'border-0' : null}}">
         @isset($title)
         <h5 class="modal-title">{{$title}}</h5>
