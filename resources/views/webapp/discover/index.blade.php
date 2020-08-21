@@ -31,6 +31,7 @@
 </div>
 
 @include('webapp.discover.tour.modal')
+@include('webapp.discover.composers.modal')
 @endsection
 
 @push('scripts')

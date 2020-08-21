@@ -1,7 +1,7 @@
 <div class="mb-4">
 	<div class="d-flex d-apart mb-3">
 		<h5 class="m-0">Composers</h5>
-		<a href="{{route('webapp.composers.index')}}" class="link-blue">View all</a>
+		<button data-toggle="modal" data-target="#composers-modal" class="btn-raw text-blue">View all</button>
 	</div>
 	<div class="custom-scroll dragscroll dragscroll-horizontal">
 		<div class="d-flex pb-2">

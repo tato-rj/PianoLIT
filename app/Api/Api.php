@@ -2,7 +2,7 @@
 
 namespace App\Api;
 
-use App\Piece;
+use App\{Piece, Composer};
 use App\Blog\Post;
 
 class Api extends Factory
@@ -45,6 +45,17 @@ class Api extends Factory
         });
 
         return $post;
+    }
+
+    public function composersList()
+    {
+        $key = \Redis::get('app.composers');
+
+        $composers = \Cache::remember($key, days(1), function() {
+            return Composer::atLeast(1)->get()->sortBy('last_name');
+        });
+
+        return $composers;
     }
 
     public function search($request)

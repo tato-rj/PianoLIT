@@ -14,8 +14,17 @@
 </section>
 
 <section id="tags-search">
+
 @env('local')
+@foreach($categories as $title => $category)
+	@if(in_array($title, ['technique', 'mood', 'genre']))
+	@include('webapp.explore.rows.tags')
+	@elseif($title == 'period')
+	@include('webapp.explore.rows.periods')
+	@endif
+@endforeach
 @else
+
 @foreach($categories as $title => $category)
 	<div class="mb-3">
 		<h5>{{ucfirst($title)}}</h5>

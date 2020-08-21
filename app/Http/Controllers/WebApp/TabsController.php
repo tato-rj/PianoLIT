@@ -11,10 +11,11 @@ class TabsController extends Controller
 {
     public function discover(Api $api)
     {
+        $composers = $api->composersList();
     	$rows = $api->discover()->toArray();
         $post = $api->post();
 
-    	return view('webapp.discover.index', compact(['rows', 'post']));
+    	return view('webapp.discover.index', compact(['rows', 'post', 'composers']));
     }
 
     public function explore()
