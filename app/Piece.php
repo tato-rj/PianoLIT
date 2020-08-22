@@ -302,9 +302,7 @@ class Piece extends PianoLit
 
     public function scopeWithTutorials($query)
     {
-        return $query->withVideos()->get()->filter(function($piece, $index) {
-            return $piece->videos_count > 2;
-        });
+        return $query->has('tutorials', '>', 2)->get();
     }
 
     public function scopebyRecordingsAvailable($query)
