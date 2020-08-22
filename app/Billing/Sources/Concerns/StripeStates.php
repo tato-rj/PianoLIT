@@ -52,13 +52,7 @@ trait StripeStates
 
 	public function isActive()
 	{
-		$isPaused = $this->isPaused();
-		$isActive = in_array($this->status, $this->states['active']);
-
-		if ($isPaused)
-			return $this->renews_at ? now()->lte($this->renews_at) && $isActive : false;
-
-		return $isActive;
+		return ! $this->isPaused() && in_array($this->status, $this->states['active']);
 	}
 
 	public function isExpired()
