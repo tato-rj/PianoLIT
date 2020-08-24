@@ -29,7 +29,7 @@ trait StripeStates
 
 		$status = $this->getStatus();
 
-		if (in_array($this->status, $this->states['inactive']))
+		if (in_array($status, $this->states['inactive']) || $this->paused_at)
 			return 'secondary';
 
 		if (in_array($status, $this->states['active']))
