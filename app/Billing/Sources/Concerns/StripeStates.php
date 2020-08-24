@@ -93,7 +93,7 @@ trait StripeStates
 
 	public function willRenew()
 	{
-		return (bool) $this->renews_at;
+		return (bool) $this->renews_at && ! $this->paused_at;
 	}
 
 	public function isCanceled()
