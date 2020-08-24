@@ -29,12 +29,12 @@ trait StripeStates
 
 		$status = $this->getStatus();
 
-		if (in_array($status, $this->states['active']))
-			return 'green';
-
 		if (in_array($this->status, $this->states['inactive']))
 			return 'secondary';
 
+		if (in_array($status, $this->states['active']))
+			return 'green';
+		
 		if (in_array($status, $this->states['canceled']))
 			return 'danger';
 	}
