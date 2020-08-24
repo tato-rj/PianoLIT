@@ -29,7 +29,7 @@ Check this week's FREE pick
 @include('mail::lists.check', ['items' => [
 	'Get the score', 
 	'Watch a video performance',
-	'Watch video tutorials',
+	'Watch ' . (count($piece->videos_array) - 1) . ' video tutorials',
 	'Speed up/slow down the audio',
 	'Discover similar pieces',
 	'Find top performances on Apple Music'
