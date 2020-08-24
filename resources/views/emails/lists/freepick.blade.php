@@ -29,7 +29,7 @@ Check this week's FREE pick
 @include('mail::lists.check', ['items' => [
 	'Get the score', 
 	'Watch a video performance',
-	'Watch ' . (count($piece->videos_array) - 1) . ' video tutorials',
+	'Watch ' . (count($tutorials) - 1) . ' video tutorials',
 	'Speed up/slow down the audio',
 	'Discover similar pieces',
 	'Find top performances on Apple Music'
@@ -37,7 +37,7 @@ Check this week's FREE pick
 
 @include('mail::divider', ['orientation' => 'vertical'])
 
-@include('mail::lists.badge', ['tutorials' => $piece->videos_array])
+@include('mail::lists.badge', ['tutorials' => $tutorials])
 
 @include('mail::divider', ['orientation' => 'vertical'])
 
