@@ -34,26 +34,4 @@ class StripeTest extends AppTest
 
         $this->assertTrue($user->membership->source->isOnTrial());
     }
-
-    // /** @test */
-    // public function it_knows_its_status()
-    // {
-    //     $this->stripeUser->membership->source->update(['renews_at' => now()->copy()->addDays(4)]);
-
-    //     $this->assertTrue($this->stripeUser->isOnTrial);
-
-    //     $this->assertEquals('active', $this->stripeUser->getStatus());
-
-    //     $this->stripeUser->membership->source->update(['renews_at' => now()->copy()->addDays(20)]);
-
-    //     $this->assertFalse($this->stripeUser->isOnTrial);
-
-    //     $this->assertEquals('active', $this->stripeUser->getStatus());
-
-    //     $this->stripeUser->membership->source->update(['renews_at' => now()->copy()->subDay(), 'status']);
-
-    //     $this->assertFalse($this->stripeUser->isOnTrial);
-        
-    //     $this->assertEquals('inactive', $this->stripeUser->getStatus());
-    // }
 }

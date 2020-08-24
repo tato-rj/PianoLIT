@@ -37,7 +37,7 @@ class MembersTest extends AppTest
     }
 
     /** @test */
-    public function when_opening_a_piece_it_is_redirected_to_their_membership_settings_page_if_paused()
+    public function paused_memberships_are_redirected_to_their_membership_settings_page_if_past_the_grace_period()
     {
         $this->withExceptionHandling();
 
@@ -47,9 +47,25 @@ class MembersTest extends AppTest
 
         $this->postStripeMembership(auth()->user());
 
-        auth()->user()->membership->source->update(['status' => 'paused', 'paused_at' => now()]);
+        auth()->user()->membership->source->update(['status' => 'paused', 'paused_at' => now(), 'renews_at' => now()->subMonth()]);
 
         $this->get(route('webapp.pieces.show', $this->piece))->assertRedirect(route('webapp.membership.edit'));
+    }
+
+    /** @test */
+    public function a_paused_members_has_access_to_the_app_during_the_grace_period()
+    {
+        $user = create(User::class);
+
+        $this->signIn($user);
+
+        $this->postStripeMembership(auth()->user());
+
+        auth()->user()->membership->source->update(['status' => 'paused', 'paused_at' => now()]);
+
+        $this->assertTrue(auth()->user()->isAuthorized());
+
+        // $this->get(route('webapp.pieces.show', $this->piece))->assertSuccessfull();
     }
 
     /** @test */

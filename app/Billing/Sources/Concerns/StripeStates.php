@@ -41,9 +41,13 @@ trait StripeStates
 
 	public function getStatus($callStripe = false)
 	{
-		if ($this->isPaused())
-			return 'paused';
+		if ($this->isPaused()) {
+			return $this->isExpired() ? 'inactive' : 'active';
+		}
 
+		if ($this->isEnded())
+			return 'inactive';
+	
 		if ($this->isOnTrial())
 			return 'trial';
 

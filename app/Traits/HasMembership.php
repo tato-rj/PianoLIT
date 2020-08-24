@@ -26,9 +26,6 @@ trait HasMembership
     public function isAuthorized()
     {
         $status = $this->getStatus();
-        
-        if ($status == 'paused')
-            return $this->membership->source->renews_at ? now()->lte($this->membership->source->renews_at) : false;
 
         return in_array($status, ['active', 'trial']);
     }

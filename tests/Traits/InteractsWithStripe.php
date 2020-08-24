@@ -71,4 +71,13 @@ trait InteractsWithStripe
 
         $this->assertEquals($cards[0]->last4, $last4);
     }
+
+    public function assertApiStatusIs($status, $user = null)
+    {
+        $user = $user ?? auth()->user();
+
+        $response = $this->post(route('api.memberships.status', ['user_id' => $user->id]));
+
+        $this->assertEquals($response->json(), $status);
+    }
 }
