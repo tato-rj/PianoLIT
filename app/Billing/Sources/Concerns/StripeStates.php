@@ -32,7 +32,7 @@ trait StripeStates
 		if (in_array($status, $this->states['active']))
 			return 'green';
 
-		if (in_array($status, $this->states['inactive']))
+		if (in_array($this->status, $this->states['inactive']))
 			return 'secondary';
 
 		if (in_array($status, $this->states['canceled']))
