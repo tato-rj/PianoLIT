@@ -297,7 +297,7 @@ class Piece extends PianoLit
 
     public function scopeWithVideos($query)
     {
-        return $query->whereNotNull('videos');
+        return $query->has('tutorials');
     }
 
     public function scopeWithTutorials($query)
