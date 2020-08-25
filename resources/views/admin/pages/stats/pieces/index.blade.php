@@ -20,9 +20,9 @@
             'xAxis' => 'hide',
             'select' => [
               'take' => [
-                ['label' => 'Last 5', 'value' => 5],
-                ['label' => 'Last 10', 'value' => '10'],
-                ['label' => 'Last 15', 'value' => '15']
+                ['label' => 'Last 10', 'value' => 10],
+                ['label' => 'Last 20', 'value' => '20'],
+                ['label' => 'Last 30', 'value' => '30']
               ]
             ],
           ])
