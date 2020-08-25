@@ -22,7 +22,7 @@
               'take' => [
                 ['label' => 'Last 10', 'value' => 10],
                 ['label' => 'Last 20', 'value' => '20'],
-                ['label' => 'Last 30', 'value' => '30']
+                ['label' => 'Show all', 'value' => \App\Piece::freepicks()->count()]
               ]
             ],
           ])
