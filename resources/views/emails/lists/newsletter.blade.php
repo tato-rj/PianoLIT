@@ -5,7 +5,13 @@
 	'author' => 'A. Einstein'
 ])
 
-<p>If September is your back-to-class or just back-to-reality month, we’ve some great piano music additions that will make this transition from summer to early fall easier. Get the PianoLIT app and start exploring.</p>
+<p>If September is your back-to-class or just back-to-reality month, we have some new great piano music that will make this transition from summer to early fall a bit easier. Get the PianoLIT app and start exploring.</p>
+
+<p>We are very excited to announce two new resources we are releasing this month!</p>
+
+<p>Our new <strong>eBooks</strong> will cover a wide variety of piano related topics, ranging from theory, sight reading, history and more. We are also developing <strong>eScores</strong>, which are our own editions of impossible-to-find piano scores. These are true gems of the piano repertoire for every mood and level.</p>
+
+<p class="text-center"><strong>STAY TUNED🤗!</strong></p>
 
 @component('mail::panel')
 # How do you think we're doing?
@@ -27,7 +33,7 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 
 <p><a href="https://www.youtube.com/watch?v=-mNdUXpYLsk" class="text-md"><strong>Watch Dreaming Opus 15 No.3 by Amy Beach</strong></a></p>
 
-<p><a href="https://my.pianolit.com/pieces/677#score" class="text-md"><strong>You'll find the score here</strong></a></p>
+<p><a href="https://my.pianolit.com/storage/app/score/pianolit-dreaming-in-gb-major-from-4-sketches-op15-no3-8596.pdf" class="text-md"><strong>Download the FREE score here</strong></a></p>
 
 <p>Based on a poem by French poet Victor Hugo, this is a remarkable piece in every possible way. The writing is intricate and expressive, the musical ideas are original and encompass a wide range of emotions.</p>
 
@@ -122,7 +128,7 @@ Check it out <a href="https://cgsociety.org/c/featured/fcup/clara-schumann-1856"
 @endcomponent
 
 @component('mail::panel')
-Fans have flocked to a church in Germany to hear a chord change in a musical composition that lasts for 639 years. Yes, it’s not a typo but the work is by the avant-garde American composer, John Cage called As Slow As Possible. It began 19 years ago and changed chord for first time in seven years. The score is made up of eight pages of music, to be played at the piano or organ - very slowly. So slowly that the piece will end in 2640.
+Fans have flocked to a church in Germany to hear a chord change in a musical composition that lasts for 639 years. Yes, it’s not a typo. The work is by the avant-garde American composer, John Cage called As Slow As Possible. It began 19 years ago and changed chord for first time in seven years. The score is made up of eight pages of music, to be played at the piano or organ - very slowly. So slowly that the piece will end in 2640.
 
 Read more about this <a href="https://www.bbc.com/news/world-europe-54041568" target="_blank">HERE</a>.
 @endcomponent
