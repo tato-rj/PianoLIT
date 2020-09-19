@@ -223,6 +223,16 @@ function lastword($str)
 	return array_pop($pieces);
 }
 
+function firstword($str)
+{
+	if (! $str || ! is_string($str))
+		return null;
+
+	$arr = explode(' ',trim($str));
+	
+	return $arr[0];
+}
+
 function noteToHumans($note) {
 	$result = str_replace('+', '#', $note);
 	$result = str_replace('-', 'b', $result);

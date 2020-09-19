@@ -18,3 +18,46 @@
 	padding-left: 44px !important;
 	padding-right: 44px !important;
 }
+
+input.input-light {
+	transition: .2s;
+	background: $grey-lighter;
+	border: 0;
+
+	&:hover {
+		background-color: $grey-light;
+	}
+
+	&:active {
+		background-color: $grey-light;
+	}
+
+	&:focus {
+		background-color: $grey-light;
+	}
+}
+
+input.input-center {
+	text-align: center;
+}
+
+input.input-center::-webkit-input-placeholder {
+	text-align: center;
+}
+
+input.input-center:-moz-placeholder { /* Firefox 18- */
+	text-align: center;  
+}
+
+input.input-center::-moz-placeholder {  /* Firefox 19+ */
+	text-align: center;  
+}
+
+input.input-center:-ms-input-placeholder {  
+	text-align: center; 
+}
+
+.input-invisible {
+	background-color: transparent !important;
+	border: 0;
+}

@@ -18,11 +18,12 @@ class TabsController extends Controller
     	return view('webapp.discover.index', compact(['rows', 'post', 'composers']));
     }
 
-    public function explore()
+    public function explore(Api $api)
     {
     	$categories = Tag::display()->groupBy('type');
+        $explore = $api->explore();
 
-    	return view('webapp.explore.index', compact('categories'));
+    	return view('webapp.explore.index', compact(['categories', 'explore']));
     }
 
     public function playlists()

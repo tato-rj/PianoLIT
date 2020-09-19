@@ -1,3 +1,80 @@
+h1 {
+	font-size: 2.75rem;
+}
+
+h1,h2, h3, h4, h5, h6 {
+	font-family: 'Poppins', sans-serif;
+	font-weight: 600;
+}
+
+body {
+	letter-spacing: .025em;
+}
+
+.navbar-nav .nav-link {
+	white-space: nowrap;
+}
+
+.navbar-light .navbar-toggler {
+	border: 0;
+}
+
+.navbar-nav .show>.nav-link {
+	color: rgba(0,0,0,.5) !important;
+}
+
+.navbar-nav .nav-link:hover {
+	color: rgba(0,0,0,.7) !important;
+}
+
+.accent-bottom::after {
+	content: '';
+	display: block;
+	background-color: #0055fe;
+	width: 100px;
+	border-radius: 2px;
+	height: 7px;
+	margin-top: 1.5rem;
+}
+
+.font-serif {
+	font-family: Georgia,Cambria,"Times New Roman",Times,serif;
+	font-weight: normal;
+	letter-spacing: .003em;
+}
+
+.blog-post {
+	font-size: 1.15em;
+	letter-spacing: .025em;
+}
+
+.blog-post h1, .blog-post h2, .blog-post h3, .blog-post h4 {
+	margin-bottom: 1.5rem;
+}
+
+.card:hover .card-overlay {
+	opacity: .6 !important;
+}
+
+.breadcrumb {
+	background-color: transparent;
+	font-size: 80%;
+}
+
+iframe {border: 0;}
+
+button:focus {outline:0;}
+
+
+.embed-responsive-a4 {
+  padding-bottom: 141.42%;
+}
+
+.selected-tag {
+	background: #70cfa7 !important;
+	color: white;
+}
+
 .mark, mark {
 	padding: 0!important;
 }

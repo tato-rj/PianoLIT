@@ -109,7 +109,7 @@
 
         </div>
 
-        @include('components/alerts/http')
+        @include('components.alerts.http')
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>

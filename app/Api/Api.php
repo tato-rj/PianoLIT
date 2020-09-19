@@ -2,7 +2,7 @@
 
 namespace App\Api;
 
-use App\{Piece, Composer};
+use App\{Piece, Composer, Tag};
 use App\Blog\Post;
 
 class Api extends Factory
@@ -61,5 +61,22 @@ class Api extends Factory
     public function search($request)
     {
         return (new Search($request))->query();
+    }
+
+    public function explore()
+    {
+        $categories = Tag::display()->groupBy('type')->forget('period');
+        $highlights = Piece::freePicks()->get();
+        $post = $this->post();
+        $periods = Tag::periods()->withCount('pieces')->get();
+        $composer = $highlights->shift()->composer;
+
+        return collect([
+            ['label' => 'Categories', 'collection' => $categories], 
+            ['label' => 'Highlights', 'collection' => $highlights->shuffle()->take(20)],
+            ['label' => 'Originals', 'collection' => $post],
+            ['label' => 'Periods', 'collection' => $periods],
+            ['label' => 'Composer of the week', 'collection' => $composer]
+        ]);
     }
 }

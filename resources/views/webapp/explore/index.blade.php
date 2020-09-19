@@ -16,13 +16,11 @@
 <section id="tags-search">
 
 @env('local')
-@foreach($categories as $title => $category)
-	@if(in_array($title, ['technique', 'mood', 'genre']))
-	@include('webapp.explore.rows.tags')
-	@elseif($title == 'period')
-	@include('webapp.explore.rows.periods')
-	@endif
+<div class="">
+@foreach($explore as $row)
+	@include('webapp.explore.rows.'.strtolower(firstword($row['label'])))
 @endforeach
+</div>
 @else
 
 @foreach($categories as $title => $category)
@@ -49,12 +47,15 @@ $('#tags-search .tag').on('click', function() {
 	$('#tags-search .tag').not(this).removeClass('btn-teal');
 	$(this).toggleClass('btn-teal');
 	
+	let $results = $(this).closest('.modal-body').find('.search-results');
 	let tags = $('#tags-search .tag.btn-teal').attrToArray('data-name');
+
+	$results.html('<div class="text-muted text-center mb-3"><i>Searching...</i></div>');
 
   	axios.get(window.urls.searchCount, {params: {search: tags.join(' ')}})
   		.then(function(response) {
-  			$('#bottom-popup-content').html(response.data)
-  			$('#bottom-popup').show();
+  			$results.html(response.data)
+  			// $('#bottom-popup').show();
   		})
   		.catch(function(error) {
   			$('#bottom-popup').fadeOut('fast');

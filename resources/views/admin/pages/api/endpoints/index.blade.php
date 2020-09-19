@@ -49,7 +49,13 @@
         'route' => route('api.tags'), 
         'args' => [],
         'title' => 'Tags tab'])
-      
+
+      @include('admin.pages.api.endpoints.card', [
+        'type' => 'GET', 
+        'route' => route('api.explore'), 
+        'args' => [],
+        'title' => 'Explore tab'])
+
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
         'route' => route('api.users.tutorial-requests.show', ['user_id' => \App\User::has('tutorialRequests')->first()->id]),

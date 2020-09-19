@@ -33,4 +33,9 @@ class TabsController extends Controller
     {
         return Tag::display();
     }
+
+    public function explore(Api $api)
+    {
+        return $api->explore()->toArray();
+    }
 }

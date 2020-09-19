@@ -26,6 +26,10 @@ $(document).ready(function() {
     $('#sort-container input[type="radio"]').click(function() {
         $('#pieces-list').sortChildrenBy(this);
     });
+
+    $('[data-clamp]').each(function() {
+        $(this).clamp($(this).data('clamp'));
+    });
 });
 
 $(window).bind('load', function() {

@@ -41,7 +41,8 @@ class Piece extends PianoLit
         'is_new',
         'number_of_pages',
         'for_who',
-        'has_siblings'
+        'has_siblings',
+        'background'
     ];
     
     protected $report_by = 'medium_name_with_composer';
@@ -543,6 +544,11 @@ class Piece extends PianoLit
     }
 
     public function getBackground()
+    {
+        return storage($this->cover_path);
+    }
+
+    public function getBackgroundAttribute()
     {
         return storage($this->cover_path);
     }
