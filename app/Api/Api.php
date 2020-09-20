@@ -2,7 +2,7 @@
 
 namespace App\Api;
 
-use App\{Piece, Composer, Tag};
+use App\{Piece, Composer, Tag, Tutorial};
 use App\Blog\Post;
 
 class Api extends Factory
@@ -65,7 +65,9 @@ class Api extends Factory
 
     public function explore()
     {
-        $categories = Tag::display()->groupBy('type')->forget('period');
+        $categories = Tag::display()->groupBy('type')->forget(['period', 'level']);
+        $levels = Tag::extendedLevels()->withCount('pieces')->get();
+        $harmony = Tutorial::byType('harmonic')->with('piece')->get()->unique('piece_id');
         $highlights = Piece::freePicks()->get();
         $post = $this->post();
         $periods = Tag::periods()->withCount('pieces')->get();
@@ -76,7 +78,9 @@ class Api extends Factory
             ['label' => 'Highlights', 'collection' => $highlights->shuffle()->take(20)],
             ['label' => 'Originals', 'collection' => $post],
             ['label' => 'Periods', 'collection' => $periods],
-            ['label' => 'Composer of the week', 'collection' => $composer]
+            ['label' => 'Levels', 'collection' => $levels],
+            ['label' => 'Composer of the week', 'collection' => $composer],
+            ['label' => 'Latest harmonic analysis', 'collection' => $harmony]
         ]);
     }
 }

@@ -42,6 +42,10 @@
 
 @push('scripts')
 <script type="text/javascript">
+
+</script>
+
+<script type="text/javascript">
 $('#tags-search .tag').on('click', function() {
 	$('#tags-search button').disable();
 	$('#tags-search .tag').not(this).removeClass('btn-teal');
@@ -50,15 +54,21 @@ $('#tags-search .tag').on('click', function() {
 	let $results = $(this).closest('.modal-body').find('.search-results');
 	let tags = $('#tags-search .tag.btn-teal').attrToArray('data-name');
 
+	$results.empty();
+
+	if (tags.length == 0) {
+		$('#tags-search button').enable();
+		return;
+	}
+
 	$results.html('<div class="text-muted text-center mb-3"><i>Searching...</i></div>');
 
   	axios.get(window.urls.searchCount, {params: {search: tags.join(' ')}})
   		.then(function(response) {
-  			$results.html(response.data)
-  			// $('#bottom-popup').show();
+  			$results.html(response.data);
   		})
   		.catch(function(error) {
-  			$('#bottom-popup').fadeOut('fast');
+  			$results.html('<div class="text-red text-center mb-3"><i>Sorry, something went wrong...</i></div>');
   		})
   		.then(function() {
   			$('#tags-search button').enable();

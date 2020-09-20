@@ -1,7 +1,6 @@
 @component('webapp.explore.rows.row', ['data' => $row])
-<div class="p-2">
 <a href="{{route('webapp.search.results', ['search' => $row['collection']->name])}}" class="link-none">
-	<div class="border rounded row mb-3">
+	<div class="border rounded row no-gutters mb-3">
 		<div class="col-lg-8 col-md-8 col-8 p-3">
 			<div class="d-flex flex-wrap justify-content-between">
 				<div class="mr-2">
@@ -18,5 +17,4 @@
 		<div class="col-lg-4 col-md-4 col-4 bg-align-center rounded-right" style="background-image: url({{$row['collection']->cover_image}});"></div>
 	</div>
 </a>
-</div>
 @endcomponent

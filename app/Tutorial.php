@@ -44,4 +44,9 @@ class Tutorial extends PianoLit
     {
     	return $this->types;
     }
+
+    public function scopeByType($query, $type)
+    {
+        return $query->where('type', 'LIKE', '%'.ucfirst($type).'%');
+    }
 }
