@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 
 class RedisController extends Controller
 {
-	protected $keys = ['app.discover'];
+	protected $keys = ['app.discover', 'app.explore'];
 
     public function update()
     {

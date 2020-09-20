@@ -3,7 +3,7 @@
     <div class="modal-content border-0">
       <div class="modal-header bg-{{$headerBg ?? null}} {{!empty($headerNoborder) ? 'border-0' : null}}">
         @isset($title)
-        <h5 class="modal-title">{!! $title !!}</h5>
+        <h5 class="modal-title clamp-1">{!! $title !!}</h5>
         @endisset
         @isset($titleRaw)
         <div class="w-100">{!! $titleRaw !!}</div>

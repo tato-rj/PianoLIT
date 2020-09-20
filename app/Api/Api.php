@@ -65,22 +65,28 @@ class Api extends Factory
 
     public function explore()
     {
-        $categories = Tag::display()->groupBy('type')->forget(['period', 'level']);
-        $levels = Tag::extendedLevels()->withCount('pieces')->get();
-        $harmony = Tutorial::byType('harmonic')->with('piece')->get()->unique('piece_id');
-        $highlights = Piece::freePicks()->get();
-        $post = $this->post();
-        $periods = Tag::periods()->withCount('pieces')->get();
-        $composer = $highlights->shift()->composer;
+        $key = \Redis::get('app.explore');
 
-        return collect([
-            ['label' => 'Categories', 'collection' => $categories], 
-            ['label' => 'Highlights', 'collection' => $highlights->shuffle()->take(20)],
-            ['label' => 'Originals', 'collection' => $post],
-            ['label' => 'Periods', 'collection' => $periods],
-            ['label' => 'Levels', 'collection' => $levels],
-            ['label' => 'Composer of the week', 'collection' => $composer],
-            ['label' => 'Latest harmonic analysis', 'collection' => $harmony]
-        ]);
+        $collection = \Cache::remember($key, days(1), function() {
+            $categories = Tag::display()->groupBy('type')->forget(['period', 'level']);
+            $levels = Tag::extendedLevels()->withCount('pieces')->get();
+            $harmony = Tutorial::byType('harmonic')->with('piece')->take(12)->get()->unique('piece_id')->take(4);
+            $highlights = Piece::freePicks()->get();
+            $post = $this->post();
+            $periods = Tag::periods()->withCount('pieces')->get();
+            $composer = $highlights->shift()->composer;
+            
+            return collect([
+                ['label' => 'Categories', 'collection' => $categories], 
+                ['label' => 'Highlights', 'collection' => $highlights->shuffle()->take(16)],
+                ['label' => 'Originals', 'collection' => $post],
+                ['label' => 'Periods', 'collection' => $periods],
+                ['label' => 'Levels', 'collection' => $levels],
+                ['label' => 'Composer of the week', 'collection' => $composer],
+                ['label' => 'Latest harmonic analysis', 'collection' => $harmony]
+            ]);
+        });
+
+        return $collection;
     }
 }

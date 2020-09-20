@@ -15,15 +15,13 @@
 
 <section id="tags-search">
 
-@env('local')
 <div class="">
 @foreach($explore as $row)
 	@include('webapp.explore.rows.'.strtolower(firstword($row['label'])))
 @endforeach
 </div>
-@else
 
-@foreach($categories as $title => $category)
+{{-- @foreach($categories as $title => $category)
 	<div class="mb-3">
 		<h5>{{ucfirst($title)}}</h5>
 		<div class="d-flex flex-wrap">
@@ -34,8 +32,7 @@
 		@endforeach
 		</div>
 	</div>
-@endforeach
-@endenv
+@endforeach --}}
 </section>
 
 @endsection
@@ -127,6 +124,41 @@ function submitRecent(recent) {
 	let $form = $('#search-form');
 	$form.find('input[name="search"]').val(recent);
 	$form.submit();
+}
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.video-container').each(function() {
+		let videoId = '#'+ $(this).find('video').attr('id');
+
+		new Plyr(videoId);
+	});
+});
+</script>
+{{-- TRIGGER LINK ON CLICK, NOT WHILE DRAGGING --}}
+<script type="text/javascript">
+ $(function() {
+    var isDragging = false;
+    $('.search-card, .piece-card')
+    .mousedown(function() {
+        $(window).mousemove(function() {
+            isDragging = true;
+            $(window).unbind("mousemove");
+        });
+    })
+    .mouseup(function() {
+        var wasDragging = isDragging;
+        isDragging = false;
+        $(window).unbind("mousemove");
+        if (!wasDragging) {
+            search($(this));
+        }
+    });
+  });
+
+function search(element) {
+	goTo(element.attr('data-url'));
 }
 </script>
 @endpush
