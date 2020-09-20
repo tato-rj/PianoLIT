@@ -40,7 +40,7 @@
 						<p class="m-0 text-muted">{{$video->description}}</p>
 					</div>
 					<video class="w-100" id="piece-video-{{$video->id}}">
-						<source src="https://storage.googleapis.com/pianolit-app/videos/frederic-chopin/castadiva-01.mp4" type="video/mp4">
+						<source src="{{$video->video_url}}" type="video/mp4">
 						Your browser does not support the video tag.
 					</video>
 				</div>
