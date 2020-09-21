@@ -12,7 +12,7 @@
 				</div>
 			</div>
 			<div class="mb-2"><small>{{$row['collection']->lifespan}}</small></div>
-			<div data-clamp="4">{{$row['collection']->curiosity}} {{$row['collection']->curiosity}}</div>
+			<div data-clamp="4">{{$row['collection']->curiosity}}</div>
 		</div>
 		<div class="col-lg-4 col-md-4 col-4 bg-align-center rounded-right" style="background-image: url({{$row['collection']->cover_image}});"></div>
 	</div>
