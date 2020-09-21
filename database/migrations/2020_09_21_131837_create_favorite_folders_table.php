@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateFavoritesTable extends Migration
+class CreateFavoriteFoldersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateFavoritesTable extends Migration
      */
     public function up()
     {
-        Schema::create('favorites', function (Blueprint $table) {
+        Schema::create('favorite_folders', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('piece_id');
-            $table->unsignedInteger('folder_id')->nullable();
+            $table->string('name');
+            $table->string('description')->nullable();
             $table->timestamps();
-
-            $table->unique(['user_id', 'piece_id']);
         });
     }
 
@@ -31,6 +29,6 @@ class CreateFavoritesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('favorites');
+        Schema::dropIfExists('favorite_folders');
     }
 }

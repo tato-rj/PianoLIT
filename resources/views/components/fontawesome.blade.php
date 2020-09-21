@@ -6,4 +6,4 @@
 		   mr-{{$mr ?? 2}} 
 		   ml-{{$ml ?? null}} 
 		   {{$classes ?? null}}"
-	style="{{isset($if) && ! $if ? 'display: none;' : null}}"></i>
+	style="{{isset($if) && ! $if ? 'display: none;' : null}} {{$styles ?? null}}"></i>

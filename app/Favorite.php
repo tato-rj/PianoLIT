@@ -15,4 +15,9 @@ class Favorite extends PianoLit
     {
     	return $this->belongsTo(User::class);
     }
+
+    public function folder()
+    {
+    	return $this->belongsTo(FavoriteFolder::class, 'folder_id');
+    }
 }
