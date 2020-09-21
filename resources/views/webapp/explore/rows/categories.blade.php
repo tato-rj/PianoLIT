@@ -4,7 +4,7 @@
 		<div class="col-4 p-2">
 			<button data-toggle="modal" data-target="#tags-{{$name}}" 
 					style="border: 1px solid rgba(77, 192, 181, .3)"
-					class="btn btn-block py-2 text-nowrap d-flex flex-center">
+					class="btn rounded btn-block py-2 text-nowrap d-flex flex-center">
 				<div class="">
 					<img src="{{asset('images/icons/'.$name.'.svg')}}" class="m-1" style="width: 25px"><div>{{ucfirst($name)}}</div>
 				</div>
