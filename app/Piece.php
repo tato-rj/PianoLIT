@@ -42,7 +42,7 @@ class Piece extends PianoLit
         'number_of_pages',
         'for_who',
         'has_siblings',
-        'background'
+        'image_background'
     ];
     
     protected $report_by = 'medium_name_with_composer';
