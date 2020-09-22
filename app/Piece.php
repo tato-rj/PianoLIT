@@ -548,7 +548,7 @@ class Piece extends PianoLit
         return storage($this->cover_path);
     }
 
-    public function getBackgroundAttribute()
+    public function getImageBackgroundAttribute()
     {
         return storage($this->cover_path);
     }

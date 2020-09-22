@@ -12,10 +12,10 @@ class FavoritesTest extends AppTest
         parent::setUp();
 
 		$this->favorite = Favorite::first();
-		
+
 		$folder = create(FavoriteFolder::class, ['user_id' => $this->favorite->user_id]);
 
-		$this->favorite->folder()->associate($folder);
+		$this->favorite->folders()->save($folder);
     }
 
 	/** @test */
@@ -31,9 +31,17 @@ class FavoritesTest extends AppTest
 	}
 
 	/** @test */
-	public function it_belongs_to_a_folder()
+	public function it_belongs_to_many_folders()
 	{
-		$this->assertInstanceOf(FavoriteFolder::class, $this->favorite->folder);
+		$newfolder = create(FavoriteFolder::class, ['user_id' => $this->favorite->user_id]);
+
+		$this->assertCount(1, $this->favorite->folders);
+
+		$this->assertInstanceOf(FavoriteFolder::class, $this->favorite->folders->first());
+
+		$this->favorite->folders()->save($newfolder);
+
+		$this->assertCount(2, $this->favorite->fresh()->folders);
 	}
 
     /** @test */

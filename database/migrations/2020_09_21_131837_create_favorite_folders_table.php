@@ -20,6 +20,13 @@ class CreateFavoriteFoldersTable extends Migration
             $table->string('description')->nullable();
             $table->timestamps();
         });
+
+        Schema::create('favorite_favorite_folder', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedInteger('favorite_folder_id');
+            $table->unsignedInteger('favorite_id');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -30,5 +37,6 @@ class CreateFavoriteFoldersTable extends Migration
     public function down()
     {
         Schema::dropIfExists('favorite_folders');
+        Schema::dropIfExists('favorite_favorite_folder');
     }
 }

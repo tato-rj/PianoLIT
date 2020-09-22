@@ -17,7 +17,6 @@ class CreateFavoritesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('piece_id');
-            $table->unsignedInteger('folder_id')->nullable();
             $table->timestamps();
 
             $table->unique(['user_id', 'piece_id']);
