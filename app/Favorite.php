@@ -31,10 +31,13 @@ class Favorite extends PianoLit
     {
         $this->checkFolderOwnership($user, $folder);
 
-        if ($record = $this->retrieve($user, $piece, $folder)->first())
-            return $record->delete();
+        if ($record = $this->retrieve($user, $piece, $folder)->first()){
+            $record->delete();
+            return false;
+        }
         
-        return $this->addTo($user, $piece, $folder);
+        $this->addTo($user, $piece, $folder);
+        return true;
     }
 
     public function scopeRetrieve($query, User $user, Piece $piece, FavoriteFolder $folder = null)
