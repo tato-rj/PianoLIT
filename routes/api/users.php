@@ -4,12 +4,21 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::prefix('favorites')->name('favorites.')->group(function() {
 
-		Route::get('/show', 'Api\FavoritesController@show')->name('show');
+		Route::get('show', 'Api\FavoritesController@show')->name('show');
 
-		Route::post('/show', 'Api\FavoritesController@show'); // REMOVE THIS
+		Route::post('show', 'Api\FavoritesController@show'); // REMOVE THIS
 
-		Route::post('/update', 'FavoritesController@update')->name('update');
+		Route::post('update', 'FavoritesController@update')->name('update');
 
+		Route::prefix('folders')->name('folders.')->group(function() {
+
+			Route::post('', 'FavoriteFoldersController@store')->name('store');
+
+			Route::patch('', 'FavoriteFoldersController@update')->name('update');
+
+			Route::delete('', 'FavoriteFoldersController@destroy')->name('delete');
+
+		});
 	});
 
 	Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function() {

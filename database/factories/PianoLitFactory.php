@@ -1,6 +1,6 @@
 <?php
 
-use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist, EmailList, Clip, Tutorial, FavoriteFolder};
+use App\{Composer, Country, Piece, Tag, Playlist, Admin, Timeline, Pianist, EmailList, Clip, Tutorial, FavoriteFolder, Favorite, User};
 use App\Infograph\Infograph;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -111,6 +111,17 @@ $factory->define(Piece::class, function (Faker $faker) {
             'creator_id' => function() {
                 return create(Admin::class)->id;
             }
+    ];
+});
+
+$factory->define(Favorite::class, function(Faker $faker) {
+    return [
+        'user_id' => function() {
+            return create(User::class)->id;
+        },
+        'piece_id' => function() {
+            return create(Piece::class)->id;
+        }
     ];
 });
 

@@ -61,7 +61,15 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function favorites()
     {
-        return $this->belongsToMany(Piece::class, 'favorites', 'user_id', 'piece_id')->with(['composer', 'favorites'])->withTimestamps()->orderBy('favorites.created_at', 'DESC');
+        return $this->belongsToMany(Piece::class, 'favorites', 'user_id', 'piece_id')
+                    ->with(['composer', 'favorites'])
+                    ->withTimestamps()
+                    ->orderBy('favorites.created_at', 'DESC');
+    }
+
+    public function favoriteFolders()
+    {
+        return $this->hasMany(FavoriteFolder::class);
     }
 
     public function views()

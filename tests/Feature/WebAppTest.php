@@ -52,7 +52,7 @@ class WebAppTest extends AppTest
 
         $this->assertTrue($favorite->isFavorited($this->user->id));
 
-        $this->post(route('webapp.users.favorites.toggle', $favorite));
+        $this->post(route('api.users.favorites.update', ['user_id' => $this->user->id, 'piece_id' => $favorite->id]));
 
         $this->assertFalse($favorite->fresh()->isFavorited($this->user->id));        
     }
