@@ -1,4 +1,4 @@
-<div class="border-bottom py-2 piece-result {{str_slug($piece->long_name)}}" 
+<div class="py-2 piece-result {{str_slug($piece->long_name)}}" 
 	data-tags="{{$piece->tags->pluck('name')->implode(' ')}}"
 	data-sort-level="{{$piece->level_order}}"
 	data-sort-catalogue="{{ord($piece->catalogue_full_name).''.$piece->catalogue_number.''.$piece->collection_number}}"

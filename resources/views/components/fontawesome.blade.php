@@ -1,4 +1,5 @@
 <i title="{{$title ?? null}}" 
+	name="{{$name ?? null}}"
 	class="fa{{$fa_type ?? 's'}} 
 		   fa-{{$icon}} 
 		   text-{{$color ?? null}} 

@@ -49,6 +49,12 @@ class PiecesController extends Controller
         return view('webapp.piece.components.video.element', compact('tutorial'))->render();
     }
 
+    public function saveTo(Piece $piece)
+    {
+        $folders = auth()->user()->favoriteFolders()->lastUpdated()->get();
+        return view('webapp.piece.components.saveto.index', compact(['piece', 'folders']))->render();        
+    }
+
     // NOT BEING USED
     public function score(Piece $piece)
     {

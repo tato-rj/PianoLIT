@@ -32,6 +32,13 @@
         ]); ?>
     </script>
     <style type="text/css">
+    .piece-result:not(:last-of-type) {
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
         #blog-content img, #blog-content iframe {
             max-width: 100%;
         }
@@ -115,6 +122,10 @@
     <script src="{{ mix('js/app.js') }}"></script>
 
     <script type="text/javascript">
+    $(document).on('click', '[data-dismiss=popup]', function() {
+        $('#bottom-popup').fadeOut('fast');
+    });
+
     $(document).on('click', 'button[data-manage="favorite"]', function(event) {
         event.preventDefault();
         let $button = $(this);
@@ -162,6 +173,85 @@
     </script>
     <script type="text/javascript">
     $('main').css('margin-bottom', $('#menu').height() + 20);
+    </script>
+
+    <script type="text/javascript">
+    $(document).on('click', 'button[data-manage=save-to]', function() {
+        let $btn = $(this);
+        $btn.disable();
+
+        axios.get($btn.data('url'))
+            .then(function(response) {
+                $('#bottom-popup-content').html(response.data)
+                $('#bottom-popup-content > div').width($('main').width());
+                $('#bottom-popup').show();
+            })
+            .catch(function(error) {
+                $('#bottom-popup').fadeOut('fast');
+            })
+            .then(function() {
+                $btn.enable();
+            });
+    });
+
+    $(document).on('click', 'button[data-submit=favorite]', function() {
+        let $btn = $(this);
+        let $icons = $btn.find('.favorite-icons');
+        $btn.disable();
+
+        axios.post($btn.data('url'))
+            .then(function(response) {
+                showIcon($icons, response.data);
+            })
+            .catch(function(error) {
+                alert('Something went wrong...');
+                console.log(error);
+            })
+            .then(function() {
+                $btn.enable();
+            });
+    });
+
+    $(document).on('click', 'button[data-submit=folder]', function() {
+        let $btn = $(this);
+        let $name = $($btn.data('name'));
+        let $container = $('#favorite-folders-container');
+
+        $btn.siblings('button').hide();
+
+        $btn.disable().text('Saving...');
+
+        axios.post($btn.data('url'), {name: $($name).val()})
+            .then(function(response) {
+                $container.html(response.data.html.list);
+            })
+            .catch(function(error) {
+                alert('Something went wrong...');
+                console.log(error);
+            })
+            .then(function() {
+                //
+            });
+    });
+
+    function showIcon($container, data) {
+        $container.find('i').hide();
+        $container.find('i[name="success"]').fadeIn('fast');
+
+        setTimeout(function() {
+            $container.closest('#favorite-folders-container').html(data.html.list)
+        }, 1000);
+    }
+
+    $(document).on('click', 'button.new-folder', function() {
+        $(this).hide();
+        $($(this).data('target')).show();
+    });
+
+    $(document).on('click', 'button.cancel-new-folder', function() {
+        $($(this).data('container')).hide();
+        $($(this).data('target')).show();
+    });
     </script>
     @stack('scripts')
 

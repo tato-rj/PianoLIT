@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\FavoriteFolder;
+use App\{FavoriteFolder, Piece, Favorite, User};
 use App\Rules\UserMustOwnTheFolder;
 use Illuminate\Http\Request;
 
@@ -12,13 +12,33 @@ class FavoriteFoldersController extends Controller
     {
     	$request->validate([
     		'user_id' => 'required|exists:users,id',
+            'piece_id' => 'sometimes|exists:pieces,id',
     		'name' => 'required|string'
     	]);
 
-    	return FavoriteFolder::create([
-    		'user_id' => $request->user_id,
-    		'name' => $request->name
-    	]);
+        $folder = FavoriteFolder::create([
+            'user_id' => $request->user_id,
+            'name' => $request->name
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        if ($piece = Piece::find($request->piece_id)) {
+            Favorite::toggle(
+                $user, 
+                $piece, 
+                $folder
+            );
+        }
+
+        $folders = $user->favoriteFolders()->lastUpdated()->get();
+
+    	return response()->json([
+            'html' => [
+                'list' => view('webapp.piece.components.saveto.content', compact(['piece', 'folders']))->render(),
+                'flex' => null
+            ]
+        ]);
     }
 
     public function update(Request $request)

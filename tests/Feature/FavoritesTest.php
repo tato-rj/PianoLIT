@@ -153,4 +153,10 @@ class FavoritesTest extends AppTest
 
         $this->assertFalse($this->user->favoriteFolders()->exists());
     }
+
+    /** @test */
+    public function users_can_create_a_folder_and_save_a_piece_in_it_at_the_same_time()
+    {
+        //
+    }
 }

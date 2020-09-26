@@ -16,6 +16,11 @@ class PianoLit extends Model
         return $query->orderBy('created_at');
     }
 
+    public function scopeLastUpdated($query)
+    {
+        return $query->orderBy('updated_at','DESC');
+    }
+
     public function scopeExclude($query, $ids)
     {
         return $query->whereNotIn('id', $ids);

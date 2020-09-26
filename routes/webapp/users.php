@@ -12,6 +12,12 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 
 		});
 
+		Route::prefix('favorites')->name('favorites.')->group(function() {
+
+			Route::post('{piece}', 'FavoritesController@update')->name('update');
+
+		});
+
 	});
 
 });

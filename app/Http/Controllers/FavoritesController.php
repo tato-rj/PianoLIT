@@ -9,12 +9,20 @@ class FavoritesController extends Controller
 {
     public function update(Request $request)
     {
-        $status = Favorite::toggle(
-        	User::findOrFail($request->user_id), 
-        	Piece::findOrFail($request->piece_id), 
-	        FavoriteFolder::find($request->folder_id)
-	    );
+        $user = User::findOrFail($request->user_id);
+        $piece = Piece::findOrFail($request->piece_id);
+        $folder = FavoriteFolder::find($request->folder_id);
 
-        return response()->json(['status' => $status, 'comment' => 'The favorite has been updated']);
+        $status = Favorite::toggle($user, $piece, $folder);
+
+        $folders = $user->favoriteFolders()->lastUpdated()->get();
+
+        return response()->json([
+        	'status' => $status,
+            'html' => [
+                'list' => view('webapp.piece.components.saveto.content', compact(['piece', 'folders']))->render(),
+                'flex' => null
+            ]
+        ]);
     }
 }

@@ -3,17 +3,21 @@
 }
 
 .dragscroll-horizontal {
-	overflow-x: scroll;
+	overflow-x: auto;
 }
 
 .custom-scroll::-webkit-scrollbar {
     height: 6px;
 }
 
-.custom-scroll::-webkit-scrollbar-track {
-    background: transparent; 
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
 }
- 
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .custom-scroll::-webkit-scrollbar-thumb {
     background: #e5e7e9;
     border-radius: 2px;
