@@ -196,8 +196,9 @@
 
     $(document).on('click', 'button[data-submit=favorite]', function() {
         let $btn = $(this);
+        let $btns = $btn.parent().find('button');
         let $icons = $btn.find('.favorite-icons');
-        $btn.disable();
+        $btns.disable();
 
         axios.post($btn.data('url'))
             .then(function(response) {
@@ -208,7 +209,7 @@
                 console.log(error);
             })
             .then(function() {
-                $btn.enable();
+                $btns.enable();
             });
     });
 

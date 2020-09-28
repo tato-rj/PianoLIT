@@ -31,14 +31,7 @@ class FavoriteFoldersController extends Controller
             );
         }
 
-        $folders = $user->favoriteFolders()->lastUpdated()->get();
-
-    	return response()->json([
-            'html' => [
-                'list' => view('webapp.piece.components.saveto.content', compact(['piece', 'folders']))->render(),
-                'flex' => null
-            ]
-        ]);
+    	return response()->json(['message' => 'The folder has been created.', 'data' => $folder]);
     }
 
     public function update(Request $request)
@@ -50,17 +43,16 @@ class FavoriteFoldersController extends Controller
     					  new UserMustOwnTheFolder($request->folder_id)
     					],
     		'name' => 'required|string',
-    		'description' => 'sometimes|string',
     	]);
 
-    	$folder = FavoriteFolder::findOrFail($request->folder_id);
+    	$folder = FavoriteFolder::find($request->folder_id);
 
     	$folder->update([
     		'name' => $request->name,
     		'description' => $request->description
     	]);
 
-    	return $folder;
+    	return response()->json(['message' => 'The folder has been created.', 'data' => $folder]);
     }
 
     public function destroy(Request $request)
@@ -69,12 +61,11 @@ class FavoriteFoldersController extends Controller
     		'folder_id' => 'required|exists:favorite_folders,id',
     		'user_id' => ['required', 
     					  'exists:users,id',
-    					  new UserMustOwnTheFolder($request->folder_id)
-    					]
+    					  new UserMustOwnTheFolder($request->folder_id)]
     	]);
 
-    	FavoriteFolder::findOrFail($request->folder_id)->delete();
+    	FavoriteFolder::find($request->folder_id)->delete();
 
-    	return response()->json('The folder has been removed.');
+    	return response()->json(['message' => 'The folder has been removed.']);
     }
 }

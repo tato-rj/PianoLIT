@@ -467,9 +467,9 @@ function lookup($file)
 	return $file ? 'text-success' : 'text-danger';
 }
 
-function percentage($num1, $num2)
+function percentage($num, $percent)
 {
-	return (int)round(($num1 * 100) / $num2);
+	return (int)round(($num * 100) / $percent);
 }
 
 function str_ends_with($str, $chars)

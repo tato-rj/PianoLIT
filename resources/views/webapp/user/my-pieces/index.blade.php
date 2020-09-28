@@ -119,20 +119,5 @@ $('button[data-toggle="list"]').on('show.bs.tab', function (e) {
 </script>
 
 <script type="text/javascript">
-$(document).on('click', '.favorite-folder', function() {
-	let $folder = $(this).closest('.folder-container');
-	let $container = $folder.closest('.row');
-	let $favorites = $folder.find('.favorite-pieces');
-
-	$('.favorite-pieces:visible').slideToggle('fast');
-
-	if ($favorites.is(':visible')) {
-		$container.find('.folder-container').addClass('col-lg-4 col-md-6').removeClass('col-lg-12 col-md-12');
-	} else {
-		$folder.siblings().addClass('col-lg-4 col-md-6').removeClass('col-lg-12 col-md-12');
-		$folder.removeClass('col-lg-4 col-md-6').addClass('col-lg-12 col-md-12');
-		$favorites.slideToggle('fast');
-	}
-});
 </script>
 @endpush

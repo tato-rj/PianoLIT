@@ -1,0 +1,1 @@
+<div class="badge badge-pill alert-blue">{{$folder->favorites_count}} {{str_plural('piece', $folder->favorites_count)}}</div>

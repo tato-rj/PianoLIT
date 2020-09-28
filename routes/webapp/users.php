@@ -14,6 +14,18 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 
 		Route::prefix('favorites')->name('favorites.')->group(function() {
 
+			Route::prefix('folders')->name('folders.')->group(function() {
+	
+				Route::get('{folder}', 'UsersController@folder')->name('show');
+
+				Route::post('', 'FavoriteFoldersController@store')->name('store');
+
+				Route::patch('{folder}', 'FavoriteFoldersController@update')->name('update');
+
+				Route::delete('{folder}', 'FavoriteFoldersController@destroy')->name('delete');
+	
+			});
+
 			Route::post('{piece}', 'FavoritesController@update')->name('update');
 
 		});

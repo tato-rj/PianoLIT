@@ -1,6 +1,8 @@
 <section id="folders-list" class="row"> 
 @forelse(auth()->user()->favoriteFolders()->lastUpdated()->get() as $folder)
-	@include('webapp.user.my-pieces.favorites.folder-sm')
+	@include('webapp.user.my-pieces.favorites.folders.folder')
+	@include('webapp.user.my-pieces.favorites.delete')
+	@include('webapp.user.my-pieces.favorites.edit')
 @empty
 	@include('webapp.components.empty', [
 		'icon' => 'empty-favorites', 

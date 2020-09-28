@@ -11,7 +11,7 @@
 			</div>
 			<div class="d-flex">
 				<button class="btn btn-primary mr-2 rounded-pill" data-submit="folder" data-name="#folder-name-{{$piece->id}}"
-				data-url="{{route('api.users.favorites.folders.store', ['piece_id' => $piece->id, 'user_id' => auth()->user()->id])}}">Save</button>
+				data-url="{{route('webapp.users.favorites.folders.store', ['piece_id' => $piece->id])}}">Save</button>
 				<button class="btn btn-grey-outline cancel-new-folder rounded-pill" data-container="#new-folder-container-{{$piece->id}}" data-target="#new-folder-button-{{$piece->id}}">Cancel</button>
 			</div>
 		</div>
