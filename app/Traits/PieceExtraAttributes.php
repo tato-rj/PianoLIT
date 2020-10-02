@@ -307,7 +307,7 @@ trait PieceExtraAttributes
                 'non-traditional' => "Ideal for beginners who like original pieces with modern sounds and unique characters.",
                 'flashy' => "If you are starting out and want to wow your audience, this piece is for you!",
                 'relaxing' => "Great piece for beginners who like relaxing, dreamy pieces.",
-                'default' => "If you are just starting out and like pieces, you'll love this one!",
+                'default' => "If you are just starting out and developing your technique, this piece will be a great one for you!",
             ],
             'early beginner' => [
                 'pedagogical' => "Ideal for beginners looking for an inspiring and rewarding experience.",
