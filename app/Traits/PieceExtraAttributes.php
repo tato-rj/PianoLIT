@@ -6,6 +6,9 @@ trait PieceExtraAttributes
 {
     public function getScoreCopyrightAttribute()
     {
+        if ($this->id == 652)
+            return 'Creative Commons';
+        
         return $this->score_copyright;
     }
 
