@@ -4,12 +4,12 @@ namespace App\Traits;
 
 trait PieceExtraAttributes
 {
-    public function getScoreCopyrightAttribute()
+    public function getScoreCopyrightAttribute($value)
     {
         if ($this->id == 652)
             return 'Creative Commons';
-        
-        return $this->score_copyright;
+
+        return $value;
     }
 
     public function getIsNewAttribute()
