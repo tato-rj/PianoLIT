@@ -9,7 +9,7 @@ trait PieceExtraAttributes
         if ($this->id == 652)
             return 'Creative Commons';
 
-        return $value;
+        return 'Creative Commons';
     }
 
     public function getIsNewAttribute()
