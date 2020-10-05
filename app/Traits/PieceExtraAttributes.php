@@ -4,6 +4,11 @@ namespace App\Traits;
 
 trait PieceExtraAttributes
 {
+    public function getScoreCopyrightAttribute()
+    {
+        return $this->score_copyright;
+    }
+
     public function getIsNewAttribute()
     {
         return $this->created_at->gte(now()->subDays(3));    
