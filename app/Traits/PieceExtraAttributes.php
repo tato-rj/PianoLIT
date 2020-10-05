@@ -4,14 +4,6 @@ namespace App\Traits;
 
 trait PieceExtraAttributes
 {
-    public function getScoreCopyrightAttribute($value)
-    {
-        if ($this->id == 652)
-            return 'Creative Commons';
-
-        return 'Creative Commons';
-    }
-
     public function getIsNewAttribute()
     {
         return $this->created_at->gte(now()->subDays(3));    
