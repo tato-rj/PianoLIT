@@ -31,7 +31,7 @@ var piano = new Tone.Sampler({
 	"C8" : "C8.[mp3|ogg]"
 }, {
 	"release" : 1,
-	"baseUrl" : "https://tonejs.github.io/examples/audio/salamander/"
+	"baseUrl" : "https://tonejs.github.io/audio/salamander/"
 }).toMaster();
 
 var $keyDown;

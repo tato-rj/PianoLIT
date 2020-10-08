@@ -17,11 +17,10 @@
 $body-bg: #e9ecef;
 $brand-primary: #2e5ab9;
 
+@import "brand/fonts";
 @import "bootstrap-custom";
 @import "responsive";
-@import "theme-custom";
 @import "global";
-@import "swiper";
 
 html {
 	background-color: white;
