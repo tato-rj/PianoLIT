@@ -1,5 +1,16 @@
-@component('components.modal', ['id' => 'tour-modal', 'headerNoborder' => true, 'headerBg' => 'primary', 'closeColor' => 'white', 'footerRaw' => 'next', 'bodyNoPadding' => true])
-@slot('titleRaw')
+@component('components.modal', [
+	'id' => 'tour-modal',
+	'options' => [
+		'header' => [
+			'background' => 'primary',
+			'raw' => true,
+			'close' => ['color' => 'white', 'position' => 'absolute-top-right']
+		],
+		'body' => ['padding' => 0],
+		'footer' => ['raw' => true]
+	]
+])
+@slot('header')
 <div class="text-center text-white px-3">
 	<p class="mb-1"><small>QUESTION <span id="question-iteration"></span> OF <span id="questions-count"></span></small></p>
 	<div class="mb-4" id="dots" style="font-size:50%">
@@ -46,7 +57,7 @@
 </div>
 @endslot
 
-@slot('footerRaw')
+@slot('footer')
 <button class="btn btn-block btn-green py-4 rounded-sm-bottom" id="next" style="border-radius: 0">NEXT</button>
 @endslot
 

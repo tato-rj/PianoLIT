@@ -1,1 +1,0 @@
-<h6 class="text-teal">{{$title ?? 'What is that?'}}</h6>

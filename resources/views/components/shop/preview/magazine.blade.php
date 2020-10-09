@@ -1,7 +1,11 @@
-@component('components.modal', ['id' => 'preview-product', 'size' => 'lg', 'headerNoBorder' => true, 'footerNoBorder' => true])
-  @slot('title')
+@component('components.modal', [
+  'id' => 'preview-product', 
+  'options' => ['size' => 'lg']
+])
+  @slot('header')
     @fa(['icon' => 'book-open'])Preview
   @endslot
+
   @slot('body')
     <div id="product-loading">
       <div class="d-flex flex-center" style="min-height: 300px">
@@ -36,6 +40,7 @@
       @endforeach
     </div>
   @endslot
+  
   @slot('footer')
     <div class="d-flex flex-center w-100">
       <button class="btn-raw px-3 py-1 product-turn" data-direction="previous">@fa(['color' => 'primary', 'size' => 'lg', 'icon' => 'arrow-alt-circle-left', 'mr' => 0])</button>

@@ -30,7 +30,11 @@
 	</div>
 	
 	@if($isAuthorized)
-	@component('components.modal', ['id' => 'harmony-' . $loop->iteration, 'title' => $tutorial->piece->medium_name])
+	@component('components.modal', ['id' => 'harmony-' . $loop->iteration])
+	@slot('header')
+	{{$tutorial->piece->medium_name}}
+	@endslot
+
 	@slot('body')
 		<div class="mb-5">
 			@foreach($tutorial->piece->tutorials()->byType('harmonic')->get() as $video)

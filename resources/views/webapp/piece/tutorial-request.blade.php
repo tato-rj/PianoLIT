@@ -1,5 +1,5 @@
-@component('components.modal', ['id' => 'tutorial-request-modal', 'headerNoborder' => true, 'footerNoBorder' => true])
-@slot('title')
+@component('components.modal', ['id' => 'tutorial-request-modal'])
+@slot('header')
 Request tutorial
 @endslot
 

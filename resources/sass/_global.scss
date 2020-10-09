@@ -23,7 +23,6 @@ iframe {border: 0;}
 
 button:focus {outline:0;}
 
-
 .embed-responsive-a4 {
   padding-bottom: 141.42%;
 }
@@ -75,10 +74,11 @@ a {
 
 a:hover {
 	color: darken($brand-primary, 5);
+	text-decoration: none;
 }
 
-.no-underline:hover {
-	text-decoration: none;
+a.underline:hover {
+	text-decoration: underline;
 }
 
 .navbar-brand {

@@ -77,13 +77,13 @@ class Api extends Factory
             $composer = $highlights->shift()->composer;
             
             return collect([
-                ['label' => 'Categories', 'collection' => $categories], 
-                ['label' => 'Highlights', 'collection' => $highlights->shuffle()->take(16)],
-                ['label' => 'Originals', 'collection' => $post],
-                ['label' => 'Periods', 'collection' => $periods],
-                ['label' => 'Levels', 'collection' => $levels],
-                ['label' => 'Composer of the week', 'collection' => $composer],
-                ['label' => 'Latest harmonic analysis', 'collection' => $harmony]
+                ['label' => 'Categories', 'collection' => $categories, 'celltype' => 'category'], 
+                ['label' => 'Highlights', 'collection' => $highlights->shuffle()->take(16), 'celltype' => 'highlight'],
+                ['label' => 'Originals', 'collection' => $post, 'celltype' => 'original'],
+                ['label' => 'Periods', 'collection' => $periods, 'celltype' => 'period'],
+                ['label' => 'Levels', 'collection' => $levels, 'celltype' => 'level'],
+                ['label' => 'Composer of the week', 'collection' => $composer, 'celltype' => 'composer'],
+                ['label' => 'Latest harmonic analysis', 'collection' => $harmony, 'celltype' => 'harmony']
             ]);
         });
 

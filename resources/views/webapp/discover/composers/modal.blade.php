@@ -1,4 +1,8 @@
-@component('components.modal', ['id' => 'composers-modal', 'title' => 'Composers'])
+@component('components.modal', ['id' => 'composers-modal'])
+@slot('header')
+Composers
+@endslot
+
 @slot('body')
 	<div class="list-group list-group-flush">
 		@foreach($composers as $composer)

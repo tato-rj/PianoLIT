@@ -32,7 +32,7 @@
 				@auth
 				<h6>Welcome back {{auth()->user()->first_name}}!</h6>
 				@if(auth()->user()->studioPolicies()->exists())
-					<h6><a href="{{route('users.studio-policies.index')}}" class="link-blue">Click here</a> to view the policies you've created</h6>
+					<h6><a href="{{route('users.studio-policies.index')}}">Click here</a> to view the policies you've created</h6>
 				@else
 					<div class="border rounded px-3 py-5 mt-4 text-center">
 						<h2 class="text-grey mb-1"><i class="far fa-folder-open"></i></h2>
@@ -40,7 +40,7 @@
 					</div>
 				@endif
 				@else
-				<h6><a href="{{route('users.studio-policies.index')}}" id="auth-only" class="link-blue">Log in</a> to view the policies you've created</h6>
+				<h6><a href="{{route('users.studio-policies.index')}}" id="auth-only">Log in</a> to view the policies you've created</h6>
 				@endauth
 			</div>
 		</div>

@@ -1,7 +1,7 @@
 @if($full ?? true)
 <div class="row mb-4 t-2" id="youtube-previews" style="opacity: 0">
 	<div class="col-12">
-		<p class="text-center mx-auto">Subscribe to our <a href="{{route('youtube')}}" target="_blank" class="link-blue">Youtube Channel</a> and enjoy daily videos of awesome piano pieces!</p>
+		<p class="text-center mx-auto">Subscribe to our <a href="{{route('youtube')}}" target="_blank">Youtube Channel</a> and enjoy daily videos of awesome piano pieces!</p>
 	</div>
 
 	<div class="col-lg-4 col-md-4 col-12 p-3">

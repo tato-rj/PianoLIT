@@ -11,7 +11,11 @@
 			</button>
 		</div>
 
-		@component('components.modal', ['id' => 'tags-' . $name, 'title' => ucfirst($name)])
+		@component('components.modal', ['id' => 'tags-' . $name])
+		@slot('header')
+		{{ucfirst($name)}}
+		@endslot
+
 		@slot('body')
 			<div class="search-results"></div>
 			<div class="d-flex justify-content-center flex-wrap">
