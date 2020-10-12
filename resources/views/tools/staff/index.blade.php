@@ -9,11 +9,9 @@
 		'updated_at' => carbon('28-08-2019')
 	]])
 
-@push('header')
-@endpush
-
 @section('content')
-@include('components.title', [
+
+@pagetitle([
 	'version' => '1.0',
 	'title' => 'Staff Generator', 
 	'subtitle' => 'Download new staff paper in different formats quick and easy'])
@@ -44,10 +42,11 @@
 	@include('components.sections.youtube')
 </div>
 
+@popup(['view' => 'subscription'])
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 
 <script type="text/javascript">
 $('.staff').on('click', function() {

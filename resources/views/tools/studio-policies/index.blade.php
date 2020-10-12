@@ -13,7 +13,8 @@
 @endpush
 
 @section('content')
-@include('components.title', [
+
+@pagetitle([
 	'version' => '1.0',
 	'title' => 'Studio Policy Generator', 
 	'subtitle' => 'Generate your studio policy in just a few seconds!'])
@@ -59,5 +60,5 @@
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 @endpush

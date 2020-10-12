@@ -14,7 +14,8 @@
 @endpush
 
 @section('content')
-@include('components.title', [
+
+@pagetitle([
 	'version' => '1.1',
 	'title' => 'The Circle of Fifths', 
 	'subtitle' => 'An interactive and fun tool to explore music harmony in an innovative way. Enjoy!'])
@@ -84,18 +85,12 @@
 @include('tools.circle-of-fifths.info.neighbors')
 @include('tools.circle-of-fifths.info.functional')
 
-@include('components.overlays.subscribe.crashcourse')
+@popup(['view' => 'subscription'])
 @endsection
 
 @push('scripts')
-@include('components.addthis')
-
+@addthis
 <script type="text/javascript" src="{{mix('js/tone.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/components/circle-of-fifths.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
-
-<script type="text/javascript">
-// $("#crashcourse-overlay").showAfter(4);
-</script>
-
 @endpush

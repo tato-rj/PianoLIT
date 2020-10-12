@@ -12,15 +12,6 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function __construct()
-    {
-        $gift = \Cache::remember('infographs.gift', minutes(2), function() {
-            return \App\Infograph\Infograph::gifts()->inRandomOrder()->first();
-        });
-        
-    	\View::share('gift', $gift);
-    }
-
     public function updateStatusFor(ShareableContent $model)
     {
         $model->updateStatus(request('attribute'));

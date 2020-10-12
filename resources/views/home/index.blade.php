@@ -13,14 +13,11 @@
 @include('home.sections.youtube')
 @include('home.sections.testimonials')
 	
+@popup(['view' => 'subscription'])
 @endsection
 
 @push('scripts')
 <script type="text/javascript" src="{{asset('js/components/testimonials.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/components/tagsearch.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/animations/phonescreens.js')}}"></script>
-
-<script type="text/javascript">
-$("#subscribe-overlay").showAfter(5);
-</script>
 @endpush

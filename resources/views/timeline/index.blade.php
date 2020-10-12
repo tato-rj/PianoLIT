@@ -22,7 +22,8 @@
 @endpush
 
 @section('content')
-@include('components.title', [
+
+@pagetitle([
 	'version' => '1.0',
 	'title' => 'Music Timeline', 
 	'subtitle' => 'View the major music events in connection with world history'])
@@ -40,9 +41,10 @@
 	@include('components.sections.youtube')
 </div>
 
+@popup(['view' => 'subscription'])
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 <script type="text/javascript" src="{{asset('js/views/timeline.js')}}"></script>
 @endpush

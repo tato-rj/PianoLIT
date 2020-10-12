@@ -53,12 +53,12 @@
 	@include('shop.products.show.suggestions')
 </section>
 
-@include('components.shop.preview.magazine')
+@include('shop.components.preview.magazine')
 
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 <script type="text/javascript" src="{{asset('js/vendor/turn.min.js')}}"></script>
 
 <script type="text/javascript">

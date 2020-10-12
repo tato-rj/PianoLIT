@@ -54,17 +54,53 @@
 
         </main>
 
-        @include('components.search.forms.global')
+        @include('search.components.forms.global')
         
         @include('layouts.footer')
 
         @include('auth.modal')
-        @include('components.alerts.http')
+        
+        @if($message = session('status'))
+        @alert([
+            'color' => 'green',
+            'message' => '<strong class="mr-2">Success |  </strong>' . $message,
+            'dismissible' => true,
+            'floating' => 'top'])
+        @endif
+
+        @if($message = session('error') ?? $errors->first())
+        @alert([
+            'color' => 'red',
+            'message' => '<strong class="mr-2">Sorry |  </strong>' . $message,
+            'dismissible' => true,
+            'floating' => 'top'])
+        @endif
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
     
     <script type="text/javascript">
+
+jQuery.fn.checkCookie = function() {
+    let cookie = $(this).data('cookie');
+    let record = getCookie(cookie);
+    let recordedAt = moment(record, 'x');
+    let expiresAt = moment(record, 'x').add(3, 'days');
+    let isExpired = moment().isSameOrAfter(expiresAt);
+
+    if (record == null || isExpired) {
+        console.log('Showing popup');
+        setCookie(cookie, moment().format('x'), 3);
+        return this;
+    }
+
+    console.log('Popup already shown '+recordedAt.fromNow());
+    console.log('Will show again '+expiresAt.fromNow());
+    return $();
+};
+
+    $("#modal-subscription").checkCookie().showAfter(3);
+
     if (iOS()) {
         $('.free-trial-launch').attr('href', "{{config('app.stores.ios')}}");
     } else {

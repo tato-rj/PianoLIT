@@ -50,7 +50,7 @@
           <div class="mb-3">
             <p class="text-center mb-0"><small>Files uploaded on {{carbon($date)->toFormattedDateString()}}</small></p>
             <div class="d-flex" style="overflow-x: scroll;">
-              @each('components.quiz.file', $group, 'file')
+              @each('admin.pages.quizzes.audio.file', $group, 'file')
             </div>
           </div>
         @endforeach

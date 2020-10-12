@@ -10,9 +10,8 @@
     ]])
 
 @section('content')
-    @include('components.overlays.loading')
 
-    @include('components.title', [
+    @pagetitle([
         'version' => '2.0',
         'title' => 'Chord Finder', 
         'subtitle' => 'Just tell us the notes and we\'ll show the most likely chords you can make with them'])
@@ -24,10 +23,12 @@
     @endempty
 
 @include('tools.chord-finder.error')
+
+@popup(['view' => 'crashcourse'])
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 <script type="text/javascript" src="{{mix('js/tone.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/components/chord-finder.js')}}"></script>

@@ -21,7 +21,7 @@ class QuizzesController extends Controller
         $levels = Level::all();
         $topics = Topic::all();
 
-        return view('quizzes.index', compact(['quizzes', 'levels', 'topics']));
+        return view('games.quizzes.index', compact(['quizzes', 'levels', 'topics']));
     }
 
     public function topic(Topic $topic)
@@ -29,7 +29,7 @@ class QuizzesController extends Controller
         $topics = Topic::exclude([$topic->id])->get();
         $quizzes = Quiz::published()->latest()->byTopic($topic)->paginate(12);
 
-        return view('quizzes.topic', compact(['quizzes', 'topics', 'topic']));
+        return view('games.quizzes.topic', compact(['quizzes', 'topics', 'topic']));
     }
 
     /**
@@ -44,7 +44,7 @@ class QuizzesController extends Controller
 
         if (! $quiz->published_at) {
             if (auth()->guard('admin')->check())
-                return view('quizzes.show', compact(['quiz', 'suggestions']))->with('preview', true);
+                return view('games.quizzes.show', compact(['quiz', 'suggestions']))->with('preview', true);
 
             abort(404);
         }
@@ -52,7 +52,7 @@ class QuizzesController extends Controller
         if (traffic()->isRealVisitor())
             $quiz->increment('views');
 
-        return view('quizzes.show', compact(['quiz', 'suggestions']));
+        return view('games.quizzes.show', compact(['quiz', 'suggestions']));
     }
 
     public function feedback(Request $request, Quiz $quiz)
@@ -71,6 +71,6 @@ class QuizzesController extends Controller
             Admin::notifyAll(new QuizCompleted($quiz));
         }
 
-        return view('components.games.feedback', compact('feedback'))->render();
+        return view('games.components.feedback', compact('feedback'))->render();
     }
 }

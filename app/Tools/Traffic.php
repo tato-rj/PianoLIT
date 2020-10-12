@@ -7,7 +7,7 @@ class Traffic
 	protected $ignoreIP = [
 		'73.126.137.37', 
 		'24.215.182.64', 
-		'104.129.138.238'
+		'69.142.144.48'
 	];
 	// 284 -> Arthur, 260 -> Elena, 196 -> Mark Twain, 249 -> Tester, 928 -> Krusty
 	protected $ignoreID = [284, 260, 196, 249, 928];

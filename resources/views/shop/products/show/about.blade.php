@@ -8,7 +8,7 @@
 				@fa(['icon' => 'cloud-download-alt', 'color' => 'grey'])Available in <strong>{{arrayToSentence(array_keys($product->links()))}}</strong>
 			</div>
 			<div class="m-2">
-				@fa(['icon' => 'calendar-alt', 'color' => 'grey'])Published on {{$product->published_at->toFormattedDateString()}}
+				@fa(['icon' => 'calendar-alt', 'color' => 'grey'])Published on {{$product->published_at ? $product->published_at->toFormattedDateString() : 'n/a'}}
 			</div>
 			<div class="m-2">
 				@fa(['icon' => 'pen-nib', 'color' => 'grey'])Last updated {{$product->updated_at->diffForHumans()}}

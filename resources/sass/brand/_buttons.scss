@@ -10,8 +10,13 @@
 	}
 
 	&:active {
-		background-color: darken($brand-primary, 4%);
-		border-color: darken($brand-primary, 4%);
+		background-color: darken($brand-primary, 6%) !important;
+		border-color: darken($brand-primary, 6%) !important;
+	}
+
+	&:focus {
+		background-color: darken($brand-primary, 6%) !important;
+		border-color: darken($brand-primary, 6%) !important;
 	}
 }
 
@@ -27,7 +32,34 @@
 	}
 
 	&:active {
-		background-color: darken($brand-primary, 4%);
-		border-color: darken($brand-primary, 4%);
+		background-color: darken($brand-primary, 6%) !important;
+		border-color: darken($brand-primary, 6%) !important;
+	}
+
+	&:focus {
+		background-color: darken($brand-primary, 6%) !important;
+		border-color: darken($brand-primary, 6%) !important;
+	}
+}
+
+.btn-white {
+	color: $brand-primary !important;
+	background-color: white;
+	border-color: white;
+
+	&:hover {
+		color: $brand-primary !important;
+		background-color: white;
+		border-color: white;
+	}
+
+	&:active {
+		background-color: white !important;
+		border-color: white !important;
+	}
+
+	&:focus {
+		background-color: white !important;
+		border-color: white !important;
 	}
 }

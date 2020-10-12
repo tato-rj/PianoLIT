@@ -21,12 +21,20 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['full' => ! request()->has('bodyonly')]);
         });
 
-        \View::composer('components/overlays/subscribe/crashcourse', function($view) {
+        \View::composer('components.popups.crashcourse', function($view) {
             $highlightedCrashcourse = \Cache::remember('highlightedCrashcourse', days(7), function() {
                 return \App\CrashCourse\CrashCourse::published()->first();
             });
 
             $view->with(['highlightedCrashcourse' => $highlightedCrashcourse]);
+        });
+
+        \View::composer('components.popups.subscription', function($view) {
+            $gift = \Cache::remember('infographs.gift', minutes(2), function() {
+                return \App\Infograph\Infograph::gifts()->inRandomOrder()->first();
+            });
+
+            $view->with(['gift' => $gift]);
         });
     }
 

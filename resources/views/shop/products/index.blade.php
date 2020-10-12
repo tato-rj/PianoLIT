@@ -10,21 +10,21 @@
 		'updated_at' => carbon('17-06-2020')
 	]])
 
-@push('header')
-<style type="text/css">
-
-</style>
-@endpush
-
 @section('content')
-@include('components.title')
+
+@pagetitle
 
 <div class="container mb-5">
-	@each('components.shop.display.lg', $products, 'product')
+	@if ($products)
+	@each('shop.components.display.lg', $products, 'product')
+	@else
+	<div class="p-4 text-center text-red"><strong>Coming up soon!</strong></div>
+	@include('components.animations.workers')
+	@endif
 </div>
 
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 @endpush

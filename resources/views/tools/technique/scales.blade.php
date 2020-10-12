@@ -9,12 +9,9 @@
 		'updated_at' => carbon('29-08-2019')
 	]])
 
-@push('header')
-@endpush
-
 @section('content')
 
-@include('components.title', [
+@pagetitle([
 	'version' => '2.0',
 	'title' => 'Scales Tutor', 
 	'subtitle' => 'Select below the scale you need and we\'ll show the notes and fingering for each hand'])
@@ -40,15 +37,12 @@
 </div>
 
 @include('tools.chord-finder.error')
-@include('components.overlays.subscribe.model-2')
+@popup(['view' => 'crashcourse'])
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 <script type="text/javascript" src="{{mix('js/tone.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/components/piano.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/components/play-keyboard.js')}}"></script>
-<script type="text/javascript">
-$("#gift-overlay").showAfter(4);
-</script>
 @endpush

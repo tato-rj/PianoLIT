@@ -1,8 +1,7 @@
 jQuery.fn.showAfter = function(time) {
 	let element = this;
     setTimeout(function() {
-    	if ($('.modal:visible').length == 0)
-	    	element.fadeIn('fast');
+    	element.modal('show');
     }, time * 1000);
 };
 

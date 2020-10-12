@@ -27,7 +27,7 @@
           <div class="mb-3">
             <p class="text-center mb-0"><small>Images uploaded on {{carbon($date)->toFormattedDateString()}}</small></p>
             <div class="d-flex" style="overflow-x: scroll;">
-              @each('components.quiz.image', $group, 'file')
+              @each('admin.pages.quizzes.images.image', $group, 'file')
             </div>
           </div>
         @endforeach

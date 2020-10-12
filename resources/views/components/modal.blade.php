@@ -1,4 +1,4 @@
-<div class="modal fade" id="{{$id}}">
+<div class="modal fade" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}">
   <div class="modal-dialog modal-{{array_find($options ?? null, ['size'])}}">
     <div class="modal-content border-0">
       <div class="modal-header 
@@ -15,7 +15,7 @@
           @fa(['icon' => 'times', 'mr' => 0])
         </button>
       </div>
-      <div class="modal-body p-{{array_find($options ?? null, ['body', 'padding'])}}">
+      <div class="{{array_find($options ?? null, ['body', 'raw']) == true ? 'w-100' : 'modal-body'}} p-{{array_find($options ?? null, ['body', 'padding'])}}">
       {!! $body !!}
       </div>
       @isset($footer)

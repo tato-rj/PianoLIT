@@ -31,7 +31,7 @@ class SearchController extends Controller
                 $results->push(['model' => class_basename($searchable), 'data' => $query->get()]);
         }
 
-        return view('components.search.results.global.index', compact('results'))->render();   
+        return view('search.components.results.global.index', compact('results'))->render();   
     }
 
     public function similar(Piece $piece)

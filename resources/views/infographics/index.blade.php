@@ -10,14 +10,9 @@
 		'updated_at' => carbon('28-08-2019')
 	]])
 
-@push('header')
-<style type="text/css">
-
-</style>
-@endpush
-
 @section('content')
-@include('components.title', [
+
+@pagetitle([
 	'title' => 'Infographics', 
 	'subtitle' => 'Cool infographics about all music things related'])
 
@@ -48,6 +43,6 @@
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 <script type="text/javascript" src="{{asset('js/components/infographics.js')}}"></script>
 @endpush

@@ -1,1 +1,0 @@
-@each('components.blog.cards.horizontal', $data, 'post')

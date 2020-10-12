@@ -15,7 +15,14 @@
 	</div>
 
 	<div class="col-12 text-center">
-		<a href="{{route('youtube')}}" target="_blank" class="btn btn-primary btn-wide shadow"><i class="fab fa-lg fa-youtube mr-3"></i>Visit our channel</a>
+		@button([
+			'href' => route('youtube'),
+			'external' => true,
+			'label' => '<i class="fab fa-lg fa-youtube mr-3"></i>Visit our channel',
+			'styles' => [
+				'shadow' => true,
+				'theme' => 'primary',
+			]])
 	</div>
 </div>
 @endif

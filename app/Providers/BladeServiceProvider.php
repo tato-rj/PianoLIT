@@ -31,7 +31,7 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.form.error');
         \Blade::include('components.form.tinyeditor');
         \Blade::include('components.form.toggle');
-        \Blade::include('components.alerts.alert');
+        \Blade::include('components.alert');
         \Blade::include('components.datatable.layout', 'datatable');
         \Blade::include('components.datatable.raw', 'datatableRaw');
         \Blade::include('components.pagination');
@@ -45,9 +45,9 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.pill');
         \Blade::include('components.modal');
         \Blade::include('components.topics');
-
-        \Blade::directive('popup', function ($card) {
-            return view('components.overlays.subscribe.model-2');
-        });
+        \Blade::include('components.addthis');
+        \Blade::include('components.progressbar');
+        \Blade::include('components.title', 'pagetitle');
+        \Blade::include('components.popups.popup');
     }
 }

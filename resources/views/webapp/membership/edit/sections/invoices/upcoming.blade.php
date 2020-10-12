@@ -1,4 +1,3 @@
-
 <tr>
 	@if($invoice)
 	<td class="text-nowrap">{{carbon($invoice->next_payment_attempt)->toFormattedDateString()}}</td>

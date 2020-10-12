@@ -13,9 +13,13 @@
 @endpush
 
 @section('content')
-@include('pianists.powered')
 
-@include('components.title', [
+<div class="text-center mb-2">
+	<label class="mb-0 text-grey d-block"><small>Powered by</small></label>
+	<img src="{{asset('images/icons/apple-music.svg')}}" style="opacity: 0.7;width: 59px;margin-top: -12px;">
+</div>
+
+@pagetitle([
 	'title' => 'Great Pianists', 
 	'subtitle' => 'Discover recordings from the most famous pianists of our time'])
 
@@ -41,7 +45,7 @@
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
 <script type="text/javascript">
 $('div#pianists').filterableBy('input#search-pianist');
 </script>

@@ -7,13 +7,13 @@ Route::prefix('true-or-false')->name('true-or-false.')->group(function() {
 
 		$statements = (new \App\Games\TrueOrFalse\TrueOrFalse)->statements(['easy', 'difficult']);
 
-		return view('trueorfalse.index', compact(['statements', 'colors']));
+		return view('games.trueorfalse.index', compact(['statements', 'colors']));
 	})->name('index');
 
 	Route::get('feedback', function() {
 		$feedback = (new \App\Games\TrueOrFalse\TrueOrFalse)->evaluate(request()->score, request()->count);
 
-	    return view('components.games.feedback', compact('feedback'))->render();
+	    return view('games.components.feedback', compact('feedback'))->render();
 	})->name('feedback');
 
 });
@@ -25,7 +25,7 @@ Route::get('riddles', function() {
 		'#ffffff' => ['Scales', 'Whole note and quarter note', 'Etude', 'Classical']
 	];
 
-	return view('riddles.index', compact('riddles'));
+	return view('games.riddles.index', compact('riddles'));
 })->name('riddles');
 
 Route::prefix('quizzes')->name('quizzes.')->group(function() {

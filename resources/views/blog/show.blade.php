@@ -17,7 +17,8 @@
 @endpush
 
 @section('content')
-@include('components.progressbar')
+
+@progressbar
 
 <section id="blog-post" class="container mb-5">
 	<div class="row mb-6" id="main-content">
@@ -82,7 +83,7 @@
 		<div class="col-12 mb-4">
 			<div><i class="fas fa-glasses mr-2"></i><strong>READ NEXT</strong></div>
 		</div>
-		@each('components.blog.cards.small', $suggestions, 'suggestion')
+		@each('blog.components.cards.small', $suggestions, 'suggestion')
 	</div>
 
 	<div class="row">
@@ -92,11 +93,13 @@
 	</div>
 </section>
 
-@include('components.overlays.subscribe.model-1')
-@include('components.blog.inner-subscribe')
+@include('blog.components.inner-subscribe')
+
 @if($post->hasGift())
-@include('components.blog.gift')
+@include('blog.components.gift')
 @endif
+
+@popup(['view' => 'subscription'])
 @endsection
 
 @push('scripts')
@@ -110,7 +113,7 @@ $(document).ready(function() {
 $(document).on('click', "button#gift", function() {
 	let $button = $(this);
 	$button.find('i').removeClass('animated');
-	$('#gift-post-overlay').fadeIn();
+	$('#modal-gift').modal('show');
 });
 
 $('.card-title').clamp(2);
