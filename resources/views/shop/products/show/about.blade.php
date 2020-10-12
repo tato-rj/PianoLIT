@@ -16,7 +16,6 @@
 		</div>
 	</div>
 	<div class="col-12">
-		<h5 class="mb-4 text-center">What's it about?</h5>
 		<div>{!! $product->description !!}</div>
 	</div>
 </div>
