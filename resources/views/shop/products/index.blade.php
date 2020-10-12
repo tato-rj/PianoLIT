@@ -15,8 +15,7 @@
 @pagetitle
 
 <div class="container mb-5">
-	<p>{{$products->count()}}</p>
-	@empty($products)
+	@if($products->count() == 0)
 	<div class="p-4 text-center text-red"><strong>Coming up soon!</strong></div>
 	@include('components.animations.workers')
 	@else
