@@ -15,11 +15,11 @@
 @pagetitle
 
 <div class="container mb-5">
-	@if ($products)
-	@each('shop.components.display.lg', $products, 'product')
-	@else
+	@empty($products)
 	<div class="p-4 text-center text-red"><strong>Coming up soon!</strong></div>
 	@include('components.animations.workers')
+	@else
+	@each('shop.components.display.lg', $products, 'product')
 	@endif
 </div>
 
