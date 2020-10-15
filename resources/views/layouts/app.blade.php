@@ -27,10 +27,54 @@
     @include('layouts.html.js-app')
 
     <style type="text/css">
+        .fadeInLeft {
+            animation-duration: .2s;
+        }
+        .search-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
     .book-cover {
         -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
     }
+
+        .rounded, .btn, input, textarea, select {
+            border-radius: 1rem!important;
+        }
+        .rounded-bottom, .rounded-left {
+            border-bottom-left-radius: 1rem!important;
+        }
+        .rounded-bottom, .rounded-right {
+            border-bottom-right-radius: 1rem!important;
+        }
+        .rounded-right, .rounded-top {
+            border-top-right-radius: 1rem!important;
+        }
+        .rounded-left, .rounded-top {
+            border-top-left-radius: 1rem!important;
+        }
+        
+        
+        .rounded-sm {
+            border-radius: .25rem!important;
+        }
+        .rounded-sm-bottom, .rounded-sm-left {
+            border-bottom-left-radius: .25rem!important;
+        }
+        .rounded-sm-bottom, .rounded-sm-right {
+            border-bottom-right-radius: .25rem!important;
+        }
+        .rounded-sm-right, .rounded-sm-top {
+            border-top-right-radius: .25rem!important;
+        }
+        .rounded-sm-left, .rounded-sm-top {
+            border-top-left-radius: .25rem!important;
+        }
     </style>
     @stack('header')
 </head>
@@ -78,9 +122,50 @@
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
-    
-    <script type="text/javascript">
 
+    <script type="text/javascript">
+jQuery.fn.visible = function() {
+    return this.css('visibility', 'visible');
+};
+
+jQuery.fn.invisible = function() {
+    return this.css('visibility', 'hidden');
+};
+
+jQuery.fn.visibilityToggle = function() {
+    return this.css('visibility', function(i, visibility) {
+        return (visibility == 'visible') ? 'hidden' : 'visible';
+    });
+};
+    </script>
+
+    <script type="text/javascript">
+        var $search = $('#app-search');
+        var $prevDiv = $search.prev();
+        var searchPos = $search.offset();
+        var mb = 0;
+        console.log(searchPos);
+
+        $(window).scroll(function() {
+            let scrollTop = $(this).scrollTop();
+
+            if (searchPos) {
+                if (scrollTop > searchPos.top) {
+                    mb = $search.outerHeight()+'px';
+                    console.log(mb);
+                    $search.addClass('search-fixed');
+                    $search.find('img.animated').show();
+                    $prevDiv.css('margin-bottom', mb);
+                } else {
+                    $search.removeClass('search-fixed');
+                    $search.find('img.animated').hide();
+                    $prevDiv.css('margin-bottom', '0');
+                }
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
 jQuery.fn.checkCookie = function() {
     let cookie = $(this).data('cookie');
     let record = getCookie(cookie);
@@ -105,7 +190,7 @@ jQuery.fn.checkCookie = function() {
         $('.free-trial-launch').attr('href', "{{config('app.stores.ios')}}");
     } else {
         $(document).ready(function() {
-            setTimeout(function() {$('#webapp-banner').slideDown()}, 500);
+            // setTimeout(function() {$('#webapp-banner').slideDown()}, 500);
         });
     }
 

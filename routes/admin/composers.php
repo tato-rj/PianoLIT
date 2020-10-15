@@ -1,3 +1,3 @@
 <?php
 
-Route::patch('composers/{composer}/toggle-famous', 'ComposersController@toggleFamous')->name('composers.toggle-famous');
+Route::patch('composers/{composer}/toggle-famous', 'Admin\ComposersController@toggleFamous')->name('composers.toggle-famous');

@@ -29,11 +29,13 @@ class HomeController extends Controller
     public function index()
     {
         $latest = Piece::latest()->with(['composer', 'tags'])->take(8)->get();
-        $tags = Tag::byTypes(['ranking', 'length', 'period', 'genre'])->reverse();
+        $tags = Tag::byTypes($except = ['sublevel', 'ranking', 'level', 'length', 'period', 'genre'])->reverse();
+        $highlights = \App\Piece::freePicks()->free(false)->get();
+        $composers = \App\Composer::inRandomOrder()->take(25)->get();
         $testimonials = testimonials();
         shuffle($testimonials);
 
-        return view('home.index', compact(['latest', 'tags', 'testimonials']));
+        return view('home.index', compact(['latest', 'tags', 'testimonials', 'composers', 'highlights']));
     }
 
     public function loadPieces(Request $request)

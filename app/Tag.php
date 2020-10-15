@@ -13,6 +13,8 @@ class Tag extends PianoLit
         'core' => ['level', 'sublevel', 'period', 'length']
     ];
 
+    protected $appends = ['cover_image'];
+
     private $specialTags = ['dreamy', 'elegant', 'flashy', 'crazy', 'melancholic', 'happy'];
 
     protected static function boot()
@@ -129,8 +131,8 @@ class Tag extends PianoLit
         return $query->where('name', 'famous');
     }
 
-    public function getBackground()
+    public function getCoverImageAttribute()
     {
-        return asset('images/temp/'.strtolower($this->name).'.jpg');
+        return $this->type == 'period' ? asset('images/backgrounds/periods/'.strtolower($this->name).'.jpg') : null;
     }
 }

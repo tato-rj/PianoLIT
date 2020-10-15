@@ -1,6 +1,6 @@
 <div class="modal fade" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}">
   <div class="modal-dialog modal-{{array_find($options ?? null, ['size'])}}">
-    <div class="modal-content border-0">
+    <div class="modal-content border-0" style="border-radius: 1rem">
       <div class="modal-header 
         bg-{{array_find($options ?? null, ['header', 'background'])}} 
         {{array_find($options ?? null, ['header', 'border']) == true ? null : 'border-0'}}" style="{{array_find($options ?? null, ['header', 'show']) === false ? 'display:none' : null}}">

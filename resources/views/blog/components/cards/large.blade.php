@@ -3,7 +3,7 @@
 		<a class="link-none" href="{{route('posts.show', $post->slug)}}">
 			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$post->cover_image()}}); height: 200px">
 				
-				@include('components.cards.new', ['is_new' => $post->is_new])
+				@include('components.tags.new', ['is_new' => $post->is_new])
 
 				<div class="card-overlay h-100 t-2" style="opacity: 0">
 					<div class="text-white overlay-blue d-flex flex-center rounded-top"><i class="fas fa-eye fa-3x"></i></div>

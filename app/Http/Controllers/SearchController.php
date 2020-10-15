@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Piece, Tag, Api};
+use App\{Piece, Tag};
+use App\Api\Api;
 
 class SearchController extends Controller
 {
-    public function index(Request $request)
+    public function index(Api $api, Request $request)
     {
-    	// $results = $this->search($request);
+        if (auth()->check())
+            return redirect(route('webapp.search.results', ['lazy-load', 'search' => $request->search]));
+        
+    	$results = $api->search($request)->filtered()->get();
 
-    	// return view('search.index', compact('results'));
+    	return view('search.index', compact('results'));
     }
 
     public function global(Request $request)
@@ -32,26 +36,5 @@ class SearchController extends Controller
         }
 
         return view('search.components.results.global.index', compact('results'))->render();   
-    }
-
-    public function similar(Piece $piece)
-    {
-        $pieces = $piece->similar();
-
-        return view('search.similar', ['results' => $pieces, 'piece' => $piece]);
-    }
-
-    public function moreRows(Request $request)
-    {
-        $tag = Tag::whereIn('type', ['mood', 'technique'])->has('pieces', '>', 20)->except('name', $request->tags)->inRandomOrder()->first();
-
-        if (empty($tag))
-            return null;
-
-        $title = $tag->type == 'mood' ? 'Pieces that are' : 'Pieces good for';
-
-        return view('components.search.results.row', [
-            'playlist' => []//$this->api->tag($title, $tag->name)
-        ])->render();
     }
 }

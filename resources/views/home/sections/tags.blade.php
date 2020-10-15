@@ -5,6 +5,18 @@
 			<h3 class="accent-bottom mb-4">Finding new pieces has never been so easy</h3>
 			<p class="text-muted">Select below the ideas that match the kind of pieces you would like to find. Let's see what you'll discover!</p>
 		</div>
+		@env('local')
+		<div class="col-12 mb-5">
+			@include('webapp.components.grids.circles', [
+				'collection' => $composers,
+				'name' => 'name',
+				'image' => 'cover_image',
+				'count' => 'pieces_count'])
+		</div>
+		<div class="col-12 mb-5">
+			@include('webapp.components.grids.squares', ['collection' => $highlights])
+		</div>
+		@endenv
 		<div class="col-12">
 			<div class="mb-5 pb-3 custom-scroll dragscroll dragscroll-horizontal">
 				<div id="tags-search" class="d-flex " style="width: 2170px;">
@@ -16,7 +28,7 @@
 						    <button 
 						    	data-name="{{$tag->name}}"
 						    	data-id="{{$tag->id}}"
-						      class="tag btn btn-light badge-pill m-2 px-3 py-1 text-nowrap">
+						      class="tag btn btn-light badge-pill m-2 px-3 py-1 text-nowrap" style="font-weight: normal;">
 						      {{$tag->name}}
 						    </button>
 							@endforeach

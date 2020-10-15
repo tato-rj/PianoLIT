@@ -10,7 +10,14 @@
 
 @section('content')
 @component('webapp.layouts.header', ['title' => 'Discover', 'subtitle' => 'Take a quick tour to find the perfect piece for you'])
-	@button(['label' => 'FIND YOUR MATCH', 'wide' => true, 'theme' => 'outline-secondary', 'classes' => 'rounded-pill', 'modal' => 'tour-modal'])
+	@button([
+		'label' => 'FIND YOUR MATCH', 
+		'styles' => [
+			'size' => 'wide', 
+			'theme' => 'outline-secondary'
+			], 
+		'classes' => 'rounded-pill', 
+		'data' => ['toggle' => 'modal', 'target' => '#tour-modal']])
 @endcomponent
 
 <section id="discover-rows">

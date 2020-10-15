@@ -1,4 +1,3 @@
-{{-- @if(!empty($href)) --}}
 <{{empty($href) ? 'button' : 'a'}}
 	@isset($href)
 	href="{{$href}}" 
@@ -28,38 +27,9 @@
 			mr-{{array_find($styles ?? null, ['mr'])}} 
 			text-{{array_find($styles ?? null, ['text'])}} 
 			{{array_find($styles ?? null, ['shadow']) == true ? 'shadow' : null}} 
+			{{array_find($styles ?? null, ['pill']) == true ? 'rounded-pill' : null}} 
 			{{$classes ?? null}}">
 
 	{!! $label !!}
 
 </{{empty($href) ? 'button' : 'a'}}>
-
-{{-- @else
-
-<button
-	type="{{$type ?? null}}"
-	{{$attr ?? null}}
-
-	@if(!empty($modal))
-	data-toggle="modal" data-target="#{{$modal}}"
-	@endif
-
-	@if(!empty($collapse))
-	data-toggle="collapse" data-target="#{{$collapse}}"
-	@endif
-
-	@if(!empty($tab))
-	data-toggle="tab" data-target="#{{$tab}}"
-	@endif
-
-	@if(!empty($disabled) && $disabled)
-	disabled
-	@endif
-
-	@empty($raw)
-	class="btn btn-{{$size ?? null}} btn-{{!empty($wide) ? 'wide' : null}} btn-{{$theme ?? null}} bg-{{$color ?? null}} text-{{$text ?? null}} {{$classes ?? null}}"
-	@else
-	style="border: none; background: transparent; padding: 0"
-	@endempty>{!! $label !!}
-</button>
-@endif --}}

@@ -533,9 +533,9 @@ class Piece extends PianoLit
         return $this->cover_path ? asset('storage/' . $this->cover_path) : null;
     }
 
-    public function scopeFree($query)
+    public function scopeFree($query, $bool = true)
     {
-        return $query->where('is_free', true);
+        return $query->where('is_free', $bool);
     }
 
     public function scopeFreepicks($query)

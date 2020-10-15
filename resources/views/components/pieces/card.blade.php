@@ -10,14 +10,11 @@
 				</div>
 				<div>
 					<div class="text-muted">
-						@if($piece->hasItunes())
-						<div style="line-height: 1.3"><small><i class="fab fa-itunes"></i> iTunes recordings</small></div>
-						@endif
 						@if($piece->tutorials()->exists())
-						<div style="line-height: 1.3"><small><i class="fab fa-youtube"></i> Video available</small></div>
+						<div style="line-height: 1.3"><small>@fa(['icon' => 'video'])Media available</small></div>
 						@endif
-						@if($piece->hasAudio())
-						<div style="line-height: 1.3"><small><i class="fas fa-headphones-alt"></i> Audio available</small></div>
+						@if($piece->hasScore($publicDomain = true))
+						<div style="line-height: 1.3"><small>@fa(['icon' => 'glasses'])Score available</small></div>
 						@endif
 					</div>
 				</div>

@@ -33,6 +33,6 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::post('/login', 'Auth\Api\LoginController@login')->name('login');
 
-	Route::get('{user}', 'ApiController@user')->name('show'); // DO WE NEED THIS?
+	// Route::get('{user}', 'ApiController@user')->name('show'); // DO WE NEED THIS?
 
 });

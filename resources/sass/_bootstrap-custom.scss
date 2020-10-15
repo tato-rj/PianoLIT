@@ -67,6 +67,11 @@ a.color-inherit:hover {
 	        transition: 0.2s;
 }
 
+.shadow {
+    -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 0.12rem 1.2rem rgba(0, 0, 0, 0.15) !important;
+}
+
 .shadow-light {
 	-webkit-box-shadow: 0 5px 30px rgba(0,0,0,0.1);
 	-moz-box-shadow: 0 5px 30px rgba(0,0,0,0.1);
@@ -95,4 +100,12 @@ a.color-inherit:hover {
 
 .rounded-pill {
 	border-radius: 100px;
+}
+
+.btn {
+	font-weight: bold;
+}
+
+.btn-sm {
+	padding: .25rem .75rem !important;
 }

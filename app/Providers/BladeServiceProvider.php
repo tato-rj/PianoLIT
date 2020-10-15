@@ -46,6 +46,7 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.modal');
         \Blade::include('components.topics');
         \Blade::include('components.addthis');
+        \Blade::include('components.tags.tag');
         \Blade::include('components.progressbar');
         \Blade::include('components.title', 'pagetitle');
         \Blade::include('components.popups.popup');

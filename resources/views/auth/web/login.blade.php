@@ -6,7 +6,7 @@
         <div class="col-lg-4 col-md-6 col-sm-8 col-12 mx-auto">
             <h3 class="accent-bottom mb-4">Log in to PianoLIT</h3>
             <p>If you already have a profile on our iOS app, you can use the same email and password to log in from here.</p>
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login') }}" disable-on-submit>
                 @csrf
                 
                 @include('auth.fields.login')
