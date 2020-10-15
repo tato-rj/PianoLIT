@@ -69,6 +69,7 @@ class Api extends Factory
 
         $collection = \Cache::remember($key, days(1), function() {
             $categories = Tag::display()->groupBy('type')->forget(['period', 'level']);
+            $categoryIcons = [asset('images/icons/technique.svg'), asset('images/icons/mood.svg'), asset('images/icons/genre.svg')];
             $levels = Tag::extendedLevels()->withCount('pieces')->get();
             $harmony = Tutorial::byType('harmonic')->latest()->with('piece')->take(12)->get()->unique('piece_id')->take(4);
             $highlights = Piece::freePicks()->get();
@@ -77,7 +78,7 @@ class Api extends Factory
             $composer = $highlights->shift()->composer;
             
             return collect([
-                ['label' => 'Categories', 'collection' => $categories, 'celltype' => 'category'], 
+                ['label' => 'Categories', 'collection' => $categories, 'celltype' => 'category', 'cover_icons' => $categoryIcons], 
                 ['label' => 'Highlights', 'collection' => $highlights->shuffle()->take(16), 'celltype' => 'highlight'],
                 ['label' => 'Originals', 'collection' => $post, 'celltype' => 'original'],
                 ['label' => 'Periods', 'collection' => $periods, 'celltype' => 'period'],
