@@ -11,7 +11,7 @@
 			</div>	
 		</div>
 	</div>
-	<div class="col-lg-3 col-md-3 col-12 p-5">
+	<div class="col-lg-3 col-md-3 col-12 py-5 pr-5">
 		@include('shop.components.cover')
 	</div>
 </div>

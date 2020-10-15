@@ -1,6 +1,6 @@
 <div class="row mb-5">
 	<div class="col-lg-6 col-md-6 col-12">
-		@include('shop.components.cover')
+		@include('shop.components.cover', ['maxWidth' => '280px'])
 	</div>
 	<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
 		<div>
