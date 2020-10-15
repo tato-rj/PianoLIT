@@ -65,6 +65,11 @@
         .rounded, .btn, input, textarea, select {
             border-radius: 1rem;
         }
+
+        input, textarea, select {
+            border-radius: 1rem !important;
+        }
+
         .rounded-bottom, .rounded-left {
             border-bottom-left-radius: 1rem!important;
         }
