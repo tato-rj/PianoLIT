@@ -24,7 +24,7 @@
 			</div>
 			<div class="col-lg-5 col-md-6 col-12 mb-3">
 				<p><small><strong>HERE ARE SOME EXAMPLES</strong></small></p>
-				<ul class="list-flat">
+				<ul class="list-flat" id="query-suggestions">
 					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'pieces for beginners'])}}">
 						@tag(['type' => 'search', 'label' => 'pieces for beginners'])</a></li>
 					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'pieces like fur elise'])}}">

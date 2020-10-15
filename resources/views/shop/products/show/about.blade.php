@@ -1,4 +1,4 @@
-<div class="row mb-5 pb-5 border-bottom">
+<div class="row mb-5 pb-5">
 	<div class="col-12 py-1 mb-4 border-y">
 		<div class="d-flex flex-wrap justify-content-center align-items-center text-muted" style="font-size: 80%">
 			<div class="m-2">

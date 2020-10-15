@@ -9,37 +9,45 @@
 	</div>
 	<div class="row">
 		@component('search.components.plan')
+		@slot('button')
 		<button class="btn px-0 text-nowrap mb-3" disabled>YOU'RE NOT REGISTERED</button>
+		@endslot
+		@slot('list')
 		<ul class="list-flat li-mb-1">
 			<li><strong style="font-size: 160%; line-height: 1" class="text-red">8</strong> results limit</li>
 			<li><strong style="font-size: 160%; line-height: 1" class="text-red">2</strong> queries per day</li>
 		</ul>
+		@endslot
 		@endcomponent
 
-		@component('search.components.plan', ['color' => 'light'])
+		@component('search.components.plan', ['color' => 'light', 
+			'items' => [
+				'<u>Unlimited</u> results',
+				'<u>Unlimited</u> queries per day',
+				'iOS App',
+				'Desktop App',
+				'Advanced filters',]])
+
+		@slot('button')
 		<a href="{{route('webapp.discover')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-outline-primary text-nowrap btn-block mb-3">SIGN UP FOR FREE</a>
-		<ul class="list-flat li-mb-3">
-			<li><strong>Unlimited</strong> results</li>
-			<li><strong>Unlimited</strong> queries per day</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'apple', 'fa_type' => 'b'])</span>iOS App</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'laptop'])</span>Desktop App</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'filter'])</span>Advanced filters</li>
-		</ul>
+		@endslot
 		@endcomponent
 
-		@component('search.components.plan', ['color' => 'light'])
-		<a href="{{route('webapp.discover')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-primary text-nowrap btn-block mb-3">@fa(['icon' => 'crown'])GO PREMIUM</a>
-		<ul class="list-flat li-mb-3">
-			<li><strong>Unlimited</strong> results</li>
-			<li><strong>Unlimited</strong> queries per day</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'apple', 'fa_type' => 'b'])</span>iOS App</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'laptop'])</span>Desktop App</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'filter'])</span>Advanced filters</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'file-alt'])</span>Get the score</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'video'])</span>Request video tutorials</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'heart'])</span>Organize your favorites</li>
-			<li><span class="text-center d-inline-block mr-2" style="min-width: 20px;">@fa(['mr' => 0, 'color' => 'green', 'icon' => 'list-ul'])</span>Curated playlists</li>
-		</ul>
+		@component('search.components.plan', ['color' => 'light', 
+			'items' => [
+				'<u>Unlimited</u> results',
+				'<u>Unlimited</u> queries per day',
+				'iOS App',
+				'Desktop App',
+				'Advanced filters',
+				'Get the score',
+				'Request video tutorials',
+				'Save and organize your favorites',
+				'Curated playlists']])
+		
+		@slot('button')
+		<a href="{{route('webapp.membership.pricing')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-primary text-nowrap btn-block mb-3">@fa(['icon' => 'crown'])GO PREMIUM</a>
+		@endslot
 		@endcomponent
 	</div>
 </section>
