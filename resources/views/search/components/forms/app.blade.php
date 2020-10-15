@@ -39,7 +39,7 @@
 					</div>
 				</div>
 				<div class="bg-white shadow-light rounded">
-					<form method="GET" action="{{route('explore.search')}}" disable-on-submit>
+					<form method="GET" action="{{route('explore.search')}}" disable-on-submit submit-on-enter>
 						<div class="input-group input-group-lg">
 							<div class="input-group-prepend">
 								<button disabled class="btn-raw pl-3">@fa(['icon' => 'music', 'mr' => 0, 'size' => 'lg', 'color' => 'grey'])</button>

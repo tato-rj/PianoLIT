@@ -92,6 +92,24 @@ a.color-inherit:hover {
 	@extend .shadow-light;
 }
 
+.li-mb-1 {
+	li:not(:last-child) {
+		@extend .mb-1;
+	}
+}
+
+.li-mb-2 {
+	li:not(:last-child) {
+		@extend .mb-2;
+	}
+}
+
+.li-mb-3 {
+	li:not(:last-child) {
+		@extend .mb-3;
+	}
+}
+
 .truncate {
   white-space: nowrap;
   overflow: hidden;

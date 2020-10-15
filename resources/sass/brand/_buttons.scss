@@ -27,8 +27,8 @@
 
 	&:hover {
 		color: white !important;
-		background-color: darken($brand-primary, 4%);
-		border-color: darken($brand-primary, 4%);
+		background-color: $brand-primary;
+		border-color: $brand-primary;
 	}
 
 	&:active {

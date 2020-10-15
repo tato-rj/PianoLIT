@@ -10,6 +10,14 @@ $('[full-load]').on('click', function() {
 	$('#loading-overlay').show();
 });
 
+$('form[submit-on-enter] input').keypress(function(e) {
+    if (e.which == 13) {
+    	console.log('Submitting the form on enter');
+        $(this).closest('form').submit();
+        return false;
+    }
+})
+
 $('[data-toggle="fixed-panel"]').on('click', function() {
 	let $link = $(this);
 	let $panel = $($link.attr('data-target'));

@@ -20,7 +20,7 @@
           </form>
         </div>
 
-        <div class="modal-footer border-0 bg-light cursor-pointer" data-toggle="panel" href="#panel-register" href-parent="#panel-login">
+        <div class="modal-footer rounded-bottom border-0 bg-light cursor-pointer" data-toggle="panel" href="#panel-register" href-parent="#panel-login">
           <h6 class="m-0 text-center w-100">Don't have an account yet?</h6>
         </div>
       </div>
@@ -39,7 +39,7 @@
             </form>
         </div>
 
-        <div class="modal-footer border-0 bg-light cursor-pointer" data-toggle="panel" href="#panel-login" href-parent="#panel-register">
+        <div class="modal-footer rounded-bottom border-0 bg-light cursor-pointer" data-toggle="panel" href="#panel-login" href-parent="#panel-register">
           <h6 class="m-0 text-center w-100">Already have an account?</h6>
         </div>
       </div>

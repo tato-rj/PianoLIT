@@ -143,15 +143,6 @@
     <script src="{{ mix('js/app.js') }}"></script>
 
     <script type="text/javascript">
-        $('form input').keypress(function (e) {
-                // if (e.which == 13) {
-                //     $(this).closest('form').submit();
-                //     return false;
-                // }
-            });
-    </script>
-
-    <script type="text/javascript">
 jQuery.fn.visible = function() {
     return this.css('visibility', 'visible');
 };

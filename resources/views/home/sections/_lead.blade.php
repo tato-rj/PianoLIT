@@ -25,10 +25,16 @@
 			<div class="col-lg-5 col-md-6 col-12 mb-3">
 				<p><small><strong>HERE ARE SOME EXAMPLES</strong></small></p>
 				<ul class="list-flat">
-					<li class="mb-2">@tag(['type' => 'search', 'label' => 'pieces for beginners'])</li>
-					<li class="mb-2">@tag(['type' => 'search', 'label' => 'bach little preludes'])</li>
-					<li class="mb-2">@tag(['type' => 'search', 'label' => 'pieces by women composers'])</li>
-					<li class="mb-2">@tag(['type' => 'search', 'label' => 'repertoire for the left hand'])</li>
+					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'pieces for beginners'])}}">
+						@tag(['type' => 'search', 'label' => 'pieces for beginners'])</a></li>
+					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'pieces like fur elise'])}}">
+						@tag(['type' => 'search', 'label' => 'pieces like fur elise'])</a></li>
+					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'pieces by women composers'])}}">
+						@tag(['type' => 'search', 'label' => 'pieces by women composers'])</a></li>
+					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'repertoire for my left hand'])}}">
+						@tag(['type' => 'search', 'label' => 'repertoire for the left hand'])</a></li>
+					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'bach little preludes'])}}">
+						@tag(['type' => 'search', 'label' => 'bach little preludes'])</a></li>
 				</ul>
 			</div>
 		</div>
