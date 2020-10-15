@@ -8,6 +8,7 @@ class Post extends ShareableContent
 {
     protected $searchableColumns = ['title', 'content'];
     protected $folder = 'blog';
+    protected $with = ['topics'];
     protected $report_by = 'title';
 
     protected static function boot()
