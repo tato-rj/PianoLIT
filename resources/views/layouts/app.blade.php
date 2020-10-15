@@ -27,6 +27,25 @@
     @include('layouts.html.js-app')
 
     <style type="text/css">
+        .form-transparent {
+            background-color: transparent !important;
+        }
+
+        /* Change Autocomplete styles in Chrome*/
+        input.form-transparent:-webkit-autofill,
+        input.form-transparent:-webkit-autofill:hover, 
+        input.form-transparent:-webkit-autofill:focus,
+        textarea.form-transparent:-webkit-autofill,
+        textarea.form-transparent:-webkit-autofill:hover,
+        textarea.form-transparent:-webkit-autofill:focus,
+        select.form-transparent:-webkit-autofill,
+        select.form-transparent:-webkit-autofill:hover,
+        select.form-transparent:-webkit-autofill:focus {
+          border: 1px solid transparent;
+          -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+          transition: background-color 5000s ease-in-out 0s;
+        }
+
         .fadeInLeft {
             animation-duration: .2s;
         }
@@ -122,6 +141,15 @@
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
+
+    <script type="text/javascript">
+        $('form input').keypress(function (e) {
+                if (e.which == 13) {
+                    // $(this).closest('form').submit();
+                    return false;
+                }
+            });
+    </script>
 
     <script type="text/javascript">
 jQuery.fn.visible = function() {
