@@ -9,6 +9,7 @@ class Post extends ShareableContent
     protected $searchableColumns = ['title', 'content'];
     protected $folder = 'blog';
     protected $with = ['topics'];
+    protected $appends = ['cover_image'];
     protected $report_by = 'title';
 
     protected static function boot()
@@ -36,6 +37,11 @@ class Post extends ShareableContent
     public function hasGift()
     {
         return ! is_null($this->gift_path);
+    }
+
+    public function getCoverImageAttribute()
+    {
+        return $this->cover_image();
     }
 
     public function scopeByTopic($query, Topic $topic)
