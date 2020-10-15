@@ -50,6 +50,8 @@
 
 	@include('shop.products.show.about')
 
+	@include('shop.products.show.cta')
+
 	@include('shop.products.show.suggestions')
 </section>
 
