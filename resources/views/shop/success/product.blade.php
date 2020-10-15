@@ -1,6 +1,6 @@
 <div class="col-lg-10 col-12 mx-auto text-center">
 	<div class="mb-4">
-		@include('shop.components.cover', ['product' => $purchase->item])
+		@include('shop.components.cover', ['product' => $purchase->item, 'maxWidth' => '280px'])
 	</div>
 	<div class="text-center">
 		<p class="text-muted">Download your product below</p>

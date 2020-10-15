@@ -9,7 +9,7 @@
     </td>
     <td class="text-nowrap">
         @foreach($purchase->item->links() as $label => $hash)
-        <a href="{{route('shop.download', ['purchase' => $purchase, 'path' => $hash])}}" class="link-blue">{{$label}}</a> {{$loop->count > 1 && ! $loop->last ? ' | ' : null}}
+        <a href="{{route('shop.download', ['purchase' => $purchase, 'path' => $hash])}}">{{$label}}</a> {{$loop->count > 1 && ! $loop->last ? ' | ' : null}}
         @endforeach
     </td>
   </tr>

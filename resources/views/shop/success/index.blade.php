@@ -13,7 +13,7 @@
 	  @include('shop.success.product')
 	</div>
 	<div class="text-center">
-		<h6>How are we doing? <a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank" class="link-blue">Give your feedback</a> on what we can improve</h6>
+		<h6>How are we doing? <a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank">Give your feedback</a> on what we can improve</h6>
 	</div>
 </section>
 
