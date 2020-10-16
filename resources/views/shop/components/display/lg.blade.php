@@ -15,7 +15,7 @@
 		</div>
 	</div>
 
-	<div class="col-lg-6 col-md-6 col-12 mb-3 order-lg-2 order-md-2 order-1">
+	<div class="col-lg-6 col-md-6 col-10 mx-auto mb-3 order-lg-2 order-md-2 order-1">
 		@include('shop.components.cover', ['maxWidth' => '3020px'])
 	</div>
 </div>
