@@ -5,7 +5,7 @@
 	'author' => 'P. Casals'
 ])
 
-<p>With October we have officially surpassed 3/4 of year 2020. And you know what this means: we are approaching the holidays and spending a whole lot more time indoor. So for your practicing time, we have some perfect pieces to get into the Halloween spirit.</p>
+<p>With October already halway through, we have officially surpassed 3/4 of the year 2020. And you know what this means: we are approaching the holidays and spending a whole lot more time indoor. So for your practicing time, we have some perfect pieces to get into the Halloween spirit.</p>
 
 <p>Head over to the <a href="https://my.pianolit.com/playlists" target="_blank">PianoLIT App</a> and start exploring our featured playlist “Scary vibes”.</p>
 
@@ -20,7 +20,7 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 	'badge' => [
 		'name' => 'listen', 
 		'color' => 'orange',
-		'link' => 'https://www.youtube.com/watch?v=RPFURmmnEHs'
+		'link' => 'https://www.youtube.com/watch?v=mC_yUTPg_Kg'
 	],
 	'title' => 'A haunted melody'
 ])
