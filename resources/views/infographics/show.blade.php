@@ -18,9 +18,6 @@
 
 		<div class="row">
 			<div class="col-lg-8 col-md-10 col-10 mx-auto">
-
-				@include('components.return', ['url' => route('resources.infographs.index'), 'to' => 'Infographics page'])
-
 				<div class="row">
 					<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 						<img src="{{storage($infograph->thumbnail_path)}}" class="no-click preview border w-100">

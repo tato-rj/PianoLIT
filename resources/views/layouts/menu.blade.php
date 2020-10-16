@@ -2,12 +2,11 @@
   <a class="navbar-brand" href="{{config('app.url')}}">
       <img src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 20%; width: 60px">
   </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-items">
     <div class="animated-icon2"><span></span><span></span><span></span><span></span></div>
-    {{-- <span class="navbar-toggler-icon"></span> --}}
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+  <div class="collapse navbar-collapse" id="navbar-items">
     <ul class="navbar-nav ml-auto">
 
       @include('layouts.menu.dropdown', [
