@@ -10,7 +10,7 @@
 			
 			<div>
 				@include('shop.components.action')
-				<a href="{{$product->showRoute()}}" class="btn btn-sm btn-wide btn-outline-secondary mb-2">@fa(['icon' => 'info-circle'])More details</a>
+				<a href="{{$product->showRoute()}}" class="btn btn-wide btn-outline-secondary mb-2">@fa(['icon' => 'info-circle'])More details</a>
 			</div>
 		</div>
 	</div>
