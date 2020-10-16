@@ -3,7 +3,7 @@
     {{auth()->user()->first_name}}
   </a>
 
-  <div class="dropdown-menu p-2" style="font-size: .9em; left: initial; right: 0; min-width: auto" aria-labelledby="navbarDropdown">
+  <div class="dropdown-menu py-2 px-3 rounded animated fadeInUp" style="left: initial; right: 0; min-width: auto" aria-labelledby="navbarDropdown">
 {{--     <a class="nav-link" style="white-space: nowrap;" href="{{route('users.invite')}}">Invite Friends</a>
   
     <div class="dropdown-divider my-1"></div> --}}
