@@ -1,5 +1,5 @@
 @foreach($purchases as $purchase)
-    @if($purchase)
+{{--     @if($purchase)
       <tr>
         <td class="text-nowrap">{{$purchase->created_at->toFormattedDateString()}}</td>
         <td>{{$purchase->type}}</td>
@@ -14,5 +14,5 @@
             @endforeach
         </td>
       </tr>
-    @endif
+    @endif --}}
 @endforeach
