@@ -28,6 +28,9 @@ class UsersController extends Controller
 
     public function profile()
     {
+        if (auth()->check() && auth()->user()->email == 'arthurvillar@gmail.com')
+            return auth()->user()->purchases;
+        
         return view('users.profile.index');
     }
 
