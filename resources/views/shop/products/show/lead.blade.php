@@ -1,5 +1,5 @@
 <div class="row pb-5 pt-3">
-		<div class="col-lg-8 col-md-8 col-12 d-flex mb-3 align-items-center order-lg-1 order-md-1 order-2">
+		<div class="col-lg-8 col-md-8 col-10 mx-auto d-flex mb-3 align-items-center order-lg-1 order-md-1 order-2">
 			<div>
 				@topics(['topics' => $product->topics])
 				<div>
