@@ -1,8 +1,8 @@
 <div class="row mb-5">
-	<div class="col-lg-6 col-md-6 col-12">
+	<div class="col-lg-6 col-md-6 col-10 mx-auto mb-3">
 		@include('shop.components.cover', ['maxWidth' => '280px'])
 	</div>
-	<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
+	<div class="col-lg-6 col-md-6 col-10 mx-auto d-flex align-items-center mb-3">
 		<div>
 			@topics(['topics' => $product->topics])
 			<div class="mb-2">
