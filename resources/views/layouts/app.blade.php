@@ -62,12 +62,12 @@
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
     }
 
-        .rounded, .btn, input, textarea, select {
+        .rounded, .btn {
             border-radius: 1rem !important;
         }
 
         input, textarea, select {
-            border-radius: 1rem !important;
+            border-radius: 1rem;
         }
 
         .rounded-bottom, .rounded-left {
