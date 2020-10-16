@@ -55,6 +55,11 @@
 	@include('shop.products.show.suggestions')
 </section>
 
+<div class="container mb-6">
+	@include('components.sections.feedback')
+	@include('components.sections.youtube')
+</div>
+
 @include('shop.components.preview.magazine')
 
 @endsection

@@ -23,6 +23,9 @@
 	@endif
 </div>
 
+<div class="container mb-6">
+	@include('components.sections.youtube')
+</div>
 @endsection
 
 @push('scripts')
