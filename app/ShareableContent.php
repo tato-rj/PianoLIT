@@ -98,7 +98,7 @@ abstract class ShareableContent extends PianoLit
 
     public function scopeSuggestions($query, $number = 4)
     {
-        return $query->except(['id' => $this->id])->inRandomOrder()->published()->take($number);
+        return $query->except('id', $this->id)->inRandomOrder()->published()->take($number);
     }
 
     public function scopeSearch($query, $input)
