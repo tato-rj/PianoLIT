@@ -2,7 +2,7 @@
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     {{$label}}
   </a>
-  <div class="dropdown-menu p-2" style="font-size: .9em" aria-labelledby="navbarDropdown">
+  <div class="dropdown-menu py-2 px-3 rounded animated fadeInUp" aria-labelledby="navbarDropdown">
     @foreach($groups as $group)
       @if(! empty($group['title']))
         <label style="font-size: .9em" class="m-0 text-grey text-uppercase"><small>{{$group['title']}}</small></label>

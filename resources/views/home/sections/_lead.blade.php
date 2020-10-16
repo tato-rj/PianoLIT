@@ -2,7 +2,7 @@
 <section class="container">
 	<div class="row">		
 		<div class="col-lg-8 col-sm-10 col-12 mx-auto text-center">
-			<h1 class="mb-3"><strong>Find music that inspires you.</strong></h1>
+			<h1 class="mb-3 font-weight-bold animate-letters">Find music that inspires you.</h1>
 			<p class="text-muted mb-4" style="font-size: 110%">Where pianists discover new pieces and find inspiration<br>to play only what they love.</p>			
 		</div>
 	</div>
@@ -25,16 +25,24 @@
 			<div class="col-lg-5 col-md-6 col-12 mb-3">
 				<p><small><strong>HERE ARE SOME EXAMPLES</strong></small></p>
 				<ul class="list-flat" id="query-suggestions">
-					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'pieces for beginners'])}}">
-						@tag(['type' => 'search', 'label' => 'pieces for beginners'])</a></li>
-					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'pieces like fur elise'])}}">
-						@tag(['type' => 'search', 'label' => 'pieces like fur elise'])</a></li>
-					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'pieces by women composers'])}}">
-						@tag(['type' => 'search', 'label' => 'pieces by women composers'])</a></li>
-					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'repertoire for my left hand'])}}">
-						@tag(['type' => 'search', 'label' => 'repertoire for the left hand'])</a></li>
-					<li class="mb-2"><a href="{{route('explore.search', ['search' => 'bach little preludes'])}}">
-						@tag(['type' => 'search', 'label' => 'bach little preludes'])</a></li>
+					@foreach(collect([
+						'pieces for beginners',
+						'pieces like fur elise',
+						'pieces by women composers',
+						'repertoire for my left hand',
+						'bach little preludes',
+						'intermediate pieces by chopin',
+						'pieces by black composers',
+						'advanced arpeggios',
+						'scales for beginners',
+						'baroque pieces',
+						'pieces for rcm 4 level',
+						'florence price'
+					])->shuffle() as $suggestion)
+					<li class="mb-2" style="display: {{$loop->iteration > 5 ? 'none' : null}}">
+						<a href="{{route('explore.search', ['search' => $suggestion])}}">
+						@tag(['type' => 'search', 'label' => $suggestion])</a></li>
+					@endforeach
 				</ul>
 			</div>
 		</div>

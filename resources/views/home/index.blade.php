@@ -28,6 +28,17 @@
 <script type="text/javascript" src="{{asset('js/animations/phonescreens.js')}}"></script>
 
 <script type="text/javascript">
+$(document).ready(function() {
+    let $suggestions = $('#query-suggestions');
+    
+    setInterval(function() {
+        $suggestions.find('li').last().detach().prependTo($suggestions).fadeIn('slow');
+        $suggestions.find('li:visible').last().hide();
+    }, 4000);
+});
+</script>
+
+<script type="text/javascript">
  $(function() {
     var isDragging = false;
     $('.search-card, .piece-card')

@@ -41,8 +41,11 @@
 				'Desktop App',
 				'Advanced filters',
 				'Get the score',
+				'Watch videos',
 				'Request video tutorials',
 				'Save and organize your favorites',
+				'Speed up/slow down audio',
+				'Separate hands recordings',
 				'Curated playlists']])
 		
 		@slot('button')

@@ -2,7 +2,7 @@
 
 namespace App\Merchandise;
 
-use App\PianoLit;
+use App\{PianoLit, User};
 use App\Events\PurchaseMade;
 
 class Purchase extends PianoLit
@@ -19,6 +19,11 @@ class Purchase extends PianoLit
     public function item()
     {
         return $this->morphTo();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function getIsFreeAttribute()
