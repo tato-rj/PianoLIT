@@ -1,4 +1,5 @@
 @foreach($purchases as $purchase)
+<div json="{{$purchase->id}}"></div>
 {{--     @if($purchase)
       <tr>
         <td class="text-nowrap">{{$purchase->created_at->toFormattedDateString()}}</td>
