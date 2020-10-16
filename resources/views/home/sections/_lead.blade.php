@@ -57,7 +57,7 @@
 			
 			@button([
 				'href' => route('webapp.discover'),
-				'label' => 'Start FREE trial',
+				'label' => auth()->check() ? 'Go to the WebApp' : 'Start FREE trial',
 				'styles' => [
 					'shadow' => true,
 					'size' => 'wide',
