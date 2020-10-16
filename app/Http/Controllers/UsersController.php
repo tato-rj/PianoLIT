@@ -28,12 +28,6 @@ class UsersController extends Controller
 
     public function profile()
     {
-        if (auth()->check() && auth()->user()->email == 'arthurvillar@gmail.com') {
-            $array = auth()->user()->purchases->toArray();
-            $purchases = request()->start_at ? collect(array_slice($array, request()->start_at, count($array), true))->take(5)->values() : [];
-            return $purchases;
-        }
-
         return view('users.profile.index');
     }
 
@@ -46,7 +40,7 @@ class UsersController extends Controller
     {
         $array = auth()->user()->purchases->toArray();
 
-        $purchases = $request->start_at ? collect(array_slice($array, $request->start_at, count($array), true))->take(5) : [];
+        $purchases = $request->start_at ? collect(array_slice($array, $request->start_at, count($array), true))->take(5)->values() : [];
 
         return view('users.purchases.rows', compact('purchases'))->render();
     }
