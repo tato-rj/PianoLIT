@@ -30,7 +30,7 @@ class UsersController extends Controller
     {
         if (auth()->check() && auth()->user()->email == 'arthurvillar@gmail.com') {
             $array = auth()->user()->purchases->toArray();
-            $purchases = $request->start_at ? collect(array_slice($array, $request->start_at, count($array), true))->take(5) : [];
+            $purchases = request()->start_at ? collect(array_slice($array, request()->start_at, count($array), true))->take(5) : [];
             return $purchases;
         }
 
