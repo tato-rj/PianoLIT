@@ -13,7 +13,7 @@ class Tag extends PianoLit
         'core' => ['level', 'sublevel', 'period', 'length']
     ];
 
-    protected $appends = ['cover_image'];
+    protected $appends = ['cover_image', 'source'];
 
     private $specialTags = ['dreamy', 'elegant', 'flashy', 'crazy', 'melancholic', 'happy'];
 
@@ -28,6 +28,11 @@ class Tag extends PianoLit
         self::deleting(function($tag) {
             $tag->pieces()->detach();
         });
+    }
+
+    public function getSourceAttribute()
+    {
+        return route('api.search');
     }
 
     public function creator()

@@ -22,6 +22,11 @@ class Composer extends Person
     	return $this->hasMany(Piece::class);
     }
 
+    public function getSourceAttribute()
+    {
+        return route('api.search');
+    }
+
     public function calculateAge($year, $event)
     {
         if (! $year || ! $this->born_in)

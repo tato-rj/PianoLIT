@@ -22,7 +22,7 @@ class Controller extends BaseController
     	$field = str_replace('_at', '', $attr);
         $message = $model->$attr ? 'The '.$name.' is <u>' . $field . '</u>' : 'The '.$name.' is no longer <u>' . $field . '</u>';
 
-        return view('components.alerts.alert', [
+        return view('components.alert', [
             'color' => 'green',
             'message' => '<i class="fas fa-check-circle mr-2"></i>' . $message,
             'temporary' => true,

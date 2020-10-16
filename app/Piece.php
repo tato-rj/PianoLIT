@@ -42,7 +42,8 @@ class Piece extends PianoLit
         'number_of_pages',
         'for_who',
         'has_siblings',
-        'image_background'
+        'image_background',
+        'source'
     ];
     
     protected $report_by = 'medium_name_with_composer';
@@ -56,6 +57,11 @@ class Piece extends PianoLit
             $piece->favorites()->delete();
             $piece->deleteFiles();
         });
+    }
+
+    public function getSourceAttribute()
+    {
+        return route('api.pieces.find');
     }
 
     public function toSearchableArray()
