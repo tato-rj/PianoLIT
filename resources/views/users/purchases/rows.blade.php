@@ -1,6 +1,6 @@
 @foreach($purchases as $purchase)
   <tr>
-    <td class="text-nowrap">{{$purchase->created_at->toFormattedDateString()}}</td>
+    <td class="text-nowrap">{{$purchase->created_at ? $purchase->created_at->toFormattedDateString() : null}}</td>
     <td>{{$purchase->type}}</td>
     <td class="text-nowrap">{{$purchase->item->title}}
     @if($purchase->isFree)
