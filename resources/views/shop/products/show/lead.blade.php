@@ -1,5 +1,5 @@
 <div class="row pb-5 pt-3">
-		<div class="col-lg-8 col-md-8 col-12 d-flex align-items-center">
+		<div class="col-lg-8 col-md-8 col-12 d-flex align-items-center order-lg-1 order-md-1 order-2">
 			<div>
 				@topics(['topics' => $product->topics])
 				<div>
@@ -21,7 +21,7 @@
 			</div>
 		</div>
 
-		<div class="col-lg-4 col-md-4 col-12">
+		<div class="col-lg-4 col-md-4 col-12 order-lg-2 order-md-2 order-1">
 			@include('shop.components.cover')
 		</div>
 </div>
