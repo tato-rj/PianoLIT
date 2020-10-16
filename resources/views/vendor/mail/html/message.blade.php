@@ -44,7 +44,7 @@
 @if(isset($subscription))
 <p>You have received this email as a subscriber of PianoLIT.com<br>You can <a href="{{route('subscriptions.unsubscribe', [$subscription, $list])}}">unsubscribe</a> from these emails here<br>(Don't worry, we won't take it personally).</p>
 @endif
-<p>© {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')</p>
+<p>© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
 </div>
 </div>
 @endcomponent
