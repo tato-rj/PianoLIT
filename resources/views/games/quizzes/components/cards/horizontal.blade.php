@@ -1,5 +1,5 @@
 <div class="col-12 p-2 mb-3">
-	<div class="card border-0">
+	<div class="card rounded border-0">
 		<a class="link-none" href="{{route('quizzes.show', $quiz->slug)}}">
 		  <div class="row no-gutters">
 		    <div class="col-lg-3">

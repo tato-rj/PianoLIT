@@ -63,7 +63,7 @@
     }
 
         .rounded, .btn, input, textarea, select {
-            border-radius: 1rem;
+            border-radius: 1rem !important;
         }
 
         input, textarea, select {

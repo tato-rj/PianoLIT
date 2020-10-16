@@ -1,7 +1,7 @@
 <div class="row pb-5 pt-3">
 		<div class="col-lg-8 col-md-8 col-12 d-flex align-items-center">
 			<div>
-				@topics(['topics' => \App\Blog\Post::first()->topics, 'route' => 'ebooks.topic'])
+				@topics(['topics' => $product->topics])
 				<div>
 					<h4 class="mb-4 clamp-2"><strong>{{$product->title}}</strong></h4>
 					@include('shop.components.highlights')

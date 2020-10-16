@@ -7,7 +7,7 @@
 		@else
 		<ul class="list-flat li-mb-2">
 			@foreach($items as $item)
-			<li>@fa(['color' => 'green', 'icon' => 'check'])<strong>{!! $item !!}</strong></li>
+			<li>@fa(['color' => 'green', 'icon' => 'check', 'if' => $loop->iteration > 2])<strong>{!! $item !!}</strong></li>
 			@endforeach
 		</ul>
 		@endisset

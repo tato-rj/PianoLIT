@@ -1,5 +1,5 @@
 <div class="col-lg-3 col-md-6 col-12 p-2 suggestion-card">
-	<div class="card w-100 border-0 shadow-light t-2">
+	<div class="card w-100 border-0 shadow-light rounded t-2">
 		<a class="link-none" href="{{route('quizzes.show', $suggestion->slug)}}">
 			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$suggestion->cover_image()}}); height: 100px">
 				<div class="card-overlay h-100 t-2" style="opacity: 0">

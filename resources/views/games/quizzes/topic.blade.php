@@ -10,11 +10,11 @@
 		<div class="col-lg-3 col-md-3 col-12">
       <p><strong>Other topics</strong></p>
       <div class="d-flex flex-wrap">
-        @each('components.quiz.topic', $topics, 'topic')
+        @each('games.quizzes.components.topic', $topics, 'topic')
       </div>
     </div>
     <div class="col-lg-9 col-md-9 col-12">
-      @each('components.quiz.cards.horizontal', $quizzes, 'quiz')
+      @each('games.quizzes.components.cards.horizontal', $quizzes, 'quiz')
     </div>
 
 	</div>

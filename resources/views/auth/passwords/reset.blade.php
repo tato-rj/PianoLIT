@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-lg-4 col-md-6 col-sm-8 col-12 mx-auto">
             <h4 class="mb-4">Reset your password below</h4>
-            <form method="POST" action="{{ route('password.update') }}">
+            <form method="POST" action="{{ route('password.update') }}" disable-on-submit>
                 @csrf
 
                 <input type="hidden" name="token" value="{{ $token }}">

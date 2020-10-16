@@ -1,4 +1,4 @@
-@component('components.shop.forms.summary')
+@component('shop.components.forms.summary')
 	<div class="mb-2"><small>You're about to subscribe to the</small></div>
 	<div class="mb-3 pb-3 border-bottom">
 		<div class="d-flex d-apart mb-4">

@@ -22,8 +22,8 @@
 
 		@component('search.components.plan', ['color' => 'light', 
 			'items' => [
-				'<u>Unlimited</u> results',
-				'<u>Unlimited</u> queries per day',
+				'<span class="text-primary">Unlimited</span> results',
+				'<span class="text-primary">Unlimited</span> queries per day',
 				'iOS App',
 				'Desktop App',
 				'Advanced filters',]])
@@ -35,8 +35,8 @@
 
 		@component('search.components.plan', ['color' => 'light', 
 			'items' => [
-				'<u>Unlimited</u> results',
-				'<u>Unlimited</u> queries per day',
+				'<span class="text-primary">Unlimited</span> results',
+				'<span class="text-primary">Unlimited</span> queries per day',
 				'iOS App',
 				'Desktop App',
 				'Advanced filters',

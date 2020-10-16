@@ -1,5 +1,5 @@
 <div class="col-12 p-2 mb-3">
-	<div class="card border-0">
+	<div class="card border-0 rounded">
 		<a class="link-none" href="{{route('posts.show', $post->slug)}}">
 		  <div class="row no-gutters">
 		    <div class="col-lg-3">

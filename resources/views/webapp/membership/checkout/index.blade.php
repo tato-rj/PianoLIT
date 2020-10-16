@@ -13,8 +13,8 @@
 	</div>
 
 	<div class="col-lg-6 col-md-6 col-12"> 
-		@component('components.shop.forms.layout')
-			@include('components.shop.forms.new', [
+		@component('shop.components.forms.layout')
+			@include('shop.components.forms.new', [
 				'action' => route('webapp.membership.purchase', $plan),
 				'label' => 'Subscribe now for $' . $plan->formattedPrice(),
 				'comments' => 'Your free trial will start today and end on ' . now()->addDays(7)->toFormattedDateString() . '. Unless you cancel during this duration, you’ll be charged $' . $plan->formattedPrice() . ' after ' . $plan->trial_period_days . ' days. Afterwards your subscription will renew automatically every ' . $plan->interval . ', but you can cancel anytime.'

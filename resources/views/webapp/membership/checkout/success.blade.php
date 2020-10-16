@@ -13,7 +13,11 @@
 		<h1>@fa(['icon' => 'check-circle', 'fa_type' => 'r', 'color' => 'green', 'mr' => 0, 'size' => 'lg'])</h1>
 		<h2>CONGRATULATIONS!</h2>
 		<p class="mb-4">You have successfully subscribed to our Monthly Plan</p>
-		@button(['label' => 'LET\'S GET STARTED', 'href' => route('webapp.discover'), 'wide' => true, 'theme' => 'outline-secondary', 'classes' => 'rounded-pill', 'modal' => 'tour-modal'])
+		@button(['label' => 'LET\'S GET STARTED', 'href' => route('webapp.discover'),
+			'styles' => [
+				'size' => 'wide', 
+				'theme' => 'outline-secondary'
+			], 'classes' => 'rounded-pill', 'modal' => 'tour-modal'])
 	</div>
 	@include('webapp.membership.pricing.features')
 </section>

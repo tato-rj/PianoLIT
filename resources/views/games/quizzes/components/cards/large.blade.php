@@ -1,5 +1,5 @@
 <div class="col-lg-4 col-md-6 col-12 p-3">
-	<div class="card border-0 shadow-light w-100 t-2">
+	<div class="card border-0 shadow-light rounded w-100 t-2">
 		<a class="link-none" href="{{route('quizzes.show', $quiz->slug)}}">
 			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$quiz->cover_image()}}); height: 160px">
 				@if($quiz->is_new)
