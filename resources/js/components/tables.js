@@ -41,7 +41,6 @@ $('.custom-table .load-more').on('click', function() {
     $button.prop('disabled', false);
   })
   .fail(function() {
-    alert('Something went wrong...');
-    $button.text('NOT WORKING');
+    $button.text('SORRY, WE COULDN\'T LOAD MORE RESULTS');
   });
 });
