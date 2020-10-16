@@ -16,7 +16,12 @@
   </div>
 </div>
 
-@component('components.overlays.modal', ['title' => 'Publish tutorial'])
+@component('components.modal', ['id' => 'publish-tutorial'])
+@slot('header')
+Publish Tutorial
+@endslot
+
+@slot('body')
 <p class="m-0">Are you ready to publish this tutorial?</p>
 <p class="mb-3"><u>The user will receive an email saying that the tutorial is ready.</u></p>
 <form method="POST">
@@ -24,6 +29,7 @@
   @method('PATCH')
   <button type="submit" class="btn btn-sm btn-block btn-danger">Yes, the tutorial is ready</button>
 </form>
+@endslot
 @endcomponent
 @endsection
 
