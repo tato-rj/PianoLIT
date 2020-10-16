@@ -28,9 +28,12 @@ class UsersController extends Controller
 
     public function profile()
     {
-        if (auth()->check() && auth()->user()->email == 'arthurvillar@gmail.com')
-            return auth()->user()->purchases;
-        
+        if (auth()->check() && auth()->user()->email == 'arthurvillar@gmail.com') {
+            $array = auth()->user()->purchases->toArray();
+            $purchases = $request->start_at ? collect(array_slice($array, $request->start_at, count($array), true))->take(5) : [];
+            return $purchases;
+        }
+
         return view('users.profile.index');
     }
 
