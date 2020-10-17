@@ -1,7 +1,3 @@
-.blog-font p, .blog-font h4, .blog-font iframe {
-	margin-bottom: 1.75rem;
-}
-
 #blog-post {
 	p img {
 		max-width: 100%;
@@ -25,4 +21,8 @@
 		width: 100%;
 		display: block;
 	}
+}
+
+.blog-font p, .blog-font h4, .blog-font iframe {
+	margin-bottom: 1.75rem;
 }
