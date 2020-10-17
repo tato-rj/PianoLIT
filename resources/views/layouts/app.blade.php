@@ -27,8 +27,7 @@
     @include('layouts.html.js-app')
 
     <style type="text/css">
-        .dropdown-toggle::after {content: none}
-        
+
 @-webkit-keyframes fadeInUp {
   from {
     opacity: 0;
