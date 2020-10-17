@@ -10,7 +10,8 @@
 	}
 
 	.mce-excerpt {
-		margin: 0 3rem;
+		margin-left: 3rem;
+		margin-right: 3rem;
 		font-style: italic;
 	}
 	.vglnk {
@@ -24,5 +25,5 @@
 }
 
 .blog-font p, .blog-font h4, .blog-font iframe {
-	margin-bottom: 1.75rem;
+	margin-bottom: 1.75rem !important;
 }

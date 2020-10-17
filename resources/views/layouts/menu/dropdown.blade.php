@@ -1,8 +1,8 @@
 <li class="nav-item dropdown mx-2">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
     {{$label}}
   </a>
-  <div class="dropdown-menu py-2 px-3 rounded animated fadeInUp" aria-labelledby="navbarDropdown">
+  <div class="dropdown-menu py-2 px-3 rounded animated fadeInUp">
     @foreach($groups as $group)
       @if(! empty($group['title']))
         <label style="font-size: .9em" class="m-0 text-grey text-uppercase"><small>{{$group['title']}}</small></label>
