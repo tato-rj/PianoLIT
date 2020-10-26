@@ -1,6 +1,6 @@
 <div class="row">
 		<div class="col-lg-9 col-md-9 col-12 mb-2">
-			<div class="grid row">
+			<div class="grid row mb-4">
 				{{$items}}
 			</div>
 
