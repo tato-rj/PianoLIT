@@ -133,6 +133,18 @@
             transform: translateY(20px);
             transition: .2s;
         }
+
+    /*PAGINATION*/
+    .page-item:last-child .page-link {border-radius: 0}
+
+    .page-link {
+        /*border: none;*/
+        border-radius: 8px !important;
+        transition: .2s;
+        margin: 2px;
+    }
+
+    .page-item:not(:last-child):not(:first-child) .page-link {border: none;}
     </style>
     @stack('header')
 </head>

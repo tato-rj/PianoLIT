@@ -19,7 +19,7 @@ class InfographicsController extends Controller
     public function index(InfographicFilters $filters)
     {
         $infographs = Infograph::published()->latest()->filter($filters)->paginate(12);
-        $topics = Topic::has('infographs', '>', 0)->ordered()->get();
+        $topics = Topic::has('infographs')->ordered()->get();
 
         return view('infographics.index', compact(['infographs', 'topics']));        
     }
