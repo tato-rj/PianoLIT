@@ -9,7 +9,7 @@
   @pagetitle(['title' => 'Quizzes', 'subtitle' => 'Test your knowledge and learn cool new facts about music'])
 
   @component('components.display.layout', [
-    'links' => $quizzes->links(),
+    'collection' => $quizzes,
     'topics' => $topics])
 
   @slot('items')

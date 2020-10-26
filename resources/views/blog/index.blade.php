@@ -8,7 +8,7 @@
 
 	
 	@component('components.display.layout', [
-		'links' => $posts->links(),
+		'collection' => $posts,
 		'topics' => $topics])
 
 	@slot('items')
@@ -16,8 +16,6 @@
 	@endslot
 	
 	@endcomponent
-
-  @pagination(['collection' => $posts])
 </section>
 
 @endsection

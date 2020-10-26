@@ -18,7 +18,7 @@
 		'subtitle' => 'Cool infographics about all music things related'])
 		
 	@component('components.display.layout', [
-		'links' => $infographs->links(),
+		'collection' => $infographs,
 		'topics' => $topics])
 
 		@slot('items')

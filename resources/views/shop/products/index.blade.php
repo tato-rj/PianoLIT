@@ -20,7 +20,7 @@
 		@include('components.animations.workers')
 	@else
 		@component('components.display.layout', [
-			'links' => $products->links(),
+			'collection' => $products,
 			'topics' => $topics])
 
 		@slot('items')

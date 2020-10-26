@@ -3,6 +3,8 @@
 			<div class="grid row">
 				{{$items}}
 			</div>
+
+          @pagination
 		</div>
 		<div class="col-lg-3 col-md-3 col-12 mb-2">
 			<div class="mb-4">
