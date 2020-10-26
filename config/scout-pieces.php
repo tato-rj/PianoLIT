@@ -162,7 +162,18 @@ return [
     */
     'allowTyposOnNumericTokens' => true,
     'advancedSyntax' => true,
-    'optionalWords' => ['composer', 'composers', 'piece', 'pieces', 'by', 'from', 'the'],
+    'optionalWords' => [
+        'composer', 
+        'composers', 
+        'piece', 
+        'pieces', 
+        'by', 
+        'from', 
+        'the',
+        'my',
+        'for',
+        'repertoire'
+    ],
     'disableTypoToleranceOnWords' => ['black'],
     'disableExactOnAttributes' => [],
     'typoTolerance' => 'true',
@@ -173,7 +184,9 @@ return [
         ['etude', 'study', 'etudes', 'studies'],
         ['easy', 'beginner'],
         ['easy', 'elementary'],
-        ['difficult', 'advanced']
+        ['difficult', 'advanced'],
+        ['women', 'female'],
+        ['woman', 'female'],
     ],
     'separatorsToIndex' => '#',
     'removeWordsIfNoResults' => 'lastWords'

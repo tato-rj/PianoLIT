@@ -80,7 +80,9 @@ class Piece extends PianoLit
             'composer_name' => $this->composer->name,
             'nationality' => $this->composer->nationality,
             'country' => $this->composer->country->name,
-            'views_count' => $this->views_count
+            'views_count' => $this->views_count,
+            'gender' => $this->composer->gender,
+            'ethnicity' => $this->composer->ethnicity
         ];
 
         return $array;
@@ -563,6 +565,7 @@ class Piece extends PianoLit
     {
         if (empty($array))
             return $query->take(0);
+        
         $results = $query->where(function($query) use ($array, $request) {
             foreach ($array as $tag) {
                 $suffix = is_numeric(lastchar($tag)) ? null : '%';
