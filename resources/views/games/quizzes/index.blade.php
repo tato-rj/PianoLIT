@@ -40,6 +40,6 @@
 @push('scripts')
 <script type="text/javascript">
 $('.card-title').clamp(2);
-$('.card-text').clamp(4);
+$('.card-text').clamp(randomBetween(3, 5));
 </script>
 @endpush
