@@ -3,17 +3,19 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
-use App\Shop\eScore;
+use App\Shop\{eScore, eScoreTopic};
+use App\Filters\ProductFilters;
 use Illuminate\Http\Request;
 use App\Billing\Factories\StripeFactory;
 
 class eScoresController extends Controller
 {
-    public function index()
+    public function index(ProductFilters $filters)
     {
-    	$products = eScore::published()->get();
+    	$products = eScore::published()->filter($filters)->paginate(12);
+        $topics = eScoreTopic::has('escores')->get();
 
-    	return view('shop.products.escores', compact('products'));
+    	return view('shop.products.escores', compact(['products', 'topics']));
     }
 
     public function show(eScore $escore)

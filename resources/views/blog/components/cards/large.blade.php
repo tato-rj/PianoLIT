@@ -1,4 +1,4 @@
-<div class="col-lg-4 col-md-6 col-12 p-3">
+<div class="grid-item col-lg-4 col-md-6 col-12 p-2">
 	<div class="card border-0 shadow-light w-100 t-2 rounded">
 		<a class="link-none" href="{{route('posts.show', $post->slug)}}">
 			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$post->cover_image()}}); height: 200px">

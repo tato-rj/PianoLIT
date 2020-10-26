@@ -30,7 +30,7 @@
 			@endif
 			<div class="mb-4">
 				
-				@topics(['topics' => $post->topics, 'route' => 'posts.topic'])
+				@topics(['model' => $post])
 
 				<h1 class="mb-4">{{$post->title}}</h1>
 				<p class="text-muted blog-font">{{$post->description}}</p>
@@ -79,12 +79,10 @@
 		</div>
 	</div>
 
-	<div class="row mb-6">
-		<div class="col-12 mb-4">
-			<div><i class="fas fa-glasses mr-2"></i><strong>READ NEXT</strong></div>
-		</div>
-		@each('blog.components.cards.small', $suggestions, 'suggestion')
-	</div>
+	@include('components.display.suggestions', [
+		'title' => '<i class="fas fa-glasses mr-2"></i><strong>READ NEXT</strong>',
+		'card' => 'blog.components.cards.small',
+		'collection' => $suggestions])
 
 	<div class="row">
 		<div class="col-12 mb-2">

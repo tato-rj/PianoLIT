@@ -66,7 +66,7 @@
 
       @endauth
 
-      @include('layouts.menu.search')
+      {{-- @include('layouts.menu.search') --}}
 
     </ul>
   </div>

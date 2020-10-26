@@ -5,6 +5,7 @@ window.moment = require('moment');
 window.Plyr = require('plyr');
 window.Mark = require('mark.js/dist/jquery.mark.min.js');
 window.axios = require('axios').default;
+window.Masonry = require('masonry-layout');
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support

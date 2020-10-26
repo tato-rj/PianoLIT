@@ -15,6 +15,7 @@ class Quiz extends ShareableContent
     protected $withCount = ['results'];
     protected $appends = ['questions'];
     protected $report_by = 'title';
+    public $route = 'quizzes.index';
 
     protected static function boot()
     {

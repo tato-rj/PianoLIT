@@ -3,14 +3,18 @@
 namespace App\Blog;
 
 use App\{ShareableContent, Admin};
+use App\Traits\Filterable;
 
 class Post extends ShareableContent
 {
+    use Filterable;
+
     protected $searchableColumns = ['title', 'content'];
     protected $folder = 'blog';
     protected $with = ['topics'];
     protected $appends = ['cover_image'];
     protected $report_by = 'title';
+    public $route = 'posts.index';
 
     protected static function boot()
     {

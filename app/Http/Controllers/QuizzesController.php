@@ -15,7 +15,7 @@ class QuizzesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, QuizFilters $filters)
+    public function index(QuizFilters $filters)
     {
         $quizzes = Quiz::published()->latest()->filter($filters)->paginate(12);
         $levels = Level::all();

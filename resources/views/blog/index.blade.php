@@ -6,11 +6,16 @@
         'title' => 'Blog', 
         'subtitle' => 'A space where we share our ideas and explore intriguing facts about the exciting world of classical music'])
 
-	<div class="row mb-4">
-		
-		@each('blog.components.cards.large', $posts, 'post')
+	
+	@component('components.display.layout', [
+		'links' => $posts->links(),
+		'topics' => $topics])
 
-	</div>
+	@slot('items')
+		@each('blog.components.cards.large', $posts, 'post')
+	@endslot
+	
+	@endcomponent
 
   @pagination(['collection' => $posts])
 </section>

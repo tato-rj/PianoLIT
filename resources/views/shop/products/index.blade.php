@@ -15,12 +15,15 @@
 @pagetitle
 
 <div class="container mb-5">
-	@if($products->count() == 0)
-	<div class="p-4 text-center text-red"><strong>Coming up soon!</strong></div>
-	@include('components.animations.workers')
-	@else
-	@each('shop.components.display.lg', $products, 'product')
-	@endif
+	@component('components.display.layout', [
+		'links' => $products->links(),
+		'topics' => $topics])
+
+	@slot('items')
+		@each('shop.components.card', $products, 'item')
+	@endslot
+	
+	@endcomponent
 </div>
 
 <div class="container mb-6">

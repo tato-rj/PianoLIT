@@ -53,7 +53,7 @@ class HomeController extends Controller
         }
         
         return [
-            'view' => ! $pieces->isEmpty() ? view('components.pieces.display', compact('pieces'))->render() : view('components.pieces.empty')->render(),
+            'view' => view('search.components.results.pieces', compact('pieces'))->render(),
             'total' => $total,
             'count' => $pieces->count(),
             'label' => $label

@@ -127,6 +127,12 @@
         .rounded-sm-left, .rounded-sm-top {
             border-top-left-radius: .25rem!important;
         }
+
+        .grid {
+            opacity: 0; 
+            transform: translateY(20px);
+            transition: .2s;
+        }
     </style>
     @stack('header')
 </head>
@@ -266,6 +272,26 @@ jQuery.fn.checkCookie = function() {
 
       return false;
     }
+    </script>
+
+    <script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    var container = document.querySelector('.grid');
+    var grid = new Masonry( container, {
+        itemSelector: '.grid-item',
+    });
+
+    grid.on( 'layoutComplete', function( gridInstance, laidOutItems ) {
+        container.style.opacity = 1;
+        container.style.transform = 'translateY(0)';
+    });
+
+    grid.layout();
+}, false);
+    </script>
+
+    <script type="text/javascript">
+
     </script>
 
     @stack('scripts')

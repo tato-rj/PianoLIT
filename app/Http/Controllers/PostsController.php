@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Blog\{Post, Topic};
 use App\Http\Requests\PostForm;
 use Illuminate\Http\Request;
+use App\Filters\BlogFilters;
 
 class PostsController extends Controller
 {
@@ -13,11 +14,12 @@ class PostsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(BlogFilters $filters)
     {
-        $posts = Post::published()->latest()->paginate(12);
+        $posts = Post::published()->latest()->filter($filters)->paginate(12);
+        $topics = Topic::all();
 
-        return view('blog.index', compact('posts'));
+        return view('blog.index', compact(['posts', 'topics']));
     }
 
     public function topic(Topic $topic)

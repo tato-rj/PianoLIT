@@ -52,7 +52,11 @@
 
 	@include('shop.products.show.cta')
 
-	@include('shop.products.show.suggestions')
+	@include('components.display.suggestions', [
+		'title' => 'You might also be interested in',
+		'card' => 'shop.components.card',
+		'collection' => $product->suggestions()->get()])
+
 </section>
 
 <div class="container mb-6">

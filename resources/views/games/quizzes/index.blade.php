@@ -8,37 +8,30 @@
    
   @pagetitle(['title' => 'Quizzes', 'subtitle' => 'Test your knowledge and learn cool new facts about music'])
 
-	<div class="row">
-		<div class="col-lg-10 col-md-9 col-12 mb-4">
-        <div class="row mb-4">
-          @each('games.quizzes.components.cards.large', $quizzes, 'quiz')
+  @component('components.display.layout', [
+    'links' => $quizzes->links(),
+    'topics' => $topics])
+
+  @slot('items')
+    @each('games.quizzes.components.cards.large', $quizzes, 'quiz')
+  @endslot
+
+  @slot('extra')
+      <div>
+        <div class="d-flex d-apart mb-1 pb-1 border-bottom">
+          <p class="text-muted mb-0"><strong>LEVELS</strong></p>
+          <a href="{{route('quizzes.index')}}" class="text-muted"><small>reset</small></a>
         </div>
-        <div class="row">
-          <div class="col-12 d-flex justify-content-center">
-            {{ $quizzes->links() }}
-          </div>
-        </div>
-    </div>
-    <div class="col-lg-2 col-md-3 col-12" id="filters">
-      <div class="mb-2">
-        <p class="text-muted mb-1 pb-1 border-bottom"><strong>LEVELS</strong></p>
         <div>
           @foreach($levels as $level)
-          <button data-href="{{route('quizzes.index', ['level' => $level->slug])}}" class="btn btn-{{request('level') == $level->slug ? 'teal' : 'light'}} m-1 btn-sm text-muted text-truncate">{{ucfirst($level->name)}}</button>
+          <a href="{{route('quizzes.index', request('level') == $level->slug ? null : ['level' => $level->slug])}}" class="btn btn-{{request('level') == $level->slug ? 'primary' : 'light'}} m-1 btn-sm text-muted text-truncate">{{ucfirst($level->name)}}</a>
           @endforeach
         </div>
       </div>
+  @endslot
 
-      <div>
-        <p class="text-muted mb-1 pb-1 border-bottom"><strong>TOPICS</strong></p>
-        <div>
-          @foreach($topics as $topic)
-          <button data-href="{{route('quizzes.index', ['topics' => $topic->slug])}}" class="btn btn-{{request('topics') == $topic->slug ? 'teal' : 'light'}} m-1 btn-sm text-muted">{{ucfirst($topic->name)}}</button>
-          @endforeach
-        </div>
-      </div>
-    </div>
-  </div>
+  @endcomponent
+
 </section>
 
 @popup(['view' => 'subscription'])
@@ -46,11 +39,6 @@
 
 @push('scripts')
 <script type="text/javascript">
-$('#filters button').on('click', function() {
-  return $(this).hasClass('btn-teal') ? 
-    resetParams() : 
-    goTo($(this).attr('data-href'));
-});
 $('.card-title').clamp(2);
 $('.card-text').clamp(4);
 </script>

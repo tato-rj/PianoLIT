@@ -18,7 +18,7 @@
 
 		<div class="row">
 			<div class="col-lg-8 col-md-10 col-10 mx-auto">
-				<div class="row">
+				<div class="row mb-5">
 					<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 						<img src="{{storage($infograph->thumbnail_path)}}" class="no-click preview border w-100">
 					</div>
@@ -26,7 +26,7 @@
 						<div class="">
 							<div class="mb-4 pb-4 border-bottom">
 								
-								@topics(['topics' => $infograph->topics, 'route' => 'resources.infographs.topic'])
+								@topics(['model' => $infograph])
 
 								<h4 class="mb-1">{{$infograph->name}}</h4>
 								<p class="text-muted mb-4">{{$infograph->description}}</p>
@@ -61,16 +61,12 @@
 						</div>
 					</div>
 				</div>
-				@if(! $related->isEmpty())
-				<div class="mt-5">
-					<h5 class="mb-4">More like this</h5>
-					<div class="row no-gutters">
-						@foreach($related as $infograph)
-						@include('infographics.card', ['sizes' => 'col-lg-3 col-md-4 col-6'])
-						@endforeach
-					</div>
-				</div>
-				@endif
+
+				@include('components.display.suggestions', [
+					'title' => 'More like this',
+					'card' => 'infographics.card',
+					'collection' => $related])
+
 			</div>
 		</div>
 	</div>

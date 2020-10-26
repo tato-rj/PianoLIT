@@ -14,6 +14,7 @@ class eBook extends Product implements Merchandise
 
     protected $withCount = ['purchases'];
     protected $successRoute = 'ebooks.success';
+    public $route = 'ebooks.index';
 
     protected static function boot()
     {

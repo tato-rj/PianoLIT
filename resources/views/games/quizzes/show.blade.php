@@ -25,9 +25,8 @@
 			</div>
 			@endif
 			<div class="mb-4">
-				<div class="d-flex flex-wrap mb-2">
-					@each('games.quizzes.components.topic', $quiz->topics, 'topic')
-				</div>
+				@topics(['model' => $quiz])
+				
 				<h1 class="mb-4">QUIZ: {{$quiz->title}}</h1>
 				<p class="text-muted blog-font">{{$quiz->description}}</p>
 				<div class="d-apart text-muted">
@@ -69,13 +68,13 @@
 		</div>
 	</div>
 
-	<div class="row mb-6">
-		<div class="col-12 mb-4">
-			<div><strong>OTHER QUIZZES YOU MIGHT LIKE</strong></div>
-		</div>
-		@each('games.quizzes.components.cards.small', $suggestions, 'suggestion')
-	</div>
+	@include('components.display.suggestions', [
+		'title' => 'OTHER QUIZZES YOU MIGHT LIKE',
+		'card' => 'games.quizzes.components.cards.small',
+		'collection' => $suggestions])
+
 </section>
+
 <div class="container mb-6">
 	@include('components.sections.youtube')
 </div>

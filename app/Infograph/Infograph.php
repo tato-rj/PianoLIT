@@ -5,13 +5,17 @@ namespace App\Infograph;
 use App\Admin;
 use App\Merchandise\Product;
 use App\Shop\Contract\Merchandise;
+use App\Traits\Filterable;
 
 class Infograph extends Product implements Merchandise
 {
+    use Filterable;
+
     protected $searchableColumns = ['name', 'description'];
     protected $folder = 'infograph';
     protected $report_by = 'name';
     protected $price = 0;
+    public $route = 'resources.infographs.index';
 
     protected static function boot()
     {

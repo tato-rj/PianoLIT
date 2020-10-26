@@ -7,6 +7,7 @@ use App\Merchandise\Purchase;
 use App\Infograph\{Infograph, Topic};
 use Illuminate\Http\Request;
 use App\Notifications\InfographVoted;
+use App\Filters\InfographicFilters;
 
 class InfographicsController extends Controller
 {
@@ -15,9 +16,9 @@ class InfographicsController extends Controller
         $this->middleware('throttle:2')->only('updateScore');
     }
 
-    public function index()
+    public function index(InfographicFilters $filters)
     {
-        $infographs = Infograph::published()->latest()->paginate(12);
+        $infographs = Infograph::published()->latest()->filter($filters)->paginate(12);
         $topics = Topic::has('infographs', '>', 0)->ordered()->get();
 
         return view('infographics.index', compact(['infographs', 'topics']));        
@@ -40,7 +41,7 @@ class InfographicsController extends Controller
     public function show(Infograph $infograph)
     {
         $related = $infograph->related();
-
+        
         return view('infographics.show', compact(['infograph', 'related']));
     }
 

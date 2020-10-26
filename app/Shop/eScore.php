@@ -14,6 +14,7 @@ class eScore extends Product implements Merchandise
 
     protected $withCount = ['purchases'];
     protected $successRoute = 'escores.success';
+    public $route = 'escores.index';
 
     protected static function boot()
     {

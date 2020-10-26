@@ -1,4 +1,4 @@
-<div class="bg-light rounded p-5">
+<div class="bg-light rounded p-5 mb-5">
 	<div class="row">
 		<div class="col-lg-8 col-md-8 col-12 d-flex align-items-center">
 			<div>
@@ -11,9 +11,9 @@
 		</div>
 		<div class="col-lg-4 col-md-4 col-12">
 			@include('shop.components.highlights')
-				<div>
-					@include('shop.components.action')
-				</div>	
+			<div>
+				@include('shop.components.action')
+			</div>	
 		</div>
 	</div>
 </div>
