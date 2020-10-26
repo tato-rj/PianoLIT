@@ -3,9 +3,6 @@
 			<div class="grid row">
 				{{$items}}
 			</div>
-          <div class="d-flex justify-content-center">
-            {!! $links !!}
-          </div>
 		</div>
 		<div class="col-lg-3 col-md-3 col-12 mb-2">
 			<div class="mb-4">
