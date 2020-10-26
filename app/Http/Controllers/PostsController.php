@@ -38,7 +38,7 @@ class PostsController extends Controller
      */
     public function show(Post $post)
     {
-        $suggestions = Post::exclude([$post->id])->suggestions(4)->get();
+        $suggestions = $post->suggestions(8)->get();
 
         if (! $post->published_at) {
             if (auth()->guard('admin')->check())

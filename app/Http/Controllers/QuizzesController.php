@@ -40,7 +40,7 @@ class QuizzesController extends Controller
      */
     public function show(Quiz $quiz)
     {
-        $suggestions = Quiz::exclude([$quiz->id])->suggestions(8)->get();
+        $suggestions = $quiz->suggestions(8)->get();
 
         if (! $quiz->published_at) {
             if (auth()->guard('admin')->check())
