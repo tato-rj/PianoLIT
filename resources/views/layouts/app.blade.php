@@ -275,7 +275,7 @@ jQuery.fn.checkCookie = function() {
     </script>
 
     <script type="text/javascript">
-document.addEventListener('DOMContentLoaded', function() {
+$(document).load(function() {
     var container = document.querySelector('.grid');
     var grid = new Masonry( container, {
         itemSelector: '.grid-item',
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     grid.layout();
-}, false);
+})
     </script>
 
     <script type="text/javascript">
