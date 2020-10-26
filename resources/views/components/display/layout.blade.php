@@ -1,5 +1,4 @@
 <div class="row">
-	@env('local')
 		<div class="col-lg-9 col-md-9 col-12 mb-2">
 			<div class="grid row">
 				{{$items}}
@@ -25,7 +24,4 @@
 
 			@include('components.display.ads')
 		</div>
-	@else
-		{{$items}}
-	@endenv
 </div>
