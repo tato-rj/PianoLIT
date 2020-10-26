@@ -85,11 +85,6 @@
             z-index: 1000;
         }
 
-    .book-cover {
-        -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
-        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
-    }
-
         .rounded, .btn {
             border-radius: 1rem !important;
         }
