@@ -24,14 +24,6 @@ class QuizzesController extends Controller
         return view('games.quizzes.index', compact(['quizzes', 'levels', 'topics']));
     }
 
-    public function topic(Topic $topic)
-    {
-        $topics = Topic::exclude([$topic->id])->get();
-        $quizzes = Quiz::published()->latest()->byTopic($topic)->paginate(12);
-
-        return view('games.quizzes.topic', compact(['quizzes', 'topics', 'topic']));
-    }
-
     /**
      * Display the specified resource.
      *

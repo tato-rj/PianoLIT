@@ -24,33 +24,11 @@ class InfographicsController extends Controller
         return view('infographics.index', compact(['infographs', 'topics']));        
     }
 
-    public function load(Request $request)
-    {
-        $infographs = Topic::bySlug($request->topic)->infographs()->latest()->get();
-
-        return view('infographics.load', compact('infographs'))->render();
-    }
-
-    public function search(Request $request)
-    {
-        $infographs = Infograph::search($request->search)->get();
-
-        return view('infographics.load', compact('infographs'))->render();
-    }
-
     public function show(Infograph $infograph)
     {
         $related = $infograph->related();
         
         return view('infographics.show', compact(['infograph', 'related']));
-    }
-
-    public function topic(Topic $topic)
-    {
-        $topics = Topic::exclude([$topic->id])->get();
-        $infographs = Infograph::published()->latest()->byTopic($topic)->paginate(12);
-
-        return view('infographics.topic', compact(['infographs', 'topics', 'topic']));
     }
 
     public function download(Infograph $infograph)

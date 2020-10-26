@@ -22,14 +22,6 @@ class PostsController extends Controller
         return view('blog.index', compact(['posts', 'topics']));
     }
 
-    public function topic(Topic $topic)
-    {
-        $topics = Topic::exclude([$topic->id])->get();
-        $posts = Post::published()->latest()->byTopic($topic)->paginate(12);
-
-        return view('blog.topic', compact(['posts', 'topics', 'topic']));
-    }
-
     /**
      * Display the specified resource.
      *

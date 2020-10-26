@@ -55,7 +55,7 @@
 	@include('components.display.suggestions', [
 		'title' => 'You might also be interested in',
 		'card' => 'shop.components.card',
-		'collection' => $product->suggestions()->get()])
+		'collection' => $product->suggestions(8)->get()])
 
 </section>
 
