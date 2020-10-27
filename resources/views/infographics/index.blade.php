@@ -19,7 +19,9 @@
 		
 	@component('components.display.layout', [
 		'collection' => $infographs,
-		'topics' => $topics])
+		'topics' => $topics,
+	    'ads' => ['ebook', 'escore']
+	  ])
 
 		@slot('items')
 			@foreach($infographs as $item)

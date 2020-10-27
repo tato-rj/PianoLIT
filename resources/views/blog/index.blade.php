@@ -9,7 +9,9 @@
 	
 	@component('components.display.layout', [
 		'collection' => $posts,
-		'topics' => $topics])
+		'topics' => $topics,
+		'ads' => ['ebook', 'escore']
+	])
 
 	@slot('items')
 		@each('blog.components.cards.large', $posts, 'post')

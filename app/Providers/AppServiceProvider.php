@@ -35,7 +35,10 @@ class AppServiceProvider extends ServiceProvider
         });
 
         \View::composer('components.display.ads', function($view) {
-            $view->with(['ad_product' => \App\Shop\eBook::published()->first()]);
+            $view->with(['ad' => [
+                'ebook' => \App\Shop\eBook::published()->latest()->first(),
+                'escore' => \App\Shop\eScore::published()->latest()->first()
+            ]]);
         });
 
         \View::composer('components.popups.crashcourse', function($view) {
@@ -64,6 +67,10 @@ class AppServiceProvider extends ServiceProvider
     {
         \Blade::if('manager', function () {
             return auth()->guard('admin')->user()->role == 'manager';
+        });
+
+        \Blade::if('inarray', function ($needle, $array) {
+            return in_array($needle, $array);
         });
 
         \Blade::if('editor', function () {

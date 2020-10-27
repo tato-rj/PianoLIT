@@ -10,7 +10,9 @@
 
   @component('components.display.layout', [
     'collection' => $quizzes,
-    'topics' => $topics])
+    'topics' => $topics,
+    'ads' => ['ebook', 'escore']
+  ])
 
   @slot('items')
     @each('games.quizzes.components.cards.large', $quizzes, 'quiz')

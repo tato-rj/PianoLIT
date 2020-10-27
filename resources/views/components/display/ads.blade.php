@@ -1,3 +1,7 @@
-<div class="mb-4">
-	@include('components.display.ads.model-1')
-</div>
+@inarray('ebook', $ads)
+@include('components.display.ads.ebook')
+@endinarray
+
+@inarray('escore', $ads)
+@include('components.display.ads.escore')
+@endinarray

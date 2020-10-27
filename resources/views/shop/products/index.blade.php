@@ -21,7 +21,9 @@
 	@else
 		@component('components.display.layout', [
 			'collection' => $products,
-			'topics' => $topics])
+			'topics' => $topics,
+			'ads' => $ads
+		])
 
 		@slot('items')
 			@each('shop.components.card', $products, 'item')
