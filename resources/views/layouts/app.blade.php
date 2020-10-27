@@ -20,13 +20,16 @@
     @isset($shareable)
         @include('layouts.html.shareable')
     @endisset
-
+    <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/primer.css') }}" rel="stylesheet">
 
     @include('layouts.html.js-app')
 
     <style type="text/css">
+        .font-cursive {
+            font-family: 'Caveat', cursive;
+        }
 
 @-webkit-keyframes fadeInUp {
   from {

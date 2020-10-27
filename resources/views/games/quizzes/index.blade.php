@@ -17,7 +17,7 @@
   @endslot
 
   @slot('extra')
-      <div>
+      <div class="mb-5">
         <div class="d-flex d-apart mb-1 pb-1 border-bottom">
           <p class="text-muted mb-0"><strong>LEVELS</strong></p>
           <a href="{{route('quizzes.index')}}" class="text-muted"><small>reset</small></a>

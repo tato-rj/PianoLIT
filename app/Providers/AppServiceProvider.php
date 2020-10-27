@@ -34,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['hasFullAccess' => auth()->check() ? auth()->user()->isAuthorized() : false]);
         });
 
+        \View::composer('components.display.ads', function($view) {
+            $view->with(['ad_product' => \App\Shop\eBook::published()->first()]);
+        });
+
         \View::composer('components.popups.crashcourse', function($view) {
             $highlightedCrashcourse = \Cache::remember('highlightedCrashcourse', days(7), function() {
                 return \App\CrashCourse\CrashCourse::published()->first();
