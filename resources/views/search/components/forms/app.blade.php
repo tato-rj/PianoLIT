@@ -2,7 +2,7 @@
 <div id="app-search">
 	<div class="container py-4">
 		<div class="row">
-			<div class="col-lg-8 col-sm-10 col-12 mx-auto rounded p-4 shadow bg-light">
+			<div class="col-lg-8 col-sm-10 col-11 mx-auto rounded p-4 shadow bg-light">
 				<div class="d-flex d-apart mb-3">
 					<div>
 						<div>
