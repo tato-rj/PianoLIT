@@ -6,7 +6,7 @@
 		<div class="mb-4">
 			<div>Subscribe today and get a <strong><u>FREE</u></strong> poster in your inbox!</div>
 		</div>
-		@include('components.form.subscription', ['gift_url' => route('infographs.download', $gift->slug)])
+		@include('components.form.subscription', ['label' => 'SUBSCRIBE NOW','gift_url' => route('infographs.download', $gift->slug)])
 	</div>
 </div>
 @endslot
