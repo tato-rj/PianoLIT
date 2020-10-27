@@ -8,9 +8,9 @@
 		<div class="px-4 mb-4">
 			@include('shop.components.cover', ['product' => $ad_product, 'maxWidth' => '300px'])
 		</div>
-		<div class="mb-5">
+		<div class="mb-4">
 			<p>{{$ad_product->subtitle}}</p>
-			<h6>{{$ad_product->title}}</h6>
+			<h6><strong>{{$ad_product->title}}</strong></h6>
 		</div>
 		<div>
 			<a href="{{$ad_product->showRoute()}}" class="link-none border-bottom py-3 py-2 border-1x border-dark text-nowrap" style="letter-spacing: 3px">
