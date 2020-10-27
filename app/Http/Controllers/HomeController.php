@@ -32,7 +32,7 @@ class HomeController extends Controller
         $latest = Piece::latest()->with(['composer', 'tags'])->take(8)->get();
         $tags = Tag::byTypes($except = ['sublevel', 'ranking', 'level', 'length', 'period', 'genre'])->reverse();
         $highlights = \App\Piece::freePicks()->free(false)->take(16)->get();
-        $composers = \App\Composer::inRandomOrder()->take(16)->get();
+        $composers = \App\Composer::inRandomOrder()->has('pieces')->take(16)->get();
         $suggestions = $api->querySuggestions()['queries'];
         $testimonials = testimonials();
         shuffle($testimonials);
