@@ -172,7 +172,9 @@ return [
         'the',
         'my',
         'for',
-        'repertoire'
+        'repertoire',
+        'level',
+        'levels'
     ],
     'disableTypoToleranceOnWords' => ['black'],
     'disableExactOnAttributes' => [],

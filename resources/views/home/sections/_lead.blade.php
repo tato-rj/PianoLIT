@@ -36,7 +36,7 @@
 						'advanced arpeggios',
 						'scales for beginners',
 						'baroque pieces',
-						'pieces for rcm 4 level',
+						'repertoire by asian composers',
 						'florence price'
 					])->shuffle() as $suggestion)
 					<li class="mb-2" style="display: {{$loop->iteration > 5 ? 'none' : null}}">
