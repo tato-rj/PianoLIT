@@ -1,12 +1,12 @@
 <div class="row">
-		<div class="col-lg-9 col-md-9 col-12 mb-2">
+		<div class="col-lg-9 col-md-9 col-12 mb-2 order-lg-1 order-md-1 order-2">
 			<div class="grid row mb-4">
 				{{$items}}
 			</div>
 
           @pagination
 		</div>
-		<div class="col-lg-3 col-md-3 col-12 mb-2">
+		<div class="col-lg-3 col-md-3 col-12 mb-2 order-lg-2 order-md-2 order-1">
 			<div class="mb-4">
 				<div class="d-flex d-apart mb-1 pb-1 border-bottom">
 					<p class="text-muted mb-0"><strong>TOPICS</strong></p>
