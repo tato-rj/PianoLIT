@@ -7,7 +7,9 @@
 			<p class="font-cursive mb-0" style="font-size: 4em; margin-top: -30px;">eBooks</p>
 		</div>
 		<div class="px-4 mb-4">
-			@include('shop.components.cover', ['product' => $ad['ebook'], 'maxWidth' => '300px'])
+			<a href="{{$ad['ebook']->showRoute()}}" class="link-none">
+				@include('shop.components.cover', ['product' => $ad['ebook'], 'maxWidth' => '300px'])
+			</a>
 		</div>
 		<div class="mb-4">
 			<p>{{$ad['ebook']->subtitle}}</p>
