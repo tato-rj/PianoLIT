@@ -1,5 +1,5 @@
 <div class="position-relative" style="overflow: hidden;">
-	<div class="bg-light position-absolute w-100 h-100" style="top: 0; left: 40%; z-index: -1"></div>
+	<div class="bg-light position-absolute w-100 h-100" style="top: 0; left: 30%; z-index: -1"></div>
 	<div class="text-center px-3 pt-5 pb-6">
 		<div class="mb-2">
 			<h4 class="m-0 text-primary">Piano<strong>LIT</strong></h4>
