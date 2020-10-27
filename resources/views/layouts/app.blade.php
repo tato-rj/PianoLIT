@@ -266,7 +266,6 @@ jQuery.fn.checkCookie = function() {
         'iPhone Simulator',
         'iPod Simulator',
         'iPad',
-        'MacIntel',
         'iPhone',
         'iPod'
       ];
