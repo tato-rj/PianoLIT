@@ -2,8 +2,8 @@
 	<div class="bg-light position-absolute w-100 h-100" style="top: 0; left: 30%; z-index: -1"></div>
 	<div class="text-center px-3 pt-5 pb-6">
 		<div class="mb-2">
-			<h4 class="m-0 text-primary">Piano<strong>LIT</strong></h4>
-			<p class="font-cursive mb-0" style="font-size: 4em; margin-top: -34px;">eBooks</p>
+			<h5 class="m-0 text-primary">Piano<strong>LIT</strong></h5>
+			<p class="font-cursive mb-0" style="font-size: 4em; margin-top: -30px;">eBooks</p>
 		</div>
 		<div class="px-4 mb-4">
 			@include('shop.components.cover', ['product' => $ad_product, 'maxWidth' => '300px'])

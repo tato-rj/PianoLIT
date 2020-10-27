@@ -20,7 +20,7 @@
     @isset($shareable)
         @include('layouts.html.shareable')
     @endisset
-    <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap" rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/primer.css') }}" rel="stylesheet">
 
@@ -28,7 +28,7 @@
 
     <style type="text/css">
         .font-cursive {
-font-family: 'Reenie Beanie', cursive;
+font-family: 'Waiting for the Sunrise', cursive;
         }
 
 @-webkit-keyframes fadeInUp {
