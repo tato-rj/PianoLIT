@@ -10,7 +10,11 @@
 		</div>
 		<div class="mb-4">
 			<p>{{$ad_product->subtitle}}</p>
+			@if($mobile)
+			<h5><strong>{{$ad_product->title}}</strong></h5>
+			@else
 			<h6><strong>{{$ad_product->title}}</strong></h6>
+			@endif
 		</div>
 		<div>
 			<a href="{{$ad_product->showRoute()}}" class="link-none border-bottom py-3 py-2 border-1x border-dark text-nowrap" style="letter-spacing: 3px">
