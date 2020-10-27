@@ -31,8 +31,6 @@ Route::get('riddles', function() {
 Route::prefix('quizzes')->name('quizzes.')->group(function() {
 
 	Route::get('', 'QuizzesController@index')->name('index');
-	
-	Route::get('/topics/{topic}', 'QuizzesController@topic')->name('topic');
 
 	Route::get('/{quiz}', 'QuizzesController@show')->name('show');
 
