@@ -6,14 +6,7 @@
 @section('content')
 
 @include('home.sections._lead')
-@env('production')
-@include('home.sections.highlights')
-@endenv
-@env('local')
-@include('home.sections.promo')
-@else
 @include('home.sections.bar')
-@endenv
 @include('home.sections.tags')
 @include('home.sections.composition')
 @include('home.sections.youtube')

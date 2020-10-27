@@ -9,6 +9,7 @@
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 				<div class="p-2">
+					
 					<iframe class="rounded border-white border-3x border w-100" height="315" src="https://www.youtube.com/embed/w0vNe0E76Vo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 				</div>
 			</div>
