@@ -189,6 +189,7 @@ return [
         ['difficult', 'advanced'],
         ['women', 'female'],
         ['woman', 'female'],
+        ['fur', 'for']
     ],
     'separatorsToIndex' => '#',
     'removeWordsIfNoResults' => 'lastWords'
