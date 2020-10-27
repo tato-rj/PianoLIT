@@ -22,13 +22,7 @@ Route::prefix('resources')->name('resources.')->group(function() {
 
 		Route::get('', 'InfographicsController@index')->name('index');
 
-		Route::get('load', 'InfographicsController@load')->name('load');
-
-		Route::get('search', 'InfographicsController@search')->name('search');
-
 		Route::get('{infograph}', 'InfographicsController@show')->name('show');
-
-		Route::get('topics/{topic}', 'InfographicsController@topic')->name('topic');
 
 	});
 
