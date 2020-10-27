@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\{Tag, Piece};
+use App\Api\Api;
 use Illuminate\Http\Request;
 use App\Jobs\UploadToCloud;
 use App\Rules\VideoLength;
@@ -26,16 +27,17 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Api $api)
     {
         $latest = Piece::latest()->with(['composer', 'tags'])->take(8)->get();
         $tags = Tag::byTypes($except = ['sublevel', 'ranking', 'level', 'length', 'period', 'genre'])->reverse();
         $highlights = \App\Piece::freePicks()->free(false)->get();
         $composers = \App\Composer::inRandomOrder()->take(25)->get();
+        $suggestions = $api->querySuggestions()['queries'];
         $testimonials = testimonials();
         shuffle($testimonials);
-
-        return view('home.index', compact(['latest', 'tags', 'testimonials', 'composers', 'highlights']));
+        
+        return view('home.index', compact(['latest', 'tags', 'testimonials', 'composers', 'highlights', 'suggestions']));
     }
 
     public function loadPieces(Request $request)

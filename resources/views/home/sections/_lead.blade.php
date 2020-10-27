@@ -24,21 +24,7 @@
 			<div class="col-lg-5 col-md-6 col-12 mb-3">
 				<p><small><strong>HERE ARE SOME EXAMPLES</strong></small></p>
 				<ul class="list-flat" id="query-suggestions">
-					@foreach(collect([
-						'pieces for beginners',
-						'pieces like fur elise',
-						'pieces by women composers',
-						'repertoire for my left hand',
-						'bach little preludes',
-						'intermediate pieces by chopin',
-						'pieces by black composers',
-						'advanced arpeggios',
-						'scales for beginners',
-						'baroque pieces',
-						'repertoire by asian composers',
-						'intermediate pieces',
-						'florence price'
-					])->shuffle() as $suggestion)
+					@foreach($suggestions as $suggestion)
 					<li class="mb-2" style="display: {{$loop->iteration > 5 ? 'none' : null}}">
 						<a href="{{route('explore.search', ['search' => $suggestion])}}">
 						@tag(['type' => 'search', 'label' => $suggestion])</a></li>

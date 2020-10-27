@@ -89,4 +89,25 @@ class Api extends Factory
 
         return $collection;
     }
+
+    public function querySuggestions()
+    {
+        $queries = collect([
+                'pieces for beginners',
+                'pieces like fur elise',
+                'pieces by women composers',
+                'repertoire for my left hand',
+                'bach little preludes',
+                'intermediate pieces by chopin',
+                'pieces by black composers',
+                'advanced arpeggios',
+                'scales for beginners',
+                'baroque pieces',
+                'repertoire by asian composers',
+                'intermediate pieces',
+                'florence price'
+            ])->shuffle();
+
+        return collect(['queries' => $queries]);
+    }
 }

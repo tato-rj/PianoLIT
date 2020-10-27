@@ -38,4 +38,9 @@ class TabsController extends Controller
     {
         return $api->explore()->toArray();
     }
+
+    public function querySuggestions(Api $api)
+    {
+        return $api->querySuggestions()->toArray();
+    }
 }
