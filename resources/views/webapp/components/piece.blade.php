@@ -9,7 +9,7 @@
 	<a href="{{route('webapp.pieces.show', $piece)}}" class="link-none">
 		<div class="d-flex mb-2 align-items-center">
 			@include('webapp.components.piece.level')
-			@fa(['icon' => 'lock', 'color' => 'grey', 'ml' => 2, 'if' => ! auth()->user()->isAuthorized()])
+			@fa(['icon' => 'lock', 'color' => 'grey', 'ml' => 2, 'if' => ! $hasFullAccess])
 		</div>
 		@include('webapp.components.piece.name')
 		@include('webapp.components.piece.composer')

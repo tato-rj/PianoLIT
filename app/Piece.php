@@ -16,6 +16,7 @@ class Piece extends PianoLit
     protected $withCount = ['views', 'tags', 'favorites', 'tutorials'];
     protected $casts = ['is_free' => 'boolean'];
     protected $dates = ['highlighted_at'];
+    protected $with = ['composer'];
     protected $appends = [
         'short_name',
         'medium_name', 

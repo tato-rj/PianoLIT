@@ -6,17 +6,9 @@
 			<p class="text-muted">Select below the ideas that match the kind of pieces you would like to find. Let's see what you'll discover!</p>
 		</div>
 
-		<div class="col-12 mb-5">
-			@include('webapp.components.grids.circles', [
-				'collection' => $composers,
-				'route' => 'explore.search',
-				'name' => 'name',
-				'image' => 'cover_image',
-				'count' => 'pieces_count'])
-		</div>
-		<div class="col-12 mb-5">
-			@include('webapp.components.grids.squares', ['collection' => $highlights])
-		</div>
+		@include('home.sections.composers')
+
+		@include('home.sections.freepicks')
 		
 		<div class="col-12">
 			<div class="mb-5 pb-3 custom-scroll dragscroll dragscroll-horizontal">
@@ -40,11 +32,6 @@
 			</div>
 		</div>
 
-		<div class="col-12">
-			<h5 class="ml-2 mb-3" id="pieces-label">Latest pieces</h5>
-			<div class="row" id="pieces-container" data-url="{{route('load-pieces')}}">
-				@include('search.components.results.pieces', ['pieces' => $latest])
-			</div>
-		</div>
+		@include('home.sections.latest')
 	</div>
 </section>

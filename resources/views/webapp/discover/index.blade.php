@@ -21,9 +21,9 @@
 @endcomponent
 
 <section id="discover-rows">
-@foreach($rows as $row)
-	@include('webapp.discover.rows.' . $row['row'])
-@endforeach
+	@foreach($rows as $row)
+		@include('webapp.discover.rows.' . $row['row'], compact('hasFullAccess'))
+	@endforeach
 </section>
 
 <div class="py-5 text-center">

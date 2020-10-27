@@ -24,7 +24,7 @@ abstract class Factory
 
     public function composers($title)
     {
-        $collection = Composer::nonPedagogical()->inRandomOrder()->atLeast(2)->withCount('pieces')->take($this->limit)->get();
+        $collection = Composer::nonPedagogical()->with(['country', 'pieces'])->inRandomOrder()->atLeast(2)->withCount('pieces')->take($this->limit)->get();
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
@@ -78,7 +78,7 @@ abstract class Factory
     public function tag($title)
     {
         $tag = Tag::mood()->has('pieces', '>', 20)->inRandomOrder()->pluck('name')->first();
-        $collection = Piece::with('composer')->for($tag)->inRandomOrder()->take($this->limit)->get();
+        $collection = Piece::with(['tags', 'composer'])->for($tag)->inRandomOrder()->take($this->limit)->get();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 

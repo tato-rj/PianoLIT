@@ -1,1 +1,3 @@
-@each('webapp.components.piece', $pieces, 'piece')
+@foreach($pieces as $piece)
+	@include('webapp.components.piece', compact('hasFullAccess'))
+@endforeach

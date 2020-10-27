@@ -21,6 +21,18 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['full' => ! request()->has('bodyonly')]);
         });
 
+        \View::composer([
+            'webapp.discover.index', 
+            'webapp.explore.index', 
+            'webapp.playlists.index', 
+            'webapp.user.my-pieces.index',
+            'webapp.search.results',
+            'webapp.piece.options.similar',
+            'home.index'
+        ], function($view) {
+            $view->with(['hasFullAccess' => auth()->check() ? auth()->user()->isAuthorized() : false]);
+        });
+
         \View::composer('components.popups.crashcourse', function($view) {
             $highlightedCrashcourse = \Cache::remember('highlightedCrashcourse', days(7), function() {
                 return \App\CrashCourse\CrashCourse::published()->first();

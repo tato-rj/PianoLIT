@@ -2,7 +2,7 @@
 <div class="mb-4">
 @foreach(auth()->user()->pendingTutorialRequests as $request)
 	<p class="lead text-center">Requested on {{$request->created_at->toFormattedDateString()}}</p>
-	@component('webapp.components.piece', ['piece' => $request->piece])
+	@component('webapp.components.piece', ['piece' => $request->piece, 'hasFullAccess' => $hasFullAccess])
 		@button(['label' => '<i class="fas fa-hourglass-half"></i> Pending', 'theme' => 'warning', 'size' => 'sm'])
 	@endcomponent
 @endforeach
@@ -13,7 +13,7 @@
 <div class="mb-4">
 <p class="lead text-center">Already published</p>
 @foreach(auth()->user()->publishedTutorialRequests as $request)
-	@component('webapp.components.piece', ['piece' => $request->piece])
+	@component('webapp.components.piece', ['piece' => $request->piece, 'hasFullAccess' => $hasFullAccess])
 		<p class="m-0 text-success">@fa(['icon' => 'check-circle', 'color' => 'success'])Published on {{$request->published_at->toFormattedDateString()}}</p>
 	@endcomponent
 @endforeach

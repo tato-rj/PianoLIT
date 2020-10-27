@@ -2,7 +2,7 @@
 	'card' => $card,
 	'type' => 'piece-card', 
 	'url' => route('webapp.pieces.show', $card),
-	'locked' => ! auth()->user()->isAuthorized(),
+	'locked' => $hasFullAccess,
 	'new' => $card->is_new])
 
 @endcomponent

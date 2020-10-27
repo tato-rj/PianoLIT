@@ -189,7 +189,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $tags = $this->tags();
 
         if (empty($tags))
-            return Piece::orderBy('views_count', 'DESC')->take($limit)->get();
+            return Piece::orderBy('views_count', 'DESC')->with(['composer', 'tags'])->take($limit)->get();
 
         $suggestions = Piece::localSearch($tags)->with(['tags', 'composer'])->limit($limit)->get();
 

@@ -7,7 +7,7 @@
 
 <section id="pieces-list"> 
 @forelse(auth()->user()->favorites as $piece)
-	@include('webapp.components.piece')
+	@include('webapp.components.piece', compact('hasFullAccess'))
 @empty
 	@include('webapp.components.empty', [
 		'icon' => 'empty-favorites', 

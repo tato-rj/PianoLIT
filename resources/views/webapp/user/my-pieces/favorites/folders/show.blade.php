@@ -17,7 +17,7 @@
 
 <section id="pieces-list">
 	@forelse($folder->favorites as $favorite)
-		@include('webapp.components.piece', ['piece' => $favorite->piece])
+		@include('webapp.components.piece', ['piece' => $favorite->piece, 'hasFullAccess' => $hasFullAccess])
 	@empty
 		<h5 class="text-grey text-center mt-6 mb-3"><i>This folder is emtpy</i></h5>
 	@endforelse

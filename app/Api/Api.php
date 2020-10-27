@@ -52,7 +52,7 @@ class Api extends Factory
         // $key = \Redis::get('app.allcomposers');
 
         // $composers = \Cache::remember($key, days(1), function() {
-            return Composer::atLeast(1)->get()->sortBy('last_name')->values();
+            return Composer::atLeast(1)->with(['country', 'pieces'])->get()->sortBy('last_name')->values();
         // });
 
         // return $composers;
