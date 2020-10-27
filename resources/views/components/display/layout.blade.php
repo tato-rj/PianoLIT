@@ -1,5 +1,8 @@
 <div class="row">
 		<div class="col-lg-9 col-md-9 col-12 mb-2 order-lg-1 order-md-1 order-2">
+			<div class="position-absolute pt-7 w-100" style="top: 0; left: 50%; transform: translateX(-50%);">
+				@include('components.animations.loading')
+			</div>
 			<div class="grid row mb-4">
 				{{$items}}
 			</div>

@@ -289,6 +289,7 @@ $(window).on('load', function() {
     });
 
     grid.on( 'layoutComplete', function( gridInstance, laidOutItems ) {
+        $('div[data-loading]').fadeOut('fast');
         container.style.opacity = 1;
         container.style.transform = 'translateY(0)';
     });
