@@ -94,7 +94,6 @@ class Api extends Factory
     {
         $queries = collect([
                 'pieces for beginners',
-                'pieces like fur elise',
                 'pieces by women composers',
                 'repertoire for my left hand',
                 'bach little preludes',
