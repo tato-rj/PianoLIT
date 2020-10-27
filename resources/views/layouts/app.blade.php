@@ -282,7 +282,7 @@ jQuery.fn.checkCookie = function() {
     </script>
 
     <script type="text/javascript">
-$(window).load(function() {
+$(document).ready(function() {
     var container = document.querySelector('.grid');
     var grid = new Masonry( container, {
         itemSelector: '.grid-item',
