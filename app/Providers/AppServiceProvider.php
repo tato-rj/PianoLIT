@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
             'webapp.user.my-pieces.index',
             'webapp.search.results',
             'webapp.piece.options.similar',
+            'webapp.piece.options.collection',
             'home.index'
         ], function($view) {
             $view->with(['hasFullAccess' => auth()->check() ? auth()->user()->isAuthorized() : false]);

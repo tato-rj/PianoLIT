@@ -14,7 +14,9 @@
 			<p class="mb-1">More from</p>
 			<h5>{{$piece->collection}}</h5>
 		</div>
-		@each('webapp.components.piece', $siblings->each->isFavorited(auth()->user()->id), 'piece')
+		@foreach($siblings->each->isFavorited(auth()->user()->id) as $piece)
+			@include('webapp.components.piece', compact('hasFullAccess'))
+		@endforeach
 	</div>
 </section>
 
