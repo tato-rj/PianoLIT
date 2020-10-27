@@ -37,6 +37,7 @@
 						'scales for beginners',
 						'baroque pieces',
 						'repertoire by asian composers',
+						'intermediate pieces',
 						'florence price'
 					])->shuffle() as $suggestion)
 					<li class="mb-2" style="display: {{$loop->iteration > 5 ? 'none' : null}}">
