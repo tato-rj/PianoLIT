@@ -8,7 +8,7 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-lg-8 col-md-8 col-12 mx-auto row">
+		<div class="col-lg-8 col-md-9 col-12 mx-auto row">
 			@component('search.components.plan', ['color' => 'light', 
 				'items' => [
 					'iOS App',
