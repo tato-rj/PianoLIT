@@ -24,11 +24,10 @@
 
 		{{$extra ?? null}}
 		
-		<div class="hide-on-sm">
-			@include('components.display.ads', ['mobile' => false])
-		</div>
+
+		@include('components.display.ads', ['vertical' => true, 'mobile' => false])
 	</div>
-	<div class="col-12 show-on-sm order-3">
-		@include('components.display.ads', ['mobile' => true])
+	<div class="col-12 order-3">
+		@include('components.display.ads', ['vertical' => true, 'mobile' => true])
 	</div>
 </div>

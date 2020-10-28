@@ -10,7 +10,7 @@
 	@component('components.display.layout', [
 		'collection' => $posts,
 		'topics' => $topics,
-		'ads' => ['ebook', 'escore']
+		'ads' => ['ebook', 'escore', 'crashcourse']
 	])
 
 	@slot('items')

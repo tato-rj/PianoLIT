@@ -22,7 +22,7 @@
 
 <section id="blog-post" class="container mb-5">
 	<div class="row mb-6" id="main-content">
-		<div class="col-lg-8 col-12 mx-auto">
+		<div class="col-lg-9 col-md-8 col-12 mb-2">
 			@if(! empty($preview))
 			<div class="alert alert-warning" role="alert">
 			  <i class="fas fa-exclamation-triangle mr-2"></i>This post is <u>not published</u>. Only admins can see this page.
@@ -76,6 +76,10 @@
 					<button  class="btn btn-primary-outline btn-sm btn-subscribe">Subscribe</button>
 				</div>
 			</div>
+		</div>
+
+		<div class="col-lg-3 col-md-4 col-12 mb-2">
+			@include('components.display.ads', ['vertical' => true, 'ads' => ['ebook', 'escore', 'crashcourse']])
 		</div>
 	</div>
 

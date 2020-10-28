@@ -37,7 +37,8 @@ class AppServiceProvider extends ServiceProvider
         \View::composer('components.display.ads', function($view) {
             $view->with(['ad' => [
                 'ebook' => \App\Shop\eBook::published()->latest()->first(),
-                'escore' => \App\Shop\eScore::published()->latest()->first()
+                'escore' => \App\Shop\eScore::published()->latest()->first(),
+                'crashcourse' => \App\CrashCourse\CrashCourse::published()->latest()->first()
             ]]);
         });
 

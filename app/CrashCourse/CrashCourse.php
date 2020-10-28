@@ -20,6 +20,11 @@ class CrashCourse extends ShareableContent
         });
     }
 
+    public function showRoute()
+    {
+        return route('crashcourses.show', $this);
+    }
+
     public function subscriptions()
     {
     	return $this->hasMany(CrashCourseSubscription::class);

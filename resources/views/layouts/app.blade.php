@@ -27,6 +27,10 @@
     @include('layouts.html.js-app')
 
     <style type="text/css">
+        .ad-banner:nth-child(odd) {
+            background-color: #f8f9fa;   
+        }
+
         .font-cursive {
 font-family: 'Waiting for the Sunrise', cursive;
         }

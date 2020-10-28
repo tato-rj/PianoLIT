@@ -1,7 +1,7 @@
-@inarray('ebook', $ads)
-@include('components.display.ads.ebook')
-@endinarray
+@php(shuffle($ads))
 
-@inarray('escore', $ads)
-@include('components.display.ads.escore')
-@endinarray
+@foreach($ads as $view)
+	@if(view()->exists('components.display.ads.' . $view) && $ad[$view])
+	@include('components.display.ads.' . $view)
+	@endif
+@endforeach
