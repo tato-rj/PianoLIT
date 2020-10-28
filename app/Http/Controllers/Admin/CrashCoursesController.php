@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\CrashCourse\{CrashCourse, CrashCourseTopic};
 use App\Mail\CrashCourseFeedbackEmail;
+use App\Files\Uploaders\ImageUpload;
 
 class CrashCoursesController extends Controller
 {
@@ -36,12 +37,16 @@ class CrashCoursesController extends Controller
             'creator_id' => auth()->guard('admin')->user()->id,
             'slug' => str_slug($request->title),
             'title' => $request->title,
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for(CrashCourse::class)
+                                                       ->name(str_slug($request->title))
+                                                       ->withThumbnail()
+                                                       ->cropped()
+                                                       ->upload(),
             'description' => $request->description
         ]);
 
         $crashcourse->topics()->attach($request->topics);
-
-        $crashcourse->uploadCoverImage($request);
 
         return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', 'The crashcourse has been successfuly created!');
     }
@@ -77,11 +82,15 @@ class CrashCoursesController extends Controller
             'slug' => str_slug($request->title),
             'title' => $request->title,
             'description' => $request->description,
+            'cover_path' => (new ImageUpload($request))->take('cover_image')
+                                                       ->for($crashcourse)
+                                                       ->name(str_slug($request->title))
+                                                       ->withThumbnail()
+                                                       ->cropped()
+                                                       ->upload(),
         ]);
 
         $crashcourse->topics()->sync($request->topics);
-
-        $crashcourse->uploadCoverImage($request);
 
         return redirect()->back()->with('status', 'The course has been successfuly updated!');
     }

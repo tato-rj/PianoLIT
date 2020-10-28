@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['ad' => [
                 'ebook' => \App\Shop\eBook::published()->latest()->first(),
                 'escore' => \App\Shop\eScore::published()->latest()->first(),
-                'crashcourse' => []
+                'crashcourse' => \App\CrashCourse\CrashCourse::published()->latest()->first()
             ]]);
         });
 
