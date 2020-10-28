@@ -16,7 +16,9 @@
 @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
 
 <section id="pieces-list">
-@each('webapp.components.piece', $playlist->pieces()->has('tutorials')->get(), 'piece')
+@foreach($playlist->pieces()->has('tutorials')->get() as $piece)
+	@include('webapp.components.piece', compact('hasFullAccess'))
+@endforeach
 </section>
 
 @endsection
