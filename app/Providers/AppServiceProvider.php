@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
             'webapp.discover.index', 
             'webapp.explore.index', 
             'webapp.playlists.index', 
+            'webapp.playlists.show', 
             'webapp.user.my-pieces.index',
             'webapp.search.results',
             'webapp.piece.options.similar',
