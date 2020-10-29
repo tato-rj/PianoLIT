@@ -4,6 +4,7 @@
 @import '~swiper/dist/css/swiper.min';
 @import '~flag-icon-css/css/flag-icon.min';
 @import '~plyr/dist/plyr';
+@import '~hover.css/css/hover-min';
 @import 'vendor/animate';
 
 @import "bootstrap-custom";
@@ -36,3 +37,9 @@
 @import "brand/buttons";
 @import "brand/colors";
 @import "brand/fonts";
+
+.hvr-underline-from-center:before {
+  background: $brand-primary;
+  border-radius: 6px;
+  height: 3px;
+}

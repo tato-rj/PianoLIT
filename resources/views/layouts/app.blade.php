@@ -27,6 +27,9 @@
     @include('layouts.html.js-app')
 
     <style type="text/css">
+.dropdown-toggle::after {
+    display: none;
+}
         .ad-banner:nth-child(odd) {
             background-color: #f8f9fa;   
         }
@@ -242,12 +245,12 @@ jQuery.fn.checkCookie = function() {
     let cookie = $(this).data('cookie');
     let record = getCookie(cookie);
     let recordedAt = moment(record, 'x');
-    let expiresAt = moment(record, 'x').add(3, 'days');
+    let expiresAt = moment(record, 'x').add(2, 'days');
     let isExpired = moment().isSameOrAfter(expiresAt);
 
     if (record == null || isExpired) {
         console.log('Showing popup');
-        setCookie(cookie, moment().format('x'), 3);
+        setCookie(cookie, moment().format('x'), 2);
         return this;
     }
 

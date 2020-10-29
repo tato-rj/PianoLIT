@@ -1,3 +1,3 @@
 <li class="nav-item mx-2">
-	<a class="nav-link" href="{{$url}}">{{$label}}</a>
+	<a class="nav-link hvr-underline-from-center" href="{{$url}}">{{$label}}</a>
 </li>

@@ -27,6 +27,7 @@
         "flag-icon-css": "^3.4.6",
         "fullcalendar": "^3.9.0",
         "hamburgers": "^1.1.3",
+        "hover.css": "^2.3.2",
         "inputmask": "^4.0.6",
         "jquery-countdown": "^2.2.0",
         "jquery-ui-bundle": "^1.12.1-migrate",
