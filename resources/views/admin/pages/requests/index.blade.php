@@ -47,7 +47,7 @@ Publish Tutorial
 
 </script>
 <script type="text/javascript">
-$('#modal-publish-tutorial').on('shown.bs.modal', function(e) {
+$('#publish-tutorial').on('shown.bs.modal', function(e) {
   let url = $(e.relatedTarget).attr('data-url');
   $(this).find('form').attr('action', url);
 });
