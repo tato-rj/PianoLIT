@@ -2,7 +2,7 @@
 	'card' => $card,
 	'type' => 'piece-card', 
 	'url' => route('webapp.pieces.show', $card),
-	'locked' => $hasFullAccess,
+	'locked' => ! $hasFullAccess,
 	'new' => $card->is_new])
 
 @endcomponent
