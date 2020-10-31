@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    @include('layouts.html.google.analytics')
     @include('layouts.html.google.manager-head')
     @include('layouts.html.google.fonts')
 
