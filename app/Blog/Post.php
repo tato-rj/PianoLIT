@@ -12,7 +12,7 @@ class Post extends ShareableContent
     protected $searchableColumns = ['title', 'content'];
     protected $folder = 'blog';
     protected $with = ['topics'];
-    protected $appends = ['cover_image'];
+    protected $appends = ['cover_image', 'app_url'];
     protected $report_by = 'title';
     public $route = 'posts.index';
 
@@ -41,6 +41,11 @@ class Post extends ShareableContent
     public function hasGift()
     {
         return ! is_null($this->gift_path);
+    }
+
+    public function getAppUrlAttribute()
+    {
+        return route('posts.app', $this);
     }
 
     public function getCoverImageAttribute()

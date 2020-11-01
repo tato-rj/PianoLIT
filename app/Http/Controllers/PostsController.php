@@ -44,4 +44,18 @@ class PostsController extends Controller
 
         return view('blog.show', compact(['post', 'suggestions']));
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Blog\Post  $post
+     * @return \Illuminate\Http\Response
+     */
+    public function app(Post $post)
+    {
+        if (traffic()->isRealVisitor())
+            $post->increment('views');
+
+        return view('blog.app', compact('post'));
+    }
 }

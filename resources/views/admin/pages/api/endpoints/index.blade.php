@@ -154,6 +154,12 @@
         'route' => route('api.pieces.increment-views', ['user_id' => \App\User::tester()->id, 'piece_id' => \App\Piece::inRandomOrder()->first()->id]), 
         'args' => ['user_id', 'piece_id'],
         'title' => 'Increment views for a piece'])
+
+      @include('admin.pages.api.endpoints.card', [
+        'type' => 'GET', 
+        'route' => route('posts.app', \App\Blog\Post::inRandomOrder()->first()), 
+        'args' => [],
+        'title' => 'Show the blog post on the app'])
     </div>
   </div>
 </div>
