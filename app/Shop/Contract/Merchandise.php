@@ -13,5 +13,4 @@ interface Merchandise
 	public function links();
 	public function showRoute();
 	public function checkoutRoute();
-	public function actionButtons();
 }
