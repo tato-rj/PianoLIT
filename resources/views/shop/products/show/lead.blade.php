@@ -11,12 +11,9 @@
 				<div class="mb-2">
 					@include('shop.components.price')
 				</div>
-				<div>
-					@include('shop.components.action')
-				</div>
-				<div>
-					@include('shop.components.preview.button')
-				</div>
+
+				{{$product->actionButtons()}}
+
 			</div>
 		</div>
 	</div>

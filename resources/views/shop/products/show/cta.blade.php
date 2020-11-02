@@ -12,7 +12,7 @@
 		<div class="col-lg-4 col-md-4 col-12">
 			@include('shop.components.highlights')
 			<div>
-				@include('shop.components.action')
+				@include('shop.components.actions.download')
 			</div>	
 		</div>
 	</div>

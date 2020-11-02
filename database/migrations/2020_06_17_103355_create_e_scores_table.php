@@ -28,6 +28,7 @@ class CreateEScoresTable extends Migration
             $table->unsignedInteger('discount')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->unsignedInteger('creator_id');
+            $table->unsignedInteger('piece_id')->nullable();
             $table->timestamps();
         });
 

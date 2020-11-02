@@ -41,6 +41,11 @@ class eBook extends Product implements Merchandise
         return $this->morphMany(Purchase::class, 'item');
     }
 
+    public function actionButtons()
+    {
+        return view('shop.components.actions.ebook', ['product' => $this]);
+    }
+
     public function notification()
     {
         $icon = ! $this->isFree() ? '<i class="fas fa-money-bill-wave text-green mr-1"></i>' : null;

@@ -3,7 +3,7 @@
 namespace App\Shop;
 
 use App\Traits\FindBySlug;
-use App\{ShareableContent, Admin};
+use App\{ShareableContent, Admin, Piece};
 use App\Merchandise\{Purchase, Product};
 use App\Shop\Contract\Merchandise;
 use Illuminate\Http\UploadedFile;
@@ -39,6 +39,16 @@ class eScore extends Product implements Merchandise
     public function purchases()
     {
         return $this->morphMany(Purchase::class, 'item');
+    }
+
+    public function piece()
+    {
+        return $this->belongsTo(Piece::class);
+    }
+
+    public function actionButtons()
+    {
+        return view('shop.components.actions.escore', ['product' => $this]);
     }
 
     public function notification()

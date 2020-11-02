@@ -33,7 +33,10 @@
         <div class="col-12">
           @input(['bag' => 'default', 'name' => 'title', 'placeholder' => 'eScore title', 'limit' => 120])
           @textarea(['bag' => 'default', 'name' => 'subtitle', 'placeholder' => 'eScore subtitle', 'limit' => 238])
+        </div>
+        <div class="col">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
+          @input(['bag' => 'default', 'type' => 'number', 'name' => 'piece_id', 'placeholder' => 'Related piece ID', 'required' => false])
         </div>
         <div class="col">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'price', 'placeholder' => 'eScore price', 'limit' => 200])

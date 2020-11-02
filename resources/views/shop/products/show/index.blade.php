@@ -163,4 +163,28 @@ $(document).ready(function() {
 
 </script>
 
+<script type="text/javascript">
+var audio = new Audio;
+let $playBtn = $('button[data-action="play"]');
+let $stopBtn = $('button[data-action="stop"]');
+
+$playBtn.click(function() {
+	$(this).disable();
+	audio.src = $(this).data('src');
+	audio.play();
+});
+
+$('button[data-action="stop"]').click(function() {
+	$(this).hide();
+	$playBtn.show();
+	audio.pause();
+	audio.src = null;
+});
+
+audio.oncanplay = function() {
+	$playBtn.hide().enable();
+	$stopBtn.show();
+};
+</script>
+
 @endpush

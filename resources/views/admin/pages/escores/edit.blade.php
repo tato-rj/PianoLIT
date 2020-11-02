@@ -79,7 +79,10 @@
       <div class="col-12">
         @input(['bag' => 'default', 'value' => $escore->title, 'name' => 'title', 'placeholder' => 'eScore title', 'limit' => 120])
         @textarea(['bag' => 'default', 'value' => $escore->subtitle, 'name' => 'subtitle', 'placeholder' => 'eScore subtitle', 'limit' => 238])
+      </div>
+      <div class="col"> 
         @input(['bag' => 'default', 'value' => $escore->pages_count, 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
+        @input(['bag' => 'default', 'value' => $escore->piece_id, 'type' => 'number', 'name' => 'piece_id', 'placeholder' => 'Related piece ID', 'required' => false])
       </div>
       <div class="col">
         @input(['bag' => 'default', 'value' => $escore->price, 'type' => 'number', 'name' => 'price', 'placeholder' => 'eScore price', 'limit' => 200])
