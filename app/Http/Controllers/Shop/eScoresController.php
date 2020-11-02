@@ -12,7 +12,7 @@ class eScoresController extends Controller
 {
     public function index(ProductFilters $filters)
     {
-    	$products = eScore::published()->filter($filters)->paginate(12);
+    	$products = eScore::published()->latest()->filter($filters)->paginate(12);
         $topics = eScoreTopic::has('escores')->get();
 
     	return view('shop.products.escores', compact(['products', 'topics']));

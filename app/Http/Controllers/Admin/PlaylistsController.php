@@ -107,7 +107,7 @@ class PlaylistsController extends Controller
 
         Playlist::sort($request->ids);
 
-        return view('components.alerts.alert', [
+        return view('components.alert', [
             'color' => 'green',
             'message' => '<i class="fas fa-check-circle mr-2"></i>The order has been updated',
             'temporary' => true,

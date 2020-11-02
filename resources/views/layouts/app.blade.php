@@ -290,20 +290,22 @@ jQuery.fn.checkCookie = function() {
     </script>
 
     <script type="text/javascript">
-$(window).on('load', function() {
-    var container = document.querySelector('.grid');
-    var grid = new Masonry( container, {
-        itemSelector: '.grid-item',
-    });
+    $(window).on('load', function() {
+        var container = document.querySelector('.grid');
+        if (container) {
+            var grid = new Masonry( container, {
+                itemSelector: '.grid-item',
+            });
 
-    grid.on( 'layoutComplete', function( gridInstance, laidOutItems ) {
-        $('div[data-loading]').fadeOut('fast');
-        container.style.opacity = 1;
-        container.style.transform = 'translateY(0)';
-    });
+            grid.on( 'layoutComplete', function( gridInstance, laidOutItems ) {
+                $('div[data-loading]').fadeOut('fast');
+                container.style.opacity = 1;
+                container.style.transform = 'translateY(0)';
+            });
 
-    grid.layout();
-})
+            grid.layout();
+        }
+    });
     </script>
 
     <script type="text/javascript">

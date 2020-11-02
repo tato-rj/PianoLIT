@@ -12,7 +12,7 @@ class eBooksController extends Controller
 {
     public function index(ProductFilters $filters)
     {
-    	$products = eBook::published()->filter($filters)->paginate(12);
+    	$products = eBook::published()->latest()->filter($filters)->paginate(12);
         $topics = eBookTopic::has('ebooks')->get();
 
     	return view('shop.products.ebooks', compact(['products', 'topics']));

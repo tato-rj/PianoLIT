@@ -1,4 +1,5 @@
-@component('components.modal', ['id' => 'modal-subscription', 'cookie' => 'subscription-popup', 'if' => ! empty($gift)])
+@if($gift)
+@component('components.modal', ['id' => 'modal-subscription', 'cookie' => 'subscription-popup'])
 @slot('body')
 <div class="text-center">
 	<img src="{{storage($gift->thumbnail_path)}}" class="border mb-3" style="width: 210px">
@@ -11,3 +12,4 @@
 </div>
 @endslot
 @endcomponent
+@endif
