@@ -10,7 +10,7 @@
       @pagination
 	</div>
 	<div class="col-lg-3 col-md-4 col-12 order-lg-2 order-md-2 order-1">
-		@if($topics)
+		@if(count($topics) > 0)
 		<div class="mb-5">
 			<div class="d-flex d-apart mb-1 pb-1 border-bottom">
 				<p class="text-muted mb-0"><strong>TOPICS</strong></p>
