@@ -1,5 +1,5 @@
 <li class="nav-item dropdown mx-2">
-  <a class="nav-link dropdown-toggle hvr-underline-from-center" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
     {{$label}}
     @fa(['icon' => 'chevron-down', 'mr' => 0, 'styles' => 'font-size: 72%'])
   </a>
