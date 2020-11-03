@@ -6,7 +6,7 @@
 @section('content')
 
 @include('home.sections._lead')
-@include('home.sections.bar')
+@include('home.sections.promo')
 @include('home.sections.tags')
 @include('home.sections.composition')
 @include('home.sections.youtube')
