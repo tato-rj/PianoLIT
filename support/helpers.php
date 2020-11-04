@@ -79,7 +79,7 @@ function weeks($count)
 
 function possessive($str)
 {
-	if (str_ends_with($str, ['s']))
+	if (last_letter_in($str, ['s']))
 		return $str.'\'';
 
 	return $str.'\'s';
@@ -490,7 +490,7 @@ function percentage($num, $percent)
 	return (int)round(($num * 100) / $percent);
 }
 
-function str_ends_with($str, $chars)
+function last_letter_in($str, $chars)
 {
 	return in_array(substr($str, -1), $chars);
 }

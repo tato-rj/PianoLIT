@@ -31,16 +31,17 @@ trait AdminEvents
     {
 		Storage::fake('public');
 
-        $post = make(Post::class, ['cover_image' => UploadedFile::fake()->image('cover.jpg')]);
+        $post = make(Post::class)->toArray();
 
-		$post->cropped_width = '200';
-		$post->cropped_height = '200';
-		$post->cropped_x = '0';
-		$post->cropped_y = '0';
+        $post['cover_image'] = UploadedFile::fake()->image('cover.jpg');
+		$post['cropped_width'] = '200';
+		$post['cropped_height'] = '200';
+		$post['cropped_x'] = '0';
+		$post['cropped_y'] = '0';
 
-        $this->post(route('admin.posts.store'), $post->toArray());
+        $this->post(route('admin.posts.store'), $post);
 
-        return Post::byTitle($post->title);
+        return Post::byTitle($post['title']);
     }
 
     public function storeQuiz()

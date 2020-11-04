@@ -64,14 +64,15 @@ class BlogTest extends AppTest
         $cover = $post->cover_path;
         $thumbnail = $post->thumbnail_path;
 
-        $update = make(Post::class, ['cover_image' => UploadedFile::fake()->image('cover.jpg')]);
+        $update = make(Post::class)->toArray();
 
-        $update->cropped_width = '200';
-        $update->cropped_height = '200';
-        $update->cropped_x = '0';
-        $update->cropped_y = '0';
+        $update['cover_image'] = UploadedFile::fake()->image('cover.jpg');
+        $update['cropped_width'] = '200';
+        $update['cropped_height'] = '200';
+        $update['cropped_x'] = '0';
+        $update['cropped_y'] = '0';
 
-        $this->patch(route('admin.posts.update', $post->slug), $update->toArray());
+        $this->patch(route('admin.posts.update', $post->slug), $update);
 
         $this->assertNotEquals($title, $post->fresh()->title);
 

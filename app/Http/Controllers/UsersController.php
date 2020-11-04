@@ -87,7 +87,7 @@ class UsersController extends Controller
     {
         $list->toggle(auth()->user()->subscription);
         
-        return view('components.alerts.alert', [
+        return view('components.alert', [
             'color' => 'green',
             'message' => '<i class="fas fa-check-circle mr-2"></i>Your subscription has been updated',
             'temporary' => true,

@@ -13,8 +13,8 @@ trait ExceptionHandling {
 
         $this->app->instance(ExceptionHandler::class, new class extends Handler {
             public function __construct() {}
-            public function report(\Exception $exception) {}
-            public function render($request, \Exception $exception) {
+            public function report(\Throwable $exception) {}
+            public function render($request, \Throwable $exception) {
                 throw $exception;
             }
         });
