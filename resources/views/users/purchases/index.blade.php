@@ -11,7 +11,7 @@
 			<h5>My downloads</h5>
 			<p>Here is a list of all the products you've downloaded/purchased so far</p>
 		</div>
-		@paginationCount(['collection' => $purchases, 'item' => 'download'])
+		@paginationCount(['collection' => $purchases])
 
 		@include('users.purchases.list')
 
