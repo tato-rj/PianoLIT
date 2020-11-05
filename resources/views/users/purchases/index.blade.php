@@ -12,21 +12,8 @@
 			<p>Here is a list of all the products you've downloaded/purchased so far</p>
 		</div>
 
-		@if(auth()->user()->purchases()->exists())
-		@table([
-			'id' => 'purchases-table',
-			'sortable' => true,
-			'headers' => ['Date <i class="fas fa-sort"></i>', 'Type <i class="fas fa-sort"></i></th>', 'Name <i class="fas fa-sort"></i>', 'Download <i class="fas fa-sort"></i>'],
-			'more' => route('users.load-purchases'),
-			'rows' => view('users.purchases.rows', [
-				'purchases' => auth()->user()->purchases->take(5)
-			])
-		])
-		@else
-		<div class="py-5 text-center">
-			<p class="text-muted m-0"><i>Looks like you haven't made any downloads so far...</i></p>
-		</div>
-		@endif
+		@include('users.purchases.list')
+		@pagination(['collection' => $purchases])
 	  </div>
 	</div>
 </div>

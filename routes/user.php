@@ -8,8 +8,6 @@ Route::get('', 'UsersController@profile')->name('profile');
 
 Route::get('purchases', 'UsersController@purchases')->name('purchases');
 
-Route::get('load-purchases', 'UsersController@loadPurchases')->name('load-purchases');
-
 Route::get('invite-friends', 'UsersController@invite')->name('invite');
 
 Route::patch('{user}', 'UsersController@update')->name('update');
