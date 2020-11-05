@@ -12,7 +12,7 @@
 			<p>Here is a list of all the products you've downloaded/purchased so far</p>
 		</div>
 		@if($purchases)
-		<div class="text-center text-muted">Showing {{$purchases->perPage()}} of {{$purchases->total()}} {{str_plural('download', $purchases->total())}}</div>
+		<div class="text-center text-muted">Showing {{$purchases->firstItem()}}-{{$purchases->lastItem()}} of {{$purchases->total()}} {{str_plural('download', $purchases->total())}}</div>
 		@endif
 
 		@include('users.purchases.list')
