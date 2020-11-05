@@ -11,8 +11,12 @@
 			<h5>My downloads</h5>
 			<p>Here is a list of all the products you've downloaded/purchased so far</p>
 		</div>
+		@if($purchases)
+		<div class="text-center text-muted">Showing {{$purchases->currentPage()}} of {{$purchases->total()}} {{str_plural('download', $purchases->total())}}</div>
+		@endif
 
 		@include('users.purchases.list')
+
 		@pagination(['collection' => $purchases])
 	  </div>
 	</div>
