@@ -3,6 +3,8 @@
 		<div class="position-absolute pt-7 w-100" style="top: 0; left: 50%; transform: translateX(-50%);">
 			@include('components.animations.loading')
 		</div>
+		@paginationCount(['align' => 'left'])
+
 		<div class="grid row mb-4">
 			{{$items}}
 		</div>

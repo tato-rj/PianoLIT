@@ -34,7 +34,8 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.alert');
         \Blade::include('components.datatable.layout', 'datatable');
         \Blade::include('components.datatable.raw', 'datatableRaw');
-        \Blade::include('components.pagination');
+        \Blade::include('components.pagination.links', 'pagination');
+        \Blade::include('components.pagination.count', 'paginationCount');
         \Blade::include('admin.components.charts.chart');
         \Blade::include('admin.components.charts.ranking');
         \Blade::include('components.tables.list');
