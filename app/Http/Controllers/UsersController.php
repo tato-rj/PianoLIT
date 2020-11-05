@@ -33,7 +33,7 @@ class UsersController extends Controller
 
     public function purchases()
     {
-        $purchases = auth()->user()->purchases()->paginate(12);
+        $purchases = auth()->user()->purchases()->paginate(8);
 
         return view('users.purchases.index', compact('purchases'));
     }
