@@ -309,7 +309,6 @@ jQuery.fn.checkCookie = function() {
     </script>
 
     <script type="text/javascript">
-
     </script>
 
     @stack('scripts')

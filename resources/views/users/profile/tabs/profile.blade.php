@@ -2,7 +2,7 @@
 	<div>
 		<h5>My profile information</h5>
 		<p>Use the form below to edit your profile.</p>
-		<form method="POST" action="{{route('users.update', auth()->user()->id)}}">
+		<form method="POST" action="{{route('users.update', auth()->user()->id)}}" disable-on-submit>
 			@csrf
 			@method('PATCH')
 			<div class="form-row">
@@ -20,7 +20,7 @@
 			@input(['placeholder' => 'Confirm your password', 'bag' => 'default', 'name' => 'password_confirmation', 'type' => 'password', 'required' => 'no'])
 
 			<div class="form-group">
-				<button class="btn btn-primary shadow btn-wide">@fa(['icon' => 'save'])Save my changes</button>
+				<button type="submit" class="btn btn-primary shadow btn-wide">@fa(['icon' => 'save'])Save my changes</button>
 			</div>
 		</form>
 	</div>
