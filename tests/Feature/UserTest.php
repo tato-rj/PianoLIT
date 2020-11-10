@@ -29,10 +29,18 @@ class UserTest extends AppTest
     }
 
     /** @test */
+    public function users_can_signup_from_the_webapp()
+    {
+        $request = make(User::class);
+
+        $this->register($request);
+        
+        $this->assertDatabaseHas('users', ['first_name' => $request->first_name]); 
+    }
+
+    /** @test */
     public function registration_forms_require_a_recaptcha_if_present()
     {
-        unset(app()[Recaptcha::class]);
-
         $this->register(null, $bot = true)->assertSessionHas('error');
         
         $this->assertDatabaseMissing('users', ['first_name' => 'John']); 

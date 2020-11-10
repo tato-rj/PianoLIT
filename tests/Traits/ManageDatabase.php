@@ -86,18 +86,15 @@ trait ManageDatabase
             'last_name' => $user['last_name'] ?? 'Doe',
             'email' => $user['email'] ?? 'doe@email.com',
             'password' => $user['password'] ?? 'secret999',
-            'password_confirmation' => $user['password_confirmation'] ?? 'secret999',
+            'password_confirmation' => $user['password'] ?? 'secret999',
             'locale' => $user['locale'] ?? 'en_US',
             'age_range' => $user['age_range'] ?? '35 to 45',
             'experience' => $user['experience'] ?? 'Little',
             'preferred_piece_id' => $user['preferred_piece_id'] ?? create('App\Piece')->id,
             'occupation' => $user['occupation'] ?? 'Teacher',
             'origin' => 'web',
-            'g-recaptcha-response' => 'token',
+            'g-recaptcha-response' => $bot ? null : 'token',
         ];
-
-        if ($bot)
-            $request = $request + ['g-recaptcha-response' => 'test'];
 
         return $this->post(route('api.users.store'), $request);     
     }
