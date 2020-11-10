@@ -1,4 +1,5 @@
 <meta name="keywords" content="{{$shareable['keywords']}}">
+<meta name="description" content="{{$shareable['description']}}">
 <meta name="twitter:card" value="{{$shareable['description']}}">
 <meta property="og:site_name" content="PianoLIT" />
 <meta property="og:title" content="{{$shareable['title']}}" />

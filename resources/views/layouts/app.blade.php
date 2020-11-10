@@ -20,6 +20,7 @@
         @include('layouts.html.shareable')
     @else
         <meta name="keywords" content="{{seo()->keywords()}}">
+        <meta name="description" content="{{seo()->about('description')}}">
         <meta name="twitter:card" value="{{seo()->about('description')}}">
         <meta name="twitter:site" content="@litpiano">
         <meta name="twitter:card" content="summary">
