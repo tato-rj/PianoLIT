@@ -19,18 +19,18 @@ class ValidateRegistrationForm
     {
         $this->request = $request;
 
-        if ($this->origin('web') && $this->hasIssues(['missingRecaptcha', 'isBot']))
+        if ($this->origin(['web', 'webapp']) && $this->hasIssues(['missingRecaptcha', 'isBot']))
             return redirect(route('home'))->with('error', $this->errorMessage());
 
         return $next($request);
     }
 
-    public function origin($origin)
+    public function origin(array $origins)
     {
-        return $this->request->origin == $origin;
+        return in_array($this->request->origin, $origins);
     }
 
-    public function hasIssues($issues)
+    public function hasIssues(array $issues)
     {
         foreach($issues as $issue) {
             if (method_exists($this, $issue) && $this->$issue())
@@ -47,6 +47,9 @@ class ValidateRegistrationForm
 
     public function missingRecaptcha()
     {
+        if (local())
+            return false;
+
         return ! $this->request->has('g-recaptcha-response') || ! $this->request->get('g-recaptcha-response');
     }
 

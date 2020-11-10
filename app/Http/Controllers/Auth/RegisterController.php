@@ -41,7 +41,9 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['guest', 'validateRegistrationForm']);
+        $this->middleware('guest');
+
+        $this->middleware('validateRegistrationForm')->only('register');
     }
 
     /**
