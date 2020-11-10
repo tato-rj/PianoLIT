@@ -1,7 +1,7 @@
 <section class="container">
 	<div class="row">		
 		<div class="col-lg-8 col-sm-10 col-12 mx-auto text-center">
-			<h1 class="mb-3 font-weight-bold animate-letters">Find music that inspires you.</h1>
+			<h1 class="mb-3 font-weight-bold animate-letters">Find classical piano pieces that inspires you.</h1>
 			<p class="text-muted mb-4" style="font-size: 110%">Where pianists discover new pieces and find inspiration<br>to play only what they love.</p>			
 		</div>
 	</div>
