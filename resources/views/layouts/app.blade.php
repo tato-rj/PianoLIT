@@ -14,7 +14,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{local() ? '(local)' : null}} {{$title ?? config('app.name')}}</title>
+    <title>{{local() ? '(local)' : null}} {{$title ?? config('app.name') . ' - Find music that inspires you'}}</title>
 
     @isset($shareable)
         @include('layouts.html.shareable')
