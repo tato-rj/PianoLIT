@@ -47,6 +47,11 @@ function dirToArray($path)
 	return array_slice(scandir(base_path($path)), 2);
 }
 
+function seo()
+{
+	return new \App\Services\SEO\SEO;
+}
+
 function datatable($data)
 {
 	return new \App\Resources\DataTables\Builder($data);

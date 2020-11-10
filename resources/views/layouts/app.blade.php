@@ -14,11 +14,29 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{local() ? '(local)' : null}} {{$title ?? config('app.name') . ' - Find music that inspires you'}}</title>
+    <title>{{local() ? '(local)' : null}} {{$title ?? seo()->about('title')}}</title>
 
     @isset($shareable)
         @include('layouts.html.shareable')
+    @else
+        <meta name="keywords" content="{{seo()->keywords()}}">
+        <meta name="twitter:card" value="{{seo()->about('description')}}">
+        <meta name="twitter:site" content="@litpiano">
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="{{seo()->about('title')}}">
+        <meta name="twitter:description" content="{{seo()->about('description')}}">
+        <meta name="twitter:app:country" content="US">
+        <meta name="twitter:app:name:iphone" content="PianoLIT">
+        <meta name="twitter:app:id:iphone" content="00000000">
+
+        <meta itemprop="name" content="{{seo()->about('title')}}"/>
+        <meta itemprop="headline" content="{{seo()->about('description')}}"/>
+        <meta itemprop="description" content="{{seo()->about('description')}}"/>
+        <meta itemprop="author" content="PianoLIT"/>
+
+        <link rel="canonical" href="{{url()->current()}}" />
     @endisset
+
     <link href="https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap" rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/primer.css') }}" rel="stylesheet">
