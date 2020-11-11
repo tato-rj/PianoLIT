@@ -4,6 +4,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::get('', 'Admin\AdminsController@subscriptions')->name('index');
 
+	Route::get('user', 'Admin\SubscriptionsController@findUser')->name('find-user');
+
 	Route::get('export', 'Admin\SubscriptionsController@export')->name('export');
 
 	Route::post('', 'Admin\SubscriptionsController@store')->name('store');

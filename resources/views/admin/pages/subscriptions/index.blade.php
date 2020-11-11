@@ -17,6 +17,7 @@
         </div>
         <div class="d-flex">
           <div class="mr-2">
+
             <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
               @csrf
               <input type="hidden" name="type" value="txt">
@@ -58,6 +59,9 @@ $('#check-all-datatable').change(function() {
 });
 
 $(document).on('change', '.check-datatable', function() {
+  if ($(this).is(':checked'))
+    findUser($(this).data('id'));
+  
   getIds();
 });
 
@@ -98,6 +102,23 @@ function addSelectedIds()
   $('#delete-modal form').append(inputs);
 
   $('#delete-modal form').attr('action', $('#delete-all-btn').data('action'));
+}
+
+function findUser(id)
+{
+  let $table = $('#subscriptions-table');
+  let $cell = $table.find('input[data-id="'+id+'"]').closest('td').next('td').next('td');
+  $cell.find('span').remove();
+  $cell.append('<span class="text-warning ml-2"><i>searching for user...</span>');
+
+  axios.get("{{route('admin.subscriptions.find-user')}}", {params: {id: id}})
+      .then(function(response) {
+        $cell.find('span').remove();
+        $cell.append(response.data);
+      })
+      .catch(function(error) {
+          console.log(error);
+      });
 }
 
 function removeSelectedIds()

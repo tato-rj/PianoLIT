@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\{Subscription, EmailList};
+use App\{Subscription, EmailList, User};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -49,6 +49,14 @@ class SubscriptionsController extends Controller
     public function clean($emails)
     {
     	return explode(',', preg_replace('/\s+/', '', $emails));
+    }
+
+    public function findUser(Request $request)
+    {
+        $subscription = Subscription::findOrFail($request->id);
+        $user = User::byEmail($subscription->email)->first();
+
+        return view('admin.pages.subscriptions.user', compact('user'));
     }
 
     public function destroyMany(Request $request)
