@@ -8,6 +8,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 	Route::post('', 'Admin\SubscriptionsController@store')->name('store');
 
+	Route::delete('many', 'Admin\SubscriptionsController@destroyMany')->name('destroy-many');
+
 	Route::delete('{subscription}', 'Admin\SubscriptionsController@destroy')->name('destroy');
 
 	Route::prefix('lists')->name('lists.')->group(function() {

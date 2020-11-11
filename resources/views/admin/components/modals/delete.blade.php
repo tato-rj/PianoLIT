@@ -8,7 +8,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Are you sure you want to delete this?
+        Are you sure you want to do this?
         <p class="text-danger"><small>This action cannot be undone</small></p>
       </div>
       <div class="modal-footer">

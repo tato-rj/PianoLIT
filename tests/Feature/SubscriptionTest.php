@@ -172,4 +172,30 @@ class SubscriptionTest extends AppTest
 
         $this->assertFalse(EmailList::newsletter()->has($subscription->email));
     }
+
+    /** @test */
+    public function admins_can_delete_multiple_emails_from_the_subscribers_list()
+    {
+        $subscription1 = create(Subscription::class);
+        $subscription2 = create(Subscription::class);
+
+        $subscription1->join(EmailList::newsletter());
+        $subscription2->join(EmailList::newsletter());
+
+        $this->assertDatabaseHas('subscriptions', ['email' => $subscription1->email]);
+        $this->assertDatabaseHas('subscriptions', ['email' => $subscription2->email]);
+
+        $this->assertTrue(EmailList::newsletter()->has($subscription1->email));
+        $this->assertTrue(EmailList::newsletter()->has($subscription2->email));
+
+        $this->signIn();
+
+        $this->delete(route('admin.subscriptions.destroy-many', ['ids' => [$subscription1->id, $subscription2->id]]));
+
+        $this->assertDatabaseMissing('subscriptions', ['email' => $subscription1->email]);
+        $this->assertDatabaseMissing('subscriptions', ['email' => $subscription2->email]);
+
+        $this->assertFalse(EmailList::newsletter()->has($subscription1->email));
+        $this->assertFalse(EmailList::newsletter()->has($subscription2->email));
+    }
 }

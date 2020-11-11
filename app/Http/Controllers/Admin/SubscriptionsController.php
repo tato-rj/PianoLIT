@@ -51,6 +51,15 @@ class SubscriptionsController extends Controller
     	return explode(',', preg_replace('/\s+/', '', $emails));
     }
 
+    public function destroyMany(Request $request)
+    {
+        foreach($request->ids as $id) {
+            Subscription::find($id)->delete();
+        }
+
+        return redirect()->back()->with('status', count($request->ids) . ' emails has been removed.');
+    }
+
     public function destroy(Subscription $subscription)
     {
         $subscription->delete();
