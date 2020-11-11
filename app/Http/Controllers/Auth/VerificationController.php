@@ -50,4 +50,9 @@ class VerificationController extends Controller
 
         return back()->with('status', 'We just sent you another verification email!');
     }
+
+    public function verified()
+    {
+        return view('auth.verified');
+    }
 }
