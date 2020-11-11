@@ -3,5 +3,6 @@
 	function onSubmit(token) {
 		document.getElementById("register-form").submit();
 		document.getElementById("crashcourse-form").submit();
+		document.getElementById("footer-subscription-form").submit();
 	}
 </script>

@@ -6,7 +6,7 @@
 			<p class="text-muted mb-4">We'll send you one monthly email with news, updates and fun piano resources we discover</p>
 			<div class="row mb-3">
 				<div class="col-lg-6 col-md-8 col-10 mx-auto">
-					@include('components.form.subscription')
+					@include('components.form.subscription', ['id' => 'footer-subscription-form'])
 				</div>
 			</div>
 			<div class="mb-5">

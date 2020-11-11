@@ -1,4 +1,4 @@
-<form method="POST" action="{{route('subscriptions.store')}}">
+<form method="POST" action="{{route('subscriptions.store')}}" id="{{$id ?? null}}">
 	@csrf
 
 	@include('components.form.subscription.hidden')
