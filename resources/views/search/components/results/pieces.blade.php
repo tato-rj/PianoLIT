@@ -22,7 +22,7 @@
 				</div>
 			</div>
 			<div class="card-action position-absolute w-100 text-center t-2 h-100 d-flex flex-center" style="left: 0; bottom: -100%">
-				<h6 class="m-0"><i class="fab fa-apple"></i> Learn more</h6>
+				<p class="m-0 font-weight-bold"><i class="fab fa-apple"></i> Learn more</p>
 			</div>
 		</div>
 	</a>
