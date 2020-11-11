@@ -21,6 +21,10 @@ mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/studio-policies/elegant.scss', 'public/css/studio-policies')
     .sass('resources/sass/studio-policies/informal.scss', 'public/css/studio-policies')
     .styles([
+      'public/css/app.css',
+      'resources/sass/primer/primer.css'
+      ], 'public/css/app.css')
+    .styles([
       'resources/sass/vendor/theme.min.css',
       'resources/sass/vendor/tables.css',
       'resources/sass/vendor/dropzone.css',
@@ -38,7 +42,6 @@ mix.js('resources/js/app.js', 'public/js')
       'resources/js/vendor/tables.min.js',
       'resources/js/vendor/theme.min.js'
       ], 'public/js/admin.js')
-    .copyDirectory('resources/sass/primer', 'public/css')
     .copyDirectory('resources/js/vendor', 'public/js/vendor')
     .copyDirectory('resources/js/views', 'public/js/views')
     .copyDirectory('resources/js/components', 'public/js/components')
