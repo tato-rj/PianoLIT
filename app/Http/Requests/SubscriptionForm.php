@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Subscription;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\Recaptcha;
 
 class SubscriptionForm extends FormRequest
 {
@@ -27,7 +28,8 @@ class SubscriptionForm extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'g-recaptcha-response' => ['sometimes', new Recaptcha]
         ];
     }
 }
