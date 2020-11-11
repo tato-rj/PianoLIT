@@ -33,11 +33,11 @@ class SendTimelineEmail extends Command
      */
     public function handle()
     {
-        if (Composer::famous()->bornToday()->exists()) {
-            $list = EmailList::birthdays();
-            $list->send();
-            event(new EmailListSent($list));
-        }
+        // if (Composer::famous()->bornToday()->exists()) {
+        //     $list = EmailList::birthdays();
+        //     $list->send();
+        //     event(new EmailListSent($list));
+        // }
 
         return $this->info('The birthday email has been processed for today.');
     }
