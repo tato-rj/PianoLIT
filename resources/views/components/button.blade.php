@@ -3,6 +3,8 @@
 	href="{{$href}}" 
 	@endisset
 
+	{{! empty($nofollow) && $nofollow ? 'rel="nofollow"' : null}}
+
 	{{$attr ?? null}}
 
 	{{! empty($submit) && $submit ? 'type="submit"' : null}}
