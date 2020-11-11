@@ -13,16 +13,16 @@
 	<div class="row">	
 		<div class="col-lg-8 col-md-10 col-10 mx-auto row no-gutters">
 			<div class="col-lg-7 col-md-6 col-12 mb-3">
-				<p><small><strong>WHAT CAN YOU DO WITH PIANOLIT</strong></small></p>
+				<p class="font-weight-bold"><small>WHAT CAN YOU DO WITH PIANOLIT</small></p>
 				<ul class="list-flat">
-					<li class="mb-2">@fa(['icon' => 'check', 'color' => 'green'])<strong>Find</strong> pieces that match your level</li>
-					<li class="mb-2">@fa(['icon' => 'check', 'color' => 'green'])<strong>Discover</strong> pieces similar to the ones you like</li>
-					<li class="mb-2">@fa(['icon' => 'check', 'color' => 'green'])<strong>Explore</strong> repertoire by mood or technique</li>
-					<li class="">@fa(['icon' => 'check', 'color' => 'green'])<strong>Learn</strong> with tutorials and practicing tips</li>
+					<li class="mb-2">@fa(['icon' => 'check', 'color' => 'green'])<span class="font-weight-bold">Find</span> pieces that match your level</li>
+					<li class="mb-2">@fa(['icon' => 'check', 'color' => 'green'])<span class="font-weight-bold">Discover</span> pieces similar to the ones you like</li>
+					<li class="mb-2">@fa(['icon' => 'check', 'color' => 'green'])<span class="font-weight-bold">Explore</span> repertoire by mood or technique</li>
+					<li class="">@fa(['icon' => 'check', 'color' => 'green'])<span class="font-weight-bold">Learn</span> with tutorials and practicing tips</li>
 				</ul>
 			</div>
 			<div class="col-lg-5 col-md-6 col-12 mb-3">
-				<p><small><strong>HERE ARE SOME EXAMPLES</strong></small></p>
+				<p class="font-weight-bold"><small>HERE ARE SOME EXAMPLES</small></p>
 				<ul class="list-flat" id="query-suggestions">
 					@foreach($suggestions as $suggestion)
 					<li class="mb-2" style="display: {{$loop->iteration > 5 ? 'none' : null}}">
