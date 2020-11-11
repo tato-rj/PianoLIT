@@ -24,8 +24,6 @@ Route::prefix('quiz')->name('quizzes.')->group(function() {
 
 	});
 	
-	Route::delete('destroy', 'Admin\QuizMediaController@destroy')->name('destroy');
-
 	Route::prefix('topics')->name('topics.')->group(function() {
 	
 		Route::get('', 'Admin\AdminsController@quizTopics')->name('index');
