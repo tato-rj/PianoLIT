@@ -1,8 +1,8 @@
 <?php
 
-Route::get('test-upload', function() {
-	return view('test');
-});
+// Route::get('test-upload', function() {
+// 	return view('test');
+// });
 
 Route::post('test-upload', 'HomeController@filetest')->name('test-upload');
 
