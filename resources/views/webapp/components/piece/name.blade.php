@@ -1,1 +1,1 @@
-<h6 class="m-0">{{$piece->long_name}}</h6>
+<p class="m-0 h6">{{$piece->long_name}}</p>

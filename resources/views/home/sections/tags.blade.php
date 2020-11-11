@@ -15,7 +15,7 @@
 				<div id="tags-search" class="d-flex " style="width: 2170px;">
 					@foreach($tags as $type => $group)
 					<div class="{{$loop->last ? null : 'border-right mr-4 pr-1'}}">
-						<h6>{{ucfirst($type)}}</h6>
+						<p class="h6">{{ucfirst($type)}}</p>
 						<div class="d-flex flex-wrap ">
 							@foreach($group as $tag)
 						    <button 

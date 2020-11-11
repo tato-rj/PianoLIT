@@ -7,7 +7,7 @@
 			<div class="d-flex h-100 justify-content-between flex-column t-2 card-content">
 				<div class="mb-2" style="">
 					<span class="badge badge-pill mb-1 bg-{{$piece->level->name}}">{{$piece->level->name}}</span>
-					<p class="mb-0 clamp-2" style="max-width: 100%;"><strong>{{$piece->simple_name}}</strong></p>
+					<p class="mb-0 clamp-2 font-weight-bold" style="max-width: 100%;">{{$piece->simple_name}}</p>
 					<p class="clamp-1 m-0 text-muted"><small>by {{$piece->composer->short_name}}</small></p>
 				</div>
 				<div>
