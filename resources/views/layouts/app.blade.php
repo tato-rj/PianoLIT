@@ -191,8 +191,6 @@ font-family: 'Waiting for the Sunrise', cursive;
 
         </main>
 
-        @include('search.components.forms.global')
-        
         @include('layouts.footer')
 
         @include('auth.modal')

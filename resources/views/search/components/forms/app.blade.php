@@ -6,7 +6,7 @@
 				<div class="d-flex d-apart mb-3">
 					<div>
 						<div>
-							<img class="animated fadeInLeft" src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 20%; width: 26px; display: none;">
+							<img class="animated fadeInLeft" src="{{asset('images/brand/app-icon.svg')}}" alt="PianoLIT icon" style="border-radius: 20%; width: 26px; display: none;">
 							<span class="ml-1 text-muted">
 								@if(request('search'))
 									<strong>{{$results->count()}}</strong> {{str_plural('result', $results->count())}} for
@@ -22,9 +22,9 @@
 					</div>
 					<div class="text-nowrap">
 						<a href="{{config('app.stores.ios')}}" target="_blank" class="hide-on-sm mr-2">
-							<img style="width: 104px" src="{{asset('images/apple/download.svg')}}"></a>
+							<img style="width: 104px" alt="Download PianoLIT" src="{{asset('images/apple/download.svg')}}"></a>
 						<a href="{{route('webapp.discover')}}" class="hide-on-sm mr-2">
-							<img style="width: 104px" src="{{asset('images/webapp/download.svg')}}"></a>
+							<img style="width: 104px" alt="Download PianoLIT" src="{{asset('images/webapp/download.svg')}}"></a>
 					
 						@button([
 							'href' => route('webapp.discover'),

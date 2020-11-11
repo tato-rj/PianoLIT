@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light py-5">
   <a class="navbar-brand" href="{{config('app.url')}}">
-      <img src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 20%; width: 60px">
+      @icon
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-items">
     <div class="animated-icon2"><span></span><span></span><span></span><span></span></div>
