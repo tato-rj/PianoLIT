@@ -41,23 +41,31 @@ class RemoveSpamSubscribers extends Command
     public function handle()
     {
         EmailLog::whereNotNull('failed_at')->chunk(400, function($report) {
-            $this->incrementCount();
             foreach($report as $spam) {
                 $user = User::byEmail($spam->recipient);
+
                 $subscription = Subscription::byEmail($spam->recipient);
 
                 if (! $user->exists() && $subscription->exists()) {
                     $this->info('Removing ' . $subscription->first()->email);
+                    
                     $subscription->first()->delete();
+                    
+                    $this->incrementCount();
                 }
             }
         });
 
-        $this->info('All done ' . $this->count);
+        $this->info('All done! The number of subscriptions removed was ' . $this->getCount());
     }
 
     public function incrementCount()
     {
         $this->count += 1;
+    }
+
+    public function getCount()
+    {
+        return $this->count;
     }
 }
