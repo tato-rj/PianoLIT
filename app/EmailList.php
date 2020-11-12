@@ -28,9 +28,11 @@ class EmailList extends PianoLit
 	{
         $list_id = $this->listId();
 
-		foreach ($this->subscribers as $subscriber) {
-            \Mail::to($subscriber->email)->queue($this->mailable($list_id, $subscriber));
-		}
+        $this->subscribers()->chunk(500, function($subscribers) use ($list_id) {
+            foreach ($subscribers as $subscriber) {
+                \Mail::to($subscriber->email)->queue($this->mailable($list_id, $subscriber));
+            }
+        });
 
         $this->update(['last_sent_at' => now()]);
 	}
