@@ -38,7 +38,9 @@ class RemoveSpamSubscribers extends Command
      */
     public function handle()
     {
-        EmailLog::whereNotNull('failed_at')->chunk(400, function($report) {
+        $count = 0;
+        EmailLog::whereNotNull('failed_at')->chunk(400, function($report) use ($count) {
+            $count = 1;
             foreach($report as $spam) {
                 $user = User::byEmail($spam->recipient);
                 $subscription = Subscription::byEmail($spam->recipient);
@@ -50,6 +52,6 @@ class RemoveSpamSubscribers extends Command
             }
         });
 
-        $this->info('All done');
+        $this->info('All done ' . $count);
     }
 }
