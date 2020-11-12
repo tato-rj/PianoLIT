@@ -21,7 +21,7 @@ class RemoveSpamSubscribers extends Command
      */
     protected $description = 'Remove all subscriptions that have no user and failed in the last email report';
 
-    protected $count = 0;
+    public $count = 0;
 
     /**
      * Create a new command instance.
