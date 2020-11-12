@@ -43,7 +43,7 @@ class FailedSubscriptionsRemoved extends Notification
     {
         return [
             'title' => 'Subscription list cleaned up',
-            'message' => '<strong>' . $this->count . '</strong> failed emails have been removed.',
+            'message' => '<strong>' . $this->count . '</strong> spam emails have been removed.',
             'url' => ''
         ];
     }

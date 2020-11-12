@@ -57,7 +57,7 @@ class RemoveSpamSubscribers extends Command
             }
         });
 
-        // if ($this->getCount() > 0)
+        if ($this->getCount() > 0)
             event(new RemovedFailed($this->getCount()));
 
         $this->info('We have removed ' . $this->getCount() . ' failed subscriptions from the database');
