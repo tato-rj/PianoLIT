@@ -12,7 +12,7 @@ class RemoveSpamSubscribers extends Command
      *
      * @var string
      */
-    protected $signature = 'subscriptions:remove-spam';
+    protected $signature = 'subscriptions:remove-spam {take=200}';
 
     /**
      * The console command description.
@@ -38,20 +38,21 @@ class RemoveSpamSubscribers extends Command
      */
     public function handle()
     {
-        $count = 0;
-        $report = EmailLog::whereNotNull('failed_at')->take(1600)->get();
+        $this->info('Selecting ' . $this->argument('take'));
+        // $count = 0;
+        // $report = EmailLog::whereNotNull('failed_at')->take($this->argument('take'))->get();
 
-        foreach($report as $spam) {
-            $user = User::byEmail($spam->recipient);
-            $subscription = Subscription::byEmail($spam->recipient);
+        // foreach($report as $spam) {
+        //     $user = User::byEmail($spam->recipient);
+        //     $subscription = Subscription::byEmail($spam->recipient);
 
-            if (! $user->exists() && $subscription->exists()) {
-                $count += 1;
-                $this->info('Removing ' . $subscription->first()->email);
-                $subscription->first()->delete();
-            }
-        }
+        //     if (! $user->exists() && $subscription->exists()) {
+        //         $count += 1;
+        //         $this->info('Removing ' . $subscription->first()->email);
+        //         // $subscription->first()->delete();
+        //     }
+        // }
 
-        $this->info($count . ' have been removed');
+        // $this->info($count . ' have been removed');
     }
 }
