@@ -39,7 +39,7 @@ class RemoveSpamSubscribers extends Command
     public function handle()
     {
         $count = 0;
-        $report = EmailLog::whereNotNull('failed_at')->take(600)->get();
+        $report = EmailLog::whereNotNull('failed_at')->take(1200)->get();
 
         foreach($report as $spam) {
             $user = User::byEmail($spam->recipient);
