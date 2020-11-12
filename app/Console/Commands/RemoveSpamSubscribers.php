@@ -38,6 +38,7 @@ class RemoveSpamSubscribers extends Command
      */
     public function handle()
     {
+        $this->info('Taking '.$this->argument('take').' records from the database');
         $count = 0;
         $report = EmailLog::whereNotNull('failed_at')->take($this->argument('take'))->get();
 
