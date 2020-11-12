@@ -40,7 +40,7 @@ class RemoveSpamSubscribers extends Command
     {
         $query = EmailLog::whereNotNull('failed_at');
 
-        $report = $query->take(2)->get();
+        $report = $query->take(20)->get();
 
         $report->each(function($spam) {
             if (User::byEmail($spam->recipient)->exists())
