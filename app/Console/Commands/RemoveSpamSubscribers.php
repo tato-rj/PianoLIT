@@ -40,11 +40,11 @@ class RemoveSpamSubscribers extends Command
     {
         $query = EmailLog::whereNotNull('failed_at');
 
-        $report = $query->take(200)->get();
+        $report = $query->take(20)->get();
 
         $report->each(function($spam) {
-            if (User::byEmail($spam->recipient)->exists())
-                $this->info($spam->recipient . ' belongs to a user');
+            if (! User::byEmail($spam->recipient)->exists() && Subscription::byEmail($spam->recipient)->exists())
+                $this->info($spam->recipient . ' does not belong to a user and is ready to be removed');
         });
 
         $this->info($query->count() . ' bad subscriptions left to be removed');
