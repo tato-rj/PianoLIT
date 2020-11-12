@@ -40,9 +40,10 @@ class RemoveSpamSubscribers extends Command
     {
         $query = EmailLog::whereNotNull('failed_at');
 
-        $spam = $query->take(100)->get();
+        $spam = $query->take(500)->get();
 
         $this->info($query->count() . ' bad subscriptions left to be removed');
-        return $this->info($spam->count() . ' to be removed now');
+        
+        $this->info($spam->count() . ' to be removed now');
     }
 }
