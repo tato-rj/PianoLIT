@@ -38,7 +38,7 @@ class RemoveSpamSubscribers extends Command
      */
     public function handle()
     {
-        EmailLog::whereNotNull('failed_at')->get()->chunk(400, function($report) {
+        EmailLog::whereNotNull('failed_at')->chunk(400, function($report) {
             foreach($report as $spam) {
                 $this->info('Chunk here');
                 $user = User::byEmail($spam->recipient);
