@@ -1,11 +1,11 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
 
 @include('mail::newsletter.quote', [
-	'quote' => 'When legendary cellist Pablo Casals was asked why he continued to practice at age 90, he responded: “Because I think I am making progress”',
-	'author' => 'P. Casals'
+	'quote' => 'There are still so many beautiful things to be said in C Major',
+	'author' => 'S. Prokofiev'
 ])
 
-<p>With October already halway through, we have officially surpassed 3/4 of the year 2020. And you know what this means: we are approaching the holidays and spending a whole lot more time indoor. So for your practicing time, we have some perfect pieces to get into the Halloween spirit.</p>
+<p>November has only started and is already being marked by coronavirus resurgence, political unrest around the world, and wonderful new music additions on the PianoLIT platform. Make sure to check out our newest pieces and don’t forget to update your app if you use iOS devices.</p>
 
 <p>Head over to the <a href="https://my.pianolit.com/playlists" target="_blank">PianoLIT App</a> and start exploring our featured playlist “Scary vibes”.</p>
 
@@ -20,75 +20,73 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 	'badge' => [
 		'name' => 'listen', 
 		'color' => 'orange',
-		'link' => 'https://www.youtube.com/watch?v=mC_yUTPg_Kg'
+		'link' => 'https://www.youtube.com/watch?v=FSk7NulJWoA'
 	],
-	'title' => 'A haunted melody'
+	'title' => 'Birds'
 ])
 
-<p>When thinking about a piece to feature during the Halloween month, nothing better than Alkan’s “Song of the Madwoman by the Seashore”. A brilliant piece with a dark and sinister atmosphere. So evocative that it will get you chills down your spine while playing! While most of Alkan’s compositions are advanced music, this piece which is part of his Preludes Op. 31 is more around the late intermediate level.</p>
+<p>We’ve been directed to Bernstein’s own compositions by a PianoLIT user. After digesting his collections inspired by birds, we were quite frankly were amazed by this artist’s creativity. The first collection is a fantastic suite of 8 studies: the purple finch, the hummingbird, the woodpecker, the seagull, the chickadee, the vulture, the penguin, the eagle.</p>
+<p>The second volume follows the first with 9 more studies: myna bird, the swan, the robin, the owl, the roadrunner, the condor, the nightingale, the guinea hen, the phoenix. Some of them, like the swan, contain homages to previous composers like Saint-Saens (from Saint-Saens’ own Swan in the Carnival of the Animals).</p>
 
-<p><a href="https://youtu.be/mC_yUTPg_Kg" class="text-md"><strong>Watch “Song of the Madwoman by the Seashore” by C. V. Alkan</strong></a></p>
+<p><a href="https://www.youtube.com/watch?v=FSk7NulJWoA" class="text-md"><strong>Watch “The Roadrunner” by S. Bernstein</strong></a></p>
 
-<p><a href="https://my.pianolit.com/storage/app/score/pianolit-prelude-in-ab-minor-from-25-preludes-op31-no8-song-of-the-madwoman-on-the-seashore-1850.pdf" class="text-md"><strong>Download the FREE score here</strong></a></p>
-
-<p>Charles Valentine Alkan was a pianist active during the Parisian years that saw Chopin and Liszt a the heart of the musical scene. Alkan was there among them. Extremely talented and a virtuoso, his music is very demanding technically. When he turned 35, Alkan began to adopt a reclusive life style, while continuing with his compositions.</p>
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
-		'name' => 'free ebook', 
+		'name' => 'eScore', 
 		'color' => 'green',
-		'link' => 'https://pianolit.com/ebooks/become-a-better-sight-reader-in-5-days'
+		'link' => 'https://pianolit.com/escores/sewing-song-by-t-wiggins-blind-tom'
 	],
-	'title' => 'Become a better sight-reader in 5 days - Start reading like a pro with practical tips and music scores for each day'
+	'title' => 'Sewing song by Thomas Wiggins'
 ])
 
-<p>If you've played piano before, you’re probably familiar with the concept of sight-reading. Sight-reading is the practice of reading and performing a piece that you've never seen before. The benefits of skillful sight-reading are many, but don’t fall in the mistake of thinking that sight-readers are born that way. The art of sight-reading can, and should, be taught.</p>
+<p>Born into slavery in Georgia, Thomas Wiggins' life was one of the most incredible and moving episodes in American history. Blind and autistic, and so unable to work with other slaves, Thomas found inspiration in the sounds of the natural world and music. The Sewing Song is an extraordinary piece that combines heartfelt and tender moments with fiery and passionate sections. The writing is clean and very pianistic, making this a great piece for late intermediate pianists.</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/ebooks/become-a-better-sight-reader-in-5-days'])
-Download the FREE eBook now
+@component('mail::button', ['url' => 'https://pianolit.com/escores/sewing-song-by-t-wiggins-blind-tom'])
+Get eScore here
 @endcomponent
-
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'read', 
 		'color' => 'pink',
-		'link' => 'https://pianolit.com/blog/core-piano-repertoire-that-every-pianist-should-know'
+		'link' => 'https://pianolit.com/blog/music-intervals-in-a-nutshell'
 	],
-	'title' => 'Core piano repertoire that every pianist should know'
+	'title' => 'Music Intervals in a Nutshell'
 ])
 
-<p>The piano repertoire is vast, but there are some pieces that every pianist, regardless of the level, should absolutely know. Here's the list.</p>
+<p>The distance between two notes in music is just like the distances between objects in the "real world". Being familiar with this measuring system is fundamental to understanding how music works behind the curtains.</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/blog/core-piano-repertoire-that-every-pianist-should-know'])
-Read the blog post
+@component('mail::button', ['url' => 'https://pianolit.com/blog/music-intervals-in-a-nutshell'])
+Check out this post
 @endcomponent
+
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'infographic', 
 		'color' => 'yellow',
-		'link' => 'https://pianolit.com/resources/infographs/speed-markings'
+		'link' => 'https://pianolit.com/resources/infographs/jsbachs-ornaments-table'
 	],
-	'title' => 'Speed markings'
+	'title' => 'J.S.Bach\'s Ornaments Table'
 ])
 
-<p>The most commonly used speed markings, along with a quick description for each of them.</p>
+<p>J.S.Bach wrote this table in the "Klavierbüchlein für Wilhelm Friedemann Bach", a book he created for the keyboard education of his eldest son Wilhelm. This table is used to this day as a standard for baroque ornaments.</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/resources/infographs/speed-markings'])
+@component('mail::button', ['url' => 'https://pianolit.com/resources/infographs/jsbachs-ornaments-table'])
 Download the infographic for FREE!
 @endcomponent
 @endcomponent
 
-<h1 class="text-lg mb-4">True or False: Charles Valentin Alkan’s music</h1>
+<h1 class="text-lg mb-4">True or False: All about Seymour Bernstein</h1>
 @include('mail::lists.numbered', ['items' => [
-	'<strong>He composed a funeral march for the death of a parrot:</strong> TRUE | FALSE',
-	'<strong>He was a reclusive throughout his life and never met his famous colleagues Chopin and Liszt:</strong> TRUE | FALSE',
-	'<strong>He was a child prodigy and later on a virtuoso:</strong> TRUE | FALSE',
-	'<strong>He was a dedicated pedagogue and most of his repertoire is for beginner level:</strong> TRUE | FALSE'
+	'<strong>He struggled with performance anxiety and quit the stage in 1977:</strong> TRUE | FALSE',
+	'<strong>He is featured in a documentary directed by Hollywood actor Ethan Hawke:</strong> TRUE | FALSE',
+	'<strong>He was born and raised in Newark, New Jersey:</strong> TRUE | FALSE',
+	'<strong>He is not into teaching and avoids playing or composing pedagogical music:</strong> TRUE | FALSE'
 ]])
 
 <div class="text-center mt-4">Find the answers at the bottom of the newsletter!</div>
@@ -106,38 +104,32 @@ Check out the PianoLIT WebApp
 <h1 class="text-lg mb-4">COOL FACTS TO SHARE THIS MONTH:</h1>
 
 @component('mail::panel')
-On the occasion of Beethoven's 250th birthday, the Kunsthistorisches Museum in Vienna serves up a very special exhibition called “”Beethoven moves. It combines paintings, sketchbooks, graphics, sculptures, and videos with music and Beethoven the person. 
+Interesting article on “Why you should still listen to classical music”. To share with your friends that avoid classical music at all costs.
 
-The exhibition is to be seen as a poetic reflection of his creative work. Beethoven's masterpieces enter into a connection with the masterpieces of the visual arts (painting, sculpture, graphics, drawings, photography, and video) and thus create a new total work of art of Beethoven. 
-
-The visitor is invited to locate their own body in the space and thus to put it in relationship to the music, language, image, and movement. A whole-body experience that leads to a very special encounter with the great composer.
-
-Read more <a href="https://www.wien.info/en/sightseeing/museums-exhibitions/beethoven-moves-khm" target="_blank">HERE</a>.
-
-Watch the installation <a href="https://www.instagram.com/p/CF3yV48BBHz/?utm_source=ig_web_copy_link" target="_blank">HERE</a> (turn up your sound!).
+Read more <a href="https://medium.com/@manuel_brenner/why-you-should-still-be-listening-to-classical-music-e0429aef69a3" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-Remember when Wilma and Betty headed out for a night of Leonard Bernstone conducting Rockymaninoff at the Hollyrock Bowl? Watch it again! :)
+Did you know about Sophie Menter, virtuoso pianist and composer (1846-1918)? She was known for her fiery temperament and brilliance as a performer. In Paris, her nickname was “l’incarnation de Liszt”. She also was Liszt’s student.
 
-Watch the video <a href="https://www.youtube.com/watch?v=Gy75VoLv04c" target="_blank">HERE</a>.
+Listen to her Mazurka, Op.6 <a href="https://www.youtube.com/watch?v=gUt8WUtC8EQ" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-Have you ever heard of robots playing the cello? You’re in for a treat! Check out this Work In Progress: ”Cello Concerto No.1” - for industrial robots and string quintet (17′) (2019)
+The Netflix “ta-dum” sound mark is one of all-time greats but doesn’t work as well in the theater because is only 3 seconds long. So Netflix commissioned Hans Zimmer to extend it for theaters. And it’s just…. so…. good!!
 
-Watch it <a href="https://www.youtube.com/watch?v=8srZQ5iZDoY" target="_blank">HERE</a>.
+Watch it <a href="https://www.youtube.com/watch?v=phG4_0MpT4M" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-One of the most distinctive concert halls in the world! 🤩 The Palau in Barcelona. We cannot wait till concert halls like this are filled with music once again.
+We all know how a great musician Mendelssohn is, but did you know he was also quite an incredible drafter and painter?
 
-Watch the video <a href="https://www.youtube.com/watch?v=yr8TIFkppkA" target="_blank">HERE</a>.
+Learn more about it <a href="https://www.loc.gov/item/ihas.200156435/" target="_blank">HERE</a>.
 @endcomponent
 
-<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. FALSE, 3. TRUE, 4. FALSE</div>
+<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. TRUE, 3. TRUE, 4. FALSE</div>
 
-<p>Here at pianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks our users for having such great ideas.</p>
+<p>Here at PianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks to our users for having such great ideas.</p>
 
 @component('mail::button', ['url' => config('app.stores.ios')])
 Download PianoLIT for iOS here
