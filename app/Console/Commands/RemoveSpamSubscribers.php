@@ -12,7 +12,7 @@ class RemoveSpamSubscribers extends Command
      *
      * @var string
      */
-    protected $signature = 'subscriptions:remove-spam {take=200}';
+    protected $signature = 'subscriptions:remove-spam';
 
     /**
      * The console command description.
@@ -40,6 +40,7 @@ class RemoveSpamSubscribers extends Command
     {
         EmailLog::whereNotNull('failed_at')->get()->chunk(400, function($report) {
             foreach($report as $spam) {
+                $this->info('Chunk here');
                 $user = User::byEmail($spam->recipient);
                 $subscription = Subscription::byEmail($spam->recipient);
 
