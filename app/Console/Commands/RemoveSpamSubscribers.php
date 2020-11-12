@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\EmailLog;
+use App\{EmailLog, User, Subscription};
 
 class RemoveSpamSubscribers extends Command
 {
@@ -43,7 +43,8 @@ class RemoveSpamSubscribers extends Command
         $report = $query->take(2)->get();
 
         $report->each(function($spam) {
-            $this->info($spam->recipient);
+            if (User::byEmail($spam->recipient)->exists())
+                $this->info('Delete ' . $spam->recipient);
         });
 
         $this->info($query->count() . ' bad subscriptions left to be removed');
