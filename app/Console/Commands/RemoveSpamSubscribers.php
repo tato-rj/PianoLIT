@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\Emails\RemovedFailed;
 use Illuminate\Console\Command;
 use App\{EmailLog, User, Subscription};
 
@@ -56,7 +57,10 @@ class RemoveSpamSubscribers extends Command
             }
         });
 
-        $this->info('All done! The number of subscriptions removed was ' . $this->getCount());
+        if ($this->getCount() > 0)
+            event(new RemovedFailed($this->getCount()));
+
+        $this->info('We have removed ' . $this->getCount() . ' failed subscriptions from the database');
     }
 
     public function incrementCount()

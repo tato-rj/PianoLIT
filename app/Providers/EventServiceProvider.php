@@ -40,6 +40,9 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\Emails\Unsubscribed::class => [
             \App\Listeners\Emails\UnsubscribedListener::class
         ],
+        \App\Events\Emails\RemovedFailed::class => [
+            \App\Listeners\Emails\RemovedFailedEmailsListener::class
+        ],
         \App\Events\CrashCourses\CrashCourseSignUp::class => [
             \App\Listeners\CrashCourses\CrashCourseSignUpListener::class
         ],
