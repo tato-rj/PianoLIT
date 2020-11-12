@@ -3,7 +3,7 @@
 namespace App\Listeners\Emails;
 
 use App\Events\Emails\RemovedFailed;
-use App\Notifications\Subscriptions\EmailListSentNotification;
+use App\Notifications\Subscriptions\FailedSubscriptionsRemoved;
 use App\Admin;
 
 class RemovedFailedEmailsListener
@@ -16,6 +16,6 @@ class RemovedFailedEmailsListener
      */
     public function handle(RemovedFailed $event)
     {
-        Admin::notifyAll(new EmailListSentNotification($event->count));
+        Admin::notifyAll(new FailedSubscriptionsRemoved($event->count));
     }
 }
