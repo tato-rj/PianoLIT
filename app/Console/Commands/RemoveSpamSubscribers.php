@@ -21,6 +21,8 @@ class RemoveSpamSubscribers extends Command
      */
     protected $description = 'Remove all subscriptions that have no user and failed in the last email report';
 
+    protected $count = 0;
+
     /**
      * Create a new command instance.
      *
@@ -38,9 +40,8 @@ class RemoveSpamSubscribers extends Command
      */
     public function handle()
     {
-        $count = 0;
         EmailLog::whereNotNull('failed_at')->chunk(400, function($report) use ($count) {
-            $count = 1;
+            $this->incrementCount();
             foreach($report as $spam) {
                 $user = User::byEmail($spam->recipient);
                 $subscription = Subscription::byEmail($spam->recipient);
@@ -52,6 +53,11 @@ class RemoveSpamSubscribers extends Command
             }
         });
 
-        $this->info('All done ' . $count);
+        $this->info('All done ' . $this->count);
+    }
+
+    public function incrementCount()
+    {
+        $this->count += 1;
     }
 }
