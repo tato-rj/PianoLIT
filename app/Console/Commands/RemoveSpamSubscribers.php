@@ -38,7 +38,7 @@ class RemoveSpamSubscribers extends Command
      */
     public function handle()
     {
-        $spam = EmailLog::where('failed_at')->get();
+        $spam = EmailLog::whereNotNull('failed_at')->get();
 
         return $this->info($spam->count() . ' bad subscriptions will be removed');
     }
