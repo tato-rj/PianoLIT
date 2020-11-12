@@ -48,7 +48,7 @@ class RemoveSpamSubscribers extends Command
             if (! $user->exists() && $subscription->exists()) {
                 $count += 1;
                 $this->info('Removing ' . $subscription->first()->email);
-                // $subscription->first()->delete();
+                $subscription->first()->delete();
             }
         }
 
