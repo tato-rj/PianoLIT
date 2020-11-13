@@ -35,10 +35,10 @@ $('.calendar-month').click(function() {
 	let $all = $('.calendar-month').not($(this)).removeClass('col-lg-6 col-md-8 col-12').addClass('col-lg-3 col-md-4 col-6').find('.composer-list');
 	let $this = $(this).toggleClass('col-lg-3 col-md-4 col-6 col-lg-6 col-md-8 col-12').find('.composer-list');
 
-	$all.addClass('d-flex flex-wrap').find('.composer-item').addClass('offset-composer');
+	$all.addClass('d-flex flex-wrap').find('.composer-item').addClass('offset-composer').find('img').tooltip('enable');
 	$all.find('.composer-info').hide();
 
-	$this.toggleClass('d-flex flex-wrap').find('.composer-item').toggleClass('offset-composer');
+	$this.toggleClass('d-flex flex-wrap').find('.composer-item').toggleClass('offset-composer').find('img').tooltip('disable');
 	$this.find('.composer-info').fadeIn();
 });
 </script>
