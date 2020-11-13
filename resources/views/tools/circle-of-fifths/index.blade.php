@@ -74,11 +74,6 @@
 	</div>
 </div>
 
-<div class="container mb-6">
-	@include('components.sections.feedback')
-	@include('components.sections.youtube')
-</div>
-
 @include('tools.circle-of-fifths.info.key')
 @include('tools.circle-of-fifths.info.signature')
 @include('tools.circle-of-fifths.info.relative')

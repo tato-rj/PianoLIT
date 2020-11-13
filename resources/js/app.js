@@ -16,7 +16,6 @@ require('./components/overlays');
 require('./components/progressbar');
 require('./components/auth');
 require('./components/toggle');
-require('./youtube/YoutubeV3');
 require('./search/Search');
 
 require('./startup');

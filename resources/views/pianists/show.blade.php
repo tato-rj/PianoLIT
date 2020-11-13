@@ -38,11 +38,6 @@
 	</div>
 </div>
 
-<div class="container mb-6">
-	@include('components.sections.feedback')
-	@include('components.sections.youtube')
-</div>
-
 @popup(['view' => 'subscription'])
 @endsection
 

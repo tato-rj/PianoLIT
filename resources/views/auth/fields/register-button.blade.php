@@ -1,6 +1,4 @@
-@env('production')
 @include('auth.fields.recaptcha')
-@endenv
 
 <button disable-on-submit type="submit" class="btn btn-primary shadow btn-block mb-2">Register</button>
 <div class="mb-4">

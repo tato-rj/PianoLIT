@@ -9,9 +9,9 @@
 	@include('components/form/error', ['field' => 'email'])
 	
 	@isset($id)
-	@env('production')
+
 	@include('auth.fields.recaptcha')
-	@endenv
+
 	@endisset
 
 	@button([

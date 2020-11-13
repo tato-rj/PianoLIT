@@ -80,10 +80,6 @@ main {overflow: hidden !important;}
 </div>
 </section>
 
-<div class="container mb-6">
-  @include('components.sections.youtube')
-</div>
-
 @include('games.components.results', ['button' => 'Go back'])
 @popup(['view' => 'subscription'])
 @endsection

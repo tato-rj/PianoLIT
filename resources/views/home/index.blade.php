@@ -9,7 +9,6 @@
 @include('home.sections.promo')
 @include('home.sections.tags')
 @include('home.sections.composition')
-{{-- @include('home.sections.youtube') --}}
 @include('home.sections.testimonials')
 	
 @popup(['view' => 'subscription'])

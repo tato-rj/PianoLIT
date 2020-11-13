@@ -79,9 +79,6 @@
 
 </section>
 
-<div class="container mb-6">
-	@include('components.sections.youtube')
-</div>
 @include('games.components.results', ['button' => 'Review my answers'])
 @endsection
 
