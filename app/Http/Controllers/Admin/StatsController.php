@@ -62,7 +62,7 @@ class StatsController extends Controller
         $upcomingBirthdays = Composer::upcomingBirthdays(30)->get();
         $upcomingDeathdays = Composer::upcomingDeathdays(30)->get();
         $periodsStats = Composer::byPeriod();
-        $countriesStats = Country::withCount('composers')->orderBy('composers_count', 'DESC')->get();
+        $countriesStats = Country::has('composers')->withCount('composers')->orderBy('composers_count', 'DESC')->get();
         $mapArray = [['Country', 'Composers']];
 
         foreach($countriesStats as $country) {
