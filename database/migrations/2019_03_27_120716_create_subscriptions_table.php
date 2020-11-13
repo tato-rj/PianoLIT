@@ -17,6 +17,7 @@ class CreateSubscriptionsTable extends Migration
             $table->bigIncrements('id');
             $table->string('email');
             $table->string('origin_url')->nullable();
+            $table->string('form_id')->nullable();
             $table->boolean('newsletter_list')->default(true);
             $table->boolean('birthday_list')->default(true);
             $table->timestamps();

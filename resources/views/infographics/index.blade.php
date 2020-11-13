@@ -37,5 +37,5 @@
 
 @push('scripts')
 @addthis
-<script type="text/javascript" src="{{asset('js/components/infographics.js')}}"></script>
+{{-- <script type="text/javascript" src="{{asset('js/components/infographics.js')}}"></script> --}}
 @endpush

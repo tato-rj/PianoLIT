@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', '']])
+    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', 'Form ID', '']])
 
   </div>
 </div>
@@ -48,6 +48,7 @@
   {data: 'created_at', class: 'text-nowrap', sort: true},
   {data: 'email', name: 'subscriptions.email', class: 'dataTables_main_column'},
   {data: 'origin_url', name: 'subscriptions.origin_url'},
+  {data: 'form_id', name: 'subscriptions.form_id'},
   {data: 'action', orderable: false, searchable: false},
 ]).create();
 </script>

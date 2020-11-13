@@ -22,7 +22,7 @@ PianoLIT Crashcourses
     </div>
         <form method="POST" id="crashcourse-form" action="{{route('crashcourses.signup', $highlightedCrashcourse)}}" class="cc-form">
           @csrf
-          @include('components.form.subscription.hidden')
+          @include('components.form.subscription.hidden', ['id' => 'crashcourse-form'])
           <input type="hidden" name="origin_url" value="{{url()->current()}}">
                 @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
                 @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])

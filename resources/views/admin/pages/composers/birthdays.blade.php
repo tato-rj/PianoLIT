@@ -30,10 +30,6 @@
                 @endif
               </td>
               <td>{{$composer->date_of_birth->toFormattedDateString()}}</td>
-              <td class="text-right">
-                <a href="{{route('email-preview.birthday.mail', ['composer_id' => $composer->id])}}" target="_blank" title="Receive a preview of the birthday email" class="text-muted mr-2"><i class="fas fa-envelope-open"></i></a>
-                <a href="{{route('email-preview.birthday.web', ['composer_id' => $composer->id])}}" target="_blank" title="See a preview of the birthday email" class="text-muted mr-2"><i class="fas fa-birthday-cake"></i></a>
-              </td>
             </tr>
           </tbody>
           @endforeach
