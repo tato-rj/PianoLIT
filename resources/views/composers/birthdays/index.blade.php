@@ -7,10 +7,18 @@
 		'subtitle' => 'Don\'t miss out on the birthday of any of your favorite composers'])
 
 	<div class="row">
-		@for($i=1; $i<=12; $i++)
+		@foreach($months as $month)
 		@include('composers.birthdays.month')
-		@endfor
+		@endforeach
 	</div>
 </div>
 
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+@endpush
