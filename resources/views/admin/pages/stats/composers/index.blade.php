@@ -45,6 +45,12 @@
         'data' => $countriesStats])
     </div>
 
+    <div class="row">
+        <div class="col-12">
+            <div id="regions_div" data-stats="{{json_encode($mapArray)}}" style="width: 100%; height: 500px;"></div>
+        </div>
+    </div>
+
     <div class="row my-3">
         @include('admin.pages.stats.composers.ranking')
     </div>
@@ -54,7 +60,29 @@
 @endsection
 
 @section('scripts')
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+<script type="text/javascript">
+      google.charts.load('current', {
+        'packages':['geochart'],
+        // Note: you will need to get a mapsApiKey for your project.
+        // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+        'mapsApiKey': 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'
+      });
+      google.charts.setOnLoadCallback(drawRegionsMap);
+
+      function drawRegionsMap() {
+        var array = $('#regions_div').data('stats');
+
+        var data = google.visualization.arrayToDataTable(array);
+
+        var options = {};
+
+        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+        chart.draw(data, options);
+      }
+</script>
 <script type="text/javascript">
 $(document).ready( function () {
     $('#composers-table').DataTable({

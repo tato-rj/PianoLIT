@@ -63,9 +63,15 @@ class StatsController extends Controller
         $upcomingDeathdays = Composer::upcomingDeathdays(30)->get();
         $periodsStats = Composer::byPeriod();
         $countriesStats = Country::withCount('composers')->orderBy('composers_count', 'DESC')->get();
+        $mapArray = [['Country', 'Composers']];
+
+        foreach($countriesStats as $country) {
+            array_push($mapArray, [$country->name, $country->composers_count]);
+        }
+
         $composers = Composer::all();
 
-        return view('admin.pages.stats.composers.index', compact(['composersStats', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays', 'periodsStats', 'countriesStats', 'composers']));
+        return view('admin.pages.stats.composers.index', compact(['composersStats', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays', 'periodsStats', 'countriesStats', 'composers', 'mapArray']));
     }
 
     public function blog()
