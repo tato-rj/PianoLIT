@@ -1,6 +1,6 @@
 @php($hasBirthdays = $calendar->has($loop->iteration))
 
-<div class="col-lg-3 col-md-4 col-6 p-3">
+<div class="col-lg-3 col-md-4 col-6 t-2 p-3 {{$hasBirthdays ? 'calendar-month' : null}}" style="user-select: none;">
 	<div class="{{$hasBirthdays ? 'shadow-center cursor-pointer' : 'border'}} rounded px-4 py-3 h-100">
 		<div class="d-flex d-apart mb-2">
 			<div class="badge badge-pill alert-{{$hasBirthdays ? 'blue' : 'grey'}}">{{strtoupper($month)}}</div>
@@ -9,9 +9,17 @@
 			@endif
 		</div>
 		@if($hasBirthdays)
-		<div class="d-flex flex-wrap">
+		<div class="d-flex flex-wrap composer-list">
 			@foreach($calendar[$loop->iteration] as $composer)
-			<img data-toggle="tooltip" data-placement="bottom" title="{{$composer->name}}" src="{{$composer->cover_image}}" style="width: 40px; {{$loop->first ? null : 'margin-left: -18px;'}}" class="rounded-circle mr-2">
+			<div class="offset-composer composer-item mb-1 d-flex align-items-center">
+				<img data-toggle="tooltip" data-placement="bottom" title="{{$composer->name}}" src="{{$composer->cover_image}}" style="width: 40px; " class="rounded-circle mr-2">
+				<div class="composer-info w-100" style="display: none;">
+					<div class="d-flex d-apart w-100">
+						<div><strong>{{$composer->short_name}}</strong></div>
+						<div>@fa(['icon' => 'calendar-alt', 'color' => 'grey']){{$composer->born_at}}</div>
+					</div>
+				</div>
+			</div>
 			@endforeach
 		</div>
 		@endif
