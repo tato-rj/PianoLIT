@@ -15,7 +15,7 @@
 				<img data-toggle="tooltip" data-placement="bottom" title="{{$composer->name}}" src="{{$composer->cover_image}}" style="width: 40px; " class="rounded-circle mr-2">
 				<div class="composer-info w-100" style="display: none;">
 					<div class="d-flex d-apart w-100">
-						<div class="clamp-1"><strong>{{$composer->short_name}} {{$composer->short_name}} {{$composer->short_name}}</strong></div>
+						<div class="clamp-1"><strong>{{$composer->short_name}}</strong></div>
 						<div class="text-nowrap">@fa(['icon' => 'calendar-alt', 'color' => 'grey']){{$composer->date_of_birth->format('M d, Y')}}</div>
 					</div>
 				</div>
