@@ -32,14 +32,33 @@ $(function () {
 
 <script type="text/javascript">
 $('.calendar-month').click(function() {
-	let $all = $('.calendar-month').not($(this)).removeClass('col-lg-6 col-md-8 col-12').addClass('col-lg-3 col-md-4 col-6').find('.composer-list');
-	let $this = $(this).toggleClass('col-lg-3 col-md-4 col-6 col-lg-6 col-md-8 col-12').find('.composer-list');
-
-	$all.addClass('d-flex flex-wrap').find('.composer-item').addClass('offset-composer').find('img').tooltip('enable');
-	$all.find('.composer-info').hide();
-
-	$this.toggleClass('d-flex flex-wrap').find('.composer-item').toggleClass('offset-composer').find('img').tooltip('disable');
-	$this.find('.composer-info').fadeIn();
+	if (isClosed($(this))) {
+		resetCalendar();
+		openMonth($(this));
+	} else {
+		resetCalendar();
+	}
 });
+
+function openMonth($month)
+{
+	$month.addClass('col-lg-6 col-md-8 col-12').removeClass('col-lg-3 col-md-4 col-6');
+	$month.find('.composer-list').removeClass('d-flex flex-wrap').find('.composer-item').removeClass('offset-composer').find('img').tooltip('disable');
+	$month.find('.composer-info').fadeIn();
+}
+
+function resetCalendar()
+{
+	let $calendar = $('.calendar-month');
+
+	$calendar.removeClass('col-lg-6 col-md-8 col-12').addClass('col-lg-3 col-md-4 col-6');
+	$calendar.find('.composer-list').addClass('d-flex flex-wrap').find('.composer-item').addClass('offset-composer').find('img').tooltip('enable');
+	$calendar.find('.composer-info').hide();
+}
+
+function isClosed($month)
+{
+	return ! $month.hasClass('col-12');
+}
 </script>
 @endpush
