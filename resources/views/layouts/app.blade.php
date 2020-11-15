@@ -238,7 +238,6 @@ jQuery.fn.visibilityToggle = function() {
             if (searchPos) {
                 if (scrollTop > searchPos.top) {
                     mb = $search.outerHeight()+'px';
-                    console.log(mb);
                     $search.addClass('search-fixed');
                     $search.find('img.animated').show();
                     $prevDiv.css('margin-bottom', mb);
