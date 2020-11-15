@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-lg-4 col-md-6 col-sm-8 col-12 mx-auto">
             <h4 class="mb-4">Reset your password below</h4>
-            <form id="password-reset-form" method="POST" action="{{ route('password.update') }}" disable-on-submit>
+            <form method="POST" action="{{ route('password.update') }}" disable-on-submit>
                 @csrf
 
                 <input type="hidden" name="token" value="{{ $token }}">
@@ -19,8 +19,6 @@
                 <div class="form-group">
                     <input required type="password" name="password_confirmation" placeholder="Confirm your new password" class="form-control w-100 input-light" value="{{ old('password') }}">
                 </div>
-                
-                @include('auth.fields.recaptcha')
                 
                 <div class="form-group text-center">
                     <button type="submit" class="btn btn-primary shadow btn-block mb-4">Reset my password</button>

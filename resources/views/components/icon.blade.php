@@ -1,1 +1,1 @@
-<img src="{{asset('images/brand/app-icon.svg')}}" alt="PianoLIT icon" style="border-radius: 20%; width: {{$size ?? '60px'}}">
+<img src="{{asset('images/brand/app-icon.svg')}}" alt="PianoLIT icon" class="mb-{{$mb ?? null}}" style="border-radius: 20%; width: {{$size ?? '60px'}}">

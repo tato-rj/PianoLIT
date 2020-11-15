@@ -5,13 +5,11 @@
     <div class="row">
         <div class="col-lg-4 col-md-6 col-sm-8 col-12 mx-auto">
             <h4 class="mb-4">Forgot your password?</h4>
-            <form id="password-reset-form" method="POST" action="{{ route('password.email') }}" disable-on-submit>
+            <form method="POST" action="{{ route('password.email') }}" disable-on-submit>
                 @csrf
                 <div class="form-group">
                     <input required type="email" name="email" placeholder="Email" class="form-control w-100 input-light" value="{{ old('email') }}">
                 </div>
-
-                @include('auth.fields.recaptcha')
                 
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary shadow btn-block mb-4">Send Password Reset Link</button>

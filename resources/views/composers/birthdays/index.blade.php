@@ -14,7 +14,7 @@
 		'title' => 'Birthdays', 
 		'subtitle' => 'Don\'t miss out on the birthday of any of your favorite composers'])
 
-	<div class="row">
+	<div class="row" id="calendar">
 		@foreach($months as $month)
 		@include('composers.birthdays.month')
 		@endforeach
@@ -31,7 +31,7 @@ $(function () {
 </script>
 
 <script type="text/javascript">
-$('.calendar-month').click(function() {
+$('.calendar-month').on('click', function() {
 	if (isClosed($(this))) {
 		resetCalendar();
 		openMonth($(this));
@@ -40,10 +40,14 @@ $('.calendar-month').click(function() {
 	}
 });
 
+$(document).ready(function() {
+	$('#calendar > div').show();
+});
+
 function openMonth($month)
 {
 	$month.addClass('col-lg-6 col-md-8 col-12').removeClass('col-lg-3 col-md-4 col-6');
-	$month.find('.composer-list').removeClass('d-flex flex-wrap').find('.composer-item').removeClass('offset-composer').find('img').tooltip('disable');
+	$month.find('.composer-list').removeClass('d-flex flex-wrap').find('.composer-item').addClass('bg-light').removeClass('offset-composer').find('img').tooltip('disable');
 	$month.find('.composer-info').fadeIn();
 }
 
@@ -52,7 +56,7 @@ function resetCalendar()
 	let $calendar = $('.calendar-month');
 
 	$calendar.removeClass('col-lg-6 col-md-8 col-12').addClass('col-lg-3 col-md-4 col-6');
-	$calendar.find('.composer-list').addClass('d-flex flex-wrap').find('.composer-item').addClass('offset-composer').find('img').tooltip('enable');
+	$calendar.find('.composer-list').addClass('d-flex flex-wrap').find('.composer-item').removeClass('bg-light').addClass('offset-composer').find('img').tooltip('enable');
 	$calendar.find('.composer-info').hide();
 }
 

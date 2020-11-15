@@ -52,5 +52,6 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.title', 'pagetitle');
         \Blade::include('components.popups.popup');
         \Blade::include('components.icon');
+        \Blade::include('components.cta.button', 'cta');
     }
 }

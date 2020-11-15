@@ -3,9 +3,7 @@
 	function onSubmit(token) {
 		document.getElementById("register-form").submit();
 		document.getElementById("crashcourse-form").submit();
-		document.getElementById("footer-subscription-form").submit();
 		document.getElementById("feedback-subscription-form").submit();
-		document.getElementById("gift-subscription-form").submit();
-		document.getElementById("password-reset-form").submit();
+		// document.getElementById("gift-subscription-form").submit();
 	}
 </script>
