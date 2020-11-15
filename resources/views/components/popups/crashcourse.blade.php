@@ -28,7 +28,6 @@ PianoLIT Crashcourses
                 @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
             </div>
             <div class="my-2 text-center">
-              @include('auth.fields.recaptcha')
               <button disable-on-submit type="submit" class="btn btn-primary btn-sm-block shadow btn-wide mb-2"><strong>START FREE COURSE!</strong></button>
               <div class="text-muted"><small>Ps: we'll never share your email with anyone</small></div>
             </div>

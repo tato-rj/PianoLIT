@@ -8,7 +8,7 @@
 	</div>
 	@include('components/form/error', ['field' => 'email'])
 	
-	@isset($id)
+	@isset($recaptcha)
 
 	@include('auth.fields.recaptcha')
 
