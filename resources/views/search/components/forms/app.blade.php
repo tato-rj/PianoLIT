@@ -21,8 +21,8 @@
 						</div>
 					</div>
 					<div class="text-nowrap">
-						@cta(['type' => 'ios'])
-						@cta(['type' => 'webapp'])
+						<span class="hide-on-sm">@cta(['type' => 'ios'])</span>
+						<span class="hide-on-sm">@cta(['type' => 'webapp'])</span>
 					
 						@button([
 							'href' => route('webapp.discover'),

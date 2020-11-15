@@ -5,8 +5,8 @@
 			@icon(['mb' => 2])
 			<p class="text-muted">{{seo()->about('moto')}}</p>
 			<div class="mb-4">
-				@cta(['type' => 'ios'])
-				@cta(['type' => 'webapp'])
+				@cta(['type' => 'ios', 'classes' => 'mb-2'])
+				@cta(['type' => 'webapp', 'classes' => 'mb-2'])
 			</div>
 			<div class="mb-5">
 				@include('layouts.footer.links')
