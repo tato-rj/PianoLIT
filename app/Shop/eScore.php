@@ -46,6 +46,11 @@ class eScore extends Product implements Merchandise
         return $this->belongsTo(Piece::class);
     }
 
+    public function autoDownload()
+    {
+        return false;
+    }
+
     public function actionButtons()
     {
         return view('shop.components.actions.escore', ['product' => $this]);

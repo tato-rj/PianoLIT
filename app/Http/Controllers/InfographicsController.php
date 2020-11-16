@@ -33,15 +33,18 @@ class InfographicsController extends Controller
 
     public function download(Infograph $infograph)
     {
-        if (traffic()->isRealVisitor()) {
+        if (traffic()->isRealVisitor())
             $infograph->increment('downloads');
 
-            auth()->user()->purchase($infograph);
+        if (! auth()->user()->purchasesOf($infograph)->exists()) {
+            $purchase = auth()->user()->purchase($infograph);
+        } else {
+            $purchase = auth()->user()->purchasesOf($infograph)->first();
         }
 
-        $file = request('size') == 'lg' ? $infograph->cover_path : $infograph->thumbnail_path;
-
-        return \Storage::disk('public')->download($file);
+        return request('type') == 'download' ? 
+            \Storage::disk('public')->download($infograph->cover_path) : 
+            redirect(route('shop.success', ['purchase' => $purchase, 'type' => 'free']));
     }
 
     public function updateScore(Request $request, Infograph $infograph)

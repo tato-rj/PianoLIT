@@ -72,6 +72,11 @@ class eBook extends Product implements Merchandise
         return view('components.shop.downloads.ebook', ['product' => $this]);
     }
 
+    public function autoDownload()
+    {
+        return false;
+    }
+
     public function links()
     {
         $pdf = $this->pdf_path ? ['PDF' => encrypt($this->pdf_path)] : [];

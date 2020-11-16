@@ -17,9 +17,25 @@
 	</div>
 </section>
 
-@include('home.sections.youtube')
-
 @endsection
 
 @push('scripts')
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/downloadjs/1.4.8/download.min.js"></script>
+<script type="text/javascript">
+let $countdown = $('#countdown-seconds');
+
+if ($countdown.length) {
+	let seconds = 3;
+	let timer = setInterval(function() {
+	  if (seconds < 1) {
+	    clearInterval(timer);
+	    console.log($countdown.data('href'));
+		window.location.href = $countdown.data('href');
+	  } else {
+	  	seconds -= 1;
+	  	$countdown.text(seconds);
+	  }
+	}, 1000);
+}
+</script>
 @endpush

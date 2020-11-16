@@ -62,7 +62,7 @@ class ShopController extends Controller
 
         $purchase = auth()->user()->purchase($form->product, $chargeId);
 
-        return redirect(route('shop.success', $purchase));
+        return redirect(route('shop.success', ['purchase' => $purchase, 'type' => $form->product->isFree() ? 'free' : 'purchase']));
     }
 
     public function success(Purchase $purchase)
@@ -70,6 +70,6 @@ class ShopController extends Controller
         if (! auth()->user()->purchasesOf($purchase->item)->exists())
             return redirect($purchase->item->checkoutRoute());
 
-        return view('shop.success.index', compact('purchase'));        
+        return view('shop.success.index', compact('purchase'));
     }
 }

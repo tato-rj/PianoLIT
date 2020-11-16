@@ -31,7 +31,7 @@
 								<h4 class="mb-1">{{$infograph->name}}</h4>
 								<p class="text-muted mb-4">{{$infograph->description}}</p>
 								<div>
-									<a id="{{auth()->check() ? 'infograph-download' : 'auth-only'}}" href="{{route('infographs.download', ['infograph' => $infograph->slug, 'size' => 'lg'])}}" class="btn btn-block btn-green py-2 font-weight-bold"><i class="fas fa-file-download mr-2"></i>Download</a>
+									@include('infographics.download')
 								</div>
 								@if($infograph->downloads > 4)
 								<div class="text-muted text-center mt-1">
