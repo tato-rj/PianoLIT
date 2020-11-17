@@ -10,9 +10,11 @@ class SearchController extends Controller
 {
     public function index(Api $api, Request $request)
     {
+        $request->validate(['search' => 'required']);
+        
         if (auth()->check())
             return redirect(route('webapp.search.results', ['lazy-load', 'search' => $request->search]));
-        
+
     	$results = $api->search($request)->filtered()->get();
 
     	return view('search.index', compact('results'));
