@@ -47,7 +47,8 @@ class RefreshStripe extends Command
             $this->flushRecords();
             $this->flushPayments();
             $this->createPlans();
-            $this->createCoupon();
+            $this->createCoupon('40OFF', '40% OFF', 40);
+            $this->createCoupon('80OFF', '80% OFF', 80);
         }
 
     }
@@ -96,13 +97,13 @@ class RefreshStripe extends Command
         return $this->info('New plans have been created on Stripe.');
     }
 
-    public function createCoupon()
+    public function createCoupon($id, $name, $discount)
     {
         try {
             \Stripe\Coupon::create([
-                'id' => 'TEST-COUPON',
-                'name' => '50% OFF',
-                'percent_off' => 50,
+                'id' => $id,
+                'name' => $name,
+                'percent_off' => $discount,
                 'duration' => 'repeating',
                 'duration_in_months' => 3,
             ]);   
@@ -110,6 +111,6 @@ class RefreshStripe extends Command
             return $this->info($e->getMessage());            
         }
 
-        return $this->info('A test coupon has been created on Stripe.');
+        return $this->info('The test coupon ' . $name . ' has been created on Stripe.');
     }
 }

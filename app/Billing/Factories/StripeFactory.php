@@ -76,7 +76,7 @@ class StripeFactory
     if (! $this->coupon)
       return $priceInCents;
 
-    return $this->percentage($priceInCents, $this->coupon->percent_off);
+    return $priceInCents - $this->percentage($priceInCents, $this->coupon->percent_off);
   }
 
   public function percentage($num, $percent)
