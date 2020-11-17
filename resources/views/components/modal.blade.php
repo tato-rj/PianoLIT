@@ -4,6 +4,7 @@
     <div class="modal-content border-0" style="border-radius: 1rem">
       <div class="modal-header 
         bg-{{array_find($options ?? null, ['header', 'background'])}} 
+        {{array_find($options ?? null, ['header', 'raw']) ? 'rounded-top' : null}}
         {{array_find($options ?? null, ['header', 'border']) == true ? null : 'border-0'}}" style="{{array_find($options ?? null, ['header', 'show']) === false ? 'display:none' : null}}">
         @isset($header)
           @if(array_find($options ?? null, ['header', 'raw']))
