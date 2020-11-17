@@ -1,8 +1,4 @@
-@component('components.modal', ['id' => 'remove-card', 'headerNoBorder' => true, 'footerNoBorder' => true])
-	@slot('title')
-	Remove card on file
-	@endslot
-
+@component('components.modal', ['id' => 'remove-card', 'header' => 'Remove card on file'])
 	@slot('body')
 	<form method="POST" action="{{route('shop.payment-method.remove')}}">
 		@csrf

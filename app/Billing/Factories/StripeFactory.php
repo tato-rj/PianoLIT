@@ -57,8 +57,8 @@ class StripeFactory
     return Charge::create([
       'customer' => $this->quickCheckout ? null : $this->customer->id,
       'source' => $this->quickCheckout ? $this->token : null,
-      'amount' => $item->finalPrice($inCents = true),
-      'currency' => 'usd'
+      'amount' => $this->calculatePrice($item),
+      'currency' => 'usd',
     ]);
   }
 
@@ -69,9 +69,28 @@ class StripeFactory
       return $this;
   }
 
-  public function withCoupon($coupon = null)
+  public function calculatePrice($item)
   {
-    $this->coupon = $coupon;
+    $priceInCents = $item->finalPrice($inCents = true);
+
+    if (! $this->coupon)
+      return $priceInCents;
+
+    return $this->percentage($priceInCents, $this->coupon->percent_off);
+  }
+
+  public function percentage($num, $percent)
+  {
+    return (int)round(($num * $percent) / 100);
+  }
+
+  public function withCoupon($id = null)
+  {
+    if (! $id)
+      return $this;
+
+    if ($coupon = $this->getCoupon($id))
+      $this->validateCoupon($coupon);
 
     return $this;
   }
@@ -79,6 +98,12 @@ class StripeFactory
   public function getCoupon($id)
   {
     return Coupon::retrieve($id);
+  }
+
+  public function validateCoupon(Coupon $coupon)
+  {
+    if ($coupon->valid)
+      $this->coupon = $coupon;
   }
 
 	public function subscribe(Plan $plan, $stripeToken)

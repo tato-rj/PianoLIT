@@ -178,7 +178,7 @@
 
         @include('layouts.header')
 
-        <main style="overflow-x: hidden">
+        <main>
             
             @include('admin.components.alerts.impersonator')
 

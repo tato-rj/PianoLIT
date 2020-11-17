@@ -1,4 +1,4 @@
-<section class="container mb-5">
+<section class="container-fluid mb-5" style="overflow-x: hidden;">
 	<div id="screens-composition" class="row">
 		<div class="col-lg-6 col-sm-8 col-12 mx-auto">
 			<p class="text-muted"><small>PIANOLIT APP</small></p>

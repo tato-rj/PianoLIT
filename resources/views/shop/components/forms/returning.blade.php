@@ -19,7 +19,6 @@
 	@include('shop.components.forms.coupon')
 
 	<button id="card-button" type="submit" class="btn btn-block btn-default">@fa(['icon' => 'lock'])Buy now for ${{$product->finalPrice()}}</button>
-	<div class="text-muted"><small>All prices are listed in US Dollars.</small></div>
 </form>
 
 @include('shop.components.forms.remove-card')

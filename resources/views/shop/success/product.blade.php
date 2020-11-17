@@ -1,4 +1,4 @@
-<div class="col-lg-10 col-12 mx-auto text-center">
+<div class="col-lg-10 col-12 mx-auto text-center mb-4">
 	<div class="mb-4">
 		@include('shop.components.cover', ['product' => $purchase->item, 'maxWidth' => '280px'])
 	</div>

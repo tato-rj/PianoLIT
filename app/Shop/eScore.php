@@ -72,6 +72,11 @@ class eScore extends Product implements Merchandise
         return route('escores.show', $this);
     }
 
+    public function indexRoute()
+    {
+        return route('escores.index');
+    }
+
     public function checkoutRoute()
     {
         return route('escores.checkout', $this);

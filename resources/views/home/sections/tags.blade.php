@@ -1,11 +1,14 @@
-<section class="container mb-5">
+<section class="container-fluid">
 	<div class="row">
 		<div class="col-lg-6 col-sm-8 col-12 mx-auto mb-4">
 			<p class="text-muted"><small>DISCOVER</small></p>
 			<h3 class="accent-bottom mb-4">Finding new pieces has never been so easy</h3>
 			<p class="text-muted">Select below the ideas that match the kind of pieces you would like to find. Let's see what you'll discover!</p>
 		</div>
-
+	</div>
+</section>
+<section class="container mb-5">
+	<div class="row">
 		@include('home.sections.composers')
 
 		@include('home.sections.freepicks')

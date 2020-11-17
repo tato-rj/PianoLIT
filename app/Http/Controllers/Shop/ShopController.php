@@ -59,7 +59,7 @@ class ShopController extends Controller
                 return back()->with('error', $e->getMessage());
             }
         }
-
+        
         $purchase = auth()->user()->purchase($form->product, $chargeId);
 
         return redirect(route('shop.success', ['purchase' => $purchase, 'type' => $form->product->isFree() ? 'free' : 'purchase']));

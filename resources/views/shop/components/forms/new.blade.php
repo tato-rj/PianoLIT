@@ -1,4 +1,4 @@
-<form action="{{$action}}" method="POST" id="payment-form" class="mb-4 payment-forms" data-key="{{config('services.stripe.key')}}" 
+<form action="{{$action}}" method="POST" disable-on-submit id="payment-form" class="mb-4 payment-forms" data-key="{{config('services.stripe.key')}}" 
 	style="{{! empty($hide) ? 'display: none' : null}}">
 	@csrf
 	<div class="mb-3">

@@ -1,4 +1,5 @@
 <div class="col-lg-10 col-12 mx-auto text-center mb-3">
+	<h1>@fa(['icon' => 'check-circle', 'fa_type' => 'r', 'color' => 'green', 'mr' => 0, 'size' => 'lg'])</h1>
 	<h2 class="mb-4">Thank You, {{auth()->user()->first_name}}!</h2>
 
 	@if($purchase->item->autoDownload())

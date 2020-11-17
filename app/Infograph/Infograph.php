@@ -39,7 +39,12 @@ class Infograph extends Product implements Merchandise
 
     public function showRoute()
     {
-        return null;
+        return route('resources.infographs.show', $this);
+    }
+
+    public function indexRoute()
+    {
+        return route('resources.infographs.index');
     }
 
     public function checkoutRoute()

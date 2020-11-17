@@ -23,7 +23,7 @@
               @if($purchase->item->isFree())
               <strong class="text-green">FREE</strong>
               @else
-              ${{$purchase->item->finalPrice()}}
+              ${{$purchase->cost}}
               @endif 
             </div>
           </div>

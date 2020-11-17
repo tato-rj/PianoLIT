@@ -11,6 +11,7 @@ use App\Merchandise\Purchase;
 use App\Stats\User as UserStats;
 use App\Billing\{Membership, Payment, Customer};
 use App\Billing\Sources\Stripe;
+use App\Billing\Factories\StripeFactory;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -109,10 +110,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function purchase(Merchandise $item, $chargeId = null)
     {
+        $charge = $chargeId ? (new StripeFactory)->getCharge($chargeId) : null;
+
+        $price = $charge ? $charge->amount / 100 : $item->finalPrice();
+
         return $this->purchases()->create([
             'item_type' => get_class($item), 
             'item_id' => $item->id,
-            'cost' => $item->finalPrice(),
+            'cost' => $price,
             'charge_id' => $chargeId
         ]);
     }

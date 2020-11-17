@@ -62,6 +62,11 @@ class eBook extends Product implements Merchandise
         return route('ebooks.show', $this);
     }
 
+    public function indexRoute()
+    {
+        return route('ebooks.index');
+    }
+
     public function checkoutRoute()
     {
         return route('ebooks.checkout', $this);

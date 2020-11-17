@@ -12,6 +12,7 @@ interface Merchandise
 	public function url();
 	public function links();
 	public function showRoute();
+	public function indexRoute();
 	public function checkoutRoute();
 	public function autoDownload();
 }

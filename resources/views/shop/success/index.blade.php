@@ -11,9 +11,11 @@
 	<div class="row mb-5">
 	  @include('shop.success.summary')
 	  @include('shop.success.product')
+	  @include('shop.success.return')
 	</div>
 	<div class="text-center">
-		<h6>How are we doing? <a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank">Give your feedback</a> on what we can improve</h6>
+		<h5>How are we doing?</h5>
+		<h6><a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank">Give your feedback</a> on what we can improve, we'll love to hear from you.</h6>
 	</div>
 </section>
 
@@ -25,7 +27,7 @@
 let $countdown = $('#countdown-seconds');
 
 if ($countdown.length) {
-	let seconds = 3;
+	let seconds = 5;
 	let timer = setInterval(function() {
 	  if (seconds < 1) {
 	    clearInterval(timer);
