@@ -2,8 +2,11 @@
 
 @push('header')
 <style type="text/css">
-.offset-composer:not(:first-child) {
-	margin-left: -18px;
+.offset-list {
+	padding-left: 24px;
+}
+.offset-list .composer-item {
+	margin-left: -24px;
 }
 </style>
 @endpush
@@ -36,7 +39,19 @@
 <script type="text/javascript">
 $('select[name="composers-options"]').on('change', function() {
 	let option = $(this).val();
-	console.log(option);
+
+	$('#calendar > div').addClass('opacity-4');
+
+	axios.get(window.location.href, {params: {option: option}})
+		 .then(function(response) {
+		 	console.log(response.data);
+		 	$('#calendar').html(response.data).promise().done(function() {
+				$('#calendar > div').show();
+		 	});
+		 })
+		 .catch(function(error) {
+		 	console.log(error);
+		 });
 });
 </script>
 
@@ -47,7 +62,7 @@ $(function () {
 </script>
 
 <script type="text/javascript">
-$('.calendar-month').on('click', function() {
+$(document).on('click', '.calendar-month', function() {
 	if (isClosed($(this))) {
 		resetCalendar();
 		openMonth($(this));
@@ -63,7 +78,7 @@ $(document).ready(function() {
 function openMonth($month)
 {
 	$month.addClass('col-lg-6 col-md-8 col-12').removeClass('col-lg-3 col-md-4 col-6');
-	$month.find('.composer-list').removeClass('d-flex flex-wrap').find('.composer-item').addClass('bg-light').removeClass('offset-composer').find('img').tooltip('disable');
+	$month.find('.composer-list').removeClass('d-flex flex-wrap offset-list').find('.composer-item').addClass('bg-light').find('img').tooltip('disable');
 	$month.find('.composer-info').fadeIn();
 }
 
@@ -72,7 +87,7 @@ function resetCalendar()
 	let $calendar = $('.calendar-month');
 
 	$calendar.removeClass('col-lg-6 col-md-8 col-12').addClass('col-lg-3 col-md-4 col-6');
-	$calendar.find('.composer-list').addClass('d-flex flex-wrap').find('.composer-item').removeClass('bg-light').addClass('offset-composer').find('img').tooltip('enable');
+	$calendar.find('.composer-list').addClass('d-flex flex-wrap offset-list').find('.composer-item').removeClass('bg-light').find('img').tooltip('enable');
 	$calendar.find('.composer-info').hide();
 }
 

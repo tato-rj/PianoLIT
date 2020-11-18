@@ -1,6 +1,6 @@
 @component('auth.webapp.layout', [
 	'title' => 'Sign up for free', 
-	'subtitle' => 'Use the form below to sign up and get started. Enjoy!',
+	'subtitle' => 'Access your profile across multiple platforms and devices, including our WebApp',
 	'animated' => false])
 
     <form method="POST" action="{{ route('register') }}" id="register-form" disable-on-submit>

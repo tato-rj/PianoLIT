@@ -86,6 +86,21 @@ abstract class Person extends PianoLit
         return $this->date_of_birth ? $this->date_of_birth->day : null;        
     }
 
+    public function getUpcomingBirthdayAttribute()
+    {
+        if (! $this->date_of_birth)
+            return null;
+
+        $month = $this->date_of_birth->month;
+        $day = $this->date_of_birth->day;
+        $year = now()->year;
+
+        if ($month && $day && $year)
+            return carbon("{$month}/{$day}/{$year}");
+
+        return null;
+    }
+
     public function getBornInAttribute()
     {
         return $this->date_of_birth ? $this->date_of_birth->year : null;
