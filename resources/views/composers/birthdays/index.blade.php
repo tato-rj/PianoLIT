@@ -17,7 +17,7 @@
 		'title' => 'Birthdays', 
 		'subtitle' => 'Don\'t miss out on the birthday of any of your favorite composers'])
 
-	<div class="border py-2 px-3 rounded">
+	<div class="border pt-3 pb-1 px-3 rounded">
 		<div class="bg-light rounded py-1 pr-1 pl-3 d-flex d-apart mb-2">
 			<h5 class="text-muted m-0">{{now()->year}} Calendar</h5>
 			<div>
