@@ -77,7 +77,7 @@ $(document).ready(function() {
 
 function openMonth($month)
 {
-	$month.addClass('col-lg-6 col-md-8').removeClass('col-lg-3 col-md-4');
+	$month.addClass('col-lg-6 col-md-8 selected-month').removeClass('col-lg-3 col-md-4');
 	$month.find('.composer-list').removeClass('d-flex flex-wrap offset-list').find('.composer-item').addClass('bg-light').find('img').tooltip('disable');
 	$month.find('.composer-info').fadeIn();
 }
@@ -86,14 +86,14 @@ function resetCalendar()
 {
 	let $calendar = $('.calendar-month');
 
-	$calendar.removeClass('col-lg-6 col-md-8').addClass('col-lg-3 col-md-4');
+	$calendar.removeClass('col-lg-6 col-md-8 selected-month').addClass('col-lg-3 col-md-4');
 	$calendar.find('.composer-list').addClass('d-flex flex-wrap offset-list').find('.composer-item').removeClass('bg-light').find('img').tooltip('enable');
 	$calendar.find('.composer-info').hide();
 }
 
 function isClosed($month)
 {
-	return ! $month.hasClass('col-12');
+	return ! $month.hasClass('selected-month');
 }
 </script>
 @endpush
