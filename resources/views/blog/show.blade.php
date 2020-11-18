@@ -1,4 +1,5 @@
 @extends('layouts.app', ['title' => $post->title . ' | PianoLIT Blog',
+	'popup' => 'subscription',
 	'shareable' => [
 		'keywords' => '',
 		'title' => $post->title,
@@ -101,7 +102,7 @@
 @include('blog.components.gift')
 @endif
 
-@popup(['view' => 'subscription'])
+{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')

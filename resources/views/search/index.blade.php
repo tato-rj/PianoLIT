@@ -25,7 +25,7 @@
 
 @include('search.components.plans')
 
-@include('home.sections.youtube')
+{{-- @include('home.sections.youtube') --}}
 @endsection
 
 @push('scripts')

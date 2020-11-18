@@ -1,5 +1,6 @@
 @extends('layouts.app', [
   'title' => $pianist->name . ' | ' . config('app.name'),
+  'popup' => 'subscription',
   'shareable' => [
     'keywords' => $pianist->name . ',pianists,classical music,classical recordings,best classical pianists,chopin album,liszt recording,beethoven album,mozart music',
     'title' => 'Great Pianists | ' . $pianist->name,
@@ -38,7 +39,7 @@
 	</div>
 </div>
 
-@popup(['view' => 'subscription'])
+{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')

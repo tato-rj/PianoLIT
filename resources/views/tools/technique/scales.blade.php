@@ -1,5 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Scales Tutor | ' . config('app.name'),
+	'popup' => 'subscription',
 	'shareable' => [
 		'keywords' => 'scale,arpeggio,music theory,fingering',
 		'title' => 'Scales Tutor',
@@ -32,7 +33,7 @@
 </div>
 
 @include('tools.chord-finder.error')
-@popup(['view' => 'crashcourse'])
+{{-- @popup(['view' => 'crashcourse']) --}}
 @endsection
 
 @push('scripts')

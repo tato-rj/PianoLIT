@@ -1,5 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Arpeggios Tutor | ' . config('app.name'),
+	'popup' => 'subscription',
 	'shareable' => [
 		'keywords' => 'scale,arpeggio,music theory,fingering',
 		'title' => 'Arpeggios Tutor',
@@ -35,7 +36,7 @@
 </div>
 
 @include('tools.chord-finder.error')
-@popup(['view' => 'crashcourse'])
+{{-- @popup(['view' => 'crashcourse']) --}}
 @endsection
 
 @push('scripts')

@@ -14,16 +14,32 @@
 		'title' => 'Birthdays', 
 		'subtitle' => 'Don\'t miss out on the birthday of any of your favorite composers'])
 
-	<div class="row" id="calendar">
-		@foreach($months as $month)
-		@include('composers.birthdays.month')
-		@endforeach
+	<div class="border py-2 px-3 rounded">
+		<div class="bg-light rounded py-1 pr-1 pl-3 d-flex d-apart mb-2">
+			<h5 class="text-muted m-0">2020 Calendar</h5>
+			<div>
+				<select name="composers-options" class="form-control form-control-sm rounded">
+					<option value="famous">Most famous</option>
+					<option value="all">Show all</option>
+				</select>
+			</div>
+		</div>
+		<div class="row" id="calendar">
+			@include('composers.birthdays.calendar')
+		</div>
 	</div>
 </div>
 
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$('select[name="composers-options"]').on('change', function() {
+	let option = $(this).val();
+	console.log(option);
+});
+</script>
+
 <script type="text/javascript">
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()

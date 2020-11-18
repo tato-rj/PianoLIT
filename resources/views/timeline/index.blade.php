@@ -1,5 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Music Timeline | ' . config('app.name'),
+	'popup' => 'subscription',
 	'shareable' => [
 		'keywords' => 'music history,music theory,timeline,composers,famous pieces,symphony',
 		'title' => 'Music Timeline',
@@ -36,7 +37,7 @@
 	</div>
 </div>
 
-@popup(['view' => 'subscription'])
+{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')

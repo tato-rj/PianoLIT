@@ -190,6 +190,10 @@
 
         @include('auth.modal')
         
+        @isset($popup)
+        <div id="popup-container" data-view="{{$popup}}" data-url="{{route('subscriptions.modal')}}"></div>
+        @endisset
+
         @if($message = session('status'))
         @alert([
             'color' => 'green',
@@ -230,7 +234,6 @@ jQuery.fn.visibilityToggle = function() {
         var $prevDiv = $search.prev();
         var searchPos = $search.offset();
         var mb = 0;
-        console.log(searchPos);
 
         $(window).scroll(function() {
             let scrollTop = $(this).scrollTop();
@@ -269,15 +272,25 @@ jQuery.fn.checkCookie = function() {
     return $();
 };
 
-    $("#modal-subscription").checkCookie().showAfter(3);
+    
+$(document).ready(function() {
+    let $popupContainer = $('#popup-container');
 
-    if (iOS()) {
-        $('.free-trial-launch').attr('href', "{{config('app.stores.ios')}}");
-    } else {
-        $(document).ready(function() {
-            // setTimeout(function() {$('#webapp-banner').slideDown()}, 500);
-        });
+    if ($popupContainer.length) {
+        axios.get($popupContainer.data('url'), {params: {view: $popupContainer.data('view')}})
+             .then(function(response) {
+                $popupContainer.append(response.data);
+                $popupContainer.find("#modal-subscription").checkCookie().showAfter(3);
+             })
+             .catch(function(error) {
+                console.log(error);
+             });        
     }
+});
+
+
+    if (iOS())
+        $('.free-trial-launch').attr('href', "{{config('app.stores.ios')}}");
 
     function iOS() {
 

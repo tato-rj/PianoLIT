@@ -1,5 +1,6 @@
 @extends('layouts.app', [
     'title' => 'The Ultimate Chord Finder | ' . config('app.name'),
+    'popup' => 'subscription',
     'shareable' => [
         'keywords' => 'chords,chord finder,music theory,harmony',
         'title' => 'The Ultimate Chord Finder',
@@ -24,7 +25,7 @@
 
 @include('tools.chord-finder.error')
 
-@popup(['view' => 'crashcourse'])
+{{-- @popup(['view' => 'crashcourse']) --}}
 @endsection
 
 @push('scripts')

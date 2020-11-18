@@ -1,5 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Staffs Generator | ' . config('app.name'),
+	'popup' => 'subscription',
 	'shareable' => [
 		'keywords' => 'staff,music theory,music sheet,piano sheet,treble sheet,bass sheet',
 		'title' => 'Staffs Generator',
@@ -37,7 +38,7 @@
 	</div>
 </div>
 
-@popup(['view' => 'subscription'])
+{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')

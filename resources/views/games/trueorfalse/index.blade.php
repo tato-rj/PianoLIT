@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'PianoLIT Games: True or False'])
+@extends('layouts.app', ['title' => 'PianoLIT Games: True or False', 'popup' => 'subscription'])
 
 @push('header')
 <style type="text/css">
@@ -81,7 +81,7 @@ main {overflow: hidden !important;}
 </section>
 
 @include('games.components.results', ['button' => 'Go back'])
-@popup(['view' => 'subscription'])
+{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')

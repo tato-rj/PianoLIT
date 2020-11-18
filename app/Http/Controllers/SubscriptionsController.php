@@ -20,9 +20,9 @@ class SubscriptionsController extends Controller
         $this->middleware('throttle:2')->only('store');
     }
 
-    public function index()
+    public function modal(Request $request)
     {
-        //
+        return view('components.popups.subscription')->render();
     }
 
     /**

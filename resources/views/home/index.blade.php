@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['popup' => 'subscription'])
 
 @push('header')
 @endpush
@@ -11,7 +11,7 @@
 @include('home.sections.composition')
 @include('home.sections.testimonials')
 	
-@popup(['view' => 'subscription'])
+{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')

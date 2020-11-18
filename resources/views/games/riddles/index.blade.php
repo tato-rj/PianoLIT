@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'PianoLIT Quizzes'])
+@extends('layouts.app', ['title' => 'PianoLIT Quizzes', 'popup' => 'subscription'])
 
 @push('header')
 
@@ -27,7 +27,7 @@
 
 </section>
 
-@popup(['view' => 'subscription'])
+{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')
