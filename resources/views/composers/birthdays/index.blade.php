@@ -19,7 +19,7 @@
 
 	<div class="border py-2 px-3 rounded">
 		<div class="bg-light rounded py-1 pr-1 pl-3 d-flex d-apart mb-2">
-			<h5 class="text-muted m-0">2020 Calendar</h5>
+			<h5 class="text-muted m-0">{{now()->year}} Calendar</h5>
 			<div>
 				<select name="composers-options" class="form-control form-control-sm rounded">
 					<option value="famous">Most famous</option>
@@ -77,7 +77,7 @@ $(document).ready(function() {
 
 function openMonth($month)
 {
-	$month.addClass('col-lg-6 col-md-8 col-12').removeClass('col-lg-3 col-md-4 col-6');
+	$month.addClass('col-lg-6 col-md-8').removeClass('col-lg-3 col-md-4');
 	$month.find('.composer-list').removeClass('d-flex flex-wrap offset-list').find('.composer-item').addClass('bg-light').find('img').tooltip('disable');
 	$month.find('.composer-info').fadeIn();
 }
@@ -86,7 +86,7 @@ function resetCalendar()
 {
 	let $calendar = $('.calendar-month');
 
-	$calendar.removeClass('col-lg-6 col-md-8 col-12').addClass('col-lg-3 col-md-4 col-6');
+	$calendar.removeClass('col-lg-6 col-md-8').addClass('col-lg-3 col-md-4');
 	$calendar.find('.composer-list').addClass('d-flex flex-wrap offset-list').find('.composer-item').removeClass('bg-light').find('img').tooltip('enable');
 	$calendar.find('.composer-info').hide();
 }
