@@ -1,4 +1,4 @@
-@if($gift)
+@isset($gift)
 @component('components.modal', ['id' => 'modal-subscription', 'cookie' => 'subscription-popup'])
 @slot('body')
 <div class="text-center">
@@ -12,4 +12,4 @@
 </div>
 @endslot
 @endcomponent
-@endif
+@endisset

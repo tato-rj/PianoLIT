@@ -1,6 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Music Timeline | ' . config('app.name'),
-	'popup' => 'subscription',
+	'popup' => 'gift',
 	'shareable' => [
 		'keywords' => 'music history,music theory,timeline,composers,famous pieces,symphony',
 		'title' => 'Music Timeline',

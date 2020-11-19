@@ -277,7 +277,10 @@ $(document).ready(function() {
     let $popupContainer = $('#popup-container');
 
     if ($popupContainer.length) {
-        axios.get($popupContainer.data('url'), {params: {view: $popupContainer.data('view')}})
+        let view = $popupContainer.data('view');
+
+        console.log('Loading the ' + view + ' popup');
+        axios.get($popupContainer.data('url'), {params: {view: view}})
              .then(function(response) {
                 $popupContainer.append(response.data);
                 $popupContainer.find("#modal-subscription").checkCookie().showAfter(3);
@@ -285,6 +288,8 @@ $(document).ready(function() {
              .catch(function(error) {
                 console.log(error);
              });        
+    } else {
+        console.log('No popup to show');
     }
 });
 

@@ -1,6 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'The (interactive) Circle of Fifths | ' . config('app.name'),
-	'popup' => 'subscription',
+	'popup' => 'gift',
 	'shareable' => [
 		'keywords' => 'circle of fifths,music theory,circle,fifths,music theory,chords',
 		'title' => 'The Interactive Circle of Fifths',

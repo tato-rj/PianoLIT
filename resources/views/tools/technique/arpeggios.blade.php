@@ -1,6 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Arpeggios Tutor | ' . config('app.name'),
-	'popup' => 'subscription',
+	'popup' => 'gift',
 	'shareable' => [
 		'keywords' => 'scale,arpeggio,music theory,fingering',
 		'title' => 'Arpeggios Tutor',

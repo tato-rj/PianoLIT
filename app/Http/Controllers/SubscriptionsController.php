@@ -22,7 +22,7 @@ class SubscriptionsController extends Controller
 
     public function modal(Request $request)
     {
-        return view('components.popups.subscription')->render();
+        return view('components.popups.popup', ['view' => $request->view])->render();
     }
 
     /**

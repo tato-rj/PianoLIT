@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'title' => 'The Ultimate Chord Finder | ' . config('app.name'),
-    'popup' => 'subscription',
+    'popup' => 'gift',
     'shareable' => [
         'keywords' => 'chords,chord finder,music theory,harmony',
         'title' => 'The Ultimate Chord Finder',

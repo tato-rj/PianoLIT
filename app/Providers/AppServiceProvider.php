@@ -51,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['highlightedCrashcourse' => $highlightedCrashcourse]);
         });
 
-        \View::composer('components.popups.subscription', function($view) {
+        \View::composer('components.popups.gift', function($view) {
             $gift = \Cache::remember('infographs.gift', minutes(2), function() {
                 return \App\Infograph\Infograph::gifts()->inRandomOrder()->first();
             });

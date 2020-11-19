@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'PianoLIT Games: True or False', 'popup' => 'subscription'])
+@extends('layouts.app', ['title' => 'PianoLIT Games: True or False', 'popup' => 'gift'])
 
 @push('header')
 <style type="text/css">
