@@ -3,7 +3,7 @@
 	<i class="fa-1x fas fa-gift animated infinite bounce delay-4s" style="color: #E92C59"></i>
 </button>
 
-@component('components.modal', ['id' => 'modal-gift'])
+@component('components.modal', ['id' => 'blog-gift-modal'])
 @slot('body')
 <div class="text-center">
 	<img src="{{$post->gift_path}}" class="border mb-3" style="width: 210px">

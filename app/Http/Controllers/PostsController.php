@@ -45,6 +45,11 @@ class PostsController extends Controller
         return view('blog.show', compact(['post', 'suggestions']));
     }
 
+    public function gift(Post $post)
+    {
+        return view('blog.components.gift', compact('post'))->render();
+    }
+
     /**
      * Display the specified resource.
      *

@@ -1,5 +1,5 @@
 @isset($gift)
-@component('components.modal', ['id' => 'modal-subscription', 'cookie' => 'subscription-popup'])
+@component('components.modal', ['id' => 'modal-gift', 'cookie' => 'subscription-popup'])
 @slot('body')
 <div class="text-center">
 	<img src="{{storage($gift->thumbnail_path)}}" alt="{{$gift->name}}" class="border mb-3" style="width: 210px">

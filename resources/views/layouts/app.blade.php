@@ -271,27 +271,46 @@ jQuery.fn.checkCookie = function() {
     console.log('Will show again '+expiresAt.fromNow());
     return $();
 };
-
     
 $(document).ready(function() {
-    let $popupContainer = $('#popup-container');
+    loadPopup($('#popup-container'), function($modal) {
+        $modal.checkCookie().showAfter(3);
+    });
+});
 
-    if ($popupContainer.length) {
-        let view = $popupContainer.data('view');
+$('button[show="subscription-modal"]').on('click', function() {
+    let $btn = $(this);
 
-        console.log('Loading the ' + view + ' popup');
-        axios.get($popupContainer.data('url'), {params: {view: view}})
+    $btn.disable();
+
+    loadPopup($btn, function($modal) {
+        $modal.modal('show');
+        $btn.enable();
+    });
+});
+
+function loadPopup($container, callback = null)
+{
+    if ($container.length) {
+        let view = $container.data('view');
+
+        if (view)
+            console.log('Loading the ' + view + ' view');
+    
+        axios.get($container.data('url'), {params: {view: view}})
              .then(function(response) {
-                $popupContainer.append(response.data);
-                $popupContainer.find("#modal-subscription").checkCookie().showAfter(3);
+                $('body').append(response.data);
+
+                if (callback)
+                    callback($(response.data));
              })
              .catch(function(error) {
                 console.log(error);
-             });        
+             });
     } else {
         console.log('No popup to show');
     }
-});
+}
 
 
     if (iOS())

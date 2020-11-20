@@ -44,7 +44,7 @@
 					<figcaption class="figure-caption">{{$post->cover_credits}}</figcaption>
 				</figure>
 				<div class="border-bottom mb-3 pb-3 text-center">
-					<p class="m-0 text-muted">Want a heads up when a new story comes out? <span class="text-blue cursor-pointer show-overlay" data-target="#subscribe-overlay">Subscribe here</span></p>
+					<p class="m-0 text-muted">Want a heads up when a new story comes out? <button show="subscription-modal" data-view="subscription" data-url="{{route('subscriptions.modal')}}" class="btn-raw text-primary">Subscribe here</button></p>
 				</div>
 			</div>
 			<div id="blog-content" class="blog-font">
@@ -74,7 +74,7 @@
 				</div>
 				<div class="text-right">
 
-					<button  class="btn btn-primary-outline btn-sm btn-subscribe">Subscribe</button>
+					<button  show="subscription-modal" data-view="subscription" data-url="{{route('subscriptions.modal')}}" class="btn btn-primary-outline btn-sm">Subscribe</button>
 				</div>
 			</div>
 		</div>
@@ -89,25 +89,27 @@
 		'card' => 'blog.components.cards.small',
 		'collection' => $suggestions])
 
+	@env('production')
 	<div class="row">
 		<div class="col-12 mb-2">
 			<div id="disqus_thread"></div>
 		</div>
 	</div>
+	@endenv
 </section>
 
-@include('blog.components.inner-subscribe')
-
 @if($post->hasGift())
-@include('blog.components.gift')
+<div id="gift-container" data-url="{{route('posts.gift', $post)}}"></div>
+{{-- @include('blog.components.gift') --}}
 @endif
-
-{{-- @popup(['view' => 'subscription']) --}}
 @endsection
 
 @push('scripts')
-@include('components.addthis')
+@addthis
+
+@env('production')
 <script type="text/javascript" src="{{asset('js/components/disqus.js')}}"></script>
+@endenv
 <script type="text/javascript">
 $(document).ready(function() {
 	showScrollProgressBar($('#main-content'));
@@ -116,10 +118,11 @@ $(document).ready(function() {
 $(document).on('click', "button#gift", function() {
 	let $button = $(this);
 	$button.find('i').removeClass('animated');
-	$('#modal-gift').modal('show');
+	$('#blog-gift-modal').modal('show');
 });
 
 $('.card-title').clamp(2);
-$('#inner-subscribe').html($('#inner-subscribe-model > div'));
+
+loadPopup($('#gift-container'));
 </script>
 @endpush
