@@ -301,6 +301,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $query->where('email', $email);
     }
 
+    public function scopeByOrigin($query, $origin)
+    {
+        return $query->where('origin', $origin);
+    }
+
     public function stripeIds()
     {
         $membershipId = $this->hasMembershipWith(Stripe::class) ? $this->membership->source->stripe_id : null;

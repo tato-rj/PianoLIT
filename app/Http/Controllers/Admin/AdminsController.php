@@ -29,7 +29,12 @@ class AdminsController extends Controller
 
         $stats = (new Stats)->model(Subscription::class);
 
-        return view('admin.pages.home.index', compact(['pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays']));
+        $iosUsers = User::byOrigin('ios')->count();
+        $iosMembers = User::byOrigin('ios')->has('membership')->count();
+        $webappUsers = User::byOrigin('webapp')->count();
+        $webappMembers = User::byOrigin('webapp')->has('membership')->count();
+
+        return view('admin.pages.home.index', compact(['pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays', 'iosUsers', 'iosMembers', 'webappUsers', 'webappMembers']));
     }
 
     /**

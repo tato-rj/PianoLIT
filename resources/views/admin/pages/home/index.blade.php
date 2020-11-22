@@ -48,14 +48,27 @@
       </div>
 
       <div class="row">
-        <div class="col-12">
-          @php($members_count = \App\Billing\Membership::member()->count())
-          @php($signupworth = ($members_count*50)/$users_count)
-          <p>Number of users: {{$users_count}}</p>
-          <p>Number of members: {{$members_count}}</p>
-          <p>For every {{round($users_count/$members_count)}} users we get 1 membership</p>
-          <p>Each member spends on average $50 (guess)</p>
-          <p>Based on the guess above, each signup is worth about ${{number_format((float)$signupworth, 2, '.', '')}}</p>
+        <div class="col-6">
+          <div class="p-4 bg-light">
+            <h6>iOS</h6>
+            @php($iosValue = ($iosMembers*50)/$iosUsers)
+            <p>Number of users: {{$iosUsers}}</p>
+            <p>Number of members: {{$iosMembers}}</p>
+            <p>For every {{$iosMembers ? round($iosUsers/$iosMembers) : 0}} iOS users we get 1 membership</p>
+            <p>Each member spends on average $50 (guess)</p>
+            <p>Based on the guess above, each signup is worth about ${{number_format((float)$iosValue, 2, '.', '')}}</p>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="p-4 bg-light">
+            <h6>WebApp</h6>
+            @php($webappValue = ($webappMembers*50)/$webappUsers)
+            <p>Number of users: {{$webappUsers}}</p>
+            <p>Number of members: {{$webappMembers}}</p>
+            <p>For every {{$webappMembers ? round($webappUsers/$webappMembers) : 0}} iOS users we get 1 membership</p>
+            <p>Each member spends on average $50 (guess)</p>
+            <p>Based on the guess above, each signup is worth about ${{number_format((float)$webappValue, 2, '.', '')}}</p>
+          </div>
         </div>
       </div>
     
