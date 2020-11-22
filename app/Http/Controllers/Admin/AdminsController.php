@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\{User, Piece, Composer, Subscription};
+use App\Billing\Payment;
 use App\Quiz\{Quiz, Level, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Blog\Post;
@@ -33,8 +34,9 @@ class AdminsController extends Controller
         $iosMembers = User::byOrigin('ios')->has('membership')->count();
         $webappUsers = User::byOrigin('webapp')->count();
         $webappMembers = User::byOrigin('webapp')->has('membership')->count();
+        $webappAveragePayment = Payment::sum('amount')/100;
 
-        return view('admin.pages.home.index', compact(['pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays', 'iosUsers', 'iosMembers', 'webappUsers', 'webappMembers']));
+        return view('admin.pages.home.index', compact(['pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays', 'iosUsers', 'iosMembers', 'webappUsers', 'webappMembers', 'webappAveragePayment']));
     }
 
     /**

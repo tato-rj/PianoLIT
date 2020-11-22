@@ -66,8 +66,8 @@
             <p>Number of users: {{$webappUsers}}</p>
             <p>Number of members: {{$webappMembers}}</p>
             <p>For every {{$webappMembers ? round($webappUsers/$webappMembers) : 0}} WebApp users we get 1 membership</p>
-            <p>Each member spends on average $50 (guess)</p>
-            <p>Based on the guess above, each signup is worth about ${{number_format((float)$webappValue, 2, '.', '')}}</p>
+            <p>Each member spends on average ${{$webappMembers ? $webappAveragePayment/$webappMembers : 0}}</p>
+            <p>Each signup is worth about ${{number_format((float)$webappValue, 2, '.', '')}}</p>
           </div>
         </div>
       </div>
