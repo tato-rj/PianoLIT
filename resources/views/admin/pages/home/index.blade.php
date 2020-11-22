@@ -49,7 +49,7 @@
 
       <div class="row">
         <div class="col-12">
-          @php($members_count = \App\Billing\Membership::count())
+          @php($members_count = \App\Billing\Membership::member()->count())
           @php($signupworth = ($members_count*50)/$users_count)
           <p>Number of users: {{$users_count}}</p>
           <p>Number of members: {{$members_count}}</p>
