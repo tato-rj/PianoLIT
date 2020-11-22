@@ -4,6 +4,8 @@ Route::namespace('WebApp')->group(function() {
 
 	Route::get('', 'TabsController@discover')->name('discover');
 
+	Route::get('welcome', 'TabsController@discover')->name('welcome');
+
 	Route::get('explore', 'TabsController@explore')->name('explore');
 
 	Route::get('playlists', 'TabsController@playlists')->name('playlists');

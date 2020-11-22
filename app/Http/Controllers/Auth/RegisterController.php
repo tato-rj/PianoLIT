@@ -109,9 +109,16 @@ class RegisterController extends Controller
 
     protected function registered(Request $request, $user)
     {
-        if (in_array($request->origin, ['web', 'webapp']))
-            return back()->with('status', 'Your account successfully created! Please check your inbox to confirm your email.');
-        
-        return $user;
+        if (! in_array($request->origin, ['web', 'webapp']))
+            return $user;
+
+        return $this->origin($request, 'webapp') ? 
+            redirect(route('webapp.welcome')) : 
+            back()->with('status', 'Your account successfully created! Please check your inbox to confirm your email.');
+    }
+
+    protected function origin($request, $origin)
+    {
+        return $request->origin == $origin;
     }
 }

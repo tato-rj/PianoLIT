@@ -47,6 +47,7 @@ class RefreshStripe extends Command
             $this->flushRecords();
             $this->flushPayments();
             $this->createPlans();
+            $this->createCoupon('TEST-COUPON', 'TEST COUPON', 50);
             $this->createCoupon('40OFF', '40% OFF', 40);
             $this->createCoupon('80OFF', '80% OFF', 80);
         }
