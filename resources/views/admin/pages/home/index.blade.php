@@ -46,6 +46,18 @@
           'url' => route('admin.posts.index')])
       
       </div>
+
+      <div class="row">
+        <div class="col-12">
+          @php($members_count = \App\Billing\Membership::count())
+          @php($signupworth = ($members_count*50)/$users_count)
+          <p>Number of users: {{$users_count}}</p>
+          <p>Number of members: {{$members_count}}</p>
+          <p>For every {{round($users_count/$members_count)}} users we get 1 membership</p>
+          <p>Each member spends on average $50 (guess)</p>
+          <p>Based on the guess above, each signup is worth about ${{number_format((float)$signupworth, 2, '.', '')}}</p>
+        </div>
+      </div>
     
       @else
       <div class="row p-4">
