@@ -1,4 +1,4 @@
-@foreach($pieces as $piece)
+@forelse($pieces as $piece)
 
 <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
 	<a href="{{route('webapp.discover')}}" class="link-none free-trial-launch">
@@ -28,4 +28,10 @@
 	</a>
 </div>
 
-@endforeach
+@empty
+<div class="col-12 text-center py-5">
+	<h1>@fa(['icon' => 'box-open', 'color' => 'grey'])</h1>
+	<p class="text-muted">Sorry, let's try something else!</p>
+</div>
+
+@endforelse
