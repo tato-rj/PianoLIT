@@ -38,6 +38,8 @@
         <link rel="canonical" href="{{url()->current()}}" />
     @endisset
 
+    <link rel="preload" href="{{ asset('fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.woff2') }}" as="font" crossorigin="anonymous">
+    <link rel="preload" href="{{ asset('fonts/vendor/@fortawesome/fontawesome-free/webfa-solid-900.woff2') }}" as="font" crossorigin="anonymous">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     {{-- <link href="{{ asset('css/primer.css') }}" rel="stylesheet"> --}}
 
