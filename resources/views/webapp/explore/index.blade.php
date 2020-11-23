@@ -1,9 +1,8 @@
 @extends('webapp.layouts.app')
 
 @push('header')
-<style type="text/css">
-
-</style>
+<link rel="preload" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" as="style">
+<link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">
 @endpush
 
 @section('content')

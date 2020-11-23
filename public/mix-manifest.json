@@ -1,11 +1,13 @@
 {
     "/js/app.js": "/js/app.js?id=71badc26cadb881ebfc4",
-    "/css/app.css": "/css/app.css?id=2a10bcd6d13ea7367760",
-    "/css/admin.css": "/css/admin.css?id=39ad47a9a493044a53c6",
+    "/css/app.css": "/css/app.css?id=398af5fa94ae6a9c35db",
+    "/css/admin.css": "/css/admin.css?id=9159efa230292c00fd7d",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
     "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=265bb693f4154efcaaec",
     "/css/studio-policies/elegant.css": "/css/studio-policies/elegant.css?id=4aae0c05002438971714",
     "/css/studio-policies/informal.css": "/css/studio-policies/informal.css?id=1d1105ead8ba3664484a",
     "/js/admin.js": "/js/admin.js?id=ad5963d1c5c97c2f4670",
-    "/js/tone.js": "/js/tone.js?id=eb88ab1574ac731b1f8e"
+    "/js/tone.js": "/js/tone.js?id=eb88ab1574ac731b1f8e",
+    "/css/vendor/fontawesome/all.min.css": "/css/vendor/fontawesome/all.min.css?id=b227b1617a1763c8bc05",
+    "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=79fb36dda0a235254c3e"
 }

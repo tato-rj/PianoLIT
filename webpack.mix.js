@@ -48,6 +48,11 @@ mix.js('resources/js/app.js', 'public/js')
     .copyDirectory('resources/js/animations', 'public/js/animations')
     .copyDirectory('resources/js/tinyeditor', 'public/js/tinyeditor')
     .copyDirectory('resources/images', 'public/images')
-    // .copyDirectory('resources/fonts', 'public/fonts')
+    //FONTAWESOME
+    .copy('node_modules/@fortawesome/fontawesome-free/css/all.min.css', 'public/css/vendor/fontawesome')
+    .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/css/vendor/webfonts')
+    //SVG FLAGS
+    .copy('node_modules/flag-icon-css/css/flag-icon.min.css', 'public/css/vendor/flag-icon')
+    .copy('node_modules/flag-icon-css/flags', 'public/css/vendor/flags')
     .version();
 
