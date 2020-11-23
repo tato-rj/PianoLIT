@@ -1,4 +1,4 @@
-@extends('layouts.app', ['popup' => 'gift'])
+@extends('layouts.app')
 
 @push('header')
 @endpush
