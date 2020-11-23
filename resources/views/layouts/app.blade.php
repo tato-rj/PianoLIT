@@ -38,6 +38,8 @@
         <link rel="canonical" href="{{url()->current()}}" />
     @endisset
 
+    <link rel="preload" as="style" href="{{ mix('css/app.css') }}">
+
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     {{-- <link href="{{ asset('css/primer.css') }}" rel="stylesheet"> --}}
 
