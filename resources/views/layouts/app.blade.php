@@ -358,9 +358,6 @@ function loadPopup($container, callback = null)
     });
     </script>
 
-    <script type="text/javascript">
-    </script>
-
     @stack('scripts')
 
 </body>
