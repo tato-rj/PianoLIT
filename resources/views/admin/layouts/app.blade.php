@@ -11,8 +11,6 @@
     <link rel="preload" href="{{ asset('css/vendor/fontawesome/all.min.css') }}" as="style">
     
     <link href="{{ asset('css/vendor/fontawesome/all.min.css') }}" rel="stylesheet">
-    
-    <link rel="stylesheet" type="text/css" href="{{asset('css/primer.css')}}">
     <link rel="stylesheet" type="text/css" href="{{mix('css/admin.css')}}">
     
     @include('admin.layouts.html.js-app')

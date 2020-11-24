@@ -29,6 +29,7 @@ mix.js('resources/js/app.js', 'public/js')
       'resources/sass/vendor/tables.css',
       'resources/sass/vendor/dropzone.css',
       'public/css/admin.css',
+      'resources/sass/primer/primer.css'
       ], 'public/css/admin.css')
     .scripts([
       'public/js/app.js',
