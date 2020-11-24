@@ -83,7 +83,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware(['web', 'log.web', 'cache.headers:private;max_age=3600'])
+        Route::middleware(['web', 'log.web'])
              ->namespace($this->namespace)
              ->group(function() {
                 $this->getFolder('routes/web');
