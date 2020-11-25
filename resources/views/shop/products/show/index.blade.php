@@ -2,7 +2,7 @@
 	'title' => $product->title . ' | ' . config('app.name'),
 	'noclicks' => true,
 	'shareable' => [
-		'keywords' => '',
+		'keywords' => $product->keywords(),
 		'title' => $product->title,
 		'description' => $product->subtitle,
 		'thumbnail' => $product->cover_image(),
