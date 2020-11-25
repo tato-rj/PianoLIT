@@ -52,6 +52,11 @@ class Infograph extends Product implements Merchandise
         return null;
     }
 
+    public function keywords()
+    {
+        return null;
+    }
+
     public function autoDownload()
     {
         return route('infographs.download', ['infograph' => $this, 'type' => 'download']);

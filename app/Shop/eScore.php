@@ -46,6 +46,17 @@ class eScore extends Product implements Merchandise
         return $this->belongsTo(Piece::class);
     }
 
+    public function keywords()
+    {
+        $title = $this->title . ' sheet music';
+
+        $composer = $this->piece()->exists() ? $this->piece->composer->name . ' sheet music' : null;
+
+        $words = array_values(array_filter([$title, $composer]));
+
+        return arrayToSentence($words, ',', ',');
+    }
+
     public function autoDownload()
     {
         return false;

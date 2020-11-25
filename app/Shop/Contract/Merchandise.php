@@ -15,4 +15,5 @@ interface Merchandise
 	public function indexRoute();
 	public function checkoutRoute();
 	public function autoDownload();
+	public function keywords();
 }

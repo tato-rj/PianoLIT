@@ -342,7 +342,7 @@ function storage($path)
 	return null;
 }
 
-function arrayToSentence($array, $conjunction = 'and')
+function arrayToSentence($array, $conjunction = ' and ', $separator = ', ')
 {
 	$arrayCount = count($array);
 
@@ -352,7 +352,7 @@ function arrayToSentence($array, $conjunction = 'and')
 	    $sentence = $array[0];
 	} else {
 	    $partial = array_slice($array, 0, $arrayCount-1);
-	    $sentence = implode(', ', $partial) . " $conjunction " . $array[$arrayCount-1];
+	    $sentence = implode($separator, $partial) . "$conjunction" . $array[$arrayCount-1];
 	}
 
 	return $sentence;

@@ -1,7 +1,7 @@
 @extends('shop.products.index', [
 	'title' => 'eScores', 
 	'subtitle' => 'A curated collection of unique piano pieces',
-	'keywords' => 'scores,score music,learn music,music theory,music sheet',
+	'keywords' => $product->keywords(),
 	'thumbnail' => asset('images/misc/thumbnails/infographs.jpg'),
     'ads' => ['ebook']
 ])

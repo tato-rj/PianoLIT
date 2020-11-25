@@ -41,6 +41,11 @@ class eBook extends Product implements Merchandise
         return $this->morphMany(Purchase::class, 'item');
     }
 
+    public function keywords()
+    {
+        return '';
+    }
+
     public function actionButtons()
     {
         return view('shop.components.actions.ebook', ['product' => $this]);
