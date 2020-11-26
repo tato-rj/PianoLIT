@@ -20,6 +20,10 @@
 				@include('composers.birthdays.composer')
 			@endforeach
 		</div>
+		@else
+		<div class="text-center text-grey">
+			<small><strong><i>No birthdays this month</i></strong></small>
+		</div>
 		@endif
 	</div>
 </div>
