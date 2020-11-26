@@ -1,5 +1,10 @@
 <?php
 
+function pianolit()
+{
+	return new \App\Services\PianoLIT\PianoLIT;
+}
+
 function array_find($array = null, array $keys)
 {
 	if (! $array)
