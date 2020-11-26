@@ -9,7 +9,7 @@
 							<img class="animated fadeInLeft" src="{{asset('images/brand/app-icon.svg')}}" alt="PianoLIT icon" style="border-radius: 20%; width: 26px; display: none;">
 							<span class="ml-1 text-muted">
 								@if(request('search'))
-									<strong>{{$results->count()}}</strong> {{str_plural('result', $results->count())}} for
+									Search results for
 								@else
 									@auth
 									Hi <strong>{{auth()->user()->first_name}}</strong>!
@@ -39,6 +39,7 @@
 				</div>
 				<div class="bg-white shadow-light rounded">
 					<form method="GET" action="{{route('explore.search')}}" disable-on-submit submit-on-enter>
+						<input type="hidden" name="lazy-load">
 						<div class="input-group input-group-lg">
 							<div class="input-group-prepend">
 								<button disabled class="btn-raw pl-3">@fa(['icon' => 'music', 'mr' => 0, 'size' => 'lg', 'color' => 'grey'])</button>

@@ -26,7 +26,7 @@
 				<ul class="list-flat" id="query-suggestions">
 					@foreach($suggestions as $suggestion)
 					<li class="mb-2" style="display: {{$loop->iteration > 5 ? 'none' : null}}">
-						<a href="{{route('explore.search', ['search' => $suggestion])}}">
+						<a href="{{route('explore.search', ['search' => $suggestion, 'lazy-load' => true])}}">
 						@tag(['type' => 'search', 'label' => $suggestion])</a></li>
 					@endforeach
 				</ul>
