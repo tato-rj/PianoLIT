@@ -31,7 +31,10 @@
         'groups' => [
           [
             'title' => 'Learn', 
-            'links' => ['Infographics' => route('resources.infographs.index'), 'Music Timeline' => route('resources.timeline')]
+            'links' => [
+              'Infographics' => route('resources.infographs.index'), 
+              'Music Timeline' => route('resources.timeline'),
+              'Famous birthdays' => route('composers.birthdays')]
           ],
           [
             'title' => 'Listen', 
