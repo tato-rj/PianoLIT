@@ -9,7 +9,7 @@ class Tag extends PianoLit
     use HasLimit;
     
     protected $labels = [
-        'search' => ['mood', 'technique', 'genre', 'ranking'],
+        'search' => ['mood', 'technique', 'genre', 'ranking', 'season'],
         'core' => ['level', 'sublevel', 'period', 'length']
     ];
 
