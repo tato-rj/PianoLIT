@@ -68,7 +68,7 @@ class Api extends Factory
         $key = \Redis::get('app.explore');
 
         $collection = \Cache::remember($key, days(1), function() {
-            $categories = Tag::display()->groupBy('type')->forget(['period', 'level']);
+            $categories = Tag::display()->groupBy('type')->forget(['period', 'level', 'season']);
             $levels = Tag::extendedLevels()->withCount('pieces')->get();
             $harmony = Tutorial::byType('harmonic')->latest()->with('piece')->take(12)->get()->unique('piece_id')->take(4);
             $highlights = Piece::freePicks()->get();
