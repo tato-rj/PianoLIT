@@ -1,5 +1,8 @@
 <div class="d-flex align-items-center">
 	<div class="mr-2">
+		<a href="{{route('admin.pieces.edit', $item->piece)}}" class="btn btn-sm btn-outline-secondary">View</a>
+	</div>
+	<div class="mr-2">
 		<button class="btn btn-sm btn-outline-secondary view-request-types" {{! $item->types ? 'disabled' : null}} data-types="{{json_encode(unserialize($item->types))}}">Details</button>
 	</div>
 	<div>
