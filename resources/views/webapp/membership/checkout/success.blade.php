@@ -12,7 +12,7 @@
 	<div class="mb-5 pb-5 border-bottom">
 		<h1>@fa(['icon' => 'check-circle', 'fa_type' => 'r', 'color' => 'green', 'mr' => 0, 'size' => 'lg'])</h1>
 		<h2>CONGRATULATIONS!</h2>
-		<p class="mb-4">You have successfully subscribed to our Monthly Plan</p>
+		<p class="mb-4">You have successfully subscribed to PianoLIT</p>
 		@button(['label' => 'LET\'S GET STARTED', 'href' => route('webapp.discover'),
 			'styles' => [
 				'size' => 'wide', 

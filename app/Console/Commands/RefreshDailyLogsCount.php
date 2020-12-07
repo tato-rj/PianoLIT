@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Log\Loggers\DailyLog;
+use Illuminate\Support\Facades\Redis;
 
 class RefreshDailyLogsCount extends Command
 {
@@ -26,7 +27,7 @@ class RefreshDailyLogsCount extends Command
         }
 
         $this->redisPrefix = config('database.redis.prefix');
-        $this->logs = \Redis::keys($this->redisPrefix . 'user:*');
+        $this->logs = Redis::keys($this->redisPrefix . 'user:*');
         $this->logger = new DailyLog;
     }
 
@@ -58,7 +59,7 @@ class RefreshDailyLogsCount extends Command
 
     public function getRecords($log)
     {
-        return array_map('json_decode', \Redis::hgetall($log));
+        return array_map('json_decode', Redis::hgetall($log));
     }
 
     public function flushAll()

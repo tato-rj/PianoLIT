@@ -6,6 +6,7 @@ use App\{Admin, User, Piece, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Log\Loggers\DailyLog;
+use Illuminate\Support\Facades\Redis;
 use App\Stats\Stats;
 
 class UsersController extends Controller
@@ -79,8 +80,8 @@ class UsersController extends Controller
 
     public function purge(User $user)
     {
-        \Redis::del($user->redisKey('app'));
-        \Redis::del($user->redisKey('web'));
+        Redis::del($user->redisKey('app'));
+        Redis::del($user->redisKey('web'));
         \Artisan::call('redis:refresh-daily-logs');
 
         $user->delete();

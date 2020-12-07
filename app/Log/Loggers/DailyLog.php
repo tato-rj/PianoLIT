@@ -3,6 +3,7 @@
 namespace App\Log\Loggers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Redis;
 
 class DailyLog
 {
@@ -18,7 +19,7 @@ class DailyLog
 	{
 		$from = $date ? $date->format('Y-m-d') : null;
 
-        $logs = \Redis::keys($this->prefix . $this->namespace . $from . '*');
+        $logs = Redis::keys($this->prefix . $this->namespace . $from . '*');
 
         $records = collect();
 
@@ -91,7 +92,7 @@ class DailyLog
 
 	public function increment($log)
 	{
-		\Redis::incr($this->prefix . $this->namespace . $this->date . ':' . $this->getOrigin($log));
+		Redis::incr($this->prefix . $this->namespace . $this->date . ':' . $this->getOrigin($log));
 	}
 
 	public function namespace()
@@ -107,6 +108,6 @@ class DailyLog
 
         $origin = $array[count($array)-1];
 
-        return ['date' => $date, $origin => \Redis::get($key)];
+        return ['date' => $date, $origin => Redis::get($key)];
 	}
 }

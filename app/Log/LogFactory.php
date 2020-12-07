@@ -4,6 +4,7 @@ namespace App\Log;
 
 use Carbon\Carbon;
 use App\Log\Loggers\DailyLog;
+use Illuminate\Support\Facades\Redis;
 
 class LogFactory
 {
@@ -20,7 +21,7 @@ class LogFactory
 		$key = $this->prefix . $logger->getKey();
 		$value = [$timestamp => $logger->getData()];
 
-		\Redis::hmset($key, $value);
+		Redis::hmset($key, $value);
 
 		(new DailyLog)->getDate($timestamp)->increment($key);
 	}
@@ -82,7 +83,7 @@ class LogFactory
 
 	public function redisToArray($key, $type)
 	{
-		$log = array_map('json_decode', \Redis::hgetall($key . $type));
+		$log = array_map('json_decode', Redis::hgetall($key . $type));
 
 		krsort($log);
 
@@ -91,6 +92,6 @@ class LogFactory
 
 	public function total($type = 'user')
 	{
-		return count(\Redis::keys($type . ':*'));
+		return count(Redis::keys($type . ':*'));
 	}
 }

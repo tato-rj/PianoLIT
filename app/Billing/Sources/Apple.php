@@ -71,7 +71,7 @@ class Apple extends PianoLit implements BillingSource
         if (empty($request->receipt) || empty($request->latest_receipt_info))
         	abort(400, $this->appleError($request->status));
 
-		$latest_receipt = array_key_exists('expires_date', $request->latest_receipt_info) ? 
+		$latest_receipt = property_exists($request->latest_receipt_info, 'expires_date') ? 
 			$request->latest_receipt_info : null;
 
         if (! $latest_receipt) {

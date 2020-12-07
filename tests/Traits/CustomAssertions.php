@@ -2,11 +2,13 @@
 
 namespace Tests\Traits;
 
+use Illuminate\Support\Facades\Redis;
+
 trait CustomAssertions
 {
 	public function assertRedisContains($redisKey, $logKey, $logValue)
 	{
-        $log = array_map('json_decode', \Redis::hgetall($this->redisPrefix . $redisKey));
+        $log = array_map('json_decode', Redis::hgetall($this->redisPrefix . $redisKey));
 
         krsort($log);
 
@@ -16,7 +18,7 @@ trait CustomAssertions
 
 	public function assertRedisNotContains($redisKey, $logKey, $logValue)
 	{
-        $log = array_map('json_decode', \Redis::hgetall($this->redisPrefix . $redisKey));
+        $log = array_map('json_decode', Redis::hgetall($this->redisPrefix . $redisKey));
 
         krsort($log);
 
@@ -26,21 +28,21 @@ trait CustomAssertions
 
 	public function assertRedisHas($key)
 	{
-		$exists = (bool) \Redis::exists($this->redisPrefix . $key);
+		$exists = (bool) Redis::exists($this->redisPrefix . $key);
 
 		return $this->assertTrue($exists, 'Failed asserting that the key ' . $key . ' was pushed to Redis.');
 	}
 
 	public function assertRedisMissing($key)
 	{
-		$exists = (bool) \Redis::exists($this->redisPrefix . $key);
+		$exists = (bool) Redis::exists($this->redisPrefix . $key);
 
 		return $this->assertFalse($exists, 'The key ' . $key . ' was pushed to Redis.');
 	}
 
 	public function assertRedisEmpty()
 	{
-		$exists = (bool) \Redis::keys($this->redisPrefix . '*');
+		$exists = (bool) Redis::keys($this->redisPrefix . '*');
 
 		return $this->assertFalse($exists, 'Failed asserting that Redis is empty.');
 	}

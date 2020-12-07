@@ -41,16 +41,21 @@ class eScore extends Product implements Merchandise
         return $this->morphMany(Purchase::class, 'item');
     }
 
-    public function piece()
+    public function pieces()
     {
-        return $this->belongsTo(Piece::class);
+        return $this->belongsToMany(Piece::class);
+    }
+
+    public function ownTitle()
+    {
+        return view('shop.products.escores.title', ['escore' => $this]);
     }
 
     public function keywords()
     {
         $title = $this->title . ' sheet music';
 
-        $composer = $this->piece()->exists() ? $this->piece->composer->name . ' sheet music' : null;
+        $composer = $this->pieces()->exists() ? $this->piece->composer->name . ' sheet music' : null;
 
         $words = array_values(array_filter([$title, $composer]));
 

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Redis;
 use App\User;
 
 class CleanRedisLogs extends Command
@@ -41,7 +42,7 @@ class CleanRedisLogs extends Command
         $prefix = config('database.redis.prefix');
 
         if (testing() || $this->confirm('This will delete all records from any user who is no longer in our database. Are you sure?')) {
-            $records = \Redis::keys($prefix . 'user:*');
+            $records = Redis::keys($prefix . 'user:*');
 
             foreach ($records as $record) {
                 $array = explode(':', $record);
@@ -49,9 +50,9 @@ class CleanRedisLogs extends Command
                 foreach ($array as $value) {
                     if (is_numeric($value)) {
                         if (! User::find($value)) {
-                            \Redis::del($prefix . 'user:' . $value . ':app');
-                            \Redis::del($prefix . 'user:' . $value . ':web');
-                            \Redis::del($prefix . 'user:' . $value . ':webapp');
+                            Redis::del($prefix . 'user:' . $value . ':app');
+                            Redis::del($prefix . 'user:' . $value . ':web');
+                            Redis::del($prefix . 'user:' . $value . ':webapp');
                         }
 
                         break;

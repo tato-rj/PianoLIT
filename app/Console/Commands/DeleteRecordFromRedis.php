@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Redis;
 use App\User;
 
 class DeleteRecordFromRedis extends Command
@@ -42,9 +43,9 @@ class DeleteRecordFromRedis extends Command
             return $this->info('A user with id of ' . $this->argument('user_id') . ' does not exist.');
 
         if (testing() || $this->confirm('This will delete all records from ' . $user->full_name . '. Are you sure?')) {
-            \Redis::del($user->redisKey('app'));
-            \Redis::del($user->redisKey('web'));
-            \Redis::del($user->redisKey('webapp'));
+            Redis::del($user->redisKey('app'));
+            Redis::del($user->redisKey('web'));
+            Redis::del($user->redisKey('webapp'));
 
             return $this->info($user->first_name . '\'s logs have been removed.');
         }

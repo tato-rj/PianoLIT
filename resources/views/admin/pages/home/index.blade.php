@@ -51,7 +51,7 @@
         <div class="col-6">
           <div class="p-4 bg-light">
             <h6>iOS</h6>
-            @php($iosValue = ($iosMembers*50)/$iosUsers)
+            @php($iosValue = $iosUsers ? ($iosMembers*50)/$iosUsers : 0)
             <p>Number of users: {{$iosUsers}}</p>
             <p>Number of members: {{$iosMembers}}</p>
             <p>For every {{$iosMembers ? round($iosUsers/$iosMembers) : 0}} iOS users we get 1 membership</p>
@@ -62,7 +62,7 @@
         <div class="col-6">
           <div class="p-4 bg-light">
             <h6>WebApp</h6>
-            @php($webappValue = ($webappMembers*50)/$webappUsers)
+            @php($webappValue = $webappUsers ? ($webappMembers*50)/$webappUsers : 0)
             <p>Number of users: {{$webappUsers}}</p>
             <p>Number of members: {{$webappMembers}}</p>
             <p>For every {{$webappMembers ? round($webappUsers/$webappMembers) : 0}} WebApp users we get 1 membership</p>

@@ -8,7 +8,7 @@
 			@include('shop.components.cover')
 		</div>
 		<div class="col-lg-6 col-12 mt-3">
-			<h4 class="clamp-2 mb-3"><strong>{{$product->title}}</strong></h4>
+			@include('shop.components.title')
 			<div class="mb-3">
 				@include('shop.components.details')
 			</div>

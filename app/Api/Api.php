@@ -3,6 +3,7 @@
 namespace App\Api;
 
 use App\{Piece, Composer, Tag, Tutorial};
+use Illuminate\Support\Facades\Redis;
 use App\Blog\Post;
 
 class Api extends Factory
@@ -11,7 +12,7 @@ class Api extends Factory
 
 	public function discover()
 	{
-        $key = \Redis::get('app.discover');
+        $key = Redis::get('app.discover');
 
         $collection = \Cache::remember($key, days(1), function() {
             return collect([
@@ -38,18 +39,18 @@ class Api extends Factory
 
     public function post()
     {
-        $key = \Redis::get('app.blog-post');
+        // $key = Redis::get('app.blog-post');
 
-        $post = \Cache::remember($key, days(1), function() {
+        // $post = \Cache::remember($key, days(1), function() {
             return Post::published()->inRandomOrder()->first();
-        });
+        // });
 
-        return $post;
+        // return $post;
     }
 
     public function composersList()
     {
-        // $key = \Redis::get('app.allcomposers');
+        // $key = Redis::get('app.allcomposers');
 
         // $composers = \Cache::remember($key, days(1), function() {
             return Composer::atLeast(1)->with(['country', 'pieces'])->get()->sortBy('last_name')->values();
@@ -65,7 +66,7 @@ class Api extends Factory
 
     public function explore()
     {
-        $key = \Redis::get('app.explore');
+        $key = Redis::get('app.explore');
 
         $collection = \Cache::remember($key, days(1), function() {
             $categories = Tag::display()->groupBy('type')->forget(['period', 'level', 'season']);

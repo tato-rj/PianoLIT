@@ -3,7 +3,7 @@
 		<div>
 			@topics(['model' => $product])
 			<div>
-				<h4 class="mb-4 clamp-2"><strong>{{$product->title}}</strong></h4>
+				@include('shop.components.title')
 				@include('shop.components.highlights')
 			</div>
 			

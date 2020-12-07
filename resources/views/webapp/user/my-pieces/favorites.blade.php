@@ -1,6 +1,6 @@
-@env('local')
+{{-- @env('local')
 @include('webapp.user.my-pieces.favorites.index')
-@else
+@else --}}
 @if(auth()->user()->favorites()->exists())
 @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
 @endif
@@ -15,4 +15,4 @@
 		'subtitle' => 'Tap <i class="fas fa-heart"></i> to add a piece to your favorites'])
 @endforelse
 </section>
-@endenv
+{{-- @endenv --}}

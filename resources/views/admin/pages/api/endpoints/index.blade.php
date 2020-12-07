@@ -22,7 +22,7 @@
     <div class="row" id="endpoints" style="display: none;">
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
-        'route' => route('api.discover', ['user_id' => \App\User::tester()->id]), 
+        'route' => route('api.discover', ['user_id' => \App\User::tester()]), 
         'args' => ['user_id'],
         'title' => 'Discover tab'])
       
@@ -64,27 +64,27 @@
 
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
-        'route' => route('api.users.tutorial-requests.show', ['user_id' => \App\User::has('tutorialRequests')->first()->id]),
+        'route' => route('api.users.tutorial-requests.show', ['user_id' => \App\User::has('tutorialRequests')->first()]),
         'args' => ['user_id'], 
         'title' => 'Requested tutorials'])
 
       @include('admin.pages.api.endpoints.card', [
         'depricated' => true,
         'type' => 'GET', 
-        'route' => route('api.tutorial-requests', ['user_id' => \App\User::has('tutorialRequests')->first()->id]),
+        'route' => route('api.tutorial-requests', ['user_id' => \App\User::has('tutorialRequests')->first()]),
         'args' => ['user_id'], 
         'title' => 'Requested tutorials'])
 
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
-        'route' => route('api.users.favorites.show', ['user_id' => \App\User::has('favorites')->first()->id]),
+        'route' => route('api.users.favorites.show', ['user_id' => \App\User::has('favorites')->first()]),
         'args' => ['user_id'], 
         'title' => 'User favorites'])
       
       @include('admin.pages.api.endpoints.card', [
         'depricated' => true,
         'type' => 'POST', 
-        'route' => route('api.users.favorites.show', ['user_id' => \App\User::has('favorites')->first()->id]),
+        'route' => route('api.users.favorites.show', ['user_id' => \App\User::has('favorites')->first()]),
         'args' => ['user_id'], 
         'title' => 'User favorites'])
 
@@ -96,14 +96,14 @@
 
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
-        'route' => route('api.pieces.find', ['search' => \App\Piece::first()->id, 'user_id' => 1]),
+        'route' => route('api.pieces.find', ['search' => \App\Piece::first(), 'user_id' => 1]),
         'args' => ['search', 'user_id'], 
         'title' => 'Call for a single piece'])
 
       @include('admin.pages.api.endpoints.card', [
         'depricated' => true,
         'type' => 'POST', 
-        'route' => route('api.pieces.find', ['search' => \App\Piece::first()->id, 'user_id' => 1]),
+        'route' => route('api.pieces.find', ['search' => \App\Piece::first(), 'user_id' => 1]),
         'args' => ['search', 'user_id'], 
         'title' => 'Call for a single piece'])
       
@@ -127,7 +127,7 @@
       
       @include('admin.pages.api.endpoints.card', [
         'type' => 'POST', 
-        'route' => route('api.users.favorites.update', ['user_id' => \App\User::tester()->id, 'piece_id' => \App\Piece::first()->id]), 
+        'route' => route('api.users.favorites.update', ['user_id' => \App\User::tester(), 'piece_id' => \App\Piece::first()]), 
         'args' => ['user_id', 'piece_id'],
         'title' => 'Update user\'s favorites'])
 
@@ -145,13 +145,13 @@
 
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
-        'route' => route('api.playlists.show', ['playlist' => \App\Playlist::first(), 'user_id' => \App\User::tester()->id]), 
+        'route' => route('api.playlists.show', ['playlist' => \App\Playlist::first(), 'user_id' => \App\User::tester()]), 
         'args' => ['user_id'],
         'title' => 'Pieces from a playlist'])
 
       @include('admin.pages.api.endpoints.card', [
         'type' => 'POST', 
-        'route' => route('api.pieces.increment-views', ['user_id' => \App\User::tester()->id, 'piece_id' => \App\Piece::inRandomOrder()->first()->id]), 
+        'route' => route('api.pieces.increment-views', ['user_id' => \App\User::tester(), 'piece_id' => \App\Piece::inRandomOrder()->first()]), 
         'args' => ['user_id', 'piece_id'],
         'title' => 'Increment views for a piece'])
 
