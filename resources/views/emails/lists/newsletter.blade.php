@@ -1,13 +1,15 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
 
 @include('mail::newsletter.quote', [
-	'quote' => 'There are still so many beautiful things to be said in C Major',
-	'author' => 'S. Prokofiev'
+	'quote' => 'I have never written a note I didn’t mean',
+	'author' => 'E. Satie'
 ])
 
-<p>November has only started and is already being marked by coronavirus resurgence, political unrest around the world, and wonderful new music additions on the PianoLIT platform. Make sure to check out our newest pieces and don’t forget to update your app if you use iOS devices.</p>
+<p>We would like to use this month’s introduction to give a shoutout to <strong>A Seat at the Piano</strong> and the incredible work they are doing with their project.</p>
 
-<p>Head over to the <a href="https://my.pianolit.com/playlists" target="_blank">PianoLIT App</a> and start exploring our featured playlist “Scary vibes”.</p>
+<p>ASAP was founded in the summer of 2020 in the midst of social and racial reckoning around the world. Their mission is to promote and advocate for the inclusion, study, and performance of a more equitably representative body of piano works. With their website platform, they strive to raise the voices of those who are less heard and to inspire more thoughtful, inclusive programming within the performing and pedagogical spheres.</p>
+
+<p>Check their website <a href="https://www.aseatatthepiano.com/" target="_blank">here</a> 👏👏👏</p>
 
 @component('mail::panel')
 # How do you think we're doing?
@@ -18,48 +20,37 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 
 @component('mail::newsletter.section', [
 	'badge' => [
-		'name' => 'listen', 
+		'name' => 'webapp', 
 		'color' => 'orange',
-		'link' => 'https://www.youtube.com/watch?v=FSk7NulJWoA'
+		'link' => 'https://my.pianolit.com/pieces/859'
 	],
-	'title' => 'Birds'
+	'title' => 'Silent Night'
 ])
 
-<p>We’ve been directed to Bernstein’s own compositions by a PianoLIT user. After digesting his collections inspired by birds, we were quite frankly were amazed by this artist’s creativity. The first collection is a fantastic suite of 8 studies: the purple finch, the hummingbird, the woodpecker, the seagull, the chickadee, the vulture, the penguin, the eagle.</p>
-<p>The second volume follows the first with 9 more studies: myna bird, the swan, the robin, the owl, the roadrunner, the condor, the nightingale, the guinea hen, the phoenix. Some of them, like the swan, contain homages to previous composers like Saint-Saens (from Saint-Saens’ own Swan in the Carnival of the Animals).</p>
+<p>Max Reger was a German composer and teacher, active during the last years of the ‘800 and the first decades of the ‘900 and famous for his organ works. His opus 17 is a collection of 20 short pieces that brings back fond memories from the composer's youth, much like Schumann's Opus 15 "Scenes from Childhood". These are not easy pieces for beginners but rather inspired by the composer's memories.</p>
 
-<p><a href="https://www.youtube.com/watch?v=FSk7NulJWoA" class="text-md"><strong>Watch “The Roadrunner” by S. Bernstein</strong></a></p>
+<p>One piece in particular, is a rendition of the famous and beloved Silent Night. Here the right hand resembles the delicate sound of tiny bells accompanying the main theme. The coordination between the distinct rhythmic groups in the right hand and the melody in the left hand is the main challenge.</p>
 
-@endcomponent
+<p><a href="https://youtu.be/-4uwtdIKtmQ" class="text-md"><strong>Watch “Silent Night” by M. Reger</strong></a></p>
 
-@component('mail::newsletter.section', [
-	'badge' => [
-		'name' => 'eScore', 
-		'color' => 'green',
-		'link' => 'https://pianolit.com/escores/sewing-song-by-t-wiggins-blind-tom'
-	],
-	'title' => 'Sewing song by Thomas Wiggins'
-])
+<p><a href="https://pianolit.com/storage/app/score/pianolit-silent-night-in-a-major-from-from-childhood-op17-no9-4560.pdf" class="text-md"><strong>Get the score for FREE here
 
-<p>Born into slavery in Georgia, Thomas Wiggins' life was one of the most incredible and moving episodes in American history. Blind and autistic, and so unable to work with other slaves, Thomas found inspiration in the sounds of the natural world and music. The Sewing Song is an extraordinary piece that combines heartfelt and tender moments with fiery and passionate sections. The writing is clean and very pianistic, making this a great piece for late intermediate pianists.</p>
+</strong></a></p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/escores/sewing-song-by-t-wiggins-blind-tom'])
-Get eScore here
-@endcomponent
 @endcomponent
 
 @component('mail::newsletter.section', [
 	'badge' => [
 		'name' => 'read', 
 		'color' => 'pink',
-		'link' => 'https://pianolit.com/blog/music-intervals-in-a-nutshell'
+		'link' => 'https://pianolit.com/blog/classical-piano-music-like-clair-de-lune'
 	],
-	'title' => 'Music Intervals in a Nutshell'
+	'title' => 'Classical piano music like Clair de Lune'
 ])
 
-<p>The distance between two notes in music is just like the distances between objects in the "real world". Being familiar with this measuring system is fundamental to understanding how music works behind the curtains.</p>
+<p>Always loved Debussy's masterwork Clair de Lune and want to play something similar? You are in the right place. Keep on reading to discover new classical piano music like Clair de Lune.</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/blog/music-intervals-in-a-nutshell'])
+@component('mail::button', ['url' => 'https://pianolit.com/blog/classical-piano-music-like-clair-de-lune'])
 Check out this post
 @endcomponent
 
@@ -67,26 +58,44 @@ Check out this post
 
 @component('mail::newsletter.section', [
 	'badge' => [
-		'name' => 'infographic', 
-		'color' => 'yellow',
-		'link' => 'https://pianolit.com/resources/infographs/jsbachs-ornaments-table'
+		'name' => 'eScore', 
+		'color' => 'green',
+		'link' => 'https://pianolit.com/escores/sonata-in-f'
 	],
-	'title' => 'J.S.Bach\'s Ornaments Table'
+	'title' => 'Sonata in F by M.T. Agnesi'
 ])
 
-<p>J.S.Bach wrote this table in the "Klavierbüchlein für Wilhelm Friedemann Bach", a book he created for the keyboard education of his eldest son Wilhelm. This table is used to this day as a standard for baroque ornaments.</p>
+<p>The early decades of the Classical period were marked by vibrant, bold, and uplifting music. The writing was simple and the texture clean, providing incredible contrast to the music of the Baroque period that had just ended.</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/resources/infographs/jsbachs-ornaments-table'])
-Download the infographic for FREE!
+<p>This beautiful short sonata embodies the spirit of this generation and it will help you develop clean and even playing on the left hand, as well as nuanced scale passages on the right hand.</p>
+
+@component('mail::button', ['url' => 'https://pianolit.com/escores/sonata-in-f'])
+Get eScore here
 @endcomponent
 @endcomponent
 
-<h1 class="text-lg mb-4">True or False: All about Seymour Bernstein</h1>
+@component('mail::newsletter.section', [
+	'badge' => [
+		'name' => 'resource', 
+		'color' => 'yellow',
+		'link' => 'https://pianolit.com/composers/birthdays'
+	],
+	'title' => 'Don\'t miss out on the birthday of any of your favorite composers'
+])
+
+<p>Check out this free resource listing every composers’ birthday in a neat calendar. So that you never forget about their special day ever again!</p>
+
+@component('mail::button', ['url' => 'https://pianolit.com/composers/birthdays'])
+See who has birthday this month
+@endcomponent
+@endcomponent
+
+<h1 class="text-lg mb-4">True or False: Christmas music</h1>
 @include('mail::lists.numbered', ['items' => [
-	'<strong>He struggled with performance anxiety and quit the stage in 1977:</strong> TRUE | FALSE',
-	'<strong>He is featured in a documentary directed by Hollywood actor Ethan Hawke:</strong> TRUE | FALSE',
-	'<strong>He was born and raised in Newark, New Jersey:</strong> TRUE | FALSE',
-	'<strong>He is not into teaching and avoids playing or composing pedagogical music:</strong> TRUE | FALSE'
+	'<strong>Silent Night is a popular Austrian Christmas carol composed in 1818:</strong> TRUE | FALSE',
+	'<strong>During his career J.S. Bach always refused to compose any music that was Christmas related:</strong> TRUE | FALSE',
+	'<strong>Scriabin was born on Christmas Day:</strong> TRUE | FALSE',
+	'<strong>Liszt wrote a suite of 12 pieces called “The Christmas Tree” suite:</strong> TRUE | FALSE'
 ]])
 
 <div class="text-center mt-4">Find the answers at the bottom of the newsletter!</div>
@@ -104,30 +113,30 @@ Check out the PianoLIT WebApp
 <h1 class="text-lg mb-4">COOL FACTS TO SHARE THIS MONTH:</h1>
 
 @component('mail::panel')
-Interesting article on “Why you should still listen to classical music”. To share with your friends that avoid classical music at all costs.
+Ever wondered how Beethoven really looked like if you had the privilege to meet him in real life? Well, GC artist Hadi Karimi gives us a door into the past with his remarkable computer reconstruction of the artist’s bust.
 
-Read more <a href="https://medium.com/@manuel_brenner/why-you-should-still-be-listening-to-classical-music-e0429aef69a3" target="_blank">HERE</a>.
+Read more <a href="https://hadikarimi.com/portfolio/ludwig-van-beethoven-1815" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-Did you know about Sophie Menter, virtuoso pianist and composer (1846-1918)? She was known for her fiery temperament and brilliance as a performer. In Paris, her nickname was “l’incarnation de Liszt”. She also was Liszt’s student.
+Watch this opera singing cockatiel! 🦜
 
-Listen to her Mazurka, Op.6 <a href="https://www.youtube.com/watch?v=gUt8WUtC8EQ" target="_blank">HERE</a>.
+Check this out <a href="https://www.youtube.com/watch?v=QmpH-IgWW6Q&feature=emb_title" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-The Netflix “ta-dum” sound mark is one of all-time greats but doesn’t work as well in the theater because is only 3 seconds long. So Netflix commissioned Hans Zimmer to extend it for theaters. And it’s just…. so…. good!!
+Did you know the famed Steinway manufacturing plant is now making a piano designed in collaboration with Lenny Kravitz? We are not entirely sure how to feel about its look… but it would be more interesting to hear how it sounds. What do you think?
 
-Watch it <a href="https://www.youtube.com/watch?v=phG4_0MpT4M" target="_blank">HERE</a>.
+Read more about it <a href="https://www.steinway.com/pianos/steinway/limited-edition/kravitz-grand/?utm_source=vr&utm_medium=email&utm_campaign=201112" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-We all know how a great musician Mendelssohn is, but did you know he was also quite an incredible drafter and painter?
+To end with a good laugh! 😂
 
-Learn more about it <a href="https://www.loc.gov/item/ihas.200156435/" target="_blank">HERE</a>.
+Check it out <a href="https://www.instagram.com/p/CIOXUiBgjwj/" target="_blank">HERE</a>.
 @endcomponent
 
-<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. TRUE, 3. TRUE, 4. FALSE</div>
+<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. FALSE, 3. TRUE, 4. TRUE</div>
 
 <p>Here at PianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks to our users for having such great ideas.</p>
 
