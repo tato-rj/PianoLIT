@@ -144,6 +144,7 @@ class PiecesController extends Controller
             'audio_path' => $request->hasFile('audio') ? $request->file('audio')->store('app/audio', 'public') : null,
             'audio_path_rh' => $request->hasFile('audio_rh') ? $request->file('audio_rh')->store('app/audio_rh', 'public') : null,
             'audio_path_lh' => $request->hasFile('audio_lh') ? $request->file('audio_lh')->store('app/audio_lh', 'public') : null,
+            'is_attributed_to' => $request->is_attributed_to ? 1 : 0,
             'creator_id' => auth()->user()->id,
         ]);
 
@@ -213,6 +214,7 @@ class PiecesController extends Controller
             'composer_id' => $request->composer_id,
             'composed_in' => $request->composed_in,
             'published_in' => $request->published_in,
+            'is_attributed_to' => $request->is_attributed_to ? 1 : 0,
             'cover_path' => (new ImageUpload($request))->take('cover_image')
                                                        ->for($piece)
                                                        ->name(str_slug($piece->medium_name))

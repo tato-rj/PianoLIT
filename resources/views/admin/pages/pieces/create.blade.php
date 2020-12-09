@@ -37,14 +37,25 @@
             <div class="col">
               <input type="text" class="validate-name form-control" name="collection_name" placeholder="Collection name" value="{{ old('collection_name') }}">
             </div>
-            <div class="col">
-              <select class="form-control required {{$errors->has('composer_id') ? 'is-invalid' : ''}}" name="composer_id">
-                <option class="default" selected disabled>Composer</option>
-                @foreach($composers as $composer)
-                <option value="{{$composer->id}}" {{ old('composer_id') == $composer->id ? 'selected' : ''}}>{{$composer->short_name}}</option>
-                @endforeach
-              </select>
-              @include('admin.components.feedback', ['field' => 'composer_id'])
+            <div class="col d-flex">
+              <div class="flex-grow">
+                <select class="form-control required {{$errors->has('composer_id') ? 'is-invalid' : ''}}" name="composer_id">
+                  <option class="default" selected disabled>Composer</option>
+                  @foreach($composers as $composer)
+                  <option value="{{$composer->id}}" {{ old('composer_id') == $composer->id ? 'selected' : ''}}>{{$composer->short_name}}</option>
+                  @endforeach
+                </select>
+                @include('admin.components.feedback', ['field' => 'composer_id'])
+              </div>
+              <div class="pl-2 d-flex flex-column">
+                <label class="text-brand"><small>Attributed</small></label>
+                <div class="d-flex flex-center flex-grow">
+                  <label class="switch cursor-pointer">
+                    <input name="is_attributed_to" type="checkbox">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
           {{-- Catalogue and number --}}

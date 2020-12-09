@@ -170,7 +170,7 @@ abstract class Factory
         foreach ($collection as $model) {
             if (get_class($model) == 'App\Piece') {
                 $model->setAttribute('name', $model->medium_name);
-                $subtitle = $model->composer->short_name;
+                $subtitle = $model->attribution . $model->composer->short_name;
             } else {
                 $model->name = ucfirst($model->name);
                 $number = $model->pieces_count;

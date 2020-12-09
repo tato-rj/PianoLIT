@@ -55,6 +55,11 @@ trait PieceExtraAttributes
         return null;
     }
 
+    public function getAttributionAttribute()
+    {
+        return $this->is_attributed_to ? 'attr. ' : null;
+    }
+
     public function getLevelIdAttribute()
     {
         if ($this->level)

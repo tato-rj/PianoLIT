@@ -48,14 +48,25 @@
               <label class="text-brand"><small>Collection name</small></label>
               <input type="text" class="form-control" name="collection_name" placeholder="Collection name" value="{{$piece->collection_name}}">
             </div>
-            <div class="col">
-              <label class="text-brand"><small>Composer</small></label>
-              <select class="form-control" name="composer_id">
-                <option selected disabled>Composer</option>
-                @foreach($composers as $composer)
-                <option value="{{$composer->id}}" {{($piece->composer_id == $composer->id) ? 'selected' : ''}}>{{$composer->short_name}}</option>
-                @endforeach
-              </select>
+            <div class="col d-flex">
+              <div class="flex-grow">
+                <label class="text-brand"><small>Composer</small></label>
+                <select class="form-control" name="composer_id">
+                  <option selected disabled>Composer</option>
+                  @foreach($composers as $composer)
+                  <option value="{{$composer->id}}" {{($piece->composer_id == $composer->id) ? 'selected' : ''}}>{{$composer->short_name}}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="pl-2 d-flex flex-column">
+                <label class="text-brand"><small>Attributed</small></label>
+                <div class="d-flex flex-center flex-grow">
+                  <label class="switch cursor-pointer">
+                    <input name="is_attributed_to" type="checkbox" {{$piece->is_attributed_to ? 'checked' : null}}>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
           {{-- Catalogue and number --}}

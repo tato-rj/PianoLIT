@@ -14,7 +14,7 @@ class Piece extends PianoLit
     
     protected $folder = 'pieces';
     protected $withCount = ['views', 'tags', 'favorites', 'tutorials'];
-    protected $casts = ['is_free' => 'boolean'];
+    protected $casts = ['is_free' => 'boolean', 'is_attributed_to' => 'boolean'];
     protected $dates = ['highlighted_at'];
     protected $with = ['composer'];
     protected $appends = [

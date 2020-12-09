@@ -4,7 +4,7 @@
 	<div class="px-4">
 		@include('webapp.components.piece.level')
 		<h4 class="mt-2 mb-1">{{$piece->medium_name}}</h4>
-		<p class="text-muted">{{$piece->composer->name}}</p>
+		<p class="text-muted">{{$piece->attribution}}{{$piece->composer->name}}</p>
 	</div>
 
 	<button class="btn-raw position-absolute" type="More options"  
