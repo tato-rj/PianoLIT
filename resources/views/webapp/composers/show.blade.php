@@ -19,5 +19,5 @@
 
 <div class="text-center mb-2">
 	<a href="{{route('webapp.search.results', ['search' => $composer->name])}}" class="btn rounded-pill btn-default">
-		@fa(['icon' => 'folder-plus'])Discover {{possessive($composer->last_name)}} pieces</a>
+		@fa(['icon' => 'folder-plus'])Discover more pieces by {{$composer->short_name}}</a>
 </div>
