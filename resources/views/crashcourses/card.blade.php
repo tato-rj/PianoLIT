@@ -9,7 +9,7 @@
           <p class="m-0 text-muted"><i class="fas fa-envelope-open-text mr-2"></i>This course has {{$crashcourse->lessons_count}} {{ str_plural('lesson', $crashcourse->lessons_count) }}</p>
         </div>
 
-        <form method="POST" id="crashcourse-form" action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">
+        <form method="POST" id="crashcourse-form" disable-on-submit action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">
           @csrf
           @include('components.form.subscription.hidden', ['id' => 'crashcourse-form'])
           <input type="hidden" name="origin_url" value="{{url()->current()}}">
@@ -23,7 +23,7 @@
             </div>
             <div class="my-2">
               @include('auth.fields.recaptcha')
-              <button disable-on-submit type="submit" class="btn btn-primary btn-sm-block shadow btn-wide mb-2"><strong>START FREE COURSE!</strong></button>
+              <button type="submit" class="btn btn-primary btn-sm-block shadow btn-wide mb-2"><strong>START FREE COURSE!</strong></button>
               <div class="text-muted"><small>Ps: we'll never share your email with anyone</small></div>
             </div>
           </div>

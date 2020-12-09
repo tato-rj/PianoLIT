@@ -17,9 +17,11 @@ class CreateEScoresTable extends Migration
             $table->bigIncrements('id');
             $table->string('slug');
             $table->string('title');
+            $table->string('author')->nullable();
             $table->string('subtitle');
             $table->text('description');
             $table->string('pdf_path')->nullable();
+            $table->string('audio_path')->nullable();
             $table->string('cover_path')->nullable();
             $table->text('previews')->nullable();
             $table->integer('score')->default(0);
@@ -28,7 +30,6 @@ class CreateEScoresTable extends Migration
             $table->unsignedInteger('discount')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->unsignedInteger('creator_id');
-            $table->unsignedInteger('piece_id')->nullable();
             $table->timestamps();
         });
 

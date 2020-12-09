@@ -24,6 +24,8 @@ class eScore extends Product implements Merchandise
             $escore->topics()->detach();
             
             \Storage::disk('public')->delete($escore->cover_path);
+            \Storage::disk('public')->delete($escore->pdf_path);
+            \Storage::disk('public')->delete($escore->audio_path);
 
             foreach ($escore->previews as $preview) {
                 $escore->deletePreview($preview);        
@@ -41,23 +43,11 @@ class eScore extends Product implements Merchandise
         return $this->morphMany(Purchase::class, 'item');
     }
 
-    public function pieces()
-    {
-        return $this->belongsToMany(Piece::class);
-    }
-
-    public function ownTitle()
-    {
-        return view('shop.products.escores.title', ['escore' => $this]);
-    }
-
     public function keywords()
     {
         $title = $this->title . ' sheet music';
 
-        $composer = $this->pieces()->exists() ? $this->piece->composer->name . ' sheet music' : null;
-
-        $words = array_values(array_filter([$title, $composer]));
+        $words = array_values(array_filter([$title]));
 
         return arrayToSentence($words, ',', ',');
     }

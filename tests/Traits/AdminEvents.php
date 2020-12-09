@@ -4,7 +4,7 @@ namespace Tests\Traits;
 
 use App\Blog\Post;
 use App\Quiz\Quiz;
-use App\Shop\eBook;
+use App\Shop\{eBook, eScore};
 use App\Infograph\Infograph;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -25,6 +25,21 @@ trait AdminEvents
         $this->post(route('admin.ebooks.store'), $ebook->toArray());
 
         return eBook::byTitle($ebook->title);
+    }
+
+    public function storeEScore()
+    {
+        Storage::fake('public');
+        
+        $escore = make(eScore::class, [
+            'cover_image' => UploadedFile::fake()->image('cover.jpg'),
+            'audio_file' => UploadedFile::fake()->image('audio.mp4'),
+            'pdf_file' => UploadedFile::fake()->image('file.pdf')
+        ]);
+
+        $this->post(route('admin.escores.store'), $escore->toArray());
+
+        return eScore::byTitle($escore->title);
     }
 
     public function storeBlogPost()

@@ -45,8 +45,7 @@ class InfographicsController extends Controller
                                                        ->for(Infograph::class)
                                                        ->name(str_slug($form->name))
                                                        ->withThumbnail()
-                                                       ->upload(),
-            'published_at' => now()
+                                                       ->upload()
         ]);
 
         $infograph->topics()->attach($request->topics);
@@ -114,7 +113,7 @@ class InfographicsController extends Controller
 
         $infograph->topics()->sync($request->topics);
 
-        return redirect()->back()->with('status', 'The infograph has been successfuly updated!');    
+        return redirect(route('admin.infographs.edit', $infograph))->with('status', 'The infograph has been successfuly updated!');    
     }
 
     public function updateStatus(Infograph $infograph)

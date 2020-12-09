@@ -29,14 +29,4 @@ abstract class Product extends ShareableContent
 
         return arrayToSentence($words, ',', ',') . ',scores,sheet music';
 	}
-
-	public function own($attr)
-	{
-		$method = 'own' . ucfirst($attr);
-
-		if (method_exists($this, $method))
-			return $this->$method();
-
-		return null;
-	}
 }

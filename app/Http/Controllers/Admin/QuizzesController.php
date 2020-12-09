@@ -81,7 +81,7 @@ class QuizzesController extends Controller
 
         $quiz->topics()->sync($request->topics);
 
-        return redirect()->back()->with('status', 'The quiz has been successfuly updated!');
+        return redirect(route('admin.quizzes.edit', $quiz))->with('status', 'The quiz has been successfuly updated!');
     }
 
     public function topicUpdate(Request $request, Topic $topic)

@@ -59,15 +59,6 @@
               @endforeach
             @endif
           @endcomponent
-          {{-- @include('admin.pages.quizzes.question.layout') --}}
-        </div>
-
-        <div class="col-12 mb-4">
-          
-        </div>
-
-        <div class="col-12 mb-4">
-          
         </div>
 
         <div class="col-12 text-right">

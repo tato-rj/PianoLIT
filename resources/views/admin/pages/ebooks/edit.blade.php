@@ -77,52 +77,26 @@
         </div>
       </div>
       <div class="col-12">
-        @input(['bag' => 'default', 'value' => $ebook->title, 'name' => 'title', 'placeholder' => 'eBook title', 'limit' => 120])
-        @textarea(['bag' => 'default', 'value' => $ebook->subtitle, 'name' => 'subtitle', 'placeholder' => 'eBook subtitle', 'limit' => 238])
-        @input(['bag' => 'default', 'value' => $ebook->pages_count, 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
+        @input(['bag' => 'default', 'label' => 'Title', 'value' => $ebook->title, 'name' => 'title', 'placeholder' => 'eBook title', 'limit' => 120])        @input(['bag' => 'default', 'label' => 'Author(s)', 'value' => $ebook->author, 'name' => 'author', 'placeholder' => 'eBook author(s)', 'limit' => 120, 'required' => false])
+        @textarea(['bag' => 'default', 'label' => 'Short description', 'value' => $ebook->subtitle, 'name' => 'subtitle', 'placeholder' => 'eBook subtitle', 'limit' => 238])
+      </div>
+      <div class="col-4">
+        @input(['bag' => 'default', 'label' => 'Number of pages', 'value' => $ebook->pages_count, 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
+      </div>
+      <div class="col-4">
+        @input(['bag' => 'default', 'label' => 'Price in USD', 'value' => $ebook->price, 'type' => 'number', 'name' => 'price', 'placeholder' => 'eBook price', 'limit' => 200])
+      </div>
+      <div class="col-4">
+        @input(['bag' => 'default', 'label' => 'Discount', 'value' => $ebook->discount, 'type' => 'number', 'name' => 'discount', 'placeholder' => '% discount', 'limit' => 100, 'step' => 5, 'required' => false])
       </div>
       <div class="col">
-        @input(['bag' => 'default', 'value' => $ebook->price, 'type' => 'number', 'name' => 'price', 'placeholder' => 'eBook price', 'limit' => 200])
-        @input(['bag' => 'default', 'value' => $ebook->discount, 'type' => 'number', 'name' => 'discount', 'placeholder' => '% discount', 'limit' => 100, 'step' => 5, 'required' => false])
+        @file(['bag' => 'default', 'name' => 'cover_image', 'value' => $ebook->cover_path, 'label' => 'Cover image', 'required' => false])
       </div>
       <div class="col">
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <a class="input-group-text no-underline {{$ebook->cover_path ? 'text-success' : 'text-muted opacity-4'}}" href="{{storage($ebook->cover_path)}}" target="_blank">@fa(['icon' => 'file-image', 'mr' => 0])</a>
-            </div>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('cover_image') ? 'is-invalid' : ''}}" name="cover_image" id="cover-file">
-              <label class="custom-file-label truncate" for="cover-file">Cover image</label>
-            </div>
-          </div>
-        </div>
-
+        @file(['bag' => 'default', 'name' => 'pdf_file', 'value' => $ebook->pdf_path, 'label' => 'PDF', 'required' => false])
       </div>
-
       <div class="col">
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <a class="input-group-text no-underline {{$ebook->pdf_path ? 'text-success' : 'text-muted opacity-4'}}" href="{{storage($ebook->pdf_path)}}" target="_blank">@fa(['icon' => 'file-alt', 'mr' => 0])</a>
-            </div>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('pdf_file') ? 'is-invalid' : ''}}" name="pdf_file" id="pdf-file">
-              <label class="custom-file-label truncate" for="pdf-file">PDF file</label>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <a class="input-group-text no-underline {{$ebook->epub_path ? 'text-success' : 'text-muted opacity-4'}}" href="{{storage($ebook->epub_path)}}" target="_blank">@fa(['icon' => 'file-alt', 'mr' => 0])</a>
-            </div>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('epub_file') ? 'is-invalid' : ''}}" name="epub_file" id="epub-file">
-              <label class="custom-file-label truncate" for="epub-file">EPUB file</label>
-            </div>
-          </div>
-        </div>
+        @file(['bag' => 'default', 'name' => 'epub_file', 'value' => $ebook->epub_path, 'label' => 'ePUB', 'required' => false])
       </div>
 
       <div class="col-12 mb-4">

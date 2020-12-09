@@ -77,44 +77,27 @@
         </div>
       </div>
       <div class="col-12">
-        @input(['bag' => 'default', 'value' => $escore->title, 'name' => 'title', 'placeholder' => 'eScore title', 'limit' => 120])
-        @textarea(['bag' => 'default', 'value' => $escore->subtitle, 'name' => 'subtitle', 'placeholder' => 'eScore subtitle', 'limit' => 238])
+        @input(['bag' => 'default', 'label' => 'Title', 'value' => $escore->title, 'name' => 'title', 'placeholder' => 'eScore title', 'limit' => 120])
+        @input(['bag' => 'default', 'label' => 'Composer(s)', 'value' => $escore->author, 'name' => 'author', 'placeholder' => 'eScore composer(s)', 'limit' => 120, 'required' => false])
+        @textarea(['bag' => 'default', 'label' => 'Short description', 'value' => $escore->subtitle, 'name' => 'subtitle', 'placeholder' => 'eScore subtitle', 'limit' => 238])
       </div>
-      <div class="col"> 
-        @input(['bag' => 'default', 'value' => $escore->pages_count, 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
-        @input(['bag' => 'default', 'value' => $escore->piece_id, 'type' => 'number', 'name' => 'piece_id', 'placeholder' => 'Related piece ID', 'required' => false])
+      <div class="col-4"> 
+        @input(['bag' => 'default', 'label' => 'Number of pages', 'value' => $escore->pages_count, 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
+      </div>
+      <div class="col-4">
+        @input(['bag' => 'default', 'label' => 'Price in USD', 'value' => $escore->price, 'type' => 'number', 'name' => 'price', 'placeholder' => 'eScore price', 'limit' => 200])
+      </div>
+      <div class="col-4">
+        @input(['bag' => 'default', 'label' => 'Discount', 'value' => $escore->discount, 'type' => 'number', 'name' => 'discount', 'placeholder' => '% discount', 'limit' => 100, 'step' => 5, 'required' => false])
       </div>
       <div class="col">
-        @input(['bag' => 'default', 'value' => $escore->price, 'type' => 'number', 'name' => 'price', 'placeholder' => 'eScore price', 'limit' => 200])
-        @input(['bag' => 'default', 'value' => $escore->discount, 'type' => 'number', 'name' => 'discount', 'placeholder' => '% discount', 'limit' => 100, 'step' => 5, 'required' => false])
+        @file(['bag' => 'default', 'name' => 'cover_image', 'value' => $escore->cover_path, 'label' => 'Cover image', 'required' => false])
       </div>
       <div class="col">
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <a class="input-group-text no-underline {{$escore->cover_path ? 'text-success' : 'text-muted opacity-4'}}" href="{{storage($escore->cover_path)}}" target="_blank">@fa(['icon' => 'file-image', 'mr' => 0])</a>
-            </div>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('cover_image') ? 'is-invalid' : ''}}" name="cover_image" id="cover-file">
-              <label class="custom-file-label truncate" for="cover-file">Cover image</label>
-            </div>
-          </div>
-        </div>
-
+        @file(['bag' => 'default', 'name' => 'pdf_file', 'value' => $escore->pdf_path, 'label' => 'Pdf file', 'required' => false])
       </div>
-
       <div class="col">
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <a class="input-group-text no-underline {{$escore->pdf_path ? 'text-success' : 'text-muted opacity-4'}}" href="{{storage($escore->pdf_path)}}" target="_blank">@fa(['icon' => 'file-alt', 'mr' => 0])</a>
-            </div>
-            <div class="custom-file">
-              <input type="file" class="custom-file-input {{$errors->has('pdf_file') ? 'is-invalid' : ''}}" name="pdf_file" id="pdf-file">
-              <label class="custom-file-label truncate" for="pdf-file">PDF file</label>
-            </div>
-          </div>
-        </div>
+        @file(['bag' => 'default', 'name' => 'audio_file', 'value' => $escore->audio_path, 'label' => 'Audio file', 'required' => false])
       </div>
 
       <div class="col-12 mb-4">

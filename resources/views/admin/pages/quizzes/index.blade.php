@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    @datatable(['table' => 'quizzes', 'columns' => ['Date', 'Title', 'Number of questions', 'Status', '']])
+    @datatable(['table' => 'quizzes', 'columns' => ['Date', 'Title', 'Number of questions', 'Published', '']])
 
   </div>
 </div>

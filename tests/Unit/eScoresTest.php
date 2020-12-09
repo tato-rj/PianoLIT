@@ -23,12 +23,6 @@ class eScoresTest extends AppTest
 	}
 
 	/** @test */
-	public function it_has_many_pieces()
-	{
-		$this->assertInstanceOf(Piece::class, $this->escore->pieces->first());
-	}
-
-	/** @test */
 	public function it_has_many_purchases()
 	{
 		$this->signIn();

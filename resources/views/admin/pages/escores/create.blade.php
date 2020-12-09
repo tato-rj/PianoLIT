@@ -32,33 +32,26 @@
         </div>
         <div class="col-12">
           @input(['bag' => 'default', 'name' => 'title', 'placeholder' => 'eScore title', 'limit' => 120])
-          @textarea(['bag' => 'default', 'name' => 'subtitle', 'placeholder' => 'eScore subtitle', 'limit' => 238])
+          @input(['bag' => 'default', 'name' => 'author', 'placeholder' => 'eScore composer(s)', 'limit' => 120, 'required' => false])
+          @textarea(['bag' => 'default', 'name' => 'subtitle', 'placeholder' => 'eScore short description', 'limit' => 238])
         </div>
-        <div class="col">
+        <div class="col-4">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
-          @input(['bag' => 'default', 'type' => 'number', 'name' => 'piece_id', 'placeholder' => 'Related piece ID', 'required' => false])
         </div>
-        <div class="col">
+        <div class="col-4">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'price', 'placeholder' => 'eScore price', 'limit' => 200])
+        </div>
+        <div class="col-4">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'discount', 'placeholder' => '% discount', 'limit' => 100, 'step' => 5, 'required' => false])
         </div>
         <div class="col">
-          <div class="form-group">
-            <div class="custom-file">
-              <input type="file" required class="custom-file-input {{$errors->has('cover_image') ? 'is-invalid' : ''}}" name="cover_image" id="cover-file">
-              <label class="custom-file-label truncate" for="cover-file">Cover image</label>
-            </div>
-          </div>
-
+          @file(['bag' => 'default', 'name' => 'cover_image'])
         </div>
-
         <div class="col">
-          <div class="form-group">
-            <div class="custom-file">
-              <input type="file" required class="custom-file-input {{$errors->has('pdf_file') ? 'is-invalid' : ''}}" name="pdf_file" id="pdf-file">
-              <label class="custom-file-label truncate" for="pdf-file">PDF file</label>
-            </div>
-          </div>
+          @file(['bag' => 'default', 'name' => 'pdf_file'])
+        </div>
+        <div class="col">
+          @file(['bag' => 'default', 'name' => 'audio_file'])
         </div>
 
         <div class="col-12 mb-4">

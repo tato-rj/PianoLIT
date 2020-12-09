@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Files\Uploaders\ImageUpload;
 use App\Shop\{eBook, eBookTopic};
+use App\Http\Controllers\Traits\ManageFiles;
 
 class eBooksController extends Controller
 {
+    use ManageFiles;
+
     public function index()
     {
         if (request()->ajax())
@@ -33,10 +36,13 @@ class eBooksController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate(['title' => 'unique:e_books,title']);
+
         $ebook = eBook::create([
             'slug' => str_slug($request->title),
             'creator_id' => auth()->guard('admin')->user()->id,
             'title' => $request->title,
+            'author' => $request->author,
             'subtitle' => $request->subtitle,
             'description' => $request->description,
             'pages_count' => $request->pages_count,
@@ -46,10 +52,8 @@ class eBooksController extends Controller
                                                        ->for(eBook::class)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
-            'pdf_path' => $request->hasFile('pdf_file') ? 
-            	$request->file('pdf_file')->storeAs('app/ebooks/pdf', 'pianolit-'.str_slug($request->title).'-'.lastnchar(mt_rand(), 4).'.'.$request->file('pdf_file')->extension(), 'public') : null,
-            'epub_path' => $request->hasFile('epub_file') ? 
-            	$request->file('epub_file')->storeAs('app/ebooks/epub', 'pianolit-'.str_slug($request->title).'-'.lastnchar(mt_rand(), 4).'.'.$request->file('epub_file')->extension(), 'public') : null,
+            'pdf_path' => $this->hasFile('pdf_file')->upload('title', 'ebooks/pdf'),
+            'epub_path' => $this->hasFile('epub_file')->upload('title', 'ebooks/epub')
         ]);
         
         $ebook->topics()->attach($request->topics);
@@ -105,6 +109,7 @@ class eBooksController extends Controller
         $ebook->update([
             'slug' => str_slug($request->title),
             'title' => $request->title,
+            'author' => $request->author,
             'subtitle' => $request->subtitle,
             'description' => $request->description,
             'pages_count' => $request->pages_count,
@@ -114,24 +119,13 @@ class eBooksController extends Controller
                                                        ->for($ebook)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
+            'pdf_path' => $this->hasFile('pdf_file')->delete($ebook->pdf_path)->upload('title', 'escores/pdf'),
+            'epub_path' => $this->hasFile('epub_file')->delete($ebook->epub_path)->upload('title', 'escores/epub')
         ]);
-
-        $file_fields = ['pdf_path' => 'pdf_file','epub_path' => 'epub_file'];
-
-        foreach ($file_fields as $field => $file) {
-            $filetype = str_replace('_path', '', $field);
-            if ($request->hasFile($file)) {
-                \Storage::disk('public')->delete($ebook->$field);
-                $name = 'pianolit-'.str_slug($request->title) . '-' . lastnchar(mt_rand(), 4) . '.' . $request->file($file)->extension();
-                $ebook->$field = $request->file($file)->storeAs('app/ebooks/'.$filetype, $name, 'public');
-
-                $ebook->save();
-            }
-        }
 
         $ebook->topics()->sync($request->topics);
 
-        return redirect()->back()->with('status', 'The eBook has been successfuly updated!');
+        return redirect(route('admin.ebooks.edit', $ebook))->with('status', 'The eBook has been successfuly updated!');
     }
 
     public function updateStatus(eBook $ebook)

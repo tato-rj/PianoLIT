@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    @datatable(['table' => 'crash_courses', 'columns' => ['Date', 'Title', 'Number of lessons', 'Active subscriptions', 'Status', '']])
+    @datatable(['table' => 'crash_courses', 'columns' => ['Date', 'Title', 'Number of lessons', 'Active subscriptions', 'Published', '']])
 
   </div>
 </div>

@@ -17,6 +17,7 @@ class CreateEBooksTable extends Migration
             $table->bigIncrements('id');
             $table->string('slug');
             $table->string('title');
+            $table->string('author')->nullable();
             $table->string('subtitle');
             $table->text('description');
             $table->string('pdf_path')->nullable();

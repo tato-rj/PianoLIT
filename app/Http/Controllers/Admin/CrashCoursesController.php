@@ -92,7 +92,7 @@ class CrashCoursesController extends Controller
 
         $crashcourse->topics()->sync($request->topics);
 
-        return redirect()->back()->with('status', 'The course has been successfuly updated!');
+        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', 'The course has been successfuly updated!');
     }
 
     public function updateStatus(CrashCourse $crashcourse)

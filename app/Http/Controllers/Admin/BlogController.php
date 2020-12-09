@@ -70,7 +70,7 @@ class BlogController extends Controller
 
         $post->topics()->sync($request->topics);
 
-        return redirect()->back()->with('status', 'The post has been successfuly updated!');
+        return redirect(route('admin.posts.edit', $post))->with('status', 'The post has been successfuly updated!');
     }
 
     public function updateStatus(Post $post)

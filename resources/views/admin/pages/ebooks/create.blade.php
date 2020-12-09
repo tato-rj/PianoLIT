@@ -32,11 +32,16 @@
         </div>
         <div class="col-12">
           @input(['bag' => 'default', 'name' => 'title', 'placeholder' => 'eBook title', 'limit' => 120])
-          @textarea(['bag' => 'default', 'name' => 'subtitle', 'placeholder' => 'eBook subtitle', 'limit' => 238])
+          @input(['bag' => 'default', 'name' => 'author', 'placeholder' => 'eBook author(s)', 'limit' => 120, 'required' => false])
+          @textarea(['bag' => 'default', 'name' => 'subtitle', 'placeholder' => 'eBook short description', 'limit' => 238])
+        </div>
+        <div class="col-4">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
         </div>
-        <div class="col">
+        <div class="col-4">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'price', 'placeholder' => 'eBook price', 'limit' => 200])
+        </div>
+        <div class="col-4">
           @input(['bag' => 'default', 'type' => 'number', 'name' => 'discount', 'placeholder' => '% discount', 'limit' => 100, 'step' => 5, 'required' => false])
         </div>
         <div class="col">
@@ -48,7 +53,6 @@
           </div>
 
         </div>
-
         <div class="col">
           <div class="form-group">
             <div class="custom-file">
@@ -56,6 +60,8 @@
               <label class="custom-file-label truncate" for="pdf-file">PDF file</label>
             </div>
           </div>
+        </div>
+        <div class="col">
           <div class="form-group">
             <div class="custom-file">
               <input type="file" required class="custom-file-input {{$errors->has('epub_file') ? 'is-invalid' : ''}}" name="epub_file" id="epub-file">

@@ -25,6 +25,7 @@ class BladeServiceProvider extends ServiceProvider
     {
         \Blade::include('components.form.upload.image');
         \Blade::include('components.form.input');
+        \Blade::include('components.form.file');
         \Blade::include('components.form.label');
         \Blade::include('components.form.textarea');
         \Blade::include('components.form.options');

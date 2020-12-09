@@ -8,6 +8,7 @@ $factory->define(eBook::class, function (Faker $faker) {
     return [
         'slug' => str_slug($faker->sentence),
         'title' => $faker->sentence,
+        'author' => $faker->word,
         'subtitle' => $faker->sentence,
         'description' => $faker->sentence,
         'cover_path' => $faker->url,
@@ -38,6 +39,7 @@ $factory->define(eScore::class, function (Faker $faker) {
     return [
         'slug' => str_slug($faker->sentence),
         'title' => $faker->sentence,
+        'author' => $faker->word,
         'subtitle' => $faker->sentence,
         'description' => $faker->sentence,
         'cover_path' => $faker->url,

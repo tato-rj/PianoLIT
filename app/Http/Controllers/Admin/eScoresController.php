@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Files\Uploaders\ImageUpload;
 use App\Shop\{eScore, eScoreTopic};
+use App\Http\Controllers\Traits\ManageFiles;
 
 class eScoresController extends Controller
 {
+    use ManageFiles;
+
     public function index()
     {
         if (request()->ajax())
@@ -33,13 +36,15 @@ class eScoresController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate(['title' => 'unique:e_scores,title']);
+
         $escore = eScore::create([
             'slug' => str_slug($request->title),
             'creator_id' => auth()->guard('admin')->user()->id,
             'title' => $request->title,
+            'author' => $request->author,
             'subtitle' => $request->subtitle,
             'description' => $request->description,
-            'piece_id' => $request->piece_id,
             'pages_count' => $request->pages_count,
             'price' => $request->price,
             'discount' => $request->discount,
@@ -47,8 +52,8 @@ class eScoresController extends Controller
                                                        ->for(eScore::class)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
-            'pdf_path' => $request->hasFile('pdf_file') ? 
-            	$request->file('pdf_file')->storeAs('app/escores/pdf', 'pianolit-'.str_slug($request->title).'-'.lastnchar(mt_rand(), 4).'.'.$request->file('pdf_file')->extension(), 'public') : null
+            'pdf_path' => $this->hasFile('pdf_file')->upload('title', 'escores/pdf'),
+            'audio_path' => $this->hasFile('audio_file')->upload('title', 'escores/audio')
         ]);
         
         $escore->topics()->attach($request->topics);
@@ -104,9 +109,9 @@ class eScoresController extends Controller
         $escore->update([
             'slug' => str_slug($request->title),
             'title' => $request->title,
+            'author' => $request->author,
             'subtitle' => $request->subtitle,
             'description' => $request->description,
-            'piece_id' => $request->piece_id,
             'pages_count' => $request->pages_count,
             'price' => $request->price,
             'discount' => $request->discount,
@@ -114,24 +119,13 @@ class eScoresController extends Controller
                                                        ->for($escore)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
+            'pdf_path' => $this->hasFile('pdf_file')->delete($escore->pdf_path)->upload('title', 'escores/pdf'),
+            'audio_path' => $this->hasFile('audio_file')->delete($escore->audio_path)->upload('title', 'escores/audio')
         ]);
-
-        $file_fields = ['pdf_path' => 'pdf_file'];
-
-        foreach ($file_fields as $field => $file) {
-            $filetype = str_replace('_path', '', $field);
-            if ($request->hasFile($file)) {
-                \Storage::disk('public')->delete($escore->$field);
-                $name = 'pianolit-'.str_slug($request->title) . '-' . lastnchar(mt_rand(), 4) . '.' . $request->file($file)->extension();
-                $escore->$field = $request->file($file)->storeAs('app/escores/'.$filetype, $name, 'public');
-
-                $escore->save();
-            }
-        }
 
         $escore->topics()->sync($request->topics);
 
-        return redirect()->back()->with('status', 'The eScore has been successfuly updated!');
+        return redirect(route('admin.escores.edit', $escore))->with('status', 'The eScore has been successfuly updated!');
     }
 
     public function updateStatus(eScore $escore)
