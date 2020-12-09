@@ -14,7 +14,7 @@
 @section('content')
 <div class="container mb-5">
 	@pagetitle([
-		'title' => 'Birthdays', 
+		'title' => 'Composers Birthdays', 
 		'subtitle' => 'Don\'t miss out on the birthday of any of your favorite composers'])
 
 	<div class="border pt-3 pb-1 px-3 rounded">
