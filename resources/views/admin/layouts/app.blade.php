@@ -48,9 +48,9 @@
     <script type="text/javascript">
 $(window).bind('load', function() {
     $('#loading-overlay > div').addClass('animateSlideUpOut');
-    $('#loading-overlay').fadeOut(function() {
-            $(this).remove();
-    });
+    // $('#loading-overlay').fadeOut(function() {
+    //         $(this).remove();
+    // });
 });
     </script>
 
