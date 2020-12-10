@@ -14,7 +14,27 @@
     <link rel="stylesheet" type="text/css" href="{{mix('css/admin.css')}}">
     
     @include('admin.layouts.html.js-app')
+<style type="text/css">
+/* Works on Firefox */
+.navbar-nav {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.1) transparent;
+}
 
+/* Works on Chrome, Edge, and Safari */
+.navbar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.navbar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.navbar-nav::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.1);
+  border-radius: 20px;
+}
+</style>
     @yield('head')
   </head>
 
