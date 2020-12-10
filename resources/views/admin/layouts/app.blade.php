@@ -19,13 +19,14 @@
   </head>
 
   <body class="fixed-nav sticky-footer bg-dark" id="page-top">
+    @include('admin.components.loader')
     @include('admin.layouts.header.bar')
 
     @yield('content')
 
     {{-- @include('admin.layouts.footer') --}}
 
-    @include('admin.components.loader')
+    
     
     @if($message = session('status'))
     @alert([
