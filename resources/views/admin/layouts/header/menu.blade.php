@@ -110,7 +110,7 @@
       <li class="nav-item hide-on-collapse">
         <a class="nav-link position-relative notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" data-toggle="fixed-panel" data-target="#notifications-panel">
           @fa(['icon' => 'bell', 'classes' => 'notification-bell'])<span class="inline-on-collapse ml-1">Notifications</span>
-          <div class="notifications-count bg-white rounded-circle position-absolute font-weight-bold shadow-sm" style="bottom: 4px; right: 2px;">
+          <div class="notifications-count text-dark bg-white rounded-circle position-absolute font-weight-bold shadow-sm" style="bottom: 4px; right: 2px;">
             <div class="d-flex flex-center w-100 h-100">{{auth()->user()->unreadNotifications->count()}}</div>
           </div>
         </a>
