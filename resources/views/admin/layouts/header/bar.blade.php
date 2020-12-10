@@ -11,9 +11,12 @@
         </div>
       </a>
     </li>
-    <button class="border-0 navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <li class="nav-item inline-on-collapse">
+      <button class="btn-raw navbar-toggler navbar-toggler-right nav-link" type="button" data-toggle="collapse" data-target="#navbarResponsive">
+        @fa(['icon' => 'bars', 'mr' => 0, 'styles' => 'transform: translateY(1px)'])
+        {{-- <span class="navbar-toggler-icon"></span> --}}
+      </button>
+    </li>
   </div>
 
   @include('admin.layouts.header.menu')

@@ -39,6 +39,10 @@
     background-color: rgba(0,0,0,0.1)!important;
   }
 
+.navbar-toggler {
+  padding: 0!important;
+}
+
 @media (max-width:992px){
   .navbar {
     background-color: #f8f9fa;
