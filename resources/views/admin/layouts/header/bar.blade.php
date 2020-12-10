@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+<nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm" id="mainNav">
   <a class="navbar-brand mr-0" href="{{route('admin.home')}}">
     <img src="{{asset('images/brand/admin-icon.svg')}}" class="mr-2 shadow-sm">Piano<strong>LIT</strong> | Admin
   </a>
@@ -11,10 +11,8 @@
         </div>
       </a>
     </li>
-
-
     <button class="border-0 navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive">
-      <div class="animated-icon2"><span></span><span></span><span></span><span></span></div>
+      <span class="navbar-toggler-icon"></span>
     </button>
   </div>
 

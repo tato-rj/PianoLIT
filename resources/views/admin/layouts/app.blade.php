@@ -15,21 +15,6 @@
     
     @include('admin.layouts.html.js-app')
 <style type="text/css">
-.navbar {
-  background-color: #636f83;
-}
-
-.navbar-brand {
-  color: white!important;
-}
-
-.navbar-sidenav a:hover {
-  background-color: rgba(0,0,0,0.1)!important;
-}
-
-.navbar-nav:not(.navbar-sidenav) .nav-link {
-  color: white!important;
-}
 /* Works on Firefox */
 .navbar-nav {
   scrollbar-width: thin;
@@ -50,17 +35,29 @@
   border-radius: 20px;
 }
 
+  .navbar-sidenav a:hover {
+    background-color: rgba(0,0,0,0.1)!important;
+  }
+
 @media (max-width:992px){
-  .nav-link, .navbar-nav a {color: white!important;}
-  .nav-link {padding-left:8px!important; padding-right: 8px!important}
+  .navbar {
+    background-color: #f8f9fa;
+  }
+  .nav-link {padding: .8rem!important}
 }
 
-.animated-icon2 span {
-    background: white;
-}
+@media (min-width:992px){
+  .navbar {
+    background-color: #636f83;
+  }
 
-.animated-icon2 {
-    height: 17px;
+  .navbar-brand {
+    color: white!important;
+  }
+
+  .navbar-nav:not(.navbar-sidenav) .nav-link {
+    color: white!important;
+  }
 }
 </style>
     @yield('head')
