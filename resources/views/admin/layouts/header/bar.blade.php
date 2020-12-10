@@ -11,8 +11,10 @@
         </div>
       </a>
     </li>
+
+
     <button class="border-0 navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive">
-      <span class="navbar-toggler-icon"></span>
+      <div class="animated-icon2"><span></span><span></span><span></span><span></span></div>
     </button>
   </div>
 

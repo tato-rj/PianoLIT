@@ -37,17 +37,30 @@
 }
 
 /* Works on Chrome, Edge, and Safari */
-.navbar-nav::-webkit-scrollbar {
+.navbar-nav::-webkit-scrollbar, .navbar-collapse::-webkit-scrollbar {
   width: 6px;
 }
 
-.navbar-nav::-webkit-scrollbar-track {
+.navbar-nav::-webkit-scrollbar-track, .navbar-collapse::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.navbar-nav::-webkit-scrollbar-thumb {
+.navbar-nav::-webkit-scrollbar-thumb, .navbar-collapse::-webkit-scrollbar-thumb {
   background-color: rgba(0,0,0,0.1);
   border-radius: 20px;
+}
+
+@media (max-width:992px){
+  .nav-link, .navbar-nav a {color: white!important;}
+  .nav-link {padding-left:8px!important; padding-right: 8px!important}
+}
+
+.animated-icon2 span {
+    background: white;
+}
+
+.animated-icon2 {
+    height: 17px;
 }
 </style>
     @yield('head')
