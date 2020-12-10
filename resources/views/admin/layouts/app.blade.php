@@ -101,9 +101,16 @@
         $('#loading-overlay > div:last-child').addClass('animateLoader').parent().fadeOut();
       }
 
-window.addEventListener('beforeunload', function (e) {
-  showLoader();
-}); 
+      $(document).on('click', 'a', function() {
+        let link = $(this).attr('href');
+
+        if (! link.includes('#'))
+          showLoader();
+      });
+
+      $(document).on('submit', 'form', function() {
+        showLoader();
+      })
 
       $(window).bind('load', function() {
           hideLoader();
