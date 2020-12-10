@@ -1,10 +1,10 @@
-@keyframes slideUpOut {
+@keyframes loaderAnimation {
   from {transform: translateY(0); opacity: 1;}
-  to {transform: translateY(-100px); opacity: 0;}
+  to {transform: scale(1.4); opacity: 0;}
 }
 
-.animateSlideUpOut {
-  animation-name: slideUpOut;
+.animateLoader {
+  animation-name: loaderAnimation;
   animation-duration: 1s;
 }
 

@@ -68,12 +68,21 @@
     <script type="text/javascript" src="{{mix('js/admin.js')}}"></script>
 
     <script type="text/javascript">
-$(window).bind('load', function() {
-    $('#loading-overlay > div:last-child').addClass('animateSlideUpOut');
-    $('#loading-overlay').fadeOut(function() {
-        $(this).remove();
-    });
-});
+      function showLoader() {
+        $('#loading-overlay').find('>div').removeClass('animateLoader').parent().show();
+      }
+
+      function hideLoader() {
+        $('#loading-overlay > div:last-child').addClass('animateLoader').parent().fadeOut();
+      }
+
+      $(window).bind('beforeunload', function(){
+        showLoader();
+      });
+
+      $(window).bind('load', function() {
+          hideLoader();
+      });
     </script>
 
     @yield('scripts')
