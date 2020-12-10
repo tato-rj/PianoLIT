@@ -4,6 +4,6 @@
 		<div class="bg-primary h-100 position-absolute animateSwing" style="width: 20%; top: 0; left: -20%"></div>
 	</div>
 	<div class="h-100 w-100 d-flex flex-center">
-		@icon(['size' => '80px', 'admin' => true, 'classes' => 'shadow-light'])
+		@icon(['size' => '80px', 'admin' => true])
 	</div>
 </div>
