@@ -1,5 +1,5 @@
   <div class="collapse navbar-collapse" id="navbarResponsive">
-    <ul class="navbar-nav navbar-sidenav" style="overflow: hidden;">
+    <ul class="navbar-nav navbar-sidenav custom-scroll" >
 
       @editor
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'My profile', 'icon' => 'pencil-alt'])

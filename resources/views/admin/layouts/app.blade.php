@@ -20,6 +20,7 @@
 
   <body class="fixed-nav sticky-footer bg-dark" id="page-top">
     @include('admin.components.loader')
+
     @include('admin.layouts.header.bar')
 
     @yield('content')
@@ -48,10 +49,10 @@
 
     <script type="text/javascript">
 $(window).bind('load', function() {
-    // $('#loading-overlay > div').addClass('animateSlideUpOut');
-    // $('#loading-overlay').fadeOut(function() {
-    //         $(this).remove();
-    // });
+    $('#loading-overlay > div:last-child').addClass('animateSlideUpOut');
+    $('#loading-overlay').fadeOut(function() {
+        $(this).remove();
+    });
 });
     </script>
 
