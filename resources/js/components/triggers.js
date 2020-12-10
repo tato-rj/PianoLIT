@@ -6,10 +6,6 @@ $('.no-click').bind('contextmenu', function(e) {
     return false;
 }); 
 
-$('[full-load]').on('click', function() {
-	$('#loading-overlay').show();
-});
-
 $('form[submit-on-enter] input').keypress(function(e) {
     if (e.which == 13) {
     	console.log('Submitting the form on enter');

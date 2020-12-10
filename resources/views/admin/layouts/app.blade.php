@@ -23,9 +23,9 @@
 
     @yield('content')
 
-    @include('admin.layouts.footer')
+    {{-- @include('admin.layouts.footer') --}}
 
-    @include('components.loaders.fullpage')
+    @include('admin.components.loader')
     
     @if($message = session('status'))
     @alert([
@@ -44,6 +44,15 @@
     @endif
 
     <script type="text/javascript" src="{{mix('js/admin.js')}}"></script>
+
+    <script type="text/javascript">
+$(window).bind('load', function() {
+    $('#loading-overlay > div').addClass('animateSlideUpOut');
+    $('#loading-overlay').fadeOut(function() {
+            $(this).remove();
+    });
+});
+    </script>
 
     @yield('scripts')
   </body>

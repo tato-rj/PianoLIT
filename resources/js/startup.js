@@ -29,11 +29,7 @@ $(document).ready(function() {
     });
 });
 
-$(window).bind('load', function() {
-    $('#load-screen').fadeOut(function() {
-        $(this).remove();
-    });
-});
+
 
 $(document).on('click', '#reload', function() {
     window.location = window.location.href.split("?")[0];

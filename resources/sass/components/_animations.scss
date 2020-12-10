@@ -1,5 +1,17 @@
+@keyframes slideUpOut {
+  from {transform: translateY(0); opacity: 1;}
+  to {transform: translateY(-100px); opacity: 0;}
+}
+
+.animateSlideUpOut {
+  animation-name: slideUpOut;
+  animation-duration: 1s;
+}
+
 .sk-folding-cube {
   margin: 20px auto;
+  width: 40px;
+  height: 40px;
   position: relative;
   -webkit-transform: rotateZ(45deg);
           transform: rotateZ(45deg);
@@ -21,7 +33,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #e7ebee;
+  background-color: $brand-primary;
   -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
           animation: sk-foldCubeAngle 2.4s infinite linear both;
   -webkit-transform-origin: 100% 100%;

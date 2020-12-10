@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-  <a class="navbar-brand mr-0" full-load href="{{route('admin.home')}}">
+  <a class="navbar-brand mr-0" href="{{route('admin.home')}}">
     <img src="{{asset('images/brand/admin-icon.svg')}}" class="mr-2 shadow-sm">Piano<strong>LIT</strong> | Admin
   </a>
   <div>

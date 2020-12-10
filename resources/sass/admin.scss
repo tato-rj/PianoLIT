@@ -1,5 +1,7 @@
 @import "~bootstrap/scss/bootstrap";
 @import "~jquery-ui-bundle/jquery-ui.min";
+@import "variables";
+
 @import "components/datatables";
 @import "components/panel";
 @import "components/toggle";
@@ -9,17 +11,16 @@
 @import "components/sort";
 @import "components/notifications";
 @import "components/tabs";
-@import "variables";
 
 // Custom Variables
 $body-bg: #e9ecef;
-$brand-primary: #2e5ab9;
 
-@import "brand/fonts";
-@import "brand/colors";
 @import "bootstrap-custom";
 @import "responsive";
 @import "global";
+@import "brand/buttons";
+@import "brand/colors";
+@import "brand/fonts";
 
 html {
 	background-color: white;
