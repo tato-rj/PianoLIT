@@ -6,6 +6,9 @@
       @endeditor
   
       @manager
+
+        @include('admin.layouts.header.divider', ['label' => 'TOOLS'])
+
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
         'dropdown' => [
           ['route' => route('admin.api.discover'), 'name' => 'App tabs'],
@@ -23,7 +26,7 @@
           ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],
         ]])
         
-        <div class="dropdown-divider hide-on-sm"></div>
+        @include('admin.layouts.header.divider', ['label' => 'PEOPLE'])
         
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
         'dropdown' => [
@@ -40,7 +43,7 @@
           ['name' => 'Reports', 'route' => route('admin.subscriptions.reports.index')]
         ]])
 
-        <div class="dropdown-divider hide-on-sm"></div>
+        @include('admin.layouts.header.divider', ['label' => 'PAID CONTENT'])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Repertoire', 'icon' => 'music',
         'dropdown' => [
@@ -51,11 +54,6 @@
           ['route' => route('admin.tags.index'), 'name' => 'Tags'],
         ]])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'play-circle',
-        'dropdown' => [
-          ['route' => route('admin.clips.index'), 'name' => 'Clips'],
-        ]])
-        
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Shop', 'icon' => 'shopping-cart',
         'dropdown' => [
           ['name' => 'eBooks', 'route' => route('admin.ebooks.index')],
@@ -65,7 +63,7 @@
           ['name' => 'eScore Topics', 'route' => route('admin.escores.topics.index')]
         ]])
 
-        <div class="dropdown-divider hide-on-sm"></div>
+        @include('admin.layouts.header.divider', ['label' => 'FREE CONTENT'])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Blog', 'icon' => 'newspaper',
         'dropdown' => [
@@ -96,8 +94,13 @@
           ['name' => 'Subscriptions', 'route' => route('admin.crashcourses.subscriptions.index')]
         ]])
 
-        <div class="dropdown-divider hide-on-sm"></div>
+        @include('admin.layouts.header.divider', ['label' => 'EXTRA'])
         
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'play-circle',
+        'dropdown' => [
+          ['route' => route('admin.clips.index'), 'name' => 'Clips'],
+        ]])
+
         @include('admin.layouts.header.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list-ul'])
       @endmanager
 

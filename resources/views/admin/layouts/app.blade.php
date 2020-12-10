@@ -48,6 +48,8 @@
     background-color: #f8f9fa;
   }
   .nav-link {padding: .8rem!important}
+
+  .navbar-nav .nav-item {border: 0!important;}
 }
 
 @media (min-width:992px){
