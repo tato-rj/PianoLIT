@@ -50,6 +50,11 @@
           ['route' => route('admin.pianists.index'), 'name' => 'Pianists'],
           ['route' => route('admin.tags.index'), 'name' => 'Tags'],
         ]])
+
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'play-circle',
+        'dropdown' => [
+          ['route' => route('admin.clips.index'), 'name' => 'Clips'],
+        ]])
         
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Shop', 'icon' => 'shopping-cart',
         'dropdown' => [
@@ -59,6 +64,8 @@
           ['name' => 'eScores', 'route' => route('admin.escores.index')],
           ['name' => 'eScore Topics', 'route' => route('admin.escores.topics.index')]
         ]])
+
+        <div class="dropdown-divider hide-on-sm"></div>
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Blog', 'icon' => 'newspaper',
         'dropdown' => [
@@ -88,23 +95,14 @@
           ['name' => 'Topics', 'route' => route('admin.crashcourses.topics.index')],
           ['name' => 'Subscriptions', 'route' => route('admin.crashcourses.subscriptions.index')]
         ]])
-        
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'play-circle',
-        'dropdown' => [
-          ['route' => route('admin.clips.index'), 'name' => 'Clips'],
-        ]])
 
+        <div class="dropdown-divider hide-on-sm"></div>
+        
         @include('admin.layouts.header.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list-ul'])
       @endmanager
 
     </ul>
-    <ul class="navbar-nav sidenav-toggler">
-      <li class="nav-item">
-        <a class="nav-link text-center" id="sidenavToggler">
-          <i class="fa fa-fw fa-angle-left"></i>
-        </a>
-      </li>
-    </ul>
+
     <ul class="navbar-nav ml-auto">
       <li class="nav-item hide-on-collapse">
         <a class="nav-link position-relative notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" data-toggle="fixed-panel" data-target="#notifications-panel">

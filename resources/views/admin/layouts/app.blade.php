@@ -15,6 +15,21 @@
     
     @include('admin.layouts.html.js-app')
 <style type="text/css">
+.navbar {
+  background-color: #636f83;
+}
+
+.navbar-brand {
+  color: white!important;
+}
+
+.navbar-sidenav a:hover {
+  background-color: rgba(0,0,0,0.1)!important;
+}
+
+.navbar-nav.ml-auto .nav-link {
+  color: white!important;
+}
 /* Works on Firefox */
 .navbar-nav {
   scrollbar-width: thin;
