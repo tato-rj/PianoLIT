@@ -102,6 +102,7 @@
       }
 
       $(window).bind('beforeunload', function(){
+        return 'test';
         showLoader();
       });
 
