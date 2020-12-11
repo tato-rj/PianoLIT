@@ -24,11 +24,11 @@ class AdminsController extends Controller
             'Users' => [User::upUntilLastWeek()->count(), User::count()],
             'Subscribers' => [Subscription::upUntilLastWeek()->count(), Subscription::count()],
             'Pieces' => [Piece::upUntilLastWeek()->count(), Piece::count()],
-            'Quizzes' => [Quiz::upUntilLastWeek()->count(), Quiz::count()],
-            'Blog posts' => [Post::upUntilLastWeek()->count(), Post::count()],
-            'Infographics' => [Infograph::upUntilLastWeek()->count(), Infograph::count()],
-            'eBooks' => [eBook::upUntilLastWeek()->count(), eBook::count()],
-            'eScores' => [eScore::upUntilLastWeek()->count(), eScore::count()]
+            'Quizzes' => [Quiz::published()->upUntilLastWeek()->count(), Quiz::published()->count()],
+            'Blog posts' => [Post::published()->upUntilLastWeek()->count(), Post::published()->count()],
+            'Infographics' => [Infograph::published()->upUntilLastWeek()->count(), Infograph::published()->count()],
+            'eBooks' => [eBook::published()->upUntilLastWeek()->count(), eBook::published()->count()],
+            'eScores' => [eScore::published()->upUntilLastWeek()->count(), eScore::published()->count()]
         ]);
 
         $birthdays = Composer::bornToday()->get();
