@@ -1,5 +1,5 @@
 <div class="d-flex align-items-center mb-4">
-	<div class="bg-white rounded d-flex flex-center border mr-4" style="width: 60px; height: 60px">
+	<div class="bg-white rounded d-flex flex-center border mr-3" style="width: 60px; height: 60px; flex-shrink: 0">
 		<div>@fa(['icon' => $icon, 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
 	</div>
 	<div class="">
