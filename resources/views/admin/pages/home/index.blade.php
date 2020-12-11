@@ -29,9 +29,9 @@
           </div>
           <div class="col-lg-8 col-md-8 col-12 d-flex flex-column alert-grey">
             @foreach($userStats['platforms'] as $platform)
-            <div class="p-4 d-flex align-items-center d-flex flex-wrap d-apart {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
+            <div class="p-4 align-items-center d-md-flex flex-wrap justify-content-between {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
               <div class="mr-3">@fa($platform['icon']){{$platform['counts'][1]}} {{$platform['label']}} Users</div>
-              <div class="d-sm-block">
+              <div class="">
                 @if($platform['counts'][0] == $platform['counts'][1])
                 <small class="text-warning text-nowrap">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
                 @elseif($platform['counts'][0] > $platform['counts'][1])
