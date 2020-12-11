@@ -21,11 +21,15 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        $counts = collect([
-            ['label' => 'Users', 'counts' => [User::upUntilLastWeek()->count(), User::count()], 'url' => route('admin.users.index')],
-            ['label' => 'iOS Users', 'counts' => [User::byOrigin('ios')->upUntilLastWeek()->count(), User::byOrigin('ios')->count()], 'url' => route('admin.users.logs')],
-            ['label' => 'WebApp Users', 'counts' => [User::byOrigin('webapp')->upUntilLastWeek()->count(), User::byOrigin('webapp')->count()], 'url' => route('admin.users.logs')],
-            ['label' => 'Web Users', 'counts' => [User::byOrigin('web')->upUntilLastWeek()->count(), User::byOrigin('web')->count()], 'url' => route('admin.users.logs')],
+        $userStats = [
+            'all' => ['label' => 'Users', 'counts' => [User::upUntilLastWeek()->count(), User::count()], 'url' => route('admin.users.index')],
+            'platforms' => [
+                ['icon' => ['icon' => 'apple', 'fa_type' => 'b'],'label' => 'iOS', 'counts' => [User::byOrigin('ios')->upUntilLastWeek()->count(), User::byOrigin('ios')->count()], 'url' => route('admin.users.logs')],
+                ['icon' => ['icon' => 'bolt'],'label' => 'WebApp', 'counts' => [User::byOrigin('webapp')->upUntilLastWeek()->count(), User::byOrigin('webapp')->count()], 'url' => route('admin.users.logs')],
+                ['icon' => ['icon' => 'laptop'],'label' => 'Web', 'counts' => [User::byOrigin('web')->upUntilLastWeek()->count(), User::byOrigin('web')->count()], 'url' => route('admin.users.logs')]]
+        ];
+
+        $counts = [
             ['label' => 'Subscribers', 'counts' => [Subscription::upUntilLastWeek()->count(), Subscription::count()], 'url' => route('admin.subscriptions.index')],
             ['label' => 'Pieces', 'counts' => [Piece::upUntilLastWeek()->count(), Piece::count()], 'url' => route('admin.pieces.index')],
             ['label' => 'Quizzes', 'counts' => [Quiz::published()->upUntilLastWeek()->count(), Quiz::published()->count()], 'url' => route('admin.quizzes.index')],
@@ -35,7 +39,7 @@ class AdminsController extends Controller
             ['label' => 'eBooks', 'counts' => [eBook::published()->upUntilLastWeek()->count(), eBook::published()->count()], 'url' => route('admin.ebooks.index')],
             ['label' => 'eScores', 'counts' => [eScore::published()->upUntilLastWeek()->count(), eScore::published()->count()], 'url' => route('admin.escores.index')],
             ['label' => 'Crash Courses', 'counts' => [CrashCourse::published()->upUntilLastWeek()->count(), CrashCourse::published()->count()], 'url' => route('admin.crashcourses.index')],
-        ]);
+        ];
 
         $birthdays = Composer::bornToday()->get();
         $deathdays = Composer::diedToday()->get();
@@ -46,7 +50,7 @@ class AdminsController extends Controller
         $webappMembers = User::byOrigin('webapp')->has('membership')->count();
         $webappAveragePayment = Payment::sum('amount')/100;
 
-        return view('admin.pages.home.index', compact(['counts', 'birthdays', 'deathdays', 'iosUsers', 'iosMembers', 'webappUsers', 'webappMembers', 'webappAveragePayment']));
+        return view('admin.pages.home.index', compact(['userStats', 'counts', 'birthdays', 'deathdays', 'iosUsers', 'iosMembers', 'webappUsers', 'webappMembers', 'webappAveragePayment']));
     }
 
     /**

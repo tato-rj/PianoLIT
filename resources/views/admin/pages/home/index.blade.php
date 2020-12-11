@@ -11,6 +11,39 @@
 
       @manager
       <div class="container-fluid">
+        <div class="row no-gutters mb-4">
+          <div class="col-lg-4 col-md-4 col-12 bg-primary text-white d-flex flex-center p-4">
+            <div class="text-center">
+              <div class="opacity-6">Total number of users</div>
+              <h1 style="font-size: 3.6em; width: 86px; height: 86px; background-color: rgba(255,255,255,0.12)" class="rounded-circle d-flex flex-center my-3 mx-auto">{{$userStats['all']['counts'][1]}}</h1>
+              <div>
+                @if($userStats['all']['counts'][0] == $userStats['all']['counts'][1])
+                <span class="ext-warning">@fa(['icon' => 'exclamation-circle'])Same as last week</span>
+                @elseif($userStats['all']['counts'][0] > $userStats['all']['counts'][1])
+                <span class="ext-red">@fa(['icon' => 'arrow-down'])Down {{$userStats['all']['counts'][0] - $userStats['all']['counts'][1]}} from last week</span>
+                @else
+                <span class="ext-green">@fa(['icon' => 'arrow-up'])Up {{$userStats['all']['counts'][1] - $userStats['all']['counts'][0]}} from last week</span>
+                @endif
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8 col-md-8 col-12 d-flex flex-column">
+            @foreach($userStats['platforms'] as $platform)
+            <div class="p-4 alert-grey d-flex align-items-center d-flex flex-wrap d-apart {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
+              <div class="mr-3">@fa($platform['icon']){{$platform['counts'][1]}} {{$platform['label']}} Users</div>
+              <div>
+                @if($platform['counts'][0] == $platform['counts'][1])
+                <small class="text-warning">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
+                @elseif($platform['counts'][0] > $platform['counts'][1])
+                <small class="text-red">@fa(['icon' => 'arrow-down'])Down {{$platform['counts'][0] - $platform['counts'][1]}} from last week</small>
+                @else
+                <small class="text-green">@fa(['icon' => 'arrow-up'])Up {{$platform['counts'][1] - $platform['counts'][0]}} from last week</small>
+                @endif
+              </div>
+            </div>
+            @endforeach
+          </div>
+        </div>
         <div class="row mb-3">
         @foreach($counts as $stat)
           @include('admin.pages.home.card')
