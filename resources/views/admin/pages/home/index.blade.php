@@ -10,7 +10,7 @@
       @include('admin.pages.home.onthisday')
 
       @manager
-      <div class="container-fluid">
+      <div class="container-fluid px-2">
         <div class="row no-gutters mb-4">
           <div class="col-lg-4 col-md-4 col-12 bg-primary text-white d-flex flex-center p-4">
             <div class="text-center">
@@ -44,6 +44,8 @@
             @endforeach
           </div>
         </div>
+      </div>
+      <div class="container-fluid">
         <div class="row mb-3">
         @foreach($counts as $stat)
           @include('admin.pages.home.card')
