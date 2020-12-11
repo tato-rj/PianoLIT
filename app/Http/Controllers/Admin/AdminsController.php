@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\{User, Piece, Composer, Subscription};
 use App\Billing\Payment;
+use App\Infograph\Infograph;
 use App\Quiz\{Quiz, Level, QuizResult};
 use App\Quiz\Topic as QuizTopic;
+use App\Shop\{eBook, eScore};
 use App\Blog\Post;
 use App\Tools\Stats;
 use Illuminate\Http\Request;
@@ -18,17 +20,19 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        $pieces_count = Piece::count();
-        $composers_count = Composer::count();
-        $users_count = User::count();
-        $subscriptions_count = Subscription::count();
-        $quiz_results_count = QuizResult::count();
-        $blog_count = Post::count();
+        $counts = collect([
+            'Users' => [User::upUntilLastWeek()->count(), User::count()],
+            'Subscriptions' => [Subscription::upUntilLastWeek()->count(), Subscription::count()],
+            'Pieces' => [Piece::upUntilLastWeek()->count(), Piece::count()],
+            'Quizzes' => [Quiz::upUntilLastWeek()->count(), Quiz::count()],
+            'Blog posts' => [Post::upUntilLastWeek()->count(), Post::count()],
+            'Infographics' => [Infograph::upUntilLastWeek()->count(), Infograph::count()],
+            'eBooks' => [eBook::upUntilLastWeek()->count(), eBook::count()],
+            'eScores' => [eScore::upUntilLastWeek()->count(), eScore::count()]
+        ]);
 
         $birthdays = Composer::bornToday()->get();
         $deathdays = Composer::diedToday()->get();
-
-        $stats = (new Stats)->model(Subscription::class);
 
         $iosUsers = User::byOrigin('ios')->count();
         $iosMembers = User::byOrigin('ios')->has('membership')->count();
@@ -36,7 +40,7 @@ class AdminsController extends Controller
         $webappMembers = User::byOrigin('webapp')->has('membership')->count();
         $webappAveragePayment = Payment::sum('amount')/100;
 
-        return view('admin.pages.home.index', compact(['pieces_count', 'quiz_results_count', 'composers_count', 'users_count', 'subscriptions_count', 'blog_count', 'stats', 'birthdays', 'deathdays', 'iosUsers', 'iosMembers', 'webappUsers', 'webappMembers', 'webappAveragePayment']));
+        return view('admin.pages.home.index', compact(['counts', 'birthdays', 'deathdays', 'iosUsers', 'iosMembers', 'webappUsers', 'webappMembers', 'webappAveragePayment']));
     }
 
     /**

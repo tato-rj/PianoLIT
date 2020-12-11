@@ -74,7 +74,7 @@
 
     @include('admin.layouts.header.bar')
 
-    <div class="p-4">
+    <div class="px-2 py-3">
       @yield('content')
     </div>
 

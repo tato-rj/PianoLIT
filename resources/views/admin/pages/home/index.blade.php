@@ -10,46 +10,17 @@
       @include('admin.pages.home.onthisday')
 
       @manager
-      <div class="row mb-3">
-        @include('admin.pages.home.card', [
-          'color' => 'advanced',
-          'icon' => 'music',
-          'label' => $pieces_count . ' Pieces',
-          'url' => route('admin.pieces.index')])
-
-        @include('admin.pages.home.card', [
-          'color' => 'beginner',
-          'icon' => 'address-card',
-          'label' => $composers_count . ' Composers',
-          'url' => route('admin.composers.index')])
-
-        @include('admin.pages.home.card', [
-          'color' => 'elementary',
-          'icon' => 'book-open',
-          'label' => $quiz_results_count . ' Quiz results',
-          'url' => route('admin.quizzes.index')])
-
-        @include('admin.pages.home.card', [
-          'color' => 'intermediate',
-          'icon' => 'users',
-          'label' => $users_count . ' Users',
-          'url' => route('admin.users.logs')])
-
-        @include('admin.pages.home.card', [
-          'color' => 'elementary',
-          'icon' => 'at',
-          'label' => $subscriptions_count . ' Subscribers',
-          'url' => route('admin.subscriptions.index')])
-
-        @include('admin.pages.home.card', [
-          'color' => 'advanced',
-          'icon' => 'newspaper',
-          'label' => $blog_count . ' Blog posts',
-          'url' => route('admin.posts.index')])
-      
+      <div class="container-fluid">
+        <div class="row mb-3">
+        @foreach($counts as $label => $count)
+          @include('admin.pages.home.card', [
+                    'past' => $count[0],
+                    'current' => $count[1],
+                    'label' => $label])
+        @endforeach        
+        </div>
       </div>
-
-      <div class="row">
+{{--       <div class="row">
         <div class="col-6">
           <div class="p-4 bg-light">
             <h6>iOS</h6>
@@ -72,7 +43,7 @@
             <p>Each signup is worth about ${{number_format((float)$webappValue, 2, '.', '')}}</p>
           </div>
         </div>
-      </div>
+      </div> --}}
     
       @else
       <div class="row p-4">

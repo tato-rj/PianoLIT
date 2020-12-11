@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Traits\{HasMembership, Reportable, Loggable};
+use App\Traits\{HasMembership, Reportable, Loggable, ManageDates};
 use App\Shop\Contract\Merchandise;
 use App\Merchandise\Purchase;
 use App\Stats\User as UserStats;
@@ -15,7 +15,7 @@ use App\Billing\Factories\StripeFactory;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable, HasMembership, Reportable, Loggable;
+    use Notifiable, HasMembership, Reportable, Loggable, ManageDates;
 
     protected $guarded = [];
     protected $hidden = ['password', 'remember_token'];
