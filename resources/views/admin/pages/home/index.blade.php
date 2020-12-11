@@ -15,7 +15,7 @@
           <div class="col-lg-4 col-md-4 col-12 bg-primary text-white d-flex flex-center p-4">
             <div class="text-center">
               <div class="opacity-6">Total number of users</div>
-              <h1 style="font-size: 3.6em; width: 86px; height: 86px; background-color: rgba(255,255,255,0.12)" class="rounded-circle d-flex flex-center my-3 mx-auto">{{$userStats['all']['counts'][1]}}</h1>
+              <h1 style="font-size: 3.6em;" class="my-3 mx-auto">{{number_format($userStats['all']['counts'][1])}}</h1>
               <div>
                 @if($userStats['all']['counts'][0] == $userStats['all']['counts'][1])
                 <span class="ext-warning">@fa(['icon' => 'exclamation-circle'])Same as last week</span>
