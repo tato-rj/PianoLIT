@@ -4,6 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'music', 'title' => 'Tags', 'subtitle' => 'Manage all the tags used by pieces.'])
     
     <div class="row mb-3">
       <div class="col-12">

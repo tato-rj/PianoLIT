@@ -69,12 +69,14 @@
     @yield('head')
   </head>
 
-  <body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  <body class="fixed-nav sticky-footer" id="page-top">
     @include('admin.components.loader')
 
     @include('admin.layouts.header.bar')
 
-    @yield('content')
+    <div class="p-4">
+      @yield('content')
+    </div>
 
     {{-- @include('admin.layouts.footer') --}}
 

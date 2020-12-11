@@ -9,6 +9,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Activity Logs', 'subtitle' => 'See what the users are doing on every platform.'])
+
     <div class="row mb-4">
       <div class="col-12">
         @chart([

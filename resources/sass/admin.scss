@@ -21,8 +21,9 @@ $body-bg: #e9ecef;
 @import "brand/buttons";
 @import "brand/colors";
 @import "brand/fonts";
+@import "brand/corners";
 
-html {
+html, body {
 	background-color: white;
 }
 

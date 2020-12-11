@@ -9,6 +9,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'music', 'title' => 'Composers', 'subtitle' => 'Manage all the composers.'])
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center mb-4">
         <div>

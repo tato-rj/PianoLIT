@@ -10,6 +10,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Tutorial Requests', 'subtitle' => 'Manage the tutorials requested by the users.'])
     
     @datatable(['table' => 'requests', 'columns' => ['Date requested', 'Date published', 'Piece', 'User', '']])
 

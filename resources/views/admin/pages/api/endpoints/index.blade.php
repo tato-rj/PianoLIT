@@ -14,6 +14,7 @@
 
 <div class="content-wrapper">  
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'code', 'title' => 'Endpoints', 'subtitle' => 'Reference to all the endpoints used by the api.'])
     <div class="row mb-4">
       <div class="col-12">
         <input type="text" name="search-endpoint" placeholder="Search here" class="form-control ">

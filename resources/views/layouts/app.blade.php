@@ -110,44 +110,6 @@
             z-index: 1000;
         }
 
-        .rounded, .btn {
-            border-radius: 1rem !important;
-        }
-
-        input, textarea, select {
-            border-radius: 1rem;
-        }
-
-        .rounded-bottom, .rounded-left {
-            border-bottom-left-radius: 1rem!important;
-        }
-        .rounded-bottom, .rounded-right {
-            border-bottom-right-radius: 1rem!important;
-        }
-        .rounded-right, .rounded-top {
-            border-top-right-radius: 1rem!important;
-        }
-        .rounded-left, .rounded-top {
-            border-top-left-radius: 1rem!important;
-        }
-        
-        
-        .rounded-sm {
-            border-radius: .25rem!important;
-        }
-        .rounded-sm-bottom, .rounded-sm-left {
-            border-bottom-left-radius: .25rem!important;
-        }
-        .rounded-sm-bottom, .rounded-sm-right {
-            border-bottom-right-radius: .25rem!important;
-        }
-        .rounded-sm-right, .rounded-sm-top {
-            border-top-right-radius: .25rem!important;
-        }
-        .rounded-sm-left, .rounded-sm-top {
-            border-top-left-radius: .25rem!important;
-        }
-
         .grid {
             opacity: 0; 
             transform: translateY(20px);

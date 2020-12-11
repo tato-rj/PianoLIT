@@ -9,6 +9,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'music', 'title' => 'Playlists', 'subtitle' => 'Manage the playlists of pieces.'])
     <div class="row mb-3">
       <div class="col-12">
         @include('admin.pages.playlists.create')

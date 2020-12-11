@@ -5,6 +5,8 @@
   <div class="content-wrapper">
     <div class="container-fluid mb-3">
 
+      @include('admin.components.page.title', ['icon' => 'home', 'title' => 'Dashboard', 'subtitle' => 'Here\'s an overview of how things are going today.'])
+
       @include('admin.pages.home.onthisday')
 
       @manager

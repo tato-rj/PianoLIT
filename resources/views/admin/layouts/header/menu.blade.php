@@ -11,7 +11,7 @@
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
         'dropdown' => [
-          ['route' => route('admin.api.discover'), 'name' => 'App tabs'],
+          ['route' => route('admin.api.discover'), 'name' => 'Discover tab'],
           ['route' => route('admin.api.endpoints'), 'name' => 'Endpoints'],
         ]])
 
@@ -26,7 +26,7 @@
           ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],
         ]])
         
-        @include('admin.layouts.header.divider', ['label' => 'PEOPLE'])
+        @include('admin.layouts.header.divider', ['label' => 'ACQUISITION'])
         
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
         'dropdown' => [

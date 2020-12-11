@@ -7,6 +7,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Email Lists', 'subtitle' => 'Send out mass emails with the email lists.'])
 
     <div class="row">
       <div class="col-12 mb-4">
