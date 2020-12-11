@@ -33,11 +33,11 @@
               <div class="mr-3">@fa($platform['icon']){{$platform['counts'][1]}} {{$platform['label']}} Users</div>
               <div>
                 @if($platform['counts'][0] == $platform['counts'][1])
-                <small class="text-warning text-nowrap">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
+                <small class="text-warning text-nowrap ml-3">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
                 @elseif($platform['counts'][0] > $platform['counts'][1])
-                <small class="text-red text-nowrap">@fa(['icon' => 'arrow-down'])Down {{$platform['counts'][0] - $platform['counts'][1]}} from last week</small>
+                <small class="text-red text-nowrap ml-3">@fa(['icon' => 'arrow-down'])Down {{$platform['counts'][0] - $platform['counts'][1]}} from last week</small>
                 @else
-                <small class="text-green text-nowrap">@fa(['icon' => 'arrow-up'])Up {{$platform['counts'][1] - $platform['counts'][0]}} from last week</small>
+                <small class="text-green text-nowrap ml-3">@fa(['icon' => 'arrow-up'])Up {{$platform['counts'][1] - $platform['counts'][0]}} from last week</small>
                 @endif
               </div>
             </div>
