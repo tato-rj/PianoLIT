@@ -4,6 +4,6 @@
 	</div>
 	<div class="">
 		<h5 class="m-0">{{$title}}</h5>
-		<div class="text-muted">{{$subtitle}}</div>
+		<div class="text-muted hide-on-sm">{{$subtitle}}</div>
 	</div>
 </div>
