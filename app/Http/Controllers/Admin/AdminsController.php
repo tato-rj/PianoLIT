@@ -22,18 +22,19 @@ class AdminsController extends Controller
     public function home()
     {
         $counts = collect([
-            'Users' => [User::upUntilLastWeek()->count(), User::count()],
-            'iOS Users' => [User::byOrigin('ios')->upUntilLastWeek()->count(), User::byOrigin('ios')->count()],
-            'WebApp Users' => [User::byOrigin('webapp')->upUntilLastWeek()->count(), User::byOrigin('webapp')->count()],
-            'Web Users' => [User::byOrigin('web')->upUntilLastWeek()->count(), User::byOrigin('web')->count()],
-            'Subscribers' => [Subscription::upUntilLastWeek()->count(), Subscription::count()],
-            'Pieces' => [Piece::upUntilLastWeek()->count(), Piece::count()],
-            'Quizzes' => [Quiz::published()->upUntilLastWeek()->count(), Quiz::published()->count()],
-            'Blog posts' => [Post::published()->upUntilLastWeek()->count(), Post::published()->count()],
-            'Infographics' => [Infograph::published()->upUntilLastWeek()->count(), Infograph::published()->count()],
-            'eBooks' => [eBook::published()->upUntilLastWeek()->count(), eBook::published()->count()],
-            'eScores' => [eScore::published()->upUntilLastWeek()->count(), eScore::published()->count()],
-            'CrashCourses' => [CrashCourse::published()->upUntilLastWeek()->count(), CrashCourse::published()->count()]
+            ['label' => 'Users', 'counts' => [User::upUntilLastWeek()->count(), User::count()], 'url' => route('admin.users.index')],
+            ['label' => 'iOS Users', 'counts' => [User::byOrigin('ios')->upUntilLastWeek()->count(), User::byOrigin('ios')->count()], 'url' => route('admin.users.logs')],
+            ['label' => 'WebApp Users', 'counts' => [User::byOrigin('webapp')->upUntilLastWeek()->count(), User::byOrigin('webapp')->count()], 'url' => route('admin.users.logs')],
+            ['label' => 'Web Users', 'counts' => [User::byOrigin('web')->upUntilLastWeek()->count(), User::byOrigin('web')->count()], 'url' => route('admin.users.logs')],
+            ['label' => 'Subscribers', 'counts' => [Subscription::upUntilLastWeek()->count(), Subscription::count()], 'url' => route('admin.subscriptions.index')],
+            ['label' => 'Pieces', 'counts' => [Piece::upUntilLastWeek()->count(), Piece::count()], 'url' => route('admin.pieces.index')],
+            ['label' => 'Quizzes', 'counts' => [Quiz::published()->upUntilLastWeek()->count(), Quiz::published()->count()], 'url' => route('admin.quizzes.index')],
+
+            ['label' => 'Blog posts', 'counts' => [Post::published()->upUntilLastWeek()->count(), Post::published()->count()], 'url' => route('admin.posts.index')],
+            ['label' => 'Infographics', 'counts' => [Infograph::published()->upUntilLastWeek()->count(), Infograph::published()->count()], 'url' => route('admin.infographs.index')],
+            ['label' => 'eBooks', 'counts' => [eBook::published()->upUntilLastWeek()->count(), eBook::published()->count()], 'url' => route('admin.ebooks.index')],
+            ['label' => 'eScores', 'counts' => [eScore::published()->upUntilLastWeek()->count(), eScore::published()->count()], 'url' => route('admin.escores.index')],
+            ['label' => 'Crash Courses', 'counts' => [CrashCourse::published()->upUntilLastWeek()->count(), CrashCourse::published()->count()], 'url' => route('admin.crashcourses.index')],
         ]);
 
         $birthdays = Composer::bornToday()->get();

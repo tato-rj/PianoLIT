@@ -12,11 +12,8 @@
       @manager
       <div class="container-fluid">
         <div class="row mb-3">
-        @foreach($counts as $label => $count)
-          @include('admin.pages.home.card', [
-                    'past' => $count[0],
-                    'current' => $count[1],
-                    'label' => $label])
+        @foreach($counts as $stat)
+          @include('admin.pages.home.card')
         @endforeach        
         </div>
       </div>
