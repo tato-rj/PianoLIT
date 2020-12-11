@@ -31,13 +31,13 @@
             @foreach($userStats['platforms'] as $platform)
             <div class="p-4 d-flex align-items-center d-flex flex-wrap d-apart {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
               <div class="mr-3">@fa($platform['icon']){{$platform['counts'][1]}} {{$platform['label']}} Users</div>
-              <div>
+              <div class="d-sm-block">
                 @if($platform['counts'][0] == $platform['counts'][1])
-                <small class="text-warning text-nowrap ml-3">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
+                <small class="text-warning text-nowrap">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
                 @elseif($platform['counts'][0] > $platform['counts'][1])
-                <small class="text-red text-nowrap ml-3">@fa(['icon' => 'arrow-down'])Down {{$platform['counts'][0] - $platform['counts'][1]}} from last week</small>
+                <small class="text-red text-nowrap">@fa(['icon' => 'arrow-down'])Down {{$platform['counts'][0] - $platform['counts'][1]}} from last week</small>
                 @else
-                <small class="text-green text-nowrap ml-3">@fa(['icon' => 'arrow-up'])Up {{$platform['counts'][1] - $platform['counts'][0]}} from last week</small>
+                <small class="text-green text-nowrap">@fa(['icon' => 'arrow-up'])Up {{$platform['counts'][1] - $platform['counts'][0]}} from last week</small>
                 @endif
               </div>
             </div>
