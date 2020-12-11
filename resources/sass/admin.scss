@@ -15,13 +15,13 @@
 // Custom Variables
 $body-bg: #e9ecef;
 
+@import "brand/corners";
 @import "bootstrap-custom";
 @import "responsive";
 @import "global";
 @import "brand/buttons";
 @import "brand/colors";
 @import "brand/fonts";
-@import "brand/corners";
 
 html, body {
 	background-color: white;

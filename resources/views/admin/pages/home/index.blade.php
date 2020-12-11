@@ -11,7 +11,7 @@
 
       @manager
       <div class="container-fluid px-2">
-        <div class="row no-gutters mb-4">
+        <div class="row no-gutters mb-4" id="user-stats-overview">
           <div class="col-lg-4 col-md-4 col-12 bg-primary text-white d-flex flex-center p-4">
             <div class="text-center">
               <div class="opacity-6">Total number of users</div>
@@ -27,9 +27,9 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-8 col-md-8 col-12 d-flex flex-column">
+          <div class="col-lg-8 col-md-8 col-12 d-flex flex-column alert-grey">
             @foreach($userStats['platforms'] as $platform)
-            <div class="p-4 alert-grey d-flex align-items-center d-flex flex-wrap d-apart {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
+            <div class="p-4 d-flex align-items-center d-flex flex-wrap d-apart {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
               <div class="mr-3">@fa($platform['icon']){{$platform['counts'][1]}} {{$platform['label']}} Users</div>
               <div>
                 @if($platform['counts'][0] == $platform['counts'][1])

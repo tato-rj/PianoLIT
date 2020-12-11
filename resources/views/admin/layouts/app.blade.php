@@ -42,6 +42,19 @@
 .navbar-toggler {
   padding: 0!important;
 }
+@media (max-width:768px){
+  #user-stats-overview > div:first-child {
+      border-top-left-radius: 1rem;
+      border-bottom-left-radius: 0!important;
+      border-top-right-radius: 1rem;
+    }
+
+  #user-stats-overview > div:last-child {
+      border-bottom-left-radius: 1rem;
+      border-top-right-radius: 0!important;
+      border-bottom-right-radius: 1rem;
+  }
+}
 
 @media (max-width:992px){
   .navbar {
@@ -50,11 +63,31 @@
   .nav-link {padding: .8rem!important}
 
   .navbar-nav .nav-item {border: 0!important;}
+
+  #user-stats-overview > div:first-child {
+      border-top-left-radius: 1rem;
+      border-bottom-left-radius: 1rem;
+    }
+
+  #user-stats-overview > div:last-child {
+      border-top-right-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+  }
 }
 
-@media (min-width:992px){
+@media (min-width:992px) {
   .navbar {
     background-color: #636f83;
+  }
+
+  #user-stats-overview > div:first-child {
+      border-top-left-radius: 1rem;
+      border-bottom-left-radius: 1rem;
+    }
+
+  #user-stats-overview > div:last-child {
+      border-top-right-radius: 1rem;
+      border-bottom-right-radius: 1rem;
   }
 
   .navbar-brand {
@@ -65,6 +98,8 @@
     color: white!important;
   }
 }
+
+
 </style>
     @yield('head')
   </head>
