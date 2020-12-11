@@ -1,7 +1,7 @@
 <div class="col-lg-3 col-md-4 col-12 p-2">
   <div class="rounded shadow-light p-3">
     <div class="pb-2 border-bottom">
-      <strong>{{$current}}</strong> {{$label}}
+      <strong>{{number_format($current)}}</strong> {{$label}}
     </div>
     <div class="pt-2">
       @if($past == $current)
