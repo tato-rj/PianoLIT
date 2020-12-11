@@ -22,7 +22,7 @@ class AdminsController extends Controller
     {
         $counts = collect([
             'Users' => [User::upUntilLastWeek()->count(), User::count()],
-            'Subscriptions' => [Subscription::upUntilLastWeek()->count(), Subscription::count()],
+            'Subscribers' => [Subscription::upUntilLastWeek()->count(), Subscription::count()],
             'Pieces' => [Piece::upUntilLastWeek()->count(), Piece::count()],
             'Quizzes' => [Quiz::upUntilLastWeek()->count(), Quiz::count()],
             'Blog posts' => [Post::upUntilLastWeek()->count(), Post::count()],
