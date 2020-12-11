@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\{User, Piece, Composer, Subscription};
 use App\Billing\Payment;
 use App\Infograph\Infograph;
+use App\CrashCourse\CrashCourse;
 use App\Quiz\{Quiz, Level, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Shop\{eBook, eScore};
@@ -22,13 +23,17 @@ class AdminsController extends Controller
     {
         $counts = collect([
             'Users' => [User::upUntilLastWeek()->count(), User::count()],
+            'iOS Users' => [User::byOrigin('ios')->upUntilLastWeek()->count(), User::byOrigin('ios')->count()],
+            'WebApp Users' => [User::byOrigin('webapp')->upUntilLastWeek()->count(), User::byOrigin('webapp')->count()],
+            'Web Users' => [User::byOrigin('web')->upUntilLastWeek()->count(), User::byOrigin('web')->count()],
             'Subscribers' => [Subscription::upUntilLastWeek()->count(), Subscription::count()],
             'Pieces' => [Piece::upUntilLastWeek()->count(), Piece::count()],
             'Quizzes' => [Quiz::published()->upUntilLastWeek()->count(), Quiz::published()->count()],
             'Blog posts' => [Post::published()->upUntilLastWeek()->count(), Post::published()->count()],
             'Infographics' => [Infograph::published()->upUntilLastWeek()->count(), Infograph::published()->count()],
             'eBooks' => [eBook::published()->upUntilLastWeek()->count(), eBook::published()->count()],
-            'eScores' => [eScore::published()->upUntilLastWeek()->count(), eScore::published()->count()]
+            'eScores' => [eScore::published()->upUntilLastWeek()->count(), eScore::published()->count()],
+            'CrashCourses' => [CrashCourse::published()->upUntilLastWeek()->count(), CrashCourse::published()->count()]
         ]);
 
         $birthdays = Composer::bornToday()->get();
