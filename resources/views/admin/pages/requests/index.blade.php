@@ -3,7 +3,6 @@
 @section('head')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
-
 @endsection
 
 @section('content')
@@ -13,7 +12,6 @@
     @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Tutorial Requests', 'subtitle' => 'Manage the tutorials requested by the users.'])
     
     @datatable(['table' => 'requests', 'columns' => ['Date requested', 'Date published', 'Piece', 'User', '']])
-
   </div>
 </div>
 

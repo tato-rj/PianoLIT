@@ -11,7 +11,7 @@
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
         'dropdown' => [
-          ['route' => route('admin.api.discover'), 'name' => 'Discover tab'],
+          ['route' => route('admin.api.discover'), 'name' => 'Discover Tab'],
           ['route' => route('admin.api.endpoints'), 'name' => 'Endpoints'],
         ]])
 
@@ -33,13 +33,13 @@
           ['name' => 'Profiles', 'route' => route('admin.users.index')],
           ['name' => 'Activity Logs', 'route' => route('admin.users.logs')],
           ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')],
-          ['name' => 'Memberships logs', 'route' => route('admin.memberships.logs'), 'target' => '_blank']
+          ['name' => 'Memberships Logs', 'route' => route('admin.memberships.logs'), 'target' => '_blank']
         ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Subscriptions', 'icon' => 'envelope',
         'dropdown' => [
           ['name' => 'Subscribers', 'route' => route('admin.subscriptions.index')],
-          ['name' => 'Email lists', 'route' => route('admin.subscriptions.lists.index')],
+          ['name' => 'Email Lists', 'route' => route('admin.subscriptions.lists.index')],
           ['name' => 'Reports', 'route' => route('admin.subscriptions.reports.index')]
         ]])
 
@@ -70,7 +70,7 @@
           ['route' => route('admin.posts.index'), 'name' => 'Posts'],
           ['route' => route('admin.topics.index'), 'name' => 'Topics'],
           ['route' => route('admin.posts.audio.index'), 'name' => 'Audio'],
-          ['route' => route('admin.posts.gifts.index'), 'name' => 'Images'],
+          ['route' => route('admin.posts.gifts.index'), 'name' => 'Gifts'],
         ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Quizzes', 'icon' => 'question-circle',
@@ -98,7 +98,7 @@
         
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'play-circle',
         'dropdown' => [
-          ['route' => route('admin.clips.index'), 'name' => 'Clips'],
+          ['route' => route('admin.clips.index'), 'name' => 'Video Clips'],
         ]])
 
         @include('admin.layouts.header.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list-ul'])

@@ -33,6 +33,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">    
+    @include('admin.components.page.title', ['icon' => 'newspaper', 'title' => 'Blog Gifts', 'subtitle' => 'Manage the images used as gifts by blog posts.'])
     <div class="row mb-3">
       <div class="col-12">
         <form action="{{route('admin.posts.gifts.store')}}" class="dropzone" id="filesDropzone"></form>

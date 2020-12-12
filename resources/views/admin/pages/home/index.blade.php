@@ -10,22 +10,24 @@
       @include('admin.pages.home.onthisday')
 
       @manager
-      <div class="container-fluid px-2">
+      <div class="container-fluid px-0">
         <div class="row no-gutters mb-4" id="user-stats-overview">
-          <div class="col-lg-4 col-md-4 col-12 bg-primary text-white d-flex flex-center p-4">
-            <div class="text-center">
-              <div class="opacity-6">Total number of users</div>
-              <h1 style="font-size: 3.6em;" class="my-3 mx-auto">{{number_format($userStats['all']['counts'][1])}}</h1>
-              <div>
-                @if($userStats['all']['counts'][0] == $userStats['all']['counts'][1])
-                @fa(['icon' => 'exclamation-circle'])Same as last week
-                @elseif($userStats['all']['counts'][0] > $userStats['all']['counts'][1])
-                @fa(['icon' => 'arrow-down'])Down {{$userStats['all']['counts'][0] - $userStats['all']['counts'][1]}} from last week
-                @else
-                @fa(['icon' => 'arrow-up'])Up {{$userStats['all']['counts'][1] - $userStats['all']['counts'][0]}} from last week
-                @endif
+          <div class="col-lg-4 col-md-4 col-12 bg-primary text-white">
+            <a class="link-none w-100 h-100 d-flex flex-center" href="{{$userStats['all']['url']}}">
+              <div class="text-center py-4">
+                <div class="opacity-6">Total number of users</div>
+                <h1 style="font-size: 3.6em;" class="my-2 mx-auto">{{number_format($userStats['all']['counts'][1])}}</h1>
+                <div>
+                  @if($userStats['all']['counts'][0] == $userStats['all']['counts'][1])
+                  @fa(['icon' => 'exclamation-circle'])Same as last week
+                  @elseif($userStats['all']['counts'][0] > $userStats['all']['counts'][1])
+                  @fa(['icon' => 'arrow-down'])Down {{$userStats['all']['counts'][0] - $userStats['all']['counts'][1]}} from last week
+                  @else
+                  @fa(['icon' => 'arrow-up'])Up {{$userStats['all']['counts'][1] - $userStats['all']['counts'][0]}} from last week
+                  @endif
+                </div>
               </div>
-            </div>
+            </a>
           </div>
           <div class="col-lg-8 col-md-8 col-12 d-flex flex-column alert-grey">
             @foreach($userStats['platforms'] as $platform)
@@ -45,12 +47,10 @@
           </div>
         </div>
       </div>
-      <div class="container-fluid">
-        <div class="row mb-3">
+      <div class="row mb-3">
         @foreach($counts as $stat)
           @include('admin.pages.home.card')
-        @endforeach        
-        </div>
+        @endforeach
       </div>
 {{--       <div class="row">
         <div class="col-6">

@@ -9,17 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    <div class="row d-none d-sm-flex">
-      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <a href="{{route('admin.ebooks.create')}}" class="btn btn-sm btn-default">
-            <i class="fas fa-plus mr-2"></i>Create a new eBook
-          </a>
-        </div>
-        <div>
-          {{-- @include('admin.components.filters.blog', ['filters' => []]) --}}
-        </div>
-      </div>
+    @include('admin.components.page.title', ['icon' => 'shopping-cart', 'title' => 'eBooks', 'subtitle' => 'Manage all the eBooks available on the website.'])
+
+    <div class="mb-4">
+      <a href="{{route('admin.ebooks.create')}}" class="btn btn-sm btn-default">
+        <i class="fas fa-plus mr-2"></i>Create a new eBook
+      </a>
     </div>
 
     @datatable(['table' => 'ebooks', 'columns' => ['Date', 'Title', '# Purchases', 'Published', '']])

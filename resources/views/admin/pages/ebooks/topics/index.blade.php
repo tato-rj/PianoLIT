@@ -4,9 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'eBooks topics',
-    'description' => 'Manage the eBooks topics'])
+    @include('admin.components.page.title', ['icon' => 'shopping-cart', 'title' => 'eBook Topics', 'subtitle' => 'Manage the topics used by eBooks.'])
     
     <div class="row mb-3">
       <div class="col-12">

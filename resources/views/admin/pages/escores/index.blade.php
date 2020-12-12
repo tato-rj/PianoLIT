@@ -9,6 +9,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'shopping-cart', 'title' => 'eScores', 'subtitle' => 'Manage all the eScores available on the website.'])
     <div class="row d-none d-sm-flex">
       <div class="col-12 d-flex justify-content-between align-items-center mb-4">
         <div>

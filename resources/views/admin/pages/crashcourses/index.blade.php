@@ -9,6 +9,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'graduation-cap', 'title' => 'Crash Courses', 'subtitle' => 'Manage the crash courses available on the website.'])
     <div class="row mb-4">
         <div class="col-12">
           <a href="{{route('admin.crashcourses.create')}}" class="btn btn-sm btn-default mr-2">

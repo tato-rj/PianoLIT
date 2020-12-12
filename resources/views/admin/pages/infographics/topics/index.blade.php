@@ -4,9 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'Infographs topics',
-    'description' => 'Manage the infographs topics'])
+    @include('admin.components.page.title', ['icon' => 'pencil-ruler', 'title' => 'Infographic Topics', 'subtitle' => 'Manage the topics used by infographics.'])
     
     <div class="row mb-3">
       <div class="col-12">

@@ -9,17 +9,11 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    <div class="row d-none d-sm-flex">
-      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <a href="{{route('admin.posts.create')}}" class="btn btn-sm btn-default">
-            <i class="fas fa-plus mr-2"></i>Create a new post
-          </a>
-        </div>
-        <div>
-          @include('admin.components.filters.blog', ['filters' => []])
-        </div>
-      </div>
+    @include('admin.components.page.title', ['icon' => 'newspaper', 'title' => 'Blog', 'subtitle' => 'Manage the all the blog posts.'])
+    <div class="mb-4">
+      <a href="{{route('admin.posts.create')}}" class="btn btn-sm btn-default">
+        <i class="fas fa-plus mr-2"></i>Create a new post
+      </a>
     </div>
 
     @datatable(['table' => 'blog', 'columns' => ['Date', 'Title', 'Reading Time', 'Published', '']])

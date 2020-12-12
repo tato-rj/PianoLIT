@@ -33,6 +33,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">    
+    @include('admin.components.page.title', ['icon' => 'newspaper', 'title' => 'Blog Audio', 'subtitle' => 'Manage the audio used by blog posts.'])
     <div class="row mb-3">
       <div class="col-12">
         <form action="{{route('admin.posts.audio.store')}}" class="dropzone" id="filesDropzone"></form>
@@ -46,7 +47,7 @@
       </div>
       <div class="col-12">
         <div class="d-flex flex-wrap mb-2">
-          @each('components.blog.file', $audio, 'file')
+          @each('admin.pages.blog.components.file', $audio, 'file')
         </div>
       </div>
     </div>

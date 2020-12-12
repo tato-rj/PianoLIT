@@ -1,4 +1,4 @@
-<div class="col-lg-3 col-md-4 col-12 p-2">
+<div class="col-lg-3 col-md-4 col-12 mb-3">
   <div class="rounded border d-flex">
     <div class="flex-grow p-3">
       <div class="pb-2 border-bottom">

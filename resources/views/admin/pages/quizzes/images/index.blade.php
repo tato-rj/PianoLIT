@@ -10,6 +10,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'question-circle', 'title' => 'Quiz Images', 'subtitle' => 'Manage the images used by quizzes.'])
     
     <div class="row mb-3">
       <div class="col-12">

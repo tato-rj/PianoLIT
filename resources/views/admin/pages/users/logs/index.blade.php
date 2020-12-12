@@ -17,8 +17,6 @@
           'url' => route('admin.stats.users'),
           'chart' => 'line',
           'type' => 'logs',
-          'title' => 'Activity logs',
-          'subtitle' => 'Number of logs per day',
           'select' => [
             'logs_limit' => [
               ['label' => 'past 7 days', 'value' => 7],

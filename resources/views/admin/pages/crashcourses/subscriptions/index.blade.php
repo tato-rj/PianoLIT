@@ -9,6 +9,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'graduation-cap', 'title' => 'Crash Course Subscriptions', 'subtitle' => 'Manage subscriptions from the crash courses.'])
 
     @datatable(['table' => 'crash_course_subscriptions', 'columns' => ['Date', 'First Name', 'Email', 'Crash Course', 'Status', '']])
 

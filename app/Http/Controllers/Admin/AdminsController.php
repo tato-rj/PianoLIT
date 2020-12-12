@@ -22,7 +22,7 @@ class AdminsController extends Controller
     public function home()
     {
         $userStats = [
-            'all' => ['label' => 'Users', 'counts' => [User::upUntilLastWeek()->count(), User::count()], 'url' => route('admin.users.index')],
+            'all' => ['label' => 'Users', 'counts' => [User::upUntilLastWeek()->count(), User::count()], 'url' => route('admin.users.logs')],
             'platforms' => [
                 ['icon' => ['icon' => 'apple', 'fa_type' => 'b'],'label' => 'iOS', 'counts' => [User::byOrigin('ios')->upUntilLastWeek()->count(), User::byOrigin('ios')->count()], 'url' => route('admin.users.logs')],
                 ['icon' => ['icon' => 'bolt'],'label' => 'WebApp', 'counts' => [User::byOrigin('webapp')->upUntilLastWeek()->count(), User::byOrigin('webapp')->count()], 'url' => route('admin.users.logs')],

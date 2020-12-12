@@ -33,6 +33,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['icon' => 'question-circle', 'title' => 'Quiz Audio', 'subtitle' => 'Manage the audio used by quizzes.'])
     
     <div class="row mb-3">
       <div class="col-12">

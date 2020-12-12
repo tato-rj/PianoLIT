@@ -1,8 +1,12 @@
-<div id="stats-{{$type}}" data-url="{{$url}}" data-chart="{{$chart}}" class="border py-4 px-3">
+<div id="stats-{{$type}}" data-url="{{$url}}" data-chart="{{$chart}}" class="mb-4">
   <div class="mx-2 mb-4 d-flex justify-content-between">
     <div>
+      @isset($title)
       <h4 class="mb-1"><strong>{{$title}}</strong></h4>
+      @endisset
+      @isset($subtitle)
       <p class="m-0 text-grey">{{$subtitle ?? null}}</p>
+      @endisset
     </div>
     <div class="d-flex flex-wrap">
       @if(! empty($buttons))

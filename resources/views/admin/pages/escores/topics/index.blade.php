@@ -4,9 +4,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-  @include('admin.components.breadcrumb', [
-    'title' => 'eScores topics',
-    'description' => 'Manage the eScores topics'])
+    @include('admin.components.page.title', ['icon' => 'shopping-cart', 'title' => 'eScore Topics', 'subtitle' => 'Manage the topics used by eScores.'])
     
     <div class="row mb-3">
       <div class="col-12">
