@@ -11,7 +11,7 @@
 		</audio>
 		@endif
 		@if($question['image'])
-			<img src="{{asset($question['image'])}}" class="mt-3 w-100" style="max-width: 360px">
+			<img src="{{asset($question['image'])}}" class="mt-3 w-100" style="max-width: 542px">
 		@endif
 	</div>
 	<div class="quiz-answers">
