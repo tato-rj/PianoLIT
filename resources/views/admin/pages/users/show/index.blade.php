@@ -24,10 +24,6 @@
     @include('admin.pages.users.show.membership')
 
     @include('admin.pages.users.show.manage')
-
-    @if(app()->environment() == 'local')
-    @include('admin.pages.users.show.sandbox')
-    @endif
   </div>
 </div>
 

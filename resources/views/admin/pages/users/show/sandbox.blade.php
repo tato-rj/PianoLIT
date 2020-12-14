@@ -1,6 +1,5 @@
-<div class="row">
   @if($user->membership()->exists())
-  <div class="col-lg-4 col-md-4 col-sm-8 col-12 p-3">
+  <div class="col-lg-3 col-md-4 col-sm-8 col-12 p-3">
     <form method="POST" action="{{route('admin.memberships.destroy', $user->id)}}">
       @csrf
       @method('DELETE')
@@ -13,7 +12,7 @@
     </form>
   </div>
   @else
-  <div class="col-lg-4 col-md-4 col-sm-8 col-12 p-3">
+  <div class="col-lg-3 col-md-4 col-sm-8 col-12 p-3">
     <form method="POST" action="{{route('api.memberships.store')}}">
       <input type="hidden" name="receipt_data" value="fake-receipt-data">
       <input type="hidden" name="password" value="fake-password">
@@ -22,9 +21,8 @@
         <p class="mb-2">
           <strong><i class="fas fa-credit-card mr-2"></i>Create membership</strong>
         </p>
-        <span><small>Simulate a request for a new membership</small></span>
+        <span><small>Simulate a request</small></span>
       </div>
     </form>
   </div>
   @endif
-</div>
