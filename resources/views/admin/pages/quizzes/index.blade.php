@@ -14,20 +14,11 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'question-circle', 'title' => 'Quizzes', 'subtitle' => 'Manage the all the quizzes.'])
-
-    <div class="row d-none d-sm-flex">
-      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <a href="{{route('admin.quizzes.create')}}" class="btn btn-sm btn-default">
-            <i class="fas fa-plus mr-2"></i>Create a new quiz
-          </a>
-        </div>
-        <div>
-          {{-- @include('admin.components.filters.blog', ['filters' => []]) --}}
-        </div>
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'question-circle', 
+      'title' => 'Quizzes', 'subtitle' => 'Manage the all the quizzes.',
+      'action' => ['label' => 'Create a new quiz', 'url' => route('admin.quizzes.create')]
+    ])
 
     @datatable(['table' => 'quizzes', 'columns' => ['Date', 'Title', 'Number of questions', 'Published', '']])
 

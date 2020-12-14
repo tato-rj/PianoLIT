@@ -9,8 +9,18 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    
-    @include('components.return', ['url' => route('admin.subscriptions.lists.index'), 'to' => 'email lists'])
+    @include('admin.components.page.title', [
+      'icon' => 'users',
+      'title' => $list->name, 
+      'subtitle' => 'Use this page to edit the list '.$list->name.'.', 
+      'back' => ['view all lists' => route('admin.subscriptions.lists.index')]
+    ])
+
+    <div class="row mb-2">
+      <div class="col-12">
+        <div class="alert alert-warning text-center"><i class="fas fa-users"></i> This list has a total of <strong>{{$list->subscribers_count}}</strong> {{str_plural('subscriber', $list->subscribers_count)}}</div>
+      </div>
+    </div>
 
     <div class="row mb-4">
       <div class="col-12">
@@ -29,12 +39,6 @@
             </div>
           </div>
         </form>
-      </div>
-    </div>
-
-    <div class="row mb-2">
-      <div class="col-12">
-        <div class="alert alert-warning text-center"><i class="fas fa-users"></i> This list has a total of <strong>{{$list->subscribers_count}}</strong> {{str_plural('subscriber', $list->subscribers_count)}}</div>
       </div>
     </div>
 

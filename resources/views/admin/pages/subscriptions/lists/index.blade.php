@@ -7,15 +7,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Email Lists', 'subtitle' => 'Send out mass emails with the email lists.'])
-
-    <div class="row">
-      <div class="col-12 mb-4">
-        <div class="mb-4">
-        @include('admin.pages.subscriptions.lists.create')
-        </div>
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'users', 
+      'title' => 'Email Lists', 
+      'subtitle' => 'Send out mass emails with the email lists.',
+      'action' => ['label' => 'Create a new list', 'modal' => 'add-modal']
+    ])
 
     <div class="row">
       @foreach($lists as $list)
@@ -26,6 +23,7 @@
 </div>
 
 @include('admin.components.modals.delete')
+@include('admin.pages.subscriptions.lists.create')
 
 @endsection
 

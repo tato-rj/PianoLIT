@@ -6,7 +6,12 @@
 @section('content')
 <div class="content-wrapper">
   <div class="container-fluid">
-    @return(['url' => route('admin.users.index'), 'to' => 'view all users'])
+    @include('admin.components.page.title', [
+      'icon' => 'users', 
+      'title' => $user->full_name, 
+      'subtitle' => 'Use this page to view and manage '.possessive($user->first_name).' profile.', 
+      'back' => ['back to logs' => route('admin.users.logs'), 'view all' => route('admin.users.index')]
+    ])
 
     @include('admin.pages.users.show.profile')
 

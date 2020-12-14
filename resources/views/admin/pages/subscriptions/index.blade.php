@@ -9,7 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'envelope', 'title' => 'Subscriptions', 'subtitle' => 'Manage all email subscriptions.'])
+    @include('admin.components.page.title', [
+      'icon' => 'envelope', 
+      'title' => 'Subscriptions', 
+      'subtitle' => 'Manage all email subscriptions.',
+      'action' => ['label' => 'Add new emails', 'modal' => 'add-modal']
+    ])
 
     <div class="row">
       <div class="col-12 mb-4">

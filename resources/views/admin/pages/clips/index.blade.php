@@ -9,30 +9,19 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'play-circle', 'title' => 'Video Clips', 'subtitle' => 'Manage video clips to be used anywhere.'])
-    <div class="row">
-      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target="#add-modal">
-            <i class="fas fa-plus mr-2"></i>Create a new clip
-          </button>
-        </div>
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'play-circle', 
+      'title' => 'Video Clips', 
+      'subtitle' => 'Manage video clips to be used anywhere.',
+      'action' => ['label' => 'Create a new clip', 'modal' => 'add-modal']
+    ])
 
     @datatable(['table' => 'clips', 'columns' => ['Name', 'URL', '']])
 
   </div>
 </div>
 @include('admin.components.modals/delete')
-
-@component('admin.components.modals/add', ['model' => 'clip'])
-<form method="POST" action="{{route('admin.clips.store')}}">
-  @csrf
-  @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Name', 'limit' => 120])
-  @input(['bag' => 'default', 'name' => 'url', 'placeholder' => 'URL', 'limit' => 220])
-
-@endcomponent
+@include('admin.pages.clips.create')
 
 @endsection
 

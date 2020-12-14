@@ -9,14 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'graduation-cap', 'title' => 'Crash Courses', 'subtitle' => 'Manage the crash courses available on the website.'])
-    <div class="row mb-4">
-        <div class="col-12">
-          <a href="{{route('admin.crashcourses.create')}}" class="btn btn-sm btn-default mr-2">
-            <i class="fas fa-plus mr-2"></i>Create a new Crash Course
-          </a>
-        </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'graduation-cap', 
+      'title' => 'Crash Courses', 
+      'subtitle' => 'Manage the crash courses available on the website.',
+      'action' => ['label' => 'Create a new Crash Course', 'url' => route('admin.crashcourses.create')]
+    ])
 
     @datatable(['table' => 'crash_courses', 'columns' => ['Date', 'Title', 'Number of lessons', 'Active subscriptions', 'Published', '']])
 

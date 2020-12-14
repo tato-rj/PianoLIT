@@ -15,17 +15,24 @@ class SubscriptionsController extends Controller
             'origin_url' => 'required',
         ]);
 
-        $count = 0;
     	$emails = $this->clean($request->emails);
 
-    	foreach ($emails as $email) {
-    		if (valid_email($email)) {
-    			Subscription::createOrActivate((object) ['email' => $email, 'origin_url' => $request->origin_url], $notifyUser = false);
-    			$count += 1;
-    		}
-    	}
+        if ($failedEmail = $this->cannotProccess($emails, $request))
+            return back()->withErrors(['emails' => $failedEmail . ' is not a valid email.']);
 
-    	return back()->with('status', 'We subscribed or re-activated a total of ' . $count . ' ' . str_plural('email', $count) . '.');
+    	return back()->with('status', 'We subscribed or re-activated a total of ' . count($emails) . ' ' . str_plural('email', count($emails)) . '.');
+    }
+
+    public function cannotProccess($emails, $request)
+    {
+        foreach ($emails as $email) {
+            if (! valid_email($email))
+                return $email;
+        }
+
+        foreach ($emails as $email) {
+            Subscription::createOrActivate((object) ['email' => $email, 'origin_url' => $request->origin_url], $notifyUser = false);
+        }
     }
 
     public function export()

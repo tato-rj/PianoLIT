@@ -9,7 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'pencil-ruler', 'title' => 'Infographics', 'subtitle' => 'Manage the infographics available on the website.'])
+    @include('admin.components.page.title', [
+      'icon' => 'pencil-ruler', 
+      'title' => 'Infographics', 
+      'subtitle' => 'Manage the infographics available on the website.',
+      'action' => ['label' => 'Create a new infographic', 'url' => '']
+    ])
 
     <div class="row">
       <div class="col-12 mb-4">

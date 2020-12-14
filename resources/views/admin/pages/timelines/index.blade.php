@@ -35,13 +35,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'list-ul', 'title' => 'Timeline', 'subtitle' => 'Manage events used in the timeline.'])
-
-    <div class="row">
-      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-      @include('admin.pages.timelines.create')
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'list-ul', 
+      'title' => 'Timeline', 
+      'subtitle' => 'Manage events used in the timeline.',
+      'action' => ['label' => 'Create a new event', 'modal' => 'add-modal']
+    ])
 
     <div class="row">
       <div class="col-12 text-center mb-4">
@@ -60,6 +59,7 @@
 
 @include('admin.pages.timelines.edit')
 @include('admin.components.modals.delete')
+@include('admin.pages.timelines.create')
 @endsection
 
 @section('scripts')

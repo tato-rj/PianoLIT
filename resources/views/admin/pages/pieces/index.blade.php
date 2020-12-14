@@ -16,17 +16,20 @@ small .custom-control-label::before, small .custom-control-label::after {
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'music', 'title' => 'Pieces', 'subtitle' => 'Manage all the pieces available on the app.'])
-    <div class="row">
-      <div class="col-lg-4 col-md-4 col-12 mb-3 hide-on-sm">
-        <a href="{{route('admin.pieces.create')}}" class="btn btn-sm btn-default">
-          <i class="fas fa-plus mr-2"></i>Add a new piece
-        </a>
-      </div>
+    @include('admin.components.page.title', [
+      'icon' => 'music', 
+      'title' => 'Pieces', 
+      'subtitle' => 
+      'Manage all the pieces available on the app.',
+      'action' => ['label' => 'Add a new piece', 'url' => route('admin.pieces.create')]
+    ])
+
+{{--     <div class="row">
+
       <div class="col-lg-8 col-md-8 col-12 mb-3">
         @include('admin.components.filters.pieces')
       </div>
-    </div>
+    </div> --}}
 
     @datatable(['table' => 'pieces', 'columns' => ['', 'ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']])
 

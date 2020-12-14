@@ -9,13 +9,15 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Users', 'subtitle' => 'Use this page to view and manage the profile of our users.'])
-    <div class="mb-4">
+    @component('admin.components.page.title', ['icon' => 'users', 'title' => 'Users', 'subtitle' => 'Use this page to view and manage the profile of our users.'])
+
       <form method="GET" disable-on-submit action="{{route('admin.memberships.validate.all')}}">
         @csrf
         <button class="btn btn-sm btn-success"><i class="fas fa-clipboard-check mr-2"></i>Validate all subscriptions</button>
       </form>
-    </div>
+
+    @endcomponent
+
     <div id="multi-select" style="display: none;">
       <div class="alert alert-warning d-flex justify-content-between align-items-center">
         <div><strong><span id="selected-count">3</span> selected</strong></div>

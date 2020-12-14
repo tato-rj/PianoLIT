@@ -4,30 +4,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'music', 'title' => 'Tags', 'subtitle' => 'Manage all the tags used by pieces.'])
-    
-    <div class="row mb-3">
-      <div class="col-12">
-        <form method="POST" action="{{route('admin.tags.store')}}" class="form-inline">
-          @csrf
-          <input type="text" name="name" placeholder="Create a new tag here" class="form-control mr-2">
-          <select required class="form-control mr-2" name="type">
-            <option selected disabled>Type</option>
-           
-            @foreach(\App\Tag::labels() as $label => $options)
-              <optgroup label="{{ucfirst($label)}} tags">
-                @foreach($options as $option)
-                <option value="{{$option}}">{{ucfirst($option)}}</option>
-                @endforeach
-              </optgroup>
-            @endforeach
-          </select>
-          
-          <button type="submit" class="btn btn-default">Save</button>
-        </form>
-        @include('admin.components.feedback', ['field' => 'name'])
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'music', 
+      'title' => 'Tags', 
+      'subtitle' => 'Manage all the tags used by pieces.',
+      'action' => ['label' => 'Create a new tag', 'modal' => 'add-modal']
+    ])
 
     <div class="row my-3">
       <div class="col-12 text-center">
@@ -52,6 +34,7 @@
 </div>
 
 @include('admin.components.modals.tag')
+@include('admin.pages.tags.create')
 
 @endsection
 

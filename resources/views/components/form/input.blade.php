@@ -1,7 +1,10 @@
-<div class="form-group">
+<div class="form-group {{$grid ?? null}}">
 	@include('components.form.label', ['asterisk' => $asterisk ?? null])
 	<input 
 		class="form-control {{$classes ?? null}} {{validate($errors->$bag, $name)}}" 
+		@isset($id)
+		id="{{$id}}"
+		@endisset
 		style="{{$styles ?? null}}" 
 		{{$required ?? 'required'}} 
 		type="{{$type ?? 'text'}}" 
@@ -22,5 +25,5 @@
 		@endif
 	>
 
-	@include('components/form/error', ['bag' => $bag, 'field' => $name])
+	@include('components.form.error', ['bag' => $bag, 'field' => $name])
 </div>

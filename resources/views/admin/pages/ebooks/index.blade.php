@@ -9,13 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'shopping-cart', 'title' => 'eBooks', 'subtitle' => 'Manage all the eBooks available on the website.'])
-
-    <div class="mb-4">
-      <a href="{{route('admin.ebooks.create')}}" class="btn btn-sm btn-default">
-        <i class="fas fa-plus mr-2"></i>Create a new eBook
-      </a>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'shopping-cart', 
+      'title' => 'eBooks', 
+      'subtitle' => 'Manage all the eBooks available on the website.',
+      'action' => ['label' => 'Create a new eBook', 'url' => route('admin.ebooks.create')]
+    ])
 
     @datatable(['table' => 'ebooks', 'columns' => ['Date', 'Title', '# Purchases', 'Published', '']])
 

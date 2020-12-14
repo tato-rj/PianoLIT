@@ -9,21 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'music', 'title' => 'Composers', 'subtitle' => 'Manage all the composers.'])
-    <div class="row">
-      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target="#add-modal">
-            <i class="fas fa-plus mr-2"></i>Add a new composer
-          </button>
-        </div>
-        <div>
-          <button type="button" data-toggle="modal" data-target="#famous-birthdays" class="btn btn-sm btn-warning">
-            <i class="fas fa-birthday-cake mr-2"></i>Famous birthdays
-          </button>
-        </div>
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'music', 
+      'title' => 'Composers', 
+      'subtitle' => 'Manage all the composers.',
+      'action' => ['label' => 'Add new composer', 'modal' => 'add-modal']
+    ])
 
     @datatable(['table' => 'composers', 'columns' => ['Name', 'Famous', 'Pieces count', '']])
 
@@ -31,7 +22,6 @@
 </div>
 
 @include('admin.components.modals.delete')
-@include('admin.pages.composers.birthdays')
 @include('admin.pages.composers.create')
 
 @endsection

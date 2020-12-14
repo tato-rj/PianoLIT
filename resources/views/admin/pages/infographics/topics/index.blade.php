@@ -4,19 +4,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'pencil-ruler', 'title' => 'Infographic Topics', 'subtitle' => 'Manage the topics used by infographics.'])
-    
-    <div class="row mb-3">
-      <div class="col-12">
-        <form method="POST" action="{{route('admin.infographs.topics.store')}}" class="form-inline">
-          @csrf
-          <input type="text" name="name" placeholder="Create a new topic here" class="form-control mr-2">
-          
-          <button type="submit" class="btn btn-default">Save</button>
-        </form>
-        @include('admin.components.feedback', ['field' => 'name'])
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'pencil-ruler', 
+      'title' => 'Infographic Topics', 
+      'subtitle' => 'Manage the topics used by infographics.',
+      'action' => ['label' => 'Create a new topic', 'modal' => 'add-modal']
+    ])
 
     <div class="row my-3">
       <div class="col-12 text-center">
@@ -33,6 +26,7 @@
 </div>
 
 @include('admin.components.modals.topic')
+@include('admin.pages.infographics.topics.create')
 
 @endsection
 

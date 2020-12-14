@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group {{$grid ?? null}}">
 	@include('components.form.label', ['asterisk' => $asterisk ?? null])
 
 	<div class="input-group">

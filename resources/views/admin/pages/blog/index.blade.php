@@ -9,12 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'newspaper', 'title' => 'Blog', 'subtitle' => 'Manage the all the blog posts.'])
-    <div class="mb-4">
-      <a href="{{route('admin.posts.create')}}" class="btn btn-sm btn-default">
-        <i class="fas fa-plus mr-2"></i>Create a new post
-      </a>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'newspaper', 
+      'title' => 'Blog', 
+      'subtitle' => 'Manage the all the blog posts.',
+      'action' => ['label' => 'Create a new post', 'url' => route('admin.posts.create')]
+    ])
 
     @datatable(['table' => 'blog', 'columns' => ['Date', 'Title', 'Reading Time', 'Published', '']])
 

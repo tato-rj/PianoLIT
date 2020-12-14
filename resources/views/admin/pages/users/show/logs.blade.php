@@ -1,5 +1,3 @@
-@include('admin.pages.users.show.title', ['title' => 'Activity Logs', 'icon' => 'clipboard-check'])
-
 <div class="row">
   <div class="col-12">
   	@table([

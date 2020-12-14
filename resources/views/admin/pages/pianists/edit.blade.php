@@ -4,8 +4,15 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    <div class="row my-5 mx-2">
-      <form id="edit-form" method="POST" action="{{route('admin.pianists.update', $pianist->slug)}}" enctype="multipart/form-data" class="col-lg-6 col-sm-10 col-12 mx-auto">
+    @include('admin.components.page.title', [
+      'icon' => 'music',
+      'title' => $pianist->name, 
+      'subtitle' => 'Use this page to edit '.possessive($pianist->name).' profile.', 
+      'back' => ['view all playists' => route('admin.pianists.index')]
+    ])
+
+    <div class="row">
+      <form id="edit-form" method="POST" action="{{route('admin.pianists.update', $pianist)}}" enctype="multipart/form-data" class="col-lg-6 col-sm-10 col-12 mx-auto">
         @csrf
         @method('PATCH')
         {{-- Name --}}

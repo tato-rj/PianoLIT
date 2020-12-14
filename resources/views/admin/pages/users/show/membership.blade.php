@@ -1,6 +1,3 @@
-@include('admin.pages.users.show.title', [
-	'title' => 'Membership', 
-	'icon' => 'credit-card'])
 
 <div class="mb-4">
 

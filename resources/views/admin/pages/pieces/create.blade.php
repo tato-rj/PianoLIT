@@ -4,15 +4,17 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', [
+      'icon' => 'music', 
+      'mb' => 0,
+      'title' => 'New piece', 
+      'subtitle' => 'Use this page to add a new piece.', 
+      'back' => ['view all pieces' => route('admin.pieces.index')]
+    ])
     <div class="row mb-3">
-      <div class="col-12">
-        <div class="d-flex d-apart">
-          @return(['url' => route('admin.pieces.index'), 'to' => 'view all pieces'])
-          <div>
-            <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
-            <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
-          </div>
-        </div>
+      <div class="col-12 text-right">
+        <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
+        <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
       </div>
     </div>
 

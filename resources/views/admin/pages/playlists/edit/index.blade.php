@@ -9,7 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-	    @return(['url' => route('admin.playlists.index'), 'to' => 'view all playlists'])
+    @include('admin.components.page.title', [
+      'icon' => 'music',
+      'title' => $playlist->name, 
+      'subtitle' => 'Use this page to edit the playlist '.$playlist->name.'.', 
+      'back' => ['view all playists' => route('admin.playlists.index')]
+    ])
 
 	    <div class="row mb-4">
 	      <div class="col-12">

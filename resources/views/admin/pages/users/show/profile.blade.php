@@ -1,5 +1,3 @@
-@include('admin.pages.users.show.title', ['title' => 'Basic Information', 'icon' => 'address-card'])
-
 <div class="row">
   <div class="col-lg-6 col-md-6 col-12 mb-4">
     @list([

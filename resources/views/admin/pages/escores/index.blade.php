@@ -9,19 +9,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'shopping-cart', 'title' => 'eScores', 'subtitle' => 'Manage all the eScores available on the website.'])
-    <div class="row d-none d-sm-flex">
-      <div class="col-12 d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <a href="{{route('admin.escores.create')}}" class="btn btn-sm btn-default">
-            <i class="fas fa-plus mr-2"></i>Create a new eScore
-          </a>
-        </div>
-        <div>
-          {{-- @include('admin.components.filters.blog', ['filters' => []]) --}}
-        </div>
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'icon' => 'shopping-cart', 
+      'title' => 'eScores', 
+      'subtitle' => 'Manage all the eScores available on the website.',
+      'action' => ['label' => 'Create a new eScore', 'url' => route('admin.escores.create')]
+    ])
 
     @datatable(['table' => 'escores', 'columns' => ['Date', 'Title', '# Purchases', 'Published', '']])
 

@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="{{$nogutters ?? 'form-group'}}">
 	@include('components.form.label', ['asterisk' => $asterisk ?? null])
 	<div class="ml-2">
 		@foreach($options as $label => $option)

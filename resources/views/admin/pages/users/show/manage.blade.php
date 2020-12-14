@@ -1,5 +1,3 @@
-@include('admin.pages.users.show.title', ['title' => 'Manage Account', 'icon' => 'tools'])
-
 <div class="row mb-4">
   <div class="col-lg-4 col-md-4 col-sm-8 col-12 p-3">
     <a href="mailto:{{$user->email}}" class="link-none">
