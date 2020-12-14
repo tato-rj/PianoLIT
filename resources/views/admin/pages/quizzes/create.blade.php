@@ -12,7 +12,13 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    
+    @include('admin.components.page.title', [
+      'theme' => 'create',
+      'title' => 'New quiz', 
+      'subtitle' => 'Use this page to create a new quiz.', 
+      'back' => ['view all quizzes' => route('admin.quizzes.index')]
+    ])
+
       <form id="create-quiz" class="row my-3" method="POST" action="{{route('admin.quizzes.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-lg-4 col-md-6 col-12 mb-4">

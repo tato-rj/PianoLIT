@@ -37,8 +37,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-
-    @return(['url' => route('admin.escores.index'), 'to' => 'view all eScores'])
+    @include('admin.components.page.title', [
+      'theme' => 'edit',
+      'title' => $escore->title, 
+      'subtitle' => 'Use this page to edit this eScore.', 
+      'back' => ['view all eScores' => route('admin.escores.index')]
+    ])
 
     <div class="row">
       <div class="col-12 mb-3">

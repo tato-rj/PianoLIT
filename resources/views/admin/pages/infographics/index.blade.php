@@ -13,14 +13,8 @@
       'icon' => 'pencil-ruler', 
       'title' => 'Infographics', 
       'subtitle' => 'Manage the infographics available on the website.',
-      'action' => ['label' => 'Create a new infographic', 'url' => '']
+      'action' => ['label' => 'Create a new infographic', 'modal' => 'add-modal']
     ])
-
-    <div class="row">
-      <div class="col-12 mb-4">
-      @include('admin.pages.infographics.create')
-      </div>
-    </div>
 
     @datatable(['table' => 'infographs', 'columns' => ['Date', 'Name', 'Downloads', 'Score', 'Published', 'Gift', '']])
   
@@ -30,14 +24,14 @@
 @include('admin.components.modals.delete')
 
 @include('admin.pages.infographics.preview')
-
+@include('admin.pages.infographics.create')
 @endsection
 
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
-$('input#customFile').change(function() {
+$('input[name="cover_image"]').change(function() {
     var fr = new FileReader;
     fr.onload = function() {
         var img = new Image;

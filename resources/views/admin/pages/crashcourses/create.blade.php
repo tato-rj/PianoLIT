@@ -12,7 +12,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-      @return(['url' => route('admin.crashcourses.index'), 'to' => 'view all courses'])
+    @include('admin.components.page.title', [
+      'theme' => 'create',
+      'title' => 'New Crash Course', 
+      'subtitle' => 'Use this page to create a new course.', 
+      'back' => ['view all courses' => route('admin.crashcourses.index')]
+    ])
     
       <form id="create-quiz" class="row" method="POST" action="{{route('admin.crashcourses.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf

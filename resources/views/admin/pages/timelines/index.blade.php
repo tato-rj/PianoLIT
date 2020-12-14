@@ -73,11 +73,11 @@ $('.event').on('click', function (e) {
   let type = $event.attr('data-type');
   let edit_url = $event.attr('data-edit-url');
 
-  $('#event-modal').find('form#edit-event').attr('action', edit_url);
-  $('#event-modal').find('input#year').val(year);
-  $('#event-modal').find('input#url').val(url);
-  $('#event-modal').find('textarea#event').val(event);
-  $('#event-modal').find('select#type option[value="'+type+'"]').prop('selected', true);
+  $('#edit-modal').find('form').attr('action', edit_url);
+  $('#edit-modal').find('input[name="year"]').val(year);
+  $('#edit-modal').find('input[name="url"]').val(url);
+  $('#edit-modal').find('input[name="event"]').val(event);
+  $('#edit-modal').find('select option[value="'+type+'"]').prop('selected', true);
 });
 
 (new DataTableRaw({

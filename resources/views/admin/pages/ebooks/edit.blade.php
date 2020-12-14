@@ -37,8 +37,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-
-    @return(['url' => route('admin.ebooks.index'), 'to' => 'view all eBooks'])
+    @include('admin.components.page.title', [
+      'theme' => 'edit',
+      'title' => $ebook->title, 
+      'subtitle' => 'Use this page to edit this eBook.', 
+      'back' => ['view all eBooks' => route('admin.ebooks.index')]
+    ])
 
     <div class="row">
       <div class="col-12 mb-3">

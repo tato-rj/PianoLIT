@@ -12,7 +12,13 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @return(['url' => route('admin.crashcourses.index'), 'to' => 'view all courses'])
+    @include('admin.components.page.title', [
+      'theme' => 'edit',
+      'title' => $crashcourse->title, 
+      'subtitle' => 'Use this page to edit this course.', 
+      'back' => ['view all courses' => route('admin.crashcourses.index')]
+    ])
+
     <div class="row">
       <div class="col-12">
         @php($subscribers_count = count($crashcourse->activeSubscriptions))

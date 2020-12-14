@@ -10,9 +10,9 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'music',
+      'theme' => 'edit',
       'title' => $playlist->name, 
-      'subtitle' => 'Use this page to edit the playlist '.$playlist->name.'.', 
+      'subtitle' => 'Use this page to edit this playlist.', 
       'back' => ['view all playists' => route('admin.playlists.index')]
     ])
 

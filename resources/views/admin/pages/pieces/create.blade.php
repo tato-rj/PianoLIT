@@ -5,7 +5,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'music', 
+      'theme' => 'create', 
       'mb' => 0,
       'title' => 'New piece', 
       'subtitle' => 'Use this page to add a new piece.', 

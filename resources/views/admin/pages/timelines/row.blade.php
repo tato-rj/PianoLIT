@@ -18,7 +18,7 @@
     ]])
       <a href="#" 
       data-toggle="modal" 
-      data-target="#event-modal" 
+      data-target="#edit-modal" 
       data-type="{{$item->type}}" 
       data-year="{{$item->year}}" 
       data-event="{{$item->event}}" 

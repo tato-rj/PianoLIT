@@ -10,7 +10,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'users',
+      'theme' => 'edit',
       'title' => $list->name, 
       'subtitle' => 'Use this page to edit the list '.$list->name.'.', 
       'back' => ['view all lists' => route('admin.subscriptions.lists.index')]

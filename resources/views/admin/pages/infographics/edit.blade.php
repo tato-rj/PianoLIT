@@ -7,7 +7,12 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @return(['url' => route('admin.infographs.index'), 'to' => 'view all infographics'])
+    @include('admin.components.page.title', [
+      'theme' => 'edit',
+      'title' => $infograph->title, 
+      'subtitle' => 'Use this page to edit this infographic.', 
+      'back' => ['view all infographics' => route('admin.infographs.index')]
+    ])
 
 	<div class="row mb-5">
 		<div class="col-4">
@@ -18,7 +23,7 @@
 				<h6 class="text-grey">This infrograph has been downloaded <strong class="text-muted">{{$infograph->downloads}}</strong> {{str_plural('time', $infograph->downloads)}}.</h6>
 				<h6 class="text-grey m-0">The current score is <strong class="text-muted">{{$infograph->score}}</strong>.</h6>
 			</div>
-			<form method="POST" action="{{route('admin.infographs.update', $infograph->slug)}}" enctype="multipart/form-data">
+			<form method="POST" action="{{route('admin.infographs.update', $infograph)}}" enctype="multipart/form-data">
 				@method('PATCH')
 				@csrf
 				<div class="form-row form-group">

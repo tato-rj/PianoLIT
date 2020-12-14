@@ -12,9 +12,9 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'music',
+      'theme' => 'edit',
       'title' => 'Edit ' . $piece->name, 
-      'subtitle' => 'Use this page to edit '.$piece->medium_name.'.', 
+      'subtitle' => 'Use this page to edit this piece.', 
       'back' => ['view all pieces' => route('admin.pieces.index')]
     ])
     <div class="row mb-3">

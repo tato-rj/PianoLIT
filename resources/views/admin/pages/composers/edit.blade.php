@@ -5,9 +5,9 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'music',
+      'theme' => 'edit',
       'title' => $composer->name, 
-      'subtitle' => 'Use this page to edit '.possessive($composer->name).' profile.', 
+      'subtitle' => 'Use this page to edit this composer.', 
       'back' => ['view all playists' => route('admin.composers.index')]
     ])
 

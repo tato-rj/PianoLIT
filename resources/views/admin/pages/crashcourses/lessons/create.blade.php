@@ -9,7 +9,13 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @return(['url' => route('admin.crashcourses.edit', $crashcourse), 'to' => 'course page'])
+    @include('admin.components.page.title', [
+      'theme' => 'create',
+      'title' => 'New lesson', 
+      'subtitle' => 'Use this page to create a new lesson for the course '.$crashcourse->title.'.', 
+      'back' => ['back to the course' => route('admin.crashcourses.edit', $crashcourse)]
+    ])
+
     <div class="row mb-4">
       <div class="col-12">
         <div class="alert alert-grey text-center">This course currently has <strong>{{$crashcourse->lessons_count}}</strong> {{str_plural('lesson', $crashcourse->lessons_count)}}.</div>

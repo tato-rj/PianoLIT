@@ -9,7 +9,7 @@
     @include('admin.components.page.title', [
       'icon' => 'users', 
       'title' => $user->full_name, 
-      'subtitle' => 'Use this page to view and manage '.possessive($user->first_name).' profile.', 
+      'subtitle' => 'Use this page to view and manage this user.', 
       'back' => ['back to logs' => route('admin.users.logs'), 'view all' => route('admin.users.index')]
     ])
 

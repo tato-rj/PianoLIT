@@ -13,6 +13,13 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">    
+    @include('admin.components.page.title', [
+      'theme' => 'create',
+      'title' => 'New eBook', 
+      'subtitle' => 'Use this page to create a new eBook.', 
+      'back' => ['view all eBooks' => route('admin.ebooks.index')]
+    ])
+
       <form id="create-ebook" class="row my-3" method="POST" action="{{route('admin.ebooks.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-12">

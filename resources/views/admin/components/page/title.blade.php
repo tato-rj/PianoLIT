@@ -1,7 +1,22 @@
 <div class="d-md-flex justify-content-between {{$mb ?? 'mb-4'}}">
 	<div class="px2 d-flex align-items-center mb-3" id="page-title">
 		<div class="bg-white rounded d-flex flex-center border mr-3 hide-on-sm" style="width: 60px; height: 60px; flex-shrink: 0">
-			<div>@fa(['icon' => $icon, 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+			@isset($theme)
+				@switch($theme)
+				@case('edit')
+				<div>@fa(['icon' => 'tools', 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+				@break
+				
+				@case('create')
+				<div>@fa(['icon' => 'magic', 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+				@break
+
+				@default
+				<div>@fa(['icon' => '', 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+				@endswitch
+			@else
+				<div>@fa(['icon' => $icon, 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+			@endif
 		</div>
 		<div class="title-text">
 			<h5 class="m-0">{{$title}}</h5>
