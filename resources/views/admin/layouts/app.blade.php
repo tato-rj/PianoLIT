@@ -144,7 +144,7 @@
         $('#loading-overlay > div:last-child').addClass('animateLoader').parent().fadeOut();
       }
 
-      $(document).on('click', 'a', function() {
+      $(document).on('click', 'a:not([target])', function() {
         let link = $(this).attr('href');
 
         if (! link.includes('#'))

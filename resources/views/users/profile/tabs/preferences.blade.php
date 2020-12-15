@@ -11,7 +11,7 @@
 					<tr>
 						<td class="p-0 align-middle"><h6 class="m-0"><i class="fas fa-mail-bulk mr-2"></i>{{$list->name}}</h6></td>
 						<td class="p-0 text-center align-middle">
-							@toggle(['toggle' => auth()->user()->subscription->in($list), 'route' => route('users.subscriptions.update-list', $list)])
+							@toggle(['toggle' => auth()->user()->subscription->in($list), 'route' => route('users.subscriptions.update-list', $list), 'autoToggle' => true])
 						</td>
 					</tr>
 					<tr>

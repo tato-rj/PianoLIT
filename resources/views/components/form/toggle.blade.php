@@ -2,7 +2,16 @@
 	{{-- Used for sorting --}}
 	<span class="position-absolute invisible">{{$toggle ? 1 : 0}}</span>
 
-	<input class="status-toggle" type="checkbox" {{$toggle ? 'checked' : null}} data-url="{{$route}}">
+	<input class="{{$autoToggle ? 'status-toggle' : null}}" type="checkbox"
+		@isset($route)
+	 	data-url="{{$route}}"
+	 	@endisset
+
+		@isset($name)
+	 	name="{{$name}}"
+	 	@endisset
+
+	 	{{$toggle ? 'checked' : null}}>
 	
 	<span class="slider round"></span>
 </label>

@@ -21,7 +21,7 @@
         @include('admin.components.users.status.lg', ['elements' => $user->statusElements()])
       </div>
       <div class="px-4 pb-3 text-center text-nowrap">
-        <span class="text-muted mr-2 text-truncate">Super status</span>@toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id)])
+        <span class="text-muted mr-2 text-truncate">Super status</span>@toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id), 'autoToggle' => true])
       </div>
     </div>
     <div class="text-center">

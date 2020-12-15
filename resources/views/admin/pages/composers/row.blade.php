@@ -4,7 +4,7 @@
   </td>
 
   <td>
-    @toggle(['toggle' => $item->is_famous, 'route' => route('admin.composers.toggle-famous', $item->id)])
+    @toggle(['toggle' => $item->is_famous, 'route' => route('admin.composers.toggle-famous', $item->id), 'autoToggle' => true])
   </td>
   
   <td>{{$item->pieces_count}} {{str_plural('piece', $item->pieces_count)}}</td>
