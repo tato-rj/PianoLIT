@@ -25,7 +25,7 @@
 			</form>
 		</div>
 	@endif
-	<a href="" data-toggle="modal" data-target="#membership-history" class="link-default">
-		<div class="mb-2">Request receipts history</div>
-	</a>
+	<button data-toggle="modal" data-target="#membership-history" class="btn btn-link">
+		@fa(['fa_type' => 'b', 'icon' => 'apple'])Request receipts history
+	</button>
 </div>
