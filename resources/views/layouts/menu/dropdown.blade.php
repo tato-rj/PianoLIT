@@ -3,7 +3,7 @@
     {{$label}}
     @fa(['icon' => 'chevron-down', 'mr' => 0, 'styles' => 'font-size: 72%'])
   </a>
-  <div class="dropdown-menu py-2 px-3 rounded animated fadeInUp" style="right: 1px!important">
+  <div class="dropdown-menu py-2 px-3 rounded animated fadeInUp">
     @foreach($groups as $group)
       @if(! empty($group['title']))
         <label style="font-size: .9em" class="m-0 text-grey text-uppercase"><small>{{$group['title']}}</small></label>

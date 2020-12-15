@@ -4,7 +4,7 @@
     @fa(['icon' => 'chevron-down', 'mr' => 0, 'styles' => 'font-size: 72%'])
   </a>
 
-  <div class="dropdown-menu py-2 px-3 rounded animated fadeInUp" style="left: initial; right: 0; min-width: auto" aria-labelledby="navbarDropdown">
+  <div class="dropdown-menu py-2 px-3 rounded animated fadeInUp" style="left: initial; right: 1px; min-width: auto" aria-labelledby="navbarDropdown">
 {{--     <a class="nav-link" style="white-space: nowrap;" href="{{route('users.invite')}}">Invite Friends</a>
   
     <div class="dropdown-divider my-1"></div> --}}
