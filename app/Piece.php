@@ -461,6 +461,9 @@ class Piece extends PianoLit
         if (! $this->collection_name && ! $this->catalogue_number)
             return false;
 
+        if ($this->collection_name == 'The Well-Tempered Clavier Book 1')
+            return true;
+
         return Piece::exceptThis()->with(['composer', 'tags'])
                       ->where([
                         'composer_id' => $this->composer_id, 
@@ -472,7 +475,7 @@ class Piece extends PianoLit
 
     public function siblings()
     {
-        foreach (['Notebook for Anna Magdalena Bach'] as $collection) {
+        foreach (['Notebook for Anna Magdalena Bach', 'The Well-Tempered Clavier Book 1'] as $collection) {
             if ($this->collection_name == $collection)
                 return Piece::exceptThis()->with(['composer', 'tags'])->where(['collection_name' => $collection])
                     ->orderByRaw('cast(collection_number as unsigned)')
