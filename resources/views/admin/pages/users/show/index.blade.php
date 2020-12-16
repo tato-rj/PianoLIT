@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 
 @section('head')
+<link rel="preload" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" as="style">
+<link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

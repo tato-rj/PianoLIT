@@ -32,7 +32,7 @@ class UpdateLocation
     public function updateLocation(User $user, $location)
     {
         try {
-            Location::createOrUpdate($user->id, [
+            Location::createIfNotExists($user->id, [
                 'user_id' => $user->id,
                 'ip' => $location->ip,
                 'countryName' => $location->countryName,

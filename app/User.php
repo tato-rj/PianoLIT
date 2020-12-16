@@ -146,6 +146,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return array_key_exists($key, $levels) ? $levels[$key] : null;
     }
 
+    public function getCountryFlagAttribute()
+    {
+        if ($this->location()->exists())
+            return $this->location->countryFlag;
+    }
+
     public function getPreferredMoodAttribute()
     {
         if (! $this->preferred_piece)

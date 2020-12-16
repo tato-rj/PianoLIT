@@ -3,7 +3,7 @@
 	<h5 class="mb-0">{{$composer->name}}</h5>
 	<div class="mb-1"><small>{{$composer->lifespan}}</small></div>
 	<div>
-		<span class="flag-icon flag-icon-{{$composer->country->flag_code}} rounded-sm shadow-center mr-1"></span>
+		@flag(['code' => $composer->country->flag_code])
 		<strong class="text-muted">{{$composer->country->name}}</strong>
 	</div>
 </div>
