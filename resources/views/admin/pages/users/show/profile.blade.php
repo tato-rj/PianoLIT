@@ -13,6 +13,20 @@
         'Signed up on' => $user->created_at->toFormattedDateString()
       ]
     ])
+
+    @if($user->location()->exists())
+    <div class="bg-light p-4 rounded my-2">
+      @list([
+        'content' => [
+          'Country' => $user->location->countryName,
+          'Region' => $user->location->regionName,
+          'City' => $user->location->cityName,
+          'Latitude' => $user->location->latitude,
+          'Longitude' => $user->location->longitude,
+        ]
+      ])
+    </div>
+    @endif
   </div>
   <div class="col-lg-3 col-md-4 col-sm-8 col-9 mx-auto mb-4">
     <div class="shadow-sm rounded d-inline-block border w-100 mb-1">

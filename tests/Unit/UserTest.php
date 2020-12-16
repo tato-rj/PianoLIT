@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Billing\{Membership, Payment};
 use App\Billing\Sources\Apple;
-use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User, FavoriteFolder};
+use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User, FavoriteFolder, Location};
 use Tests\AppTest;
 use App\Merchandise\Purchase;
 use App\Infograph\Infograph;
@@ -60,6 +60,14 @@ class UserTest extends AppTest
 		create(StudioPolicy::class, ['user_id' => $this->user->id]);
 
 		$this->assertInstanceOf(StudioPolicy::class, $this->user->studioPolicies->first()); 
+	}
+
+	/** @test */
+	public function it_has_a_location()
+	{
+		$this->user->location()->save(make(Location::class));
+
+		$this->assertInstanceOf(Location::class, $this->user->location); 
 	}
 
 	/** @test */

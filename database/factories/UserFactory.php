@@ -1,7 +1,7 @@
 <?php
 
 use App\Payments\Membership;
-use App\{User, Admin, Subscription, StudioPolicy, TutorialRequest, Piece};
+use App\{User, Admin, Subscription, StudioPolicy, TutorialRequest, Piece, Location};
 use App\CrashCourse\{CrashCourse, CrashCourseLesson, CrashCourseSubscription, CrashCourseTopic};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -138,5 +138,21 @@ $factory->define(CrashCourseTopic::class, function (Faker $faker) {
         'creator_id' => function() {
             return create(Admin::class)->id;
         },
+    ];
+});
+
+$factory->define(Location::class, function (Faker $faker) {
+    return [
+        'user_id' => function() {
+            return create(User::class)->id;
+        },
+        'ip' => $faker->ipv4,
+        'countryName' => $faker->country,
+        'countryCode' => $faker->countryCode,
+        'regionCode' => $faker->stateAbbr,
+        'regionName' => $faker->state,
+        'cityName' => $faker->city,
+        'latitude' => $faker->latitude(),
+        'longitude' => $faker->longitude(),
     ];
 });

@@ -66,7 +66,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebAppRoutes()
     {
         Route::domain('my.'.config('app.short_url'))
-             ->middleware(['web', 'auth:web', 'log.webapp'])
+             ->middleware(['web', 'auth:web', 'log.webapp', 'location.update'])
              ->name('webapp.')
              ->namespace($this->namespace)
              ->group(function() {
@@ -83,7 +83,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware(['web', 'log.web'])
+        Route::middleware(['web', 'log.web', 'location.update'])
              ->namespace($this->namespace)
              ->group(function() {
                 $this->getFolder('routes/web');
@@ -149,7 +149,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('api')
              ->name('api.')
-             ->middleware('api')
+             ->middleware('api', 'location.update')
              ->namespace($this->namespace)
              ->group(function() {
                 $this->getFolder('routes/api');

@@ -70,6 +70,7 @@ class Kernel extends HttpKernel
         'non-members-only' => \App\Http\Middleware\Membership\RedirectIfMembershipIsActive::class,
         'members-only' => \App\Http\Middleware\Membership\RedirectIfNotMember::class,
         'validateRegistrationForm' => \App\Http\Middleware\ValidateRegistrationForm::class,
+        'location.update' => \App\Http\Middleware\UpdateLocation::class,
     ];
 
     /**
