@@ -24,6 +24,6 @@ class Location extends PianoLit
 
     public function getCoordinatesAttribute()
     {
-    	return $this->latitude . ' | ' . $this->longitude;
+    	return $this->latitude . ', ' . $this->longitude;
     }
 }
