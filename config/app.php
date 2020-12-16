@@ -191,6 +191,7 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
+        Stevebauman\Location\LocationServiceProvider::class,
 
     ],
 

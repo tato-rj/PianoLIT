@@ -21,6 +21,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
+        // return \Stevebauman\Location\Facades\Location::get(request()->ip());
         $userStats = [
             'all' => ['label' => 'Users', 'counts' => [User::upUntilLastWeek()->count(), User::count()], 'url' => route('admin.users.index')],
             'platforms' => [

@@ -29,8 +29,8 @@ class Membership extends Sandbox
 
 		$response['status'] = 0;
 		$response['receipt'] = $this->receipt;
-		$response['latest_receipt'] = $notification->latest_receipt;
-		$response['latest_receipt_info'] = $notification->latest_receipt_info;
+		$response['latest_receipt'] = $notification['latest_receipt'];
+		$response['latest_receipt_info'] = $notification['latest_receipt_info'];
 		
 		return json_encode($response);
 	}
