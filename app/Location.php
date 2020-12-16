@@ -19,7 +19,7 @@ class Location extends PianoLit
 
     public function getFullLocationAttribute()
     {
-    	return $this->cityName . ' in ' . $this->regionName . ', ' . $this->countryName;
+    	return $this->cityName . ', ' . $this->regionName . '(' . $this->countryName . ')';
     }
 
     public function getCoordinatesAttribute()

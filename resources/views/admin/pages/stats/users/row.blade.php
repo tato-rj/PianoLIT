@@ -6,7 +6,7 @@
   <td>{{$item->id}}</td>
   
   <td title="{{$top_user ? "$item->first_name is a our fan!" : null}}" class="dataTables_main_column">
-    {{$item->full_name}}{!! $top_user ? '<i class="fas fa-trophy ml-2 text-success"></i>' : null !!}
+    {{$item->full_name}}{!! $top_user ? '<i class="fas fa-trophy ml-2 text-success"></i>' : null !!} {!! $item->countryFlag !!}
   </td>
 
   <td class="{{$top_user ? 'font-weight-bold' : null}}">{{$item->logs_count}}</td>
