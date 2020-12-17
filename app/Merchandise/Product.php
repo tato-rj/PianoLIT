@@ -2,12 +2,17 @@
 
 namespace App\Merchandise;
 
-use App\ShareableContent;
+use App\{ShareableContent, Review};
 use App\Traits\Filterable;
 
 abstract class Product extends ShareableContent
 {
 	use Filterable;
+
+	public function reviews()
+	{
+		return $this->morphMany(Review::class, 'reviewable');
+	}
 
 	public function purchaseRoute()
 	{

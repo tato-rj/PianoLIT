@@ -80,10 +80,12 @@ class AdminTest extends AppTest
         $subscription_id = $this->user->subscription->id;
 
         $this->get(route('users.profile'));
+        $this->get(route('home'));
         
         $this->assertRedisHas('user:'.auth()->user()->id.':web');
         $this->assertDatabaseHas('users', ['id' => $user_id]);
         $this->assertDatabaseHas('subscriptions', ['email' => $user_email]);
+        $this->assertDatabaseHas('locations', ['user_id' => $user_id]);
         $this->assertDatabaseHas('email_list_subscription', ['subscription_id' => $subscription_id]);
 
         $this->signIn();
@@ -93,6 +95,7 @@ class AdminTest extends AppTest
         $this->assertRedisEmpty();
         $this->assertDatabaseMissing('users', ['id' => $user_id]);
         $this->assertDatabaseMissing('subscriptions', ['email' => $user_id]);
+        $this->assertDatabaseMissing('locations', ['user_id' => $user_id]);
         $this->assertDatabaseMissing('email_list_subscription', ['subscription_id' => $user_id]);
     }
 

@@ -34,6 +34,9 @@ class User extends Authenticatable implements MustVerifyEmail
         self::deleting(function($user) {
             if ($user->subscription()->exists())
                 $user->subscription->delete();
+
+            if ($user->location()->exists())
+                $user->location->delete();
     
             $user->favorites()->detach();
             $user->views()->detach();
