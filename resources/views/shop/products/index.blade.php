@@ -15,22 +15,17 @@
 @pagetitle
 
 <div class="container mb-5">
-	@if($products->count() == 0)
-		<div class="p-4 text-center text-red"><strong>Coming up soon!</strong></div>
-		@include('components.animations.workers')
-	@else
-		@component('components.display.layout', [
-			'collection' => $products,
-			'topics' => $topics,
-			'ads' => $ads
-		])
+	@component('components.display.layout', [
+		'collection' => $products,
+		'topics' => $topics,
+		'ads' => $ads
+	])
 
-		@slot('items')
-			@each('shop.components.card', $products, 'item')
-		@endslot
-		
-		@endcomponent
-	@endif
+	@slot('items')
+		@each('shop.components.card', $products, 'item')
+	@endslot
+	
+	@endcomponent
 </div>
 
 @endsection

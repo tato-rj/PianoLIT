@@ -1,0 +1,1 @@
+<div>{{$review->title}}</div>

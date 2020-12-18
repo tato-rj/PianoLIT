@@ -15,9 +15,16 @@ class CreateReviewsTable extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('user_id');
             $table->morphs('reviewable');
             $table->unsignedTinyInteger('rating');
+            $table->string('title')->nullable();
+            $table->string('content')->nullable();
+            $table->boolean('anonymous')->default(0);
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
+
+            $table->unique(['user_id', 'reviewable_type', 'reviewable_id']);
         });
     }
 

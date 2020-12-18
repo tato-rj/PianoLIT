@@ -1,7 +1,7 @@
 <?php
 
 use App\Shop\{eBook, eBookTopic, eScore, eScoreTopic};
-use App\Admin;
+use App\{Admin, Review, User};
 use Faker\Generator as Faker;
 
 $factory->define(eBook::class, function (Faker $faker) {
@@ -62,5 +62,19 @@ $factory->define(eScoreTopic::class, function (Faker $faker) {
         'creator_id' => function() {
             return create(Admin::class)->id;
         },
+    ];
+});
+
+$factory->define(Review::class, function (Faker $faker) {
+    $product = create(eBook::class);
+
+    return [
+        'user_id' => function() {
+            return create(User::class)->id;
+        },
+        'reviewable_type' => get_class($product),
+        'reviewable_id' => $product->id,
+        'published_at' => now(),
+        'rating' => $faker->numberBetween(1,5)
     ];
 });

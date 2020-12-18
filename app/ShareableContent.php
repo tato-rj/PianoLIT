@@ -4,9 +4,10 @@ namespace App;
 
 use App\Traits\FindBySlug;
 use Illuminate\Http\Request;
+use App\Behaviors\PublishableContent;
 use App\Tools\Cropper;
 
-abstract class ShareableContent extends PianoLit
+abstract class ShareableContent extends PublishableContent
 {
 	use FindBySlug;	
 
@@ -19,35 +20,9 @@ abstract class ShareableContent extends PianoLit
         return $this->belongsTo(Admin::class);
     }
 
-    public function isPublished()
-    {
-        return ! is_null($this->published_at);
-    }
-
-    public function getIsNewAttribute()
-    {
-        return $this->published_at->gte(now()->subWeek());
-    }
-
     public function scopeByTitle($query, $title)
     {
         return $query->where('title', $title)->first();
-    }
-
-    public function updateStatus($attribute = null)
-    {
-        $attribute = $attribute ?? 'published_at';
-
-        if ($this->$attribute) {
-        	$this->update([$attribute => null]);
-        } else {
-            $this->update([$attribute => now()]);
-        }
-    }
-
-    public function getStatusAttribute()
-    {
-        return $this->published_at ? 'published' : 'unpublished';
     }
 
     // public function uploadCoverImage(Request $request, $crop = true, $filename = 'cover_image')
@@ -79,21 +54,6 @@ abstract class ShareableContent extends PianoLit
     public function thumbnail_image()
     {
         return asset('storage/' . $this->thumbnail_path);
-    }
-
-    public function scopePublished($query)
-    {
-        return $query->whereNotNull('published_at');
-    }
-
-    public function scopeNew($query)
-    {
-        return $query->whereBetween('published_at', [now()->copy()->subWeek(), now()]);
-    }
-
-    public function scopeExceptNew($query)
-    {
-        return $query->whereNotBetween('published_at', [now()->copy()->subWeek(), now()]);
     }
 
     public function scopeSuggestions($query, $number = 4)

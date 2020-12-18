@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Shop\{eScore, eScoreTopic};
 use App\Merchandise\Purchase;
-use App\Admin;
+use App\{Admin, Review};
 use Tests\AppTest;
 use Illuminate\Http\UploadedFile;
 
@@ -20,6 +20,14 @@ class eScoresTest extends AppTest
 	public function it_belongs_to_an_admin()
 	{
 		$this->assertInstanceOf(Admin::class, $this->escore->creator);
+	}
+
+	/** @test */
+	public function it_has_many_reviews()
+	{
+		create(Review::class, ['reviewable_type' => get_class($this->escore), 'reviewable_id' => $this->escore->id]);
+
+		$this->assertInstanceOf(Review::class, $this->escore->reviews->first());
 	}
 
 	/** @test */

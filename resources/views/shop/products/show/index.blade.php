@@ -52,6 +52,8 @@
 
 	@include('shop.products.show.cta')
 
+	@include('shop.components.reviews.layout')
+
 	@include('components.display.suggestions', [
 		'title' => 'You might also be interested in',
 		'card' => 'shop.components.card',

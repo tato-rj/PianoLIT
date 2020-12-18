@@ -12,6 +12,7 @@ use App\Stats\User as UserStats;
 use App\Billing\{Membership, Payment, Customer};
 use App\Billing\Sources\Stripe;
 use App\Billing\Factories\StripeFactory;
+use App\Merchandise\Product;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -66,6 +67,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function reviewed(Product $product)
+    {
+        return Review::by($this)->for($product)->exists();
     }
 
     public function favorites()

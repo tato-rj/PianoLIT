@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Shop\{eBook, eBookTopic};
 use App\Merchandise\Purchase;
-use App\Admin;
+use App\{Admin, Review};
 use Tests\AppTest;
 use Illuminate\Http\UploadedFile;
 
@@ -14,6 +14,14 @@ class eBooksTest extends AppTest
 	public function it_has_many_topics()
 	{
 		$this->assertInstanceOf(eBookTopic::class, $this->ebook->topics->first());
+	}
+
+	/** @test */
+	public function it_has_many_reviews()
+	{
+		create(Review::class, ['reviewable_type' => get_class($this->ebook), 'reviewable_id' => $this->ebook->id]);
+
+		$this->assertInstanceOf(Review::class, $this->ebook->reviews->first());
 	}
 
 	/** @test */

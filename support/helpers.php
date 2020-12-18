@@ -42,6 +42,11 @@ function onWebapp()
 	return 'my' == explode('.', request()->getHttpHost())[0];
 }
 
+function is_decimal($val)
+{
+    return is_numeric($val) && floor($val) != $val;
+}
+
 function requestWith($params)
 {
 	return new \Illuminate\Http\Request($params);

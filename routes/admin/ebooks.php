@@ -16,7 +16,7 @@ Route::prefix('ebooks')->name('ebooks.')->group(function() {
 
 		Route::patch('{topic}/update', 'Admin\eBooksController@topicUpdate')->name('update');
 		
-		Route::delete('{topic}/destroy', 'Admin\eBooksController@topicDestroy')->name('destroy');
+		Route::delete('{topic}', 'Admin\eBooksController@topicDestroy')->name('destroy');
 
 	});
 
