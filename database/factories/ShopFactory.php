@@ -67,11 +67,11 @@ $factory->define(eScoreTopic::class, function (Faker $faker) {
 
 $factory->define(Review::class, function (Faker $faker) {
     $product = create(eBook::class);
+    $user = create(User::class);
 
     return [
-        'user_id' => function() {
-            return create(User::class)->id;
-        },
+        'user_id' => $user->id,
+        'reviewer' => $user->full_name,
         'reviewable_type' => get_class($product),
         'reviewable_id' => $product->id,
         'published_at' => now(),

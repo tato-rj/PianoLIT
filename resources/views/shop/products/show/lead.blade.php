@@ -8,6 +8,9 @@
 			</div>
 			
 			<div>
+				<a href="#reviews" class="link-none">
+					@include('shop.components.reviews.stars', ['complete' => true])
+				</a>
 				<div class="mb-2">
 					@include('shop.components.price')
 				</div>

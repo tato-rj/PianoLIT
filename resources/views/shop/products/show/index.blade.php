@@ -58,7 +58,6 @@
 		'title' => 'You might also be interested in',
 		'card' => 'shop.components.card',
 		'collection' => $product->suggestions(8)->get()])
-
 </section>
 
 @include('shop.components.preview.magazine')
@@ -182,6 +181,67 @@ audio.oncanplay = function() {
 	$playBtn.hide().enable();
 	$stopBtn.show();
 };
+</script>
+
+<script type="text/javascript">
+$('.editable-star').on('mouseover', function() {
+	let $selection = $(this);
+
+	resetSelections(false);
+	$selection.addClass('fas').removeClass('far');
+	$selection.prevAll('i').addClass('fas').removeClass('far');
+});
+
+$('.editable-star').on('mouseleave', function() {
+	highlightSelected();
+});
+
+$('.editable-star').on('click', function() {
+	let $selection = $(this);
+
+	selectStars($selection);
+	highlightSelected();
+});
+
+function selectStars($selection)
+{
+	resetSelections();
+	$selection.attr('selected', true);
+	$selection.prevAll('i').attr('selected', true);
+
+	$('input[name="rating"]').val(selectedStars());
+}
+
+function highlightSelected()
+{
+	$('.editable-star').each(function() {
+		if ($(this).attr('selected')) {
+			$(this).addClass('fas').removeClass('far');
+		} else {
+			$(this).removeClass('fas').addClass('far');
+		}
+	});
+}
+
+function selectedStars()
+{
+	return $('.editable-star[selected]').length;
+}
+
+function resetSelections(hard = true)
+{
+	if (hard) {
+		$('.editable-star').removeAttr('selected').removeClass('fas').addClass('far');		
+	} else {
+		$('.editable-star').removeClass('fas').addClass('far');
+	}
+}
+
+$('#review-modal').on('hidden.bs.modal', function (e) {
+  resetSelections();
+  $('#review-modal input, #review-modal textarea').val('');
+})
+
 </script>
 
 @endpush

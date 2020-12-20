@@ -9,14 +9,23 @@ abstract class Product extends ShareableContent
 {
 	use Filterable;
 
+	protected $withCount = ['reviews'];
+
 	public function reviews()
 	{
 		return $this->morphMany(Review::class, 'reviewable');
 	}
 
-	public function reviewRoute($rating, $title = null, $content = null)
+	public function publishedReviews()
 	{
-		return route('reviews.store', ['model' => get_class($this), 'id' => $this->id, 'rating' => $rating, 'title' => $title, 'content' => $content]);
+		return $this->morphMany(Review::class, 'reviewable')->published();
+	}
+
+	public function reviewRoute($prefix = null)
+	{
+		$route = $prefix ? $prefix . '.reviews.store' : 'reviews.store';
+		
+		return route($route, ['model' => get_class($this), 'id' => $this->id]);
 	}
 
 	public function purchaseRoute()

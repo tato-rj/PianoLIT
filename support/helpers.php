@@ -500,9 +500,12 @@ function lookup($file)
 	return $file ? 'text-success' : 'text-danger';
 }
 
-function percentage($num, $percent)
+function percentage($num, $total)
 {
-	return (int)round(($num * 100) / $percent);
+	if ($total == 0)
+		return 0;
+
+	return (int)round(($num * 100) / $total);
 }
 
 function last_letter_in($str, $chars)

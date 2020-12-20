@@ -174,6 +174,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->preferred_piece->tags->where('type', 'mood')->pluck('name');        
     }
 
+    public function reviewFor(PianoLit $product)
+    {
+        return Review::where(['user_id' => $this->id, 'reviewable_type' => get_class($product), 'reviewable_id' => $product->id])->first();
+    }
+
     public function tags($string = false)
     {
         $tags = [];

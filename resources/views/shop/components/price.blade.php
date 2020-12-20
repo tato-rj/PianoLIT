@@ -1,8 +1,9 @@
-<h4 class="m-0">
-	<span>Price:</span>
+@php($isSmall = isset($sm) && $sm)
+<h4 class="m-0" style="{{$isSmall ? 'font-size:88%' : null }}">
+	<span>{{$isSmall ? null : 'Price:'}}</span>
 	<span class="{{$product->discount ? 'text-red' : null}}">
 		@if($product->isFree())
-		FREE!
+		<span class="text-green">FREE!</span>
 		@else
 		${{$product->finalPrice()}}
 		@endif 

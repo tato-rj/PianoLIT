@@ -21,8 +21,11 @@ class ReviewsController extends Controller
             'reviewable_type' => get_class($form->product),
             'reviewable_id' => $form->product->id,
             'title' => $form->title,
+            'reviewer' => $form->reviewer,
             'content' => $form->content
-        ]); 
+        ]);
+
+        return back()->with('status', 'Your review has been successfully submited.');
     }
 
     /**

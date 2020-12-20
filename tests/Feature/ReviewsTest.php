@@ -12,7 +12,7 @@ class ReviewsTest extends AppTest
     {
         $this->expectException('Illuminate\Auth\AuthenticationException');
 
-        $this->post($this->ebook->reviewRoute(5));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5]);
     }
 
     /** @test */
@@ -22,7 +22,7 @@ class ReviewsTest extends AppTest
 
         $this->assertCount(0, $this->ebook->reviews);
 
-        $this->post($this->ebook->reviewRoute(5));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5]);
 
         $this->assertCount(1, $this->ebook->fresh()->reviews);
     }
@@ -34,9 +34,9 @@ class ReviewsTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->post($this->ebook->reviewRoute(5));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5]);
 
-        $this->post($this->ebook->reviewRoute(2));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5]);
     }
 
     /** @test */
@@ -46,13 +46,13 @@ class ReviewsTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->post($this->ebook->reviewRoute(5));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5]);
 
         $this->assertCount(1, $this->ebook->reviews);
 
         $this->signIn(create(User::class));
 
-        $this->post($this->ebook->reviewRoute(5));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5]);
 
         $this->assertCount(2, $this->ebook->fresh()->reviews);
     }
@@ -62,7 +62,7 @@ class ReviewsTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->post($this->ebook->reviewRoute(5, 'Awesome product!'));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5, 'title' => 'Awesome product!']);
 
         $this->get(route('ebooks.show', $this->ebook))->assertDontSee($this->ebook->reviews->first()->title);
 
@@ -76,7 +76,7 @@ class ReviewsTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->post($this->ebook->reviewRoute(5, 'Awesome product!'));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5, 'title' => 'Awesome product!']);
         
         $this->assertCount(1, $this->ebook->reviews);
 
@@ -92,7 +92,7 @@ class ReviewsTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->post($this->ebook->reviewRoute(5, 'Awesome product!'));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5, 'title' => 'Awesome product!']);
         
         $this->signIn(create(User::class));
 
@@ -104,7 +104,7 @@ class ReviewsTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->post($this->ebook->reviewRoute(5, 'Awesome product!'));
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5, 'title' => 'Awesome product!']);
         
         $this->assertCount(1, $this->ebook->reviews);
 
@@ -115,5 +115,19 @@ class ReviewsTest extends AppTest
         $this->delete(route('admin.reviews.destroy', $this->ebook->reviews->first()));
         
         $this->assertCount(0, $this->ebook->fresh()->reviews);   
+    }
+
+    /** @test */
+    public function admins_can_submit_many_fake_reviews()
+    {
+        $this->signIn();
+
+        $this->post($this->ebook->reviewRoute('admin'), ['rating' => 5, 'title' => 'Awesome product!']);
+
+        $this->post($this->ebook->reviewRoute('admin'), ['rating' => 3, 'title' => 'Nice product!']);
+
+        $this->assertTrue($this->ebook->reviews()->first()->isFake());
+        $this->assertTrue($this->ebook->reviews()->latest()->first()->isFake());
+        $this->assertEquals(2, $this->ebook->reviews()->count());
     }
 }

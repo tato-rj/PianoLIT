@@ -63,6 +63,8 @@
           ['name' => 'eScore Topics', 'route' => route('admin.escores.topics.index')]
         ]])
 
+        @include('admin.layouts.header.item', ['route' => route('admin.reviews.index'), 'name' => 'Reviews', 'icon' => 'star-half-alt'])
+
         @include('admin.layouts.header.divider', ['label' => 'FREE CONTENT'])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Blog', 'icon' => 'newspaper',

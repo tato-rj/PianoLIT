@@ -43,7 +43,7 @@
       'subtitle' => 'Use this page to edit this eBook.', 
       'back' => ['view all eBooks' => route('admin.ebooks.index')]
     ])
-
+    
     <div class="row">
       <div class="col-12 mb-3">
         <form action="{{route('admin.ebooks.previews.upload', $ebook)}}" class="dropzone" id="filesDropzone"></form>
@@ -114,6 +114,7 @@
         <button type="submit" id="submit-button" class="btn btn-default">Update eBook</button>
       </div>
     </form>
+    @include('admin.pages.reviews.fake', ['product' => $ebook])
 
   </div>
 </div>
