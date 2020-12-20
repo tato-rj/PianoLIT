@@ -26,8 +26,8 @@ class AdminsController extends Controller
                 'label' => 'Users', 
                 'total' => User::count(),
                 'counts' => [
-                    User::between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    User::between(now()->subWeek(), now())->count()], 
+                    User::upUntilLastWeek()->count(), 
+                    User::count()], 
                 'url' => route('admin.users.index')],
             'platforms' => [
                 [
@@ -35,24 +35,24 @@ class AdminsController extends Controller
                     'label' => 'iOS', 
                     'total' => User::byOrigin('ios')->count(),
                     'counts' => [
-                        User::byOrigin('ios')->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                        User::byOrigin('ios')->between(now()->subWeek(), now())->count()], 
+                        User::byOrigin('ios')->upUntilLastWeek()->count(), 
+                        User::byOrigin('ios')->count()], 
                     'url' => route('admin.users.logs')
                 ], [
                     'icon' => ['icon' => 'bolt'], 
                     'label' => 'WebApp', 
                     'total' => User::byOrigin('webapp')->count(),
                     'counts' => [
-                        User::byOrigin('webapp')->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                        User::byOrigin('webapp')->between(now()->subWeek(), now())->count()], 
+                        User::byOrigin('webapp')->upUntilLastWeek()->count(), 
+                        User::byOrigin('webapp')->count()], 
                     'url' => route('admin.users.logs')
                 ], [
                     'icon' => ['icon' => 'laptop'], 
                     'label' => 'Web', 
                     'total' => User::byOrigin('web')->count(),
                     'counts' => [
-                        User::byOrigin('web')->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                        User::byOrigin('web')->between(now()->subWeek(), now())->count()], 
+                        User::byOrigin('web')->upUntilLastWeek()->count(), 
+                        User::byOrigin('web')->count()], 
                     'url' => route('admin.users.logs')
                 ]
             ]
@@ -63,57 +63,57 @@ class AdminsController extends Controller
                 'label' => 'Subscribers', 
                 'total' => Subscription::count(),
                 'counts' => [
-                    Subscription::between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    Subscription::between(now()->subWeek(), now())->count()], 
+                    Subscription::upUntilLastWeek()->count(), 
+                    Subscription::count()], 
                 'url' => route('admin.subscriptions.index')
             ], [
                 'label' => 'Pieces', 
                 'total' => Piece::count(),
                 'counts' => [
-                    Piece::between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    Piece::between(now()->subWeek(), now())->count()], 
+                    Piece::upUntilLastWeek()->count(), 
+                    Piece::count()], 
                 'url' => route('admin.pieces.index')
             ], [
                 'label' => 'Quizzes', 
                 'total' => Quiz::published()->count(),
                 'counts' => [
-                    Quiz::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    Quiz::published()->between(now()->subWeek(), now())->count()], 
+                    Quiz::published()->upUntilLastWeek()->count(), 
+                    Quiz::published()->count()], 
                 'url' => route('admin.quizzes.index')
             ], [
                 'label' => 'Blog posts', 
                 'total' => Post::published()->count(),
                 'counts' => [
-                    Post::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    Post::published()->between(now()->subWeek(), now())->count()], 
+                    Post::published()->upUntilLastWeek()->count(), 
+                    Post::published()->count()], 
                 'url' => route('admin.posts.index')
             ], [
                 'label' => 'Infographics', 
                 'total' => Infograph::published()->count(),
                 'counts' => [
-                    Infograph::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    Infograph::published()->between(now()->subWeek(), now())->count()], 
+                    Infograph::published()->upUntilLastWeek()->count(), 
+                    Infograph::published()->count()], 
                 'url' => route('admin.infographs.index')
             ], [
                 'label' => 'eBooks', 
                 'total' => eBook::published()->count(),
                 'counts' => [
-                    eBook::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    eBook::published()->between(now()->subWeek(), now())->count()], 
+                    eBook::published()->upUntilLastWeek()->count(), 
+                    eBook::published()->count()], 
                 'url' => route('admin.ebooks.index')
             ], [
                 'label' => 'eScores', 
                 'total' => eScore::published()->count(),
                 'counts' => [
-                    eScore::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    eScore::published()->between(now()->subWeek(), now())->count()], 
+                    eScore::published()->upUntilLastWeek()->count(), 
+                    eScore::published()->count()], 
                 'url' => route('admin.escores.index')
             ], [
                 'label' => 'Crash Courses', 
                 'total' => CrashCourse::published()->count(),
                 'counts' => [
-                    CrashCourse::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
-                    CrashCourse::published()->between(now()->subWeek(), now())->count()], 
+                    CrashCourse::published()->upUntilLastWeek()->count(), 
+                    CrashCourse::published()->count()], 
                 'url' => route('admin.crashcourses.index')
             ],
         ];
