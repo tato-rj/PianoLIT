@@ -115,6 +115,7 @@
         <button type="submit" id="submit-button" class="btn btn-default">Update eScore</button>
       </div>
     </form>
+    @include('admin.pages.reviews.fake', ['product' => $escore])
 
   </div>
 </div>
