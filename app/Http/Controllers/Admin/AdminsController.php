@@ -39,15 +39,15 @@ class AdminsController extends Controller
         ];
 
         $counts = [
-            ['label' => 'Subscribers', 'counts' => [Subscription::upUntilLastWeek()->count(), Subscription::count()], 'url' => route('admin.subscriptions.index')],
-            ['label' => 'Pieces', 'counts' => [Piece::upUntilLastWeek()->count(), Piece::count()], 'url' => route('admin.pieces.index')],
-            ['label' => 'Quizzes', 'counts' => [Quiz::published()->upUntilLastWeek()->count(), Quiz::published()->count()], 'url' => route('admin.quizzes.index')],
+            ['label' => 'Subscribers', 'counts' => [Subscription::between(now()->subWeeks(2), now()->subWeeks(1))->count(), Subscription::between(now()->subWeek(), now())->count()], 'url' => route('admin.subscriptions.index')],
+            ['label' => 'Pieces', 'counts' => [Piece::between(now()->subWeeks(2), now()->subWeeks(1))->count(), Piece::between(now()->subWeek(), now())->count()], 'url' => route('admin.pieces.index')],
+            ['label' => 'Quizzes', 'counts' => [Quiz::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), Quiz::published()->between(now()->subWeek(), now())->count()], 'url' => route('admin.quizzes.index')],
 
-            ['label' => 'Blog posts', 'counts' => [Post::published()->upUntilLastWeek()->count(), Post::published()->count()], 'url' => route('admin.posts.index')],
-            ['label' => 'Infographics', 'counts' => [Infograph::published()->upUntilLastWeek()->count(), Infograph::published()->count()], 'url' => route('admin.infographs.index')],
-            ['label' => 'eBooks', 'counts' => [eBook::published()->upUntilLastWeek()->count(), eBook::published()->count()], 'url' => route('admin.ebooks.index')],
-            ['label' => 'eScores', 'counts' => [eScore::published()->upUntilLastWeek()->count(), eScore::published()->count()], 'url' => route('admin.escores.index')],
-            ['label' => 'Crash Courses', 'counts' => [CrashCourse::published()->upUntilLastWeek()->count(), CrashCourse::published()->count()], 'url' => route('admin.crashcourses.index')],
+            ['label' => 'Blog posts', 'counts' => [Post::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), Post::published()->between(now()->subWeek(), now())->count()], 'url' => route('admin.posts.index')],
+            ['label' => 'Infographics', 'counts' => [Infograph::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), Infograph::published()->between(now()->subWeek(), now())->count()], 'url' => route('admin.infographs.index')],
+            ['label' => 'eBooks', 'counts' => [eBook::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), eBook::published()->between(now()->subWeek(), now())->count()], 'url' => route('admin.ebooks.index')],
+            ['label' => 'eScores', 'counts' => [eScore::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), eScore::published()->between(now()->subWeek(), now())->count()], 'url' => route('admin.escores.index')],
+            ['label' => 'Crash Courses', 'counts' => [CrashCourse::published()->between(now()->subWeeks(2), now()->subWeeks(1))->count(), CrashCourse::published()->between(now()->subWeek(), now())->count()], 'url' => route('admin.crashcourses.index')],
         ];
 
         $birthdays = Composer::bornToday()->get();
