@@ -8,4 +8,9 @@ trait ManageDates
     {
         return $query->where('created_at','<=', now()->subWeek());
     }
+
+    public function scopeBetween($query, $from, $to)
+    {
+        return $query->whereBetween('created_at', [$from, $to]);
+    }
 }

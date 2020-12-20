@@ -26,7 +26,10 @@ class AdminsController extends Controller
             'platforms' => [
                 ['icon' => ['icon' => 'apple', 'fa_type' => 'b'],'label' => 'iOS', 'counts' => [User::byOrigin('ios')->upUntilLastWeek()->count(), User::byOrigin('ios')->count()], 'url' => route('admin.users.logs')],
                 ['icon' => ['icon' => 'bolt'],'label' => 'WebApp', 'counts' => [User::byOrigin('webapp')->upUntilLastWeek()->count(), User::byOrigin('webapp')->count()], 'url' => route('admin.users.logs')],
-                ['icon' => ['icon' => 'laptop'],'label' => 'Web', 'counts' => [User::byOrigin('web')->upUntilLastWeek()->count(), User::byOrigin('web')->count()], 'url' => route('admin.users.logs')]]
+                ['icon' => ['icon' => 'laptop'],'label' => 'Web', 'counts' => [
+                    User::byOrigin('web')->between(now()->subWeeks(2), now()->subWeeks(1))->count(), 
+                    User::byOrigin('web')->between(now()->subWeek(), now())->count()
+                ], 'url' => route('admin.users.logs')]]
         ];
 
         $counts = [
