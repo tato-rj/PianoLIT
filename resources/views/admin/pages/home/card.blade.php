@@ -2,7 +2,7 @@
   <div class="rounded border d-flex">
     <div class="flex-grow p-3">
       <div class="pb-2 border-bottom">
-          <strong>{{number_format($stat['counts'][1])}}</strong> {{$stat['label']}}
+          <strong>{{number_format($stat['total'])}}</strong> {{$stat['label']}}
       </div>
       <div class="pt-2">
         @if($stat['counts'][0] == $stat['counts'][1])

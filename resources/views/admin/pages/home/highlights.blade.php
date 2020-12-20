@@ -3,7 +3,7 @@
             <a class="link-none w-100 h-100 d-flex flex-center" href="{{$userStats['all']['url']}}">
               <div class="text-center py-4">
                 <div class="opacity-6">Total number of users</div>
-                <h1 style="font-size: 3.6em;" class="my-2 mx-auto">{{number_format($userStats['all']['counts'][1])}}</h1>
+                <h1 style="font-size: 3.6em;" class="my-2 mx-auto">{{number_format($userStats['all']['total'])}}</h1>
                 <div>
                   @if($userStats['all']['counts'][0] == $userStats['all']['counts'][1])
                   @fa(['icon' => 'exclamation-circle'])Same as last week
@@ -20,7 +20,7 @@
             @foreach($userStats['platforms'] as $platform)
             <a class="link-none" href="{{$platform['url']}}">
               <div class="p-4 align-items-center d-md-flex flex-wrap justify-content-between {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
-                <div class="mr-3">@fa($platform['icon']){{$platform['counts'][1]}} {{$platform['label']}} Users</div>
+                <div class="mr-3">@fa($platform['icon']){{$platform['total']}} {{$platform['label']}} Users</div>
                 <div class="">
                   @if($platform['counts'][0] == $platform['counts'][1])
                   <small class="text-warning text-nowrap">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
