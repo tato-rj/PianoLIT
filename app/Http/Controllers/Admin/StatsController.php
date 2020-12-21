@@ -89,7 +89,7 @@ class StatsController extends Controller
         $locationsStats = $query->select($field, \DB::raw('count(*) as total'))
                                 ->groupBy($field)
                                 ->get();
-
+return $locationsStats;
         $array = [['', 'Users']];
 
         foreach($locationsStats as $location) {
