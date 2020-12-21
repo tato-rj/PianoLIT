@@ -84,14 +84,12 @@ class StatsController extends Controller
 
         $query = $countryExists ? Location::byCountry($country) : new Location;
 
-        $region = $countryExists ? $query->first()->countryCode : null;
+        $region = $countryExists ? Location::byCountry($country)->first()->countryCode : null;
 
         $locationsStats = $query->select($field, \DB::raw('count(*) as total'))
                                 ->groupBy($field)
                                 ->get();
-return Location::byCountry('United States')->select($field, \DB::raw('count(*) as total'))
-                                ->groupBy($field)
-                                ->get();
+
         $array = [['', 'Users']];
 
         foreach($locationsStats as $location) {
