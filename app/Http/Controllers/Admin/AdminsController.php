@@ -21,9 +21,15 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return \App\Location::byCountry('United States')->select('regionName', \DB::raw('count(*) as total'))
+        $locationsStats = \App\Location::byCountry('United States')->select('regionName', \DB::raw('count(*) as total'))
                                 ->groupBy('regionName')
                                 ->get();
+        $array = [['', 'Users']];
+
+        foreach($locationsStats as $location) {
+            array_push($array, [$location->reginoName, $location->total]);
+        }
+        return $array;
         $userStats = [
             'all' => [
                 'label' => 'Users', 
