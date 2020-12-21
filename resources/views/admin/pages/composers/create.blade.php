@@ -11,7 +11,7 @@
       @include('admin.pages.composers.gender', ['gender' => old('gender')])
     </div>
   </div>
-  @textarea(['bag' => 'default', 'name' => 'biography', 'placeholder' => 'Life\'s summary', 'limit' => 255, 'rows' => 6])
+  @textarea(['bag' => 'default', 'name' => 'biography', 'placeholder' => 'Life\'s summary', 'rows' => 6])
   @textarea(['bag' => 'default', 'name' => 'curiosity', 'placeholder' => 'Did you know?', 'limit' => 125, 'rows' => 3, 'required' => false])
 
   <div class="form-row">
