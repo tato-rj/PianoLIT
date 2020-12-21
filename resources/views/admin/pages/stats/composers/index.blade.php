@@ -47,7 +47,7 @@
 
     <div class="row">
         <div class="col-12">
-            <div id="regions_div" data-stats="{{json_encode($mapArray)}}" style="width: 100%; height: 500px;"></div>
+            <div id="regions_div" data-countries="{{json_encode($countriesArray)}}" style="width: 100%; height: 500px;"></div>
         </div>
     </div>
 
@@ -62,26 +62,48 @@
 @section('scripts')
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+
 <script type="text/javascript">
-      google.charts.load('current', {
+    // SETUP
+    google.charts.load('current', {
         'packages':['geochart'],
         // Note: you will need to get a mapsApiKey for your project.
         // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
         'mapsApiKey': "{{env('GOOGLE_API_KEY')}}"
-      });
-      google.charts.setOnLoadCallback(drawRegionsMap);
+    });
 
-      function drawRegionsMap() {
-        var array = $('#regions_div').data('stats');
+    function loadMap(array, region = null) {
+        google.charts.setOnLoadCallback(function() {
+            return drawRegionsMap(array, region);
+        });
+    }
+
+    function drawRegionsMap(array, region = null) {
 
         var data = google.visualization.arrayToDataTable(array);
 
-        var options = {};
+        var options = {
+            region: region,
+            colorAxis: {colors: ['#D7E9E9', '#0055fe']}
+        };
 
         var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
 
         chart.draw(data, options);
-      }
+
+        google.visualization.events.addListener(chart, 'select', function() {
+            var selection = chart.getSelection().length ? chart.getSelection()[0]['row'] + 1 : null;
+
+            if (selection) {
+                loadMap(array, 'US');
+            }
+        });
+    }
+</script>
+<script type="text/javascript">
+    var countriesArray = $('#regions_div').data('countries');
+
+    loadMap(countriesArray);
 </script>
 <script type="text/javascript">
 $(document).ready( function () {

@@ -8,7 +8,7 @@ use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
 use App\Billing\Membership;
-use App\{User, Piece, Tag, Composer, Country};
+use App\{User, Piece, Tag, Composer, Country, Location};
 use App\Log\Loggers\DailyLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -63,15 +63,40 @@ class StatsController extends Controller
         $upcomingDeathdays = Composer::upcomingDeathdays(30)->get();
         $periodsStats = Composer::byPeriod();
         $countriesStats = Country::has('composers')->withCount('composers')->orderBy('composers_count', 'DESC')->get();
-        $mapArray = [['Country', 'Composers']];
+        $countriesArray = [['Country', 'Composers']];
 
         foreach($countriesStats as $country) {
-            array_push($mapArray, [$country->name, $country->composers_count]);
+            array_push($countriesArray, [$country->name, $country->composers_count]);
         }
 
         $composers = Composer::all();
 
-        return view('admin.pages.stats.composers.index', compact(['composersStats', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays', 'periodsStats', 'countriesStats', 'composers', 'mapArray']));
+        return view('admin.pages.stats.composers.index', compact(['composersStats', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays', 'periodsStats', 'countriesStats', 'composers', 'countriesArray']));
+    }
+
+    public function loadMap(Request $request)
+    {
+        $country = $request->country;
+        
+        $field = $country ? 'regionName' : 'countryName';
+
+        $countryExists = Location::where('countryName', $country)->exists();
+
+        $query = $countryExists ? Location::where('countryName', $country) : new Location;
+
+        $region = $countryExists ? $query->first()->countryCode : null;
+
+        $locationsStats = $query->select($field, \DB::raw('count(*) as total'))
+                                ->groupBy($field)
+                                ->get();
+
+        $array = [['', 'Users']];
+
+        foreach($locationsStats as $location) {
+            array_push($array, [$location->$field, $location->total]);
+        }
+
+        return ['region' => $region, 'array' => $array];
     }
 
     public function blog()

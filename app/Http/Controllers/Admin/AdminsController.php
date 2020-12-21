@@ -21,6 +21,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
+        // return \App\Location::all();
         $userStats = [
             'all' => [
                 'label' => 'Users', 

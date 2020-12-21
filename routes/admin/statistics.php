@@ -18,4 +18,5 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 
 	Route::get('infographs', 'Admin\StatsController@infographs')->name('infographs');
 
+	Route::get('load-map', 'Admin\StatsController@loadMap')->name('load-map');
 });
