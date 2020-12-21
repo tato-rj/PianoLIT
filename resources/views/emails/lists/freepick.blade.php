@@ -43,7 +43,7 @@ Check this week's FREE pick
 
 @component('mail::panel')
 <h1>Did you know?</h1>
-{{$piece->curiosity}}
+{{$piece->curiosity ?? $piece->composer->curiosity}}
 @endcomponent
 
 @component('mail::promotion')
