@@ -19,6 +19,9 @@
         @endforeach
       </div>
       <div class="row">
+          <div class="col-12">
+          <h5>Where our users are from</h5>
+        </div>
           <div class="col-12 position-relative" style="overflow-x: auto;">
               <div id="regions-div" data-url="{{route('admin.stats.load-map')}}" style="width: 100%; height: 500px; min-width: 600px"></div>
               <button id="reset-map" class="absolute-top-left btn btn-primary btn-sm" style="display: none;">Reset map</button>
