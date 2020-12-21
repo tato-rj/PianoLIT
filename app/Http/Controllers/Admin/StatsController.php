@@ -76,7 +76,7 @@ class StatsController extends Controller
 
     public function loadMap(Request $request)
     {
-        $country = 'United States';// $request->country;
+        $country = $request->country;
         
         $field = $country ? 'regionName' : 'countryName';
 
