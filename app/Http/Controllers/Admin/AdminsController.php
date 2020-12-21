@@ -21,7 +21,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        // return \App\Location::all();
+        return \App\Location::byCountry('United Stated')->get();
         $userStats = [
             'all' => [
                 'label' => 'Users', 

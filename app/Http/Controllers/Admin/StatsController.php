@@ -80,9 +80,9 @@ class StatsController extends Controller
         
         $field = $country ? 'regionName' : 'countryName';
 
-        $countryExists = Location::where('countryName', $country)->exists();
+        $countryExists = Location::byCountry($country)->exists();
 
-        $query = $countryExists ? Location::where('countryName', $country) : new Location;
+        $query = $countryExists ? Location::byCountry($country) : new Location;
 
         $region = $countryExists ? $query->first()->countryCode : null;
 

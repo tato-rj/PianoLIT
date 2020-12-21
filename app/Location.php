@@ -26,4 +26,9 @@ class Location extends PianoLit
     {
     	return $this->latitude . ', ' . $this->longitude;
     }
+
+    public function scopeByCountry($query, $country)
+    {
+        return $query->where('countryName', $country);
+    }
 }
