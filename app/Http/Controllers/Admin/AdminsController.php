@@ -21,7 +21,9 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return \App\Location::byCountry('United States')->get();
+        return \App\Location::byCountry('United States')->select('regionName', \DB::raw('count(*) as total'))
+                                ->groupBy('regionName')
+                                ->get();
         $userStats = [
             'all' => [
                 'label' => 'Users', 
