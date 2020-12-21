@@ -4,6 +4,11 @@ namespace App;
 
 class Location extends PianoLit
 {
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function scopeCreateIfNotExists($query, $userId, $data)
     {
     	if (! $this->find($userId))
@@ -27,8 +32,21 @@ class Location extends PianoLit
     	return $this->latitude . ', ' . $this->longitude;
     }
 
+    public function getGooglemapAttribute()
+    {
+        return "http://maps.google.com/?q={$this->coordinates}&ll={$this->coordinates}&z=12";
+    }
+
     public function scopeByCountry($query, $country)
     {
         return $query->where('countryName', $country);
+    }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withBlade([
+            'user' => view('admin.pages.users.locations.table.user'),
+            'action' => view('admin.pages.users.locations.table.actions')
+        ])->make();
     }
 }

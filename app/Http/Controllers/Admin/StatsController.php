@@ -8,7 +8,7 @@ use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
 use App\Billing\Membership;
-use App\{User, Piece, Tag, Composer, Country, Location};
+use App\{User, Piece, Tag, Composer, Country};
 use App\Log\Loggers\DailyLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -72,31 +72,6 @@ class StatsController extends Controller
         $composers = Composer::all();
 
         return view('admin.pages.stats.composers.index', compact(['composersStats', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays', 'periodsStats', 'countriesStats', 'composers', 'countriesArray']));
-    }
-
-    public function loadMap(Request $request)
-    {
-        $country = $request->country;
-        
-        $field = $country ? 'regionName' : 'countryName';
-
-        $countryExists = Location::byCountry($country)->exists();
-
-        $query = $countryExists ? Location::byCountry($country) : new Location;
-
-        $region = $countryExists ? Location::byCountry($country)->first()->countryCode : null;
-
-        $locationsStats = $query->select($field, \DB::raw('count(*) as total'))
-                                ->groupBy($field)
-                                ->get();
-
-        $array = [['', 'Users']];
-
-        foreach($locationsStats as $location) {
-            array_push($array, [$location->$field, $location->total]);
-        }
-
-        return ['region' => $region, 'array' => $array];
     }
 
     public function blog()

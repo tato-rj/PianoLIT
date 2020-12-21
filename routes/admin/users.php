@@ -6,6 +6,14 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::get('', 'Admin\UsersController@index')->name('index');
 
+	Route::prefix('locations')->name('locations.')->group(function() {
+
+		Route::get('', 'Admin\LocationsController@index')->name('index');
+
+		Route::get('load-map', 'Admin\LocationsController@loadMap')->name('load-map');
+	
+	});
+
 	Route::get('logs', 'Admin\UsersController@logs')->name('logs');
 
 	Route::get('{user}', 'Admin\UsersController@show')->name('show');

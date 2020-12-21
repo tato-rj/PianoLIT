@@ -3,7 +3,7 @@
 Route::prefix('statistics')->name('stats.')->group(function() {
 
 	Route::get('users', 'Admin\StatsController@users')->name('users');
-
+	
 	Route::get('memberships', 'Admin\StatsController@memberships')->name('memberships');
 
 	Route::get('subscriptions', 'Admin\StatsController@subscriptions')->name('subscriptions');
@@ -17,6 +17,4 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 	Route::get('quizzes', 'Admin\StatsController@quizzes')->name('quizzes');
 
 	Route::get('infographs', 'Admin\StatsController@infographs')->name('infographs');
-
-	Route::get('load-map', 'Admin\StatsController@loadMap')->name('load-map');
 });

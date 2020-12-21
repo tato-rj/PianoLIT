@@ -31,6 +31,7 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
         'dropdown' => [
           ['name' => 'Profiles', 'route' => route('admin.users.index')],
+          ['name' => 'Locations', 'route' => route('admin.users.locations.index')],
           ['name' => 'Activity Logs', 'route' => route('admin.users.logs')],
           ['name' => 'Tutorial Requests', 'route' => route('admin.tutorial-requests.index')],
           ['name' => 'Memberships Logs', 'route' => route('admin.memberships.logs'), 'target' => '_blank']

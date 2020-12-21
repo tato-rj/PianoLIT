@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\{User, Piece, Composer, Subscription};
+use App\{User, Piece, Composer, Subscription, Location};
 use App\Billing\Payment;
 use App\Infograph\Infograph;
 use App\CrashCourse\CrashCourse;
