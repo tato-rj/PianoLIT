@@ -27,7 +27,7 @@ class AdminsController extends Controller
         $array = [['', 'Users']];
 
         foreach($locationsStats as $location) {
-            array_push($array, [$location->reginoName, $location->total]);
+            array_push($array, [$location->regionName, $location->total]);
         }
         return $array;
         $userStats = [
