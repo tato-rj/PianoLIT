@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Review;
+use App\{Review, Admin};
 use Illuminate\Http\Request;
 use App\Http\Requests\ReviewsForm;
+use App\Notifications\ReviewSubmittedNotification;
 
 class ReviewsController extends Controller
 {
@@ -16,7 +17,7 @@ class ReviewsController extends Controller
      */
     public function store(ReviewsForm $form, $model, $id)
     {
-        auth()->user()->reviews()->create([
+        $review = auth()->user()->reviews()->create([
             'rating' => $form->rating,
             'reviewable_type' => get_class($form->product),
             'reviewable_id' => $form->product->id,
@@ -24,6 +25,8 @@ class ReviewsController extends Controller
             'reviewer' => $form->reviewer,
             'content' => $form->content
         ]);
+
+        Admin::notifyAll(new ReviewSubmittedNotification($review));
 
         return back()->with('status', 'Your review has been successfully submited.');
     }

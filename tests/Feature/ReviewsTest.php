@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\User;
+use App\Notifications\ReviewSubmittedNotification;
 
 class ReviewsTest extends AppTest
 {
@@ -41,7 +42,7 @@ class ReviewsTest extends AppTest
 
     /** @test */
     public function multiple_users_can_review_the_same_product()
-    {        
+    {
         $this->assertFalse($this->ebook->reviews()->exists());
 
         $this->signIn($this->user);
@@ -93,7 +94,7 @@ class ReviewsTest extends AppTest
         $this->signIn($this->user);
 
         $this->post($this->ebook->reviewRoute(), ['rating' => 5, 'title' => 'Awesome product!']);
-        
+
         $this->signIn(create(User::class));
 
         $this->delete(route('reviews.destroy', $this->ebook->reviews->first()));
@@ -129,5 +130,17 @@ class ReviewsTest extends AppTest
         $this->assertTrue($this->ebook->reviews()->first()->isFake());
         $this->assertTrue($this->ebook->reviews()->latest()->first()->isFake());
         $this->assertEquals(2, $this->ebook->reviews()->count());
+    }
+
+    /** @test */
+    public function admins_are_notified_when_a_product_receives_a_review()
+    {
+        \Notification::fake();
+
+        $this->signIn($this->user);
+
+        $this->post($this->ebook->reviewRoute(), ['rating' => 5, 'title' => 'Awesome product!']);
+
+        \Notification::assertSentTo($this->admin, ReviewSubmittedNotification::class);
     }
 }
