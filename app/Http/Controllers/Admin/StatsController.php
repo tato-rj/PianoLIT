@@ -86,8 +86,8 @@ class StatsController extends Controller
 
         $region = $countryExists ? $query->first()->countryCode : null;
 
-        $locationsStats = $query->select($field, \DB::raw('count(*) as total'))
-                                ->groupBy($field)
+        $locationsStats = $query->select('countryName', 'regionName', \DB::raw('count(*) as total'))
+                                ->groupBy('countryName', 'regionName')
                                 ->get();
 return $locationsStats;
         $array = [['', 'Users']];
