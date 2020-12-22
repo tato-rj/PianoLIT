@@ -2,6 +2,6 @@
 
 Route::name('funnels.')->group(function() {
 
-	Route::get('find-your-match', 'FunnelsController@findYourMatch')->name('find-your-match');
+	Route::get('find-your-match', 'FunnelsController@findYourMatch')->name('find-your-match')->middleware('dev-only:home');
 	
 });
