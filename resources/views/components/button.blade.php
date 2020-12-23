@@ -3,6 +3,10 @@
 	href="{{$href}}" 
 	@endisset
 
+	@isset($id)
+	id="{{$id}}" 
+	@endisset
+
 	{{! empty($nofollow) && $nofollow ? 'rel="nofollow"' : null}}
 
 	{{$attr ?? null}}

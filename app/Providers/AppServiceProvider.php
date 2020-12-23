@@ -124,5 +124,11 @@ class AppServiceProvider extends ServiceProvider
                 return $bool ? $piece->isFavorited($user_id) : ! $piece->isFavorited($user_id);
             });
         });
+
+        Collection::macro('notNull', function() {
+            return $this->filter(function($item) {
+                return !is_null($item);
+            })->values();
+        });
     }
 }
