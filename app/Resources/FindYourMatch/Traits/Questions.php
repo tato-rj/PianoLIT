@@ -42,12 +42,12 @@ trait Questions
 		],
 
 		'Which composer you wish you knew more about?' => [
-			['label' => 'Florence Price', 'subtitle' => '1887 to 1953', 'keywords' => ['type' => 'genre', 'term' => 'black composers']],
+			['label' => 'Florence Price', 'subtitle' => '1887 to 1953', 'keywords' => ['type' => 'ethnicity', 'term' => 'black']],
 			['label' => 'Alberto Ginastera', 'subtitle' => '1916 to 1983', 'keywords' => ['type' => 'period', 'term' => 'modern']],
-			['label' => 'Thomas Wiggins', 'subtitle' => '1849 to 1908', 'keywords' => ['type' => 'genre', 'term' => 'black composers']],
-			['label' => 'Ulysses Kay', 'subtitle' => '1917 to 1995', 'keywords' => ['type' => 'genre', 'term' => 'black composers']],
-			['label' => 'Amy Beach', 'subtitle' => '1867 to 1944', 'keywords' => ['type' => 'genre', 'term' => 'women composers']],
-			['label' => 'Mel Bonis', 'subtitle' => '1923 to 2006', 'keywords' => ['type' => 'genre', 'term' => 'women composers']]
+			['label' => 'Thomas Wiggins', 'subtitle' => '1849 to 1908', 'keywords' => ['type' => 'ethnicity', 'term' => 'black']],
+			['label' => 'Ulysses Kay', 'subtitle' => '1917 to 1995', 'keywords' => ['type' => 'ethnicity', 'term' => 'black']],
+			['label' => 'Amy Beach', 'subtitle' => '1867 to 1944', 'keywords' => ['type' => 'gender', 'term' => 'female']],
+			['label' => 'Mel Bonis', 'subtitle' => '1923 to 2006', 'keywords' => ['type' => 'gender', 'term' => 'female']]
 		],
 
 		'If you had to hang out with one famous composer, who would that be?' => [
@@ -61,11 +61,20 @@ trait Questions
 
 		'Which of these hidden gems do you like the most?' => [
 			['label' => 'Elegy', 'subtitle' => 'by Shostakovich', 'keywords' => ['type' => 'mood', 'term' => 'tender']],
-			['label' => 'Souvenance', 'subtitle' => 'by Chaminade', 'keywords' => ['type' => 'genre', 'term' => 'woman composers']],
-			['label' => 'Dreaming', 'subtitle' => 'by Amy Beach', 'keywords' => ['type' => 'genre', 'term' => 'woman composers']],
-			['label' => 'Sewing Song', 'subtitle' => 'by Thomas Wiggins', 'keywords' => ['type' => 'genre', 'term' => 'black composers']],
-			['label' => 'Song Without Words', 'subtitle' => 'by Mel Bonis', 'keywords' => ['type' => 'genre', 'term' => 'woman composers']],
-			['label' => 'Little Melody', 'subtitle' => 'Florence Price', 'keywords' => ['type' => 'genre', 'term' => 'black composers']]
-		]
+			['label' => 'Souvenance', 'subtitle' => 'by Chaminade', 'keywords' => ['type' => 'gender', 'term' => 'female']],
+			['label' => 'Dreaming', 'subtitle' => 'by Amy Beach', 'keywords' => ['type' => 'gender', 'term' => 'female']],
+			['label' => 'Sewing Song', 'subtitle' => 'by Thomas Wiggins', 'keywords' => ['type' => 'ethnicity', 'term' => 'black']],
+			['label' => 'Song Without Words', 'subtitle' => 'by Mel Bonis', 'keywords' => ['type' => 'gender', 'term' => 'female']],
+			['label' => 'Little Melody', 'subtitle' => 'Florence Price', 'keywords' => ['type' => 'ethnicity', 'term' => 'black']]
+		],
+
+		'Which option best describes where you are right now in your piano journey?' => [
+			['label' => 'I just got started', 'subtitle' => 'It\'s been less than a year', 'keywords' => ['type' => 'level', 'term' => 'elementary']],
+			['label' => 'I\'ve been playing Bach minuets', 'subtitle' => 'My reading is ok, but it\'s getting better!', 'keywords' => ['type' => 'level', 'term' => 'early beginner']],
+			['label' => 'Speed', 'subtitle' => 'Playing fast pieces is the hardest thing for me', 'keywords' => ['type' => 'level', 'term' => 'late intermediate']],
+			['label' => 'Memorization', 'subtitle' => 'It\'s hard for me to memorize', 'keywords' => ['type' => 'level', 'term' => 'early intermediate']],
+			['label' => 'Motivation', 'subtitle' => 'I like playing, but not practicing', 'keywords' => ['type' => 'level', 'term' => 'early intermediate']],
+			['label' => 'I\'m a newby, it\'s all a challenge', 'subtitle' => 'I\'m excited to start!', 'keywords' => ['type' => 'level', 'term' => 'elementary']]
+		],
 	];
 }

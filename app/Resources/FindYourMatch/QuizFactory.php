@@ -3,35 +3,40 @@
 namespace App\Resources\FindYourMatch;
 
 use App\Resources\FindYourMatch\Categories\Category;
+use App\Resources\FindYourMatch\Traits\Categories;
 use App\Tag;
 
 abstract class QuizFactory
 {
+	use Categories;
+	
 	public function __construct()
 	{
-		foreach ($this->categories as $category => $class) {
-			$this->$category = new $class;
+		$this->bootCategories();
+	}
+
+	public function getKeywords($flexible = false)
+	{
+		if ($flexible) {
+			foreach ($this->categories as $category => $class) {
+				if ($this->keywords->has($category)) {
+					$this->keywords->forget($category);
+					break;
+				}
+			}
 		}
+
+		return $this->keywords;
 	}
 
 	public function getResults()
 	{
-		$results = collect(['and' => collect(), 'or' => collect()]);
+		$results = collect();
 
 		foreach ($this->categories as $category => $class) {
-			$keywords = $this->$category->get();
-			$results['and']->push($keywords['and']);
-			$results['or']->push($keywords['or']);
+			$results->push($this->$category->get());
 		}
-		
-		$results['and'] = $results['and']->flatten()->notNull();
-		$results['or'] = $results['or']->flatten()->notNull();
 
-		return $results;
-	}
-
-	public function isValid($category)
-	{
-		return property_exists($this, $category) && $this->$category instanceof Category;
+		return $results->flattenWithKeys();
 	}
 }

@@ -130,5 +130,11 @@ class AppServiceProvider extends ServiceProvider
                 return !is_null($item);
             })->values();
         });
+
+        Collection::macro('flattenWithKeys', function() {
+            return $this->mapWithKeys(function($a) {
+                return $a;
+            });
+        });
     }
 }

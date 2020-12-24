@@ -2,7 +2,7 @@
 
 Route::name('funnels.')->group(function() {
 
-	Route::prefix('find-your-match')->name('find-your-match.')->middleware('dev-only:home')->group(function() {
+	Route::prefix('find-your-match')->name('find-your-match.')->group(function() {
 
 		Route::get('', 'FunnelsController@match')->name('index');
 

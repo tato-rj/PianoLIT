@@ -3,24 +3,21 @@
 namespace App\Resources\FindYourMatch;
 
 use App\Resources\FindYourMatch\Traits\Questions;
-use App\Resources\FindYourMatch\Categories\{Composer, Genre, Level, Mood, Nationality, Period};
 
 class Quiz extends QuizFactory
 {
 	use Questions;
 
-	protected $categories = [
-		'composer' => Composer::class,
-		'genre' => Genre::class,
-		'level' => Level::class,
-		'mood' => Mood::class,
-		'nationality' => Nationality::class,
-		'period' => Period::class
-	];
+	protected $keywords;
 
 	public function generate()
 	{
 		return $this->questions;
+	}
+
+	public function search()
+	{
+		return (new Search($this))->results();
 	}
 
 	public function findKeywords($input)
@@ -37,6 +34,8 @@ class Quiz extends QuizFactory
 				$this->$category->take($term[1]);
 		}
 
-		return $this->getResults();
+		$this->keywords = $this->getResults();
+
+		return $this;
 	}
 }
