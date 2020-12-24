@@ -38,6 +38,7 @@ class Search
 		if (! $query->exists())
 			return $this->tryAgain();
 
+		return $this->quiz->getKeywords();
 		return $query->first();
 	}
 
