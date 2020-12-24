@@ -7,7 +7,7 @@ trait Questions
 	protected $questions = [
 		'What would you listen to during a relaxing Sunday afternoon?' => [
 			['label' => 'Goldberg Variations', 'subtitle' => 'by J.S.Bach', 'keywords' => ['type' => 'period', 'term' => 'baroque']],
-			['label' => 'Romeo and Juliet', 'subtitle' => 'by P.Tchaikovsky', 'keywords' => ['type' => 'nationality', 'term' => 'russian']],
+			['label' => 'Romeo and Juliet', 'subtitle' => 'by P.Tchaikovsky', 'keywords' => ['type' => 'mood', 'term' => 'dramatic']],
 			['label' => 'Moonlight Sonata', 'subtitle' => 'by L.V.Beethoven', 'keywords' => ['type' => 'mood', 'term' => 'melancholic']],
 			['label' => 'Requiem in D minor', 'subtitle' => 'by W.A.Mozart', 'keywords' => ['type' => 'mood', 'term' => 'dramatic']],
 			['label' => 'Firebird Suite', 'subtitle' => 'by I.Stravinsky', 'keywords' => ['type' => 'mood', 'term' => 'modern']],
