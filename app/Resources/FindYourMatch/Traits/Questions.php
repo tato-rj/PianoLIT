@@ -71,10 +71,10 @@ trait Questions
 		'Which option best describes where you are right now in your piano journey?' => [
 			['label' => 'I just got started', 'subtitle' => 'It\'s been less than a year', 'keywords' => ['type' => 'level', 'term' => 'elementary']],
 			['label' => 'I\'ve been playing Bach minuets', 'subtitle' => 'My reading is ok, but it\'s getting better!', 'keywords' => ['type' => 'level', 'term' => 'early beginner']],
-			['label' => 'Speed', 'subtitle' => 'Playing fast pieces is the hardest thing for me', 'keywords' => ['type' => 'level', 'term' => 'late intermediate']],
-			['label' => 'Memorization', 'subtitle' => 'It\'s hard for me to memorize', 'keywords' => ['type' => 'level', 'term' => 'early intermediate']],
-			['label' => 'Motivation', 'subtitle' => 'I like playing, but not practicing', 'keywords' => ['type' => 'level', 'term' => 'early intermediate']],
-			['label' => 'I\'m a newby, it\'s all a challenge', 'subtitle' => 'I\'m excited to start!', 'keywords' => ['type' => 'level', 'term' => 'elementary']]
+			['label' => 'I can play well but reading is still a challenge', 'subtitle' => 'Playing fast pieces is the hardest thing for me', 'keywords' => ['type' => 'level', 'term' => 'early intermediate']],
+			['label' => 'I\'ve been playing for a while but lost motivation', 'subtitle' => 'It\'s hard for me to memorize', 'keywords' => ['type' => 'level', 'term' => 'late intermediate']],
+			['label' => 'I don\'t like playing concerts, I play just for myself', 'subtitle' => 'I like playing, but not practicing', 'keywords' => ['type' => 'level', 'term' => 'late intermediate']],
+			['label' => 'I am a professional pianist', 'subtitle' => 'I\'m excited to start!', 'keywords' => ['type' => 'level', 'term' => 'advanced']]
 		],
 	];
 }
