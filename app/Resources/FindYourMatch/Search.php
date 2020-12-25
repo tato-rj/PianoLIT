@@ -26,9 +26,7 @@ class Search
 			dd('Give up');
 
 		// $query = Piece::whereNotNull('cover_path');
-		$query = Piece::whereHas('tags', function($q) {
-			$q->where('name', '!=', 'famous');
-		});
+		$query = Piece::whereNotNull('name');
 
 		$keywords = $keywords ?? $this->quiz->getKeywords();
 
@@ -38,7 +36,7 @@ class Search
 			}
 		}
 
-		if (! $query->exists())
+		if (! $query->exists() || $query->first()->isFamous)
 			return $this->tryAgain();
 
 		return $query->first();
