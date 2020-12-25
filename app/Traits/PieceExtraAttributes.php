@@ -4,13 +4,6 @@ namespace App\Traits;
 
 trait PieceExtraAttributes
 {
-    public function getIsFamousAttribute()
-    {
-        return (bool) $this->has('tags', function() {
-
-        });
-    }
-
     public function getIsNewAttribute()
     {
         return $this->created_at->gte(now()->subDays(3));    

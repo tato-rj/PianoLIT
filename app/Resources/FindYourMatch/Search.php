@@ -36,13 +36,10 @@ class Search
 			}
 		}
 
-		if (! $query->exists() || $query->whereHas('tags', function($q) {
-	$q->where('name', 'famous');
-})->exists()) {
+		if (! $query->exists())
 			return $this->tryAgain();
-		}
 
-		return $query->first();
+		return $query->get();
 	}
 
 	public function tryAgain()
