@@ -6,7 +6,9 @@ trait PieceExtraAttributes
 {
     public function getIsFamousAttribute()
     {
-        return (bool) $this->tags->contains('famous');
+        return (bool) $this->has('tags', function() {
+
+        });
     }
 
     public function getIsNewAttribute()
