@@ -25,7 +25,7 @@ class Search
 		if ($this->tooManyTimes())
 			dd('Give up');
 
-		$query = Piece::whereNotNull('cover_path');
+		$query = Piece::whereNotNull('name');
 
 		$keywords = $keywords ?? $this->quiz->getKeywords();
 
@@ -38,7 +38,6 @@ class Search
 		if (! $query->exists())
 			return $this->tryAgain();
 
-		return $this->quiz->getKeywords();
 		return $query->first();
 	}
 
