@@ -28,7 +28,7 @@ Request tutorial
 
 	<div class="d-flex flex-center w-100">
 		<button class="btn rounded-pill btn-wide mx-2 btn-sm btn-outline-secondary" data-dismiss="modal">Cancel</button>
-		<button type="submit" class="btn rounded-pill btn-wide mx-2 btn-sm btn-default">Submit</button>
+		<button type="submit" class="btn rounded-pill btn-wide mx-2 btn-sm btn-default">Submit my request</button>
 	</div>
 </form>
 @endslot
