@@ -39,7 +39,7 @@ class Search
 		if (! $query->exists())
 			return $this->tryAgain();
 
-		return $query->inRandomOrder()->first();
+		return $query->inRandomOrder()->count();
 	}
 
 	public function tryAgain()
