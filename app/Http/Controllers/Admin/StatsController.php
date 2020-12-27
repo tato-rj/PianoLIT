@@ -27,7 +27,7 @@ class StatsController extends Controller
     {
         if (request()->ajax())
             return (new Stats)->for('pieces')->query(request('type'), request()->except('type'))->get();
-$tagStats = Tag::whereIn('type', ['mood', 'technique'])->withCount('pieces')->orderBy('pieces_count', 'DESC')->get(10);
+$tagStats = Tag::whereIn('type', ['mood', 'technique'])->withCount('pieces')->orderBy('pieces_count', 'DESC')->take(10)->get();
 return $tagStats;
         $favorites = Piece::orderBy('favorites_count', 'DESC')->take(10)->get();
         $views = Piece::orderBy('views_count', 'DESC')->take(10)->get();
