@@ -4,6 +4,7 @@ namespace App\Resources\FindYourMatch\Traits;
 
 trait Questions
 {
+	// TOP TAGS: DREAMY, PLAYFUL TENDER, HAPPY, MELANCHOLIC, RELAXING, CALM, ELEGANT, SAD, MYSTERIOUS
 	protected $questions = [
 		'What would you listen to during a relaxing Sunday afternoon?' => [
 			['label' => 'Goldberg Variations', 'subtitle' => 'by J.S.Bach', 'keywords' => ['type' => 'period', 'term' => 'baroque']],
