@@ -25,8 +25,8 @@ class Search
 		if ($this->tooManyTimes())
 			dd('Give up');
 
-		// $query = Piece::whereNotNull('cover_path');
-		$query = Piece::whereNotNull('name');
+		// $query = Piece::notFamous()->whereNotNull('cover_path');
+		$query = Piece::notFamous();
 
 		$keywords = $keywords ?? $this->quiz->getKeywords();
 
