@@ -76,11 +76,11 @@ textarea {
 	overflow-x: hidden;
 }
 
-a {
+a, .link-primary  {
 	color: $brand-primary;
 }
 
-a:hover {
+a:hover, .link-primary:hover {
 	color: darken($brand-primary, 5);
 	text-decoration: none;
 }

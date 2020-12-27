@@ -24,10 +24,10 @@ trait Questions
 		],
 
 		'Pick the music genre you connect with the most' => [
-			['label' => 'Renaissance', 'subtitle' => '1400 to 1600', 'keywords' => ['type' => 'mood', 'term' => 'serious']],
 			['label' => 'Baroque', 'subtitle' => '1600 to 1750', 'keywords' => ['type' => 'period', 'term' => 'baroque']],
 			['label' => 'Classical', 'subtitle' => '1750 to 1810', 'keywords' => ['type' => 'period', 'term' => 'classical']],
 			['label' => 'Romantic', 'subtitle' => '1810 to 1900', 'keywords' => ['type' => 'period', 'term' => 'romantic']],
+			['label' => 'Impressionist', 'subtitle' => '1890 to 1930', 'keywords' => ['type' => 'period', 'term' => 'impressionist']],
 			['label' => 'Modern', 'subtitle' => '1900 to 1945', 'keywords' => ['type' => 'period', 'term' => 'modern']],
 			['label' => 'Contemporary', 'subtitle' => '1945 to now', 'keywords' => ['type' => 'mood', 'term' => 'crazy']]
 		],
@@ -51,12 +51,12 @@ trait Questions
 		],
 
 		'If you had to hang out with one famous composer, who would that be?' => [
-			['label' => 'F.Liszt', 'keywords' => ['type' => 'composer', 'term' => 'liszt']],
-			['label' => 'Prokofiev', 'keywords' => ['type' => 'composer', 'term' => 'prokofiev']],
-			['label' => 'J.S.Bach', 'keywords' => ['type' => 'composer', 'term' => 'bach']],
-			['label' => 'L.V.Beethoven', 'keywords' => ['type' => 'composer', 'term' => 'beethoven']],
-			['label' => 'F.Chopin', 'keywords' => ['type' => 'composer', 'term' => 'chopin']],
-			['label' => 'W.A.Mozart', 'keywords' => ['type' => 'composer', 'term' => 'mozart']]
+			['label' => 'F.Liszt', 'keywords' => ['type' => 'mood', 'term' => 'passionate']],
+			['label' => 'Prokofiev', 'keywords' => ['type' => 'period', 'term' => 'modern']],
+			['label' => 'J.S.Bach', 'keywords' => ['type' => 'period', 'term' => 'baroque']],
+			['label' => 'L.V.Beethoven', 'keywords' => ['type' => 'mood', 'term' => 'serious']],
+			['label' => 'F.Chopin', 'keywords' => ['type' => 'mood', 'term' => 'melancholic']],
+			['label' => 'W.A.Mozart', 'keywords' => ['type' => 'mood', 'term' => 'playful']]
 		],
 
 		'Which of these hidden gems do you like the most?' => [

@@ -15,6 +15,6 @@
 	</div>
 	<div>
 		<p class="m-0 text-muted"><small>Not what you expected?</small></p>
-		<a href="{{route('webapp.membership.checkout', $plan->other())}}" class="link-blue">Switch to the {{$plan->other()->long_name}}</a>
+		<a href="{{route('webapp.membership.checkout', $plan->other())}}">Switch to the {{$plan->other()->long_name}}</a>
 	</div>
 @endcomponent

@@ -2,12 +2,11 @@
 
 namespace App\Resources\FindYourMatch\Traits;
 
-use App\Resources\FindYourMatch\Categories\{Composer, Gender, Ethnicity, Level, Mood, Period, Category};
+use App\Resources\FindYourMatch\Categories\{Gender, Ethnicity, Level, Mood, Period, Category};
 
 trait Categories
 {
 	protected $categories = [
-		'composer' => Composer::class,
 		'period' => Period::class,
 		'mood' => Mood::class,
 		'gender' => Gender::class,
