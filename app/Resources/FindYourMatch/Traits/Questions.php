@@ -62,11 +62,11 @@ trait Questions
 
 		'Which of these hidden gems do you like the most?' => [
 			['label' => 'Elegy', 'subtitle' => 'by Shostakovich', 'keywords' => ['type' => 'mood', 'term' => 'tender']],
-			['label' => 'Souvenance', 'subtitle' => 'by Chaminade', 'keywords' => ['type' => 'gender', 'term' => 'female']],
-			['label' => 'Dreaming', 'subtitle' => 'by Amy Beach', 'keywords' => ['type' => 'gender', 'term' => 'female']],
-			['label' => 'Sewing Song', 'subtitle' => 'by Thomas Wiggins', 'keywords' => ['type' => 'ethnicity', 'term' => 'black']],
-			['label' => 'Song Without Words', 'subtitle' => 'by Mel Bonis', 'keywords' => ['type' => 'gender', 'term' => 'female']],
-			['label' => 'Little Melody', 'subtitle' => 'Florence Price', 'keywords' => ['type' => 'ethnicity', 'term' => 'black']]
+			['label' => 'Souvenance', 'subtitle' => 'by Chaminade', 'keywords' => ['type' => 'mood', 'term' => 'melancholic']],
+			['label' => 'Dreaming', 'subtitle' => 'by Amy Beach', 'keywords' => ['type' => 'mood', 'term' => 'dreamy']],
+			['label' => 'Sewing Song', 'subtitle' => 'by Thomas Wiggins', 'keywords' => ['type' => 'mood', 'term' => 'passionate']],
+			['label' => 'Song Without Words', 'subtitle' => 'by Mel Bonis', 'keywords' => ['type' => 'mood', 'term' => 'passionate']],
+			['label' => 'Little Melody', 'subtitle' => 'Florence Price', 'keywords' => ['type' => 'mood', 'term' => 'relaxing']]
 		],
 
 		'Which option best describes where you are right now in your piano journey?' => [

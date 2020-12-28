@@ -9,8 +9,6 @@ trait Categories
 	protected $categories = [
 		'period' => Period::class,
 		'mood' => Mood::class,
-		'gender' => Gender::class,
-		'ethnicity' => Ethnicity::class,
 		'level' => Level::class,
 	];
 
