@@ -36,8 +36,8 @@
 
 @slot('footer')
 <div class="text-center p-4 bg-light border-bottom">
-	<p>We also found <strong>{{$results['count']}} more pieces</strong> you might like!</p>
-		<a href="{{route('webapp.pieces.show', $results['piece'])}}" class="btn rounded-pill btn-primary-outline">Show me more</a>
+	<p>Would you like to find more pieces like this one?</p>
+	<a href="{{route('webapp.pieces.similar', $results['piece'])}}" class="btn rounded-pill btn-primary-outline">@fa(['icon' => 'folder-plus'])More like this</a>
 </div>
 @endslot
 @endcomponent
