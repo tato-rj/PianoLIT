@@ -52,6 +52,7 @@ class PiecesController extends Controller
     public function saveTo(Piece $piece)
     {
         $folders = auth()->user()->favoriteFolders()->lastUpdated()->get();
+        
         return view('webapp.piece.components.saveto.index', compact(['piece', 'folders']))->render();        
     }
 

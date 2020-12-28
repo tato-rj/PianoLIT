@@ -12,11 +12,13 @@ Route::prefix('users')->name('users.')->group(function() {
 
 		Route::prefix('folders')->name('folders.')->group(function() {
 
-			Route::post('', 'FavoriteFoldersController@store')->name('store');
+			Route::get('', 'Api\FavoriteFoldersController@index')->name('index');
 
-			Route::patch('', 'FavoriteFoldersController@update')->name('update');
+			// Route::post('', 'Api\FavoriteFoldersController@store')->name('store');
 
-			Route::delete('', 'FavoriteFoldersController@destroy')->name('delete');
+			// Route::patch('', 'Api\FavoriteFoldersController@update')->name('update');
+
+			// Route::delete('', 'Api\FavoriteFoldersController@destroy')->name('delete');
 
 		});
 	});

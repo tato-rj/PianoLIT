@@ -132,6 +132,13 @@
         'args' => ['user_id', 'piece_id'],
         'title' => 'Update user\'s favorites'])
 
+      {{-- FAVORITE FOLDERS --}}
+      @include('admin.pages.api.endpoints.card', [
+        'type' => 'GET', 
+        'route' => route('api.users.favorites.folders.index', ['user_id' => \App\User::tester()]), 
+        'args' => ['user_id'],
+        'title' => 'Show user\'s folders'])
+
       @include('admin.pages.api.endpoints.card', [
         'type' => 'GET', 
         'route' => route('api.playlists.index', ['group' => 'journey']), 
