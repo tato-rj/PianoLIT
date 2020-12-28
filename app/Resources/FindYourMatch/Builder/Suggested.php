@@ -30,14 +30,8 @@ class Suggested
 	public function build($query)
 	{
 		return	$this->builder->whereHas($this->table, function($q) use ($query) {
-					if (count($query) > 1) {
-						foreach ($query as $item) {
-							$q->orWhere($this->column, 'like', '%'.$item.'%');
-						}
-					} else {
-						foreach ($query as $item) {
-							$q->where($this->column, 'like', '%'.$item.'%');
-						}
+					foreach ($query as $item) {
+						$q->orWhere($this->column, 'like', '%'.$item.'%');
 					}
 				});
 	}

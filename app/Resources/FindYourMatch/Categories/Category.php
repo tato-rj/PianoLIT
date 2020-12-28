@@ -38,6 +38,8 @@ abstract class Category
 	{
 		$this->prioritizeDuplicates();
 
+		$this->prioritizeSingle();
+
 		$this->prioritizeRelevance();
 
 		return collect([$this->name => $this->query]);
@@ -54,6 +56,14 @@ abstract class Category
 
 		if ($duplicates->isNotEmpty())
 			$this->query = $duplicates->random();
+	}
+
+	public function prioritizeSingle()
+	{
+		if ($this->query->count() == 1) {
+			dd('HERE: ' . $this->query->first());
+			$this->query = $this->query->first();
+		}
 	}
 
 	public function prioritizeRelevance()
