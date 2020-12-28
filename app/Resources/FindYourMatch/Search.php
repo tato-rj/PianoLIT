@@ -35,11 +35,11 @@ class Search
 				$query = $this->quiz->$category->build($query);
 			}
 		}
-		
+
 		if (! $query->exists())
 			return $this->tryAgain();
 
-		return $query->inRandomOrder()->count();
+		return $query->inRandomOrder()->first();
 	}
 
 	public function tryAgain()
