@@ -41,7 +41,7 @@ class Search
 
 		$results = $query->inRandomOrder();
 
-		return json(['count' => $results->count() , 'piece' => $results->first()]);
+		return response()->json(['count' => $results->count() , 'piece' => $results->first()]);
 	}
 
 	public function tryAgain()
