@@ -29,7 +29,7 @@ class Search
 		$query = Piece::notFamous();
 
 		$keywords = $keywords ?? $this->quiz->getKeywords();
-dd($keywords);
+
 		foreach ($keywords as $category => $keyword) {
 			if ($this->quiz->isValid($category)) {
 				$query = $this->quiz->$category->build($query);
@@ -39,7 +39,9 @@ dd($keywords);
 		if (! $query->exists())
 			return $this->tryAgain();
 
-		return $query->inRandomOrder()->first();
+		$results = $query->inRandomOrder();
+
+		return json(['count' => $results->count() , 'piece' => $results->first()]);
 	}
 
 	public function tryAgain()
