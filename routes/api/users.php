@@ -14,11 +14,11 @@ Route::prefix('users')->name('users.')->group(function() {
 
 			Route::get('', 'Api\FavoriteFoldersController@index')->name('index');
 
-			// Route::post('', 'Api\FavoriteFoldersController@store')->name('store');
+			Route::post('', 'Api\FavoriteFoldersController@store')->name('store');
 
-			// Route::patch('', 'Api\FavoriteFoldersController@update')->name('update');
+			Route::patch('', 'Api\FavoriteFoldersController@update')->name('update');
 
-			// Route::delete('', 'Api\FavoriteFoldersController@destroy')->name('delete');
+			Route::delete('', 'Api\FavoriteFoldersController@destroy')->name('delete');
 
 		});
 	});

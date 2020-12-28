@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\{EmailList, Subscription, EmailLog};
 use App\Events\Emails\{EmailListSent, Unsubscribed};
+use App\Jobs\{SendMassEmails, SendEmail};
 
 class EmailListsController extends Controller
 {
@@ -36,16 +37,14 @@ class EmailListsController extends Controller
 
     public function send(EmailList $list)
     {
-    	$list->send();
+        $this->dispatch(new SendMassEmails($list));
 
-        event(new EmailListSent($list));
-
-        return back()->with('status', 'The list email was sent to all susbcribers.');
+        return back()->with('status', 'The list email is being sent to all susbcribers, please allow a few seconds to complete.');
     }
     
     public function sendTo(Request $request, EmailList $list)
     {
-    	\Mail::to($request->email)->send($list->mailable($list->listId(), Subscription::byEmail($request->email)->first()));
+        \Mail::to($request->email)->send($list->mailable($list->listId(), Subscription::byEmail($request->email)->first()));
 
     	return back()->with('status', 'A preview was sent to ' . $request->email);
     }

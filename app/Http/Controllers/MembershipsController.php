@@ -9,6 +9,7 @@ use App\Http\Requests\AppleMembershipForm;
 use Illuminate\Http\Request;
 use App\Services\Apple\AppleValidator;
 use App\Billing\Sources\{Apple, Stripe};
+use App\Jobs\ValidateAppleMemberships;
 
 class MembershipsController extends Controller
 {
@@ -41,19 +42,9 @@ class MembershipsController extends Controller
         if ($users->isEmpty())
             return redirect()->back()->with('error', "We found no expired subscriptions.");
 
-        foreach ($users as $user) {
-            if ($user->hasMembershipWith(Apple::class)) {
-                $request = (new AppleValidator)->verify($user->membership->source->latest_receipt, $user->membership->source->password);  
-
-                try {              
-                    $user->membership->source->validate($request);   
-                } catch (\Exception $e) {
-                    return redirect()->back()->with('error', $e->getMessage());
-                }
-            }
-        }
+        $this->dispatch(new ValidateAppleMemberships($users));
     
-        return redirect()->back()->with('status', "All users have been successfully re-validated.");
+        return redirect()->back()->with('status', "Apple memberships are being validated, please allow a few moments to complete.");
     }
 
     public function validateUser(Request $request)
