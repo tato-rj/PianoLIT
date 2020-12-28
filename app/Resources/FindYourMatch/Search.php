@@ -35,7 +35,7 @@ class Search
 				$query = $this->quiz->$category->build($query);
 			}
 		}
-dd($query->count());
+		
 		if (! $query->exists())
 			return $this->tryAgain();
 
