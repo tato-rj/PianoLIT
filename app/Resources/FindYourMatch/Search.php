@@ -25,8 +25,8 @@ class Search
 		if ($this->tooManyTimes())
 			dd('Give up');
 
-		// $query = Piece::notFamous()->whereNotNull('cover_path');
-		$query = Piece::notFamous();
+		$query = Piece::notFamous()->whereNotNull('cover_path');
+		// $query = Piece::notFamous();
 
 		$keywords = $keywords ?? $this->quiz->getKeywords();
 
@@ -39,9 +39,9 @@ class Search
 		if (! $query->exists())
 			return $this->tryAgain();
 
-		$results = Piece::all();//$query->inRandomOrder();
+		$results = $query->inRandomOrder();
 
-		return response()->json(['count' => $results->count() , 'piece' => $results->first()]);
+		return ['count' => $results->count() , 'piece' => $results->first()];
 	}
 
 	public function tryAgain()

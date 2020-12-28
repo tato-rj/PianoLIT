@@ -86,8 +86,15 @@ $('#find-button').click(function() {
 		axios.get($btn.data('url'), {params: query})
 			 .then(function(response) {
 			 	$('body').append(response.data);
-			 	$(document).find('#match-modal').modal('show');
+			 	let $modal = $(document).find('#match-modal');
+			 	
+			 	let videoId = '#'+ $modal.find('video').attr('id');
+			 	
+			 	new Plyr(videoId);
+
 			 	$btn.removeLoader();
+			 	
+			 	$modal.modal('show');
 			 })
 			 .catch(function(error) {
 			 	console.log(error);
@@ -133,5 +140,13 @@ function getSearchTerms()
 {
 	query = $('.answer-card.selected-answer').attrToArray('data-query');
 }
+
+$(document).ready(function() {
+	$('.video-container').each(function() {
+		
+
+		new Plyr(videoId);
+	});
+});
 </script>
 @endpush
