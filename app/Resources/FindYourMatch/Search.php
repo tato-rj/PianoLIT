@@ -29,7 +29,7 @@ class Search
 		$query = Piece::notFamous();
 
 		$keywords = $keywords ?? $this->quiz->getKeywords();
-
+dd($keywords);
 		foreach ($keywords as $category => $keyword) {
 			if ($this->quiz->isValid($category)) {
 				$query = $this->quiz->$category->build($query);
