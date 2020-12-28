@@ -60,10 +60,8 @@ abstract class Category
 
 	public function prioritizeSingle()
 	{
-		if ($this->query->count() == 1) {
-			dd('HERE: ' . $this->query->first());
+		if ($this->query->count() == 1)
 			$this->query = $this->query->first();
-		}
 	}
 
 	public function prioritizeRelevance()
