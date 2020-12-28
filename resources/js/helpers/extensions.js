@@ -1,5 +1,5 @@
 jQuery.fn.addLoader = function() {
-    let spinner = `<div class="animated fadeIn" style="position: absolute;
+    let spinner = `<div class="loader-spinner animated fadeIn" style="position: absolute;
                                 top: 50%;
                                 left: 50%;
                                 -webkit-transform: transform: translate(-50%, -50%);
@@ -10,6 +10,13 @@ jQuery.fn.addLoader = function() {
     $(this).prop('disabled', true).addClass('position-relative').contents().wrapAll('<div class="invisible"></div>');
     $(this).append(spinner);
 };
+
+jQuery.fn.removeLoader = function() {
+    $(this).removeClass('position-relative').find('.invisible').removeClass('invisible');
+    $(this).prop('disabled', false)
+    $(this).find('.loader-spinner').remove();
+};
+
 
 jQuery.fn.sortChildrenBy = function(button) {
     let filter = $(button).data('filter');

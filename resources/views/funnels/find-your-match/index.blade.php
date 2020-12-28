@@ -43,12 +43,9 @@
 				'size' => 'wide',
 				'theme' => 'primary',
 			],
+			'data' => ['url' => route('funnels.find-your-match.results')],
 			'id' => 'find-button'
 		])
-
-  		<form method="GET" action="{{route('funnels.find-your-match.results')}}" id="find-form">
-  			<input type="hidden" name="input">
-  		</form>
   	</div>
   </div>
 </section>
@@ -79,14 +76,22 @@ $('#quiz .answer-card').on('click', function(e) {
 });
 
 $('#find-button').click(function() {
+	let $btn = $(this);
 	let missingAnswers = $('.questions-container').length - query.length;
 
 	if (missingAnswers > 0) {
 		alert('You have ' + missingAnswers + ' left to answer');
 	} else {
-		$(this).addLoader();
-		$('#find-form').find('input[name="input"]').val(query);
-		$('#find-form').submit();
+		$btn.addLoader();
+		axios.get($btn.data('url'), {params: query})
+			 .then(function(response) {
+			 	$('body').append(response.data);
+			 	$(document).find('#match-modal').modal('show');
+			 	$btn.removeLoader();
+			 })
+			 .catch(function(error) {
+			 	console.log(error);
+			 });
 	}
 });
 

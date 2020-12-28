@@ -16,8 +16,8 @@ class FunnelsController extends Controller
 
     public function matchResults(Request $request)
     {        
-   		return (new Quiz)->findKeywords($request->input)->search();
+   		$results = (new Quiz)->findKeywords($request->input)->search();
 
-    	return view('funnels.find-your-match.results.index');
+    	return view('funnels.find-your-match.results', compact('results'))->render();
     }
 }
