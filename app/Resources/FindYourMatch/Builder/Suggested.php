@@ -29,9 +29,10 @@ class Suggested
 
 	public function build($query)
 	{
+		dd($query);
 		return	$this->builder->whereHas($this->table, function($q) use ($query) {
 					foreach ($query as $item) {
-						$q->where($this->column, 'like', '%'.$item.'%');
+						$q->orWhere($this->column, 'like', '%'.$item.'%');
 					}
 				});
 	}
