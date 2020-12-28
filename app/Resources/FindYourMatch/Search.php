@@ -39,9 +39,7 @@ class Search
 		if (! $query->exists())
 			return $this->tryAgain();
 
-		$results = $query->inRandomOrder();
-
-		return ['count' => $results->count() , 'piece' => $results->first()];
+		return $query->inRandomOrder()->first();
 	}
 
 	public function tryAgain()
