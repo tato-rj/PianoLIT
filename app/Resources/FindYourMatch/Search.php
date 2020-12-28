@@ -30,13 +30,12 @@ class Search
 
 		$keywords = $keywords ?? $this->quiz->getKeywords();
 
-dd($keywords);
 		foreach ($keywords as $category => $keyword) {
 			if ($this->quiz->isValid($category)) {
 				$query = $this->quiz->$category->build($query);
 			}
 		}
-		
+dd($query->count());
 		if (! $query->exists())
 			return $this->tryAgain();
 
