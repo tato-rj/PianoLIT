@@ -60,7 +60,7 @@ abstract class Category
 
 	public function prioritizeSingle()
 	{
-		if ($this->query->count() == 1)
+		if (! is_string($this->query) && $this->query->count() == 1)
 			$this->query = $this->query->first();
 	}
 
