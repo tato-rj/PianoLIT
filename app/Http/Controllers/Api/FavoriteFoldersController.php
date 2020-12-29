@@ -25,6 +25,11 @@ class FavoriteFoldersController extends Controller
         return $user->favoriteFolders()->with('favorites')->lastUpdated()->get();     
     }
 
+    public function test()
+    {
+        return response()->json(['message' => 'Message here', 'data' => ['Some data']]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

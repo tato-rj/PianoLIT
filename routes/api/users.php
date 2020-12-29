@@ -13,6 +13,7 @@ Route::prefix('users')->name('users.')->group(function() {
 		Route::prefix('folders')->name('folders.')->group(function() {
 
 			Route::get('', 'Api\FavoriteFoldersController@index')->name('index');
+			Route::get('test', 'Api\FavoriteFoldersController@test')->name('test');
 
 			Route::post('', 'Api\FavoriteFoldersController@store')->name('store');
 
