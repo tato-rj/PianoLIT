@@ -10,6 +10,13 @@ class AppleMembershipsValidated extends Notification
 {
     use Queueable;
 
+    protected $count;
+
+    public function __construct($count)
+    {
+        $this->count = $count;
+    }
+
     /**
      * Get the notification's delivery channels.
      *
@@ -31,7 +38,7 @@ class AppleMembershipsValidated extends Notification
     {
         return [
             'title' => 'Memberships validated',
-            'message' => 'All Apple memberships have just been re-validated.',
+            'message' => 'All Apple memberships were re-validated (' . $this->count . ' reactivated).',
             'url' => route('admin.users.index')
         ];
     }

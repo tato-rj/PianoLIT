@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Billing\Membership;
 use App\Events\Memberships\NewTrial;
-use App\User;
+use App\{User, Admin};
 use App\Http\Requests\AppleMembershipForm;
 use Illuminate\Http\Request;
 use App\Services\Apple\AppleValidator;
 use App\Billing\Sources\{Apple, Stripe};
-use App\Jobs\ValidateAppleMemberships;
-use App\Events\Memberships\AppleMembershipsValidated;
+use App\Notifications\Memberships\AppleMembershipsValidated;
 
 class MembershipsController extends Controller
 {
@@ -38,12 +37,28 @@ class MembershipsController extends Controller
     {
         $this->authorize('validate', Membership::class);
 
+        $count = 0;
+
         $users = User::exclude([284, 260, 249, 196])->noSuperUsers()->expired();
 
         if ($users->isEmpty())
             return redirect()->back()->with('error', "We found no expired subscriptions.");
 
-        $this->dispatch(new ValidateAppleMemberships($users));
+        foreach ($users as $user) {
+            if ($user->hasMembershipWith(Apple::class)) {
+                $request = (new AppleValidator)->verify($user->membership->source->latest_receipt, $user->membership->source->password);  
+                try {              
+                    $user->membership->source->validate($request);
+
+                    if (! $user->membership->source->isExpired())
+                        $count += 1;
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', $e->getMessage());
+                }
+            }
+        }
+
+        Admin::notifyAll(new AppleMembershipsValidated($count));
     
         return redirect()->back()->with('status', "Apple memberships are being validated, please allow a few moments to complete.");
     }

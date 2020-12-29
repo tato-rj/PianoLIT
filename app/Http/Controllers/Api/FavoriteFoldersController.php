@@ -22,28 +22,28 @@ class FavoriteFoldersController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'piece_id' => 'sometimes|exists:pieces,id',
-            'name' => 'required|string'
-        ]);
+        // $request->validate([
+        //     'user_id' => 'required|exists:users,id',
+        //     'piece_id' => 'sometimes|exists:pieces,id',
+        //     'name' => 'required|string'
+        // ]);
 
-        $folder = FavoriteFolder::create([
-            'user_id' => $request->user_id,
-            'name' => $request->name
-        ]);
+        // $folder = FavoriteFolder::create([
+        //     'user_id' => $request->user_id,
+        //     'name' => $request->name
+        // ]);
 
-        $user = User::findOrFail($request->user_id);
+        // $user = User::findOrFail($request->user_id);
 
-        if ($piece = Piece::find($request->piece_id)) {
-            Favorite::toggle(
-                $user, 
-                $piece, 
-                $folder
-            );
-        }
+        // if ($piece = Piece::find($request->piece_id)) {
+        //     Favorite::toggle(
+        //         $user, 
+        //         $piece, 
+        //         $folder
+        //     );
+        // }
 
-        return response()->json(['message' => 'The folder has been created.', 'data' => $folder]);
+        // return response()->json(['message' => 'Saved to ' . $folder->name, 'data' => $folder]);
     }
 
     public function update(Request $request)
