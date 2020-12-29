@@ -6,7 +6,6 @@ use Tests\AppTest;
 use Tests\Traits\BillingResources;
 use App\User;
 use App\Notifications\Memberships\NewTrialNotification;
-use App\Notifications\Memberships\AppleMembershipsValidated;
 
 class AppleTest extends AppTest
 {
@@ -39,8 +38,6 @@ class AppleTest extends AppTest
     /** @test */
     public function an_admin_can_verify_the_status_of_all_apple_memberships()
     {
-        \Notification::fake();
-
         $this->signIn();
 
         $this->appleUser->membership->source->update(['renews_at' => now()->copy()->subWeek()]);
@@ -50,8 +47,6 @@ class AppleTest extends AppTest
         $this->get(route('admin.memberships.validate.all'));
 
         $this->assertNotNull($this->appleUser->membership->fresh()->source->validated_at);
-
-        \Notification::assertSentTo($this->admin, AppleMembershipsValidated::class);
     }
 
     /** @test */

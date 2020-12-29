@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Services\Apple\AppleValidator;
 use App\Billing\Sources\{Apple, Stripe};
 use App\Jobs\ValidateAppleMemberships;
+use App\Events\Memberships\AppleMembershipsValidated;
 
 class MembershipsController extends Controller
 {
