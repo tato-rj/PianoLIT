@@ -12,7 +12,7 @@
 			</div>
 		    @else
 		    <form method="POST" action="{{$route}}" target="_blank">
-		    	<a href="" class="link-{{$colors[strtolower($type)]}}"><small>{{strtok($route, '?')}}</small></a>
+		    	<button class="btn-raw text-{{$colors[strtolower($type)]}}"><small>{{strtok($route, '?')}}</small></button>
 		    </form>
 		    @endif
 		</div>
