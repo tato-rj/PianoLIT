@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'edit-folder-' . $folder->id, 'title' => 'Edit my folder'])
+@component('components.modal', ['id' => 'edit-folder-' . $folder->id, 'title' => 'Edit my folder', 'header' => 'Update folder'])
 @slot('body')
   <div>
     <form method="POST" action="{{route('webapp.users.favorites.folders.update', $folder)}}" disable-on-submit>

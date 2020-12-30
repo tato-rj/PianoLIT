@@ -1,4 +1,4 @@
-@component('components.modal', ['id' => 'delete-folder-' . $folder->id, 'title' => 'Delete my folder'])
+@component('components.modal', ['id' => 'delete-folder-' . $folder->id, 'title' => 'Delete my folder', 'header' => 'Delete folder'])
 @slot('body')
   <div class="mb-3">
     <div>Are you sure you want to delete the folder <strong>{{$folder->name}}</strong>?</div>

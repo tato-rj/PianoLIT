@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\{FavoriteFolder, Piece, Favorite, User};
+use App\Http\Requests\FavoriteFoldersForm;
 use App\Rules\UserMustOwnTheFolder;
 
 class FavoriteFoldersController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('log.app')->except(['index', 'update']);
+        // $this->middleware('log.app')->except(['index', 'update']);
     }
 
     public function index(Request $request)
@@ -25,27 +26,16 @@ class FavoriteFoldersController extends Controller
         return $user->favoriteFolders()->with('favorites')->lastUpdated()->get();     
     }
 
-    public function test()
+    public function store(Request $request, FavoriteFoldersForm $form)
     {
-        return response()->json(['message' => 'Message here', 'data' => ['Some data']]);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'piece_id' => 'sometimes|exists:pieces,id',
-            'name' => 'required|string'
-        ]);
-
         $folder = FavoriteFolder::create([
-            'user_id' => $request->user_id,
-            'name' => $request->name
+            'user_id' => $form->user_id,
+            'name' => $form->name
         ]);
 
-        $user = User::findOrFail($request->user_id);
+        $user = User::findOrFail($form->user_id);
 
-        if ($piece = Piece::find($request->piece_id)) {
+        if ($piece = Piece::find($form->piece_id)) {
             Favorite::toggle(
                 $user, 
                 $piece, 
@@ -56,16 +46,16 @@ class FavoriteFoldersController extends Controller
         return response()->json(['message' => 'Saved to ' . $folder->name, 'data' => $folder]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, FavoriteFoldersForm $form)
     {
-        $request->validate([
-            'folder_id' => 'required|exists:favorite_folders,id',
-            'user_id' => ['required', 
-                          'exists:users,id',
-                          new UserMustOwnTheFolder($request->folder_id)
-                        ],
-            'name' => 'required|string',
-        ]);
+        // $request->validate([
+        //     'folder_id' => 'required|exists:favorite_folders,id',
+        //     'user_id' => ['required', 
+        //                   'exists:users,id',
+        //                   new UserMustOwnTheFolder($request->folder_id)
+        //                 ],
+        //     'name' => 'required|string',
+        // ]);
 
         $folder = FavoriteFolder::find($request->folder_id);
 

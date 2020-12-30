@@ -252,17 +252,19 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
         let $name = $($btn.data('name'));
         let $container = $('#favorite-folders-container');
 
+        $btn.disable().addLoader();
         $btn.siblings('button').hide();
-
-        $btn.disable().text('Saving...');
 
         axios.post($btn.data('url'), {name: $($name).val()})
             .then(function(response) {
                 $container.html(response.data.html.list);
+                $container.find('.invalid-feedback').text('').hide();
             })
             .catch(function(error) {
-                alert('Something went wrong...');
-                console.log(error);
+                $btn.enable().removeLoader();
+                $btn.siblings('button').show();
+                let feedback = objFirst(error.response.data.errors)[0];
+                $container.find('.invalid-feedback').text(feedback).show();
             })
             .then(function() {
                 //
@@ -291,6 +293,12 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
         $($(this).data('container')).hide();
         $($(this).data('target')).show();
     });
+    </script>
+
+    <script type="text/javascript">
+    objFirst = function(obj) {
+        return obj[Object.keys(obj)[0]];
+    }
     </script>
     @stack('scripts')
 

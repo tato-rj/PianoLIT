@@ -94,6 +94,18 @@ class FavoritesTest extends AppTest
     }
 
     /** @test */
+    public function app_users_cannot_create_two_folders_with_the_same_name()
+    {
+        $this->expectException('Illuminate\Validation\ValidationException');
+
+        $this->signIn($this->user);
+
+        $this->post(route('api.users.favorites.folders.store', ['user_id' => $this->user->id, 'name' => 'Foo']));
+
+        $this->post(route('api.users.favorites.folders.store', ['user_id' => $this->user->id, 'name' => 'Foo']));
+    }
+
+    /** @test */
     public function app_users_can_update_their_folders()
     {
         $folder = create(FavoriteFolder::class, ['user_id' => $this->user->id]);
@@ -106,7 +118,7 @@ class FavoritesTest extends AppTest
     /** @test */
     public function app_users_cannot_update_folders_from_other_users()
     {
-        $this->expectException('Illuminate\Validation\ValidationException');
+        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
         
         $folder = create(FavoriteFolder::class);
 

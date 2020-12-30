@@ -15,5 +15,6 @@
 				<button class="btn btn-grey-outline cancel-new-folder rounded-pill" data-container="#new-folder-container-{{$piece->id}}" data-target="#new-folder-button-{{$piece->id}}">Cancel</button>
 			</div>
 		</div>
+		<div class="invalid-feedback"></div>
 	</div>
 </div>
