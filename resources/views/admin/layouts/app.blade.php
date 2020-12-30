@@ -151,7 +151,7 @@
           showLoader();
       });
 
-      $(document).on('submit', 'form', function() {
+      $(document).on('submit', 'form:not([target])', function() {
         showLoader();
       })
 
