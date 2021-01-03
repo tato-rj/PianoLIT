@@ -14,7 +14,7 @@ Route::prefix('users')->name('users.')->group(function() {
 
 			Route::get('', 'Api\FavoriteFoldersController@index')->name('index');
 
-			Route::get('folder', 'Api\FavoriteFoldersController@show')->name('show');
+			Route::get('find', 'Api\FavoriteFoldersController@show')->name('show');
 
 			Route::post('', 'Api\FavoriteFoldersController@store')->name('store');
 
