@@ -26,6 +26,18 @@ class FavoriteFoldersController extends Controller
         return $user->favoriteFolders()->with('favorites')->lastUpdated()->get();     
     }
 
+    public function show(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'folder_id' => 'required|exists:favorite_folders,id'
+        ]);
+
+        $folder = FavoriteFolder::where(['id' => $request->folder_id, 'user_id' => $request->user_id])->with('favorites')->first();
+
+        return $folder;
+    }
+
     public function store(Request $request, FavoriteFoldersForm $form)
     {
         $folder = FavoriteFolder::create([
