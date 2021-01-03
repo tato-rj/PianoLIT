@@ -34,7 +34,7 @@ class FavoriteFolder extends PianoLit
     {
         $collection = $query->where(['id' => $folderId, 'user_id' => $userId])->with('favorites')->first();
 
-        return $collection->favorites->pluck('piece');
+        return $collection->favorites->pluck('piece')->each->isFavorited($userId);
     }
 
     public function getComposersAttribute()
