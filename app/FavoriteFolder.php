@@ -22,12 +22,19 @@ class FavoriteFolder extends PianoLit
 
     public function favorites()
     {
-        return $this->hasMany(Favorite::class)->with('piece');
+        return $this->hasMany(Favorite::class)->with('piece')->latest();
     }
 
     public function scopeRetrieve($query, $userId, $folderId)
     {
     	return $query->where(['id' => $folderId, 'user_id' => $userId])->exists();
+    }
+
+    public function scopeFlat($query, $userId, $folderId)
+    {
+        $collection = $query->where(['id' => $folderId, 'user_id' => $userId])->with('favorites')->first();
+
+        return $collection->favorites->pluck('piece');
     }
 
     public function getComposersAttribute()

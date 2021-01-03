@@ -33,9 +33,7 @@ class FavoriteFoldersController extends Controller
             'folder_id' => 'required|exists:favorite_folders,id'
         ]);
 
-        $folder = FavoriteFolder::where(['id' => $request->folder_id, 'user_id' => $request->user_id])->with('favorites')->first();
-
-        return $folder;
+        return FavoriteFolder::flat($request->user_id, $request->folder_id);
     }
 
     public function store(Request $request, FavoriteFoldersForm $form)
