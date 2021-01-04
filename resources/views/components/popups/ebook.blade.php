@@ -1,7 +1,7 @@
 @component('components.modal', ['id' => 'modal-subscription', 'options' => ['header' => ['raw' => true]]])
 @slot('header')
 <h5 class="mt-2">Don't miss out!</h5>
-<div style="margin-bottom: -8px">Get 20% on our new eBook that'll teach all about intervals</div>
+<div style="margin-bottom: -8px">Get 20% off on our new eBook👇</div>
 @endslot
 
 @slot('body')
