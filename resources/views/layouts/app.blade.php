@@ -242,7 +242,7 @@ $(document).ready(function() {
     });
 
     loadPopup($('#popup-container[always]'), function($modal) {
-        $modal.modal('show');
+        $modal.showAfter(3);
     });
 });
 
