@@ -1,6 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Staffs Generator | ' . config('app.name'),
-	'popup' => 'gift',
+	'popup' => ['view' => 'gift'],
 	'shareable' => [
 		'keywords' => 'staff,music theory,music sheet,piano sheet,treble sheet,bass sheet',
 		'title' => 'Staffs Generator',

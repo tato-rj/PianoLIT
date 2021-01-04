@@ -122,9 +122,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->tutorialRequests()->whereNotNull('published_at');
     }
 
-    public function purchasesOf(Merchandise $item)
+    public function purchasesOf(Merchandise $item = null)
     {
-        return $this->purchases()->where(['item_id' => $item->id, 'item_type' => get_class($item)]);
+        if ($item)
+            return $this->purchases()->where(['item_id' => $item->id, 'item_type' => get_class($item)]);
     }
 
     public function purchase(Merchandise $item, $chargeId = null)

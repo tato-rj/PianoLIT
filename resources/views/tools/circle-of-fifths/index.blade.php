@@ -1,6 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'The (interactive) Circle of Fifths | ' . config('app.name'),
-    'popup' => 'ebook',
+    'popup' => ['view' => 'ebook', 'always' => true, 'product' => \App\Shop\eBook::latest()->first()],
     'popupAlways' => true,
 	'shareable' => [
 		'keywords' => 'circle of fifths,music theory,circle,fifths,music theory,chords',

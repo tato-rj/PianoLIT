@@ -5,10 +5,9 @@
 @endslot
 
 @slot('body')
-@php($ebook = \App\Shop\eBook::latest()->first())
 <div class="mb-3">
-	@include('shop.components.cover', ['product' => $ebook])
+	@include('shop.components.cover')
 </div>
-<a href="{{$ebook->showRoute()}}" class="btn btn-primary btn-block">Download this eBook now!</a>
+<a href="{{$product->showRoute()}}" class="btn btn-primary btn-block">Download this eBook now!</a>
 @endslot
 @endcomponent

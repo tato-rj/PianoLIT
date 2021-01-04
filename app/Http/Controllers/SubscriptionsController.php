@@ -22,7 +22,14 @@ class SubscriptionsController extends Controller
 
     public function modal(Request $request)
     {
-        return view('components.popups.popup', ['view' => $request->view])->render();
+        $model = $request->productClass;
+
+        $product = $model ? $model::findOrFail($request->productId) : null;
+
+        if ($product && auth()->user() && auth()->user()->purchasesOf($product)->exists())
+            return null;
+
+        return view('components.popups.popup', ['view' => $request->view, 'product' => $product])->render();
     }
 
     /**

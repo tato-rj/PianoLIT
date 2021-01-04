@@ -1,6 +1,6 @@
 @extends('layouts.app', [
   'title' => $pianist->name . ' | ' . config('app.name'),
-  'popup' => 'gift',
+  'popup' => ['view' => 'gift'],
   'shareable' => [
     'keywords' => $pianist->name . ',pianists,classical music,classical recordings,best classical pianists,chopin album,liszt recording,beethoven album,mozart music',
     'title' => 'Great Pianists | ' . $pianist->name,

@@ -1,5 +1,5 @@
 @extends('layouts.app', ['title' => $post->title . ' | PianoLIT Blog',
-	'popup' => 'gift',
+	'popup' => ['view' => 'gift'],
 	'shareable' => [
 		'keywords' => '',
 		'title' => $post->title,

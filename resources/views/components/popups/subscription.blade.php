@@ -6,7 +6,7 @@
 
 @slot('body')
 <div class="text-center">
-	@include('components.form.subscription', ['id' => 'subscription-form', 'label' => 'SUBSCRIBE NOW'])
+	@include('components.form.subscription', ['formId' => 'subscription-form', 'label' => 'SUBSCRIBE NOW'])
 </div>
 @endslot
 @endcomponent

@@ -43,3 +43,85 @@
   border-radius: 6px;
   height: 3px;
 }
+
+.dropdown-toggle::after {
+    display: none;
+}
+        .ad-banner:nth-child(odd) {
+            background-color: #f8f9fa;   
+        }
+
+@-webkit-keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 12%, 0);
+    transform: translate3d(0, 12%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 12%, 0);
+    transform: translate3d(0, 12%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+        .form-transparent {
+            background-color: transparent !important;
+        }
+
+        /* Change Autocomplete styles in Chrome*/
+        input.form-transparent:-webkit-autofill,
+        input.form-transparent:-webkit-autofill:hover, 
+        input.form-transparent:-webkit-autofill:focus,
+        textarea.form-transparent:-webkit-autofill,
+        textarea.form-transparent:-webkit-autofill:hover,
+        textarea.form-transparent:-webkit-autofill:focus,
+        select.form-transparent:-webkit-autofill,
+        select.form-transparent:-webkit-autofill:hover,
+        select.form-transparent:-webkit-autofill:focus {
+          border: 1px solid transparent;
+          -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+          transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .fadeInLeft {
+            animation-duration: .2s;
+        }
+        .search-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .grid {
+            opacity: 0; 
+            transform: translateY(20px);
+            transition: .2s;
+        }
+
+    /*PAGINATION*/
+    .page-item:last-child .page-link {border-radius: 0}
+
+    .page-link {
+        /*border: none;*/
+        border-radius: 8px !important;
+        transition: .2s;
+        margin: 2px;
+    }
+
+    .page-item:not(:last-child):not(:first-child) .page-link {border: none;}

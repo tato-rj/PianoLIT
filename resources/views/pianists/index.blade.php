@@ -1,6 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Great Pianists | ' . config('app.name'),
-	'popup' => 'gift',
+	'popup' => ['view' => 'gift'],
 	'shareable' => [
 		'keywords' => 'pianists,classical music,classical recordings,best classical pianists,chopin album,liszt recording,beethoven album,mozart music',
 		'title' => 'Great Pianists',

@@ -1,7 +1,6 @@
 @extends('layouts.app', [
 	'title' => 'Scales Tutor | ' . config('app.name'),
-    'popup' => 'ebook',
-    'popupAlways' => true,
+    'popup' => ['view' => 'ebook', 'always' => true, 'product' => \App\Shop\eBook::latest()->first()],
 	'shareable' => [
 		'keywords' => 'scale,arpeggio,music theory,fingering',
 		'title' => 'Scales Tutor',

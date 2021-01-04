@@ -45,89 +45,6 @@
 
     @include('layouts.html.js-app')
 
-    <style type="text/css">
-.dropdown-toggle::after {
-    display: none;
-}
-        .ad-banner:nth-child(odd) {
-            background-color: #f8f9fa;   
-        }
-
-@-webkit-keyframes fadeInUp {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 12%, 0);
-    transform: translate3d(0, 12%, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 12%, 0);
-    transform: translate3d(0, 12%, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-        .form-transparent {
-            background-color: transparent !important;
-        }
-
-        /* Change Autocomplete styles in Chrome*/
-        input.form-transparent:-webkit-autofill,
-        input.form-transparent:-webkit-autofill:hover, 
-        input.form-transparent:-webkit-autofill:focus,
-        textarea.form-transparent:-webkit-autofill,
-        textarea.form-transparent:-webkit-autofill:hover,
-        textarea.form-transparent:-webkit-autofill:focus,
-        select.form-transparent:-webkit-autofill,
-        select.form-transparent:-webkit-autofill:hover,
-        select.form-transparent:-webkit-autofill:focus {
-          border: 1px solid transparent;
-          -webkit-box-shadow: 0 0 0px 1000px transparent inset;
-          transition: background-color 5000s ease-in-out 0s;
-        }
-
-        .fadeInLeft {
-            animation-duration: .2s;
-        }
-        .search-fixed {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-
-        .grid {
-            opacity: 0; 
-            transform: translateY(20px);
-            transition: .2s;
-        }
-
-    /*PAGINATION*/
-    .page-item:last-child .page-link {border-radius: 0}
-
-    .page-link {
-        /*border: none;*/
-        border-radius: 8px !important;
-        transition: .2s;
-        margin: 2px;
-    }
-
-    .page-item:not(:last-child):not(:first-child) .page-link {border: none;}
-    </style>
     @stack('header')
 </head>
 
@@ -153,9 +70,15 @@
         @include('layouts.footer')
 
         @include('auth.modal')
-        
+       
         @isset($popup)
-        <div id="popup-container" {{isset($popupAlways) && $popupAlways ? 'always' : null}} data-view="{{$popup}}" data-url="{{route('subscriptions.modal')}}"></div>
+        <div id="popup-container" {{istrue($popup['always'] ?? null, 'always')}}
+            @isset($popup['product'])
+                 data-product-class="{{get_class($popup['product'])}}" 
+                 data-product-id="{{$popup['product']->id}}" 
+             @endisset
+             data-view="{{$popup['view']}}" 
+             data-url="{{route('subscriptions.modal')}}"></div>
         @endisset
 
         @if($message = session('status'))
@@ -178,19 +101,7 @@
     <script src="{{ mix('js/app.js') }}"></script>
 
     <script type="text/javascript">
-jQuery.fn.visible = function() {
-    return this.css('visibility', 'visible');
-};
 
-jQuery.fn.invisible = function() {
-    return this.css('visibility', 'hidden');
-};
-
-jQuery.fn.visibilityToggle = function() {
-    return this.css('visibility', function(i, visibility) {
-        return (visibility == 'visible') ? 'hidden' : 'visible';
-    });
-};
     </script>
 
     <script type="text/javascript">
@@ -226,7 +137,6 @@ jQuery.fn.checkCookie = function() {
     let isExpired = moment().isSameOrAfter(expiresAt);
 
     if (record == null || isExpired) {
-        console.log('Showing popup');
         setCookie(cookie, moment().format('x'), 2);
         return this;
     }
@@ -237,12 +147,14 @@ jQuery.fn.checkCookie = function() {
 };
     
 $(document).ready(function() {
-    loadPopup($('#popup-container:not([always])'), function($modal) {
-        $modal.checkCookie().showAfter(3);
-    });
+    let $popup = $('#popup-container');
 
-    loadPopup($('#popup-container[always]'), function($modal) {
-        $modal.showAfter(3);
+    loadPopup($popup, function($modal) {
+        if ($popup.is('[always]')) {
+            $modal.showAfter(3);
+        } else {
+            $modal.checkCookie().showAfter(3);
+        }
     });
 });
 
@@ -261,11 +173,10 @@ function loadPopup($container, callback = null)
 {
     if ($container.length) {
         let view = $container.data('view');
-
-        if (view)
-            console.log('Loading the ' + view + ' view');
-    
-        axios.get($container.data('url'), {params: {view: view}})
+        let productClass = $container.data('product-class');
+        let productId = $container.data('product-id');
+   
+        axios.get($container.data('url'), {params: {view: view, productClass: productClass, productId: productId}})
              .then(function(response) {
                 $('body').append(response.data);
 
@@ -275,8 +186,6 @@ function loadPopup($container, callback = null)
              .catch(function(error) {
                 console.log(error);
              });
-    } else {
-        console.log('No popup to show');
     }
 }
 

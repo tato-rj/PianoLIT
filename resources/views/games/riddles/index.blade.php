@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'PianoLIT Quizzes', 'popup' => 'gift'])
+@extends('layouts.app', ['title' => 'PianoLIT Quizzes', 'popup' => ['view' => 'gift']])
 
 @push('header')
 

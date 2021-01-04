@@ -12,7 +12,7 @@
 			<div>We'll send you this gift directly on your inbox!</div>
 		</div>
 		
-		@include('components.form.subscription', ['gift' => $post->gift_path, 'label' => 'SEND ME THE GIFT'])
+		@include('components.form.subscription', ['formId' => 'gift-subscription-form', 'gift' => $post->gift_path, 'label' => 'SEND ME THE GIFT'])
 	</div>
 </div>
 @endslot

@@ -5,6 +5,16 @@ function pianolit()
 	return new \App\Services\PianoLIT\PianoLIT;
 }
 
+function istrue($condition = null, $show = null)
+{
+	$true = isset($condition) && $condition;
+
+	if (! $true)
+		return null;
+
+	return $show ?? true;
+}
+
 function array_find($array = null, array $keys)
 {
 	if (! $array)
