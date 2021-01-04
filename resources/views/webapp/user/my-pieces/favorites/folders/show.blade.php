@@ -17,7 +17,11 @@
 
 <section id="pieces-list">
 	@forelse($folder->favorites as $favorite)
-		@include('webapp.components.piece', ['piece' => $favorite->piece, 'hasFullAccess' => $hasFullAccess])
+		@component('webapp.components.piece', ['piece' => $favorite->piece, 'hasFullAccess' => $hasFullAccess])
+		<button class="btn-raw t-2" id="flag-{{$favorite->piece->id}}" data-submit="favorite" data-target="#flag-{{$favorite->piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $favorite->piece, 'folder_id' => $folder->id])}}" data-favorited="true" style="font-size: 120%" title="Remove from this folder">
+			@fa(['icon' => 'heart', 'fa_type' => 's', 'color' => 'red'])
+		</button>
+		@endcomponent
 	@empty
 		<h5 class="text-grey text-center mt-6 mb-3"><i>This folder is emtpy</i></h5>
 	@endforelse

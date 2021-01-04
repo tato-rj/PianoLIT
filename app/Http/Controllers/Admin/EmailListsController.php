@@ -37,7 +37,10 @@ class EmailListsController extends Controller
 
     public function send(EmailList $list)
     {
-        $this->dispatch(new SendMassEmails($list));
+        $list->send();
+
+        event(new EmailListSent($list));
+        // $this->dispatch(new SendMassEmails($list));
 
         return back()->with('status', 'The list email is being sent to all susbcribers, please allow a few seconds to complete.');
     }
