@@ -1,6 +1,7 @@
 @extends('layouts.app', [
     'title' => 'The Ultimate Chord Finder | ' . config('app.name'),
-    'popup' => 'gift',
+    'popup' => 'ebook',
+    'popupAlways' => true,
     'shareable' => [
         'keywords' => 'chords,chord finder,music theory,harmony',
         'title' => 'The Ultimate Chord Finder',

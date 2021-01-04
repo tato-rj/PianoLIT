@@ -155,7 +155,7 @@
         @include('auth.modal')
         
         @isset($popup)
-        <div id="popup-container" data-view="{{$popup}}" data-url="{{route('subscriptions.modal')}}"></div>
+        <div id="popup-container" {{isset($popupAlways) && $popupAlways ? 'always' : null}} data-view="{{$popup}}" data-url="{{route('subscriptions.modal')}}"></div>
         @endisset
 
         @if($message = session('status'))
@@ -237,8 +237,12 @@ jQuery.fn.checkCookie = function() {
 };
     
 $(document).ready(function() {
-    loadPopup($('#popup-container'), function($modal) {
+    loadPopup($('#popup-container:not([always])'), function($modal) {
         $modal.checkCookie().showAfter(3);
+    });
+
+    loadPopup($('#popup-container[always]'), function($modal) {
+        $modal.modal('show');
     });
 });
 
