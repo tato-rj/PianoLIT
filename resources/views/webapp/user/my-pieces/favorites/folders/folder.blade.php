@@ -1,4 +1,4 @@
-<div class="col-lg-6 col-md-6 col-12 folder-container mb-3">
+<div class="col-lg-4 col-md-4 col-6 folder-container mb-3">
 	<div class="rounded border">
 		<a href="{{route('webapp.users.favorites.folders.show', $folder)}}" class="link-none">
 			<div class="rounded-top p-3 cursor-pointer favorite-folder">

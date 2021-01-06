@@ -34,6 +34,33 @@
     -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
 }
+
+#main-nav .nav-link, #main-nav .nav-link:hover {
+	border: 0;
+}
+
+#main-nav .nav-link:not(.active) {
+	color: #6c757d!important;
+}
+
+#main-nav .nav-item {
+	position: relative;
+}
+
+#nav-border {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 1px;
+	background-color: #343a40;
+}
+
+.nav-outline {
+	width: 100%;
+	height: 1px;
+	background-color: transparent;
+}
 </style>
 @endpush
 
@@ -405,5 +432,26 @@ function iOS() {
 
   return false;
 }
+</script>
+
+<script type="text/javascript">
+jQuery.fn.match = function(element) {
+	let pos = element.parent().position().left;
+	let width = element.outerWidth();
+
+	return this.css({
+		width: width,
+		left: pos+'px'
+	}).empty();
+};
+
+let $border = $('#nav-border');
+
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  let $tab = $(e.target);
+  $border.match($tab);
+  $border.show();
+  console.log($tab);
+});
 </script>
 @endpush

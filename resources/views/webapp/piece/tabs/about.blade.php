@@ -1,14 +1,14 @@
 <div class="tab-pane fade show active" id="tab-about">
-	<div class="mb-3 pb-4 border-bottom">
+	<div class="mb-4">
 		<div class="d-flex flex-center flex-wrap">
-			<div class="text-nowrap mx-2 mb-1">
-				@fa(['icon' => 'file-alt', 'mr' => 1, 'color' => 'brand']){{$piece->number_of_pages}}
+			<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+				@fa(['icon' => 'file-alt']){{$piece->number_of_pages}}
 			</div>
-			<div class="text-nowrap mx-2 mb-1">
-				@fa(['icon' => 'palette', 'mr' => 1, 'color' => 'brand']){{$piece->period_name}}
+			<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+				@fa(['icon' => 'palette']){{$piece->period_name}}
 			</div>
-			<div class="text-nowrap mx-2 mb-1">
-				@fa(['icon' => 'music', 'mr' => 1, 'color' => 'brand']){{$piece->key}}
+			<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+				@fa(['icon' => 'music']){{$piece->key}}
 			</div>
 		</div>
 	</div>
@@ -49,7 +49,7 @@
 	</div>
 
 	<div class="text-center mb-4">
-		<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn rounded-pill btn-default">
+		<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn btn-default">
 			@fa(['icon' => 'folder-plus'])More like this</a>
 	</div>
 </div>
