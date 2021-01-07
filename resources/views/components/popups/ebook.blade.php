@@ -8,8 +8,8 @@
 <div class="mb-3">
 	@include('shop.components.cover', [
 		'cover' => $product->mockup_image() ?? $product->cover_image(),
-		'top' => '3.6em',
-		'left' => '3.4em'
+		'top' => '45px',
+		'left' => '34px'
 	])
 </div>
 <a href="{{$product->showRoute()}}" class="btn btn-primary btn-block">Download this eBook now!</a>
