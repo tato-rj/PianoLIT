@@ -1,9 +1,9 @@
 <div class="position-relative mx-auto d-block w-100" style="max-width: {{$maxWidth ?? null}}">
-	<img src="{{$cover ?? $product->cover_image()}}" class="w-100 {{isset($cover) ? null : 'shadow'}}">
+	<img src="{{$product->cover_image()}}" class="w-100 shadow">
 	@if($product->isFree())
-		@include('shop.components.cover.free', ['top' => $top ?? null, 'left' => $left ?? null])
+		@include('shop.components.cover.free')
 	@elseif($product->discount > 0 && $product->discount < 100)
-		@include('shop.components.cover.discount', ['top' => $top ?? null, 'left' => $left ?? null])
+		@include('shop.components.cover.discount')
 	@endif
 
 	@auth

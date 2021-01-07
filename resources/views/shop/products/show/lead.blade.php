@@ -22,6 +22,6 @@
 	</div>
 
 	<div class="col-lg-4 col-md-4 col-10 mx-auto mb-3 order-lg-2 order-md-2 order-1">
-		@include('shop.components.cover')
+		@include('shop.components.mockup')
 	</div>
 </div>
