@@ -17,15 +17,24 @@
         'title' => 'Chord Finder', 
         'subtitle' => 'Just tell us the notes and we\'ll show the most likely chords you can make with them'])
 
+<div class="container mb-5">
+    @component('components.display.layout', [
+        'ads' => ['ebook']
+    ])
+
+    @slot('content')
     @empty($request)
         @include('tools.chord-finder.empty')
     @else
         @include('tools.chord-finder.results.index')
     @endempty
+    @endslot
+    
+    @endcomponent
+</div>
 
 @include('tools.chord-finder.error')
 
-{{-- @popup(['view' => 'crashcourse']) --}}
 @endsection
 
 @push('scripts')

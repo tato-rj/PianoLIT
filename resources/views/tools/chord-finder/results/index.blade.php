@@ -1,9 +1,9 @@
 <div class="container mb-4" id="notes-container">
 	<div class="row">
-		<div class="col-lg-6 col-12 mb-4">
+		<div class="col-12 mb-4">
 			@include('tools.chord-finder.results.chords')
 		</div>
-		<div class="col-lg-6 col-12 mb-4">
+		<div class="col-12 mb-4">
 			<p class="text-grey"><i class="fas fa-volume-up mr-2"></i>Click the chords to hear them on the keyboard</p>
 			@include('components.piano.keyboard', [
 				'centered' => false,
@@ -24,8 +24,8 @@
 				@foreach($request['chords'] as $chord)
 					@foreach($chord['inversions'] as $inversion)
 					  <div class="chord-info" style="display: none;" id="{{$inversion['id']}}">
-					  	<div class="d-flex">
-							<div class="mb-4 px-2">
+					  	<div class="row">
+							<div class="col-lg-4 col-12 mb-4">
 								<label class="alert-grey rounded-top py-2 px-4 text-center w-100 m-0 text-nowrap"><small><strong>THIS CHORD HAS</strong></small></label>
 								<ul class="list-flat">
 									@foreach($inversion['intervals'] as $interval)

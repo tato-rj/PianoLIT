@@ -1,3 +1,5 @@
+$(document).ready(function() {
+
 $(document).on('click', '.chords-results button', function() {
     if (notPlaying) {
         hideDots();
@@ -391,3 +393,5 @@ function updateUrl(notes) {
         window.history.pushState({path:newurl},'',newurl);
     }
 }
+
+});
