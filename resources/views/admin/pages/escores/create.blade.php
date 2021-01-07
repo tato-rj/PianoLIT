@@ -55,6 +55,9 @@
           @file(['bag' => 'default', 'name' => 'cover_image'])
         </div>
         <div class="col">
+          @file(['bag' => 'default', 'name' => 'mockup_image'])
+        </div>
+        <div class="col">
           @file(['bag' => 'default', 'name' => 'pdf_file'])
         </div>
         <div class="col">

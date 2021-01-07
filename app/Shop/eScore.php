@@ -24,6 +24,7 @@ class eScore extends Product implements Merchandise
             $escore->topics()->detach();
             
             \Storage::disk('public')->delete($escore->cover_path);
+            \Storage::disk('public')->delete($escore->mockup_path);
             \Storage::disk('public')->delete($escore->pdf_path);
             \Storage::disk('public')->delete($escore->audio_path);
 

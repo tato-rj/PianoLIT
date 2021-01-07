@@ -98,6 +98,9 @@
         @file(['bag' => 'default', 'name' => 'cover_image', 'value' => $escore->cover_path, 'label' => 'Cover image', 'required' => false])
       </div>
       <div class="col">
+        @file(['bag' => 'default', 'name' => 'mockup_image', 'value' => $escore->mockup_path, 'label' => 'Mockup image', 'required' => false])
+      </div>
+      <div class="col">
         @file(['bag' => 'default', 'name' => 'pdf_file', 'value' => $escore->pdf_path, 'label' => 'Pdf file', 'required' => false])
       </div>
       <div class="col">

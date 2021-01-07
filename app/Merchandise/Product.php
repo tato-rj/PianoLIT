@@ -3,11 +3,11 @@
 namespace App\Merchandise;
 
 use App\{ShareableContent, Review};
-use App\Traits\Filterable;
+use App\Traits\{Filterable, HasMockup};
 
 abstract class Product extends ShareableContent
 {
-	use Filterable;
+	use Filterable, HasMockup;
 
 	protected $withCount = ['reviews'];
 

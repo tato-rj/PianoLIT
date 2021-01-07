@@ -58,7 +58,14 @@
               <label class="custom-file-label truncate" for="cover-file">Cover image</label>
             </div>
           </div>
-
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <div class="custom-file">
+              <input type="file" required class="custom-file-input {{$errors->has('mockup_image') ? 'is-invalid' : ''}}" name="mockup_image" id="mockup-file">
+              <label class="custom-file-label truncate" for="mockup-file">Mockup image</label>
+            </div>
+          </div>
         </div>
         <div class="col">
           <div class="form-group">

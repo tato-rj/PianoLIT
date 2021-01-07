@@ -97,6 +97,9 @@
         @file(['bag' => 'default', 'name' => 'cover_image', 'value' => $ebook->cover_path, 'label' => 'Cover image', 'required' => false])
       </div>
       <div class="col">
+        @file(['bag' => 'default', 'name' => 'mockup_image', 'value' => $ebook->mockup_path, 'label' => 'Mockup image', 'required' => false])
+      </div>
+      <div class="col">
         @file(['bag' => 'default', 'name' => 'pdf_file', 'value' => $ebook->pdf_path, 'label' => 'PDF', 'required' => false])
       </div>
       <div class="col">

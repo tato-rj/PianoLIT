@@ -52,6 +52,10 @@ class eBooksController extends Controller
                                                        ->for(eBook::class)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
+            'mockup_path' => (new ImageUpload($request))->take('mockup_image')
+                                                       ->for(eBook::class)
+                                                       ->name(str_slug($request->title).'-mockup')
+                                                       ->upload(),
             'pdf_path' => $this->hasFile('pdf_file')->upload('title', 'ebooks/pdf'),
             'epub_path' => $this->hasFile('epub_file')->upload('title', 'ebooks/epub')
         ]);
@@ -118,6 +122,10 @@ class eBooksController extends Controller
             'cover_path' => (new ImageUpload($request))->take('cover_image')
                                                        ->for($ebook)
                                                        ->name(str_slug($request->title))
+                                                       ->upload(),
+            'mockup_path' => (new ImageUpload($request))->take('mockup_image')
+                                                       ->for($ebook)
+                                                       ->name(str_slug($request->title).'-mockup')
                                                        ->upload(),
             'pdf_path' => $this->hasFile('pdf_file')->delete($ebook->pdf_path)->upload('title', 'escores/pdf'),
             'epub_path' => $this->hasFile('epub_file')->delete($ebook->epub_path)->upload('title', 'escores/epub')
