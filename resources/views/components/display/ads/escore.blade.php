@@ -6,7 +6,7 @@
 
 	@slot('image')
 	<div class="px-3">
-		@include('shop.components.cover', ['product' => $ad['escore'], 'maxWidth' => '300px'])
+		@include('shop.components.mockup', ['product' => $ad['escore']])
 	</div>
 	@endslot
 

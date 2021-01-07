@@ -49,6 +49,12 @@
         <form action="{{route('admin.ebooks.previews.upload', $ebook)}}" class="dropzone" id="filesDropzone"></form>
       </div>
       <div class="col-12 d-flex flex-wrap">
+        <div class="d-flex bg-light p-2 rounded">
+          <img src="{{$ebook->cover_image()}}" style="width: 80px" class="p-2">
+          @if($ebook->mockup_image())
+          <img src="{{$ebook->mockup_image()}}" style="width: 80px" class="ml-2">
+          @endif
+        </div>
         @foreach($ebook->previews as $preview)
         <a href="#" data-url="{{route('admin.ebooks.previews.remove', ['ebook' => $ebook, 'preview_path' => $preview])}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete">
           <div class="position-relative m-1" style="width: 80px">

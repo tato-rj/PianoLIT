@@ -49,6 +49,12 @@
         <form action="{{route('admin.escores.previews.upload', $escore)}}" class="dropzone" id="filesDropzone"></form>
       </div>
       <div class="col-12 d-flex flex-wrap">
+        <div class="d-flex bg-light p-3 rounded">
+          <img src="{{$escore->cover_image()}}" style="width: 80px">
+          @if($escore->mockup_image())
+          <img src="{{$escore->mockup_image()}}" style="width: 80px" class="ml-2">
+          @endif
+        </div>
         @foreach($escore->previews as $preview)
         <a href="#" data-url="{{route('admin.escores.previews.remove', ['escore' => $escore, 'preview_path' => $preview])}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete">
           <div class="position-relative m-1" style="width: 80px">
