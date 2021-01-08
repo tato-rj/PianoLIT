@@ -4,6 +4,7 @@
 			@topics(['model' => $product])
 			<div>
 				@include('shop.components.title')
+				<p class="text-muted">{{$product->subtitle}}</p>
 				@include('shop.components.highlights')
 			</div>
 			

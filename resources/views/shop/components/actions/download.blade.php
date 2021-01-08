@@ -1,5 +1,5 @@
 @if(auth()->check() && auth()->user()->purchasesOf($product)->exists())
-<div class="mb-2 text-center">
+<div class="mb-{{$mb ?? 2}} text-center">
 	<a href="{{route('users.purchases')}}" class="btn btn-block btn-primary">@fa(['icon' => 'cloud-download-alt'])Download it again</a>
 	<p class="text-muted m-0"><small>Downloaded on {{auth()->user()->purchasesOf($product)->first()->created_at->toFormattedDateString()}}</small></p>
 </div>

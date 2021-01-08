@@ -1,19 +1,18 @@
-<div class="bg-light rounded p-5 mb-5">
+<div class="mb-6">
 	<div class="row">
-		<div class="col-lg-8 col-md-8 col-12 d-flex align-items-center">
+		<div class="col-lg-6 col-md-6 col-12">
+			@include('shop.components.mockup', ['maxWidth' => '280px'])
+		</div>
+		<div class="px-5 py-4 bg-light rounded col-lg-6 col-md-6 col-12 d-flex flex-center">
 			<div>
-				<h4 class="mb-4 clamp-2"><strong>{{$product->title}}</strong></h4>
-				<p>{{$product->subtitle}}</p>
-				<div class="mb-2">
+				<div class="mb-3">
+					@include('shop.components.title')
+					<p>{{$product->subtitle}}</p>
 					@include('shop.components.price')
 				</div>
+
+				@include('shop.components.actions.download', ['mb' => 0])
 			</div>
-		</div>
-		<div class="col-lg-4 col-md-4 col-12">
-			@include('shop.components.highlights')
-			<div>
-				@include('shop.components.actions.download')
-			</div>	
 		</div>
 	</div>
 </div>
