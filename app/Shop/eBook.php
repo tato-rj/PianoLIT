@@ -46,7 +46,10 @@ class eBook extends Product implements Merchandise
 
     public function keywords()
     {
-        return '';
+        $title = strtolower($this->title);
+        $description = strtolower($this->subtitle);
+
+        return $title . ',' . $description;
     }
 
     public function actionButtons()

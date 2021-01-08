@@ -5,7 +5,7 @@
 		'keywords' => $product->keywords(),
 		'title' => $product->title,
 		'description' => $product->subtitle,
-		'thumbnail' => $product->cover_image(),
+		'thumbnail' => $product->mockup_image(),
 		'created_at' => $product->created_at,
 		'updated_at' => $product->created_at
 	]])
