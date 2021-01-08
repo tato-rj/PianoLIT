@@ -2,7 +2,7 @@
 	<img src="{{$product->cover_image()}}" class="w-100 shadow">
 	@if($product->isFree())
 		@include('shop.components.cover.free')
-	@elseif($product->discount > 0 && $product->discount < 100)
+	@elseif($product->hasDiscount())
 		@include('shop.components.cover.discount')
 	@endif
 

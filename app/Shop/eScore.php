@@ -193,11 +193,6 @@ class eScore extends Product implements Merchandise
         }
     }
 
-    public function isFree()
-    {
-        return $this->price == 0 || $this->discount == 100;
-    }
-
     public function scopeDatatable($query)
     {
         return datatable($query)->withDate()->withBlade([

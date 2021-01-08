@@ -16,6 +16,16 @@ abstract class Product extends ShareableContent
 		return $this->morphMany(Review::class, 'reviewable');
 	}
 
+    public function isFree()
+    {
+        return $this->price == 0 || $this->discount == 100;
+    }
+
+    public function hasDiscount()
+    {
+    	return (bool) $this->discount;
+    }
+
 	public function publishedReviews()
 	{
 		return $this->morphMany(Review::class, 'reviewable')->published();

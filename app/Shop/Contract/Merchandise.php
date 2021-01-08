@@ -7,6 +7,7 @@ interface Merchandise
 	public function purchases();
 	public function getPriceInCentsAttribute();
 	public function isFree();
+	public function hasDiscount();
 	public function finalPrice();
 	public function notification();
 	public function url();
