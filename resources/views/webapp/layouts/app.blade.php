@@ -163,14 +163,12 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
         event.preventDefault();
         let $button = $(this);
         let $heart = $button.find('i');
-        let $label = $(this).siblings('span.favorite-label');
 
         $button.disable().addClass('opacity-6');
 
         axios.post($button.attr('data-url-toggle'))
             .then(function(response) {
                 $heart.toggleClass('fas far');
-                $label.text(response.data.status ? $label.data('label-true') : $label.data('label-false'));
             })
             .catch(function(error) {
                 alert('Sorry, we couldn\'t update your favorite at this time.');

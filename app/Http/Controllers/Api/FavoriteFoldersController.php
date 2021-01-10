@@ -18,12 +18,18 @@ class FavoriteFoldersController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id'
+            'user_id' => 'required|exists:users,id',
+            'piece_id' => 'sometimes|exists:pieces,id'
         ]);
 
         $user = User::find($request->user_id);
 
-        return $user->favoriteFolders()->with('favorites')->lastUpdated()->get();     
+        $folders = $user->favoriteFolders()->with('favorites')->lastUpdated()->get();
+
+        if ($request->has('piece_id'))
+            $folders->each->hasPiece($request->piece_id);
+
+        return $folders;     
     }
 
     public function show(Request $request)

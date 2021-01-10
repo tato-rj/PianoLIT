@@ -27,8 +27,7 @@
 				<div class="dropdown-divider"></div>
 				<div class="py-2">
 					<a class="cursor-pointer toggle-favorite link-none mb-3 px-3">
-						@php($label = auth()->user()->favorites->contains($piece) ? 'Remove from' : 'Add to')
-						@include('webapp.components.favorite')<span class="favorite-label" data-label-true="Remove from favorites" data-label-false="Add to favorites">{{$label}} favorites</span>
+						@include('webapp.components.favorite')<span>Manage favorites</span>
 					</a>
 				</div>
 			</div>

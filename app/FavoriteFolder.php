@@ -47,4 +47,9 @@ class FavoriteFolder extends PianoLit
 
         return $composers->unique();
     }
+
+    public function hasPiece($piece_id)
+    {
+        $this->has_piece = $this->favorites()->where('piece_id', $piece_id)->exists();
+    }
 }
