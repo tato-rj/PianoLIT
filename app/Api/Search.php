@@ -80,6 +80,15 @@ class Search
         	}
         }
 
-        return $pieces->each->isFavorited($this->request->user_id);
+        $pieces->each(function($piece) {
+            $piece->isFavorited($this->getUserId());
+        });
+
+        return $pieces;
+    }
+
+    public function getUserId()
+    {
+        return auth()->check() ? auth()->user()->id : $this->request->user_id;
     }
 }
