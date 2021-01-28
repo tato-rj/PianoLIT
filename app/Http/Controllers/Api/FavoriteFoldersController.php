@@ -64,14 +64,14 @@ class FavoriteFoldersController extends Controller
 
     public function update(Request $request, FavoriteFoldersForm $form)
     {
-        // $request->validate([
-        //     'folder_id' => 'required|exists:favorite_folders,id',
-        //     'user_id' => ['required', 
-        //                   'exists:users,id',
-        //                   new UserMustOwnTheFolder($request->folder_id)
-        //                 ],
-        //     'name' => 'required|string',
-        // ]);
+        $request->validate([
+            'folder_id' => 'required|exists:favorite_folders,id',
+            'user_id' => ['required', 
+                          'exists:users,id',
+                          new UserMustOwnTheFolder($request->folder_id)
+                        ],
+            'name' => 'required|string',
+        ]);
 
         $folder = FavoriteFolder::find($request->folder_id);
 
