@@ -149,8 +149,10 @@ class AdminsController extends Controller
     /**
      * Display the blog index page.
      */
-    public function blog()
+    public function blog(Request $request)
     {
+        $request->validate(['name' => 'required']);
+        
         if (request()->ajax())
             return Post::datatable();
 
