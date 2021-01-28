@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\{FavoriteFolder, Piece, Favorite, User};
 use App\Http\Requests\FavoriteFoldersForm;
 use App\Rules\UserMustOwnTheFolder;
+use Illuminate\Support\Facades\Validator;
 
 class FavoriteFoldersController extends Controller
 {
@@ -64,7 +65,7 @@ class FavoriteFoldersController extends Controller
 
     public function update(Request $request, FavoriteFoldersForm $form)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'folder_id' => 'required|exists:favorite_folders,id',
             'user_id' => ['required', 
                           'exists:users,id',
@@ -72,6 +73,9 @@ class FavoriteFoldersController extends Controller
                         ],
             'name' => 'required|string|min:3',
         ]);
+
+        if ($validator->fails())
+            return response()->json(['message' => $validator->messages()[0][0]]);
 
         $folder = FavoriteFolder::find($request->folder_id);
 
