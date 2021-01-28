@@ -155,7 +155,7 @@ class AdminsController extends Controller
     {
         $validator = Validator::make($request->all(), ['name' => 'required']);
 
-        dd($validator);
+        dd(get_class_methods($validator));
 
         if (request()->ajax())
             return Post::datatable();
