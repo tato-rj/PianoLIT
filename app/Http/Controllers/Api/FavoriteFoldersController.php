@@ -46,21 +46,21 @@ class FavoriteFoldersController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
-            'piece_id' => 'sometimes|exists:pieces,id',
-            'name' => [
-                'required', 
-                'string',
-                'min:3',
-                Rule::unique('favorite_folders')->where(function ($query) use ($request) {
-                    return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
-                })
-            ]
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'user_id' => 'required|exists:users,id',
+        //     'piece_id' => 'sometimes|exists:pieces,id',
+        //     'name' => [
+        //         'required', 
+        //         'string',
+        //         'min:3',
+        //         Rule::unique('favorite_folders')->where(function ($query) use ($request) {
+        //             return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
+        //         })
+        //     ]
+        // ]);
 
-        if ($validator->fails())
-            return response()->json(['message' => $validator->messages()->first()]);
+        // if ($validator->fails())
+        //     return response()->json(['message' => $validator->messages()->first()]);
 
         $folder = FavoriteFolder::create([
             'user_id' => $form->user_id,
