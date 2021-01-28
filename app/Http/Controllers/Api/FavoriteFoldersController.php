@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\{FavoriteFolder, Piece, Favorite, User};
 use App\Http\Requests\FavoriteFoldersForm;
 use App\Rules\UserMustOwnTheFolder;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
 class FavoriteFoldersController extends Controller
@@ -63,19 +64,23 @@ class FavoriteFoldersController extends Controller
         return response()->json(['message' => 'Saved to ' . $folder->name, 'data' => $folder]);
     }
 
-    public function update(Request $request, FavoriteFoldersForm $form)
+    public function update(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'folder_id' => 'required|exists:favorite_folders,id',
-        //     'user_id' => ['required', 
-        //                   'exists:users,id',
-        //                   new UserMustOwnTheFolder($request->folder_id)
-        //                 ],
-        //     'name' => 'required|string|min:3',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'folder_id' => 'required|exists:favorite_folders,id',
+            'user_id' => 'required|exists:users,id',
+            'name' => [
+                'required', 
+                'string',
+                'min:3',
+                Rule::unique('favorite_folders')->where(function ($query) use ($request) {
+                    return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
+                })
+            ]
+        ]);
 
-        // if ($validator->fails())
-        //     return response()->json(['message' => $validator->messages()[0][0]]);
+        if ($validator->fails())
+            return response()->json(['message' => $validator->messages()[0][0]]);
 
         $folder = FavoriteFolder::find($request->folder_id);
 
