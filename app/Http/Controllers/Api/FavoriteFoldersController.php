@@ -46,30 +46,30 @@ class FavoriteFoldersController extends Controller
 
     public function store(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'user_id' => 'required|exists:users,id',
-        //     'piece_id' => 'sometimes|exists:pieces,id',
-        //     'name' => [
-        //         'required', 
-        //         'string',
-        //         'min:3',
-        //         Rule::unique('favorite_folders')->where(function ($query) use ($request) {
-        //             return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
-        //         })
-        //     ]
-        // ]);
-
-        // if ($validator->fails())
-        //     return response()->json(['message' => $validator->messages()->first()]);
-
-        $folder = FavoriteFolder::create([
-            'user_id' => $form->user_id,
-            'name' => $form->name
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'piece_id' => 'sometimes|exists:pieces,id',
+            'name' => [
+                'required', 
+                'string',
+                'min:3',
+                Rule::unique('favorite_folders')->where(function ($query) use ($request) {
+                    return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
+                })
+            ]
         ]);
 
-        $user = User::findOrFail($form->user_id);
+        if ($validator->fails())
+            return response()->json(['message' => $validator->messages()->first()]);
 
-        if ($piece = Piece::find($form->piece_id)) {
+        $folder = FavoriteFolder::create([
+            'user_id' => $request->user_id,
+            'name' => $request->name
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        if ($piece = Piece::find($request->piece_id)) {
             Favorite::toggle(
                 $user, 
                 $piece, 
