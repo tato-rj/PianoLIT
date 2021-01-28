@@ -10,34 +10,52 @@ class FavoritesTest extends AppTest
     /** @test */
     public function app_users_can_toggle_favorites_without_folders()
     {
+        Favorite::truncate();
+
         $initialCount = $this->user->favorites()->count();
         
         $newPiece = create(Piece::class);
+
+        $this->assertEquals(0, Favorite::count());
 
         $this->post(route('api.users.favorites.update', ['user_id' => $this->user->id, 'piece_id' => $newPiece]));
 
         $this->assertNotEquals($initialCount, $this->user->favorites()->count());
 
+        $this->assertEquals(1, Favorite::count());
+
         $this->post(route('api.users.favorites.update', ['user_id' => $this->user->id, 'piece_id' => $newPiece]));
 
         $this->assertEquals($initialCount, $this->user->favorites()->count());
+
+        $this->assertEquals(0, Favorite::count());
     }
 
     /** @test */
     public function app_users_can_toggle_favorites_from_folders()
     {
+        Favorite::truncate();
+
+        create(Favorite::class, ['user_id' => $this->user->id]);
+
+        $this->assertEquals(1, Favorite::count());
+
         $newPiece = create(Piece::class);
 
         $folder = create(FavoriteFolder::class, ['user_id' => $this->user->id]);
 
         $this->post(route('api.users.favorites.update', ['user_id' => $this->user->id, 'piece_id' => $newPiece, 'folder_id' => $folder->id]));
-         
+
+        $this->assertEquals(2, Favorite::count());
+
         $this->assertEquals(2, $this->user->favorites()->count());
 
         $this->assertEquals(1, $this->user->favoriteFolders()->first()->favorites()->count());
 
         $this->post(route('api.users.favorites.update', ['user_id' => $this->user->id, 'piece_id' => $newPiece, 'folder_id' => $folder->id]));
-         
+
+        $this->assertEquals(1, Favorite::count());
+        
         $this->assertEquals(1, $this->user->favorites()->count());
 
         $this->assertEquals(0, $this->user->favoriteFolders()->first()->favorites()->count());

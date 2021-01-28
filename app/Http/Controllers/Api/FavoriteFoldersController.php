@@ -80,7 +80,7 @@ class FavoriteFoldersController extends Controller
             'description' => $request->description
         ]);
 
-        return response()->json(['message' => 'The folder has been created.', 'data' => $folder]);
+        return response()->json(['message' => 'The folder has been updated.', 'data' => $folder]);
     }
 
     public function destroy(Request $request)
