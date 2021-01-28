@@ -14,6 +14,8 @@ use App\Tools\Stats;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Support\Facades\Validator;
+
 class AdminsController extends Controller
 {
     /**
@@ -151,8 +153,10 @@ class AdminsController extends Controller
      */
     public function blog(Request $request)
     {
-        $request->validate(['name' => 'required']);
-        
+        $validator = Validator::make($request->all(), ['name' => 'required']);
+
+        dd($validator);
+
         if (request()->ajax())
             return Post::datatable();
 
