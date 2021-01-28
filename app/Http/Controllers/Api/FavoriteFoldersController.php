@@ -65,17 +65,17 @@ class FavoriteFoldersController extends Controller
 
     public function update(Request $request, FavoriteFoldersForm $form)
     {
-        $validator = Validator::make($request->all(), [
-            'folder_id' => 'required|exists:favorite_folders,id',
-            'user_id' => ['required', 
-                          'exists:users,id',
-                          new UserMustOwnTheFolder($request->folder_id)
-                        ],
-            'name' => 'required|string|min:3',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'folder_id' => 'required|exists:favorite_folders,id',
+        //     'user_id' => ['required', 
+        //                   'exists:users,id',
+        //                   new UserMustOwnTheFolder($request->folder_id)
+        //                 ],
+        //     'name' => 'required|string|min:3',
+        // ]);
 
-        if ($validator->fails())
-            return response()->json(['message' => $validator->messages()[0][0]]);
+        // if ($validator->fails())
+        //     return response()->json(['message' => $validator->messages()[0][0]]);
 
         $folder = FavoriteFolder::find($request->folder_id);
 
