@@ -70,7 +70,7 @@ class FavoriteFoldersController extends Controller
                           'exists:users,id',
                           new UserMustOwnTheFolder($request->folder_id)
                         ],
-            'name' => 'required|string',
+            'name' => 'required|string|min:3',
         ]);
 
         $folder = FavoriteFolder::find($request->folder_id);
