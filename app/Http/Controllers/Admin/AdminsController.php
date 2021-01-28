@@ -154,7 +154,7 @@ class AdminsController extends Controller
     public function blog(Request $request)
     {
         $validator = Validator::make($request->all(), ['name' => 'required']);
-        dd($validator->messages());
+        dd(get_class_methods($validator->messages()));
         dd(get_class_methods($validator));
 
         if (request()->ajax())
