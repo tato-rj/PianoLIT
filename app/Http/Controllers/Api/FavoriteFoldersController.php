@@ -73,9 +73,9 @@ class FavoriteFoldersController extends Controller
                 'required', 
                 'string',
                 'min:3',
-                // Rule::unique('favorite_folders')->where(function ($query) use ($request) {
-                //     return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
-                // })
+                Rule::unique('favorite_folders')->where(function ($query) use ($request) {
+                    return $query->where(['user_id' => 123123123, 'name' => $request->name]);
+                })
             ]
         ]);
 
