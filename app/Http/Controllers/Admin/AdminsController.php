@@ -14,6 +14,8 @@ use App\Tools\Stats;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Support\Facades\Validator;
+
 class AdminsController extends Controller
 {
     /**
