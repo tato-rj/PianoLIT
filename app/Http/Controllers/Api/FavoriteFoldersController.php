@@ -80,7 +80,7 @@ class FavoriteFoldersController extends Controller
         ]);
 
         if ($validator->fails())
-            return response()->json(['message' => $validator->messages()[0][0]]);
+            return response()->json(['message' => $validator->messages()->first()]);
 
         $folder = FavoriteFolder::find($request->folder_id);
 
