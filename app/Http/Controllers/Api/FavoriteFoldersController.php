@@ -110,12 +110,15 @@ class FavoriteFoldersController extends Controller
 
     public function destroy(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'folder_id' => 'required|exists:favorite_folders,id',
             'user_id' => ['required', 
                           'exists:users,id',
                           new UserMustOwnTheFolder($request->folder_id)]
         ]);
+
+        if ($validator->fails())
+            return response()->json(['message' => $validator->messages()->first()]);
 
         FavoriteFolder::find($request->folder_id)->delete();
 

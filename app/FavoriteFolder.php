@@ -25,6 +25,11 @@ class FavoriteFolder extends PianoLit
         return $this->hasMany(Favorite::class)->with('piece')->latest();
     }
 
+    public function scopeAlphabetically($query)
+    {
+        return $query->orderBy('name');
+    }
+
     public function scopeRetrieve($query, $userId, $folderId)
     {
     	return $query->where(['id' => $folderId, 'user_id' => $userId])->exists();
