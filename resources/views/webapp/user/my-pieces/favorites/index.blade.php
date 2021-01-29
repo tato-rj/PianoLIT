@@ -1,5 +1,5 @@
 <section id="folders-list" class="row"> 
-@forelse(auth()->user()->favoriteFolders()->alphabetically()->get() as $folder)
+@forelse(auth()->user()->favoriteFolders()->latest()->get() as $folder)
 	@include('webapp.user.my-pieces.favorites.folders.folder')
 	@include('webapp.user.my-pieces.favorites.delete')
 	@include('webapp.user.my-pieces.favorites.edit')
