@@ -28,7 +28,7 @@ abstract class Factory
 	{
 		$records = [];
 
-        if (array_key_exists('datasets', $this->data->first())) {
+        if ($this->data->first() && collect($this->data->first())->has('datasets')) {
             foreach ($this->data as $data) {
                 foreach ($data['datasets'] as $name => $count) {
                     $records[$name]['title'] = $name;

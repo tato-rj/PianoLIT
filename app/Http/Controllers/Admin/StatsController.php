@@ -23,6 +23,14 @@ class StatsController extends Controller
         return view('admin.pages.stats.users.index');
     }
 
+    public function logs()
+    {
+        if (request()->ajax())
+            return (new Stats)->for('logs')->query(request('type'), request()->except('type'))->get();
+
+        return view('admin.pages.stats.logs.index');
+    }
+
     public function pieces()
     {
         if (request()->ajax())

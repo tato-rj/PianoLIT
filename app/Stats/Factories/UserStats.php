@@ -78,14 +78,14 @@ class UserStats extends Factory
         $verified = $this->table->whereNotNull('email_verified_at')->count();
 
         $this->data = collect([
-            [
+            collect([
                 'label' => 'verified',
                 'count' => $verified
-            ],
-            [
+            ]),
+            collect([
                 'label' => 'not verified',
                 'count' => $total - $verified
-            ]
+            ])
         ]);
 
         return $this;
@@ -99,24 +99,15 @@ class UserStats extends Factory
         $hasFavs = User::where('origin', 'ios')->has('favorites')->count();
 
         $this->data = collect([
-            [
+            collect([
                 'label' => 'with favorites',
                 'count' => $hasFavs
-            ],
-            [
+            ]),
+            collect([
                 'label' => 'no favorites',
                 'count' => $total - $hasFavs
-            ]
+            ])
         ]);
-
-        return $this;
-    }
-
-    public function logs($where = null)
-    {
-        $this->title = 'Activity logs';
-        $this->colors = [$this->color['cyan'], $this->color['orange'], $this->color['purple']];    
-        $this->data = (new DailyLog)->latest($where['logs_limit'] ?? 6);
 
         return $this;
     }

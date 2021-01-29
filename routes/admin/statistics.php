@@ -3,6 +3,8 @@
 Route::prefix('statistics')->name('stats.')->group(function() {
 
 	Route::get('users', 'Admin\StatsController@users')->name('users');
+
+	Route::get('logs', 'Admin\StatsController@logs')->name('logs');
 	
 	Route::get('memberships', 'Admin\StatsController@memberships')->name('memberships');
 

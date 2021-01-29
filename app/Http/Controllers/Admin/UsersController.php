@@ -36,7 +36,7 @@ class UsersController extends Controller
     public function logs()
     {        
         if (request()->ajax())
-            return (new Stats)->for('users')->query(request('type'), request()->except('type'))->get();
+            return (new Stats)->for('logs')->query(request('type'), request()->except('type'))->get();
 
         $users = User::latest()->with(['membership'])->get();
         $logs_total_count = ((new \App\Log\LogFactory)->total());

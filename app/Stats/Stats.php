@@ -2,12 +2,13 @@
 
 namespace App\Stats;
 
-use App\Stats\Factories\{UserStats, PieceStats, SubscriptionStats};
+use App\Stats\Factories\{UserStats, PieceStats, SubscriptionStats, LogStats};
 
 class Stats {
 	protected $factory;
 	protected $factories = [
 		'users' => UserStats::class,
+		'logs' => LogStats::class,
 		'subscriptions' => SubscriptionStats::class,
 		'pieces' => PieceStats::class,
 	];

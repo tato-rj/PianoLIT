@@ -18,7 +18,7 @@
         @chart([
           'url' => route('admin.stats.users'),
           'chart' => 'line',
-          'type' => 'logs',
+          'type' => 'daily',
           'select' => [
             'logs_limit' => [
               ['label' => 'past 7 days', 'value' => 7],
@@ -49,8 +49,8 @@ var quickchart = new QuickChart;
 
 $(document).ready(function() {
     quickchart.setup({
-      element: '#stats-logs', 
-      url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
+      element: '#stats-daily', 
+      url: "{{route('admin.users.logs', ['type' => 'daily'])}}"
     }).make('line');
 });
 </script>

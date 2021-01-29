@@ -18,6 +18,7 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Statistics', 'icon' => 'chart-line',
         'dropdown' => [
           ['name' => 'Users', 'route' => route('admin.stats.users')],
+          ['name' => 'Logs', 'route' => route('admin.stats.logs')],
           ['name' => 'Memberships', 'route' => route('admin.stats.memberships')],
           ['name' => 'Subscriptions', 'route' => route('admin.stats.subscriptions')],
           ['name' => 'Pieces', 'route' => route('admin.stats.pieces')],
