@@ -60,7 +60,7 @@ class FavoriteFoldersController extends Controller
         ]);
 
         if ($validator->fails())
-            return response()->json(['message' => $validator->messages()->first()]);
+            return response()->json(['message' => $validator->messages()->first(), 'valid' => false]);
 
         $folder = FavoriteFolder::create([
             'user_id' => $request->user_id,
@@ -77,7 +77,7 @@ class FavoriteFoldersController extends Controller
             );
         }
 
-        return response()->json(['message' => 'Saved to ' . $folder->name, 'data' => $folder]);
+        return response()->json(['message' => 'Saved to ' . $folder->name, 'data' => $folder, 'valid' => true]);
     }
 
     public function update(Request $request)
@@ -96,7 +96,7 @@ class FavoriteFoldersController extends Controller
         ]);
 
         if ($validator->fails())
-            return response()->json(['message' => $validator->messages()->first()]);
+            return response()->json(['message' => $validator->messages()->first(), 'valid' => false]);
 
         $folder = FavoriteFolder::find($request->folder_id);
 
@@ -105,7 +105,7 @@ class FavoriteFoldersController extends Controller
             'description' => $request->description
         ]);
 
-        return response()->json(['message' => 'The folder has been updated.', 'data' => $folder]);
+        return response()->json(['message' => 'The folder has been updated.', 'data' => $folder, 'valid' => true]);
     }
 
     public function destroy(Request $request)
@@ -118,10 +118,10 @@ class FavoriteFoldersController extends Controller
         ]);
 
         if ($validator->fails())
-            return response()->json(['message' => $validator->messages()->first()]);
+            return response()->json(['message' => $validator->messages()->first(), 'valid' => false]);
 
         FavoriteFolder::find($request->folder_id)->delete();
 
-        return response()->json(['message' => 'The folder has been removed.']);
+        return response()->json(['message' => 'The folder has been removed.', 'valid' => true]);
     }
 }

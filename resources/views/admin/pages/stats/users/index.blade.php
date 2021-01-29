@@ -75,6 +75,18 @@
           ])
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-4 col-md-4 col-12 mb-4">
+          @chart([
+            'url' => route('admin.stats.users'),
+            'chart' => 'pie',
+            'type' => 'logs',
+            'title' => 'Logs',
+            'subtitle' => 'Number of logs',
+            'height' => '30vh',
+          ])
+        </div>
+    </div>
 
   </div>
 </div>
@@ -104,6 +116,11 @@ $(document).ready(function() {
     quickchart.setup({
       element: '#stats-favorites', 
       url: "{{route('admin.stats.users', ['type' => 'favorites'])}}"
+    }).make('pie');
+
+    quickchart.setup({
+      element: '#stats-logs', 
+      url: "{{route('admin.stats.users', ['type' => 'logs'])}}"
     }).make('pie');
 });
 </script>
