@@ -114,13 +114,17 @@ class FavoritesTest extends AppTest
     /** @test */
     public function app_users_cannot_create_two_folders_with_the_same_name()
     {
-        $this->expectException('Illuminate\Validation\ValidationException');
-
         $this->signIn($this->user);
 
-        $this->post(route('api.users.favorites.folders.store', ['user_id' => $this->user->id, 'name' => 'Foo']));
+        $response = $this->post(route('api.users.favorites.folders.store', ['user_id' => $this->user->id, 'name' => 'Foo']));
 
-        $this->post(route('api.users.favorites.folders.store', ['user_id' => $this->user->id, 'name' => 'Foo']));
+        $this->assertTrue($response['valid']);
+        $this->assertCount(1, $this->user->favoriteFolders);
+
+        $response = $this->post(route('api.users.favorites.folders.store', ['user_id' => $this->user->id, 'name' => 'Foo']));
+
+        $this->assertFalse($response['valid']);
+        $this->assertCount(1, $this->user->favoriteFolders);
     }
 
     /** @test */
@@ -128,19 +132,20 @@ class FavoritesTest extends AppTest
     {
         $folder = create(FavoriteFolder::class, ['user_id' => $this->user->id]);
 
-        $this->patch(route('api.users.favorites.folders.update', ['user_id' => $this->user->id, 'folder_id' => $folder->id, 'name' => 'Bar']));
+        $this->patch(route('api.users.favorites.folders.update', ['user_id' => $this->user->id, 'folder_id' => $folder->id, 'name' => 'bar']));
 
         $this->assertNotEquals($folder->name, $this->user->favoriteFolders->fresh()->first()->name);
     }
 
     /** @test */
     public function app_users_cannot_update_folders_from_other_users()
-    {
-        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
-        
+    {        
         $folder = create(FavoriteFolder::class);
 
-        $this->patch(route('api.users.favorites.folders.update', ['user_id' => $this->user->id, 'folder_id' => $folder->id, 'name' => 'Bar']));
+        $response = $this->patch(route('api.users.favorites.folders.update', ['user_id' => $this->user->id, 'folder_id' => $folder->id, 'name' => 'bar']));
+
+        $this->assertFalse($response['valid']);
+        $this->assertNotEquals($folder->name, 'bar');
     }
 
     /** @test */
@@ -157,12 +162,13 @@ class FavoritesTest extends AppTest
 
     /** @test */
     public function app_users_cannot_delete_folders_from_other_users()
-    {
-        $this->expectException('Illuminate\Validation\ValidationException');
-        
+    {        
         $folder = create(FavoriteFolder::class);
 
-        $this->delete(route('api.users.favorites.folders.delete', ['user_id' => $this->user->id, 'folder_id' => $folder->id]));
+        $response = $this->delete(route('api.users.favorites.folders.delete', ['user_id' => $this->user->id, 'folder_id' => $folder->id]));
+
+        $this->assertFalse($response['valid']);
+        $this->assertDatabaseHas('favorite_folders', ['name' => $folder->name]);
     }
 
     /** @test */
@@ -193,7 +199,7 @@ class FavoritesTest extends AppTest
 
         $this->assertNotTrue($piece->isFavorited($this->user));
 
-        $this->post(route('api.users.favorites.folders.store', ['user_id' => $this->user->id, 'name' => 'Bar', 'piece_id' => $piece->id]));
+        $this->post(route('api.users.favorites.folders.store', ['user_id' => $this->user->id, 'name' => 'bar', 'piece_id' => $piece->id]));
 
         $this->assertNotTrue($piece->isFavorited($this->user));
     }

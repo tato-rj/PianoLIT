@@ -116,7 +116,7 @@ class UserStats extends Factory
     {
         $this->title = 'Activity logs';
         $this->colors = [$this->color['cyan'], $this->color['orange'], $this->color['purple']];    
-        $this->data = (new DailyLog)->between(0, 2);
+        $this->data = (new DailyLog)->latest($where['logs_limit'] ?? 6);
 
         return $this;
     }

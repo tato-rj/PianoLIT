@@ -17,7 +17,6 @@ class StatsController extends Controller
 {
     public function users()
     {
-        return (new Stats)->for('users')->query(request('type'), request()->except('type'))->get();
         if (request()->ajax())
             return (new Stats)->for('users')->query(request('type'), request()->except('type'))->get();
 

@@ -78,13 +78,6 @@ class DailyLog
 		return collect(array_values($records));
 	}
 
-	public function between($min, $max)
-	{
-		$total = $this->all();
-
-		dd($total);
-	}
-
     public function getOrigin($log)
     {
         return substr($log, strrpos($log, ':') + 1);
