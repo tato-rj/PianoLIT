@@ -116,7 +116,7 @@ $('#pdf-share').click(function() {
 $(document).ready(function() {
 	const pdfurl = "{{storage($piece->score_path)}}";
 
-	if (IOS()) {
+	if (safari()) {
 		$('.ios-only').show();
 		$('.non-ios').hide();
 	} else {
