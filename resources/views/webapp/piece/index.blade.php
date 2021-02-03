@@ -116,7 +116,7 @@ $('#pdf-share').click(function() {
 $(document).ready(function() {
 	const pdfurl = "{{storage($piece->score_path)}}";
 
-	if (safari()) {
+	if (IOS()) {
 		$('.ios-only').show();
 		$('.non-ios').hide();
 	} else {
@@ -419,7 +419,7 @@ function iOS() {
     'iPhone Simulator',
     'iPod Simulator',
     'iPad',
-    'MacIntel',
+    // 'MacIntel',
     'iPhone',
     'iPod'
   ];
