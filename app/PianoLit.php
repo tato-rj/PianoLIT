@@ -16,6 +16,11 @@ class PianoLit extends Model
         return $query->orderBy('created_at');
     }
 
+    public function scopeAlphabetical($query, $column)
+    {
+        return $query->orderBy($column);
+    }
+
     public function scopeLastUpdated($query)
     {
         return $query->orderBy('updated_at','DESC');

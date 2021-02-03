@@ -26,7 +26,7 @@ class FavoriteFoldersController extends Controller
 
         $user = User::find($request->user_id);
 
-        $folders = $user->favoriteFolders()->with('favorites')->latest()->get();
+        $folders = $user->favoriteFolders()->with('favorites')->alphabetical('name')->get();
 
         if ($request->has('piece_id'))
             $folders->each->hasPiece($request->piece_id);
