@@ -116,7 +116,7 @@ $('#pdf-share').click(function() {
 $(document).ready(function() {
 	const pdfurl = "{{storage($piece->score_path)}}";
 
-	if (iOS()) {
+	if (safari()) {
 		$('.ios-only').show();
 		$('.non-ios').hide();
 	} else {
@@ -431,6 +431,20 @@ function iOS() {
   }
 
   return false;
+}
+
+function safari()
+{
+	var ua = navigator.userAgent.toLowerCase(); 
+	if (ua.indexOf('safari') != -1) { 
+		if (ua.indexOf('chrome') > -1) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	return false;
 }
 </script>
 
