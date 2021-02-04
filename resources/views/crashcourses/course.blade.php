@@ -17,7 +17,7 @@
 					<div><i class="fas fa-check text-green mr-2"></i> Receive the course in your inbox</div>
 					<div><i class="fas fa-check text-green mr-2"></i> Learn with bite sized content</div>
 				</div>
-				<form method="POST" id="crashcourse-form" disable-on-submit action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">
+				<form method="POST" disable-on-submit action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">
 					@csrf
 					@include('components.form.subscription.hidden', ['id' => 'crashcourse-form'])
 					<div class="">

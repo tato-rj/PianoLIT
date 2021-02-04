@@ -1,4 +1,4 @@
-@if(count($topics) > 0)
+@if(!empty($topics) && count($topics) > 0)
 <div class="mb-5">
 	<div class="d-flex d-apart mb-1 pb-1 border-bottom">
 		<p class="text-muted mb-0"><strong>TOPICS</strong></p>
