@@ -1,5 +1,5 @@
 <div class="my-2">
-	<div class="row mb-2">
+	<div class="row mb-4">
 		<div class="col-lg-6 col-md-6 col-12 bg-align-center px-5 py-4 position-relative" style="background-image: url({{$crashcourse->cover_image()}});">
 			<div class="overlay-darkest"></div>
 			<div class="pt-6 text-white z-10 position-relative">
