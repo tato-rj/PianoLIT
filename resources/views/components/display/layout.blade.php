@@ -4,6 +4,7 @@
 			{{$content}}
 		</div>
 		<div class="col-lg-3 col-md-4 col-12 order-lg-2 order-md-2 order-1">
+			@include('components.display.topics')
 			@include('components.display.ads', ['vertical' => true, 'mobile' => false])
 		</div>
 	@else
@@ -20,19 +21,8 @@
 	      @pagination
 		</div>
 		<div class="col-lg-3 col-md-4 col-12 order-lg-2 order-md-2 order-1">
-			@if(count($topics) > 0)
-			<div class="mb-5">
-				<div class="d-flex d-apart mb-1 pb-1 border-bottom">
-					<p class="text-muted mb-0"><strong>TOPICS</strong></p>
-					<a href="{{route(request()->route()->getName())}}" class="text-muted"><small>reset</small></a>
-				</div>
-		        <div>
-		          @foreach($topics as $topic)
-		          <a href="{{route(request()->route()->getName(), request('topics') == $topic->slug ? null : ['topics' => $topic->slug])}}" class="btn btn-{{request('topics') == $topic->slug ? 'primary' : 'light'}} m-1 btn-sm text-muted">{{ucfirst($topic->name)}}</a>
-		          @endforeach
-		        </div>
-		    </div>
-		    @endif
+
+			@include('components.display.topics')
 
 			{{$extra ?? null}}
 			

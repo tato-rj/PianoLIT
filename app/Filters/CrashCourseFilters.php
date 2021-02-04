@@ -4,7 +4,7 @@ namespace App\Filters;
 
 use App\Filters\Traits\Topics;
 
-class BlogFilters extends Filters
+class CrashCourseFilters extends Filters
 {
 	use Topics;
 

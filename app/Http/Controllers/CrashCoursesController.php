@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\CrashCourse\{CrashCourse, CrashCourseSubscription};
+use App\CrashCourse\{CrashCourse, CrashCourseTopic, CrashCourseSubscription};
 use App\Http\Requests\CrashCourseForm;
 use App\Subscription;
 use Illuminate\Http\Request;
+use App\Filters\CrashCourseFilters;
 
 class CrashCoursesController extends Controller
 {
@@ -14,11 +15,12 @@ class CrashCoursesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(CrashCourseFilters $filters)
     {
-        $crashcourses = CrashCourse::published()->latest()->paginate(12);
+        $topics = CrashCourseTopic::all();
+        $crashcourses = CrashCourse::published()->latest()->filter($filters)->paginate(12);
 
-        return view('crashcourses.index', compact('crashcourses'));
+        return view('crashcourses.index', compact(['crashcourses', 'topics']));
     }
 
     /**

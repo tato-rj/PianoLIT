@@ -2,14 +2,11 @@
 
 namespace App\Filters;
 
+use App\Filters\Traits\Topics;
+
 class InfographicFilters extends Filters
 {
+	use Topics;
+	
 	protected $filters = ['topics'];
-
-	public function topics($topics)
-	{
-		return $this->builder->whereHas('topics', function ($query) use ($topics) {
-			$query->whereIn('slug', $topics);
-        });		
-	}
 }

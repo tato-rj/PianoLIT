@@ -2,16 +2,13 @@
 
 namespace App\Filters;
 
+use App\Filters\Traits\Topics;
+
 class QuizFilters extends Filters
 {
+	use Topics;
+	
 	protected $filters = ['topics', 'level'];
-
-	public function topics($topics)
-	{
-		return $this->builder->whereHas('topics', function ($query) use ($topics) {
-			$query->whereIn('slug', $topics);
-        });		
-	}
 
 	public function level($level)
 	{

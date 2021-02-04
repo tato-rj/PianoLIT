@@ -4,9 +4,12 @@ namespace App\CrashCourse;
 
 use App\{ShareableContent, Subscription};
 use App\Events\CrashCourses\CrashCourseSignUp;
+use App\Traits\Filterable;
 
 class CrashCourse extends ShareableContent
 {
+    use Filterable;
+    
     protected $searchableColumns = ['title', 'description'];
 	protected $withCount = ['lessons', 'subscriptions'];
     

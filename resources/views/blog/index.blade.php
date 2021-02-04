@@ -6,7 +6,6 @@
         'title' => 'Blog', 
         'subtitle' => 'A space where we share our ideas and explore intriguing facts about the exciting world of classical music'])
 
-	
 	@component('components.display.layout', [
 		'collection' => $posts,
 		'topics' => $topics,
