@@ -32,6 +32,7 @@
           [
             'title' => 'Learn', 
             'links' => [
+              'Crash Courses' => route('crashcourses.index'), 
               'Infographics' => route('resources.infographs.index'), 
               'Music Timeline' => route('resources.timeline'),
               'Famous birthdays' => route('composers.birthdays')]

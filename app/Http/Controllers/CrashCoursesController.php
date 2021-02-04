@@ -55,7 +55,7 @@ class CrashCoursesController extends Controller
 
         $crashcourse->signup($subscription, $request->first_name);
 
-        return redirect()->back()->with('status', 'Thanks for signing up!');
+        return redirect()->back()->with('status', 'Thanks for signing up! Please check your email for the first lesson.');
     }
 
     public function cancel(Request $request)
