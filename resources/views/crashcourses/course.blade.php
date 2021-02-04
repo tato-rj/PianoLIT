@@ -13,7 +13,7 @@
 				<div class="mb-4">
 					<p class=""><strong>What's in it for me?</strong></p>
 					<div><i class="fas fa-check text-green mr-2"></i> 100% FREE!</div>
-					<div><i class="fas fa-check text-green mr-2"></i> 3 lessons included in this course</div>
+					<div><i class="fas fa-check text-green mr-2"></i> {{$crashcourse->lessons_count}} lessons included in this course</div>
 					<div><i class="fas fa-check text-green mr-2"></i> Receive the course in your inbox</div>
 					<div><i class="fas fa-check text-green mr-2"></i> Learn with bite sized content</div>
 				</div>
