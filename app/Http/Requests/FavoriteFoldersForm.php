@@ -49,7 +49,8 @@ class FavoriteFoldersForm extends FormRequest
             'name' => [
                 'required', 
                 'string',
-                'min:3|max:44',
+                'min:3',
+                'max:44',
                 Rule::unique('favorite_folders')->where(function ($query) {
                     return $query->where(['user_id' => $this->user->id, 'name' => $this->name]);
                 }),
