@@ -52,7 +52,7 @@ class FavoriteFoldersController extends Controller
             'name' => [
                 'required', 
                 'string',
-                'min:3',
+                'min:3|max:44',
                 Rule::unique('favorite_folders')->where(function ($query) use ($request) {
                     return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
                 })]
@@ -90,7 +90,7 @@ class FavoriteFoldersController extends Controller
             'name' => [
                 'required', 
                 'string',
-                'min:3',
+                'min:3|max:44',
                 Rule::unique('favorite_folders')->where(function ($query) use ($request) {
                     return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
                 })]
