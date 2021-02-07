@@ -4,10 +4,12 @@ namespace App\Exports\Subscriptions\Factories;
 
 use App\User;
 
-class Members implements ExportFactory
+class Fans implements ExportFactory
 {
 	public function generate()
 	{
-		return $this->data = User::has('membership')->get()->pluck('email')->toArray();
+		$this->getQuery(User::has('membership'));
+
+		return $this->handle();
 	}
 }

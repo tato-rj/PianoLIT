@@ -11,15 +11,11 @@ abstract class ExportFactory
 
 	protected function getQuery($query)
 	{
-		$this->query = $query;
+		$this->query = $query->whereNotIn('email', $this->exceptions)->get();
 	}
 
 	protected function handle()
 	{
-		return $this->query
-					->whereNotIn('email', $this->exceptions)
-					->get()
-					->pluck('email')
-					->toArray();
+		return $this->query->pluck('email')->toArray();
 	}
 }
