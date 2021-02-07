@@ -6,8 +6,6 @@ use App\User;
 
 class Members implements ExportFactory
 {
-	protected $data;
-
 	public function generate()
 	{
 		return $this->data = User::has('membership')->get()->pluck('email')->toArray();

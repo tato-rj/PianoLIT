@@ -8,10 +8,8 @@ class Members extends ExportFactory
 {
 	public function generate()
 	{
-		return User::has('membership')
-					 ->whereNotIn('email', $this->exceptions)
-					 ->get()
-					 ->pluck('email')
-					 ->toArray();
+		$this->getQuery(User::has('membership'));
+
+		return $this->handle();
 	}
 }
