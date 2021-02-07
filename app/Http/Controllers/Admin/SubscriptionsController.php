@@ -38,7 +38,7 @@ class SubscriptionsController extends Controller
 
     public function export(Request $request)
     {
-        $emails = (new SubscriptionExport)->for('members')->get();
+        $emails = (new SubscriptionExport)->for('fans')->get();
 
         return view('admin.pages.subscriptions.exports.txt', compact('emails'));
     }

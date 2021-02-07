@@ -2,14 +2,15 @@
 
 namespace App\Exports\Subscriptions;
 
-use App\Exports\Subscriptions\Factories\{Members};
+use App\Exports\Subscriptions\Factories\{Members, Fans};
 
 class SubscriptionExport
 {
 	protected $factory;
 
 	protected $types = [
-		'members' => Members::class
+		'members' => Members::class,
+		'fans' => Fans::class
 	];
 
 	public function for($type)

@@ -9,7 +9,7 @@ abstract class ExportFactory
 
 	abstract public function generate();
 
-	public function alter()
+	public function filter()
 	{
 		return $this->query;
 	}
@@ -21,6 +21,6 @@ abstract class ExportFactory
 
 	protected function handle()
 	{
-		return $this->alter()->pluck('email')->toArray();
+		return $this->filter()->pluck('email')->toArray();
 	}
 }
