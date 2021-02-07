@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\{Subscription, EmailList, User};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Exports\Subscriptions\SubscriptionExport;
 
 class SubscriptionsController extends Controller
 {
@@ -35,10 +36,12 @@ class SubscriptionsController extends Controller
         }
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        if (! request()->has('type'))
-            abort(422, 'Please specify which format you need.');
+        $data = (new SubscriptionExport)->for('members')->get();
+        // $request->validate(['type' => 'required']);
+
+        dd($data);
 
         $ids = json_decode(request('ids'));
 
