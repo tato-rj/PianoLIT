@@ -6,11 +6,9 @@ use App\User;
 
 class Fans extends ExportFactory
 {
-	public function generate()
+	public function __construct()
 	{
-		$this->getQuery(User::query());
-
-		return $this->handle();
+		$this->setQuery(User::query());
 	}
 
 	public function filter()

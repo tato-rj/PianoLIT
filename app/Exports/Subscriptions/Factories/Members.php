@@ -6,10 +6,8 @@ use App\User;
 
 class Members extends ExportFactory
 {
-	public function generate()
+	public function __construct()
 	{
-		$this->getQuery(User::has('membership'));
-
-		return $this->handle();
+		$this->setQuery(User::has('membership'));
 	}
 }
