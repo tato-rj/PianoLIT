@@ -23,12 +23,17 @@
         </div>
         <div class="d-flex">
           <div class="mr-2">
-
             <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
               @csrf
-              <input type="hidden" name="type" value="txt">
-              <input type="hidden" name="ids">
-              <button type="submit" class="btn btn-light"><i class="fas fa-file-alt mr-2"></i>Export emails</button>
+              <input type="hidden" name="type" value="members">
+              <button type="submit" class="btn btn-light"><i class="fas fa-file-alt mr-2"></i>Export members</button>
+            </form>
+          </div>
+          <div class="mr-2">
+            <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
+              @csrf
+              <input type="hidden" name="type" value="fans">
+              <button type="submit" class="btn btn-light"><i class="fas fa-file-alt mr-2"></i>Export fans</button>
             </form>
           </div>
           <button class="btn btn-danger" id="delete-all-btn" style="display: none;" data-action="{{route('admin.subscriptions.destroy-many')}}" data-toggle="modal" data-target="#delete-modal">Delete all selected</button>
