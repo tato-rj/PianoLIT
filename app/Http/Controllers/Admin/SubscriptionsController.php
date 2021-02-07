@@ -38,20 +38,7 @@ class SubscriptionsController extends Controller
 
     public function export(Request $request)
     {
-        $data = (new SubscriptionExport)->for('members')->get();
-        // $request->validate(['type' => 'required']);
-
-        dd($data);
-
-        $ids = json_decode(request('ids'));
-
-        if ($ids) {
-            $emails = Subscription::find($ids)->pluck('email')->toArray();
-        } elseif (request()->has('list_id')) {
-            $emails = EmailList::find(request('list_id'))->subscribers->pluck('email')->toArray();
-        } else {
-            $emails = Subscription::all()->pluck('email')->toArray();
-        }
+        $emails = (new SubscriptionExport)->for('members')->get();
 
         return view('admin.pages.subscriptions.exports.txt', compact('emails'));
     }
