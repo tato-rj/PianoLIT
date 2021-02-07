@@ -10,9 +10,6 @@ class Members implements ExportFactory
 
 	public function generate()
 	{
-		$collection = User::has('membership')->get();
-		$filtered = $collection->except($this->exceptions);
-
-		return $filtered->pluck('email')->toArray();
+		return User::has('membership')->whereNotIn('email', $this->exceptions)->get()->pluck('email')->toArray();
 	}
 }
