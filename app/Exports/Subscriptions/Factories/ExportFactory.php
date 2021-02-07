@@ -9,6 +9,11 @@ abstract class ExportFactory
 
 	abstract public function generate();
 
+	public function alter()
+	{
+		return $this->query;
+	}
+
 	protected function getQuery($query)
 	{
 		$this->query = $query->whereNotIn('email', $this->exceptions)->get();
@@ -16,6 +21,6 @@ abstract class ExportFactory
 
 	protected function handle()
 	{
-		return $this->query->pluck('email')->toArray();
+		return $this->alter()->pluck('email')->toArray();
 	}
 }
