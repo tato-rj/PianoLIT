@@ -30,8 +30,8 @@
 
                 @foreach($topics as $topic)
                 <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}">
-                  <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
+                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="topic-{{$topic->name}}">
+                  <label class="custom-control-label" for="topic-{{$topic->name}}">{{$topic->name}}</label>
                 </div>
                 @endforeach
 
