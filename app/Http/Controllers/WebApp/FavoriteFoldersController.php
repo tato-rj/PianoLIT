@@ -27,12 +27,15 @@ class FavoriteFoldersController extends Controller
 
         $folders = auth()->user()->favoriteFolders()->lastUpdated()->get();
 
-    	return response()->json([
-            'html' => [
-                'list' => $piece ? view('webapp.piece.components.saveto.content', compact(['piece', 'folders']))->render() : null,
-                'flex' => null
-            ]
-        ]);
+        if ($request->wantsJson())
+        	return response()->json([
+                'html' => [
+                    'list' => $piece ? view('webapp.piece.components.saveto.content', compact(['piece', 'folders']))->render() : null,
+                    'flex' => null
+                ]
+            ]);
+
+        return back()->with(['status' => 'You have a new folder!']);
     }
 
     public function update(Request $request, FavoriteFoldersForm $form, FavoriteFolder $folder)

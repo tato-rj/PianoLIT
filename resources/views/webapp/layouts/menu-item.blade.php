@@ -1,4 +1,4 @@
-<div class="text-center position-relative">
+<div class="text-center position-relative" id="menu-{{str_slug($label)}}">
 	<a class="menu-link {{url()->current() == $url ? 'active' : null}}" href="{{$url}}">
 		<div>@fa(['icon' => $icon, 'classes' => 'menu-icon', 'mr' => 0])</div>
 		<div><small>{{$label}}</small></div>

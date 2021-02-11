@@ -33,6 +33,7 @@
         ]); ?>
     </script>
     <style type="text/css">
+        .bs-tooltip-top {top: -20px !important;}
     .piece-result:not(:last-of-type) {
         border-bottom: 1px solid #dee2e6 !important;
     }
@@ -121,7 +122,7 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
             <div class="col-lg-8 col-md-12 mx-auto">
 
             <main>
-                
+
                 @include('admin.components.alerts.impersonator')
 
                 @yield('content')
@@ -154,6 +155,9 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 
     <script src="{{ mix('js/app.js') }}"></script>
 
+<script type="text/javascript">
+
+</script>
     <script type="text/javascript">
     $(document).on('click', '[data-dismiss=popup]', function() {
         $('#bottom-popup').fadeOut('fast');
