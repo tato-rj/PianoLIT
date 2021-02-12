@@ -22,6 +22,7 @@
           ['name' => 'Memberships', 'route' => route('admin.stats.memberships')],
           ['name' => 'Subscriptions', 'route' => route('admin.stats.subscriptions')],
           ['name' => 'Pieces', 'route' => route('admin.stats.pieces')],
+          ['name' => 'Favorites', 'route' => route('admin.stats.favorites')],
           ['name' => 'Composers', 'route' => route('admin.stats.composers')],
           ['name' => 'Blog', 'route' => route('admin.stats.blog')],
           ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],

@@ -5,6 +5,7 @@ namespace App;
 class FavoriteFolder extends PianoLit
 {
     protected $withCount = ['favorites'];
+    protected $casts = ['is_default' => 'boolean'];
 
     public static function boot()
     {
@@ -23,6 +24,11 @@ class FavoriteFolder extends PianoLit
     public function favorites()
     {
         return $this->hasMany(Favorite::class)->with('piece')->latest();
+    }
+
+    public function scopeUserCreated($query)
+    {
+        return $this->where('is_default', false);
     }
     
     public function scopeRetrieve($query, $userId, $folderId)
@@ -51,5 +57,13 @@ class FavoriteFolder extends PianoLit
     public function hasPiece($piece_id)
     {
         $this->has_piece = $this->favorites()->where('piece_id', $piece_id)->exists();
+    }
+
+    public function scopeDatatable($query)
+    {
+        return datatable($query)->withDate()->withCount(['favorites'])->withBlade([
+            'user' => view('admin.pages.stats.favorites.table.user'),
+            'action' => view('admin.pages.stats.favorites.table.actions'),
+        ])->make();
     }
 }

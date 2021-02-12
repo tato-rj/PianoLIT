@@ -49,7 +49,7 @@
 @endcomponent
     <div class="tab-content" id="nav-tabContent">
       <div class="tab-pane fade show active" id="list-favorites" role="tabpanel" aria-labelledby="list-profile-list">
-		@include('webapp.user.my-pieces.favorites')
+		@include('webapp.user.my-pieces.favorites.index')
       </div>
       <div class="tab-pane fade" id="list-tutorials" role="tabpanel" aria-labelledby="list-home-list">
 		@include('webapp.user.my-pieces.tutorial-requests')

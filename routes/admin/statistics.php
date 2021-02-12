@@ -12,6 +12,8 @@ Route::prefix('statistics')->name('stats.')->group(function() {
 
 	Route::get('pieces', 'Admin\StatsController@pieces')->name('pieces');
 
+	Route::get('favorites', 'Admin\StatsController@favorites')->name('favorites');
+
 	Route::get('composers', 'Admin\StatsController@composers')->name('composers');
 
 	Route::get('blog', 'Admin\StatsController@blog')->name('blog');

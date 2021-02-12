@@ -18,6 +18,7 @@ class CreateFavoriteFoldersTable extends Migration
             $table->unsignedInteger('user_id');
             $table->string('name');
             $table->string('description')->nullable();
+            $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
 

@@ -8,7 +8,7 @@ use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
 use App\Billing\Membership;
-use App\{User, Piece, Tag, Composer, Country};
+use App\{User, Piece, Tag, Composer, Country, FavoriteFolder};
 use App\Log\Loggers\DailyLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -40,6 +40,14 @@ class StatsController extends Controller
         $views = Piece::orderBy('views_count', 'DESC')->take(10)->get();
 
         return view('admin.pages.stats.pieces.index', compact(['favorites', 'views']));
+    }
+
+    public function favorites()
+    {
+        if (request()->ajax())
+            return FavoriteFolder::userCreated()->datatable();
+        
+        return view('admin.pages.stats.favorites.index');
     }
 
     public function subscriptions()
