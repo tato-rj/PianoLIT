@@ -1,15 +1,15 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
 
 @include('mail::newsletter.quote', [
-	'quote' => 'Life can’t be all bad when for ten dollars you can buy all Beethoven sonatas and listen to them for ten years.',
-	'author' => 'E. Satie'
+	'quote' => 'Works of art make rules; rules do not make works of art.',
+	'author' => 'C. Debussy'
 ])
 
-<p>What’s your resolution for year 2021, aside practicing more? Ours at PianoLIT is discovering more and more piano repertoire for you. If you have any questions or any piece you’d like to see in the app just hit reply and send us your request.</p>
+<p>What’s your resolution for the year 2021, aside from practicing more? Ours at PianoLIT is to keep discovering new piano pieces for you. If you have any questions or any piece you’d like to see in the app just hit reply and send us your request.</p>
 
 @component('mail::panel')
 # How do you think we're doing?
-If you’ve downloaded the PianoLIT app, please tell us what you think <a href="https://forms.gle/BLG89NvjmkWdwSVMA" target="_blank">here</a>! This helps us improve and provide you with the best tools for your musical journey.
+If you’ve downloaded the PianoLIT app, please tell us what you think <a href="https://forms.gle/BLG89NvjmkWdwSVMA" target="_blank">HERE</a>! This helps us improve and provide you with the best tools for your musical journey.
 @endcomponent
 
 @include('mail::divider', ['orientation' => 'vertical'])
