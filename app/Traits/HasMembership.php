@@ -29,6 +29,16 @@ trait HasMembership
 
         return in_array($status, ['active', 'trial']);
     }
+
+    public function canUseLoyaltyDiscount()
+    {
+        return $this->loyaltyDiscounts()->lastMonth()->count() == 0;
+    }
+
+    public function isEligibleForFreeMonthlyProduct()
+    {
+        return $this->membership()->exists() && $this->membership->fresh()->source->isPaying() && $this->canUseLoyaltyDiscount();
+    }
     
     public function scopeExpired($query)
     {

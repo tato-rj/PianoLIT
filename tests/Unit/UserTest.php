@@ -112,8 +112,6 @@ class UserTest extends AppTest
 		$this->user->purchase($this->ebook);
 
 		$this->assertCount(2, $this->user->fresh()->purchases);
-		$this->assertCount(1, $this->user->purchases()->free()->get());
-		$this->assertCount(1, $this->user->purchases()->paid()->get());
 	}
 
 	/** @test */

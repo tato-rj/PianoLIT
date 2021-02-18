@@ -8,7 +8,7 @@
 				<div class="mb-3">
 					@include('shop.components.title')
 					<p>{{$product->subtitle}}</p>
-					@include('shop.components.price')
+					@include('shop.components.price', ['free' => auth()->check() && auth()->user()->isEligibleForFreeMonthlyProduct()])
 				</div>
 
 				@include('shop.components.actions.download', ['mb' => 0])

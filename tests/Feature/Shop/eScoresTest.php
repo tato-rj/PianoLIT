@@ -122,6 +122,8 @@ class eScoresTest extends AppTest
     {
     	$this->signIn($this->user);
 
+        $this->postStripePurchase($this->ebook->purchaseRoute());
+
         $this->postStripePurchase($this->escore->purchaseRoute());
 		
 		$purchase = auth()->user()->purchases()->latest()->first();

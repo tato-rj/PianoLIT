@@ -9,7 +9,7 @@ use App\Traits\{HasMembership, Reportable, Loggable, ManageDates};
 use App\Shop\Contract\Merchandise;
 use App\Merchandise\Purchase;
 use App\Stats\User as UserStats;
-use App\Billing\{Membership, Payment, Customer};
+use App\Billing\{Membership, LoyaltyDiscount, Payment, Customer};
 use App\Billing\Sources\Stripe;
 use App\Billing\Factories\StripeFactory;
 use App\Merchandise\Product;
@@ -52,6 +52,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function membership()
     {
     	return $this->hasOne(Membership::class);
+    }
+
+    public function loyaltyDiscounts()
+    {
+        return $this->hasManyThrough(LoyaltyDiscount::class, Purchase::class);
     }
 
     public function customer()
@@ -132,7 +137,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $charge = $chargeId ? (new StripeFactory)->getCharge($chargeId) : null;
 
-        $price = $charge ? $charge->amount / 100 : $item->finalPrice();
+        $price = $charge ? $charge->amount / 100 : null;
 
         return $this->purchases()->create([
             'item_type' => get_class($item), 

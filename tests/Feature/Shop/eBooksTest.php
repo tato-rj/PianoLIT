@@ -195,6 +195,8 @@ class eBooksTest extends AppTest
     {
     	$this->signIn($this->user);
 
+        $this->postStripePurchase($this->escore->purchaseRoute());
+
         $this->postStripePurchase($this->ebook->purchaseRoute());
 		
 		$purchase = auth()->user()->purchases()->latest()->first();

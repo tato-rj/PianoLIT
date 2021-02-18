@@ -45,7 +45,7 @@ class CreateDefaultFolders extends Command
                 $folder = FavoriteFolder::firstOrCreate([
                     'user_id' => $favorite->user_id,
                     'name' => 'Favorites',
-                    'is_default' => 1
+                    'is_default' => true
                 ]);
 
                 try {

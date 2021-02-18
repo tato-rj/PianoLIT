@@ -59,6 +59,11 @@ trait StripeStates
 		return ! $this->isPaused() && in_array($this->status, $this->states['active']);
 	}
 
+	public function isPaying()
+	{
+		return ! $this->isPaused() && $this->status == 'active';
+	}
+
 	public function isExpired()
 	{
 		if (! $this->renews_at && ! $this->membership_ends_at)

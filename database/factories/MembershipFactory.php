@@ -1,7 +1,8 @@
 <?php
 
-use App\Billing\{Membership, Plan};
+use App\Billing\{Membership, Plan, LoyaltyDiscount};
 use App\Billing\Sources\{Apple, Stripe};
+use App\Merchandise\Purchase;
 use App\User;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -46,5 +47,14 @@ $factory->define(Plan::class, function (Faker $faker) {
         'description' => $faker->paragraph,
         'interval' => $faker->word,
         'trial_period_days' => 7
+    ];
+});
+
+$factory->define(LoyaltyDiscount::class, function (Faker $faker) {
+    return [
+        'purchase_id' => function() {
+            return create(Purchase::class)->id;
+        },
+        'discount' => 100,
     ];
 });

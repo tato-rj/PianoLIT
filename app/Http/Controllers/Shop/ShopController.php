@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Merchandise\Purchase;
 use App\Billing\Factories\StripeFactory;
+use App\Billing\LoyaltyDiscount;
 use App\Shop\Contract\Merchandise;
 use App\Http\Requests\PurchaseForm;
 
@@ -48,8 +49,10 @@ class ShopController extends Controller
     public function purchase(PurchaseForm $form, $model, $reference)
     {
         $chargeId = null;
+        $isFree = $form->product->isFree();
+        $isEligible = auth()->user()->isEligibleForFreeMonthlyProduct();
 
-        if (! $form->product->isFree()) {
+        if (! $isFree && ! $isEligible) {
             try {
                 $chargeId = (new StripeFactory)->withCard($form->save_card)
                                                ->withCoupon(strtoupper($form->coupon))
@@ -61,6 +64,9 @@ class ShopController extends Controller
         }
         
         $purchase = auth()->user()->purchase($form->product, $chargeId);
+
+        if (! $isFree && $isEligible)
+            LoyaltyDiscount::apply($purchase, 100);
 
         return redirect(route('shop.success', ['purchase' => $purchase, 'type' => $form->product->isFree() ? 'free' : 'purchase']));
     }

@@ -1,15 +1,11 @@
 @component('mail::message', ['subscription' => $subscription, 'list' => $list])
 
 @include('mail::newsletter.quote', [
-	'quote' => 'I have never written a note I didn’t mean',
+	'quote' => 'Life can’t be all bad when for ten dollars you can buy all Beethoven sonatas and listen to them for ten years.',
 	'author' => 'E. Satie'
 ])
 
-<p>We would like to use this month’s introduction to give a shoutout to <strong>A Seat at the Piano</strong> and the incredible work they are doing with their project.</p>
-
-<p>ASAP was founded in the summer of 2020 in the midst of social and racial reckoning around the world. Their mission is to promote and advocate for the inclusion, study, and performance of a more equitably representative body of piano works. With their website platform, they strive to raise the voices of those who are less heard and to inspire more thoughtful, inclusive programming within the performing and pedagogical spheres.</p>
-
-<p>Check their website <a href="https://www.aseatatthepiano.com/" target="_blank">here</a> 👏👏👏</p>
+<p>What’s your resolution for year 2021, aside practicing more? Ours at PianoLIT is discovering more and more piano repertoire for you. If you have any questions or any piece you’d like to see in the app just hit reply and send us your request.</p>
 
 @component('mail::panel')
 # How do you think we're doing?
@@ -20,20 +16,37 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 
 @component('mail::newsletter.section', [
 	'badge' => [
-		'name' => 'webapp', 
-		'color' => 'orange',
-		'link' => 'https://my.pianolit.com/pieces/859'
+		'name' => 'eBook', 
+		'color' => 'green',
+		'link' => 'https://pianolit.com/ebooks/music-intervals'
 	],
-	'title' => 'Silent Night'
+	'title' => 'Music Intervals'
 ])
 
-<p>Max Reger was a German composer and teacher, active during the last years of the ‘800 and the first decades of the ‘900 and famous for his organ works. His opus 17 is a collection of 20 short pieces that brings back fond memories from the composer's youth, much like Schumann's Opus 15 "Scenes from Childhood". These are not easy pieces for beginners but rather inspired by the composer's memories.</p>
+<p>Musical intervals are the foundation of music theory. In order to understand how chords and harmony work, first you need to know how to count intervals between notes and understand their different types.</p>
+<p>In this eBook, you will also learn what musical terms such as consonance, dissonance or harmonic series mean. You will also have a chance to test your knowledge with lots of exercises at the end!</p>
 
-<p>One piece in particular, is a rendition of the famous and beloved Silent Night. Here the right hand resembles the delicate sound of tiny bells accompanying the main theme. The coordination between the distinct rhythmic groups in the right hand and the melody in the left hand is the main challenge.</p>
+@component('mail::button', ['url' => 'https://pianolit.com/ebooks/music-intervals'])
+Get eBook here
+@endcomponent
+@endcomponent
 
-<p><a href="https://youtu.be/-4uwtdIKtmQ" class="text-md"><strong>Watch “Silent Night” by M. Reger</strong></a></p>
+@component('mail::newsletter.section', [
+	'badge' => [
+		'name' => 'listen', 
+		'color' => 'orange',
+		'link' => 'https://youtu.be/rg_bezTHLaU'
+	],
+	'title' => 'The Leader of the Golden Turtles'
+])
 
-<p><a href="https://pianolit.com/storage/app/score/pianolit-silent-night-in-a-major-from-from-childhood-op17-no9-4560.pdf" class="text-md"><strong>Get the score for FREE here
+<p>“Histories” is a collection of 10 impressionistic short pieces for intermediate levels, an excellent choice for those starting to learn this genre.</p>
+
+<p>The Leader of the Golden Turtles (La meneuse de tortues d'or) has a stately and noble character with broad sounds and gestures. The first theme is lighter with and almost improvisatory character, while the second theme is much more serious and confident. Both themes return at the end mixed together, and the challenge here is in playing them at the same time while maintaining their original character and articulation.</p>
+
+<p><a href="https://youtu.be/rg_bezTHLaU" class="text-md"><strong>Watch “The Leader of the Golden Turtles” by J. Ibert</strong></a></p>
+
+<p><a href="https://pianolit.com/storage/app/score/pianolit-1-la-meneuse-de-tortues-dor-in-d-minor-from-histories-3316.pdf" class="text-md"><strong>Get the score for FREE here
 
 </strong></a></p>
 
@@ -43,14 +56,14 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 	'badge' => [
 		'name' => 'read', 
 		'color' => 'pink',
-		'link' => 'https://pianolit.com/blog/classical-piano-music-like-clair-de-lune'
+		'link' => 'https://pianolit.com/blog/piano-pieces-by-black-composers'
 	],
-	'title' => 'Classical piano music like Clair de Lune'
+	'title' => 'Piano pieces by Black Composers'
 ])
 
-<p>Always loved Debussy's masterwork Clair de Lune and want to play something similar? You are in the right place. Keep on reading to discover new classical piano music like Clair de Lune.</p>
+<p>Let's take a quick look at some of the most influential black composers, their inspiring stories, and incredible music.</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/blog/classical-piano-music-like-clair-de-lune'])
+@component('mail::button', ['url' => 'https://pianolit.com/blog/piano-pieces-by-black-composers'])
 Check out this post
 @endcomponent
 
@@ -58,44 +71,26 @@ Check out this post
 
 @component('mail::newsletter.section', [
 	'badge' => [
-		'name' => 'eScore', 
-		'color' => 'green',
-		'link' => 'https://pianolit.com/escores/sonata-in-f'
-	],
-	'title' => 'Sonata in F by M.T. Agnesi'
-])
-
-<p>The early decades of the Classical period were marked by vibrant, bold, and uplifting music. The writing was simple and the texture clean, providing incredible contrast to the music of the Baroque period that had just ended.</p>
-
-<p>This beautiful short sonata embodies the spirit of this generation and it will help you develop clean and even playing on the left hand, as well as nuanced scale passages on the right hand.</p>
-
-@component('mail::button', ['url' => 'https://pianolit.com/escores/sonata-in-f'])
-Get eScore here
-@endcomponent
-@endcomponent
-
-@component('mail::newsletter.section', [
-	'badge' => [
-		'name' => 'resource', 
+		'name' => 'crash course', 
 		'color' => 'yellow',
-		'link' => 'https://pianolit.com/composers/birthdays'
+		'link' => 'https://pianolit.com/crashcourses/5-hidden-gems-for-beginner-and-intermediate-pianists'
 	],
-	'title' => 'Don\'t miss out on the birthday of any of your favorite composers'
+	'title' => '5 hidden gems for beginner and intermediate pianists'
 ])
 
-<p>Check out this free resource listing every composers’ birthday in a neat calendar. So that you never forget about their special day ever again!</p>
+<p>Expand your knowledge in piano repertoire by diving deep into 5 remarkable pieces and the composers behind them.</p>
 
-@component('mail::button', ['url' => 'https://pianolit.com/composers/birthdays'])
-See who has birthday this month
+@component('mail::button', ['url' => 'https://pianolit.com/crashcourses/5-hidden-gems-for-beginner-and-intermediate-pianists'])
+Start the FREE crash course today!
 @endcomponent
 @endcomponent
 
-<h1 class="text-lg mb-4">True or False: Christmas music</h1>
+<h1 class="text-lg mb-4">True or False: Impressionist music</h1>
 @include('mail::lists.numbered', ['items' => [
-	'<strong>Silent Night is a popular Austrian Christmas carol composed in 1818:</strong> TRUE | FALSE',
-	'<strong>During his career J.S. Bach always refused to compose any music that was Christmas related:</strong> TRUE | FALSE',
-	'<strong>Scriabin was born on Christmas Day:</strong> TRUE | FALSE',
-	'<strong>Liszt wrote a suite of 12 pieces called “The Christmas Tree” suite:</strong> TRUE | FALSE'
+	'<strong>Debussy was an icon of the impressionist movement, although he did not define himself as an impressionist:</strong> TRUE | FALSE',
+	'<strong>Maurice Ravel was another leading figures in impressionism:</strong> TRUE | FALSE',
+	'<strong>György Ligeti is one of the main figure of late impressionism in music:</strong> TRUE | FALSE',
+	'<strong>“Impressionism” is a term borrowed after one of Monet\'s paintings:</strong> TRUE | FALSE'
 ]])
 
 <div class="text-center mt-4">Find the answers at the bottom of the newsletter!</div>
@@ -113,30 +108,32 @@ Check out the PianoLIT WebApp
 <h1 class="text-lg mb-4">COOL FACTS TO SHARE THIS MONTH:</h1>
 
 @component('mail::panel')
-Ever wondered how Beethoven really looked like if you had the privilege to meet him in real life? Well, GC artist Hadi Karimi gives us a door into the past with his remarkable computer reconstruction of the artist’s bust.
+Ever wondered how Mozart really looked like if you had the privilege to meet him in real life? Here’s the computer reconstruction of the artist’s bust by GC artist Hadi Karimi.
 
-Read more <a href="https://hadikarimi.com/portfolio/ludwig-van-beethoven-1815" target="_blank">HERE</a>.
+Read more <a href="https://www.artstation.com/artwork/J9z83Z" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-Watch this opera singing cockatiel! 🦜
+This commercial by Tosando Music went viral in Japan and inspired many adults to learn to play the piano at home.
 
-Check this out <a href="https://www.youtube.com/watch?v=QmpH-IgWW6Q&feature=emb_title" target="_blank">HERE</a>.
+Check this out <a href="https://www.youtube.com/watch?v=XnOWGVCUJw8" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
-Did you know the famed Steinway manufacturing plant is now making a piano designed in collaboration with Lenny Kravitz? We are not entirely sure how to feel about its look… but it would be more interesting to hear how it sounds. What do you think?
+Did you know? A RASTRUM is a multi-nibbed pen used to draw the five lines of a musical stave simultaneously. It literally means ‘rake’ in Latin.
 
-Read more about it <a href="https://www.steinway.com/pianos/steinway/limited-edition/kravitz-grand/?utm_source=vr&utm_medium=email&utm_campaign=201112" target="_blank">HERE</a>.
+Read more about it <a href="https://www.reddit.com/r/specializedtools/comments/f47j5j/a_rastrum_is_a_multinibbed_pen_used_to_draw_the/" target="_blank">HERE</a>.
 @endcomponent
 
 @component('mail::panel')
 To end with a good laugh! 😂
 
-Check it out <a href="https://www.instagram.com/p/CIOXUiBgjwj/" target="_blank">HERE</a>.
+Rowan Atkinson performing the European Anthem in German...until he runs out of words at the end of the first verse.
+
+Check it out <a href="https://www.youtube.com/watch?v=oWGZdYNpaSo" target="_blank">HERE</a>.
 @endcomponent
 
-<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. FALSE, 3. TRUE, 4. TRUE</div>
+<div class="mb-4 mt-4 text-center">Answers: 1. TRUE, 2. TRUE, 3. FALSE, 4. TRUE</div>
 
 <p>Here at PianoLIT we are working non-stop to improve and expand our music library. If you wish to see the recording of any piece, please reply to this email with your request and we’ll jump on it. We’ve already received some great input (you’ll see them soon in the app!) and thanks to our users for having such great ideas.</p>
 

@@ -55,6 +55,11 @@ trait InteractsWithStripe
         $this->assertEquals($charge->status, 'succeeded');
     }
 
+    public function assertUserWasNotCharged($purchase)
+    {
+        $this->assertTrue($purchase->charge_id == null);
+    }
+
     public function assertCardWasCharged($chargeId, $last4)
     {
         $charge = (new StripeFactory)->getCharge($chargeId);

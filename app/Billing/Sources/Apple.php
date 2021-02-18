@@ -163,6 +163,11 @@ class Apple extends PianoLit implements BillingSource
         return in_array($this->getStatus(), ['active', 'trial']);        
     }
 
+    public function isPaying()
+    {
+        return $this->getStatus() == 'active';
+    }
+
     public function hasCard()
     {
         //

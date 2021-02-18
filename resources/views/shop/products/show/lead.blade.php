@@ -1,4 +1,7 @@
 <div class="row pb-5 pt-3">
+	<div class="col-12">
+		@include('shop.components.loyalty.notification')
+	</div>
 	<div class="col-lg-8 col-md-8 col-12 mx-auto d-flex mb-3 align-items-center order-lg-1 order-md-1 order-2">
 		<div>
 			@topics(['model' => $product])
@@ -13,7 +16,7 @@
 					@include('shop.components.reviews.stars', ['complete' => true])
 				</a>
 				<div class="mb-2">
-					@include('shop.components.price')
+					@include('shop.components.price', ['free' => auth()->check() && auth()->user()->isEligibleForFreeMonthlyProduct()])
 				</div>
 
 				{{$product->actionButtons()}}
