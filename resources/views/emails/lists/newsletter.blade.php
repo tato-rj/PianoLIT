@@ -6,6 +6,7 @@
 ])
 
 <p>What’s your resolution for the year 2021, aside from practicing more? Ours at PianoLIT is to keep discovering new piano pieces for you. If you have any questions or any piece you’d like to see in the app just hit reply and send us your request.</p>
+<p>🎁 Are you a member? Our latest eBook explaining Music Intervals is included with a membership plan. Sign up now and get it for <strong>FREE</strong>!</p>
 
 @component('mail::panel')
 # How do you think we're doing?
