@@ -37,7 +37,9 @@ trait HasMembership
 
     public function isEligibleForFreeMonthlyProduct()
     {
-        return $this->membership()->exists() && $this->membership->fresh()->source->isPaying() && $this->canUseLoyaltyDiscount();
+        $validAccount = $this->super_user || ($this->membership()->exists() && $this->membership->fresh()->source->isPaying());
+
+        return $validAccount && $this->canUseLoyaltyDiscount();
     }
     
     public function scopeExpired($query)
