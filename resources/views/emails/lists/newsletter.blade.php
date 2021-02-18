@@ -25,6 +25,7 @@ If you’ve downloaded the PianoLIT app, please tell us what you think <a href="
 
 <p>Musical intervals are the foundation of music theory. In order to understand how chords and harmony work, first you need to know how to count intervals between notes and understand their different types.</p>
 <p>In this eBook, you will also learn what musical terms such as consonance, dissonance or harmonic series mean. You will also have a chance to test your knowledge with lots of exercises at the end!</p>
+<p>🎁 Are you a member? Any eBook is included with a membership plan. Sign up now and get it for <strong>FREE</strong>!</p>
 
 @component('mail::button', ['url' => 'https://pianolit.com/ebooks/music-intervals'])
 Get eBook here
