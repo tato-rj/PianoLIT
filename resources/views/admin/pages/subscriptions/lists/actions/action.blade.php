@@ -5,6 +5,7 @@
 {{$before ?? null}}
   <form method="GET" action="{{route('admin.subscriptions.lists.send-to', $list)}}" class="mb-2" disable-on-submit>
     @csrf
+    <input type="hidden" name="subject">
     @input([
       'label' => 'Send a preview email to', 
       'value' => null, 
@@ -23,6 +24,7 @@
     <p class="text-danger"><strong>Are you sure?</strong></p>
     <form method="GET" action="{{route('admin.subscriptions.lists.send', $list)}}" disable-on-submit>
       @csrf
+      <input type="hidden" name="subject">
       <button type="submit" class="btn btn-sm btn-block btn-danger">Yes, send the email to the entire list</button>
     </form>
   </div>
