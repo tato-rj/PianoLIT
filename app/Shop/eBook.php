@@ -57,10 +57,12 @@ class eBook extends Product implements Merchandise
         return view('shop.components.actions.ebook', ['product' => $this]);
     }
 
-    public function notification()
+    public function notification($cost = null)
     {
-        $icon = ! $this->isFree() ? '<i class="fas fa-money-bill-wave text-green mr-1"></i>' : null;
-     
+        $userPaid = ! $this->isFree() && $cost >= 1;
+
+        $icon = $userPaid ? '<i class="fas fa-money-bill-wave text-green mr-1"></i>' : null;
+    
         return [
             'title' => 'eBook purchase',
             'message' => $icon . 'New purchase for the <strong>' . $this->title . '</strong> eBook.',

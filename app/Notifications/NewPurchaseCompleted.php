@@ -43,6 +43,6 @@ class NewPurchaseCompleted extends Notification
      */
     public function toArray($notifiable)
     {
-        return $this->purchase->item->notification();
+        return $this->purchase->item->notification($this->purchase->cost);
     }
 }
