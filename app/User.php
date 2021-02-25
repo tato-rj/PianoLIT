@@ -332,6 +332,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $query->where('email', 'test@email.com')->first();
     }
 
+    public function scopeTeam($query)
+    {
+        return $query->whereIn('id', [284, 260, 944]);
+    }
+
     public function scopeByEmail($query, $email)
     {
         return $query->where('email', $email);

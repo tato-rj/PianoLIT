@@ -28,7 +28,9 @@ class FavoriteFolder extends PianoLit
 
     public function scopeUserCreated($query)
     {
-        return $this->where('is_default', false);
+        $teamIds = User::team()->pluck('id');
+
+        return $this->where('is_default', false)->whereNotIn('user_id', $teamIds);
     }
     
     public function scopeRetrieve($query, $userId, $folderId)
