@@ -26,11 +26,11 @@
 	@endif
 
 	<div>
-		<p class="m-0"><strong>Editor</strong></p>
-		<p class="text-muted">{{$piece->score_editor ?? 'Unknown'}}</p>
-		<p class="m-0"><strong>Publisher info</strong></p>
-		<p class="text-muted">{{$piece->score_publisher ?? 'Unknown'}}</p>
-		<p class="m-0"><strong>Copyright</strong></p>
-		<p class="text-muted">{{$piece->score_copyright ?? 'Unknown'}}</p>
+		{{-- <p class="m-0"><strong>Editor</strong></p> --}}
+		{{-- <p class="text-muted">{{$piece->score_editor ?? 'Unknown'}}</p> --}}
+		{{-- <p class="m-0"><strong>Publisher info</strong></p> --}}
+		{{-- <p class="text-muted">{{$piece->score_publisher ?? 'Unknown'}}</p> --}}
+		{{-- <p class="m-0"><strong>Copyright</strong></p> --}}
+		{{-- <p class="text-muted">{{$piece->score_copyright ?? 'Unknown'}}</p> --}}
 	</div>
 </div>
