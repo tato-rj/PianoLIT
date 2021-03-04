@@ -3,6 +3,7 @@
 namespace App\Resources\FindYourMatch;
 
 use App\Resources\FindYourMatch\Traits\{Questions, Display};
+use App\Piece;
 
 class Quiz extends QuizFactory
 {
@@ -16,6 +17,6 @@ class Quiz extends QuizFactory
 
 		$this->rankByKeywords();
 
-		return $this->ranking->inRandomOrder()->first() ?? Piece::freePicks()->inRandomOrder()->first();
+		return $this->ranking->shuffle()->first() ?? Piece::freePicks()->inRandomOrder()->first();
 	}
 }
