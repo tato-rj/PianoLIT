@@ -16,6 +16,6 @@ class Quiz extends QuizFactory
 
 		$this->rankByKeywords();
 
-		return $this->ranking->first() ?? Piece::freePicks()->inRandomOrder()->first();
+		return $this->ranking->inRandomOrder()->first() ?? Piece::freePicks()->inRandomOrder()->first();
 	}
 }
