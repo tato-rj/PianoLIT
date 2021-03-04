@@ -73,7 +73,7 @@ abstract class QuizFactory
 			$ranking->push(['score' => $score, 'piece' => $piece]);
 		}
 
-		$this->ranking = $ranking->sortByDesc('score')->pluck('piece');
+		$this->ranking = $ranking->sortByDesc('score')->pluck('piece')->take(5);
 	}
 
 	public function sortLevels()
