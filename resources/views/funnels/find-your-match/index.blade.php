@@ -35,7 +35,7 @@ $('button#carousel-submit').click(function() {
 	setTimeout(function() {	
 		axios.get($btn.data('url'), {params: {input: answers}})
 			 .then(function(response) {
-			 	console.log(response.data);
+			 	console.log(answers);
 			 	$('body').append(response.data);
 			 	$('#match-modal').modal('show');
 				new Plyr('#'+$('.video-container video').attr('id'));		 		
