@@ -83,6 +83,6 @@ class Quiz extends QuizFactory
 
 	public function getPieces()
 	{
-		return Piece::famous()->withAudio()->inRandomOrder()->get()->unique('composer_id')->take(12);
+		return Piece::famous()->withAudio()->withVideos()->inRandomOrder()->get()->unique('composer_id')->take(12);
 	}
 }

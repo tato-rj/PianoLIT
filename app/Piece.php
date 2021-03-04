@@ -307,7 +307,7 @@ class Piece extends PianoLit
 
     public function scopeWithAudio($query)
     {
-        return $query->where('audio_path', '!=', null);
+        return $query->whereNotNull('audio_path');
     }
 
     public function scopeWithVideos($query)
