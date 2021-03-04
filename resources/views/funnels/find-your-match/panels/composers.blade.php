@@ -1,4 +1,4 @@
-@component('funnels.find-your-match.panels.panel', ['loop' => $loop ?? false, 'question' => 'Pick your top 3 favorite composers'])
+@component('funnels.find-your-match.panels.panel', ['loop' => $loop ?? false, 'question' => 'Pick the 3 composers you like the most'])
 
 <div class="container-fluid">
 	<div class="carousel-answers row"> 

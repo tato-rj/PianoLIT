@@ -1,4 +1,4 @@
-@component('funnels.find-your-match.panels.panel', ['loop' => $loop ?? false, 'question' => 'Pick your top 3 favorite pieces'])
+@component('funnels.find-your-match.panels.panel', ['loop' => $loop ?? false, 'question' => 'Pick the 3 pieces you like the most'])
 
 @include('funnels.find-your-match.components.audio', [
 	'media' => $pieces
