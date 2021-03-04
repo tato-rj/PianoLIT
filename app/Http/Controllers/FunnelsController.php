@@ -9,7 +9,11 @@ class FunnelsController extends Controller
 {
     public function match()
     {
-    	return view('funnels.find-your-match.index');
+        $composers = (new Quiz)->getComposers();
+        $tags = (new Quiz)->getTags();
+        $pieces = (new Quiz)->getPieces();
+
+    	return view('funnels.find-your-match.index', compact(['composers', 'tags', 'pieces']));
     }
 
     public function matchResults(Request $request)

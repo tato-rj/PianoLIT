@@ -1,14 +1,20 @@
 @component('funnels.find-your-match.panels.panel', ['loop' => $loop ?? false, 'question' => 'Pick your top 3 favorite composers'])
 
-@include('funnels.find-your-match.components.images', [
-	'images' => [
-		\App\Composer::where('name', 'Johann Sebastian Bach')->first()->cover_image => ['Johann Sebastian Bach', 'counterpoint'],
-		\App\Composer::where('name', 'Ludwig Van Beethoven')->first()->cover_image => ['Ludwig Van Beethoven', 'bold'],
-		\App\Composer::where('name', 'Frédéric Chopin')->first()->cover_image => ['Frédéric Chopin', 'melancholic'],
-		\App\Composer::where('name', 'Florence Price')->first()->cover_image => ['Florence Price', 'dreamy'],
-		\App\Composer::where('name', 'Thomas Wiggins')->first()->cover_image => ['Thomas Wiggins', 'passionate'],
-		\App\Composer::where('name', 'Cécile Chaminade')->first()->cover_image => ['Cécile Chaminade', 'melancholic'],
-	]
-])
+<div class="container-fluid">
+	<div class="carousel-answers row"> 
+		@foreach($composers as $composer)
+		<div class="col-lg-4 col-md-4 col-6 p-2">
+			<div class="rounded cursor-pointer list-group-item list-group-item-action border-0 w-100 p-3" data-carousel="answer" data-type="multi" value="{{$composer->mood}}">
+				<div class="p-3">
+					<img src="{{$composer->cover_image}}" class="rounded w-100">
+				</div>
+				<div class="text-center">
+					<div style="line-height: 1" class="mb-1">{{$composer->short_name}}</div>
+				</div>
+			</div>
+		</div>
+		@endforeach
+	</div>
+</div>
 
 @endcomponent

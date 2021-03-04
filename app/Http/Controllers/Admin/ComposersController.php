@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\{Composer, Country};
+use App\{Composer, Country, Tag};
 use App\Http\Requests\ComposerForm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -22,8 +22,9 @@ class ComposersController extends Controller
 
         $composers = Composer::famous()->get();
         $countries = Country::orderBy('nationality')->get();
+        $moods = Tag::mood()->mostPopular()->take(12);
 
-        return view('admin.pages.composers.index', compact(['composers', 'countries']));
+        return view('admin.pages.composers.index', compact(['composers', 'countries', 'moods']));
     }
 
     /**
@@ -60,6 +61,7 @@ class ComposersController extends Controller
             'is_pedagogical' => $form->is_pedagogical ? 1 : 0,
             'date_of_birth' => $form->date_of_birth,
             'date_of_death' => $form->date_of_death,
+            'mood' => $form->mood,
             'creator_id' => auth()->guard('admin')->user()->id
         ]);
 
@@ -86,8 +88,9 @@ class ComposersController extends Controller
     public function edit(Composer $composer)
     {
         $countries = Country::orderBy('nationality')->get();
+        $moods = Tag::mood()->mostPopular()->take(12);
 
-        return view('admin.pages.composers.edit', compact(['composer', 'countries']));
+        return view('admin.pages.composers.edit', compact(['composer', 'countries', 'moods']));
     }
 
     /**
@@ -113,6 +116,7 @@ class ComposersController extends Controller
             'is_pedagogical' => $request->is_pedagogical ? 1 : 0,
             'country_id' => $request->country_id,
             'period' => strtolower($request->period),
+            'mood' => $request->mood,
             'cover_path' => (new ImageUpload($request))->take('cover_image')
                                                        ->for($composer)
                                                        ->name(str_slug($request->name))

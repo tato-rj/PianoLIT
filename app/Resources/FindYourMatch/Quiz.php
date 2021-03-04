@@ -3,7 +3,7 @@
 namespace App\Resources\FindYourMatch;
 
 use App\Resources\FindYourMatch\Traits\Questions;
-use App\{Piece, Tag};
+use App\{Piece, Tag, Composer};
 
 class Quiz extends QuizFactory
 {
@@ -69,5 +69,20 @@ class Quiz extends QuizFactory
 		}
 
 		$this->ranking = $ranking->sortByDesc('score')->pluck('piece');
+	}
+
+	public function getComposers()
+	{
+		return Composer::famous()->inRandomOrder()->take(6)->get();
+	}
+
+	public function getTags()
+	{
+		return Tag::mood()->mostPopular()->take(12)->pluck('name');
+	}
+
+	public function getPieces()
+	{
+		return Piece::famous()->inRandomOrder()->take(6)->get();
 	}
 }

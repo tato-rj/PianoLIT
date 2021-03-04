@@ -8,7 +8,7 @@
       'theme' => 'edit',
       'title' => $composer->name, 
       'subtitle' => 'Use this page to edit this composer.', 
-      'back' => ['view all playists' => route('admin.composers.index')]
+      'back' => ['view all composers' => route('admin.composers.index')]
     ])
 
     <div class="row">
@@ -61,7 +61,7 @@
           </div>
         </div>
         {{-- Nationality and period --}}
-        <div class="form-row form-group">
+        <div class="form-row">
           <div class="col">
             <div class="form-group">
               <label class="text-brand">Nationality</label>
@@ -72,6 +72,8 @@
                 @endforeach
               </select>
             </div>
+          </div>
+          <div class="col">
             <div class="form-group">
               <label class="text-brand">Ethnicity</label>
               <select class="form-control" name="ethnicity">
@@ -84,9 +86,24 @@
           </div>
           <div class="col">
             <div class="form-group">
+              <label class="text-brand">Mood</label>
+              <select class="form-control" name="mood">
+                <option selected disabled>Mood</option>
+                @foreach($moods as $mood)
+                <option value="{{$mood}}" {{$composer->mood == $mood ? 'selected' : ''}}>{{ucfirst($mood)}}</option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col">
+            <div class="form-group">
               <label class="text-brand">Born in</label>
               <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ is_object($composer->date_of_birth) ? $composer->date_of_birth->format('m/d/Y') : null }}">      
             </div>
+          </div>
+          <div class="col">
             <div class="form-group">
               <label class="text-brand">Died in</label>
               <input type="text" class="form-control" id="died-in" name="date_of_death" placeholder="Died in" value="{{ is_object($composer->date_of_death) ? $composer->date_of_death->format('m/d/Y') : null}}">

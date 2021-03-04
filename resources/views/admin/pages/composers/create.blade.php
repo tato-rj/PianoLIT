@@ -22,6 +22,7 @@
   <div class="form-row">
     @select(['bag' => 'default', 'name' => 'country_id', 'placeholder' => 'Nationality', 'options' => $countries->pluck('id', 'nationality'), 'grid' => 'col'])
     @select(['bag' => 'default', 'name' => 'ethnicity', 'placeholder' => 'Ethnicity', 'options' => ethnicities(), 'grid' => 'col'])
+    @select(['bag' => 'default', 'name' => 'mood', 'placeholder' => 'Mood', 'options' => $moods, 'grid' => 'col'])
   </div>
 
   <div class="form-row">

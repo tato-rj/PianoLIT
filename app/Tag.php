@@ -75,6 +75,11 @@ class Tag extends PianoLit
         return $query->where('type', 'mood');
     }
 
+    public function scopeMostPopular($query)
+    {
+        return $query->withCount('pieces')->get()->sortByDesc('pieces_count')->values();
+    }
+
     public function scopeLengths($query)
     {
         return $query->where('type', 'length');
