@@ -88,7 +88,7 @@ class ComposersController extends Controller
     public function edit(Composer $composer)
     {
         $countries = Country::orderBy('nationality')->get();
-        $moods = Tag::mood()->mostPopular()->take(12);
+        $moods = Tag::mood()->mostPopular()->pluck('name')->take(12);
 
         return view('admin.pages.composers.edit', compact(['composer', 'countries', 'moods']));
     }
