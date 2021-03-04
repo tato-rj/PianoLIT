@@ -509,7 +509,7 @@ class Piece extends PianoLit
         return $pieces;
     }
 
-    public function similar()
+    public function similar($strict = true)
     {
         $mood = $this->mood()->pluck('id');
 
@@ -517,9 +517,11 @@ class Piece extends PianoLit
             $query->whereIn('id', $mood);
         })->get();
 
-        foreach ($similar as $key => $piece) {
-            if ($piece->level->id != $this->level->id || $piece->period->id != $this->period->id)
-                $similar->forget($key);
+        if ($strict) {
+            foreach ($similar as $key => $piece) {
+                if ($piece->level->id != $this->level->id || $piece->period->id != $this->period->id)
+                    $similar->forget($key);
+            }
         }
 
         return $similar;

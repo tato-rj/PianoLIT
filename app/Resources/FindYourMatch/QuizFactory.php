@@ -50,18 +50,15 @@ abstract class QuizFactory
 	public function findSimilar()
 	{
 		$similar = collect();
+		$level = $this->levels->first();
 
-		while ($similar->isEmpty() && ! $this->levels->isEmpty()) {
-			$level = $this->levels->shift();
-
-			foreach ($this->pieces as $piece) {
-				$similar = $similar->merge($piece->similar());
-			}
-
-			$similar = $similar->filter(function($piece, $key) use ($level) {
-				return $piece->tags->pluck('name')->contains($level);
-			});
+		foreach ($this->pieces as $piece) {
+			$similar = $similar->merge($piece->similar($strict = false));
 		}
+
+		$similar = $similar->filter(function($piece, $key) use ($level) {
+			return $piece->tags->pluck('name')->contains($level);
+		});
 
 		$this->similar = $similar->unique();
 	}
