@@ -67,6 +67,16 @@ function dirToArray($path)
 	return array_slice(scandir(base_path($path)), 2);
 }
 
+function intToLetter($int)
+{
+	$letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+	if (array_key_exists($int, $letters))
+		return $letters[$int];
+
+	return $int;
+}
+
 function seo()
 {
 	return new \App\Services\SEO\SEO;

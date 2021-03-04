@@ -16,10 +16,10 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/tone.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .sass('resources/sass/admin.scss', 'public/css')
-    .sass('resources/sass/studio-policies/layout.scss', 'public/css/studio-policies')
-    .sass('resources/sass/studio-policies/simple.scss', 'public/css/studio-policies')
-    .sass('resources/sass/studio-policies/elegant.scss', 'public/css/studio-policies')
-    .sass('resources/sass/studio-policies/informal.scss', 'public/css/studio-policies')
+    // .sass('resources/sass/studio-policies/layout.scss', 'public/css/studio-policies')
+    // .sass('resources/sass/studio-policies/simple.scss', 'public/css/studio-policies')
+    // .sass('resources/sass/studio-policies/elegant.scss', 'public/css/studio-policies')
+    // .sass('resources/sass/studio-policies/informal.scss', 'public/css/studio-policies')
     .styles([
       'public/css/app.css',
       'resources/sass/primer/primer.css'

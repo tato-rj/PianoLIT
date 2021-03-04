@@ -11,6 +11,7 @@
 <section class="mb-4">
 	@include('webapp.search.form')
 </section>
+				@include('funnels.find-your-match.results', ['piece' => \App\Piece::first()])
 
 <section id="tags-search">
 

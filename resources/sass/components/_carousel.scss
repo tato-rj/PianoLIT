@@ -1,0 +1,9 @@
+.carousel-inner>.carousel-item {
+    -webkit-transition: -webkit-transform 0.2s ease-in-out !important;
+    -o-transition: -o-transform 0.2s ease-in-out !important;
+    transition: transform 0.2s ease-in-out !important;
+}
+
+.carousel-answers [data-carousel="answer"]:not(.selected-answer):hover {
+	background-color: #f8f9fa;
+}

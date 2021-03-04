@@ -1,108 +1,194 @@
-@extends('layouts.app', [
-	'title' => 'Discover the right pieces for you'])
+@component('layouts.funnel', [
+ 	'title' => 'Discover the right piece for you',
+])
 
-@push('header')
-<style type="text/css">
-	.unselected-answer {
-		opacity: .4;
-	}
+@slot('header')
+<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700&display=swap" rel="stylesheet">
+@endslot
+<div class="text-center pt-7 mx-auto" style="width: 90%">
+	<div class="mb-3">
+		<h1 style="font-family: Roboto Condensed,sans-serif;" class="text-uppercase m-0">What should I play next?</h1>
+		<p class="bg-white py-2 px-3 d-inline-block rounded"><strong>Take the quiz below to find out the best piano piece for you!</strong></p>
+	</div>
 
-	.questions-container:not(:last-child) {
-		margin-bottom: 3rem!important;
-	}
-
-	.audio-control {
-	    bottom: 8px;
-	    left: 50%;
-	    transform: translateX(-50%);
-	}
-</style>
-@endpush
-
-@section('content')
-<section class="container py-4 mb-5">
-  <div class="row mb-5">
-    <div class="col-lg-8 col-md-12 mx-auto">
-      {{-- @include('webapp.layouts.header', ['title' => 'Find your match', 'subtitle' => 'Take this quick tour to find the perfect piece for you']) --}}
-		@pagetitle([
-			'title' => 'Find your match', 
-			'subtitle' => 'Take this quick tour to find the perfect piece for you'])
-
-     	@include('funnels.find-your-match.components.quiz')
-    </div>
-  </div>
-
-  <div class="row">
-  	<div class="col-12 text-center">
-  		<h6>All set?</h6>
-  		<p class="text-muted">Click below to submit your answers and find your best match</p>
-		@button([
-			'label' => 'Find my best match',
-			'styles' => [
-				'shadow' => true,
-				'size' => 'wide',
-				'theme' => 'primary',
-			],
-			'data' => ['url' => route('funnels.find-your-match.results')],
-			'id' => 'find-button'
-		])
-  	</div>
-  </div>
+	<div class="w-100" style="background-image: url({{asset('images/misc/piano.svg')}}); height: 129px;"></div>
+</div>
+<section class="container py-4">
+	<div class="row">
+		<div class="col-lg-8 col-md-12 mx-auto">
+			<div class="bg-white rounded p-3 pb-4">
+				@include('funnels.find-your-match.carousel')
+			</div>
+			</div>
+		</div>
 </section>
-@endsection
 
-@push('scripts')
+@slot('scripts')
 @include('components.addthis')
 <script type="text/javascript">
-var player;
-var query = [];
-
-$('#quiz .answer-card').on('click', function(e) {
-	if ($(e.target).is('button'))
-		return;
-
-	let $answer = $(this);
-
-	$answer.closest('.questions')
-		   .find('.answer-card')
-		   .removeClass('selected-answer shadow-center')
-		   .addClass('unselected-answer');
-
-	$answer.addClass('selected-answer shadow-center')
-		   .removeClass('unselected-answer');
-
-	resetAudio();
-	getSearchTerms();
-});
-
-$('#find-button').click(function() {
+$('button#carousel-submit').click(function() {
 	let $btn = $(this);
-	let missingAnswers = $('.questions-container').length - query.length;
-
-	if (missingAnswers > 0) {
-		alert('You have ' + missingAnswers + ' left to answer');
-	} else {
-		$btn.addLoader();
-		axios.get($btn.data('url'), {params: query})
+	let answers = $('[data-carousel="answer"].selected-answer').attrToArray('value');
+	
+	$btn.addLoader();
+	
+	setTimeout(function() {	
+		axios.get($btn.data('url'), {params: {input: answers}})
 			 .then(function(response) {
+			 	console.log(response.data);
 			 	$('body').append(response.data);
-			 	let $modal = $(document).find('#match-modal');
-			 	
-			 	let videoId = '#'+ $modal.find('video').attr('id');
-			 	
-			 	new Plyr(videoId);
-
-			 	$btn.removeLoader();
-			 	
-			 	$modal.modal('show');
+			 	$('#match-modal').modal('show');
+				new Plyr('#'+$('.video-container video').attr('id'));		 		
 			 })
 			 .catch(function(error) {
 			 	console.log(error);
+			 })
+			 .then(function() {
+			 	$btn.removeLoader();
 			 });
-	}
+	}, 1000);
 });
 
-$('.audio-control button').on('click', function() {
+$('button#carousel-control').click(function() {
+	$('#find-match-carousel').carousel('next');
+});
+
+$('#find-match-carousel').on('slide.bs.carousel', function (event) {
+  let $panel = $(event.relatedTarget);
+
+	$('.carousel-buttons button').prop('disabled', true);
+
+  if ($panel.is(':last-child')) {
+  	$('button#carousel-control').hide();
+  	$('button#carousel-submit').show();
+  }
+});
+
+$('.carousel-answers [data-carousel="answer"][data-type="single"]').click(function() {
+	selectOnly(this);
+	releaseButton();
+});
+
+$('.carousel-answers [data-carousel="answer"][data-type="multi"]').click(function() {
+	toggle(this);
+	checkSelected(this)
+});
+
+$(document).on('hide.bs.modal', '#match-modal', function (e) {
+  reset();
+})
+
+function toggle(elem) 
+{
+	resetAnimations();
+
+	if (isSelected(elem)) {
+		unselect(elem);
+	} else {
+		if (allSelected(elem)) {
+			animate(elem);
+		} else {
+			select(elem);
+		}
+	}
+}
+
+function select(elem, only = false)
+{
+	resetAudio();
+	$(elem).addClass('alert-green selected-answer').removeClass('opacity-6 list-group-item-action');
+	$(elem).closest('.carousel-answers').find('[data-carousel="answer"]').not(only ? elem : '.selected-answer').removeClass('alert-green selected-answer').addClass('opacity-6 list-group-item-action');
+}
+
+function selectOnly(elem)
+{
+	select(elem, true);
+}
+
+function unselect(elem) 
+{
+	$(elem).removeClass('alert-green selected-answer').addClass('opacity-6 list-group-item-action');	
+
+	if (selectedCount(elem) == 0)
+		$(elem).closest('.carousel-answers').find('[data-carousel="answer"]').removeClass('opacity-6');	
+}
+
+function isSelected(elem) 
+{
+	return $(elem).hasClass('selected-answer');
+}
+
+function selectedCount(elem) 
+{
+	return $(elem).closest('.carousel-answers').find('[data-carousel="answer"].selected-answer').length;
+}
+
+function allSelected(elem) 
+{
+	return selectedCount(elem) == 3;
+}
+
+function checkSelected(elem) {
+	let remaining = 3 - selectedCount(elem);
+
+	if (remaining > 0 && remaining < 3) {
+		showAlert(remaining);
+		lockButton();
+
+		return false;
+	} else {
+		hideAlert();
+		releaseButton();
+
+		return true;
+	}
+}
+
+function animate(elem)
+{
+	$(elem).addClass('animated headShake');
+}
+
+function resetAnimations()
+{
+	$('.carousel-answers [data-carousel="answer"]').removeClass('animated headShake');
+}
+
+function releaseButton()
+{
+	$('.carousel-buttons button').prop('disabled', false);
+}
+
+function lockButton()
+{
+	$('.carousel-buttons button').prop('disabled', true);
+}
+
+function showAlert(remaining)
+{
+	$('#remaining-alert span').text(remaining);
+	$('#remaining-alert').css('opacity', 1);
+}
+
+function hideAlert()
+{
+	$('#remaining-alert').css('opacity', 0);
+}
+
+function reset()
+{
+	$('.carousel-answers [data-carousel="answer"]').removeClass('animated headShake selected-answer alert-green opacity-6').addClass('list-group-item-action');
+	$('#carousel-container > #success-overlay').hide();
+	$('#find-match-carousel').carousel(0);
+  	$('button#carousel-control').show();
+  	$('button#carousel-submit').hide();
+}
+</script>
+<script type="text/javascript">
+var player;
+
+$('.audio-control button').on('click', function(e) {
+	e.stopPropagation();
 	let $btn = $(this);
 
 	$btn.hide();
@@ -136,17 +222,7 @@ function isPlaying()
 	return player ? true : false;
 }
 
-function getSearchTerms()
-{
-	query = $('.answer-card.selected-answer').attrToArray('data-query');
-}
-
-$(document).ready(function() {
-	$('.video-container').each(function() {
-		
-
-		new Plyr(videoId);
-	});
-});
 </script>
-@endpush
+@endslot
+
+@endcomponent

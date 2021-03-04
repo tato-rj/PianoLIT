@@ -3,12 +3,13 @@
 namespace App\Resources\FindYourMatch;
 
 use App\Resources\FindYourMatch\Traits\Questions;
+use App\{Piece, Tag};
 
 class Quiz extends QuizFactory
 {
 	use Questions;
 
-	protected $keywords;
+	protected $pieces, $tags, $similar, $ranking;
 
 	public function generate()
 	{
@@ -17,25 +18,56 @@ class Quiz extends QuizFactory
 
 	public function search()
 	{
-		return (new Search($this))->results();
+		$this->findSimilar();
+
+		$this->rankByKeywords();
+
+		return $this->ranking->first();
 	}
 
-	public function findKeywords($input)
+	public function getKeywords($input)
 	{
-		$results = collect();
-		$inputArray = explode(',', $input);
+		$this->pieces = collect();
+		$this->tags = collect();
 
-		foreach($inputArray as $pair) {
-			$term = explode(':', $pair);
+		foreach($input as $keyword) {
+			if (is_numeric($keyword)) {
+				$piece = Piece::find($keyword);
 
-			$category = $term[0];
+				if ($piece)
+					$this->pieces->push($piece);
+			} else {
+				$query = Tag::name($keyword);
 
-			if ($this->isValid($category))
-				$this->$category->take($term[1]);
+				if ($query->exists())
+					$this->tags->push($query->first());
+			}
 		}
 
-		$this->keywords = $this->getResults();
-
 		return $this;
+	}
+
+	public function findSimilar()
+	{
+		$similar = collect();
+
+		foreach ($this->pieces as $piece) {
+			$similar = $similar->merge($piece->similar());
+		}
+
+		$this->similar = $similar->unique();
+	}
+
+	public function rankByKeywords()
+	{
+		$ranking = collect();
+
+		foreach ($this->similar as $piece) {
+			$score = $piece->tags->intersect($this->tags)->count();
+
+			$ranking->push(['score' => $score, 'piece' => $piece]);
+		}
+
+		$this->ranking = $ranking->sortByDesc('score')->pluck('piece');
 	}
 }

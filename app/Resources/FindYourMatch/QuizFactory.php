@@ -15,28 +15,28 @@ abstract class QuizFactory
 		$this->bootCategories();
 	}
 
-	public function getKeywords($flexible = false)
-	{
-		if ($flexible) {
-			foreach ($this->categories as $category => $class) {
-				if ($this->keywords->has($category)) {
-					$this->keywords->forget($category);
-					break;
-				}
-			}
-		}
+	// public function getKeywords($flexible = false)
+	// {
+	// 	if ($flexible) {
+	// 		foreach ($this->categories as $category => $class) {
+	// 			if ($this->keywords->has($category)) {
+	// 				$this->keywords->forget($category);
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
 
-		return $this->keywords;
-	}
+	// 	return $this->keywords;
+	// }
 
-	public function getResults()
-	{
-		$results = collect();
+	// public function getResults()
+	// {
+	// 	$results = collect();
 
-		foreach ($this->categories as $category => $class) {
-			$results->push($this->$category->get());
-		}
+	// 	foreach ($this->categories as $category => $class) {
+	// 		$results->push($this->$category->get());
+	// 	}
 
-		return $results->flattenWithKeys();
-	}
+	// 	return $results->flattenWithKeys();
+	// }
 }

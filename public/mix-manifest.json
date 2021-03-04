@@ -1,13 +1,9 @@
 {
-    "/js/app.js": "/js/app.js?id=3f22bc563c8ff356fe82",
-    "/css/app.css": "/css/app.css?id=ee0403e0f9003ae5232c",
-    "/css/admin.css": "/css/admin.css?id=d9fd2ed1063a2c375104",
-    "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
-    "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=265bb693f4154efcaaec",
-    "/css/studio-policies/elegant.css": "/css/studio-policies/elegant.css?id=4aae0c05002438971714",
-    "/css/studio-policies/informal.css": "/css/studio-policies/informal.css?id=1d1105ead8ba3664484a",
-    "/js/admin.js": "/js/admin.js?id=9fa58837a7d94c5b96cb",
-    "/js/tone.js": "/js/tone.js?id=eb88ab1574ac731b1f8e",
-    "/css/vendor/fontawesome/all.min.css": "/css/vendor/fontawesome/all.min.css?id=b227b1617a1763c8bc05",
-    "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=79fb36dda0a235254c3e"
+    "/js/admin.js": "/js/admin.js?id=7b91a0ac5f606071ee3f",
+    "/js/app.js": "/js/app.js?id=a0f096a920d9420c10be",
+    "/css/app.css": "/css/app.css?id=3163f8c38c3a117f9997",
+    "/css/admin.css": "/css/admin.css?id=4c9f22839f1266f2ee39",
+    "/js/tone.js": "/js/tone.js?id=4a64023a6c3319687a16",
+    "/css/vendor/fontawesome/all.min.css": "/css/vendor/fontawesome/all.min.css?id=c4af24ce595437830af0",
+    "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e"
 }

@@ -9,15 +9,13 @@ class FunnelsController extends Controller
 {
     public function match()
     {
-    	$quiz = (new Quiz)->generate();
-
-    	return view('funnels.find-your-match.index', compact('quiz'));
+    	return view('funnels.find-your-match.index');
     }
 
     public function matchResults(Request $request)
-    {        
-   		$piece = (new Quiz)->findKeywords($request->input)->search();
-
+    {
+   		$piece = (new Quiz)->getKeywords($request->input)->search();
+        
     	return view('funnels.find-your-match.results', compact('piece'))->render();
     }
 }
