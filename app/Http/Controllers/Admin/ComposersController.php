@@ -22,7 +22,7 @@ class ComposersController extends Controller
 
         $composers = Composer::famous()->get();
         $countries = Country::orderBy('nationality')->get();
-        $moods = Tag::mood()->mostPopular()->pluck('name')->take(25);
+        $moods = Tag::mood()->mostPopular()->pluck('name')->take(25)->sortBy('name');
 
         return view('admin.pages.composers.index', compact(['composers', 'countries', 'moods']));
     }
@@ -88,7 +88,7 @@ class ComposersController extends Controller
     public function edit(Composer $composer)
     {
         $countries = Country::orderBy('nationality')->get();
-        $moods = Tag::mood()->mostPopular()->pluck('name')->take(25);
+        $moods = Tag::mood()->mostPopular()->pluck('name')->take(25)->sortBy('name');
 
         return view('admin.pages.composers.edit', compact(['composer', 'countries', 'moods']));
     }
