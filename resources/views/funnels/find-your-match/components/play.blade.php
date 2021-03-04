@@ -1,5 +1,5 @@
 <div class="col-lg-3 col-md-4 col-6 p-2">
-	<div class="rounded cursor-pointer list-group-item list-group-item-action border-0 cursor-pointer w-100 p-3" data-carousel="answer" data-type="multi" value="{{$piece->id}}">
+	<div class="rounded cursor-pointer list-group-item list-group-item-action border-0 cursor-pointer w-100 p-2" data-carousel="answer" data-type="multi" value="{{$piece->id}}">
 		<div class="audio-control text-center mb-2">
 			<button class="border-0 rounded-circle btn-green play-control" style="height: 50px; width: 50px" data-action="play">
 				@fa(['icon' => 'play', 'size' => 'lg', 'mr' => 0])
