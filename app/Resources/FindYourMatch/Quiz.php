@@ -73,7 +73,7 @@ class Quiz extends QuizFactory
 
 	public function getComposers()
 	{
-		return Composer::famous()->inRandomOrder()->take(6)->get();
+		return Composer::famous()->inRandomOrder()->take(12)->get();
 	}
 
 	public function getTags()

@@ -3,7 +3,7 @@
 <div class="container-fluid">
 	<div class="carousel-answers row"> 
 		@foreach($composers as $composer)
-		<div class="col-lg-4 col-md-4 col-6 p-2">
+		<div class="col-lg-3 col-md-4 col-6 p-2">
 			<div class="rounded cursor-pointer list-group-item list-group-item-action border-0 w-100 p-3" data-carousel="answer" data-type="multi" value="{{$composer->mood}}">
 				<div class="p-3">
 					<img src="{{$composer->cover_image}}" class="rounded w-100">
