@@ -6,7 +6,7 @@ use App\{Tag, Piece};
 
 abstract class QuizFactory
 {
-	protected $pieces, $tags, $levels, $similar, $ranking, $level;
+	protected $pieces, $tags, $levels, $similar, $ranking;
 
 	public function getKeywords($input)
 	{
@@ -48,7 +48,7 @@ abstract class QuizFactory
 	public function findSimilar()
 	{
 		$similar = collect();
-		$level = $this->levels->first();
+		$level = $this->preferredLevel();
 
 		foreach ($this->pieces as $piece) {
 			$similar = $similar->merge($piece->similar($strict = false));
@@ -81,7 +81,34 @@ abstract class QuizFactory
 
 	public function preferredLevel()
 	{
-		//
+		$levels = ['elementary', 'early beginner', 'late beginner', 'early intermediate', 'late intermediate', 'advanced'];
+		$first = $this->levels->first();
+
+		if ($this->levels->count() == 1)
+			return $first;
+
+		$second = $this->levels->get(1);
+
+		if ($first == 'advanced')
+			return 'late intermediate';
+
+		if ($first == 'intermediate') {
+			if ($second == 'advanced') {
+				return 'late intermediate';
+			} else {
+				return 'early intermediate';
+			}
+		}
+
+		if ($first == 'beginner') {
+			if ($second == 'elementary') {
+				return 'early beginner';
+			} else {
+				return 'late beginner';
+			}
+		}
+
+		return $first;
 	}
 
 	// use Categories;
