@@ -5,6 +5,7 @@
 @slot('header')
 <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700&display=swap" rel="stylesheet">
 @endslot
+
 <div class="text-center pt-7 mx-auto" style="width: 90%">
 	<div class="mb-3">
 		<h1 style="font-family: Roboto Condensed,sans-serif;" class="text-uppercase">What should I play next?</h1>

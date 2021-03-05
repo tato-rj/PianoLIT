@@ -9,7 +9,7 @@
 
 @section('content')
 
-<div class="cc-container container-fluid p-4">
+<div class="cc-container container-fluid p-4" style="overflow-x: hidden;">
   <div class="{{empty($theme) ? 'bg-lightest-primary' : 'bg-'.$theme.'-lightest'}} position-relative d-flex d-apart flex-column">
     <div class="position-absolute bg-white rounded-circle d-flex flex-center cc-icon">
       <a target="_blank" href="{{route('home')}}"><img src="{{asset('images/brand/app-icon.svg')}}"></a>
