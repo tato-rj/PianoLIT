@@ -1,5 +1,5 @@
 <div id="carousel-container" class="position-relative">
-  <div id="find-match-carousel" class="carousel slide" data-interval="false">
+  <div id="find-match-carousel" class="carousel slide" data-interval="false" data-touch="false">
     <div class="carousel-inner">
       @foreach(['experience', 'score', 'pieces', 'challenge', 'composers', 'mood'] as $view)
         @include('funnels.find-your-match.panels.'.$view, ['loop' => $loop])
