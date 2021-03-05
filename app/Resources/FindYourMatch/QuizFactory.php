@@ -7,10 +7,6 @@ use App\{Tag, Piece};
 abstract class QuizFactory
 {
 	protected $pieces, $tags, $levels, $similar, $ranking;
-	protected $exclude = [
-		// Turk, Kabalevsly
-		'composers' => [32, 50]
-	];
 
 	public function getKeywords($input)
 	{
@@ -59,7 +55,10 @@ abstract class QuizFactory
 		}
 
 		$similar = $similar->filter(function($piece, $key) use ($level) {
-			return $piece->tags->pluck('name')->contains($level);
+			$notExcluded = ! in_array($piece->id, $this->exclude['pieces']);
+			$hasLevel = $piece->tags->pluck('name')->contains($level);
+
+			return $hasLevel && $notExcluded;
 		});
 
 		$this->similar = $similar->unique();

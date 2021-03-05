@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'title' => 'The Ultimate Chord Finder | ' . config('app.name'),
-    'popup' => ['view' => 'ebook', 'always' => true, 'product' => \App\Shop\eBook::latest()->first()],
+    'popup' => ['view' => 'ebook', 'always' => false, 'product' => \App\Shop\eBook::latest()->first()],
     'shareable' => [
         'keywords' => 'chords,chord finder,music theory,harmony',
         'title' => 'The Ultimate Chord Finder',

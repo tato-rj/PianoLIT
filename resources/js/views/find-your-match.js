@@ -1,4 +1,5 @@
 var player;
+var except = [];
 
 $('.audio-control button').on('click', function(e) {
 	e.stopPropagation();
@@ -56,33 +57,35 @@ $('#dial').knob({
 
 $('button#carousel-submit').click(function() {
 	let $btn = $(this);
+	let except = $btn.data('except');
 	let answers = $('[data-carousel="answer"].selected-answer').attrToArray('value');
 	
 	$btn.addLoader();
 	
-	setTimeout(function() {	
-		axios.get($btn.data('url'), {params: {input: answers}})
-			 .then(function(response) {
-			 	console.log(answers);
-			 	$('body').append(response.data);
+	axios.get($btn.data('url'), {params: {input: answers, except: except}})
+		 .then(function(response) {
+		 	console.log(answers);
 
-			 	setTimeout(function() {
-				 	$('#match-modal').modal('show');
+		 	$('body').append(response.data);
 
-				 	$('#match-modal').on('hidden.bs.modal', function (e) {
-						$('#match-modal').remove();
-					});
+		 	$('#match-modal').modal('show');
 
-					new Plyr('#'+$('.video-container video').attr('id'));
-			 	}, 1000);
-			 })
-			 .catch(function(error) {
-			 	console.log(error);
-			 })
-			 .then(function() {
-			 	$btn.removeLoader();
-			 });
-	}, 1000);
+		 	$('#match-modal').on('hidden.bs.modal', function (e) {
+				$('#match-modal').remove();
+			});
+		 	
+		 	$('#match-modal').on('shown.bs.modal', function (e) {
+				$btn.removeLoader();
+				excludePiece($('#match-modal').data('piece-id'));
+			});
+
+			new Plyr('#'+$('.video-container video').attr('id'));
+		 })
+		 .catch(function(error) {
+		 	alert('We couldn\'t get your results, please give it another try!');
+		 	$btn.removeLoader();
+		 	console.log(error);
+		 });
 });
 
 $('button#carousel-control').click(function() {
@@ -111,8 +114,12 @@ $('.carousel-answers [data-carousel="answer"][data-type="multi"]').click(functio
 });
 
 $(document).on('hide.bs.modal', '#match-modal', function (e) {
-  reset();
-})
+	$('#carousel-restart').show();
+});
+
+$('#carousel-restart').on('click', function() {
+	reset();
+});
 
 function toggle(elem) 
 {
@@ -127,6 +134,22 @@ function toggle(elem)
 			select(elem);
 		}
 	}
+}
+
+function excludePiece(pieceId)
+{
+	if (except.length < 15) {
+		except.push(pieceId);
+	} else {
+		resetExclude();
+	}
+	
+	$('#carousel-submit').text('FIND ANOTHER PIECE');
+}
+
+function resetExclude()
+{
+	except = [];
 }
 
 function select(elem, onlyThis = false)
@@ -222,11 +245,23 @@ function hideAlert()
 	$('#remaining-alert').css('opacity', 0);
 }
 
+function resetDial()
+{
+	let $label = $('#dial-label');
+
+	$('#dial').val(0).trigger('change');
+	$label.text($label.data('original-text')).attr('value', null).addClass('opacity-2');
+}
+
 function reset()
 {
 	$('.carousel-answers [data-carousel="answer"]').removeClass('animated headShake selected-answer alert-green opacity-6').addClass('list-group-item-action');
 	$('#carousel-container > #success-overlay').hide();
+	$('#carousel-restart').hide();
 	$('#find-match-carousel').carousel(0);
   	$('button#carousel-control').show();
   	$('button#carousel-submit').hide();
+	$('#carousel-submit').text($('#carousel-submit').data('original-text'));
+  	resetDial();  	
+  	resetExclude();
 }

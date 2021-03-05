@@ -1,5 +1,12 @@
 @if($if ?? true)
-<div class="modal fade" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}">
+<div class="modal fade" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}" 
+
+  @isset($data)
+  @foreach($data as $attr => $value)
+    data-{{$attr}}="{{$value}}"
+  @endforeach
+  @endisset
+>
   <div class="modal-dialog modal-{{array_find($options ?? null, ['size'])}}">
     <div class="modal-content border-0" style="border-radius: 1rem">
       <div class="modal-header 

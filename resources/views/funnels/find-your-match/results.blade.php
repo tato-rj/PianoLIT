@@ -1,5 +1,6 @@
 @component('components.modal', [
 	'id' => 'match-modal',
+	'data' => ['piece-id' => $piece->id],
 	'options' => [
 	    'header' => ['show' => false],
 		'body' => ['padding' => 0],

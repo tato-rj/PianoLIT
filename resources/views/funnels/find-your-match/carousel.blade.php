@@ -27,7 +27,7 @@
       'id' => 'carousel-submit',
       'label' => 'FIND MY BEST MATCH',
       'attr' => 'style=display:none',
-      'data' => ['url' => route('funnels.find-your-match.results')],
+      'data' => ['url' => route('funnels.find-your-match.results'), 'original-text' => 'FIND MY BEST MATCH'],
       'styles' => [
         'shadow' => true,
         'size' => 'wide',
@@ -35,5 +35,17 @@
       ],
       'disabled' => true
     ])
+    <div>
+    @button([
+      'id' => 'carousel-restart',
+      'label' => 'RESTART TOUR',
+      'attr' => 'style=display:none',
+      'styles' => [
+        'size' => 'wide',
+        'mt' => 3,
+        'theme' => 'outline-secondary',
+      ]
+    ])
+  </div>
   </div>
 </div>

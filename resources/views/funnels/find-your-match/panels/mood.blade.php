@@ -5,7 +5,7 @@
 <div class="container-fluid">
 	<div class="row carousel-answers">
 		<div class="col-12 text-center">
-			<div id="dial-label" data-carousel="answer" data-type="single" value="" class="mb-4 bg-white font-weight-old opacity-2 h4">Turn the dial to start</div>
+			<div id="dial-label" data-carousel="answer" data-original-text="Turn the dial to start" data-type="single" value="" class="mb-4 bg-white opacity-2 h4">Turn the dial to start</div>
 			<input type="text" value="0" id="dial" data-cursor="true" data-tags="{{json_encode($tags)}}">
 		</div>
 	</div>
