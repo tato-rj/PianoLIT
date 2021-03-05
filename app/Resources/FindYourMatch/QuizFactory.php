@@ -7,6 +7,9 @@ use App\{Tag, Piece};
 abstract class QuizFactory
 {
 	protected $pieces, $tags, $levels, $similar, $ranking;
+	protected $exclude = [
+		'composers' => [32]
+	];
 
 	public function getKeywords($input)
 	{
@@ -51,7 +54,7 @@ abstract class QuizFactory
 		$level = $this->preferredLevel();
 
 		foreach ($this->pieces as $piece) {
-			$similar = $similar->merge($piece->similar($strict = false));
+			$similar = $similar->merge($piece->similar($strict = false)->whereNotIn('composer_id', $this->exclude['composers']));
 		}
 
 		$similar = $similar->filter(function($piece, $key) use ($level) {
