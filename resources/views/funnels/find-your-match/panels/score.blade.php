@@ -8,7 +8,6 @@
 		'It looks hard, it would take me a little while' => 'beginner',
 		'Not too difficult, but not too easy either' => 'beginner',
 		'This looks pretty simple' => 'intermediate',
-		'I could sight read this with no problem' => 'advanced'
 	]
 ])
 
