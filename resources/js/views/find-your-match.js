@@ -140,6 +140,7 @@ function excludePiece(pieceId)
 {
 	if (except.length < 15) {
 		except.push(pieceId);
+		console.log('Excluding: '+except);
 	} else {
 		resetExclude();
 	}
