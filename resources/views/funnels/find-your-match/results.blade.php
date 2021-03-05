@@ -7,6 +7,10 @@
 ]])
 @slot('body')
 	<div class="rounded-top bg-align-center position-relative" style="background-image: url({{$piece->image_background ?? $piece->period->cover_image}}); height: 200px;">
+      <button class="close text-white absolute-top-right" type="button" data-dismiss="modal">
+          @fa(['icon' => 'times', 'mr' => 0])
+        </button>
+
 		<img src="{{$piece->composer->cover_image}}" class="rounded-circle position-absolute shadow border border-white border-2x" style="width: 100px; bottom: -50px; left: 25px">
 	</div>
 	<div class="p-4">

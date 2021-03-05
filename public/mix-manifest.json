@@ -1,8 +1,12 @@
 {
     "/js/admin.js": "/js/admin.js?id=7b91a0ac5f606071ee3f",
-    "/js/app.js": "/js/app.js?id=a0f096a920d9420c10be",
+    "/js/app.js": "/js/app.js?id=15bf49c490c59c8864d8",
     "/css/app.css": "/css/app.css?id=3163f8c38c3a117f9997",
     "/css/admin.css": "/css/admin.css?id=4c9f22839f1266f2ee39",
+    "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
+    "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=265bb693f4154efcaaec",
+    "/css/studio-policies/elegant.css": "/css/studio-policies/elegant.css?id=4aae0c05002438971714",
+    "/css/studio-policies/informal.css": "/css/studio-policies/informal.css?id=1d1105ead8ba3664484a",
     "/js/tone.js": "/js/tone.js?id=4a64023a6c3319687a16",
     "/css/vendor/fontawesome/all.min.css": "/css/vendor/fontawesome/all.min.css?id=c4af24ce595437830af0",
     "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e"

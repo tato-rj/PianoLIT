@@ -11,13 +11,15 @@
 @section('content')
 @component('webapp.layouts.header', ['title' => 'Discover', 'subtitle' => 'Take a quick tour to find the perfect piece for you'])
 	@button([
+		'id' => 'tour-button',
+		'href' => route('webapp.tour'),
 		'label' => 'FIND YOUR MATCH', 
 		'styles' => [
 			'size' => 'wide', 
 			'theme' => 'outline-secondary'
 			], 
-		'classes' => 'rounded-pill', 
-		'data' => ['toggle' => 'modal', 'target' => '#tour-modal']])
+		'classes' => 'rounded-pill'
+		])
 @endcomponent
 
 <section id="discover-rows">
@@ -38,22 +40,24 @@
 @endsection
 
 @push('scripts')
+<script type="text/javascript" src="{{asset('js/vendor/jquery.knob.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/views/find-your-match.js')}}"></script>
 <script type="text/javascript">
-// $(document).ready(function() {
-// 	let cookie = 'pianolit_new_feature_favorite_folders';
+$(document).ready(function() {
+	let cookie = 'pianolit_new_feature_tour';
 
-// 	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-// 		let options = {
-// 			placement: 'top', 
-// 			title: '🎁 New feature!',
-// 			trigger: 'manual'
-// 		};
+	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+		let options = {
+			placement: 'bottom', 
+			title: '🎁 New feature!',
+			trigger: 'manual'
+		};
 
-// 		$('#menu-my-pieces').tooltip(options).tooltip('show');
+		$('#tour-button').tooltip(options).tooltip('show');
 
-// 		setCookie(cookie, moment().format('x'), 365);
-// 	}
-// });
+		setCookie(cookie, moment().format('x'), 365);
+	}
+});
 </script>
 {{-- TOUR --}}
 <script type="text/javascript">

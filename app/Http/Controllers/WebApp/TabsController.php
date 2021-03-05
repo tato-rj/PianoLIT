@@ -34,6 +34,11 @@ class TabsController extends Controller
     	return view('webapp.playlists.index', compact(['playlists', 'journey']));
     }
 
+    public function tour()
+    {
+        return view('webapp.tour.index');
+    }
+
     public function myPieces()
     {
     	return view('webapp.user.my-pieces.index');

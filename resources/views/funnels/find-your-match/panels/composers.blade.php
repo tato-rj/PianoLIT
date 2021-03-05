@@ -1,3 +1,5 @@
+@php($composers = (new \App\Resources\FindYourMatch\Quiz)->showComposers())
+
 @component('funnels.find-your-match.panels.panel', ['loop' => $loop ?? false, 'question' => 'Pick the 3 composers you like the most'])
 
 <div class="container-fluid">
