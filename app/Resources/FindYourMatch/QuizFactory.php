@@ -8,7 +8,8 @@ abstract class QuizFactory
 {
 	protected $pieces, $tags, $levels, $similar, $ranking;
 	protected $exclude = [
-		'composers' => [32]
+		// Turk, Kabalevsly
+		'composers' => [32, 50]
 	];
 
 	public function getKeywords($input)
