@@ -13,7 +13,11 @@ trait Display
 
 	public function showTags()
 	{
-		return Tag::mood()->mostPopular()->take(12)->pluck('name');
+		$tags = Tag::mood()->mostPopular()->take(12)->pluck('name');
+
+		$tags->push($tags->first());
+
+		return $tags;
 	}
 
 	public function showPieces()

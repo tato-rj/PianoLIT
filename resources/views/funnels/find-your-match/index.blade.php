@@ -25,6 +25,27 @@
 
 @slot('scripts')
 @include('components.addthis')
+<script type="text/javascript" src="{{asset('js/vendor/jquery.knob.min.js')}}"></script>
+<script type="text/javascript">
+
+let tags = $('#dial').data('tags');
+let $dialLabel = $('#dial-label');
+
+console.log(tags);
+$('#dial').knob({
+	'step': 1,
+	'thickness': .5,
+    'min': 0,
+    'max': 12,
+    'displayInput': false,
+    'fgColor': '#222222',
+    'change' : function (v) {
+    	let pos = Math.round(v);
+    	let tag = ucfirst(tags[pos]);
+    	$dialLabel.removeClass('opacity-2').text(tag).val(tag);
+    }
+});
+</script>
 <script type="text/javascript">
 $('button#carousel-submit').click(function() {
 	let $btn = $(this);
