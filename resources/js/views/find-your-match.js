@@ -65,13 +65,16 @@ $('button#carousel-submit').click(function() {
 			 .then(function(response) {
 			 	console.log(answers);
 			 	$('body').append(response.data);
-			 	$('#match-modal').modal('show');
 
-			 	$('#match-modal').on('hidden.bs.modal', function (e) {
-					$('#match-modal').remove();
-				});
+			 	setTimeout(function() {
+				 	$('#match-modal').modal('show');
 
-				new Plyr('#'+$('.video-container video').attr('id'));
+				 	$('#match-modal').on('hidden.bs.modal', function (e) {
+						$('#match-modal').remove();
+					});
+
+					new Plyr('#'+$('.video-container video').attr('id'));
+			 	}, 1000);
 			 })
 			 .catch(function(error) {
 			 	console.log(error);
