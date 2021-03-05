@@ -6,7 +6,7 @@
 		'About 1 or 2 years' => 'beginner',
 		'Somewhere around 3 or 4 years' => 'beginner',
 		'It\'s been many years' => 'advanced',
-		'I used to play but haven\'t done much in quite some time' => 'intermediate',
+		'I used to play well but haven\'t done much in quite some time' => 'intermediate',
 	]
 ])
 
