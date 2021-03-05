@@ -2,12 +2,12 @@
 
 namespace App\Resources\FindYourMatch;
 
-use App\Resources\FindYourMatch\Traits\{Questions, Display};
+use App\Resources\FindYourMatch\Traits\Display;
 use App\Piece;
 
 class Quiz extends QuizFactory
 {
-	use Questions, Display;
+	use Display;
 
 	public function search()
 	{

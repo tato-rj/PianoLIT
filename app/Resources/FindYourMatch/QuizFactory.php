@@ -2,8 +2,6 @@
 
 namespace App\Resources\FindYourMatch;
 
-// use App\Resources\FindYourMatch\Categories\Category;
-// use App\Resources\FindYourMatch\Traits\Categories;
 use App\{Tag, Piece};
 
 abstract class QuizFactory

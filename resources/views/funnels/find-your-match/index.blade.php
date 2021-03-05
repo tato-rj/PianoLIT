@@ -7,7 +7,7 @@
 @endslot
 <div class="text-center pt-7 mx-auto" style="width: 90%">
 	<div class="mb-3">
-		<h1 style="font-family: Roboto Condensed,sans-serif;" class="text-uppercase m-0">What should I play next?</h1>
+		<h1 style="font-family: Roboto Condensed,sans-serif;" class="text-uppercase">What should I play next?</h1>
 		<p class="bg-white py-2 px-3 d-inline-block rounded"><strong>Take the quiz below to find out the best piano piece for you!</strong></p>
 	</div>
 
@@ -93,11 +93,17 @@ function toggle(elem)
 	}
 }
 
-function select(elem, only = false)
+function select(elem, onlyThis = false)
 {
 	resetAudio();
 	$(elem).addClass('alert-green selected-answer').removeClass('opacity-6 list-group-item-action');
-	$(elem).closest('.carousel-answers').find('[data-carousel="answer"]').not(only ? elem : '.selected-answer').removeClass('alert-green selected-answer').addClass('opacity-6 list-group-item-action');
+
+	if (onlyThis) {
+		unselectAllExcept(elem);
+	} else {
+		if (allSelected(elem))
+			unselectAllExcept(elem, true);
+	}
 }
 
 function selectOnly(elem)
@@ -111,6 +117,11 @@ function unselect(elem)
 
 	if (selectedCount(elem) == 0)
 		$(elem).closest('.carousel-answers').find('[data-carousel="answer"]').removeClass('opacity-6');	
+}
+
+function unselectAllExcept(elem, all = false)
+{
+	$(elem).closest('.carousel-answers').find('[data-carousel="answer"]').not(all ? '.selected-answer' : elem).removeClass('alert-green selected-answer').addClass('opacity-6 list-group-item-action');
 }
 
 function isSelected(elem) 

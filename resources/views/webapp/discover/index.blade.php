@@ -39,21 +39,21 @@
 
 @push('scripts')
 <script type="text/javascript">
-$(document).ready(function() {
-	let cookie = 'pianolit_new_feature_favorite_folders';
+// $(document).ready(function() {
+// 	let cookie = 'pianolit_new_feature_favorite_folders';
 
-	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-		let options = {
-			placement: 'top', 
-			title: '🎁 New feature!',
-			trigger: 'manual'
-		};
+// 	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+// 		let options = {
+// 			placement: 'top', 
+// 			title: '🎁 New feature!',
+// 			trigger: 'manual'
+// 		};
 
-		$('#menu-my-pieces').tooltip(options).tooltip('show');
+// 		$('#menu-my-pieces').tooltip(options).tooltip('show');
 
-		setCookie(cookie, moment().format('x'), 365);
-	}
-});
+// 		setCookie(cookie, moment().format('x'), 365);
+// 	}
+// });
 </script>
 {{-- TOUR --}}
 <script type="text/javascript">
