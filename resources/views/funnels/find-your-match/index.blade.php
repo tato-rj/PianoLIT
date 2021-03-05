@@ -43,7 +43,8 @@ $('#dial').knob({
     'change' : function (v) {
     	let pos = Math.round(v);
     	let tag = ucfirst(tags[pos]);
-    	$dialLabel.removeClass('opacity-2').text(tag).val(tag);
+    	$dialLabel.removeClass('opacity-2').addClass('alert-green selected-answer').text(tag).val(tag);
+    	releaseButton();
     }
 });
 </script>
