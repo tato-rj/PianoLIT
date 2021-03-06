@@ -31,6 +31,8 @@ class Quiz extends QuizFactory
 
 		$this->rankByKeywords();
 
-		return $this->ranking->shuffle()->first() ?? Piece::freePicks()->inRandomOrder()->first();
+		$piece = $this->ranking->shuffle()->first();
+
+		return $piece ? $piece : Piece::freePicks()->inRandomOrder()->first();
 	}
 }
