@@ -76,7 +76,7 @@ $('button#carousel-submit').click(function() {
 		 	
 		 	$('#match-modal').on('shown.bs.modal', function (e) {
 				$btn.removeLoader();
-				excludePiece($('#match-modal').data('piece-id'));
+				// excludePiece($('#match-modal').data('piece-id'));
 			});
 
 			new Plyr('#'+$('.video-container video').attr('id'));
@@ -114,12 +114,13 @@ $('.carousel-answers [data-carousel="answer"][data-type="multi"]').click(functio
 });
 
 $(document).on('hide.bs.modal', '#match-modal', function (e) {
-	$('#carousel-restart').show();
+	reset();
+	// $('#carousel-restart').show();
 });
 
-$('#carousel-restart').on('click', function() {
-	reset();
-});
+// $('#carousel-restart').on('click', function() {
+// 	reset();
+// });
 
 function toggle(elem) 
 {
@@ -140,6 +141,7 @@ function excludePiece(pieceId)
 {
 	if (except.length < 15) {
 		except.push(pieceId);
+		console.log('Excluding: '+except);
 	} else {
 		resetExclude();
 	}
