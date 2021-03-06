@@ -33,6 +33,9 @@ class Quiz extends QuizFactory
 
 		$piece = $this->ranking->shuffle()->first();
 
-		return $piece ? $piece : Piece::freePicks()->inRandomOrder()->first();
+		if ($piece instanceof Piece)
+			return $piece;
+
+		return Piece::freePicks()->inRandomOrder()->first();
 	}
 }
