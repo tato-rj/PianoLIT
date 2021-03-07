@@ -16,13 +16,5 @@
 		<div class="text-muted"><i>Hardest</i></div>
 	</div>
 </div>
-{{-- @include('funnels.find-your-match.components.answers', [
-	'answers' => [
-		'I\'ve no idea how to read this' => 'elementary',
-		'It looks hard, it would take me a little while' => 'beginner',
-		'Not too difficult, but not too easy either' => 'beginner',
-		'This looks pretty simple' => 'intermediate',
-	]
-]) --}}
 
 @endcomponent
