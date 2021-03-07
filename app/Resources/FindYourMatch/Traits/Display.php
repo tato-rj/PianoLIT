@@ -22,9 +22,9 @@ trait Display
 
 	public function showReadingLevels()
 	{
-		$levels = Tag::extendedLevels()->pluck('name');
+		$levels = Tag::levels()->pluck('name');
 		
-		$levels->pop();
+		$levels->prepend($levels->first());
 
 		return $levels;
 	}
