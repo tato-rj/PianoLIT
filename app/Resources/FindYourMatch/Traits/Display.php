@@ -8,7 +8,7 @@ trait Display
 {
 	public function showComposers()
 	{
-		return Composer::famous()->inRandomOrder()->take(12)->get();
+		return Composer::famous()->inRandomOrder()->take(6)->get();
 	}
 
 	public function showTags()
@@ -22,6 +22,6 @@ trait Display
 
 	public function showPieces()
 	{
-		return Piece::famous()->withAudio()->withVideos()->inRandomOrder()->get()->unique('composer_id')->take(12);
+		return Piece::tour()->inRandomOrder()->get()->unique('composer_id')->take(6);
 	}
 }

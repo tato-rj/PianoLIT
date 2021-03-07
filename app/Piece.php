@@ -310,6 +310,11 @@ class Piece extends PianoLit
         return $query->whereNotNull('audio_path');
     }
 
+    public function scopeTour($query)
+    {
+        return $query->where('show_on_tour', true);
+    }
+
     public function scopeWithVideos($query)
     {
         return $query->has('tutorials');

@@ -197,13 +197,13 @@ function selectedCount(elem)
 
 function allSelected(elem) 
 {
-	return selectedCount(elem) == 3;
+	return selectedCount(elem) == 2;
 }
 
 function checkSelected(elem) {
-	let remaining = 3 - selectedCount(elem);
+	let remaining = 2 - selectedCount(elem);
 
-	if (remaining > 0 && remaining < 3) {
+	if (remaining > 0 && remaining < 2) {
 		showAlert(remaining);
 		lockButton();
 
