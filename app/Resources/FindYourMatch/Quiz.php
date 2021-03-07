@@ -9,21 +9,6 @@ class Quiz extends QuizFactory
 {
 	use Display;
 
-	protected $pieces = [
-		//Baroque
-		[],
-		//Classical
-		[],
-		//Romantic
-		[],
-		//Impressionistic
-		[],
-		//Modern
-		[],
-		//Contemporary
-		[]
-	];
-
 	protected $exclude = [
 		// Turk, Kabalevsly
 		'composers' => [32, 50],

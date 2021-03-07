@@ -20,6 +20,15 @@ trait Display
 		return $tags;
 	}
 
+	public function showReadingLevels()
+	{
+		$levels = Tag::extendedLevels()->pluck('name');
+		
+		$levels->pop();
+
+		return $levels;
+	}
+
 	public function showPieces()
 	{
 		return Piece::tour()->inRandomOrder()->get()->unique('composer_id')->take(6);
