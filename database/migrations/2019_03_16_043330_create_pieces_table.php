@@ -37,6 +37,7 @@ class CreatePiecesTable extends Migration
             $table->string('score_copyright')->nullable();
             $table->string('cover_path')->nullable();
             $table->boolean('is_free')->default(false);
+            $table->boolean('show_on_tour')->default(false);
             $table->boolean('is_attributed_to')->default(false);
             $table->timestamp('highlighted_at')->nullable();
             $table->unsignedInteger('composer_id');

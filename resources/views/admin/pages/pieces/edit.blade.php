@@ -254,6 +254,11 @@
               </div>
             </div>
           </div>
+
+          <div class="bg-light px-3 py-2 text-muted form-group rounded d-flex d-apart">
+            <div class="mr-1">Should this piece show up in the <u>tour</u>?</div>
+            @toggle(['toggle' => $piece->show_on_tour, 'name' => 'show_on_tour', 'autoToggle' => false])
+          </div>
           @endmanager
         </div>
 
