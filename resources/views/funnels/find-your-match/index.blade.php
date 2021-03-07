@@ -26,8 +26,6 @@
 
 @slot('scripts')
 @include('components.addthis')
-<script type="text/javascript" src="{{asset('js/vendor/jquery.knob.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/views/find-your-match.js')}}"></script>
 @endslot
 
 @endcomponent

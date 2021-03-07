@@ -1,6 +1,7 @@
 require('./bootstrap/app');
 require('dragscroll/dragscroll.js');
 require('./vendor/clamp');
+require('./vendor/jquery.knob.min');
 require('./helpers/display');
 require('./helpers/array');
 require('./helpers/extensions');
@@ -17,6 +18,7 @@ require('./components/progressbar');
 require('./components/auth');
 require('./components/toggle');
 require('./search/Search');
+require('./views/find-your-match');
 
 require('./startup');
 
