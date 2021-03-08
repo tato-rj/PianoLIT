@@ -26,8 +26,6 @@ trait Display
 		
 		$levels->prepend($levels->first());
 
-		$levels->reverse();
-
 		return $levels;
 	}
 
