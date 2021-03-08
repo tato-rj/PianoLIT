@@ -26,9 +26,7 @@ trait Display
 		
 		$levels->prepend($levels->first());
 
-		$levels->reverse();
-
-		return $levels->all();
+		return $levels->reverse();
 	}
 
 	public function showPieces()
