@@ -1,7 +1,7 @@
 @foreach($memberships as $membership)
   <tr>
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 5%">
-      <div class="text-truncate">{{$membership->user->id}}</div>
+      <div class="text-truncate">{{$membership->user()->exists() ? $membership->user->id : null}}</div>
     </td>
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 10%">
       @if($membership->user()->exists())
