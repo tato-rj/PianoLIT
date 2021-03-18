@@ -18,6 +18,9 @@
         <a href="{{route('admin.crashcourses.lessons.edit', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-warning">
           <i class="far fa-edit mr-2"></i>Edit
         </a>
+        <a href="{{route('admin.crashcourses.lessons.duplicate', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-warning">
+          <i class="far fa-copy mr-2"></i>Duplicate
+        </a>
       </div>
       <div>
         <a href="#" data-url="{{route('admin.crashcourses.lessons.destroy', compact(['crashcourse', 'lesson']))}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete btn btn-sm btn-danger">

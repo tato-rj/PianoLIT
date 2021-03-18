@@ -45,6 +45,8 @@ Route::prefix('crashcourses')->name('crashcourses.')->group(function() {
 
 		Route::post('', 'Admin\CrashCourseLessonsController@store')->name('store');
 
+		Route::get('{lesson}/duplicate', 'Admin\CrashCourseLessonsController@duplicate')->name('duplicate');
+
 		Route::patch('{lesson}', 'Admin\CrashCourseLessonsController@update')->name('update');
 
 		Route::delete('{lesson}', 'Admin\CrashCourseLessonsController@destroy')->name('destroy');

@@ -25,13 +25,13 @@
 			<div style="white-space: pre-wrap;">{{$piece->description}}</div>		
 		</div>
 
-		<div class="mb-5">
+		<div>
 			<div class="mb-4 video-container">
 				<video class="w-100" id="piece-video-{{$piece->tutorials()->first()->id}}">
 					<source src="{{$piece->tutorials()->first()->video_url}}" type="video/mp4">
 				</video>
 			</div>
-			<div class="text-center mb-4">
+			<div class="text-center">
 				<a href="{{route('webapp.pieces.show', $piece)}}" class="btn rounded-pill btn-primary">Learn more about this piece</a>
 			</div>
 		</div>

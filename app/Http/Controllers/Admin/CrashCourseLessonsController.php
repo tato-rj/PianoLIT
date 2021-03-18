@@ -43,6 +43,24 @@ class CrashCourseLessonsController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function duplicate(Request $request, CrashCourse $crashcourse, CrashCourseLesson $lesson)
+    {
+        $crashcourse->lessons()->create([
+            'subject' => $lesson->subject . ' - copy',
+            'body' => $lesson->body,
+            'reading_time' => $lesson->reading_time,
+            'order' => $crashcourse->lessons_count
+        ]);
+
+        return redirect(route('admin.crashcourses.edit', $crashcourse))->with('status', "The lesson has been successfully duplicated!");
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  \App\CrashCourse\CrashCourseLesson  $lesson
