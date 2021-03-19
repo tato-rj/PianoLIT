@@ -18,7 +18,7 @@
         <a href="{{route('admin.crashcourses.lessons.edit', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-warning">
           <i class="far fa-edit mr-2"></i>Edit
         </a>
-        <a href="{{route('admin.crashcourses.lessons.duplicate', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-warning">
+        <a href="{{route('admin.crashcourses.lessons.duplicate', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-green">
           <i class="far fa-copy mr-2"></i>Duplicate
         </a>
       </div>
