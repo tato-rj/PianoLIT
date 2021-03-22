@@ -29,8 +29,5 @@
 @push('scripts')
 <script type="text/javascript">
 $('.card-title').clamp(2);
-$('.card-text').each(function() {
-  $(this).clamp(randomBetween(3, 5));
-});
 </script>
 @endpush
