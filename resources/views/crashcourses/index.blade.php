@@ -15,10 +15,10 @@
 		'ads' => ['ebook', 'escore']
 	])
 
-	@slot('content')
-		<div class="container">
-			@each('crashcourses.course', $crashcourses, 'crashcourse')
-		</div>
+	@slot('items')
+		@each('crashcourses.course', $crashcourses, 'crashcourse')
+
+		{{-- @each('crashcourses.course', $crashcourses, 'crashcourse') --}}
 	@endslot
 	
 	@endcomponent
@@ -28,5 +28,9 @@
 
 @push('scripts')
 <script type="text/javascript">
+$('.card-title').clamp(2);
+$('.card-text').each(function() {
+  $(this).clamp(randomBetween(3, 5));
+});
 </script>
 @endpush

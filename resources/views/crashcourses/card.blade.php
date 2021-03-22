@@ -23,7 +23,7 @@
             </div>
             <div class="my-2">
               @include('auth.fields.recaptcha')
-              <button type="submit" class="btn btn-primary btn-sm-block shadow btn-wide mb-2"><strong>START FREE COURSE!</strong></button>
+              <button type="submit" class="btn btn-primary btn-sm-block shadow btn-wide mb-2">START FREE COURSE!</button>
               <div class="text-muted"><small>Ps: we'll never share your email with anyone</small></div>
             </div>
           </div>
