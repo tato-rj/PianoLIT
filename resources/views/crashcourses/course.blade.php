@@ -1,7 +1,7 @@
 <div class="grid-item col-lg-4 col-md-6 col-12 p-2">
 	<div class="card border-0 shadow-light w-100 t-2 rounded">
 		<a class="link-none" href="{{route('crashcourses.show', $crashcourse->slug)}}" target="_blank">
-			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$crashcourse->cover_image()}}); height: 200px">
+			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$crashcourse->cover_image()}}); height: 126px">
 				
 				@include('components.tags.new', ['is_new' => $crashcourse->is_new])
 
