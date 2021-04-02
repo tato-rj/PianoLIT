@@ -87,7 +87,7 @@ Start the FREE crash course today!
 @endcomponent
 @endcomponent
 
-<h1 class="text-lg mb-4">True or False: Impressionist music</h1>
+<h1 class="text-lg mb-4">True or False: Scales music</h1>
 @include('mail::lists.numbered', ['items' => [
 	'<strong>To play scales you need to develop a good dexterity:</strong> TRUE | FALSE',
 	'<strong>Legato in music means to play with short and quik sounds:</strong> TRUE | FALSE',
@@ -122,7 +122,7 @@ Check this out <a href="https://wepresent.wetransfer.com/story/manifesto-yuri-su
 @endcomponent
 
 @component('mail::panel')
-Ever wondered how a computer animated music would oust like? Ask no more… Check out this video called “Resonant chamber” by the company Animusic.
+Ever wondered how a computer animated music would sound like? Ask no more… Check out this video called “Resonant chamber” by the company Animusic.
 
 Watch it <a href="https://www.youtube.com/watch?v=toXNVbvFXyk" target="_blank">HERE</a>.
 @endcomponent
