@@ -19,8 +19,6 @@ class CreateStudioPoliciesTable extends Migration
             $table->text('data');
             $table->string('theme')->default('default');
             $table->timestamps();
-
-            $table->index(['user_id', 'data']);
         });
     }
 
