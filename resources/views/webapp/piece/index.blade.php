@@ -43,6 +43,10 @@
 	color: #6c757d!important;
 }
 
+#main-nav .nav-link.active {
+	background-color: inherit;
+}
+
 #main-nav .nav-item {
 	position: relative;
 }
@@ -465,7 +469,6 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
   let $tab = $(e.target);
   $border.match($tab);
   $border.show();
-  console.log($tab);
 });
 </script>
 @endpush
