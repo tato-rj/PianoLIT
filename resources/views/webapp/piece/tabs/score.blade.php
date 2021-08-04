@@ -1,5 +1,5 @@
 <div class="tab-pane fade" id="tab-score">
-	{{-- @if($piece->hasAudio()) --}}
+	@if($piece->hasAudio())
 	<div class="mb-4">
 		{{-- <h5 class="mb-4">Audio recording</h5> --}}
 		<div class="text-center">
@@ -7,7 +7,7 @@
 				@fa(['icon' => 'microphone', 'size' => '1x'])Listen now</button>
 		</div>
 	</div>
-	{{-- @endif --}}
+	@endif
 	
 	@if($piece->isPublicDomain)
 	<div class="non-ios" style="display: none;">
