@@ -1,13 +1,13 @@
 <div class="tab-pane fade" id="tab-score">
-	@if($piece->hasAudio())
+	{{-- @if($piece->hasAudio()) --}}
 	<div class="mb-4">
 		{{-- <h5 class="mb-4">Audio recording</h5> --}}
 		<div class="text-center">
-			<button id="launch-audio" data-url="{{route('webapp.pieces.audio', $piece)}}" class="btn btn-default">
-				@fa(['icon' => 'play-circle', 'fa_type' => 'r'])Listen now</button>
+			<button id="launch-audio" data-url="{{route('webapp.pieces.audio', $piece)}}" class="btn btn-outline-secondary btn-wide">
+				@fa(['icon' => 'microphone', 'size' => '1x'])Listen now</button>
 		</div>
 	</div>
-	@endif
+	{{-- @endif --}}
 	
 	@if($piece->isPublicDomain)
 	<div class="non-ios" style="display: none;">
