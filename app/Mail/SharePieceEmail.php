@@ -12,7 +12,7 @@ class SharePieceEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $piece, $user;
+    public $piece, $user, $url;
 
     /**
      * Create a new message instance.
@@ -23,6 +23,7 @@ class SharePieceEmail extends Mailable
     {
         $this->piece = $piece;
         $this->user = $user;
+        $this->url = route('webapp.pieces.show', $piece);
     }
 
     /**
