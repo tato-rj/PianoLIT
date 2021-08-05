@@ -6,7 +6,7 @@ trait PieceExtraAttributes
 {
     public function getIsNewAttribute()
     {
-        return $this->created_at->gte(now()->subDays(3));    
+        return $this->created_at->gte(now()->subDays(5));    
     }
 
     public function getAudioAttribute()
