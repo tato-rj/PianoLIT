@@ -143,7 +143,7 @@ class UserTest extends AppTest
 
         $this->post(route('webapp.pieces.share', ['piece' => $this->piece, 'recipient_email' => 'test@email.com']));
 
-        \Mail::assertQueued(SharePieceEmail::class);
+        \Mail::assertSent(SharePieceEmail::class);
     }
 
     /** @test */
