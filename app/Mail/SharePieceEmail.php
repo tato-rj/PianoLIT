@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\{Piece, User};
 
-class SharePieceEmail extends Mailable
+class SharePieceEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
