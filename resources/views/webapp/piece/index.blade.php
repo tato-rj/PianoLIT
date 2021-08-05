@@ -85,6 +85,7 @@
 </section>
 
 @include('webapp.piece.components.panel')
+@include('webapp.piece.share')
 @endsection
 
 @push('scripts')
@@ -370,6 +371,12 @@ function stopVideo(reset = true) {
 		}
 	});
 }
+</script>
+
+<script type="text/javascript">
+$('#share-modal').on('show.bs.modal', function (e) {
+  $('[data-toggle="fixed-panel"]').click();
+})
 </script>
 
 <script type="text/javascript">

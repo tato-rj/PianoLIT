@@ -15,17 +15,19 @@
 			<div class="list-group">
 				<a href="{{route('webapp.pieces.composer', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Meet the composer @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
 
-				@if($piece->itunes)
-				<a href="{{route('webapp.pieces.apple-music', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">On Apple Music @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
-				@endif
-
 				@if($piece->siblingsExist())
 				<a href="{{route('webapp.pieces.collection', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">From the same collection @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
 				@endif
 
 				<a href="{{route('webapp.pieces.similar', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">More like this @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+				
 				<div class="dropdown-divider"></div>
-				<div class="py-2">
+				
+				<div class="py-2 list-group">
+					<a class="cursor-pointer share-piece link-none mb-3 px-3" data-toggle="modal" data-target="#share-modal">
+						@fa(['icon' => 'share']) Share this piece
+					</a>
+
 					<a class="cursor-pointer toggle-favorite link-none mb-3 px-3">
 						@include('webapp.components.favorite')<span>Manage favorites</span>
 					</a>

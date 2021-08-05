@@ -19,4 +19,6 @@ Route::namespace('WebApp')->middleware('members-only')->prefix('pieces')->name('
 	Route::get('{piece}/score', 'PiecesController@score')->name('score');
 
 	Route::get('{piece}/save-to', 'PiecesController@saveTo')->name('save-to');
+
+	Route::post('{piece}/share', 'PiecesController@share')->name('share');
 });

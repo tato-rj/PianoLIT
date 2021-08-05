@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WebApp;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\{Piece, Timeline, Tutorial};
+use App\Events\PieceShared;
 
 class PiecesController extends Controller
 {
@@ -54,6 +55,15 @@ class PiecesController extends Controller
         $folders = auth()->user()->favoriteFolders()->lastUpdated()->get();
         
         return view('webapp.piece.components.saveto.index', compact(['piece', 'folders']))->render();        
+    }
+
+    public function share(Request $request, Piece $piece)
+    {
+        $email = $request->recipient_email;
+
+        event(new PieceShared($piece, $email));
+
+        return back()->with('status', 'Your email is on the way!');
     }
 
     // NOT BEING USED

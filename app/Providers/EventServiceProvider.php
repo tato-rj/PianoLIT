@@ -57,6 +57,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         \App\Events\PurchaseMade::class => [
             \App\Listeners\NewPurchaseListener::class
+        ],
+        \App\Events\PieceShared::class => [
+            \App\Listeners\PieceSharedListener::class
         ]
     ];
 
