@@ -20,7 +20,11 @@
 				@endif
 
 				<a href="{{route('webapp.pieces.similar', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">More like this @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
-				
+
+				@env('local')
+				<a href="{{route('webapp.pieces.timeline', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Timeline @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+				@endenv
+
 				<div class="dropdown-divider"></div>
 				
 				<div class="py-2 list-group">

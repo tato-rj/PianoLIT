@@ -17,8 +17,8 @@ class CreateTutorialsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedInteger('piece_id');
             $table->string('type');
-            $table->string('category')->nullable();
-            $table->string('description');
+            $table->string('category');
+            $table->string('description')->nullable();
             $table->string('filename');
             $table->string('video_url')->nullable();
             $table->timestamps();

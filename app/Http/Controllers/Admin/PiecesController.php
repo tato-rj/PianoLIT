@@ -194,7 +194,7 @@ class PiecesController extends Controller
             'length' => 'required',
             'level' => 'required'
         ]);
-        
+
         $piece->update([
             'name' => $request->name,
             'nickname' => $request->nickname,

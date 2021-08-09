@@ -80,6 +80,11 @@
 		@include('webapp.piece.tabs.media')
 		@include('webapp.piece.tabs.score')
 		@include('webapp.piece.tabs.timeline')
+
+		@env('local')
+		@include('webapp.piece.tabs.lessons')
+		@include('webapp.piece.tabs.tutorial')
+		@endenv
 	</div>
 
 </section>
@@ -328,6 +333,10 @@ function showPlayer(player) {
 </script>
 
 <script type="text/javascript">
+
+new Plyr('#piece-performance');
+new Plyr('#piece-synthesia');
+
 $('button[data-action="video"]').on('click', function() {
 	let $btn = $(this);
 	let $icon = $btn.find('> div:first-of-type');
@@ -364,7 +373,7 @@ function stopVideo(reset = true) {
 		let $video = $(this);
 		$video.get(0).pause();
 
-		if (reset) {
+		if (reset && $video.parents('.video-container').length) {
 			$video.get(0).currentTime = 0;
 			$video.closest('.video-container').removeClass('border rounded-sm p-2 ').find('div').show();
 			$video.remove();

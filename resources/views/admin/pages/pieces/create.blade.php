@@ -427,25 +427,27 @@ $('a.add-new-field').on('click', function() {
   number = $('.videos-form:not(.original-type)').length;
   inputs = $clone.find('input');
   $(inputs[0]).attr('name',  'videos['+number+'][type]');
-  $(inputs[1]).attr('name',  'videos['+number+'][description]');
-  $(inputs[2]).attr('name',  'videos['+number+'][filename]');
+  $(inputs[1]).attr('name',  'videos['+number+'][category]');
+  $(inputs[2]).attr('name',  'videos['+number+'][description]');
+  $(inputs[3]).attr('name',  'videos['+number+'][filename]');
   if ($('.videos-form:not(.original-type)').length == 0) {
     $clone.find('.default-performance').show();
   }
   $clone.removeClass('original-type').insertBefore($button).show();
 });
 
-$(document).on('click', '.default-performance', function() {
-  let $button = $(this);
-  $button.closest('.quick-fill').siblings('.video-type').val($button.attr('data-type'));
-  $button.closest('.quick-fill').siblings('.video-description').val($button.attr('data-description'));
-});
+// $(document).on('click', '.default-performance', function() {
+//   let $button = $(this);
+//   $button.closest('.quick-fill').siblings('.video-type').val($button.attr('data-type'));
+//   $button.closest('.quick-fill').siblings('.video-description').val($button.attr('data-description'));
+// });
 
-$(document).on('change', 'select[data-name="tutorial-description"]', function() {
-  let $button = $(this);
+$(document).on('change', 'select[data-name="type"]', function() {
+  let $option = $(this);
 
-  $button.closest('.quick-fill').siblings('.video-type').val('Tutorial');
-  $button.closest('.quick-fill').siblings('.video-description').val($button.val());
+  $option.siblings('.video-type').val($option.parent().find(':selected').attr('data-type'));
+  $option.siblings('.video-category').val($option.parent().find(':selected').attr('data-category'));
+  $option.siblings('.video-description').val($option.parent().find(':selected').attr('data-description'));
 });
 
 ////////////////

@@ -28,6 +28,13 @@ class PiecesController extends Controller
     	return view('webapp.piece.options.composer', compact('piece'));
     }
 
+    public function timeline(Piece $piece)
+    {
+        $timeline = Timeline::for($piece->id, 4);
+
+        return view('webapp.piece.options.timeline', compact(['piece', 'timeline']));
+    }
+
     public function appleMusic(Piece $piece)
     {
         return view('webapp.piece.options.apple-music', compact('piece'));

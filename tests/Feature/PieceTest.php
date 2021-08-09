@@ -44,6 +44,7 @@ class PieceTest extends AppTest
 
         $newTutorial = [
             'type' => 'NEW TITLE',
+            'category' => 'type',
             'description' => 'NEW DESCRIPTION',
             'filename' => 'NEW FILENAME'
         ];
@@ -63,6 +64,7 @@ class PieceTest extends AppTest
         $editedTutorials = [
             'id' => $originalTutorial->id,
             'type' => 'NEW TITLE',
+            'category' => 'type',
             'description' => $originalTutorial->description,
             'filename' => $originalTutorial->filename
         ];
@@ -79,6 +81,7 @@ class PieceTest extends AppTest
 
         $newTutorial = [
             'type' => 'NEW TITLE',
+            'category' => 'type',
             'description' => 'NEW DESCRIPTION',
             'filename' => 'NEW FILENAME'
         ];

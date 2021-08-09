@@ -31,6 +31,7 @@ $factory->define(Tutorial::class, function (Faker $faker) {
     return [
         'piece_id' => 1,
         'type' => $faker->word,
+        'category' => $faker->word,
         'description' => $faker->sentence,
         'filename' => $faker->word,
         'video_url' => $faker->url,

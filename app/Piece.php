@@ -134,6 +134,26 @@ class Piece extends PianoLit
         return $this->hasMany(Tutorial::class);
     }
 
+    public function hasTutorials(array $categories)
+    {
+        return $this->tutorials()->pluck('category')->intersect($categories)->count() == count($categories);
+    }
+
+    public function lessons()
+    {
+        return $this->tutorials()->whereNotIn('category', ['performance', 'synthesia']);
+    }
+
+    public function performance()
+    {
+        return $this->tutorials()->where('category', 'performance')->first();
+    }
+
+    public function synthesia()
+    {
+        return $this->tutorials()->where('category', 'synthesia')->first();
+    }
+
     public function saveTutorials($videos)
     {        
         $this->syncTutorials($videos);
@@ -142,6 +162,7 @@ class Piece extends PianoLit
             foreach ($videos as $video) {
                 $array = [
                     'type' => $video['type'],
+                    'category' => $video['category'],
                     'description' => $video['description'],
                     'filename' => $video['filename'],
                 ];

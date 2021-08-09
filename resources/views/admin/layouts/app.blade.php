@@ -147,7 +147,7 @@
       $(document).on('click', 'a:not([target])', function() {
         let link = $(this).attr('href');
 
-        if (! link.includes('#'))
+        if (link && ! link.includes('#'))
           showLoader();
       });
 

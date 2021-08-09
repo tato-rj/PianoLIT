@@ -4,7 +4,6 @@
 @endpush
 
 @section('content')
-
 @include('home.sections._lead')
 @include('home.sections.promo')
 @include('home.sections.tags')

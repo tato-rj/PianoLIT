@@ -36,6 +36,7 @@ class BladeServiceProvider extends ServiceProvider
         \Blade::include('components.form.submit');
         \Blade::include('components.alert');
         \Blade::include('components.flag');
+        \Blade::include('components.video');
         \Blade::include('components.datatable.layout', 'datatable');
         \Blade::include('components.datatable.raw', 'datatableRaw');
         \Blade::include('components.pagination.links', 'pagination');
