@@ -12,7 +12,7 @@
 
 	@if(! $piece->hasTutorials(['tutorial', 'harmony']))
 	<div class="row">
-		<div class="col-lg-7 col-md-10 col-12 mx-auto text-center border-top mt-3 pt-3">
+		<div class="col-lg-7 col-md-10 col-12 mx-auto text-center mt-3 pt-3">
 			<p class="text-muted">Would you like to learn more about this piece? Request video tutorials to learn more</p>
 			<button class="btn rounded-pill btn-outline-secondary btn-wide" data-toggle="modal" data-target="#tutorial-request-modal">Send my request</button>
 		</div>
