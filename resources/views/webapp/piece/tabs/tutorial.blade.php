@@ -1,5 +1,5 @@
 <div class="tab-pane fade" id="tab-tutorial">
-	@if(!$piece->media['synthesia'])
+	@if($piece->media['synthesia'])
 	<div class="mb-5 rounded-video">
 		@video([
 			'classes' => 'w-100', 
