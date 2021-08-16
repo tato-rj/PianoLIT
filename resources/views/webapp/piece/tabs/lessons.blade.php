@@ -8,12 +8,6 @@
 		</div>
 		@endforeach
 	</div>
-	@else
-	<div class="text-center py-4">
-		<p class="m-0">No media found :/</p>
-		<p class="text-muted">We haven't uploaded any audio or videos yet...</p>
-		@fa(['icon' => 'music', 'color' => 'grey', 'size' => 'lg'])
-	</div>
 	@endif
 
 	@if(! $piece->hasTutorials(['tutorial', 'harmony']))
