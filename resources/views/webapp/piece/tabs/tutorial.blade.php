@@ -19,7 +19,7 @@
 	@endif
 
 	<h5 class="mb-3">What is Synthesia?</h5>
-	<p>Synthesia is an animation that can help you learn how to play the piano using falling notes. While this tool is not a substitute for reading music, it does provide quick and easy way for beginners to get started.</p>
+	<p>Synthesia is an animation that can help you learn how to play the piano using falling notes. While this tool is not a substitute for reading music, it does provide a quick and easy way for beginners to get started.</p>
 
 
 </div>
