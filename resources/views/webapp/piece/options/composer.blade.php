@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app')
+@extends('webapp.layouts.app', ['title' => $piece->composer->name])
 
 @push('header')
 <link rel="preload" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" as="style">

@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app')
+@extends('webapp.layouts.app', ['title' => 'Quick tour'])
 
 @push('header')
 <style type="text/css">

@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app')
+@extends('webapp.layouts.app', ['title' => 'Settings'])
 
 @push('header')
 @endpush

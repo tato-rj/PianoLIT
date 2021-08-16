@@ -39,6 +39,10 @@
 @import "brand/fonts";
 @import "brand/corners";
 
+.tooltip {
+    z-index: 1040;
+}
+
 .hvr-underline-from-center:before {
   background: $brand-primary;
   border-radius: 6px;

@@ -1,7 +1,6 @@
 <div class="tab-pane fade" id="tab-score">
 	@if($piece->hasAudio())
 	<div class="mb-4">
-		{{-- <h5 class="mb-4">Audio recording</h5> --}}
 		<div class="text-center">
 			<button id="launch-audio" data-url="{{route('webapp.pieces.audio', $piece)}}" class="btn btn-outline-secondary btn-wide">
 				@fa(['icon' => 'microphone', 'size' => '1x'])Listen now</button>
@@ -34,13 +33,4 @@
 		<a href="{{$piece->score_url}}" target="_blank" class="btn rounded-pill btn-default">@fa(['icon' => 'shopping-basket'])Buy score</a>
 	</div>
 	@endif
-
-	<div>
-		{{-- <p class="m-0"><strong>Editor</strong></p> --}}
-		{{-- <p class="text-muted">{{$piece->score_editor ?? 'Unknown'}}</p> --}}
-		{{-- <p class="m-0"><strong>Publisher info</strong></p> --}}
-		{{-- <p class="text-muted">{{$piece->score_publisher ?? 'Unknown'}}</p> --}}
-		{{-- <p class="m-0"><strong>Copyright</strong></p> --}}
-		{{-- <p class="text-muted">{{$piece->score_copyright ?? 'Unknown'}}</p> --}}
-	</div>
 </div>

@@ -4,13 +4,13 @@ namespace App;
 
 use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Builder;
-use App\Traits\{PieceExtraAttributes, PieceStatus};
+use App\Traits\{PieceExtraAttributes, PieceStatus, HasMedia};
 use Illuminate\Http\Request;
 use App\Tools\Cropper;
 
 class Piece extends PianoLit
 {
-    use PieceExtraAttributes, PieceStatus, Searchable;
+    use PieceExtraAttributes, PieceStatus, Searchable, HasMedia;
     
     protected $folder = 'pieces';
     protected $withCount = ['views', 'tags', 'favorites', 'tutorials'];
@@ -137,21 +137,6 @@ class Piece extends PianoLit
     public function hasTutorials(array $categories)
     {
         return $this->tutorials()->pluck('category')->intersect($categories)->count() == count($categories);
-    }
-
-    public function lessons()
-    {
-        return $this->tutorials()->whereNotIn('category', ['performance', 'synthesia']);
-    }
-
-    public function performance()
-    {
-        return $this->tutorials()->where('category', 'performance')->first();
-    }
-
-    public function synthesia()
-    {
-        return $this->tutorials()->where('category', 'synthesia')->first();
     }
 
     public function saveTutorials($videos)

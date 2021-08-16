@@ -1,5 +1,5 @@
 @if($if ?? true)
-<div class="modal fade" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}" 
+<div class="modal fade {{isset($show) ? 'autoshow' : null}}" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}" 
 
   @isset($data)
   @foreach($data as $attr => $value)

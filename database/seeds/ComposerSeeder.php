@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Composer;
+use App\{Composer, Admin};
 
 class ComposerSeeder extends Seeder
 {
@@ -26,7 +26,7 @@ class ComposerSeeder extends Seeder
             "mood" => "agitaded",
             "date_of_birth" => "1857-08-08T04:56:02.000000Z",
             "date_of_death" => "1944-04-13T04:00:00.000000Z",
-            "creator_id" => 1,
+            "creator_id" => Admin::first()->id,
         ]);
     }
 }

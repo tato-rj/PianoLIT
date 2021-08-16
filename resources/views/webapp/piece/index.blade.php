@@ -1,8 +1,12 @@
-@extends('webapp.layouts.app')
+@extends('webapp.layouts.app', ['title' => $piece->short_name])
 
 @push('header')
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
+.rounded-video .plyr {
+	border-radius: 1rem!important;
+}
+
 #pdf-container .pdf-control:hover button {
 	opacity: .6 !important;
 }
@@ -77,20 +81,19 @@
 	@include('webapp.piece.nav')
 	<div class="tab-content p-3">
 		@include('webapp.piece.tabs.about')
-		@include('webapp.piece.tabs.media')
+		{{-- @include('webapp.piece.tabs.media') --}}
 		@include('webapp.piece.tabs.score')
-		@include('webapp.piece.tabs.timeline')
-
-		@env('local')
+		{{-- @include('webapp.piece.tabs.timeline') --}}
 		@include('webapp.piece.tabs.lessons')
 		@include('webapp.piece.tabs.tutorial')
-		@endenv
 	</div>
 
 </section>
 
 @include('webapp.piece.components.panel')
 @include('webapp.piece.share')
+@include('components.popups.whatsnew', ['tabscount' => 4])
+
 @endsection
 
 @push('scripts')
@@ -485,6 +488,35 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
   let $tab = $(e.target);
   $border.match($tab);
   $border.show();
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+ let cookie = 'pianolit_whatsnew_8.12.21';
+
+ if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+     $('.modal.autoshow').modal('show');
+
+     setCookie(cookie, moment().format('x'), 365);
+ }
+});
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+	let cookie = 'pianolit_new_feature_synthesia';
+
+	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+		let options = {
+			placement: 'bottom', 
+			title: '🎁 New feature!',
+			trigger: 'manual'
+		};
+
+		$('[new-feature]').tooltip(options).tooltip('show');
+
+		setCookie(cookie, moment().format('x'), 365);
+	}
 });
 </script>
 @endpush

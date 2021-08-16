@@ -18,7 +18,7 @@
 
     @include('layouts.html.theme')
 
-    <title>{{local() ? '(local)' : null}} {{config('app.name')}}</title>
+    <title>{{local() ? '(local)' : null}} {{config('app.name')}}{{isset($title) ? ' | ' . $title : null}}</title>
 
     <link rel="preload" href="{{ asset('css/vendor/fontawesome/all.min.css') }}" as="style">
     
@@ -33,6 +33,10 @@
         ]); ?>
     </script>
     <style type="text/css">
+
+    .tooltip {
+    z-index: 1040;
+}
         .bs-tooltip-top {top: -20px !important;}
     .piece-result:not(:last-of-type) {
         border-bottom: 1px solid #dee2e6 !important;
@@ -136,9 +140,6 @@
 
     <script src="{{ mix('js/app.js') }}"></script>
 
-<script type="text/javascript">
-
-</script>
     <script type="text/javascript">
     $(document).on('click', '[data-dismiss=popup]', function() {
         $('#bottom-popup').fadeOut('fast');
@@ -283,6 +284,19 @@
         return obj[Object.keys(obj)[0]];
     }
     </script>
+    
+<script type="text/javascript">
+
+$('#whatsnew-carousel').on('slide.bs.carousel', function (event) {
+    $dots = $(this).find('.carousel-dots i');
+    $dots.removeClass('text-primary').addClass('text-grey');
+    $dots.eq(event.to).removeClass('text-grey').addClass('text-primary');
+    if (event.to == $(this).find('.carousel-item').length - 1) {
+        $(this).find('button[data-slide="end"]').show().siblings('button').hide();
+    }
+});
+
+</script>
     @stack('scripts')
 
 </body>

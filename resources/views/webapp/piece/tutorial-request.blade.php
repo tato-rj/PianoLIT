@@ -23,7 +23,7 @@ Request tutorial
 			</div>
 		</div>
 		<div id="tutorial-alert" class="text-red text-center" style="display: none;"><small>Please select at least one type of video</small></div>
-		<p class="text-muted text-center m-0"><small>These are custom made videos and it will take just a few days to make.</small></p>
+		<p class="text-muted m-0"><small>These are custom made videos and it will take just a few days to make.</small></p>
 	</div>
 
 	<div class="d-flex flex-center w-100">

@@ -1,7 +1,12 @@
 <div class="tab-pane fade" id="tab-lessons">
-	@if($piece->tutorials()->exists())
+	@if($piece->media['lessons'])
 	<div class="mb-5">
-		@each('webapp.piece.components.video', $piece->lessons, 'tutorial')
+		@foreach($piece->media['lessons'] as $lessons)
+		<div class="pb-2">
+			<h5 class="mb-3">{{$lessons['title']}}</h5>
+			@each('webapp.piece.components.video', $lessons['videos'], 'tutorial')
+		</div>
+		@endforeach
 	</div>
 	@else
 	<div class="text-center py-4">

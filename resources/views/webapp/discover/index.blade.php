@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app')
+@extends('webapp.layouts.app', ['title' => 'Discover'])
 
 @push('header')
 <style type="text/css">
@@ -42,23 +42,6 @@
 @push('scripts')
 <script type="text/javascript" src="{{asset('js/vendor/jquery.knob.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/views/find-your-match.js')}}"></script>
-<script type="text/javascript">
-// $(document).ready(function() {
-// 	let cookie = 'pianolit_new_feature_tour';
-
-// 	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-// 		let options = {
-// 			placement: 'bottom', 
-// 			title: '🎁 New feature!',
-// 			trigger: 'manual'
-// 		};
-
-// 		$('#tour-button').tooltip(options).tooltip('show');
-
-// 		setCookie(cookie, moment().format('x'), 365);
-// 	}
-// });
-</script>
 {{-- TOUR --}}
 <script type="text/javascript">
 function resetTour() {

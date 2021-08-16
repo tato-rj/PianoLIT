@@ -7,9 +7,9 @@ Synthesia tutorial
 <form id="synthesia-request-form" method="POST" action="{{route('webapp.users.tutorial-requests.store', $piece)}}">
 	@csrf
 	<div class="mb-4">
-		<p>Send your request for a synthesia video?</p>
+		<p class="m-0">Confirm your request?</p>
 		<input name="video_types[]" type="checkbox" hidden value="Synthesia" checked>
-		<p class="text-muted text-center m-0"><small>These are custom made videos and it will take just a few days to make.</small></p>
+		<p class="text-muted m-0"><small>These are custom made videos and it will take just a few days to make.</small></p>
 	</div>
 
 	<div class="d-flex flex-center w-100">
