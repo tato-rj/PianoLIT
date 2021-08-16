@@ -19,8 +19,7 @@
 	@endif
 
 	<h5 class="mb-3">What is Synthesia?</h5>
-	<p>Synthesia is an animation that can help you learn how to play the piano using falling notes. It lowers the barrier to entry for beginners.</p>
-	<p>You can get started immediately without knowing how to read sheet music. Playing pieces right away provides great motivation to stick with the piano where you can learn traditional sheet music notation over time as you go along.</p>
+	<p>Synthesia is an animation that can help you learn how to play the piano using falling notes. While this tool is not a substitute for reading music, it does provide quick and easy way for beginners to get started.</p>
 
 
 </div>
