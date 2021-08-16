@@ -21,24 +21,6 @@
 .btn-outline {border-width: 1.4px;}
 .btn-default {padding: .6em 2.8em;}
 
-.timeline-event:before {
-	content: '';
-	width: 12px;
-	height: 12px;
-	border-radius: 50%;
-	background-color: #dee2e6;
-	position: absolute;
-	left: -7px;
-	bottom: 50%;
-	transform: translateY(50%);
-}
-
-.timeline-highlighted:before {
-	background-color: #0055fe!important;
-    -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-}
-
 #main-nav .nav-link, #main-nav .nav-link:hover {
 	border: 0;
 }
