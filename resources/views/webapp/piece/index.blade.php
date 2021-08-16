@@ -73,7 +73,6 @@
 </section>
 
 @include('webapp.piece.components.panel')
-@include('webapp.piece.share')
 @include('components.popups.whatsnew', ['tabscount' => 4])
 
 @endsection
@@ -365,12 +364,6 @@ function stopVideo(reset = true) {
 		}
 	});
 }
-</script>
-
-<script type="text/javascript">
-$('#share-modal').on('show.bs.modal', function (e) {
-  $('[data-toggle="fixed-panel"]').click();
-})
 </script>
 
 <script type="text/javascript">

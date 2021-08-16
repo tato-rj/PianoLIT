@@ -1,3 +1,4 @@
+@isset($piece)
 @component('components.modal', ['id' => 'share-modal'])
 @slot('header')
 Share with a friend!
@@ -14,3 +15,4 @@ Share with a friend!
 @endslot
 
 @endcomponent
+@endisset

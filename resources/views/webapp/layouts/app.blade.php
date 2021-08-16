@@ -119,6 +119,7 @@
             @include('webapp.layouts.menu')
             </div>
 
+            @include('webapp.piece.share')
         </div>
 
         @if($message = session('status'))
@@ -187,6 +188,10 @@
     $('a.toggle-favorite span').click(function() {
         $(this).siblings('button').click();
     });
+
+    $('#share-modal').on('show.bs.modal', function (e) {
+      $('[data-toggle="fixed-panel"]').click();
+    })
     </script>
     <script type="text/javascript">
     $('main').css('margin-bottom', $('#menu').height() + 20);
