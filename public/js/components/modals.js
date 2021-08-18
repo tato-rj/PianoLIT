@@ -15,4 +15,8 @@ $('[data-toggle="panel"]').on('click', function() {
     let target = $(this).attr('href');
     let parent = $(this).attr('href-parent');
     $(parent).add(target).toggle();
-});  
+});
+
+$('#share-modal').on('show.bs.modal', function (e) {
+  $('[data-toggle="fixed-panel"]').click();
+});

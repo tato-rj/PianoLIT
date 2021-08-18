@@ -63,9 +63,7 @@
 	@include('webapp.piece.nav')
 	<div class="tab-content p-3">
 		@include('webapp.piece.tabs.about')
-		{{-- @include('webapp.piece.tabs.media') --}}
 		@include('webapp.piece.tabs.score')
-		{{-- @include('webapp.piece.tabs.timeline') --}}
 		@include('webapp.piece.tabs.lessons')
 		@include('webapp.piece.tabs.tutorial')
 	</div>
@@ -79,14 +77,18 @@
 
 @push('scripts')
 <script type="text/javascript">
-$('#composer-bio').clamp(4);
+
 </script>
 
 <script type="text/javascript">
-    var url = document.location.toString();
-    if (url.match('#')) {
-        $('.nav-tabs a[href="#tab-' + url.split('#')[1] + '"]').tab('show');
-    }
+// LIMIT COMPOSER BIO ON THE ABOUT SECTION TO 4 LINES
+$('#composer-bio').clamp(4);
+
+// UPDATE URL WHEN A NEW TAB IS SELECTED
+var url = document.location.toString();
+if (url.match('#')) {
+  $('.nav-tabs a[href="#tab-' + url.split('#')[1] + '"]').tab('show');
+}
 </script>
 
 <script type="text/javascript">
@@ -258,7 +260,6 @@ $(document).on('change', 'input#audio-speed', function() {
 
 $(document).on('click', '#close-player', function() {
 	stopAudio();
-	$('#bottom-popup').fadeOut('fast');
 });
 
 $(document).on('click', '#player-header > .flex-grow, #toggle-player', function() {
@@ -444,26 +445,6 @@ function safari()
 
 	return false;
 }
-</script>
-
-<script type="text/javascript">
-jQuery.fn.match = function(element) {
-	let pos = element.parent().position().left;
-	let width = element.outerWidth();
-
-	return this.css({
-		width: width,
-		left: pos+'px'
-	}).empty();
-};
-
-let $border = $('#nav-border');
-
-$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-  let $tab = $(e.target);
-  $border.match($tab);
-  $border.show();
-});
 </script>
 
 <script type="text/javascript">

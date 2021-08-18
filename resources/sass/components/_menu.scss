@@ -2,3 +2,17 @@
 	color: #495057 !important;
 	background-color: #f3f5f7;
 }
+
+#webapp .menu-link {
+    text-decoration: none;
+    color: #969ba0;
+    transition: .2s;
+}
+
+#webapp .menu-link:hover, #webapp .menu-link.active {
+    color: #0055fe !important;
+}
+
+#webapp .menu-link .menu-icon {
+    font-size: 1.4em;
+}

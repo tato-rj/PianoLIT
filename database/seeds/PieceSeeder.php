@@ -23,7 +23,7 @@ class PieceSeeder extends Seeder
             "key" => "G minor",
             "description" => "This Arabesque is an excellent early-advanced level choice for pianists who are starting to explore advanced repertoire. It has a bold character, folk-like rhythms, and explores many different colors and moods.",
             "curiosity" => null,
-            "audio_path" => null,
+            "audio_path" => 'app/audio/D8OOk5etrnyHtaseaOR2GYRAoq2SkFgVNdKSOFXk.mp3',
             "audio_path_rh" => null,
             "audio_path_lh" => null,
             "itunes" => null,

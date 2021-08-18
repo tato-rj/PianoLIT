@@ -10,3 +10,7 @@
     left: 8px;
     font-size: 15px;
 }
+
+.piece-result:not(:last-of-type) {
+    border-bottom: 1px solid #dee2e6 !important;
+}

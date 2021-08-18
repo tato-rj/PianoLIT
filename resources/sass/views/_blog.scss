@@ -27,3 +27,7 @@
 .blog-font p, .blog-font h4, .blog-font iframe {
 	margin-bottom: 1.75rem !important;
 }
+
+#blog-content img, #blog-content iframe {
+    max-width: 100%;
+}

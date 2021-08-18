@@ -7,12 +7,16 @@
 	<div>
 		<button class="border-0 p-0 bg-transparent text-success mr-2 align-middle" disabled><i class="fas fa-award"></i></button>
 	</div>
-	@elseif($item->hasImage())
+	@elseif($item->hasImage() && ! $item->published_at)
 	<form method="POST" action="{{route('admin.pieces.highlight', $item->id)}}">
 		@csrf
 		@method('PATCH')
 		<button type="submit" class="border-0 p-0 bg-transparent text-grey mr-2 align-middle" title="Highlight this piece"><i class="fas fa-award"></i></button>
 	</form>
+	@elseif($item->published_at)
+	<div>
+		<button class="border-0 p-0 bg-transparent text-success mr-2 align-middle" disabled><i class="fas fa-check-circle"></i></button>
+	</div>
 	@endif
 
 	<form method="POST" action="{{route('admin.pieces.hijack', $item->id)}}">

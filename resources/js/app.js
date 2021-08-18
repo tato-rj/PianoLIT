@@ -17,6 +17,10 @@ require('./components/overlays');
 require('./components/progressbar');
 require('./components/auth');
 require('./components/toggle');
+require('./components/popups');
+require('./components/favorites');
+require('./components/carousel');
+require('./components/tabs');
 require('./search/Search');
 require('./views/find-your-match');
 

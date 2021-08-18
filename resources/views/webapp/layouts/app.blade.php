@@ -32,70 +32,6 @@
             'searchCount' => route('webapp.search.count', ['count'])
         ]); ?>
     </script>
-    <style type="text/css">
-
-    .tooltip {
-    z-index: 1040;
-}
-        .bs-tooltip-top {top: -20px !important;}
-    .piece-result:not(:last-of-type) {
-        border-bottom: 1px solid #dee2e6 !important;
-    }
-
-.custom-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-        #blog-content img, #blog-content iframe {
-            max-width: 100%;
-        }
-
-        .rounded {
-            border-radius: 1rem!important;
-        }
-        .rounded-bottom, .rounded-left {
-            border-bottom-left-radius: 1rem!important;
-        }
-        .rounded-bottom, .rounded-right {
-            border-bottom-right-radius: 1rem!important;
-        }
-        .rounded-right, .rounded-top {
-            border-top-right-radius: 1rem!important;
-        }
-        .rounded-left, .rounded-top {
-            border-top-left-radius: 1rem!important;
-        }
-        
-        
-        .rounded-sm {
-            border-radius: .25rem!important;
-        }
-        .rounded-sm-bottom, .rounded-sm-left {
-            border-bottom-left-radius: .25rem!important;
-        }
-        .rounded-sm-bottom, .rounded-sm-right {
-            border-bottom-right-radius: .25rem!important;
-        }
-        .rounded-sm-right, .rounded-sm-top {
-            border-top-right-radius: .25rem!important;
-        }
-        .rounded-sm-left, .rounded-sm-top {
-            border-top-left-radius: .25rem!important;
-        }
-
-        #webapp .menu-link {
-            text-decoration: none;
-            color: #969ba0;
-            transition: .2s;
-        }
-
-        #webapp .menu-link:hover, #webapp .menu-link.active {
-            color: #0055fe !important;
-        }
-
-        #webapp .menu-link .menu-icon {
-            font-size: 1.4em;
-        }
-    </style>
     @stack('header')
 </head>
 <body>
@@ -142,28 +78,8 @@
     <script src="{{ mix('js/app.js') }}"></script>
 
     <script type="text/javascript">
-    $(document).on('click', '[data-dismiss=popup]', function() {
-        $('#bottom-popup').fadeOut('fast');
-    });
 
-    $(document).on('click', 'button[data-manage="favorite"]', function(event) {
-        event.preventDefault();
-        let $button = $(this);
-        let $heart = $button.find('i');
 
-        $button.disable().addClass('opacity-6');
-
-        axios.post($button.attr('data-url-toggle'))
-            .then(function(response) {
-                $heart.toggleClass('fas far');
-            })
-            .catch(function(error) {
-                alert('Sorry, we couldn\'t update your favorite at this time.');
-            })
-            .then(function() {
-                $button.enable().removeClass('opacity-6');
-            });
-    });
     </script>
     <script type="text/javascript">
     $(document).ready(function() {
@@ -180,128 +96,12 @@
                 }
             });
         }
-
-        $('#bottom-popup > div').css('bottom', $('#bottom-popup').siblings('.row').outerHeight() + 14);
     });
     </script>
     <script type="text/javascript">
-    $('a.toggle-favorite span').click(function() {
-        $(this).siblings('button').click();
-    });
-
-    $('#share-modal').on('show.bs.modal', function (e) {
-      $('[data-toggle="fixed-panel"]').click();
-    })
-    </script>
-    <script type="text/javascript">
+    // ADJUST THE BOTTOM MARGIN OF THE PAGE ACCORDING TO THE HEIGHT OF THE MENU ON THE WEBAPP
     $('main').css('margin-bottom', $('#menu').height() + 20);
     </script>
-
-    <script type="text/javascript">
-    $(document).on('click', 'button[data-manage=save-to]', function() {
-        let $btn = $(this);
-        $btn.disable();
-
-        axios.get($btn.data('url'))
-            .then(function(response) {
-                $('#bottom-popup-content').html(response.data)
-                $('#bottom-popup-content > div').width($('main').width());
-                $('#bottom-popup').show();
-            })
-            .catch(function(error) {
-                $('#bottom-popup').fadeOut('fast');
-            })
-            .then(function() {
-                $btn.enable();
-            });
-    });
-
-    $(document).on('click', 'button[data-submit=favorite]', function() {
-        let $btn = $(this);
-        let $btns = $btn.parent().find('button');
-        let $icons = $btn.find('.favorite-icons');
-        $btns.disable();
-
-        axios.post($btn.data('url'))
-            .then(function(response) {
-                showIcon($icons, response.data);
-                updateFlag($btn.data('target'));
-            })
-            .catch(function(error) {
-                alert('Something went wrong...');
-                console.log(error);
-            })
-            .then(function() {
-                $btns.enable();
-            });
-    });
-
-    $(document).on('click', 'button[data-submit=folder]', function() {
-        let $btn = $(this);
-        let $name = $($btn.data('name'));
-        let $container = $('#favorite-folders-container');
-
-        $btn.disable().addLoader();
-        $btn.siblings('button').hide();
-
-        axios.post($btn.data('url'), {name: $($name).val()})
-            .then(function(response) {
-                $container.html(response.data.html.list);
-                $container.find('.invalid-feedback').text('').hide();
-            })
-            .catch(function(error) {
-                $btn.enable().removeLoader();
-                $btn.siblings('button').show();
-                let feedback = objFirst(error.response.data.errors)[0];
-                $container.find('.invalid-feedback').text(feedback).show();
-            })
-            .then(function() {
-                //
-            });
-    });
-
-    function showIcon($container, data) {
-        $container.find('i').hide();
-        $container.find('i[name="success"]').fadeIn('fast');
-
-        setTimeout(function() {
-            $container.closest('#favorite-folders-container').html(data.html.list)
-        }, 1000);
-    }
-
-    function updateFlag(flag) {
-        $(flag).find('i').toggleClass('far fas');
-    }
-
-    $(document).on('click', 'button.new-folder', function() {
-        $(this).hide();
-        $($(this).data('target')).show();
-    });
-
-    $(document).on('click', 'button.cancel-new-folder', function() {
-        $($(this).data('container')).hide();
-        $($(this).data('target')).show();
-    });
-    </script>
-
-    <script type="text/javascript">
-    objFirst = function(obj) {
-        return obj[Object.keys(obj)[0]];
-    }
-    </script>
-    
-<script type="text/javascript">
-
-$('#whatsnew-carousel').on('slide.bs.carousel', function (event) {
-    $dots = $(this).find('.carousel-dots i');
-    $dots.removeClass('text-primary').addClass('text-grey');
-    $dots.eq(event.to).removeClass('text-grey').addClass('text-primary');
-    if (event.to == $(this).find('.carousel-item').length - 1) {
-        $(this).find('button[data-slide="end"]').show().siblings('button').hide();
-    }
-});
-
-</script>
     @stack('scripts')
 
 </body>

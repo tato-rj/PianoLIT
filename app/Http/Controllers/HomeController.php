@@ -10,18 +10,6 @@ use App\Rules\VideoLength;
 
 class HomeController extends Controller
 {
-    public function filetest(Request $request)
-    {
-        \Validator::make($request->all(), [
-            'video' => 'required|mimetypes:video/avi,video/mpeg,video/mp4,video/x-ms-wmv,video/x-msvideo,video/3gpp,video/quicktime|max:'.config('filesystems.disks.gcs.max_sizes.video')
-        ],[
-            'max' => 'The video size cannot exceed 100MB.',
-        ])->validate();
-
-        UploadToCloud::dispatchNow($request->file('video'));
-
-        return response(200);
-    }
     /**
      * Show the application dashboard.
      *
