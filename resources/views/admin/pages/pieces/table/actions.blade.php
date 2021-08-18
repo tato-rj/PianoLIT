@@ -15,7 +15,7 @@
 	</form>
 	@elseif($item->highlighted_at)
 	<div>
-		<button class="border-0 p-0 bg-transparent text-success mr-2 align-middle" disabled>@fa(['icon' => 'check-circle', 'mr' => 0])</button>
+		<button class="border-0 p-0 bg-transparent text-success mr-2 align-middle" disabled>@fa(['icon' => 'check', 'mr' => 0])</button>
 	</div>
 	@endif
 
