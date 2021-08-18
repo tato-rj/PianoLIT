@@ -15,6 +15,16 @@ class UserSeeder extends Seeder
         User::create([
             "first_name" => "Arthur",
             "last_name" => "Villar",
+            "email" => "arthurvillar@gmail.com",
+            'password' => bcrypt('maiden'),
+            "origin" => "web",
+            "locale" => "unknown",
+            "super_user" => false,
+        ]);
+
+        User::create([
+            "first_name" => "Bart",
+            "last_name" => "Simpson",
             "email" => "test@email.com",
             'password' => bcrypt('maiden'),
             "origin" => "web",

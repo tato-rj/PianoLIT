@@ -73,6 +73,7 @@ class Api extends Factory
             $levels = Tag::extendedLevels()->withCount('pieces')->get();
             $harmony = Tutorial::byType('harmonic')->latest()->with('piece')->take(12)->get()->unique('piece_id')->take(4);
             $highlights = Piece::freePicks()->get();
+            $synthesia = Tutorial::with('piece')->byType('synthesia')->inRandomOrder()->take(12)->get();
             $post = $this->post();
             $periods = Tag::periods()->withCount('pieces')->get();
             $composer = $highlights->shift()->composer;
@@ -83,8 +84,9 @@ class Api extends Factory
                 ['label' => 'Originals', 'collection' => $post, 'celltype' => 'original'],
                 ['label' => 'Periods', 'collection' => $periods, 'celltype' => 'period'],
                 ['label' => 'Levels', 'collection' => $levels, 'celltype' => 'level'],
+                ['label' => 'Synthesia releases', 'collection' => $synthesia, 'celltype' => 'synthesia'],
                 ['label' => 'Composer of the week', 'collection' => $composer, 'celltype' => 'composer'],
-                ['label' => 'Latest harmonic analysis', 'collection' => $harmony, 'celltype' => 'harmony']
+                ['label' => 'Latest harmonic analysis', 'collection' => $harmony, 'celltype' => 'harmony'],
             ]);
         });
 
