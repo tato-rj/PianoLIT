@@ -5,7 +5,7 @@
 	@foreach($row['collection'] as $tutorial)
 		<div class="m-2 position-relative">
 			@auth
-			@fa(['icon' => 'lock', 'classes' => 'absolute-center opacity-6', 'size' => '3x', 'color' => 'white', 'if' => $isAuthorized])
+			@fa(['icon' => 'lock', 'classes' => 'absolute-center opacity-6', 'size' => '3x', 'color' => 'white', 'if' => ! $isAuthorized])
 			@endauth
 			<div class="border cursor-pointer rounded d-flex d-apart flex-column piece-card" role="img" aria-label="{{$tutorial->piece->name}}" data-url="{{route('webapp.pieces.show', $tutorial->piece)}}#tutorial" style="width: 240px">
 				<div class="d-flex align-items-center px-3 py-2">
