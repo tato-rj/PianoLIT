@@ -23,7 +23,7 @@
 				{{-- {{$tutorial->description}} --}}
 			</div>
 			<div class="d-flex d-apart">
-				<div>@fa(['icon' => 'play-circle', 'size' => 'lg', 'classes' => 'opacity-4'])<strong>2 min</strong></div>
+				<div>@fa(['icon' => 'play-circle', 'size' => 'lg', 'classes' => 'opacity-4'])<strong>Play</strong></div>
 				<div>@fa(['icon' => 'lock', 'classes' => 'opacity-4', 'if' => ! $isAuthorized])</div>
 			</div>
 		</div>
