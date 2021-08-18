@@ -9,9 +9,9 @@
       </div>
     </div>
     <div class="d-flex hide-on-sm">
-      <span class="{{$item->hasDescription() ? 'text-primary' : 'text-muted'}}" title="{{$item->description}}"><i class="fas fa-info-circle mr-1"></i></span>
+      <span class="{{$item->hasDescription() ? 'text-primary' : 'text-muted'}} mr-1" title="{{$item->description}}"><i class="fas fa-info-circle"></i></span>
       @include('admin.components.play', ['audio' => storage($item->audio_path)])
-      <span class="text-nowrap mr-1 {{$item->tutorials_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube mr-1"></i></span>
+      <span class="text-nowrap mx-1 {{$item->tutorials_count > 0 ? 'text-primary' : 'text-muted'}}"><i class="fab fa-youtube"></i></span>
       <span class="{{$item->hasTutorials(['synthesia']) ? 'text-danger' : 'text-muted'}}"><i class="fas fa-fire"></i></span>
     </div>
   </div>
