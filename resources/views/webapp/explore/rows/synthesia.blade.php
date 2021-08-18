@@ -16,7 +16,7 @@
 				<div class="w-100 text-center">
 					<img src="{{asset('images/webapp/synthesia-missing.svg')}}" class="mx-auto mb-4" style="width: 102px; opacity:  .1">
 				</div>
-				<div class="clamp-1">by {{$tutorial->piece->composer->name}}</div>
+				<div class="clamp-1">by {{$tutorial->piece->composer->short_name}}</div>
 			</div>
 		</div>
 	@endforeach
