@@ -13,7 +13,7 @@
 					<div class="text-dark clamp-1"><strong>{{$tutorial->piece->medium_name}}</strong></div>
 				</div>
 
-				<img src="{{asset('images/webapp/synthesia-thumbnails/thumb-'.$loop->index.'.jpg')}}" class="w-100">
+				<img src="{{$tutorial->thumbnail}}" class="w-100">
 				<div class="clamp-1 px-2 py-1"><small>{{$tutorial->piece->composer->name}}</small></div>
 			</div>
 		</div>

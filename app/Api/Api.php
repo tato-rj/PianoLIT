@@ -90,7 +90,7 @@ class Api extends Factory
         });
 
         if ($this->for == 'webapp') {
-            $synthesia = Tutorial::with('piece')->byType('synthesia')->inRandomOrder()->take(12)->get();
+            $synthesia = Tutorial::synthesia(12);
             $collection->splice(5, 0, [['label' => 'Synthesia releases', 'collection' => $synthesia, 'celltype' => 'synthesia']]);
         }
 

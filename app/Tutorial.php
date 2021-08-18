@@ -5,7 +5,7 @@ namespace App;
 class Tutorial extends PianoLit
 {
 	protected $types = ['Performance', 'Tutorial', 'Harmonic analysis'];
-    protected $appends = ['title'];
+    protected $appends = ['title', 'thumbnail'];
 	
     public static function boot()
     {
@@ -48,5 +48,17 @@ class Tutorial extends PianoLit
     public function scopeByType($query, $type)
     {
         return $query->where('type', 'LIKE', '%'.ucfirst($type).'%');
+    }
+
+    public function scopeSynthesia($query, $count)
+    {
+        return $query->byType('synthesia')
+                           ->with('piece')
+                           ->inRandomOrder()
+                           ->take($count)
+                           ->get()
+                           ->each(function($item, $index) {
+                                $item->thumbnail = asset('images/webapp/synthesia-thumbnails/thumb-'.$index.'.jpg');
+                           })->shuffle();
     }
 }
