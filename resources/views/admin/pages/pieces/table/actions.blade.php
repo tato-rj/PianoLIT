@@ -5,7 +5,7 @@
 	]])
 	@if($item->is_free)
 	<div>
-		<button class="border-0 p-0 bg-transparent text-warning mr-2 align-middle" disabled>@fa(['icon' => 'award', 'mr' => 0])</button>
+		<button class="border-0 p-0 bg-transparent text-warning mr-2 align-middle" title="This piece is the current Freepick!" disabled>@fa(['icon' => 'award', 'mr' => 0])</button>
 	</div>
 	@elseif($item->hasImage() && ! $item->highlighted_at)
 	<form method="POST" action="{{route('admin.pieces.highlight', $item->id)}}">
@@ -15,7 +15,7 @@
 	</form>
 	@elseif($item->highlighted_at)
 	<div>
-		<button class="border-0 p-0 bg-transparent text-success mr-2 align-middle" disabled>@fa(['icon' => 'check', 'mr' => 0])</button>
+		<button class="border-0 p-0 bg-transparent text-success mr-2 align-middle" title="This piece has already been selected as a Freepick" disabled>@fa(['icon' => 'check', 'mr' => 0])</button>
 	</div>
 	@endif
 
