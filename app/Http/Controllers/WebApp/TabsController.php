@@ -21,7 +21,7 @@ class TabsController extends Controller
     public function explore(Api $api)
     {
     	$categories = Tag::display()->groupBy('type');
-        $explore = $api->explore();
+        $explore = $api->for('webapp')->explore();
 
     	return view('webapp.explore.index', compact(['categories', 'explore']));
     }

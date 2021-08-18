@@ -8,7 +8,7 @@ use App\Blog\Post;
 
 class Api extends Factory
 {
-    protected $results, $request, $query, $options;
+    protected $results, $request, $query, $options, $for;
 
 	public function discover()
 	{
@@ -73,7 +73,6 @@ class Api extends Factory
             $levels = Tag::extendedLevels()->withCount('pieces')->get();
             $harmony = Tutorial::byType('harmonic')->latest()->with('piece')->take(12)->get()->unique('piece_id')->take(4);
             $highlights = Piece::freePicks()->get();
-            // $synthesia = Tutorial::with('piece')->byType('synthesia')->inRandomOrder()->take(12)->get();
             $post = $this->post();
             $periods = Tag::periods()->withCount('pieces')->get();
             $composer = $highlights->shift()->composer;
@@ -89,6 +88,11 @@ class Api extends Factory
                 ['label' => 'Latest harmonic analysis', 'collection' => $harmony, 'celltype' => 'harmony'],
             ]);
         });
+
+        if ($this->for == 'webapp') {
+            $synthesia = Tutorial::with('piece')->byType('synthesia')->inRandomOrder()->take(12)->get();
+            $collection->splice(5, 0, [['label' => 'Synthesia releases', 'collection' => $synthesia, 'celltype' => 'synthesia']]);
+        }
 
         return $collection;
     }
@@ -111,5 +115,12 @@ class Api extends Factory
             ])->shuffle();
 
         return collect(['queries' => $queries]);
+    }
+
+    public function for($device)
+    {
+        $this->for = $device;
+
+        return $this;
     }
 }

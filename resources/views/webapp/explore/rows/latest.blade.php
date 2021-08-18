@@ -20,7 +20,6 @@
 			</div>
 			<div class="mb-2">
 				A full harmonic analysis of this piece, one measure at a time
-				{{-- {{$tutorial->description}} --}}
 			</div>
 			<div class="d-flex d-apart">
 				<div>@fa(['icon' => 'play-circle', 'size' => 'lg', 'classes' => 'opacity-4'])<strong>Play</strong></div>
