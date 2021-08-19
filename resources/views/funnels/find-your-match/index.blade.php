@@ -20,8 +20,8 @@
 			<div class="bg-white rounded p-3 pb-4">
 				@include('funnels.find-your-match.carousel')
 			</div>
-			</div>
 		</div>
+	</div>
 </section>
 
 @slot('scripts')

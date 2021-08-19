@@ -6,6 +6,11 @@
 	background-color: transparent;
 }
 
+.mirror {
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+}
+
 .lh-1 {
 	line-height: 1;
 }

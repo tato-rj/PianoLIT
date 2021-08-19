@@ -3,39 +3,8 @@
 @push('header')
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
-.rounded-video .plyr {
-	border-radius: 1rem!important;
-}
 
-#pdf-container .pdf-control:hover button {
-	opacity: .6 !important;
-}
 
-.mirror {
-	-webkit-transform: scaleX(-1);
-	transform: scaleX(-1);
-}
-
-.hands-lg {font-size: 240%;}
-
-.btn-outline {border-width: 1.4px;}
-.btn-default {padding: .6em 2.8em;}
-
-#main-nav .nav-link, #main-nav .nav-link:hover {
-	border: 0;
-}
-
-#main-nav .nav-link:not(.active) {
-	color: #6c757d!important;
-}
-
-#main-nav .nav-link.active {
-	background-color: inherit;
-}
-
-#main-nav .nav-item {
-	position: relative;
-}
 
 #nav-border {
 	position: absolute;

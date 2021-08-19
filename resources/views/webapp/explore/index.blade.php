@@ -11,22 +11,17 @@
 <section class="mb-4">
 	@include('webapp.search.form')
 </section>
-				@include('funnels.find-your-match.results', ['piece' => \App\Piece::first()])
 
 <section id="tags-search">
 
-@foreach($explore as $row)
-	@include('webapp.explore.rows.'.strtolower(firstword($row['label'])))
-@endforeach
+	@foreach($explore as $row)
+		@include('webapp.explore.rows.'.strtolower(firstword($row['label'])))
+	@endforeach
 
 </section>
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
-
-</script>
-
 <script type="text/javascript">
 $('#tags-search .tag').on('click', function() {
 	$('#tags-search button').disable();
