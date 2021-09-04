@@ -13,7 +13,7 @@ window.filters = [];
 
 @include('webapp.components.sorting', ['disabled' => true])
 
-<section id="pieces-list" class="row">
+<section id="pieces-list" class="row mt-3">
 </section>
 
 @include('webapp.components.spinner')
