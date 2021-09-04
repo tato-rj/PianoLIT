@@ -575,15 +575,19 @@ class Piece extends PianoLit
         return $query->where('is_free', $bool);
     }
 
-    public function scopeFreepicks($query)
+    public function scopeFreepicks($query, $ordered = true)
     {
-        return $query->whereNotNull('highlighted_at')->orderBy('highlighted_at', 'DESC');
+        $highlights = $query->whereNotNull('highlighted_at');
+
+        return $ordered ? 
+                    $highlights->orderBy('highlighted_at', 'DESC') :
+                    $highlights;
     }
 
-    public function scopeFiltered($query)
+    public function scopeFiltered($query, $random = true)
     {
         if (! request()->filters)
-            return $query;
+            return $random ? $query->inRandomOrder() : $query;
 
         foreach (request()->filters as $list) {
             $query->whereHas('tags', function($q) use ($list) {
