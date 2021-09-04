@@ -1,5 +1,5 @@
 @foreach($pieces as $piece)
-	<div class="col-lg-4 col-md-6 col-12 mb-2 position-relative"
+	<div class="col-lg-4 col-md-6 col-12 mb-4 position-relative"
 		data-tags="{{$piece->tags->pluck('name')->implode(' ')}}"
 		data-sort-level="{{$piece->level_order}}"
 		data-sort-catalogue="{{ord($piece->catalogue_full_name).''.$piece->catalogue_number.''.$piece->collection_number}}"
