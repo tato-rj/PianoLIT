@@ -5,7 +5,7 @@ namespace App\Http\Controllers\WebApp;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Api\Api;
-use App\{Tag, Playlist};
+use App\{Tag, Playlist, Piece};
 
 class TabsController extends Controller
 {
@@ -24,6 +24,14 @@ class TabsController extends Controller
         $explore = $api->for('webapp')->explore();
 
     	return view('webapp.explore.index', compact(['categories', 'explore']));
+    }
+
+    public function highlights(Api $api, Request $request)
+    {
+        if ($request->wantsJson())
+            return view('webapp.highlights.pieces', ['pieces' =>  Piece::freePicks()->filtered()->get()])->render();
+
+        return view('webapp.highlights.index');
     }
 
     public function playlists()

@@ -1,9 +1,6 @@
-@extends('webapp.layouts.app', ['title' => 'Search results'])
+@extends('webapp.layouts.app', ['title' => 'Highlights'])
 
 @push('header')
-<style type="text/css">
-
-</style>
 <script type="text/javascript">
 window.page = 1;
 window.loading = window.done = false;
@@ -12,15 +9,11 @@ window.filters = [];
 @endpush
 
 @section('content')
-@include('webapp.layouts.header', ['subtitle' => 'Results for <i>"' . request('search') . '"</i>'])
-
-<section class="mb-2">
-	@include('webapp.search.form')
-</section>
+@include('webapp.layouts.header', ['title' => 'Highlights', 'subtitle' => 'Highlights from our database'])
 
 @include('webapp.components.sorting', ['disabled' => true])
 
-<section id="pieces-list">
+<section id="pieces-list" class="row">
 </section>
 
 @include('webapp.components.spinner')
@@ -32,20 +25,19 @@ window.filters = [];
 @endsection
 
 @push('scripts')
-
 <script type="text/javascript">
 $(document).ready(function() {
 	loadResults();
 
-	$(window).on('scroll', function() {
-		let scrollHeight = $(document).height();
-		let scrollPosition = $(window).height() + $(window).scrollTop();
-		let endOfScreen = Math.floor((scrollHeight - scrollPosition) / scrollHeight) === 0;
-		let notLoading = ! window.loading;
+	// $(window).on('scroll', function() {
+	// 	let scrollHeight = $(document).height();
+	// 	let scrollPosition = $(window).height() + $(window).scrollTop();
+	// 	let endOfScreen = Math.floor((scrollHeight - scrollPosition) / scrollHeight) === 0;
+	// 	let notLoading = ! window.loading;
 
-		if (endOfScreen && notLoading)
-		    loadResults();
-	});
+	// 	if (endOfScreen && notLoading)
+	// 	    loadResults();
+	// });
 });
 
 function loadResults() {
@@ -74,9 +66,7 @@ function loadResults() {
 		});
 	}
 };
-</script>
 
-<script type="text/javascript">
 $('#server-filter input[type="checkbox"]').change(function() {
 	let filters = [];
 
@@ -92,9 +82,10 @@ $('#server-filter input[type="checkbox"]').change(function() {
     applyFilters(filters);
 });
 </script>
+
 <script type="text/javascript">
 function makeUrl() {
-	return window.location.href + '&lazy-load&page=' + window.page;
+	return window.location.href + '?lazy-load&page=' + window.page;
 }
 
 function reset() {

@@ -580,6 +580,20 @@ class Piece extends PianoLit
         return $query->whereNotNull('highlighted_at')->orderBy('highlighted_at', 'DESC');
     }
 
+    public function scopeFiltered($query)
+    {
+        if (! request()->filters)
+            return $query;
+
+        foreach (request()->filters as $list) {
+            $query->whereHas('tags', function($q) use ($list) {
+                return $q->whereIn('name', json_decode($list));
+            }); 
+        }
+
+        return $query;
+    }
+
     public function getBackground()
     {
         return storage($this->cover_path);

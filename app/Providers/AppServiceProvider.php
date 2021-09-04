@@ -24,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         \View::composer([
             'webapp.discover.index', 
             'webapp.explore.index', 
+            'webapp.highlights.pieces', 
             'webapp.playlists.index', 
             'webapp.playlists.show', 
             'webapp.user.my-pieces.index',

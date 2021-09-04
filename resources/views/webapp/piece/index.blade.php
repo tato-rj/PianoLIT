@@ -417,31 +417,30 @@ function safari()
 </script>
 
 <script type="text/javascript">
-$(document).ready(function() {
- let cookie = 'pianolit_whatsnew_8.12.21';
+// $(document).ready(function() {
+//  let cookie = 'pianolit_whatsnew_8.12.21';
 
- if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-     $('.modal.autoshow').modal('show');
+//  if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+//      $('.modal.autoshow').modal('show');
 
-     setCookie(cookie, moment().format('x'), 365);
- }
-});
-</script>
-<script type="text/javascript">
-$(document).ready(function() {
-	let cookie = 'pianolit_new_feature_synthesia';
+//      setCookie(cookie, moment().format('x'), 365);
+//  }
+// });
 
-	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-		let options = {
-			placement: 'bottom', 
-			title: '🎁 New feature!',
-			trigger: 'manual'
-		};
+// $(document).ready(function() {
+// 	let cookie = 'pianolit_new_feature_synthesia';
 
-		$('[new-feature]').tooltip(options).tooltip('show');
+// 	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+// 		let options = {
+// 			placement: 'bottom', 
+// 			title: '🎁 New feature!',
+// 			trigger: 'manual'
+// 		};
 
-		setCookie(cookie, moment().format('x'), 365);
-	}
-});
+// 		$('[new-feature]').tooltip(options).tooltip('show');
+
+// 		setCookie(cookie, moment().format('x'), 365);
+// 	}
+// });
 </script>
 @endpush

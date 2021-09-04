@@ -10,6 +10,8 @@ Route::namespace('WebApp')->group(function() {
 
 	Route::get('explore', 'TabsController@explore')->name('explore');
 
+	Route::get('highlights', 'TabsController@highlights')->name('highlights');
+
 	Route::get('playlists', 'TabsController@playlists')->name('playlists');
 	
 	Route::get('my-pieces', 'TabsController@myPieces')->name('my-pieces');
