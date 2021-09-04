@@ -29,7 +29,7 @@ class TabsController extends Controller
     public function highlights(Api $api, Request $request)
     {
         if ($request->wantsJson())
-            return view('webapp.highlights.pieces', ['pieces' =>  Piece::freePicks()->filtered()->get()])->render();
+            return view('webapp.highlights.pieces', ['pieces' =>  Piece::freePicks()->inRandomOrder()->filtered()->get()])->render();
 
         return view('webapp.highlights.index');
     }
