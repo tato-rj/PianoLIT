@@ -9,7 +9,7 @@ window.filters = [];
 @endpush
 
 @section('content')
-@include('webapp.layouts.header', ['title' => 'Highlights', 'subtitle' => 'Highlights from our database'])
+@include('webapp.layouts.header', ['title' => 'Highlights', 'subtitle' => 'What would you like to play next?'])
 
 @include('webapp.components.sorting', ['disabled' => true])
 
