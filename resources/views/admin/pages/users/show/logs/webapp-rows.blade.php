@@ -1,7 +1,7 @@
 @foreach($logs as $date => $event)
   <tr>
     <td class="text-nowrap">{{carbon($date)->format('M j\\, Y \\a\\t h:i A')}}</td>
-    <td class="dataTables_main_column">{{$event->url}}</td>
+    <td class="dataTables_main_column"><a href="{{$event->url}}" target="_blank">{{$event->url}}</a></td>
     <td>
       <button  
         @if(! empty($event->data))

@@ -11,4 +11,10 @@ class PianoLIT
 
 		return null;
 	}
+
+	public function appToWebapp($url)
+	{
+        $url = substr_replace($url, 'my.', 8, 0);
+        return str_replace('api/', '', $url);
+	}
 }
