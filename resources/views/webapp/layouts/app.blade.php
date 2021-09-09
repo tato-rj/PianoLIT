@@ -11,14 +11,10 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @isset($shareable)
-        @include('layouts.html.shareable')
-    @else
-        <meta property="og:site_name" content="PianoLIT" />
-        <meta property="og:title" content="PianoLIT WebApp" />
-        <meta property="og:url" content="{{url()->current()}}" />
-        <meta property="og:image" content="{{asset('images/webapp/thumbnail.jpg')}}" />
-    @endif
+    <meta property="og:site_name" content="PianoLIT" />
+    <meta property="og:title" content="PianoLIT WebApp" />
+    <meta property="og:url" content="{{url()->current()}}" />
+    <meta property="og:image" content="{{asset('images/webapp/thumbnail.jpg')}}" />
 
     @include('layouts.html.theme')
 

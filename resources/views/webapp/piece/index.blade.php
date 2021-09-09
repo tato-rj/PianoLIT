@@ -1,17 +1,11 @@
-@extends('webapp.layouts.app', [
-	'title' => $piece->short_name,
-	'shareable' => [
-		'keywords' => $piece->medium_name_with_composer,
-		'title' => $piece->medium_name_with_composer,
-		'description' => $piece->description,
-		'thumbnail' => $piece->cover_image(),
-		'created_at' => $piece->created_at->format(DateTime::ISO8601),
-		'updated_at' => $piece->updated_at->format(DateTime::ISO8601)
-	]])
+@extends('webapp.layouts.app', ['title' => $piece->short_name])
 
 @push('header')
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
+
+
+
 #nav-border {
 	position: absolute;
 	bottom: 0;
