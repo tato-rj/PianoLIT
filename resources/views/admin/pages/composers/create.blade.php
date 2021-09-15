@@ -26,8 +26,8 @@
   </div>
 
   <div class="form-row">
-    @input(['bag' => 'default', 'name' => 'date_of_birth', 'id' => 'born-in', 'placeholder' => 'Date born', 'grid' => 'col'])
-    @input(['bag' => 'default', 'name' => 'date_of_death', 'id' => 'died-in', 'placeholder' => 'Date died', 'grid' => 'col'])
+    @input(['bag' => 'default', 'name' => 'date_of_birth', 'id' => 'born-in', 'placeholder' => 'Date born', 'grid' => 'col', 'required' => false])
+    @input(['bag' => 'default', 'name' => 'date_of_death', 'id' => 'died-in', 'placeholder' => 'Date died', 'grid' => 'col', 'required' => false])
   </div>
   @options(['bag' => 'default', 'required' => false, 'nogutters' => true, 'type' => 'checkbox', 'name' => 'is_famous', 'options' => ['Is this composer famous?' => true]])
   @options(['bag' => 'default', 'required' => false, 'type' => 'checkbox', 'name' => 'is_pedagogical', 'options' => ['Is this mostly a pedagogical composer?' => true]])
