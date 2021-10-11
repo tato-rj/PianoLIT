@@ -43,7 +43,7 @@ abstract class ShareableContent extends PublishableContent
 
     public function cover_image()
     {
-        return asset('storage/' . $this->mockup_path ?? $this->cover_path);
+        return asset('storage/' . $this->cover_path);
     }
 
     public function getThumbnailPathAttribute()
