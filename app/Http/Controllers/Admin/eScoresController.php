@@ -52,6 +52,10 @@ class eScoresController extends Controller
                                                        ->for(eScore::class)
                                                        ->name(str_slug($request->title))
                                                        ->upload(),
+            'mockup_path' => (new ImageUpload($request))->take('mockup_image')
+                                                       ->for(eScore::class)
+                                                       ->name(str_slug($request->title).'-mockup')
+                                                       ->upload(),
             'pdf_path' => $this->hasFile('pdf_file')->upload('title', 'escores/pdf'),
             'audio_path' => $this->hasFile('audio_file')->upload('title', 'escores/audio')
         ]);
@@ -118,6 +122,10 @@ class eScoresController extends Controller
             'cover_path' => (new ImageUpload($request))->take('cover_image')
                                                        ->for($escore)
                                                        ->name(str_slug($request->title))
+                                                       ->upload(),
+            'mockup_path' => (new ImageUpload($request))->take('mockup_image')
+                                                       ->for($escore)
+                                                       ->name(str_slug($request->title).'-mockup')
                                                        ->upload(),
             'pdf_path' => $this->hasFile('pdf_file')->delete($escore->pdf_path)->upload('title', 'escores/pdf'),
             'audio_path' => $this->hasFile('audio_file')->delete($escore->audio_path)->upload('title', 'escores/audio')

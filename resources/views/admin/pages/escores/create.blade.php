@@ -61,7 +61,7 @@
           @file(['bag' => 'default', 'name' => 'pdf_file'])
         </div>
         <div class="col">
-          @file(['bag' => 'default', 'name' => 'audio_file'])
+          @file(['bag' => 'default', 'name' => 'audio_file', 'required' => false])
         </div>
 
         <div class="col-12 mb-4">

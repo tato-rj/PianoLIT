@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             ComposerSeeder::class,
             PieceSeeder::class,
             PlaylistSeeder::class,
-            BlogSeeder::class
+            BlogSeeder::class,
+            ShopSeeder::class
         ]);
     }
 }
