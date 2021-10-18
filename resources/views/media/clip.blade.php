@@ -4,16 +4,23 @@
 ])
 
 @push('header')
-
+<style type="text/css">
+.plyr--video {height: 100%;}
+</style>
 @endpush
 
 @section('content')
 <div class="h-100vh d-flex flex-column cc-video">
   <div class="player" style="height: 84vh">
-    <video id="clip" class="w-100 h-100" data-position="{{$position ?? null}}" style="background-color: black" controls>
+    @video([
+      'classes' => 'w-100 h-100', 
+      'id' => 'clip',
+      'position' => $position,
+      'url' => $url])
+{{--     <video id="clip" class="w-100 h-100" data-position="{{$position ?? null}}" style="background-color: black" controls>
       <source src="{{$url}}" type="video/mp4">
       Your browser does not support the video tag.
-    </video>
+    </video> --}}
   </div>
   <div class="bg-light h-100 w-100">
     <div class="d-flex flex-center flex-wrap credits" style="height: 100%">
@@ -35,10 +42,20 @@
 
 @push('scripts')
 <script type="text/javascript">
-var vid = document.getElementById("clip");
-vid.addEventListener('canplay', function() {
-    this.currentTime = vid.getAttribute('data-position');
+
+  let position = $('#clip').data('position');
+  let player = new Plyr('#clip');
+  let positionSet = false;
+
+player.on('canplay', event => {
+  if (! positionSet) {
+    player.currentTime = position;
+    console.log(player.currentTime);
+    positionSet = true;
+  }
 });
+  // player.stop();
+  
 
 </script>
 @endpush
