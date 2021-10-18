@@ -7,17 +7,17 @@ use App\{Clip, Piece};
 
 class ClipsController extends Controller
 {
-    public function show(Clip $clip)
+    public function show(Request $request, Clip $clip)
     {
     	$url = $clip->url;
 
-    	return view('media.clip', compact('url'));
+    	return view('media.clip', ['url' => $url, 'position' => $request->position]);
     }
 
-    public function piece(Piece $piece)
+    public function piece(Request $request, Piece $piece)
     {
     	if ($url = $piece->performance_url)
-    		return view('media.clip', compact('url'));
+    		return view('media.clip', ['url' => $url, 'position' => $request->position]);
     	
     	return redirect(route('home'));    	
     }

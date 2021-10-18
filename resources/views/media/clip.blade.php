@@ -10,7 +10,7 @@
 @section('content')
 <div class="h-100vh d-flex flex-column cc-video">
   <div class="player" style="height: 84vh">
-    <video id="clip" class="w-100 h-100" style="background-color: black" controls>
+    <video id="clip" class="w-100 h-100" data-position="{{$position ?? null}}" style="background-color: black" controls>
       <source src="{{$url}}" type="video/mp4">
       Your browser does not support the video tag.
     </video>
@@ -32,3 +32,10 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+var vid = document.getElementById("clip");
+vid.currentTime = vid.getAttribute('data-position');
+</script>
+@endpush
