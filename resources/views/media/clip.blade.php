@@ -36,6 +36,9 @@
 @push('scripts')
 <script type="text/javascript">
 var vid = document.getElementById("clip");
-vid.currentTime = vid.getAttribute('data-position');
+vid.addEventListener('canplay', function() {
+    this.currentTime = vid.getAttribute('data-position');
+});
+
 </script>
 @endpush
