@@ -21,12 +21,12 @@
   <div class="col-lg-3 col-md-4 col-sm-8 col-9 mx-auto mb-4">
     <div class="shadow-sm rounded d-inline-block border w-100 mb-1">
       <div class="px-4 py-2 mb-4 bg-light text-center"><strong class="text-blue">{{$user->membership()->exists() ? class_basename($user->membership->source) : 'Status'}}</strong></div>
-      <div class="text-center mb-3 pb-4 px-4 border-bottom">
+      <div class="text-center p-4">
         @include('admin.components.users.status.lg', ['elements' => $user->statusElements()])
       </div>
-      <div class="px-4 pb-3 text-center text-nowrap">
+{{--       <div class="px-4 pb-3 text-center text-nowrap">
         <span class="text-muted mr-2 text-truncate">Super status</span>@toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id), 'autoToggle' => true])
-      </div>
+      </div> --}}
     </div>
     <div class="text-center">
       <form method="POST" action="{{route('api.memberships.status')}}" target="_blank">

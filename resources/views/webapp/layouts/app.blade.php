@@ -75,6 +75,8 @@
         @endif
     </div>
 
+    @include('components.popups.whatsnew', ['tabscount' => 4])
+
     <script src="{{ mix('js/app.js') }}"></script>
 
     <script type="text/javascript">
@@ -102,6 +104,34 @@
     // ADJUST THE BOTTOM MARGIN OF THE PAGE ACCORDING TO THE HEIGHT OF THE MENU ON THE WEBAPP
     $('main').css('margin-bottom', $('#menu').height() + 20);
     </script>
+
+    <script type="text/javascript">
+// $(document).ready(function() {
+//  let cookie = 'pianolit_whatsnew_8.12.21';
+
+//  if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+     // $('.modal.autoshow').modal('show');
+
+//      setCookie(cookie, moment().format('x'), 365);
+//  }
+// });
+
+// $(document).ready(function() {
+//  let cookie = 'pianolit_new_feature_synthesia';
+
+//  if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+//      let options = {
+//          placement: 'bottom', 
+//          title: '🎁 New feature!',
+//          trigger: 'manual'
+//      };
+
+//      $('[new-feature]').tooltip(options).tooltip('show');
+
+//      setCookie(cookie, moment().format('x'), 365);
+//  }
+// });
+</script>
     @stack('scripts')
 
 </body>

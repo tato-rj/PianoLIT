@@ -54,8 +54,6 @@ player.on('canplay', event => {
     positionSet = true;
   }
 });
-  // player.stop();
-  
 
 </script>
 @endpush

@@ -40,7 +40,6 @@
 </section>
 
 @include('webapp.piece.components.panel')
-@include('components.popups.whatsnew', ['tabscount' => 4])
 
 @endsection
 
@@ -416,31 +415,5 @@ function safari()
 }
 </script>
 
-<script type="text/javascript">
-// $(document).ready(function() {
-//  let cookie = 'pianolit_whatsnew_8.12.21';
 
-//  if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-//      $('.modal.autoshow').modal('show');
-
-//      setCookie(cookie, moment().format('x'), 365);
-//  }
-// });
-
-// $(document).ready(function() {
-// 	let cookie = 'pianolit_new_feature_synthesia';
-
-// 	if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-// 		let options = {
-// 			placement: 'bottom', 
-// 			title: '🎁 New feature!',
-// 			trigger: 'manual'
-// 		};
-
-// 		$('[new-feature]').tooltip(options).tooltip('show');
-
-// 		setCookie(cookie, moment().format('x'), 365);
-// 	}
-// });
-</script>
 @endpush

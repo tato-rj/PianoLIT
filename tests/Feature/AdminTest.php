@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\{Admin, Subscription, User, EmailList};
 use Tests\AppTest;
 use App\Mail\Newsletter\Welcome as WelcomeToNewsletter;
+use App\Mail\SuperUserEmail;
 
 class AdminTest extends AppTest
 {
@@ -149,5 +150,21 @@ class AdminTest extends AppTest
 
         $this->assertEquals(get_class(auth()->user()), get_class($this->user));
         $this->assertEquals(auth()->user()->email, $this->user->email);
+    }
+
+    /** @test */
+    public function a_user_is_notified_when_an_admin_gives_the_account_super_user_status()
+    {
+        \Mail::fake();
+
+        $this->signIn();
+
+        $this->assertNull($this->user->super_user);
+
+        $this->patch(route('admin.users.super-status', $this->user->id));
+
+        $this->assertTrue($this->user->fresh()->super_user);
+
+        \Mail::assertSent(SuperUserEmail::class);
     }
 }
