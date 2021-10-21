@@ -31,6 +31,6 @@ class SuperUserEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject('You\'re a super user!')->markdown('emails.super-user');
+        return $this->subject('👏You\'re a super user!')->markdown('emails.super-user');
     }
 }
