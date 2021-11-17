@@ -11,7 +11,6 @@
 
 @if($published = auth()->user()->publishedTutorialRequests()->exists())
 <div class="mb-4">
-<p class="lead text-center">Already published</p>
 @foreach(auth()->user()->publishedTutorialRequests as $request)
 	@component('webapp.components.piece', ['piece' => $request->piece, 'hasFullAccess' => $hasFullAccess])
 		<p class="m-0 text-success">@fa(['icon' => 'check-circle', 'color' => 'success'])Published on {{$request->published_at->toFormattedDateString()}}</p>
