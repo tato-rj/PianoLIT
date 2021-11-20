@@ -44,7 +44,10 @@ class Api extends Factory
 
         \Cache::remember($key, minutes(.5), function() {
             $ids = Playlist::whereNull('group')->inRandomOrder()->pluck('id');
+
             Playlist::sort($ids);
+
+            return $ids;
         });
 
         return Playlist::byGroup($group)->with('pieces')->has('pieces', '>', 5)->sorted()->complete();;
