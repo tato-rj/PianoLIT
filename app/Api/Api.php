@@ -4,6 +4,7 @@ namespace App\Api;
 
 use App\{Piece, Composer, Tag, Tutorial};
 use Illuminate\Support\Facades\Redis;
+use App\Playlist;
 use App\Blog\Post;
 
 class Api extends Factory
@@ -36,6 +37,20 @@ class Api extends Factory
 
         return $collection;
 	}
+
+    public function playlists($group = null)
+    {
+        $key = Redis::get('app.playlists.'.$group);
+
+        $collection = \Cache::remember($key, minutes(.5), function() use ($group) {
+            $ids = Playlist::whereNull('group')->inRandomOrder()->pluck('id');
+            Playlist::sort($ids);
+
+            return Playlist::byGroup($group)->with('pieces')->has('pieces', '>', 5)->sorted()->complete();
+        });
+
+        return $collection;
+    }
 
     public function post()
     {

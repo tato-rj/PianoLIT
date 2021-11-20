@@ -39,6 +39,11 @@ class TabsController extends Controller
         return $api->explore()->toArray();
     }
 
+    public function playlists(Api $api, $group = null)
+    {
+        return $api->playlists($group)->toArray();
+    }
+
     public function querySuggestions(Api $api)
     {
         return $api->querySuggestions()->toArray();

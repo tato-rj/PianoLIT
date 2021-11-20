@@ -34,10 +34,10 @@ class TabsController extends Controller
         return view('webapp.highlights.index');
     }
 
-    public function playlists()
+    public function playlists(Api $api)
     {
-        $playlists = Playlist::byGroup(null)->has('pieces', '>', 5)->sorted()->complete();
-        $journey = Playlist::byGroup('journey')->has('pieces', '>', 5)->sorted()->get();
+        $playlists = $api->playlists();//Playlist::byGroup(null)->has('pieces', '>', 5)->sorted()->complete();
+        $journey = $api->playlists('journey');//Playlist::byGroup('journey')->has('pieces', '>', 5)->sorted()->get();
 
     	return view('webapp.playlists.index', compact(['playlists', 'journey']));
     }
