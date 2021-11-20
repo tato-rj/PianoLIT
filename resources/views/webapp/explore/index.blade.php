@@ -58,8 +58,20 @@ let recent = getRecent();
 
 showRecent();
 $('input[name="search"]').keyup(function() {
-	console.log($(this).val().length);
-})
+	let length = $(this).val().length;
+
+	if (length > 3) {
+		$('[data-erase]').show();
+	} else {
+		$('[data-erase]').hide();
+	}
+});
+$('[data-erase]').click(function() {
+    let name = $(this).data('erase');
+    $('[name="'+name+'"]').val('');
+    $(this).hide();
+});
+
 $('#search-form').on('submit', function() {
 	let query = $(this).find('input[name="search"]').val();
 	saveRecent(query, recent);
