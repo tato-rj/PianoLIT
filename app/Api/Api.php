@@ -42,14 +42,12 @@ class Api extends Factory
     {
         $key = Redis::get('app.playlists.'.$group);
 
-        $collection = \Cache::remember($key, minutes(.5), function() use ($group) {
+        $order = \Cache::remember($key, minutes(.5), function() {
             // $ids = Playlist::whereNull('group')->inRandomOrder()->pluck('id');
             // Playlist::sort($ids);
-
-            return Playlist::byGroup($group)->with('pieces')->has('pieces', '>', 5)->sorted()->complete();
         });
 
-        return $collection;
+        return Playlist::byGroup($group)->with('pieces')->has('pieces', '>', 5)->sorted()->complete();;
     }
 
     public function post()
