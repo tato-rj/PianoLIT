@@ -40,11 +40,11 @@ class Api extends Factory
 
     public function playlists($group = null)
     {
-        $key = Redis::get('app.playlists.'.$group);
+        $key = Redis::get('app.playlists.order');
 
-        $order = \Cache::remember($key, minutes(.5), function() {
-            // $ids = Playlist::whereNull('group')->inRandomOrder()->pluck('id');
-            // Playlist::sort($ids);
+        \Cache::remember($key, minutes(.5), function() {
+            $ids = Playlist::whereNull('group')->inRandomOrder()->pluck('id');
+            Playlist::sort($ids);
         });
 
         return Playlist::byGroup($group)->with('pieces')->has('pieces', '>', 5)->sorted()->complete();;
