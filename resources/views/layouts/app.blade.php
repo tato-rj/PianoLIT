@@ -60,8 +60,6 @@
         @include('layouts.header')
 
         <main>
-            
-            @include('admin.components.alerts.impersonator')
 
             @yield('content')
 
