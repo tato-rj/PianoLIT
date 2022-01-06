@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             PieceSeeder::class,
             PlaylistSeeder::class,
             BlogSeeder::class,
-            ShopSeeder::class
+            ShopSeeder::class,
+            MailSeeder::class
         ]);
     }
 }

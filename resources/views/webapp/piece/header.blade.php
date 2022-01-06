@@ -2,6 +2,7 @@
 	@include('webapp.components.back')
 
 	<div class="px-4">
+		{{-- <img src="{{$piece->composer->cover_image}}" style="width: 50px" class="rounded-circle shadow mb-1"> --}}
 		@include('webapp.components.piece.level')
 		<h4 class="mt-2 mb-1">{{$piece->medium_name}}</h4>
 		<p class="text-muted">{{$piece->attribution}}{{$piece->composer->name}}</p>

@@ -605,7 +605,10 @@ class Piece extends PianoLit
 
     public function getImageBackgroundAttribute()
     {
-        return storage($this->cover_path);
+        if ($this->cover_path)
+            return storage($this->cover_path);
+
+        return storage($this->period->cover_image);
     }
 
     public function scopeLocalSearch($query, $array, $request = null)
