@@ -608,7 +608,7 @@ class Piece extends PianoLit
         if ($this->cover_path)
             return storage($this->cover_path);
 
-        return storage($this->period->cover_image);
+        return $this->period->cover_image;
     }
 
     public function scopeLocalSearch($query, $array, $request = null)
