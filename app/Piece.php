@@ -44,7 +44,8 @@ class Piece extends PianoLit
         'for_who',
         'has_siblings',
         'image_background',
-        'source'
+        'source',
+        'media'
     ];
     
     protected $report_by = 'medium_name_with_composer';
