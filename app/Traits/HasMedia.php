@@ -8,6 +8,8 @@ trait HasMedia
     {
         $performance = $this->tutorials()->byType('performance')->first();
         $synthesia = $this->tutorials()->byType('synthesia')->first();
+        $synthesia->background_url = asset('images/webapp/synthesia-thumbnail.gif');
+        
         $tutorials = $this->tutorials()->byType('tutorial')->get();
         $harmony = $this->tutorials()->byType('harmonic analysis')->get();
         $slow = $this->tutorials()->byType('slow')->get();
