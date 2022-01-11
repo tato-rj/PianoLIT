@@ -1,6 +1,6 @@
 @include('admin.pages.api.endpoints.card', [
 'type' => 'GET', 
-'route' => route('api.pieces.find', ['search' => \App\Piece::first(), 'user_id' => 1]),
+'route' => route('api.pieces.find', ['search' => \App\Piece::find(334), 'user_id' => 1]),
 'args' => ['search', 'user_id'], 
 'title' => 'Call for a single piece'])
 
