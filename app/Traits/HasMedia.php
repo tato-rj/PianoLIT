@@ -25,6 +25,8 @@ trait HasMedia
         		unset($lessons[$index]);
         }
 
+        $lessons = array_values($lessons);
+
         return compact(['performance', 'synthesia', 'lessons']);
     }
 }
