@@ -8,4 +8,6 @@ Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function()
 
 	Route::patch('{tutorialRequest}/publish', 'Admin\TutorialRequestsController@publish')->name('publish');
 
+	Route::delete('{tutorialRequest}', 'Admin\TutorialRequestsController@destroy')->name('destroy');
+
 });

@@ -25,4 +25,11 @@ class TutorialRequestsController extends Controller
 
         return back()->with('status', 'The request has been published!');
     }
+
+    public function destroy(tutorialRequest $tutorialRequest)
+    {
+        $tutorialRequest->delete();
+
+        return back()->with('status', 'The request has been deleted.');
+    }
 }
