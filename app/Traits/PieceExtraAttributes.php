@@ -129,9 +129,7 @@ trait PieceExtraAttributes
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
 
-        $name = $this->nickname ?? $this->name;
-
-        return $number . $name;
+        return $number . $this->name;
     }
 
     public function getSimpleNameAttribute()
@@ -144,7 +142,11 @@ trait PieceExtraAttributes
 
     public function getShortNameAttribute()
     {
-        $name = $this->basename();
+        $number = $this->movement_number ? "$this->movement_number. " : '';
+
+        $name = $this->nickname ?? $this->name;
+
+        $name = $number . $name;
 
         $key = (! in_array($this->key, ['Modal', 'Serial', 'Chromatic', 'Experimental', 'Atonal'])) ? ' in ' . $this->key : null;
         $name .= $this->catalogue_name || $this->collection_number ? " {$this->catalogue}" : $key;
