@@ -129,7 +129,9 @@ trait PieceExtraAttributes
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
 
-        return $number . $this->name;
+        $name = $this->nickname ?? $this->name;
+
+        return $number . $name;
     }
 
     public function getSimpleNameAttribute()
