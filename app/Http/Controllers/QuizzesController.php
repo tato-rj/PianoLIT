@@ -60,7 +60,7 @@ class QuizzesController extends Controller
                 'user_id' => auth()->guard('web')->check() ? auth()->user()->id : null
             ]);
 
-            Admin::notifyAll(new QuizCompleted($quiz));
+            // Admin::notifyAll(new QuizCompleted($quiz));
         }
 
         return view('games.components.feedback', compact('feedback'))->render();
