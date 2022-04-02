@@ -159,9 +159,12 @@ trait PieceExtraAttributes
 
     public function getMediumNameAttribute()
     {
-        $name = $this->short_name;
-        $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
-        return rm_whitespaces($name);       
+        // $name = $this->short_name;
+
+        // $name .= $this->nickname ? " \"{$this->nickname}\"" : '';
+
+        // return rm_whitespaces($name);       
+        return $this->short_name;
     }
 
     public function getLongNameAttribute()
