@@ -25,7 +25,7 @@ class Api extends Factory
                 $this->order(5)->women('From women composers'),
                 $this->order(6)->tag('Pieces that are'),
                 // $this->order(6)->levels('Levels'),
-                $this->order(7)->similar('Like today\'s free pick', Piece::free()->first()),
+                // $this->order(7)->similar('Like today\'s free pick', Piece::free()->first()),
                 // $this->order(8)->improve('Improve your'),
                 // $this->order(9)->for('Great for'),
                 $this->order(8)->ranking('rcm', 'Equivalent to the RCM levels'),
