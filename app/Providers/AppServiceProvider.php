@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
             'webapp.user.my-pieces.index',
             'webapp.user.my-pieces.favorites.folders.show',
             'webapp.search.results',
+            'webapp.piece.index',
             'webapp.piece.options.similar',
             'webapp.piece.options.collection',
             'home.index'

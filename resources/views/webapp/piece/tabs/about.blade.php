@@ -57,8 +57,23 @@
 		@endforeach
 	</div>
 
-	<div class="text-center mb-4">
+	<div class="mb-4">
+		<div class="d-flex d-apart mb-3">
+			<h5 class="m-0">More like this</h5>
+			<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn-raw link-primary">View all</a>
+		</div>
+		<div class="custom-scroll dragscroll dragscroll-horizontal">
+			<div class="d-flex pb-2" style="height: 144px;">
+				@foreach($piece->similar(false)->take(16) as $card)
+					@include('webapp.discover.cards.piece', ['hasFullAccess' => $hasFullAccess, 'color' => 'yellow'])
+				@endforeach
+			</div>
+		</div>
+	</div>
+
+
+{{-- 	<div class="text-center mb-4">
 		<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn btn-wide btn-default">
 			@fa(['icon' => 'folder-plus'])More like this</a>
-	</div>
+	</div> --}}
 </div>

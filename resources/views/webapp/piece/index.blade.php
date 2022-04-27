@@ -414,6 +414,30 @@ function safari()
 	return false;
 }
 </script>
+{{-- TRIGGER LINK ON CLICK, NOT WHILE DRAGGING --}}
+<script type="text/javascript">
+ $(function() {
+    var isDragging = false;
+    $('.search-card, .piece-card')
+    .mousedown(function() {
+        $(window).mousemove(function() {
+            isDragging = true;
+            $(window).unbind("mousemove");
+        });
+    })
+    .mouseup(function() {
+        var wasDragging = isDragging;
+        isDragging = false;
+        $(window).unbind("mousemove");
+        if (!wasDragging) {
+            search($(this));
+        }
+    });
+  });
 
+function search(element) {
+	goTo(element.attr('data-url'));
+}
+</script>
 
 @endpush
