@@ -47,7 +47,7 @@
 		@endif
 	</div>
 
-	<div class="mb-4 pb-4">
+	<div class="mb-4">
 		<h5 class="mb-3">Ranking</h5>
 		@foreach($piece->rankings as $ranking => $label)
 		<div class="d-flex align-items-center mb-2">
