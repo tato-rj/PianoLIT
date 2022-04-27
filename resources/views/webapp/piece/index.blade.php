@@ -291,9 +291,6 @@ function showPlayer(player) {
 
 		new Plyr(videoId);
 	});
-	
-// new Plyr('#piece-performance');
-// new Plyr('#piece-synthesia');
 
 $('button[data-action="video"]').on('click', function() {
 	let $btn = $(this);

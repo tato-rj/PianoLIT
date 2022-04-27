@@ -18,8 +18,16 @@
 	@include('webapp.piece.synthesia-request')
 	@endif
 
-	<h5 class="mb-3">What is Synthesia?</h5>
+	<div class="mt-6">
+		<h5 class="mb-3">Other releases</h5>
+		@component('webapp.components.grids.grid')
+			@foreach(\App\Tutorial::synthesia(12) as $tutorial)
+				@include('webapp.explore.cards.synthesia', ['isAuthorized' => $hasFullAccess])
+			@endforeach
+		@endcomponent
+	</div>
+{{-- 	<h5 class="mb-3">What is Synthesia?</h5>
 	<p>Synthesia is an animation that can help you learn how to play the piano using falling notes. While this tool is not a substitute for reading music, it does provide a quick and easy way for beginners to get started.</p>
-
+ --}}
 
 </div>
