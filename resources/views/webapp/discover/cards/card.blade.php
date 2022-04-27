@@ -1,6 +1,6 @@
 <div class="mr-3 cursor-pointer rounded h-100 d-flex align-items-end p-3 {{$type}} position-relative" 
 data-url="{{$url}}"
-style="@include('webapp.discover.rows.gradient-css', ['color' => $color ?? $card->color])">
+style="@include('webapp.discover.rows.gradient-css', ['color' => $card->color])">
 	@fa(['icon' => 'lock', 'classes' => 'absolute-top-left opacity-8', 'color' => 'white', 'if' => $locked])
 	@pill(['label' => 'NEW', 'color' => 'white', 'text' => 'danger', 'pos' => 'top-right', 'if' => $new])
 	<div class="text-white" style="width: 164px">
