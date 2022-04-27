@@ -1,6 +1,6 @@
 <div class="tab-pane fade show active" id="tab-about">
 	@if($piece->media['performance'])
-	<div class="mb-4 rounded-video">
+	<div class="mb-4 rounded-video video-container">
 		@video([
 			'classes' => 'w-100', 
 			'id' => 'piece-performance', 

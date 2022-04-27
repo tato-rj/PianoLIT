@@ -286,9 +286,14 @@ function showPlayer(player) {
 </script>
 
 <script type="text/javascript">
+	$('.video-container').each(function() {
+		let videoId = '#'+ $(this).find('video').attr('id');
 
-new Plyr('#piece-performance');
-new Plyr('#piece-synthesia');
+		new Plyr(videoId);
+	});
+	
+// new Plyr('#piece-performance');
+// new Plyr('#piece-synthesia');
 
 $('button[data-action="video"]').on('click', function() {
 	let $btn = $(this);
