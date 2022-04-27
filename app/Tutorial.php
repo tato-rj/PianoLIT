@@ -61,4 +61,9 @@ class Tutorial extends PianoLit
                                 $item->thumbnail = asset('images/webapp/synthesia-thumbnails/thumb-'.$index.'.jpg');
                            })->shuffle();
     }
+
+    public function scopeLatestHarmonicAnalysis($query, $count)
+    {
+        return $query->byType('harmonic')->latest()->with('piece')->take(12)->get()->unique('piece_id')->take($count);
+    }
 }

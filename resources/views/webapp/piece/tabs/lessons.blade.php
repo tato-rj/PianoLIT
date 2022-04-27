@@ -20,4 +20,11 @@
 
 	@include('webapp.piece.tutorial-request')
 	@endif
+
+	<div class="mt-5 pt-5 border-top">
+		<h5 class="mb-3">Latest harmonic analysis</h5>
+		@foreach(\App\Tutorial::latestHarmonicAnalysis(4) as $tutorial)
+			@include('webapp.explore.cards.harmony', ['isAuthorized' => $hasFullAccess])
+		@endforeach
+	</div>
 </div>
