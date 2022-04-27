@@ -1,6 +1,6 @@
 <div class="tab-pane fade" id="tab-tutorial">
 	@if($piece->media['synthesia'])
-	<div class="mb-5 rounded-video video-container">
+	<div class="rounded-video video-container">
 		@video([
 			'classes' => 'w-100', 
 			'id' => 'piece-synthesia', 
@@ -9,7 +9,7 @@
 	</div>
 	@else
 
-	<div class="text-center pb-6">
+	<div class="text-center">
 		<img src="{{asset('images/webapp/synthesia-missing.svg')}}" class="mx-auto mb-4" style="width: 132px; opacity:  .1">
 		<p class="text-muted">Would you like to watch a synthesia of this piece?<br>Tap below to make your request.</p>
 		<button class="btn rounded-pill btn-outline-secondary btn-wide" data-toggle="modal" data-target="#synthesia-request-modal">Send my request</button>
