@@ -529,9 +529,14 @@ class Piece extends PianoLit
             $query->whereIn('id', $mood);
         })->get();
 
+        foreach ($similar as $key => $piece) {
+            if (! in_array($piece->level->id, [$this->level->id - 1, $this->level->id, $this->level->id + 1]))
+                $similar->forget($key);
+        }
+
         if ($strict) {
             foreach ($similar as $key => $piece) {
-                if ($piece->level->id != $this->level->id || $piece->period->id != $this->period->id)
+                if ($piece->period->id != $this->period->id)
                     $similar->forget($key);
             }
         }
