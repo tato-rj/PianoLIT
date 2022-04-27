@@ -530,7 +530,7 @@ class Piece extends PianoLit
         })->get();
 
         foreach ($similar as $key => $piece) {
-            if (! in_array($piece->extended_level->id, [$this->extended_level->id - 1, $this->extended_level->id, $this->extended_level->id + 1]))
+            if (! in_array($piece->level->id, [$this->level->id - 1, $this->level->id, $this->level->id + 1]))
                 $similar->forget($key);
         }
 
