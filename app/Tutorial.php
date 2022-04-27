@@ -66,4 +66,9 @@ class Tutorial extends PianoLit
     {
         return $query->byType('harmonic')->latest()->with('piece')->take(12)->get()->unique('piece_id')->take($count);
     }
+
+    public function scopeHarmonicAnalysis($query, $count)
+    {
+        return $query->byType('harmonic')->inRandomOrder()->with('piece')->take(12)->get()->unique('piece_id')->take($count);
+    }
 }

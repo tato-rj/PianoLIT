@@ -24,7 +24,7 @@
 	<div class="mt-6">
 		<h5 class="mb-3">Other harmonic analysis</h5>
 		<div class="row">
-			@foreach(\App\Tutorial::latestHarmonicAnalysis(4) as $tutorial)
+			@foreach(\App\Tutorial::harmonicAnalysis(4) as $tutorial)
 				@include('webapp.explore.cards.harmony', ['isAuthorized' => $hasFullAccess])
 			@endforeach
 		</div>
