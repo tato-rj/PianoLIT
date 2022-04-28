@@ -57,6 +57,9 @@
 		@endforeach
 	</div>
 
+	@php($similar = $piece->similar())
+
+	@if(! $similar->isEmpty())
 	<div class="mb-4">
 		<div class="d-flex d-apart mb-3">
 			<h5 class="m-0">More like this</h5>
@@ -72,7 +75,7 @@
 			</div>
 		</div>
 	</div>
-
+	@endif
 
 {{-- 	<div class="text-center mb-4">
 		<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn btn-wide btn-default">
