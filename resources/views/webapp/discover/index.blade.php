@@ -42,15 +42,7 @@
 @push('scripts')
 <script type="text/javascript" src="{{asset('js/vendor/jquery.knob.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/views/find-your-match.js')}}"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pulltorefreshjs/0.1.22/index.umd.min.js"></script>
-<script type="text/javascript">
-const ptr = PullToRefresh.init({
-  mainElement: 'body',
-  onRefresh() {
-    window.location.reload();
-  }
-});
-</script>
+
 {{-- TOUR --}}
 <script type="text/javascript">
 function resetTour() {
