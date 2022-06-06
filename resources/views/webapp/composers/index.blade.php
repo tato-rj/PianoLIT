@@ -14,7 +14,7 @@
 
 <section class="container">
 	<div class="row" id="composers-list" data-cards=".composer-card">
-		@foreach($composers->shuffle() as $composer)
+		@foreach($composers as $composer)
 			@include('webapp.composers.list-item')
 		@endforeach
 	</div>
