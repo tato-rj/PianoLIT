@@ -10,7 +10,7 @@ abstract class Factory
 
     public function __construct()
     {
-        $this->limit = mt_rand(16,24);
+        $this->limit = mt_rand(8,12);
     }
 
     public function free($title)
