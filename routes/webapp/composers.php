@@ -4,4 +4,6 @@ Route::namespace('WebApp')->prefix('composers')->name('composers.')->group(funct
 
 	Route::get('', 'ComposersController@index')->name('index');
 
+	Route::get('{composer}', 'ComposersController@show')->name('show');
+
 });

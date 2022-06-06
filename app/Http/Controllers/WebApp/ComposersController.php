@@ -14,4 +14,9 @@ class ComposersController extends Controller
 
     	return view('webapp.composers.index', compact('composers'));
     }
+
+    public function show(Composer $composer)
+    {
+        return view('webapp.composers.show', compact('composer'));
+    }
 }

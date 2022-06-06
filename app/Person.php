@@ -40,6 +40,20 @@ abstract class Person extends PianoLit
         return null;
     }
 
+        public function getLifespanYearsAttribute()
+    {
+        if ($this->born_at && $this->died_at)
+            return $this->date_of_birth->year . ' - ' . $this->date_of_death->year;
+
+        if ($this->born_at)
+            return 'Born on ' . $this->born_at;
+
+        if ($this->died_at)
+            return 'Died on ' . $this->died_at;
+
+        return null;
+    }
+
     public function wasBornToday()
     {
         return $this->date_of_birth ? $this->date_of_birth->isBirthday(now()) : null;

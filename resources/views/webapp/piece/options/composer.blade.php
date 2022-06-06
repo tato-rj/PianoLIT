@@ -11,7 +11,7 @@
 @include('webapp.piece.options.header')
 
 <section>
-	@include('webapp.composers.show', ['composer' => $piece->composer])
+	@include('webapp.composers.profile', ['composer' => $piece->composer])
 </section>
 
 @include('webapp.piece.components.panel')
