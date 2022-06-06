@@ -1,4 +1,4 @@
-<div class="col-lg-3 col-md-4 col-6 text-center mb-2 composer-card">
+<div class="col-lg-3 col-md-4 col-6 text-center mb-1 composer-card">
 <a href="{{route('webapp.composers.show', $composer)}}" class="link-none px-2">
 	<div class="text-center">
 		<img src="{{$composer->cover_image}}" style="width: 110px" class="rounded-circle shadow mb-3">
