@@ -21,7 +21,7 @@
 @component('components.modal', ['id' => 'composer-' . $row['collection']->id])
 @slot('body')
 	<div class="px-2">
-		@include('webapp.composers.show', ['composer' => $row['collection']])
+		@include('webapp.composers.profile', ['composer' => $row['collection']])
 	</div>
 @endslot
 @endcomponent
