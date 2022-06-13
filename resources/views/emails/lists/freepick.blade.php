@@ -20,7 +20,7 @@ Check this week's FREE pick
 
 @component('mail::panel')
 <h1><strong>Don't use an iPhone?</strong></h1>
-<p style="margin-bottom: 4px">Our WebApp is up and running! 🤗</p>
+<p style="margin-bottom: 4px">You can also access PianoLIT from any browser! 🤗</p>
 <p style="margin-bottom: 12px">Available on all devices, tablets and computers.</p>
 <a href="https://my.pianolit.com/" target="_blank" class="text-center"><strong>Check the FREE pick on the WebApp</strong></a>
 @endcomponent
