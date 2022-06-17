@@ -52,6 +52,7 @@ $('.composers-highlight').click(function() {
 
 			$('.composer-card').hide();
 console.log(attr);
+console.log(query);
 			if (attr.indexOf(query) >= 0)
 				$(this).show();
 		});
