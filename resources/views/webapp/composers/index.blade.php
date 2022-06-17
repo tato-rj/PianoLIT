@@ -51,8 +51,8 @@ $('.composers-highlight').click(function() {
 			let attr = $(this).data(field);
 
 			$('.composer-card').hide();
-
-			if (attr.toLowerCase().indexOf(query) >= 0)
+console.log(attr);
+			if (attr.indexOf(query) >= 0)
 				$(this).show();
 		});
 	}
