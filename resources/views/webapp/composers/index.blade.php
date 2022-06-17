@@ -50,12 +50,10 @@ $('.composers-highlight').click(function() {
 		$('.composer-card').each(function() {
 			let attr = $(this).data(field);
 
-			if (attr.toLowerCase().indexOf(query) >= 0) {
-				$('.composer-card').hide();
+			$('.composer-card').hide();
+
+			if (attr.toLowerCase().indexOf(query) >= 0)
 				$(this).show();
-			} else {
-				$('.composer-card').show();
-			}
 		});
 	}
 
