@@ -47,12 +47,11 @@ $('.composers-highlight').click(function() {
 	if ($(this).attr('selected')) {
 		$('.composer-card').show();
 	} else {
+		$('.composer-card').hide();
+		
 		$('.composer-card').each(function() {
 			let attr = $(this).data(field);
 
-			$('.composer-card').hide();
-console.log(attr);
-console.log(query);
 			if (attr.indexOf(query) >= 0)
 				$(this).show();
 		});
