@@ -23,7 +23,6 @@
 		@include('webapp.composers.highlight', ['field' => 'ethnicity', 'query' => 'black', 'label' => 'Black Composers'])
 		@include('webapp.composers.highlight', ['field' => 'gender', 'query' => 'female', 'label' => 'Women Composers'])
 		@include('webapp.composers.highlight', ['field' => 'period', 'query' => 'modern contemporary', 'label' => '20th Century Composers'])
-		@include('webapp.composers.highlight', ['field' => 'gender', 'query' => 'female', 'label' => 'American Composers'])
 	</div>
 	<div class="row" id="composers-list" data-cards=".composer-card">
 		@foreach($composers as $composer)
