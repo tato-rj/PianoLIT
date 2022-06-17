@@ -48,11 +48,11 @@ $('.composers-highlight').click(function() {
 		$('.composer-card').show();
 	} else {
 		$('.composer-card').hide();
-		
+
 		$('.composer-card').each(function() {
 			let attr = $(this).data(field);
 
-			if (attr.indexOf(query) >= 0)
+			if (query.indexOf(attr) >= 0)
 				$(this).show();
 		});
 	}
