@@ -56,7 +56,7 @@ $('.composers-highlight').click(function() {
 		$('.composer-card').each(function() {
 			let attr = $(this).data(field);
 
-			if (str_contains(query, ' ')) {
+			if (query.includes(' ')) {
 				if (query.indexOf(attr) >= 0)
 					$(this).show();
 			} else {
