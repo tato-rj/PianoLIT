@@ -1,6 +1,5 @@
 @extends('layouts.app', [
 	'title' => 'Metaverse Concerts | ' . config('app.name'),
-	'popup' => ['view' => 'gift'],
 	'shareable' => [
 		'keywords' => 'classical music on metaverse, metaverse music, piano metaverse, piano concert metaverse, music recital metaverse',
 		'title' => 'Metaverse Concerts',
