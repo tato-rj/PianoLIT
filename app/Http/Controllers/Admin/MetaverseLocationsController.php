@@ -30,6 +30,7 @@ class MetaverseLocationsController extends Controller
             'name' => $request->name,
             'url' => $request->url,
             'venue' => $request->venue,
+            'capacity' => $request->capacity,
         ]);
 
         return back()->with('status', "The location has been successfully created!");
@@ -47,6 +48,7 @@ class MetaverseLocationsController extends Controller
             'name' => $request->name,
             'url' => $request->url,
             'venue' => $request->venue,
+            'capacity' => $request->capacity,
         ]);
 
         return back()->with('status', "The location has been successfully updated!");

@@ -18,8 +18,11 @@
 				<p class="m-0">Duration: <span class="text-muted">{{$event->duration}}</span></p>
 			</div>
 			<div class="mb-4">
-				<a href="{{$event->location->url}}" target="_blank" class="btn rounded-pill btn-outline-dark btn-wide">@fa(['icon' => 'fire'])Go to event</a>
-
+				<div class="text-center">
+					<a href="{{$event->location->url}}" target="_blank" class="d-block mb-1 btn rounded-pill btn-outline-dark btn-wide">@fa(['icon' => 'fire'])Go to event</a>
+					<small class="text-muted">Capacity: {{$event->location->formatted_capacity}}</small>
+				</div>
+				
 			</div>
 		</div>
 	</div>
