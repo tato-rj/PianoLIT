@@ -5,6 +5,7 @@
   @method('PATCH')
   @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Name', 'limit' => 120, 'value' => $item->name])
   @input(['bag' => 'default', 'name' => 'url', 'placeholder' => 'URL', 'limit' => 255, 'value' => $item->url])
+  @input(['bag' => 'default', 'name' => 'venue', 'placeholder' => 'Venue', 'limit' => 120, 'value' => $item->venue])
 
   @submit(['label' => 'Update location', 'block' => true])
 </form>

@@ -23,11 +23,13 @@ class MetaverseLocationsController extends Controller
         $request->validate([
             'name' => 'required',
             'url' => 'required',
+            'venue' => 'required',
         ]);
 
         MetaverseLocation::create([
             'name' => $request->name,
             'url' => $request->url,
+            'venue' => $request->venue,
         ]);
 
         return back()->with('status', "The location has been successfully created!");
@@ -38,11 +40,13 @@ class MetaverseLocationsController extends Controller
         $request->validate([
             'name' => 'required',
             'url' => 'required',
+            'venue' => 'required',
         ]);
     
         $metaverseLocation->update([
             'name' => $request->name,
             'url' => $request->url,
+            'venue' => $request->venue,
         ]);
 
         return back()->with('status', "The location has been successfully updated!");

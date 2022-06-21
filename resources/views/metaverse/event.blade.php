@@ -13,6 +13,7 @@
 					<img class="mr-2" style="width: 40px" src="{{$event->location->icon}}">
 					<h5 class="m-0">{{$event->location->name}}</h5>
 				</div>
+				<p class="text-muted m-0">Venue: {{$event->location->venue}}</p>
 				<p class="text-muted m-0">Program: {{$event->theme}}</p>
 				<p class="text-muted m-0">Duration: {{$event->duration}}</p>
 			</div>

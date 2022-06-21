@@ -4,6 +4,7 @@
   @csrf
   @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Name', 'limit' => 120])
   @input(['bag' => 'default', 'name' => 'url', 'placeholder' => 'URL', 'limit' => 255])
+  @input(['bag' => 'default', 'name' => 'venue', 'placeholder' => 'Venue', 'limit' => 120])
 
   @submit(['label' => 'Create location', 'block' => true])
 </form>

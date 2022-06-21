@@ -17,6 +17,7 @@ class CreateMetaverseLocationsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('url');
+            $table->string('venue');
             $table->timestamps();
         });
     }

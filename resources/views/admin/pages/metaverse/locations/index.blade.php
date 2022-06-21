@@ -16,7 +16,7 @@
       'action' => ['label' => 'Add a new location', 'modal' => 'add-modal']
     ])
 
-    @datatable(['table' => 'metaverseLocation', 'columns' => ['Name', 'Url', '']])
+    @datatable(['table' => 'metaverseLocation', 'columns' => ['Name', 'Url', 'Venue', '']])
 
   </div>
 </div>
@@ -32,6 +32,7 @@
 (new DataTable('#metaverseLocation-table')).columns([
   {data: 'name'},
   {data: 'url', class: 'dataTables_main_column'},
+  {data: 'venue'},
   {data: 'actions', orderable: false, searchable: false},
 ]).order('asc').create();
 </script>
