@@ -15,7 +15,7 @@ function istrue($condition = null, $show = null)
 	return $show ?? true;
 }
 
-function array_find($array = null, array $keys)
+function array_find($array = null, $keys = [])
 {
 	if (! $array)
 		return null;
@@ -110,6 +110,41 @@ function days($count)
 function weeks($count)
 {
 	return days(7) * $count;
+}
+
+function monthslist($monthNumber = null)
+{
+	$months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+	return $monthNumber ? $months[$monthNumber - 1] : $months;
+}
+
+function dayslist()
+{
+	$days = [];
+
+	for ($i=1; $i<=31; $i++) {
+		array_push($days, $i);
+	}
+
+	return $days;
+}
+
+function timeslots($day = null)
+{
+	$origin = $day ? $day->copy() : now()->copy();
+	$date = $day ? $day->startOfDay() : now()->startOfDay();
+	$slots = collect();
+
+// 'g:i a'
+	while ($date->isSameDay($origin)) {
+		if ($date->hour >= 8 && $date->hour <= 21)
+			$slots->put($date->format('h:i a'), $date->format('H:i'));
+	
+		$date->addMinutes(15);
+	}
+
+	return $slots;
 }
 
 function possessive($str)

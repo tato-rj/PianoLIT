@@ -14,7 +14,11 @@
 
 		@isset($options)
 		@foreach($options as $label => $value)
-		<option value="{{$value}}" {{old($name) == $value ? 'selected' : ''}}>{{is_string($label) ? $label : ucfirst($value)}}</option>
+		<option value="{{$value}}" 
+		@isset($select)
+		{{$select == $value ? 'selected' : null}}
+		@endisset
+		{{old($name) == $value ? 'selected' : ''}}>{{is_string($label) ? $label : ucfirst($value)}}</option>
 		@endforeach
 		@endisset
 		
@@ -22,7 +26,11 @@
 		@foreach($optGroups as $group => $options)
 		<optgroup label="{{ucfirst($group)}}">
 			@foreach($options as $label => $value)
-			<option value="{{$value}}" {{old($name) == $value ? 'selected' : ''}}>{{is_string($label) ? $label : ucfirst($value)}}</option>
+			<option value="{{$value}}" 
+			@isset($select)
+			{{$select == $value ? 'selected' : null}} 
+			@endisset
+			{{old($name) == $value ? 'selected' : ''}}>{{is_string($label) ? $label : ucfirst($value)}}</option>
 			@endforeach
 		</optgroup>
 		@endforeach

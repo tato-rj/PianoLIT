@@ -70,6 +70,12 @@
 
         @include('admin.layouts.header.divider', ['label' => 'FREE CONTENT'])
 
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Metaverse', 'icon' => 'fire',
+        'dropdown' => [
+          ['route' => route('admin.metaverse.index'), 'name' => 'Events'],
+          ['route' => route('admin.metaverse.locations.index'), 'name' => 'Locations']
+        ]])
+
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Blog', 'icon' => 'newspaper',
         'dropdown' => [
           ['route' => route('admin.posts.index'), 'name' => 'Posts'],
