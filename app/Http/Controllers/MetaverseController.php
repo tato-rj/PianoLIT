@@ -9,7 +9,7 @@ class MetaverseController extends Controller
 {
     public function index()
     {
-        $events = Metaverse::all();
+        $events = Metaverse::schedule()->upcoming()->paginate(8);
 
         return view('metaverse.index', compact('events'));
     }

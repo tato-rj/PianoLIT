@@ -14,7 +14,7 @@ class MetaverseController extends Controller
         if (request()->ajax())
             return Metaverse::datatable();
 
-        $events = Metaverse::all();
+        $events = Metaverse::schedule()->get();
 
         return view('admin.pages.metaverse.events.index', compact('events'));
     }

@@ -26,6 +26,8 @@
 			@endforeach
 		</div>
 	</div>
+
+	@pagination(['collection' => $events])
 </div>
 
 @endsection

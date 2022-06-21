@@ -12,6 +12,16 @@ class Metaverse extends PianoLit
         return $this->belongsTo(MetaverseLocation::class);
     }
 
+    public function scopeSchedule($query)
+    {
+        return $query->orderBy('date');
+    }
+
+    public function scopeUpcoming($query)
+    {
+        return $query->whereDate('date', '>=', now());
+    }
+
     public function locations()
     {
         $locations = collect();
