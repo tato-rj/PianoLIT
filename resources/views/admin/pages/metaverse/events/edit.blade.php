@@ -8,7 +8,7 @@
 
   <div class="form-row"> 
     @select(['bag' => 'default', 'name' => 'time', 'placeholder' => 'Time', 'options' => timeslots()->toArray(), 'grid' => 'col', 'select' => $item->time])
-    @select(['bag' => 'default', 'name' => 'duration', 'placeholder' => 'Duration', 'options' => (new \App\Metaverse)->durations(), 'grid' => 'col', 'select' => $item->duration])
+    @select(['bag' => 'default', 'name' => 'duration', 'placeholder' => 'Duration', 'options' => (new \App\MetaverseEvent)->durations(), 'grid' => 'col', 'select' => $item->duration])
   </div>
 
   <div class="form-row"> 

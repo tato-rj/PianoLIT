@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Metaverse;
+use App\MetaverseEvent;
 use Carbon\Carbon;
 
-class MetaverseController extends Controller
+class MetaverseEventsController extends Controller
 {
     public function index()
     {
         if (request()->ajax())
-            return Metaverse::datatable();
+            return MetaverseEvent::datatable();
 
-        $events = Metaverse::schedule()->get();
+        $events = MetaverseEvent::schedule()->get();
 
         return view('admin.pages.metaverse.events.index', compact('events'));
     }
@@ -33,7 +33,7 @@ class MetaverseController extends Controller
         
         $date = Carbon::parse($request->day . ' ' . $request->month . ' ' . $request->year .' ' . $request->time);
 
-        Metaverse::create([
+        MetaverseEvent::create([
             'location_id' => $request->location_id,
             'theme' => $request->theme,
             'duration' => $request->duration,
@@ -44,7 +44,7 @@ class MetaverseController extends Controller
         return back()->with('status', "The event has been successfully created!");
     }
 
-    public function update(Request $request, Metaverse $metaverse)
+    public function update(Request $request, MetaverseEvent $metaverseEvent)
     {
         $request->validate([
             'location_id' => 'required',
@@ -58,7 +58,7 @@ class MetaverseController extends Controller
         
         $date = Carbon::parse($request->day . ' ' . $request->month . ' ' . $request->year .' ' . $request->time);
 
-        $metaverse->update([
+        $metaverseEvent->update([
             'location_id' => $request->location_id,
             'theme' => $request->theme,
             'duration' => $request->duration,
@@ -69,9 +69,9 @@ class MetaverseController extends Controller
         return back()->with('status', "The event has been successfully updated!");
     }
 
-    public function destroy(Request $request, Metaverse $metaverse)
+    public function destroy(Request $request, MetaverseEvent $metaverseEvent)
     {
-        $metaverse->delete();
+        $metaverseEvent->delete();
 
         return back()->with('status', "The event has been successfully deleted.");
     }

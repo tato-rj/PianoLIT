@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Metaverse;
+use App\MetaverseEvent;
 
-class MetaverseController extends Controller
+class MetaverseEventsController extends Controller
 {
     public function index()
     {
-        $events = Metaverse::schedule()->upcoming()->paginate(8);
+        $events = MetaverseEvent::schedule()->upcoming()->paginate(8);
 
         return view('metaverse.index', compact('events'));
     }

@@ -2,7 +2,7 @@
 
 namespace App;
 
-class Metaverse extends PianoLit
+class MetaverseEvent extends PianoLit
 {
     protected $durations = ['15 min', '20 min', '30 min', '45 min', '60 min'];
     protected $casts = ['date' => 'datetime'];

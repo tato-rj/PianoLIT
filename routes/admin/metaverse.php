@@ -2,9 +2,9 @@
 
 Route::prefix('metaverse')->name('metaverse.')->group(function() {
 
-	Route::get('', 'Admin\MetaverseController@index')->name('index');
+	Route::get('', 'Admin\MetaverseEventsController@index')->name('index');
 
-	Route::post('', 'Admin\MetaverseController@store')->name('store');
+	Route::post('', 'Admin\MetaverseEventsController@store')->name('store');
 
 	Route::prefix('locations')->name('locations.')->group(function() {
 
@@ -21,11 +21,11 @@ Route::prefix('metaverse')->name('metaverse.')->group(function() {
 		});
 	});
 
-	Route::prefix('{metaverse}')->name('event.')->group(function() {
+	Route::prefix('{metaverseEvent}')->name('event.')->group(function() {
 
-		Route::patch('', 'Admin\MetaverseController@update')->name('update');
+		Route::patch('', 'Admin\MetaverseEventsController@update')->name('update');
 
-		Route::delete('', 'Admin\MetaverseController@destroy')->name('destroy');
+		Route::delete('', 'Admin\MetaverseEventsController@destroy')->name('destroy');
 
 	});
 });

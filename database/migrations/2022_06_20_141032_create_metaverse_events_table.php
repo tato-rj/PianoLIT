@@ -13,7 +13,7 @@ class CreateMetaversesTable extends Migration
      */
     public function up()
     {
-        Schema::create('metaverses', function (Blueprint $table) {
+        Schema::create('metaverse_events', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('location_id');
             $table->string('theme');
@@ -31,6 +31,6 @@ class CreateMetaversesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('metaverses');
+        Schema::dropIfExists('metaverse_events');
     }
 }
