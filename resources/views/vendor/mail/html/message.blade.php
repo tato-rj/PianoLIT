@@ -23,14 +23,8 @@
 @component('mail::footer')
 <div style="margin: 8px 0">
 <div style="margin-bottom: 32px">
-<a target="_blank" href="{{config('services.channels.facebook')}}" class="link-none">
-<img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/facebook.png')}}">
-</a>
 <a target="_blank" href="{{config('services.channels.youtube')}}" class="link-none">
 <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/youtube.png')}}">
-</a>
-<a target="_blank" href="{{config('services.channels.pinterest')}}" class="link-none">
-<img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/pinterest.png')}}">
 </a>
 <a target="_blank" href="{{config('services.channels.reddit')}}" class="link-none">
 <img style="display: inline-block; margin: 0 12px; opacity: .4" width="22" src="{{asset('images/emails/reddit.png')}}">
