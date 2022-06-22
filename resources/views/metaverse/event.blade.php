@@ -41,5 +41,6 @@
 
 @component('components.modal', ['id' => 'event-'.$event->id.'-description', 'header' => $event->theme])
 @slot('body')
+{{$event->description}}
 @endslot
 @endcomponent
