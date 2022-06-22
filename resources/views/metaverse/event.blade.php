@@ -6,6 +6,7 @@
 			<div style="width: 20%; min-width: 108px">
 				<label>TIME</label>
 				<h5>{{strtoupper($event->formatted_time)}}</h5>
+				<div class="text-muted">@fa(['icon' => 'stopwatch', 'mr' => 1]){{$event->duration}}</div>
 			</div>
 			<div class="d-flex flex-wrap flex-grow">
 				<div class="flex-grow mb-4">
@@ -23,7 +24,6 @@
 						<span class="text-muted">{{$event->theme}}</span>
 						@endif
 					</p>
-					<p class="m-0">Duration: <span class="text-muted">{{$event->duration}}</span></p>
 				</div>
 			</div>
 		</div>
