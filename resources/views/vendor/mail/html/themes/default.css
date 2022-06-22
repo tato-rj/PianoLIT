@@ -9,13 +9,14 @@ body {
     background-color: white;
     color: #74787E;
     height: 100%;
-    hyphens: auto;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    -webkit-hyphens: none;
+    hyphens: none;
     line-height: 1.4;
     margin: 0;
-    -moz-hyphens: auto;
     -ms-word-break: break-all;
     width: 100% !important;
-    -webkit-hyphens: auto;
     -webkit-text-size-adjust: none;
     word-break: break-all;
     word-break: break-word;

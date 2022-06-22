@@ -29,7 +29,7 @@ Open with the iOS app
 
 <p>▶️ On our <strong>Youtube Channel</strong> we post not only recordings from the pieces we like the most, but also special in-depth videos about harmonic analysis. <a href="https://youtube.com/pianolit" target="_blank">Subscribe here</a></p>
 
-<p>📚 Check out our <strong>eBooks</strong>! Dive into your favorite music topics and keep on learning. <a href="https://pianolit.com/ebooks" target="_blank">Find our store here</a></p>
+<p>📚 Check out our <strong>eBooks</strong>! Dive into your favorite music topics and keep on learning (and if you are a member you can download them all for FREE).<a href="https://pianolit.com/ebooks" target="_blank">Find our store here</a></p>
 
 @endcomponent
 
