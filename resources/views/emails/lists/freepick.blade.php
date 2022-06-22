@@ -25,11 +25,11 @@ Open with the iOS app
 
 <p><strong>Don't miss out on more from PianoLIT:</strong></p>
 
-<p>😎 We are on the <u>Metaverse</u>! PianoLIT is partnering with Spatial to promote weekly concerts and events on all topics related to music. Simply jump in and enjoy the show. <a href="https://pianolit.com/metaverse" target="_blank">Check out our schedule here</a></p>
+<p>😎 We are on the <strong>Metaverse</strong>! PianoLIT is partnering with Spatial to promote weekly concerts and events on all topics related to music. Simply jump in and enjoy the show. <a href="https://pianolit.com/metaverse" target="_blank">Check out our schedule here</a></p>
 
-<p>▶️ On our <u>Youtube Channel</u> we post not only recordings from the pieces we like the most, but also special in-depth videos about harmonic analysis. <a href="https://youtube.com/pianolit" target="_blank">Subscribe here</a></p>
+<p>▶️ On our <strong>Youtube Channel</strong> we post not only recordings from the pieces we like the most, but also special in-depth videos about harmonic analysis. <a href="https://youtube.com/pianolit" target="_blank">Subscribe here</a></p>
 
-<p>📚 Check out our <u>eBooks</u>! Dive into your favorite music topics and keep on learning. <a href="https://pianolit.com/ebooks" target="_blank">Find our store here</a></p>
+<p>📚 Check out our <strong>eBooks</strong>! Dive into your favorite music topics and keep on learning. <a href="https://pianolit.com/ebooks" target="_blank">Find our store here</a></p>
 
 @endcomponent
 
