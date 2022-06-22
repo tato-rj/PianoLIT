@@ -41,6 +41,6 @@
 
 @component('components.modal', ['id' => 'event-'.$event->id.'-description', 'header' => $event->theme])
 @slot('body')
-{{$event->description}}
+<p style="white-space: pre-wrap;">{{$event->description}}</p>
 @endslot
 @endcomponent
