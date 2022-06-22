@@ -6,9 +6,11 @@
   @select(['bag' => 'default', 'name' => 'location_id', 'placeholder' => 'Location', 'options' => $item->locations(), 'select' => $item->location_id])
   @input(['bag' => 'default', 'name' => 'theme', 'placeholder' => 'Theme', 'limit' => 255, 'value' => $item->theme])
 
+  @textarea(['bag' => 'default', 'name' => 'description', 'placeholder' => 'Description (optional)', 'rows' => 4, 'required' => false, 'value' => $item->description])
+
   <div class="form-row"> 
     @select(['bag' => 'default', 'name' => 'time', 'placeholder' => 'Time', 'options' => timeslots()->toArray(), 'grid' => 'col', 'select' => $item->time])
-    @select(['bag' => 'default', 'name' => 'duration', 'placeholder' => 'Duration', 'options' => (new \App\MetaverseEvent)->durations(), 'grid' => 'col', 'select' => $item->duration])
+    @select(['bag' => 'default', 'name' => 'duration', 'placeholder' => 'Duration', 'options' => (new \App\Metaverse\MetaverseEvent)->durations(), 'grid' => 'col', 'select' => $item->duration])
   </div>
 
   <div class="form-row"> 

@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Metaverse;
+
+use App\PianoLit;
 
 class MetaverseLocation extends PianoLit
 {

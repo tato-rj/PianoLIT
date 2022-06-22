@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Metaverse;
+
+use App\PianoLit;
 
 class MetaverseEvent extends PianoLit
 {
@@ -58,9 +60,9 @@ class MetaverseEvent extends PianoLit
     public function scopeDatatable($query)
     {
         return datatable($query)->withBlade([
-            'location' => view('admin.pages.metaverse.table.location'),
-            'date' => view('admin.pages.metaverse.table.date'),
-            'actions' => view('admin.pages.metaverse.table.actions'),
+            'location' => view('admin.pages.metaverse.events.table.location'),
+            'date' => view('admin.pages.metaverse.events.table.date'),
+            'actions' => view('admin.pages.metaverse.events.table.actions'),
         ])->make();
     }
 }

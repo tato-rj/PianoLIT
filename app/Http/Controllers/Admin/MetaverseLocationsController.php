@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\MetaverseLocation;
+use App\Metaverse\MetaverseLocation;
 
 class MetaverseLocationsController extends Controller
 {

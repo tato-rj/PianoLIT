@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\MetaverseEvent;
+use App\Metaverse\MetaverseEvent;
 use Carbon\Carbon;
 
 class MetaverseEventsController extends Controller
@@ -39,6 +39,7 @@ class MetaverseEventsController extends Controller
             'duration' => $request->duration,
             'time' => $request->time,
             'date' => $date,
+            'description' => $request->description,
         ]);
 
         return back()->with('status', "The event has been successfully created!");
@@ -64,6 +65,7 @@ class MetaverseEventsController extends Controller
             'duration' => $request->duration,
             'time' => $request->time,
             'date' => $date,
+            'description' => $request->description,
         ]);
 
         return back()->with('status', "The event has been successfully updated!");

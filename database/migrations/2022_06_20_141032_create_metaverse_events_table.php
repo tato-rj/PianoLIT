@@ -18,6 +18,7 @@ class CreateMetaversesTable extends Migration
             $table->unsignedInteger('location_id');
             $table->string('theme');
             $table->string('duration');
+            $table->text('description')->nullable();
             $table->string('time');
             $table->datetime('date');
             $table->timestamps();
