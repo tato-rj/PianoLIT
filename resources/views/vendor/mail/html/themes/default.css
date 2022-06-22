@@ -6,7 +6,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
 }
 
 body {
-    background-color: #f8f9fa;
+    background-color: white;
     color: #74787E;
     height: 100%;
     hyphens: auto;
@@ -82,7 +82,7 @@ img {
 /* Layout */
 
 .wrapper {
-    background-color: #f8f9fa;
+    background-color: white;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -209,8 +209,8 @@ img {
 }
 
 .button {
-    -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+/*    -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;*/
     display: inline-block;
     font-weight: 700;
     color: #212529;
