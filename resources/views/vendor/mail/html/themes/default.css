@@ -240,6 +240,12 @@ img {
     border-color: #0055fe;
 }
 
+.button-outline-primary {
+    color: #0055fe !important;
+    background-color: transparent;
+    border-color: #0055fe;
+}
+
 .button-green,
 .button-success {
     background-color: #38C172;
@@ -398,6 +404,14 @@ img {
     color: #279643;
 }
 
+.mb-6 {
+    margin-bottom: 3rem!important;
+}
+
+.mb-5 {
+    margin-bottom: 2rem!important;
+}
+
 .mb-4 {
     margin-bottom: 1.5rem!important;
 }
@@ -497,9 +511,7 @@ img {
 }
 
 .mail-title {
-    color: #3D4852;
-    font-size: 34px;
-    font-weight: bold;
+    font-size: 26px;
     margin-top: -34px;
     margin-bottom: 16px;
     text-align: center;
@@ -530,8 +542,8 @@ img {
 }
 
 .dot {
-    width: 9px; 
-    height: 9px; 
+    width: 12px; 
+    height: 12px; 
     display: inline-block; 
     border-radius: 50%;
 }
