@@ -16,20 +16,16 @@
 						<h5 class="m-0">{{$event->location->name}}</h5>
 					</div>
 					<p class="m-0">Venue: <span class="text-muted">{{$event->location->venue}}</span></p>
-					<p class="m-0">
-						Program: 
-						@if($event->description)
-						<a href="" class="text-muted" title="Learn more" data-toggle="modal" data-target="#event-{{$event->id}}-description">{{$event->theme}}@fa(['icon' => 'info-circle', 'mr' => 0, 'ml' => 1, 'color' => 'primary'])</a>
-						@else
-						<span class="text-muted">{{$event->theme}}</span>
-						@endif
-					</p>
+					<p class="m-0">Program: <span class="text-muted">{{$event->theme}}</span></p>
 				</div>
 			</div>
 		</div>
 		<div class="col-lg-4 col-12">
 			<div class="mb-4">
 				<div class="text-center">
+					@if($event->description)
+					<a href="{{$event->location->url}}" data-toggle="modal" data-target="#event-{{$event->id}}-description" class="d-block mb-1 btn rounded-pill btn-outline-primary btn-wide">More info</a>
+					@endif
 					<a href="{{$event->location->url}}" target="_blank" class="d-block mb-1 btn rounded-pill btn-outline-dark btn-wide">@fa(['icon' => 'fire'])Go to event</a>
 					<small class="text-muted">Capacity: {{$event->location->formatted_capacity}}</small>
 				</div>
