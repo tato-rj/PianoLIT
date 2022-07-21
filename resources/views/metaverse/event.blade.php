@@ -37,6 +37,8 @@
 @component('components.modal', ['id' => 'event-'.$event->id.'-description', 'header' => $event->theme])
 @slot('body')
 <p class="mb-4" style="white-space: pre-wrap;">{{$event->description}}</p>
+<div class="text-center">
 @include('metaverse.go')
+</div>
 @endslot
 @endcomponent
