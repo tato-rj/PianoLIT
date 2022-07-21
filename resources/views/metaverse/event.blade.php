@@ -26,8 +26,7 @@
 					@if($event->description)
 					<a href="{{$event->location->url}}" data-toggle="modal" data-target="#event-{{$event->id}}-description" class="d-block mb-1 btn rounded-pill btn-primary btn-wide">More info</a>
 					@endif
-					<a href="{{$event->location->url}}" target="_blank" class="d-block mb-1 btn rounded-pill btn-outline-dark btn-wide">@fa(['icon' => 'fire'])Go to event</a>
-					<small class="text-muted">Capacity: {{$event->location->formatted_capacity}}</small>
+					@include('metaverse.go')
 				</div>
 			</div>
 		</div>
