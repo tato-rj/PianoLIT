@@ -1,2 +1,2 @@
-<a href="{{$event->location->url}}" target="_blank" class="d-block mb-1 btn rounded-pill btn-outline-dark btn-wide">@fa(['icon' => 'fire'])Go to event</a>
-<small class="text-muted">Capacity: {{$event->location->formatted_capacity}}</small>
+<a href="{{$event->location->url}}" target="_blank" class="d-{{isset($block) ? 'block' : null}} mb-1 btn rounded-pill btn-outline-dark btn-wide">@fa(['icon' => 'fire'])Go to event</a>
+<small class="text-muted d-block">Capacity: {{$event->location->formatted_capacity}}</small>

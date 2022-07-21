@@ -26,7 +26,7 @@
 					@if($event->description)
 					<a href="{{$event->location->url}}" data-toggle="modal" data-target="#event-{{$event->id}}-description" class="d-block mb-1 btn rounded-pill btn-primary btn-wide">More info</a>
 					@endif
-					@include('metaverse.go')
+					@include('metaverse.go', ['block' => true])
 				</div>
 			</div>
 		</div>
