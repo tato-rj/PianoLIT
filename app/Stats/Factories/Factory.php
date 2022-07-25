@@ -60,7 +60,7 @@ abstract class Factory
     {
         foreach ($conditions as $key => $condition) {
             if ($key && $condition)
-                $this->table = $this->table->where($key, $condition);        
+                $this->table = $this->table->where($key, $condition);
         }
 
         return $this;

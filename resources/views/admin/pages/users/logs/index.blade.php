@@ -16,7 +16,7 @@
     <div class="row mb-4">
       <div class="col-12">
         @chart([
-          'url' => route('admin.stats.users'),
+          'url' => route('admin.users.logs'),
           'chart' => 'line',
           'type' => 'daily',
           'select' => [
