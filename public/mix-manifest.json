@@ -1,9 +1,13 @@
 {
-    "/js/admin.js": "/js/admin.js?id=9a022ea7657daab9987c",
-    "/js/app.js": "/js/app.js?id=2dccaf200fc45e5e79aa",
-    "/js/tone.js": "/js/tone.js?id=fa32150deb46b19561c6",
-    "/css/app.css": "/css/app.css?id=28ffc28197b615082401",
-    "/css/admin.css": "/css/admin.css?id=a775447bbda43235fdb2",
+    "/js/admin.js": "/js/admin.js?id=ac1edd12448c74278d8b",
+    "/js/app.js": "/js/app.js?id=a3d0e717b532b55bbb29",
+    "/css/app.css": "/css/app.css?id=8539ce9d03703a0c5c78",
+    "/css/admin.css": "/css/admin.css?id=7761bfc0e05f3562e626",
+    "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
+    "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=265bb693f4154efcaaec",
+    "/css/studio-policies/elegant.css": "/css/studio-policies/elegant.css?id=4aae0c05002438971714",
+    "/css/studio-policies/informal.css": "/css/studio-policies/informal.css?id=1d1105ead8ba3664484a",
+    "/js/tone.js": "/js/tone.js?id=4a64023a6c3319687a16",
     "/css/vendor/fontawesome/all.min.css": "/css/vendor/fontawesome/all.min.css?id=ecd507b3125edc4d2a03",
     "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e"
 }

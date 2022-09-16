@@ -4,6 +4,8 @@ Route::prefix('metaverse')->name('metaverse.')->group(function() {
 
 	Route::get('', 'Admin\MetaverseEventsController@index')->name('index');
 
+	Route::get('text', 'Admin\MetaverseEventsController@text')->name('text');
+
 	Route::post('', 'Admin\MetaverseEventsController@store')->name('store');
 
 	Route::prefix('locations')->name('locations.')->group(function() {

@@ -19,6 +19,11 @@ class MetaverseEventsController extends Controller
         return view('admin.pages.metaverse.events.index', compact('events'));
     }
 
+    public function text()
+    {
+        return view('admin.pages.metaverse.events.text');
+    }
+
     public function store(Request $request)
     {
         $request->validate([

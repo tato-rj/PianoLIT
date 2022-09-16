@@ -13,6 +13,10 @@ class UsersController extends Controller
 {
     public function index()
     {
+        if (request()->ajax()) {
+            return datatable(User::query())->withDate()->checkable()->make();            
+        }
+
         $users = User::latest()->get();
 
         return view('admin.pages.users.index', compact('users'));
