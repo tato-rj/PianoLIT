@@ -2,7 +2,6 @@
 
 @section('head')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
 <style type="text/css">
 .input-group-vertical .input-group:first-child {
     padding-bottom: 0;
