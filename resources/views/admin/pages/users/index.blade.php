@@ -34,8 +34,8 @@
       </div>
     </div>
     
-    {{-- @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'ID', 'Name', 'Origin', 'Status', 'Super User', '']]) --}}
-    @datatable(['table' => 'users', 'columns' => ['Date', 'ID', 'Name']])
+    @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'ID', 'Name', 'Origin', 'Status', 'Super User', '']])
+    {{-- @datatable(['table' => 'users', 'columns' => ['Date', 'ID', 'Name']]) --}}
   </div>
 </div>
 
@@ -44,12 +44,12 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-// (new DataTableRaw({table: '#users-table', dontSortFirst: true, options: {order: [[1, 'desc']]}})).create();
-(new DataTable('#users-table')).columns([
-  {data: 'created_at', class: 'text-nowrap', sort: false},
-  {data: 'id', name: 'users.id'},
-  {data: 'first_name', name: 'users.first_name'},
-]).create();
+(new DataTableRaw({table: '#users-table', dontSortFirst: true, options: {order: [[1, 'desc']]}})).create();
+// (new DataTable('#users-table')).columns([
+//   {data: 'created_at', class: 'text-nowrap', sort: false},
+//   {data: 'id', name: 'users.id'},
+//   {data: 'first_name', name: 'users.first_name'},
+// ]).create();
 </script>
 <script type="text/javascript">
 $('.check-user').on('change', function() {
