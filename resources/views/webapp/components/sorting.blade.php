@@ -1,4 +1,4 @@
-<section id="options-container" class="sticky-top bg-white px-2 pt-2">
+<section id="options-container" class="sticky-top bg-white px-2 pt-2" style="z-index: auto;">
 	<div class="mb-2 d-flex justify-content-end" style="display: none;" id="options">
 		@button(['disabled' => $disabled, 'label' => '<i class="fas fa-sort mr-1"></i> Sort by', 'attr' => 'data-target=#sort-container', 
 		'styles' => [
