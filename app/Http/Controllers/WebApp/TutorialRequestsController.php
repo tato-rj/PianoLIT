@@ -17,6 +17,9 @@ class TutorialRequestsController extends Controller
         if (auth()->user()->publishedTutorialRequests()->where('piece_id', $piece->id)->exists())
             return back()->with('error', 'Looks like you have already made a request for this piece, please send us an email if you were looking for something else.');
 
+        if (! auth()->user()->isAuthorized())
+            return redirect(route('webapp.membership.pricing'));
+
         $tutorial = TutorialRequest::create([
             'user_id' => auth()->user()->id,
             'piece_id' => $piece->id,
