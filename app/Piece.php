@@ -381,15 +381,15 @@ class Piece extends PianoLit
         $name;
         $count = 0;
 
-        $collection = $query->whereHas('composer', function($q) {
+        return $query->whereHas('composer', function($q) {
             $q->where('gender', 'female');
-        })->take(12)->get()->groupBy('composer.name');
+        })->take(12)->get();
 
-        $collection->each(function($composer, $key) use ($collection) {
-            $collection[$key] = $composer->random($composer->count() > 2 ? 5 : $composer->count());
-        });
+        // $collection->each(function($composer, $key) use ($collection) {
+        //     $collection[$key] = $composer->random($composer->count() > 2 ? 5 : $composer->count());
+        // });
 
-        return $collection->flatten();
+        // return $collection->flatten();
     }
 
     public function isFavorited($user_id)
