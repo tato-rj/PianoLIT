@@ -383,7 +383,7 @@ class Piece extends PianoLit
 
         $collection = $query->whereHas('composer', function($q) {
             $q->where('gender', 'female');
-        })->get()->groupBy('composer.name');
+        })->take(12)->get()->groupBy('composer.name');
 
         $collection->each(function($composer, $key) use ($collection) {
             $collection[$key] = $composer->random($composer->count() > 5 ? 5 : $composer->count());
