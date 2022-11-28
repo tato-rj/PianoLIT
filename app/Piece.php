@@ -384,12 +384,6 @@ class Piece extends PianoLit
         return $query->whereHas('composer', function($q) {
             $q->where('gender', 'female');
         })->inRandomOrder()->take(12)->get();
-
-        // $collection->each(function($composer, $key) use ($collection) {
-        //     $collection[$key] = $composer->random($composer->count() > 2 ? 5 : $composer->count());
-        // });
-
-        // return $collection->flatten();
     }
 
     public function isFavorited($user_id)
