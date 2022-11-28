@@ -386,7 +386,7 @@ class Piece extends PianoLit
         })->take(12)->get()->groupBy('composer.name');
 
         $collection->each(function($composer, $key) use ($collection) {
-            $collection[$key] = $composer->random($composer->count() > 5 ? 5 : $composer->count());
+            $collection[$key] = $composer->random($composer->count() > 2 ? 5 : $composer->count());
         });
 
         return $collection->flatten();
