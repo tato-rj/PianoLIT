@@ -8,6 +8,7 @@
 
 <section class="container py-5">
 	<div class="row position-relative"> 
+		@if($results)
 		@include('search.components.results.pieces', ['pieces' => $results->take(8)])
 
 		@if($results->count() > 4)
@@ -19,6 +20,7 @@
 		height: 40%;
 		background: rgb(255,255,255);
 		background: linear-gradient(0deg, rgba(255,255,255,1) 25%, rgba(255,255,255,0) 100%);"></div>
+		@endif
 		@endif
 	</div>
 </section>
