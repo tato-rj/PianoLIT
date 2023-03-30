@@ -174,4 +174,30 @@ class RatingsTest extends AppTest
 
         $this->assertFalse($response->getData()->shouldReview);
     }
+
+    /** @test */
+    public function a_users_rating_is_saved()
+    {
+        $user = create(User::class);
+        
+        $user->membership()->save($this->membership);
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+        
+        $this->assertTrue($response->getData()->shouldReview);
+
+        $this->assertTrue($user->ratings()->unconfirmed()->exists());
+
+        $this->assertFalse($user->ratings()->confirmed()->exists());
+
+        $this->post(route('api.users.should-review', ['user_id' => $user->id, 'score' => 5]));
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+        
+        $this->assertFalse($response->getData()->shouldReview);
+
+        $this->assertFalse($user->ratings()->unconfirmed()->exists());
+
+        $this->assertTrue($user->ratings()->confirmed()->exists());
+    }
 }

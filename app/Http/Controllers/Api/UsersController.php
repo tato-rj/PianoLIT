@@ -41,4 +41,16 @@ class UsersController extends Controller
             'shouldReview' => $shouldReview
         ];
     }
+
+    public function saveReview(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'score' => 'required'
+        ]);
+
+        User::find($request->user_id)->ratings()->unconfirmed()->first()->update(['score' => $request->score]);
+
+        return response(200);
+    }
 }

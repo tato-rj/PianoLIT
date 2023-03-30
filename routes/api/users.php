@@ -3,6 +3,7 @@
 Route::prefix('users')->name('users.')->group(function() {
 
 	Route::get('ios-review/check', 'Api\UsersController@shouldReview')->name('should-review');
+	Route::post('ios-review/check', 'Api\UsersController@saveReview')->name('save-review');
 
 	Route::prefix('favorites')->name('favorites.')->group(function() {
 
