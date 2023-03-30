@@ -28,7 +28,7 @@ class LocationsTest extends AppTest
     public function users_visiting_the_webapp_have_their_location_saved_or_updated()
     {
         create(Post::class, ['published_at' => now()]);
-        create(Piece::class, ['is_free' => true]);
+        Piece::first()->update(['is_free' => true]);
 
         $this->signIn($this->user);
 

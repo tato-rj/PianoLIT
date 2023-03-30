@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMetaverseEventsTable extends Migration
+class CreateRatingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreateMetaverseEventsTable extends Migration
      */
     public function up()
     {
-        Schema::create('metaverse_events', function (Blueprint $table) {
+        Schema::create('ratings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('location_id');
-            $table->string('theme');
-            $table->string('duration');
-            $table->text('description')->nullable();
-            $table->string('time');
-            $table->datetime('date');
+            $table->unsignedInteger('user_id');
+            $table->unsignedTinyInteger('score');
             $table->timestamps();
         });
     }
@@ -32,6 +28,6 @@ class CreateMetaverseEventsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('metaverse_events');
+        Schema::dropIfExists('ratings');
     }
 }

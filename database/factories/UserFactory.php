@@ -1,7 +1,7 @@
 <?php
 
 use App\Payments\Membership;
-use App\{User, Admin, Subscription, StudioPolicy, TutorialRequest, Piece, Location};
+use App\{User, Admin, Subscription, StudioPolicy, TutorialRequest, Piece, Location, Rating};
 use App\CrashCourse\{CrashCourse, CrashCourseLesson, CrashCourseSubscription, CrashCourseTopic};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -154,5 +154,14 @@ $factory->define(Location::class, function (Faker $faker) {
         'cityName' => $faker->city,
         'latitude' => $faker->latitude(),
         'longitude' => $faker->longitude(),
+    ];
+});
+
+$factory->define(Rating::class, function (Faker $faker) {
+    return [
+        'user_id' => function() {
+            return create(User::class)->id;
+        },
+        'score' => $faker->numberBetween(1,5),
     ];
 });

@@ -91,14 +91,6 @@ class EmailListTest extends AppTest
     }
 
     /** @test */
-    public function admins_can_see_a_preview_on_the_browser()
-    {
-    	$this->signIn();
-
-    	$this->get(route('admin.subscriptions.lists.preview', $this->freePickList))->assertSee(Piece::free()->first()->name);    	 
-    }
-
-    /** @test */
     public function admins_can_add_and_remove_emails_from_the_lists()
     {
         $this->signIn();

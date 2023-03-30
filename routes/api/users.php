@@ -2,6 +2,8 @@
 
 Route::prefix('users')->name('users.')->group(function() {
 
+	Route::get('ios-review/check', 'Api\UsersController@shouldReview')->name('should-review');
+
 	Route::prefix('favorites')->name('favorites.')->group(function() {
 
 		Route::get('show', 'Api\FavoritesController@show')->name('show');

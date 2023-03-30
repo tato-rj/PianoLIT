@@ -93,7 +93,7 @@ class LogsTest extends AppTest
     public function visits_on_webapp_are_stored_on_redis()
     {
         create(Post::class, ['published_at' => now()]);
-        create(Piece::class, ['is_free' => true]);
+        Piece::first()->update(['is_free' => true]);
         
         $this->signIn($this->user);
 
@@ -155,7 +155,7 @@ class LogsTest extends AppTest
         $first_user = create(User::class);
         $second_user = create(User::class);
         $third_user = create(User::class);
-        create(Piece::class, ['is_free' => true]);
+        Piece::first()->update(['is_free' => true]);
         create(Post::class, ['published_at' => now()]);
 
         $this->signIn($first_user);

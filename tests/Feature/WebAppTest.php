@@ -12,7 +12,7 @@ class WebAppTest extends AppTest
     {
         parent::setUp();
         
-        create(Piece::class, ['is_free' => true]);
+        Piece::first()->update(['is_free' => true]);
         create(Post::class, ['published_at' => now()]);
     }
 

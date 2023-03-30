@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Billing\{Membership, Payment};
 use App\Billing\Sources\Apple;
-use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User, FavoriteFolder, Location, Review};
+use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User, FavoriteFolder, Location, Review, Rating};
 use Tests\AppTest;
 use App\Merchandise\Purchase;
 use App\Infograph\Infograph;
@@ -24,6 +24,14 @@ class UserTest extends AppTest
 		$this->user->payments()->create(['amount' => 999, 'charge_id' => 'ch_000000']);
 		
 		$this->assertInstanceOf(Payment::class, $this->user->payments()->first());
+	}
+
+	/** @test */
+	public function it_has_many_app_ratings()
+	{
+		$this->user->ratings()->create(['score' => 5]);
+		
+		$this->assertInstanceOf(Rating::class, $this->user->ratings()->first());
 	}
 
 	/** @test */

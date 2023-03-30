@@ -21,6 +21,7 @@
       </div>
     </div>
     <div class="row" id="endpoints" style="display: none;">
+      @include('admin.pages.api.endpoints.groups.users')
       @include('admin.pages.api.endpoints.groups.auth')
       @include('admin.pages.api.endpoints.groups.favorites')
       @include('admin.pages.api.endpoints.groups.piece')
