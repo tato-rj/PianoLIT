@@ -23,6 +23,8 @@ class RatingsTest extends AppTest
 
         $user->membership()->save($this->membership);
 
+        $this->travel(now()->addDays(7));
+
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
         $this->assertTrue($response->getData()->shouldReview);
@@ -59,6 +61,78 @@ class RatingsTest extends AppTest
         $this->assertFalse($response->getData()->shouldReview);
 
         $this->postStripeMembership($user);
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertFalse($response->getData()->shouldReview);
+    }
+
+    /** @test */
+    public function when_a_rating_request_is_made_it_is_saved_as_unconfirmed()
+    {
+        $user = create(User::class);
+
+        $this->assertFalse($user->ratings()->exists());
+        
+        $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($user->ratings()->exists());
+        $this->assertTrue($user->ratings()->unconfirmed()->exists());
+        $this->assertFalse($user->ratings()->confirmed()->exists());
+    }
+
+    /** @test */
+    public function a_user_who_ignores_the_request_does_not_receive_another_one_right_away()
+    {
+        $user = create(User::class);
+        
+        $user->membership()->save($this->membership);
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($response->getData()->shouldReview);
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertFalse($response->getData()->shouldReview);
+    }
+
+    /** @test */
+    public function a_user_who_ignores_the_request_receives_another_one_a_week_later()
+    {
+        $user = create(User::class);
+        
+        $user->membership()->save($this->membership);
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($response->getData()->shouldReview);
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertFalse($response->getData()->shouldReview);
+
+        $this->travel(now()->addDays(7));
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($response->getData()->shouldReview);
+    }
+
+    /** @test */
+    public function a_user_who_submited_a_rating_is_not_asked_to_submit_again()
+    {
+        $user = create(User::class);
+        
+        $user->membership()->save($this->membership);
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($response->getData()->shouldReview);
+        
+        $user->ratings()->first()->update(['score' => 5]);
+
+        $this->travel(now()->addDays(20));
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 

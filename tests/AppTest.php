@@ -12,6 +12,7 @@ use App\Billing\Membership;
 use App\{Composer, Piece, Admin, Country, Tag, User, Playlist, Subscription, Timeline, Pianist, EmailList, Tutorial};
 use Tests\Traits\CustomAssertions;
 use App\Rules\Recaptcha;
+use Carbon\Carbon;
 
 class AppTest extends TestCase
 {
@@ -153,5 +154,10 @@ class AppTest extends TestCase
             'subscription_name' => null,
             'started_at' => now()->subSeconds(5)
         ]);
+    }
+
+    public function travel($date)
+    {
+        Carbon::setTestNow($date);
     }
 }

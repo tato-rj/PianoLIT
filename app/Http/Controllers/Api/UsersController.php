@@ -20,9 +20,14 @@ class UsersController extends Controller
         $isActive = $user->getStatus() == 'active';
         $isTrial = $user->getStatus() == 'trial';
         $isFan = $user->logs_count >= $min;
+        $askedRecently = $user->ratings()->unconfirmed()->recently()->exists();
+        $hasReview = $user->ratings()->confirmed()->exists();
+
+        if (! $request->has('example'))
+            $user->ratings()->firstOrCreate([]);
 
         return [
-            'shouldReview' => ! $isTrial && ($isActive || $isFan)
+            'shouldReview' => ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan)
         ];
     }
 }
