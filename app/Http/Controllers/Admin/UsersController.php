@@ -17,7 +17,9 @@ class UsersController extends Controller
             return datatable(User::query())->withDate()->checkable()->make();            
         }
 
-        $users = User::latest()->get();
+        $users = cache()->remember('users', now()->addHours(6), function() {
+            return User::latest()->get();
+        });
 
         return view('admin.pages.users.index', compact('users'));
     }

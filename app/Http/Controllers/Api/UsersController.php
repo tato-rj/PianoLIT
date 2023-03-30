@@ -17,8 +17,12 @@ class UsersController extends Controller
         $user = User::find($request->user_id);
         $min = testing() ? 1 : 100;
 
-        $isActive = $user->getStatus() == 'active';
-        $isTrial = $user->getStatus() == 'trial';
+        $status = cache()->remember('user.'.$user->id.'.status', now()->addDay(), function() use ($user) {
+            return $user->getStatus();
+        });
+
+        $isActive = $status == 'active';
+        $isTrial = $status == 'trial';
         $isFan = $user->logs_count >= $min;
         $askedRecently = $user->ratings()->unconfirmed()->recently()->exists();
         $hasReview = $user->ratings()->confirmed()->exists();
