@@ -41,11 +41,8 @@ class UsersController extends Controller
 
     public function logs()
     {        
-        if (request()->ajax()) {
-            return cache()->remember('stats.logs', now()->addHours(6), function() {
-                return (new Stats)->for('logs')->query(request('type'), request()->except('type'))->get();
-            });
-        }
+        if (request()->ajax())
+            return (new Stats)->for('logs')->query(request('type'), request()->except('type'))->get();
 
         $users = cache()->remember('users.logs', now()->addHours(6), function() {
             return User::latest()->with(['membership'])->get();
