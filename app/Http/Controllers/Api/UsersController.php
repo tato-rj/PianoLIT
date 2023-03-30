@@ -24,14 +24,17 @@ class UsersController extends Controller
         $hasReview = $user->ratings()->confirmed()->exists();
         $tooManyAttempts = $user->ratings()->unconfirmed()->tooMany()->exists();
 
-        if (! $request->has('example'))
-            $user->ratings()->firstOrCreate([]);
+        $shouldReview = ! $tooManyAttempts && ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan);
 
-        if (! $tooManyAttempts)
-            $user->ratings()->first()->increment('attempts');
+        if (! $request->has('example')) {
+            $user->ratings()->firstOrCreate([]);
+            
+            if ($shouldReview)
+                $user->ratings()->first()->increment('attempts');
+        }
 
         return [
-            'shouldReview' => ! $tooManyAttempts && ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan)
+            'shouldReview' => $shouldReview
         ];
     }
 }
