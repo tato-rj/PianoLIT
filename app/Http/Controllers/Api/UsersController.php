@@ -22,12 +22,16 @@ class UsersController extends Controller
         $isFan = $user->logs_count >= $min;
         $askedRecently = $user->ratings()->unconfirmed()->recently()->exists();
         $hasReview = $user->ratings()->confirmed()->exists();
+        $tooManyAttempts = $user->ratings()->unconfirmed()->tooMany()->exists();
 
         if (! $request->has('example'))
             $user->ratings()->firstOrCreate([]);
 
+        if (! $tooManyAttempts)
+            $user->ratings()->first()->increment('attempts');
+
         return [
-            'shouldReview' => ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan)
+            'shouldReview' => ! $tooManyAttempts && ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan)
         ];
     }
 }

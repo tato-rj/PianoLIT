@@ -21,6 +21,11 @@ class Rating extends PianoLit
 
     public function scopeRecently($query)
     {
-        return $query->where('updated_at', '>=', now()->subDays(6));
+        return $query->where('created_at', '>=', now()->subDays(6));
+    }
+
+    public function scopeTooMany($query)
+    {
+        return $query->where('attempts', '>=', 4);
     }
 }

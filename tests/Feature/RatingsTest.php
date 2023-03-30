@@ -138,4 +138,40 @@ class RatingsTest extends AppTest
 
         $this->assertFalse($response->getData()->shouldReview);
     }
+
+    /** @test */
+    public function after_three_attempts_the_user_will_no_longer_receive_rating_requests()
+    {
+        $user = create(User::class);
+        
+        $user->membership()->save($this->membership);
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($response->getData()->shouldReview);
+
+        $this->travel(now()->addDays(7));
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($response->getData()->shouldReview);
+
+        $this->travel(now()->addDays(7));
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($response->getData()->shouldReview);
+
+        $this->travel(now()->addDays(7));
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertTrue($response->getData()->shouldReview);
+        
+        $this->travel(now()->addDays(7));
+
+        $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
+
+        $this->assertFalse($response->getData()->shouldReview);
+    }
 }

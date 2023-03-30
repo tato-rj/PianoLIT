@@ -17,6 +17,7 @@ class CreateRatingsTable extends Migration
             $table->id();
             $table->unsignedInteger('user_id');
             $table->unsignedTinyInteger('score')->nullable();
+            $table->unsignedTinyInteger('attempts')->default(0);
             $table->timestamps();
         });
     }
