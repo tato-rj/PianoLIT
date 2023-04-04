@@ -10,7 +10,9 @@ class UsersController extends Controller
 {
     public function shouldReview(Request $request)
     {
-        return true;
+        return [
+            'should_review' => true
+        ];
 
         $request->validate([
             'user_id' => 'required|exists:users,id',
