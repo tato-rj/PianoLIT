@@ -24,18 +24,19 @@ class UsersController extends Controller
         $isActive = $status == 'active';
         $isTrial = $status == 'trial';
         $isFan = $user->logs_count >= $min;
-        $askedRecently = $user->ratings()->unconfirmed()->recently()->exists();
-        $hasReview = $user->ratings()->confirmed()->exists();
-        $tooManyAttempts = $user->ratings()->unconfirmed()->tooMany()->exists();
+        //$askedRecently = $user->ratings()->unconfirmed()->recently()->exists();
+        //$hasReview = $user->ratings()->confirmed()->exists();
+        //$tooManyAttempts = $user->ratings()->unconfirmed()->tooMany()->exists();
 
-        $shouldReview = ! $tooManyAttempts && ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan);
+        //$shouldReview = ! $tooManyAttempts && ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan);
+        $shouldReview = ! $isTrial && ($isActive || $isFan);
 
-        if (! $request->has('example')) {
-            $user->ratings()->firstOrCreate([]);
+        // if (! $request->has('example')) {
+        //     $user->ratings()->firstOrCreate([]);
             
-            if ($shouldReview)
-                $user->ratings()->first()->increment('attempts');
-        }
+        //     if ($shouldReview)
+        //         $user->ratings()->first()->increment('attempts');
+        // }
 
         return [
             'should_review' => $shouldReview
