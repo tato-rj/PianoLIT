@@ -11,7 +11,7 @@ class UsersController extends Controller
     public function shouldReview(Request $request)
     {
         return [
-            'should_review' => true
+            'should_review' => false,
         ];
 
         $request->validate([
@@ -42,7 +42,7 @@ class UsersController extends Controller
         }
 
         return [
-            'shouldReview' => $shouldReview
+            'should_review' => $shouldReview
         ];
     }
 
