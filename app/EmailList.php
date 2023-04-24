@@ -28,7 +28,7 @@ class EmailList extends PianoLit
 	{
         $list_id = $this->listId();
 
-        $this->subscribers()->chunk(300, function($subscribers) use ($list_id) {
+        $this->subscribers()->chunk(500, function($subscribers) use ($list_id) {
             foreach ($subscribers as $subscriber) {
                 \Mail::to($subscriber->email)->queue($this->mailable($list_id, $subscriber));
             }
