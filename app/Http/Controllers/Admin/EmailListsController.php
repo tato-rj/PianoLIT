@@ -37,6 +37,7 @@ class EmailListsController extends Controller
 
     public function send(EmailList $list)
     {
+        return 'here';
         $list->send();
 
         event(new EmailListSent($list));
