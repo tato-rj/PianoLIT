@@ -17,7 +17,7 @@ class FreePickEmail extends Mailable implements ShouldQueue
 
     public function __construct($list_id, $subscription = null)
     {
-        $this->piece = Piece::free()->first();
+        $this->piece = Piece::find(940);//Piece::free()->first();
         $this->tutorials = $this->piece->tutorials()->get()->toArray();
         $this->subscription = $subscription;
         $this->list = EmailList::freepick();
