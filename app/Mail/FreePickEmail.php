@@ -22,7 +22,6 @@ class FreePickEmail extends Mailable implements ShouldQueue
         $this->subscription = $subscription;
         $this->list = EmailList::freepick();
         $this->list_id = $list_id;
-        dd('here');
     }
 
     /**
@@ -32,6 +31,7 @@ class FreePickEmail extends Mailable implements ShouldQueue
      */
     public function build()
     {
+        dd('now here');
         $this->track($this->list, $this->list_id, $this->subscription, $this->tutorials);
 
         return $this->subject('Your free pick this week')->markdown('emails.lists.freepick');
