@@ -22,6 +22,7 @@ class FreePickEmail extends Mailable implements ShouldQueue
         $this->subscription = $subscription;
         $this->list = EmailList::freepick();
         $this->list_id = $list_id;
+        dd('here');
     }
 
     /**
