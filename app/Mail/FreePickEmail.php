@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use App\{Piece, EmailList};
 use App\Mail\Traits\Trackable;
 
-class FreePickEmail extends Mailable implements ShouldQueue
+class FreePickEmail extends Mailable
 {
     use Queueable, SerializesModels, Trackable;
 
