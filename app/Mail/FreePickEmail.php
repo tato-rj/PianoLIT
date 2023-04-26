@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use App\{Piece, EmailList};
 use App\Mail\Traits\Trackable;
 
-class FreePickEmail extends Mailable
+class FreePickEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels, Trackable;
 
@@ -17,7 +17,7 @@ class FreePickEmail extends Mailable
 
     public function __construct($list_id, $subscription = null)
     {
-        $this->piece = Piece::find(940);//Piece::free()->first();
+        $this->piece = Piece::free()->first();
         $this->tutorials = $this->piece->tutorials()->get()->toArray();
         $this->subscription = $subscription;
         $this->list = EmailList::freepick();
@@ -31,7 +31,6 @@ class FreePickEmail extends Mailable
      */
     public function build()
     {
-        dd('now here');
         $this->track($this->list, $this->list_id, $this->subscription, $this->tutorials);
 
         return $this->subject('Your free pick this week')->markdown('emails.lists.freepick');
