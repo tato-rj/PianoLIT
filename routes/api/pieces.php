@@ -6,6 +6,8 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::get('/find', 'Api\PiecesController@show')->name('find');
 
+	Route::get('/freepicks', 'Api\PiecesController@freepicks')->name('freepicks');
+
 	Route::post('/find', 'Api\PiecesController@show'); // REMOVE THIS
 
 	Route::get('{piece}/timeline', 'Api\PiecesController@timeline')->name('timeline');

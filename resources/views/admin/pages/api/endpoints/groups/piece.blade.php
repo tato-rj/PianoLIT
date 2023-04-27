@@ -13,6 +13,12 @@
 
 @include('admin.pages.api.endpoints.card', [
 'type' => 'GET', 
+'route' => route('api.pieces.freepicks'),
+'args' => [], 
+'title' => 'Call for the freepicks'])
+
+@include('admin.pages.api.endpoints.card', [
+'type' => 'GET', 
 'route' => route('api.pieces.collection', ['piece' => \App\Piece::first(), 'user_id' => 1]),
 'args' => ['user_id'], 
 'title' => 'Collection a piece belongs to'])
