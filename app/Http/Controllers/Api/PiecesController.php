@@ -24,7 +24,8 @@ class PiecesController extends Controller
 
     public function freepicks(Request $request)
     {
-        return Piece::freePicks()->take(5)->get();
+        return Piece::freePicks()->paginate(5);
+        // return Piece::freePicks()->take(5)->get();
     }
     
     public function timeline($pieceId)
