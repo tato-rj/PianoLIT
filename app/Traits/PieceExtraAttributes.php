@@ -144,7 +144,7 @@ trait PieceExtraAttributes
     {
         $number = $this->movement_number ? "$this->movement_number. " : '';
 
-        if ($this->catalogue_name == 'Sonata') {
+        if ($this->collection_name == 'Sonata') {
             $name = $this->name;
         } else {
             $name = $this->nickname ?? $this->name;
