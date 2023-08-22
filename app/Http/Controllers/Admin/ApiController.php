@@ -23,4 +23,9 @@ class ApiController extends Controller
     {
         return view('admin.pages.api.endpoints.index');
     }
+
+    public function upload(Request $request)
+    {
+        return $request->all();
+    }
 }
