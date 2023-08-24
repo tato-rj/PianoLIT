@@ -12,6 +12,14 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 
 		});
 
+		Route::prefix('performances')->name('performances.')->group(function() {
+
+			Route::post('{piece}', 'PerformancesController@store')->name('store');
+
+			Route::delete('{performance}', 'PerformancesController@destroy')->name('destroy');
+
+		});
+
 		Route::prefix('favorites')->name('favorites.')->group(function() {
 
 			Route::prefix('folders')->name('folders.')->group(function() {

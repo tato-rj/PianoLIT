@@ -19,7 +19,7 @@ class RatingsTest extends AppTest
         
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
 
         $user->membership()->save($this->membership);
 
@@ -27,7 +27,7 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
     }
 
     /** @test */
@@ -42,11 +42,11 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $userWhoLikesUs->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $userWhoDoesntLikeUs->id]));
 
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
     }
 
     /** @test */
@@ -58,13 +58,13 @@ class RatingsTest extends AppTest
         
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
 
         $this->postStripeMembership($user);
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
     }
 
     /** @test */
@@ -90,11 +90,11 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
     }
 
     /** @test */
@@ -106,17 +106,17 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
 
         $this->travel(now()->addDays(7));
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
     }
 
     /** @test */
@@ -128,7 +128,7 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
         
         $user->ratings()->first()->update(['score' => 5]);
 
@@ -136,7 +136,7 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
     }
 
     /** @test */
@@ -148,31 +148,31 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
 
         $this->travel(now()->addDays(7));
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
 
         $this->travel(now()->addDays(7));
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
 
         $this->travel(now()->addDays(7));
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
         
         $this->travel(now()->addDays(7));
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
 
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
     }
 
     /** @test */
@@ -184,7 +184,7 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
         
-        $this->assertTrue($response->getData()->shouldReview);
+        $this->assertTrue($response->getData()->should_review);
 
         $this->assertTrue($user->ratings()->unconfirmed()->exists());
 
@@ -194,7 +194,7 @@ class RatingsTest extends AppTest
 
         $response = $this->get(route('api.users.should-review', ['user_id' => $user->id]));
         
-        $this->assertFalse($response->getData()->shouldReview);
+        $this->assertFalse($response->getData()->should_review);
 
         $this->assertFalse($user->ratings()->unconfirmed()->exists());
 

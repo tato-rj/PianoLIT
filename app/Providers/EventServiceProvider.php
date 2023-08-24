@@ -60,6 +60,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         \App\Events\PieceShared::class => [
             \App\Listeners\PieceSharedListener::class
+        ],
+        \App\Events\Performances\PerformanceSubmitted::class => [
+            \App\Listeners\Performances\PerformanceSubmittedListener::class
+        ],
+        \App\Events\Performances\PerformanceApproved::class => [
+            \App\Listeners\Performances\PerformanceApprovedListener::class
         ]
     ];
 

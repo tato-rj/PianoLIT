@@ -14,6 +14,14 @@ Route::prefix('users')->name('users.')->group(function() {
 	
 	});
 
+	Route::prefix('performances')->name('performances.')->group(function() {
+
+		Route::patch('{performance}', 'Admin\PerformancesController@approve')->name('approve');
+
+		Route::delete('{performance}', 'Admin\PerformancesController@destroy')->name('destroy');
+
+	});
+
 	Route::get('logs', 'Admin\UsersController@logs')->name('logs');
 
 	Route::get('{user}', 'Admin\UsersController@show')->name('show');

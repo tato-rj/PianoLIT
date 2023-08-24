@@ -17,26 +17,31 @@ class UsersController extends Controller
         $user = User::find($request->user_id);
         $min = testing() ? 1 : 100;
 
-        $status = cache()->remember('user.'.$user->id.'.status', now()->addDay(), function() use ($user) {
-            return $user->getStatus();
-        });
+        if (testing()) {
+            $status = $user->getStatus();
+        } else {
+            $status = cache()->remember('user.'.$user->id.'.status', now()->addDay(), function() use ($user) {
+                return $user->getStatus();
+            });
+        }
 
         $isActive = $status == 'active';
         $isTrial = $status == 'trial';
         $isFan = $user->logs_count >= $min;
-        //$askedRecently = $user->ratings()->unconfirmed()->recently()->exists();
-        //$hasReview = $user->ratings()->confirmed()->exists();
-        //$tooManyAttempts = $user->ratings()->unconfirmed()->tooMany()->exists();
+        
+        $askedRecently = $user->ratings()->unconfirmed()->recently()->exists();
+        $hasReview = $user->ratings()->confirmed()->exists();
+        $tooManyAttempts = $user->ratings()->unconfirmed()->tooMany()->exists();
 
-        //$shouldReview = ! $tooManyAttempts && ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan);
-        $shouldReview = ! $isTrial && ($isActive || $isFan);
+        $shouldReview = ! $tooManyAttempts && ! $isTrial && ! $askedRecently && ! $hasReview && ($isActive || $isFan);
+        // $shouldReview = ! $isTrial && ($isActive || $isFan);
 
-        // if (! $request->has('example')) {
-        //     $user->ratings()->firstOrCreate([]);
+        if (! $request->has('example')) {
+            $user->ratings()->firstOrCreate([]);
             
-        //     if ($shouldReview)
-        //         $user->ratings()->first()->increment('attempts');
-        // }
+            if ($shouldReview)
+                $user->ratings()->first()->increment('attempts');
+        }
 
         return [
             'should_review' => $shouldReview

@@ -105,6 +105,11 @@ class Piece extends PianoLit
         return $this->hasMany(PieceView::class);
     }
 
+    public function performances()
+    {
+        return $this->hasMany(Performance::class);
+    }
+
     public function composer()
     {
         return $this->belongsTo(Composer::class);

@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Billing\{Membership, Payment};
 use App\Billing\Sources\Apple;
-use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User, FavoriteFolder, Location, Review, Rating};
+use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User, FavoriteFolder, Location, Review, Rating, Performance, Clap};
 use Tests\AppTest;
 use App\Merchandise\Purchase;
 use App\Infograph\Infograph;
@@ -47,6 +47,22 @@ class UserTest extends AppTest
 
 		$this->assertInstanceOf(Review::class, $this->user->reviews->first());
 	}
+
+	/** @test */
+	public function it_has_many_performances()
+	{
+		create(Performance::class, ['user_id' => $this->user->id]);
+
+		$this->assertInstanceOf(Performance::class, $this->user->performances->first());
+	}
+
+    /** @test */
+    public function it_has_many_claps()
+    {
+        create(Clap::class, ['user_id' => $this->user]);
+
+        $this->assertInstanceOf(Clap::class, $this->user->claps()->first());
+    }
 
 	/** @test */
 	public function it_has_many_favorite_folders()

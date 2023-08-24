@@ -5,6 +5,12 @@ Route::prefix('users')->name('users.')->group(function() {
 	Route::get('ios-review/check', 'Api\UsersController@shouldReview')->name('should-review');
 	Route::post('ios-review/check', 'Api\UsersController@saveReview')->name('save-review');
 
+	Route::prefix('performances')->name('performances.')->group(function() {
+
+		Route::post('{performance}/clap', 'Api\PerformancesController@clap')->name('clap');
+
+	});
+
 	Route::prefix('favorites')->name('favorites.')->group(function() {
 
 		Route::get('show', 'Api\FavoritesController@show')->name('show');
