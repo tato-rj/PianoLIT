@@ -1,9 +1,5 @@
 <?php
 
-Route::get('check-php', function() {
-	return phpinfo();
-});
-
 Route::prefix('blog')->name('posts.')->group(function() {
 
 	Route::get('', 'PostsController@index')->name('index');
