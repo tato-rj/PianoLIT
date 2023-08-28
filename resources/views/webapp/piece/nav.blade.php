@@ -1,5 +1,5 @@
 
-<ul id="main-nav" class="nav nav-fill nav-tabs mb-3 position-relative border-bottom" style="border: 0" role="tablist">
+<ul id="main-nav" class="nav nav-fill nav-tabs mb-3 position-relative border-bottom" style="border: 0; font-size: 90%;" role="tablist">
 	<li class="nav-item">
 		<a class="nav-link active" data-anchor="about" data-toggle="tab" href="#tab-about">About</a>
 		<div class="nav-outline"></div>
