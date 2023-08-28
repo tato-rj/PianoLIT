@@ -18,13 +18,16 @@ class PerformancesController extends Controller
      */
     public function store(Request $request, Piece $piece)
     {
+        $this->authorize('perform', $piece);
+
         $request->validate([
-            'video' => 'required|mimes:mp4,mov,avi,webm,wmv'
+            'user-performance-video' => 'required|mimes:mp4,mov,avi,webm,wmv'
         ]);
-        
+
         $performance = auth()->user()->performances()->create([
             'piece_id' => $piece->id,
-            'public_id' => (new CloudinaryApi)->upload($request->file('video'))->publicId()
+            'display_name' => $request->display_name,
+            'public_id' => (new CloudinaryApi)->upload($request->file('user-performance-video'))->publicId()
         ]);
 
         event(new PerformanceSubmitted($performance));
@@ -76,8 +79,14 @@ class PerformancesController extends Controller
     {
         $this->authorize('update', $performance);
 
-        $performance->delete();
+        $response = (new CloudinaryApi)->delete($performance);
 
-        return back()->with('status', 'The performance has been deleted.');
+        if ($response['result'] == 'ok') {
+            $performance->delete();
+
+            return back()->with('status', 'The performance has been deleted.');
+        }
+
+        return back()->with('error', 'Your performance could not be deleted, please try again later.');
     }
 }

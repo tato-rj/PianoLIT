@@ -20,7 +20,7 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-free": "^5.15.1",
+        "@fortawesome/fontawesome-free": "^6.4.2",
         "caniuse-lite": "^1.0.30001402",
         "cropperjs": "^1.4.3",
         "dragscroll": "0.0.8",
@@ -35,7 +35,6 @@
         "mark.js": "^8.11.1",
         "masonry-layout": "^4.2.2",
         "moment": "^2.22.2",
-        "plyr": "^3.6.4",
         "swiper": "^4.5.0",
         "tone": "^13.4.9",
         "trix": "^0.11.2"

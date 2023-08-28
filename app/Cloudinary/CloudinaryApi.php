@@ -3,6 +3,7 @@
 namespace App\Cloudinary;
 
 use Illuminate\Http\UploadedFile;
+use App\Performance;
 
 class CloudinaryApi
 {
@@ -11,7 +12,7 @@ class CloudinaryApi
 
 	public function __construct()
 	{
-		$this->folder = $this->namespace . '\\' . auth()->user()->email;
+		$this->folder = $this->namespace . '/' . auth()->user()->email;
 	}
 
 	public function upload(UploadedFile $file)
@@ -36,8 +37,32 @@ class CloudinaryApi
         return $this;
 	}
 
+	public function find(Performance $performance)
+	{
+		$record = cloudinary()->search()->expression('public_id:'.$performance->public_id)->execute()['resources'];
+
+		if ($record)
+			return $record[0];
+	}
+
+	public function delete(Performance $performance)
+	{
+		if (testing()) {
+			return ['result' => 'ok'];
+		} else {
+			return cloudinary()->destroy($performance->public_id, ['resource_type' => 'video']);
+		}
+	}
+
 	public function publicId()
 	{
 		return $this->response->getPublicId();
+	}
+
+	public function getThumbnailFrom($url)
+	{
+		$ext = pathinfo($url, PATHINFO_EXTENSION);
+
+		return str_replace($ext, 'jpg', $url);
 	}
 }

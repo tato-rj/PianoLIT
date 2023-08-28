@@ -251,6 +251,7 @@ return [
         'Genderize' => Pixelpeter\Genderize\Facades\Genderize::class,
         'Bugsnag' => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
+        'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class,
     ],
 
 ];

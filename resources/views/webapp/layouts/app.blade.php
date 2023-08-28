@@ -20,9 +20,6 @@
 
     <title>{{local() ? '(local)' : null}} {{config('app.name')}}{{isset($title) ? ' | ' . $title : null}}</title>
 
-    <link rel="preload" href="{{ asset('css/vendor/fontawesome/all.min.css') }}" as="style">
-    
-    <link href="{{ asset('css/vendor/fontawesome/all.min.css') }}" rel="stylesheet">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 
     @include('layouts.html.js-app')

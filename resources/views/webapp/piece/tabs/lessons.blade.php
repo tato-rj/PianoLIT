@@ -1,4 +1,18 @@
 <div class="tab-pane fade" id="tab-lessons">
+{{-- 	<div class="mb-4">
+		<div class="mb-4"> 
+			@if(! auth()->user()->performances()->of($piece)->approved()->exists())
+				@if(auth()->user()->performances()->of($piece)->waiting()->exists())
+				@include('webapp.piece.performances.pending')
+				@else
+				@include('webapp.piece.performances.upload')
+				@endif
+			@endif
+		</div>
+		
+		@include('webapp.piece.performances.videos')
+	</div> --}}
+	
 	@if($piece->media['lessons'])
 	<div>
 		@foreach($piece->media['lessons'] as $lessons)

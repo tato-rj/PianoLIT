@@ -46,7 +46,7 @@ class PerformanceSubmittedNotification extends Notification
         return [
             'title' => 'New performance submitted',
             'message' => '<strong>' . $this->performance->user->first_name . '</strong> submitted a new performance.',
-            'url' => route('admin.tutorial-requests.index')
+            'url' => route('admin.stage.index')
         ];
     }
 }

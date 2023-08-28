@@ -1,0 +1,1 @@
+{{$item->piece->composer->short_name}}

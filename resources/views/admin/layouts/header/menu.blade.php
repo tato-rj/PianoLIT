@@ -51,6 +51,7 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Repertoire', 'icon' => 'music',
         'dropdown' => [
           ['route' => route('admin.pieces.index'), 'name' => 'Pieces'],
+          ['route' => route('admin.stage.index'), 'name' => 'Stage'],
           ['route' => route('admin.playlists.index'), 'name' => 'Playlists'],
           ['route' => route('admin.composers.index'), 'name' => 'Composers'],
           ['route' => route('admin.pianists.index'), 'name' => 'Pianists'],

@@ -16,7 +16,11 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::prefix('performances')->name('performances.')->group(function() {
 
-		Route::patch('{performance}', 'Admin\PerformancesController@approve')->name('approve');
+		Route::patch('{performance}', 'Admin\PerformancesController@update')->name('update');
+
+		Route::patch('{performance}/urls', 'Admin\PerformancesController@getUrls')->name('get-urls');
+		
+		Route::patch('{performance}/status', 'Admin\PerformancesController@approve')->name('approve');
 
 		Route::delete('{performance}', 'Admin\PerformancesController@destroy')->name('destroy');
 

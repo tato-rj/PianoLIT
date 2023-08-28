@@ -4,16 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Performance;
+use App\{Performance, User};
 
 class PerformancesController extends Controller
 {
-    public function clap(Performance $performance)
+    public function clap(Request $request, Performance $performance)
     {
-        $this->authorize('clap', $performance);
+        if ($performance->user_id == $request->user_id)
+            throw new \Illuminate\Auth\Access\AuthorizationException('You cannot clap to your own performance');
 
-        $performance->clap();
+        $performance->clap(User::find($request->user_id));
 
-        return response(200);
+        return ['claps_sum' => $performance->claps_sum];
     }
 }

@@ -1,0 +1,43 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "watch": "npm run development -- --watch",
+        "watch-poll": "npm run watch -- --watch-poll",
+        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "prod": "npm run production",
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    },
+    "devDependencies": {
+        "axios": "^0.18",
+        "bootstrap": "^4.0.0",
+        "cross-env": "^5.1",
+        "jquery": "^3.3.1",
+        "laravel-mix": "^2.0",
+        "lodash": "^4.17.5",
+        "popper.js": "^1.12",
+        "vue": "^2.5.7"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.15.1",
+        "caniuse-lite": "^1.0.30001402",
+        "cropperjs": "^1.4.3",
+        "dragscroll": "0.0.8",
+        "easy-autocomplete": "^1.3.5",
+        "flag-icon-css": "^3.4.6",
+        "fullcalendar": "^3.9.0",
+        "hamburgers": "^1.1.3",
+        "hover.css": "^2.3.2",
+        "inputmask": "^4.0.6",
+        "jquery-countdown": "^2.2.0",
+        "jquery-ui-bundle": "^1.12.1-migrate",
+        "mark.js": "^8.11.1",
+        "masonry-layout": "^4.2.2",
+        "moment": "^2.22.2",
+        "plyr": "^3.6.4",
+        "swiper": "^4.5.0",
+        "tone": "^13.4.9",
+        "trix": "^0.11.2"
+    }
+}

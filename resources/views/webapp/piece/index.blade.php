@@ -1,10 +1,28 @@
 @extends('webapp.layouts.app', ['title' => $piece->short_name])
 
 @push('header')
+<link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
+video::-webkit-media-controls {
+     visibility: hidden;
+}
 
+video::-webkit-media-controls-enclosure {
+     visibility: visible;
+}
 
+.clap-shadow {
+	position: absolute;
+	left: 0;
+	bottom: 2px;
+	animation-duration: .5s !important;
+}
+
+.plyr--video {
+	height: 100%;
+}
 
 #nav-border {
 	position: absolute;
@@ -44,8 +62,58 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script type="text/javascript">
+function clap($hands) {
+	$hands.removeClass('text-grey').addClass('text-green');
+	
+	let $clone = $hands.clone();
 
+	$clone.addClass('clap-shadow animated text-green fadeOutUp').appendTo($hands.parent());
+
+	setTimeout(function() {
+	  $clone.remove();
+	}, 500);
+}
+
+function isClapping() {
+	return $('i.clap-shadow').length;
+}
+
+$('.clap').on('click', function() {
+	let $hands = $(this).find('i');
+	let $counter = $(this).siblings('.claps-count');
+
+	if (! isClapping()) {
+		$counter.removeClass('heartBeat');
+
+		axios.post($(this).data('url'), {user_id: app.user.id})
+				 .then(function(response) {
+				 	$counter.text(response.data['claps_sum']);
+				 	$counter.addClass('heartBeat');
+
+				 	clap($hands);
+				 });
+	}
+});
+</script>
+<script type="text/javascript">
+$('#upload-performance').on('click', function() {
+	$('input[name="user-performance-video"]').trigger('click');
+});
+
+$('input[name="user-performance-video"]').change(function () {
+	var $source = $('#preview-performance source');
+  $source[0].src = URL.createObjectURL(this.files[0]);
+  $source.parent()[0].load();
+
+	$('#upload-performance-modal').modal('show');
+});
+
+$('#upload-performance-modal').on('hide.bs.modal', function() {
+    $('#preview-performance').get(0).pause();
+    $('#preview-performance').get(0).currentTime = 0;
+});
 </script>
 
 <script type="text/javascript">
@@ -286,10 +354,33 @@ function showPlayer(player) {
 </script>
 
 <script type="text/javascript">
+	let plyrsArray = [];
+
+	function initPlyrs(videoId)
+	{
+		let player = new Plyr(videoId, {
+			ratio: '16:9',
+		});
+
+		plyrsArray.push(player);
+
+		player.on('play', function() {
+			stopOtherPlyrs(player);
+		});
+	}
+
+	function stopOtherPlyrs(player)
+	{
+		plyrsArray.forEach(function(video) {
+			if (video.playing && video != player)
+				video.stop();
+		});
+	}
+
 	$('.video-container').each(function() {
 		let videoId = '#'+ $(this).find('video').attr('id');
 
-		new Plyr(videoId);
+		initPlyrs(videoId);
 	});
 
 $('button[data-action="video"]').on('click', function() {

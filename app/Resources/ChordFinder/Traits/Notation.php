@@ -29,6 +29,10 @@ trait Notation
 		$fifth = $this->find($notes, 5) ?? $this->find($notes, 12);
 		$seventh = $this->find($notes, 7);
 
+		if (is_null($fifth)) {
+			$fifth['type'] = null;
+		}
+
 		if ($fifth['type'] == 'perfect' || is_null($fifth)) {
 			$label['type'] = $third['type'];
 			$label['type_shorthand'] = $third['type'] == 'minor' ? 'm' : '';
@@ -150,6 +154,15 @@ trait Notation
 
 		$third = $this->find($notes, 3);
 		$fifth = $this->find($notes, 5);
+
+		if (is_null($fifth)) {
+			$fifth['type'] = null;
+		}
+
+		if (is_null($third)) {
+			$third['type'] = null;
+		}
+
 		$prefix = ($third['type'] == 'major' && $fifth['type'] == 'diminished') ? 'b5' : null;
 
 		foreach ($extensions as $extension) {

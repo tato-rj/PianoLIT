@@ -18,6 +18,7 @@ class CreatePerformancesTable extends Migration
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('piece_id');
             $table->string('public_id');
+            $table->string('display_name')->nullable();
             $table->string('video_url')->nullable();
             $table->string('thumbnail_url')->nullable();
             $table->string('bytes')->nullable();
