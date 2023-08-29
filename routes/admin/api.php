@@ -6,12 +6,4 @@ Route::prefix('api')->name('api.')->group(function() {
 
 	Route::get('endpoints', 'Admin\ApiController@endpoints')->name('endpoints');
 
-	// TEST UPLOAD
-	
-	Route::get('upload', function() {
-		return view('upload');
-	});
-
-	Route::post('upload', 'Admin\ApiController@upload')->name('test-upload');
-
 });
