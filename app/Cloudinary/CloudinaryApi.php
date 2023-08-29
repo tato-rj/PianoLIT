@@ -22,10 +22,10 @@ class CloudinaryApi
             'folder' => $this->folder,
             // 'notification_url' => 'endpoint',
             'async' => true,
-            'transformation' => [
-                'quality' => $this->quality,
-                'effect'=> 'fade:2000'
-            ]
+            // 'transformation' => [
+            //     'quality' => $this->quality,
+            //     'effect'=> 'fade:2000'
+            // ]
         ];
 
         if (testing()) {
