@@ -406,7 +406,7 @@ class Validator
 			if (isset($interval['interval']) && $interval['interval'] == 3)
 				$hasThird = true;
 
-			if (isset($interval['interval']) && $interval['interval'] == 2 || $interval['interval'] == 4)
+			if (isset($interval['interval']) && ($interval['interval'] == 2 || $interval['interval'] == 4))
 				$hasSecondOrFourth = true;
 
 			if (isset($interval['interval']) && $interval['interval'] == 10)
