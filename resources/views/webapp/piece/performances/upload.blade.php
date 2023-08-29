@@ -10,6 +10,7 @@
 		@else
 		<button class="btn rounded-pill btn-outline-secondary btn-wide" data-toggle="modal" data-target="#no-credits-modal">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
 		@endif
+		<div class="small text-center opacity-8 mt-1" style="font-size:80%">The video must be <strong>100mb</strong> or less</div>
 	</div>
 </div>
 
