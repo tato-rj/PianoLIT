@@ -103,10 +103,11 @@ $('#upload-performance').on('click', function() {
 });
 
 $('input[name="user-performance-video"]').change(function () {
-	var $source = $('#preview-performance source');
+	let $source = $('#preview-performance source');
+	let filesize = this.files[0].size;
 
-	if (this.files[0].size > 100000000) {
-		alert('Sorry, this file is too large. Please reduce its size to 100mb or less.');
+	if (filesize > 100000000) {
+		alert('Sorry, this file is too large. Please reduce its size from '+filesize/1000000+'mb to 100mb or less.');
 	} else {
 	  $source[0].src = URL.createObjectURL(this.files[0]);
 	  $source.parent()[0].load();
