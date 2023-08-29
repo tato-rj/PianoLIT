@@ -14,7 +14,7 @@
 		<div class="nav-outline"></div>
 	</li>
 	<li class="nav-item">
-		<a class="nav-link" data-anchor="lessons" data-toggle="tab" href="#tab-lessons">Lessons</a>
+		<a class="nav-link" data-anchor="lessons" data-toggle="tab" href="#tab-lessons">{{auth()->user()->isAdmin() ? 'Stage' : 'Lessons'}}</a>
 		<div class="nav-outline"></div>
 	</li>
 </ul>

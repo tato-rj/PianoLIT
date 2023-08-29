@@ -1,5 +1,6 @@
 <div class="tab-pane fade" id="tab-lessons">
-{{-- 	<div class="mb-4">
+	@if(auth()->user()->isAdmin())
+	<div class="mb-4">
 		<div class="mb-4"> 
 			@if(! auth()->user()->performances()->of($piece)->approved()->exists())
 				@if(auth()->user()->performances()->of($piece)->waiting()->exists())
@@ -11,7 +12,9 @@
 		</div>
 		
 		@include('webapp.piece.performances.videos')
-	</div> --}}
+	</div>
+
+	@else
 	
 	@if($piece->media['lessons'])
 	<div>
@@ -43,4 +46,5 @@
 			@endforeach
 		</div>
 	</div>
+	@endif
 </div>

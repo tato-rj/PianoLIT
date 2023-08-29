@@ -162,6 +162,11 @@ class User extends Authenticatable implements MustVerifyEmail
         ]);
     }
 
+    public function isAdmin()
+    {
+        return in_array($this->email, ['arthurvillar@gmail.com', 'elena.dare@gmail.com']);
+    }
+
     public function getPreferredPieceAttribute()
     {
         return Piece::find($this->preferred_piece_id);
