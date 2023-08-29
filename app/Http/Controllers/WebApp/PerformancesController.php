@@ -21,7 +21,7 @@ class PerformancesController extends Controller
         $this->authorize('perform', $piece);
 
         $request->validate([
-            'user-performance-video' => 'required|mimes:mp4,mov,avi,webm,wmv'
+            'user-performance-video' => 'required|mimes:mp4,mov,avi,webm,wmv|max:100000'
         ]);
 
         $performance = auth()->user()->performances()->create([
