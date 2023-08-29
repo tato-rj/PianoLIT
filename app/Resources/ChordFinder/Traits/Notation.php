@@ -33,6 +33,10 @@ trait Notation
 			$fifth['type'] = null;
 		}
 
+		if (is_null($third)) {
+			$third['type'] = null;
+		}
+
 		if ($fifth['type'] == 'perfect' || is_null($fifth)) {
 			$label['type'] = $third['type'];
 			$label['type_shorthand'] = $third['type'] == 'minor' ? 'm' : '';
