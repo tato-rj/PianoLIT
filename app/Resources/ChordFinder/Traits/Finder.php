@@ -7,7 +7,7 @@ trait Finder
 	public function find($notes, $interval)
 	{
 		foreach ($notes['intervals'] as $note) {
-			if ($note['interval'] == $interval)
+			if (isset($note['interval']) && $note['interval'] == $interval)
 				return $note;
 		}
 
