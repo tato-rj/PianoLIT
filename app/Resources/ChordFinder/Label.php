@@ -52,7 +52,7 @@ class Label
 	}
 
 	public function read($inversion)
-	{
+	{		
 		$root = $this->root($inversion);
 		$bass = $this->bass()['bass'] && $this->bass()['bass'][0] != $root['root'][0] ? '/' . $this->bass()['bass'] : null;
 		$type = $this->core($inversion);

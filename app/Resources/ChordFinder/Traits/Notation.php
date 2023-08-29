@@ -29,20 +29,12 @@ trait Notation
 		$fifth = $this->find($notes, 5) ?? $this->find($notes, 12);
 		$seventh = $this->find($notes, 7);
 
-		if (is_null($fifth)) {
-			$fifth['type'] = null;
-		}
-
-		if (is_null($third)) {
-			$third['type'] = null;
-		}
-
-		if ($fifth['type'] == 'perfect' || is_null($fifth)) {
+		if (is_null($fifth['name']) || $fifth['type'] == 'perfect') {
 			$label['type'] = $third['type'];
 			$label['type_shorthand'] = $third['type'] == 'minor' ? 'm' : '';
 		}
 
-		if ((is_null($third) || $third['type'] == 'minor') && $fifth['type'] == 'diminished') {
+		if ((is_null($third['name']) || $third['type'] == 'minor') && $fifth['type'] == 'diminished') {
 			if ($seventh['type'] == 'diminished') {
 				$label['type'] = 'fully diminished';
 				$label['type_shorthand'] = sup('o');
@@ -55,11 +47,11 @@ trait Notation
 			}
 		}
 
-		if ((is_null($third) || $third['type'] == 'major') && $fifth['type'] == 'augmented') {
+		if ((is_null($third['name']) || $third['type'] == 'major') && $fifth['type'] == 'augmented') {
 			$label['type'] = 'augmented';
 			$label['type_shorthand'] = 'aug';
 		}
-		
+
 		return $label;
 	}
 
@@ -70,10 +62,10 @@ trait Notation
 		$fifth = $this->find($notes, 5);
 		$seventh = $this->find($notes, 7);
 		
-		if (is_null($seventh))
+		if (is_null($seventh['name']))
 			return $label;
 
-		if (is_null($fifth) || $fifth['type'] == 'perfect') {
+		if (is_null($fifth['name']) || $fifth['type'] == 'perfect') {
 			if ($seventh['type'] == 'major') {
 				$label['seventh'] = $third == 'major' ? 'dominant 7' : 'minor 7';
 				$label['seventh_shorthand'] = ' maj7';
@@ -121,17 +113,17 @@ trait Notation
 		if ($fourth)
 			$fourthType = $fourth['type'] == 'augmented' ? '#4' : '4';
 
-		if (is_null($second) && is_null($fourth))
+		if (is_null($second['name']) && is_null($fourth['name']))
 			return ['sus' => '', 'sus_shorthand' => ''];
 
-		if (is_null($third)) {
+		if (is_null($third['name'])) {
 			if ($second && $fourth) {
 				$label['sus'] = 'suspended '.$secondType.' and '.$fourthType;
 				$label['sus_shorthand'] = sup('sus'.$secondType.$fourthType);
-			} else if ($second && is_null($fourth)) {
+			} else if ($second && is_null($fourth['name'])) {
 				$label['sus'] = 'suspended '.$secondType;
 				$label['sus_shorthand'] = sup('sus'.$secondType);				
-			} else if (is_null($second) && $fourth) {
+			} else if (is_null($second['name']) && $fourth) {
 				$label['sus'] = 'suspended '.$fourthType;
 				$label['sus_shorthand'] = sup('sus'.$fourthType);				
 			}
@@ -139,10 +131,10 @@ trait Notation
 			if ($second && $fourth) {
 				$label['sus'] = 'added '.$secondType.' and '.$fourthType;
 				$label['sus_shorthand'] = sup('add'.$secondType.$fourthType);
-			} else if ($second && is_null($fourth)) {
+			} else if ($second && is_null($fourth['name'])) {
 				$label['sus'] = 'added '.$secondType;
 				$label['sus_shorthand'] = sup('add'.$secondType);				
-			} else if (is_null($second) && $fourth) {
+			} else if (is_null($second['name']) && $fourth) {
 				$label['sus'] = 'added '.$fourthType;
 				$label['sus_shorthand'] = sup('add'.$fourthType);				
 			}
@@ -158,14 +150,6 @@ trait Notation
 
 		$third = $this->find($notes, 3);
 		$fifth = $this->find($notes, 5);
-
-		if (is_null($fifth)) {
-			$fifth['type'] = null;
-		}
-
-		if (is_null($third)) {
-			$third['type'] = null;
-		}
 
 		$prefix = ($third['type'] == 'major' && $fifth['type'] == 'diminished') ? 'b5' : null;
 

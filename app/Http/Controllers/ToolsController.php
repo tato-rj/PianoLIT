@@ -18,6 +18,7 @@ class ToolsController extends Controller
     {
 		$finder = new ChordFinder;
 		$request = $finder->take(request())->validate()->analyse()->ranked()->get();
+
 		$json = $finder->take(request())->debug();
 
 		if (request()->has('dev'))

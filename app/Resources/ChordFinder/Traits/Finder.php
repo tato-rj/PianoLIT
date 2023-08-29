@@ -10,5 +10,13 @@ trait Finder
 			if ($note['interval'] == $interval)
 				return $note;
 		}
+
+		return [
+			'interval' => null,
+			'steps' => null,
+			'name' => null,
+			'type' => null,
+			'shorthand' => null
+		];
 	}
 }
