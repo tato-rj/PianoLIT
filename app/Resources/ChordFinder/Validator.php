@@ -78,7 +78,7 @@ class Validator
 			foreach ($notes['inversions'] as $key => $inversion) {
 				if ($this->find($inversion, 7)) {
 					foreach ($inversion['intervals'] as $item => $interval) {
-						if ($interval['interval'] == 2) {
+						if (isset($interval['interval']) && $interval['interval'] == 2) {
 							$newInversion = $copy[$index]['inversions'][$key];
 							$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
 							$newStep = $newInversion['intervals'][$item]['steps'] + 12;
@@ -124,7 +124,7 @@ class Validator
 			foreach ($notes['inversions'] as $key => $inversion) {
 				if ($this->find($inversion, 7)) {
 					foreach ($inversion['intervals'] as $item => $interval) {
-						if ($interval['interval'] == 4) {
+						if (isset($interval['interval']) && $interval['interval'] == 4) {
 							$newInversion = $copy[$index]['inversions'][$key];
 							$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
 							$newStep = $newInversion['intervals'][$item]['steps'] + 12;
@@ -172,7 +172,7 @@ class Validator
 					foreach ($inversion['intervals'] as $item => $interval) {
 						$isLast = count($inversion['intervals']) == $item +1;
 
-						if ($interval['interval'] == 6 && ! $isLast) {
+						if (isset($interval['interval']) && $interval['interval'] == 6 && ! $isLast) {
 							$newInversion = $copy[$index]['inversions'][$key];
 							$newInterval = $newInversion['intervals'][$item]['interval'] + 7;
 							$newStep = $newInversion['intervals'][$item]['steps'] + 12;
@@ -223,7 +223,7 @@ class Validator
 					if (in_array($interval['interval'], [9,11,13]))
 						$hasNinethOrEleventhOrThirteenth = true;
 
-					if ($interval['name'] == 'minor 2')
+					if (isset($interval['name']) && $interval['name'] == 'minor 2')
 						$hasMinSecond = true;
 				}
 
@@ -286,10 +286,10 @@ class Validator
 		$falseThird = $falseFourth = false;
 
 		foreach ($intervals as $interval) {
-			if ($interval['name'] == 'diminished 4')
+			if (isset($interval['name']) && $interval['name'] == 'diminished 4')
 				$falseFourth = $interval['type'];
 
-			if ($interval['name'] == 'diminished 3' || $interval['name'] == 'augmented 3')
+			if (isset($interval['name']) && ($interval['name'] == 'diminished 3' || $interval['name'] == 'augmented 3'))
 				$falseThird = $interval['type'];
 		}
 
@@ -307,13 +307,13 @@ class Validator
 		$hasMinThird = $hasDimFifth = $hasMajorSixth = false;
 
 		foreach ($intervals as $interval) {
-			if ($interval['name'] == 'minor 3')
+			if (isset($interval['name']) && $interval['name'] == 'minor 3')
 				$hasMinThird = true;
 			
-			if ($interval['name'] == 'diminished 5')
+			if (isset($interval['name']) && $interval['name'] == 'diminished 5')
 				$hasDimFifth = true;
 
-			if ($interval['name'] == 'major 6')
+			if (isset($interval['name']) && $interval['name'] == 'major 6')
 				$hasMajorSixth = true;
 		}
 
@@ -357,10 +357,10 @@ class Validator
 		$hasDimFifth = $hasDimSeventh = false;
 
 		foreach ($intervals as $interval) {
-			if ($interval['name'] == 'diminished 5')
+			if (isset($interval['name']) && $interval['name'] == 'diminished 5')
 				$hasDimFifth = true;
 
-			if ($interval['name'] == 'diminished 7')
+			if (isset($interval['name']) && $interval['name'] == 'diminished 7')
 				$hasDimSeventh = true;
 		}
 
@@ -377,13 +377,13 @@ class Validator
 		$hasMinThird = $hasAugFifth = $hasMinSeventh = $hasDimSeventh = false;
 
 		foreach ($intervals as $interval) {
-			if ($interval['name'] == 'minor 3')
+			if (isset($interval['name']) && $interval['name'] == 'minor 3')
 				$hasMinThird = true;
 
-			if ($interval['name'] == 'augmented 5')
+			if (isset($interval['name']) && $interval['name'] == 'augmented 5')
 				$hasAugFifth = true;
 
-			if ($interval['name'] == 'diminished 7')
+			if (isset($interval['name']) && $interval['name'] == 'diminished 7')
 				$hasDimSeventh = true;
 		}
 
@@ -403,13 +403,13 @@ class Validator
 		$hasThird = $hasSecondOrFourth = $hasTenth = false;
 
 		foreach ($intervals as $interval) {
-			if ($interval['interval'] == 3)
+			if (isset($interval['interval']) && $interval['interval'] == 3)
 				$hasThird = true;
 
-			if ($interval['interval'] == 2 || $interval['interval'] == 4)
+			if (isset($interval['interval']) && $interval['interval'] == 2 || $interval['interval'] == 4)
 				$hasSecondOrFourth = true;
 
-			if ($interval['interval'] == 10)
+			if (isset($interval['interval']) && $interval['interval'] == 10)
 				$hasTenth = true;
 		}
 
