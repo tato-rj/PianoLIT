@@ -5,11 +5,13 @@
 		<p class="font-weight-bold text-center mb-2">Do you play this piece?</p>
 		<p class="small m-0">@fa(['icon' => 'cloud-upload-alt', 'mr' => 1])Upload a video of your performance</p>
 		<p class="small">@fa(['icon' => 'hands-clapping', 'mr' => 1])See the reactions from PianoLIT users from all around the world!</p>
+
 		@if($canUpload)
 		<button class="btn rounded-pill btn-outline-secondary btn-wide" id="upload-performance">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
 		@else
 		<button class="btn rounded-pill btn-outline-secondary btn-wide" data-toggle="modal" data-target="#no-credits-modal">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
 		@endif
+		
 		<div class="small text-center opacity-8 mt-1" style="font-size:80%">The video must be <strong>100mb</strong> or less</div>
 	</div>
 </div>
