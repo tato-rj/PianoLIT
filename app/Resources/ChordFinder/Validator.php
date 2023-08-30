@@ -217,10 +217,10 @@ class Validator
 		foreach ($this->array as $index => $result) {
 			foreach ($result['inversions'] as $key => $inversion) {
 				foreach ($inversion['intervals'] as $interval) {
-					if (in_array($interval['interval'], [2,4,6]))
+					if (isset($interval['interval']) && in_array($interval['interval'], [2,4,6]))
 						$hasTwoOrFourthOrSixth = true;
 
-					if (in_array($interval['interval'], [9,11,13]))
+					if (isset($interval['interval']) && in_array($interval['interval'], [9,11,13]))
 						$hasNinethOrEleventhOrThirteenth = true;
 
 					if (isset($interval['name']) && $interval['name'] == 'minor 2')
@@ -426,10 +426,10 @@ class Validator
 		$hasThird = $hasFifth = false;
 
 		foreach ($intervals as $interval) {
-			if (in_array($interval['interval'], [3, 10]))
+			if (isset($interval['interval']) && in_array($interval['interval'], [3, 10]))
 				$hasThird = true;
 
-			if (in_array($interval['interval'], [5, 12]))
+			if (isset($interval['interval']) && in_array($interval['interval'], [5, 12]))
 				$hasFifth = true;
 		}
 
