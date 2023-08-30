@@ -100,7 +100,7 @@ trait Notation
 		$fourth = $this->find($notes, 4);
 		$secondType = $fourthType = null;
 
-		if ($second) {
+		if (isset($second['type'])) {
 			if ($second['type'] == 'minor') {
 				$secondType = 'b2';
 			} else if ($second['type'] == 'augmented') {
@@ -110,31 +110,31 @@ trait Notation
 			}
 		}
 
-		if ($fourth)
+		if (isset($fourth['type']))
 			$fourthType = $fourth['type'] == 'augmented' ? '#4' : '4';
 
 		if (is_null($second['name']) && is_null($fourth['name']))
 			return ['sus' => '', 'sus_shorthand' => ''];
 
 		if (is_null($third['name'])) {
-			if ($second && $fourth) {
+			if (isset($second['name']) && isset($fourth['name'])) {
 				$label['sus'] = 'suspended '.$secondType.' and '.$fourthType;
 				$label['sus_shorthand'] = sup('sus'.$secondType.$fourthType);
-			} else if ($second && is_null($fourth['name'])) {
+			} else if (isset($second['name']) && is_null($fourth['name'])) {
 				$label['sus'] = 'suspended '.$secondType;
 				$label['sus_shorthand'] = sup('sus'.$secondType);				
-			} else if (is_null($second['name']) && $fourth) {
+			} else if (is_null($second['name']) && isset($fourth['name'])) {
 				$label['sus'] = 'suspended '.$fourthType;
 				$label['sus_shorthand'] = sup('sus'.$fourthType);				
 			}
 		} else {
-			if ($second && $fourth) {
+			if (isset($second['name']) && isset($fourth['name'])) {
 				$label['sus'] = 'added '.$secondType.' and '.$fourthType;
 				$label['sus_shorthand'] = sup('add'.$secondType.$fourthType);
-			} else if ($second && is_null($fourth['name'])) {
+			} else if (isset($second['name']) && is_null($fourth['name'])) {
 				$label['sus'] = 'added '.$secondType;
 				$label['sus_shorthand'] = sup('add'.$secondType);				
-			} else if (is_null($second['name']) && $fourth) {
+			} else if (is_null($second['name']) && isset($fourth['name'])) {
 				$label['sus'] = 'added '.$fourthType;
 				$label['sus_shorthand'] = sup('add'.$fourthType);				
 			}
