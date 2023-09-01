@@ -29,7 +29,7 @@ class PerformancesController extends Controller
 
         $response = $client->post('http://159.203.174.170/upload')->getBody();
 
-        dd($response);
+        return $response;
     }
 
     public function update(Request $request, Performance $performance)
