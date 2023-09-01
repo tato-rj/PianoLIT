@@ -26,7 +26,7 @@ class PerformancesController extends Controller
         $client = new Client([
             'headers' => ['Content-Type' => 'application/json']
         ]);
-        
+        return 'getting there';
         $response = $client->post('http://159.203.174.170/upload', ['body' => ''])->getBody();
 
         dd($response);
