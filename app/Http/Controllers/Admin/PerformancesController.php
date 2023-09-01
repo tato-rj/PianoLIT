@@ -29,7 +29,7 @@ class PerformancesController extends Controller
 
         $response = $client->post(env('FILEMANAGER_URL'))->getBody();
 
-        return $response;
+        return json_decode($response);
     }
 
     public function update(Request $request, Performance $performance)
