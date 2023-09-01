@@ -23,6 +23,12 @@ small .custom-control-label::before, small .custom-control-label::after {
     @datatable(['table' => 'performances', 'columns' => ['ID', 'Piece', 'Composer', '# Claps', 'User', 'Approved', '']])
 
   </div>
+  <div class="text-right p-4">
+    <form action="{{route('admin.users.performances.test-connection')}}" method="POST">
+      @csrf
+      <button class="btn btn-outline-secondary">Test Connection</button>
+    </form>
+  </div>
 </div>
 
 @include('admin.components.modals.delete')

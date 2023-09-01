@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Performance;
 use App\Events\Performances\PerformanceApproved;
 use App\Cloudinary\CloudinaryApi;
+use GuzzleHttp\Client;
 
 class PerformancesController extends Controller
 {
@@ -18,6 +19,17 @@ class PerformancesController extends Controller
                     ->datatable();
 
         return view('admin.pages.performances.index');
+    }
+
+    public function testConnection(Request $request)
+    {
+        $client = new Client([
+            'headers' => ['Content-Type' => 'application/json']
+        ]);
+        
+        $response = $client->post('http://159.203.174.170/upload', ['body' => ''])->getBody();
+
+        dd($response);
     }
 
     public function update(Request $request, Performance $performance)

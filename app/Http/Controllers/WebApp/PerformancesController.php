@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Cloudinary\CloudinaryApi;
 use App\Events\Performances\PerformanceSubmitted;
+use Illuminate\Support\Facades\Http;
 
 class PerformancesController extends Controller
 {
@@ -24,13 +25,13 @@ class PerformancesController extends Controller
             'user-performance-video' => 'required|mimes:mp4,mov,avi,webm,wmv|max:100000'
         ]);
 
-        $performance = auth()->user()->performances()->create([
-            'piece_id' => $piece->id,
-            'display_name' => $request->display_name,
-            'public_id' => (new CloudinaryApi)->upload($request->file('user-performance-video'))->publicId()
-        ]);
+        // $performance = auth()->user()->performances()->create([
+        //     'piece_id' => $piece->id,
+        //     'display_name' => $request->display_name,
+        //     'public_id' => (new CloudinaryApi)->upload($request->file('user-performance-video'))->publicId()
+        // ]);
 
-        event(new PerformanceSubmitted($performance));
+        // event(new PerformanceSubmitted($performance));
 
         return back()->with('status', 'Your video is being processed, please wait a few moments.');
     }

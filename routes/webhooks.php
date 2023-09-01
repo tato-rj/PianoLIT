@@ -6,6 +6,6 @@ Route::group(['namespace' => 'Webhooks'], function () {
 
     Route::post('stripe', 'StripeWebhookController')->name('stripe');
 
-    Route::post('cloudinary', 'CloudinaryWebhookController')->name('cloudinary');
+    Route::post('file-manager', 'FileManagerWebhookController')->name('file-manager');
 
 });

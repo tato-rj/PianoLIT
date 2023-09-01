@@ -22,6 +22,8 @@ Route::prefix('users')->name('users.')->group(function() {
 		
 		Route::patch('{performance}/status', 'Admin\PerformancesController@approve')->name('approve');
 
+		Route::post('/test-connection', 'Admin\PerformancesController@testConnection')->name('test-connection');
+
 		Route::delete('{performance}', 'Admin\PerformancesController@destroy')->name('destroy');
 
 	});
