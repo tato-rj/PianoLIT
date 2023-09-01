@@ -27,7 +27,7 @@ class PerformancesController extends Controller
             'headers' => ['Content-Type' => 'application/json']
         ]);
 
-        $response = $client->post('http://159.203.174.170/upload')->getBody();
+        $response = $client->post(env('FILEMANAGER_URL'))->getBody();
 
         return $response;
     }
