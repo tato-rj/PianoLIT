@@ -69,7 +69,7 @@ class EmailListsController extends Controller
 
     public function edit(EmailList $list)
     {
-        dd($list->last_sent_at->gt(now()->subDay()));
+        dd($list->last_sent_at->gt(now()->subMonth()));
         if (request()->ajax())
             return EmailList::datatable($list);
 
