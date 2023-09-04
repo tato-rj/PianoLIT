@@ -12,8 +12,7 @@ $factory->define(Performance::class, function (Faker $faker) {
         },
         'piece_id' => function() {
             return create(Piece::class)->id;
-        },
-        'public_id' => $faker->uuid
+        }
     ];
 });
 

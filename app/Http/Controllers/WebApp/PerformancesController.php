@@ -25,13 +25,31 @@ class PerformancesController extends Controller
             'user-performance-video' => 'required|mimes:mp4,mov,avi,webm,wmv|max:100000'
         ]);
 
-        // $performance = auth()->user()->performances()->create([
-        //     'piece_id' => $piece->id,
-        //     'display_name' => $request->display_name,
-        //     'public_id' => (new CloudinaryApi)->upload($request->file('user-performance-video'))->publicId()
-        // ]);
+        $video = $request->file('user-performance-video');
 
-        // event(new PerformanceSubmitted($performance));
+        $response = Http::acceptJson()->attach(
+            'video', file_get_contents($video), 'video.mp4'
+        )->post(env('FILEMANAGER_URL'), [
+            'secret' => env('FILEMANAGER_SECRET'),
+            'piece_id' => $piece->id,
+            'email' => auth()->user()->email,
+            'user_id' => auth()->user()->id
+        ]);
+
+        $data = json_decode($response->body());
+
+        if ($response->status() == 422)
+            return back()->withErrors($data)->withInput();
+
+        if (! $response->successful())
+            return back()->with('error', 'Sorry, your video could not be proccessed at this time. If this problem persists, please send us a message at contact@pianolit.com');
+
+        $performance = auth()->user()->performances()->create([
+            'piece_id' => $piece->id,
+            'display_name' => $request->display_name
+        ]);
+
+        event(new PerformanceSubmitted($performance));
 
         return back()->with('status', 'Your video is being processed, please wait a few moments.');
     }
