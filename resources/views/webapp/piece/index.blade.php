@@ -120,8 +120,8 @@ $('input[name="user-performance-video"]').change(function () {
 	let $source = $('#preview-performance source');
 	let filesize = this.files[0].size;
 
-	if (filesize > 100000000) {
-		alert('Sorry, this file is too large. Please reduce its size from '+Math.floor(filesize/1000000)+'mb to 100mb or less.');
+	if (filesize > 500000000) {
+		alert('Sorry, this file is too large. Please reduce its size from '+Math.floor(filesize/5000000)+'mb to 500mb or less.');
 	} else {
 	  $source[0].src = URL.createObjectURL(this.files[0]);
 	  $source.parent()[0].load();
