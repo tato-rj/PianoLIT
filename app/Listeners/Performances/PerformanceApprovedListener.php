@@ -16,6 +16,6 @@ class PerformanceApprovedListener
      */
     public function handle($event)
     {
-        \Mail::to(auth()->user()->email)->send(new PerformanceApprovedEmail($event->performance));
+        \Mail::to(auth()->user()->email)->send(new PerformanceApprovedEmail($event->performance->piece));
     }
 }

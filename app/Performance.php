@@ -69,15 +69,16 @@ class Performance extends PianoLit
         return $this->claps()->sum('count');
     }
 
-    public function process($url)
+    public function scopeProcess($query, $video)
     {
-        $ext = pathinfo($url, PATHINFO_EXTENSION);
+        $performance = $query->where([
+            'user_id' => $video['user_id'], 'piece_id' => $video['piece_id']
+        ])->firstOrFail();
 
-        $thumbnail_url = str_replace($ext, 'jpg', $url);
-
-        $this->update([
-            'video_url' => $url,
-            'thumbnail_url' => $thumbnail_url
+        return $performance->update([
+            'video_url' => $video['video_url'],
+            'thumbnail_url' => $video['thumb_url'],
+            'bytes' => $video['compressed_size']
         ]);
     }
 
@@ -94,11 +95,6 @@ class Performance extends PianoLit
     public function disapprove()
     {
         $this->update(['approved_at' => null]);
-    }
-
-    public function scopeByPublicId($query, $publicId)
-    {
-        return $query->where('public_id', $publicId);
     }
 
     public function scopeProcessing($query)

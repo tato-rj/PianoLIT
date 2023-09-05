@@ -2,7 +2,7 @@
       'other' => [['route' => $item->video_url, 'title' => 'Watch video', 'icon' => 'eye']],
       'delete' => route('admin.users.performances.destroy', $item)
   ]])
-  <div>
+{{--   <div>
     <button class="btn-raw text-muted align-middle" data-toggle="modal" data-target="#update-performance-{{$item->id}}-modal">@fa(['icon' => 'edit'])</button>
 
   @component('components.modal', [
@@ -17,14 +17,7 @@
 
     @submit(['label' => 'Update', 'block' => true])
   </form>
-
-  <form method="POST" action="{{route('admin.users.performances.get-urls', $item)}}" class="mt-2 pt-2 border-top">
-    @csrf
-    @method('PATCH')
-
-    <button class="btn btn-outline-secondary w-100">Get Urls from Cloudinary</button>
-  </form>
   @endslot
   @endcomponent
-  </div>
+  </div> --}}
   @endcomponent

@@ -10,7 +10,10 @@ class FileManagerWebhookController extends Controller
 {
     public function __invoke(Request $request)
     {
-        // Performance::byPublicId($request['public_id'])->first()->process($request['secure_url']);
+        if ($request->ip() != env('FILEMANAGER_IP'))
+            abort(404, 'You cannot make this request');
+
+        Performance::process($request->video);
 
         return response(200);
     }

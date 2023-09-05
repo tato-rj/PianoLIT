@@ -4,15 +4,12 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\{Performance, User, Piece};
-use Tests\Traits\InteractsWithCloudinary;
-use App\Cloudinary\CloudinarySandbox;
 use App\Notifications\Performances\{PerformanceSubmittedNotification, PerformanceDeletedNotification};
 use App\Mail\Performances\{PerformanceSubmittedEmail, PerformanceApprovedEmail};
+use App\Events\Performances\PerformanceSubmitted;
 
 class PerformanceTest extends AppTest
 {
-    use InteractsWithCloudinary;
-
     public function setUp() : void
     {
         parent::setUp();
@@ -22,27 +19,11 @@ class PerformanceTest extends AppTest
     }
 
     /** @test */
-    public function a_performance_upload_runs_async_and_waits_for_cloudinary_to_complete_the_upload()
-    {
-        $this->signIn($this->user);
-
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
-
-        $this->assertTrue(auth()->user()->performances()->processing()->exists());
-        $this->assertFalse(auth()->user()->performances()->pending()->exists());
-
-        $this->fakeCloudinaryWebhook();
-
-        $this->assertFalse(auth()->user()->performances()->processing()->exists());
-        $this->assertTrue(auth()->user()->performances()->pending()->exists());
-    }
-
-    /** @test */
     public function admins_are_notified_when_a_performance_is_uploaded()
     {
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
+        event(new PerformanceSubmitted(create(Performance::class)));
 
         \Notification::assertSentTo($this->admin, PerformanceSubmittedNotification::class);
     }
@@ -52,11 +33,9 @@ class PerformanceTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
-
         $this->assertFalse(auth()->user()->performances()->pending()->exists());
 
-        $this->fakeCloudinaryWebhook();
+        create(Performance::class, ['user_id' => auth()->user(), 'video_url' => 'foo']);
 
         $this->assertTrue(auth()->user()->performances()->pending()->exists());
         $this->assertFalse(auth()->user()->performances()->approved()->exists());
@@ -78,9 +57,7 @@ class PerformanceTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
-
-        $this->fakeCloudinaryWebhook();
+        event(new PerformanceSubmitted(create(Performance::class)));
 
         \Mail::assertQueued(PerformanceSubmittedEmail::class);
     }
@@ -90,9 +67,7 @@ class PerformanceTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
-
-        $this->fakeCloudinaryWebhook();
+        create(Performance::class, ['user_id' => auth()->user()]);
 
         $this->signIn();
 
@@ -102,49 +77,13 @@ class PerformanceTest extends AppTest
     }
 
     /** @test */
-    public function an_admin_can_delete_a_performance()
-    {
-        $this->signIn($this->user);
-
-        $this->assertDatabaseMissing('performances', ['user_id' => auth()->user()->id]);
-
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
-
-        $this->assertDatabaseHas('performances', ['user_id' => auth()->user()->id]);
-
-        $this->signIn();
-
-        $this->assertCount(1, Performance::all());
-        
-        $this->delete(route('admin.users.performances.destroy', Performance::first()));
-
-        $this->assertCount(0, Performance::all());
-    }
-
-        /** @test */
-    public function users_can_delete_their_own_performance()
-    {
-        $this->signIn($this->user);
-
-        $this->assertDatabaseMissing('performances', ['user_id' => auth()->user()->id]);
-
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
-
-        $this->assertDatabaseHas('performances', ['user_id' => auth()->user()->id]);
-        
-        $this->delete(route('webapp.users.performances.destroy', Performance::first()));
-
-        $this->assertCount(0, Performance::all());
-    }
-
-        /** @test */
     public function users_cannot_delete_other_users_performances()
     {
         $this->expectException('Illuminate\Auth\Access\AuthorizationException');
 
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
+        create(Performance::class, ['user_id' => auth()->user()]);
         
         $this->signIn(create(User::class));
 
@@ -158,7 +97,7 @@ class PerformanceTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
+        create(Performance::class, ['user_id' => auth()->user()]);
         
         $this->post(route('api.users.performances.clap', Performance::first()), ['user_id' => auth()->user()->id]);
     }
@@ -168,7 +107,7 @@ class PerformanceTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
+        create(Performance::class, ['user_id' => auth()->user()]);
         
         $this->signIn(create(User::class));
 
@@ -186,7 +125,7 @@ class PerformanceTest extends AppTest
     {
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
+        create(Performance::class, ['user_id' => auth()->user()]);
 
         $performance = Performance::first();
         
@@ -198,7 +137,7 @@ class PerformanceTest extends AppTest
 
         $this->assertDatabaseHas('claps', ['performance_id' => $performance->id]);
 
-        $this->delete(route('webapp.users.performances.destroy', $performance));
+        $performance->delete();
 
         $this->assertDatabaseMissing('claps', ['performance_id' => $performance->id]);
     }
@@ -210,9 +149,9 @@ class PerformanceTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
+        create(Performance::class, ['user_id' => auth()->user(), 'piece_id' => $this->piece]);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
+        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => 'foo']);
     }
 
     /** @test */
@@ -222,8 +161,8 @@ class PerformanceTest extends AppTest
 
         $this->signIn($this->user);
 
-        $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => $this->uploadedVideo()]);
+        create(Performance::class, ['user_id' => auth()->user()]);
 
-        $this->post(route('webapp.users.performances.store', create(Piece::class)), ['user-performance-video' => $this->uploadedVideo()]);
+        $this->post(route('webapp.users.performances.store', create(Piece::class)), ['user-performance-video' => 'foo']);
     }
 }

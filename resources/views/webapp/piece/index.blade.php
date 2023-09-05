@@ -38,6 +38,16 @@ video::-webkit-media-controls-enclosure {
 	height: 1px;
 	background-color: transparent;
 }
+
+.screen-lock-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 10000;
+  width: 100%;
+  height: 100vh;
+}
 </style>
 @endpush
 
@@ -98,6 +108,10 @@ $('.clap').on('click', function() {
 });
 </script>
 <script type="text/javascript">
+$('#upload-performance-modal form').on('submit', function() {
+	$('body').append('<div class="screen-lock-overlay flex-center text-white d-flex justify-content-center align-items-center"><div><strong>Please keep this browser tab open until uploading completes.</strong></div></div>');
+});
+
 $('#upload-performance').on('click', function() {
 	$('input[name="user-performance-video"]').trigger('click');
 });

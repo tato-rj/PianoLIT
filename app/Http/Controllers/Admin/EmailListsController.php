@@ -37,7 +37,7 @@ class EmailListsController extends Controller
 
     public function send(EmailList $list)
     {
-        if ($list->last_sent_at->gt(now()->subDay()))
+        if ($list->last_sent_at && $list->last_sent_at->gt(now()->subDay()))
             return back()->with('status', 'This list has recently been sent');
 
         $list->send();

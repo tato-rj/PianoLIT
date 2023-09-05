@@ -5,9 +5,8 @@ namespace App\Http\Controllers\WebApp;
 use App\{Performance, Piece};
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Cloudinary\CloudinaryApi;
+use App\FileManager\FileManagerApi;
 use App\Events\Performances\PerformanceSubmitted;
-use Illuminate\Support\Facades\Http;
 
 class PerformancesController extends Controller
 {
@@ -25,16 +24,7 @@ class PerformancesController extends Controller
             'user-performance-video' => 'required|mimes:mp4,mov,avi,webm,wmv|max:100000'
         ]);
 
-        $video = $request->file('user-performance-video');
-
-        $response = Http::acceptJson()->attach(
-            'video', file_get_contents($video), 'video.mp4'
-        )->post(env('FILEMANAGER_URL'), [
-            'secret' => env('FILEMANAGER_SECRET'),
-            'piece_id' => $piece->id,
-            'email' => auth()->user()->email,
-            'user_id' => auth()->user()->id
-        ]);
+        $response = (new FileManagerApi)->piece($piece)->upload($request->file('user-performance-video'))->getResponse();
 
         $data = json_decode($response->body());
 
@@ -42,7 +32,7 @@ class PerformancesController extends Controller
             return back()->withErrors($data)->withInput();
 
         if (! $response->successful())
-            return back()->with('error', 'Sorry, your video could not be proccessed at this time. If this problem persists, please send us a message at contact@pianolit.com');
+            return back()->with('error', $data->message);
 
         $performance = auth()->user()->performances()->create([
             'piece_id' => $piece->id,
@@ -55,40 +45,6 @@ class PerformancesController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Performance  $performance
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Performance $performance)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Performance  $performance
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Performance $performance)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Performance  $performance
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Performance $performance)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Performance  $performance
@@ -98,9 +54,9 @@ class PerformancesController extends Controller
     {
         $this->authorize('update', $performance);
 
-        $response = (new CloudinaryApi)->delete($performance);
+        $response = (new FileManagerApi)->delete($performance);
 
-        if ($response['result'] == 'ok') {
+        if ($response->successful()) {
             $performance->delete();
 
             return back()->with('status', 'The performance has been deleted.');

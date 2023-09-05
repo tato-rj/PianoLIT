@@ -6,8 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Performance;
 use App\Events\Performances\PerformanceApproved;
-use App\Cloudinary\CloudinaryApi;
-use GuzzleHttp\Client;
+use App\FileManager\FileManagerApi;
 
 class PerformancesController extends Controller
 {
@@ -21,17 +20,6 @@ class PerformancesController extends Controller
         return view('admin.pages.performances.index');
     }
 
-    public function testConnection(Request $request)
-    {
-        $client = new Client([
-            'headers' => ['Content-Type' => 'application/json']
-        ]);
-
-        $response = $client->post(env('FILEMANAGER_URL'))->getBody();
-
-        return json_decode($response);
-    }
-
     public function update(Request $request, Performance $performance)
     {
         $performance->update([
@@ -39,17 +27,6 @@ class PerformancesController extends Controller
             'thumbnail_url' => $request->thumbnail_url
         ]);
 
-        return back()->with('status', 'The performance has been updated.');
-    }
-
-    public function getUrls(Request $request, Performance $performance)
-    {
-        if ($record = (new CloudinaryApi)->find($performance))
-            $performance->update([
-                'video_url' => $record['url'],
-                'thumbnail_url' => (new CloudinaryApi)->getThumbnailFrom($record['url'])
-            ]);
-        
         return back()->with('status', 'The performance has been updated.');
     }
 
@@ -74,9 +51,9 @@ class PerformancesController extends Controller
 
     public function destroy(Performance $performance)
     {
-        $response = (new CloudinaryApi)->delete($performance);
+        $response = (new FileManagerApi)->delete($performance);
 
-        if ($response['result'] == 'ok') {
+        if ($response->successful()) {
             $performance->delete();
 
             return back()->with('status', 'The performance has been deleted.');
