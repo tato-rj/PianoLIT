@@ -109,7 +109,7 @@ $('.clap').on('click', function() {
 </script>
 <script type="text/javascript">
 $('#upload-performance-modal form').on('submit', function() {
-	$('body').append('<div class="screen-lock-overlay flex-center text-white d-flex justify-content-center align-items-center"><div><strong>Please keep this browser tab open until uploading completes.</strong></div></div>');
+	$('body').append('<div class="screen-lock-overlay flex-center text-white d-flex text-center justify-content-center align-items-center"><div class="text-center"><strong>Please keep this browser tab open until uploading completes.</strong></div></div>');
 });
 
 $('#upload-performance').on('click', function() {
