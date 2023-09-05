@@ -20,7 +20,7 @@ class CreatePerformancesTable extends Migration
             $table->string('display_name')->nullable();
             $table->string('video_url')->nullable();
             $table->string('thumbnail_url')->nullable();
-            $table->string('bytes')->nullable();
+            $table->unsignedInteger('size')->nullable();
             $table->timestamp('approved_at')->nullable();
             $table->timestamps();
         });
