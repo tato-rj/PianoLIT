@@ -75,6 +75,21 @@ abstract class Factory
         ]);
     }
 
+    public function ethnicity($ethnicity, $title)
+    {
+        $collection = Piece::with('composer')->byEthnicity($ethnicity)->shuffle();
+
+        $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+
+        return $this->createPlaylist($collection, [
+            'row' => 'gallery', 
+            'type' => 'piece', 
+            'title' => $title, 
+            'tag' => $ethnicity.' composers', 
+            'url' => route('search.index', ['global', 'search' => $ethnicity.' composers'])
+        ]);
+    }
+
     public function tag($title)
     {
         $tag = Tag::mood()->has('pieces', '>', 20)->inRandomOrder()->pluck('name')->first();

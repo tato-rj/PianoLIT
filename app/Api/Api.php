@@ -26,6 +26,7 @@ class Api extends Factory
                 $this->order(4)->ranking('suzuki', 'Equivalent to the Suzuki series'),
                 $this->order(5)->ranking('rcm', 'Equivalent to the RCM levels'),
                 $this->order(6)->ranking('abrsm', 'Equivalent to the ABRSM levels'),
+                $this->order(3)->ethnicity('black', 'From black composers'),
                 $this->order(7)->tag('Pieces that are'),
                 // $this->order(6)->levels('Levels'),
                 $this->order(8)->similar('Like today\'s free pick', Piece::free()->first()),
