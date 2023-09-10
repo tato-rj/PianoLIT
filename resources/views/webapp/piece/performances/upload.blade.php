@@ -7,7 +7,7 @@
 		<p class="small">@fa(['icon' => 'hands-clapping', 'mr' => 1])See the reactions from PianoLIT users from all around the world!</p>
 
 		@if($canUpload)
-		<button class="btn rounded-pill btn-outline-secondary btn-wide" id="upload-performance">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
+		<button class="btn rounded-pill btn-outline-secondary btn-wide" id="choose-video">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
 		@else
 		<button class="btn rounded-pill btn-outline-secondary btn-wide" data-toggle="modal" data-target="#no-credits-modal">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
 		@endif
@@ -18,25 +18,22 @@
 
 @if($canUpload)
 
-	@component('components.modal', ['id' => 'upload-performance-modal'])
+	@component('components.modal', ['id' => 'confirm-performance-modal'])
 	@slot('body')
 	<div class="mb-2">
 		<video id="preview-performance" class="w-100" height="240" controls>
 		  <source src="" type="video/mp4">
 		</video>
 	</div>
-
-	<form method="POST" action="{{route('webapp.users.performances.store', $piece)}}" enctype="multipart/form-data" disable-on-submit>
-	    @csrf
+	<div>
 	    <div class="text-center">
 		    <p class="text-muted m-0">My performance of</p>
 		    <p class="mb-2"><strong>{{$piece->long_name_with_composer}}</strong></p>
 		</div>
 		
 		@input(['label' => 'Name of the performer', 'placeholder' => auth()->user()->first_name, 'bag' => 'default', 'name' => 'display_name', 'limit' => 200, 'required' => false])
-	    <input type="file" name="user-performance-video" style="display: none">
-	    <button type="submit" class="btn btn-primary w-100">Upload</button>
-	</form>
+	    <button id="confirm-performance-button" class="btn btn-primary w-100">Upload</button>
+	</div>
 	@endslot
 	@endcomponent
 

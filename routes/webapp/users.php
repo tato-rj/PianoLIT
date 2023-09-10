@@ -14,6 +14,8 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 
 		Route::prefix('performances')->name('performances.')->group(function() {
 
+			Route::get('{piece}/upload-url', 'PerformancesController@uploadUrl')->name('upload-url');
+
 			Route::post('{piece}', 'PerformancesController@store')->name('store');
 
 			Route::delete('{performance}', 'PerformancesController@destroy')->name('destroy');

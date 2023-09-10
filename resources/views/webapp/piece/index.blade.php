@@ -68,11 +68,128 @@ video::-webkit-media-controls-enclosure {
 </section>
 
 @include('webapp.piece.components.panel')
-
+@include('webapp.piece.performances.overlay')
 @endsection
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+<script type="text/javascript">
+let $progressBar = $('.progress-bar');
+let $uploadOverlay = $('#upload-overlay');
+let $chooseButton = $('#choose-video');
+let $confirmModal = $('#confirm-performance-modal');
+let $confirmButton = $('#confirm-performance-button');
+let $progress = $('.progress');
+let resumable;
+
+function startRequest()
+{
+	axios.get('{{ route('webapp.users.performances.upload-url', $piece) }}')
+			 .then(function(response) {
+			 	launchResumable(response.data);
+			 })
+			 .catch(function(error) {
+			 	alert(error);
+			 });
+}
+
+startRequest();
+
+function launchResumable(data)
+{
+	resumable = new Resumable({
+	    target: data.url,
+	    query:{
+	        _token:'{{ csrf_token() }}',
+	        secret: data.secret,
+	        origin: 'local',
+	        user_id: data.user.id,
+	        piece_id: data.piece.id,
+	        email: data.user.email
+	    },
+	    fileType: ['mp4', 'MOV'],
+	    maxFileSize: 500000000,
+	    headers: {
+	        'Accept' : 'application/json'
+	    },
+	    testChunks: false,
+	    throttleProgressCallbacks: 1,
+	});
+
+	resumable.assignBrowse($chooseButton[0]);
+
+	$confirmButton.on('click', function() {
+	    if (resumable.files.length) {
+	        $(this).prop('disabled', true);
+	        resumable.upload();
+	        $uploadOverlay.show();
+	    }
+	});
+
+	resumable.on('fileAdded', function (file) {
+	    showProgress();
+	    showPreview(file);
+	    showModal();
+	});
+
+	resumable.on('fileProgress', function (file) {
+	    updateProgress(Math.floor(file.progress() * 100));
+	});
+
+	resumable.on('fileSuccess', function (file, response) {
+	    setTimeout(function() {
+	        $progressBar.removeClass('progress-bar-striped progress-bar-animated')
+	        						.addClass('bg-success')
+	        						.text('DONE!');
+
+	        setTimeout(function() {
+	            location.reload();
+	        }, 2000);
+	    }, 1000);
+	});
+
+	resumable.on('fileError', function (file, response) {
+	    console.log(response);
+	    alert('File uploading error.');
+	});
+}
+
+$confirmModal.on('hidden.bs.modal', function() {
+	resumable.cancel();
+});
+
+function showPreview(instance) {
+	let $preview = $('#preview-performance source');
+
+	  $preview[0].src = URL.createObjectURL(instance.file);
+	  $preview.parent()[0].load();
+}
+
+function showModal() {
+	$confirmModal.modal('show');
+}
+
+function showProgress() {
+    $progress.find('.progress-bar').css('width', '0%');
+    $progress.find('.progress-bar').html('0%');
+    $progress.find('.progress-bar').removeClass('bg-success');
+    $progress.show();
+}
+function updateProgress(value) {
+    $progress.find('.progress-bar').css('width', `${value}%`);
+    $progress.find('.progress-bar').html(`${value}%`);
+}
+
+function hideProgress() {
+    $progress.hide();
+}
+
+$('#confirm-performance-modal').on('hide.bs.modal', function() {
+    $('#preview-performance').get(0).pause();
+    $('#preview-performance').get(0).currentTime = 0;
+});
+</script>
 <script type="text/javascript">
 function clap($hands) {
 	$hands.removeClass('text-grey').addClass('text-green');
@@ -108,32 +225,27 @@ $('.clap').on('click', function() {
 });
 </script>
 <script type="text/javascript">
-$('#upload-performance-modal form').on('submit', function() {
-	$('body').append('<div class="screen-lock-overlay flex-center text-white d-flex text-center justify-content-center align-items-center"><div class="text-center"><strong>Please keep this browser tab open until uploading completes.</strong></div></div>');
-});
+// $('#upload-performance-modal form').on('submit', function() {
+// 	$('body').append('<div class="screen-lock-overlay flex-center text-white d-flex text-center justify-content-center align-items-center"><div class="text-center"><strong>Please keep this browser tab open until uploading completes.</strong></div></div>');
+// });
 
-$('#upload-performance').on('click', function() {
-	$('input[name="user-performance-video"]').trigger('click');
-});
+// $('#upload-performance').on('click', function() {
+// 	$('input[name="user-performance-video"]').trigger('click');
+// });
 
-$('input[name="user-performance-video"]').change(function () {
-	let $source = $('#preview-performance source');
-	let filesize = this.files[0].size;
+// $('input[name="user-performance-video"]').change(function () {
+// 	let $source = $('#preview-performance source');
+// 	let filesize = this.files[0].size;
 
-	if (filesize > 500000000) {
-		alert('Sorry, this file is too large. Please reduce its size from '+Math.floor(filesize/5000000)+'mb to 500mb or less.');
-	} else {
-	  $source[0].src = URL.createObjectURL(this.files[0]);
-	  $source.parent()[0].load();
+// 	if (filesize > 500000000) {
+// 		alert('Sorry, this file is too large. Please reduce its size from '+Math.floor(filesize/5000000)+'mb to 500mb or less.');
+// 	} else {
+// 	  $source[0].src = URL.createObjectURL(this.files[0]);
+// 	  $source.parent()[0].load();
 
-		$('#upload-performance-modal').modal('show');
-	}
-});
-
-$('#upload-performance-modal').on('hide.bs.modal', function() {
-    $('#preview-performance').get(0).pause();
-    $('#preview-performance').get(0).currentTime = 0;
-});
+// 		$('#upload-performance-modal').modal('show');
+// 	}
+// });
 </script>
 
 <script type="text/javascript">
