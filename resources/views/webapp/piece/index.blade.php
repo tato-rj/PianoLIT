@@ -74,6 +74,7 @@ video::-webkit-media-controls-enclosure {
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+@if(false)
 <script type="text/javascript">
 let $progressBar = $('.progress-bar');
 let $uploadOverlay = $('#upload-overlay');
@@ -224,6 +225,7 @@ $('.clap').on('click', function() {
 	}
 });
 </script>
+@endif
 <script type="text/javascript">
 // $('#upload-performance-modal form').on('submit', function() {
 // 	$('body').append('<div class="screen-lock-overlay flex-center text-white d-flex text-center justify-content-center align-items-center"><div class="text-center"><strong>Please keep this browser tab open until uploading completes.</strong></div></div>');
