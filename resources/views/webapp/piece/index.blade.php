@@ -64,7 +64,6 @@ video::-webkit-media-controls-enclosure {
 		@include('webapp.piece.tabs.lessons')
 		@include('webapp.piece.tabs.tutorial')
 	</div>
-
 </section>
 
 @include('webapp.piece.components.panel')
@@ -74,7 +73,7 @@ video::-webkit-media-controls-enclosure {
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-@if(local())
+@if(auth()->user()->email == 'arthurvillar@gmail.com')
 <script type="text/javascript">
 let $progressBar = $('.progress-bar');
 let $uploadOverlay = $('#upload-overlay');
@@ -91,7 +90,7 @@ function startRequest()
 			 	launchResumable(response.data);
 			 })
 			 .catch(function(error) {
-			 	alert(error);
+			 	console.log(error);
 			 });
 }
 
@@ -145,14 +144,17 @@ function launchResumable(data)
 	        						.text('DONE!');
 
 	        setTimeout(function() {
-	            location.reload();
+	            $('#create-performance-form').submit();
 	        }, 2000);
 	    }, 1000);
 	});
 
 	resumable.on('fileError', function (file, response) {
-	    console.log(response);
-	    alert('File uploading error.');
+		let error = JSON.parse(response);
+		let message = Object.values(error)[0];
+
+	    alert(message);
+	    reset();
 	});
 }
 
@@ -184,6 +186,14 @@ function updateProgress(value) {
 
 function hideProgress() {
     $progress.hide();
+}
+
+function reset() {
+    showProgress();
+    hideProgress();
+    $uploadOverlay.fadeOut('fast');
+    $confirmModal.modal('hide');
+    $confirmButton.prop('disabled', false);
 }
 
 $('#confirm-performance-modal').on('hide.bs.modal', function() {
@@ -226,29 +236,6 @@ $('.clap').on('click', function() {
 });
 </script>
 @endif
-<script type="text/javascript">
-// $('#upload-performance-modal form').on('submit', function() {
-// 	$('body').append('<div class="screen-lock-overlay flex-center text-white d-flex text-center justify-content-center align-items-center"><div class="text-center"><strong>Please keep this browser tab open until uploading completes.</strong></div></div>');
-// });
-
-// $('#upload-performance').on('click', function() {
-// 	$('input[name="user-performance-video"]').trigger('click');
-// });
-
-// $('input[name="user-performance-video"]').change(function () {
-// 	let $source = $('#preview-performance source');
-// 	let filesize = this.files[0].size;
-
-// 	if (filesize > 500000000) {
-// 		alert('Sorry, this file is too large. Please reduce its size from '+Math.floor(filesize/5000000)+'mb to 500mb or less.');
-// 	} else {
-// 	  $source[0].src = URL.createObjectURL(this.files[0]);
-// 	  $source.parent()[0].load();
-
-// 		$('#upload-performance-modal').modal('show');
-// 	}
-// });
-</script>
 
 <script type="text/javascript">
 // LIMIT COMPOSER BIO ON THE ABOUT SECTION TO 4 LINES

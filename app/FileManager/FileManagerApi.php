@@ -17,20 +17,20 @@ class FileManagerApi
 		return $this;
 	}
 
-	public function upload(UploadedFile $file)
-	{
-        $this->response = Http::acceptJson()->attach(
-            'video', file_get_contents($file), $file->getClientOriginalName()
-        )->post(env('FILEMANAGER_UPLOAD_URL'), [
-            'secret' => env('FILEMANAGER_SECRET'),
-            'origin' => 'webapp',
-            'piece_id' => $this->piece->id,
-            'email' => auth()->user()->email,
-            'user_id' => auth()->user()->id
-        ]);
+	// public function upload(UploadedFile $file)
+	// {
+    //     $this->response = Http::acceptJson()->attach(
+    //         'video', file_get_contents($file), $file->getClientOriginalName()
+    //     )->post(env('FILEMANAGER_UPLOAD_URL'), [
+    //         'secret' => env('FILEMANAGER_SECRET'),
+    //         'origin' => 'webapp',
+    //         'piece_id' => $this->piece->id,
+    //         'email' => auth()->user()->email,
+    //         'user_id' => auth()->user()->id
+    //     ]);
 
-        return $this;
-	}
+    //     return $this;
+	// }
 
 	public function delete(Performance $performance)
 	{

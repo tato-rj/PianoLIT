@@ -31,7 +31,11 @@
 		    <p class="mb-2"><strong>{{$piece->long_name_with_composer}}</strong></p>
 		</div>
 		
-		@input(['label' => 'Name of the performer', 'placeholder' => auth()->user()->first_name, 'bag' => 'default', 'name' => 'display_name', 'limit' => 200, 'required' => false])
+		<form id="create-performance-form" action="{{route('webapp.users.performances.store', $piece)}}" method="POST">
+			@csrf
+			@input(['label' => 'Name of the performer', 'placeholder' => auth()->user()->first_name, 'bag' => 'default', 'name' => 'display_name', 'limit' => 200, 'required' => false])
+		</form>
+
 	    <button id="confirm-performance-button" class="btn btn-primary w-100">Upload</button>
 	</div>
 	@endslot

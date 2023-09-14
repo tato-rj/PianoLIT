@@ -1,6 +1,6 @@
 <div class="tab-pane fade" id="tab-lessons">
 
-	@if(local())
+	@if(auth()->user()->email == 'arthurvillar@gmail.com')
 	<div class="mb-4">
 		<div class="mb-4"> 
 			@if(! auth()->user()->performances()->of($piece)->approved()->exists())

@@ -71,15 +71,20 @@ class Performance extends PianoLit
 
     public function scopeProcess($query, $video)
     {
-        $performance = $query->where([
-            'user_id' => $video['user_id'], 'piece_id' => $video['piece_id']
-        ])->firstOrFail();
+        $performance = $query->fromFileManager($video);
 
         return $performance->update([
             'video_url' => $video['video_url'],
             'thumbnail_url' => $video['thumb_url'],
             'size' => $video['compressed_size']
         ]);
+    }
+
+    public function scopeFromFileManager($query, $video)
+    {
+        return $query->where([
+            'user_id' => $video['user_id'], 'piece_id' => $video['piece_id']
+        ])->firstOrFail();
     }
 
     public function isApproved()

@@ -8,4 +8,6 @@ Route::group(['namespace' => 'Webhooks'], function () {
 
     Route::post('file-manager', 'FileManagerWebhookController')->name('file-manager');
 
+    Route::delete('file-manager', 'FileManagerWebhookController');
+
 });

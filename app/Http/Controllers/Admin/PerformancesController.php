@@ -53,12 +53,9 @@ class PerformancesController extends Controller
     {
         $response = (new FileManagerApi)->delete($performance);
 
-        if ($response->successful()) {
+        if ($response->status() == 404)
             $performance->delete();
 
-            return back()->with('status', 'The performance has been deleted.');
-        }
-
-        return back()->with('error', 'The performance could not be deleted.');
+        return back()->with('status', 'The performance has been deleted.');
     }
 }
