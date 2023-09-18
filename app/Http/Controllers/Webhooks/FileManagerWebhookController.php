@@ -10,8 +10,8 @@ class FileManagerWebhookController extends Controller
 {
     public function __invoke(Request $request)
     {
-        if ($request->ip() != env('FILEMANAGER_IP'))
-            abort(404, 'You cannot make this request');
+        // if ($request->ip() != env('FILEMANAGER_IP'))
+            // abort(404, 'You cannot make this request');
 
         if ($request->isMethod('POST'))
             return $this->process($request->video);
