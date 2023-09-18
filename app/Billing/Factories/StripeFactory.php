@@ -13,6 +13,7 @@ class StripeFactory
 	public function __construct()
 	{
     Stripe::setApiKey(config('services.stripe.secret'));
+    Stripe::setApiVersion(config('services.stripe.version'));
 	}
 
   public function transaction($token)

@@ -22,6 +22,7 @@ class StripeSandbox
 	public function token($card = '4242424242424242')
 	{
         Stripe::setApiKey(config('services.stripe.secret'));
+        Stripe::setApiVersion(config('services.stripe.version'));
 
 	    return Token::create([
 	      'card' => [

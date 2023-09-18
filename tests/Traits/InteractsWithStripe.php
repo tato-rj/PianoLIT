@@ -24,7 +24,7 @@ trait InteractsWithStripe
         return $this->post(route('webapp.membership.purchase',
             [
             	'stripeToken' => (new StripeSandbox)->token(), 
-            	'plan' => create(Plan::class, ['name' => 'monthly']),
+            	'plan' => create(Plan::class, ['name' => 'price_1Nq5E4A3roHoLcB1lhrchbA4']),
             	'coupon' => $withCoupon ? 'TEST-COUPON' : null
             ]
         ));
