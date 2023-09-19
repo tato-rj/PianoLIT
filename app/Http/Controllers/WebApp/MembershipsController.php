@@ -45,7 +45,7 @@ class MembershipsController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
-        
+
         StripeMembership::subscribe(auth()->user(), $customer);
 
         if (auth()->user()->membership->source->isOnTrial())

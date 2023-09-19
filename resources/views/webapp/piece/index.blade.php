@@ -81,6 +81,7 @@ let $chooseButton = $('#choose-video');
 let $confirmModal = $('#confirm-performance-modal');
 let $confirmButton = $('#confirm-performance-button');
 let $progress = $('.progress');
+let $loadingText = $('#loading-text');
 let resumable;
 
 function startRequest()
@@ -134,14 +135,15 @@ function launchResumable(data)
 	});
 
 	resumable.on('fileProgress', function (file) {
-	    updateProgress(Math.floor(file.progress() * 100));
+	    let percentage = Math.floor(file.progress() * 100);
+
+	    updateProgress(percentage);
+	    nextLoadingText(percentage);
 	});
 
 	resumable.on('fileSuccess', function (file, response) {
 	    setTimeout(function() {
-	        $progressBar.removeClass('progress-bar-striped progress-bar-animated')
-	        						.addClass('bg-success')
-	        						.text('DONE!');
+	        completeProgress();
 
 	        setTimeout(function() {
 	            $('#create-performance-form').submit();
@@ -179,6 +181,7 @@ function showProgress() {
     $progress.find('.progress-bar').removeClass('bg-success');
     $progress.show();
 }
+
 function updateProgress(value) {
     $progress.find('.progress-bar').css('width', `${value}%`);
     $progress.find('.progress-bar').html(`${value}%`);
@@ -186,6 +189,37 @@ function updateProgress(value) {
 
 function hideProgress() {
     $progress.hide();
+}
+
+let startTime;
+let canChangeSentence = true;
+
+function nextLoadingText(percentage) {
+    if (! canChangeSentence)
+        return null;
+
+    let array = $loadingText.data('sentences');
+    let index = Math.floor(percentage/Math.floor(100 / array.length));
+
+    if (percentage > 90) {
+        $loadingText.text(array.pop());
+
+        canChangeSentence = false;
+    } else {
+        if (moment().diff(startTime, 'seconds') % 4 === 0) {
+            $loadingText.text(array[index]);
+        }
+    }
+}
+
+function completeProgress() {
+    $progressBar.removeClass('progress-bar-striped progress-bar-animated')
+                .addClass('bg-success')
+                .html('<i class="fa-solid fa-check fa-xl"></i>')
+                .parent()
+                .addClass('rubberBand');
+
+    $loadingText.text('Done!');
 }
 
 function reset() {

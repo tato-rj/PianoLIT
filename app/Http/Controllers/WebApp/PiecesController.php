@@ -12,8 +12,9 @@ class PiecesController extends Controller
     public function show(Piece $piece)
     {
     	$timeline = Timeline::for($piece->id, 4);
+        $sentences = ['Tuning the piano', 'Arranging rows of comfy seats', 'Adjusting the bench', 'Warming up fingers', 'Greeting the eager audience', 'Dimming the lights', 'Wrapping up'];
 
-    	return view('webapp.piece.index', compact(['piece', 'timeline']));
+    	return view('webapp.piece.index', compact(['piece', 'timeline', 'sentences']));
     }
 
     public function collection(Piece $piece)
