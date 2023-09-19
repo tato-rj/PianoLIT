@@ -109,7 +109,7 @@ function launchResumable(data)
 	        piece_id: data.piece.id,
 	        email: data.user.email
 	    },
-	    fileType: ['mp4', 'MOV'],
+	    fileType: ['mp4', 'MOV', 'mov'],
 	    maxFileSize: 500000000,
 	    headers: {
 	        'Accept' : 'application/json'
