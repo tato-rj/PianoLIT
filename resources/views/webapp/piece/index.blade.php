@@ -73,7 +73,7 @@ video::-webkit-media-controls-enclosure {
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-@if(auth()->user()->email == 'arthurvillar@gmail.com')
+@if(local())
 <script type="text/javascript">
 let $progressBar = $('.progress-bar');
 let $uploadOverlay = $('#upload-overlay');
