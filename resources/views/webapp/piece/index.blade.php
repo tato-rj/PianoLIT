@@ -217,7 +217,7 @@ function nextLoadingText(percentage) {
 
 function completeProgress() {
     $progressBar.removeClass('progress-bar-striped progress-bar-animated')
-                .addClass('bg-success')
+                .addClass('bg-green')
                 .html('<i class="fa-solid fa-check fa-xl"></i>')
                 .parent()
                 .addClass('rubberBand');
