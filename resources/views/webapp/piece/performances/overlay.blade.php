@@ -6,7 +6,7 @@
             </div>
             <div class="text-center">
                 <div class="font-weight-bold" data-sentences="{{json_encode($sentences)}}" id="loading-text">{{$sentences[0]}}</div>
-                <div style="opacity: .6">Please keep this browser tab open until uploading completes.</div>
+                <div style="opacity: .8">Please keep this browser tab open until uploading completes.</div>
             </div>
         </div>
     </div>

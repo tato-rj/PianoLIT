@@ -18,8 +18,8 @@ class PerformanceSubmittedListener
      */
     public function handle($event)
     {
-        \Mail::to(auth()->user()->email)->send(new PerformanceSubmittedEmail($event->performance->piece));
+        // \Mail::to(auth()->user()->email)->send(new PerformanceSubmittedEmail($event->performance->piece));
 
-        Admin::notifyAll(new PerformanceSubmittedNotification($event->performance));
+        // Admin::notifyAll(new PerformanceSubmittedNotification($event->performance));
     }
 }
