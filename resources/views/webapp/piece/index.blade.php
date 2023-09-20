@@ -73,7 +73,10 @@ video::-webkit-media-controls-enclosure {
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-@if(local())
+
+{{-- START OF PERFORMANCE SCRIPTS --}}
+
+@if(local() || auth()->user()->id === 284)
 <script type="text/javascript">
 let $progressBar = $('.progress-bar');
 let $uploadOverlay = $('#upload-overlay');
@@ -270,6 +273,8 @@ $('.clap').on('click', function() {
 });
 </script>
 @endif
+
+{{-- END OF PERFORMANCE SCRIPTS --}}
 
 <script type="text/javascript">
 // LIMIT COMPOSER BIO ON THE ABOUT SECTION TO 4 LINES

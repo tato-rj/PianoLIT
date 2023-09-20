@@ -45,7 +45,7 @@
 
 	@component('components.modal', ['id' => 'no-credits-modal', 'header' => 'No credits left'])
 	@slot('body')
-		<p class="m-0">Sorry, you can only upload <u>one video per month</u>. Your next upload will be enabled in <strong>{{auth()->user()->performances()->latest()->approved()->first()->created_at->addMonth()->diffForHumans()}}</strong>.</p>
+		<p class="m-0">Sorry, you can only upload <u>one video per month</u>.</p>
 	@endslot
 	@endcomponent
 
