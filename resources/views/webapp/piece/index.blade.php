@@ -107,7 +107,7 @@ function launchResumable(data)
 	    query:{
 	        _token:'{{ csrf_token() }}',
 	        secret: data.secret,
-	        origin: 'local',
+	        origin: 'webapp',
 	        user_id: data.user.id,
 	        piece_id: data.piece.id,
 	        email: data.user.email
