@@ -34,11 +34,11 @@
 </script>
 
 <script type="text/javascript">
-$('#check-all-datatable').on('change', function() {
+$(document).on('change', '#check-all-datatable', function() {
     $(this).closest('table').find('.check-datatable').click();
 });
 
-$('.check-datatable').on('change', function() {
+$(document).on('change', '.check-datatable', function() {
   $('button[data-target="#delete-modal"]').prop('disabled', ! $('.check-datatable:checked').length);
 
   addSelectedIds();
