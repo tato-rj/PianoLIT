@@ -1,4 +1,5 @@
 <tr>
+  @include('components.datatable.checkbox', ['id' => $item->list_id])
 
   <td data-order="{{carbon($item->sent_at)->timestamp}}">{{carbon($item->sent_at)->toFormattedDateString()}}</td>
   

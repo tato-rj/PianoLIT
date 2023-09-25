@@ -1,4 +1,4 @@
-<div class="d-apart px-2">
+<div class="d-apart px-2 mt-1">
 	<label class="m-0"><strong>{!! $performance->user->countryFlag !!}{{$performance->displayName()}}</strong></label>
 
 	<div class="d-flex align-items-center">

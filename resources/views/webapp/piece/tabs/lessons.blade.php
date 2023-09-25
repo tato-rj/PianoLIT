@@ -3,15 +3,16 @@
 	@if(local() || auth()->user()->id === 284)
 	
 		<div class="mb-4">
+			
+			@if(! auth()->user()->performances()->of($piece)->approved()->exists())
 			<div class="mb-4"> 
-				@if(! auth()->user()->performances()->of($piece)->approved()->exists())
-					@if(auth()->user()->performances()->of($piece)->waiting()->exists())
-					@include('webapp.piece.performances.pending')
-					@else
-					@include('webapp.piece.performances.upload')
-					@endif
+				@if(auth()->user()->performances()->of($piece)->waiting()->exists())
+				@include('webapp.piece.performances.pending')
+				@else
+				@include('webapp.piece.performances.upload')
 				@endif
 			</div>
+			@endif			
 			
 			@include('webapp.piece.performances.videos')
 		</div>

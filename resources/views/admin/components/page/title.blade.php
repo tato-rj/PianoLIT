@@ -39,7 +39,7 @@
 	    @endisset
 
     	@isset($action['modal'])
-	      <button  data-toggle="modal" data-target="#{{$action['modal']}}" class="btn btn-sm btn-default">
+	      <button data-toggle="modal" data-target="#{{$action['modal']}}" class="btn btn-sm btn-default">
 	        @fa(['icon' => 'plus']){{$action['label']}}
 	      </button>
 	    @endisset

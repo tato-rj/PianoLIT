@@ -33,7 +33,6 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 		Route::post('', 'Admin\EmailListsController@store')->name('store');
 
 		Route::delete('{list}', 'Admin\EmailListsController@destroy')->name('destroy');
-
 	});
 
 	Route::prefix('reports')->name('reports.')->group(function() {
@@ -42,6 +41,8 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 		Route::get('{list}', 'Admin\EmailListsController@report')->name('show');
 
+		Route::delete('many', 'Admin\EmailListsController@destroyManyReports')->name('destroy-many');
+		
 		Route::delete('{list}', 'Admin\EmailListsController@destroyReport')->name('destroy');
 
 	});

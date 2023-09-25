@@ -49,6 +49,11 @@ class Performance extends PianoLit
         return $this->user()->is($user);
     }
 
+    public function scopeBy($query, User $user)
+    {
+        return $query->where('user_id', $user->id);
+    }
+
     public function scopeNotBy($query, User $user)
     {
         return $query->where('user_id', '!=', $user->id);

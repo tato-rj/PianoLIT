@@ -1,10 +1,6 @@
-<div class="d-apart px-2">
-  <label class="mb-0 text-muted"><strong>{{$performance->claps_sum}}</strong> claps</label>
+<button class="btn-sm btn-primary btn w-100 mb-2 mt-2" data-toggle="modal" data-target="#insights-performance-{{$performance->id}}-modal">@fa(['icon' => 'chart-line'])Insights</button>
 
-  <div class="d-flex align-items-center">
-    <button class="btn-raw btn-lg text-red" data-toggle="modal" data-target="#delete-performance-{{$performance->id}}-modal">@fa(['icon' => 'trash-alt', 'mr' => 0])</button>
-  </div>
-</div>
+<button class="btn-sm btn-red-outline btn w-100" data-toggle="modal" data-target="#delete-performance-{{$performance->id}}-modal">@fa(['icon' => 'trash-alt'])Delete submission</button>
 
 @component('components.modal', [
   'id' => 'delete-performance-'.$performance->id.'-modal',
@@ -17,5 +13,16 @@
     @method('DELETE')
     <button type="submit" class="btn btn-sm btn-block btn-danger">Yes, I am sure</button>
   </form>
+@endslot
+@endcomponent
+
+@component('components.modal', [
+  'id' => 'insights-performance-'.$performance->id.'-modal',
+  'header' => 'Insights'])
+@slot('body')
+<div class="text-center">
+  <h1 class="text-teal">@fa(['icon' => 'hands-clapping', 'mr' => 0])</h1>
+  <h5>{{$performance->claps_sum}} claps</h5>
+</div>
 @endslot
 @endcomponent

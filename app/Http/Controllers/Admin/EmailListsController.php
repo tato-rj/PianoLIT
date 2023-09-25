@@ -112,4 +112,11 @@ class EmailListsController extends Controller
 
         return redirect(route('admin.subscriptions.reports.index'))->with('status', 'The list has been deleted');
     }
+
+    public function destroyManyReports(Request $request)
+    {
+        EmailLog::byLists($request->ids)->delete();
+
+        return redirect(route('admin.subscriptions.reports.index'))->with('status', 'The lists have been deleted');
+    }
 }

@@ -57,6 +57,11 @@ class EmailLog extends PianoLit
         return $query->where('list_id', $listId);
     }
 
+    public function scopeByLists($query, array $ids)
+    {
+        return $query->whereIn('list_id', $ids);
+    }
+
     public function scopeDatatable($query, $list)
     {
         return datatable($query->byList($list))->withBlade([
