@@ -15,7 +15,7 @@
     
     <button class="btn btn-danger mb-4" id="delete-all-btn" disabled data-action="{{route('admin.subscriptions.reports.destroy-many')}}" data-toggle="modal" data-target="#delete-modal">Delete all selected</button>
 
-    @datatableRaw(['model' => 'reports', 'columns' => ['checkbox', 'Date', 'Name', 'Emails', 'Delivered', 'Failed', 'Opened', 'Clicked', '']])
+    @datatableRaw(['model' => 'reports', 'columns' => ['Date', 'Name', 'Emails', 'Delivered', 'Failed', 'Opened', 'Clicked', '']])
 
   </div>
 </div>
