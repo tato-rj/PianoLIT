@@ -77,7 +77,7 @@ abstract class Factory
 
     public function ethnicity($ethnicity, $title)
     {
-        $collection = Piece::with('composer')->byEthnicity($ethnicity)->shuffle();
+        $collection = Piece::with('composer')->byEthnicity($ethnicity)->inRandomOrder()->take(12)->get()->shuffle();
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
 
