@@ -4,6 +4,8 @@
 ])
 
 @push('header')
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
 <style type="text/css">
 .plyr--video {height: 100%;}
 </style>
@@ -41,6 +43,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script type="text/javascript">
 
   let position = $('#clip').data('position');
