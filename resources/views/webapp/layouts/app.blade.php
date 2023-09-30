@@ -32,6 +32,8 @@
     @stack('header')
 </head>
 <body>
+    @qrcode
+    
     @include('layouts.html.google.manager-body')
    
     <div id="webapp" class="container">

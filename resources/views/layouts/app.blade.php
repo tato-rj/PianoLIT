@@ -46,6 +46,8 @@
 </head>
 
 <body>
+    @qrcode
+    
     @include('layouts.html.google.manager-body')
 
 {{--     @confirmed(false)

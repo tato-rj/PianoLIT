@@ -3,7 +3,6 @@
       <i class="fas fa-ellipsis-v dropdown-toggle" data-toggle="dropdown"></i>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         @if($item->hasAudio())
-        <a href="{{route('admin.pieces.qr-code', $item)}}" target="_blank" class="dropdown-item">QR Code</a>
         <a href="{{route('clips.piece', $item)}}" target="_blank" class="dropdown-item">Clip</a>
         @endif
         <a href="{{$item->timeline_url}}" target="_blank" class="dropdown-item">Timeline</a>

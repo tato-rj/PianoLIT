@@ -14,8 +14,6 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::get('alerts/show', 'Admin\PiecesController@alerts')->name('alerts');
 
-	Route::get('{piece}/qr-code', 'Admin\PiecesController@qrCode')->name('qr-code');
-
 	Route::patch('{piece}/update-level', 'Admin\PiecesController@updateLevel')->name('update-level');
 
 	Route::patch('{piece}/update-tag', 'Admin\PiecesController@updateTag')->name('update-tag');
