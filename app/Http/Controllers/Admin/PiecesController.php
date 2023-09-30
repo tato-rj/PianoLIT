@@ -6,6 +6,7 @@ use App\{Piece, Composer, Tag, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Files\Uploaders\ImageUpload;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PiecesController extends Controller
 {
@@ -37,6 +38,24 @@ class PiecesController extends Controller
         $levels = Tag::levels()->get();
 
         return view('admin.pages.pieces.popups.levels', ['piece' => $piece, 'levels' => $levels])->render();
+    }
+
+    public function qrCode(Piece $piece)
+    {
+        return response()->streamDownload(
+            function () {
+                echo QrCode::size(500)->margin(1)
+                                        ->format('png')
+                                        ->merge(asset('images/brand/icon-rounded.png'), .25, true)
+                                        ->errorCorrection('H')
+                                        ->style('round')
+                                        ->generate('Hello, World!');
+            },
+            'qr-code.png',
+            [
+                'Content-Type' => 'image/png',
+            ]
+        );
     }
 
     /**

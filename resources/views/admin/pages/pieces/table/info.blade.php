@@ -2,6 +2,7 @@
     <div class="dropdown d-inline-block align-text-bottom cursor-pointer mr-1">
       <i class="fas fa-ellipsis-v dropdown-toggle" data-toggle="dropdown"></i>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a href="{{route('admin.pieces.qr-code', $item)}}" target="_blank" class="dropdown-item">QR Code</a>
         <a href="{{route('clips.piece', $item)}}" target="_blank" class="dropdown-item">Clip</a>
         <a href="{{$item->timeline_url}}" target="_blank" class="dropdown-item">Timeline</a>
         <a href="{{route('api.pieces.collection', $item->id)}}" target="_blank" class="dropdown-item">Collection</a>
