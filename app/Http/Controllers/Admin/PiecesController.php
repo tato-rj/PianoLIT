@@ -42,19 +42,22 @@ class PiecesController extends Controller
 
     public function qrCode(Piece $piece)
     {
+        $url = route('clips.piece', $piece);
+        $logo = asset('images/brand/icon-rounded.png');
+        $format = 'png';
+        $filename = 'QR-' . str_slug($piece->short_name) . '.' . $format;
+
         return response()->streamDownload(
-            function () {
+            function () use ($url, $logo, $format) {
                 echo QrCode::size(500)->margin(1)
-                                        ->format('png')
-                                        ->merge(asset('images/brand/icon-rounded.png'), .25, true)
+                                        ->format($format)
+                                        ->merge($logo, .25, true)
                                         ->errorCorrection('H')
                                         ->style('round')
-                                        ->generate('Hello, World!');
+                                        ->generate($url);
             },
-            'qr-code.png',
-            [
-                'Content-Type' => 'image/png',
-            ]
+            $filename,
+            ['Content-Type' => 'image/png']
         );
     }
 
