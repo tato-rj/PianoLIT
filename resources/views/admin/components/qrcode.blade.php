@@ -1,5 +1,5 @@
 @if(auth()->check() && auth()->user()->isAdmin())
-<div class="position-fixed" 
+<div class="position-fixed d-none d-lg-block" 
 	style="top: 0;
 	    left: 50%;
 	    transform: translateX(-50%);
