@@ -51,7 +51,7 @@ class PiecesController extends Controller
             function () use ($url, $logo, $format) {
                 echo QrCode::size(500)->margin(1)
                                         ->format($format)
-                                        ->merge($logo, .25, true)
+                                        ->merge($logo, .15, true)
                                         // ->errorCorrection('H')
                                         ->style('round')
                                         ->generate($url);
