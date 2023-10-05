@@ -56,6 +56,11 @@ class Composer extends Person
         return \DB::table('composers')->selectRaw('period, count(*) as count')->groupBy('period')->get();
     }
 
+    public function scopeByEthnicity($query, $ethnicity)
+    {
+        return $query->where('ethnicity', $ethnicity);
+    }
+
     public function scopeName($query, $name)
     {
         return $query->where('name', $name);

@@ -26,9 +26,16 @@ abstract class Factory
     {
         $collection = Composer::nonPedagogical()->with(['country', 'pieces'])->inRandomOrder()->atLeast(2)->withCount('pieces')->take($this->limit)->get();
 
+        $blackComposers = Composer::nonPedagogical()->with(['country', 'pieces'])->byEthnicity('black')->inRandomOrder()->atLeast(2)->withCount('pieces')->take(2)->get();
+
+        foreach ($blackComposers as $composer) {
+            if (! $collection->has($composer))
+                $collection->push($composer);
+        }
+
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
-        return $this->createPlaylist($collection, ['row' => 'composers', 'type' => 'composer', 'title' => $title]);
+        return $this->createPlaylist($collection->shuffle(), ['row' => 'composers', 'type' => 'composer', 'title' => $title]);
     }
 
     public function latest($title)
