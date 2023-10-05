@@ -85,25 +85,13 @@ $factory->define(Pianist::class, function(Faker $faker) {
 
 $factory->define(Piece::class, function (Faker $faker) {
     return [
-            'name' => $faker->word,
-            'nickname' => $faker->word,
+            'name' => ucwords($faker->word),
             'catalogue_name' => randval(catalogues()),
             'catalogue_number' => rand(1,100),
-            'collection_name' => $faker->word,
+            'collection_name' => ucwords($faker->word),
             'collection_number' => rand(1,10),
-            'movement_number' => rand(1,4),
             'key' => randval(keys()),
-            'curiosity' => '',
-            'audio_path' => '',
-            'audio_path_rh' => '',
-            'audio_path_lh' => '',
-            'itunes' => '',
-            'videos' => '',
             'is_free' => false,
-            'score_path' => '',
-            'score_editor' => '',
-            'score_publisher' => '',
-            'score_copyright' => '',
             'composed_in' => $faker->year,
             'published_in' => $faker->year,
             'composer_id' => function() {

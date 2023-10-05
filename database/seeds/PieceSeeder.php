@@ -15,6 +15,23 @@ class PieceSeeder extends Seeder
         $this->arabesque();
         $this->adagio();
         $this->rondo();
+        $this->randomPiece(10);
+    }
+
+    public function randomPiece($count)
+    {
+        for ($i=0; $i < $count; $i++) { 
+            $piece = create(Piece::class, [
+                'composer_id' => Composer::inRandomOrder()->first()->id,
+                'creator_id' => Admin::first()->id
+            ]);
+
+            \DB::table('piece_tag')->insert(['tag_id' => 8, 'piece_id' => $piece->id]);
+            \DB::table('piece_tag')->insert(['tag_id' => 14, 'piece_id' => $piece->id]);
+            \DB::table('piece_tag')->insert(['tag_id' => 19, 'piece_id' => $piece->id]);
+            \DB::table('piece_tag')->insert(['tag_id' => 26, 'piece_id' => $piece->id]);
+            \DB::table('piece_tag')->insert(['tag_id' => 5, 'piece_id' => $piece->id]);
+        }
     }
 
     public function arabesque()
