@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\EmailList;
+use App\{EmailList, Subscription};
 
 class MailSeeder extends Seeder
 {
@@ -16,5 +16,11 @@ class MailSeeder extends Seeder
             'name' => 'Free Pick',
             'description' => 'Weekly emails showcasing our free pick along with the list of tutorials and curiosities about the piece and composer.'
         ]);
+
+        create(Subscription::class, [], 100);
+
+        foreach (Subscription::all() as $subscriber) {
+            $subscriber->joinAll();
+        }
     }
 }
