@@ -11,7 +11,7 @@ We had <strong>{{$report['data']->count()}} new {{strtolower(str_plural($report[
 <ul style="margin: 0; padding: 0;">
 
 @foreach($report['data'] as $data)
-	@include('emails.admin.report.records')
+@include('emails.admin.report.records')
 @endforeach
 
 </ul>
