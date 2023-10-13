@@ -61,7 +61,7 @@ class SendAdminReport extends Command
     {
         $reports = $this->generateReports();
 
-        foreach (Admin::managers()->where('email', 'arthurvillar@gmail.com')->get() as $recipient) {
+        foreach (Admin::managers()->get() as $recipient) {
             \Mail::to($recipient->email)->queue(new AdminReport($reports, $recipient));
         }
 
