@@ -24,8 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('pianolit:admin-report')->everySixHours();
-        // $schedule->command('pianolit:admin-report')->weeklyOn(7, '22:30');
+        $schedule->command('pianolit:admin-report')->weeklyOn(7, '22:30');
 
         $schedule->command('subscriptions:remove-spam')->weeklyOn(7, '10:30');
 
