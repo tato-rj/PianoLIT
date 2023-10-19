@@ -13,8 +13,16 @@
 		<a class="nav-link" data-anchor="tutorial" data-toggle="tab" href="#tab-tutorial" new-feature>Synthesia</a>
 		<div class="nav-outline"></div>
 	</li>
+
+	@if(local() || auth()->user()->id === 284)
+	<li class="nav-item">
+		<a class="nav-link" data-anchor="lessons" data-toggle="tab" href="#tab-lessons">@fa(['icon' => 'hands-clapping', 'color' => 'orange', 'size' => 'lg'])Stage</a>
+		<div class="nav-outline"></div>
+	</li>
+	@else
 	<li class="nav-item">
 		<a class="nav-link" data-anchor="lessons" data-toggle="tab" href="#tab-lessons">Lessons</a>
 		<div class="nav-outline"></div>
 	</li>
+	@endif
 </ul>

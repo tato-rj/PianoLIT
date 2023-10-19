@@ -110,10 +110,12 @@ function launchResumable(data)
 	        origin: 'webapp',
 	        user_id: data.user.id,
 	        piece_id: data.piece.id,
-	        email: data.user.email
+	        email: data.user.email,
+	        notes: ''
 	    },
 	    fileType: ['mp4', 'MOV', 'mov'],
 	    maxFileSize: 500000000,
+		maxFiles: 1,
 	    headers: {
 	        'Accept' : 'application/json'
 	    },
@@ -240,11 +242,11 @@ $('#confirm-performance-modal').on('hide.bs.modal', function() {
 </script>
 <script type="text/javascript">
 function clap($hands) {
-	$hands.removeClass('text-grey').addClass('text-green');
+	$hands.removeClass('text-grey').addClass('text-orange');
 	
 	let $clone = $hands.clone();
 
-	$clone.addClass('clap-shadow animated text-green fadeOutUp').appendTo($hands.parent());
+	$clone.addClass('clap-shadow animated text-orange fadeOutUp').appendTo($hands.parent());
 
 	setTimeout(function() {
 	  $clone.remove();

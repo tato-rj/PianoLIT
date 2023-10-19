@@ -7,6 +7,11 @@
 		<strong class="text-muted">{{$composer->country->name}}</strong>
 	</div>
 </div>
+<div class="text-center mb-4">
+	<a href="{{route('webapp.search.results', ['search' => $composer->name])}}" class="btn rounded-pill btn-default">
+		@fa(['icon' => 'folder-plus'])Discover pieces by {{$composer->short_name}}</a>
+</div>
+
 <div class="mb-4">
 		<div class="bg-light rounded p-4 text-center mx-auto" style="max-width: 500px">
 			<h5 class="text-blue">Did you know?</h5>
@@ -15,9 +20,4 @@
 </div>
 <div class="mb-4">
 	<p style="white-space: pre-wrap;">{{$composer->biography}}</p>
-</div>
-
-<div class="text-center mb-2">
-	<a href="{{route('webapp.search.results', ['search' => $composer->name])}}" class="btn rounded-pill btn-default">
-		@fa(['icon' => 'folder-plus'])Discover pieces by {{$composer->short_name}}</a>
 </div>

@@ -1,19 +1,21 @@
 @php($canUpload = ! auth()->user()->performances()->last30days()->exists())
 
 <div class="text-center">
-	<div class="p-3 rounded alert-grey">
-		<p class="font-weight-bold text-center mb-2">Do you play this piece?</p>
-		<p class="small m-0">@fa(['icon' => 'cloud-upload-alt', 'mr' => 1])Upload a video of your performance</p>
-		<p class="small">@fa(['icon' => 'hands-clapping', 'mr' => 1])See the reactions from PianoLIT users from all around the world!</p>
 
-		@if($canUpload)
-		<button class="btn rounded-pill btn-primary btn-wide" id="choose-video">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
-		@else
-		<button class="btn rounded-pill btn-primary btn-wide" data-toggle="modal" data-target="#no-credits-modal">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
-		@endif
-		
-		<div class="small text-center opacity-8 mt-1" style="font-size:80%">The video must be <strong>100mb</strong> or less</div>
-	</div>
+		<h5 class="text-dark text-center mb-3">Do you play this piece?</h5>
+		<div class="mb-3">
+			@if($canUpload)
+			<button class="btn rounded-pill btn-primary btn-wide" id="choose-video">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
+			@else
+			<button class="btn rounded-pill btn-primary btn-wide" data-toggle="modal" data-target="#no-credits-modal">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
+			@endif
+		</div>
+
+		<div class="text-muted">
+			<p class="small m-0">@fa(['icon' => 'cloud-upload-alt', 'color' => 'green'])Upload a video of your performance</p>
+			<p class="small mb-2">@fa(['icon' => 'hands-clapping', 'color' => 'green'])See the reactions from PianoLIT users from all around the world!</p>
+			<div class="small opacity-8" style="font-size:80%">Your video must be <strong>500mb</strong> or less</div>
+		</div>
 </div>
 
 @if($canUpload)
