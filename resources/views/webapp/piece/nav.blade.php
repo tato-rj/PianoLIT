@@ -16,7 +16,7 @@
 
 	@if(local() || auth()->user()->id === 284)
 	<li class="nav-item">
-		<a class="nav-link" data-anchor="lessons" data-toggle="tab" href="#tab-lessons">@fa(['icon' => 'hands-clapping', 'color' => 'orange', 'size' => 'lg'])Stage</a>
+		<a class="nav-link" data-anchor="lessons" data-toggle="tab" href="#tab-lessons">@fa(['icon' => 'hands-clapping', 'color' => 'orange', 'size' => 'lg', 'mr' => 1])Stage</a>
 		<div class="nav-outline"></div>
 	</li>
 	@else
