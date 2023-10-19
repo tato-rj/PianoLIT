@@ -38,6 +38,12 @@
 	      </a>
 	    @endisset
 
+    	@isset($action['external_link'])
+	      <a href="{{$action['external_link']}}" target="_blank" class="btn btn-sm btn-default">
+	        @fa(['icon' => 'external-link-alt']){{$action['label']}}
+	      </a>
+	    @endisset
+
     	@isset($action['modal'])
 	      <button data-toggle="modal" data-target="#{{$action['modal']}}" class="btn btn-sm btn-default">
 	        @fa(['icon' => 'plus']){{$action['label']}}

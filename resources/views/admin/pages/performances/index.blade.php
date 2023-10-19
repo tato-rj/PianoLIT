@@ -17,7 +17,8 @@ small .custom-control-label::before, small .custom-control-label::after {
     @include('admin.components.page.title', [
       'icon' => 'music', 
       'title' => 'Recordings', 
-      'subtitle' => 'Manage all the recordings submitted by the users.'
+      'subtitle' => 'Manage all the recordings submitted by the users.',
+      'action' => ['label' => 'Video Uploader', 'external_link' => env('FILEMANAGER_URL')]
     ])
 
     @datatable(['table' => 'performances', 'columns' => ['ID', 'Piece', 'Composer', '# Claps', 'User', 'Approved', '']])
