@@ -1,4 +1,4 @@
-@if(auth()->check() && auth()->user()->isAdmin())
+{{-- @if(auth()->check() && auth()->user()->isAdmin())
 <div class="position-fixed d-none d-lg-block" 
 	style="top: 0;
 	    left: 50%;
@@ -11,4 +11,4 @@
 		style="border-top-left-radius: 0!important;
     	border-top-right-radius: 0!important;">@fa(['icon' => 'qrcode', 'mr' => 0])</a>
 </div>
-@endif
+@endif --}}
