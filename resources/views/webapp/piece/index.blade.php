@@ -48,6 +48,10 @@ video::-webkit-media-controls-enclosure {
   width: 100%;
   height: 100vh;
 }
+
+.nav-tabs .active {
+    font-weight: inherit !important; 
+}
 </style>
 @endpush
 
