@@ -1,4 +1,4 @@
-@php($canUpload = ! auth()->user()->performances()->last30days()->exists())
+@php($canUpload = true)
 
 <div class="text-center">
 

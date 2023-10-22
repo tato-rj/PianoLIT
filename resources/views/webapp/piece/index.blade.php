@@ -65,7 +65,7 @@ video::-webkit-media-controls-enclosure {
 	<div class="tab-content p-3">
 		@include('webapp.piece.tabs.about')
 		@include('webapp.piece.tabs.score')
-		@include('webapp.piece.tabs.lessons')
+		@include('webapp.piece.tabs.performances')
 		@include('webapp.piece.tabs.tutorial')
 	</div>
 </section>

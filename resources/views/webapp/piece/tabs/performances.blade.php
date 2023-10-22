@@ -1,6 +1,4 @@
-<div class="tab-pane fade" id="tab-lessons">
-
-	@if(local() || auth()->user()->id === 284)
+<div class="tab-pane fade" id="tab-performances">
 	
 		<div class="mb-4">
 			
@@ -17,9 +15,8 @@
 			@include('webapp.piece.performances.videos')
 		</div>
 
-	@else
 	
-		@if($piece->media['lessons'])
+{{-- 		@if($piece->media['lessons'])
 		<div>
 			@foreach($piece->media['lessons'] as $lessons)
 			<div class="pb-2">
@@ -47,7 +44,5 @@
 					@include('webapp.explore.cards.harmony', ['isAuthorized' => $hasFullAccess])
 				@endforeach
 			</div>
-		</div>
-	
-	@endif
+		</div> --}}
 </div>

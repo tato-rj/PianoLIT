@@ -18,11 +18,28 @@
 
 @component('components.modal', [
   'id' => 'insights-performance-'.$performance->id.'-modal',
+  'size' => 'sm',
   'header' => 'Insights'])
 @slot('body')
-<div class="text-center">
-  <h1 class="text-teal">@fa(['icon' => 'hands-clapping', 'mr' => 0])</h1>
-  <h5>{{$performance->claps_sum}} claps</h5>
+<div class="d-apart">
+  <div class="text-left">
+    <h6 class="mb-2">@fa(['icon' => 'calendar-day', 'color' => 'grey'])Uploaded on</h6>
+    <h6 class="m-0">@fa(['icon' => 'hands-clapping', 'color' => 'grey'])Claps</h6>
+  </div>
+  <div class="text-right">
+    <p class="mb-2">{{$performance->created_at->toFormattedDateString()}}</p>
+    <p class="m-0">{{$performance->claps_sum}} {{str_plural('claps', $performance->claps_sum)}}</p>
+  </div>
+
+
+{{--   <div class="">
+    <h1 class="text-grey">@fa(['icon' => 'calendar-day', 'mr' => 0])</h1>
+    <h5>{{$performance->created_at->toFormattedDateString()}}</h5>
+  </div>
+  <div class="">
+    <h1 class="text-orange">@fa(['icon' => 'hands-clapping', 'mr' => 0])</h1>
+    <h5>{{$performance->claps_sum}} {{str_plural('claps', $performance->claps_sum)}}</h5>
+  </div> --}}
 </div>
 @endslot
 @endcomponent

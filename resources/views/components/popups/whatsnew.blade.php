@@ -10,7 +10,7 @@
 
 @slot('body')
 <div class="px-3">
-  <p>We've been working some updates recently. Here's what you'll find:</p>
+  <p>We've been working a cool new update recently. Here's what you'll find:</p>
 
   <div id="whatsnew-carousel" class="carousel slide" data-ride="carousel" data-interval="false">
     <div class="carousel-inner">
@@ -20,6 +20,12 @@
       </div>
       @endfor
     </div>
+
+    @if($tabscount <= 1)
+    <div class="text-center">
+      <button class="btn btn-primary btn-wide" data-slide="end" data-dismiss="modal">Got it!</button>
+    </div>
+    @else
     <div class="text-center">
       <div class="d-flex flex-center my-3 carousel-dots">
         @for($i=1; $i <= $tabscount; $i++)
@@ -29,6 +35,7 @@
       <button class="btn btn-primary btn-wide" data-slide="next" href="#whatsnew-carousel">Next @fa(['icon' => 'chevron-right', 'mr' => 0, 'ml' => 1])</button>
       <button class="btn btn-primary btn-wide" data-slide="end" style="display: none;" data-dismiss="modal">Enjoy!</button>
     </div>
+    @endif
   </div>
 </div>
 @endslot
