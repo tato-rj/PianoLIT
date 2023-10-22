@@ -11,6 +11,13 @@
 </p>
 </div>
 
+@component('mail::panel')
+# 🎉Share your own recordings!
+<p class="mb-2">You can now upload your performances, share your talent and get feedback from PianoLIT users from all over the world.</p>
+<p class="mb-3">*Available on <strong>Webapp only</strong></p>
+<img src="https://storage.googleapis.com/pianolit-app/misc/stage%20demo.gif">
+@endcomponent
+
 @component('mail::button', ['url' => 'https://my.pianolit.com/'])
 Open with the Webapp
 @endcomponent
@@ -25,7 +32,8 @@ Open with the iOS app
 
 <p><strong>Don't miss out on more from PianoLIT:</strong></p>
 
-<p>😎 We are on the <strong>Metaverse</strong>! PianoLIT is partnering with Spatial to promote weekly concerts and events on all topics related to music. Simply jump in and enjoy the show. <a href="https://pianolit.com/metaverse" target="_blank">Check out our schedule here</a></p>
+<p>🎹 On the <u>Webapp</u> you can now upload <strong>your own video recordings</strong>. Just navigate to the new <i>Stage</i> tab and follow the instructions to get started.</p>
+{{-- <p>😎 We are on the <strong>Metaverse</strong>! PianoLIT is partnering with Spatial to promote weekly concerts and events on all topics related to music. Simply jump in and enjoy the show. <a href="https://pianolit.com/metaverse" target="_blank">Check out our schedule here</a></p> --}}
 
 <p>▶️ On our <strong>Youtube Channel</strong> we post not only recordings from the pieces we like the most, but also special in-depth videos about harmonic analysis. <a href="https://youtube.com/pianolit" target="_blank">Subscribe here</a></p>
 
