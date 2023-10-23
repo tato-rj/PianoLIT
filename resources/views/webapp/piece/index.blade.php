@@ -80,7 +80,7 @@ video::-webkit-media-controls-enclosure {
 
 {{-- START OF PERFORMANCE SCRIPTS --}}
 
-@if(local() || auth()->user()->id === 284)
+
 <script type="text/javascript">
 let $progressBar = $('.progress-bar');
 let $uploadOverlay = $('#upload-overlay');
@@ -278,7 +278,7 @@ $('.clap').on('click', function() {
 	}
 });
 </script>
-@endif
+
 
 {{-- END OF PERFORMANCE SCRIPTS --}}
 
