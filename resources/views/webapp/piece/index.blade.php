@@ -117,7 +117,7 @@ function launchResumable(data)
 	        email: data.user.email,
 	        notes: ''
 	    },
-	    fileType: ['mp4', 'MOV', 'mov'],
+	    fileType: ['mp4', 'MOV', 'mov', 'wmv'],
 	    maxFileSize: 500000000,
 		maxFiles: 1,
 	    headers: {
