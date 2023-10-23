@@ -14,7 +14,7 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 
 		Route::prefix('performances')->name('performances.')->group(function() {
 
-			Route::get('{piece}/upload-url', 'PerformancesController@uploadUrl')->name('upload-url');
+			Route::get('{piece}/upload-url', 'PerformancesController@uploadUrl')->withoutMiddleware(['log.webapp'])->name('upload-url');
 
 			Route::post('{piece}', 'PerformancesController@store')->name('store');
 
