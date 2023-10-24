@@ -154,15 +154,15 @@ class PerformanceTest extends AppTest
         $this->post(route('webapp.users.performances.store', $this->piece), ['user-performance-video' => 'foo']);
     }
 
-    /** @test */
-    public function users_cannot_submit_more_than_one_performance_per_month()
-    {
-        $this->expectException('Illuminate\Auth\Access\AuthorizationException');
+    // /** @test */
+    // public function users_cannot_submit_more_than_one_performance_per_month()
+    // {
+    //     $this->expectException('Illuminate\Auth\Access\AuthorizationException');
 
-        $this->signIn($this->user);
+    //     $this->signIn($this->user);
 
-        create(Performance::class, ['user_id' => auth()->user()]);
+    //     create(Performance::class, ['user_id' => auth()->user()]);
 
-        $this->post(route('webapp.users.performances.store', create(Piece::class)), ['user-performance-video' => 'foo']);
-    }
+    //     $this->post(route('webapp.users.performances.store', create(Piece::class)), ['user-performance-video' => 'foo']);
+    // }
 }

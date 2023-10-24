@@ -12,7 +12,7 @@ class PerformancesController extends Controller
 {
     public function uploadUrl(Piece $piece)
     {
-        // $this->authorize('perform', $piece);
+        $this->authorize('perform', $piece);
 
         return [
             'url' => env('FILEMANAGER_UPLOAD_URL'),
@@ -30,7 +30,7 @@ class PerformancesController extends Controller
      */
     public function store(Request $request, Piece $piece)
     {
-        // $this->authorize('perform', $piece);
+        $this->authorize('perform', $piece);
 
         $performance = auth()->user()->performances()->create([
             'piece_id' => $piece->id,

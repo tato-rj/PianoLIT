@@ -32,6 +32,14 @@
 		    <p class="text-muted m-0">My performance of</p>
 		    <p class="mb-2"><strong>{{$piece->long_name_with_composer}}</strong></p>
 		</div>
+
+		<div class="bg-light p-3 rounded mb-2 border">
+			<h6>@fa(['icon' => 'exclamation-circle', 'color' => 'warning'])Please make sure your video...</h6>
+			<ul class="m-0">
+				<li>is a performance of <u>this piece</u> only</li>
+				<li>is clear of <u>background noises</u></li>
+			</ul>
+		</div>
 		
 		<form id="create-performance-form" action="{{route('webapp.users.performances.store', $piece)}}" method="POST">
 			@csrf

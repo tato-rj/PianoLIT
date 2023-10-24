@@ -1,7 +1,7 @@
 <div class="form-group {{$grid ?? null}}">
 	@include('components.form.label', ['asterisk' => $asterisk ?? null])
 	<input 
-		class="form-control {{$classes ?? null}} {{validate($errors->$bag, $name)}}" 
+		class="form-control rounded {{$classes ?? null}} {{validate($errors->$bag, $name)}}" 
 		@isset($id)
 		id="{{$id}}"
 		@endisset

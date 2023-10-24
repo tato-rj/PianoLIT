@@ -23,6 +23,6 @@ class PiecePolicy
 
     public function perform(User $user, Piece $piece)
     {
-        return ! auth()->user()->performances()->of($piece)->exists() && ! auth()->user()->performances()->last30days()->exists();
+        return ! auth()->user()->performances()->of($piece)->exists();// && ! auth()->user()->performances()->last30days()->exists();
     }
 }
