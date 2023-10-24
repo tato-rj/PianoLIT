@@ -20,6 +20,7 @@
               'origin' => [
                 ['label' => 'Any origin', 'value' => null],
                 ['label' => 'iOS', 'value' => 'ios'],
+                ['label' => 'WebApp', 'value' => 'webapp'],
                 ['label' => 'Website', 'value' => 'web']
               ]
             ],
@@ -42,6 +43,7 @@
               'origin' => [
                 ['label' => 'Any origin', 'value' => null],
                 ['label' => 'iOS', 'value' => 'ios'],
+                ['label' => 'WebApp', 'value' => 'webapp'],
                 ['label' => 'Website', 'value' => 'web']
               ]
             ]
@@ -59,6 +61,7 @@
               'origin' => [
                 ['label' => 'Any origin', 'value' => null],
                 ['label' => 'iOS', 'value' => 'ios'],
+                ['label' => 'WebApp', 'value' => 'webapp'],
                 ['label' => 'Website', 'value' => 'web']
               ]
             ]
