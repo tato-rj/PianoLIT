@@ -2,7 +2,7 @@
 	<div class="rounded border">
 		<a href="{{route('webapp.users.favorites.folders.show', $folder)}}" class="link-none">
 			<div class="rounded-top p-3 cursor-pointer favorite-folder">
-				<h6 class="mb-1">@fa(['icon' => 'folder-open', 'color' => 'grey']){{$folder->name}}</h6>
+				<h6 class="mb-1 text-truncate">@fa(['icon' => 'folder-open', 'color' => 'grey']){{$folder->name}}</h6>
 				@include('webapp.user.my-pieces.favorites.folders.pieces-count')
 			</div>
 		</a>
