@@ -11,7 +11,7 @@
 
       <input type="hidden" name="{{$model->getTable()}}[]" value="{{$model->id}}">
 
-      <p class="m-0 text-truncate">{{ $slot }}</p>
+      <p class="m-0 text-truncate" style="user-select: none;">{{ $slot }}</p>
     </div>
   </div>
   @empty($controls)
