@@ -60,6 +60,7 @@
 $('div.favorites-container').each(function() {
   let $tab = $(this);
   $tab.sortable({
+  	mobile: true,
     handle: '.sort-handle',
     update: function(element) {
       let url = $tab.attr('data-url-reorder');
