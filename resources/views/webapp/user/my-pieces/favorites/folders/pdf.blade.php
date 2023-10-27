@@ -1,8 +1,8 @@
 <div class="text-center w-100">
-	<a class="btn btn-primary-outline btn-wide {{$classes ?? null}}" data-toggle="modal" data-target="#generate-pdf">@fa(['icon' => 'book', 'classes' => ''])Create eScore</a>
+	<a class="btn btn-primary-outline btn-wide {{$classes ?? null}}" data-toggle="modal" data-target="#generate-pdf-folder-{{$folder->id}}">@fa(['icon' => 'book', 'classes' => ''])Create eScore</a>
 </div>
 
-@component('components.modal', ['id' => 'generate-pdf', 'header' => 'Create eScore'])
+@component('components.modal', ['id' => 'generate-pdf-folder-'.$folder->id, 'header' => 'Create eScore'])
 @slot('body')
 <p class="text-center mb-3">Customize the cover page below👇</p>
 
