@@ -28,6 +28,8 @@ class FavoriteFoldersController extends Controller
             event(new eScoreGenerated(auth()->user(), $folder));  
         } catch (\Exception $e) {
             bugreport($e);
+
+            return back()->with('error', 'Sorry, one of the scores in this folder cannot be processed. This error has been reported and we will fix this issue soon!');
         }
 
         return $pdf->stream();
