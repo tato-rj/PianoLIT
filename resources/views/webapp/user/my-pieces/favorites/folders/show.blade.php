@@ -25,7 +25,7 @@
 
 		<span class="badge align-text-bottom badge-pill bg-{{$favorite->piece->level_name}}-raw"">{{$favorite->order + 1}}</span>
 
-		<span class="">{{$favorite->piece->name}} <small class="text-muted">&middot; {{$favorite->piece->composer->short_name}}</small></span>
+		<span style="user-select: none;">{{$favorite->piece->name}} <small class="text-muted">&middot; {{$favorite->piece->composer->short_name}}</small></span>
 
 
 		@slot('controls')
