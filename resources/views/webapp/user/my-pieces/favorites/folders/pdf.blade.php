@@ -4,7 +4,7 @@
 
 @component('components.modal', ['id' => 'generate-pdf', 'header' => 'Create eScore'])
 @slot('body')
-<p class="text-center mb-3">You can edit the fields below to make the customize the cover page:</p>
+<p class="text-center mb-3">Customize the cover page below👇</p>
 
 <form target="_blank" method="GET" action="{{route('webapp.users.favorites.folders.pdf', $folder)}}">
 	<div class="mb-3 bg-white border mx-auto p-4 d-apart flex-column shadow-lg" style="height: 466px; max-width: 375px; font-family: serif;">
