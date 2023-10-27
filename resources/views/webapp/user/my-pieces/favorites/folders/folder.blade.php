@@ -7,9 +7,6 @@
 			</div>
 		</a>
 		<div class="p-2">
-			<div class="mb-2">
-				@include('webapp.user.my-pieces.favorites.folders.pdf', ['classes' => 'btn-sm w-100'])
-			</div>
 			<div class="rounded border py-1 px-3 bg-light d-flex d-apart">
 				<button class="btn-raw" data-toggle="modal" data-target="#edit-folder-{{$folder->id}}">@fa(['icon' => 'edit', 'mr' => 0, 'color' => 'secondary'])</button>
 				<button class="btn-raw" data-toggle="modal" data-target="#delete-folder-{{$folder->id}}">@fa(['icon' => 'trash-alt', 'mr' => 0, 'color' => 'red'])</button>
