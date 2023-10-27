@@ -1,5 +1,5 @@
-<div class="text-center">
-	<a class="btn btn-primary" data-toggle="modal" data-target="#generate-pdf">@fa(['icon' => 'book'])Generate eScore</a>
+<div class="text-center w-100">
+	<a class="btn btn-primary-outline btn-wide {{$classes ?? null}}" data-toggle="modal" data-target="#generate-pdf">@fa(['icon' => 'book', 'classes' => ''])Create eScore</a>
 </div>
 
 @component('components.modal', ['id' => 'generate-pdf', 'header' => 'Create eScore'])
