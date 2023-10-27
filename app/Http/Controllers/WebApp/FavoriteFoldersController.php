@@ -7,9 +7,28 @@ use Illuminate\Http\Request;
 use App\{FavoriteFolder, Piece, Favorite, User};
 use App\Http\Requests\FavoriteFoldersForm;
 use Illuminate\Validation\ValidationException;
+use App\PDF\PDFGenerator;
+use App\Events\eScoreGenerated;
 
 class FavoriteFoldersController extends Controller
 {
+    public function pdf(Request $request, FavoriteFolder $folder)
+    {
+        $request->validate([
+            'title' => 'required',
+            'subtitle' => 'required',
+            'comment' => 'required'
+        ]);
+
+        $pdf = (new PDFGenerator)->pieces($folder->favorites->pluck('piece'))
+                                 ->request($request->all())
+                                 ->generate();
+
+        event(new eScoreGenerated(auth()->user(), $folder));
+
+        return $pdf->stream();
+    }
+
     public function store(Request $request, FavoriteFoldersForm $form)
     {
         $folder = FavoriteFolder::create([

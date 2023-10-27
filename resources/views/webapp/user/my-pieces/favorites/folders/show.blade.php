@@ -13,6 +13,8 @@
 	@include('webapp.user.my-pieces.favorites.folders.pieces-count')
 </div>
 
+@include('webapp.user.my-pieces.favorites.folders.pdf')
+
 @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
 
 <section id="pieces-list">

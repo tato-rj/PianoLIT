@@ -10,7 +10,7 @@
 	    page-break-after: always;
 	}
 
-	#cover-page {
+	#cover-page, #contents {
 		margin-left: 44px;
 		margin-right: 44px;
 	}
@@ -41,26 +41,46 @@
 	}
 
 	#credits {
+		font-size: 80%;
 		text-align: center;
 		position: absolute;
 		bottom: 40px;
-		opacity: .8;
+		opacity: .6;
+	}
+
+	#contents li {
+		text-align: left;
+		position: absolute;
+		font-size: 1.2rem;
+	}
+
+	#contents ul {
+		padding-top: 4%;
 	}
  	</style>
 </head>
 <body>
-	<div id="cover-page">
+	<section id="cover-page">
 		<h1>{{$title}}</h1>
 		<h4>{{$subtitle}}</h4>
 		<div class="line"></div>
 		<h5>{{$comment}}</h5>
 
 		<div id="credits">
-			<p style="padding-top: 10px;">created by Arthur Villar</p>
+			<p style="padding-top: 4px;">created by Arthur Villar</p>
 			<p>PianoLIT eScore</p>
 		</div>
-	</div>
+	</section>
+
 	<div class="page-break"></div>
-	<h1>Page 2</h1>
+	
+	<section id="contents">
+		<h1>Table of Contents</h1>
+		<ul style="list-style: none;">
+			@foreach($pieces as $piece)
+			<li style="top: {{$loop->iteration * 34}}px">{{$piece}}</li>
+			@endforeach
+		</ul>
+	</section>
 </body>
 </html>

@@ -21,13 +21,6 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        $pdf = \PDF::loadView('pdf.escore.index', [
-            'title' => 'Book 1',
-            'subtitle' => 'Pieces for beginners',
-            'comment' => 'for piano'
-        ]);
-
-        return $pdf->stream('escore.pdf');
         $userStats = [
             'all' => [
                 'label' => 'Users', 

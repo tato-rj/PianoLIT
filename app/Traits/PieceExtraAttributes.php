@@ -39,6 +39,11 @@ trait PieceExtraAttributes
         return storage($this->score_path);
     }
 
+    public function getScoreFullPathAttribute()
+    {
+        return \Storage::disk('public')->path($this->score_path);
+    }
+
     public function getLevelNameAttribute()
     {
         if ($this->level)

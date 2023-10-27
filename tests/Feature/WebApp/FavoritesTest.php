@@ -4,6 +4,9 @@ namespace Tests\Feature\WebApp;
 
 use Tests\AppTest;
 use App\{Piece, FavoriteFolder, Favorite};
+use App\Notifications\eScoreGeneratedNotification;
+use App\PDF\PDFGenerator;
+use Mockery\MockInterface;
 
 class FavoritesTest extends AppTest
 {

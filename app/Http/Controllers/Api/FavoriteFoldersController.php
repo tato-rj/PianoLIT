@@ -44,6 +44,18 @@ class FavoriteFoldersController extends Controller
         return FavoriteFolder::flat($request->user_id, $request->folder_id);
     }
 
+    public function pdf(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'folder_id' => 'required|exists:favorite_folders,id'
+        ]);
+
+        return (new \App\PDF\PDFGenerator)->pieces(FavoriteFolder::flat($request->user_id, $request->folder_id))
+                                          ->folder(FavoriteFolder::find($request->folder_id))
+                                          ->download();
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

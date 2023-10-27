@@ -66,6 +66,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         \App\Events\Performances\PerformanceApproved::class => [
             \App\Listeners\Performances\PerformanceApprovedListener::class
+        ],
+        \App\Events\eScoreGenerated::class => [
+            \App\Listeners\eScoreGeneratedListener::class
         ]
     ];
 
