@@ -51,6 +51,19 @@ class FavoritesTest extends AppTest
     }
 
     /** @test */
+    public function when_favorited_to_a_folder_the_order_is_automatically_set()
+    {
+        $this->signIn($this->user);
+
+        $folder = create(FavoriteFolder::class, ['user_id' => $this->user->id]);
+
+        $this->post(route('webapp.users.favorites.update', ['piece' => create(Piece::class), 'folder_id' => $folder->id]));
+        $this->post(route('webapp.users.favorites.update', ['piece' => create(Piece::class), 'folder_id' => $folder->id]));
+         
+        $this->assertEquals($this->user->favoriteFolders()->first()->favorites()->pluck('order')->toArray(), [0,1]);
+    }
+
+    /** @test */
     public function webapp_users_can_add_a_repeated_favorite_on_a_different_folder()
     {
         $this->signIn($this->user);

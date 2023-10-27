@@ -23,7 +23,7 @@ class FavoriteFolder extends PianoLit
 
     public function favorites()
     {
-        return $this->hasMany(Favorite::class)->with('piece')->latest();
+        return $this->hasMany(Favorite::class)->with('piece')->orderBy('order');
     }
 
     public function scopeUserCreated($query)
@@ -59,6 +59,17 @@ class FavoriteFolder extends PianoLit
     public function hasPiece($piece_id)
     {
         $this->has_piece = $this->favorites()->where('piece_id', $piece_id)->exists();
+    }
+
+    public function sort($ids = null)
+    {
+        $array = $ids ?? $this->favorites()->get()->pluck('id');
+
+        foreach ($array as $order => $id) {
+            $this->favorites()->where('id', $id)->update(['order' => $order]);
+        }
+
+        return $this;
     }
 
     public function scopeDatatable($query)

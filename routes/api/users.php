@@ -29,6 +29,8 @@ Route::prefix('users')->name('users.')->group(function() {
 
 			Route::post('', 'Api\FavoriteFoldersController@store')->name('store');
 
+			Route::patch('reorder', 'Api\FavoriteFoldersController@reorder')->name('reorder');
+
 			Route::patch('', 'Api\FavoriteFoldersController@update')->name('update');
 
 			Route::delete('', 'Api\FavoriteFoldersController@destroy')->name('delete');

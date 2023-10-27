@@ -1,17 +1,17 @@
 <div class="edit-control border d-flex align-items-center selected-piece ordered t-2 rounded bg-white hover-shadow-light mb-2" data-id="{{$model->id}}" style="padding: .375rem 0;">
   <div class="ml-2 text-muted opacity-4">{{! empty($loop) ? $loop->iteration : null}}</div>
-  <div class="sort-handle flex-grow d-flex">
+  <div class="sort-handle flex-grow d-flex text-truncate">
     {{-- SORT HANDLE --}}
     <div class="px-2 mr-1">
       <i class="fas fa-sort"></i>
     </div>
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center text-truncate">
 
       {{ $actions ?? null }}
 
       <input type="hidden" name="{{$model->getTable()}}[]" value="{{$model->id}}">
 
-      <p class="m-0">{{ $slot }}</p>
+      <p class="m-0 text-truncate">{{ $slot }}</p>
     </div>
   </div>
   @empty($controls)

@@ -33,10 +33,18 @@ class Favorite extends PianoLit
 
         if ($record = $this->retrieve($user, $piece, $folder)->first()){
             $record->delete();
+
+            if ($folder)
+                $folder->sort();
+
             return false;
         }
         
         $this->addTo($user, $piece, $folder);
+        
+        if ($folder)
+            $folder->sort();
+
         return true;
     }
 

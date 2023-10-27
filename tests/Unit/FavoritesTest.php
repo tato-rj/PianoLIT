@@ -97,4 +97,37 @@ class FavoritesTest extends AppTest
 
     	Favorite::moveTo($this->user, $this->piece, null, $this->folder);
     }
+
+    /** @test */
+    public function its_folder_knows_how_to_order_its_pieces_by_default()
+    {
+        $secondPiece = create(Piece::class);
+
+        Favorite::toggle($this->user, $this->piece, $this->folder);
+        Favorite::toggle($this->user, $secondPiece, $this->folder);
+
+        \DB::table('favorites')->update(['order' => 0]);
+
+        $this->assertEquals($this->folder->favorites()->get()->pluck('order')->toArray(), [0, 0]);
+
+        $this->folder->sort();
+
+        $this->assertEquals($this->folder->favorites()->get()->pluck('order')->toArray(), [0, 1]);
+    }
+
+    /** @test */
+    public function its_folder_knows_how_to_order_its_pieces_given_a_different_order()
+    {
+        $secondPiece = create(Piece::class);
+
+        Favorite::toggle($this->user, $this->piece, $this->folder);
+        Favorite::toggle($this->user, $secondPiece, $this->folder);
+
+        $this->assertEquals($this->folder->favorites->first()->piece->id, $this->piece->id);
+
+        $this->folder->sort([$this->folder->favorites[1]->id, $this->folder->favorites[0]->id]);
+
+        $this->assertEquals($this->folder->favorites()->first()->piece->id, $secondPiece->id);
+        $this->assertEquals($this->folder->favorites()->get()->pluck('order')->toArray(), [0, 1]);
+    }
 }

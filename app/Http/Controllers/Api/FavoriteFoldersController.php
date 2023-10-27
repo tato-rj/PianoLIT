@@ -92,6 +92,33 @@ class FavoriteFoldersController extends Controller
         return response()->json(['message' => 'Saved to ' . $folder->name, 'data' => $folder, 'valid' => true]);
     }
 
+    public function reorder(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'folder_id' => 'required|exists:favorite_folders,id',
+            'user_id' => [
+                'required', 
+                'exists:users,id',
+                new UserMustOwnTheFolder($request->folder_id)],
+            'ids' => 'required'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['message' => $validator->messages()->first(), 'valid' => false]);
+
+        $folder = FavoriteFolder::find($request->folder_id)->sort($request->ids);
+
+        return view('components.alert', [
+            'color' => 'green',
+            'message' => '<i class="fas fa-check-circle mr-2"></i>The order has been updated',
+            'temporary' => true,
+            'dismissible' => true,
+            'floating' => 'top'
+        ])->render();
+        
+        // return response()->json(['message' => 'Favorites in this folder have been reordered.', 'data' => $folder, 'valid' => true]);
+    }
+
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [

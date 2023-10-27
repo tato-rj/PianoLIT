@@ -13,11 +13,35 @@
 	@include('webapp.user.my-pieces.favorites.folders.pieces-count')
 </div>
 
+<div class="mb-4"> 
 @include('webapp.user.my-pieces.favorites.folders.pdf')
+</div>
 
-@include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
+{{-- @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local']) --}}
 
-<section id="pieces-list">
+<div class="mt-3 favorites-container" data-url-reorder="{{route('api.users.favorites.folders.reorder', ['user_id' => auth()->user()->id, 'folder_id' => $folder->id])}}">
+	@foreach($folder->favorites as $favorite)
+		@component('components.draggable.cards.small', ['model' => $favorite])
+
+		<span class="badge align-text-bottom badge-pill bg-{{$favorite->piece->level_name}}-raw"">{{$favorite->order + 1}}</span>
+
+		<span class="">{{$favorite->piece->name}} <small class="text-muted">&middot; {{$favorite->piece->composer->short_name}}</small></span>
+
+
+		@slot('controls')
+			<div class="d-flex">
+				<button class="btn-raw t-2 mr-1" id="flag-{{$favorite->piece->id}}" data-submit="favorite" data-target="#flag-{{$favorite->piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $favorite->piece, 'folder_id' => $folder->id])}}" data-favorited="true" style="font-size: 120%" title="Remove from this folder">
+					@fa(['icon' => 'heart', 'fa_type' => 's', 'color' => 'red'])
+				</button>
+
+				<a class="btn btn-sm btn-primary text-nowrap" href="{{route('webapp.pieces.show', $favorite->piece)}}">@fa(['icon' => 'arrow-right', 'mr' => 0])</a>
+			</div>
+		@endslot
+		@endcomponent
+	@endforeach
+</div>
+
+{{-- <section id="pieces-list">
 	@forelse($folder->favorites as $favorite)
 		@component('webapp.components.piece', ['piece' => $favorite->piece, 'hasFullAccess' => $hasFullAccess])
 		<button class="btn-raw t-2" id="flag-{{$favorite->piece->id}}" data-submit="favorite" data-target="#flag-{{$favorite->piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $favorite->piece, 'folder_id' => $folder->id])}}" data-favorited="true" style="font-size: 120%" title="Remove from this folder">
@@ -27,11 +51,40 @@
 	@empty
 		<h5 class="text-grey text-center mt-6 mb-3"><i>This folder is emtpy</i></h5>
 	@endforelse
-</section>
+</section> --}}
 
 @endsection
 
 @push('scripts')
+<script type="text/javascript">
+$('div.favorites-container').each(function() {
+  let $tab = $(this);
+  $tab.sortable({
+    handle: '.sort-handle',
+    update: function(element) {
+      let url = $tab.attr('data-url-reorder');
+      let ids = $tab.find('.ordered').attrToArray('data-id');
+
+      axios.patch(url, {ids: ids})
+      .then(function(response) {
+        $('.alert-container').remove();
+
+        $('body').append(response.data);
+        
+        setTimeout(function() {
+          $('.alert-temporary').fadeOut(function() {
+            $(this).remove();
+          });
+        }, 2000);
+      })
+      .catch(function(error) {
+        alert('Something went wrong...');
+        console.log(error)
+      });
+    }
+  });
+});
+</script>
 <script type="text/javascript">
 $('#local-filter input[type="checkbox"]').change(function() {
 	let filters = [];
