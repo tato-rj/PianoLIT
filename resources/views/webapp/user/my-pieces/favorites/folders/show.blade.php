@@ -23,7 +23,7 @@
 	@foreach($folder->favorites as $favorite)
 		@component('components.draggable.cards.small', ['model' => $favorite])
 
-		<div style="width: 12px; height: 12px;" class="mr-2 align-text-bottom rounded-circle bg-{{$favorite->piece->level_name}}-raw"></div>
+		<div style="width: 12px; height: 12px;" class="mr-1 align-text-bottom rounded-circle bg-{{$favorite->piece->level_name}}-raw"></div>
 
 		<span style="user-select: none;">{{$favorite->piece->name}} <small class="text-muted">&middot; {{$favorite->piece->composer->short_name}}</small></span>
 
