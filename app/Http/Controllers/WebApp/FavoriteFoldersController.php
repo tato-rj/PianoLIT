@@ -20,11 +20,15 @@ class FavoriteFoldersController extends Controller
             'comment' => 'required'
         ]);
 
-        $pdf = (new PDFGenerator)->pieces($folder->favorites->pluck('piece'))
-                                 ->request($request->all())
-                                 ->generate();
+        try {
+            $pdf = (new PDFGenerator)->pieces($folder->favorites->pluck('piece'))
+                                     ->request($request->all())
+                                     ->generate();
 
-        event(new eScoreGenerated(auth()->user(), $folder));
+            event(new eScoreGenerated(auth()->user(), $folder));  
+        } catch (\Exception $e) {
+            bugreport($e);
+        }
 
         return $pdf->stream();
     }
