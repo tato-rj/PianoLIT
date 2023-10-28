@@ -12,7 +12,7 @@ class PDFGenerator
 
 	public function pieces($pieces)
 	{
-		$this->pieces = $pieces;
+		$this->pieces = $pieces->whereNotNull('score_url');
 
 		return $this;
 	}
