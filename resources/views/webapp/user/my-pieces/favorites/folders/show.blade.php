@@ -21,7 +21,7 @@
 
 <div class="mt-3 favorites-container" data-url-reorder="{{route('api.users.favorites.folders.reorder', ['user_id' => auth()->user()->id, 'folder_id' => $folder->id])}}">
 	@foreach($folder->favorites as $favorite)
-		@component('components.draggable.cards.small', ['model' => $favorite])
+		@component('components.draggable.cards.small', ['model' => $favorite, 'noBorder' => true])
 
 		<div class="text-truncate">
 			<div style="width: 12px; height: 12px;" class="mr-1 d-inline-block rounded-circle bg-{{$favorite->piece->level_name}}-raw"></div>

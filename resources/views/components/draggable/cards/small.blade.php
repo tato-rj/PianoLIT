@@ -1,4 +1,4 @@
-<div class="edit-control border d-flex align-items-center selected-piece ordered t-2 rounded bg-white hover-shadow-light mb-2" data-id="{{$model->id}}" style="padding: .375rem 0; user-select: none;">
+<div class="edit-control d-flex align-items-center selected-piece ordered t-2 rounded bg-white hover-shadow-light mb-2" data-id="{{$model->id}}" style="padding: .375rem 0; user-select: none;">
   <div class="ml-2 text-muted opacity-4">{{! empty($loop) ? $loop->iteration : null}}</div>
   <div class="flex-grow d-flex text-truncate">
     {{-- SORT HANDLE --}}
