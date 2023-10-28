@@ -48,7 +48,8 @@ class PDFGenerator
         $merger->addPDF($pdfpath, 'all');
 
         foreach ($this->pieces as $piece) {
-        	$merger->addPDF($piece->score_full_path, 'all');
+        	if ($piece->is_public_domain)
+	        	$merger->addPDF($piece->score_full_path, 'all');
         }
         
         $merger->merge();
