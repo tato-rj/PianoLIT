@@ -76,9 +76,11 @@
 	
 	<section id="contents">
 		<h1>Table of Contents</h1>
-		<ul style="list-style: none;">
+		<ul>
 			@foreach($pieces as $piece)
-			<li style="top: {{$loop->iteration * 34}}px">{{$piece}}</li>
+			<li style="top: {{$loop->iteration * 34}}px">
+				{{$piece}}
+			</li>
 			@endforeach
 		</ul>
 	</section>
