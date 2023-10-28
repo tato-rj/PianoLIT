@@ -4,7 +4,12 @@
 
 @component('components.modal', ['id' => 'generate-pdf-folder-'.$folder->id, 'header' => 'Create eScore'])
 @slot('body')
-<p class="text-center mb-3">Customize the cover page below👇</p>
+
+<div class="text-center mb-3">
+	@php($count = $folder->favorites->whereNotNull('piece.score_path')->count())
+	<p class="mb-1">Your eScore will include <strong>{{$count}}</strong> {{str_plural('piece', $count)}}!</p>
+	<p><u>Customize the cover page below</u>👇</p>
+</div>
 
 <form target="_blank" method="GET" action="{{route('webapp.users.favorites.folders.pdf', $folder)}}">
 	<div class="mb-3 bg-white border mx-auto p-4 d-apart flex-column shadow-lg" style="height: 466px; max-width: 375px; font-family: serif;">
