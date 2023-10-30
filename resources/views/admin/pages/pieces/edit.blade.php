@@ -217,6 +217,7 @@
           <div class="form-row form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
+
                 <a class="input-group-text no-underline {{$piece->lookup('audio_path')}}" href="{{storage($piece->audio_path)}}" target="_blank"><i class="fas fa-microphone"></i></a>
               </div>
               <div class="custom-file">
@@ -224,6 +225,7 @@
                 <label class="custom-file-label truncate" for="customFile">Both hands</label>
               </div>
             </div>
+
             <div class="col input-group">
               <div class="input-group-prepend">
                 <a class="input-group-text no-underline {{$piece->lookup('score_path')}}" href="{{storage($piece->score_path)}}" target="_blank"><i class="fas fa-file-alt"></i></a>
@@ -308,6 +310,15 @@
         </div>
       </div>
     </form>
+
+    <div class="text-right">
+      <form method="POST" action="{{route('admin.pieces.destroy-file', $piece)}}">
+        @csrf
+        @method('DELETE')
+        <input type="hidden" name="method" value="deleteScore">
+        <button type="submit" class="btn btn-red">@fa(['icon' => 'trash-alt', 'mr' => 0]) Delete score</button>
+      </form>
+    </div>
   </div>
 </div>
 

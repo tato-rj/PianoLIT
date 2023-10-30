@@ -288,6 +288,19 @@ class PiecesController extends Controller
         return back()->with(['status' => 'The piece has been successfully hijacked!']);
     }
 
+    public function destroyFile(Request $request, Piece $piece)
+    {
+        $method = $request->method;
+
+        if (method_exists($piece, $method)) {
+            $piece->$method();
+
+            return back()->with(['status' => 'The file has been successfully removed!']);
+        }
+
+        return back()->with(['status' => 'The file could not be removed']);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

@@ -570,6 +570,14 @@ class Piece extends PianoLit
         return $this->update(['score_path' => $file->storeAs('app/score', $filename, 'public')]);
     }
 
+    public function deleteScore()
+    {
+        if (\Storage::disk('public')->exists($this->score_path))
+            \Storage::disk('public')->delete($this->score_path);
+        
+        return $this->update(['score_path' => null]);
+    }
+
     public function cover_image()
     {
         return $this->cover_path ? asset('storage/' . $this->cover_path) : null;

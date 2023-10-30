@@ -208,10 +208,30 @@ class PieceTest extends AppTest
 
         $this->delete(route('admin.pieces.destroy', $piece->id));
 
-        \Storage::disk('public')->assertMissing($piece->autio_path);
+        \Storage::disk('public')->assertMissing($piece->audio_path);
         \Storage::disk('public')->assertMissing($piece->audio_rh_path);
         \Storage::disk('public')->assertMissing($piece->audio_lh_path);
         \Storage::disk('public')->assertMissing($piece->score_path);
+    }
+
+    /** @test */
+    public function admins_can_delete_a_specific_file_from_a_piece()
+    {
+        \Storage::fake('public');
+
+        $this->signIn();
+
+        $piece = $this->postPiece();
+
+        $updatedPiece = $this->updatePiece($piece);
+
+        $this->patch(route('admin.pieces.update', $piece->id), $updatedPiece);
+
+        \Storage::disk('public')->assertExists($piece->fresh()->score_path);
+
+        $this->delete(route('admin.pieces.destroy-file', $piece), ['method' => 'deleteScore']);
+
+        \Storage::disk('public')->assertMissing($piece->fresh()->score_path);
     }
 
     /** @test */
