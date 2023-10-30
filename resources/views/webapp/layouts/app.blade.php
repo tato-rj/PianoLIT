@@ -102,31 +102,31 @@
     </script>
 
     <script type="text/javascript">
-$(document).ready(function() {
- let cookie = 'pianolit_whatsnew_10.22.2023';
+// $(document).ready(function() {
+//  let cookie = 'pianolit_whatsnew_10.22.2023';
 
- if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-     $('.modal.autoshow').modal('show');
+//  if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+//      $('.modal.autoshow').modal('show');
 
-     setCookie(cookie, moment().format('x'), 365);
- }
-});
+//      setCookie(cookie, moment().format('x'), 365);
+//  }
+// });
 
-$(document).ready(function() {
- let cookie = 'pianolit_new_feature_stage';
+// $(document).ready(function() {
+//  let cookie = 'pianolit_new_feature_stage';
 
- if (! getCookie(cookie) || getCookie(cookie) == 'null') {
-     let options = {
-         placement: 'bottom', 
-         title: '🎁 New feature!',
-         trigger: 'manual'
-     };
+//  if (! getCookie(cookie) || getCookie(cookie) == 'null') {
+//      let options = {
+//          placement: 'bottom', 
+//          title: '🎁 New feature!',
+//          trigger: 'manual'
+//      };
 
-     $('[new-feature]').tooltip(options).tooltip('show');
+//      $('[new-feature]').tooltip(options).tooltip('show');
 
-     setCookie(cookie, moment().format('x'), 365);
- }
-});
+//      setCookie(cookie, moment().format('x'), 365);
+//  }
+// });
 </script>
     @stack('scripts')
 
