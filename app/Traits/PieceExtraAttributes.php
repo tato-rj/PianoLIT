@@ -93,6 +93,7 @@ trait PieceExtraAttributes
     {
         $rcm = $this->getRanking('rcm', false);
         $abrsm = $this->getRanking('abrsm', false);
+        $suzuki = $this->getRanking('suzuki', false);
 
         if (! $rcm) {
             if ($this->level_name == 'advanced') {
@@ -114,9 +115,14 @@ trait PieceExtraAttributes
             }
         }
 
+        if (! $suzuki) {
+            $suzukiDefault = null;
+        }
+
         return [
             'rcm' => $rcm ? "Equivalent to RCM level $rcm" : $rcmDefault, 
-            'abrsm' => $abrsm ? "Equivalent to ABRSM level $abrsm" : $abrsmDefault
+            'abrsm' => $abrsm ? "Equivalent to ABRSM level $abrsm" : $abrsmDefault,
+            'suzuki' => $suzuki ? "Equivalent to Suzuki book $suzuki" : $suzukiDefault
         ];
     }
 

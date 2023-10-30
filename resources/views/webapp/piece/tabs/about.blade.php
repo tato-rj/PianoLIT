@@ -50,10 +50,12 @@
 	<div class="mb-4">
 		<h5 class="mb-3">Ranking</h5>
 		@foreach($piece->rankings as $ranking => $label)
+		@if($label)
 		<div class="d-flex align-items-center mb-2">
 			<img class="mr-2" style="width: 40px" src="{{asset('images/webapp/icons/'.$ranking.'.png')}}">
 			<div class="text-nowrap">{{$label}}</div>
 		</div>
+		@endif
 		@endforeach
 	</div>
 
