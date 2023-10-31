@@ -37,7 +37,13 @@ return [
     'stripe' => [
         'model' => App\User::class,
         'key' => env('STRIPE_KEY'),
+        'us_key' => env('STRIPE_US_KEY'),
+        'swiss_key' => env('STRIPE_SWISS_KEY'),
+        
         'secret' => env('STRIPE_SECRET'),
+        'us_secret' => env('STRIPE_US_SECRET'),
+        'swiss_secret' => env('STRIPE_SWISS_SECRET'),
+
         'version' => env('STRIPE_VERSION'),
         'webhook' => [
             'secret' => env('STRIPE_WEBHOOK_SECRET'),

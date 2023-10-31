@@ -2,6 +2,7 @@
 
 namespace App\Billing\Sandbox;
 
+use App\Billing\Sources\Concerns\StripeJurisdiction;
 use App\Billing\Sandbox\Traits\StripeEvents;
 use App\Billing\Factories\StripeFactory;
 use Stripe\{Stripe, Token};
@@ -21,6 +22,8 @@ class StripeSandbox
 
 	public function token($card = '4242424242424242')
 	{
+		(new StripeJurisdiction)->us();
+
         Stripe::setApiKey(config('services.stripe.secret'));
         Stripe::setApiVersion(config('services.stripe.version'));
 

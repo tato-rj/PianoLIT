@@ -5,6 +5,7 @@ namespace App\Billing\Factories;
 use Stripe\{Stripe, Customer, Subscription, Invoice, Coupon, Charge};
 use Stripe\Plan as StripePlan;
 use App\Billing\Plan;
+use App\Billing\Sources\Concerns\StripeJurisdiction;
 
 class StripeFactory
 {
@@ -13,11 +14,10 @@ class StripeFactory
 	public function __construct()
 	{
     // if (auth()->user()->isSwissCustomer()) {
-    //   Stripe::setApiKey(config('services.stripe.swiss_secret'));
+    //   (new StripeJurisdiction)->swiss();
     // } else {
-    //   Stripe::setApiKey(config('services.stripe.us_secret'));
+    //   (new StripeJurisdiction)->us();
     // }
-    // config(['services.stripe.key' => config('services.stripe.us_key')]);
 
     Stripe::setApiKey(config('services.stripe.secret'));
     Stripe::setApiVersion(config('services.stripe.version'));
