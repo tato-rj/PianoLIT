@@ -21,7 +21,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        dd(User::latest()->first()->isSwissCustomer());
+        // dd(User::latest()->first()->isSwissCustomer());
         $userStats = [
             'all' => [
                 'label' => 'Users', 
