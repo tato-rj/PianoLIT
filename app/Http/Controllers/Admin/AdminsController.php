@@ -21,7 +21,6 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        dd(\App\User::where('email', 'tocoy52759@soebing.com')->first()->isSwissCustomer());
         $userStats = [
             'all' => [
                 'label' => 'Users', 
