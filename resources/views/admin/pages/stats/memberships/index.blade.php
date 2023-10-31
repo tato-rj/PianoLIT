@@ -8,9 +8,8 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-12">
-        <div>Stripe memberships: </div>
-        <div>Apple memberships: </div>
+      <div class="col-12 mb-4">
+        <div>Stripe memberships: {{\App\Billing\Sources\Stripe::where('status', 'active')->count()}}</div>
       </div>
       <div class="col-12">
         @table([
