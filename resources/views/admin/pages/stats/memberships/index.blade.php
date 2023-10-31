@@ -9,6 +9,10 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
+        <div>Stripe memberships: </div>
+        <div>Apple memberships: </div>
+      </div>
+      <div class="col-12">
         @table([
           'id' => 'trials-table',
           'title' => '<i class="fas fa-hourglass-half mr-2 text-warning"></i>Trials ('.$trials->count().')',

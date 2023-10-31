@@ -29,7 +29,7 @@ class StripeWebhookController extends Controller
 		    	@file_get_contents('php://input'), 
 		    	$_SERVER['HTTP_STRIPE_SIGNATURE'], 
 		    	config('services.stripe.webhook.secret'));
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 		    abort(404);
 		}
     }
