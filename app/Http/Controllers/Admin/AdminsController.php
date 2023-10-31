@@ -21,7 +21,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return User::latest()->first()->isSwissCustomer() ? 'Is customer' : 'Not a customer';
+        return User::where('email', 'arthur.villar@bkcm.org')->isSwissCustomer() ? 'Is customer' : 'Not a customer';
         $userStats = [
             'all' => [
                 'label' => 'Users', 
