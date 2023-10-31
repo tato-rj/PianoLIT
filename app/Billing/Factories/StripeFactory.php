@@ -13,11 +13,7 @@ class StripeFactory
 
 	public function __construct()
 	{
-    // if (auth()->user()->isSwissCustomer()) {
-    //   (new StripeJurisdiction)->swiss();
-    // } else {
-    //   (new StripeJurisdiction)->us();
-    // }
+    (new StripeJurisdiction)->set();
 
     Stripe::setApiKey(config('services.stripe.secret'));
     Stripe::setApiVersion(config('services.stripe.version'));

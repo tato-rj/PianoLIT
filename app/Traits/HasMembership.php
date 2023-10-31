@@ -20,7 +20,7 @@ trait HasMembership
         if ($this->customer()->exists())
             return in_array($this->customer->stripe_id, $array);
 
-        if ($this->hasMembershipWith('stripe'))
+        if ($this->hasMembershipWith('App\Billing\Sources\Stripe'))
             return in_array($this->membership->source->stripe_id, $array);
 
         return false;
