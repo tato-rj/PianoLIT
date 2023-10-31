@@ -13,10 +13,11 @@ class StripeFactory
 	public function __construct()
 	{
     // if (auth()->user()->isSwissCustomer()) {
-      // Stripe::setApiKey(config('services.stripe.swiss_secret'));
+    //   Stripe::setApiKey(config('services.stripe.swiss_secret'));
     // } else {
-      // Stripe::setApiKey(config('services.stripe.us_secret'));
+    //   Stripe::setApiKey(config('services.stripe.us_secret'));
     // }
+    // config(['services.stripe.key' => config('services.stripe.us_key')]);
 
     Stripe::setApiKey(config('services.stripe.secret'));
     Stripe::setApiVersion(config('services.stripe.version'));
