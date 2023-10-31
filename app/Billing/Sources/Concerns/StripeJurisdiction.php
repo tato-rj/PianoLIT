@@ -16,12 +16,15 @@ class StripeJurisdiction
 		config(['services.stripe.secret' => config('services.stripe.swiss_secret')]);
 	}
 
-	public function set()
+	public function set($getKey = false)
 	{
 	    if (auth()->user()->isSwissCustomer()) {
-	      return $this->swiss();
+	      $this->swiss();
 	    } else {
-	      return $this->us();
+	      $this->us();
 	    }
+
+	    if ($getKey)
+	    	return config('services.stripe.key');
 	}
 }

@@ -14,7 +14,7 @@
 </div>
 
 <form action="{{$product->purchaseRoute()}}" method="POST" id="returning-payment-form" 
-	class="mb-4 payment-forms" disable-on-submit data-key="{{(new \App\Billing\Sources\Concerns\StripeJurisdiction)->set()}}">
+	class="mb-4 payment-forms" disable-on-submit data-key="{{(new \App\Billing\Sources\Concerns\StripeJurisdiction)->set($getKey = true)}}">
 	@csrf
 	@include('shop.components.forms.coupon')
 

@@ -1,4 +1,4 @@
-<form action="{{$action}}" method="POST" disable-on-submit id="payment-form" class="mb-4 payment-forms" data-key="{{(new \App\Billing\Sources\Concerns\StripeJurisdiction)->set()}}" 
+<form action="{{$action}}" method="POST" disable-on-submit id="payment-form" class="mb-4 payment-forms" data-key="{{(new \App\Billing\Sources\Concerns\StripeJurisdiction)->set($getKey = true)}}" 
 	style="{{! empty($hide) ? 'display: none' : null}}">
 	@csrf
 	<div class="mb-3">
