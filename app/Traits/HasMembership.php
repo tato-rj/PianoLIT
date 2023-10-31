@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use App\Billing\Membership;
 use App\Billing\Sources\{Apple, Stripe};
-use App\Billing\Sources\Concers\StripeSwissCustomers;
+use App\Billing\Sources\Concerns\StripeSwissCustomers;
 
 trait HasMembership
 {
