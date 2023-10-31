@@ -21,7 +21,6 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return User::where('email', 'arthur.villar@bkcm.org')->first()->id;
         return User::where('email', 'arthur.villar@bkcm.org')->first()->isSwissCustomer() ? 'Is customer' : 'Not a customer';
         $userStats = [
             'all' => [
