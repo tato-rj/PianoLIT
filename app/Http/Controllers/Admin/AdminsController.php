@@ -22,7 +22,7 @@ class AdminsController extends Controller
     public function home()
     {
         // return \App\Billing\Sources\Stripe::pluck('stripe_id')->toArray();
-        return \App\Billing\Customer::pluck('stripe_id')->toArray();
+        // return \App\Billing\Customer::pluck('stripe_id')->toArray();
 
         return User::where('email', 'arthur.villar@bkcm.org')->first()->isSwissCustomer() ? 'Is customer' : 'Not a customer';
         $userStats = [

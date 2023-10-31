@@ -4,9 +4,37 @@ namespace App\Billing\Sources\Concerns;
 
 class StripeSwissCustomers
 {
-	public function get()
-	{
-		return [
+	protected $customers = [
+				"cus_IhIbOLYxcDYL1k",
+				"cus_InvZEvcrKmNOw6",
+				"cus_Io5wTtvb3SJEUh",
+				"cus_IvAiyXBRBXBKTa",
+				"cus_IvStlFqnMW0Abu",
+				"cus_J1EUhCPYEVs7Mi",
+				"cus_JcEy1iAi8uL0k6",
+				"cus_KtPxww4mY3Ektm",
+				"cus_L2M4pRab4sPiNs",
+				"cus_L32dfOQMFAYxh3",
+				"cus_L3a7eKStOGukUg",
+				"cus_L8QTjueSFLI29i",
+				"cus_LEgSri8c4AoVsp",
+				"cus_LJvnZH3r7MmH3p",
+				"cus_M52GoyTYl5KnuW",
+				"cus_MDiL0XpeAq6WZn",
+				"cus_NLqV2FDU7LQBxR",
+				"cus_NNyM3BWmNrR00c",
+				"cus_NQ6ocRx0lePAGh",
+				"cus_NTt1cQ8SvysGva",
+				"cus_Na2vPgLST5653u",
+				"cus_Nc9R08PNk0AoEn",
+				"cus_OHdoMXIVYjIxpp",
+				"cus_OJN8eO1JV9NRGL",
+				"cus_OYfECf5GRLDEmj",
+				"cus_OrL2O2Syn0ucPr",
+				"cus_Ov8m4r5jJH4EII"
+			];
+
+	protected $members = [
 			"cus_HIvpunJuLsOGJP",
 			"cus_HJiHuXi8qT0BV7",
 			"cus_HO3768axaijAjm",
@@ -84,5 +112,9 @@ class StripeSwissCustomers
 			"cus_OuwhdMjC5PMI1f",
 			"cus_Ov96lLM1VBco9u"
 		];
+
+	public function get()
+	{
+		return array_merge($this->customers, $this->members);
 	}
 }
