@@ -12,6 +12,12 @@ class StripeFactory
 
 	public function __construct()
 	{
+    // if (auth()->user()->isInThisList($list)) {
+    //   Stripe::setApiKey(config('services.stripe.swiss_secret'));
+    // } else {
+    //   Stripe::setApiKey(config('services.stripe.us_secret'));
+    // }
+
     Stripe::setApiKey(config('services.stripe.secret'));
     Stripe::setApiVersion(config('services.stripe.version'));
 	}
