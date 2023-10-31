@@ -21,7 +21,8 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        // dd(User::latest()->first()->isSwissCustomer());
+        return \App\Billing\Sources\Stripe::pluck('stripe_id')->toArray();
+        dd(User::latest()->first()->isSwissCustomer());
         $userStats = [
             'all' => [
                 'label' => 'Users', 

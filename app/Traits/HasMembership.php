@@ -16,7 +16,7 @@ trait HasMembership
     public function isSwissCustomer()
     {
         $array = (new StripeSwissCustomers)->get();
-        // dd(\App\Billing\Sources\Stripe::pluck('stripe_id')->toArray());
+
 // dd($array);
         if ($this->customer()->exists())
             return in_array($this->customer->stripe_id, $array);
