@@ -4,12 +4,23 @@ namespace App\Traits;
 
 use App\Billing\Membership;
 use App\Billing\Sources\{Apple, Stripe};
+use App\Billing\Sources\Concers\StripeSwissCustomers;
 
 trait HasMembership
 {
     public function hasMembershipWith($source)
     {
         return Membership::hasSourceFor($source, $this);    
+    }
+
+    public function isSwissCustomer()
+    {
+        $array = (new StripeSwissCustomers)->get();
+
+        if ($this->customer()->exists())
+            return in_array($this->customer->stripe_id, $array);
+
+        return false;
     }
 
     public function getStatus($callSource = false)

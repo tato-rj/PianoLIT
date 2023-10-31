@@ -21,7 +21,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return \App\Billing\Sources\Stripe::pluck('stripe_id')->toArray();
+        return User::latest()->first();
         $userStats = [
             'all' => [
                 'label' => 'Users', 
