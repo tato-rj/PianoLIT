@@ -11,7 +11,7 @@
 	@fa(['icon' => 'money-bill-wave', 'mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])
 </p>
 @else
-<p class="text-muted">User deleted</p>
+<p class="text-red">User deleted</p>
 @endif
 
 @endforeach
