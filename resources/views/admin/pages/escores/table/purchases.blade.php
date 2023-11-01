@@ -4,10 +4,16 @@
 @slot('body')
 @foreach($item->purchases()->with('user')->get() as $purchase)
 <div class="text-muted"><small>Purchased at {{$purchase->created_at->toFormattedDateString()}}</small></div>
+@if($purchase->user()->exists())
 <p>
 	<strong>({{$purchase->user->id}})</strong> 
 	{{$purchase->user->full_name}}
-	@fa(['icon' => 'money-bill-wave', 'mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])</p>
+	@fa(['icon' => 'money-bill-wave', 'mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])
+</p>
+@else
+<p class="text-muted">User deleted</p>
+@endif
+
 @endforeach
 @endslot
 @endcomponent
