@@ -14,6 +14,7 @@ class eScoresController extends Controller
 
     public function index()
     {
+        return eScore::all();
         if (request()->ajax())
             return eScore::datatable();
 
