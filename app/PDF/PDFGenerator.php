@@ -20,9 +20,9 @@ class PDFGenerator
 	public function request($request)
 	{
 		$this->content = array_merge([
-			'title' => $request['title'],
-			'subtitle' => $request['subtitle'],
-			'comment' => $request['comment']
+			'title' => $request['title'] ?? null,
+			'subtitle' => $request['subtitle'] ?? null,
+			'comment' => $request['comment'] ?? null
 		], [
 			'pieces' => $this->pieces->pluck('medium_name_with_composer')
 		]);

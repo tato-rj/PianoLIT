@@ -174,6 +174,14 @@ class PiecesController extends Controller
         return view('admin.pages.pieces.edit', compact(['composers', 'piece', 'types']));
     }
 
+    public function testEscore(Piece $piece)
+    {
+        return (new \App\PDF\PDFGenerator)->pieces(collect([$piece]))
+                                 ->request([])
+                                 ->generate()
+                                 ->stream();
+    }
+
     /**
      * Update the specified resource in storage.
      *

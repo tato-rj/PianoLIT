@@ -26,6 +26,8 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::get('{piece}/load-levels', 'Admin\PiecesController@loadLevels')->name('load-levels');
 
+	Route::get('{piece}/test-escore', 'Admin\PiecesController@testEscore')->name('test-escore');
+
 	Route::delete('{piece}/file', 'Admin\PiecesController@destroyFile')->name('destroy-file');
 
 });
