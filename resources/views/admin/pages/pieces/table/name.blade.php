@@ -1,4 +1,4 @@
-@if($item->hasScore())
+@if($item->score)
 <a href="{{route('admin.pieces.test-escore', $item)}}" class="link-blue" target="_blank">@fa(['icon' => 'file'])</a>
 @endif
 {{$item->long_name}}
