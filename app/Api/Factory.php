@@ -26,12 +26,12 @@ abstract class Factory
     {
         $collection = Composer::nonPedagogical()->with(['country', 'pieces'])->inRandomOrder()->atLeast(2)->withCount('pieces')->take($this->limit)->get();
 
-        $blackComposers = Composer::nonPedagogical()->with(['country', 'pieces'])->byEthnicity('black')->inRandomOrder()->atLeast(1)->withCount('pieces')->take(1)->get();
+        // $blackComposers = Composer::nonPedagogical()->with(['country', 'pieces'])->byEthnicity('black')->inRandomOrder()->atLeast(1)->withCount('pieces')->take(1)->get();
 
-        foreach ($blackComposers as $composer) {
-            if (! $collection->contains($composer))
-                $collection->push($composer);
-        }
+        // foreach ($blackComposers as $composer) {
+        //     if (! $collection->contains($composer))
+        //         $collection->push($composer);
+        // }
 
         $this->withAttributes($collection, ['source' => route('api.search')]);
 
