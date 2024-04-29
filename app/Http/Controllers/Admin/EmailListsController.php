@@ -35,12 +35,12 @@ class EmailListsController extends Controller
         return view('admin.pages.reports.show.index', compact(['report', 'event']));
     }
 
-    public function send(EmailList $list)
+    public function send(Request $request, EmailList $list)
     {
         if ($list->last_sent_at && $list->last_sent_at->gt(now()->subDay()))
             return back()->with('status', 'This list has recently been sent');
 
-        $list->send();
+        $list->send($request->start_id);
 
         event(new EmailListSent($list));
         // $this->dispatch(new SendMassEmails($list));

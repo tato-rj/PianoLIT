@@ -25,6 +25,7 @@
     <form method="GET" action="{{route('admin.subscriptions.lists.send', $list)}}" disable-on-submit>
       @csrf
       <input type="hidden" name="subject">
+      <input type="number" name="start_id" class="form-control" min="0">
       <button type="submit" class="btn btn-sm btn-block btn-danger">Yes, send the email to the entire list</button>
     </form>
   </div>

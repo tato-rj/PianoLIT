@@ -24,13 +24,11 @@ class EmailList extends PianoLit
         return $this->morphOne(EmailLog::class, 'sender');
     }
 
-	public function send()
+	public function send($startId = 0)
 	{
         $list_id = $this->listId();
-
-        // ->where('id', '>', 5191)
         
-        $this->subscribers()->chunk(500, function($subscribers) use ($list_id) {
+        $this->subscribers()->where('id', '>', $startId)->chunk(500, function($subscribers) use ($list_id) {
             foreach ($subscribers as $subscriber) {
                 \Mail::to($subscriber->email)->queue($this->mailable($list_id, $subscriber));
             }
