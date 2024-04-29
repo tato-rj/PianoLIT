@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'Email', 'Origin', 'Form ID', '']])
+    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'id', 'Email', 'Origin', 'Form ID', '']])
 
   </div>
 </div>
