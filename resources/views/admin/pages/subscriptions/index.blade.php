@@ -56,6 +56,7 @@
 (new DataTable('#subscriptions-table')).columns([
   {data: 'checkbox', orderable: false, searchable: false},
   {data: 'created_at', class: 'text-nowrap', sort: true},
+  {data: 'id', name: 'subscriptions.id', class: 'text-nowrap', sort: false},
   {data: 'email', name: 'subscriptions.email', class: 'dataTables_main_column'},
   {data: 'origin_url', name: 'subscriptions.origin_url'},
   {data: 'form_id', name: 'subscriptions.form_id'},
