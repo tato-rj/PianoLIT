@@ -37,12 +37,15 @@ class EmailListsController extends Controller
 
     public function send(Request $request, EmailList $list)
     {
-        if ($list->last_sent_at && $list->last_sent_at->gt(now()->subDay()))
-            return back()->with('status', 'This list has recently been sent');
+        return $list->subscribers()->where('id', '>', $request->start_id)->count();
 
-        $list->send($request->start_id);
+        // if ($list->last_sent_at && $list->last_sent_at->gt(now()->subDay()))
+        //     return back()->with('status', 'This list has recently been sent');
 
-        event(new EmailListSent($list));
+        // $list->send($request->start_id);
+
+        // event(new EmailListSent($list));
+        
         // $this->dispatch(new SendMassEmails($list));
 
         return back()->with('status', 'The list email is being sent to all susbcribers, please allow a few seconds to complete.');
