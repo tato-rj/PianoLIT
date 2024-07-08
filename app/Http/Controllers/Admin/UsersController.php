@@ -44,17 +44,13 @@ class UsersController extends Controller
         if (request()->ajax())
             return (new Stats)->for('logs')->query(request('type'), request()->except('type'))->get();
 
-        // $users = cache()->remember('users.logs', now()->addHours(6), function() {
-        //     return User::latest()->with(['membership'])->get();
-        // });
+        $users = cache()->remember('users.logs', now()->addHours(6), function() {
+            return User::latest()->with(['membership'])->get();
+        });
 
-        // $logs_total_count = cache()->remember('logs_total_count', now()->addHours(6), function() {
-        //     return ((new \App\Log\LogFactory)->total());
-        // });
-
-        $users = User::latest()->with(['membership'])->take(200)->get();
-
-        $logs_total_count = ((new \App\Log\LogFactory)->total());
+        $logs_total_count = cache()->remember('logs_total_count', now()->addHours(6), function() {
+            return ((new \App\Log\LogFactory)->total());
+        });
 
         return view('admin.pages.users.logs.index', compact(['users', 'logs_total_count']));        
     }
