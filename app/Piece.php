@@ -660,6 +660,7 @@ class Piece extends PianoLit
             'ranking' => view('admin.pages.pieces.table.ranking'),
             'tags' => view('admin.pages.pieces.table.tags'),
             'favorited' => view('admin.pages.pieces.table.favorited'),
+            'views' => view('admin.pages.pieces.table.views'),
             'actions' => $actions ?? view('admin.pages.pieces.table.actions'),
         ])->make();
     }
