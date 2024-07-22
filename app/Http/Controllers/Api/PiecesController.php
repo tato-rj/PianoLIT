@@ -53,7 +53,7 @@ class PiecesController extends Controller
 
     public function incrementViews(Request $request)
     {
-    	$personalAccounts = [196, 244];
+    	$personalAccounts = [];//[196, 244];
 
     	if (! in_array($request->user_id, $personalAccounts))
 	        Piece::findOrFail($request->piece_id)->views()->create(['user_id' => $request->user_id]);
