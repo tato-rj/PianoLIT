@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Laravel\Scout\Builder;
 use App\Shop\Contract\Merchandise;
 use App\Shop\{eBook, eScore};
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -70,6 +71,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Paginator::useBootstrap();
+
         \Blade::if('manager', function () {
             return auth()->guard('admin')->user()->role == 'manager';
         });
