@@ -5,6 +5,11 @@ function pianolit()
 	return new \App\Services\PianoLIT\PianoLIT;
 }
 
+function shortNumber($num)
+{
+	return $num >= 1000 ? round($num / 1000, 1) . 'k' : $num;
+}
+
 function istrue($condition = null, $show = null)
 {
 	$true = isset($condition) && $condition;
