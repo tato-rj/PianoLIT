@@ -66,7 +66,7 @@ return [
     ],
 
     'googlecloud' => [
-        'videos' => env('GOOGLE_CLOUD_URL'),
+        'videos' => 'https://storage.googleapis.com/pianolit-test/videos/',
         'crashcourses' => 'https://storage.googleapis.com/pianolit-app/crashcourses/'
     ]
 
