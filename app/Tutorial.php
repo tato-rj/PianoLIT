@@ -27,7 +27,7 @@ class Tutorial extends PianoLit
 
     public function getVideoUrlAttribute()
     {
-        return 'url';
+        return str_replace('pianolit-app', 'pianolit-test', $this->video_url);
     }
 
     public function generateUrl()
