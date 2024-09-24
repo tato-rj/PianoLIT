@@ -25,14 +25,17 @@ class Tutorial extends PianoLit
 		return $this->belongsTo(Piece::class);
 	}
 
+    public function getVideoUrlAttribute()
+    {
+        return $this->video_url;
+    }
+
     public function generateUrl()
     {
         if (! $this->piece()->exists())
             return null;
-
-        // USE THIS INSTEAD: config('services.googlecloud.videos')
         
-        $url = 'https://storage.googleapis.com/pianolit-test/videos/' . str_slug($this->piece->composer->name) . '/' . $this->filename . '.mp4';
+        $url = config('services.googlecloud.videos') . str_slug($this->piece->composer->name) . '/' . $this->filename . '.mp4';
 
     	return $this->video_url != $url ? $this->update(['video_url' => $url]) : $this;
     }
