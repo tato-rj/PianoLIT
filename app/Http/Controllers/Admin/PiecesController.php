@@ -167,7 +167,7 @@ class PiecesController extends Controller
      */
     public function edit(Piece $piece)
     {
-        return $piece;
+        return $piece->videos_array;
         $composers = Composer::orderBy('name')->get();
 
         $types = Tag::byTypes($except = ['level', 'period', 'length']);
