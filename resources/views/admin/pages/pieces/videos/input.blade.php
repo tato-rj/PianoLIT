@@ -29,7 +29,7 @@
 	<input rows="1" class="form-control-sm form-control mb-1 video-description" placeholder="Description" name="{{'videos['.$loop->index.'][description]'}}" value="{{$tutorial->description}}">
 	<div class="input-group input-group-sm mb-1">
 		<div class="input-group-prepend">
-			<a href="{{$tutorial->url}}" target="_blank" class="input-group-text no-underline"><i class="text-success fas fa-globe"></i></a>
+			<a href="{{$tutorial->video_url}}" target="_blank" class="input-group-text no-underline"><i class="text-success fas fa-globe"></i></a>
 		</div>
 		<input rows="1" class="form-control videos-link" placeholder="File name" name="{{'videos['.$loop->index.'][filename]'}}" value="{{$tutorial->filename}}">		
 	</div>
