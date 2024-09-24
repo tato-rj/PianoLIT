@@ -27,7 +27,9 @@ class Tutorial extends PianoLit
 
     public function getVideoUrlAttribute($attr)
     {
-        return str_replace('pianolit-app', 'pianolit-test', $attr);
+        return str_replace(
+            'https://storage.googleapis.com/pianolit-app/videos', 
+            'https://leftlaneapps.com/storage', $attr);
     }
 
     public function generateUrl()
