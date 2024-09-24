@@ -25,10 +25,10 @@ class Tutorial extends PianoLit
 		return $this->belongsTo(Piece::class);
 	}
 
-    // public function getVideoUrlAttribute()
-    // {
-    //     return $this->video_url;
-    // }
+    public function getVideoUrlAttribute()
+    {
+        return 'url';
+    }
 
     public function generateUrl()
     {
