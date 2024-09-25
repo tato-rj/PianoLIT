@@ -167,7 +167,7 @@ class PiecesController extends Controller
      */
     public function edit(Piece $piece)
     {
-        return $piece->tutorials->first()->update(['video_url' => 'https://storage.googleapis.com/pianolit-app/videos/dmitry-kabalevsky/op27-no1-01.mp4']);
+        return $piece->tutorials->first();
         $composers = Composer::orderBy('name')->get();
 
         $types = Tag::byTypes($except = ['level', 'period', 'length']);
