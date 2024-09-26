@@ -89,7 +89,7 @@ class Api extends Factory
         $collection = \Cache::remember($key, days(1), function() {
             $categories = Tag::display()->groupBy('type')->forget(['period', 'level', 'season']);
             $levels = Tag::extendedLevels()->withCount('pieces')->get();
-            $harmony = Tutorial::latestHarmonicAnalysis(4);
+            // $harmony = Tutorial::latestHarmonicAnalysis(4);
             $highlights = Piece::freePicks()->get();
             $post = $this->post();
             $periods = Tag::periods()->withCount('pieces')->get();
@@ -103,7 +103,7 @@ class Api extends Factory
                 ['label' => 'Levels', 'collection' => $levels, 'celltype' => 'level'],
                 // ['label' => 'Synthesia releases', 'collection' => $synthesia, 'celltype' => 'synthesia'],
                 ['label' => 'Composer of the week', 'collection' => $composer, 'celltype' => 'composer'],
-                ['label' => 'Latest harmonic analysis', 'collection' => $harmony, 'celltype' => 'harmony'],
+                // ['label' => 'Latest harmonic analysis', 'collection' => $harmony, 'celltype' => 'harmony'],
             ]);
         });
 
