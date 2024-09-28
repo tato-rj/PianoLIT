@@ -42,9 +42,9 @@ class FixVideos extends Command
         // https://leftlaneapps.com/storage/dmitry-kabalevsky/op27-no1-01.mp4
         $tutorial = Tutorial::latest()->first();
 
-        $tutorial->update(
-            ['video_url' => 'https://leftlaneapps.com/storage/videos/performance/359.mp4']
-        );
+        \DB::table('tutorials')
+            ->where('id', $tutorial->id)
+            ->update(['video_url' => 'https://leftlaneapps.com/storage/videos/performance/359.mp4']);
 
         $this->info($tutorial->video_url);
 
