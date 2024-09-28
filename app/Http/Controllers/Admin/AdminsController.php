@@ -21,6 +21,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
+        return '';
         $userStats = [
             'all' => [
                 'label' => 'Users', 
