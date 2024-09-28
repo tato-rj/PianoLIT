@@ -41,21 +41,27 @@ class FixVideos extends Command
     {
         $tutorial = Tutorial::latest()->first();
 
-        $this->updateTutorial($tutorial);
+        // $this->updateTutorial($tutorial);
 
         $this->info('Checking ' . $tutorial->video_url . '...');
 
-        $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
-
         try {
-            $response = Http::get($tutorial->video_url);
-            if ($response->successful()) {
-                $this->info($pieceName . " success: status code 200");
-            } else {
-                $this->warn($pieceName . " is missing the video: status code " . $response->status());
-            }
+            $this->pingUrl($tutorial);
         } catch (\Exception $e) {
             $this->error("An error occurred while pinging the URL: " . $e->getMessage());
+        }
+    }
+
+    public function pingUrl(Tutorial $tutorial)
+    {
+        $response = Http::get($tutorial->video_url);
+        
+        $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
+
+        if ($response->successful()) {
+            $this->info($pieceName . " success: status code 200");
+        } else {
+            $this->warn($pieceName . " is missing the video: status code " . $response->status());
         }
     }
 
