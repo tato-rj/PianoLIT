@@ -39,7 +39,11 @@ class FixVideos extends Command
      */
     public function handle()
     {
+        // https://leftlaneapps.com/storage/dmitry-kabalevsky/op27-no1-01.mp4
         $tutorial = Tutorial::latest()->first();
+
+        $tutorial->update(['video_url' => 'https://leftlaneapps.com/storage/videos/'.$tutorial->video_id.'-performance.mp4']);
+
         $this->info('Checking ' . $tutorial->video_url . '...');
 
         $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
