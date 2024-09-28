@@ -54,14 +54,20 @@ class FixVideos extends Command
 
     public function pingUrl(Tutorial $tutorial)
     {
+        $oldPath = str_replace('https://leftlaneapps.com/storage/', '', $tutorial->video_url);
+        $newPath = 'videos/'.$tutorial->type.'/'.$tutorial->piece->id . '.mp4';
+
         $response = Http::post('https://leftlaneapps.com/videouploader/fix', [
             'secret' => env('VIDEO_UPLOADER_SECRET'),
-            'video_path' => str_replace('https://leftlaneapps.com/storage/', '', $tutorial->video_url)
+            'old_path' => $oldPath,
+            'new_path' => $newPath
         ]);
 
         $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         if ($response->successful()) {
+            $this->updateTutorial($tutorial, $newPath);
+
             $this->info($response->status());
         } else {
             $this->warn($response->status());
@@ -78,13 +84,13 @@ class FixVideos extends Command
         // }
     }
 
-    public function updateTutorial(Tutorial $tutorial)
+    public function updateTutorial(Tutorial $tutorial, $newPath)
     {
-        $newUrl = 'https://leftlaneapps.com/storage/videos/performance/'.$tutorial->piece_id.'.mp4';
+        $newUrl = 'https://leftlaneapps.com/storage/'.$newPath;
         $oldUrl = 'https://leftlaneapps.com/storage/'.str_slug($tutorial->piece->composer->name).'/'.$tutorial->filename.'.mp4';
 
         \DB::table('tutorials')
             ->where('id', $tutorial->id)
-            ->update(['video_url' => $oldUrl]);
+            ->update(['video_url' => $newUrl]);
     }
 }
