@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\{User, Piece, Composer, Subscription, Location};
+use App\{User, Piece, Composer, Subscription, Location, Tutorial};
 use App\Billing\Payment;
 use App\Infograph\Infograph;
 use App\CrashCourse\CrashCourse;
@@ -21,7 +21,8 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        return '';
+        $tutorial = Tutorial::latest()->first();
+        return $tutorial;
         $userStats = [
             'all' => [
                 'label' => 'Users', 
