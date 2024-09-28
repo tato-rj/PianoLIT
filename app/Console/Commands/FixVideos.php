@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
 use App\Tutorial;
 
 class FixVideos extends Command
@@ -39,6 +40,16 @@ class FixVideos extends Command
     public function handle()
     {
         $tutorial = Tutorial::latest()->first();
-        $this->info($tutorial->video_url);
+
+        try {
+            $response = Http::get($tutorial->video_url);
+            if ($response->successful()) {
+                $this->info($tutorial->piece->name . ": the URL returned a 200 status code.");
+            } else {
+                $this->warn($tutorial->piece->name . ": the URL returned a code " . $response->status());
+            }
+        } catch (\Exception $e) {
+            $this->error("An error occurred while pinging the URL: " . $e->getMessage());
+        }
     }
 }
