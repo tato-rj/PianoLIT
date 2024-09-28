@@ -39,7 +39,7 @@ class FixVideos extends Command
      */
     public function handle()
     {
-        $tutorial = Tutorial::latest()->first();
+        $tutorial = Tutorial::first();
 
         try {
             $response = Http::get($tutorial->video_url);
