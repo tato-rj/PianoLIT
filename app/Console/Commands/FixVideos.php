@@ -45,9 +45,9 @@ class FixVideos extends Command
         try {
             $response = Http::get($tutorial->video_url);
             if ($response->successful()) {
-                $this->info($pieceName . " -> the URL returned a 200 status code.");
+                $this->info($pieceName . " is all set!");
             } else {
-                $this->warn($pieceName . " -> the URL returned a code " . $response->status());
+                $this->warn($pieceName . " is missing the video: code " . $response->status());
             }
         } catch (\Exception $e) {
             $this->error("An error occurred while pinging the URL: " . $e->getMessage());
