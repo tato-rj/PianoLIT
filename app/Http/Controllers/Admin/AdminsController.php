@@ -20,15 +20,7 @@ class AdminsController extends Controller
      * Display the home page.
      */
     public function home()
-    {
-        $tutorial = Tutorial::latest()->first();
-        return $tutorial;
-        // $tutorial->update(
-        //     ['video_url' => 'https://leftlaneapps.com/storage/videos/performance/359.mp4']
-        // );
-        
-        // return $tutorial;
-        
+    {        
         $userStats = [
             'all' => [
                 'label' => 'Users', 
