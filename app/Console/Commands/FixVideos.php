@@ -56,7 +56,7 @@ class FixVideos extends Command
     {
         $oldPath = str_replace('https://leftlaneapps.com/storage/', '', $tutorial->video_url);
         $newPath = 'videos/'.$tutorial->type.'/'.$tutorial->piece->id . '.mp4';
-dd('here');
+dd($newPath);
         $response = Http::post('https://leftlaneapps.com/videouploader/fix', [
             'secret' => env('VIDEO_UPLOADER_SECRET'),
             'old_path' => $oldPath,
