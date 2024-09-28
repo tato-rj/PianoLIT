@@ -70,7 +70,7 @@ class FixVideos extends Command
 
             $this->info($response->status());
         } else {
-            $this->warn($response->status());
+            $this->warn('NOPE: '.$response->status());
         }
 
         // $response = Http::get($tutorial->video_url);
