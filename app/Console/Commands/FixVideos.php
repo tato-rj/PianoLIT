@@ -66,6 +66,6 @@ class FixVideos extends Command
 
         \DB::table('tutorials')
             ->where('id', $tutorial->id)
-            ->update(['video_url' => $newUrl]);
+            ->update(['video_url' => $oldUrl]);
     }
 }
