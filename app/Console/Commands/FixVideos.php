@@ -44,7 +44,7 @@ class FixVideos extends Command
 
         \DB::table('tutorials')
             ->where('id', $tutorial->id)
-            ->update(['video_url' => 'https://leftlaneapps.com/storage/videos/performance/359.mp4']);
+            ->update(['video_url' => 'https://leftlaneapps.com/storage/videos/performance/'.$tutorial->piece_id.'.mp4']);
 
         $this->info($tutorial->video_url);
 
