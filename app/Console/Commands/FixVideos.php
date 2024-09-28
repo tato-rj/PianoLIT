@@ -43,7 +43,7 @@ class FixVideos extends Command
 
         // $this->updateTutorial($tutorial);
 
-        $this->info('Checking ' . $tutorial->video_url . '...');
+        // $this->info('Checking ' . $tutorial->video_url . '...');
 
         try {
             $this->pingUrl($tutorial);
@@ -54,15 +54,23 @@ class FixVideos extends Command
 
     public function pingUrl(Tutorial $tutorial)
     {
-        $response = Http::get($tutorial->video_url);
-        
-        $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
+        $response = Http::post('https://leftlaneapps.com/videouploader/fix');
 
         if ($response->successful()) {
-            $this->info($pieceName . " success: status code 200");
+            $this->info($response->status());
         } else {
-            $this->warn($pieceName . " is missing the video: status code " . $response->status());
+            $this->warn($response->status());
         }
+
+        // $response = Http::get($tutorial->video_url);
+        
+        // $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
+
+        // if ($response->successful()) {
+        //     $this->info($pieceName . " success: status code 200");
+        // } else {
+        //     $this->warn($pieceName . " is missing the video: status code " . $response->status());
+        // }
     }
 
     public function updateTutorial(Tutorial $tutorial)
