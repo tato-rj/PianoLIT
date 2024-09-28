@@ -5,7 +5,7 @@ namespace App;
 class Tutorial extends PianoLit
 {
 	protected $types = ['Performance', 'Tutorial', 'Harmonic analysis'];
-    protected $appends = ['title'];
+    protected $appends = ['title', 'tempVideoUrl'];
 	
     public static function boot()
     {
@@ -26,6 +26,15 @@ class Tutorial extends PianoLit
 	}
 
     public function getVideoUrlAttribute($attr)
+    {
+        return str_replace(
+            ['https://storage.googleapis.com/pianolit-app/videos', 'https://storage.googleapis.com/pianolit-test/videos'], 
+            'https://leftlaneapps.com/storage', 
+            $attr
+        );
+    }
+
+    public function getTempVideoUrlAttribute($attr)
     {
         return str_replace(
             ['https://storage.googleapis.com/pianolit-app/videos', 'https://storage.googleapis.com/pianolit-test/videos'], 
