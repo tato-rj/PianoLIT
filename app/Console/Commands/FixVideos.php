@@ -46,7 +46,7 @@ class FixVideos extends Command
             ['video_url' => 'https://leftlaneapps.com/storage/videos/performance/359.mp4']
         );
 
-        $$this->info($tutorial);
+        $$this->info($tutorial->video_url);
 
         // $this->info('Checking ' . $tutorial->video_url . '...');
 
