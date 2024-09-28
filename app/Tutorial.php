@@ -25,7 +25,7 @@ class Tutorial extends PianoLit
 		return $this->belongsTo(Piece::class);
 	}
 
-    public function getVideoUrlAttribute($attr)
+    public function setVideoUrlAttribute($attr)
     {
         return str_replace(
             ['https://storage.googleapis.com/pianolit-app/videos', 'https://storage.googleapis.com/pianolit-test/videos'], 
