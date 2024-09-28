@@ -41,6 +41,8 @@ class FixVideos extends Command
     {
         $tutorial = Tutorial::latest()->first();
 
+        $this->updateTutorial($tutorial);
+
         $this->info('Checking ' . $tutorial->video_url . '...');
 
         $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
@@ -60,7 +62,7 @@ class FixVideos extends Command
     public function updateTutorial(Tutorial $tutorial)
     {
         $newUrl = 'https://leftlaneapps.com/storage/videos/performance/'.$tutorial->piece_id.'.mp4';
-        $oldUrl = 'https://leftlaneapps.com/storage/dmitry-kabalevsky/op27-no1-01.mp4';
+        $oldUrl = 'https://leftlaneapps.com/storage/'.str_slug($tutorial->piece->composer->name).'/'.$tutorial->filename.'.mp4';
 
         \DB::table('tutorials')
             ->where('id', $tutorial->id)
