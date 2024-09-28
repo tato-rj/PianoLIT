@@ -54,7 +54,7 @@ class FixVideos extends Command
 
     public function pingUrl(Tutorial $tutorial)
     {
-        $response = Http::post('https://leftlaneapps.com/videouploader/fix');
+        $response = Http::post('https://leftlaneapps.com/videouploader/fix', ['secret' => env('VIDEO_UPLOADER_SECRET')]);
 
         if ($response->successful()) {
             $this->info($response->status());
