@@ -5,7 +5,7 @@
 			'classes' => 'w-100', 
 			'id' => 'piece-performance', 
 			'thumbnail' => asset('images/webapp/piano-thumbnail.jpg'),
-			'url' => $piece->media['performance']->temp_video_url])
+			'url' => $piece->media['performance']->video_url])
 	</div>
 	@endif
 
