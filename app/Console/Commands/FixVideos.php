@@ -62,7 +62,7 @@ class FixVideos extends Command
             'old_path' => $oldPath,
             'new_path' => $newPath
         ]);
-dd('here');
+
         // $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         if ($response->successful()) {
