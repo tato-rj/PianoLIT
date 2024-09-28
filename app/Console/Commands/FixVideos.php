@@ -42,25 +42,23 @@ class FixVideos extends Command
         // https://leftlaneapps.com/storage/dmitry-kabalevsky/op27-no1-01.mp4
         $tutorial = Tutorial::latest()->first();
 
-        \DB::table('tutorials')
-            ->where('id', $tutorial->id)
-            ->update(['video_url' => 'https://leftlaneapps.com/storage/videos/performance/'.$tutorial->piece_id.'.mp4']);
+        // \DB::table('tutorials')
+        //     ->where('id', $tutorial->id)
+        //     ->update(['video_url' => 'https://leftlaneapps.com/storage/videos/performance/'.$tutorial->piece_id.'.mp4']);
 
-        $this->info($tutorial->video_url);
+        $this->info('Checking ' . $tutorial->video_url . '...');
 
-        // $this->info('Checking ' . $tutorial->video_url . '...');
+        $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
-        // $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
-
-        // try {
-        //     $response = Http::get($tutorial->video_url);
-        //     if ($response->successful()) {
-        //         $this->info($pieceName . " success: status code 200");
-        //     } else {
-        //         $this->warn($pieceName . " is missing the video: status code " . $response->status());
-        //     }
-        // } catch (\Exception $e) {
-        //     $this->error("An error occurred while pinging the URL: " . $e->getMessage());
-        // }
+        try {
+            $response = Http::get($tutorial->video_url);
+            if ($response->successful()) {
+                $this->info($pieceName . " success: status code 200");
+            } else {
+                $this->warn($pieceName . " is missing the video: status code " . $response->status());
+            }
+        } catch (\Exception $e) {
+            $this->error("An error occurred while pinging the URL: " . $e->getMessage());
+        }
     }
 }
