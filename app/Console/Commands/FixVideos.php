@@ -63,9 +63,10 @@ class FixVideos extends Command
             'new_path' => $newPath
         ]);
 
-        $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
+        // $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         if ($response->successful()) {
+            dd('here');
             $this->updateTutorial($tutorial, $newPath);
 
             $this->info($response->status());
