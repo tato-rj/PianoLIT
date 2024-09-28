@@ -40,6 +40,8 @@ class FixVideos extends Command
     public function handle()
     {
         $tutorial = Tutorial::latest()->first();
+        $this->info('Checking ' . $tutorial->video_url . '...');
+
         $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         try {
