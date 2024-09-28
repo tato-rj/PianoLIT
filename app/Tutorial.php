@@ -5,7 +5,7 @@ namespace App;
 class Tutorial extends PianoLit
 {
 	protected $types = ['Performance', 'Tutorial', 'Harmonic analysis'];
-    protected $appends = ['title', 'tempVideoUrl'];
+    protected $appends = ['title'];
 	
     public static function boot()
     {
