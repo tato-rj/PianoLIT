@@ -66,7 +66,7 @@ class FixVideos extends Command
         // $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         if ($response->successful()) {
-            $this->updateTutorial($tutorial, $newPath);
+            // $this->updateTutorial($tutorial, $newPath);
 
             $this->info($response->status());
         } else {
