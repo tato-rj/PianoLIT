@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Piece;
+use App\Tutorial;
 
 class FixVideos extends Command
 {
@@ -38,7 +38,7 @@ class FixVideos extends Command
      */
     public function handle()
     {
-        $piece = Piece::find(569);
-        $this->info($piece->name);
+        $tutorial = Tutorial::first();
+        $this->info($tutorial->video_url);
     }
 }
