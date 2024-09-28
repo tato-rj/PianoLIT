@@ -39,12 +39,13 @@ class FixVideos extends Command
      */
     public function handle()
     {
+        //'https://leftlaneapps.com/storage/videos/performance/'.$tutorial->piece_id.'.mp4'
         // https://leftlaneapps.com/storage/dmitry-kabalevsky/op27-no1-01.mp4
         $tutorial = Tutorial::latest()->first();
 
-        // \DB::table('tutorials')
-        //     ->where('id', $tutorial->id)
-        //     ->update(['video_url' => 'https://leftlaneapps.com/storage/videos/performance/'.$tutorial->piece_id.'.mp4']);
+        \DB::table('tutorials')
+            ->where('id', $tutorial->id)
+            ->update(['video_url' => 'https://leftlaneapps.com/storage/dmitry-kabalevsky/op27-no1-01.mp4']);
 
         $this->info('Checking ' . $tutorial->video_url . '...');
 
