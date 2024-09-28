@@ -21,7 +21,7 @@ class AdminsController extends Controller
      */
     public function home()
     {
-        // $tutorial = Tutorial::latest()->first();
+        $tutorial = Tutorial::latest()->first();
         
         // $tutorial->update(
         //     ['video_url' => 'https://leftlaneapps.com/storage/videos/performance/359.mp4']
