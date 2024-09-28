@@ -37,6 +37,7 @@ class FixVideos extends Command
      */
     public function handle()
     {
-        $this->info('here');
+        $piece = Piece::find(569);
+        $this->info($piece->name);
     }
 }
