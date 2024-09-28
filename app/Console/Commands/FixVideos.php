@@ -56,13 +56,13 @@ class FixVideos extends Command
     {
         $oldPath = str_replace('https://leftlaneapps.com/storage/', '', $tutorial->video_url);
         $newPath = 'videos/'.str_slug($tutorial->type).'/'.$tutorial->piece->id . '.mp4';
-dd($oldPath);
+
         $response = Http::post('https://leftlaneapps.com/videouploader/fix', [
             'secret' => env('VIDEO_UPLOADER_SECRET'),
             'old_path' => $oldPath,
             'new_path' => $newPath
         ]);
-
+dd('here');
         // $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         if ($response->successful()) {
