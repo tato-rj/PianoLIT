@@ -40,13 +40,14 @@ class FixVideos extends Command
     public function handle()
     {
         $tutorial = Tutorial::first();
+        $pieceName = '(' . $tutorial->piece->id . ') ' . $tutorial->piece->medium_name;
 
         try {
             $response = Http::get($tutorial->video_url);
             if ($response->successful()) {
-                $this->info($tutorial->piece->name . ": the URL returned a 200 status code.");
+                $this->info($pieceName . ": the URL returned a 200 status code.");
             } else {
-                $this->warn($tutorial->piece->name . ": the URL returned a code " . $response->status());
+                $this->warn($pieceName . ": the URL returned a code " . $response->status());
             }
         } catch (\Exception $e) {
             $this->error("An error occurred while pinging the URL: " . $e->getMessage());
