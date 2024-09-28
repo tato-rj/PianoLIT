@@ -39,7 +39,7 @@ class FixVideos extends Command
      */
     public function handle()
     {
-        $tutorial = Tutorial::first();
+        $tutorial = Tutorial::latest()->first();
         $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         try {
