@@ -34,12 +34,12 @@ class Tutorial extends PianoLit
         );
     }
 
-    public function getTempVideoUrlAttribute($attr)
+    public function getTempVideoUrlAttribute()
     {
         return str_replace(
             ['https://storage.googleapis.com/pianolit-app/videos', 'https://storage.googleapis.com/pianolit-test/videos'], 
             'https://leftlaneapps.com/storage', 
-            $attr
+            $this->video_url
         );
     }
 
