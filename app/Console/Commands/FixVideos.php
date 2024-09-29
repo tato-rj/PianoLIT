@@ -40,7 +40,7 @@ class FixVideos extends Command
     public function handle()
     {
         $tutorial = Tutorial::where('type', 'synthesia')->latest()->first();
-        dd($tutorial->id);
+        dd($tutorial->category);
         $url = 'https://leftlaneapps.com/videouploader/fix';
 
         // $this->updateTutorial($tutorial);
