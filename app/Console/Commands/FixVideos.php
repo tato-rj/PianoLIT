@@ -41,9 +41,9 @@ class FixVideos extends Command
     {
         $tutorial = Tutorial::whereIn('type', ['synthesia', 'performance'])->take(2)->get()->last();
 
-dd($tutorial->video_url);
+// dd($tutorial->video_url);
         $url = 'https://leftlaneapps.com/videouploader/fix';
-// $this->updateTutorial($tutorial);
+$this->updateTutorial($tutorial);
         // try {
         //     $this->pingUrl($tutorial, $url);
         // } catch (\Exception $e) {
@@ -85,10 +85,10 @@ dd($tutorial->video_url);
     public function updateTutorial(Tutorial $tutorial, $newPath = null)
     {
         $newUrl = 'https://leftlaneapps.com/storage/'.$newPath;
-        // $oldUrl = 'https://leftlaneapps.com/storage/'.str_slug($tutorial->piece->composer->name).'/'.$tutorial->filename.'.mp4';
+        $oldUrl = 'https://leftlaneapps.com/storage/'.str_slug($tutorial->piece->composer->name).'/'.$tutorial->filename.'.mp4';
 
         \DB::table('tutorials')
             ->where('id', $tutorial->id)
-            ->update(['video_url' => $newUrl]);
+            ->update(['video_url' => $oldUrl]);
     }
 }
