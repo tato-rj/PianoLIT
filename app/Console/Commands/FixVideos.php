@@ -40,12 +40,8 @@ class FixVideos extends Command
     public function handle()
     {
         $tutorial = Tutorial::where('type', 'tutorial')->latest()->first();
-        dd($tutorial->description);
+
         $url = 'https://leftlaneapps.com/videouploader/fix';
-
-        // $this->updateTutorial($tutorial);
-
-        // $this->info('Checking ' . $tutorial->video_url . '...');
 
         try {
             $this->pingUrl($tutorial, $url);
@@ -66,7 +62,7 @@ class FixVideos extends Command
         ]);
 
         if ($response->successful()) {
-            $this->updateTutorial($tutorial, $newPath);
+            // $this->updateTutorial($tutorial, $newPath);
 
             $this->info($response->json()['message'] ?? null);
         } else {
