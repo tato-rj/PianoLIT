@@ -73,6 +73,7 @@ class FixVideos extends Command
             $this->info($response->json());
         } else {
             $this->warn('Something went wrong: '.$response->status());
+            $this->warn($response->json());
         }
 
         // $response = Http::get($tutorial->video_url);
