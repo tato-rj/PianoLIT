@@ -41,7 +41,7 @@ class FixVideos extends Command
     {
         $tutorial = Tutorial::whereIn('type', ['synthesia', 'performance'])->take(2)->get()->last();
 
-dd($tutorial->piece_id);
+dd($tutorial->video_url);
         $url = 'https://leftlaneapps.com/videouploader/fix';
 // $this->updateTutorial($tutorial);
         // try {
