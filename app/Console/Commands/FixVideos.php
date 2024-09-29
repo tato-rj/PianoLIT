@@ -67,13 +67,13 @@ class FixVideos extends Command
         // $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         if ($response->successful()) {
-            // $this->updateTutorial($tutorial, $newPath);
+            $this->updateTutorial($tutorial, $newPath);
 
             $this->info($response->status());
-            $this->info($response->json()['message']);
+            $this->info($response->json()['message'] ?? null);
         } else {
             $this->warn('Something went wrong: '.$response->status());
-            $this->warn($response->json()['message']);
+            $this->warn($response->json()['message'] ?? null);
         }
 
         // $response = Http::get($tutorial->video_url);
@@ -90,7 +90,7 @@ class FixVideos extends Command
     public function updateTutorial(Tutorial $tutorial, $newPath)
     {
         $newUrl = 'https://leftlaneapps.com/storage/'.$newPath;
-        $oldUrl = 'https://leftlaneapps.com/storage/'.str_slug($tutorial->piece->composer->name).'/'.$tutorial->filename.'.mp4';
+        // $oldUrl = 'https://leftlaneapps.com/storage/'.str_slug($tutorial->piece->composer->name).'/'.$tutorial->filename.'.mp4';
 
         \DB::table('tutorials')
             ->where('id', $tutorial->id)
