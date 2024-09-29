@@ -40,14 +40,15 @@ class FixVideos extends Command
     public function handle()
     {
         $tutorial = Tutorial::whereIn('type', ['synthesia', 'performance'])->take(2)->get()->last();
+
 // dd($tutorial->piece_id);
         $url = 'https://leftlaneapps.com/videouploader/fix';
-
-        try {
-            $this->pingUrl($tutorial, $url);
-        } catch (\Exception $e) {
-            $this->error("An error occurred while pinging the URL: " . $e->getMessage());
-        }
+$this->updateTutorial($tutorial);
+        // try {
+        //     $this->pingUrl($tutorial, $url);
+        // } catch (\Exception $e) {
+        //     $this->error("An error occurred while pinging the URL: " . $e->getMessage());
+        // }
     }
 
     public function pingUrl(Tutorial $tutorial, $url)
@@ -81,7 +82,7 @@ class FixVideos extends Command
         // }
     }
 
-    public function updateTutorial(Tutorial $tutorial, $newPath)
+    public function updateTutorial(Tutorial $tutorial, $newPath = null)
     {
         $newUrl = 'https://leftlaneapps.com/storage/'.$newPath;
         // $oldUrl = 'https://leftlaneapps.com/storage/'.str_slug($tutorial->piece->composer->name).'/'.$tutorial->filename.'.mp4';
