@@ -39,7 +39,8 @@ class FixVideos extends Command
      */
     public function handle()
     {
-        $tutorial = Tutorial::latest()->first();
+        $tutorial = Tutorial::where('type', 'synthesia')->latest()->first();
+        dd($tutorial->id);
         $url = 'https://leftlaneapps.com/videouploader/fix';
 
         // $this->updateTutorial($tutorial);
@@ -63,8 +64,6 @@ class FixVideos extends Command
             'old_path' => $oldPath,
             'new_path' => $newPath
         ]);
-
-        // $pieceName = $tutorial->type . ' for ' . $tutorial->piece->medium_name . ' (ID ' . $tutorial->piece->id . ')';
 
         if ($response->successful()) {
             $this->updateTutorial($tutorial, $newPath);
