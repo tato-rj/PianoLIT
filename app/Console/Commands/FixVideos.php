@@ -40,24 +40,25 @@ class FixVideos extends Command
     public function handle()
     {
         $tutorial = Tutorial::latest()->first();
+        $url = 'https://leftlaneapps.com/videouploader/fix';
 
         // $this->updateTutorial($tutorial);
 
         // $this->info('Checking ' . $tutorial->video_url . '...');
 
         try {
-            $this->pingUrl($tutorial);
+            $this->pingUrl($tutorial, $url);
         } catch (\Exception $e) {
             $this->error("An error occurred while pinging the URL: " . $e->getMessage());
         }
     }
 
-    public function pingUrl(Tutorial $tutorial)
+    public function pingUrl(Tutorial $tutorial, $url)
     {
         $oldPath = str_replace('https://leftlaneapps.com/storage/', '', $tutorial->video_url);
         $newPath = 'videos/'.str_slug($tutorial->type).'/'.$tutorial->piece->id . '.mp4';
 
-        $response = Http::post('https://leftlaneapps.com/videouploader/fix', [
+        $response = Http::post($url, [
             'secret' => env('VIDEO_UPLOADER_SECRET'),
             'old_path' => $oldPath,
             'new_path' => $newPath
