@@ -70,6 +70,7 @@ class FixVideos extends Command
             // $this->updateTutorial($tutorial, $newPath);
 
             $this->info($response->status());
+            $this->info($response->json());
         } else {
             $this->warn('Something went wrong: '.$response->status());
         }
