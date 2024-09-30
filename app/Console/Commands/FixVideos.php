@@ -39,7 +39,10 @@ class FixVideos extends Command
      */
     public function handle()
     {
-        $this->info(Piece::find(359)->tutorials()->first()->id);
+        \DB::table('tutorials')
+            ->where('id', 1339)
+            ->update(['video_url' => 'https://leftlaneapps.com/storage/dmitry-kabalevsky/op27-no1-01.mp4']);
+        // $this->info(Piece::find(359)->tutorials()->first()->id);
         // $tutorial = Tutorial::whereIn('type', ['synthesia', 'performance'])->take(2)->get()->last();
 
         // dd($tutorial->video_url);
