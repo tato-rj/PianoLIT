@@ -8,11 +8,11 @@ use App\Composer;
 
 class ChatGPTController extends Controller
 {
-    public function composers()
+    public function composers(Request $request)
     {
-        if ($request->header('auth_token') != env('CHATGPT_TOKEN'))
-            abort(404);
-        
-        return Composer::count();
+        // if ($request->header('auth_token') != env('CHATGPT_TOKEN'))
+        //     abort(404);
+
+        return response(200);
     }
 }
