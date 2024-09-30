@@ -25,14 +25,14 @@ class Tutorial extends PianoLit
 		return $this->belongsTo(Piece::class);
 	}
 
-    public function getVideoUrlAttribute($attr)
-    {
-        return str_replace(
-            ['https://storage.googleapis.com/pianolit-app/videos', 'https://storage.googleapis.com/pianolit-test/videos'], 
-            'https://leftlaneapps.com/storage', 
-            $attr
-        );
-    }
+    // public function getVideoUrlAttribute($attr)
+    // {
+    //     return str_replace(
+    //         ['https://storage.googleapis.com/pianolit-app/videos', 'https://storage.googleapis.com/pianolit-test/videos'], 
+    //         'https://leftlaneapps.com/storage', 
+    //         $attr
+    //     );
+    // }
 
     public function generateUrl()
     {
