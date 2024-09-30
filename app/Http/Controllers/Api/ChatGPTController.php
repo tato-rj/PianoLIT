@@ -65,11 +65,11 @@ class ChatGPTController extends Controller
 
         // Filter by date_of_birth (nullable)
         if ($request->has('born_after')) {
-            $query->where('date_of_birth', '>=', $request->input('born_after'));
+            $query->whereYear('date_of_birth', '>=', $request->input('born_after'));
         }
-dd('jere');
+
         if ($request->has('born_before')) {
-            $query->where('date_of_birth', '<=', $request->input('born_before'));
+            $query->whereYear('date_of_birth', '<=', $request->input('born_before'));
         }
 
         // Filter by date_of_death (nullable)
