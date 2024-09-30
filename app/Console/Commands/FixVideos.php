@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
-use App\Tutorial;
+use App\{Tutorial, Piece};
 
 class FixVideos extends Command
 {
@@ -39,11 +39,12 @@ class FixVideos extends Command
      */
     public function handle()
     {
-        $tutorial = Tutorial::whereIn('type', ['synthesia', 'performance'])->take(2)->get()->last();
+        $this->info(Piece::find(359)->tutorials()->first()->video_url);
+        // $tutorial = Tutorial::whereIn('type', ['synthesia', 'performance'])->take(2)->get()->last();
 
         // dd($tutorial->video_url);
         
-        $url = 'https://leftlaneapps.com/videouploader/fix';
+        // $url = 'https://leftlaneapps.com/videouploader/fix';
 
         // try {
         //     $this->pingUrl($tutorial, $url);
