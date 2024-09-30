@@ -17,8 +17,7 @@ class ChatGPTRestricted
     public function handle(Request $request, Closure $next)
     {
         if ($request->bearerToken() != env('CHATGPT_TOKEN'))
-            abort(401);
-            //response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
 
         return $next($request);
     }
