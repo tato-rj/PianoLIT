@@ -39,7 +39,7 @@ class FixVideos extends Command
      */
     public function handle()
     {
-        $this->info(Piece::find(359)->tutorials()->first()->video_url);
+        Piece::find(359)->tutorials()->first()->id;
         // $tutorial = Tutorial::whereIn('type', ['synthesia', 'performance'])->take(2)->get()->last();
 
         // dd($tutorial->video_url);
