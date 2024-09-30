@@ -13,6 +13,6 @@ class ChatGPTController extends Controller
         // if ($request->header('auth_token') != env('CHATGPT_TOKEN'))
         //     abort(404);
 
-        return response(200);
+        return Composer::inRandomOrder()->take(2)->get();
     }
 }
