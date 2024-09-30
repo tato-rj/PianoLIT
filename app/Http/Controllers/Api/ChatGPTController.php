@@ -10,6 +10,10 @@ class ChatGPTController extends Controller
 {
     public function composers(Request $request)
     {
-        return Composer::inRandomOrder()->take(2)->get();
+        $collection = \Cache::remember('api.chatgpt.composers', days(1), function() {
+            return Composer::all();
+        });
+
+        return $collection;
     }
 }
