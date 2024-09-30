@@ -39,9 +39,10 @@ class Tutorial extends PianoLit
         if (! $this->piece()->exists())
             return null;
         
-        $url = config('services.googlecloud.videos') . str_slug($this->piece->composer->name) . '/' . $this->filename . '.mp4';
+        $url = 'https://leftlaneapps.com/storage/' . str_slug($this->piece->composer->name) . '/' . $this->filename . '.mp4';
 
-    	return $this->video_url != $url ? $this->update(['video_url' => $url]) : $this;
+        return $url;
+    	// return $this->video_url != $url ? $this->update(['video_url' => $url]) : $this;
     }
 
     public function getTitleAttribute()
