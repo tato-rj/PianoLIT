@@ -72,6 +72,7 @@ class Kernel extends HttpKernel
         'validateRegistrationForm' => \App\Http\Middleware\ValidateRegistrationForm::class,
         'location.update' => \App\Http\Middleware\UpdateLocation::class,
         'dev-only' => \App\Http\Middleware\DevOnly::class,
+        'api.chatgpt' => \App\Http\Middleware\ChatGPTRestricted::class,
     ];
 
     /**
