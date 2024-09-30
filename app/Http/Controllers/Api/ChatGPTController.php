@@ -67,9 +67,8 @@ class ChatGPTController extends Controller
         if ($request->has('born_after')) {
             $query->where('date_of_birth', '>=', $request->input('born_after'));
         }
-
+dd('jere');
         if ($request->has('born_before')) {
-            dd('jere');
             $query->where('date_of_birth', '<=', $request->input('born_before'));
         }
 
