@@ -32,8 +32,7 @@ class Tutorial extends PianoLit
         
         $url = 'https://leftlaneapps.com/storage/' . str_slug($this->piece->composer->name) . '/' . $this->filename . '.mp4';
 
-        return $url;
-    	// return $this->video_url != $url ? $this->update(['video_url' => $url]) : $this;
+    	return $this->video_url != $url ? $this->update(['video_url' => $url]) : $this;
     }
 
     public function getTitleAttribute()
