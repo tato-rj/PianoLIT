@@ -40,7 +40,7 @@ class ChatGPTController extends Controller
 
     public function pieces(Request $request)
     {
-        $strings = ['name'];
+        $strings = ['name', 'catalogue_name', 'catalogue_number', 'collection_name', 'collection_number', 'movement_number', 'description'];
         $booleans = [];
         $relationships = ['composer.name'];
 
