@@ -10,21 +10,28 @@ class ChatGPTController extends Controller
 {
     public function composer(Request $request)
     {
+        $strings = ['name', 'ethnicity', 'period'];
+        $booleans = ['is_famous'];
+        $relationships = ['country.name'];
+
         $results = Composer::query();
 
-        if ($request->has('name'))
-            $results->where('name', 'LIKE', '%'.$request->name.'%');
+        foreach ($strings as $field) {
+            if ($request->has($field))
+                $results->where($field, 'LIKE', '%'.$request->$field.'%');
+        }
 
-        if ($request->has('country'))
-            $results->whereHas('country', function($q) use ($request) {
-                $q->where('name', 'LIKE', '%'.$request->country.'%');
-            });
+        foreach ($booleans as $field) {
+            if ($request->has($field))
+                $results->where($field, $request->$field);
+        }
 
-        if ($request->has('is_famous'))
-            $results->where('is_famous', $request->is_famous);
-
-        if ($request->has('ethnicity'))
-            $results->where('ethnicity', 'LIKE', '%'.$request->ethnicity.'%');
+        foreach ($relationships as $relation => $field) {
+            if ($request->has($relation))
+                $results->whereHas($relation, function($q) use ($request, $relation, $field) {
+                    $q->where($field, 'LIKE', '%'.$request->$relation.'%');
+                });
+        }
 
         $composers = $results->take(5)->get();
 
