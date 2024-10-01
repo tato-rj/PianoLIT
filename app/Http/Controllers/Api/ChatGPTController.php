@@ -8,9 +8,9 @@ use App\Composer;
 
 class ChatGPTController extends Controller
 {
-    public function composers(Request $request)
+    public function composer(Request $request)
     {
-        $results = Composer::take(5)->get();
+        $results = Composer::where('name', 'LIKE', '%'.$request->name.'%')->take(5)->get();
 
         return response()->json(compact('results'));
     }
