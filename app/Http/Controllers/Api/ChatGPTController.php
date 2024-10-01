@@ -12,7 +12,7 @@ class ChatGPTController extends Controller
     {
         $results = Composer::take(5)->get();
 
-        return response()->json(['foo' => 'bar']);
+        return response()->json(compact('composers'));
     }
 
 }
