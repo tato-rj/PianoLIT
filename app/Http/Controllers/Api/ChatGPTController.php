@@ -51,11 +51,6 @@ class ChatGPTController extends Controller
                 $results->where($field, 'LIKE', '%'.$request->$field.'%');
         }
 
-        foreach ($booleans as $field) {
-            if ($request->has($field))
-                $results->where($field, $request->$field);
-        }
-
         foreach ($relationships as $relation => $field) {
             if ($request->has($relation))
                 $results->whereHas($relation, function($q) use ($request, $relation, $field) {
