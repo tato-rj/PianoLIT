@@ -82,7 +82,7 @@ class ChatGPTController extends Controller
         }
 
         // Execute the query and return the results
-        $results = $query->get();
+        $results = $query->take(5)->get();
 
         return response()->json($results);
     }
