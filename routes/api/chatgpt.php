@@ -2,6 +2,8 @@
 
 Route::middleware('api.chatgpt')->prefix('chatgpt')->group(function() {
 	
-	Route::get('composer', 'Api\ChatGPTController@composer');
+	Route::get('composers', 'Api\ChatGPTController@composers');
+
+	Route::get('pieces', 'Api\ChatGPTController@pieces');
 
 });

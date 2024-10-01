@@ -8,7 +8,7 @@ use App\Composer;
 
 class ChatGPTController extends Controller
 {
-    public function composer(Request $request)
+    public function composers(Request $request)
     {
         $strings = ['name', 'ethnicity', 'period'];
         $booleans = ['is_famous'];
