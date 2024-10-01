@@ -41,7 +41,7 @@ class ChatGPTController extends Controller
     public function pieces(Request $request)
     {
         $strings = ['name', 'catalogue_name', 'catalogue_number', 'collection_name', 'collection_number', 'movement_number', 'description'];
-        $booleans = [];
+        $tags = ['level', 'mood', 'technique'];
         $relationships = ['composer.name'];
 
         $results = Piece::query();
@@ -63,10 +63,12 @@ class ChatGPTController extends Controller
                 });
         }
 
-        if ($request->has('level'))
-            $results->whereHas('tags', function($q) use ($request) {
-                $q->where('name', 'LIKE', '%'.$request->level.'%');
-            });
+        foreach ($tags as $field) {
+            if ($request->has($field))
+                $results->whereHas('tags', function($q) use ($request, $field) {
+                    $q->where('name', 'LIKE', '%'.$request->$field.'%');
+                });
+        }
 
         $pieces = $results->take(20)->get();
 
