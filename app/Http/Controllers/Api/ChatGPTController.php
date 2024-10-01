@@ -63,6 +63,11 @@ class ChatGPTController extends Controller
                 });
         }
 
+        if ($request->has('level'))
+            $results->whereHas('tags', function($q) use ($request) {
+                $q->where('name', 'LIKE', '%'.$request->level.'%');
+            });
+
         $pieces = $results->take(20)->get();
 
         return response()->json(compact('pieces'));
