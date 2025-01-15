@@ -1,6 +1,10 @@
 <div class="tab-pane fade" id="tab-performances">
-	
-		<div class="mb-4">
+<section id="timeline">
+
+	@each('webapp.piece.components.event', $timeline, 'event')
+
+</section>
+{{-- 		<div class="mb-4">
 			
 			@if(! auth()->user()->performances()->of($piece)->approved()->exists())
 			<div class="mb-4"> 
@@ -13,7 +17,7 @@
 			@endif			
 			
 			@include('webapp.piece.performances.videos')
-		</div>
+		</div> --}}
 
 	
 {{-- 		@if($piece->media['lessons'])

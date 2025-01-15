@@ -14,7 +14,7 @@
 		<div class="nav-outline"></div>
 	</li>
 	<li class="nav-item">
-		<a class="nav-link" data-anchor="performances" data-toggle="tab" href="#tab-performances" new-feature>@fa(['icon' => 'hands-clapping', 'color' => 'orange', 'size' => 'lg', 'mr' => 1])Stage</a>
+		<a class="nav-link" data-anchor="performances" data-toggle="tab" href="#tab-performances" new-feature>Timeline</a>
 		<div class="nav-outline"></div>
 	</li>
 
