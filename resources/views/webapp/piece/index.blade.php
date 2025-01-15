@@ -5,6 +5,24 @@
 <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
+.timeline-event:before {
+	content: '';
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background-color: #dee2e6;
+	position: absolute;
+	left: -7px;
+	bottom: 50%;
+	transform: translateY(50%);
+}
+
+.timeline-highlighted:before {
+	background-color: #0055fe!important;
+    -webkit-box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
 video::-webkit-media-controls {
      visibility: hidden;
 }
