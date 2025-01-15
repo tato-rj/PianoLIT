@@ -13,10 +13,10 @@
 		<a class="nav-link" data-anchor="tutorial" data-toggle="tab" href="#tab-tutorial">Synthesia</a>
 		<div class="nav-outline"></div>
 	</li>
-{{-- 	<li class="nav-item">
+	<li class="nav-item">
 		<a class="nav-link" data-anchor="performances" data-toggle="tab" href="#tab-performances" new-feature>Timeline</a>
 		<div class="nav-outline"></div>
-	</li> --}}
+	</li>
 
 {{-- 	<li class="nav-item">
 		<a class="nav-link" data-anchor="lessons" data-toggle="tab" href="#tab-lessons">Lessons</a>
