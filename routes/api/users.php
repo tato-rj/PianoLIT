@@ -11,6 +11,8 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	});
 
+	Route::get('suggestions', 'Api\UsersController@suggestions')->name('suggestions');
+
 	Route::prefix('favorites')->name('favorites.')->group(function() {
 
 		Route::get('show', 'Api\FavoritesController@show')->name('show');

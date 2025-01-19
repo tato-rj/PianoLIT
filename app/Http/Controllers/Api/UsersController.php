@@ -8,6 +8,17 @@ use App\User;
 
 class UsersController extends Controller
 {
+    public function suggestions(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::find($request->user_id);
+        
+        return $user->suggestions(20)->shuffle()->take(10);
+    }
+
     public function shouldReview(Request $request)
     {
         $request->validate([
