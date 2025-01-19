@@ -49,6 +49,7 @@ class TabsController extends Controller
 
     public function myPieces()
     {
+        // return auth()->user()->suggestions(20)->shuffle()->take(10);
     	return view('webapp.user.my-pieces.index');
     }
 

@@ -44,7 +44,7 @@
 @component('webapp.layouts.header', ['title' => 'My Pieces', 'subtitle' => 'Quickly access your favorites or see your tutorial requests'])
 <div class="list-group flex-row rounded-pill position-relative">
 	<button class="btn btn-wide rounded-pill list-group-item list-group-item-action active" data-anchor="favorites" data-toggle="list" href="#list-favorites">FAVORITES</button>
-	<button class="btn btn-wide rounded-pill list-group-item list-group-item-action" data-anchor="uploads" data-toggle="list" href="#list-uploads">UPLOADS</button>
+	<button class="btn btn-wide rounded-pill list-group-item list-group-item-action" data-anchor="uploads" data-toggle="list" href="#list-uploads">SUGGESTIONS</button>
 </div>
 @endcomponent
     <div class="tab-content" id="nav-tabContent">
@@ -52,7 +52,7 @@
 		@include('webapp.user.my-pieces.favorites.index')
       </div>
       <div class="tab-pane fade" id="list-uploads" role="tabpanel" aria-labelledby="list-home-list">
-		@include('webapp.user.my-pieces.uploads')
+		@include('webapp.user.my-pieces.suggestions')
       </div>
     </div>
 @endsection
