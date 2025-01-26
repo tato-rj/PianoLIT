@@ -250,9 +250,9 @@ class User extends Authenticatable implements MustVerifyEmail
         $tags = $this->tags();
 
         if (empty($tags))
-            return Piece::orderBy('views_count', 'DESC')->with(['composer', 'tags'])->take($limit)->get();
+            return Piece::freepicks()->with(['composer', 'tags'])->take($limit)->get();
 
-        $suggestions = Piece::localSearch($tags)->with(['tags', 'composer'])->limit($limit)->get();
+        $suggestions = Piece::freepicks()->localSearch($tags)->with(['tags', 'composer'])->limit($limit)->get();
 
         $suggestions->each(function($piece, $key) use ($suggestions) {
             if ($this->favorites->contains($piece))
