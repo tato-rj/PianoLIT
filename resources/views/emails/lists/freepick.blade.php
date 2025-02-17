@@ -11,13 +11,6 @@
 </p>
 </div>
 
-@component('mail::panel')
-# 🎉Share your own videos!
-<p class="mb-2">You can now upload your performances, share your talent and get feedback from PianoLIT users from all over the world.</p>
-<p class="mb-3">*Available on <strong>Webapp only</strong></p>
-<img src="https://storage.googleapis.com/pianolit-app/misc/stage%20demo.gif">
-@endcomponent
-
 @component('mail::button', ['url' => 'https://my.pianolit.com/'])
 Open with the Webapp
 @endcomponent
