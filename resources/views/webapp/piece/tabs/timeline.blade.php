@@ -1,4 +1,4 @@
-<div class="tab-pane fade" id="tab-performances">
+<div class="tab-pane fade" id="tab-timeline">
 <section id="timeline">
 
 	@each('webapp.piece.components.event', $timeline, 'event')

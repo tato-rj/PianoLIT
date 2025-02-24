@@ -83,13 +83,13 @@ video::-webkit-media-controls-enclosure {
 	<div class="tab-content p-3">
 		@include('webapp.piece.tabs.about')
 		@include('webapp.piece.tabs.score')
-		@include('webapp.piece.tabs.performances')
-		@include('webapp.piece.tabs.tutorial')
+		@include('webapp.piece.tabs.timeline')
+		@include('webapp.piece.tabs.synthesia')
 	</div>
 </section>
 
 @include('webapp.piece.components.panel')
-@include('webapp.piece.performances.overlay')
+{{-- @include('webapp.piece.performances.overlay') --}}
 @endsection
 
 @push('scripts')
