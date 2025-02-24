@@ -10,11 +10,11 @@
 		<div class="nav-outline"></div>
 	</li>
 	<li class="nav-item">
-		<a class="nav-link" data-anchor="tutorial" data-toggle="tab" href="#tab-tutorial">Synthesia</a>
+		<a class="nav-link" data-anchor="synthesia" data-toggle="tab" href="#tab-synthesia">Synthesia</a>
 		<div class="nav-outline"></div>
 	</li>
 	<li class="nav-item">
-		<a class="nav-link" data-anchor="performances" data-toggle="tab" href="#tab-performances" new-feature>Timeline</a>
+		<a class="nav-link" data-anchor="timeline" data-toggle="tab" href="#tab-timeline" new-feature>Timeline</a>
 		<div class="nav-outline"></div>
 	</li>
 
