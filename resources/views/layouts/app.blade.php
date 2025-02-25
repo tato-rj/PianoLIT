@@ -4,8 +4,7 @@
     @include('layouts.html.google.manager-head')
     @include('layouts.html.google.fonts')
     @include('layouts.html.google.recaptcha')
-    
-    <meta name="google-adsense-account" content="ca-pub-9562985284829074">
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
