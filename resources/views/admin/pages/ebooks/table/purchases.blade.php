@@ -3,11 +3,16 @@
 @component('components.modal', ['id' => 'purchases-'.$item->id.'-modal'])
 @slot('body')
 @foreach($item->purchases()->with('user')->get() as $purchase)
-{{-- <div class="text-muted"><small>Purchased at {{$purchase->created_at->toFormattedDateString()}}</small></div> --}}
+<div class="text-muted"><small>Purchased at {{$purchase->created_at->toFormattedDateString()}}</small></div>
 <p>
+	@if($purchase->user()->exists())
 	<strong>({{$purchase->user->id}})</strong> 
 	{{$purchase->user->full_name}}
-	@fa(['icon' => 'money-bill-wave', 'mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])</p>
+	@else
+	<i class="text-muted">(account deleted)</i>
+	@endif
+	@fa(['icon' => 'money-bill-wave', 'mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])
+</p>
 @endforeach
 @endslot
 @endcomponent
