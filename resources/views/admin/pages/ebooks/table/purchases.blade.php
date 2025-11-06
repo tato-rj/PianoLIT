@@ -2,7 +2,7 @@
 
 @component('components.modal', ['id' => 'purchases-'.$item->id.'-modal'])
 @slot('body')
-@foreach($item->purchases()->with('user')->get() as $purchase)
+@foreach($item->purchases()->with('user')->latest()->get() as $purchase)
 <div class="text-muted"><small>Purchased at {{$purchase->created_at->toFormattedDateString()}}</small></div>
 <p>
 	@if($purchase->user()->exists())
