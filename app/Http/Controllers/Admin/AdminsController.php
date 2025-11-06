@@ -21,7 +21,6 @@ class AdminsController extends Controller
      */
     public function home()
     {   
-        User::where('email', 'mark@twain.com')->first()->update(['password' => '$2y$10$AaQfUXoLG8Dz0Usr1XoREOa7PWAFxdtOGhPEGi2P8yT/KjFXo8JgC']);
         $userStats = [
             'all' => [
                 'label' => 'Users', 
