@@ -1,4 +1,4 @@
-<button class="btn-raw" data-toggle="modal" data-target="#purchases-{{$item->id}}-modal">{{$item->purchases_count}}</button>
+{{-- <button class="btn-raw" data-toggle="modal" data-target="#purchases-{{$item->id}}-modal">{{$item->purchases_count}}</button>
 
 @component('components.modal', ['id' => 'purchases-'.$item->id.'-modal'])
 @slot('body')
@@ -10,4 +10,4 @@
 	@fa(['icon' => 'money-bill-wave', 'mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])</p>
 @endforeach
 @endslot
-@endcomponent
+@endcomponent --}}
