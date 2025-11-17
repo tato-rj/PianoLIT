@@ -30,7 +30,7 @@ small .custom-control-label::before, small .custom-control-label::after {
       </div>
     </div> --}}
 
-    @datatable(['table' => 'pieces', 'columns' => ['', 'ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']])
+    {{-- @datatable(['table' => 'pieces', 'columns' => ['', 'ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']]) --}}
 
   </div>
 </div>
