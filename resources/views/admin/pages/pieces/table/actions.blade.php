@@ -1,4 +1,4 @@
-{{-- <div class="text-right"> 
+<div class="text-right"> 
 @component('components.datatable.actions', ['actions' => [
 	'edit' => route('admin.pieces.edit', $item->id),
 	'delete' => route('admin.pieces.destroy', $item->id)
@@ -25,4 +25,4 @@
 		<button type="submit" class="border-0 p-0 bg-transparent text-muted mr-2 align-middle" title="Change this piece creation date to today"><i class="fas fa-calendar-day"></i></button>
 	</form>
 @endcomponent
-</div> --}}
+</div>
