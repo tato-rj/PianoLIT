@@ -30,7 +30,7 @@ small .custom-control-label::before, small .custom-control-label::after {
       </div>
     </div> --}}
 
-    {{-- @datatable(['table' => 'pieces', 'columns' => ['', 'ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']]) --}}
+    @datatable(['table' => 'pieces', 'columns' => ['', 'ID', 'Piece', 'Composer', 'Tags', 'Level', 'Favorited', '']])
 
   </div>
 </div>
@@ -56,7 +56,7 @@ $('button#missing-image').on('click', function(e) {
   {data: 'composer.short_name', name: 'composer.name', class: 'text-nowrap'},
   {data: 'tags', name: 'tags.name', orderable: false},
   {data: 'level', name: 'tags.name', orderable: false},
-  {data: 'ranking', name: 'tags.name', orderable: false},
+  {{-- {data: 'ranking', name: 'tags.name', orderable: false}, --}}
   {data: 'favorited', orderable: false, searchable: false},
   // {data: 'views', orderable: false, searchable: false},
   {data: 'actions', orderable: false, searchable: false},
