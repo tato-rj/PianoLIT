@@ -1,5 +1,6 @@
 @if($item->highlighted_at)
-<span class="text-green">{{$item->highlighted_at->toFormattedDateString()}}</span>
+<span>Already highlighted</span>
+{{-- <span class="text-green">{{$item->highlighted_at->toFormattedDateString()}}</span> --}}
 @else
 <span class="text-muted"><i>Never highlighted</i></span>
 @endif
