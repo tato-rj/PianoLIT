@@ -7,16 +7,12 @@
 	<div>
 		<button class="border-0 p-0 bg-transparent text-warning mr-2 align-middle" title="This piece is the current Freepick!" disabled>@fa(['icon' => 'award', 'mr' => 0])</button>
 	</div>
-	@elseif($item->hasImage() && ! $item->highlighted_at)
+	@elseif($item->hasImage())
 	<form method="POST" action="{{route('admin.pieces.highlight', $item->id)}}">
 		@csrf
 		@method('PATCH')
-		<button type="submit" class="border-0 p-0 bg-transparent text-grey mr-2 align-middle" title="Highlight this piece">@fa(['icon' => 'award', 'mr' => 0])</button>
+		<button type="submit" class="border-0 p-0 bg-transparent text-{{$item->highlighted_at ? 'blue' :'grey'}} mr-2 align-middle" title="Highlight this piece">@fa(['icon' => 'award', 'mr' => 0])</button>
 	</form>
-	@elseif($item->highlighted_at)
-	<div>
-		<button class="border-0 p-0 bg-transparent text-success mr-2 align-middle" title="This piece has already been selected as a Freepick" disabled>@fa(['icon' => 'check', 'mr' => 0])</button>
-	</div>
 	@endif
 
 	<form method="POST" action="{{route('admin.pieces.hijack', $item->id)}}">
