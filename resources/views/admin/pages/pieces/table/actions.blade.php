@@ -11,7 +11,7 @@
 	<form method="POST" action="{{route('admin.pieces.highlight', $item->id)}}">
 		@csrf
 		@method('PATCH')
-		<button type="submit" class="border-0 p-0 bg-transparent text-{{$item->highlighted_at ? 'blue' : 'grey'}} mr-2 align-middle" title="{{$item->highlighted_at ? 'Last highlighted on ' . $item->highlighted_at->toFormattedDateString() : 'Never highlighted'}}">@fa(['icon' => 'award', 'mr' => 0])
+		<button type="submit" class="border-0 p-0 bg-transparent text-{{$item->highlighted_at ? 'blue' : 'grey'}} mr-2 align-middle" title="Highlight this piece">@fa(['icon' => 'award', 'mr' => 0])
 		</button>
 	</form>
 	@endif
