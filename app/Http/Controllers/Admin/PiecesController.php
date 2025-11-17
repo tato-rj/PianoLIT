@@ -20,10 +20,9 @@ class PiecesController extends Controller
             return Piece::with(['tags', 'composer'])
                     ->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])
                     ->orderBy('updated_at', 'desc')
+                    ->take(5)
                     ->datatable();
-return Piece::with(['tags', 'composer'])
-                    ->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])
-                    ->orderBy('updated_at', 'desc')->take(5)->get();
+
         return view('admin.pages.pieces.index');
     }
 
