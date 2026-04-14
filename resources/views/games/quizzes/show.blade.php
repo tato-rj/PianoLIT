@@ -36,9 +36,9 @@
 				<figure class="figure w-100">
 					<img src="{{$quiz->cover_image()}}" class="figure-img img-fluid rounded w-100">
 				</figure>
-				<div class="border-bottom mb-4 pb-3 text-center">
+{{-- 				<div class="border-bottom mb-4 pb-3 text-center">
 					<p class="m-0 text-muted">Want a heads up when a new quiz comes out? <span class="text-blue cursor-pointer btn-subscribe">Subscribe here</span></p>
-				</div>
+				</div> --}}
 
 				@include('games.quizzes.level')
 			</div>
@@ -61,9 +61,9 @@
 						<div class="text-muted"><small>Where pianists discover new pieces and find inspiration to play only what they love.</small></div>
 					</div>
 				</div>
-				<div class="text-right">
+{{-- 				<div class="text-right">
 					<button  class="btn btn-primary-outline btn-sm btn-subscribe">Subscribe</button>
-				</div>
+				</div> --}}
 			</div>
 		</div>
 
