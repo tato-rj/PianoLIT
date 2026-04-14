@@ -13,11 +13,11 @@
 </div>
 @endslot
 
-@slot('footer')
+{{-- @slot('footer')
   <div class="w-100 text-center">
     <p class="mb-1"><strong>Did you like this game?</strong></p>
     <p>Subscribe and we'll keep you in the loop about the new ones!</p>
     @include('components.form.subscription')
   </div>
-@endslot
+@endslot --}}
 @endcomponent
