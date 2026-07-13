@@ -15,7 +15,7 @@
     
     <button class="btn btn-danger mb-4" id="delete-all-btn" disabled data-action="{{route('admin.subscriptions.reports.destroy-many')}}" data-toggle="modal" data-target="#delete-modal">Delete all selected</button>
 
-    @datatableRaw(['model' => 'reports', 'columns' => ['checkbox', 'Date', 'Name', 'Emails', 'Delivered', 'Failed', 'Opened', 'Clicked', '']])
+    @datatable(['table' => 'reports', 'columns' => ['checkbox', 'Date', 'Name', 'Emails', 'Delivered', 'Failed', 'Opened', 'Clicked', '']])
 
   </div>
 </div>
@@ -27,28 +27,48 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 
 <script type="text/javascript">
-(new DataTableRaw({
-	table: '#reports-table',
-	options: {order: [[1, 'desc']]}
-})).create();
+(new DataTable('#reports-table')).columns([
+  {data: 'checkbox', orderable: false, searchable: false},
+  {data: 'sent_at', searchable: false, sort: true},
+  {data: 'name'},
+  {data: 'emails_count', searchable: false},
+  {data: 'delivered', searchable: false},
+  {data: 'failed', searchable: false},
+  {data: 'opened', searchable: false},
+  {data: 'clicked', searchable: false},
+  {data: 'actions', orderable: false, searchable: false},
+]).create();
 </script>
 
 <script type="text/javascript">
-$(document).on('change', '#check-all-datatable', function() {
-    $(this).closest('table').find('.check-datatable').click();
-});
+let selectedReportIds = new Set;
 
 $(document).on('change', '.check-datatable', function() {
-  $('button[data-target="#delete-modal"]').prop('disabled', ! $('.check-datatable:checked').length);
+  if ($(this).is(':checked')) {
+    selectedReportIds.add($(this).attr('data-id'));
+  } else {
+    selectedReportIds.delete($(this).attr('data-id'));
+  }
 
   addSelectedIds();
 });
 
+$(document).on('change', '#check-all-datatable', function() {
+  $('.check-datatable').prop('checked', $(this).is(':checked')).trigger('change');
+});
+
+$('#reports-table').on('draw.dt', function() {
+  $('.check-datatable').each(function() {
+    $(this).prop('checked', selectedReportIds.has($(this).attr('data-id')));
+  });
+  $('#check-all-datatable').prop('checked', false);
+});
+
 function addSelectedIds()
 {
-  let ids = $('.check-datatable:checked').map(function() {
-    return $(this).attr('data-id');
-  }).toArray();
+  let ids = Array.from(selectedReportIds);
+
+  $('button[data-target="#delete-modal"]').prop('disabled', ! ids.length);
 
   $('#delete-modal form #selected-ids').remove();
 

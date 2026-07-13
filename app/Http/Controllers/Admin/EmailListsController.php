@@ -18,9 +18,77 @@ class EmailListsController extends Controller
 
     public function reports()
     {
-        $reports = EmailLog::generate()->get();
+        if (request()->ajax())
+            return $this->reportsDatatable(request());
 
-        return view('admin.pages.reports.index', compact('reports'));
+        return view('admin.pages.reports.index');
+    }
+
+    protected function reportsDatatable(Request $request)
+    {
+        $start = max((int) $request->input('start', 0), 0);
+        $length = min(max((int) $request->input('length', 10), 1), 100);
+        $direction = $request->input('order.0.dir') === 'asc' ? 'asc' : 'desc';
+        $orderColumn = (int) $request->input('order.0.column', 1);
+        $sortField = $request->input("columns.{$orderColumn}.data", 'sent_at');
+        $search = trim($request->input('search.value', ''));
+        $baseQuery = EmailLog::query()->whereNotNull('list_id');
+        $recordsTotal = (clone $baseQuery)->distinct()->count('list_id');
+
+        if ($search !== '') {
+            $baseQuery->where('list_id', 'like', '%'.str_replace(' ', '-', strtolower($search)).'%');
+        }
+
+        $recordsFiltered = (clone $baseQuery)->distinct()->count('list_id');
+        $columns = [
+            'sent_at' => 'sent_at_sort',
+            'name' => 'list_id',
+            'emails_count' => 'emails_count',
+            'delivered' => 'delivered_count',
+            'failed' => 'failed_count',
+            'opened' => 'opens_count',
+            'clicked' => 'clicks_count',
+        ];
+        $orderBy = $columns[$sortField] ?? 'sent_at_sort';
+        $reports = $baseQuery
+            ->selectRaw('list_id,
+                MAX(created_at) as sent_at_sort,
+                COUNT(*) as emails_count,
+                SUM(unique_delivered) as delivered_count,
+                SUM(unique_failed) as failed_count,
+                SUM(unique_opened) as opens_count,
+                SUM(unique_clicked) as clicks_count')
+            ->groupBy('list_id')
+            ->orderBy($orderBy, $direction)
+            ->skip($start)
+            ->take($length)
+            ->get();
+
+        $data = $reports->map(function ($report) {
+            return [
+                'checkbox' => view('admin.pages.reports.table.checkbox', compact('report'))->render(),
+                'sent_at' => $report->sent_at->toFormattedDateString(),
+                'name' => $report->name,
+                'emails_count' => $report->emails_count,
+                'delivered' => $this->reportPercentage($report->delivered_count, $report->emails_count, 'delivered'),
+                'failed' => $this->reportPercentage($report->failed_count, $report->emails_count, 'failed'),
+                'opened' => $this->reportPercentage($report->opens_count, $report->emails_count, 'opened'),
+                'clicked' => $this->reportPercentage($report->clicks_count, $report->emails_count, 'clicked'),
+                'actions' => view('admin.pages.reports.table.actions', compact('report'))->render(),
+            ];
+        });
+
+        return response()->json([
+            'draw' => (int) $request->input('draw'),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data,
+        ]);
+    }
+
+    protected function reportPercentage($count, $total, $label)
+    {
+        return '<span title="'.$count.' '.$label.'">'.percentage($count, $total).'%</span>';
     }
 
     public function report($list)

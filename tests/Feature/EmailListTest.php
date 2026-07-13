@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\AppTest;
-use App\{EmailList, Subscription, Piece};
+use App\{EmailList, EmailLog, Subscription, Piece};
 use App\Mail\{FreePickEmail, NewsletterEmail};
 use App\Notifications\Emails\EmailListSentNotification;
 use App\Jobs\{SendMassEmails, SendEmail};
@@ -113,6 +113,53 @@ class EmailListTest extends AppTest
         \Queue::assertPushed(SendMassEmails::class, function($job) {
             return $job->subject == 'bar';
         });
+    }
+
+    /** @test */
+    public function email_reports_are_paginated_on_the_server()
+    {
+        $this->freePickList->emailLog()->create([
+            'message_id' => 'message-1',
+            'list_id' => 'free-pick.100',
+            'recipient' => 'one@example.com',
+            'unique_delivered' => 1,
+        ]);
+        $this->freePickList->emailLog()->create([
+            'message_id' => 'message-2',
+            'list_id' => 'free-pick.100',
+            'recipient' => 'two@example.com',
+            'unique_opened' => 1,
+        ]);
+        $this->freePickList->emailLog()->create([
+            'message_id' => 'message-3',
+            'list_id' => 'free-pick.200',
+            'recipient' => 'three@example.com',
+        ]);
+        $this->signIn();
+
+        $query = http_build_query([
+            'draw' => 1,
+            'start' => 0,
+            'length' => 1,
+            'search' => ['value' => 'free pick'],
+            'order' => [['column' => 3, 'dir' => 'desc']],
+            'columns' => [
+                ['data' => 'checkbox'],
+                ['data' => 'sent_at'],
+                ['data' => 'name'],
+                ['data' => 'emails_count'],
+            ],
+        ]);
+
+        $response = $this->get(route('admin.subscriptions.reports.index').'?'.$query, [
+            'X-Requested-With' => 'XMLHttpRequest',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('recordsTotal', 2)
+            ->assertJsonPath('recordsFiltered', 2)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.emails_count', 2);
     }
 
     /** @test */
