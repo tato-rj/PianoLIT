@@ -2,8 +2,58 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\DB;
+
 class EmailLog extends PianoLit
 {
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($log) {
+            if (! $log->list_id) {
+                return;
+            }
+
+            DB::table('email_campaign_reports')->insertOrIgnore([
+                'list_id' => $log->list_id,
+                'name' => $log->name,
+                'sent_at' => $log->sent_at,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            EmailCampaignReport::where('list_id', $log->list_id)->update([
+                'emails_count' => DB::raw('emails_count + 1'),
+                'delivered_count' => DB::raw('delivered_count + '.(int) $log->unique_delivered),
+                'failed_count' => DB::raw('failed_count + '.(int) $log->unique_failed),
+                'opens_count' => DB::raw('opens_count + '.(int) $log->unique_opened),
+                'clicks_count' => DB::raw('clicks_count + '.(int) $log->unique_clicked),
+                'updated_at' => now(),
+            ]);
+        });
+
+        static::updated(function ($log) {
+            if (! $log->list_id) {
+                return;
+            }
+
+            $columns = [
+                'unique_delivered' => 'delivered_count',
+                'unique_failed' => 'failed_count',
+                'unique_opened' => 'opens_count',
+                'unique_clicked' => 'clicks_count',
+            ];
+
+            foreach ($columns as $logColumn => $reportColumn) {
+                if ($log->wasChanged($logColumn)) {
+                    $difference = (int) $log->{$logColumn} - (int) $log->getOriginal($logColumn);
+                    EmailCampaignReport::where('list_id', $log->list_id)->increment($reportColumn, $difference);
+                }
+            }
+        });
+    }
+
     protected $dates = [
         'delivered_at',
         'failed_at',

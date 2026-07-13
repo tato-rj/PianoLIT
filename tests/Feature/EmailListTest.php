@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\AppTest;
-use App\{EmailList, EmailLog, Subscription, Piece};
+use App\{EmailCampaignReport, EmailList, EmailLog, Subscription, Piece};
 use App\Mail\{FreePickEmail, NewsletterEmail};
 use App\Notifications\Emails\EmailListSentNotification;
 use App\Jobs\{SendMassEmails, SendEmail};
@@ -160,6 +160,26 @@ class EmailListTest extends AppTest
             ->assertJsonPath('recordsFiltered', 2)
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.emails_count', 2);
+    }
+
+    /** @test */
+    public function email_campaign_summaries_are_updated_incrementally()
+    {
+        $log = $this->freePickList->emailLog()->create([
+            'message_id' => 'message-summary',
+            'list_id' => 'free-pick.300',
+            'recipient' => 'summary@example.com',
+        ]);
+
+        $this->assertDatabaseHas('email_campaign_reports', [
+            'list_id' => 'free-pick.300',
+            'emails_count' => 1,
+            'opens_count' => 0,
+        ]);
+
+        $log->update(['unique_opened' => 1]);
+
+        $this->assertSame(1, EmailCampaignReport::where('list_id', 'free-pick.300')->value('opens_count'));
     }
 
     /** @test */

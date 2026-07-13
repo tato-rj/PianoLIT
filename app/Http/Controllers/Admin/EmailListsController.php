@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\{EmailList, Subscription, EmailLog};
+use App\{EmailCampaignReport, EmailList, Subscription, EmailLog};
 use App\Events\Emails\Unsubscribed;
 
 class EmailListsController extends Controller
@@ -32,33 +32,28 @@ class EmailListsController extends Controller
         $orderColumn = (int) $request->input('order.0.column', 1);
         $sortField = $request->input("columns.{$orderColumn}.data", 'sent_at');
         $search = trim($request->input('search.value', ''));
-        $baseQuery = EmailLog::query()->whereNotNull('list_id');
-        $recordsTotal = (clone $baseQuery)->distinct()->count('list_id');
+        $baseQuery = EmailCampaignReport::query();
+        $recordsTotal = (clone $baseQuery)->count();
 
         if ($search !== '') {
-            $baseQuery->where('list_id', 'like', '%'.str_replace(' ', '-', strtolower($search)).'%');
+            $baseQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('list_id', 'like', '%'.str_replace(' ', '-', strtolower($search)).'%');
+            });
         }
 
-        $recordsFiltered = (clone $baseQuery)->distinct()->count('list_id');
+        $recordsFiltered = (clone $baseQuery)->count();
         $columns = [
-            'sent_at' => 'sent_at_sort',
-            'name' => 'list_id',
+            'sent_at' => 'sent_at',
+            'name' => 'name',
             'emails_count' => 'emails_count',
             'delivered' => 'delivered_count',
             'failed' => 'failed_count',
             'opened' => 'opens_count',
             'clicked' => 'clicks_count',
         ];
-        $orderBy = $columns[$sortField] ?? 'sent_at_sort';
+        $orderBy = $columns[$sortField] ?? 'sent_at';
         $reports = $baseQuery
-            ->selectRaw('list_id,
-                MAX(created_at) as sent_at_sort,
-                COUNT(*) as emails_count,
-                SUM(unique_delivered) as delivered_count,
-                SUM(unique_failed) as failed_count,
-                SUM(unique_opened) as opens_count,
-                SUM(unique_clicked) as clicks_count')
-            ->groupBy('list_id')
             ->orderBy($orderBy, $direction)
             ->skip($start)
             ->take($length)
@@ -173,6 +168,7 @@ class EmailListsController extends Controller
     public function destroyReport($list_id)
     {
         EmailLog::byList($list_id)->delete();
+        EmailCampaignReport::where('list_id', $list_id)->delete();
 
         return redirect(route('admin.subscriptions.reports.index'))->with('status', 'The list has been deleted');
     }
@@ -180,6 +176,7 @@ class EmailListsController extends Controller
     public function destroyManyReports(Request $request)
     {
         EmailLog::byLists($request->ids)->delete();
+        EmailCampaignReport::whereIn('list_id', $request->ids)->delete();
 
         return redirect(route('admin.subscriptions.reports.index'))->with('status', 'The lists have been deleted');
     }
