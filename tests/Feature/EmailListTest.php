@@ -6,6 +6,7 @@ use Tests\AppTest;
 use App\{EmailList, Subscription, Piece};
 use App\Mail\{FreePickEmail, NewsletterEmail};
 use App\Notifications\Emails\EmailListSentNotification;
+use App\Jobs\{SendMassEmails, SendEmail};
 
 class EmailListTest extends AppTest
 {
@@ -35,13 +36,13 @@ class EmailListTest extends AppTest
     /** @test */
     public function admins_can_send_out_the_free_pick_email_to_all_subscribers()
     {
-    	\Mail::fake();
+		\Queue::fake();
 
         $this->signIn();
 
     	$this->get(route('admin.subscriptions.lists.send', $this->freePickList));
 
-        \Mail::assertQueued(FreePickEmail::class, 2);
+		\Queue::assertPushed(SendMassEmails::class, 1);
 
         $this->assertNotNull($this->freePickList->fresh()->last_sent_at);
     }
@@ -49,13 +50,35 @@ class EmailListTest extends AppTest
     /** @test */
     public function admins_are_notified_when_an_email_list_is_sent()
     {
-        $this->signIn();
-
         \Notification::fake();
-        
-        $this->get(route('admin.subscriptions.lists.send', $this->freePickList));
+
+        $this->freePickList->subscribers()->detach();
+        (new SendMassEmails($this->freePickList->id, 'free-pick.123'))->handle();
 
         \Notification::assertSentTo($this->admin, EmailListSentNotification::class);
+    }
+
+    /** @test */
+    public function mass_emails_are_queued_in_small_background_jobs()
+    {
+        \Queue::fake();
+
+        (new SendMassEmails($this->freePickList->id, 'free-pick.123'))->handle();
+
+        \Queue::assertPushed(SendEmail::class, 2);
+        \Queue::assertPushed(SendMassEmails::class, function ($job) {
+            return $job->afterSubscriberId === $this->subscriber2->id;
+        });
+    }
+
+    /** @test */
+    public function a_queued_email_job_sends_to_one_subscriber()
+    {
+        \Mail::fake();
+
+        (new SendEmail($this->freePickList->id, 'free-pick.123', $this->subscriber1->id))->handle();
+
+        \Mail::assertQueued(FreePickEmail::class, 1);
     }
 
     /** @test */
@@ -83,10 +106,12 @@ class EmailListTest extends AppTest
             return $mail->subject == 'foo';
         });
 
+        \Queue::fake();
+
         $this->get(route('admin.subscriptions.lists.send', ['list' => $this->newsletterList, 'subject' => 'bar']));
-         
-        \Mail::assertQueued(NewsletterEmail::class, function($mail) {
-            return $mail->subject == 'bar';
+
+        \Queue::assertPushed(SendMassEmails::class, function($job) {
+            return $job->subject == 'bar';
         });
     }
 

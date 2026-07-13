@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Events\Emails\Unsubscribed;
+use App\Jobs\SendMassEmails;
 
 class EmailList extends PianoLit
 {
@@ -24,17 +25,15 @@ class EmailList extends PianoLit
         return $this->morphOne(EmailLog::class, 'sender');
     }
 
-	public function send($startId = 0)
+	public function send($subject = null)
 	{
         $list_id = $this->listId();
-        
-        $this->subscribers()->where('id', '>', $startId)->chunk(500, function($subscribers) use ($list_id) {
-            foreach ($subscribers as $subscriber) {
-                \Mail::to($subscriber->email)->queue($this->mailable($list_id, $subscriber));
-            }
-        });
-
         $this->update(['last_sent_at' => now()]);
+
+        SendMassEmails::dispatch($this->id, $list_id, $subject)
+            ->onConnection('redis');
+
+		return $list_id;
 	}
 
 	public function mailable($list_id, $subscription = null)

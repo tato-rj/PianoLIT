@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\{EmailList, Subscription, EmailLog};
-use App\Events\Emails\{EmailListSent, Unsubscribed};
-use App\Jobs\{SendMassEmails, SendEmail};
+use App\Events\Emails\Unsubscribed;
 
 class EmailListsController extends Controller
 {
@@ -40,12 +39,9 @@ class EmailListsController extends Controller
         if ($list->last_sent_at && $list->last_sent_at->gt(now()->subDay()))
             return back()->with('status', 'This list has recently been sent');
 
-        $list->send($request->start_id ?? 0);
+        $list->send($request->subject);
 
-        event(new EmailListSent($list));
-        // $this->dispatch(new SendMassEmails($list));
-
-        return back()->with('status', 'The list email is being sent to all susbcribers, please allow a few seconds to complete.');
+        return back()->with('status', 'The list email has been queued and will be sent to all subscribers in the background.');
     }
     
     public function sendTo(Request $request, EmailList $list)

@@ -14,16 +14,25 @@ class SendMassEmails implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $list;
+    public $timeout = 60;
+    public $tries = 3;
+
+    public $listId;
+    public $campaignId;
+    public $subject;
+    public $afterSubscriberId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(EmailList $list)
+    public function __construct($listId, $campaignId, $subject = null, $afterSubscriberId = 0)
     {
-        $this->list = $list;
+        $this->listId = $listId;
+        $this->campaignId = $campaignId;
+        $this->subject = $subject;
+        $this->afterSubscriberId = $afterSubscriberId;
     }
 
     /**
@@ -33,8 +42,29 @@ class SendMassEmails implements ShouldQueue
      */
     public function handle()
     {
-        $this->list->send();
+        $list = EmailList::find($this->listId);
 
-        event(new EmailListSent($this->list));
+        if (! $list) {
+            return;
+        }
+
+        $subscribers = $list->subscribers()
+            ->where('subscriptions.id', '>', $this->afterSubscriberId)
+            ->orderBy('subscriptions.id')
+            ->take(500)
+            ->get(['subscriptions.id']);
+
+        if ($subscribers->isEmpty()) {
+            event(new EmailListSent($list));
+            return;
+        }
+
+        foreach ($subscribers as $subscriber) {
+            SendEmail::dispatch($this->listId, $this->campaignId, $subscriber->id, $this->subject)
+                ->onConnection('redis');
+        }
+
+        self::dispatch($this->listId, $this->campaignId, $this->subject, $subscribers->last()->id)
+            ->onConnection('redis');
     }
 }
