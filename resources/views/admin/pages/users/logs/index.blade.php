@@ -31,7 +31,13 @@
       </div>
     </div>
 
-    @datatableRaw(['model' => 'users', 'rows' => 'admin.pages.stats.users.row', 'columns' => ['Date', 'ID', 'Name', 'Visits', 'Favorites', 'Origin', 'Status', 'Last Active', '']])
+    @unless($logIndexReady)
+      <div class="alert alert-warning">
+        The fast log index has not been built yet. Run <code>php artisan redis:rebuild-user-log-index</code> once to enable accurate visit and last-active sorting.
+      </div>
+    @endunless
+
+    @datatable(['table' => 'users', 'columns' => ['Date', 'ID', 'Name', 'Visits', 'Favorites', 'Origin', 'Status', 'Last Active', '']])
 
   </div>
 </div>
@@ -41,7 +47,17 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTableRaw({table: '#users-table', options: {order: [[7, 'desc']]}})).create();
+(new DataTable('#users-table')).columns([
+  {data: 'created_at'},
+  {data: 'id'},
+  {data: 'name'},
+  {data: 'visits', searchable: false},
+  {data: 'favorites_count', searchable: false},
+  {data: 'origin'},
+  {data: 'status', orderable: false, searchable: false},
+  {data: 'last_active', searchable: false, sort: true},
+  {data: 'actions', orderable: false, searchable: false},
+]).create();
 </script>
 
 <script type="text/javascript">

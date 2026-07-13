@@ -13,6 +13,7 @@ use App\Billing\{Membership, LoyaltyDiscount, Payment, Customer};
 use App\Billing\Sources\Stripe;
 use App\Billing\Factories\StripeFactory;
 use App\Merchandise\Product;
+use App\Log\UserLogIndex;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -33,6 +34,8 @@ class User extends Authenticatable implements MustVerifyEmail
         parent::boot();
 
         self::deleting(function($user) {
+            (new UserLogIndex)->remove($user->id);
+
             if ($user->subscription()->exists())
                 $user->subscription->delete();
 
@@ -41,6 +44,10 @@ class User extends Authenticatable implements MustVerifyEmail
     
             $user->favorites()->detach();
             $user->views()->detach();
+        });
+
+        self::created(function($user) {
+            (new UserLogIndex)->initialize($user->id);
         });
     }
 

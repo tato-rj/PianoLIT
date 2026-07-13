@@ -22,6 +22,7 @@ class LogFactory
 		$value = [$timestamp => $logger->getData()];
 
 		Redis::hmset($key, $value);
+		(new UserLogIndex)->record($logger->getKey(), $timestamp);
 
 		(new DailyLog)->getDate($timestamp)->increment($key);
 	}
@@ -44,6 +45,9 @@ class LogFactory
 
 	public function count($userId, $type = null)
 	{
+		if (! $type && (new UserLogIndex)->isReady())
+			return (new UserLogIndex)->count($userId);
+
 		$key = $this->prefix . 'user:' . $userId . ':';
 
 		if ($type)
@@ -60,6 +64,12 @@ class LogFactory
 
 	public function last($userId, $type = null)
 	{
+		if (! $type && (new UserLogIndex)->isReady()) {
+			$timestamp = (new UserLogIndex)->lastActiveTimestamp($userId);
+
+			return $timestamp ? carbon($timestamp) : null;
+		}
+
 		$key = $this->prefix . 'user:' . $userId . ':';
 
 		$recent = [];
@@ -92,6 +102,9 @@ class LogFactory
 
 	public function total($type = 'user')
 	{
+		if ($type === 'user' && (new UserLogIndex)->isReady())
+			return (new UserLogIndex)->total();
+
 		return count(Redis::keys($type . ':*'));
 	}
 }
