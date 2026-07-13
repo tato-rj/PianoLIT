@@ -14,14 +14,20 @@ class UsersController extends Controller
     public function index()
     {
         if (request()->ajax()) {
-            return datatable(User::query())->withDate()->checkable()->make();            
+            return datatable(User::query()->with(['location', 'membership.source']))
+                ->withDate()
+                ->checkable()
+                ->withBlade([
+                    'name' => view('admin.pages.users.table.name'),
+                    'origin_display' => view('admin.pages.users.table.origin'),
+                    'status' => view('admin.pages.users.table.status'),
+                    'super_user_display' => view('admin.pages.users.table.super-user'),
+                    'actions' => view('admin.pages.users.table.actions'),
+                ])
+                ->make();
         }
 
-        // $users = cache()->remember('users', now()->addHours(6), function() {
-            $users = User::latest()->get();
-        // });
-
-        return view('admin.pages.users.index', compact('users'));
+        return view('admin.pages.users.index');
     }
 
     public function show(User $user)

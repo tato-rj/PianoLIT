@@ -33,8 +33,7 @@
       </div>
     </div>
     
-    @datatableRaw(['model' => 'users', 'columns' => ['checkbox', 'Date', 'ID', 'Name', 'Origin', 'Status', 'Super User', '']])
-    {{-- @datatable(['table' => 'users', 'columns' => ['Date', 'ID', 'Name']]) --}}
+    @datatable(['table' => 'users', 'columns' => ['checkbox', 'Date', 'ID', 'Name', 'Origin', 'Status', 'Super User', '']])
   </div>
 </div>
 
@@ -43,31 +42,45 @@
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <script type="text/javascript">
-(new DataTableRaw({table: '#users-table', dontSortFirst: true, options: {order: [[1, 'desc']]}})).create();
-// (new DataTable('#users-table')).columns([
-//   {data: 'created_at', class: 'text-nowrap', sort: false},
-//   {data: 'id', name: 'users.id'},
-//   {data: 'first_name', name: 'users.first_name'},
-// ]).create();
+(new DataTable('#users-table')).columns([
+  {data: 'checkbox', orderable: false, searchable: false},
+  {data: 'created_at', name: 'users.created_at', class: 'text-nowrap', sort: true},
+  {data: 'id', name: 'users.id'},
+  {data: 'name', name: 'users.first_name', class: 'dataTables_main_column'},
+  {data: 'origin_display', name: 'users.origin'},
+  {data: 'status', orderable: false, searchable: false},
+  {data: 'super_user_display', name: 'users.super_user', searchable: false},
+  {data: 'actions', orderable: false, searchable: false},
+]).create();
 </script>
 <script type="text/javascript">
-$('.check-user').on('change', function() {
-  let $selected = $('.check-user:checked');
-  let $container = $('#multi-select');
-  let ids = [];
+let selectedUserIds = new Set;
 
-  $selected.each(function() {
-    ids.push($(this).attr('data-id'));
-  });
+function updateUserSelection() {
+  $('input[name="ids"]').val(JSON.stringify(Array.from(selectedUserIds)));
+  $('#selected-count').text(selectedUserIds.size);
+  $('#multi-select').toggle(selectedUserIds.size > 0);
+}
 
-  $('input[name="ids"]').val(JSON.stringify(ids));
-
-  if ($selected.length > 0) {
-    $container.find('#selected-count').text($selected.length);
-    $container.show();
+$(document).on('change', '.check-datatable', function() {
+  if ($(this).is(':checked')) {
+    selectedUserIds.add($(this).attr('data-id'));
   } else {
-    $container.hide();
+    selectedUserIds.delete($(this).attr('data-id'));
   }
+
+  updateUserSelection();
+});
+
+$('#check-all-datatable').on('change', function() {
+  $('.check-datatable').prop('checked', $(this).is(':checked')).trigger('change');
+});
+
+$('#users-table').on('draw.dt', function() {
+  $('.check-datatable').each(function() {
+    $(this).prop('checked', selectedUserIds.has($(this).attr('data-id')));
+  });
+  $('#check-all-datatable').prop('checked', false);
 });
 </script>
 @endsection

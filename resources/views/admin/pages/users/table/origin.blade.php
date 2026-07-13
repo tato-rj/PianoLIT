@@ -1,5 +1,4 @@
-<div class="text-truncate">
-  <i class="text-muted {{$item->origin_icon}}" style="font-size: {{$item->origin == 'ios'? '130%' : null}}"></i>
-  <small class="ml-1 text-muted">{{$item->origin == 'ios'? 'iOS' : ucfirst($item->origin)}}</small>
-  <span class="position-absolute invisible">{{$item->origin}}</span>
-</div>
+<span class="text-truncate {{$item->email_confirmed ? 'text-blue' : 'text-muted'}}" title="{{$item->email_confirmed ? 'Confirmed email on ' . $item->email_verified_at->toFormattedDateString() : 'Unconfirmed email'}}">
+  <i class="{{$item->origin_icon}}" style="font-size: {{$item->origin == 'ios' ? '130%' : null}}"></i>
+  <small class="ml-1">{{$item->formatted_origin}}</small>
+</span>
