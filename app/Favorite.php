@@ -70,9 +70,10 @@ class Favorite extends PianoLit
 
     public function scopeMoveTo($query, User $user, Piece $piece, FavoriteFolder $folderFrom = null, FavoriteFolder $folderTo = null)
     {
-        $this->removeFrom($user, $piece, $folderFrom);
-
-        $this->addTo($user, $piece, $folderTo);
+        $this->getConnection()->transaction(function () use ($user, $piece, $folderFrom, $folderTo) {
+            $this->removeFrom($user, $piece, $folderFrom);
+            $this->addTo($user, $piece, $folderTo);
+        });
     }
 
     public function checkFolderOwnership($user, $folder = null)
@@ -83,7 +84,7 @@ class Favorite extends PianoLit
 
     public function checkForDuplicates($user, $piece, $folder = null)
     {
-        if ($this->retrieve($user, $piece, $folder)->count())
+        if ($this->retrieve($user, $piece, $folder)->exists())
             throw ValidationException::withMessages(['user_id' => 'You already have this piece in this folder.']);
     }
 }

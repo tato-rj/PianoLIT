@@ -18,10 +18,23 @@ class UsersController extends Controller
 
     public function gift()
     {
-        $file = public_path(request('gift'));
+        $requested = request('gift');
+        $file = is_string($requested) && strpos($requested, "\0") === false
+            ? realpath(public_path($requested)) : false;
+        $allowed = false;
 
-        if (! file_exists($file))
+        foreach ([public_path('images/gifts'), storage_path('app/public/gifts')] as $directory) {
+            $directory = realpath($directory);
+            if ($file && $directory && strpos($file, $directory.DIRECTORY_SEPARATOR) === 0 && is_file($file)) {
+                $allowed = true;
+                break;
+            }
+        }
+
+        if (! $allowed)
             $file = public_path('images/gifts/circle-of-fifths.jpg');
+
+        abort_unless(is_file($file), 404);
 
         return response()->file($file);
     }

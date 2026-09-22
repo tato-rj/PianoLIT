@@ -62,13 +62,18 @@ class PiecesController extends Controller
 
     public function singleLookup(Request $request)
     {
+        $request->validate([
+            'field' => 'required|in:score_publisher,score_editor,score_copyright,nickname,name',
+            'input' => 'nullable|string|max:255',
+        ]);
         $field = $request->field;
 
-        $results = Piece::selectRaw("$field, $field as output")
+        $results = \DB::table('pieces')->select($field, $field.' as output')
                         ->where($field, 'like', "%$request->input%")
+                        ->distinct()
                         ->get();
 
-        return $results->unique('output')->values()->all();
+        return $results->all();
     }
    
     public function multiLookup(Request $request)

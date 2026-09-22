@@ -6,6 +6,8 @@ use App\{Piece, User, Tag, Composer};
 
 abstract class Factory
 {
+
+    protected $limit, $color;
 	protected $colors = [null, null, 'yellow', 'orange', 'red', 'darkpink', 'purple', 'darkblue', 'lightblue', 'teal', 'green', 'yellow', 'orange'];
 
     public function __construct()
@@ -15,7 +17,8 @@ abstract class Factory
 
     public function free($title)
     {
-        $collection = [Piece::free()->first()];
+        $piece = Piece::free()->first();
+        $collection = $piece ? [$piece] : [];
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find'), 'withBackground' => true]);
 
@@ -124,6 +127,9 @@ abstract class Factory
 
     public function similar($title, $piece)
     {
+        if (! $piece) {
+            return $this->createPlaylist([], ['row' => 'gallery', 'type' => 'piece', 'title' => $title, 'tag' => null, 'url' => null]);
+        }
         $collection = $piece->similar()->take($this->limit);
         $name = $piece->nickname ?? $piece->simple_name;
 

@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\User;
+use App\FavoriteFolder;
 use Illuminate\Contracts\Validation\Rule;
 
 class UserMustOwnTheFolder implements Rule
@@ -27,7 +27,7 @@ class UserMustOwnTheFolder implements Rule
      */
     public function passes($attribute, $value)
     {
-        return User::findOrFail($value)->favoriteFolders()->find($this->folderId);
+        return FavoriteFolder::where('user_id', $value)->whereKey($this->folderId)->exists();
     }
 
     /**

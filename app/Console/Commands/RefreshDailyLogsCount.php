@@ -10,7 +10,7 @@ class RefreshDailyLogsCount extends Command
 {
     protected $signature = 'redis:refresh-daily-logs';
     protected $description = 'Delete and refresh all daily logs.';
-    protected $redisPrefix, $keys, $logger;
+    protected $redisPrefix, $logs, $logger;
     /**
      * Create a new command instance.
      *
@@ -20,14 +20,7 @@ class RefreshDailyLogsCount extends Command
     {
         parent::__construct();
 
-        try {
-            define('STDIN',fopen("php://stdin","r"));
-        } catch (\Exception $e) {
-            //
-        }
-
         $this->redisPrefix = config('database.redis.prefix');
-        $this->logs = Redis::keys($this->redisPrefix . 'user:*');
         $this->logger = new DailyLog;
     }
 
@@ -39,7 +32,8 @@ class RefreshDailyLogsCount extends Command
     public function handle()
     {
         if (testing() || $this->confirm('This will delete and refresh all daily logs. Individual user logs will not be affected. Do you wish to continue?')) {
-            
+            $this->logs = Redis::keys($this->redisPrefix . 'user:*');
+
             $this->flushAll();
 
             foreach ($this->logs as $log) {           

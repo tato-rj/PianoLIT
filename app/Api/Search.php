@@ -2,7 +2,8 @@
 
 namespace App\Api;
 
-use App\Piece;
+use App\{Piece, Tag, Composer};
+use Illuminate\Validation\Rule;
 
 class Search
 {
@@ -11,11 +12,24 @@ class Search
 
     public function __construct($request)
     {
+        $request->validate([
+            'search' => 'nullable|string',
+            'model' => ['nullable', Rule::in([Tag::class, Composer::class])],
+            'filters' => 'nullable|array',
+            'filters.*' => ['string', 'json', function ($attribute, $value, $fail) {
+                $tags = json_decode($value, true);
+                if (! is_array($tags) || array_filter($tags, function ($tag) { return ! is_string($tag); })) {
+                    $fail('Filters must contain a JSON array of tag names.');
+                }
+            }],
+            'page' => 'nullable|integer|min:0',
+        ]);
+
         $this->request = $request;
 
         $this->options = $request->has('lazy-load') ? ['hitsPerPage' => 10, 'page' => $request->page ?? 0] : [];
 
-        $this->request->is_empty = ! $request->has('search') || strlen($request->search) <= 2;
+        $this->request->is_empty = strlen($request->search ?? '') <= 2;
 
         return $this;
     }
@@ -26,7 +40,8 @@ class Search
             return $this;
 
         if ($model = $this->request->model) {
-            $this->query = (new $model)->name($this->request->search)->first()->pieces()->latest();
+            $match = (new $model)->name($this->request->search)->first();
+            $this->query = $match ? $match->pieces()->latest() : Piece::whereRaw('1 = 0');
         } else {
             $this->query = Piece::search($this->request->search);
         }
@@ -36,10 +51,10 @@ class Search
 
 	public function filtered()
 	{
-		if (! $this->request->filters)
+		if (! $this->query || ! $this->request->filters)
 			return $this;
 
-		if ($this->query instanceof \Algolia\ScoutExtended\Builder) {
+		if ($this->query instanceof \Laravel\Scout\Builder) {
 			$this->lateFilter = true;
 		} else {
 			foreach ($this->request->filters as $list) {
@@ -55,7 +70,7 @@ class Search
     public function get()
     {
         if (! $this->query)
-            return null;
+            return $this->request->has('count') ? response()->json(['count' => 0]) : null;
 
         if ($this->request->has('count'))
             return response()->json(['count' => $this->query->count()]);

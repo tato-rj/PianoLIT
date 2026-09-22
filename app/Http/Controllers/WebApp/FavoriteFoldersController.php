@@ -14,6 +14,8 @@ class FavoriteFoldersController extends Controller
 {
     public function pdf(Request $request, FavoriteFolder $folder)
     {
+        abort_unless($folder->user_id == auth()->id(), 403);
+
         $request->validate([
             'title' => 'required',
             'subtitle' => 'required',
@@ -75,7 +77,7 @@ class FavoriteFoldersController extends Controller
 
     public function destroy(Request $request, FavoriteFolder $folder)
     {
-        if (auth()->user()->favoriteFolders()->find($folder)->isEmpty())
+        if (! auth()->user()->favoriteFolders()->whereKey($folder->id)->exists())
             throw ValidationException::withMessages(['folder' => 'You must own this folder to make changes to it.']);
 
     	$folder->delete();

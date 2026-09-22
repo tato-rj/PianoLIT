@@ -2,6 +2,8 @@ class Search
 {
     constructor(params) {
         this.request = null;
+        this.requestId = 0;
+        this.cancelRequest = null;
     }
 
     listenTo(input) {
@@ -31,18 +33,23 @@ class Search
     _init() {
         let obj = this;
 
-        obj.$input.on('keyup', function() {
+        obj.$input.on('input', function() {
+            let requestId = ++obj.requestId;
             let originalVal = $(this).val();
             let params = {search: obj.$input.val()};
 
             clearTimeout(obj.request);
+            if (obj.cancelRequest) {
+                obj.cancelRequest();
+                obj.cancelRequest = null;
+            }
 
             obj.request = setTimeout(function () {
                 obj._prepare();
                 
                 if (obj._inputGreaterThan(2)) {
                     obj.$results.empty();
-                    obj._call(params, originalVal);
+                    obj._call(params, originalVal, requestId);
                 } else {
                     obj._reset();
                 }
@@ -50,22 +57,26 @@ class Search
         });
     }
 
-    _call(params, originalVal) {
+    _call(params, originalVal, requestId) {
         let obj = this;
-        axios.get(obj.url, {params: params})
+        let cancellation = axios.CancelToken.source();
+        obj.cancelRequest = cancellation.cancel;
+        axios.get(obj.url, {params: params, cancelToken: cancellation.token})
         .then(function(response) {
-            if (obj.$input.val() == originalVal) {
-                console.log(response.data);
+            if (obj.requestId === requestId && obj.$input.val() === originalVal) {
                 obj.$results.html(response.data);
             }
         })
         .catch(function(error) {
-            console.log(error);
+            if (obj.requestId !== requestId || axios.isCancel(error)) return;
             obj.$results.empty();
             obj.$error.show();
         })
         .then(function() {
-            obj.$loading.hide();
+            if (obj.requestId === requestId) {
+                obj.$loading.hide();
+                obj.cancelRequest = null;
+            }
         });
     }
 

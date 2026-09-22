@@ -10,27 +10,33 @@ class StripeWebhookController extends Controller
 {
     public function __invoke(Request $request)
     {
-    	// $this->verify();
+        $payload = $this->verify($request);
 
-    	$payload = $request->all();
+        abort_unless(isset($payload['type']) && is_string($payload['type']), 400);
 
     	$method = $this->eventToMethod($payload['type']);
 
     	if (method_exists(StripeWebhooks::class, $method)) {
     		StripeWebhooks::$method($payload);
-    		return response('Webhook received', 200);
     	}
+
+        return response('Webhook received', 200);
     }
 
-    public function verify()
+    public function verify(Request $request)
     {
+        $secret = config('services.stripe.webhook.secret');
+        abort_unless(is_string($secret) && $secret !== '', 503, 'Webhook signing is not configured.');
+
 		try {
-		    \Stripe\Webhook::constructEvent(
-		    	@file_get_contents('php://input'), 
-		    	$_SERVER['HTTP_STRIPE_SIGNATURE'], 
-		    	config('services.stripe.webhook.secret'));
+		    return \Stripe\Webhook::constructEvent(
+                $request->getContent(),
+                $request->header('Stripe-Signature', ''),
+                $secret,
+                (int) config('services.stripe.webhook.tolerance', 300)
+            )->toArray();
 		} catch (\Exception $e) {
-		    abort(404);
+		    abort(400, 'Invalid webhook signature or payload.');
 		}
     }
 

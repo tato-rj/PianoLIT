@@ -1,32 +1,28 @@
 getCookie = function(name) {
-    var dc = document.cookie;
-    var prefix = name + "=";
-    var begin = dc.indexOf("; " + prefix);
-    if (begin == -1) {
-        begin = dc.indexOf(prefix);
-        if (begin != 0) return null;
-    }
-    else
-    {
-        begin += 2;
-        var end = document.cookie.indexOf(";", begin);
-        if (end == -1) {
-        end = dc.length;
+    var prefix = name + '=';
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.indexOf(prefix) === 0) {
+            var value = cookie.substring(prefix.length);
+            try {
+                return decodeURIComponent(value);
+            } catch (error) {
+                return value;
+            }
         }
     }
-    // because unescape has been deprecated, replaced with decodeURI
-    //return unescape(dc.substring(begin + prefix.length, end));
-    return decodeURI(dc.substring(begin + prefix.length, end));
+    return null;
 }
 
 setCookie = function(cname, cvalue, exdays) {
-  var expires;
+  var expires = '';
   
   if (exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    expires = "expires="+d.toUTCString();
+    expires = ';expires='+d.toUTCString();
   }
   
-  document.cookie = cname + "=" + cvalue + ";" + expires;
+  document.cookie = cname + '=' + encodeURIComponent(cvalue) + expires;
 }

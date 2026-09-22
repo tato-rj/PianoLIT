@@ -13,7 +13,7 @@ class Api extends Factory
 
 	public function discover()
 	{
-        $key = Redis::get('app.discover');
+        $key = Redis::get('app.discover') ?: 'app.discover';
 
         $collection = \Cache::remember($key, days(1), function() {
             return collect([
@@ -35,6 +35,7 @@ class Api extends Factory
             ]);
         });
         
+        $collection = clone $collection;
         $collection->splice(3, 0, [$this->order(3)->suggestions('For you')]);
 
         return $collection;
@@ -42,7 +43,7 @@ class Api extends Factory
 
     public function playlists($group = null)
     {
-        $key = Redis::get('app.playlists.order');
+        $key = Redis::get('app.playlists.order') ?: 'app.playlists.order';
 
         \Cache::remember($key, days(3), function() {
             $ids = Playlist::whereNull('group')->inRandomOrder()->pluck('id');
@@ -84,7 +85,7 @@ class Api extends Factory
 
     public function explore()
     {
-        $key = Redis::get('app.explore');
+        $key = Redis::get('app.explore') ?: 'app.explore';
 
         $collection = \Cache::remember($key, days(1), function() {
             $categories = Tag::display()->groupBy('type')->forget(['period', 'level', 'season']);
@@ -93,7 +94,7 @@ class Api extends Factory
             $highlights = Piece::freePicks()->get();
             $post = $this->post();
             $periods = Tag::periods()->withCount('pieces')->get();
-            $composer = $highlights->shift()->composer;
+            $composer = optional($highlights->shift())->composer;
             
             return collect([
                 ['label' => 'Categories', 'collection' => $categories, 'celltype' => 'category'], 
@@ -108,6 +109,7 @@ class Api extends Factory
         });
 
         if ($this->for == 'webapp') {
+            $collection = clone $collection;
             $synthesia = Tutorial::synthesia(12);
             $collection->splice(5, 0, [['label' => 'Synthesia releases', 'collection' => $synthesia, 'celltype' => 'synthesia']]);
         }

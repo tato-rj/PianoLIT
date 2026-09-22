@@ -1,8 +1,8 @@
 insertParam = function(key, value)
 {
-    key = encodeURI(key); value = encodeURI(value);
+    key = encodeURIComponent(key); value = encodeURIComponent(value);
 
-    var kvp = document.location.search.substr(1).split('&');
+    var kvp = document.location.search.substr(1).split('&').filter(Boolean);
 
     var i=kvp.length; var x; while(i--) 
     {

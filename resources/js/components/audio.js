@@ -16,11 +16,26 @@ $(document).on('click', '.play-clip', function() {
 });
 
 function stop() {
-  audio.pause;
-  audio.src = null;
+  audio.pause();
+  audio.removeAttribute('src');
+  audio.load();
 }
 
 function play(src) {
   audio.src = src;
-  audio.play();
+  var playback = audio.play();
+  if (playback && playback.catch) {
+    playback.catch(function() {
+      if (audio.getAttribute('src') === src && audio.paused) {
+        resetClipIcons();
+      }
+    });
+  }
 }
+
+function resetClipIcons() {
+  $('.play-clip i').removeClass('fa-stop-circle').addClass('fa-play-circle');
+}
+
+audio.addEventListener('ended', resetClipIcons);
+audio.addEventListener('error', resetClipIcons);

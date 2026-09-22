@@ -100,7 +100,8 @@ class FavoriteFoldersController extends Controller
                 'required', 
                 'exists:users,id',
                 new UserMustOwnTheFolder($request->folder_id)],
-            'ids' => 'required'
+            'ids' => 'required|array',
+            'ids.*' => ['required', 'integer', 'distinct', Rule::exists('favorites', 'id')->where('favorite_folder_id', $request->folder_id)]
         ]);
 
         if ($validator->fails())
@@ -134,7 +135,7 @@ class FavoriteFoldersController extends Controller
                 'max:36',
                 Rule::unique('favorite_folders')->where(function ($query) use ($request) {
                     return $query->where(['user_id' => $request->user_id, 'name' => $request->name]);
-                })]
+                })->ignore(FavoriteFolder::where('user_id', $request->user_id)->find($request->folder_id))]
         ]);
 
         if ($validator->fails())

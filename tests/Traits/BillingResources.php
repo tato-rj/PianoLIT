@@ -39,6 +39,15 @@ trait BillingResources
                       ->customerId($stripeId)
                       ->getEvent($event);
 
-        $this->post(route('webhooks.stripe', $event));
+        $secret = 'whsec_testing';
+        config(['services.stripe.webhook.secret' => $secret]);
+        $payload = json_encode($event);
+        $timestamp = time();
+        $signature = hash_hmac('sha256', $timestamp.'.'.$payload, $secret);
+
+        return $this->call('POST', route('webhooks.stripe'), [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_STRIPE_SIGNATURE' => 't='.$timestamp.',v1='.$signature,
+        ], $payload);
     }
 }

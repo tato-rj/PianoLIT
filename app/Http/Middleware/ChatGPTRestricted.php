@@ -16,7 +16,10 @@ class ChatGPTRestricted
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->bearerToken() != env('CHATGPT_TOKEN'))
+        $expected = config('services.chatgpt.token');
+        $provided = $request->bearerToken();
+
+        if (! is_string($expected) || $expected === '' || ! is_string($provided) || ! hash_equals($expected, $provided))
             return response()->json(['message' => 'Unauthorized'], 401);
 
         return $next($request);

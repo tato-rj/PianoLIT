@@ -40,7 +40,7 @@ class FavoriteFolder extends PianoLit
 
     public function scopeFlat($query, $userId, $folderId)
     {
-        $collection = $query->where(['id' => $folderId, 'user_id' => $userId])->with('favorites')->first();
+        $collection = $query->where(['id' => $folderId, 'user_id' => $userId])->with('favorites.piece.favorites')->firstOrFail();
 
         return $collection->favorites->pluck('piece')->each->isFavorited($userId);
     }
@@ -58,7 +58,9 @@ class FavoriteFolder extends PianoLit
 
     public function hasPiece($piece_id)
     {
-        $this->has_piece = $this->favorites()->where('piece_id', $piece_id)->exists();
+        $this->has_piece = $this->relationLoaded('favorites')
+            ? $this->favorites->contains('piece_id', $piece_id)
+            : $this->favorites()->where('piece_id', $piece_id)->exists();
     }
 
     public function sort($ids = null)

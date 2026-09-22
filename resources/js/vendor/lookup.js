@@ -26,7 +26,7 @@ function Lukup(obj)
     let lookup = this;
 
     this.autofill.forEach(field => {
-      value = $(element).attr('data-'+field);
+      let value = $(element).attr('data-'+field);
       if (! lookup.exclude.includes(value)) {
         if (value) {
           $('input[name="'+field+'"], textarea[name="'+field+'"]').val(value).addClass('border-warning');
@@ -46,11 +46,11 @@ function Lukup(obj)
   this.autocomplete = function() {
     this.reset();
     
-    if (this.input.val() == '')
-      return;
-
     if (this.request)
       this.request.abort();
+
+    if (this.input.val() == '')
+      return;
     
     var menu = this.prepareMenu();
     var autofill = this.autofill;
@@ -59,8 +59,6 @@ function Lukup(obj)
         field: this.field,
         input: this.input.val()
       }, function(data, status){
-        console.log('Searching with Lukup!');
-        console.log('Data: ' + data);
         // GET RESULTS
         data.forEach(result => {
           var container = menu.find('.model').clone().removeClass('model').appendTo(menu.find('div.border'));
@@ -85,9 +83,11 @@ function Lukup(obj)
       lookup.fillElements(this);
     });
 
-    $(lookup.wrapper).on('keyup', this.input, function(event){
+    lookup.input.on('input', function(event){
       clearTimeout(lookup.debounceTimeout);
-      lookup.debounceTimeout = setTimeout(lookup.autocomplete(), 200);
+      if (lookup.request) lookup.request.abort();
+      lookup.reset();
+      lookup.debounceTimeout = setTimeout(function() { lookup.autocomplete(); }, 200);
     });
 
     // HIDE AUTOCOMPLETE IF CLICK ANYWHERE ON THE SCREEN

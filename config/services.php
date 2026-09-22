@@ -2,6 +2,10 @@
 
 return [
 
+    'chatgpt' => [
+        'token' => env('CHATGPT_TOKEN'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
