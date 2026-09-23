@@ -8,5 +8,6 @@
     "/css/studio-policies/informal.css": "/css/studio-policies/informal.css?id=1d1105ead8ba3664484a",
     "/js/admin.js": "/js/admin.js?id=b9147e4b577834475215",
     "/js/tone.js": "/js/tone.js?id=4a64023a6c3319687a16",
-    "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e"
+    "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e",
+    "/js/views/piece-access.js": "/js/views/piece-access.js?id=12ad9ebcc99a375f9c14"
 }

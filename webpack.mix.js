@@ -52,5 +52,4 @@ mix.js('resources/js/app.js', 'public/js')
     //SVG FLAGS
     .copy('node_modules/flag-icon-css/css/flag-icon.min.css', 'public/css/vendor/flag-icon')
     .copy('node_modules/flag-icon-css/flags', 'public/css/vendor/flags')
-    .version();
-
+    .version(['public/js/views/piece-access.js']);

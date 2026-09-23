@@ -70,6 +70,18 @@ video::-webkit-media-controls-enclosure {
 .nav-tabs .active {
     font-weight: inherit !important; 
 }
+
+.score-preview-pages {
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#score-preview {
+    overflow: hidden;
+}
 </style>
 @endpush
 
@@ -89,16 +101,30 @@ video::-webkit-media-controls-enclosure {
 </section>
 
 @include('webapp.piece.components.panel')
+@unless($hasMediaAccess)
+    @include('webapp.piece.components.upgrade')
+@endunless
 {{-- @include('webapp.piece.performances.overlay') --}}
 @endsection
 
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+<script src="{{ mix('js/views/piece-access.js') }}"></script>
+@unless($hasMediaAccess)
+<script>
+PieceAccess.installPreviewGuards(document, function () {
+    document.querySelectorAll('audio, video').forEach(function (media) { media.pause(); });
+    $('#piece-upgrade-modal').modal('show');
+});
+const scorePreview = document.getElementById('score-preview');
+if (scorePreview) PieceAccess.renderScorePreview(scorePreview, pdfjsLib);
+</script>
+@endunless
 
 {{-- START OF PERFORMANCE SCRIPTS --}}
 
-
+@auth('web')
 <script type="text/javascript">
 let $progressBar = $('.progress-bar');
 let $uploadOverlay = $('#upload-overlay');
@@ -286,7 +312,7 @@ $('.clap').on('click', function() {
 	if (! isClapping()) {
 		$counter.removeClass('heartBeat');
 
-		axios.post($(this).data('url'), {user_id: app.user.id})
+		axios.post($(this).data('url'))
 				 .then(function(response) {
 				 	$counter.text(response.data['claps_sum']);
 				 	$counter.addClass('heartBeat');
@@ -299,6 +325,7 @@ $('.clap').on('click', function() {
 
 
 {{-- END OF PERFORMANCE SCRIPTS --}}
+@endauth
 
 <script type="text/javascript">
 // LIMIT COMPOSER BIO ON THE ABOUT SECTION TO 4 LINES
@@ -330,6 +357,8 @@ $('#pdf-share').click(function() {
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
+    if (! document.getElementById('score-pdf')) return;
+
 	const pdfurl = "{{storage($piece->score_path)}}";
 
 	if (safari()) {
@@ -339,7 +368,7 @@ $(document).ready(function() {
 		$('.ios-only').hide();
 		$('.non-ios').show();
 
-		let pdfDoc = null, pageNum = 1, numPages = 0, padeIsRendering = false, pageNumIsPending = null;
+		let pdfDoc = null, pageNum = 1, numPages = 0, pageIsRendering = false, pageNumIsPending = null;
 
 		const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
 

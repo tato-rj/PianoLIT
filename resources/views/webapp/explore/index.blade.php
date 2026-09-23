@@ -54,7 +54,7 @@ $('#tags-search .tag').on('click', function() {
 </script>
 
 <script type="text/javascript">
-let recent = getRecent();
+let recent = app.user ? getRecent() : [];
 
 showRecent();
 $('input[name="search"]').keyup(function() {
@@ -103,6 +103,8 @@ function showRecent() {
 }
 
 function saveRecent(query, recent) {
+	if (! app.user) return;
+
 	if (! recent.includes(query) && query.length <= 18)
 		recent.unshift(query);
 

@@ -1,4 +1,4 @@
-@php($is_favorited = $folder->favorites()->where('piece_id', $piece->id)->exists())
+@php($is_favorited = $folder->piece_favorites_count > 0)
 <button class="p-3 d-flex d-apart bg-light mb-2 rounded btn btn-light w-100" 
 	data-submit="favorite" data-target="#flag-{{$piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $piece, 'folder_id' => $folder->id])}}">
 	<div class="font-weight-bold">{{$folder->name}} <span class="badge bg-white text-muted border">{{$folder->favorites_count}}</span></div>

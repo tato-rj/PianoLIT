@@ -10,6 +10,10 @@ trait HasMembership
 {
     public function hasMembershipWith($source)
     {
+        if ($this->relationLoaded('membership')) {
+            return $this->membership && $this->membership->source_type === $source;
+        }
+
         return Membership::hasSourceFor($source, $this);    
     }
 
@@ -42,6 +46,23 @@ trait HasMembership
         $status = $this->getStatus();
 
         return in_array($status, ['active', 'trial']);
+    }
+
+    public function hasActiveSubscription()
+    {
+        $source = optional($this->membership)->source;
+
+        if (! $source || $source->isEnded()) {
+            return false;
+        }
+
+        // A scheduled cancellation keeps access until its end date, including trials.
+        // Use that date rather than a renewal date left over from before cancellation.
+        if ($source instanceof Stripe && $source->membership_ends_at) {
+            return (bool) $source->isOnGracePeriod();
+        }
+
+        return $source->isActive() && ! $source->isExpired();
     }
 
     public function canUseLoyaltyDiscount()

@@ -19,7 +19,7 @@
 
 {{-- @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local']) --}}
 
-<div class="mt-3 favorites-container" data-url-reorder="{{route('api.users.favorites.folders.reorder', ['user_id' => auth()->user()->id, 'folder_id' => $folder->id])}}">
+<div class="mt-3 favorites-container" data-url-reorder="{{route('webapp.users.favorites.folders.reorder', $folder)}}">
 	@foreach($folder->favorites as $favorite)
 		@component('components.draggable.cards.small', ['model' => $favorite])
 

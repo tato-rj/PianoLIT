@@ -1,6 +1,6 @@
 <?php
 
-Route::namespace('WebApp')->middleware('members-only')->prefix('pieces')->name('pieces.')->group(function() {
+Route::namespace('WebApp')->prefix('pieces')->name('pieces.')->group(function() {
 
 	Route::get('{piece}', 'PiecesController@show')->name('show');
 
@@ -20,7 +20,7 @@ Route::namespace('WebApp')->middleware('members-only')->prefix('pieces')->name('
 
 	Route::get('{piece}/score', 'PiecesController@score')->name('score');
 
-	Route::get('{piece}/save-to', 'PiecesController@saveTo')->name('save-to');
+	Route::get('{piece}/save-to', 'PiecesController@saveTo')->middleware('auth:web')->name('save-to');
 
-	Route::post('{piece}/share', 'PiecesController@share')->name('share');
+	Route::post('{piece}/share', 'PiecesController@share')->middleware('auth:web')->name('share');
 });

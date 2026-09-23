@@ -40,7 +40,8 @@ class Search
             return $this;
 
         if ($model = $this->request->model) {
-            $match = (new $model)->name($this->request->search)->first();
+            $match = $this->request->attributes->get('webapp_search_match')
+                ?? (new $model)->name($this->request->search)->first();
             $this->query = $match ? $match->pieces()->latest() : Piece::whereRaw('1 = 0');
         } else {
             $this->query = Piece::search($this->request->search);
@@ -102,8 +103,48 @@ class Search
         return $pieces;
     }
 
+    // Browser rendering needs only card data; keep the mobile get() contract intact.
+    public function forWebApp()
+    {
+        if (! $this->query) return collect();
+
+        $guest = ! auth('web')->check();
+        if ($guest && $this->lateFilter) {
+            // Filters run after Scout hydration. Scan in relevance order until the
+            // first three matching results are found, even across backend pages.
+            $pieces = new \Illuminate\Database\Eloquent\Collection;
+            $page = 1;
+            do {
+                $batch = $this->query->paginate(50, 'page', $page++);
+                $matches = $batch->getCollection()->loadMissing('tags');
+                $pieces = $pieces->merge($this->filterWebPieces($matches))->take(3);
+            } while ($pieces->count() < 3 && $batch->hasMorePages());
+        } else {
+            $pieces = $guest ? $this->query->take(3)->get()
+                : ($this->options ? $this->query->simplePaginate(10)->getCollection() : $this->query->get());
+            if ($this->lateFilter) {
+                $pieces = $this->filterWebPieces($pieces->loadMissing('tags'));
+            }
+        }
+
+        return \App\Services\WebApp\PieceCards::load($pieces);
+    }
+
+    protected function filterWebPieces($pieces)
+    {
+        return $pieces->filter(function ($piece) {
+            foreach ($this->request->filters as $list) {
+                if ($piece->tags_array->intersect(json_decode($list))->isEmpty()) return false;
+            }
+            return true;
+        })->values();
+    }
+
     public function getUserId()
     {
+        if ($this->request->routeIs('webapp.*'))
+            return auth('web')->id();
+
         return auth()->check() ? auth()->user()->id : $this->request->user_id;
     }
 }

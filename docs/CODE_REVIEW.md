@@ -93,3 +93,85 @@ Review direct Guzzle calls (Apple receipts and reCAPTCHA) for bounded timeouts, 
 ## Future entries
 
 Add a date, issue reference, affected paths, evidence, implemented change, verification, and any rollout dependency. Keep unresolved findings visible until the relevant change and verification are complete.
+
+### 2026-09-22 — Full web access through subscription grace periods
+
+- Request: preserve full content access during grace periods, including trials canceled before their end date.
+- Updated the existing web `hasActiveSubscription()` check to honor Stripe's `isOnGracePeriod()` whenever a scheduled membership end exists. That end date takes precedence over a leftover renewal date, so cancellation preserves access until the scheduled end without extending it afterward. An actually ended subscription remains restricted. Mobile contracts and cancellation/billing actions are unchanged.
+- Verification: 50 isolated PHP tests / 541 assertions and JavaScript regressions passed. Tests cover full scores/downloads, audio and videos during active/trial/canceled/paused grace periods, restriction after grace expires even with a future renewal date, and immediate-ended subscriptions. No live billing calls or deployment were performed.
+
+### 2026-09-22 — Full web content access during active trials
+
+- Correction: active trials must have the same full content access as paying subscribers. The previous paid-only predicate explicitly excluded trials.
+- Renamed the web content predicate to `hasActiveSubscription()` and reused the billing source's `isActive()` with the existing expiry/end checks. Applied it to the piece view, AJAX audio/tutorial fragments, and score-download controller. Stripe trial states and Apple trial periods now receive readable scores and unrestricted media. Paused, ended, expired, and unpaid subscriptions remain restricted. Mobile API and billing behavior are unchanged.
+- Verification: 49 isolated PHP tests / 422 assertions and JavaScript regressions passed. Coverage includes paid Stripe/Apple accounts, Stripe `trialing`/`trial`, Apple seven-day trials, full-score downloads, untagged audio/video playback, and expired/paused/ended trials. No live billing calls or deployment were performed.
+
+### 2026-09-22 — Version the piece-access script
+
+- Follow-up: the user still saw all blurred pages after the first-page change. Both the public script and the script served by `my.pianolit.test` contain the first-page renderer, but the template used an unversioned `asset()` URL, allowing browsers to reuse the previous file.
+- Changed the template to `mix()` and explicitly included the copied `piece-access.js` in Mix versioning. Included the generated manifest entry; future builds change its URL when its content changes. Existing full-score and mobile behavior is unchanged.
+- Verification: isolated Mix build, 49 PHP tests / 359 assertions, and JS regressions passed. The PHP checks assert that restricted piece pages emit a versioned script URL. A browser fixture using a multi-page PDF loaded that URL and rendered exactly one canvas with `blur(8px)` and no preview-load error. The user's existing browser cache could not be inspected directly.
+
+### 2026-09-22 — First-page score preview; URL protection deferred
+
+- Request: show only the first blurred score page to visitors and non-paying accounts. The user explicitly deferred direct PDF URL protection until web and mobile can be addressed together.
+- Changed the restricted PDF.js renderer to request/render page 1 only, retaining the existing blur and subscriber viewer. Removed the incomplete server-preview service, route, and Ghostscript configuration from this work; no new server dependency or file-delivery system is introduced.
+- Direct storage URLs remain public by request, including the mobile app's existing links. Browser blur is a presentation restriction, not file protection. Coordinate future private delivery and mobile authentication before changing these URLs.
+- Verification: 49 isolated PHP tests / 350 assertions and JavaScript regressions passed. The four-page JS fixture now asserts that only page 1 is requested and one canvas is rendered; subscriber and 10-second media checks still pass. Isolated Mix build passed and the public page script was updated. No production deployment or new browser visual check was performed.
+
+### 2026-09-22 — Piece content access rules (implemented locally)
+
+- Request: keep piece pages public while limiting visitor/non-paying content; the user chose 10-second previews. This replaces the temporary unrestricted media policy below. The free-pick flag does not bypass these new web content rules.
+- Inspection: route middleware controls page entry; `HasMembership` and Stripe/Apple billing sources control subscription status; `webapp/piece/index.blade.php` initializes Plyr and AJAX/native audio; the score tab uses PDF.js or a Safari embed. There was no existing preview limiter/modal, only the Go Premium pricing flow. The implementation reuses those players, billing methods, Bootstrap modal component, button styles, and pricing destination.
+- Added `hasActivePaidSubscription()` to the existing membership trait, using source paid/expired/ended/trial checks. Content templates receive a separate `hasMediaAccess` flag; the established `isAuthorized()` method and mobile API remain unchanged. Trials, paused/expired/ended subscriptions, and accounts without a paid subscription receive previews. No synthetic subscription is created for visitors or privileged accounts.
+- `config/webapp.php` sets the 10-second limit. The page-specific `piece-access.js` handles playback, seeking, replay attempts, early endings, fullscreen exit, and AJAX-loaded players. Paid players have no limit attributes/listeners. All audio variants and tutorial fragments use the same rules. The tutorial endpoint also validates that a tutorial belongs to its piece.
+- Restricted scores render every PDF page sequentially inside one blurred container, including on Safari. Download/share controls and native PDF embeds are absent for restricted viewers; the Laravel score-download endpoint also checks paid access. Existing paid score rendering/download controls are retained. Corrected the old PDF render-state variable typo and skipped PDF initialization when no viewer exists.
+- Verification: 49 isolated PHP tests / 350 assertions passed, plus JavaScript regressions for cutoff/seeking/replay, subscriber passthrough, dynamic audio, multi-page rendering, and load errors. Isolated Mix asset build succeeded; the copied page script is included in `public/js/views`. Browser fixture checks verified the upgrade prompt, AJAX audio stopping at 10 seconds, Synthesia seeking clamped to 10 seconds, three-page blur, subscriber playback beyond 10 seconds, and readable subscriber scores. These use synthetic local media, not production billing or content. One native audio-control interaction crashed the test browser; the check succeeded through the existing hand-selection controls after reopening the fixture. Mobile Safari and production CDN behavior still require deployment smoke checks.
+- Delivery limitation / follow-up: original videos/audio/PDFs remain publicly hosted and the browser must fetch originals for playback/PDF rendering. The UI restrictions and protected Laravel download route do not prevent direct URL access or developer-tools bypass. Strong file-level enforcement requires private/signed originals, real 10-second preview files, and server-generated blurred page images; coordinate that work with the separately deployed media service and mobile clients. No storage permissions or remote media were changed, and no production deployment was performed.
+
+### 2026-09-22 — Recently viewed repertoire (implemented locally)
+
+- Request: show Recently viewed directly above Latest pieces on Discover, only for registered users after opening a piece.
+- Added account-scoped history through `app/Services/RecentlyViewedPieces.php` and a `recently_viewed_pieces` migration. Successful GETs of the piece detail page update one unique account/piece row using an atomic upsert. Indexed reads return the latest 12 distinct pieces, with repeat visits moving a piece forward. Foreign keys remove history when an account or piece is deleted.
+- `WebApp/PiecesController` records visits using the authenticated session; `WebApp/TabsController` inserts the row outside the shared discovery cache using the existing gallery/card templates. Guests, HEAD requests, and piece subresource requests do not create history. Mobile API feeds are unchanged.
+- Verification: four isolated feature tests cover first visit, placement, repeat ordering, account isolation/forged IDs, guest exclusion, cache/API isolation, card limit, and deletion cleanup. Full isolated suite: 44 tests / 192 assertions passed. No live database or visual browser check was performed; no assets changed.
+- Rollout: run `2026_09_22_120000_create_recently_viewed_pieces_table.php` before serving the updated controllers. The migration was exercised only against disposable SQLite; production MySQL migration/deployment remains pending. History starts with visits after rollout; old activity logs are not backfilled.
+
+### 2026-09-22 — Public web app browsing (implemented locally)
+
+- Request: allow visitors to browse `my.*`; explicitly open all repertoire temporarily while retaining account-only favorites and personalized suggestions.
+- Removed blanket web authentication and repertoire membership gates. Added explicit session authentication to private folders, saves, requests, uploads, sharing, logout, and billing actions. Public My Pieces/Profile pages show sign-in prompts.
+- Made guest templates null-safe, removed guest save/upload controls, and skipped personalized discovery, saved search history, account activity logging, geolocation, and Google Tag Manager for guests. Standard framework session/CSRF cookies and infrastructure access logs are not anonymous-profile features and remain in place.
+- Web discovery/search/location resolve identity from the session, ignoring submitted user IDs. Folder viewing now checks ownership. Folder ordering and performance applause use dedicated authenticated web actions; legacy `/api/*` requests on the `my.*` host are rejected. Main-domain mobile API authentication remains the P0 follow-up above; this change does not repair that broader vulnerability or verify which hosts deployed mobile clients use.
+- A directly requested empty AJAX search exposed a null collection error; the web controller now renders an empty result without changing the mobile search payload.
+- Affected areas: `RouteServiceProvider`, webapp routes/controllers/templates, `AppServiceProvider`, shared feed/search identity handling, and authentication/location middleware. No SCSS or compiled bundle changes were needed.
+- Verification: isolated PHP suite passes 40 tests / 161 assertions, including 7 new guest/session access regressions covering public pages, premium content, denied writes, forged identity, folder ownership/reordering, and applause. JavaScript regression runner passes. No production deployment, live billing/upload integration, or browser visual verification was performed.
+- Remaining: define the next content limits. The preexisting `pieces/{piece}/appleMusic` route renders a missing `webapp.piece.options.apple-music` template and has no current webapp template caller; confirm intended behavior before restoring or retiring it. It is excluded from the passing public-page smoke checks.
+
+
+### 2026-09-23 — Visitor search limit and webapp query reduction (implemented locally)
+
+- Priority: P1 behavior change and P2 performance. Visitors now receive at most the first three matching search results, followed by Sign up / Sign in links. The server rejects subsequent visitor result pages with an empty response, ignores caller-supplied identity for access, and applies local filters before limiting. Scout filters scan backend pages in relevance order until three matches are found. Registered accounts, including accounts without a subscription, retain all results and pagination. The mobile `Search::get()` behavior remains separate.
+- Evidence and fixes: piece-card templates previously performed separate video, performance, Synthesia, and favorite lookups per piece. `Services/WebApp/PieceCards.php` batches tags/composers and uses database EXISTS aggregates for card status. Discover clones cached piece models before adding browser attributes; personalized rows and favorite status are not shared. Explore/highlights/Synthesia releases and favorite-folder contents load tags in batches. The Discover composer picker no longer loads all composers' pieces, and unused post/category queries are removed.
+- Piece detail loads tutorials once and reuses them for media/category checks, computes similar pieces once, and passes the already-bound Piece to Timeline. Timeline no longer loads unused countries. Playlist completeness reuses tutorial counts; the browser playlist index computes qualifying piece counts without hydrating the entire repertoire. Save-to responses aggregate per-folder saved status, and My Pieces reuses its folder collection/counts. Profile renders reuse membership and newsletter-list relationships.
+- The webapp's browser bootstrap serializes only the identity fields it uses, avoiding incidental favorite/media/activity serialization on every signed-in page. Search count reuses one resolved search, exact-match middleware passes its resolved model forward, and browser pagination omits the unused database total count. The search client stops visitor scrolling, prevents overlapping scroll requests, ignores stale filter responses, and restores controls after failures.
+- Affected files: `app/Api/{Api,Factory,Search}.php`, `app/Services/WebApp/PieceCards.php`, webapp controllers, `Http/Middleware/Search/CheckForLocalQueries.php`, `Piece`, `Playlist`, `Timeline`, `Subscription`, membership/media traits, webapp card/search/feed/account templates, the shared newsletter-preferences template and favorite-response controller, and new isolated PHP/JavaScript regressions.
+- Query measurement: before/after measurements used the same disposable SQLite fixture (12 pieces with tags/tutorials, six folders, one playlist); cache was cleared for each measured route. Activity logging/geolocation middleware and external services were excluded. Counts are SQL statements, not latency measurements; cold Discover can vary slightly with randomized rows. Representative results:
+
+  | Page | Before | After |
+  | --- | ---: | ---: |
+  | Discover, visitor / registered | 163 / 250 | 39 / 49 |
+  | Explore | 23 | 11 |
+  | Highlights results | 15 | 4 |
+  | Playlist index, visitor / registered | 21 / 20 | 5 / 4 |
+  | Playlist detail, visitor / registered | 41 / 53 | 6 / 6 |
+  | Piece detail, visitor / registered | 70 / 73 | 15 / 18 |
+  | Similar pieces, visitor / registered | 42 / 53 | 10 / 10 |
+  | Search results, visitor / registered | 41 / 41 | 7 / 7 |
+  | Search count | 5 | 3 |
+  | My Pieces, registered | 89 | 11 |
+  | Profile, registered without subscription | 5 | 2 |
+  | Save-to, six folders | 10 | 4 |
+
+- Verification: the full isolated PHP suite passed (66 tests / 836 assertions), JavaScript regressions passed, and `git diff --check` passed. No JS/SCSS bundle sources changed; browser script changes are rendered by Blade. Isolated PHP regressions cover route query budgets, constant card query counts for 2 versus 12 pieces, subscriber media payload parity, batched Synthesia tags, cache/account isolation, profile newsletter/membership reads, save/remove feedback, and playlist count parity. Search tests cover visitor limits, page/identity/count bypass attempts, filters, empty searches, free registered pagination, unchanged mobile result counts, and mocked Scout pagination. JavaScript tests cover duplicate requests, stopping visitor scrolling, stale responses, retries, and empty responses. The signup fragment was visually checked in a local browser fixture with the existing stylesheet.
+- Compatibility and remaining verification: no new schema migration, asset bundle, storage policy, mobile payload, or membership-access change is required for this work. Existing media/history changes retain their previously documented rollout requirements. No production deployment or production query profiling was performed; MySQL execution plans, real search-service latency, and production-size data still need deployment smoke checks. This is a measured reduction of demonstrated redundant queries, not proof of a globally minimal query count. The preexisting missing appleMusic view remains tracked separately.

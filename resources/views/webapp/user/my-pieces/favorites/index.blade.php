@@ -1,7 +1,7 @@
 <section id="folders-list" class="row"> 
 	<div class="col-12 mb-3">
 		<div class="d-flex d-apart">
-			<div class="text-muted"><small>You have <strong>{{auth()->user()->favoriteFolders()->count()}}</strong> {{str_plural('folder', auth()->user()->favoriteFolders()->count())}}</small></div>
+			<div class="text-muted"><small>You have <strong>{{$folders->count()}}</strong> {{str_plural('folder', $folders->count())}}</small></div>
 			<button data-toggle="modal" data-target="#new-folder-modal" class="btn btn-outline-secondary btn-sm">@fa(['icon' => 'plus']) New folder</button>
 
 			@component('components.modal', ['id' => 'new-folder-modal', 'header' => 'New folder'])
@@ -15,7 +15,7 @@
 			@endcomponent
 		</div>
 	</div>
-@forelse(auth()->user()->favoriteFolders()->alphabetical('name')->get() as $folder)
+@forelse($folders as $folder)
 	@include('webapp.user.my-pieces.favorites.folders.folder')
 	@include('webapp.user.my-pieces.favorites.delete')
 	@include('webapp.user.my-pieces.favorites.edit')

@@ -9,6 +9,16 @@
 	@endif
 	
 	@if($piece->isPublicDomain)
+    @unless($hasMediaAccess)
+    <div class="text-center mb-4">
+        <p class="text-muted">Subscribe to read and download the full score.</p>
+        <button type="button" data-toggle="modal" data-target="#piece-upgrade-modal" class="btn btn-primary rounded-pill btn-wide">@fa(['icon' => 'crown'])GO PREMIUM</button>
+    </div>
+    <div id="score-preview" data-pdf-url="{{ storage($piece->score_path) }}">
+        <p class="score-preview-status text-muted text-center">Loading score preview...</p>
+        <div class="score-preview-pages" aria-hidden="true"></div>
+    </div>
+    @else
 	<div class="non-ios" style="display: none;">
 		<div class="text-center mb-4">
 			@include('webapp.components.pdfviewer')
@@ -27,6 +37,7 @@
 			</div>
 		</div>
 	</div>
+    @endunless
 	@else
 	<div class="text-center mb-4">
 		<p class="text-muted">This piece is protected by copyrights. Click the button below and we'll show you where you can purchase the score!</p>

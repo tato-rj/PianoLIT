@@ -17,11 +17,9 @@ class WebAppTest extends AppTest
     }
 
     /** @test */
-    public function unauthenticated_users_are_not_allowed_in_the_webapp_pages()
+    public function unauthenticated_users_can_browse_the_webapp()
     {
-        $this->expectException('Illuminate\Auth\AuthenticationException');
-
-        $this->get(route('webapp.discover'));
+        $this->get(route('webapp.discover'))->assertStatus(200);
     }
     /** @test */
     public function authenticated_users_are_allowed_in_the_webapp_pages()

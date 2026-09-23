@@ -36,7 +36,18 @@ class AppServiceProvider extends ServiceProvider
             'webapp.piece.options.collection',
             'home.index'
         ], function($view) {
-            $view->with(['hasFullAccess' => auth()->check() ? auth()->user()->isAuthorized() : false]);
+            // Browsing stays public; piece media has a separate subscriber check below.
+            $view->with(['hasFullAccess' => strpos($view->name(), 'webapp.') === 0
+                || (auth()->check() && auth()->user()->isAuthorized())]);
+        });
+
+        \View::composer([
+            'webapp.piece.index',
+            'webapp.piece.components.audio',
+            'webapp.piece.components.video.element',
+        ], function ($view) {
+            $view->with('hasMediaAccess', auth('web')->check() && auth('web')->user()->hasActiveSubscription());
+            $view->with('previewSeconds', config('webapp.media_preview_seconds'));
         });
 
         \View::composer('components.display.ads', function($view) {

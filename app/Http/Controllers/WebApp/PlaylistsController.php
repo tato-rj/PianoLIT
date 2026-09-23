@@ -10,6 +10,8 @@ class PlaylistsController extends Controller
 {
     public function show(Playlist $playlist)
     {
-    	return view('webapp.playlists.show', compact('playlist'));
+        $pieces = \App\Services\WebApp\PieceCards::load($playlist->pieces()->has('tutorials')->get());
+
+        return view('webapp.playlists.show', compact('playlist', 'pieces'));
     }
 }

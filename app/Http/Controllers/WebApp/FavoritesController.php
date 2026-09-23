@@ -15,7 +15,9 @@ class FavoritesController extends Controller
         	$piece, 
         	FavoriteFolder::find($request->folder_id));
 
-        $folders = auth()->user()->favoriteFolders()->lastUpdated()->get();
+        $folders = auth()->user()->favoriteFolders()->withCount(['favorites as piece_favorites_count' => function ($query) use ($piece) {
+            $query->where('piece_id', $piece->id);
+        }])->lastUpdated()->get();
 
         return response()->json([
         	'status' => $status,

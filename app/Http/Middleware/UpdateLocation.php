@@ -17,11 +17,14 @@ class UpdateLocation
      */
     public function handle($request, Closure $next)
     {
+        $user = $this->getUser($request);
+
+        if (! $user)
+            return $next($request);
+
         $ip = $this->getIp();
 
         $location = LocationApi::get($ip);
-
-        $user = $this->getUser($request);
 
         if ($user && $location)
             $this->updateLocation($user, $location);
@@ -50,6 +53,9 @@ class UpdateLocation
 
     public function getUser($request)
     {
+        if ($request->routeIs('webapp.*'))
+            return auth('web')->user();
+
         if (auth()->check())
             return auth()->user();
 

@@ -15,7 +15,7 @@ class RedirectIfMembershipIsActive
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->user()->membership()->exists() && (auth()->user()->isAuthorized() || auth()->user()->membership->source->isPaused()))
+        if (auth()->check() && auth()->user()->membership()->exists() && (auth()->user()->isAuthorized() || auth()->user()->membership->source->isPaused()))
             return redirect(route('webapp.membership.edit'));
 
         return $next($request);

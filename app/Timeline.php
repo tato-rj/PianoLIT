@@ -109,7 +109,7 @@ class Timeline extends PianoLit
 
     public function scopeFor($query, $pieceId, $limit = null)
     {
-    	$mainPiece = Piece::findOrFail($pieceId);
+        $mainPiece = $pieceId instanceof Piece ? $pieceId : Piece::findOrFail($pieceId);
         
         $originalYear = $mainPiece->composed_in ? $mainPiece->composed_in : $mainPiece->published_in;
 
@@ -129,11 +129,11 @@ class Timeline extends PianoLit
     		array_push($events, ['year' => $event->year, 'event' => $event->event, 'highlight' => false]);
     	}
 
-        foreach (Composer::famous()->bornBetween([$minYear, $maxYear])->get() as $composer) {
+        foreach (Composer::without('country')->famous()->bornBetween([$minYear, $maxYear])->get() as $composer) {
             array_push($events, ['year' => $composer->born_in, 'event' => $composer->name . ' was born.', 'highlight' => false]);
         }
 
-        foreach (Composer::famous()->diedBetween([$minYear, $maxYear])->get() as $composer) {
+        foreach (Composer::without('country')->famous()->diedBetween([$minYear, $maxYear])->get() as $composer) {
             array_push($events, ['year' => $composer->died_in, 'event' => $composer->name . ' died.', 'highlight' => false]);
         }
         

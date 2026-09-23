@@ -63,7 +63,9 @@ class Subscription extends PianoLit
 
     public function in(EmailList $list)
     {
-        return $this->lists()->byName($list->name)->exists();
+        return $this->relationLoaded('lists')
+            ? $this->getRelation('lists')->contains('name', $list->name)
+            : $this->lists()->byName($list->name)->exists();
     }
 
     public function getStatusFor($list)

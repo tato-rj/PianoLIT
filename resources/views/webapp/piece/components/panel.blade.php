@@ -23,6 +23,7 @@
 
 				{{-- <a href="{{route('webapp.pieces.timeline', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Timeline @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a> --}}
 
+				@auth('web')
 				<div class="dropdown-divider"></div>
 				
 				<div class="py-2 list-group">
@@ -34,6 +35,7 @@
 						@include('webapp.components.favorite')<span>Manage favorites</span>
 					</a>
 				</div>
+				@endauth
 			</div>
 		</div>
 	</div>

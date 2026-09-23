@@ -1,4 +1,4 @@
-@php($isAuthorized = auth()->user()->isAuthorized())
+@php($isAuthorized = $hasFullAccess)
 
 @component('webapp.explore.rows.row', ['data' => $row])
 <div class="row">

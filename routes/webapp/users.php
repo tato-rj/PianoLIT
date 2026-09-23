@@ -4,7 +4,7 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 
 	Route::get('profile', 'UsersController@profile')->name('profile');
 
-	Route::prefix('users')->group(function() {
+	Route::prefix('users')->middleware('auth:web')->group(function() {
 
 		Route::prefix('tutorial-requests')->name('tutorial-requests.')->group(function() {
 
@@ -13,6 +13,8 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 		});
 
 		Route::prefix('performances')->name('performances.')->group(function() {
+
+            Route::post('{performance}/clap', 'PerformancesController@clap')->name('clap');
 
 			Route::get('{piece}/upload-url', 'PerformancesController@uploadUrl')->withoutMiddleware(['log.webapp'])->name('upload-url');
 
@@ -25,6 +27,8 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 		Route::prefix('favorites')->name('favorites.')->group(function() {
 
 			Route::prefix('folders')->name('folders.')->group(function() {
+
+                Route::patch('{folder}/reorder', 'FavoriteFoldersController@reorder')->name('reorder');
 	
 				Route::get('{folder}', 'UsersController@folder')->name('show');
 

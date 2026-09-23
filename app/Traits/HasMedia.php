@@ -6,6 +6,23 @@ trait HasMedia
 {
     public function getMediaAttribute()
     {
+        if ($this->relationLoaded('tutorials')) {
+            $byType = function ($type) {
+                return $this->tutorials->filter(function ($tutorial) use ($type) {
+                    return stripos($tutorial->type, $type) !== false;
+                })->values();
+            };
+            $performance = $byType('performance')->first();
+            $synthesia = $byType('synthesia')->first();
+            $lessons = collect([
+                ['title' => 'Harmony', 'videos' => $byType('harmonic analysis')],
+                ['title' => 'Practicing tips', 'videos' => $byType('tutorial')],
+                ['title' => 'Slow performance', 'videos' => $byType('slow')],
+            ])->filter(function ($lesson) { return $lesson['videos']->isNotEmpty(); })->values()->all();
+
+            return compact('performance', 'synthesia', 'lessons');
+        }
+
         $performance = $this->tutorials()->byType('performance')->first();
         $synthesia = $this->tutorials()->byType('synthesia')->first();
         // $synthesia->background_url = asset('images/webapp/synthesia-thumbnail.jpg');

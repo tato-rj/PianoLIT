@@ -10,17 +10,23 @@ class SearchController extends Controller
 {
     public function results(Api $api, Request $request)
     {
-        if ($request->wantsJson())
-            return view('webapp.search.results', ['pieces' =>  $api->search($request)->filtered()->get()])->render();
+        if ($request->wantsJson()) {
+            $request->validate(['page' => 'nullable|integer|min:0']);
+            // A visitor cannot reveal additional results by requesting another page.
+            if (! auth('web')->check() && (int) $request->input('page', 1) > 1) return '';
+
+            $pieces = $api->search($request)->filtered()->forWebApp();
+            return view('webapp.search.results', compact('pieces'))->render();
+        }
 
         return view('webapp.search.index');
     }
 
     public function count(Api $api, Request $request)
     {
-        if ($api->search($request))
-            return view('webapp.explore.count', ['query' => $request->search, 'count' => $api->search($request)->get()->getData()->count])->render();
+        $request->merge(['count' => true]);
+        $count = $api->search($request)->get()->getData()->count;
 
-        return abort(416, 'Empty search');
+        return view('webapp.explore.count', ['query' => $request->search, 'count' => $count])->render();
     }
 }

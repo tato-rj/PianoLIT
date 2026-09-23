@@ -1,6 +1,6 @@
 <div class="tab-pane fade" id="list-email-preferences" role="tabpanel" aria-labelledby="list-email-preferences-list">
 	<div>
-			@if(auth()->user()->subscription()->exists())
+			@if(auth()->user()->relationLoaded('subscription') ? auth()->user()->subscription : auth()->user()->subscription()->exists())
 			<div class="mb-4">
 				<h5>My preferences</h5>
 				<p>Select below the email lists you want to be in.</p>

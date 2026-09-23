@@ -1,5 +1,5 @@
-@php($performance = $piece->performances()->by(auth()->user())->approved()->first())
-@php($performances = $piece->performances()->notBy(auth()->user())->approved()->get())
+@php($performance = auth()->check() ? $piece->performances()->by(auth()->user())->approved()->first() : null)
+@php($performances = $piece->performances()->approved()->when(auth()->check(), function ($query) { $query->notBy(auth()->user()); })->get())
 
 @if($performance)
 <div class="row mb-4">
@@ -21,7 +21,7 @@
 @if(! $performances->isEmpty())
 <h5 class="mb-3">Other performances</h5>
 <div class="row">
-	@foreach($piece->performances()->notBy(auth()->user())->approved()->get() as $performance)
+	@foreach($performances as $performance)
 	<div class="col-lg-6 col-md-6 col-12 col-md-12 rounded-video video-container">
 		<div class="mb-2">
 		@video([

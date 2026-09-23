@@ -20,4 +20,4 @@ Route::namespace('WebApp')->group(function() {
 
 });
 
-Route::post('logout', 'Auth\WebApp\LoginController@logout')->name('logout');
+Route::post('logout', 'Auth\WebApp\LoginController@logout')->middleware('auth:web')->name('logout');

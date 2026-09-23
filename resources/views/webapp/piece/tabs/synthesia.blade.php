@@ -4,6 +4,7 @@
 		@video([
 			'classes' => 'w-100', 
 			'id' => 'piece-synthesia', 
+            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
 			'thumbnail' => asset('images/webapp/synthesia-thumbnail.gif'),
 			'url' => $piece->media['synthesia']->video_url])
 	</div>
@@ -12,16 +13,22 @@
 	<div class="text-center">
 		<img src="{{asset('images/webapp/synthesia-missing.svg')}}" class="mx-auto mb-4" style="width: 132px; opacity:  .1">
 		<p class="text-muted">Would you like to watch a synthesia of this piece?<br>Tap below to make your request.</p>
+		@auth('web')
 		<button class="btn rounded-pill btn-outline-secondary btn-wide" data-toggle="modal" data-target="#synthesia-request-modal">Send my request</button>
+		@else
+		<a href="{{ route('login') }}" class="btn rounded-pill btn-outline-secondary btn-wide">Sign in to request</a>
+		@endauth
 	</div>
 
+	@auth('web')
 	@include('webapp.piece.synthesia-request')
+	@endauth
 	@endif
 
 	<div class="mt-6">
 		<h5 class="mb-3">Other releases</h5>
 		@component('webapp.components.grids.grid')
-			@foreach(\App\Tutorial::synthesia(12) as $tutorial)
+			@foreach(\App\Tutorial::synthesia(12)->loadMissing('piece.tags') as $tutorial)
 				@include('webapp.explore.cards.synthesia', ['isAuthorized' => $hasFullAccess])
 			@endforeach
 		@endcomponent

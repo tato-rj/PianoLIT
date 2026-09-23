@@ -52,7 +52,11 @@ abstract class Factory
 
     public function suggestions($title)
     {
-        $user = User::find(request('user_id'));
+        $user = ($this->for ?? null) === 'webapp'
+            ? auth('web')->user()
+            : User::find(request('user_id'));
+
+        if ($user && ($this->for ?? null) === 'webapp') $user->loadMissing('favorites.tags');
 
         $collection = $user ? $user->suggestions(20)->shuffle()->take(10) : Piece::inRandomOrder()->take($this->limit)->get();
 

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    @include('layouts.html.google.manager-head')
+    @auth('web')
+        @include('layouts.html.google.manager-head')
+    @endauth
     @include('layouts.html.google.fonts')
 
     <meta charset="utf-8">
@@ -22,7 +24,7 @@
 
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 
-    @include('layouts.html.js-app')
+    @include('webapp.layouts.js-app')
     <script type="text/javascript">
         window.urls = <?php echo json_encode([
             'search' => route('webapp.search.results'),
@@ -34,7 +36,9 @@
 <body>
     @qrcode
     
-    @include('layouts.html.google.manager-body')
+    @auth('web')
+        @include('layouts.html.google.manager-body')
+    @endauth
    
     <div id="webapp" class="container">
 
@@ -52,7 +56,9 @@
             @include('webapp.layouts.menu')
             </div>
 
-            @include('webapp.piece.share')
+            @auth('web')
+                @include('webapp.piece.share')
+            @endauth
         </div>
 
         @if($message = session('status'))

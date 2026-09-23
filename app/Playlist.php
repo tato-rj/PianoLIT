@@ -37,7 +37,7 @@ class Playlist extends PianoLit
 
         $playlists->each(function($playlist, $index) use ($playlists) {
             $playlist->pieces->each(function($piece, $index) use ($playlist) {
-                if (! $piece->tutorials()->exists()) {
+                if ($piece->tutorials_count == 0) {
                     $playlist->pieces->forget($index);
                     $playlist->pieces_count = $playlist->pieces_count - 1;
                 }

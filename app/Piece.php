@@ -142,7 +142,11 @@ class Piece extends PianoLit
 
     public function hasTutorials(array $categories)
     {
-        return $this->tutorials()->pluck('category')->intersect($categories)->count() == count($categories);
+        $available = $this->relationLoaded('tutorials')
+            ? $this->tutorials->pluck('category')
+            : $this->tutorials()->pluck('category');
+
+        return $available->intersect($categories)->count() == count($categories);
     }
 
     public function saveTutorials($videos)

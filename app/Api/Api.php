@@ -36,7 +36,9 @@ class Api extends Factory
         });
         
         $collection = clone $collection;
-        $collection->splice(3, 0, [$this->order(3)->suggestions('For you')]);
+        if ($this->for !== 'webapp' || auth('web')->check()) {
+            $collection->splice(3, 0, [$this->order(3)->suggestions('For you')]);
+        }
 
         return $collection;
 	}
@@ -52,6 +54,16 @@ class Api extends Factory
 
             return $ids;
         });
+
+        if ($this->for === 'webapp') {
+            // Index cards only show counts. Match complete() without hydrating every piece.
+            return Playlist::byGroup($group)->has('pieces', '>', 5)
+                ->select('playlists.*')
+                ->withCount(['pieces' => function ($query) { $query->has('tutorials'); }])
+                ->sorted()->get()->filter(function ($playlist) {
+                    return $playlist->pieces_count >= 5;
+                })->values();
+        }
 
         return Playlist::byGroup($group)->with('pieces')->has('pieces', '>', 5)->sorted()->complete();
     }
@@ -110,7 +122,7 @@ class Api extends Factory
 
         if ($this->for == 'webapp') {
             $collection = clone $collection;
-            $synthesia = Tutorial::synthesia(12);
+            $synthesia = Tutorial::synthesia(12)->loadMissing('piece.tags');
             $collection->splice(5, 0, [['label' => 'Synthesia releases', 'collection' => $synthesia, 'celltype' => 'synthesia']]);
         }
 

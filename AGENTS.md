@@ -2,7 +2,13 @@
 
 ## Purpose and compatibility
 
-PianoLIT serves the public website, the authenticated `my.*` web app, administration, and mobile app APIs from one Laravel application. Preserve existing appearance, working behavior, route names, and mobile JSON contracts unless a task explicitly calls for a change. Favor small, demonstrated fixes over broad rewrites. Do not assume a route is unused simply because this repository has no caller: mobile clients are separate.
+PianoLIT serves the public website, the `my.*` web app, administration, and mobile app APIs from one Laravel application. Preserve existing appearance, working behavior, route names, and mobile JSON contracts unless a task explicitly calls for a change. Favor small, demonstrated fixes over broad rewrites. Do not assume a route is unused simply because this repository has no caller: mobile clients are separate.
+
+As of 2026-09-22, `my.*` allows all visitors to browse repertoire and open piece pages. Piece media uses `hasActiveSubscription()` from the existing membership trait: visitors and accounts without an active paid or trial subscription get 10-second audio/video previews and a blurred first score page; paid subscribers, active trials, and subscriptions in their grace period retain full media access. Scheduled cancellation (including during trial) preserves access through `membership_ends_at`; that date takes precedence over a stale renewal date. An actually ended subscription remains restricted. The preview duration is in `config/webapp.php`. Keep browsing (`hasFullAccess` in gallery templates) separate from piece content (`hasMediaAccess`); do not restore page-level membership redirects. Account data, favorites, uploads, and other writes still require a web session; guests receive no personalized suggestions or saved search history. Keep guest views safe when `auth()->user()` is null. Browser actions must use session-authenticated web routes, not the legacy mobile API's `user_id` identity. Preserve mobile access contracts unless explicitly requested.
+
+Media preview/blur is currently enforced in the browser. Sources still use public storage URLs; protecting original files requires private delivery plus truncated media and pre-blurred score assets. Do not describe the player rules as protection against direct-file access. The user explicitly deferred PDF URL protection until web and mobile delivery can be addressed together; keep existing public URLs and mobile contracts unchanged for now.
+
+Signed-in piece-page visits populate `recently_viewed_pieces`. Discover shows the latest 12 distinct pieces above Latest pieces, outside the shared feed cache. Never record guest visits or derive history ownership from request parameters. Deploy the history-table migration before serving this feature.
 
 ## Project map
 

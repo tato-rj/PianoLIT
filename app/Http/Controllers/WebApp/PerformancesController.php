@@ -10,6 +10,14 @@ use App\Events\Performances\PerformanceSubmitted;
 
 class PerformancesController extends Controller
 {
+    public function clap(Performance $performance)
+    {
+        abort_if($performance->user_id == auth()->id(), 403);
+        $performance->clap(auth()->user());
+
+        return ['claps_sum' => $performance->claps_sum];
+    }
+
     public function uploadUrl(Piece $piece)
     {
         $this->authorize('perform', $piece);

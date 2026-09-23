@@ -1,6 +1,10 @@
 @extends('webapp.layouts.app')
 
 @section('content')
+@guest('web')
+@include('webapp.layouts.header', ['title' => 'My Profile'])
+@include('webapp.components.sign-in', ['message' => 'Sign in to view and manage your profile.'])
+@else
 @include('webapp.layouts.header', ['title' => 'Hello ' . auth()->user()->first_name])
 
 <section>
@@ -17,4 +21,5 @@
 	  </div>
 	</div>
 </section>
+@endguest
 @endsection

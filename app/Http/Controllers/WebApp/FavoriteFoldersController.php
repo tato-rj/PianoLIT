@@ -7,11 +7,32 @@ use Illuminate\Http\Request;
 use App\{FavoriteFolder, Piece, Favorite, User};
 use App\Http\Requests\FavoriteFoldersForm;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use App\PDF\PDFGenerator;
 use App\Events\eScoreGenerated;
 
 class FavoriteFoldersController extends Controller
 {
+    public function reorder(Request $request, FavoriteFolder $folder)
+    {
+        abort_unless($folder->user_id == auth()->id(), 403);
+
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => ['required', 'integer', 'distinct', Rule::exists('favorites', 'id')->where('favorite_folder_id', $folder->id)],
+        ]);
+
+        $folder->sort($request->ids);
+
+        return view('components.alert', [
+            'color' => 'green',
+            'message' => '<i class="fas fa-check-circle mr-2"></i>The order has been updated',
+            'temporary' => true,
+            'dismissible' => true,
+            'floating' => 'top',
+        ])->render();
+    }
+
     public function pdf(Request $request, FavoriteFolder $folder)
     {
         abort_unless($folder->user_id == auth()->id(), 403);
@@ -52,7 +73,9 @@ class FavoriteFoldersController extends Controller
             );
         }
 
-        $folders = auth()->user()->favoriteFolders()->lastUpdated()->get();
+        $folders = auth()->user()->favoriteFolders()->withCount(['favorites as piece_favorites_count' => function ($query) use ($piece) {
+            $query->where('piece_id', optional($piece)->id);
+        }])->lastUpdated()->get();
 
         if ($request->wantsJson())
         	return response()->json([

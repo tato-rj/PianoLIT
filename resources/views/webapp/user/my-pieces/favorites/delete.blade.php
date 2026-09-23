@@ -2,7 +2,7 @@
 @slot('body')
   <div class="mb-3">
     <div>Are you sure you want to delete the folder <strong>{{$folder->name}}</strong>?</div>
-    @if($folder->favorites()->exists())
+    @if($folder->favorites_count > 0)
     <div>You will also lose all the pieces within it.</div>
     @endif
     <div class="text-danger mt-1"><small>This action cannot be undone</small></div>

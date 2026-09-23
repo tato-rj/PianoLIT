@@ -4,6 +4,7 @@
 		@video([
 			'classes' => 'w-100', 
 			'id' => 'piece-performance', 
+            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
 			'thumbnail' => asset('images/webapp/piano-thumbnail.jpg'),
 			'url' => $piece->media['performance']->video_url])
 	</div>
@@ -59,7 +60,6 @@
 		@endforeach
 	</div>
 
-	@php($similar = $piece->similar())
 
 	@if(! $similar->isEmpty())
 	<div class="mb-4">
@@ -69,7 +69,7 @@
 		</div>
 		<div class="custom-scroll dragscroll dragscroll-horizontal">
 			<div class="d-flex pb-2" style="height: 144px;">
-				@foreach($piece->similar()->take(16) as $card)
+				@foreach($similar as $card)
 					@php($card->color = 'yellow')
 					@php($card->subtitle = $card->composer->short_name)
 					@include('webapp.discover.cards.piece', ['hasFullAccess' => $hasFullAccess])

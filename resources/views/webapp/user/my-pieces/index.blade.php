@@ -41,6 +41,10 @@
 @endpush
 
 @section('content')
+@guest('web')
+    @include('webapp.layouts.header', ['title' => 'My Pieces'])
+    @include('webapp.components.sign-in')
+@else
 @component('webapp.layouts.header', ['title' => 'My Pieces', 'subtitle' => 'Quickly access your favorites or see your tutorial requests'])
 <div class="list-group flex-row rounded-pill position-relative">
 	<button class="btn btn-wide rounded-pill list-group-item list-group-item-action active" data-anchor="favorites" data-toggle="list" href="#list-favorites">FAVORITES</button>
@@ -55,9 +59,11 @@
 		@include('webapp.user.my-pieces.suggestions')
       </div>
     </div>
+@endguest
 @endsection
 
 @push('scripts')
+@auth('web')
 <script type="text/javascript">
 $('#local-filter input[type="checkbox"]').change(function() {
 	let filters = [];
@@ -120,4 +126,5 @@ $('button[data-toggle="list"]').on('show.bs.tab', function (e) {
 
 <script type="text/javascript">
 </script>
+@endauth
 @endpush

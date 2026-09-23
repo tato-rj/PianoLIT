@@ -13,6 +13,11 @@ use App\Billing\Factories\StripeFactory;
 
 class MembershipsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:web')->except('pricing');
+    }
+
     public function pricing()
     {
         $plans = Plan::all()->reverse();
@@ -22,7 +27,7 @@ class MembershipsController extends Controller
 
     public function edit()
     {
-        if (! auth()->user()->membership()->exists() || auth()->user()->membership->source->isEnded())
+        if (! auth()->user()->membership || auth()->user()->membership->source->isEnded())
             return redirect(route('webapp.membership.pricing'));
 
         if (auth()->user()->hasMembershipWith(Apple::class))
