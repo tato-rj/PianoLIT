@@ -94,6 +94,26 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->get(route('webapp.pieces.score', $this->piece))->assertOk();
     }
 
+    public function test_super_users_keep_full_content_regardless_of_subscription_state()
+    {
+        foreach ([
+            [null, []],
+            [Stripe::class, ['ended_at' => now()]],
+            [Stripe::class, ['renews_at' => now()->subDay()]],
+            [Apple::class, ['renews_at' => now()->subDay()]],
+        ] as [$source, $attributes]) {
+            $user = $this->userWithSubscription($source, $attributes);
+            $user->updateQuietly(['super_user' => true]);
+            $this->actingAs($user, 'web');
+            $this->assertTrue($user->isAuthorized());
+            $this->assertFullContent();
+
+            // Removing the override must restore the normal subscription rules.
+            $user->updateQuietly(['super_user' => false]);
+            $this->assertRestricted();
+        }
+    }
+
     public function test_grace_period_keeps_full_content_until_cancellation_takes_effect()
     {
         foreach (['active', 'trialing', 'canceled', 'paused'] as $status) {

@@ -50,6 +50,11 @@ trait HasMembership
 
     public function hasActiveSubscription()
     {
+        // Preserve the full-access override used by getStatus()/isAuthorized().
+        if ($this->super_user) {
+            return true;
+        }
+
         $source = optional($this->membership)->source;
 
         if (! $source || $source->isEnded()) {
