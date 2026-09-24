@@ -1,5 +1,5 @@
 
-<section class="my-2 position-relative">
+<section class="my-3 position-relative">
 	@include('webapp.components.back')
 
 	<div class="d-flex px-4">
