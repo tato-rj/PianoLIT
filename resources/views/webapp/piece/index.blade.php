@@ -22,10 +22,9 @@
 
     background-image: url({{asset($piece->image_background)}});
     background-size: cover;
-    background-position: center;
-
+    background-position: center center;
+    height: 50%;
     filter: blur(25px);
-    transform: scale(1.08);
     opacity: 0.7;
 }
 
