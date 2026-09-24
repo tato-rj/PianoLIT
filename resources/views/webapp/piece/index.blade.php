@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => $piece->short_name])
+@extends('webapp.layouts.app', ['title' => $piece->short_name, 'nomenu' => true])
 
 @push('header')
 <link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">
@@ -92,7 +92,7 @@ video::-webkit-media-controls-enclosure {
 
 <section id="tabs-container">
 	@include('webapp.piece.nav')
-	<div class="tab-content p-3">
+	<div class="tab-content">
 		@include('webapp.piece.tabs.about')
 		@include('webapp.piece.tabs.score')
 		@include('webapp.piece.tabs.timeline')
@@ -101,6 +101,11 @@ video::-webkit-media-controls-enclosure {
 </section>
 
 @include('webapp.piece.components.panel')
+@if($piece->hasAudio())
+<div class="piece-audio-popup">
+    @include('webapp.components.popup')
+</div>
+@endif
 @unless($hasMediaAccess)
     @include('webapp.piece.components.upgrade')
 @endunless

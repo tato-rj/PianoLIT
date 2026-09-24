@@ -5,7 +5,16 @@ const vm = require('vm');
 
 module.exports = async function () {
     const window = {};
-    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/score-editor.js'), 'utf8'), {window, Blob: class { constructor(parts) { this.size = Buffer.byteLength(parts.join("")); } }});
+    const bodyClasses = new Set();
+    const body = {children: [], classList: {add: name => bodyClasses.add(name), remove: name => bodyClasses.delete(name)},
+        appendChild(element) { this.children.push(element); element.parent = this; }};
+    const element = tag => ({tag, style: {}, children: [], attributes: {},
+        appendChild(child) { this.children.push(child); child.parent = this; },
+        remove() { if (this.parent) this.parent.children.splice(this.parent.children.indexOf(this), 1); },
+        setAttribute(name, value) { this.attributes[name] = String(value); },
+        getContext: () => ({})});
+    const document = {body, createElement: element, createElementNS: (namespace, tag) => element(tag)};
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/score-editor.js'), 'utf8'), {window, document, Blob: class { constructor(parts) { this.size = Buffer.byteLength(parts.join("")); } }});
     const {Markings, Editor, point, roundPoint} = window.ScoreEditor;
     const a = {id: 'a', page: 1, type: 'text', text: '1 2 3'};
     const b = {id: 'b', page: 2, type: 'stroke', points: [{x: .3, y: .4}]};
@@ -63,6 +72,19 @@ module.exports = async function () {
     assert.strictEqual(pen.store.marks.length, 1, 'Pen draws when the width selector is absent');
     assert.strictEqual(pen.store.marks[0].width, .004);
     assert.strictEqual(pen.store.marks[0].points.length, 2);
+    pen.page = 2; pen.tool = 'highlight'; pen.find = selector => selector === '[data-color]' ? {value: '#ffe066'} : null;
+    pen.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 2, preventDefault: () => {}});
+    pen.move({clientX: 100, clientY: 160, pointerId: 2, preventDefault: () => {}});
+    pen.finishStroke();
+    assert.strictEqual(pen.store.marks[1].type, 'highlight');
+    assert.strictEqual(pen.store.marks[1].width, .02);
+    assert.strictEqual(pen.store.marks[1].color, '#ffe066');
+
+    pen.clearAll();
+    assert.strictEqual(pen.store.marks.length, 0, 'Clear all immediately removes markings across the score');
+    pen.store.undo();
+    assert.strictEqual(pen.store.marks.length, 2, 'Clear all can be undone');
+    assert.strictEqual(pen.store.marks[1].page, 2, 'Undo restores markings on other score pages');
 
     let newText;
     const textTool = Object.create(Editor.prototype);
@@ -76,6 +98,72 @@ module.exports = async function () {
     textTool.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 1,
         target: {closest: () => null}, preventDefault: () => {}});
     assert.strictEqual(newText.size, .02, 'Text defaults to Small without a size selector');
+
+    const dragEditor = Object.create(Editor.prototype);
+    const savedText = Object.assign({}, a, {x: .25, y: .3, size: .02, color: '#20252b'});
+    dragEditor.ready = true; dragEditor.rendering = false; dragEditor.tool = 'read'; dragEditor.pointerId = null; dragEditor.page = 1;
+    dragEditor.store = new Markings(async data => ({revision: data.revision + 1}));
+    dragEditor.store.load({revision: 0, marks: [savedText]});
+    dragEditor.paint = () => {};
+    dragEditor.svg = {getBoundingClientRect: () => ({left: 0, top: 0, width: 500, height: 800}),
+        setPointerCapture: () => {}, hasPointerCapture: () => false, setAttribute: () => {}, removeAttribute: () => {}};
+    const textHit = {closest: () => ({getAttribute: () => savedText.id})};
+    dragEditor.down({target: textHit, clientX: 100, clientY: 100, button: 0, isPrimary: true, pointerId: 4, preventDefault: () => {}});
+    dragEditor.move({clientX: 101, clientY: 101, pointerId: 4, preventDefault: () => {}});
+    dragEditor.finishTextDrag();
+    assert.strictEqual(dragEditor.store.dirty, false, 'Tapping saved text must not create an edit');
+    dragEditor.down({target: textHit, clientX: 100, clientY: 100, button: 0, isPrimary: true, pointerId: 5, preventDefault: () => {}});
+    let dragPrevented = false;
+    dragEditor.preventTouchScroll({preventDefault: () => { dragPrevented = true; }});
+    assert.strictEqual(dragPrevented, true, 'Moving text in Read mode blocks mobile scrolling');
+    dragEditor.move({clientX: 150, clientY: 180, pointerId: 5, preventDefault: () => {}});
+    assert.strictEqual(dragEditor.store.marks[0].x, .25, 'Dragging previews without changing the saved mark');
+    dragEditor.finishTextDrag();
+    assert.strictEqual(dragEditor.store.marks[0].x, .35);
+    assert.strictEqual(dragEditor.store.marks[0].y, .4);
+    dragEditor.store.undo();
+    assert.strictEqual(dragEditor.store.marks[0].x, .25, 'Moved text remains undoable');
+
+    const zoomEditor = Object.create(Editor.prototype);
+    zoomEditor.zoom = .75; zoomEditor.page = 1; zoomEditor.render = () => Promise.resolve();
+    zoomEditor.adjustZoom(-.25); assert.strictEqual(zoomEditor.zoom, .5);
+    zoomEditor.adjustZoom(-.25); assert.strictEqual(zoomEditor.zoom, .5, 'Zoom stops at 50%');
+
+    const printEditor = Object.create(Editor.prototype);
+    const printedPages = [], printMessages = [];
+    printEditor.pdf = {numPages: 3, getPage: async number => ({
+        getViewport: ({scale}) => ({width: 500 * scale, height: 700 * scale}),
+        render: () => { printedPages.push(number); return {promise: Promise.resolve()}; }
+    })};
+    printEditor.store = new Markings(async data => ({revision: data.revision + 1}));
+    printEditor.store.load({revision: 0, marks: [
+        {id: 'first', page: 1, type: 'text', text: '1', x: .2, y: .3, size: .02, color: '#20252b'},
+        {id: 'last', page: 3, type: 'stroke', points: [{x: .1, y: .2}], width: .004, color: '#20252b'}
+    ]});
+    printEditor.page = 2; printEditor.ready = true; printEditor.rendering = false; printEditor.printing = false;
+    printEditor.finishTextDrag = () => {}; printEditor.finishStroke = () => {}; printEditor.finishText = () => {};
+    printEditor.controls = () => {}; printEditor.message = value => printMessages.push(value);
+    printEditor.changed = () => {};
+    let afterPrint, printCalls = 0;
+    window.addEventListener = (event, callback) => { if (event === 'afterprint') afterPrint = callback; };
+    window.print = () => { printCalls++; assert(bodyClasses.has('score-printing')); };
+    await printEditor.printScore();
+    assert.deepStrictEqual(printedPages, [1, 2, 3], 'Print prepares every PDF page in order');
+    assert.strictEqual(printCalls, 1);
+    assert.strictEqual(printEditor.page, 2, 'Printing must leave the open score page unchanged');
+    assert.strictEqual(body.children.length, 1);
+    assert.strictEqual(body.children[0].children.length, 3);
+    assert.strictEqual(body.children[0].children[0].children[1].children[0].tag, 'text');
+    assert.strictEqual(body.children[0].children[1].children[1].children.length, 0);
+    assert.strictEqual(body.children[0].children[2].children[1].children[0].tag, 'path');
+    afterPrint();
+    assert.strictEqual(body.children.length, 0, 'Print pages are removed after the dialog closes');
+    assert.strictEqual(bodyClasses.has('score-printing'), false);
+    printEditor.pdf.getPage = async () => { throw new Error('PDF page failed'); };
+    await printEditor.printScore();
+    assert.strictEqual(printCalls, 1, 'A missing PDF page must not print an incomplete document');
+    assert.strictEqual(body.children.length, 0);
+    assert(printMessages.pop().includes('Could not prepare every score page'));
 
     const touchEditor = Object.create(Editor.prototype);
     let blockedTouches = 0;
@@ -127,5 +215,5 @@ module.exports = async function () {
     const zoomed = point({clientX: 600, clientY: 900}, {left: 100, top: 100, width: 1000, height: 1600});
     assert.strictEqual(zoomed.x, p.x); assert.strictEqual(zoomed.y, p.y);
     assert.strictEqual(roundPoint({x: 0.333333333, y: 0}).x, .33333);
-    console.log('Passed: score annotation persistence, touch scrolling, undo/redo, page coordinates, serialized autosave, retries and conflicts.');
+    console.log('Passed: score annotation persistence, full-document printing, text dragging, zoom limits, highlighting, clear/undo, touch scrolling, page coordinates, autosave, retries and conflicts.');
 };

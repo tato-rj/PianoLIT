@@ -1,30 +1,70 @@
 .score-editor {
+    position: relative;
+    left: 50%;
+    width: calc(100vw - 32px);
+    max-width: 1100px;
+    margin-left: -550px;
+    padding-bottom: 94px;
+    color: #172033;
+
     [hidden] { display: none !important; }
+    button, select { min-height: 40px; }
+    button:focus-visible, a:focus-visible, .score-color-button:focus-within {
+        outline: 2px solid #1b59e9;
+        outline-offset: 2px;
+    }
     .score-toolbar {
         display: flex;
-        flex-wrap: wrap;
-        align-items: flex-end;
-        gap: 10px;
-        label { min-width: 80px; }
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        gap: 16px;
+        padding: 14px 20px 4px;
+        background: #fff;
+        // border: 1px solid #e8edf5;
+        border-bottom: 0;
+        // border-radius: 18px 18px 0 0;
     }
-    .score-toolbar .score-color-button {
-        position: relative;
+    .score-tools, .score-history, .score-view-controls, .score-footer-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .score-history { margin-left: auto; }
+    .score-status-row { padding: 0 20px 12px; background: #fff; }
+    .score-icon-button, .score-control-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        min-width: 36px;
-        height: 36px;
-        color: #5e656c;
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 50%;
+        background: #f6f8fc;
+        color: #172033;
+        font-size: 17px;
+        line-height: 1;
         cursor: pointer;
-        &:focus-within { outline: 2px solid #4b7bec; outline-offset: 2px; }
-        &.disabled { opacity: .5; cursor: default; }
+        transition: background-color .15s ease, border-color .15s ease;
+        &:hover:not(:disabled) { background: #eaf0ff; }
+        &:disabled { opacity: .45; cursor: default; }
+    }
+    .score-tools .score-icon-button.active {
+        background: #e9f0ff;
+        border-color: #d4e1ff;
+        color: #1555dc;
+    }
+    .score-color-button {
+        position: relative;
+        margin-left: 2px;
+        cursor: pointer;
+        &.disabled { opacity: .45; cursor: default; }
     }
     .score-color-input {
         position: absolute;
-        z-index: 1;
-        top: 0;
-        left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
         padding: 0;
@@ -32,25 +72,40 @@
         opacity: 0;
         cursor: inherit;
     }
-    .score-navigation {
-        display: flex;
-        flex-wrap: wrap;
+    .score-save-status {
+        color: #74819a;
+        font-size: 12px;
+    }
+    .score-clear-button {
+        display: inline-flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 8px;
+        justify-content: center;
+        gap: 10px;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 1px solid #ff8e97;
+        border-radius: 12px;
+        background: #fff;
+        color: #e62236;
+        font-size: 14px;
+        cursor: pointer;
+        &:hover:not(:disabled) { background: #fff3f4; }
+        &:disabled { opacity: .45; cursor: default; }
     }
     .score-scroll {
-        background: #eef0f3;
+        padding: 18px;
         overflow-x: auto;
         overflow-y: hidden;
+        background: #eef3f9;
+        // border-radius: 0 0 16px 16px;
     }
     .score-sheet {
         position: relative;
-        background: white;
-        margin: 4px auto;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
         width: 100%;
         min-height: 180px;
+        margin: 0 auto;
+        background: #fff;
+        box-shadow: 0 2px 14px rgba(37, 54, 80, .13);
     }
     canvas { display: block; width: 100%; height: 100%; }
     .score-markings {
@@ -61,6 +116,8 @@
         user-select: none;
         -webkit-user-select: none;
         path, text { pointer-events: none; }
+        &[data-tool="read"] text { pointer-events: all; touch-action: none; cursor: grab; }
+        &[data-dragging-text] text { cursor: grabbing; }
         &[data-tool="text"] text { pointer-events: all; }
         &[data-tool="erase"] {
             path { pointer-events: stroke; }
@@ -85,9 +142,153 @@
         height: 1.2em;
         caret-color: currentColor;
     }
-    button, select { min-height: 36px; }
-    @media (max-width: 575px) {
-        .score-toolbar > .btn-group:first-child { width: 100%; }
-        .score-toolbar label { flex: 1; }
+    .score-footer {
+        position: fixed;
+        z-index: 1050;
+        left: 50%;
+        bottom: 12px;
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        width: calc(100vw - 32px);
+        max-width: 1068px;
+        padding: 12px 16px;
+        border: 1px solid #e4eaf3;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, .97);
+        box-shadow: 0 12px 32px rgba(43, 66, 107, .16);
     }
+    .score-control-group {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+    }
+    .score-control-button {
+        width: 42px;
+        height: 42px;
+        border-color: #e8edf5;
+        border-radius: 12px;
+        background: #fff;
+        font-size: 16px;
+    }
+    .score-page-label, .score-zoom-label {
+        min-width: 62px;
+        text-align: center;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+    .score-fullscreen-button { margin-left: 4px; }
+    .score-listen-button, .score-action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 46px;
+        padding: 0 17px;
+        border: 1px solid #e4eaf3;
+        border-radius: 12px;
+        background: #fff;
+        color: #172033;
+        text-decoration: none;
+        white-space: nowrap;
+        font-size: 14px;
+        cursor: pointer;
+        &:hover { background: #f6f8fc; color: #172033; text-decoration: none; }
+    }
+    .score-listen-button {
+        border-color: #1555e9;
+        background: #1555e9;
+        color: #fff;
+        &:hover { background: #1047c6; color: #fff; }
+    }
+    .score-messages { padding: 8px 2px; }
+
+    &.is-fullscreen {
+        position: fixed;
+        z-index: 2000;
+        inset: 0;
+        left: 0;
+        width: 100%;
+        max-width: none;
+        height: 100dvh;
+        margin: 0 !important;
+        padding: 12px 12px 100px;
+        overflow-y: auto;
+        background: #eef3f9;
+        .score-scroll { min-height: calc(100dvh - 190px); }
+    }
+    @media (max-width: 767px) {
+        width: calc(100vw - 20px);
+        margin-left: calc(-50vw + 10px);
+        padding-bottom: 126px;
+        .score-toolbar { gap: 3px; padding: 8px 8px 2px; }
+        .score-tools, .score-history { flex: 0 0 auto; width: auto; gap: 2px; }
+        .score-history { margin-left: auto; }
+        .score-status-row { padding: 0 8px 8px; }
+        .score-icon-button, .score-clear-button { width: 34px; height: 34px; min-height: 34px; font-size: 14px; }
+        .score-color-button { margin-left: 0; }
+        .score-clear-button { padding: 0; border-radius: 50%; }
+        .score-clear-button span { display: none; }
+        .score-scroll { padding: 12px; }
+        .score-footer {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            width: calc(100vw - 16px);
+            padding: 10px;
+            border-radius: 16px;
+        }
+        .score-view-controls, .score-footer-actions { justify-content: space-between; width: 100%; }
+        .score-footer-actions { gap: 7px; }
+        .score-footer-actions > * { flex: 1 1 0; padding: 0 6px; }
+        .score-page-label, .score-zoom-label { min-width: 46px; font-size: 13px; }
+        .score-control-button { width: 38px; height: 40px; }
+        .score-action-button, .score-listen-button { font-size: 12px; gap: 6px; }
+    }
+    @media (min-width: 768px) and (max-width: 1132px) {
+        margin-left: calc(-50vw + 16px);
+    }
+    @media (max-width: 360px) {
+        .score-toolbar { padding-left: 6px; padding-right: 6px; }
+        .score-icon-button, .score-clear-button { width: 32px; height: 32px; min-height: 32px; }
+        .score-control-button { width: 34px; }
+        .score-page-label, .score-zoom-label { min-width: 42px; }
+    }
+}
+.piece-audio-popup {
+    position: fixed;
+    z-index: 2100;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    #bottom-popup > div { bottom: calc(92px + env(safe-area-inset-bottom)) !important; pointer-events: auto; }
+    @media (max-width: 767px) {
+        #bottom-popup > div { bottom: calc(132px + env(safe-area-inset-bottom)) !important; }
+    }
+}
+body.score-editor-fullscreen-open { overflow: hidden; }
+.score-print-pages { display: none; }
+@media print {
+    @page { margin: 10mm; }
+    body.score-editor-fullscreen-open { overflow: visible; }
+    body.score-printing > :not(.score-print-pages) { display: none !important; }
+    body.score-printing > .score-print-pages { display: block !important; }
+    .score-print-page {
+        position: relative;
+        margin: 0 auto;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        break-after: page;
+        page-break-after: always;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .score-print-page:last-child { break-after: auto; page-break-after: auto; }
+    .score-print-page canvas { display: block; width: 100%; height: 100%; }
+    .score-print-page svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 }

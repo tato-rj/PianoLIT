@@ -75,9 +75,11 @@
             this.canvas = this.find('canvas'); this.svg = this.find('svg');
             this.sheet = this.find('.score-sheet'); this.scroller = this.find('.score-scroll');
             this.status = this.find('[data-score-status]');
-            this.tool = 'read'; this.page = 1; this.zoom = 1;
-            this.ready = false; this.rendering = false; this.renderId = 0;
-            this.stroke = null; this.pointerId = null; this.pdf = null; this.textDraft = null;
+            this.tool = 'read'; this.page = 1; this.zoom = root.matchMedia('(max-width: 767px)').matches ? 1 : 0.75;
+            this.find('[data-zoom-label]').textContent = Math.round(this.zoom * 100) + '%';
+            this.inkColor = '#20252b'; this.highlightColor = '#ffe066';
+            this.ready = false; this.rendering = false; this.printing = false; this.renderId = 0;
+            this.stroke = null; this.textDrag = null; this.pointerId = null; this.pdf = null; this.textDraft = null;
             this.store = new Markings(data => this.http.put(this.url, Object.assign({}, this.identity, data)).then(response => response.data), () => this.changed());
             this.url = container.getAttribute('data-annotations-url');
             this.bind(); this.start();
@@ -120,9 +122,14 @@
             this.find('.score-color-button').classList.toggle('disabled', !editing);
             this.find('[data-undo]').disabled = !editing || !this.store.undoStack.length;
             this.find('[data-redo]').disabled = !editing || !this.store.redoStack.length;
+            this.find('[data-clear-all]').disabled = !editing || !this.store.marks.length;
             this.find('[data-prev]').disabled = !this.pdf || this.rendering || this.page <= 1;
             this.find('[data-next]').disabled = !this.pdf || this.rendering || this.page >= this.pdf.numPages;
-            this.all('[data-zoom]').forEach(el => { el.disabled = !this.pdf || this.rendering; });
+            this.find('[data-print]').disabled = !this.ready || this.rendering || this.printing;
+            this.all('[data-zoom]').forEach(el => {
+                const step = Number(el.getAttribute('data-zoom'));
+                el.disabled = !this.pdf || this.rendering || (step < 0 && this.zoom <= 0.5) || (step > 0 && this.zoom >= 2.5);
+            });
             const touchAction = this.tool === 'read' ? 'auto' : 'none';
             this.sheet.style.touchAction = touchAction;
             this.svg.style.touchAction = touchAction;
@@ -135,34 +142,72 @@
         }
         selectTool(tool) {
             const next = this.tool === tool ? 'read' : tool;
-            this.finishStroke(); this.finishText();
+            this.finishTextDrag(); this.finishStroke(); this.finishText();
+            if (next === 'highlight' && this.tool !== 'highlight') this.find('[data-color]').value = this.highlightColor;
+            if (this.tool === 'highlight' && next !== 'highlight') this.find('[data-color]').value = this.inkColor;
             this.tool = next; this.controls();
+            this.updatePaletteColor();
+        }
+        updatePaletteColor() {
+            this.find('.score-color-button .fa-palette').style.color = this.find('[data-color]').value;
+        }
+        clearAll() {
+            if (!this.ready || this.rendering || this.store.conflict) return;
+            this.finishTextDrag(); this.finishStroke(); this.finishText();
+            if (this.store.marks.length) this.store.replace([]);
+        }
+        toggleFullscreen() {
+            const active = !this.root.classList.contains('is-fullscreen');
+            this.root.classList.toggle('is-fullscreen', active);
+            document.body.classList.toggle('score-editor-fullscreen-open', active);
+            const button = this.find('[data-fullscreen]');
+            button.setAttribute('aria-label', active ? 'Exit full screen' : 'Full screen');
+            button.setAttribute('title', active ? 'Exit full screen' : 'Full screen');
+            button.querySelector('i').classList.toggle('fa-expand', !active);
+            button.querySelector('i').classList.toggle('fa-compress', active);
+            if (this.pdf) this.render(this.page).catch(() => this.renderError());
         }
         preventTouchScroll(event) {
-            if (this.tool !== 'read') event.preventDefault();
+            if (this.tool !== 'read' || this.textDrag) event.preventDefault();
+        }
+        adjustZoom(step) {
+            const next = Math.max(0.5, Math.min(2.5, this.zoom + step));
+            if (next === this.zoom) return;
+            this.zoom = next;
+            this.render(this.page).catch(() => this.renderError());
         }
         bind() {
             const color = this.find('[data-color]');
-            const palette = this.find('.score-color-button .fa-palette');
-            const showColor = () => { palette.style.color = color.value; };
-            color.addEventListener('input', showColor);
-            color.addEventListener('change', showColor);
-            showColor();
+            const saveColor = () => {
+                if (this.tool === 'highlight') this.highlightColor = color.value;
+                else this.inkColor = color.value;
+                this.updatePaletteColor();
+            };
+            color.addEventListener('input', saveColor);
+            color.addEventListener('change', saveColor);
+            this.updatePaletteColor();
             this.all('button[data-tool]').forEach(el => el.addEventListener('click', () => this.selectTool(el.getAttribute('data-tool'))));
             // Inspect the original target before editing replaces an SVG mark in the DOM.
             document.addEventListener('pointerdown', event => {
                 if (this.tool === 'read' || this.sheet.contains(event.target)) return;
                 const button = event.target.closest('button[data-tool]');
                 if (button && this.root.contains(button)) return;
+                const palette = event.target.closest('.score-color-button');
+                if (palette && this.root.contains(palette)) return;
                 this.selectTool('read');
             }, true);
             this.find('[data-undo]').addEventListener('click', () => { this.finishText(); this.store.undo(); });
             this.find('[data-redo]').addEventListener('click', () => { this.finishText(); this.store.redo(); });
+            this.find('[data-clear-all]').addEventListener('click', () => this.clearAll());
+            this.find('[data-fullscreen]').addEventListener('click', () => this.toggleFullscreen());
+            this.find('[data-print]').addEventListener('click', () => this.printScore());
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && this.root.classList.contains('is-fullscreen')) this.toggleFullscreen();
+            });
             this.find('[data-prev]').addEventListener('click', () => this.render(this.page - 1).catch(() => this.renderError()));
             this.find('[data-next]').addEventListener('click', () => this.render(this.page + 1).catch(() => this.renderError()));
             this.all('[data-zoom]').forEach(el => el.addEventListener('click', () => {
-                this.zoom = Math.max(0.75, Math.min(2.5, this.zoom + Number(el.getAttribute('data-zoom'))));
-                this.render(this.page).catch(() => this.renderError());
+                this.adjustZoom(Number(el.getAttribute('data-zoom')));
             }));
             this.find('[data-retry-load]').addEventListener('click', () => { this.find('[data-retry-load]').hidden = true; if (this.ready) this.render(this.page).catch(() => this.renderError()); else this.start(); });
             this.find('[data-retry-save]').addEventListener('click', () => this.store.flush());
@@ -173,13 +218,21 @@
             });
             this.svg.addEventListener('pointerdown', event => this.down(event));
             this.svg.addEventListener('pointermove', event => this.move(event));
-            this.svg.addEventListener('pointerup', event => { if (event.pointerId === this.pointerId) this.finishStroke(); });
-            this.svg.addEventListener('pointercancel', () => { this.stroke = null; this.pointerId = null; this.paint(); });
-            this.svg.addEventListener('lostpointercapture', () => this.finishStroke());
+            this.svg.addEventListener('pointerup', event => {
+                if (event.pointerId !== this.pointerId) return;
+                if (this.textDrag) this.finishTextDrag(); else this.finishStroke();
+            });
+            this.svg.addEventListener('pointercancel', () => {
+                this.stroke = null; this.textDrag = null; this.pointerId = null;
+                this.svg.removeAttribute('data-dragging-text'); this.paint();
+            });
+            this.svg.addEventListener('lostpointercapture', () => {
+                if (this.textDrag) this.finishTextDrag(); else this.finishStroke();
+            });
             // Safari can still scroll the page during a stroke despite touch-action on SVG.
             this.sheet.addEventListener('touchmove', event => this.preventTouchScroll(event), {passive: false});
             root.addEventListener('beforeunload', event => {
-                this.finishStroke(); this.finishText();
+                this.finishTextDrag(); this.finishStroke(); this.finishText();
                 if (this.store.dirty && !this.discarding) { this.store.flush(); event.preventDefault(); event.returnValue = ''; }
             });
             root.addEventListener('online', () => { if (this.ready && this.store.state === 'error') this.store.flush(); });
@@ -192,7 +245,7 @@
         async render(number) {
             if (!this.pdf || number < 1 || number > this.pdf.numPages) return;
             if (this.rendering) { this.queuedPage = number; return; }
-            this.finishStroke();
+            this.finishTextDrag(); this.finishStroke();
             if (number !== this.page) this.finishText();
             this.rendering = true; this.controls();
             const id = ++this.renderId;
@@ -213,7 +266,7 @@
                 this.sheet.style.width = width + 'px'; this.sheet.style.height = (width * ratio) + 'px';
                 this.ratio = ratio; this.page = number;
                 this.svg.setAttribute('viewBox', '0 0 1000 ' + (1000 * ratio));
-                this.find('[data-page-label]').textContent = 'Page ' + number + ' of ' + this.pdf.numPages;
+                this.find('[data-page-label]').textContent = number + ' / ' + this.pdf.numPages;
                 this.find('[data-zoom-label]').textContent = Math.round(this.zoom * 100) + '%';
                 this.paint(); this.positionText();
             } finally {
@@ -224,30 +277,95 @@
                 }
             }
         }
+        async printScore() {
+            if (!this.ready || this.rendering || this.printing) return;
+            this.finishTextDrag(); this.finishStroke(); this.finishText();
+            this.printing = true; this.controls();
+            if (this.printPages) this.printPages.remove();
+            const pages = document.createElement('div');
+            pages.className = 'score-print-pages';
+            this.printPages = pages;
+            const marks = this.store.marks.slice();
+            try {
+                for (let number = 1; number <= this.pdf.numPages; number++) {
+                    this.message('Preparing page ' + number + ' of ' + this.pdf.numPages + ' for print\u2026');
+                    const page = await this.pdf.getPage(number);
+                    const original = page.getViewport({scale: 1});
+                    const ratio = original.height / original.width;
+                    const scale = Math.min(1200 / original.width, Math.sqrt(2200000 / (original.width * original.height)));
+                    const viewport = page.getViewport({scale});
+                    const sheet = document.createElement('div');
+                    sheet.className = 'score-print-page';
+                    const width = Math.min(190, 245 / ratio);
+                    sheet.style.width = width + 'mm'; sheet.style.height = (width * ratio) + 'mm';
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
+                    await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    svg.setAttribute('viewBox', '0 0 1000 ' + (1000 * ratio));
+                    this.paintMarks(svg, number, ratio, marks);
+                    sheet.appendChild(canvas); sheet.appendChild(svg); pages.appendChild(sheet);
+                }
+                document.body.appendChild(pages);
+                document.body.classList.add('score-printing');
+                root.addEventListener('afterprint', () => {
+                    if (this.printPages !== pages) return;
+                    pages.remove(); this.printPages = null;
+                    document.body.classList.remove('score-printing');
+                    this.changed();
+                }, {once: true});
+                root.print();
+                this.changed();
+            } catch (error) {
+                pages.remove(); this.printPages = null;
+                document.body.classList.remove('score-printing');
+                this.message('Could not prepare every score page for printing. Please try again.', true);
+            } finally {
+                this.printing = false; this.controls();
+            }
+        }
         paint() {
             while (this.svg.firstChild) this.svg.removeChild(this.svg.firstChild);
             if (!this.ratio) return;
-            this.store.marks.concat(this.stroke ? [this.stroke] : []).filter(mark => mark.page === this.page && (!this.textDraft || mark.id !== this.textDraft.mark.id)).forEach(mark => {
+            this.paintMarks(this.svg, this.page, this.ratio,
+                this.store.marks.map(mark => this.textDrag && mark.id === this.textDrag.mark.id ? this.textDrag.mark : mark)
+                .concat(this.stroke ? [this.stroke] : [])
+                .filter(mark => !this.textDraft || mark.id !== this.textDraft.mark.id));
+        }
+        paintMarks(svg, page, ratio, marks) {
+            marks.filter(mark => mark.page === page).forEach(mark => {
                 const el = document.createElementNS('http://www.w3.org/2000/svg', mark.type === 'text' ? 'text' : 'path');
                 el.setAttribute('data-mark-id', mark.id);
                 if (mark.type === 'text') {
-                    el.setAttribute('x', mark.x * 1000); el.setAttribute('y', mark.y * 1000 * this.ratio);
+                    el.setAttribute('x', mark.x * 1000); el.setAttribute('y', mark.y * 1000 * ratio);
                     el.setAttribute('font-size', mark.size * 1000); el.setAttribute('font-family', 'Arial, sans-serif');
                     el.setAttribute('font-weight', '600'); el.setAttribute('fill', mark.color);
                     el.textContent = mark.text;
                 } else {
                     let points = mark.points;
                     if (points.length === 1) points = [points[0], {x: points[0].x + 0.00001, y: points[0].y}];
-                    el.setAttribute('d', points.map((p, index) => (index ? 'L' : 'M') + (p.x * 1000) + ' ' + (p.y * 1000 * this.ratio)).join(' '));
+                    el.setAttribute('d', points.map((p, index) => (index ? 'L' : 'M') + (p.x * 1000) + ' ' + (p.y * 1000 * ratio)).join(' '));
                     el.setAttribute('fill', 'none'); el.setAttribute('stroke', mark.color);
                     el.setAttribute('stroke-width', mark.width * 1000);
                     el.setAttribute('stroke-linecap', 'round'); el.setAttribute('stroke-linejoin', 'round');
+                    if (mark.type === 'highlight') el.setAttribute('stroke-opacity', '0.45');
                 }
-                this.svg.appendChild(el);
+                svg.appendChild(el);
             });
         }
         down(event) {
-            if (!this.ready || this.rendering || this.store.conflict || this.tool === 'read' || this.pointerId !== null || event.button > 0 || event.isPrimary === false) return;
+            if (!this.ready || this.rendering || this.store.conflict || this.pointerId !== null || event.button > 0 || event.isPrimary === false) return;
+            if (this.tool === 'read') {
+                const hit = event.target.closest('[data-mark-id]');
+                const existing = hit && this.store.marks.find(mark => mark.id === hit.getAttribute('data-mark-id') && mark.type === 'text' && mark.page === this.page);
+                if (!existing) return;
+                event.preventDefault();
+                this.textDrag = {original: existing, mark: Object.assign({}, existing), startX: event.clientX, startY: event.clientY, moved: false};
+                this.pointerId = event.pointerId;
+                this.svg.setAttribute('data-dragging-text', '');
+                this.svg.setPointerCapture(event.pointerId);
+                return;
+            }
             event.preventDefault();
             this.finishText();
             if (this.tool === 'text') {
@@ -268,7 +386,7 @@
             } else {
                 const widthControl = this.find('[data-width]');
                 const width = widthControl ? Number(widthControl.value) : 0.004;
-                this.stroke = Object.assign(mark, {type: 'stroke', width, points: [p]});
+                this.stroke = Object.assign(mark, {type: this.tool === 'highlight' ? 'highlight' : 'stroke', width: this.tool === 'highlight' ? 0.02 : width, points: [p]});
                 this.pointerId = event.pointerId; this.svg.setPointerCapture(event.pointerId); this.paint();
             }
         }
@@ -331,6 +449,18 @@
             input.remove(); this.paint();
         }
         move(event) {
+            if (this.textDrag && event.pointerId === this.pointerId) {
+                event.preventDefault();
+                const drag = this.textDrag;
+                const dx = event.clientX - drag.startX, dy = event.clientY - drag.startY;
+                if (!drag.moved && Math.hypot(dx, dy) < 3) return;
+                drag.moved = true;
+                const bounds = this.svg.getBoundingClientRect();
+                const position = roundPoint({x: clamp(drag.original.x + dx / bounds.width), y: clamp(drag.original.y + dy / bounds.height)});
+                drag.mark.x = position.x; drag.mark.y = position.y;
+                this.paint();
+                return;
+            }
             if (!this.stroke || event.pointerId !== this.pointerId) return;
             event.preventDefault();
             this.stroke.points.push(roundPoint(point(event, this.svg.getBoundingClientRect())));
@@ -343,6 +473,16 @@
             this.stroke = null; this.pointerId = null;
             if (this.svg.hasPointerCapture(pointerId)) this.svg.releasePointerCapture(pointerId);
             this.addMark(stroke);
+        }
+        finishTextDrag() {
+            if (!this.textDrag) return;
+            const drag = this.textDrag, pointerId = this.pointerId;
+            this.textDrag = null; this.pointerId = null;
+            this.svg.removeAttribute('data-dragging-text');
+            if (this.svg.hasPointerCapture(pointerId)) this.svg.releasePointerCapture(pointerId);
+            if (!this.store.conflict && drag.moved && (drag.mark.x !== drag.original.x || drag.mark.y !== drag.original.y)) {
+                this.store.replace(this.store.marks.map(mark => mark.id === drag.mark.id ? drag.mark : mark));
+            } else this.paint();
         }
         addMark(mark) {
             const marks = this.store.marks.concat([mark]);

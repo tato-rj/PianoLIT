@@ -128,6 +128,22 @@ class ScoreAnnotationsTest extends ReviewTestCase
             ->assertJsonPath('marks.1.color', '#B87512');
     }
 
+    public function test_highlights_persist_and_require_bounded_stroke_data()
+    {
+        $this->actingAs($this->user, 'web');
+        $highlight = ['id' => 'highlight1', 'type' => 'highlight', 'page' => 1, 'color' => '#ffe066',
+            'width' => .02, 'points' => [['x' => .1, 'y' => .2], ['x' => .4, 'y' => .2]]];
+        $this->putJson($this->url(), $this->payload([$highlight]))->assertOk();
+        $this->getJson($this->url(null, $this->payload([])))->assertJsonPath('marks.0.type', 'highlight')
+            ->assertJsonPath('marks.0.color', '#ffe066');
+        unset($highlight['width']);
+        $this->putJson($this->url(), $this->payload([$highlight], 1))->assertStatus(422);
+        $highlight['width'] = .02;
+        unset($highlight['points']);
+        $this->putJson($this->url(), $this->payload([$highlight], 1))->assertStatus(422);
+        $this->getJson($this->url(null, $this->payload([])))->assertJsonPath('marks.0.width', .02);
+    }
+
     public function test_stale_first_write_does_not_create_a_row()
     {
         $this->actingAs($this->user, 'web');
@@ -188,7 +204,9 @@ class ScoreAnnotationsTest extends ReviewTestCase
     public function test_editor_has_annotation_tools_and_can_export_an_isolated_browser_fixture()
     {
         $html = view('webapp.piece.components.score-editor', ['piece' => $this->piece])->render();
-        foreach (['data-tool="pen"', 'data-tool="text"', 'data-tool="erase"', 'data-undo', 'data-redo', 'data-annotations-url', 'type="color"', 'fa-palette'] as $control) {
+        foreach (['data-tool="pen"', 'data-tool="text"', 'data-tool="erase"', 'data-tool="highlight"',
+            'data-undo', 'data-redo', 'data-clear-all', 'data-fullscreen', 'data-print',
+            'data-annotations-url', 'type="color"', 'fa-palette'] as $control) {
             $this->assertStringContainsString($control, $html);
         }
         if ($directory = getenv('SCORE_EDITOR_PREVIEW_DIR')) {

@@ -53,7 +53,9 @@
             
             @include('webapp.layouts.footer')
 
+            @unless(isset($nomenu) && $nomenu == true)
             @include('webapp.layouts.menu')
+            @endunless
             </div>
 
             @auth('web')

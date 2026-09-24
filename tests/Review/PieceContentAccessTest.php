@@ -87,10 +87,12 @@ class PieceContentAccessTest extends ReviewTestCase
 
     protected function assertFullContent()
     {
-        $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+        $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
             ->assertDontSee('data-media-preview=', false)->assertDontSee('id="score-preview"', false)
             ->assertDontSee('id="piece-upgrade-modal"', false)->assertSee('Download score')->assertSee('id="score-pdf"', false)
-            ->assertSee('id="score-editor"', false)->assertSee('data-tool="pen"', false);
+            ->assertSee('id="score-editor"', false)->assertSee('data-tool="pen"', false)
+            ->assertSee('id="launch-audio"', false)->assertSee('id="bottom-popup-content"', false);
+        $this->assertSame(1, substr_count($response->getContent(), 'id="bottom-popup"'));
         $this->get(route('webapp.pieces.audio', $this->piece))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->get(route('webapp.pieces.score', $this->piece))->assertOk();
