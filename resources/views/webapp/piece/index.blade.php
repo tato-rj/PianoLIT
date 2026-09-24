@@ -43,7 +43,7 @@
         background-position: center center;
         background-repeat: no-repeat;
 
-        filter: blur(25px);
+        filter: blur(20px);
         opacity: 0.5;
         transform: scale(1.05);
 
