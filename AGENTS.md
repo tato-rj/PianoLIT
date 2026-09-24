@@ -10,6 +10,8 @@ Media preview/blur is currently enforced in the browser. Sources still use publi
 
 Signed-in piece-page visits populate `recently_viewed_pieces`. Discover shows the latest 12 distinct pieces above Latest pieces, outside the shared feed cache. Never record guest visits or derive history ownership from request parameters. Deploy the history-table migration before serving this feature.
 
+Full-access web users (including super users) can annotate public-domain score PDFs. Markings belong to the authenticated account, route-bound piece, and PDF identity (score path hash plus PDF.js fingerprint); never share them between pieces or accounts. Annotation reads/writes use session-authenticated web routes and optimistic revisions to avoid overwriting another tab/device. The editor loads when the Score tab opens. Original public PDF URLs/downloads and mobile contracts remain unchanged; downloads contain the original PDF. Deploy `2026_09_23_120000_create_score_annotations_table.php` before serving the editor.
+
 ## Project map
 
 - PHP application: `app/`; shared helpers: `support/helpers.php`.

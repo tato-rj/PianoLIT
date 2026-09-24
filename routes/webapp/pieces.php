@@ -18,6 +18,9 @@ Route::namespace('WebApp')->prefix('pieces')->name('pieces.')->group(function() 
 
 	Route::get('{piece}/audio', 'PiecesController@audio')->name('audio');
 
+    Route::get('{piece}/score/annotations', 'ScoreAnnotationsController@show')->middleware('auth:web')->name('score.annotations.show');
+    Route::put('{piece}/score/annotations', 'ScoreAnnotationsController@update')->middleware('auth:web')->name('score.annotations.update');
+
 	Route::get('{piece}/score', 'PiecesController@score')->name('score');
 
 	Route::get('{piece}/save-to', 'PiecesController@saveTo')->middleware('auth:web')->name('save-to');

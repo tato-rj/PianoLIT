@@ -1,0 +1,94 @@
+.score-editor {
+    [hidden] { display: none !important; }
+    .score-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 10px;
+        label { min-width: 80px; }
+    }
+    .score-toolbar .score-color-button {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+        color: #5e656c;
+        cursor: pointer;
+        &:focus-within { outline: 2px solid #4b7bec; outline-offset: 2px; }
+        &.disabled { opacity: .5; cursor: default; }
+    }
+    .score-color-input {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border: 0;
+        opacity: 0;
+        cursor: inherit;
+    }
+    .score-navigation {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .score-scroll {
+        background: #eef0f3;
+        overflow: auto;
+        max-height: 80vh;
+        overscroll-behavior: contain;
+    }
+    .score-sheet {
+        position: relative;
+        background: white;
+        margin: 4px auto;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+        width: 100%;
+        min-height: 180px;
+    }
+    canvas { display: block; width: 100%; height: 100%; }
+    .score-markings {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        user-select: none;
+        -webkit-user-select: none;
+        path, text { pointer-events: none; }
+        &[data-tool="text"] text { pointer-events: all; }
+        &[data-tool="erase"] {
+            path { pointer-events: stroke; }
+            text { pointer-events: all; }
+        }
+    }
+    .score-text-input {
+        position: absolute;
+        z-index: 1;
+        display: block;
+        box-sizing: content-box;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        outline: none;
+        box-shadow: none;
+        background: transparent;
+        font-family: Arial, sans-serif;
+        font-weight: 600;
+        line-height: 1.2;
+        height: 1.2em;
+        caret-color: currentColor;
+    }
+    button, select { min-height: 36px; }
+    @media (max-width: 575px) {
+        .score-toolbar > .btn-group:first-child { width: 100%; }
+        .score-toolbar label { flex: 1; }
+    }
+}

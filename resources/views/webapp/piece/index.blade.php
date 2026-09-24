@@ -111,6 +111,25 @@ video::-webkit-media-controls-enclosure {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script src="{{ mix('js/views/piece-access.js') }}"></script>
+@if($hasMediaAccess && $piece->score_path && $piece->isPublicDomain)
+<script src="{{ mix('js/views/score-editor.js') }}"></script>
+<script>
+const scoreEditorElement = document.getElementById('score-editor');
+if (scoreEditorElement) {
+    let scoreEditor = null;
+    function showScoreEditor() {
+        if (!scoreEditorElement.offsetWidth) return;
+        if (!scoreEditor) {
+            scoreEditor = new ScoreEditor.Editor(scoreEditorElement, pdfjsLib, axios);
+        } else if (scoreEditor.pdf) {
+            scoreEditor.render(scoreEditor.page).catch(function () { scoreEditor.renderError(); });
+        }
+    }
+    $('a[data-toggle="tab"]').on('shown.bs.tab', showScoreEditor);
+    showScoreEditor();
+}
+</script>
+@endif
 @unless($hasMediaAccess)
 <script>
 PieceAccess.installPreviewGuards(document, function () {
@@ -336,123 +355,6 @@ var url = document.location.toString();
 if (url.match('#')) {
   $('.nav-tabs a[href="#tab-' + url.split('#')[1] + '"]').tab('show');
 }
-</script>
-
-<script type="text/javascript">
-$('#pdf-share').click(function() {
-	let url = $(this).data('url');
-
-	if (navigator.share) {
-	    navigator.share({
-	      title: "{{$piece->medium_name}}",
-	      url: url
-	    }).then(() => {
-	      console.log('Thanks for sharing!');
-	    })
-	    .catch(console.log('Thanks for sharing!'));
-	} else {
-		alert('Sorry, sharing is not supported by this browser');
-	}	
-});
-</script>
-<script type="text/javascript">
-$(document).ready(function() {
-    if (! document.getElementById('score-pdf')) return;
-
-	const pdfurl = "{{storage($piece->score_path)}}";
-
-	if (safari()) {
-		$('.ios-only').show();
-		$('.non-ios').hide();
-	} else {
-		$('.ios-only').hide();
-		$('.non-ios').show();
-
-		let pdfDoc = null, pageNum = 1, numPages = 0, pageIsRendering = false, pageNumIsPending = null;
-
-		const scale = 1.5, canvas = document.querySelector('#score-pdf'), ctx = canvas.getContext('2d'), $loading = $('#pdf-loading');
-
-		function renderPage(num) {
-			pageIsRendering = true;
-			$loading.show();
-			pdfDoc.getPage(num).then(page => {
-				const viewport = page.getViewport({scale: scale});
-				canvas.height = viewport.height;
-				canvas.width = viewport.width;
-
-				page.render({
-					canvasContext: ctx,
-					viewport: viewport
-				}).promise.then(() => {
-					pageIsRendering = false;
-					$loading.hide();
-					if (pageNumIsPending !== null) {
-						renderPage(pageNumIsPending);
-						pageNumIsPending = null;
-					}
-				});
-			});
-		}
-
-		function queueRenderPage(num) {
-			if (pageIsRendering) {
-				pageNumIsPending = num;
-			} else {
-				renderPage(num);
-			}
-		}
-
-		function showPrevPage() {
-			$('.pdf-control[right]').show();
-
-			if (pageNum <= 2)
-				$('.pdf-control[left]').hide();
-
-			if (pageNum <= 1)
-				return;
-
-			pageNum--;
-			queueRenderPage(pageNum);
-		}
-
-		function showNextPage() {
-			$('.pdf-control[left]').show();
-
-			if (pageNum >= numPages - 1)
-				$('.pdf-control[right]').hide();
-
-			if (pageNum >= numPages)
-				return;
-
-			pageNum++;
-			queueRenderPage(pageNum);
-		}
-
-		function isLastPage() {
-			return pageNum <= 1;
-		}
-
-		function isFirstPage() {
-			return pageNum >= pdfDoc.numPages;
-		}
-
-		$('.pdf-control[left]').click(function() {showPrevPage()});
-
-		$('.pdf-control[right]').click(function() {showNextPage()});
-
-		pdfjsLib.getDocument({url: pdfurl}).promise.then(pdfDoc_ => {
-			pdfDoc = pdfDoc_;
-			numPages = pdfDoc.numPages;
-
-			if (numPages < 2)
-				$('.pdf-control').hide();
-
-			renderPage(pageNum);
-		}).catch(error => {
-			console.log(error);
-		});
-	}
-});
 </script>
 
 <script type="text/javascript">

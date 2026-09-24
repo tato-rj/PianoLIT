@@ -1,0 +1,107 @@
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+
+module.exports = async function () {
+    const window = {};
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/score-editor.js'), 'utf8'), {window, Blob: class { constructor(parts) { this.size = Buffer.byteLength(parts.join("")); } }});
+    const {Markings, Editor, point, roundPoint} = window.ScoreEditor;
+    const a = {id: 'a', page: 1, type: 'text', text: '1 2 3'};
+    const b = {id: 'b', page: 2, type: 'stroke', points: [{x: .3, y: .4}]};
+    let database = {revision: 0, marks: []};
+    const store = new Markings(async data => { database = {revision: data.revision + 1, marks: data.marks}; return {revision: database.revision}; });
+    store.load(database);
+    assert.strictEqual(store.dirty, false);
+    store.replace([a]); store.replace([a, b]); store.undo();
+    assert.strictEqual(store.marks.length, 1);
+    store.redo(); assert.strictEqual(store.marks[1].page, 2);
+    await store.flush(); assert.strictEqual(store.dirty, false);
+    const reopened = new Markings(() => {});
+    reopened.load(database); assert.strictEqual(reopened.marks[0].text, '1 2 3');
+    store.replace([]); await store.flush(); assert.strictEqual(database.marks.length, 0, 'Erasing every mark must persist');
+    assert.throws(() => reopened.load('<html>sign in</html>'));
+
+    const textStore = new Markings(async data => ({revision: data.revision + 1}));
+    textStore.load({revision: 0, marks: []});
+    const editor = Object.create(Editor.prototype);
+    editor.store = textStore;
+    editor.paint = () => {};
+    editor.message = () => {};
+    let removed = false;
+    const input = {value: '   ', remove: () => { removed = true; }};
+    editor.textDraft = {mark: a, input, changed: false};
+    editor.syncText();
+    assert.strictEqual(textStore.dirty, false, 'Empty text must not create a save');
+    input.value = '1'; editor.syncText();
+    input.value = '1 2'; editor.syncText();
+    assert.strictEqual(textStore.marks[0].text, '1 2', 'Typing updates the same annotation in place');
+    assert.strictEqual(textStore.undoStack.length, 1, 'One typing session is one undo action');
+    await textStore.flush();
+    assert.strictEqual(textStore.dirty, false, 'Text saves while the cursor is still active');
+    input.value = ''; editor.syncText(); editor.finishText();
+    assert.strictEqual(textStore.marks.length, 0, 'Clearing saved text removes its annotation');
+    assert.strictEqual(editor.textDraft, null); assert.strictEqual(removed, true);
+    textStore.undo(); assert.strictEqual(textStore.marks.length, 0);
+    textStore.load({revision: 2, marks: [a]});
+    editor.textDraft = {mark: a, input: {value: '5'}, changed: false};
+    editor.syncText();
+    assert.strictEqual(textStore.marks.length, 1, 'Editing existing text must not duplicate it');
+    textStore.undo(); assert.strictEqual(textStore.marks[0].text, a.text);
+
+    const pen = Object.create(Editor.prototype);
+    pen.ready = true; pen.rendering = false; pen.tool = 'pen'; pen.pointerId = null; pen.page = 1;
+    pen.store = new Markings(async data => ({revision: data.revision + 1}));
+    pen.store.load({revision: 0, marks: []});
+    pen.find = selector => selector === '[data-color]' ? {value: '#20252b'} : null;
+    pen.finishText = () => {}; pen.paint = () => {};
+    pen.svg = {getBoundingClientRect: () => ({left: 0, top: 0, width: 500, height: 800}),
+        setPointerCapture: () => {}, hasPointerCapture: () => false};
+    pen.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 1, preventDefault: () => {}});
+    pen.move({clientX: 100, clientY: 160, pointerId: 1, preventDefault: () => {}});
+    pen.finishStroke();
+    assert.strictEqual(pen.store.marks.length, 1, 'Pen draws when the width selector is absent');
+    assert.strictEqual(pen.store.marks[0].width, .004);
+    assert.strictEqual(pen.store.marks[0].points.length, 2);
+
+    const requests = [];
+    const concurrent = new Markings(data => new Promise((resolve, reject) => requests.push({data, resolve, reject})));
+    concurrent.load({revision: 0, marks: []}); concurrent.replace([a]);
+    const firstSave = concurrent.flush();
+    concurrent.replace([a, b]); await concurrent.flush();
+    assert.strictEqual(requests.length, 1, 'Only one save may be in flight');
+    requests[0].resolve({revision: 1});
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    assert.strictEqual(requests.length, 2);
+    assert.strictEqual(requests[1].data.revision, 1);
+    assert.strictEqual(requests[1].data.marks.length, 2);
+    requests[1].resolve({revision: 2}); await firstSave;
+    assert.strictEqual(concurrent.dirty, false);
+
+    concurrent.replace([b]);
+    const failed = concurrent.flush(); requests[2].reject(new Error('offline')); await failed;
+    assert.strictEqual(concurrent.state, 'error'); assert.strictEqual(concurrent.dirty, true);
+    concurrent.replace([a]);
+    const retry = concurrent.flush();
+    assert.strictEqual(requests[3].data.marks[0], b, 'Retry the original snapshot if its response was lost');
+    assert.strictEqual(requests[3].data.revision, 2);
+    requests[3].resolve({revision: 3});
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    requests[4].resolve({revision: 4}); await retry;
+    assert.strictEqual(concurrent.marks[0], a); assert.strictEqual(concurrent.dirty, false);
+
+    concurrent.replace([b]);
+    const conflict = concurrent.flush(); requests[5].reject({response: {status: 409}}); await conflict;
+    assert.strictEqual(concurrent.conflict, true); assert.strictEqual(concurrent.dirty, true);
+    await concurrent.flush(); assert.strictEqual(requests.length, 6, 'A conflict cannot silently overwrite another device');
+
+    const invalid = new Markings(async () => '<html>login</html>');
+    invalid.load({revision: 0, marks: []}); invalid.replace([a]); await invalid.flush();
+    assert.strictEqual(invalid.state, 'error'); assert.strictEqual(invalid.dirty, true);
+    const p = point({clientX: 350, clientY: 500}, {left: 100, top: 100, width: 500, height: 800});
+    assert.strictEqual(p.x, .5); assert.strictEqual(p.y, .5);
+    const zoomed = point({clientX: 600, clientY: 900}, {left: 100, top: 100, width: 1000, height: 1600});
+    assert.strictEqual(zoomed.x, p.x); assert.strictEqual(zoomed.y, p.y);
+    assert.strictEqual(roundPoint({x: 0.333333333, y: 0}).x, .33333);
+    console.log('Passed: score annotation persistence, undo/redo, page coordinates, serialized autosave, retries and conflicts.');
+};
