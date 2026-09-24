@@ -11,7 +11,7 @@
 		</div>
 		@endif
 
-		<div class="col-lg-6 col-12 mb-4">
+		<div class="{{$piece->media['performance'] ? 'col-lg-6 col-12' : 'col-12'}} mb-4">
 				<div class="d-flex flex- flex-wrap mb-3">
 					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
 						@fa(['icon' => 'file-alt']){{$piece->number_of_pages}}
