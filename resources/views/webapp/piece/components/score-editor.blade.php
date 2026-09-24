@@ -30,14 +30,6 @@
                 @endif
             </div>
         </div>
-        <div data-text-options class="mt-3" hidden>
-            <label class="small mb-0">Text size
-                <select data-text-size data-edit-control class="form-control form-control-sm" disabled>
-                    <option value="0.02">Small</option><option value="0.03" selected>Medium</option><option value="0.045">Large</option>
-                </select>
-            </label>
-            <p class="small text-muted mt-1 mb-0">Click the score and type. Click existing text to edit it.</p>
-        </div>
     </div>
     <div class="score-navigation py-2">
         <div class="d-flex align-items-center">

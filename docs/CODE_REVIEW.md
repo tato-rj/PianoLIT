@@ -226,3 +226,14 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - Cause: the toolbar's Pen width dropdown was commented out, but the Pen pointer handler still dereferenced `[data-width]`. A stroke therefore failed before pointer capture or save.
 - Pen now uses the prior Medium width (`0.004`) when that optional control is absent and still reads a selected width if the control exists. Tool toggling and annotation persistence are unchanged.
 - Verification: JavaScript regression with the width control absent draws a two-point stroke at the Medium width. A local browser fixture showed a visible stroke and “All markings saved.” Isolated production asset build and `git diff --check` passed. No backend, migration, or mobile change.
+
+### 2026-09-23 — Score box follows PDF page height (implemented locally)
+
+- Removed the editor's `80vh` height cap and inner vertical scrolling. The box now grows with the PDF page at the current zoom; the browser page handles vertical scrolling. Horizontal scrolling remains available when zoom makes the page wider than the box.
+- Affected files: score-editor SCSS, tracked `public/css/app.css`, and its Mix manifest entry. No JavaScript, route, persistence, or mobile behavior changed.
+- Verification: isolated production asset build and `git diff --check` passed. In a local browser fixture, the default score box and its scroll content were both 1,107 px tall for a 1,083 px PDF sheet; at 125% zoom both grew to 1,378 px while horizontal content exceeded the 870 px box width. No inner vertical overflow was present in either view. No production deployment was performed.
+
+### 2026-09-23 — Default Small score text (implemented locally)
+
+- Removed the Text size selector and its extra instruction block from the score toolbar. Text remains a toggleable tool: selecting it and clicking the PDF opens the inline cursor. New text marks use the former Small setting (`size = 0.02`); existing saved marks retain their own sizes.
+- Removed the JavaScript dependency on the deleted controls. A JavaScript regression checks that a new text mark starts at Small with no selector. The local browser fixture verified the simplified toolbar, an inline cursor, and text rendered at 16.92 px on an 846 px score sheet (the expected 2%). The isolated template test, JavaScript regressions, production asset build, and `git diff --check` passed. No backend, database, or mobile change.

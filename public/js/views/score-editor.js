@@ -130,7 +130,6 @@
                 const selected = el.getAttribute('data-tool') === this.tool;
                 el.classList.toggle('active', selected); el.setAttribute('aria-pressed', String(selected));
             });
-            this.find('[data-text-options]').hidden = this.tool !== 'text';
         }
         selectTool(tool) {
             const next = this.tool === tool ? 'read' : tool;
@@ -251,7 +250,7 @@
             const p = roundPoint(point(event, this.svg.getBoundingClientRect()));
             const mark = {id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2), page: this.page, color: this.find('[data-color]').value};
             if (this.tool === 'text') {
-                this.beginText(Object.assign(mark, {type: 'text', text: '', size: Number(this.find('[data-text-size]').value), x: p.x, y: p.y}));
+                this.beginText(Object.assign(mark, {type: 'text', text: '', size: 0.02, x: p.x, y: p.y}));
             } else {
                 const widthControl = this.find('[data-width]');
                 const width = widthControl ? Number(widthControl.value) : 0.004;

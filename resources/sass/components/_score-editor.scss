@@ -41,9 +41,8 @@
     }
     .score-scroll {
         background: #eef0f3;
-        overflow: auto;
-        max-height: 80vh;
-        overscroll-behavior: contain;
+        overflow-x: auto;
+        overflow-y: hidden;
     }
     .score-sheet {
         position: relative;

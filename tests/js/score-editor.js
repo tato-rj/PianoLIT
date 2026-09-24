@@ -64,6 +64,19 @@ module.exports = async function () {
     assert.strictEqual(pen.store.marks[0].width, .004);
     assert.strictEqual(pen.store.marks[0].points.length, 2);
 
+    let newText;
+    const textTool = Object.create(Editor.prototype);
+    textTool.ready = true; textTool.rendering = false; textTool.tool = 'text'; textTool.pointerId = null; textTool.page = 1;
+    textTool.store = new Markings(async data => ({revision: data.revision + 1}));
+    textTool.store.load({revision: 0, marks: []});
+    textTool.find = selector => selector === '[data-color]' ? {value: '#20252b'} : null;
+    textTool.finishText = () => {};
+    textTool.beginText = mark => { newText = mark; };
+    textTool.svg = {getBoundingClientRect: () => ({left: 0, top: 0, width: 500, height: 800})};
+    textTool.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 1,
+        target: {closest: () => null}, preventDefault: () => {}});
+    assert.strictEqual(newText.size, .02, 'Text defaults to Small without a size selector');
+
     const requests = [];
     const concurrent = new Markings(data => new Promise((resolve, reject) => requests.push({data, resolve, reject})));
     concurrent.load({revision: 0, marks: []}); concurrent.replace([a]);
