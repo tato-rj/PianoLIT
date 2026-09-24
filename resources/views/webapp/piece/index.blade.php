@@ -50,36 +50,39 @@
         z-index: 0;
     }
 
-    /* Sharp original image */
-    .piece-background::after {
-        content: "";
-        position: absolute;
-        inset: 0;
+.piece-background::after {
+    content: "";
+    position: absolute;
 
-        background-image: var(--piece-bg);
-        background-size: auto 180%;
-        background-position: center center;
-        background-repeat: no-repeat;
+    top: 0;
+    bottom: 0;
 
-        /* Fade sharp image into blurred background */
+    /* Width of sharp center image */
+    width: 62%;
+    left: 19%;
+
+    background-image: var(--piece-bg);
+    background-size: auto 180%;
+    background-position: center center;
+    background-repeat: no-repeat;
+
 -webkit-mask-image: linear-gradient(
     to right,
-    transparent 20%,
-    black 27%,
-    black 73%,
-    transparent 80%
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
 );
 
 mask-image: linear-gradient(
     to right,
-    transparent 20%,
-    black 27%,
-    black 73%,
-    transparent 80%
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
 );
 
-        z-index: 1;
-    }
+    z-index: 1;
 }
 
 
