@@ -6,7 +6,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
 
-/* MOBILE / DEFAULT */
+{{-- /* MOBILE / DEFAULT */
 .piece-background {
     width: 100%;
     height: 220px;
@@ -50,40 +50,118 @@
         z-index: 0;
     }
 
-.piece-background::after {
-    content: "";
-    position: absolute;
+    /* Sharp original image */
+    .piece-background::after {
+        content: "";
+        position: absolute;
+        inset: 0;
 
-    top: 0;
-    bottom: 0;
+        background-image: var(--piece-bg);
+        background-size: auto 180%;
+        background-position: center center;
+        background-repeat: no-repeat;
 
-    /* Width of sharp center image */
-    width: 62%;
-    left: 19%;
+        z-index: 1;
+    }
+} --}}
 
+
+/* MOBILE / DEFAULT */
+.piece-background {
+    width: 100%;
+    height: 220px;
+
+    background-color: #26364a;
     background-image: var(--piece-bg);
-    background-size: auto 180%;
-    background-position: center center;
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
 
--webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 20%,
-    black 80%,
-    transparent 100%
-);
+    clip-path: ellipse(85% 100% at 50% 0%);
 
-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 20%,
-    black 80%,
-    transparent 100%
-);
-
-    z-index: 1;
+    position: relative;
+    overflow: hidden;
 }
+
+/* Sharp image not needed separately on mobile */
+.piece-background-sharp {
+    display: none;
+}
+
+
+/* DESKTOP */
+@media (min-width: 769px) {
+
+    .piece-background {
+        background-image: none;
+    }
+
+    /* Blurred full-width background */
+    .piece-background::before {
+        content: "";
+        position: absolute;
+        inset: -30px;
+
+        background-image: var(--piece-bg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        filter: blur(20px);
+        opacity: 0.5;
+        transform: scale(1.05);
+
+        z-index: 0;
+    }
+
+
+    /* Sharp center image */
+    .piece-background-sharp {
+        display: block;
+
+        position: absolute;
+        top: -30%;
+        left: 50%;
+        transform: translateX(-50%);
+
+        height: 180%;
+        width: auto;
+        max-width: none;
+
+        /*
+         * Fade the ACTUAL image edges completely
+         * into the blurred image underneath.
+         */
+        -webkit-mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(0,0,0,0.15) 4%,
+            rgba(0,0,0,0.5) 9%,
+            black 18%,
+            black 82%,
+            rgba(0,0,0,0.5) 91%,
+            rgba(0,0,0,0.15) 96%,
+            transparent 100%
+        );
+
+        mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(0,0,0,0.15) 4%,
+            rgba(0,0,0,0.5) 9%,
+            black 18%,
+            black 82%,
+            rgba(0,0,0,0.5) 91%,
+            rgba(0,0,0,0.15) 96%,
+            transparent 100%
+        );
+
+        z-index: 1;
+    }
+}
+
+
+
 
 
 .timeline-event:before {

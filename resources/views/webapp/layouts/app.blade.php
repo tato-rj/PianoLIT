@@ -43,7 +43,17 @@
    
     <div id="webapp">
         @if(request()->routeIs('webapp.pieces.show'))
-        <div class="piece-background" style="--piece-bg: url('{{ asset($piece->image_background) }}');"></div>
+        {{-- <div class="piece-background" style="--piece-bg: url('{{ asset($piece->image_background) }}');"></div> --}}
+<div class="piece-background"
+     style="--piece-bg: url('{{ asset($piece->image_background) }}');">
+
+    <img
+        src="{{ asset($piece->image_background) }}"
+        class="piece-background-sharp"
+        alt=""
+    >
+
+</div>
         @endif
 
         <div class="container">
