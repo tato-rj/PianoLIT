@@ -6,27 +6,68 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
 
-    .piece-background {
+.piece-background {
+    position: relative;
+    width: 100%;
+    height: 220px;
     background-color: #26364a;
-  width: 100%;
-  height: 220px;
-  background-position: center center;
-  background-repeat: no-repeat;
-  clip-path: ellipse(85% 100% at 50% 0%);
+    clip-path: ellipse(85% 100% at 50% 0%);
+    overflow: hidden;
+
+    /* image is supplied by the pseudo-elements on desktop */
+    background-image: none !important;
+}
+
+/* BLURRED image behind */
+.piece-background::before {
+    content: "";
+    position: absolute;
+    inset: -30px;
+
+    background-image: var(--piece-bg);
+    background-size: cover;
+    background-position: center;
+
+    filter: blur(25px);
+    opacity: 0.65;
+    transform: scale(1.05);
+
+    z-index: 0;
+}
+
+/* SHARP original image in front */
+.piece-background::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image: var(--piece-bg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto 150%;
+
+    z-index: 1;
+}
+{{-- .piece-background {
+	background-color: #26364a;
+	width: 100%;
+	height: 220px;
+	background-position: center center;
+	background-repeat: no-repeat;
+	clip-path: ellipse(85% 100% at 50% 0%);
 }
 
 .piece-background::before {
     content: "";
     position: absolute;
     inset: 0;
-
     background-image: url({{asset($piece->image_background)}});
     background-size: cover;
     background-position: center center;
     height: 50%;
     filter: blur(25px);
     opacity: 0.7;
-}
+} --}}
 
 .timeline-event:before {
 	content: '';

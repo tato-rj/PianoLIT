@@ -43,9 +43,7 @@
    
     <div id="webapp">
         @if(request()->routeIs('webapp.pieces.show'))
-        <div class="piece-background" style="background-image: url({{asset($piece->image_background)}});">
-    
-</div>
+        <div class="piece-background" style="--piece-bg: url('{{ asset($piece->image_background) }}');"></div>
         @endif
 
         <div class="container">
