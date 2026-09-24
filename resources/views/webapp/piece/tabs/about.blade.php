@@ -12,17 +12,17 @@
 		@endif
 
 		<div class="{{$piece->media['performance'] ? 'col-lg-6 col-12' : 'col-12'}} mb-4">
-				<div class="d-flex flex- flex-wrap mb-3">
-					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-						@fa(['icon' => 'file-alt']){{$piece->number_of_pages}}
-					</div>
-					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-						@fa(['icon' => 'palette']){{$piece->period_name}}
-					</div>
-					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-						@fa(['icon' => 'music']){{$piece->key}}
-					</div>
+			<div class="d-flex {{$piece->media['performance'] ? null : 'flex-center'}} flex-wrap mb-3">
+				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+					@fa(['icon' => 'file-alt']){{$piece->number_of_pages}}
 				</div>
+				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+					@fa(['icon' => 'palette']){{$piece->period_name}}
+				</div>
+				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+					@fa(['icon' => 'music']){{$piece->key}}
+				</div>
+			</div>
 			@if($piece->hasDescription())
 			<div class="mb-3">
 				<h5 class="mb-2">What's this piece like?</h5>
