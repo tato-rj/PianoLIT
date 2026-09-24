@@ -4,12 +4,16 @@
 
 	<div class="d-flex px-4">
 		<div class="piece-header w-100">
-			@include('webapp.components.piece.level')
+			<a href="{{route('webapp.search.results', ['search' => $piece->extended_level_name])}}">
+				@include('webapp.components.piece.level')
+			</a>
 			<h3 class="mt-2 mb-1">{{$piece->medium_name}}</h3>
 			<p class="text-muted">{{$piece->attribution}}{{$piece->composer->name}}</p>
 		</div>
 
-		<img src="{{$piece->composer->cover_image}}" style="width: 100px; top: -70px; left: 30px;" class="rounded-circle shadow border border-white border-1x position-absolute piece__composer-image">
+		<a href="{{route('webapp.search.results', ['search' => $piece->composer->name])}}" class="">
+			<img src="{{$piece->composer->cover_image}}" style="width: 100px; top: -70px; left: 30px;" class="rounded-circle shadow border border-white border-1x position-absolute piece__composer-image">
+		</a>
 	</div>
 
 	<div class="position-absolute d-flex align-items-center" style="right: 0; bottom: 50%; transform: translateY(50%);">
