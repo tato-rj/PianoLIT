@@ -13,7 +13,8 @@ module.exports = async function () {
         remove() { if (this.parent) this.parent.children.splice(this.parent.children.indexOf(this), 1); },
         setAttribute(name, value) { this.attributes[name] = String(value); },
         getContext: () => ({})});
-    const document = {body, createElement: element, createElementNS: (namespace, tag) => element(tag)};
+    const head = {children: [], appendChild(child) { this.children.push(child); child.parent = this; }};
+    const document = {body, head, createElement: element, createElementNS: (namespace, tag) => element(tag)};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/score-editor.js'), 'utf8'), {window, document, Blob: class { constructor(parts) { this.size = Buffer.byteLength(parts.join("")); } }});
     const {Markings, Editor, point, roundPoint} = window.ScoreEditor;
     const a = {id: 'a', page: 1, type: 'text', text: '1 2 3'};
@@ -132,7 +133,7 @@ module.exports = async function () {
     const printEditor = Object.create(Editor.prototype);
     const printedPages = [], printMessages = [];
     printEditor.pdf = {numPages: 3, getPage: async number => ({
-        getViewport: ({scale}) => ({width: 500 * scale, height: 700 * scale}),
+        getViewport: ({scale}) => ({width: 612 * scale, height: 792 * scale}),
         render: () => { printedPages.push(number); return {promise: Promise.resolve()}; }
     })};
     printEditor.store = new Markings(async data => ({revision: data.revision + 1}));
@@ -153,14 +154,16 @@ module.exports = async function () {
     assert.strictEqual(printEditor.page, 2, 'Printing must leave the open score page unchanged');
     assert.strictEqual(body.children.length, 1);
     assert.strictEqual(body.children[0].children.length, 3);
+    assert.strictEqual(head.children[0].textContent, '@page { size: 612pt 792pt; margin: 0; }', 'Print paper matches the PDF instead of the browser default');
     assert.strictEqual(body.children[0].children[0].style.width, '98%', 'Print page nearly fills the paper with room for pagination rounding');
-    assert.strictEqual(body.children[0].children[0].style.aspectRatio, '500 / 700', 'Print preserves the original PDF aspect ratio');
+    assert.strictEqual(body.children[0].children[0].style.aspectRatio, '612 / 792', 'Print preserves the original PDF aspect ratio');
     assert.strictEqual(body.children[0].children[0].children[0].style.width, '100%', 'Canvas fits its print page');
     assert.strictEqual(body.children[0].children[0].children[1].children[0].tag, 'text');
     assert.strictEqual(body.children[0].children[1].children[1].children.length, 0);
     assert.strictEqual(body.children[0].children[2].children[1].children[0].tag, 'path');
     afterPrint();
     assert.strictEqual(body.children.length, 0, 'Print pages are removed after the dialog closes');
+    assert.strictEqual(head.children.length, 0, 'Temporary paper size is removed after printing');
     assert.strictEqual(bodyClasses.has('score-printing'), false);
     printEditor.pdf.getPage = async () => { throw new Error('PDF page failed'); };
     await printEditor.printScore();

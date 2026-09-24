@@ -3,12 +3,13 @@
 	@include('webapp.components.back')
 
 	<div class="d-flex px-4">
-		<img src="{{$piece->composer->cover_image}}" style="width: 100px; top: -60px; left: 30px;" class="rounded-circle shadow border border-white border-1x position-absolute piece__composer-image">
-		<div class="piece-header" style="margin-left: 120px;">
+		<div class="piece-header w-100">
 			@include('webapp.components.piece.level')
-			<h4 class="mt-2 mb-1">{{$piece->medium_name}}</h4>
+			<h3 class="mt-2 mb-1">{{$piece->medium_name}}</h3>
 			<p class="text-muted">{{$piece->attribution}}{{$piece->composer->name}}</p>
 		</div>
+
+		<img src="{{$piece->composer->cover_image}}" style="width: 100px; top: -70px; right: 60px;" class="rounded-circle shadow border border-white border-1x position-absolute piece__composer-image">
 	</div>
 
 	<div class="position-absolute d-flex align-items-center" style="right: 0; bottom: 50%; transform: translateY(50%);">

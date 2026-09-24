@@ -282,15 +282,19 @@
             this.finishTextDrag(); this.finishStroke(); this.finishText();
             this.printing = true; this.controls();
             if (this.printPages) this.printPages.remove();
+            if (this.printPageStyle) this.printPageStyle.remove();
             const pages = document.createElement('div');
             pages.className = 'score-print-pages';
             this.printPages = pages;
             const marks = this.store.marks.slice();
+            let pageStyle;
+            let paper;
             try {
                 for (let number = 1; number <= this.pdf.numPages; number++) {
                     this.message('Preparing page ' + number + ' of ' + this.pdf.numPages + ' for print\u2026');
                     const page = await this.pdf.getPage(number);
                     const original = page.getViewport({scale: 1});
+                    if (number === 1) paper = original;
                     const ratio = original.height / original.width;
                     const scale = Math.min(1200 / original.width, Math.sqrt(2200000 / (original.width * original.height)));
                     const viewport = page.getViewport({scale});
@@ -307,11 +311,17 @@
                     this.paintMarks(svg, number, ratio, marks);
                     sheet.appendChild(canvas); sheet.appendChild(svg); pages.appendChild(sheet);
                 }
+                if (!paper) throw new Error('PDF has no printable pages');
+                pageStyle = document.createElement('style');
+                pageStyle.textContent = '@page { size: ' + paper.width + 'pt ' + paper.height + 'pt; margin: 0; }';
+                document.head.appendChild(pageStyle);
+                this.printPageStyle = pageStyle;
                 document.body.appendChild(pages);
                 document.body.classList.add('score-printing');
                 root.addEventListener('afterprint', () => {
                     if (this.printPages !== pages) return;
                     pages.remove(); this.printPages = null;
+                    pageStyle.remove(); this.printPageStyle = null;
                     document.body.classList.remove('score-printing');
                     this.changed();
                 }, {once: true});
@@ -319,6 +329,8 @@
                 this.changed();
             } catch (error) {
                 pages.remove(); this.printPages = null;
+                if (pageStyle) pageStyle.remove();
+                this.printPageStyle = null;
                 document.body.classList.remove('score-printing');
                 this.message('Could not prepare every score page for printing. Please try again.', true);
             } finally {

@@ -54,15 +54,14 @@
 	.piece__composer-image {
 		width: 90px !important;
 		top: -66px !important;
-		left: 0 !important;
+		right: 0 !important;
 	}
 
 	.piece-header {
-		margin-left: 0 !important;
-		text-align: right !important;
-		width: 100%;
-		
-		h4 {
+		text-align: left !important;
+		margin-left: 10px !important;
+
+		h3 {
 			font-size: 1.3rem !important;
 		}
 	}

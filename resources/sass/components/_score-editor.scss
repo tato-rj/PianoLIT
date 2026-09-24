@@ -273,7 +273,6 @@
 }
 body.score-editor-fullscreen-open { overflow: hidden; }
 .score-print-pages { display: none; }
-@page { margin: 0; }
 @media print {
     body.score-printing { width: 100%; margin: 0; padding: 0; }
     body.score-editor-fullscreen-open { overflow: visible; }
