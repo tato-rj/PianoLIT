@@ -6,47 +6,63 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
 
+/* MOBILE / DEFAULT */
 .piece-background {
-    position: relative;
     width: 100%;
     height: 220px;
+
     background-color: #26364a;
-    clip-path: ellipse(85% 100% at 50% 0%);
-    overflow: hidden;
-
-    /* image is supplied by the pseudo-elements on desktop */
-    background-image: none !important;
-}
-
-/* BLURRED image behind */
-.piece-background::before {
-    content: "";
-    position: absolute;
-    inset: -30px;
-
     background-image: var(--piece-bg);
     background-size: cover;
-    background-position: center;
+    background-position: center center;
+    background-repeat: no-repeat;
 
-    filter: blur(25px);
-    opacity: 0.65;
-    transform: scale(1.05);
-
-    z-index: 0;
+    clip-path: ellipse(85% 100% at 50% 0%);
 }
 
-/* SHARP original image in front */
-.piece-background::after {
-    content: "";
-    position: absolute;
-    inset: 0;
 
-    background-image: var(--piece-bg);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: auto 150%;
+/* DESKTOP */
+@media (min-width: 769px) {
 
-    z-index: 1;
+    .piece-background {
+        position: relative;
+        overflow: hidden;
+
+        /* pseudo-elements handle the image */
+        background-image: none;
+    }
+
+    /* Blurred image filling entire width */
+    .piece-background::before {
+        content: "";
+        position: absolute;
+        inset: -30px;
+
+        background-image: var(--piece-bg);
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+
+        filter: blur(25px);
+        opacity: 0.5;
+        transform: scale(1.05);
+
+        z-index: 0;
+    }
+
+    /* Sharp original image */
+    .piece-background::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+
+        background-image: var(--piece-bg);
+        background-size: auto 160%;
+        background-position: center center;
+        background-repeat: no-repeat;
+
+        z-index: 1;
+    }
 }
 {{-- .piece-background {
 	background-color: #26364a;
