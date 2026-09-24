@@ -31,7 +31,7 @@
 						@fa(['icon' => 'share']) Share this piece
 					</a>
 
-					<a class="cursor-pointer toggle-favorite link-none mb-3 px-3">
+					<a class="cursor-pointer toggle-favorite link-none mb-3 px-3 d-block d-md-none">
 						@include('webapp.components.favorite')<span>Manage favorites</span>
 					</a>
 				</div>

@@ -40,27 +40,34 @@
         @include('layouts.html.google.manager-body')
     @endauth
    
-    <div id="webapp" class="container">
+    <div id="webapp">
+        @if(request()->routeIs('webapp.pieces.show'))
+        <div class="piece-background" style="background-image: url({{asset($piece->image_background)}});">
+    
+</div>
+        @endif
 
-        <div class="row">
-            <div class="col-lg-8 col-md-12 mx-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-12 mx-auto">
 
-            <main>
+                <main>
 
-                @yield('content')
+                    @yield('content')
 
-            </main>
-            
-            @include('webapp.layouts.footer')
+                </main>
+                
+                @include('webapp.layouts.footer')
 
-            @unless(isset($nomenu) && $nomenu == true)
-            @include('webapp.layouts.menu')
-            @endunless
+                @unless(request()->routeIs('webapp.pieces.show'))
+                @include('webapp.layouts.menu')
+                @endunless
+                </div>
+
+                @auth('web')
+                    @include('webapp.piece.share')
+                @endauth
             </div>
-
-            @auth('web')
-                @include('webapp.piece.share')
-            @endauth
         </div>
 
         @if($message = session('status'))

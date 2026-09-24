@@ -11,3 +11,12 @@
 }
 
 .hands-lg {font-size: 240%;}
+
+.piece-background {
+  width: 100%;
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  clip-path: ellipse(85% 100% at 50% 0%);
+}

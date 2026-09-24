@@ -47,6 +47,26 @@
 		font-size: .9em;
 	}
 
+	.piece-background {
+		height: 140px !important;
+	}
+
+	.piece__composer-image {
+		width: 90px !important;
+		top: -66px !important;
+		left: 0 !important;
+	}
+
+	.piece-header {
+		margin-left: 0 !important;
+		text-align: right !important;
+		width: 100%;
+		
+		h4 {
+			font-size: 1.3rem !important;
+		}
+	}
+
 	.hide-on-sm {
 		display: none !important;
 	}

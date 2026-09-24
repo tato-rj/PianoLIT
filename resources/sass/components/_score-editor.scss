@@ -247,7 +247,7 @@
         .score-footer-actions > * { flex: 1 1 0; padding: 0 6px; }
         .score-page-label, .score-zoom-label { min-width: 46px; font-size: 13px; }
         .score-control-button { width: 38px; height: 40px; }
-        .score-action-button, .score-listen-button { font-size: 12px; gap: 6px; }
+        .score-action-button, .score-listen-button { font-size: 12px; gap: 6px; min-height: 36px}
     }
     @media (min-width: 768px) and (max-width: 1132px) {
         margin-left: calc(-50vw + 16px);
@@ -273,11 +273,12 @@
 }
 body.score-editor-fullscreen-open { overflow: hidden; }
 .score-print-pages { display: none; }
+@page { margin: 0; }
 @media print {
-    @page { margin: 10mm; }
+    body.score-printing { width: 100%; margin: 0; padding: 0; }
     body.score-editor-fullscreen-open { overflow: visible; }
     body.score-printing > :not(.score-print-pages) { display: none !important; }
-    body.score-printing > .score-print-pages { display: block !important; }
+    body.score-printing > .score-print-pages { display: block !important; width: 100%; }
     .score-print-page {
         position: relative;
         margin: 0 auto;

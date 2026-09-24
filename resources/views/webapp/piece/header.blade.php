@@ -1,14 +1,22 @@
-<section class="text-center mb-5 position-relative">
+
+<section class="my-2 position-relative">
 	@include('webapp.components.back')
 
-	<div class="px-4">
-		{{-- <img src="{{$piece->composer->cover_image}}" style="width: 50px" class="rounded-circle shadow mb-1"> --}}
-		@include('webapp.components.piece.level')
-		<h4 class="mt-2 mb-1">{{$piece->medium_name}}</h4>
-		<p class="text-muted">{{$piece->attribution}}{{$piece->composer->name}}</p>
+	<div class="d-flex px-4">
+		<img src="{{$piece->composer->cover_image}}" style="width: 100px; top: -60px; left: 30px;" class="rounded-circle shadow border border-white border-1x position-absolute piece__composer-image">
+		<div class="piece-header" style="margin-left: 120px;">
+			@include('webapp.components.piece.level')
+			<h4 class="mt-2 mb-1">{{$piece->medium_name}}</h4>
+			<p class="text-muted">{{$piece->attribution}}{{$piece->composer->name}}</p>
+		</div>
 	</div>
 
-	<button class="btn-raw position-absolute" type="More options"  
-	data-toggle="fixed-panel" data-target="#options-panel" style="right: 0; bottom: 50%; transform: translateY(50%); font-size: 1.44em">
-		@fa(['icon' => 'ellipsis-v'])</button>
+	<div class="position-absolute d-flex align-items-center" style="right: 0; bottom: 50%; transform: translateY(50%);">
+		<div class="d-none d-md-block">
+		@include('webapp.components.favorite')
+	</div>
+	<button class="btn-raw ml-2" type="More options"  
+	data-toggle="fixed-panel" data-target="#options-panel" style=" font-size: 1.44em">
+		@fa(['icon' => 'ellipsis-v', 'mr' => 0])</button>
+	</div>
 </section>

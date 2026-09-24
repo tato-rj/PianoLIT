@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => $piece->short_name, 'nomenu' => true])
+@extends('webapp.layouts.app', ['title' => $piece->short_name])
 
 @push('header')
 <link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">
@@ -86,8 +86,6 @@ video::-webkit-media-controls-enclosure {
 @endpush
 
 @section('content')
-@include('webapp.layouts.header')
-
 @include('webapp.piece.header')
 
 <section id="tabs-container">

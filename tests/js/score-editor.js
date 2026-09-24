@@ -153,6 +153,9 @@ module.exports = async function () {
     assert.strictEqual(printEditor.page, 2, 'Printing must leave the open score page unchanged');
     assert.strictEqual(body.children.length, 1);
     assert.strictEqual(body.children[0].children.length, 3);
+    assert.strictEqual(body.children[0].children[0].style.width, '98%', 'Print page nearly fills the paper with room for pagination rounding');
+    assert.strictEqual(body.children[0].children[0].style.aspectRatio, '500 / 700', 'Print preserves the original PDF aspect ratio');
+    assert.strictEqual(body.children[0].children[0].children[0].style.width, '100%', 'Canvas fits its print page');
     assert.strictEqual(body.children[0].children[0].children[1].children[0].tag, 'text');
     assert.strictEqual(body.children[0].children[1].children[1].children.length, 0);
     assert.strictEqual(body.children[0].children[2].children[1].children[0].tag, 'path');

@@ -296,13 +296,14 @@
                     const viewport = page.getViewport({scale});
                     const sheet = document.createElement('div');
                     sheet.className = 'score-print-page';
-                    const width = Math.min(190, 245 / ratio);
-                    sheet.style.width = width + 'mm'; sheet.style.height = (width * ratio) + 'mm';
+                    sheet.style.width = '98%'; sheet.style.aspectRatio = original.width + ' / ' + original.height;
                     const canvas = document.createElement('canvas');
                     canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
+                    canvas.style.width = '100%'; canvas.style.height = '100%';
                     await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
                     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                     svg.setAttribute('viewBox', '0 0 1000 ' + (1000 * ratio));
+                    svg.style.width = '100%'; svg.style.height = '100%';
                     this.paintMarks(svg, number, ratio, marks);
                     sheet.appendChild(canvas); sheet.appendChild(svg); pages.appendChild(sheet);
                 }
