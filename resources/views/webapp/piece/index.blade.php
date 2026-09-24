@@ -57,7 +57,7 @@
         inset: 0;
 
         background-image: var(--piece-bg);
-        background-size: auto 160%;
+        background-size: auto 180%;
         background-position: center center;
         background-repeat: no-repeat;
 

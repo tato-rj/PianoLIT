@@ -90,10 +90,5 @@
 			</div>
 		</div>
 		@endif
-
-	{{-- 	<div class="text-center mb-4">
-			<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn btn-wide btn-default">
-				@fa(['icon' => 'folder-plus'])More like this</a>
-		</div> --}}
 	</div>
 </div>
