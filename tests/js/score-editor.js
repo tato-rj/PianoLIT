@@ -77,6 +77,17 @@ module.exports = async function () {
         target: {closest: () => null}, preventDefault: () => {}});
     assert.strictEqual(newText.size, .02, 'Text defaults to Small without a size selector');
 
+    const touchEditor = Object.create(Editor.prototype);
+    let blockedTouches = 0;
+    const touchMove = {preventDefault: () => { blockedTouches++; }};
+    for (const tool of ['pen', 'text', 'erase']) {
+        touchEditor.tool = tool;
+        touchEditor.preventTouchScroll(touchMove);
+    }
+    assert.strictEqual(blockedTouches, 3, 'Touch drags on the score cannot scroll while an editing tool is selected');
+    touchEditor.tool = 'read'; touchEditor.preventTouchScroll(touchMove);
+    assert.strictEqual(blockedTouches, 3, 'Read mode still permits normal touch scrolling');
+
     const requests = [];
     const concurrent = new Markings(data => new Promise((resolve, reject) => requests.push({data, resolve, reject})));
     concurrent.load({revision: 0, marks: []}); concurrent.replace([a]);
@@ -116,5 +127,5 @@ module.exports = async function () {
     const zoomed = point({clientX: 600, clientY: 900}, {left: 100, top: 100, width: 1000, height: 1600});
     assert.strictEqual(zoomed.x, p.x); assert.strictEqual(zoomed.y, p.y);
     assert.strictEqual(roundPoint({x: 0.333333333, y: 0}).x, .33333);
-    console.log('Passed: score annotation persistence, undo/redo, page coordinates, serialized autosave, retries and conflicts.');
+    console.log('Passed: score annotation persistence, touch scrolling, undo/redo, page coordinates, serialized autosave, retries and conflicts.');
 };

@@ -123,7 +123,9 @@
             this.find('[data-prev]').disabled = !this.pdf || this.rendering || this.page <= 1;
             this.find('[data-next]').disabled = !this.pdf || this.rendering || this.page >= this.pdf.numPages;
             this.all('[data-zoom]').forEach(el => { el.disabled = !this.pdf || this.rendering; });
-            this.svg.style.touchAction = editing && this.tool !== 'read' ? 'none' : 'auto';
+            const touchAction = this.tool === 'read' ? 'auto' : 'none';
+            this.sheet.style.touchAction = touchAction;
+            this.svg.style.touchAction = touchAction;
             this.svg.setAttribute('data-tool', this.tool);
             this.svg.style.cursor = this.tool === 'read' ? 'auto' : (this.tool === 'text' ? 'text' : 'crosshair');
             this.all('button[data-tool]').forEach(el => {
@@ -136,7 +138,16 @@
             this.finishStroke(); this.finishText();
             this.tool = next; this.controls();
         }
+        preventTouchScroll(event) {
+            if (this.tool !== 'read') event.preventDefault();
+        }
         bind() {
+            const color = this.find('[data-color]');
+            const palette = this.find('.score-color-button .fa-palette');
+            const showColor = () => { palette.style.color = color.value; };
+            color.addEventListener('input', showColor);
+            color.addEventListener('change', showColor);
+            showColor();
             this.all('button[data-tool]').forEach(el => el.addEventListener('click', () => this.selectTool(el.getAttribute('data-tool'))));
             // Inspect the original target before editing replaces an SVG mark in the DOM.
             document.addEventListener('pointerdown', event => {
@@ -165,6 +176,8 @@
             this.svg.addEventListener('pointerup', event => { if (event.pointerId === this.pointerId) this.finishStroke(); });
             this.svg.addEventListener('pointercancel', () => { this.stroke = null; this.pointerId = null; this.paint(); });
             this.svg.addEventListener('lostpointercapture', () => this.finishStroke());
+            // Safari can still scroll the page during a stroke despite touch-action on SVG.
+            this.sheet.addEventListener('touchmove', event => this.preventTouchScroll(event), {passive: false});
             root.addEventListener('beforeunload', event => {
                 this.finishStroke(); this.finishText();
                 if (this.store.dirty && !this.discarding) { this.store.flush(); event.preventDefault(); event.returnValue = ''; }

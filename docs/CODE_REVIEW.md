@@ -243,3 +243,14 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - Cause: clicking an existing SVG text mark replaces that SVG node with the inline input during `pointerdown`. The document-level outside-click listener ran afterward, saw the detached target outside the score sheet, and incorrectly deselected Text, closing the input.
 - The outside-click listener now runs in the capture phase, while the original target is still attached. Clicking saved text keeps Text active and permits editing; clicking outside still closes the input and returns to Read. The current score template has no “click existing text to edit” instruction after the prior simplification.
 - Verification: the local browser fixture created and saved text, reopened it by clicking the rendered text, edited it inline, and then confirmed outside-click deselection. JavaScript regressions, isolated template test, production asset build, and `git diff --check` passed. No backend, database, or mobile change.
+
+### 2026-09-23 — Show selected color on palette icon (implemented locally)
+
+- The Font Awesome palette icon now uses the native color input's current value, starting with the default dark score color. `input` and `change` events update the icon as the user chooses a new color; the same input value continues to set the color of new pen and text marks. No extra swatch or underline is shown.
+- Affected file: score-editor JavaScript and its tracked build/manifest. The local browser fixture confirmed the icon's computed color changed from `#20252b` to `#e3342f`, with the red icon visible. JavaScript regressions, isolated production asset build, and `git diff --check` passed. No backend, database, or mobile change.
+
+### 2026-09-23 — Stop mobile page scrolling during score edits (implemented locally)
+
+- Priority: P2 usability. A finger drag on the PDF could move the whole page while Pen, Text, or Eraser was selected. The editor now disables native touch panning on the HTML score sheet as well as its SVG overlay. A non-passive `touchmove` handler on the sheet prevents page scrolling during those editing modes, including browsers that do not fully honor SVG `touch-action`. Returning to Read restores normal touch scrolling.
+- Affected files: score-editor JavaScript, its tracked build/manifest, and JavaScript regressions. No PDF delivery, backend, database, or native mobile app contract changed.
+- Verification: JavaScript regressions cover all three editing modes and Read; isolated PHP suite passes 77 tests / 1,063 assertions; isolated production asset build and `git diff --check` pass. An actual mobile Safari finger-drag check remains pending.
