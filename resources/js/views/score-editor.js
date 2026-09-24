@@ -138,12 +138,13 @@
         }
         bind() {
             this.all('button[data-tool]').forEach(el => el.addEventListener('click', () => this.selectTool(el.getAttribute('data-tool'))));
+            // Inspect the original target before editing replaces an SVG mark in the DOM.
             document.addEventListener('pointerdown', event => {
                 if (this.tool === 'read' || this.sheet.contains(event.target)) return;
                 const button = event.target.closest('button[data-tool]');
                 if (button && this.root.contains(button)) return;
                 this.selectTool('read');
-            });
+            }, true);
             this.find('[data-undo]').addEventListener('click', () => { this.finishText(); this.store.undo(); });
             this.find('[data-redo]').addEventListener('click', () => { this.finishText(); this.store.redo(); });
             this.find('[data-prev]').addEventListener('click', () => this.render(this.page - 1).catch(() => this.renderError()));

@@ -237,3 +237,9 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 
 - Removed the Text size selector and its extra instruction block from the score toolbar. Text remains a toggleable tool: selecting it and clicking the PDF opens the inline cursor. New text marks use the former Small setting (`size = 0.02`); existing saved marks retain their own sizes.
 - Removed the JavaScript dependency on the deleted controls. A JavaScript regression checks that a new text mark starts at Small with no selector. The local browser fixture verified the simplified toolbar, an inline cursor, and text rendered at 16.92 px on an 846 px score sheet (the expected 2%). The isolated template test, JavaScript regressions, production asset build, and `git diff --check` passed. No backend, database, or mobile change.
+
+### 2026-09-23 — Keep Text active when reopening a saved mark (implemented locally)
+
+- Cause: clicking an existing SVG text mark replaces that SVG node with the inline input during `pointerdown`. The document-level outside-click listener ran afterward, saw the detached target outside the score sheet, and incorrectly deselected Text, closing the input.
+- The outside-click listener now runs in the capture phase, while the original target is still attached. Clicking saved text keeps Text active and permits editing; clicking outside still closes the input and returns to Read. The current score template has no “click existing text to edit” instruction after the prior simplification.
+- Verification: the local browser fixture created and saved text, reopened it by clicking the rendered text, edited it inline, and then confirmed outside-click deselection. JavaScript regressions, isolated template test, production asset build, and `git diff --check` passed. No backend, database, or mobile change.
