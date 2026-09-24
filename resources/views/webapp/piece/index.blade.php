@@ -5,6 +5,30 @@
 <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
+
+    .piece-background {
+    background-color: #26364a;
+  width: 100%;
+  height: 220px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  clip-path: ellipse(85% 100% at 50% 0%);
+}
+
+.piece-background::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image: url({{asset($piece->image_background)}});
+    background-size: cover;
+    background-position: center;
+
+    filter: blur(25px);
+    transform: scale(1.08);
+    opacity: 0.7;
+}
+
 .timeline-event:before {
 	content: '';
 	width: 12px;

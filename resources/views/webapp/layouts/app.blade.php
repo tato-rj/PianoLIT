@@ -32,6 +32,7 @@
         ]); ?>
     </script>
     @stack('header')
+
 </head>
 <body>
     @qrcode
