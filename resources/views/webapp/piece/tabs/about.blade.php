@@ -1,15 +1,13 @@
 <div class="tab-pane fade show active mb-5" id="tab-about">
 	<div class="row"> 
 		@if($piece->media['performance'])
-		<div class="col-lg-6 col-12 mb-4">
-			<div class="rounded-video video-container">
-				@video([
-					'classes' => 'w-100', 
-					'id' => 'piece-performance', 
-		            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
-					'thumbnail' => asset('images/webapp/piano-thumbnail.jpg'),
-					'url' => $piece->media['performance']->video_url])
-			</div>
+		<div class="col-lg-6 col-12 mb-4 rounded-video video-container">
+			@video([
+				'classes' => 'w-100', 
+				'id' => 'piece-performance', 
+	            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
+				'thumbnail' => asset('images/webapp/piano-thumbnail.jpg'),
+				'url' => $piece->media['performance']->video_url])
 		</div>
 		@endif
 
