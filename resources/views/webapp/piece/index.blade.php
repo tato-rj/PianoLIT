@@ -61,6 +61,23 @@
         background-position: center center;
         background-repeat: no-repeat;
 
+        /* Fade sharp image into blurred background */
+-webkit-mask-image: linear-gradient(
+    to right,
+    transparent 20%,
+    black 27%,
+    black 73%,
+    transparent 80%
+);
+
+mask-image: linear-gradient(
+    to right,
+    transparent 20%,
+    black 27%,
+    black 73%,
+    transparent 80%
+);
+
         z-index: 1;
     }
 }
