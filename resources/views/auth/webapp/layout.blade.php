@@ -71,7 +71,7 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
                     @include('auth.webapp.carousel')
 
                     <div class="text-center" style="display: {{$animated ? 'block' : 'none'}}">
-                        <button id="get-started" class="btn btn-default btn-wide shadow rounded-pill">Get started</button>
+                        <button id="get-started" class="btn btn-default btn-wide shadow rounded-pill">GET STARTED</button>
                     </div>
                 </div>
             </div>
