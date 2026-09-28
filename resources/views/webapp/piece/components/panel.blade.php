@@ -4,9 +4,9 @@
 	<div class="bg-white position-absolute h-100 panel-content" style="right: -100%; transition: .4s">
 		<div class="panel-header px-4 py-3">
 			<div class="d-flex d-apart">
-				<h5 class="m-0">Options</h5>
-				<button type="button" style="margin-bottom: 1px" class="close" data-dismiss="fixed-panel" aria-label="Close">
-					<span class="mb-1" aria-hidden="true">&times;</span>
+				<h6 class="m-0">Options</h6>
+				<button type="button" class="close" data-dismiss="fixed-panel" aria-label="Close">
+					<span aria-hidden="true">@fa(['icon' => 'times', 'mr' => 0])</span>
 				</button>
 			</div>
 		</div>
