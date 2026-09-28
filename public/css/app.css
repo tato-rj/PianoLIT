@@ -33932,7 +33932,7 @@ a.color-inherit:hover {
 
   .piece__composer-image {
     width: 90px !important;
-    top: -66px !important;
+    top: -80px !important;
     right: 0 !important;
     left: auto !important;
   }
@@ -35416,6 +35416,10 @@ input.input-center:-ms-input-placeholder {
 
 .piece-header {
   text-align: center;
+}
+
+.piece-background {
+  margin-bottom: 2rem;
 }
 
 .dragscroll {

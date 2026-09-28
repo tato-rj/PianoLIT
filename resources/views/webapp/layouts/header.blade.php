@@ -7,8 +7,10 @@
 	@endguest
 </div>
 
+@isset($title)
 <div class="text-center mb-4">
 	<h2>{{$title ?? null}}</h2>
 	<p style="max-width: 80%" class="mx-auto">{!! $subtitle ?? null !!}</p>
 	{{$slot ?? null}}
 </div>
+@endisset

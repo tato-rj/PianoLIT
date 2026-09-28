@@ -1,5 +1,5 @@
 
-<section class="my-3 position-relative">
+<section class="mb-4 position-relative">
 	@include('webapp.components.back')
 
 	<div class="d-flex px-4">
@@ -12,7 +12,7 @@
 		</div>
 
 		<a href="{{route('webapp.pieces.composer', $piece)}}" class="">
-			<img src="{{$piece->composer->cover_image}}" style="width: 100px; top: -70px; left: 30px;" class="rounded-circle shadow border border-white border-1x position-absolute piece__composer-image">
+			<img src="{{$piece->composer->cover_image}}" style="width: 100px; top: -90px; left: 30px;" class="rounded-circle shadow border border-white border-1x position-absolute piece__composer-image">
 		</a>
 	</div>
 

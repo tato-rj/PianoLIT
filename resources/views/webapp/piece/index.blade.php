@@ -100,10 +100,6 @@
     }
 }
 
-
-
-
-
 .timeline-event:before {
 	content: '';
 	width: 12px;
