@@ -48,6 +48,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapWebAppRoutes();
 
+        $this->mapShopRoutes();
+
         $this->mapApiRoutes();
 
         $this->mapAuthRoutes();
@@ -81,6 +83,15 @@ class RouteServiceProvider extends ServiceProvider
              ->group(function() {
                 $this->getFolder('routes/webapp');
              });
+    }
+
+    protected function mapShopRoutes()
+    {
+        Route::domain('shop.'.config('app.short_url'))
+             ->middleware('web')
+             ->name('shop.')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/shop.php'));
     }
 
     /**
