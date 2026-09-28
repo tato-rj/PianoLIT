@@ -163,7 +163,7 @@ video::-webkit-media-controls-enclosure {
 }
 
 .nav-tabs .active {
-    font-weight: inherit !important; 
+    font-weight: bold !important; 
 }
 
 .score-preview-pages {
