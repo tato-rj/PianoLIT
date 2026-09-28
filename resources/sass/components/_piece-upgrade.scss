@@ -1,0 +1,109 @@
+#piece-upgrade-modal {
+    .modal-dialog {
+        max-width: 840px;
+        margin-left: auto;
+        margin-right: auto;
+        width: calc(100% - 2rem);
+    }
+
+    .modal-content {
+        border-radius: var(--radius-modal);
+        background: var(--color-surface);
+    }
+
+    .modal-body {
+        padding: var(--space-5);
+    }
+
+    .piece-upgrade-close {
+        position: absolute;
+        top: var(--space-3);
+        right: var(--space-3);
+        z-index: 1;
+        width: 44px;
+        height: 44px;
+        color: var(--color-text-muted);
+        font-size: var(--font-size-lg);
+        opacity: 1;
+    }
+
+    .piece-upgrade-close:hover {
+        color: var(--color-text);
+    }
+
+    .piece-upgrade-close:focus-visible,
+    .piece-upgrade-action .btn:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 3px;
+    }
+
+    .piece-upgrade-heading {
+        margin-bottom: var(--space-5);
+    }
+
+    .piece-upgrade-benefits {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-4) var(--space-5);
+        margin-bottom: var(--space-5);
+    }
+
+    .piece-upgrade-benefit {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+
+    .piece-upgrade-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 56px;
+        height: 56px;
+        border-radius: var(--radius-circle);
+        font-size: var(--font-size-xl);
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: currentColor;
+            opacity: .12;
+        }
+
+        @each $color in orange, green, blue, pink, purple, indigo {
+            &--#{$color} { color: var(--color-#{$color}); }
+        }
+    }
+
+    .piece-upgrade-action .btn {
+        width: 100%;
+        max-width: 320px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (max-width: 767.98px) {
+        .modal-body {
+            padding: var(--space-5) var(--space-4) var(--space-4);
+        }
+
+        .piece-upgrade-heading,
+        .piece-upgrade-benefits {
+            margin-bottom: var(--space-4);
+        }
+
+        .piece-upgrade-benefits {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .piece-upgrade-close {
+            top: var(--space-2);
+            right: var(--space-2);
+        }
+    }
+}
