@@ -6,66 +6,6 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <style type="text/css">
 
-{{-- /* MOBILE / DEFAULT */
-.piece-background {
-    width: 100%;
-    height: 220px;
-
-    background-color: #26364a;
-    background-image: var(--piece-bg);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-
-    clip-path: ellipse(85% 100% at 50% 0%);
-}
-
-
-/* DESKTOP */
-@media (min-width: 769px) {
-
-    .piece-background {
-        position: relative;
-        overflow: hidden;
-
-        /* pseudo-elements handle the image */
-        background-image: none;
-    }
-
-    /* Blurred image filling entire width */
-    .piece-background::before {
-        content: "";
-        position: absolute;
-        inset: -30px;
-
-        background-image: var(--piece-bg);
-        background-size: cover;
-        background-position: center center;
-        background-repeat: no-repeat;
-
-        filter: blur(20px);
-        opacity: 0.5;
-        transform: scale(1.05);
-
-        z-index: 0;
-    }
-
-    /* Sharp original image */
-    .piece-background::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-
-        background-image: var(--piece-bg);
-        background-size: auto 180%;
-        background-position: center center;
-        background-repeat: no-repeat;
-
-        z-index: 1;
-    }
-} --}}
-
-
 /* MOBILE / DEFAULT */
 .piece-background {
     width: 100%;
@@ -107,7 +47,7 @@
         background-position: center;
         background-repeat: no-repeat;
 
-        filter: blur(20px);
+        filter: blur(12px);
         opacity: 0.5;
         transform: scale(1.05);
 
@@ -120,11 +60,11 @@
         display: block;
 
         position: absolute;
-        top: -30%;
+        top: -50%;
         left: 50%;
         transform: translateX(-50%);
 
-        height: 180%;
+        height: 200%;
         width: auto;
         max-width: none;
 

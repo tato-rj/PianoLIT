@@ -21,6 +21,7 @@ require('./components/popups');
 require('./components/favorites');
 require('./components/carousel');
 require('./components/tabs');
+require('./components/history-back');
 require('./search/Search');
 require('./views/find-your-match');
 

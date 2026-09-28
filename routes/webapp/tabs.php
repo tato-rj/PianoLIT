@@ -8,6 +8,8 @@ Route::namespace('WebApp')->group(function() {
 
 	Route::get('tour', 'TabsController@tour')->name('tour');
 
+    Route::post('tour/result', 'MatchTourController@result')->name('tour.result');
+
 	Route::get('explore', 'TabsController@explore')->name('explore');
 
 	Route::get('highlights', 'TabsController@highlights')->name('highlights');

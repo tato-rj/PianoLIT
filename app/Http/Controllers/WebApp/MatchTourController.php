@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Http\Controllers\WebApp;
+
+use App\Http\Controllers\Controller;
+use App\Resources\FindYourMatch\Quiz;
+use App\Services\WebApp\MatchTour;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
+class MatchTourController extends Controller
+{
+    public function result(Request $request, MatchTour $tour, Quiz $quiz)
+    {
+        $data = $tour->data();
+        abort_unless($data['ready'], 503, 'The tour is temporarily unavailable.');
+        $ids = array_column($data['pieces'], 'id');
+        $answers = $request->validate([
+            'preferredPiece' => ['required', 'integer', Rule::in(array_slice($ids, 0, 4))],
+            'reading' => 'required|array|size:2',
+            'reading.0' => 'required|boolean',
+            'reading.1' => 'required|boolean',
+            'winners' => 'required|array|size:3',
+            'winners.0' => ['required', 'integer', Rule::in(array_slice($ids, 4, 2))],
+            'winners.1' => ['required', 'integer', Rule::in(array_slice($ids, 6, 2))],
+            'winners.2' => ['required', 'integer', Rule::in(array_slice($ids, 8, 2))],
+            'intent' => ['required', Rule::in(array_keys(MatchTour::INTENTS))],
+        ]);
+        // Derive the level server-side; never trust a submitted level or user identity.
+        $piece = $quiz->getKeywords($tour->keywords($answers))->exclude($tour->exclusions($answers))->search();
+        abort_unless($piece, 503, 'No match is available right now.');
+        $piece->loadMissing(['composer', 'tags', 'tutorials']);
+        return view('webapp.tour.result', compact('piece'));
+    }
+}

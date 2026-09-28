@@ -1,5 +1,5 @@
 <section class="my-4 pb-4 d-flex d-apart">
-	<a href="{{route('webapp.pieces.show', $piece)}}" class="btn-raw d-flex text-left align-items-center link-none">
+	<a href="{{route('webapp.pieces.show', $piece)}}" data-history-back class="btn-raw d-flex text-left align-items-center link-none">
 		<div style="font-size: 2em" class="mr-2">@fa(['icon' => 'chevron-left'])</div>
 		<div>
 			<div style="line-height: 1" class="mb-1"><small><strong>RETURN TO</strong></small></div>
