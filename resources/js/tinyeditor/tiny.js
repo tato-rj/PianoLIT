@@ -55,14 +55,15 @@ tinymce.init({
     },
 
     image_advtab: true,
-    images_upload_url: '/admin/blog/images/upload',
+    images_upload_url: window.app.routes.blogImageUpload,
 
     images_upload_handler: function(blobInfo, success, failure) {
         var xhr, formData;
 
         xhr = new XMLHttpRequest();
         xhr.withCredentials = false;
-        xhr.open('POST', '/admin/blog/images/upload');
+        xhr.open('POST', window.app.routes.blogImageUpload);
+        xhr.setRequestHeader('X-CSRF-TOKEN', window.app.csrfToken);
 
         xhr.onload = function() {
             var json;

@@ -23,6 +23,7 @@ function element(value = '') {
 }
 
 async function main() {
+    require('./admin-subdomain')();
     require('./icons')();
     require('./history-back')();
     await require('./score-editor')();

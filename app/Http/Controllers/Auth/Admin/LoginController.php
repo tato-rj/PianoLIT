@@ -10,7 +10,10 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    protected $redirectTo = '/admin';
+    protected function redirectTo()
+    {
+        return route('admin.home');
+    }
 
 	public function showLoginForm()
 	{

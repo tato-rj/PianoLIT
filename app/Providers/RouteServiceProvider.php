@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
@@ -23,7 +24,14 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        URL::formatHostUsing(function ($root, $route) {
+            // Public preview links must leave the admin host when paths overlap.
+            if ($route && $route->getAction('public_site') && request()->getHost() === 'admin.'.config('app.short_url')) {
+                return rtrim(config('app.url'), '/');
+            }
+
+            return $root;
+        });
 
         parent::boot();
     }
@@ -35,6 +43,9 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        // Register subdomain routes before the public routes with matching paths.
+        $this->mapAdminRoutes();
+
         $this->mapWebAppRoutes();
 
         $this->mapApiRoutes();
@@ -42,8 +53,6 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapAuthRoutes();
 
         $this->mapWebRoutes();
-
-        $this->mapAdminRoutes();
 
         $this->mapMailRoutes();
 
@@ -83,11 +92,13 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware(['web', 'log.web', 'location.update'])
-             ->namespace($this->namespace)
-             ->group(function() {
-                $this->getFolder('routes/web');
-             });
+        Route::group([
+            'middleware' => ['web', 'log.web', 'location.update'],
+            'namespace' => $this->namespace,
+            'public_site' => true,
+        ], function() {
+            $this->getFolder('routes/web');
+        });
     }
 
     /**
@@ -99,6 +110,12 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapAuthRoutes()
     {
+        Route::domain('admin.'.config('app.short_url'))
+             ->middleware('web')
+             ->name('admin.')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/admin-auth.php'));
+
         Route::middleware('web')
              ->namespace($this->namespace)
              ->group(base_path('routes/auth.php'));
@@ -113,8 +130,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapAdminRoutes()
     {
-        Route::middleware(['web', 'auth:admin'])
-             ->prefix('admin')
+        Route::domain('admin.'.config('app.short_url'))
+             ->middleware(['web', 'auth:admin'])
              ->name('admin.')
              ->namespace($this->namespace)
              ->group(function() {

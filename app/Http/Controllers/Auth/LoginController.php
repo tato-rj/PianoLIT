@@ -34,9 +34,9 @@ class LoginController extends Controller
 
         session(['impersonator' => true]);
 
-        auth()->login($user);
+        auth()->guard('web')->login($user);
 
-        return redirect(route('home'));
+        return redirect(config('app.url'));
     }
 
     protected function attemptLogin(Request $request)

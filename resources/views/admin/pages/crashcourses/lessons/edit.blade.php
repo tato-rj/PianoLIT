@@ -2,7 +2,7 @@
 
 @section('head')
   <script src="https://cloud.tinymce.com/5/tinymce.min.js?apiKey=80i9j60sixlsp84wyu3rquuelix1zbkhrodmrne6znnns8j1"></script>
-  <script type="text/javascript" src="{{asset('js/tinyeditor/tiny.js')}}"></script>
+  <script type="text/javascript" src="{{mix('js/tinyeditor/tiny.js')}}"></script>
 @endsection
 
 @section('content')

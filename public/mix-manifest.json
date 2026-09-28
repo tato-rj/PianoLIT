@@ -12,5 +12,6 @@
     "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e",
     "/js/views/piece-access.js": "/js/views/piece-access.js?id=12ad9ebcc99a375f9c14",
     "/js/views/score-editor.js": "/js/views/score-editor.js?id=ad775b4be686938323db",
-    "/js/views/match-tour.js": "/js/views/match-tour.js?id=242aa6c185b83538149d"
+    "/js/views/match-tour.js": "/js/views/match-tour.js?id=242aa6c185b83538149d",
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf"
 }

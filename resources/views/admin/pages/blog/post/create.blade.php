@@ -3,7 +3,7 @@
 @section('head')
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.css">
   <script src="https://cloud.tinymce.com/5/tinymce.min.js?apiKey=80i9j60sixlsp84wyu3rquuelix1zbkhrodmrne6znnns8j1"></script>
-  <script type="text/javascript" src="{{asset('js/tinyeditor/tiny.js')}}"></script>
+  <script type="text/javascript" src="{{mix('js/tinyeditor/tiny.js')}}"></script>
 <style type="text/css">
 .image-container canvas { width: 100% !important; }
 .tox {border-radius: 0.25rem !important}

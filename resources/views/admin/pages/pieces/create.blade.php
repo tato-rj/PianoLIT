@@ -347,37 +347,37 @@ clipboard.on('success', function(e) {
 <script type="text/javascript">
 
 new Lukup({
-  url: app.url+'/admin/pieces/single-lookup',
+  url: @json(route('admin.pieces.single-lookup')),
   field: 'score_publisher',
   autofill: ['score_publisher']
 }).enable();
 
 new Lukup({
-  url: app.url+'/admin/pieces/single-lookup',
+  url: @json(route('admin.pieces.single-lookup')),
   field: 'score_editor',
   autofill: ['score_editor']
 }).enable();
 
 new Lukup({
-  url: app.url+'/admin/pieces/single-lookup',
+  url: @json(route('admin.pieces.single-lookup')),
   field: 'score_copyright',
   autofill: ['score_copyright']
 }).enable();
 
 new Lukup({
-  url: app.url+'/admin/pieces/single-lookup',
+  url: @json(route('admin.pieces.single-lookup')),
   field: 'nickname',
   autofill: ['nickname']
 }).enable();
 
 new Lukup({
-  url: app.url+'/admin/pieces/single-lookup',
+  url: @json(route('admin.pieces.single-lookup')),
   field: 'name',
   autofill: ['name']
 }).enable();
 
 new Lukup({
-  url: app.url+'/admin/pieces/multi-lookup',
+  url: @json(route('admin.pieces.multi-lookup')),
   field: 'collection_name',
   autofill: ['collection_name', 'nickname', 'score_url', 'catalogue_name', 'catalogue_number', 'composer_id', 'composed_in', 'published_in', 'score_editor', 'score_copyright', 'score_publisher', 'curiosity'],
   exclude: ['No information available']
@@ -395,7 +395,7 @@ $('input.validate-name').on('blur', function() {
       input[$(this).attr('name')] = $(this).val();
     });
 
-    $.post(app.url+'/admin/pieces/validate-name', input, function(data, status, xhr) {
+    $.post(@json(route('admin.pieces.validate-name')), input, function(data, status, xhr) {
 
       $('#validation-results .results').html('');
 
