@@ -3,8 +3,8 @@
 	data-submit="favorite" data-target="#flag-{{$piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $piece, 'folder_id' => $folder->id])}}">
 	<div class="font-weight-bold">{{$folder->name}} <span class="badge bg-white text-muted border">{{$folder->favorites_count}}</span></div>
 	<div class="favorite-icons">
-		@fa(['name' => 'saved', 'icon' => 'dot-circle', 'size' => 'lg', 'fa_type' => 's', 'color' => 'blue', 'if' => $is_favorited])
-		@fa(['name' => 'unsaved', 'icon' => 'circle', 'size' => 'lg', 'fa_type' => 'r', 'color' => 'blue', 'if' => ! $is_favorited])
-		@fa(['name' => 'success', 'icon' => 'check', 'size' => 'lg', 'color' => 'green', 'if' => false])
+		@icon('circle-dot', ['name' => 'saved', 'size' => 'lg', 'color' => 'blue', 'if' => $is_favorited])
+		@icon('circle', ['name' => 'unsaved', 'size' => 'lg', 'color' => 'blue', 'if' => ! $is_favorited])
+		@icon('check', ['name' => 'success', 'size' => 'lg', 'color' => 'green', 'if' => false])
 	</div>
 </button>

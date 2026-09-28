@@ -1,5 +1,5 @@
 <div class="text-right">
-	<button class="btn btn-outline-secondary btn-sm" {{$item->favorites_count == 0 ? 'disabled' : null}} data-target="#view-pieces-{{$item->id}}" data-toggle="modal">@fa(['icon' => 'eye']) View pieces</button>
+	<button class="btn btn-outline-secondary btn-sm" {{$item->favorites_count == 0 ? 'disabled' : null}} data-target="#view-pieces-{{$item->id}}" data-toggle="modal">@icon('eye') View pieces</button>
 
 	@component('components.modal', ['id' => 'view-pieces-'.$item->id, 'header' => 'Folder pieces'])
 	@slot('body')

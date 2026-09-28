@@ -9,7 +9,7 @@
 				<tbody>
 	              @foreach(\App\EmailList::all() as $list)
 					<tr>
-						<td class="p-0 align-middle"><h6 class="m-0"><i class="fas fa-mail-bulk mr-2"></i>{{$list->name}}</h6></td>
+						<td class="p-0 align-middle"><h6 class="m-0">@icon('mails', ['mr' => 2]){{$list->name}}</h6></td>
 						<td class="p-0 text-center align-middle">
 							@toggle(['toggle' => auth()->user()->subscription->in($list), 'route' => route('users.subscriptions.update-list', $list), 'autoToggle' => true])
 						</td>

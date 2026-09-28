@@ -3,6 +3,6 @@
 		<strong>Save to</strong>
 	</div>
 	<div class="d-flex align-items-center">
-		<button class="btn-raw text-muted" data-dismiss="popup">@fa(['size' => 'lg', 'icon' => 'times', 'mr' => 0])</button>
+		<button class="btn-raw text-muted" data-dismiss="popup">@icon('close', ['size' => 'lg', 'mr' => 0])</button>
 	</div>
 </div>

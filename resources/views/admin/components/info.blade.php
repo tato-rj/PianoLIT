@@ -1,1 +1,1 @@
-<i class="ml-1 fas fa-info-circle cursor-pointer" data-toggle="popover" data-trigger="hover" data-html="true" data-content="{{$message}}"></i>
+@icon('info', ['mr' => 0, 'classes' => 'ml-1 cursor-pointer', 'attributes' => ['data-toggle' => 'popover', 'data-trigger' => 'hover', 'data-html' => 'true', 'data-content' => ($message)]])

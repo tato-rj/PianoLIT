@@ -67,9 +67,9 @@
           <div class="d-flex justify-content-end">
             <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="btn btn-outline-dark mr-2">
               @if($post->published_at)
-              <i class="fas fa-globe mr-2"></i>Visit
+              @icon('globe', ['mr' => 2])Visit
               @else
-              <i class="far fa-eye mr-2"></i>Preview
+              @icon('eye', ['mr' => 2])Preview
               @endif
             </a>
             <button type="submit" id="submit-button" class="btn btn-default">Update post</button>

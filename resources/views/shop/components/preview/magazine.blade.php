@@ -3,7 +3,7 @@
   'options' => ['size' => 'lg']
 ])
   @slot('header')
-    @fa(['icon' => 'book-open'])Preview
+    @icon('book-open')Preview
   @endslot
 
   @slot('body')
@@ -43,9 +43,9 @@
   
   @slot('footer')
     <div class="d-flex flex-center w-100">
-      <button class="btn-raw btn-lg px-3 py-1 product-turn" data-direction="previous">@fa(['color' => 'primary', 'size' => 'lg', 'icon' => 'arrow-alt-circle-left', 'mr' => 0])</button>
+      <button class="btn-raw btn-lg px-3 py-1 product-turn" data-direction="previous">@icon('circle-arrow-left', ['color' => 'primary', 'size' => 'lg', 'mr' => 0])</button>
       <div class="text-grey"><small>click or drag to flip pages</small></div>
-      <button class="btn-raw btn-lg px-3 py-1 product-turn" data-direction="next">@fa(['color' => 'primary', 'size' => 'lg', 'icon' => 'arrow-alt-circle-right', 'mr' => 0])</button>
+      <button class="btn-raw btn-lg px-3 py-1 product-turn" data-direction="next">@icon('circle-arrow-right', ['color' => 'primary', 'size' => 'lg', 'mr' => 0])</button>
     </div>
   @endslot
 @endcomponent

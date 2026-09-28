@@ -8,15 +8,15 @@
 }
 
 /* style icon */
-.inner-addon .fas {
+.inner-addon .app-icon {
   position: absolute;
   padding: 10px;
   pointer-events: none;
 }
 
 /* align icon */
-.left-addon .fas  { left:  0px; top: 1.5px;}
-.right-addon .fas { right: 0px; top: 1.5px;}
+.left-addon .app-icon  { left:  0px; top: 1.5px;}
+.right-addon .app-icon { right: 0px; top: 1.5px;}
 
 /* add padding  */
 .left-addon input  { padding-left:  32px; }
@@ -32,7 +32,7 @@
             <div>
                 <p>Share this link to invite your friends</p>
                 <div class="inner-addon right-addon">
-                    <i class="fas fa-link text-muted"></i>
+                    @icon('link', ['mr' => 0, 'classes' => 'text-muted'])
                     <input type="text" class="form-control" readonly="readonly" value="{{auth()->user()->referralUrl()}}" style="background-color: white">
                 </div>
             </div>

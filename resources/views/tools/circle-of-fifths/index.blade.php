@@ -35,8 +35,8 @@
 				</div>
 				<div class="flex-grow text-grey text-center mb-2"><div><small>Use the arrows to turn the wheel</small></div></div>
 				<div id="wheel-controls" class="w-100 d-flex flex-center">
-					<button direction="right" class="px-3 border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-left"></i></button>
-					<button direction="left" class="px-3 border-0 bg-transparent p-0 text-grey"><i class="fas fa-3x fa-arrow-circle-right"></i></button>
+					<button direction="right" class="px-3 border-0 bg-transparent p-0 text-grey">@icon('circle-arrow-left', ['mr' => 0, 'classes' => 'icon-size-3x'])</button>
+					<button direction="left" class="px-3 border-0 bg-transparent p-0 text-grey">@icon('circle-arrow-right', ['mr' => 0, 'classes' => 'icon-size-3x'])</button>
 				</div>
 			</div>
 			<div class="col-lg-7 col-12" id="labels-container">

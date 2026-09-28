@@ -10,7 +10,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'fire', 
+      'icon' => 'flame',
       'title' => 'Metaverse', 
       'subtitle' => 'Manage all the events on the metaverse.',
       'action' => ['label' => 'Add a new event', 'modal' => 'add-modal']

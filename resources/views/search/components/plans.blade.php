@@ -34,7 +34,7 @@
 					'Curated playlists']])
 			
 			@slot('button')
-			<a href="{{route('webapp.membership.pricing')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-primary text-nowrap btn-block mb-3">@fa(['icon' => 'crown'])GO PREMIUM</a>
+			<a href="{{route('webapp.membership.pricing')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-primary text-nowrap btn-block mb-3">@icon('crown')GO PREMIUM</a>
 			@endslot
 			@endcomponent
 		</div>

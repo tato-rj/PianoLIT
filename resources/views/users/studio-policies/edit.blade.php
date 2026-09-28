@@ -29,15 +29,15 @@
 				<h4>Update my policy</h4>
 				<div class="d-flex d-apart flex-wrap">
 					<p class="text-right text-muted mb-2">
-						<small><i class="fas fa-calendar-alt mr-1"></i>last updated on {{$studioPolicy->updated_at->toFormattedDateString()}} at {{$studioPolicy->updated_at->format('g:i A')}}</small>
+						<small>@icon('calendar', ['mr' => 1])last updated on {{$studioPolicy->updated_at->toFormattedDateString()}} at {{$studioPolicy->updated_at->format('g:i A')}}</small>
 					</p>
 					<div class="mb-2">
 						<a class="btn btn-sm btn-teal-outline" href="{{route('users.studio-policies.show', $studioPolicy->id)}}">
-							<i class="fas fa-file-download mr-2"></i>Download policy
+							@icon('file-down', ['mr' => 2])Download policy
 						</a>
 						@env('local')
 						<a class="btn btn-sm btn-outline-secondary" target="_blank" href="{{route('users.studio-policies.show', $studioPolicy->id)}}?preview">
-							<i class="fas fa-eye mr-2"></i>Preview policy
+							@icon('eye', ['mr' => 2])Preview policy
 						</a>
 						@endenv
 					</div>
@@ -50,7 +50,7 @@
 					@include('users.studio-policies.form')
 				</div>
 				<div class="text-center">
-					<button class="btn btn-primary shadow" type="submit"><i class="fas fa-save mr-2"></i>Save my changes</button>
+					<button class="btn btn-primary shadow" type="submit">@icon('save', ['mr' => 2])Save my changes</button>
 					<div class="mt-3">
 						@include('components.return', ['url' => route('users.studio-policies.index'), 'to' => 'my policies page'])
 					</div>

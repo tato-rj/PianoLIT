@@ -5,13 +5,13 @@ $(document).on('click', '.play-clip', function() {
   let src = $(this).attr('data-src');
 
   if (src) {
-    $('.play-clip i').not($icon).removeClass('fa-stop-circle').addClass('fa-play-circle');
+    $('.play-clip i').not($icon).removeClass('icon-circle-stop').addClass('icon-circle-play');
     stop();
 
-    if ($icon.hasClass('fa-play-circle'))
+    if ($icon.hasClass('icon-circle-play'))
       play(src);
 
-    $icon.toggleClass('fa-play-circle fa-stop-circle');
+    $icon.toggleClass('icon-circle-play icon-circle-stop');
   }
 });
 
@@ -34,7 +34,7 @@ function play(src) {
 }
 
 function resetClipIcons() {
-  $('.play-clip i').removeClass('fa-stop-circle').addClass('fa-play-circle');
+  $('.play-clip i').removeClass('icon-circle-stop').addClass('icon-circle-play');
 }
 
 audio.addEventListener('ended', resetClipIcons);

@@ -9,6 +9,6 @@
 		target="_blank" 
 		class="btn btn-sm btn-warning" 
 		style="border-top-left-radius: 0!important;
-    	border-top-right-radius: 0!important;">@fa(['icon' => 'qrcode', 'mr' => 0])</a>
+        border-top-right-radius: 0!important;">@icon('qr-code', ['mr' => 0])</a>
 </div>
 @endif --}}

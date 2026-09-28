@@ -5,7 +5,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'question-circle', 
+      'icon' => 'circle-help',
       'title' => 'Quiz Topics', 
       'subtitle' => 'Manage the topics used by quizzes.',
       'action' => ['label' => 'Create a new topic', 'modal' => 'add-modal']

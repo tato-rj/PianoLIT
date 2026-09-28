@@ -29,7 +29,7 @@
           @tinyeditor(['bag' => 'default', 'name' => 'body', 'value' => $lesson->body])
           <div class="w-100 text-right">
             <a href="{{route('admin.crashcourses.lessons.preview', compact(['crashcourse', 'lesson']))}}" target="_blank" class="btn btn-outline-dark mr-2">
-              <i class="far fa-eye mr-2"></i>Preview
+              @icon('eye', ['mr' => 2])Preview
             </a>
             <button type="submit" id="submit-button" class="btn btn-default">Update lesson</button>
           </div>

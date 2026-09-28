@@ -22,6 +22,6 @@
 	</div>
 	<button class="btn-raw ml-2" type="More options"  
 	data-toggle="fixed-panel" data-target="#options-panel" style=" font-size: 1.44em">
-		@fa(['icon' => 'ellipsis-v', 'mr' => 0])</button>
+		@icon('ellipsis-vertical', ['mr' => 0])</button>
 	</div>
 </section>

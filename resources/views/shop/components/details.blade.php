@@ -1,16 +1,16 @@
 <div class="d-flex">
 	<div>
 		<div class="mb-2">
-			@fa(['icon' => 'copy', 'color' => 'grey'])
+			@icon('copy', ['color' => 'grey'])
 		</div>
 		<div class="mb-2">
-			@fa(['icon' => 'cloud-download-alt', 'color' => 'grey'])
+			@icon('cloud-download', ['color' => 'grey'])
 		</div>
 		<div class="mb-2">
-			@fa(['icon' => 'calendar-alt', 'color' => 'grey'])
+			@icon('calendar', ['color' => 'grey'])
 		</div>
 		<div class="mb-2">
-			@fa(['icon' => 'pen-nib', 'color' => 'grey'])
+			@icon('pen-tool', ['color' => 'grey'])
 		</div>
 	</div>
 	<div>

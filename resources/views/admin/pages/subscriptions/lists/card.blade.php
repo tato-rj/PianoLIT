@@ -4,11 +4,11 @@
             <h5 class="m-0"><strong>{{$list->name}}</strong></h5>
             <p class="m-0"><small>{{$list->description}}</small></p>
             @if($list->last_sent_at)
-            <p class="m-0 text-success"><small><i class="fas fa-calendar-day"></i> last sent {{$list->last_sent_at->diffForHumans()}}</small></p>
+            <p class="m-0 text-success"><small>@icon('calendar-days', ['mr' => 0]) last sent {{$list->last_sent_at->diffForHumans()}}</small></p>
             @endif
           </div>
           <div>
-            <p><i class="fas fa-users"></i> {{$list->subscribers_count}} {{str_plural('subscriber', $list->subscribers_count)}}</p>
+            <p>@icon('users', ['mr' => 0]) {{$list->subscribers_count}} {{str_plural('subscriber', $list->subscribers_count)}}</p>
             <div class="d-flex d-apart mb-2">
               <div class="d-flex">
                 <a href="{{route('admin.subscriptions.lists.edit', $list)}}" class="btn btn-default btn-sm px-3 mr-2">Edit</a>
@@ -18,7 +18,7 @@
                </div>
               <div>
                 <a href="#" data-url="{{route('admin.subscriptions.lists.destroy', $list)}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete text-danger">
-                  <i class="far fa-trash-alt align-middle"></i>
+                  @icon('trash-2', ['mr' => 0, 'classes' => 'align-middle'])
                 </a>
               </div>
             </div>
@@ -27,7 +27,7 @@
                 @csrf
                 <input type="hidden" name="type" value="txt">
                 <input type="hidden" name="list_id" value="{{$list->id}}">
-                <button type="submit" class="btn btn-sm btn-outline-secondary btn-block"><i class="fas fa-file-alt mr-2"></i>Export emails</button>
+                <button type="submit" class="btn btn-sm btn-outline-secondary btn-block">@icon('file-text', ['mr' => 2])Export emails</button>
               </form>
             </div>
           </div>

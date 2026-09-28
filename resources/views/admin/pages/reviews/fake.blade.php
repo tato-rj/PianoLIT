@@ -1,6 +1,6 @@
 <div class="text-right">
 @button([
-	'label' => '<i class="fas fa-smile-wink mr-1"></i>Write a fake review', 
+	'label' => \App\Support\Icon::render('smile', ['mr' => 1]) . 'Write a fake review',
 	'styles' => [
 		'theme' => 'warning'
 		], 

@@ -9,7 +9,7 @@
 @slot('body')
 	<div class="rounded-top bg-align-center position-relative" style="background-image: url({{$piece->image_background ?? $piece->period->cover_image}}); height: 200px;">
       <button class="close text-white absolute-top-right" type="button" data-dismiss="modal">
-          @fa(['icon' => 'times', 'mr' => 0])
+          @icon('close', ['mr' => 0])
         </button>
 
 		<img src="{{$piece->composer->cover_image}}" class="rounded-circle position-absolute shadow border border-white border-2x" style="width: 100px; bottom: -50px; left: 25px">
@@ -40,7 +40,7 @@
 @slot('footer')
 		<div class="text-center p-4 bg-light rounded-bottom">
 			<p>Would you like to find more pieces like this one?</p>
-			<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn rounded-pill btn-primary-outline">@fa(['icon' => 'folder-plus'])More like this</a>
+			<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn rounded-pill btn-primary-outline">@icon('folder-plus')More like this</a>
 		</div>
 	</div>
 @endslot

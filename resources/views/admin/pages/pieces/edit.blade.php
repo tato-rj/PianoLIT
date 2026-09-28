@@ -30,7 +30,7 @@
       <div class="row">
         <div class="col-lg-6 col-sm-10 col-12 mx-auto">
           <div class="px-3 py-2 rounded mb-4 bg-light">
-            <i class="fas fa-eye text-brand mr-2"></i><small class="text-muted">{{$piece->views_count}} {{str_plural('view', $piece->views_count) }}</small>
+            @icon('eye', ['mr' => 2, 'classes' => 'text-brand'])<small class="text-muted">{{$piece->views_count}} {{str_plural('view', $piece->views_count) }}</small>
           </div>
 
           {{-- Name --}}
@@ -178,7 +178,7 @@
           <div class="form-group">
             <div class="d-flex d-apart">
               <label class="text-brand"><small>Description</small></label>
-              <label class="text-brand cursor-pointer" data-piece-id="{{$piece->id}}" id="description-auto-complete">@fa(['icon' => 'magic'])</label>
+              <label class="text-brand cursor-pointer" data-piece-id="{{$piece->id}}" id="description-auto-complete">@icon('wand-sparkles')</label>
             </div>
             <textarea class="form-control" rows="5" name="description" placeholder="Enter a description here">{{ $piece->description }}</textarea>
           </div>
@@ -206,7 +206,7 @@
                 <label class="text-brand"><small>Score url</small></label>
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <a class="input-group-text no-underline {{$piece->lookup('score_url')}}" href="{{$piece->score_url}}" target="_blank"><i class="fas fa-globe"></i></a>
+                    <a class="input-group-text no-underline {{$piece->lookup('score_url')}}" href="{{$piece->score_url}}" target="_blank">@icon('globe', ['mr' => 0])</a>
                   </div>
                   <input type="text" class="form-control" maxlength="255" name="score_url" placeholder="Score url" value="{{$piece->score_url}}">
                 </div>
@@ -218,7 +218,7 @@
             <div class="col input-group">
               <div class="input-group-prepend">
 
-                <a class="input-group-text no-underline {{$piece->lookup('audio_path')}}" href="{{storage($piece->audio_path)}}" target="_blank"><i class="fas fa-microphone"></i></a>
+                <a class="input-group-text no-underline {{$piece->lookup('audio_path')}}" href="{{storage($piece->audio_path)}}" target="_blank">@icon('mic', ['mr' => 0])</a>
               </div>
               <div class="custom-file">
                 <input type="file" class="custom-file-input" name="audio" id="customFile">
@@ -228,7 +228,7 @@
 
             <div class="col input-group">
               <div class="input-group-prepend">
-                <a class="input-group-text no-underline {{$piece->lookup('score_path')}}" href="{{storage($piece->score_path)}}" target="_blank"><i class="fas fa-file-alt"></i></a>
+                <a class="input-group-text no-underline {{$piece->lookup('score_path')}}" href="{{storage($piece->score_path)}}" target="_blank">@icon('file-text', ['mr' => 0])</a>
               </div>
               <div class="custom-file">
                 <input type="file" class="custom-file-input" name="score" id="customFile">
@@ -239,7 +239,7 @@
           <div class="form-row form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
-                <a class="input-group-text no-underline {{$piece->lookup('audio_path_lh')}}" href="{{storage($piece->audio_path_lh)}}" target="_blank"><i class="fas fa-hand-paper" style="transform: scaleX(-1)"></i></a>
+                <a class="input-group-text no-underline {{$piece->lookup('audio_path_lh')}}" href="{{storage($piece->audio_path_lh)}}" target="_blank">@icon('hand', ['mr' => 0, 'styles' => 'transform: scaleX(-1)'])</a>
               </div>
               <div class="custom-file">
                 <input type="file" class="custom-file-input" name="audio_lh" id="customFile">
@@ -248,7 +248,7 @@
             </div>
             <div class="col input-group">
               <div class="input-group-prepend">
-                <a class="input-group-text no-underline {{$piece->lookup('audio_path_rh')}}" href="{{storage($piece->audio_path_rh)}}" target="_blank"><i class="fas fa-hand-paper"></i></a>
+                <a class="input-group-text no-underline {{$piece->lookup('audio_path_rh')}}" href="{{storage($piece->audio_path_rh)}}" target="_blank">@icon('hand', ['mr' => 0])</a>
               </div>
               <div class="custom-file">
                 <input type="file" class="custom-file-input" name="audio_rh" id="customFile">
@@ -316,7 +316,7 @@
         @csrf
         @method('DELETE')
         <input type="hidden" name="method" value="deleteScore">
-        <button type="submit" class="btn btn-red">@fa(['icon' => 'trash-alt', 'mr' => 0]) Delete score</button>
+        <button type="submit" class="btn btn-red">@icon('trash-2', ['mr' => 0]) Delete score</button>
       </form>
     </div>
   </div>

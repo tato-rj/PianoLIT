@@ -21,7 +21,7 @@
 @endif
 
 @button([
-	'label' => '<i class="fa fas fa-trash-alt mr-2"></i>Delete', 
+	'label' => \App\Support\Icon::render('trash-2', ['mr' => 2]) . 'Delete',
 	'styles' => [
 		'size' => 'sm', 
 		'theme' => 'red'

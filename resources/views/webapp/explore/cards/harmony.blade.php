@@ -17,8 +17,8 @@
 				A full harmonic analysis of this piece, one measure at a time
 			</div>
 			<div class="d-flex d-apart">
-				<div>@fa(['icon' => 'play-circle', 'size' => 'lg', 'classes' => 'opacity-4'])<strong>Play</strong></div>
-				<div>@fa(['icon' => 'lock', 'classes' => 'opacity-4', 'if' => ! $isAuthorized])</div>
+				<div>@icon('circle-play', ['size' => 'lg', 'classes' => 'opacity-4'])<strong>Play</strong></div>
+				<div>@icon('lock', ['classes' => 'opacity-4', 'if' => ! $isAuthorized])</div>
 			</div>
 		</div>
 	</div>

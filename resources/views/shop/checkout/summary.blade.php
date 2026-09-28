@@ -1,5 +1,5 @@
 @component('shop.components.forms.summary')
-<div class="mb-2 text-muted"><small>@fa(['icon' => 'question-circle'])Need help or have a question? <a class="link-blue" href="mailto:{{config('app.emails.general')}}?subject=Help with a purchase">Let us know</a></small></div>
+<div class="mb-2 text-muted"><small>@icon('circle-help')Need help or have a question? <a class="link-blue" href="mailto:{{config('app.emails.general')}}?subject=Help with a purchase">Let us know</a></small></div>
 <h4 class="border-bottom mb-3 pb-3">You're almost there!</h4>
 
 <div class="mb-4">

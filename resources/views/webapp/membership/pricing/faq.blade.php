@@ -5,7 +5,7 @@
     <div class="border-bottom">
       <div class="py-3 cursor-pointer d-apart" data-toggle="collapse" data-target="#collapse1">
         <h6 class="mb-0">How does the trial work?</h6>
-        <div>@fa(['icon' => 'plus'])</div>
+        <div>@icon('plus')</div>
       </div>
 
       <div id="collapse1" class="collapse" data-parent="#faq-accordion">
@@ -20,7 +20,7 @@
     <div class="border-bottom">
       <div class="py-3 cursor-pointer d-apart" data-toggle="collapse" data-target="#collapse2">
         <h6 class="mb-0">When will I be charged?</h6>
-        <div>@fa(['icon' => 'plus'])</div>
+        <div>@icon('plus')</div>
       </div>
 
       <div id="collapse2" class="collapse" data-parent="#faq-accordion">
@@ -33,7 +33,7 @@
     <div class="border-bottom">
       <div class="py-3 cursor-pointer d-apart" data-toggle="collapse" data-target="#collapse3">
         <h6 class="mb-0">Do subscriptions auto-renew?</h6>
-        <div>@fa(['icon' => 'plus'])</div>
+        <div>@icon('plus')</div>
       </div>
 
       <div id="collapse3" class="collapse" data-parent="#faq-accordion">
@@ -46,7 +46,7 @@
     <div class="border-bottom">
       <div class="py-3 cursor-pointer d-apart" data-toggle="collapse" data-target="#collapse4">
         <h6 class="mb-0">How can I cancel my trial or subscription?</h6>
-        <div>@fa(['icon' => 'plus'])</div>
+        <div>@icon('plus')</div>
       </div>
 
       <div id="collapse4" class="collapse" data-parent="#faq-accordion">
@@ -59,7 +59,7 @@
     <div class="">
       <div class="py-3 cursor-pointer d-apart" data-toggle="collapse" data-target="#collapse5">
         <h6 class="mb-0">Can I switch between a yearly and a monthly subscription?</h6>
-        <div>@fa(['icon' => 'plus'])</div>
+        <div>@icon('plus')</div>
       </div>
 
       <div id="collapse5" class="collapse" data-parent="#faq-accordion">

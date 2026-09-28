@@ -35,7 +35,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'list-ul', 
+      'icon' => 'list',
       'title' => 'Timeline', 
       'subtitle' => 'Manage events used in the timeline.',
       'action' => ['label' => 'Create a new event', 'modal' => 'add-modal']

@@ -18,7 +18,7 @@ PianoLIT Crashcourses
     <div class="mb-4">
       <p class="text-warning text-uppercase"><strong>...by signing up to this {{$highlightedCrashcourse->lessons_count}}-day course you'll learn about:</strong></p>
       <h4>{{$highlightedCrashcourse->title}}</h4>
-      <p class="m-0 text-muted"><i class="fas fa-envelope-open-text mr-2"></i>This course has {{$highlightedCrashcourse->lessons_count}} {{ str_plural('lesson', $highlightedCrashcourse->lessons_count) }}</p>
+      <p class="m-0 text-muted">@icon('mail-open', ['mr' => 2])This course has {{$highlightedCrashcourse->lessons_count}} {{ str_plural('lesson', $highlightedCrashcourse->lessons_count) }}</p>
     </div>
         <form method="POST" id="crashcourse-form" action="{{route('crashcourses.signup', $highlightedCrashcourse)}}" class="cc-form">
           @csrf

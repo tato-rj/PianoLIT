@@ -26,6 +26,6 @@
 		</div>
 	@endif
 	<button data-toggle="modal" data-target="#membership-history" class="btn btn-link">
-		@fa(['fa_type' => 'b', 'icon' => 'apple'])Request receipts history
+		@icon('brand-apple')Request receipts history
 	</button>
 </div>

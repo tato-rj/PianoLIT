@@ -45,7 +45,7 @@
           @foreach($editor->pieces as $piece)
           <li class="mb-2">
             <a href="{{route('admin.pieces.edit', $piece)}}">
-              <i class="fas fa-caret-right mr-2"></i>{{$piece->long_name}}
+              @icon('chevron-right', ['mr' => 2]){{$piece->long_name}}
             </a>
           </li>
           @endforeach

@@ -1,7 +1,7 @@
 <div>
     @if($user = $item->user())
     <a href="{{route('admin.users.show', $user)}}" class="text-nowrap">
-      <i class="fas fa-user mr-2"></i>{{$item->email}}
+      @icon('user', ['mr' => 2]){{$item->email}}
     </a>
     @else
     {{$item->email}}

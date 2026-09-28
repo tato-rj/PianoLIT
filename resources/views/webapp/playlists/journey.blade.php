@@ -10,9 +10,9 @@
 	</a>
 	@if(!$loop->last)
 	<div class="d-flex flex-column justify-content-center mt-2" style="font-size: 44%">
-		@fa(['icon' => 'circle', 'color' => 'dark', 'mr' => 0, 'classes' => 'my-2'])
-		@fa(['icon' => 'circle', 'color' => 'dark', 'mr' => 0, 'classes' => 'my-2'])
-		@fa(['icon' => 'circle', 'color' => 'dark', 'mr' => 0, 'classes' => 'my-2'])
+		@icon('circle', ['color' => 'dark', 'mr' => 0, 'classes' => 'my-2', 'filled' => true])
+		@icon('circle', ['color' => 'dark', 'mr' => 0, 'classes' => 'my-2', 'filled' => true])
+		@icon('circle', ['color' => 'dark', 'mr' => 0, 'classes' => 'my-2', 'filled' => true])
 	</div>
 	@endif
 </div>

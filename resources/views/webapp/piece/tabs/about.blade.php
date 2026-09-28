@@ -14,13 +14,13 @@
 		<div class="{{$piece->media['performance'] ? 'col-lg-6 col-12' : 'col-12'}} mb-4">
 			<div class="d-flex {{$piece->media['performance'] ? null : 'flex-center'}} flex-wrap mb-3">
 				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-					@fa(['icon' => 'file-alt']){{$piece->number_of_pages}}
+					@icon('file-text'){{$piece->number_of_pages}}
 				</div>
 				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-					@fa(['icon' => 'palette']){{$piece->period_name}}
+					@icon('palette'){{$piece->period_name}}
 				</div>
 				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-					@fa(['icon' => 'music']){{$piece->key}}
+					@icon('music'){{$piece->key}}
 				</div>
 			</div>
 			@if($piece->hasDescription())
@@ -44,13 +44,13 @@
 			<div class="mb-2">
 				<div class="d-flex flex-center flex-wrap">
 					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-						@fa(['icon' => 'file-alt']){{$piece->number_of_pages}}
+						@icon('file-text'){{$piece->number_of_pages}}
 					</div>
 					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-						@fa(['icon' => 'palette']){{$piece->period_name}}
+						@icon('palette'){{$piece->period_name}}
 					</div>
 					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
-						@fa(['icon' => 'music']){{$piece->key}}
+						@icon('music'){{$piece->key}}
 					</div>
 				</div>
 			</div>

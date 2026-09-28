@@ -11,16 +11,16 @@
     @include('admin.components.play', ['audio' => storage($item->audio_path)])
     <div class="ml-2">
       @if($item->is_public_domain)
-      <a href="{{storage($item->score_path)}}" target="_blank" class="{{$item->lookup('score_path')}}"><i class="fas fa-file-alt"></i></a>
+      <a href="{{storage($item->score_path)}}" target="_blank" class="{{$item->lookup('score_path')}}">@icon('file-text', ['mr' => 0])</a>
       @else
-      <a href="{{$item->score_url}}" target="_blank" class="test-success"><i class="fas fa-globe"></i></a>
+      <a href="{{$item->score_url}}" target="_blank" class="test-success">@icon('globe', ['mr' => 0])</a>
       @endif
     </div>
     <div class="ml-2">
-      <a href="{{route('admin.pieces.edit', $item->id)}}" target="_blank" class="text-warning"><i class="far fa-eye"></i></a>
+      <a href="{{route('admin.pieces.edit', $item->id)}}" target="_blank" class="text-warning">@icon('eye', ['mr' => 0])</a>
     </div>
     <div>
-      <div class="text-primary cursor-pointer add-piece ml-2" data-id="{{$item->id}}"><i class="fas fa-plus-circle"></i>
+      <div class="text-primary cursor-pointer add-piece ml-2" data-id="{{$item->id}}">@icon('circle-plus', ['mr' => 0])
         <div style="display: none;">
           @include('admin.pages.playlists.edit.piece', ['piece' => $item])
         </div>

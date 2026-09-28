@@ -3,7 +3,7 @@
   <div class="flex-grow d-flex text-truncate">
     {{-- SORT HANDLE --}}
     <div class="px-2 mr-1 sort-handle">
-      <i class="fas fa-sort"></i>
+      @icon('arrow-down-up', ['mr' => 0])
     </div>
     <div class="d-flex align-items-center text-truncate">
 
@@ -16,7 +16,7 @@
   </div>
   @empty($controls)
   <div class="text-right px-1 remove">
-    <i class="fas text-danger fa-times-circle mx-2 cursor-pointer"></i>
+    @icon('circle-x', ['mr' => 0, 'classes' => 'text-danger mx-2 cursor-pointer'])
   </div>
   @else
   <div class="text-right px-1">

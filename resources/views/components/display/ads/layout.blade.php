@@ -46,7 +46,7 @@
 
 					{{$action}} 
 
-					@fa(['icon' => 'chevron-right', 'mr' => 0])
+					@icon('chevron-right', ['mr' => 0])
 				</a>
 			</div>
 		</div>

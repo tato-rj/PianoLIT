@@ -149,7 +149,7 @@
           {{-- Description --}}
           <div class="form-group">
             <div class="text-right">
-              <label class="text-brand cursor-pointer" id="description-auto-complete">@fa(['icon' => 'magic'])</label>
+              <label class="text-brand cursor-pointer" id="description-auto-complete">@icon('wand-sparkles')</label>
             </div>
             <textarea class="form-control" rows="5" name="description" placeholder="Enter a description here">{{old('description')}}</textarea>
           </div>
@@ -180,7 +180,7 @@
           <div class="form-row form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
-                <div class="input-group-text"><i class="fas fa-microphone"></i></div>
+                <div class="input-group-text">@icon('mic', ['mr' => 0])</div>
               </div>
               <div class="custom-file">
                 <input type="file" class="custom-file-input" name="audio" id="customFile">
@@ -189,7 +189,7 @@
             </div>
             <div class="col input-group">
               <div class="input-group-prepend">
-                <div class="input-group-text"><i class="fas fa-file-alt"></i></div>
+                <div class="input-group-text">@icon('file-text', ['mr' => 0])</div>
               </div>
               <div class="custom-file">
                 <input type="file" class="custom-file-input" name="score" id="customFile">
@@ -200,7 +200,7 @@
           <div class="form-row form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
-                <div class="input-group-text"><i class="fas fa-hand-paper" style="transform: scaleX(-1)"></i></div>
+                <div class="input-group-text">@icon('hand', ['mr' => 0, 'styles' => 'transform: scaleX(-1)'])</div>
               </div>
               <div class="custom-file">
                 <input type="file" class="custom-file-input" name="audio_lh" id="customFile">
@@ -209,7 +209,7 @@
             </div>
             <div class="col input-group">
               <div class="input-group-prepend">
-                <div class="input-group-text"><i class="fas fa-hand-paper"></i></div>
+                <div class="input-group-text">@icon('hand', ['mr' => 0])</div>
               </div>
               <div class="custom-file">
                 <input type="file" class="custom-file-input" name="audio_rh" id="customFile">

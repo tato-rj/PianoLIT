@@ -10,7 +10,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'fire', 
+      'icon' => 'flame',
       'title' => 'Metaverse Locations', 
       'subtitle' => 'Manage all the locations we use on the metaverse.',
       'action' => ['label' => 'Add a new location', 'modal' => 'add-modal']

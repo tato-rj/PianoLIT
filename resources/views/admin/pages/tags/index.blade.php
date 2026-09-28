@@ -26,7 +26,7 @@
         @endforeach
       </div>
       <div class="col-12 mt-4 ml-2">
-        <p class="text-muted"><small>Ps: Tags with a <i class="fas fa-star text-warning fa-xs"></i> are the ones showing in the tour screen on the app.</small></p>
+        <p class="text-muted"><small>Ps: Tags with a @icon('star', ['mr' => 0, 'classes' => 'text-warning icon-size-xs', 'filled' => true]) are the ones showing in the tour screen on the app.</small></p>
       </div>
     </div>
 

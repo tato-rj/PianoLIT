@@ -35,7 +35,7 @@
 						@include('users.studio-policies.form')
 					</div>
 					<div class="text-center">
-						<button class="btn btn-primary shadow"><i class="fas fa-save mr-2"></i>Create my policy</button>
+						<button class="btn btn-primary shadow">@icon('save', ['mr' => 2])Create my policy</button>
 					</div>
 				</form>
 			</div>

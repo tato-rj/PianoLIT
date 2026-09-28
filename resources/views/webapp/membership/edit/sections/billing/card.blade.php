@@ -17,7 +17,7 @@
 				<div id="card-errors" role="alert" class="invalid-feedback d-block"></div>
 			</div>
 		</div>
-		<button id="card-button" class="btn btn-block btn-default mb-2">@fa(['icon' => 'lock'])Update my card</button>
+		<button id="card-button" class="btn btn-block btn-default mb-2">@icon('lock')Update my card</button>
 		<p class="m-0"><small>Don't worry, your card information will never directly touch our servers.</small></p>
 	</form>
 </div>

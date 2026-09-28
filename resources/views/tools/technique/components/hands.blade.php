@@ -9,7 +9,7 @@
 				data-fingering="{{json_encode($result['lh'])}}" 
 				data-notes="{{json_encode($result['up_down'])}}">
 				<div class="text-muted mb-2"><small><strong>PLAY LEFT HAND</strong></small></div>
-				<i class="fas opacity-6 text-grey fa-hand-paper fa-flip-horizontal fa-8x"></i>
+				@icon('hand', ['mr' => 0, 'classes' => 'opacity-6 text-grey icon-flip-horizontal icon-size-8x'])
 			</button>
 		</div>
 		<div class="col-6">
@@ -21,7 +21,7 @@
 				data-fingering="{{json_encode($result['rh'])}}" 
 				data-notes="{{json_encode($result['up_down'])}}">
 				<div class="text-muted mb-2"><small><strong>PLAY RIGHT HAND</strong></small></div>
-				<i class="fas opacity-6 text-grey fa-hand-paper fa-8x"></i>
+				@icon('hand', ['mr' => 0, 'classes' => 'opacity-6 text-grey icon-size-8x'])
 			</button>
 		</div>
 	</div>

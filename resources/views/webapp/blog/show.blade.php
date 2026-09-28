@@ -12,7 +12,7 @@
 <p class="text-muted blog-font">{{$post->description}}</p>
 <div class="d-apart text-muted">
 	<p><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
-	<p><small><i class="fas fa-eye mr-2"></i>{{$post->views}}</small></p>
+	<p><small>@icon('eye', ['mr' => 2]){{$post->views}}</small></p>
 </div>
 
 <figure class="figure w-100">

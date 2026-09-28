@@ -3,12 +3,12 @@
     data-toggle="{{!empty($dropdown) ? 'collapse' : null}}"  
     href="{{!empty($dropdown) ? '#'.str_slug($name) : $route}}">
     <div>
-      @fa(['icon' => $icon, 'mr' => 1, 'color' => 'muted'])
+      @icon($icon, ['mr' => 1, 'color' => 'muted'])
       <span class="nav-link-text">{{$name}}</span>
     </div>
     @if(!empty($dropdown))
     <div>
-      <i class="fas fa-caret-down ml-1"></i>
+      @icon('chevron-down', ['mr' => 0, 'classes' => 'ml-1'])
     </div>
     @endif
   </a>

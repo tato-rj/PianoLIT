@@ -9,7 +9,7 @@
 </div>
 <div class="text-center mb-5">
 	<a href="{{route('webapp.search.results', ['search' => $composer->name])}}" class="btn btn-default">
-		@fa(['icon' => 'search'])Discover pieces by {{$composer->short_name}}</a>
+		@icon('search')Discover pieces by {{$composer->short_name}}</a>
 </div>
 
 <div class="mb-5">

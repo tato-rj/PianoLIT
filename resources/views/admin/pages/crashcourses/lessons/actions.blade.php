@@ -1,5 +1,5 @@
 <a href="#" data-toggle="modal" data-target="#lesson-{{$lesson->id}}-preview-modal" class="btn btn-sm btn-outline-dark mr-2">
-<i class="far fa-eye mr-2"></i>Preview
+@icon('eye', ['mr' => 2])Preview
 </a>
 
 <div class="modal fade" id="lesson-{{$lesson->id}}-preview-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

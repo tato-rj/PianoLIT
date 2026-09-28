@@ -20,7 +20,7 @@
 				<button type="button" class="list-group-item list-group-item-action border-0 rounded-pill text-left mb-1 d-flex justify-content-between align-items-center" {{strhas($answer, '[x]') ? 'correct' : null}}
 						data-overlay="#overlay-{{$loop->parent->iteration}}">
 					{{$list[$loop->index]}}) {{str_replace('[x]', '', $answer)}}
-					<i class="fas fa-{{strhas($answer, '[x]') ? 'check' : 'times'}}-circle" style="display: none;"></i>
+					@icon(strhas($answer, '[x]') ? 'circle-check' : 'circle-x', ['mr' => 0, 'if' => false])
 				</button>
 			@endforeach
 		</div>

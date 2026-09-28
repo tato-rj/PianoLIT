@@ -14,12 +14,12 @@
       <div class="col-12">
         @table([
           'id' => 'trials-table',
-          'title' => '<i class="fas fa-hourglass-half mr-2 text-warning"></i>Trials ('.$trials->count().')',
+          'title' => \App\Support\Icon::render('hourglass', ['mr' => 2, 'classes' => 'text-warning']) . 'Trials ('.$trials->count().')',
           'sortable' => true,
           'borderless' => true,
           'hoverable' => 'no',
           'more' => route('admin.memberships.load-trials'),
-          'headers' => ['ID <i class="fas fa-sort"></i>', 'User <i class="fas fa-sort"></i>', 'Plan <i class="fas fa-sort"></i>', 'Progress <i class="fas fa-sort"></i>', 'Ends at <i class="fas fa-sort"></i>'],
+          'headers' => ['ID ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'User ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Plan ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Progress ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Ends at ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . ''],
           'rows' => view('admin.pages.stats.memberships.trials', ['memberships' => $trials->take(10)])
         ])
       </div>
@@ -28,12 +28,12 @@
       <div class="col-12">
         @table([
           'id' => 'members-table',
-          'title' => '<i class="fas fa-credit-card mr-2 text-green"></i>Active memberships ('.$members->count().')',
+          'title' => \App\Support\Icon::render('credit-card', ['mr' => 2, 'classes' => 'text-green']) . 'Active memberships ('.$members->count().')',
           'sortable' => true,
           'borderless' => true,
           'hoverable' => 'no',
           'more' => route('admin.memberships.load-members'),
-          'headers' => ['ID <i class="fas fa-sort"></i>', 'User <i class="fas fa-sort"></i>', 'Plan <i class="fas fa-sort"></i>', 'Time until next renewal <i class="fas fa-sort"></i>', 'Renews at <i class="fas fa-sort"></i>'],
+          'headers' => ['ID ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'User ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Plan ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Time until next renewal ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Renews at ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . ''],
           'rows' => view('admin.pages.stats.memberships.members', ['memberships' => $members->take(10)])
         ])
       </div>
@@ -42,12 +42,12 @@
       <div class="col-12">
         @table([
           'id' => 'expired-table',
-          'title' => '<i class="fas fa-credit-card mr-2 text-muted"></i>Expired memberships ('.$expired->count().')',
+          'title' => \App\Support\Icon::render('credit-card', ['mr' => 2, 'classes' => 'text-muted']) . 'Expired memberships ('.$expired->count().')',
           'sortable' => true,
           'borderless' => true,
           'hoverable' => 'no',
           'more' => route('admin.memberships.load-expired'),
-          'headers' => ['ID <i class="fas fa-sort"></i>', 'User <i class="fas fa-sort"></i>', 'Plan <i class="fas fa-sort"></i>', 'Time since last renewal <i class="fas fa-sort"></i>', 'Last renew at <i class="fas fa-sort"></i>'],
+          'headers' => ['ID ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'User ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Plan ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Time since last renewal ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Last renew at ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . ''],
           'rows' => view('admin.pages.stats.memberships.expired', ['memberships' => $expired->take(10)])
         ])
       </div>

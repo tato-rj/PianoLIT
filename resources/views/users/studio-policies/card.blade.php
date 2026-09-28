@@ -9,19 +9,19 @@
 			<div class="w-50 text-center">
 				<a class="link-grey" title="Edit" href="{{route('users.studio-policies.edit', $policy->id)}}">
 					<small class="d-block">EDIT</small>
-					<i class="fas fa-lg fa-edit"></i>
+					@icon('square-pen', ['mr' => 0, 'classes' => 'icon-size-lg'])
 				</a>
 			</div>
 			<div class="w-50 text-center">
 				<a class="link-grey delete" title="Delete" href="" data-url="{{route('users.studio-policies.destroy', $policy->id)}}" data-toggle="modal" data-target="#delete-modal">
 					<small class="d-block">DELETE</small>
-					<i class="fas fa-lg fa-trash-alt"></i>
+					@icon('trash-2', ['mr' => 0, 'classes' => 'icon-size-lg'])
 				</a>
 			</div>
 		</div>
 		<div>
 			<a class="btn btn-teal btn-block text-left" href="{{route('users.studio-policies.show', $policy->id)}}">
-				<i class="fas fa-file-download mr-2"></i>Download
+				@icon('file-down', ['mr' => 2])Download
 			</a>
 		</div>
 	</div>

@@ -19,7 +19,7 @@ window.filters = [];
 @include('webapp.components.spinner')
 
 <div id="empty" class="text-grey text-center pt-5 pb-4" style="display: none;">
-	@fa(['icon' => 'box-open', 'mr' => 0, 'size' => 'lg'])
+	@icon('package-open', ['mr' => 0, 'size' => 'lg'])
 	<div><strong></strong></div>
 </div>
 @endsection

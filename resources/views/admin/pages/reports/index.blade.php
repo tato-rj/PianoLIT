@@ -9,7 +9,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'envelope', 
+      'icon' => 'mail',
       'title' => 'Email Reports', 
       'subtitle' => 'See detailed reports from the email lists.'])
     

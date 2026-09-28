@@ -113,7 +113,7 @@ $('.remove-file').on('click', function(){
   if (! $button.hasClass('removing')) {
     $button.addClass('removing');
 
-    $button.attr('disabled', true).find('i').removeClass('fa-trash-alt').addClass('fa-hourglass-half');
+    $button.attr('disabled', true).find('i').removeClass('icon-trash-2').addClass('icon-hourglass');
 
     $.ajax({
       url: url,

@@ -33,7 +33,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'question-circle', 'title' => 'Quiz Audio', 'subtitle' => 'Manage the audio used by quizzes.'])
+    @include('admin.components.page.title', ['icon' => 'circle-help', 'title' => 'Quiz Audio', 'subtitle' => 'Manage the audio used by quizzes.'])
     
     <div class="row mb-3">
       <div class="col-12">
@@ -119,7 +119,7 @@ $('.remove-file').on('click', function(){
   if (! $button.hasClass('removing')) {
     $button.addClass('removing');
 
-    $button.attr('disabled', true).find('i').removeClass('fa-trash-alt').addClass('fa-hourglass-half');
+    $button.attr('disabled', true).find('i').removeClass('icon-trash-2').addClass('icon-hourglass');
 
     $.ajax({
       url: url,

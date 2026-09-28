@@ -29,8 +29,8 @@
             <td>{{$quiz->results_count}}</td>
             <td>{{$quiz->average_score}} out of {{count($quiz->questions)}}</td>
             <td class="text-right text-nowrap">
-              <a href="{{route('quizzes.show', $quiz->slug)}}" target="_blank" class="text-muted mr-2"><i class="far fa-eye align-middle"></i></a>
-              <a href="{{route('admin.quizzes.edit', $quiz->slug)}}" class="text-muted mr-2"><i class="far fa-edit align-middle"></i></a>
+              <a href="{{route('quizzes.show', $quiz->slug)}}" target="_blank" class="text-muted mr-2">@icon('eye', ['mr' => 0, 'classes' => 'align-middle'])</a>
+              <a href="{{route('admin.quizzes.edit', $quiz->slug)}}" class="text-muted mr-2">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
             </td>
           </tr>
           @endforeach

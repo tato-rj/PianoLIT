@@ -14,7 +14,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'question-circle', 
+      'icon' => 'circle-help',
       'title' => 'Quizzes', 'subtitle' => 'Manage the all the quizzes.',
       'action' => ['label' => 'Create a new quiz', 'url' => route('admin.quizzes.create')]
     ])

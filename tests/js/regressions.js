@@ -23,6 +23,7 @@ function element(value = '') {
 }
 
 async function main() {
+    require('./icons')();
     require('./history-back')();
     await require('./score-editor')();
     await require('./webapp-search')();

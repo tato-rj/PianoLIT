@@ -18,7 +18,7 @@
 
     <div class="row mb-2">
       <div class="col-12">
-        <div class="alert alert-warning text-center"><i class="fas fa-users"></i> This list has a total of <strong>{{$list->subscribers_count}}</strong> {{str_plural('subscriber', $list->subscribers_count)}}</div>
+        <div class="alert alert-warning text-center">@icon('users', ['mr' => 0]) This list has a total of <strong>{{$list->subscribers_count}}</strong> {{str_plural('subscriber', $list->subscribers_count)}}</div>
       </div>
     </div>
 

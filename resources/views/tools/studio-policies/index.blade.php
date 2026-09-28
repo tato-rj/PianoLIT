@@ -26,7 +26,7 @@
 				<p>Are you looking to create a professionally-looking policy for your studio? Do you want to dust off the one you have and improve it for your expanding studio? Then you're in the right place 🤗!</p>
 				<p>Just click on the button below, answer a few questions and we'll generate a <u>well crafted</u> and <u>straight forward</u> document in just a few steps.</p>
 			</div>
-			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow btn-block"><i class="fas fa-magic mr-2"></i>Create a Studio Policy now</a>
+			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow btn-block">@icon('wand-sparkles', ['mr' => 2])Create a Studio Policy now</a>
 		</div>
 		<div class="col-lg-8 col-12 mx-auto">			
 			<div class="text-center">
@@ -36,7 +36,7 @@
 					<h6><a href="{{route('users.studio-policies.index')}}">Click here</a> to view the policies you've created</h6>
 				@else
 					<div class="border rounded px-3 py-5 mt-4 text-center">
-						<h2 class="text-grey mb-1"><i class="far fa-folder-open"></i></h2>
+						<h2 class="text-grey mb-1">@icon('folder-open', ['mr' => 0])</h2>
 						<h5 class="text-grey m-0">You have not created a policy yet</h5>
 					</div>
 				@endif

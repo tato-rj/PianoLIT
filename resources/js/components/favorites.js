@@ -73,7 +73,7 @@
     }
 
     function updateFlag(flag) {
-        $(flag).find('i').toggleClass('far fas');
+        $(flag).find('i').toggleClass('icon-filled');
     }
 
     $(document).on('click', 'button.new-folder', function() {

@@ -20,10 +20,10 @@ $('.quiz-answers button').on('click', function() {
 
 	console.log(answers);
 
-	$parent.find('button[correct]').toggleClass('list-group-item-action alert-green').find('.fas').show();
+	$parent.find('button[correct]').toggleClass('list-group-item-action alert-green').find('.app-icon').show();
 
 	if (! $button.is('[correct]'))
-		$button.toggleClass('list-group-item-action alert-red').find('.fas').show();
+		$button.toggleClass('list-group-item-action alert-red').find('.app-icon').show();
 
 	if (! answers.includes(null))
 		submit();

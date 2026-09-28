@@ -4,18 +4,18 @@
 			@isset($theme)
 				@switch($theme)
 				@case('edit')
-				<div>@fa(['icon' => 'tools', 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+				<div>@icon('wrench', ['mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
 				@break
 				
 				@case('create')
-				<div>@fa(['icon' => 'magic', 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+				<div>@icon('wand-sparkles', ['mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
 				@break
 
 				@default
-				<div>@fa(['icon' => '', 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+				<div>@icon('', ['mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
 				@endswitch
 			@else
-				<div>@fa(['icon' => $icon, 'mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
+				<div>@icon($icon, ['mr' => 0, 'color' => 'grey', 'size' => 'lg'])</div>
 			@endif
 		</div>
 		<div class="title-text">
@@ -34,19 +34,19 @@
     <div class="mb-3">
     	@isset($action['url'])
 	      <a href="{{$action['url']}}" class="btn btn-sm btn-default">
-	        @fa(['icon' => 'plus']){{$action['label']}}
+	        @icon('plus'){{$action['label']}}
 	      </a>
 	    @endisset
 
     	@isset($action['external_link'])
 	      <a href="{{$action['external_link']}}" target="_blank" class="btn btn-sm btn-default">
-	        @fa(['icon' => 'external-link-alt']){{$action['label']}}
+	        @icon('external-link'){{$action['label']}}
 	      </a>
 	    @endisset
 
     	@isset($action['modal'])
 	      <button data-toggle="modal" data-target="#{{$action['modal']}}" class="btn btn-sm btn-default">
-	        @fa(['icon' => 'plus']){{$action['label']}}
+	        @icon('plus'){{$action['label']}}
 	      </button>
 	    @endisset
     </div>
@@ -56,7 +56,7 @@
 		<div class="mb-3">
 		@foreach($back as $label => $url)
 	      <a href="{{$url}}" class="btn btn-sm btn-grey text-uppercase">
-	        @fa(['icon' => 'arrow-circle-left']){{$label}}
+	        @icon('circle-arrow-left'){{$label}}
 	      </a>
 	    @endforeach
 		</div>

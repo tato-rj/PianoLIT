@@ -28,7 +28,7 @@ function showAlbums(albums) {
              <p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>
             </div>
             <div class="d-flex flex-center p-2" style="background: rgba(0,0,0,0.025);">
-              <i class="ml-1 fas fa-angle-right fa-lg"></i>
+              <i class="ml-1 app-icon icon-chevron-right icon-size-lg"></i>
             </div>
          </div>
        </div>
@@ -38,7 +38,7 @@ function showAlbums(albums) {
   }
 
   if (albums.length == 200)
-    html += '<div class="col-12 mt-4 text-center"><div class="alert alert-warning d-inline-block"><i class="fas fa-exclamation-circle mr-2"></i>We reached Apple Music\'s limit of 200 results</div></div>';
+    html += '<div class="col-12 mt-4 text-center"><div class="alert alert-warning d-inline-block"><i class="app-icon icon-circle-alert mr-2"></i>We reached Apple Music\'s limit of 200 results</div></div>';
 
   $('#api-results').html(html);
 

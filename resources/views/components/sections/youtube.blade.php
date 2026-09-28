@@ -18,7 +18,7 @@
 		@button([
 			'href' => route('youtube'),
 			'external' => true,
-			'label' => '<i class="fab fa-lg fa-youtube mr-3"></i>Visit our channel',
+			'label' => \App\Support\Icon::render('brand-youtube', ['mr' => 3, 'classes' => 'icon-size-lg']) . 'Visit our channel',
 			'styles' => [
 				'shadow' => true,
 				'theme' => 'primary',

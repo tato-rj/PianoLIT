@@ -19,7 +19,7 @@
 	<div class="card">
 		<div class="card-header bg-pastel" id="receipt-{{$loop->iteration}}">
 			<div class="d-flex justify-content-between cursor-pointer" data-toggle="collapse" data-target="#receipt-history-{{$loop->iteration}}">
-				<strong><i class="fas fa-file-alt mr-2"></i>Receipt #{{$loop->iteration}}</strong>
+				<strong>@icon('file-text', ['mr' => 2])Receipt #{{$loop->iteration}}</strong>
 			</div>
 		</div>
 

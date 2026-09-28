@@ -36,7 +36,7 @@
           <strong>COURSE LESSONS</strong>
           <a href="{{route('admin.crashcourses.lessons.create', $crashcourse)}}" class="btn btn-sm btn-default position-absolute" 
             style="top: 50%; right: 12px; transform: translateY(-50%);">
-            <i class="fas fa-plus mr-2"></i><strong>NEW</strong>
+            @icon('plus', ['mr' => 2])<strong>NEW</strong>
           </a>
         </div>
         <div id="course-lessons" data-url-reorder="{{route('admin.crashcourses.lessons.reorder', $crashcourse)}}">

@@ -8,8 +8,8 @@
       'content' => array_merge([
         'Name' => $user->full_name . $user->countryFlag,
         'Email' => $user->email_confirmed ? 
-          $user->email . '<span class="text-green ml-1" title="Email confirmed on ' . $user->email_verified_at->toFormattedDateString() . '"><i class="fas fa-check-circle"></i></span>' :
-          $user->email . '<span class="text-muted ml-1" title="Email not yet confirmed"><i class="fas fa-hourglass-half"></i></span>',
+          $user->email . '<span class="text-green ml-1" title="Email confirmed on ' . $user->email_verified_at->toFormattedDateString() . '">' . \App\Support\Icon::render('circle-check', ['mr' => 0]) . '</span>' :
+          $user->email . '<span class="text-muted ml-1" title="Email not yet confirmed">' . \App\Support\Icon::render('hourglass', ['mr' => 0]) . '</span>',
         'Origin' => $user->formattedOrigin,
         'Favorites' => $user->favorites_count . ' ' . str_plural('piece', $user->favorites_count),
         'Tutorial Requests' => $user->tutorialRequests()->count() . ' ' . str_plural('request', $user->tutorialRequests()->count()),

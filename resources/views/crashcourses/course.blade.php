@@ -6,11 +6,11 @@
 				@include('components.tags.new', ['is_new' => $crashcourse->is_new])
 
 				<div class="card-overlay h-100 t-2" style="opacity: 0">
-					<div class="text-white overlay-blue d-flex flex-center rounded-top"><i class="fas fa-eye fa-3x"></i></div>
+					<div class="text-white overlay-blue d-flex flex-center rounded-top">@icon('eye', ['mr' => 0, 'classes' => 'icon-size-3x'])</div>
 				</div>
 			</div>
 			<div class="card-body rounded-bottom">
-				<p class="text-muted mb-1"><small>@fa(['icon' => 'layer-group', 'color' => 'primary']){{$crashcourse->lessons_count}} lessons</small></p>
+				<p class="text-muted mb-1"><small>@icon('layers', ['color' => 'primary']){{$crashcourse->lessons_count}} lessons</small></p>
 				<h5 class="card-title mb-2">{{$crashcourse->title}}</h5>
 				<p class="card-text">{{$crashcourse->description}}</p>
 			</div>
@@ -32,10 +32,10 @@
 			<div class="w-100">
 				<div class="mb-4">
 					<p class=""><strong>What's in it for me?</strong></p>
-					<div><i class="fas fa-check text-green mr-2"></i> 100% FREE!</div>
-					<div><i class="fas fa-check text-green mr-2"></i> <strong>{{$crashcourse->lessons_count}} lessons</strong> included in this course</div>
-					<div><i class="fas fa-check text-green mr-2"></i> Receive the course in your inbox</div>
-					<div><i class="fas fa-check text-green mr-2"></i> Learn with bite sized content</div>
+					<div>@icon('check', ['mr' => 2, 'classes' => 'text-green']) 100% FREE!</div>
+					<div>@icon('check', ['mr' => 2, 'classes' => 'text-green']) <strong>{{$crashcourse->lessons_count}} lessons</strong> included in this course</div>
+					<div>@icon('check', ['mr' => 2, 'classes' => 'text-green']) Receive the course in your inbox</div>
+					<div>@icon('check', ['mr' => 2, 'classes' => 'text-green']) Learn with bite sized content</div>
 				</div>
 				<form method="POST" disable-on-submit action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">
 					@csrf

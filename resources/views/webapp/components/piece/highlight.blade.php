@@ -4,7 +4,7 @@
 		<p class="m-0 text-white">{{$piece->attribution}}{{$piece->composer->short_name}}</p>
 	</div>
 	<div class="w-100 text-white">
-		@fa(['icon' => 'circle', 'mr' => 1, 'classes' => 'align-middle color-' . $piece->level_name])
+		@icon('circle', ['mr' => 1, 'classes' => 'align-middle color-' . $piece->level_name, 'filled' => true])
 		<span><small>{{strtoupper($piece->extended_level_name)}}</small></span>
 	</div>
 </div>

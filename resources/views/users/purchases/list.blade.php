@@ -10,7 +10,7 @@
           <div><span class="badge badge-pill badge-primary mr-2">{{$purchase->type}}</span></div>
           <strong class="mr-2">{{$purchase->item->title}}</strong>
         </div>
-        <div>@fa(['icon' => 'caret-down'])</div>
+        <div>@icon('chevron-down')</div>
       </div>
     </div>
 
@@ -32,7 +32,7 @@
             <div>
               @foreach($purchase->item->links() as $label => $hash)
               <a href="{{route('shop.download', ['purchase' => $purchase, 'path' => $hash])}}">
-                @fa(['icon' => 'cloud-download-alt', 'mr' => 1]){{$label}}
+                @icon('cloud-download', ['mr' => 1]){{$label}}
               </a> {{$loop->count > 1 && ! $loop->last ? ' | ' : null}}
               @endforeach
             </div>

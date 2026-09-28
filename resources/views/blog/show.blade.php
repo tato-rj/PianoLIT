@@ -26,7 +26,7 @@
 		<div class="col-lg-9 col-md-8 col-12 mb-2">
 			@if(! empty($preview))
 			<div class="alert alert-warning" role="alert">
-			  <i class="fas fa-exclamation-triangle mr-2"></i>This post is <u>not published</u>. Only admins can see this page.
+			  @icon('triangle-alert', ['mr' => 2])This post is <u>not published</u>. Only admins can see this page.
 			</div>
 			@endif
 			<div class="mb-4">
@@ -37,7 +37,7 @@
 				<p class="text-muted blog-font">{{$post->description}}</p>
 				<div class="d-apart text-muted">
 					<p><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
-					<p><small><i class="fas fa-eye mr-2"></i>{{$post->views}}</small></p>
+					<p><small>@icon('eye', ['mr' => 2]){{$post->views}}</small></p>
 				</div>
 				<figure class="figure w-100">
 					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded w-100">
@@ -85,7 +85,7 @@
 	</div>
 
 	@include('components.display.suggestions', [
-		'title' => '<i class="fas fa-glasses mr-2"></i><strong>READ NEXT</strong>',
+		'title' => \App\Support\Icon::render('glasses', ['mr' => 2]) . '<strong>READ NEXT</strong>',
 		'card' => 'blog.components.cards.small',
 		'collection' => $suggestions])
 

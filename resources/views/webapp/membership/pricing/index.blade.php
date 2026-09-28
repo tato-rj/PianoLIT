@@ -26,11 +26,11 @@
 @push('scripts')
 <script type="text/javascript">
 $('#faq-accordion').on('show.bs.collapse', function (event) {
-  $(event.target).siblings('div').find('i').removeClass('fa-plus').addClass(' fa-minus');
+  $(event.target).siblings('div').find('i').removeClass('icon-plus').addClass(' icon-minus');
 });
 
 $('#faq-accordion').on('hide.bs.collapse', function (event) {
-  $(event.target).siblings('div').find('i').removeClass('fa-minus').addClass(' fa-plus');
+  $(event.target).siblings('div').find('i').removeClass('icon-minus').addClass(' icon-plus');
 });
 </script>
 @endpush

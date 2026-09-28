@@ -11,7 +11,7 @@
 			@endif
 			">{{strtoupper($month)}}</div>
 			@if($hasBirthdays)
-			<div class="text-blue"><strong>@fa(['icon' => 'birthday-cake', 'color' => 'grey']){{$calendar[$loop->iteration]->count()}}</strong></div>
+			<div class="text-blue"><strong>@icon('cake', ['color' => 'grey']){{$calendar[$loop->iteration]->count()}}</strong></div>
 			@endif
 		</div>
 		@if($hasBirthdays)

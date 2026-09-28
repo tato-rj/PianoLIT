@@ -8,7 +8,7 @@
 		data-sort-period="{{$piece->period->id}}"
 		data-sort-views="{{$piece->views_count}}">
 		@auth
-		@fa(['icon' => 'lock', 'classes' => 'absolute-center opacity-6', 'size' => '2x', 'color' => 'white', 'if' => ! $hasFullAccess && ! $piece->is_free])
+		@icon('lock', ['classes' => 'absolute-center opacity-6', 'size' => '2x', 'color' => 'white', 'if' => ! $hasFullAccess && ! $piece->is_free])
 		@endauth
 		<a href="{{route('webapp.pieces.show', $piece)}}">
 			@include('webapp.components.piece.highlight', ['height' => '220px', 'piece' => $piece])

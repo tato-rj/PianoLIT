@@ -42,7 +42,7 @@
 				'number' => $event->clicks_count])
 		</div>
 		<div class="m-2">
-			<a href="#" data-url="{{route('admin.subscriptions.reports.destroy', $event->list_id)}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="btn btn-outline-danger"><i class="fas fa-trash-alt mr-1"></i>Delete report</a>
+			<a href="#" data-url="{{route('admin.subscriptions.reports.destroy', $event->list_id)}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="btn btn-outline-danger">@icon('trash-2', ['mr' => 1])Delete report</a>
 		</div>
 	</div>
 	

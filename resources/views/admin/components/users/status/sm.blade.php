@@ -1,2 +1,2 @@
-<i class="fas fa-{{$elements['icon']}} text-{{$elements['color']}} mr-2"></i>
+@icon($elements['icon'], ['color' => $elements['color']])
 <span class="text-muted">{{$elements['label']}}</span>

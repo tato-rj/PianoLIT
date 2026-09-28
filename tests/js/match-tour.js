@@ -60,7 +60,7 @@ module.exports = async function () {
     const button = () => ({innerHTML: '', setAttribute() {}});
     const a = button(), b = button();
     await previews.play(pieces[0], a); await previews.play(pieces[1], b);
-    assert(a.innerHTML.includes('fa-play')); assert(b.innerHTML.includes('fa-pause'));
+    assert(a.innerHTML.includes('icon-play')); assert(b.innerHTML.includes('icon-pause'));
     previews.audio.currentTime = 10.5; previews.audio.events.timeupdate(); assert(previews.audio.paused);
     previews.audio.failure = true; await previews.play(pieces[0], a); assert.strictEqual(warnings, 1); assert.strictEqual(previews.button, null);
 

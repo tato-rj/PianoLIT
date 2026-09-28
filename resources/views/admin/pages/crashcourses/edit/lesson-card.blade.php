@@ -6,25 +6,25 @@
     <div class="mb-3 pb-2 border-bottom d-flex justify-content-between">
       <div>
         <h5 class="m-0"><strong>{{$lesson->subject}}</strong></h5>
-        <p class="m-0 text-muted"><small><i class="fas fa-stopwatch mr-2"></i>{{$lesson->reading_time}} min read</small></p>
+        <p class="m-0 text-muted"><small>@icon('timer', ['mr' => 2]){{$lesson->reading_time}} min read</small></p>
       </div>
       <div class="px-2 mt-2">
-        <i class="fas fa-sort fa-lg"></i>
+        @icon('arrow-down-up', ['mr' => 0, 'classes' => 'icon-size-lg'])
       </div>
     </div>
     <div class="d-flex justify-content-between">
       <div class="">
         @include('admin.pages.crashcourses.lessons.actions', ['id' => $lesson->id])
         <a href="{{route('admin.crashcourses.lessons.edit', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-warning">
-          <i class="far fa-edit mr-2"></i>Edit
+          @icon('square-pen', ['mr' => 2])Edit
         </a>
         <a href="{{route('admin.crashcourses.lessons.duplicate', compact(['crashcourse', 'lesson']))}}" class="btn btn-sm btn-green">
-          <i class="far fa-copy mr-2"></i>Duplicate
+          @icon('copy', ['mr' => 2])Duplicate
         </a>
       </div>
       <div>
         <a href="#" data-url="{{route('admin.crashcourses.lessons.destroy', compact(['crashcourse', 'lesson']))}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete btn btn-sm btn-danger">
-          <i class="far fa-trash-alt mr-2"></i>Delete
+          @icon('trash-2', ['mr' => 2])Delete
         </a>
       </div>
     </div>

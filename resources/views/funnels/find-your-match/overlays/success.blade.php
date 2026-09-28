@@ -4,7 +4,7 @@
     animation-delay: .5s;">
       <div class="text-center">
         <h1>
-          @fa(['icon' => 'check-circle', 'color' => 'green', 'size' => 'lg'])
+          @icon('circle-check', ['color' => 'green', 'size' => 'lg'])
         </h1>
         <h4 class="m-0">We found a piece for you!</h4>
       </div>

@@ -14,7 +14,7 @@
 
       <form method="GET" disable-on-submit action="{{route('admin.memberships.validate.all')}}">
         @csrf
-        <button class="btn btn-sm btn-success"><i class="fas fa-clipboard-check mr-2"></i>Validate all subscriptions</button>
+        <button class="btn btn-sm btn-success">@icon('clipboard-check', ['mr' => 2])Validate all subscriptions</button>
       </form>
 
     @endcomponent

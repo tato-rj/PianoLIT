@@ -385,7 +385,7 @@ function nextLoadingText(percentage) {
 function completeProgress() {
     $progressBar.removeClass('progress-bar-striped progress-bar-animated')
                 .addClass('bg-green')
-                .html('<i class="fa-solid fa-check fa-xl"></i>')
+                .html('<i class="app-icon icon-check icon-size-xl"></i>')
                 .parent()
                 .addClass('rubberBand');
 
@@ -513,11 +513,11 @@ $(document).on('click', '#close-player', function() {
 
 $(document).on('click', '#player-header > .flex-grow, #toggle-player', function() {
 	$('#player-body').toggle();
-	$('#toggle-player i').toggleClass('fa-chevron-down fa-chevron-up');
+	$('#toggle-player i').toggleClass('icon-chevron-down icon-chevron-up');
 });
 
 $(document).on('click', '#expand-player', function() {
-	$(this).find('i').toggleClass('fa-expand fa-compress');
+	$(this).find('i').toggleClass('icon-maximize icon-minimize');
 	$('#player-body > div:first-of-type').toggleClass('flex-column align-items-center');
 	$('#select-hand').toggleClass('mr-3 mb-3 hands-lg');
 	$('#select-hand button').toggleClass('mx-2').find('>div:last-of-type').toggle();

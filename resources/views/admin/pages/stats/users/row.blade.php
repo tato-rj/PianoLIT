@@ -6,7 +6,7 @@
   <td>{{$item->id}}</td>
   
   <td title="{{$top_user ? "$item->first_name is a our fan!" : null}}" class="dataTables_main_column">
-    {{$item->full_name}}{!! $top_user ? '<i class="fas fa-trophy ml-2 text-success"></i>' : null !!} {!! $item->countryFlag !!}
+    {{$item->full_name}}{!! $top_user ? \App\Support\Icon::render('trophy', ['mr' => 0, 'classes' => 'ml-2 text-success']) : null !!} {!! $item->countryFlag !!}
   </td>
 
   <td class="{{$top_user ? 'font-weight-bold' : null}}">{{$item->logs_count}}</td>
@@ -14,7 +14,7 @@
   <td>{{$item->favorites_count}}</td>
 
   <td class="text-truncate {{$item->email_confirmed ? 'text-blue' : 'text-muted'}}" title="{{$item->email_confirmed ? 'Confirmed email on ' . $item->email_verified_at->toFormattedDateString() : 'Unconfirmed email'}}">
-    <i class="{{$item->origin_icon}}" style="font-size: {{$item->origin == 'ios'? '130%' : null}}"></i>
+    @icon($item->origin_icon, ['mr' => 0, 'styles' => 'font-size: ' . ($item->origin == 'ios'? '130%' : null)])
     <small class="ml-1">{{$item->origin == 'ios'? 'iOS' : ucfirst($item->origin)}}</small>
   </td>
   

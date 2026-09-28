@@ -40,7 +40,7 @@
           @textarea(['bag' => 'default', 'name' => 'description', 'placeholder' => 'Course description', 'limit' => 238])
         </div>
         <div class="col-12 text-right">
-          <button type="submit" id="submit-button" class="btn btn-default">Save and continue<i class="fas fa-long-arrow-alt-right ml-2"></i></button>
+          <button type="submit" id="submit-button" class="btn btn-default">Save and continue@icon('arrow-right', ['mr' => 0, 'classes' => 'ml-2'])</button>
         </div>
       </form>
 

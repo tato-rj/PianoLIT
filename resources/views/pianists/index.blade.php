@@ -28,7 +28,7 @@
 	<div class="row mb-5">
 		<div class="col-lg-6 col-md-7 col-10 mx-auto">
 			<div class="search-bar position-relative">
-				<i class="fas fa-search"></i>
+				@icon('search', ['mr' => 0])
 				<input id="search-pianist" type="text" placeholder="Search here..." class="w-100 border-bottom">
 			</div>
 		</div>

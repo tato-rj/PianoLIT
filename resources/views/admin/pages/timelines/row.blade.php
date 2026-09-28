@@ -5,7 +5,7 @@
   
   <td>
     @if($item->url)
-    <a href="{{$item->url}}" target="_blank" class="link-blue mr-1"><i class="fas fa-{{$item->getIcon($item->type)['icon']}}"></i></a>
+    <a href="{{$item->url}}" target="_blank" class="link-blue mr-1">@icon($item->getIcon($item->type)['icon'], ['mr' => 0])</a>
     @endif
     {{$item->event}}
   </td>
@@ -24,7 +24,7 @@
       data-event="{{$item->event}}" 
       data-url="{{$item->url}}" 
       data-edit-url="{{route('admin.timelines.update', $item->id)}}" 
-      class="text-muted cursor-pointer mr-2 event" title="Edit"><i class="far fa-edit align-middle"></i></a>
+      class="text-muted cursor-pointer mr-2 event" title="Edit">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
     @endcomponent
   </td>
 </tr>

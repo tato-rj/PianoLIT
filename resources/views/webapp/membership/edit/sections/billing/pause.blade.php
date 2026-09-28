@@ -10,9 +10,9 @@
 		@csrf
 	
 		@if(auth()->user()->membership->source->isPaused())
-		<button type="submit" class="btn btn-block btn-green">@fa(['icon' => 'play-circle'])Resume my membership</button>
+		<button type="submit" class="btn btn-block btn-green">@icon('circle-play')Resume my membership</button>
 		@else
-		<button type="submit" class="btn btn-block btn-warning">@fa(['icon' => 'pause-circle'])Pause my membership</button>
+		<button type="submit" class="btn btn-block btn-warning">@icon('circle-pause')Pause my membership</button>
 		@endif
 	</form>
 </div>

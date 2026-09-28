@@ -11,6 +11,6 @@
   {{$slot ?? null}}
 
   <a class="add-new-field text-warning cursor-pointer d-block text-center" data-type="reference">
-    <small><i class="fas fa-plus mr-2"></i>Add a new one</small>
+    <small>@icon('plus', ['mr' => 2])Add a new one</small>
   </a>
 </div>

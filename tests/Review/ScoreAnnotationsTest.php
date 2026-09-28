@@ -218,7 +218,7 @@ class ScoreAnnotationsTest extends ReviewTestCase
         $html = view('webapp.piece.components.score-editor', ['piece' => $this->piece])->render();
         foreach (['data-tool="pen"', 'data-tool="text"', 'data-tool="erase"', 'data-tool="highlight"',
             'data-undo', 'data-redo', 'data-clear-all', 'data-fullscreen', 'data-print',
-            'data-annotations-url', 'type="color"', 'fa-palette'] as $control) {
+            'data-annotations-url', 'type="color"', 'icon-palette'] as $control) {
             $this->assertStringContainsString($control, $html);
         }
         if ($directory = getenv('SCORE_EDITOR_PREVIEW_DIR')) {

@@ -1,7 +1,7 @@
 @if($item->delivered_at)
-<span class="text-success"><i class="fas fa-check-circle mr-1"></i>Delivered</span>
+<span class="text-success">@icon('circle-check', ['mr' => 1])Delivered</span>
 @elseif($item->failed_at)
-<span class="text-danger"><i class="fas fa-times-circle mr-1"></i>Failed</span>
+<span class="text-danger">@icon('circle-x', ['mr' => 1])Failed</span>
 @else
 <span class="text-muted">Unknown</span>
 @endif

@@ -5,7 +5,7 @@
       @method('DELETE')
       <div class="bg-advanced p-4 rounded cursor-pointer sandbox-button">
         <p class="mb-2">
-          <strong><i class="fas fa-credit-card mr-2"></i>Remove membership</strong>
+          <strong>@icon('credit-card', ['mr' => 2])Remove membership</strong>
         </p>
         <span><small>Remove membership and restart trial</small></span>
       </div>
@@ -19,7 +19,7 @@
       <input type="hidden" name="user_id" value="{{$user->id}}">
       <div class="bg-pastel p-4 rounded cursor-pointer sandbox-button">
         <p class="mb-2">
-          <strong><i class="fas fa-credit-card mr-2"></i>Create membership</strong>
+          <strong>@icon('credit-card', ['mr' => 2])Create membership</strong>
         </p>
         <span><small>Simulate a request</small></span>
       </div>

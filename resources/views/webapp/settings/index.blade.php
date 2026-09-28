@@ -13,7 +13,7 @@
 		@elseif(auth()->check() && auth()->user()->membership && ! auth()->user()->membership->source->isEnded())
 		@include('webapp.settings.item', ['url' => route('webapp.membership.edit'), 'label' => 'My membership ' . auth()->user()->membership->source->badge()])
 		@else
-		@include('webapp.settings.item', ['url' => route('webapp.membership.pricing'), 'label' => 'Subscribe <i class="fas fa-star text-yellow"></i>'])
+		@include('webapp.settings.item', ['url' => route('webapp.membership.pricing'), 'label' => 'Subscribe ' . \App\Support\Icon::render('star', ['mr' => 0, 'classes' => 'text-yellow', 'filled' => true]) . ''])
 		@endif
 		@auth('web')
 		@include('webapp.settings.item', ['url' => route('webapp.users.profile'), 'label' => 'My profile'])

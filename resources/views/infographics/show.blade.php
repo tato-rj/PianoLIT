@@ -35,7 +35,7 @@
 								</div>
 								@if($infograph->downloads > 4)
 								<div class="text-muted text-center mt-1">
-									<small><i class="fas fa-star text-yellow mr-1"></i>I've been downloaded <span>{{$infograph->downloads}}</span> times!</small>
+									<small>@icon('star', ['mr' => 1, 'classes' => 'text-yellow', 'filled' => true])I've been downloaded <span>{{$infograph->downloads}}</span> times!</small>
 								</div>
 								@endif
 							</div>
@@ -51,9 +51,9 @@
 								<div class="d-flex align-items-center">
 									<div class="mr-2"><small><strong>Did you like this?</strong></small></div>
 									<div class="d-flex align-items-center flex-nowrap">
-										<button title="Love it!" data-value="1" data-url="{{route('infographs.update-score', $infograph->slug)}}" class="animate review border-0 bg-transparent text-grey px-1 mr-2"><small>Yes</small> <i class="fas fa-thumbs-up"></i></button>
+										<button title="Love it!" data-value="1" data-url="{{route('infographs.update-score', $infograph->slug)}}" class="animate review border-0 bg-transparent text-grey px-1 mr-2"><small>Yes</small> @icon('thumbs-up', ['mr' => 0])</button>
 										<button title="Not so much..." data-value="0" data-url="{{route('infographs.update-score', $infograph->slug)}}" class="animate review border-0 bg-transparent text-grey px-1">
-											<small>No</small> <i class="fas fa-thumbs-down"></i></button>
+											<small>No</small> @icon('thumbs-down', ['mr' => 0])</button>
 									</div>
 								</div>
 								<div><small class="infograph-feedback">Help us improve by sending us your feedback.</small></div>

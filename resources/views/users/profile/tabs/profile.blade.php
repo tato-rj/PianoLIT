@@ -20,7 +20,7 @@
 			@input(['placeholder' => 'Confirm your password', 'bag' => 'default', 'name' => 'password_confirmation', 'type' => 'password', 'required' => 'no'])
 
 			<div class="form-group">
-				<button type="submit" class="btn btn-primary shadow btn-wide">@fa(['icon' => 'save'])Save my changes</button>
+				<button type="submit" class="btn btn-primary shadow btn-wide">@icon('save')Save my changes</button>
 			</div>
 		</form>
 	</div>

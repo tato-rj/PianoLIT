@@ -4,7 +4,7 @@
 		@csrf
 		@method('DELETE')
 		<p>Are you sure you want to remove your card <strong style="white-space: nowrap;">{!! auth()->user()->customer->card() !!}</strong>?</p>
-		<button type="submit" class="btn btn-sm btn-danger">@fa(['icon' => 'trash-alt'])Yes, I'm sure</button>
+		<button type="submit" class="btn btn-sm btn-danger">@icon('trash-2')Yes, I'm sure</button>
 	</form>
 	@endslot
 @endcomponent

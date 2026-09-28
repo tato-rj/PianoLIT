@@ -5,12 +5,12 @@ $('.timeline-btn').on('click', function() {
 
 $('.collapse').on('hide.bs.collapse', function () {
   let $title = $(this).prev('div');
-  $title.find('i').removeClass('fa-caret-up').addClass('fa-caret-down');
+  $title.find('i').removeClass('icon-chevron-up').addClass('icon-chevron-down');
   $title.find('span small').text('click to show');
 });
 
 $('.collapse').on('show.bs.collapse', function () {
   let $title = $(this).prev('div');
-  $title.find('i').addClass('fa-caret-up').removeClass('fa-caret-down');
+  $title.find('i').addClass('icon-chevron-up').removeClass('icon-chevron-down');
   $title.find('span small').text('click to hide');
 });

@@ -20,10 +20,10 @@
 									<h4 class="name mb-1"></h4>
 									<p class="description text-muted mb-4"></p>
 									<div>
-										<a href="" class="url btn btn-block btn-green py-2 font-weight-bold"><i class="fas fa-file-download mr-2"></i>Download</a>
+										<a href="" class="url btn btn-block btn-green py-2 font-weight-bold">@icon('file-down', ['mr' => 2])Download</a>
 									</div>
 									<div class="text-muted text-center mt-1" id="downloads-count" style="display: none;">
-										<small><i class="fas fa-star text-yellow mr-1"></i>I've been downloaded <span></span> times!</small>
+										<small>@icon('star', ['mr' => 1, 'classes' => 'text-yellow', 'filled' => true])I've been downloaded <span></span> times!</small>
 									</div>
 								</div>
 								<div style="line-height: 1.2" class="mb-3">
@@ -34,9 +34,9 @@
 									<div class="d-flex align-items-center">
 										<div class="mr-2"><small><strong>Did you like this?</strong></small></div>
 										<div class="d-flex align-items-center flex-nowrap">
-											<button title="Love it!" data-value="1" data-url class="animate review border-0 bg-transparent text-grey px-1 mr-2"><small>Yes</small> <i class="fas fa-thumbs-up"></i></button>
+											<button title="Love it!" data-value="1" data-url class="animate review border-0 bg-transparent text-grey px-1 mr-2"><small>Yes</small> @icon('thumbs-up', ['mr' => 0])</button>
 											<button title="Not so much..." data-value="0" data-url class="animate review border-0 bg-transparent text-grey px-1">
-												<small>No</small> <i class="fas fa-thumbs-down"></i></button>
+												<small>No</small> @icon('thumbs-down', ['mr' => 0])</button>
 										</div>
 									</div>
 									<div><small class="infograph-feedback">Help us improve by sending us your feedback.</small></div>

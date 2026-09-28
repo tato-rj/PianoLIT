@@ -6,7 +6,7 @@
 				<div class="absolute-top-right"><span class="badge badge-light text-green"><small><strong>NEW</strong></small></span></div>
 				@endif
 				<div class="card-overlay h-100 t-2" style="opacity: 0">
-					<div class="text-white overlay-blue d-flex flex-center rounded-top"><i class="fas fa-eye fa-3x"></i></div>
+					<div class="text-white overlay-blue d-flex flex-center rounded-top">@icon('eye', ['mr' => 0, 'classes' => 'icon-size-3x'])</div>
 				</div>
 			</div>
 			<div class="card-body rounded-bottom">

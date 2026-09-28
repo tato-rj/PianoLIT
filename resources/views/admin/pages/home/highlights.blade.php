@@ -6,11 +6,11 @@
                 <h1 style="font-size: 3.6em;" class="my-2 mx-auto">{{number_format($userStats['all']['total'])}}</h1>
                 <div>
                   @if($userStats['all']['counts'][0] == $userStats['all']['counts'][1])
-                  @fa(['icon' => 'exclamation-circle'])Same as last week
+                  @icon('circle-alert')Same as last week
                   @elseif($userStats['all']['counts'][0] > $userStats['all']['counts'][1])
-                  @fa(['icon' => 'arrow-down'])Down {{$userStats['all']['counts'][0] - $userStats['all']['counts'][1]}} from last week
+                  @icon('arrow-down')Down {{$userStats['all']['counts'][0] - $userStats['all']['counts'][1]}} from last week
                   @else
-                  @fa(['icon' => 'arrow-up'])Up {{$userStats['all']['counts'][1] - $userStats['all']['counts'][0]}} from last week
+                  @icon('arrow-up')Up {{$userStats['all']['counts'][1] - $userStats['all']['counts'][0]}} from last week
                   @endif
                 </div>
               </div>
@@ -20,14 +20,14 @@
             @foreach($userStats['platforms'] as $platform)
             <a class="link-none" href="{{$platform['url']}}">
               <div class="p-4 align-items-center d-md-flex flex-wrap justify-content-between {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
-                <div class="mr-3">@fa($platform['icon']){{$platform['total']}} {{$platform['label']}} Users</div>
+                <div class="mr-3">@icon(($platform['icon']['fa_type'] ?? null) === 'b' ? 'brand-' . $platform['icon']['icon'] : $platform['icon']['icon']){{$platform['total']}} {{$platform['label']}} Users</div>
                 <div class="">
                   @if($platform['counts'][0] == $platform['counts'][1])
-                  <small class="text-warning text-nowrap">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
+                  <small class="text-warning text-nowrap">@icon('circle-alert')Same as last week</small>
                   @elseif($platform['counts'][0] > $platform['counts'][1])
-                  <small class="text-red text-nowrap">@fa(['icon' => 'arrow-down'])Down {{$platform['counts'][0] - $platform['counts'][1]}} from last week</small>
+                  <small class="text-red text-nowrap">@icon('arrow-down')Down {{$platform['counts'][0] - $platform['counts'][1]}} from last week</small>
                   @else
-                  <small class="text-green text-nowrap">@fa(['icon' => 'arrow-up'])Up {{$platform['counts'][1] - $platform['counts'][0]}} from last week</small>
+                  <small class="text-green text-nowrap">@icon('arrow-up')Up {{$platform['counts'][1] - $platform['counts'][0]}} from last week</small>
                   @endif
                 </div>
               </div>

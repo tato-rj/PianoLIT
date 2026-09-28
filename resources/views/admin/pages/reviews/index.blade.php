@@ -13,7 +13,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'star-half-alt', 'title' => 'Reviews', 'subtitle' => 'Manage the reviews of any product on the website.'])
+    @include('admin.components.page.title', ['icon' => 'star-half', 'title' => 'Reviews', 'subtitle' => 'Manage the reviews of any product on the website.'])
     
     @datatable(['table' => 'reviews', 'columns' => ['Date', 'Product', 'Rating', 'User', 'Published', '']])
   </div>

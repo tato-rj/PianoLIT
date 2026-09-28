@@ -8,7 +8,7 @@
       <div class="col-12 d-flex justify-content-between align-items-center">
         <div>
           <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target="#add-modal">
-            <i class="fas fa-plus mr-2"></i>Add a new editor
+            @icon('plus', ['mr' => 2])Add a new editor
           </button>
         </div>
         <div>

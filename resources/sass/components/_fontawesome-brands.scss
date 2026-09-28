@@ -1,0 +1,16 @@
+// Lucide renders interface icons. Only Font Awesome brand logos need a font.
+// Importing fontawesome.scss would also compile the entire non-brand icon map.
+@import '~@fortawesome/fontawesome-free/scss/brands';
+
+.fab,
+.fa-brands {
+    font-family: 'Font Awesome 6 Brands';
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    display: inline-block;
+    line-height: 1;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

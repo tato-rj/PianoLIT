@@ -18,7 +18,7 @@
 				@empty
 				<div class="col-12">
 					<div class="border rounded px-3 py-5 my-4 text-center">
-						<h2 class="text-grey mb-1"><i class="far fa-folder-open"></i></h2>
+						<h2 class="text-grey mb-1">@icon('folder-open', ['mr' => 0])</h2>
 						<h5 class="text-grey m-0">You have not created a policy yet</h5>
 					</div>
 				</div>
@@ -30,7 +30,7 @@
 	<div class="row mb-6">
 		<div class="col-lg-12 text-center">
 			<h5 class="mb-3">Do you want to create a new one?</h5>
-			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow"><i class="fas fa-magic mr-2"></i>Start a new policy now</a>
+			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow">@icon('wand-sparkles', ['mr' => 2])Start a new policy now</a>
 		</div>
 	</div>
 	

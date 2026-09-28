@@ -22,7 +22,7 @@
         <section class="row">
             <div class="col-lg-6 col-md-8 col-10 mx-auto text-center">
                 <div class="mb-4">
-                    @icon
+                    @brandIcon
                 </div>
                 
                 <div class="mb-4">

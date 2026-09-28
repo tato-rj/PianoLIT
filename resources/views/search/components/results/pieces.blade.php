@@ -13,16 +13,16 @@
 				<div>
 					<div class="text-muted">
 						@if($piece->tutorials()->exists())
-						<div style="line-height: 1.3"><small>@fa(['icon' => 'video'])Media available</small></div>
+						<div style="line-height: 1.3"><small>@icon('video')Media available</small></div>
 						@endif
 						@if($piece->hasScore($publicDomain = true))
-						<div style="line-height: 1.3"><small>@fa(['icon' => 'glasses'])Score available</small></div>
+						<div style="line-height: 1.3"><small>@icon('glasses')Score available</small></div>
 						@endif
 					</div>
 				</div>
 			</div>
 			<div class="card-action position-absolute w-100 text-center t-2 h-100 d-flex flex-center" style="left: 0; bottom: -100%">
-				<p class="m-0 font-weight-bold"><i class="fab fa-apple"></i> Learn more</p>
+				<p class="m-0 font-weight-bold">@icon('brand-apple', ['mr' => 0]) Learn more</p>
 			</div>
 		</div>
 	</a>
@@ -30,7 +30,7 @@
 
 @empty
 <div class="col-12 text-center py-5">
-	<h1>@fa(['icon' => 'box-open', 'color' => 'grey'])</h1>
+	<h1>@icon('package-open', ['color' => 'grey'])</h1>
 	<p class="text-muted">Sorry, let's try something else!</p>
 </div>
 

@@ -2,7 +2,7 @@
 <footer class="bg-light py-6">
 	<div class="container">
 		<div class="col-lg-8 col-md-10 col-12 mx-auto text-center">
-			@icon(['mb' => 2])
+			@brandIcon(['mb' => 2])
 			<p class="text-muted">{{seo()->about('moto')}}</p>
 			<div class="mb-4">
 				@cta(['type' => 'ios', 'classes' => 'mb-2'])

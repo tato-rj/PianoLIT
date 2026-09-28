@@ -4,7 +4,7 @@
 		'id' => 'requests-table',
   		'title' => 'Tutorial Requests (' . $user->tutorialRequests()->count() . ')',
 		'sortable' => true,
-		'headers' => ['Date <i class="fas fa-sort"></i>', 'Piece <i class="fas fa-sort"></i>', 'Composer <i class="fas fa-sort"></i></th>', 'Level <i class="fas fa-sort"></i>'],
+		'headers' => ['Date ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Piece ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Composer ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '</th>', 'Level ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . ''],
 		'more' => route('admin.users.load-requests', $user->id),
 		'rows' => view('admin.pages.users.show.requests.rows', [
 			'user' => $user, 

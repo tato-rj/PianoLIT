@@ -12,12 +12,12 @@
 	>
 	@for($i=1; $i<=5; $i++)
 		@if($rating >= $i)
-			@fa(['fa_type' => 's', 'mr' => 0, 'icon' => 'star', 'color' => 'warning', 'classes' => $classes])
+			@icon('star', ['mr' => 0, 'color' => 'warning', 'classes' => $classes, 'filled' => true])
 		@else
 			@if($i - $rating < 1)
-			@fa(['fa_type' => 's', 'mr' => 0, 'icon' => 'star-half-alt', 'color' => 'warning', 'classes' => $classes])
+			@icon('star-half', ['mr' => 0, 'color' => 'warning', 'classes' => $classes, 'filled' => true])
 			@else
-			@fa(['fa_type' => 'r', 'mr' => 0, 'icon' => 'star', 'color' => 'warning', 'classes' => $classes])
+			@icon('star', ['mr' => 0, 'color' => 'warning', 'classes' => $classes])
 			@endif
 		@endif
 	@endfor

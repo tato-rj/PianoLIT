@@ -18,7 +18,7 @@
 	@csrf
 	@include('shop.components.forms.coupon')
 
-	<button id="card-button" type="submit" class="btn btn-block btn-default">@fa(['icon' => 'lock'])Buy now for ${{$product->finalPrice()}}</button>
+	<button id="card-button" type="submit" class="btn btn-block btn-default">@icon('lock')Buy now for ${{$product->finalPrice()}}</button>
 </form>
 
 @include('shop.components.forms.remove-card')

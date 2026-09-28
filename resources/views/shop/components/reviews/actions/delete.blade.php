@@ -1,6 +1,6 @@
-<p class="text-muted">@fa(['icon' => 'calendar-alt'])You submitted a review on {{$review->created_at->toFormattedDateString()}}</p>
+<p class="text-muted">@icon('calendar')You submitted a review on {{$review->created_at->toFormattedDateString()}}</p>
 @button([
-	'label' => '<i class="fa fas fa-trash-alt mr-2"></i>Delete my review', 
+	'label' => \App\Support\Icon::render('trash-2', ['mr' => 2]) . 'Delete my review',
 	'styles' => [
 		'size' => 'sm', 
 		'theme' => 'red'

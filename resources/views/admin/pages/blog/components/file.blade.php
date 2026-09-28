@@ -6,11 +6,11 @@
 	</audio>
 	<div class="d-flex justify-content-between w-100">
 		<button class="btn btn-danger btn-sm remove-file px-2" data-path="{{route('admin.posts.audio.destroy', ['path' => $file])}}" style="border-radius: 20px;">
-			<i class="fas fa-trash-alt mr-2"></i><strong>Delete</strong>
+			@icon('trash-2', ['mr' => 2])<strong>Delete</strong>
 		</button>
 
 		<button class="btn btn-warning btn-sm px-2 clip" data-clipboard-text="/storage/{{$file}}" data-toggle="tooltip" title="Copied!" data-trigger="manual" style="border-radius: 20px;">
-			<i class="fas fa-copy mr-2"></i><strong>Copy</strong>
+			@icon('copy', ['mr' => 2])<strong>Copy</strong>
 		</button>
 	</div>
 </div>

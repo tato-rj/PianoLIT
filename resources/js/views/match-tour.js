@@ -97,7 +97,7 @@
         stop() {
             this.generation++;
             this.audio.pause();
-            if (this.button) { this.button.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>'; this.button.setAttribute('aria-pressed', 'false'); }
+            if (this.button) { this.button.innerHTML = '<i class="app-icon icon-play" aria-hidden="true"></i>'; this.button.setAttribute('aria-pressed', 'false'); }
             this.button = null;
         }
         async play(piece, button) {
@@ -108,7 +108,7 @@
             const generation = this.generation;
             this.audio.src = piece.audio;
             this.audio.currentTime = 0;
-            button.innerHTML = '<i class="fas fa-pause" aria-hidden="true"></i>';
+            button.innerHTML = '<i class="app-icon icon-pause" aria-hidden="true"></i>';
             button.setAttribute('aria-pressed', 'true');
             try { await this.audio.play(); }
             catch (error) {
@@ -215,7 +215,7 @@
                 '<button type="button" class="match-select" data-choice="' + piece.id + '" aria-pressed="false">' +
                 '<img class="rounded-circle" src="' + escape(piece.image) + '" alt=""><span class="match-piece-copy"><strong>' + escape(piece.title) +
                 '</strong><small class="text-muted">' + escape(piece.composer) + '</small></span></button>' +
-                '<button type="button" class="match-play btn btn-green rounded-circle" data-play="' + piece.id + '" aria-pressed="false" aria-label="Play preview: ' + escape(piece.title) + '"><i class="fas fa-play" aria-hidden="true"></i></button></div>').join('') + '</div>';
+                '<button type="button" class="match-play btn btn-green rounded-circle" data-play="' + piece.id + '" aria-pressed="false" aria-label="Play preview: ' + escape(piece.title) + '"><i class="app-icon icon-play" aria-hidden="true"></i></button></div>').join('') + '</div>';
         }
         render(focus = true) {
             this.stage.classList.remove('leaving'); this.report(''); this.navigation();

@@ -8,7 +8,7 @@
 <p>
 	<strong>({{$purchase->user->id}})</strong> 
 	{{$purchase->user->full_name}}
-	@fa(['icon' => 'money-bill-wave', 'mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])
+	@icon('banknote', ['mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])
 </p>
 @else
 <p class="text-red">User deleted</p>

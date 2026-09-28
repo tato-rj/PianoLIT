@@ -6,17 +6,17 @@
       </div>
       <div class="pt-2">
         @if($stat['counts'][0] == $stat['counts'][1])
-        <small class="text-warning">@fa(['icon' => 'exclamation-circle'])Same as last week</small>
+        <small class="text-warning">@icon('circle-alert')Same as last week</small>
         @elseif($stat['counts'][0] > $stat['counts'][1])
-        <small class="text-red">@fa(['icon' => 'arrow-down'])Down {{$stat['counts'][0] - $stat['counts'][1]}} from last week</small>
+        <small class="text-red">@icon('arrow-down')Down {{$stat['counts'][0] - $stat['counts'][1]}} from last week</small>
         @else
-        <small class="text-green">@fa(['icon' => 'arrow-up'])Up {{$stat['counts'][1] - $stat['counts'][0]}} from last week</small>
+        <small class="text-green">@icon('arrow-up')Up {{$stat['counts'][1] - $stat['counts'][0]}} from last week</small>
         @endif
       </div>
     </div>
     <a class="text-muted" href="{{$stat['url']}}">
       <div class="d-flex flex-center p-2 bg-light rounded-right h-100">
-        @fa(['icon' => 'arrow-right', 'size' => 'g', 'mr' => 0])
+        @icon('arrow-right', ['size' => 'g', 'mr' => 0])
       </div>
     </a>
   </div>

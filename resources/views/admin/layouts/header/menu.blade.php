@@ -2,7 +2,7 @@
     <ul class="navbar-nav navbar-sidenav">
 
       @editor
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'My profile', 'icon' => 'pencil-alt'])
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'My profile', 'icon' => 'pencil'])
       @endeditor
   
       @manager
@@ -39,7 +39,7 @@
           ['name' => 'Memberships Logs', 'route' => route('admin.memberships.logs'), 'target' => '_blank']
         ]])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Subscriptions', 'icon' => 'envelope',
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Subscriptions', 'icon' => 'mail',
         'dropdown' => [
           ['name' => 'Subscribers', 'route' => route('admin.subscriptions.index')],
           ['name' => 'Email Lists', 'route' => route('admin.subscriptions.lists.index')],
@@ -67,11 +67,11 @@
           ['name' => 'eScore Topics', 'route' => route('admin.escores.topics.index')]
         ]])
 
-        @include('admin.layouts.header.item', ['route' => route('admin.reviews.index'), 'name' => 'Reviews', 'icon' => 'star-half-alt'])
+        @include('admin.layouts.header.item', ['route' => route('admin.reviews.index'), 'name' => 'Reviews', 'icon' => 'star-half'])
 
         @include('admin.layouts.header.divider', ['label' => 'FREE CONTENT'])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Metaverse', 'icon' => 'fire',
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Metaverse', 'icon' => 'flame',
         'dropdown' => [
           ['route' => route('admin.metaverse.index'), 'name' => 'Events'],
           ['route' => route('admin.metaverse.locations.index'), 'name' => 'Locations']
@@ -85,7 +85,7 @@
           ['route' => route('admin.posts.gifts.index'), 'name' => 'Gifts'],
         ]])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Quizzes', 'icon' => 'question-circle',
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Quizzes', 'icon' => 'circle-help',
         'dropdown' => [
           ['route' => route('admin.quizzes.index'), 'name' => 'Quizzes'],
           ['route' => route('admin.quizzes.topics.index'), 'name' => 'Topics'],
@@ -108,12 +108,12 @@
 
         @include('admin.layouts.header.divider', ['label' => 'EXTRA'])
         
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'play-circle',
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'circle-play',
         'dropdown' => [
           ['route' => route('admin.clips.index'), 'name' => 'Video Clips'],
         ]])
 
-        @include('admin.layouts.header.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list-ul'])
+        @include('admin.layouts.header.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list'])
       @endmanager
 
     </ul>
@@ -121,7 +121,7 @@
     <ul class="navbar-nav ml-auto">
       <li class="nav-item hide-on-collapse">
         <a class="nav-link position-relative notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" data-toggle="fixed-panel" data-target="#notifications-panel">
-          @fa(['icon' => 'bell', 'classes' => 'notification-bell'])<span class="inline-on-collapse ml-1">Notifications</span>
+          @icon('bell', ['classes' => 'notification-bell'])<span class="inline-on-collapse ml-1">Notifications</span>
           <div class="notifications-count text-dark bg-white rounded-circle position-absolute font-weight-bold shadow-sm" style="bottom: 4px; right: 2px;">
             <div class="d-flex flex-center w-100 h-100">{{auth()->user()->unreadNotifications->count()}}</div>
           </div>
@@ -132,7 +132,7 @@
           @csrf
         </form>
         <a class="nav-link" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-          @fa(['icon' => 'sign-out-alt', 'size' => 'lg'])<span class="ml-1 inline-on-collapse">Logout</span>
+          @icon('log-out', ['size' => 'lg'])<span class="ml-1 inline-on-collapse">Logout</span>
         </a>
       </li>
     </ul>

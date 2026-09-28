@@ -17,17 +17,17 @@
 			@isset($mobile)
 			{{$mobile ? 'lead px-4' : null}}
 			@endisset
-			">@fa(['icon' => 'check', 'color' => 'green'])Instant Download</li>
+			">@icon('check', ['color' => 'green'])Instant Download</li>
 			<li class="
 			@isset($mobile)
 			{{$mobile ? 'lead px-4' : null}}
 			@endisset
-			">@fa(['icon' => 'check', 'color' => 'green'])Lifetime Access</li>
+			">@icon('check', ['color' => 'green'])Lifetime Access</li>
 			<li class="
 			@isset($mobile)
 			{{$mobile ? 'lead px-4' : null}}
 			@endisset
-			">@fa(['icon' => 'check', 'color' => 'green'])One click payment</li>
+			">@icon('check', ['color' => 'green'])One click payment</li>
 		</ul>
 	</div>
 	@endslot

@@ -21,7 +21,7 @@
           @endif
         @endisset
       <button class="close text-{{array_find($options ?? null, ['header', 'close', 'color'])}} {{array_find($options ?? null, ['header', 'close', 'position'])}}" type="button" data-dismiss="modal">
-          @fa(['icon' => 'times', 'mr' => 0])
+          @icon('close', ['mr' => 0])
         </button>
       </div>
       <div class="{{array_find($options ?? null, ['body', 'raw']) == true ? 'w-100' : 'modal-body'}} p-{{array_find($options ?? null, ['body', 'padding'])}}">

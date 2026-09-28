@@ -2,25 +2,25 @@
 	<h4 class="text-center mb-5">What's in it for you</h4>
 	<div class="row">
 		@include('webapp.membership.pricing.components.feature', [
-			'icon' => 'magic',
+			'icon' => 'wand-sparkles',
 			'title' => 'Unlimited access',
 			'description' => 'Enjoy full access to every resource available in PianoLIT.'
 		])
 
 		@include('webapp.membership.pricing.components.feature', [
-			'icon' => 'book-reader',
+			'icon' => 'book-open',
 			'title' => 'Stay inspired',
 			'description' => 'Search based on mood, technique, level, periods and more.'
 		])
 
 		@include('webapp.membership.pricing.components.feature', [
-			'icon' => 'stream',
+			'icon' => 'list',
 			'title' => 'Keep on discovering',
 			'description' => 'Love a certain piece? PianoLIT will show you other pieces just like that.'
 		])
 
 		@include('webapp.membership.pricing.components.feature', [
-			'icon' => 'box-open',
+			'icon' => 'package-open',
 			'title' => 'Simple to use',
 			'description' => 'Watch videos, request tutorials and listen to separate hands recordings.'
 		])
@@ -32,7 +32,7 @@
 		])
 
 		@include('webapp.membership.pricing.components.feature', [
-			'icon' => 'directions',
+			'icon' => 'signpost',
 			'title' => 'Follow a path',
 			'description' => 'Find inspiration by discovering the new pieces with curated playlists.'
 		])

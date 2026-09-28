@@ -4,7 +4,7 @@
 			@include('tools.chord-finder.results.chords')
 		</div>
 		<div class="col-12 mb-4">
-			<p class="text-grey"><i class="fas fa-volume-up mr-2"></i>Click the chords to hear them on the keyboard</p>
+			<p class="text-grey">@icon('volume-2', ['mr' => 2])Click the chords to hear them on the keyboard</p>
 			@include('components.piano.keyboard', [
 				'centered' => false,
 				'octaves' => [
@@ -47,7 +47,7 @@
 	<div class="row my-6">
 		<div class="col-12 text-center">
 			<div id="reload" class="d-inline-block cursor-pointer lead">
-				<strong><i class="fas fa-redo mr-2"></i>Start again</strong>
+				<strong>@icon('rotate-cw', ['mr' => 2])Start again</strong>
 			</div>
 		</div>
 		@if(app()->isLocal() || request()->has('dev'))

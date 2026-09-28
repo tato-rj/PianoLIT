@@ -6,7 +6,7 @@
         <div class="mb-4">
           <p class="text-warning text-uppercase"><strong>...by signing up to this {{$crashcourse->lessons_count}}-day course you'll learn about:</strong></p>
           <h4>{{$crashcourse->title}}</h4>
-          <p class="m-0 text-muted"><i class="fas fa-envelope-open-text mr-2"></i>This course has {{$crashcourse->lessons_count}} {{ str_plural('lesson', $crashcourse->lessons_count) }}</p>
+          <p class="m-0 text-muted">@icon('mail-open', ['mr' => 2])This course has {{$crashcourse->lessons_count}} {{ str_plural('lesson', $crashcourse->lessons_count) }}</p>
         </div>
 
         <form method="POST" id="crashcourse-form" disable-on-submit action="{{route('crashcourses.signup', $crashcourse)}}" class="cc-form">

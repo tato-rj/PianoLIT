@@ -4,11 +4,11 @@
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
                 <li class="page-item disabled">
-                    <span class="page-link">@fa(['icon' => 'angle-left', 'mr' => 0])</span>
+                    <span class="page-link">@icon('chevron-left', ['mr' => 0])</span>
                 </li>
             @else
                 <li class="page-item">
-                    <a class="page-link" href="{{ $paginator->previousPageUrl() }}">@fa(['icon' => 'angle-left', 'mr' => 0])</a>
+                    <a class="page-link" href="{{ $paginator->previousPageUrl() }}">@icon('chevron-left', ['mr' => 0])</a>
                 </li>
             @endif
 
@@ -34,11 +34,11 @@
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
                 <li class="page-item">
-                    <a class="page-link" href="{{ $paginator->nextPageUrl() }}">@fa(['icon' => 'angle-right', 'mr' => 0])</a>
+                    <a class="page-link" href="{{ $paginator->nextPageUrl() }}">@icon('chevron-right', ['mr' => 0])</a>
                 </li>
             @else
                 <li class="page-item disabled">
-                    <span class="page-link">@fa(['icon' => 'angle-right', 'mr' => 0])</span>
+                    <span class="page-link">@icon('chevron-right', ['mr' => 0])</span>
                 </li>
             @endif
         </ul>

@@ -6,33 +6,33 @@
   <form method="GET" action="{{\URL::current()}}" class="form-inline">
     <div class="btn-group btn-group-toggle m-1" title="Show only pieces created by me">
       <label class="btn btn-light {{(request('creator_id') == auth()->guard('admin')->user()->id) ? 'active' : ''}}">
-        <input type="checkbox" name="creator_id" autocomplete="off" value="{{auth()->guard('admin')->user()->id}}" onchange="this.form.submit()" {{(request('creator_id') == auth()->guard('admin')->user()->id) ? 'checked' : ''}}><i class="fas fa-user"></i>
+        <input type="checkbox" name="creator_id" autocomplete="off" value="{{auth()->guard('admin')->user()->id}}" onchange="this.form.submit()" {{(request('creator_id') == auth()->guard('admin')->user()->id) ? 'checked' : ''}}>@icon('user', ['mr' => 0])
       </label>
     </div>
     <div class="btn-group btn-group-toggle m-1" title="Pieces missing itunes links">
       <label class="btn btn-light {{request('itunes') ? 'active' : ''}}">
-        <input type="checkbox" name="itunes" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('itunes') ? 'checked' : ''}}><i class="fab fa-itunes"></i></i>
+        <input type="checkbox" name="itunes" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('itunes') ? 'checked' : ''}}>@icon('brand-itunes', ['mr' => 0])</i>
       </label>
     </div>
     <div class="btn-group btn-group-toggle m-1" title="Pieces missing videos">
       <label class="btn btn-light {{request('videos') ? 'active' : ''}}">
-        <input type="checkbox" name="videos" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('videos') ? 'checked' : ''}}><i class="fab fa-youtube"></i></i>
+        <input type="checkbox" name="videos" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('videos') ? 'checked' : ''}}>@icon('brand-youtube', ['mr' => 0])</i>
       </label>
     </div>
     <div class="btn-group btn-group-toggle m-1" title="Pieces missing audio recordings">
       <label class="btn btn-light {{request('audio_path') ? 'active' : ''}}">
-        <input type="checkbox" name="audio_path" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('audio_path') ? 'checked' : ''}}><i class="fas fa-volume-off"></i></i>
+        <input type="checkbox" name="audio_path" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('audio_path') ? 'checked' : ''}}>@icon('volume-x', ['mr' => 0])</i>
       </label>
     </div>
     <div class="btn-group btn-group-toggle m-1" title="Pieces missing the score">
       <label class="btn btn-light {{request('score_path') ? 'active' : ''}}">
-        <input type="checkbox" name="score_path" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('score_path') ? 'checked' : ''}}><i class="fas fa-file-alt"></i></i>
+        <input type="checkbox" name="score_path" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('score_path') ? 'checked' : ''}}>@icon('file-text', ['mr' => 0])</i>
       </label>
     </div>
 
     <div class="btn-group btn-group-toggle m-1" title="Pieces in the Public Domain">
       <label class="btn btn-light {{request('is_free') ? 'active' : ''}}">
-        <input type="checkbox" name="is_free" autocomplete="off" value="false" onchange="this.form.submit()" {{request('is_free') ? 'checked' : ''}}><i class="fab fa-creative-commons-pd-alt"></i></i>
+        <input type="checkbox" name="is_free" autocomplete="off" value="false" onchange="this.form.submit()" {{request('is_free') ? 'checked' : ''}}>@icon('brand-creative-commons-pd-alt', ['mr' => 0])</i>
       </label>
     </div>
   </form>

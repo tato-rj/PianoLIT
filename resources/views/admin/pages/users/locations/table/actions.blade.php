@@ -1,6 +1,6 @@
 <div class="text-right">
 @button([
-	'label' => '<i class="fas fa-map-marker-alt mr-2"></i>Find on map', 
+	'label' => \App\Support\Icon::render('map-pin', ['mr' => 2]) . 'Find on map',
 	'styles' => [
 		'size' => 'sm', 
 		'theme' => 'grey'

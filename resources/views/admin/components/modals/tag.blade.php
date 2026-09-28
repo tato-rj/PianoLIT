@@ -15,7 +15,7 @@
     <form method="POST" id="delete-tag">
       @csrf
       @method('DELETE')
-      <button type="submit" class="btn btn-link btn-sm text-danger no-underline p-0"><i class="fas fa-trash-alt mr-2"></i>Delete tag</button>
+      <button type="submit" class="btn btn-link btn-sm text-danger no-underline p-0">@icon('trash-2', ['mr' => 2])Delete tag</button>
     </form>
   </div>
   <div class="text-muted mb-0"><i><small>Tag created by <strong><span id="creator"></span></strong></small></i></div>

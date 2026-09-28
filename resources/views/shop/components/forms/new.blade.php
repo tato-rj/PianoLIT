@@ -20,7 +20,7 @@
 
 		<div><small>By purchasing I agree to the <a href="{{route('terms')}}" target="_blank" class="link-blue">Terms of Service</a>.</small></div>
 	</div>
-	<button id="card-button" class="btn btn-block btn-default">@fa(['icon' => 'lock']){{$label}}</button>
+	<button id="card-button" class="btn btn-block btn-default">@icon('lock'){{$label}}</button>
 </form>
 <div class="text-muted mb-1"><small>{{$comments}}</small></div>
 <div class="text-muted"><small>All prices are listed in US Dollars.</small></div>

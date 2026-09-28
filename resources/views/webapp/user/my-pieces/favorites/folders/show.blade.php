@@ -9,7 +9,7 @@
 	@include('webapp.components.back')
 	
 	<p class="text-muted mb-1"><small><i>last updated on {{$folder->updated_at->toFormattedDateString()}}</i></small></p>
-	<h3 class="px-3">@fa(['icon' => 'folder-open', 'color' => 'grey']){{$folder->name}}</h3>
+	<h3 class="px-3">@icon('folder-open', ['color' => 'grey']){{$folder->name}}</h3>
 	@include('webapp.user.my-pieces.favorites.folders.pieces-count')
 </div>
 
@@ -33,10 +33,10 @@
 		@slot('controls')
 			<div class="d-flex">
 				<button class="btn-raw t-2 mr-1" id="flag-{{$favorite->piece->id}}" data-submit="favorite" data-target="#flag-{{$favorite->piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $favorite->piece, 'folder_id' => $folder->id])}}" data-favorited="true" style="font-size: 120%" title="Remove from this folder">
-					@fa(['icon' => 'heart', 'fa_type' => 's', 'color' => 'red'])
+					@icon('heart', ['color' => 'red', 'filled' => true])
 				</button>
 
-				<a class="btn btn-sm btn-primary text-nowrap" href="{{route('webapp.pieces.show', $favorite->piece)}}">@fa(['icon' => 'arrow-right', 'mr' => 0])</a>
+				<a class="btn btn-sm btn-primary text-nowrap" href="{{route('webapp.pieces.show', $favorite->piece)}}">@icon('arrow-right', ['mr' => 0])</a>
 			</div>
 		@endslot
 		@endcomponent
@@ -47,7 +47,7 @@
 	@forelse($folder->favorites as $favorite)
 		@component('webapp.components.piece', ['piece' => $favorite->piece, 'hasFullAccess' => $hasFullAccess])
 		<button class="btn-raw t-2" id="flag-{{$favorite->piece->id}}" data-submit="favorite" data-target="#flag-{{$favorite->piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $favorite->piece, 'folder_id' => $folder->id])}}" data-favorited="true" style="font-size: 120%" title="Remove from this folder">
-			@fa(['icon' => 'heart', 'fa_type' => 's', 'color' => 'red'])
+			@icon('heart', ['color' => 'red', 'filled' => true])
 		</button>
 		@endcomponent
 	@empty

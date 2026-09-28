@@ -4,7 +4,7 @@
 	<div class="input-group">
 		@isset($value)
 	    <div class="input-group-prepend">
-	      <a class="input-group-text no-underline {{$value ? 'text-success' : 'text-muted opacity-4'}}" href="{{storage($value)}}" target="_blank">@fa(['icon' => 'file-alt', 'mr' => 0])</a>
+	      <a class="input-group-text no-underline {{$value ? 'text-success' : 'text-muted opacity-4'}}" href="{{storage($value)}}" target="_blank">@icon('file-text', ['mr' => 0])</a>
 	    </div>
 	    @endisset
 		<div class="custom-file">

@@ -16,7 +16,7 @@ $fields = [
 		<div class="d-flex">
 		@foreach(\App\StudioPolicy::durations() as $duration)
 			<div class="m-2 border rounded">
-				<div class="mb-2 alert-grey rounded-top px-2 py-1"><strong><i class="fas fa-stopwatch mr-2"></i>{{ucfirst($duration)}} Lessons</strong></div>
+				<div class="mb-2 alert-grey rounded-top px-2 py-1"><strong>@icon('timer', ['mr' => 2]){{ucfirst($duration)}} Lessons</strong></div>
 				<div class="">
 					@include('users.studio-policies.create.steps.components.fee', ['period' => 'lesson'])
 					@include('users.studio-policies.create.steps.components.fee', ['period' => 'month'])

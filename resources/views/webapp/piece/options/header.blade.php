@@ -2,5 +2,5 @@
 	@include('webapp.components.back')
 
 	<button class="btn-raw" type="More options"	data-toggle="fixed-panel" data-target="#options-panel" style="font-size: 1.44em">
-		@fa(['icon' => 'ellipsis-v'])</button>
+		@icon('ellipsis-vertical')</button>
 </section>

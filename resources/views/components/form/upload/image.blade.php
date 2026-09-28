@@ -5,7 +5,7 @@
     <div class="position-relative image-container">
       @if($empty)
       <div class="bg-light px-2 text-muted border-left border-top border-right rounded-top">
-        <small><strong><i class="fas fa-image mr-2"></i>Cover image</strong></small>
+        <small><strong>@icon('image', ['mr' => 2])Cover image</strong></small>
       </div>
       @endif
 
@@ -13,15 +13,15 @@
       
       <div class="controls d-flex justify-content-between mt-2">
         <button type="button" id="upload-button" class="btn btn-sm btn-warning">
-          <i class="fas fa-folder-open mr-2"></i>{{$empty ? 'Choose image' : 'Change image'}}
+          @icon('folder-open', ['mr' => 2]){{$empty ? 'Choose image' : 'Change image'}}
         </button>
 
         <button type="button" id="confirm-button" style="display: none;" class="btn btn-sm btn-success">
-          <i class="fas fa-check-circle mr-2"></i>Confirm
+          @icon('circle-check', ['mr' => 2])Confirm
         </button>
 
         <button type="button" id="cancel-button" style="display: none;" class="btn btn-sm btn-danger">
-          <i class="fas fa-times-circle mr-2"></i>Cancel
+          @icon('circle-x', ['mr' => 2])Cancel
         </button>
       </div>
     </div>

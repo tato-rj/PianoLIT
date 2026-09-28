@@ -5,15 +5,15 @@
 		<h5 class="text-dark text-center mb-3">Do you play this piece?</h5>
 		<div class="mb-3">
 			@if($canUpload)
-			<button class="btn rounded-pill btn-primary btn-wide" id="choose-video">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
+			<button class="btn rounded-pill btn-primary btn-wide" id="choose-video">@icon('cloud-upload')Share my performance</button>
 			@else
-			<button class="btn rounded-pill btn-primary btn-wide" data-toggle="modal" data-target="#no-credits-modal">@fa(['icon' => 'cloud-upload-alt'])Share my performance</button>
+			<button class="btn rounded-pill btn-primary btn-wide" data-toggle="modal" data-target="#no-credits-modal">@icon('cloud-upload')Share my performance</button>
 			@endif
 		</div>
 
 		<div class="text-muted">
-			<p class="small m-0">@fa(['icon' => 'cloud-upload-alt', 'color' => 'green'])Upload a video of your performance</p>
-			<p class="small mb-2">@fa(['icon' => 'hands-clapping', 'color' => 'green'])See the reactions from PianoLIT users from all around the world!</p>
+			<p class="small m-0">@icon('cloud-upload', ['color' => 'green'])Upload a video of your performance</p>
+			<p class="small mb-2">@icon('hand-heart', ['color' => 'green'])See the reactions from PianoLIT users from all around the world!</p>
 			<div class="small opacity-8" style="font-size:80%">Your video must be <strong>500mb</strong> or less</div>
 		</div>
 </div>
@@ -34,7 +34,7 @@
 		</div>
 
 		<div class="bg-light p-3 rounded mb-2 border">
-			<h6>@fa(['icon' => 'exclamation-circle', 'color' => 'warning'])Please make sure your video...</h6>
+			<h6>@icon('circle-alert', ['color' => 'warning'])Please make sure your video...</h6>
 			<ul class="m-0">
 				<li>is a performance of <u>this piece</u> only</li>
 				<li>is clear of <u>background noises</u></li>

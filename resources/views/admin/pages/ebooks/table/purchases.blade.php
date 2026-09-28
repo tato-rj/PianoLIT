@@ -11,7 +11,7 @@
 	@else
 	<i class="text-muted">(account deleted)</i>
 	@endif
-	@fa(['icon' => 'money-bill-wave', 'mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])
+	@icon('banknote', ['mr' => 0, 'color' => $purchase->cost ? 'green' : 'grey'])
 </p>
 @endforeach
 @endslot

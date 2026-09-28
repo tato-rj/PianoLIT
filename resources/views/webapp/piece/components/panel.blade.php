@@ -6,29 +6,29 @@
 			<div class="d-flex d-apart">
 				<h6 class="m-0">Options</h6>
 				<button type="button" class="close" data-dismiss="fixed-panel" aria-label="Close">
-					<span aria-hidden="true">@fa(['icon' => 'times', 'mr' => 0])</span>
+					<span aria-hidden="true">@icon('close', ['mr' => 0])</span>
 				</button>
 			</div>
 		</div>
 
 		<div class="panel-body px-2 py-3" style="overflow-y: auto; height: 85%;">
 			<div class="list-group">
-				<a href="{{route('webapp.pieces.composer', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Meet the composer @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+				<a href="{{route('webapp.pieces.composer', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Meet the composer @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
 
 				@if($piece->siblingsExist())
-				<a href="{{route('webapp.pieces.collection', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">From the same collection @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+				<a href="{{route('webapp.pieces.collection', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">From the same collection @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
 				@endif
 
-				<a href="{{route('webapp.pieces.similar', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">More like this @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+				<a href="{{route('webapp.pieces.similar', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">More like this @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
 
-				{{-- <a href="{{route('webapp.pieces.timeline', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Timeline @fa(['icon' => 'chevron-right', 'color' => 'muted', 'mr' => 0, 'ml' => 4])</a> --}}
+				{{-- <a href="{{route('webapp.pieces.timeline', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Timeline @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a> --}}
 
 				@auth('web')
 				<div class="dropdown-divider"></div>
 				
 				<div class="py-2 list-group">
 					<a class="cursor-pointer share-piece link-none mb-3 px-3" data-toggle="modal" data-target="#share-modal">
-						@fa(['icon' => 'share']) Share this piece
+						@icon('share') Share this piece
 					</a>
 
 					<a class="cursor-pointer toggle-favorite link-none mb-3 px-3 d-block d-md-none">

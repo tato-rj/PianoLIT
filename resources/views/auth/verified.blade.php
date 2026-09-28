@@ -6,7 +6,7 @@
         <div class="col-lg-4 col-md-6 col-sm-8 col-12 mx-auto">
             <div class="text-center">
                 <div class="mb-3">
-                    <i class="fas fa-3x fa-check-circle text-green"></i>
+                    @icon('circle-check', ['mr' => 0, 'classes' => 'icon-size-3x text-green'])
                 </div>
                 <h4 class="mb-4">Your Email has been verified!</h4>
 

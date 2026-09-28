@@ -1,0 +1,38 @@
+// Set this one value for every Lucide icon: thin 1, light 1.5, regular 2, bold 2.5.
+:root {
+    --icon-stroke-width: 1.5;
+}
+
+.app-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    vertical-align: -.125em;
+    font-style: normal;
+    flex-shrink: 0;
+
+    > svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        stroke-width: var(--icon-stroke-width);
+        pointer-events: none;
+    }
+
+    &.icon-filled > svg { fill: currentColor; }
+}
+
+.icon-weight-thin { --icon-stroke-width: 1; }
+.icon-weight-light { --icon-stroke-width: 1.5; }
+.icon-weight-regular { --icon-stroke-width: 2; }
+.icon-weight-bold { --icon-stroke-width: 2.5; }
+.icon-size-xs { font-size: .75em; }
+.icon-size-sm { font-size: .875em; }
+.icon-size-lg { font-size: 1.333333em; }
+.icon-size-xl { font-size: 1.5em; }
+@for $size from 1 through 10 {
+    .icon-size-#{$size}x { font-size: #{$size}em; }
+}
+.icon-fw { width: 1.25em; text-align: center; }
+.icon-flip-horizontal { transform: scaleX(-1); }

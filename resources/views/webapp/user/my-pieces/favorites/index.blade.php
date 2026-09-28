@@ -2,7 +2,7 @@
 	<div class="col-12 mb-3">
 		<div class="d-flex d-apart">
 			<div class="text-muted"><small>You have <strong>{{$folders->count()}}</strong> {{str_plural('folder', $folders->count())}}</small></div>
-			<button data-toggle="modal" data-target="#new-folder-modal" class="btn btn-outline-secondary btn-sm">@fa(['icon' => 'plus']) New folder</button>
+			<button data-toggle="modal" data-target="#new-folder-modal" class="btn btn-outline-secondary btn-sm">@icon('plus') New folder</button>
 
 			@component('components.modal', ['id' => 'new-folder-modal', 'header' => 'New folder'])
 			@slot('body')
@@ -23,6 +23,6 @@
 	@include('webapp.components.empty', [
 		'icon' => 'empty-favorites', 
 		'title' => 'No favorites yet', 
-		'subtitle' => 'Tap <i class="fas fa-heart"></i> to add a piece to your favorites'])
+		'subtitle' => 'Tap ' . \App\Support\Icon::render('heart', ['mr' => 0, 'filled' => true]) . ' to add a piece to your favorites'])
 @endforelse
 </section>

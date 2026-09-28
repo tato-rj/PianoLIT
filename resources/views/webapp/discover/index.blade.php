@@ -30,7 +30,7 @@
 <div class="py-5 text-center">
 	<p class="lead mb-2">Help us get even better</p>
 	<a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank" class="btn btn-wide rounded-pill btn-outline-secondary">
-		@fa(['icon' => 'comment-dots'])GIVE YOUR FEEDBACK
+		@icon('message-circle-more')GIVE YOUR FEEDBACK
 	</a>
 </div>
 

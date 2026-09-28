@@ -9,7 +9,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'play-circle', 
+      'icon' => 'circle-play',
       'title' => 'Video Clips', 
       'subtitle' => 'Manage video clips to be used anywhere.',
       'action' => ['label' => 'Create a new clip', 'modal' => 'add-modal']

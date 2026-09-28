@@ -5,7 +5,7 @@
 ])
 
 @slot('header')
-@fa(['icon' => 'paint-brush', 'color' => 'primary'])What's new!
+@icon('paintbrush', ['color' => 'primary'])What's new!
 @endslot
 
 @slot('body')
@@ -29,10 +29,10 @@
     <div class="text-center">
       <div class="d-flex flex-center my-3 carousel-dots">
         @for($i=1; $i <= $tabscount; $i++)
-        @fa(['icon' => 'circle', 'mr' => 1, 'ml' => 1, 'size' => 'xs', 'color' => $i == 1 ? 'primary' : 'grey'])
+        @icon('circle', ['mr' => 1, 'ml' => 1, 'size' => 'xs', 'color' => $i == 1 ? 'primary' : 'grey', 'filled' => true])
         @endfor
       </div>
-      <button class="btn btn-primary btn-wide" data-slide="next" href="#whatsnew-carousel">Next @fa(['icon' => 'chevron-right', 'mr' => 0, 'ml' => 1])</button>
+      <button class="btn btn-primary btn-wide" data-slide="next" href="#whatsnew-carousel">Next @icon('chevron-right', ['mr' => 0, 'ml' => 1])</button>
       <button class="btn btn-primary btn-wide" data-slide="end" style="display: none;" data-dismiss="modal">Enjoy!</button>
     </div>
     @endif

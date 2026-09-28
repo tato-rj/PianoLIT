@@ -149,7 +149,7 @@
             this.updatePaletteColor();
         }
         updatePaletteColor() {
-            this.find('.score-color-button .fa-palette').style.color = this.find('[data-color]').value;
+            this.find('.score-color-button .icon-palette').style.color = this.find('[data-color]').value;
         }
         clearAll() {
             if (!this.ready || this.rendering || this.store.conflict) return;
@@ -163,8 +163,8 @@
             const button = this.find('[data-fullscreen]');
             button.setAttribute('aria-label', active ? 'Exit full screen' : 'Full screen');
             button.setAttribute('title', active ? 'Exit full screen' : 'Full screen');
-            button.querySelector('i').classList.toggle('fa-expand', !active);
-            button.querySelector('i').classList.toggle('fa-compress', active);
+            button.querySelector('i').classList.toggle('icon-maximize', !active);
+            button.querySelector('i').classList.toggle('icon-minimize', active);
             if (this.pdf) this.render(this.page).catch(() => this.renderError());
         }
         preventTouchScroll(event) {

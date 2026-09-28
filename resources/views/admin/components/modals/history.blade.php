@@ -10,7 +10,7 @@
       </div>
       <div class="modal-body">
         <div class="p-5 text-center" id="history-loading">
-          <i class="fab fa-apple fa-2x mb-2"></i>
+          @icon('brand-apple', ['mr' => 0, 'classes' => 'icon-size-2x mb-2'])
           <p class="m-0 text-muted">Hang on, we're calling Apple...</p>
         </div>
         <div id="history-data" style="display: none;">

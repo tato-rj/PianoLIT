@@ -15,7 +15,7 @@
 				<button class="m-1 btn btn-chord-main" 
 					href="#{{$inversion['id']}}" 
 					data-notes="{{json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
-					<i class="fas fa-play-circle mr-2 opacity-4"></i>
+					@icon('circle-play', ['mr' => 2, 'classes' => 'opacity-4'])
 					<strong>{!! $inversion['label']['full_shorthand'] !!}</strong>
 				</button>
 			@endif
@@ -34,7 +34,7 @@
 				<button class="btn btn-chord-additional m-1" 
 					href="#{{$inversion['id']}}" 
 					data-notes="{{json_encode($inversion['chord'])}}" style="order: {{$inversion['ranking']}}">
-					<i class="fas fa-play-circle mr-2 opacity-4"></i>
+					@icon('circle-play', ['mr' => 2, 'classes' => 'opacity-4'])
 					<strong>{!! $inversion['label']['full_shorthand'] !!}</strong>
 				</button>
 			@endif

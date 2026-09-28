@@ -15,7 +15,7 @@ $(document).on('click', 'button[data-manage="favorite"]', function(event) {
 
     axios.post($button.attr('data-url-toggle'))
         .then(function(response) {
-            $heart.toggleClass('fas far');
+            $heart.toggleClass('icon-filled');
         })
         .catch(function(error) {
             alert('Sorry, we couldn\'t update your favorite at this time.');

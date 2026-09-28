@@ -23,7 +23,7 @@
     <div class="text-center">
       <form method="POST" action="{{route('redis.update')}}" class="mb-2">
         @csrf
-        <button class="btn btn-outline-success btn-sm"><i class="fas fa-sync-alt mr-1"></i>Refresh discover page</button>
+        <button class="btn btn-outline-success btn-sm">@icon('refresh-cw', ['mr' => 1])Refresh discover page</button>
       </form>
       <div class="badge badge-pill alert-grey">Will auto refresh in {{carbon(intval(str_replace('app.discover-', '', $key)))->addDay()->diffForHumans()}}</div>
     </div>

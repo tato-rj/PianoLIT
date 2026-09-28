@@ -84,3 +84,5 @@ a.bg-primary:hover, a.bg-primary:focus, button.bg-primary:hover, button.bg-prima
 .page-item.active .page-link { background-color: var(--color-primary); border-color: var(--color-primary); }
 .page-link { color: var(--color-primary); }
 .page-link:hover { color: var(--color-link-hover); }
+
+@import 'components/icons';

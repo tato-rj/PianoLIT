@@ -1,1 +1,1 @@
-<small><a href="{{$link}}" target="_blank"><i class="fas fa-external-link-alt mr-1"></i>Find here</a></small>
+<small><a href="{{$link}}" target="_blank">@icon('external-link', ['mr' => 1])Find here</a></small>

@@ -8,7 +8,6 @@
 
     <title>{{local() ? '(local)' : null}} PianoLIT | Admin</title>
 
-    <link rel="preload" href="{{ asset('css/vendor/fontawesome/all.min.css') }}" as="style">
     
     <link rel="stylesheet" type="text/css" href="{{mix('css/admin.css')}}">
     
@@ -164,8 +163,8 @@ $('.editable-star').on('mouseover', function() {
   let $selection = $(this);
 
   resetSelections(false);
-  $selection.addClass('fas').removeClass('far');
-  $selection.prevAll('i').addClass('fas').removeClass('far');
+  $selection.addClass('icon-filled');
+  $selection.prevAll('i').addClass('icon-filled');
 });
 
 $('.editable-star').on('mouseleave', function() {
@@ -192,9 +191,9 @@ function highlightSelected()
 {
   $('.editable-star').each(function() {
     if ($(this).attr('selected')) {
-      $(this).addClass('fas').removeClass('far');
+      $(this).addClass('icon-filled');
     } else {
-      $(this).removeClass('fas').addClass('far');
+      $(this).removeClass('icon-filled');
     }
   });
 }
@@ -207,9 +206,9 @@ function selectedStars()
 function resetSelections(hard = true)
 {
   if (hard) {
-    $('.editable-star').removeAttr('selected').removeClass('fas').addClass('far');    
+    $('.editable-star').removeAttr('selected').removeClass('icon-filled');
   } else {
-    $('.editable-star').removeClass('fas').addClass('far');
+    $('.editable-star').removeClass('icon-filled');
   }
 }
 

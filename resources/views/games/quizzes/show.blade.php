@@ -21,7 +21,7 @@
 		<div class="col-lg-9 col-md-8 col-12 mb-2">
 			@if(! empty($preview))
 			<div class="alert alert-warning" role="alert">
-			  <i class="fas fa-exclamation-triangle mr-2"></i>This quiz is <u>not published</u>. Only admins can see this page.
+			  @icon('triangle-alert', ['mr' => 2])This quiz is <u>not published</u>. Only admins can see this page.
 			</div>
 			@endif
 			<div class="mb-4">
@@ -31,7 +31,7 @@
 				<p class="text-muted blog-font">{{$quiz->description}}</p>
 				<div class="d-apart text-muted">
 					<p><small>{{$quiz->created_at->toFormattedDateString()}} &bull; {{count($quiz->questions)}} questions</small></p>
-					<p><small><i class="fas fa-eye mr-2"></i>{{$quiz->views}}</small></p>
+					<p><small>@icon('eye', ['mr' => 2]){{$quiz->views}}</small></p>
 				</div>
 				<figure class="figure w-100">
 					<img src="{{$quiz->cover_image()}}" class="figure-img img-fluid rounded w-100">

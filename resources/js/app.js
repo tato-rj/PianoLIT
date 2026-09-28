@@ -1,3 +1,4 @@
+require('./components/icons');
 require('./bootstrap/app');
 require('dragscroll/dragscroll.js');
 require('./vendor/clamp');

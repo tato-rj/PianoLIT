@@ -7,15 +7,15 @@
 	</div>
 	<div>
 	    @if($item->isPublished())
-	    <div class="text-success text-nowrap"><i class="fas fa-check-circle mr-1"></i>Published</div>
+	    <div class="text-success text-nowrap">@icon('circle-check', ['mr' => 1])Published</div>
 	    @else
-	    <a href="#" data-url="{{route('admin.tutorial-requests.publish', $item->id)}}" data-toggle="modal" data-target="#publish-tutorial" class="btn btn-sm btn-warning text-nowrap"><i class="fas fa-hourglass-half mr-1"></i>Publish</a>
+	    <a href="#" data-url="{{route('admin.tutorial-requests.publish', $item->id)}}" data-toggle="modal" data-target="#publish-tutorial" class="btn btn-sm btn-warning text-nowrap">@icon('hourglass', ['mr' => 1])Publish</a>
 	    @endif
 	</div>
 	@if(! $item->isPublished())
 	<div class="ml-2">
 		<a href="#" data-url="{{route('admin.tutorial-requests.destroy', $item)}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete text-muted d-none d-sm-block">
-			<i class="far fa-trash-alt align-middle"></i>
+			@icon('trash-2', ['mr' => 0, 'classes' => 'align-middle'])
 		</a>
 	</div>
 	@endif
