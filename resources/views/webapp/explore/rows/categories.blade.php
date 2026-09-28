@@ -1,4 +1,4 @@
-@component('webapp.explore.rows.row', ['data' => $row])
+{{-- @component('webapp.explore.rows.row', ['data' => $row])
 <div class="row no-gutters">
 	@foreach($row['collection'] as $name => $tags)
 		<div class="col-4 p-2">
@@ -30,3 +30,4 @@
 	@endforeach
 </div>
 @endcomponent
+ --}}
