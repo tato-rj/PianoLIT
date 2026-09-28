@@ -3,7 +3,7 @@
 		@icon
 	</a>
 	@guest('web')
-	<a href="{{ route('login') }}" class="btn btn-outline-secondary rounded-pill">Sign in</a>
+	<a href="{{ route('login') }}" class="btn btn-outline-secondary">Sign in</a>
 	@endguest
 </div>
 

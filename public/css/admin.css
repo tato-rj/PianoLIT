@@ -26139,7 +26139,7 @@ a.color-inherit:hover {
 }
 
 .btn {
-  font-weight: bold;
+  padding: .375rem 1.5rem;
 }
 
 .btn-sm,

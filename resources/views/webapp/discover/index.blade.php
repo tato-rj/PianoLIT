@@ -13,12 +13,11 @@
 	@button([
 		'id' => 'tour-button',
 		'href' => route('webapp.tour'),
-		'label' => 'FIND YOUR MATCH', 
+		'label' => 'Find your match', 
 		'styles' => [
 			'size' => 'wide', 
 			'theme' => 'outline-secondary'
-			], 
-		'classes' => 'rounded-pill'
+			]
 		])
 @endcomponent
 

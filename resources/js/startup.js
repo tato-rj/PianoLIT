@@ -37,5 +37,7 @@ $(document).on('click', '#reload', function() {
 
 $(document).on('click', '[data-anchor]', function() {
     let anchor = $(this).attr('data-anchor');
-    window.location.hash = anchor;
+    // Tabs belong to this page; keep their shareable URL without adding a
+    // navigation step. Preserve the Back button's state on this history entry.
+    window.history.replaceState(window.history.state, '', '#' + anchor);
 });
