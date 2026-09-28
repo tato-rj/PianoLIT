@@ -3,8 +3,8 @@
   --radius-sm: .25rem;
   --radius-pill: 100px;
   --radius-circle: 50%;
-  --radius-button: var(--radius);
-  --radius-input: var(--radius);
+  --radius-button: .75rem;
+  --radius-input: .75rem;
   --radius-modal: var(--radius);
   --color-primary: #0055fe;
   --color-primary-hover: #004eea;
