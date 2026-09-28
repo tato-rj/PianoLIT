@@ -8,7 +8,7 @@
   @endisset
 >
   <div class="modal-dialog modal-{{array_find($options ?? null, ['size'])}}">
-    <div class="modal-content border-0" style="border-radius: 1rem">
+    <div class="modal-content border-0" style="border-radius: var(--radius-modal)">
       <div class="modal-header 
         bg-{{array_find($options ?? null, ['header', 'background'])}} 
         {{array_find($options ?? null, ['header', 'raw']) ? 'rounded-top' : null}}

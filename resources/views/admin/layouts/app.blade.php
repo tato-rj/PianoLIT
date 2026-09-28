@@ -43,15 +43,15 @@
 }
 @media (max-width:768px){
   #user-stats-overview > div:first-child {
-      border-top-left-radius: 1rem;
+      border-top-left-radius: var(--radius);
       border-bottom-left-radius: 0!important;
-      border-top-right-radius: 1rem;
+      border-top-right-radius: var(--radius);
     }
 
   #user-stats-overview > div:last-child {
-      border-bottom-left-radius: 1rem;
+      border-bottom-left-radius: var(--radius);
       border-top-right-radius: 0!important;
-      border-bottom-right-radius: 1rem;
+      border-bottom-right-radius: var(--radius);
   }
 }
 
@@ -64,13 +64,13 @@
   .navbar-nav .nav-item {border: 0!important;}
 
   #user-stats-overview > div:first-child {
-      border-top-left-radius: 1rem;
-      border-bottom-left-radius: 1rem;
+      border-top-left-radius: var(--radius);
+      border-bottom-left-radius: var(--radius);
     }
 
   #user-stats-overview > div:last-child {
-      border-top-right-radius: 1rem;
-      border-bottom-right-radius: 1rem;
+      border-top-right-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
   }
 }
 
@@ -80,13 +80,13 @@
   }
 
   #user-stats-overview > div:first-child {
-      border-top-left-radius: 1rem;
-      border-bottom-left-radius: 1rem;
+      border-top-left-radius: var(--radius);
+      border-bottom-left-radius: var(--radius);
     }
 
   #user-stats-overview > div:last-child {
-      border-top-right-radius: 1rem;
-      border-bottom-right-radius: 1rem;
+      border-top-right-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
   }
 
   .navbar-brand {

@@ -51,7 +51,7 @@
 }
 
 .hvr-underline-from-center:before {
-  background: $brand-primary;
+  background: var(--color-primary);
   border-radius: 6px;
   height: 3px;
 }
@@ -60,7 +60,7 @@
     display: none;
 }
         .ad-banner:nth-child(odd) {
-            background-color: #f8f9fa;   
+            background-color: var(--color-surface-subtle);
         }
 
 @-webkit-keyframes fadeInUp {

@@ -17,7 +17,7 @@
     .match-play { position: absolute; right: 14px; top: calc(50% - 20px); width: 40px; height: 40px; padding: 0; }
     .match-card:hover { border-color: #aeb7c2; }
     .match-card.selected, .match-intent.selected, .match-reading-answer.selected { background: $green-lightest; border-color: $green; }
-    button:focus-visible { outline: 3px solid $brand-primary; outline-offset: 3px; }
+    button:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 3px; }
     button:disabled { cursor: default; }
     .match-rounds { letter-spacing: .15em; }
     .match-score { max-width: 620px; border: 1px solid #e4e7eb; border-radius: 8px; padding: 12px; margin: 24px auto 12px; background: #fff; min-height: 170px; }

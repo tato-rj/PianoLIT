@@ -1,64 +1,64 @@
 .btn-primary {
 	color: white !important;
-	background-color: $brand-primary;
-	border-color: $brand-primary;
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
 
 	&:hover {
 		color: white !important;
-		background-color: darken($brand-primary, 4%);
-		border-color: darken($brand-primary, 4%);
+		background-color: var(--color-primary-hover);
+		border-color: var(--color-primary-hover);
 	}
 
 	&:active {
-		background-color: darken($brand-primary, 6%) !important;
-		border-color: darken($brand-primary, 6%) !important;
+		background-color: var(--color-primary-active) !important;
+		border-color: var(--color-primary-active) !important;
 	}
 
 	&:focus {
-		background-color: darken($brand-primary, 6%) !important;
-		border-color: darken($brand-primary, 6%) !important;
+		background-color: var(--color-primary-active) !important;
+		border-color: var(--color-primary-active) !important;
 	}
 
 	&:disabled {
-		background-color: lighten($brand-primary, 6%) !important;
-		border-color: lighten($brand-primary, 6%) !important;
+		background-color: var(--color-primary-disabled) !important;
+		border-color: var(--color-primary-disabled) !important;
 	}
 }
 
 .btn-primary-outline {
-	color: $brand-primary !important;
+	color: var(--color-primary) !important;
 	background-color: transparent;
-	border-color: $brand-primary;
+	border-color: var(--color-primary);
 
 	&:hover {
 		color: white !important;
-		background-color: $brand-primary;
-		border-color: $brand-primary;
+		background-color: var(--color-primary);
+		border-color: var(--color-primary);
 	}
 
 	&:active {
-		background-color: darken($brand-primary, 6%) !important;
-		border-color: darken($brand-primary, 6%) !important;
+		background-color: var(--color-primary-active) !important;
+		border-color: var(--color-primary-active) !important;
 	}
 
 	&:focus {
-		background-color: darken($brand-primary, 6%) !important;
-		border-color: darken($brand-primary, 6%) !important;
+		background-color: var(--color-primary-active) !important;
+		border-color: var(--color-primary-active) !important;
 	}
 
 	&:disabled {
-		background-color: lighten($brand-primary, 6%) !important;
-		border-color: lighten($brand-primary, 6%) !important;
+		background-color: var(--color-primary-disabled) !important;
+		border-color: var(--color-primary-disabled) !important;
 	}
 }
 
 .btn-white {
-	color: $brand-primary !important;
+	color: var(--color-primary) !important;
 	background-color: white;
 	border-color: white;
 
 	&:hover {
-		color: $brand-primary !important;
+		color: var(--color-primary) !important;
 		background-color: white;
 		border-color: white;
 	}

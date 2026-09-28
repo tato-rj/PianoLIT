@@ -82,11 +82,11 @@ textarea {
 }
 
 a, .link-primary  {
-	color: $brand-primary;
+	color: var(--color-primary);
 }
 
 a:hover, .link-primary:hover {
-	color: darken($brand-primary, 5);
+	color: var(--color-link-hover);
 	text-decoration: none;
 }
 
@@ -107,17 +107,17 @@ a.underline:hover {
 }
 
 .btn-default {
-	background: $brand-primary;
+	background: var(--color-primary);
 	color: white;
 }
 
 .btn-default:hover, .btn-default:active, .btn-default:focus {
 	color: white;
-	background: darken($brand-primary, 3);
+	background: var(--color-default-button-hover);
 }
 
 .text-brand {
-	color: $brand-primary;
+	color: var(--color-primary);
 }
 
 .list-style-none {

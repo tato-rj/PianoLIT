@@ -6,8 +6,8 @@
 	font-size: 70%; 
 	top: -14px; 
 	left: -1px; 
-	border-top-right-radius: 16px; 
-	border-bottom-right-radius: 16px;
+	border-top-right-radius: var(--radius);
+	border-bottom-right-radius: var(--radius);
 }
 </style>
 @endpush

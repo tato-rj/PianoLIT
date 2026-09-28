@@ -1,0 +1,86 @@
+// Shared foundation is appended AFTER Bootstrap and Primer by webpack.mix.js.
+@import "variables";
+@include design-tokens;
+
+body {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
+    color: var(--color-text);
+    background-color: var(--color-surface);
+}
+
+@for $level from 1 through 6 {
+    h#{$level}, .h#{$level} {
+        font-family: var(--font-family-heading);
+        font-weight: var(--font-weight-heading);
+        line-height: var(--line-height-heading);
+        font-size: var(--font-size-h#{$level});
+    }
+}
+.h1 { font-size: var(--font-size-h1-utility); }
+.font-serif { font-family: var(--font-family-serif); }
+.blog-post { font-size: var(--font-size-blog); }
+small, .small { font-size: var(--font-size-small); }
+// Admin theme's .smaller has a deliberately smaller size than .small.
+.smaller { font-size: var(--font-size-tiny); }
+.lead { font-size: var(--font-size-lg); }
+.btn, .form-control, .custom-select, .dropdown-menu, .input-group-text {
+    font-size: var(--font-size-base);
+}
+.btn-xs { font-size: var(--font-size-xs); }
+.btn-sm, .btn-group-sm > .btn, .form-control-sm, .custom-select-sm, .input-group-sm > .form-control, .input-group-sm > .custom-select, .input-group-sm > .input-group-prepend > .input-group-text, .input-group-sm > .input-group-append > .input-group-text, .input-group-sm > .input-group-prepend > .btn, .input-group-sm > .input-group-append > .btn {
+    font-size: var(--font-size-sm);
+}
+.btn-lg, .btn-group-lg > .btn, .form-control-lg, .custom-select-lg, .input-group-lg > .form-control, .input-group-lg > .custom-select, .input-group-lg > .input-group-prepend > .input-group-text, .input-group-lg > .input-group-append > .input-group-text, .input-group-lg > .input-group-prepend > .btn, .input-group-lg > .input-group-append > .btn {
+    font-size: var(--font-size-lg);
+}
+.btn-xl { font-size: var(--font-size-xl); }
+
+// Final utility adapters keep Primer's literal colors from overriding tokens.
+@each $name in grey, red, orange, yellow, green, teal, blue, indigo, purple, pink {
+    .bg-#{$name} { background-color: var(--color-#{$name}); }
+    .text-#{$name} { color: var(--color-#{$name}); }
+    .border-#{$name} { border-color: var(--color-#{$name}) !important; }
+}
+.text-grey { color: var(--color-grey) !important; }
+.text-muted { color: var(--color-text-muted) !important; }
+.text-dark { color: var(--color-text-dark) !important; }
+.text-white { color: var(--color-white) !important; }
+.bg-dark { background-color: var(--color-surface-dark) !important; }
+.bg-white { background-color: var(--color-white) !important; }
+.bg-light { background-color: var(--color-surface-subtle) !important; }
+.border { border-color: var(--color-border) !important; }
+@each $side in top, right, bottom, left {
+    .border-#{$side} { border-#{$side}-color: var(--color-border) !important; }
+}
+
+.shadow { box-shadow: var(--shadow) !important; }
+.shadow-light, .shadow-center, .hover-shadow:hover { box-shadow: var(--shadow-light) !important; }
+.shadow-dark, .hover-shadow-dark:hover { box-shadow: var(--shadow-dark); }
+
+// Opt-in gap utilities for new layouts; existing responsive spacing is preserved.
+@for $size from 1 through 5 {
+    .gap-#{$size} { gap: var(--space-#{$size}); }
+}
+
+@each $name in success, danger, warning, info, secondary {
+    .text-#{$name} { color: var(--color-#{$name}) !important; }
+    .bg-#{$name} { background-color: var(--color-#{$name}) !important; }
+    .border-#{$name} { border-color: var(--color-#{$name}) !important; }
+}
+
+.border-primary { border-color: var(--color-primary) !important; }
+a.text-primary:hover, a.text-primary:focus { color: var(--color-primary-hover) !important; }
+a.bg-primary:hover, a.bg-primary:focus, button.bg-primary:hover, button.bg-primary:focus { background-color: var(--color-primary-hover) !important; }
+.btn-outline-primary { color: var(--color-primary); border-color: var(--color-primary); }
+.btn-outline-primary:hover, .btn-outline-primary:not(:disabled):not(.disabled):active, .btn-outline-primary:not(:disabled):not(.disabled).active, .show > .btn-outline-primary.dropdown-toggle {
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+.btn-outline-primary:disabled, .btn-outline-primary.disabled { color: var(--color-primary); }
+.page-item.active .page-link { background-color: var(--color-primary); border-color: var(--color-primary); }
+.page-link { color: var(--color-primary); }
+.page-link:hover { color: var(--color-link-hover); }

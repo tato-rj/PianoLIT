@@ -1,21 +1,21 @@
 // PRIMARY COLORS
 
 .text-primary {
-	color: $brand-primary !important;
+	color: var(--color-primary) !important;
 }
 
 .bg-primary {
-	background: $brand-primary !important;
+	background: var(--color-primary) !important;
 }
 
 .border-primary {
-	border-color: $brand-primary;
+	border-color: var(--color-primary);
 }
 // CHANGE TO ACCENT-PRIMARY
 .accent-bottom::after {
 	content: '';
 	display: block;
-	background-color: $brand-primary;
+	background-color: var(--color-primary);
 	width: 100px;
 	border-radius: 2px;
 	height: 7px;
@@ -33,11 +33,11 @@
 // GRAYSCALE
 
 .bg-dark {
-	background: $body-bg;
+	background: var(--color-surface-dark);
 }
 
 .bg-lightest-primary {
-	background: lighten($brand-primary, 46) !important;
+	background: var(--color-primary-soft) !important;
 }
 
 // LEVELS

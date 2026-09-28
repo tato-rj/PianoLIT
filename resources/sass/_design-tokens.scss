@@ -1,0 +1,217 @@
+// Canonical design settings; _variables.scss imports these for legacy consumers.
+$body-bg: #161d25;
+$brand-primary: #0055fe; // Change here to rebuild all derived brand states.
+
+
+// Borders
+$laravel-border-color: darken($body-bg, 10%);
+$list-group-border: $laravel-border-color;
+$navbar-default-border: $laravel-border-color;
+$panel-default-border: $laravel-border-color;
+$panel-inner-border: $laravel-border-color;
+
+// Brands
+$brand-info: #8eb4cb;
+$brand-success: #2ab27b;
+$brand-warning: #cbb956;
+$brand-danger: #bf5329;
+
+// Levels
+$elementary: rgb(48,209,88);
+$beginner: rgb(255,214,10);
+$intermediate: rgb(255,69,58);
+$advanced: rgb(191,90,242);
+
+// Typography
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-size-base: 1rem;
+$line-height-base: 1.5;
+$text-color: #212529;
+
+// Navbar
+$navbar-default-bg: #fff;
+
+// Buttons
+$btn-default-color: $text-color;
+
+// Inputs
+$input-border: lighten($text-color, 40%);
+$input-border-focus: lighten($brand-primary, 25%);
+$input-color-placeholder: lighten($text-color, 30%);
+
+// Panels
+$panel-default-heading-bg: #fff;
+
+$grey: #B8C2CC;
+$grey-dark: darken($grey, 10%);
+$grey-darker: darken($grey, 32%);
+$grey-darkest: darken($grey, 48%);
+$grey-light: lighten($grey, 8%);
+$grey-lighter: lighten($grey, 16%);
+$grey-lightest: lighten($grey, 20%);
+
+$red: #E3342F;
+$red-dark: darken($red, 10%);
+$red-darker: darken($red, 28%);
+$red-darkest: darken($red, 36%);
+$red-light: lighten($red, 10%);
+$red-lighter: lighten($red, 28%);
+$red-lightest: lighten($red, 40%);
+
+$orange: #F6993F;
+$orange-dark: darken($orange, 16%);
+$orange-darker: darken($orange, 35%);
+$orange-darkest: darken($orange, 46%);
+$orange-light: lighten($orange, 10%);
+$orange-lighter: lighten($orange, 25%);
+$orange-lightest: lighten($orange, 32%);
+
+$yellow: #FFED4A;
+$yellow-dark: darken($yellow, 17%);
+$yellow-darker: darken($yellow, 36%);
+$yellow-darkest: darken($yellow, 48%);
+$yellow-light: lighten($yellow, 8%);
+$yellow-lighter: lighten($yellow, 20%);
+$yellow-lightest: lighten($yellow, 27%);
+
+$green: #38C172;
+$green-dark: darken($green, 10%);
+$green-darker: darken($green, 24%);
+$green-darkest: darken($green, 38%);
+$green-light: lighten($green, 10%);
+$green-lighter: lighten($green, 28%);
+$green-lightest: lighten($green, 41%);
+
+$teal: #4DC0B5;
+$teal-dark: darken($teal, 11%);
+$teal-darker: darken($teal, 24%);
+$teal-darkest: darken($teal, 39%);
+$teal-light: lighten($teal, 14%);
+$teal-lighter: lighten($teal, 28%);
+$teal-lightest: lighten($teal, 39%);
+
+$blue: #3490dc; // Existing Primer blue; brand-primary remains PianoLIT blue.
+$blue-dark: darken($blue, 12%);
+$blue-darker: darken($blue, 25%);
+$blue-darkest: darken($blue, 41%);
+$blue-light: lighten($blue, 14%);
+$blue-lighter: lighten($blue, 29%);
+$blue-lightest: lighten($blue, 39%);
+
+$indigo: #6574CD;
+$indigo-dark: darken($indigo, 12%);
+$indigo-darker: darken($indigo, 29%);
+$indigo-darkest: darken($indigo, 48%);
+$indigo-light: lighten($indigo, 10%);
+$indigo-lighter: lighten($indigo, 24%);
+$indigo-lightest: lighten($indigo, 32%);
+
+$purple: #9561E2;
+$purple-dark: darken($purple, 10%);
+$purple-darker: darken($purple, 34%);
+$purple-darkest: darken($purple, 49%);
+$purple-light: lighten($purple, 10%);
+$purple-lighter: lighten($purple, 24%);
+$purple-lightest: lighten($purple, 31%);
+
+$pink: #F66D9B;
+$pink-dark: darken($pink, 8%);
+$pink-darker: darken($pink, 42%);
+$pink-darkest: darken($pink, 56%);
+$pink-light: lighten($pink, 10%);
+$pink-lighter: lighten($pink, 22%);
+$pink-lightest: lighten($pink, 26%);
+
+$social-facebook: #3b5998;
+$social-twitter: #1DA1F2;
+$social-youtube: #FF0000;
+$social-instagram: #8a3ab9;
+$social-google: #d34836;
+$social-linkedin: #0077B5;
+$social-github: #333;
+$social-slack: #3F0F3F;
+$social-whatsapp: #25D366;
+
+
+// Shared browser tokens. The token mixin is emitted last in app.css and admin.css.
+// Edit these defaults, then run npm run production. See docs/DESIGN_TOKENS.md.
+@mixin design-tokens {
+    :root {
+        // Standard corners: images, containers, buttons and form fields.
+        --radius: 2rem;
+        --radius-sm: .25rem;
+        --radius-pill: 100px;
+        --radius-circle: 50%;
+        --radius-button: var(--radius);
+        --radius-input: var(--radius);
+        --radius-modal: var(--radius);
+
+        // Brand defaults and their interaction states derive from the Sass defaults above.
+        --color-primary: #{$brand-primary};
+        --color-primary-hover: #{darken($brand-primary, 4%)};
+        --color-primary-active: #{darken($brand-primary, 6%)};
+        --color-primary-disabled: #{lighten($brand-primary, 6%)};
+        --color-primary-soft: #{lighten($brand-primary, 46%)};
+        --color-link-hover: #{darken($brand-primary, 5%)};
+        --color-default-button-hover: #{darken($brand-primary, 3%)};
+        --color-text: #{$text-color};
+        --color-text-muted: #6c757d;
+        --color-text-dark: #343a40;
+        --color-surface: #fff;
+        --color-surface-subtle: #f8f9fa;
+        --color-surface-dark: #343a40;
+        --color-border: #dee2e6;
+        --color-white: #fff;
+        --color-black: #000;
+
+        // Bootstrap status colors and Primer palette colors have distinct uses.
+        --color-success: #28a745;
+        --color-danger: #dc3545;
+        --color-warning: #ffc107;
+        --color-info: #17a2b8;
+        --color-secondary: #6c757d;
+        --color-grey: #{$grey};
+        --color-red: #{$red};
+        --color-orange: #{$orange};
+        --color-yellow: #{$yellow};
+        --color-green: #{$green};
+        --color-teal: #{$teal};
+        --color-blue: #{$blue};
+        --color-indigo: #{$indigo};
+        --color-purple: #{$purple};
+        --color-pink: #{$pink};
+
+        --font-family-body: #{$font-family-sans-serif};
+        --font-family-heading: "Poppins", sans-serif;
+        --font-family-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+        --font-size-base: #{$font-size-base};
+        --font-size-tiny: .7rem;
+        --font-size-xs: .8rem;
+        --font-size-sm: .875rem;
+        --font-size-lg: 1.25rem;
+        --font-size-xl: 1.5rem;
+        --font-size-h1: 2.75rem;
+        --font-size-h1-utility: 2.5rem; // Existing .h1 differs from the h1 element.
+        --font-size-h2: 2rem;
+        --font-size-h3: 1.75rem;
+        --font-size-h4: 1.5rem;
+        --font-size-h5: 1.25rem;
+        --font-size-h6: 1rem;
+        --font-size-small: 80%;
+        --font-size-blog: 1.15em;
+        --line-height-body: #{$line-height-base};
+        --line-height-heading: 1.2;
+        --font-weight-heading: 600;
+        --letter-spacing-body: .025em;
+
+        --space-1: .25rem;
+        --space-2: .5rem;
+        --space-3: 1rem;
+        --space-4: 1.5rem;
+        --space-5: 3rem;
+        --shadow: 0 .12rem 1.2rem rgba(0, 0, 0, .15);
+        --shadow-light: 0 0 1rem rgba(0, 0, 0, .085);
+        --shadow-dark: 0 5px 30px rgba(0, 0, 0, .25);
+    }
+}

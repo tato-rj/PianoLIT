@@ -69,10 +69,10 @@ footer.sticky-footer, #mainNav.fixed-top.navbar-light .sidenav-toggler, .breadcr
 }
 
 .page-item.active .page-link {
-    background-color: $brand-primary;
-    border-color: $brand-primary;
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .page-link {
-	color: $brand-primary;
+	color: var(--color-primary);
 }

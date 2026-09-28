@@ -1,8 +1,8 @@
 .nav-tabs .nav-link {
-	color: #b8c2cc;
+	color: var(--color-grey);
 }
 
 .nav-tabs .active {
-	color: #343a40!important;
+	color: var(--color-text-dark)!important;
 	font-weight: bold;
 }

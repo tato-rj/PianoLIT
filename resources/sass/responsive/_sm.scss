@@ -27,8 +27,8 @@
 			width: 100%;
 
 			.nav-link.active {
-				border-bottom: 1px solid #dee2e6!important;
-				border-radius: 0.25rem;
+				border-bottom: 1px solid var(--color-border)!important;
+				border-radius: var(--radius-sm);
 			}
 
 			.nav-link:hover:not(.active) {
@@ -147,7 +147,7 @@
 
 	.navbar-nav {
 		.nav-item {
-			border-bottom: 1px solid #dee2e6 !important;
+			border-bottom: 1px solid var(--color-border) !important;
 			padding-top: 0.5rem !important;
 			padding-bottom: 0.5rem !important;
 		}
