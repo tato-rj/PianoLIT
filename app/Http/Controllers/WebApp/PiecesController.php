@@ -67,7 +67,7 @@ class PiecesController extends Controller
     {
         abort_unless($tutorial->piece_id == $piece->id, 404);
 
-        return view('webapp.piece.components.video.element', compact('tutorial'))->render();
+        return view('webapp.piece.components.video.element', compact('piece', 'tutorial'))->render();
     }
 
     public function saveTo(Piece $piece)
@@ -90,9 +90,9 @@ class PiecesController extends Controller
 
     public function score(Piece $piece)
     {
-        abort_unless(auth('web')->check() && auth('web')->user()->hasActiveSubscription(), 403);
+        abort_unless($piece->hasWebMediaAccess(auth('web')->user()), 403);
 
-        $storage = local() ? \Storage::disk('local') : \Storage::disk('public');
+        $storage = \Storage::disk('public');
 
         return $storage->download($piece->score_path);
     }

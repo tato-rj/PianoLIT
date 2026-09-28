@@ -1,7 +1,7 @@
 <div id="score-editor" class="score-editor mb-4" data-pdf-url="{{ storage($piece->score_path) }}"
     data-score-version="{{ hash('sha256', $piece->score_path) }}"
-    data-annotations-url="{{ route('webapp.pieces.score.annotations.show', $piece) }}">
-    <div class="score-toolbar" role="toolbar" aria-label="Score annotation tools">
+    data-annotations-url="{{ auth('web')->check() ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
+    <div class="score-toolbar @guest('web') d-none @endguest" role="toolbar" aria-label="Score annotation tools">
         <div class="score-tools" role="group" aria-label="Drawing tools">
             <button type="button" data-tool="pen" data-edit-control class="score-icon-button" aria-label="Pen" title="Pen" aria-pressed="false" disabled>@fa(['icon' => 'pen', 'mr' => 0])</button>
             <button type="button" data-tool="text" data-edit-control class="score-icon-button" aria-label="Text" title="Text" aria-pressed="false" disabled>@fa(['icon' => 'i-cursor', 'mr' => 0])</button>

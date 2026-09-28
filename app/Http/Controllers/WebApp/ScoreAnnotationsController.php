@@ -12,7 +12,7 @@ class ScoreAnnotationsController extends Controller
 {
     protected function identity(Request $request, Piece $piece)
     {
-        abort_unless(auth('web')->user()->hasActiveSubscription(), 403);
+        abort_unless($piece->hasWebMediaAccess(auth('web')->user()), 403);
         if (! $piece->score_path || ! $piece->isPublicDomain) {
             abort(response()->json(['message' => 'No annotatable score is available for this piece.'], 404));
         }

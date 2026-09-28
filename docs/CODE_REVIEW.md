@@ -94,6 +94,13 @@ Review direct Guzzle calls (Apple receipts and reCAPTCHA) for bounded timeouts, 
 
 Add a date, issue reference, affected paths, evidence, implemented change, verification, and any rollout dependency. Keep unresolved findings visible until the relevant change and verification are complete.
 
+### 2026-09-28 — Current free pick fully open on the web app
+
+- P1 correction: the paid/trial/grace/super-user content check ignored the current free-pick flag. The admin highlight action already clears the previous `is_free` flag before setting it on the new piece.
+- Added `Piece::hasWebMediaAccess()` in `PieceStatus`, combining the existing `is_free` flag with the established account subscription override. The piece-page composer, AJAX audio/tutorial fragments, score downloads, and authenticated annotation controller use that same check. Tutorial fragments now receive their route-bound piece. Downloads use the public storage disk where piece scores are stored in every environment.
+- Guests get full audio, top-down and Synthesia playback, and a readable score with page/zoom/fullscreen/download/print controls for the current free pick. The existing score editor skips annotation requests and disables/hides marking tools for guests; authenticated non-paying accounts can save their own free-pick markings. Favorites and annotation writes retain session authentication. Removing `is_free` restores all ordinary content restrictions on the next request, including annotation authorization. Mobile API contracts and original public URLs are unchanged.
+- Verification: 85 isolated PHP tests / 1,235 assertions and JS regressions passed. Regression coverage includes guest/non-paying free-pick access, denied guest favorites/annotation writes, flag removal, ordinary-piece forged IDs, registered markings during the free-pick period, and guest score loading without account requests or autosave. The isolated Mix build passed; the published score-editor script and its manifest hash are updated. A browser fixture verified a clear score, enabled zoom/print/download controls, hidden marking tools, and no annotation-load error. Live billing, production deployment, and actual media streaming were not exercised.
+
 ### 2026-09-22 — Full web access through subscription grace periods
 
 - Request: preserve full content access during grace periods, including trials canceled before their end date.

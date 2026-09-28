@@ -46,7 +46,8 @@ class AppServiceProvider extends ServiceProvider
             'webapp.piece.components.audio',
             'webapp.piece.components.video.element',
         ], function ($view) {
-            $view->with('hasMediaAccess', auth('web')->check() && auth('web')->user()->hasActiveSubscription());
+            $piece = $view->getData()['piece'];
+            $view->with('hasMediaAccess', $piece->hasWebMediaAccess(auth('web')->user()));
             $view->with('previewSeconds', config('webapp.media_preview_seconds'));
         });
 

@@ -96,6 +96,7 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->get(route('webapp.pieces.audio', $this->piece))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->get(route('webapp.pieces.score', $this->piece))->assertOk();
+        return $response;
     }
 
     public function test_super_users_keep_full_content_regardless_of_subscription_state()
@@ -159,9 +160,31 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertRestricted();
     }
 
-    public function test_free_pick_flag_and_supplied_user_ids_do_not_bypass_content_rules()
+    public function test_current_free_pick_is_fully_open_and_restricted_again_after_rotation()
     {
         $this->piece->updateQuietly(['is_free' => true]);
+        $this->assertFullContent()->assertDontSee('data-manage="save-to"', false)
+            ->assertSee('data-annotations-url=""', false);
+        $this->assertDatabaseCount('recently_viewed_pieces', 0);
+        $this->withExceptionHandling()->postJson(route('webapp.users.favorites.update', $this->piece))->assertUnauthorized();
+        $this->getJson(route('webapp.pieces.score.annotations.show', $this->piece))->assertUnauthorized();
+        $this->putJson(route('webapp.pieces.score.annotations.update', $this->piece), [])->assertUnauthorized();
+
+        // Turning off the flag restores restrictions on the very next request.
+        $this->piece->updateQuietly(['is_free' => false]);
+        $this->assertRestricted();
+
+        $this->actingAs($this->userWithSubscription(), 'web');
+        $this->piece->updateQuietly(['is_free' => true]);
+        $this->assertFullContent()->assertSee('data-manage="save-to"', false)
+            ->assertDontSee('data-annotations-url=""', false);
+        $this->postJson(route('webapp.users.favorites.update', $this->piece))->assertOk();
+        $this->piece->updateQuietly(['is_free' => false]);
+        $this->assertRestricted();
+    }
+
+    public function test_supplied_user_ids_do_not_bypass_normal_piece_content_rules()
+    {
         $subscriber = $this->userWithSubscription(Stripe::class);
         $this->get(route('webapp.pieces.show', [$this->piece, 'user_id' => $subscriber->id]))
             ->assertOk()->assertSee('data-media-preview="10"', false);

@@ -4,6 +4,11 @@ namespace App\Traits;
 
 trait PieceStatus
 {
+    public function hasWebMediaAccess(?\App\User $user = null)
+    {
+        return $this->is_free || ($user && $user->hasActiveSubscription());
+    }
+
     public function hasScore($publicDomain = false)
     {
         if ($publicDomain)

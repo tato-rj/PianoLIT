@@ -83,6 +83,18 @@ class ScoreAnnotationsTest extends ReviewTestCase
         $this->getJson($this->url(null, $this->payload([])))->assertOk()->assertJsonPath('marks.0.text', '1 2 3');
     }
 
+    public function test_nonpaying_free_pick_annotations_follow_the_current_piece_flag()
+    {
+        $this->user->updateQuietly(['super_user' => false]);
+        $this->actingAs($this->user, 'web');
+        $this->piece->updateQuietly(['is_free' => true]);
+        $this->putJson($this->url(), $this->payload())->assertOk();
+        $this->getJson($this->url(null, $this->payload([])))->assertOk()->assertJsonPath('marks.0.text', '1 2 3');
+        $this->piece->updateQuietly(['is_free' => false]);
+        $this->getJson($this->url(null, $this->payload([])))->assertForbidden();
+        $this->putJson($this->url(), $this->payload([], 1))->assertForbidden();
+    }
+
     public function test_pdf_replacements_and_other_fingerprints_do_not_reuse_markings()
     {
         $this->actingAs($this->user, 'web');

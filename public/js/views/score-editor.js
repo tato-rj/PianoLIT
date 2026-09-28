@@ -93,8 +93,8 @@
                 if (this.pdf.numPages > 2000) throw new Error('Too many pages');
                 this.identity = {score: this.root.getAttribute('data-score-version'), fingerprint: this.pdf.fingerprint};
                 await this.render(this.page);
-                const response = await this.http.get(this.url, {params: this.identity});
-                this.store.load(response.data);
+                const data = this.url ? (await this.http.get(this.url, {params: this.identity})).data : {revision: 0, marks: []};
+                this.store.load(data);
                 this.ready = true; this.changed();
             } catch (error) {
                 this.message('Your score or saved markings could not be loaded. Retry to begin editing.', true);
@@ -109,14 +109,14 @@
         changed() {
             this.paint(); this.controls();
             const labels = {loading: 'Loading your markings\u2026', saved: 'All markings saved', unsaved: 'Unsaved changes\u2026', saving: 'Saving\u2026', error: 'Could not save. Your changes are still here. Retry before leaving.', conflict: 'The score or markings changed elsewhere. Reload to continue; your changes have not been saved.'};
-            this.message(labels[this.store.state], ['error', 'conflict'].includes(this.store.state));
+            this.message(this.url ? labels[this.store.state] : 'Sign in to add and save markings.', ['error', 'conflict'].includes(this.store.state));
             this.find('[data-retry-save]').hidden = this.store.state !== 'error';
             this.find('[data-reload-score]').hidden = !this.store.conflict;
             clearTimeout(this.saveTimer);
-            if (this.store.state === 'unsaved') this.saveTimer = setTimeout(() => this.store.flush(), 650);
+            if (this.url && this.store.state === 'unsaved') this.saveTimer = setTimeout(() => this.store.flush(), 650);
         }
         controls() {
-            const editing = this.ready && !this.rendering && !this.store.conflict;
+            const editing = !!this.url && this.ready && !this.rendering && !this.store.conflict;
             if (this.textDraft) this.textDraft.input.readOnly = this.store.conflict;
             this.all('[data-edit-control]').forEach(el => { el.disabled = !editing; });
             this.find('.score-color-button').classList.toggle('disabled', !editing);
