@@ -10,7 +10,7 @@
 		@include('webapp.components.back')
 		<h3>{{$playlist->name}}</h3>
 	</div>
-	<p class="px-4">{{$playlist->description}}</p>
+	<p class="px-5">{{$playlist->description}}</p>
 </div>
 
 @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
