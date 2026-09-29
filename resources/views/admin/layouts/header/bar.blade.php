@@ -5,7 +5,7 @@
   <div>
     <li class="nav-item inline-on-collapse text-muted">
       <a class="nav-link position-relative cursor-pointer notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" data-toggle="fixed-panel" data-target="#notifications-panel">
-        @icon('bell', ['mr' => 0, 'classes' => 'icon-fw notification-bell'])
+        @icon('bell', ['mr' => 0, 'classes' => 'icon-fw notification-bell', 'filled' => true])
         <div class="notifications-count bg-white rounded-circle position-absolute font-weight-bold shadow-sm" style="bottom: -2px; right: 0;">
           <div class="d-flex flex-center w-100 h-100">{{auth()->user()->unreadNotifications->count()}}</div>
         </div>

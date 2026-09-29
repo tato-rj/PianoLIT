@@ -37,7 +37,7 @@ class Icon
         foreach (['ml' => 'ml-', 'color' => 'text-', 'size' => 'icon-size-', 'weight' => 'icon-weight-'] as $key => $prefix) {
             if (isset($options[$key])) $classes[] = $prefix.$options[$key];
         }
-        if (!empty($options['filled'])) $classes[] = 'icon-filled';
+        if (!empty($options['filled']) || !empty($options['solid'])) $classes[] = 'icon-filled';
         if (!empty($options['classes'])) $classes[] = $options['classes'];
         $attributes = ['class' => implode(' ', $classes)];
         foreach (['title', 'name'] as $key) {
@@ -64,7 +64,8 @@ class Icon
         }
         $html .= '>';
         if (!$brand) {
-            $html .= '<svg data-lucide-name="'.$name.'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'.static::$icons[$name].'</svg>';
+            $fill = !empty($options['solid']) ? 'currentColor' : 'none';
+            $html .= '<svg data-lucide-name="'.$name.'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="'.$fill.'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'.static::$icons[$name].'</svg>';
         }
         return new HtmlString($html.'</i>');
     }

@@ -9,13 +9,14 @@ PianoLIT uses Lucide SVGs for interface icons. The same small, local icon catalo
 @icon('close', ['mr' => 0])             {{-- no right margin --}}
 @icon('search', ['color' => 'muted'])
 @icon('heart', ['filled' => $is_favorited, 'color' => 'red'])
+@icon('heart', ['solid' => true, 'color' => 'red']) {{-- fill matches stroke color --}}
 @icon('music', ['weight' => 'thin', 'size' => 'lg'])
 @icon('check', ['name' => 'success', 'if' => false])
 ```
 
 Names normally match [Lucide's icon names](https://lucide.dev/icons/), such as `x`, `trash-2`, `circle-check`, `maximize`, and `layers`. `close` is a convenience alias for `x`. Compatibility aliases in `resources/icons/aliases.json` translate legacy model values at the view boundary without changing mobile API responses.
 
-Options: `mr` (default 2), `ml`, `color`, `size` (`xs`, `sm`, `lg`, `xl`, `1x`–`10x`), `weight`, `filled`, `classes`, `styles`, `title`, `label`, `name`, `if`, and `attributes` (data/ARIA attributes, ID, role, tabindex). A false `if` hides the wrapper rather than removing it, preserving show/hide controls. Icons inherit the surrounding text color and size. Decorative icons are hidden from assistive technology; use a label on an icon-only button/link. `label` or `title` on an icon gives it an accessible name.
+Options: `mr` (default 2), `ml`, `color`, `size` (`xs`, `sm`, `lg`, `xl`, `1x`–`10x`), `weight`, `filled`, `solid`, `classes`, `styles`, `title`, `label`, `name`, `if`, and `attributes` (data/ARIA attributes, ID, role, tabindex). `solid => true` sets SVG fill to `currentColor`, matching its stroke, and uses the existing `icon-filled` class so the fill survives dynamic icon changes. A false `if` hides the wrapper rather than removing it, preserving show/hide controls. Icons inherit the surrounding text color and size. Decorative icons are hidden from assistive technology; use a label on an icon-only button/link. `label` or `title` on an icon gives it an accessible name.
 
 Within PHP expressions or component strings, use `\App\Support\Icon::render('search', ['mr' => 1])`, concatenated with any label. Do not embed a Blade directive inside a PHP string.
 

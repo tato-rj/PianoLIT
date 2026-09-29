@@ -420,3 +420,10 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - Affected files: `resources/views/webapp/composers/profile.blade.php`, new scoped `resources/sass/views/_composers.scss`, the `app.scss` import, rebuilt `public/css/app.css`, and its Mix manifest entry. Preserved the user's current profile header edits and escaped curiosity content. No route, data, or mobile API changes.
 - Verification: isolated production build passed. Chrome checks on the actual local Chaminade profile (`/composers/1`) returned HTTP 200 at 1280px, 390px and 320px. Verified the callout's layout, serif font, color and bounds, with no callout overflow; visually inspected desktop and mobile screenshots. Scoped `git diff --check` passes. No new automated tests were added for this presentation-only change.
 - Remaining work: deploy Blade, source, CSS and manifest together. No production deployment performed.
+
+### 2026-09-29 — Support solid inline icons (implemented locally)
+
+- Priority: P3 requested renderer option. `@icon('heart', ['solid' => true])` now emits SVG `fill="currentColor"`, matching the existing stroke color. It also uses the existing `icon-filled` class to preserve fill when the browser swaps an icon's geometry.
+- Affected files: `app/Support/Icon.php` and `docs/ICONS.md`. Default/false solid options retain outline SVG markup; existing `filled` behavior and brand glyphs remain compatible. No CSS/JavaScript source changes or asset build required. Preserved unrelated grid-view edits.
+- Verification: all 5 isolated icon tests pass (594 assertions); direct renderer checks cover solid true with a color, false, and omitted options. `git diff --check` passes. No browser visual check or deployment performed.
+- Remaining work: deploy the PHP renderer to enable the option.
