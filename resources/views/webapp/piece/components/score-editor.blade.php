@@ -3,7 +3,7 @@
     data-annotations-url="{{ auth('web')->check() ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
     <div class="score-toolbar @guest('web') d-none @endguest" role="toolbar" aria-label="Score annotation tools">
         <div class="score-tools" role="group" aria-label="Drawing tools">
-            <button type="button" data-tool="pen" data-edit-control class="score-icon-button" aria-label="Pen" title="Pen" aria-pressed="false" disabled>@icon('pen', ['mr' => 0])</button>
+            <button type="button" data-tool="pen" data-edit-control class="score-icon-button" aria-label="Pen" title="Pen" aria-pressed="false" disabled>@icon('pencil', ['mr' => 0])</button>
             <button type="button" data-tool="text" data-edit-control class="score-icon-button" aria-label="Text" title="Text" aria-pressed="false" disabled>@icon('text-cursor', ['mr' => 0])</button>
             <button type="button" data-tool="erase" data-edit-control class="score-icon-button" aria-label="Eraser" title="Eraser" aria-pressed="false" disabled>@icon('eraser', ['mr' => 0])</button>
             <button type="button" data-tool="highlight" data-edit-control class="score-icon-button" aria-label="Highlighter" title="Highlighter" aria-pressed="false" disabled>@icon('highlighter', ['mr' => 0])</button>

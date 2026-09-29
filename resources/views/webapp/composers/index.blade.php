@@ -19,11 +19,11 @@
 </section>
 
 <section class="container">
-	<div class="d-flex flex-wrap justify-content-center mb-2">
+{{-- 	<div class="d-flex flex-wrap justify-content-center mb-2">
 		@include('webapp.composers.highlight', ['field' => 'ethnicity', 'query' => 'black', 'label' => 'Black Composers'])
 		@include('webapp.composers.highlight', ['field' => 'gender', 'query' => 'female', 'label' => 'Women Composers'])
 		@include('webapp.composers.highlight', ['field' => 'period', 'query' => 'modern contemporary', 'label' => '20th Century Composers'])
-	</div>
+	</div> --}}
 	<div class="row" id="composers-list" data-cards=".composer-card">
 		@foreach($composers as $composer)
 			@include('webapp.composers.list-item')

@@ -1,17 +1,17 @@
 {
-    "/js/app.js": "/js/app.js?id=6d41b0d2bc17149de6b3",
-    "/css/app.css": "/css/app.css?id=2bb8b164d82fa2f946d7",
-    "/css/admin.css": "/css/admin.css?id=e1ec3a5a8f13d45dae90",
+    "/js/app.js": "/js/app.js?id=3e286406589ac75bfedb",
+    "/css/app.css": "/css/app.css?id=15aef505da7110d1744c",
+    "/css/admin.css": "/css/admin.css?id=62ad734515d2286cfcf5",
     "/css/design-system.css": "/css/design-system.css?id=d69b15634c2fbb8a4335",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=014df888e93f6477fdab",
     "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=c5d73e29f9de8c09062a",
     "/css/studio-policies/elegant.css": "/css/studio-policies/elegant.css?id=bc42004cf6b3b8081ffd",
     "/css/studio-policies/informal.css": "/css/studio-policies/informal.css?id=697122ccf9315f4742ef",
-    "/js/admin.js": "/js/admin.js?id=10f6982ba26071c90f74",
+    "/js/admin.js": "/js/admin.js?id=fe81232c9864ef1de373",
     "/js/tone.js": "/js/tone.js?id=fa32150deb46b19561c6",
     "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e",
     "/js/views/piece-access.js": "/js/views/piece-access.js?id=12ad9ebcc99a375f9c14",
-    "/js/views/score-editor.js": "/js/views/score-editor.js?id=ad775b4be686938323db",
+    "/js/views/score-editor.js": "/js/views/score-editor.js?id=668763dbcf999c8cd14c",
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=242aa6c185b83538149d",
     "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf"
 }

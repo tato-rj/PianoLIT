@@ -47,9 +47,9 @@ The app/admin bundles populate added wrappers automatically. Change `icon-circle
 
 ## Add an icon or update Lucide
 
-1. Add its canonical Lucide name to `resources/icons/names.json`.
-2. Run `npm run icons` to regenerate `resources/icons/lucide.json` and its license from the pinned `lucide-static` npm package. Production/development builds run this step automatically.
-3. Run `npm run production` and include generated assets, the catalog, and Mix manifest in deployment.
+1. Use its Lucide name in a view, for example `@icon('sparkles')` or `@button(['icon' => 'sparkles'])`. Literal names in Blade directives, component icon options, and `Icon::render('…')` calls in views are discovered automatically. For names selected dynamically from variables, model values, or JavaScript, add the canonical names to `resources/icons/names.json`.
+2. Run `npm run production` (or `npm run development`). The build first regenerates `resources/icons/lucide.json` and its license from the pinned `lucide-static` package, then bundles the same catalog for the browser. `npm run icons` regenerates just the catalog; rebuild JavaScript too so the browser recognizes the new icons.
+3. Include generated assets, the catalog, and Mix manifest in deployment. Restart `npm run watch` after introducing a new icon name so its catalog is regenerated.
 
 Only the selected catalog is bundled, rather than Lucide's entire library. Unknown names render `circle-help`; the regression test checks literal Blade names and aliases against the catalog. Add aliases to `resources/icons/aliases.json` if a shorter application name is useful, and include the target in `names.json`.
 

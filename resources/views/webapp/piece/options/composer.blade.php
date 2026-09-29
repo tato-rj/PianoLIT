@@ -8,7 +8,7 @@
 @section('content')
 @include('webapp.layouts.header')
 
-@include('webapp.piece.options.header')
+{{-- @include('webapp.piece.options.header') --}}
 
 <section>
 	@include('webapp.composers.profile', ['composer' => $piece->composer])

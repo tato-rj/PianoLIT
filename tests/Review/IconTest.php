@@ -7,6 +7,15 @@ use Illuminate\Support\Facades\Blade;
 
 class IconTest extends ReviewTestCase
 {
+    public function test_sparkles_renders_lucide_geometry_instead_of_the_unknown_icon_fallback()
+    {
+        $html = (string) Icon::render('sparkles');
+        $this->assertStringContainsString('app-icon icon-sparkles mr-2', $html);
+        $this->assertStringContainsString('data-lucide-name="sparkles"', $html);
+        $this->assertStringContainsString('<path', $html);
+        $this->assertStringNotContainsString('circle-help', $html);
+    }
+
     public function test_blade_directive_keeps_default_spacing_and_supports_options()
     {
         $compiled = Blade::compileString("@icon('close') @icon('close', ['mr' => 0, 'weight' => 'thin'])");

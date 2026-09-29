@@ -1,9 +1,10 @@
 .score-editor {
     position: relative;
-    left: 50%;
-    width: calc(100vw - 32px);
+    // left: 50%;
+    // width: calc(100vw - 32px);
+    width: 100%;
     max-width: 1100px;
-    margin-left: -550px;
+    // margin-left: -550px;
     padding-bottom: 94px;
     color: #172033;
 
@@ -19,7 +20,7 @@
         justify-content: space-between;
         flex-wrap: nowrap;
         gap: 16px;
-        padding: 14px 20px 4px;
+        padding: 0 20px 4px;
         background: #fff;
         // border: 1px solid #e8edf5;
         border-bottom: 0;
@@ -222,10 +223,10 @@
         .score-scroll { min-height: calc(100dvh - 190px); }
     }
     @media (max-width: 767px) {
-        width: calc(100vw - 20px);
-        margin-left: calc(-50vw + 10px);
+        // width: calc(100vw - 20px);
+        // margin-left: calc(-50vw + 10px);
         padding-bottom: 126px;
-        .score-toolbar { gap: 3px; padding: 8px 8px 2px; }
+        .score-toolbar { gap: 3px; padding: 0 8px 2px; }
         .score-tools, .score-history { flex: 0 0 auto; width: auto; gap: 2px; }
         .score-history { margin-left: auto; }
         .score-status-row { padding: 0 8px 8px; }
@@ -250,7 +251,7 @@
         .score-action-button, .score-listen-button { font-size: 12px; gap: 6px; min-height: 36px}
     }
     @media (min-width: 768px) and (max-width: 1132px) {
-        margin-left: calc(-50vw + 16px);
+        // margin-left: calc(-50vw + 16px);
     }
     @media (max-width: 360px) {
         .score-toolbar { padding-left: 6px; padding-right: 6px; }

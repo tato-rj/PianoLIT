@@ -25117,6 +25117,67 @@ i.spinner-border {
   max-width: 100%;
 }
 
+.composer-curiosity {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  gap: 40px;
+  padding: 24px 40px;
+  border-radius: 12px;
+  background: #f7f4f0;
+}
+
+.composer-curiosity .composer-curiosity__label {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  margin: 0;
+  color: #987b4f;
+  font-family: var(--font-family-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.composer-curiosity .composer-curiosity__text {
+  min-width: 0;
+  margin: 0;
+  padding-left: 36px;
+  border-left: 1px solid #d9cbb5;
+  color: #172033;
+  font-family: var(--font-family-serif);
+  font-size: 18px;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 767px) {
+  .composer-curiosity {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: stretch;
+        -ms-flex-align: stretch;
+            align-items: stretch;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .composer-curiosity .composer-curiosity__text {
+    padding-top: 16px;
+    padding-left: 0;
+    border-top: 1px solid #d9cbb5;
+    border-left: 0;
+    font-size: 19px;
+  }
+}
+
 .question-overlay {
   width: 100%;
   height: 100%;
@@ -25230,6 +25291,41 @@ g.key {
   margin-right: .4rem;
 }
 
+.btn.btn-primary,
+.btn.btn-secondary {
+  border-width: 1px;
+  --radius-button: 12px;
+}
+
+.btn.btn-primary:not(.btn-xs):not(.btn-sm):not(.btn-lg):not(.btn-xl),
+.btn.btn-secondary:not(.btn-xs):not(.btn-sm):not(.btn-lg):not(.btn-xl) {
+  padding: 11px 21px;
+  font-size: calc(var(--font-size-base) * 0.9);
+  line-height: 22px;
+}
+
+.btn-group-sm > .btn.btn-primary:not(.btn-xs):not(.btn-sm):not(.btn-lg):not(.btn-xl),
+.btn-group-sm > .btn.btn-secondary:not(.btn-xs):not(.btn-sm):not(.btn-lg):not(.btn-xl) {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
+.btn-group-lg > .btn.btn-primary:not(.btn-xs):not(.btn-sm):not(.btn-lg):not(.btn-xl),
+.btn-group-lg > .btn.btn-secondary:not(.btn-xs):not(.btn-sm):not(.btn-lg):not(.btn-xl) {
+  padding: 0.5rem 1rem;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  border-radius: 0.3rem;
+}
+
+.btn.btn-primary:focus-visible,
+.btn.btn-secondary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .btn-primary {
   color: white !important;
   background-color: var(--color-primary);
@@ -25242,19 +25338,88 @@ g.key {
   border-color: var(--color-primary-hover);
 }
 
-.btn-primary:active {
+.btn-primary:not(:disabled):not(.disabled):active,
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary.dropdown-toggle[aria-expanded="true"] {
   background-color: var(--color-primary-active) !important;
   border-color: var(--color-primary-active) !important;
 }
 
-.btn-primary:focus {
+.btn-primary:focus,
+.btn-primary.focus {
   background-color: var(--color-primary-active) !important;
   border-color: var(--color-primary-active) !important;
 }
 
-.btn-primary:disabled {
+.btn-primary:disabled,
+.btn-primary.disabled {
   background-color: var(--color-primary-disabled) !important;
   border-color: var(--color-primary-disabled) !important;
+}
+
+.btn-secondary {
+  color: #172033 !important;
+  background-color: #fff;
+  border-color: #e4eaf3;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary.focus {
+  color: #172033 !important;
+  background-color: #f6f8fc;
+  border-color: #e4eaf3;
+}
+
+.btn-secondary:not(:disabled):not(.disabled):active,
+.btn-secondary:not(:disabled):not(.disabled).active,
+.btn-secondary.dropdown-toggle[aria-expanded="true"] {
+  background-color: #eaf0ff;
+  border-color: #d4e1ff;
+}
+
+.btn-secondary:focus,
+.btn-secondary.focus,
+.btn-secondary:not(:disabled):not(.disabled):active:focus,
+.btn-secondary:not(:disabled):not(.disabled).active:focus,
+.btn-secondary.dropdown-toggle[aria-expanded="true"]:focus {
+  -webkit-box-shadow: 0 0 0 0.2rem var(--color-primary-soft);
+          box-shadow: 0 0 0 0.2rem var(--color-primary-soft);
+}
+
+.btn-secondary:disabled,
+.btn-secondary.disabled {
+  background-color: #fff;
+  border-color: #e4eaf3;
+}
+
+.btn-outline-secondary {
+  color: var(--color-text) !important;
+  background-color: transparent;
+  border-color: var(--color-text);
+}
+
+.btn-outline-secondary:hover {
+  color: white !important;
+  background-color: var(--color-text);
+  border-color: var(--color-text);
+}
+
+.btn-outline-secondary:active {
+  color: white !important;
+  background-color: var(--color-text) !important;
+  border-color: var(--color-text) !important;
+}
+
+.btn-outline-secondary:focus {
+  color: white !important;
+  background-color: var(--color-text) !important;
+  border-color: var(--color-text) !important;
+}
+
+.btn-outline-secondary:disabled {
+  background-color: var(--color-text) !important;
+  border-color: var(--color-text) !important;
 }
 
 .btn-primary-outline {
@@ -25640,10 +25805,8 @@ select.form-transparent:-webkit-autofill:focus {
 
 .score-editor {
   position: relative;
-  left: 50%;
-  width: calc(100vw - 32px);
+  width: 100%;
   max-width: 1100px;
-  margin-left: -550px;
   padding-bottom: 94px;
   color: #172033;
 }
@@ -25677,7 +25840,7 @@ select.form-transparent:-webkit-autofill:focus {
   -ms-flex-wrap: nowrap;
       flex-wrap: nowrap;
   gap: 16px;
-  padding: 14px 20px 4px;
+  padding: 0 20px 4px;
   background: #fff;
   border-bottom: 0;
 }
@@ -26017,14 +26180,12 @@ select.form-transparent:-webkit-autofill:focus {
 
 @media (max-width: 767px) {
   .score-editor {
-    width: calc(100vw - 20px);
-    margin-left: calc(-50vw + 10px);
     padding-bottom: 126px;
   }
 
   .score-editor .score-toolbar {
     gap: 3px;
-    padding: 8px 8px 2px;
+    padding: 0 8px 2px;
   }
 
   .score-editor .score-tools,
@@ -26116,12 +26277,6 @@ select.form-transparent:-webkit-autofill:focus {
     font-size: 12px;
     gap: 6px;
     min-height: 36px;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1132px) {
-  .score-editor {
-    margin-left: calc(-50vw + 16px);
   }
 }
 

@@ -72,7 +72,7 @@
     class Editor {
         constructor(container, pdfjs, http) {
             this.root = container; this.pdfjs = pdfjs; this.http = http;
-            this.canvas = this.find('canvas'); this.svg = this.find('.score-markings');
+            this.canvas = this.find('canvas'); this.svg = this.find('svg');
             this.sheet = this.find('.score-sheet'); this.scroller = this.find('.score-scroll');
             this.status = this.find('[data-score-status]');
             this.tool = 'read'; this.page = 1; this.zoom = root.matchMedia('(max-width: 767px)').matches ? 1 : 0.75;

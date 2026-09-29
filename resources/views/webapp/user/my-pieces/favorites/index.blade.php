@@ -2,7 +2,7 @@
 	<div class="col-12 mb-3">
 		<div class="d-flex d-apart">
 			<div class="text-muted"><small>You have <strong>{{$folders->count()}}</strong> {{str_plural('folder', $folders->count())}}</small></div>
-			<button data-toggle="modal" data-target="#new-folder-modal" class="btn btn-outline-secondary btn-sm">@icon('plus') New folder</button>
+			<button data-toggle="modal" data-target="#new-folder-modal" class="btn btn-secondary btn-sm">@icon('plus') New folder</button>
 
 			@component('components.modal', ['id' => 'new-folder-modal', 'header' => 'New folder'])
 			@slot('body')

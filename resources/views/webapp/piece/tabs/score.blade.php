@@ -12,7 +12,7 @@
     @unless($hasMediaAccess)
     <div class="text-center mb-4">
         <p class="text-muted">Subscribe to read and download the full score.</p>
-        <button type="button" data-toggle="modal" data-target="#piece-upgrade-modal" class="btn btn-primary rounded-pill btn-wide">@icon('crown')GO PREMIUM</button>
+        <button type="button" data-toggle="modal" data-target="#piece-upgrade-modal" class="btn btn-primary">@icon('crown')GO PREMIUM</button>
     </div>
     <div id="score-preview" data-pdf-url="{{ storage($piece->score_path) }}">
         <p class="score-preview-status text-muted text-center">Loading score preview...</p>
@@ -24,7 +24,7 @@
 	@else
 	<div class="text-center mb-4">
 		<p class="text-muted">This piece is protected by copyrights. Click the button below and we'll show you where you can purchase the score!</p>
-		<a href="{{$piece->score_url}}" target="_blank" class="btn rounded-pill btn-default">@icon('shopping-basket')Buy score</a>
+		<a href="{{$piece->score_url}}" target="_blank" class="btn btn-primary">@icon('shopping-basket')Buy score</a>
 	</div>
 	@endif
 </div>

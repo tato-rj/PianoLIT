@@ -1,0 +1,47 @@
+.composer-curiosity {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 24px 40px;
+    border-radius: 12px;
+    background: #f7f4f0;
+
+    .composer-curiosity__label {
+        flex: 0 0 auto;
+        margin: 0;
+        color: #987b4f;
+        font-family: var(--font-family-body);
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.5;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+    }
+
+    .composer-curiosity__text {
+        min-width: 0;
+        margin: 0;
+        padding-left: 36px;
+        border-left: 1px solid #d9cbb5;
+        color: #172033;
+        font-family: var(--font-family-serif);
+        font-size: 18px;
+        line-height: 1.45;
+        overflow-wrap: break-word;
+    }
+
+    @media (max-width: 767px) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        padding: 24px;
+
+        .composer-curiosity__text {
+            padding-top: 16px;
+            padding-left: 0;
+            border-top: 1px solid #d9cbb5;
+            border-left: 0;
+            font-size: 19px;
+        }
+    }
+}

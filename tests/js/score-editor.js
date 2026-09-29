@@ -17,6 +17,34 @@ module.exports = async function () {
     const document = {body, head, createElement: element, createElementNS: (namespace, tag) => element(tag)};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/score-editor.js'), 'utf8'), {window, document, setTimeout, clearTimeout, Blob: class { constructor(parts) { this.size = Buffer.byteLength(parts.join("")); } }});
     const {Markings, Editor, point, roundPoint} = window.ScoreEditor;
+    // Toolbar icons precede the annotation SVG after the Lucide migration.
+    // Exercise construction and painting so an icon can never become the drawing layer.
+    const svgNode = children => ({
+        children,
+        get firstChild() { return this.children[0]; },
+        removeChild(child) { this.children.splice(this.children.indexOf(child), 1); }
+    });
+    const pencilPath = {};
+    const pencilSvg = svgNode([pencilPath]);
+    const markingsSvg = svgNode([{}]);
+    window.matchMedia = () => ({matches: false});
+    class ConstructedEditor extends Editor {
+        bind() {}
+        start() {}
+    }
+    const initialized = new ConstructedEditor({
+        querySelector(selector) {
+            if (selector === 'svg') return pencilSvg;
+            if (selector === '.score-markings') return markingsSvg;
+            return {};
+        },
+        getAttribute: () => '/annotations'
+    }, {}, {});
+    assert.strictEqual(initialized.svg, markingsSvg, 'Annotation layer must be selected instead of the first toolbar icon SVG');
+    initialized.paint();
+    assert.strictEqual(markingsSvg.children.length, 0, 'Painting clears only the annotation layer');
+    assert.strictEqual(pencilSvg.firstChild, pencilPath, 'Painting preserves the pencil icon geometry');
+
     const guest = Object.create(Editor.prototype);
     guest.url = ''; guest.page = 1; guest.pdf = null;
     guest.root = {getAttribute: () => '/free-pick.pdf'};

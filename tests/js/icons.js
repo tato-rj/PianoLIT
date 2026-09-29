@@ -24,6 +24,13 @@ module.exports = function () {
         return node;
     }
     const icon = element('i', 'app-icon icon-circle-play mr-0');
+    const sparkles = element('i', 'app-icon icon-sparkles mr-2');
+    icons.refreshIcon(sparkles);
+    assert.equal(sparkles.children[0].getAttribute('data-lucide-name'), 'sparkles');
+    assert(sparkles.children[0].innerHTML.includes('<path'));
+    const sparklesSvg = sparkles.children[0];
+    icons.refreshIcon(sparkles);
+    assert.strictEqual(sparkles.children[0], sparklesSvg, 'Recognized sparkles SVG is retained');
     icons.refreshIcon(icon);
     assert.equal(icon.children[0].getAttribute('data-lucide-name'), 'circle-play');
     assert(icon.children[0].innerHTML.includes('<circle'));

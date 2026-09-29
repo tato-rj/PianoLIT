@@ -25,6 +25,7 @@ function element(value = '') {
 async function main() {
     require('./admin-subdomain')();
     require('./icons')();
+    require('./build-icons')();
     require('./history-back')();
     await require('./score-editor')();
     await require('./webapp-search')();

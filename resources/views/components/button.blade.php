@@ -35,6 +35,10 @@
 			{{array_find($styles ?? null, ['shadow']) == true ? 'shadow' : null}} 
 			{{array_find($styles ?? null, ['pill']) == true ? 'rounded-pill' : null}} 
 			{{$classes ?? null}}">
+			
+	@isset($icon) 
+	@icon($icon)
+	@endisset
 
 	{!! $label !!}
 

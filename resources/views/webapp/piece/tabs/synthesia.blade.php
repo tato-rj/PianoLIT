@@ -1,6 +1,7 @@
 <div class="tab-pane fade" id="tab-synthesia">
 	@if($piece->media['synthesia'])
-	<div class="rounded-video video-container">
+	<div class="rounded-video video-container" style="    max-width: 520px;
+    margin: 0 auto;">
 		@video([
 			'classes' => 'w-100', 
 			'id' => 'piece-synthesia', 
