@@ -427,3 +427,10 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - Affected files: `app/Support/Icon.php` and `docs/ICONS.md`. Default/false solid options retain outline SVG markup; existing `filled` behavior and brand glyphs remain compatible. No CSS/JavaScript source changes or asset build required. Preserved unrelated grid-view edits.
 - Verification: all 5 isolated icon tests pass (594 assertions); direct renderer checks cover solid true with a color, false, and omitted options. `git diff --check` passes. No browser visual check or deployment performed.
 - Remaining work: deploy the PHP renderer to enable the option.
+
+### 2026-09-29 — Fill both admin notification bells (implemented locally)
+
+- Priority: P3 demonstrated presentation defect. The compact/light admin header requested a filled bell, while the separate desktop/dark header omitted that option. Added `filled => true` to the desktop bell in `resources/views/admin/layouts/header/menu.blade.php`; existing shared renderer/styles already preserve fill on either background.
+- Compatibility: kept notification counts, active colors, panel triggers, spacing and responsive header behavior. No CSS/JavaScript or compiled asset changes required.
+- Verification: all 5 isolated icon tests pass (594 assertions). A browser fixture extracted each header's actual bell options and used the current PHP renderer and compiled admin CSS; both computed SVG fills match their strokes, and visual inspection confirmed filled bells on light/dark backgrounds. `git diff --check` passes.
+- Remaining work: deploy the Blade template. No live-account header check or production deployment performed.

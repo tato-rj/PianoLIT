@@ -6,7 +6,7 @@
 			<div class="d-flex d-apart">
 				<h5 class="m-0">Notifications</h5>
 				<button type="button" style="margin-bottom: 1px" class="close" data-dismiss="fixed-panel" aria-label="Close">
-					<span class="mb-1" aria-hidden="true">&times;</span>
+					<span class="mb-1" aria-hidden="true">@icon('close', ['mr' => 0])</span>
 				</button>
 			</div>
 			@if(auth()->user()->hasNewNotifications())
