@@ -105,6 +105,30 @@ class WebAppCollectionsTest extends ReviewTestCase
         $this->assertArrayHasKey('pieces', $before[0]);
     }
 
+    public function test_admin_cover_controls_featured_inspiration_and_browse_images()
+    {
+        $playlist = $this->playlist('Lullabies');
+        config(['collections.inspiration' => ['lullabies']]);
+        Model::withoutEvents(function () use ($playlist) {
+            $playlist->update(['cover_path' => 'app/playlists/admin-selected.jpg']);
+        });
+        $data = app(Collections::class)->data();
+        $this->assertSame($playlist->cover_image, $data['featured']['image']);
+        $this->assertSame($playlist->cover_image, $data['inspiration'][0]['image']);
+        $this->assertFalse($data['featured']['illustrated']);
+        $this->assertSame('mood', $data['featured']['category']);
+        $response = $this->get(route('webapp.playlists'))->assertOk();
+        $this->assertSame(3, substr_count($response->getContent(), 'src="'.$playlist->cover_image.'"'));
+        $response->assertDontSee('/collections/night.webp');
+
+        // Replacing the admin cover takes effect on the next web request.
+        Model::withoutEvents(function () use ($playlist) {
+            $playlist->update(['cover_path' => 'app/playlists/replacement.jpg']);
+        });
+        $this->get(route('webapp.playlists'))->assertOk()
+            ->assertSee($playlist->cover_image, false)->assertDontSee('admin-selected.jpg');
+    }
+
     public function test_eligibility_fallback_and_empty_state()
     {
         $this->get(route('webapp.playlists'))->assertOk()->assertSee('More music is on its way');

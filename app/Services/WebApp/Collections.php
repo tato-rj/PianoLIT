@@ -18,16 +18,13 @@ class Collections
             ->filter(function ($playlist) { return $playlist->pieces_count >= 5; })
             ->map(function ($playlist) {
                 $key = Str::slug(str_replace(["'", '’'], '', $playlist->name));
-                $presentation = config('collections.artwork.'.$key, []);
 
                 return [
                     'playlist' => $playlist,
                     'key' => $key,
-                    'image' => isset($presentation['image'])
-                        ? asset('images/webapp/collections/'.$presentation['image'].'.webp')
-                        : ($playlist->cover_path ? $playlist->cover_image : asset('images/webapp/collections/featured.webp')),
-                    'illustrated' => isset($presentation['image']) || ! $playlist->cover_path,
-                    'category' => $presentation['category'] ?? 'other',
+                    'image' => $playlist->cover_path ? $playlist->cover_image : asset('images/webapp/collections/featured.webp'),
+                    'illustrated' => ! $playlist->cover_path,
+                    'category' => config('collections.categories.'.$key, 'other'),
                 ];
             })->values();
 

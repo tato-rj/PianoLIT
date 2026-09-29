@@ -5,21 +5,22 @@
 return [
     'featured' => 'lullabies',
     'inspiration' => ['great-for-beginners', 'hidden-gems', 'burgmullers-studies'],
-    'artwork' => [
-        'lullabies' => ['image' => 'night', 'category' => 'mood'],
-        'at-night' => ['image' => 'night', 'category' => 'mood'],
-        'sunday-morning' => ['image' => 'morning', 'category' => 'mood'],
-        'hidden-gems' => ['image' => 'botanical', 'category' => 'other'],
-        'great-for-beginners' => ['image' => 'steps', 'category' => 'level'],
-        'burgmullers-studies' => ['image' => 'melody', 'category' => 'composer'],
-        'its-raining-outside' => ['image' => 'night', 'category' => 'mood'],
-        'dark-vibes' => ['image' => 'night', 'category' => 'mood'],
-        'peaceful-dreamin' => ['image' => 'melody', 'category' => 'mood'],
-        'melancholic-mood' => ['image' => 'night', 'category' => 'mood'],
-        'wild-flowers' => ['image' => 'botanical', 'category' => 'mood'],
-        'on-a-winter-day' => ['image' => 'night', 'category' => 'mood'],
-        'fantastic-places' => ['image' => 'steps', 'category' => 'mood'],
-        'true-romance' => ['image' => 'melody', 'category' => 'mood'],
+    // Covers always come from the existing admin upload. Only browse categories live here.
+    'categories' => [
+        'lullabies' => 'mood',
+        'at-night' => 'mood',
+        'sunday-morning' => 'mood',
+        'hidden-gems' => 'other',
+        'great-for-beginners' => 'level',
+        'burgmullers-studies' => 'composer',
+        'its-raining-outside' => 'mood',
+        'dark-vibes' => 'mood',
+        'peaceful-dreamin' => 'mood',
+        'melancholic-mood' => 'mood',
+        'wild-flowers' => 'mood',
+        'on-a-winter-day' => 'mood',
+        'fantastic-places' => 'mood',
+        'true-romance' => 'mood',
     ],
     // These are announcements, not empty playlists or fabricated progress.
     'books' => [

@@ -29,7 +29,7 @@
             <span class="collections-meta">{{ $featured['playlist']->pieces_count }} pieces</span>
             <a class="btn btn-primary" href="{{ route('webapp.playlists.show', $featured['playlist']) }}">Explore collection @icon('arrow-right', ['mr' => 0])</a>
         </div>
-        <img class="collections-feature__art" src="{{ asset('images/webapp/collections/featured.webp') }}" alt="Abstract piano keys flowing through a moonlit landscape" width="1536" height="1024" fetchpriority="high">
+        <img class="collections-feature__art" src="{{ $featured['image'] }}" alt="" width="1200" height="800" fetchpriority="high" data-collection-image data-fallback="{{ asset('images/webapp/collections/featured.webp') }}">
     </section>
     @endif
 
