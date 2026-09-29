@@ -71,12 +71,9 @@ class TabsController extends Controller
         return view('webapp.highlights.index');
     }
 
-    public function playlists(Api $api)
+    public function playlists(\App\Services\WebApp\Collections $collections)
     {
-        $playlists = $api->for('webapp')->playlists();
-        $journey = $api->playlists('journey');
-
-    	return view('webapp.playlists.index', compact(['playlists', 'journey']));
+        return view('webapp.playlists.index', $collections->data());
     }
 
     public function tour(\App\Services\WebApp\MatchTour $tour)

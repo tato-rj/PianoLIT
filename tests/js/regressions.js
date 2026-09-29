@@ -23,6 +23,7 @@ function element(value = '') {
 }
 
 async function main() {
+    require('./collections')();
     require('./admin-subdomain')();
     require('./icons')();
     require('./build-icons')();
