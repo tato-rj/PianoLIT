@@ -15,7 +15,7 @@
 <section id="tags-search">
 
 	@foreach($explore as $row)
-		@include('webapp.explore.rows.'.strtolower(firstword($row['label'])))
+		@include('webapp.explore.rows.'.strtolower(firstword($row['celltype'])))
 	@endforeach
 
 </section>
