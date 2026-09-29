@@ -8,7 +8,9 @@
       @manager
 
         @include('admin.layouts.header.divider', ['label' => 'TOOLS'])
-
+        
+        @include('admin.layouts.header.item', ['route' => route('admin.settings.index'), 'name' => 'Settings', 'icon' => 'settings'])
+        
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
         'dropdown' => [
           ['route' => route('admin.api.discover'), 'name' => 'Discover Tab'],
@@ -27,7 +29,7 @@
           ['name' => 'Blog', 'route' => route('admin.stats.blog')],
           ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],
         ]])
-        
+
         @include('admin.layouts.header.divider', ['label' => 'ACQUISITION'])
         
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
