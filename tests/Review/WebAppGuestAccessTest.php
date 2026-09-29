@@ -67,6 +67,42 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->withExceptionHandling()->get(route('webapp.pieces.score', $this->piece))->assertForbidden();
     }
 
+    public function test_piece_and_playlist_share_the_artwork_header_without_changing_playlist_content()
+    {
+        Model::withoutEvents(function () {
+            $this->playlist->update([
+                'name' => 'Lullabies',
+                'description' => 'Quiet pieces for the evening.',
+                'cover_path' => 'app/playlists/lullabies.jpg',
+            ]);
+        });
+
+        $piece = $this->get(route('webapp.pieces.show', $this->piece))->assertOk();
+        $playlist = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()
+            ->assertSee('Lullabies')->assertSee('Quiet pieces for the evening.')
+            ->assertSee('Sort by')->assertSee('Filter by')
+            ->assertSee($this->playlist->cover_image, false)
+            ->assertDontSee('navbar-brand')->assertDontSee('width: 180px');
+
+        foreach ([$piece, $playlist] as $response) {
+            $html = $response->getContent();
+            $this->assertSame(1, substr_count($html, 'class="piece-background"'));
+            $this->assertSame(1, substr_count($html, 'class="piece-background-sharp"'));
+        }
+
+        if ($directory = getenv('ARTWORK_HEADER_PREVIEW_DIR')) {
+            foreach (['piece' => $piece, 'playlist' => $playlist] as $name => $response) {
+                $html = str_replace('http://my.localhost', 'http://my.pianolit.test', $response->getContent());
+                $html = str_replace('http://my.pianolit.test/storage/app/playlists/lullabies.jpg', 'http://my.pianolit.test/images/webapp/collections/night.webp', $html);
+                file_put_contents($directory.'/'.$name.'.html', $html);
+            }
+        }
+
+        Model::withoutEvents(function () { $this->playlist->update(['cover_path' => null]); });
+        $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()
+            ->assertSee('/images/webapp/collections/featured.webp', false);
+    }
+
     public function test_discover_omits_personal_suggestions_even_if_a_visitor_supplies_a_user_id()
     {
         Cache::put('app.discover', collect([['title' => 'Public', 'row' => 'gallery', 'type' => 'piece', 'content' => []]]), 60);

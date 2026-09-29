@@ -43,7 +43,9 @@
    
     <div id="webapp">
         @if(request()->routeIs('webapp.pieces.show'))
-            @include('webapp.piece.cover-image')
+            @include('webapp.components.artwork-header', ['image' => asset($piece->image_background)])
+        @elseif(request()->routeIs('webapp.playlists.show'))
+            @include('webapp.components.artwork-header', ['image' => $playlist->cover_image ?: asset('images/webapp/collections/featured.webp')])
         @endif
 
         <div class="container">
