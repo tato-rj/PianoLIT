@@ -5,10 +5,12 @@
 
 @section('content')
 
-<div class="text-center mb-3 position-relative">
-	@include('webapp.components.back')
-	<h3>{{$playlist->name}}</h3>
-	<p>{{$playlist->description}}</p>
+<div class="text-center mb-3">
+	<div class="position-relative">
+		@include('webapp.components.back')
+		<h3>{{$playlist->name}}</h3>
+	</div>
+	<p class="px-4">{{$playlist->description}}</p>
 </div>
 
 @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
