@@ -4,6 +4,7 @@
 @endpush
 
 @section('content')
+@include('webapp.components.back')
 <div class="text-center mb-3">
 	<h3>{{$playlist->name}}</h3>
 	<p>{{$playlist->description}}</p>
