@@ -112,7 +112,7 @@ class Api extends Factory
                 ['label' => 'Categories', 'collection' => $categories, 'celltype' => 'category'], 
                 ['label' => 'Highlights', 'collection' => $highlights->shuffle()->take(16), 'celltype' => 'highlight'],
                 ['label' => 'Originals', 'collection' => $post, 'celltype' => 'original'],
-                ['label' => 'Periods/Genres', 'collection' => $periods, 'celltype' => 'period'],
+                ['label' => 'Periods/Styles', 'collection' => $periods, 'celltype' => 'period'],
                 ['label' => 'Levels', 'collection' => $levels, 'celltype' => 'level'],
                 // ['label' => 'Synthesia releases', 'collection' => $synthesia, 'celltype' => 'synthesia'],
                 ['label' => 'Composer of the week', 'collection' => $composer, 'celltype' => 'composer'],
