@@ -26,6 +26,8 @@ async function main() {
     require('./collections')();
     require('./admin-subdomain')();
     require('./icons')();
+    require('./popups')();
+    await require('./favorites')();
     require('./build-icons')();
     require('./history-back')();
     await require('./score-editor')();

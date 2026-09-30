@@ -42,6 +42,25 @@ class IconTest extends ReviewTestCase
         $this->assertStringNotContainsString('onclick=', $html);
     }
 
+    public function test_solid_accepts_hex_rgb_and_rgba_without_changing_the_outline_color()
+    {
+        foreach (['#fff', '#0055fe', 'rgb(255, 255, 255)', 'rgba(0, 85, 254, 0.5)'] as $color) {
+            $html = (string) Icon::render('heart', ['solid' => $color]);
+            $this->assertStringContainsString('icon-filled', $html);
+            $this->assertStringContainsString('fill="'.$color.'"', $html);
+            $this->assertStringContainsString('style="fill: '.$color.'"', $html);
+            $this->assertStringContainsString('stroke="currentColor"', $html);
+        }
+
+        $sameColor = (string) Icon::render('heart', ['solid' => true]);
+        $this->assertStringContainsString('fill="currentColor"', $sameColor);
+        $this->assertStringNotContainsString('style="fill:', $sameColor);
+
+        $invalid = (string) Icon::render('heart', ['solid' => '#fff; stroke: red']);
+        $this->assertStringContainsString('fill="currentColor"', $invalid);
+        $this->assertStringNotContainsString('style="fill:', $invalid);
+    }
+
     public function test_legacy_model_values_and_brand_logos_resolve_only_at_the_view_boundary()
     {
         $this->assertStringContainsString('icon-smartphone', (string) Icon::render('fas fa-mobile'));

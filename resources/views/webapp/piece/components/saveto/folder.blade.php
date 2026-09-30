@@ -1,10 +1,14 @@
 @php($is_favorited = $folder->piece_favorites_count > 0)
-<button class="p-3 d-flex d-apart bg-light mb-2 rounded btn btn-light w-100" 
-	data-submit="favorite" data-target="#flag-{{$piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $piece, 'folder_id' => $folder->id])}}">
-	<div class="font-weight-bold">{{$folder->name}} <span class="badge bg-white text-muted border">{{$folder->favorites_count}}</span></div>
-	<div class="favorite-icons">
-		@icon('circle-dot', ['name' => 'saved', 'size' => 'lg', 'color' => 'blue', 'if' => $is_favorited])
-		@icon('circle', ['name' => 'unsaved', 'size' => 'lg', 'color' => 'blue', 'if' => ! $is_favorited])
-		@icon('check', ['name' => 'success', 'size' => 'lg', 'color' => 'green', 'if' => false])
-	</div>
+<button type="button" class="save-to-folder{{ $is_favorited ? ' is-saved' : '' }}"
+    data-submit="favorite" data-target="#flag-{{ $piece->id }}" data-url="{{ route('webapp.users.favorites.update', ['piece' => $piece, 'folder_id' => $folder->id]) }}"
+    aria-label="{{ $is_favorited ? 'Remove from' : 'Save to' }} {{ $folder->name }}" aria-pressed="{{ $is_favorited ? 'true' : 'false' }}">
+    <span class="save-to-folder__icon" aria-hidden="true">@icon('folder-open', ['mr' => 0])</span>
+    <span class="save-to-folder__copy">
+        <strong>{{ $folder->name }}</strong>
+        <small>{{ $folder->favorites_count }} {{ str_plural('piece', $folder->favorites_count) }}</small>
+    </span>
+    <span class="favorite-icons save-to-folder__status">
+        @icon('circle-check', ['name' => 'saved', 'mr' => 0, 'if' => $is_favorited, 'solid' => '#0055fe33'])
+        @icon('circle', ['name' => 'unsaved', 'mr' => 0, 'if' => ! $is_favorited])
+    </span>
 </button>

@@ -490,3 +490,34 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - Compatibility: the folder list and previews come from the authenticated web account. The previews reuse favorites already loaded for suggestions and follow folder order without another database query. No mobile API route, controller, model relation, JSON payload, migration, or stored folder data changed. Cards need no generated or uploaded images.
 - Verification: the isolated PHP review suite passed (122 tests, 5,491 assertions), including signed-in folder ownership/rendering and the existing 11-query My Pieces budget. JavaScript regressions and an isolated production asset build passed. A local browser fixture with five folders was visually inspected at desktop, 390px and 320px; the switch, folder options, edit dialog and New folder dialog worked, and the 320px layout had no horizontal overflow. `git diff --check` passed.
 - Remaining work: deploy the web PHP/Blade, Sass output and manifest together; refresh compiled views if cached. The local browser fixture used isolated test data, and no production deployment or iOS client test was performed.
+
+### 2026-09-30 — Restyle the piece Save to panel (implemented locally)
+
+- Priority: P3 requested visual consistency. The piece-page favorites panel kept its title, create-folder action, and scrollable folder list, but replaced gray filled rows and numeric badges with white bordered cards, blue folder icons, a plain piece count, and a clearly marked saved state. The header, close control, and inline folder form now follow the My Pieces spacing and typography.
+- Affected files: only web Save to Blade partials, a new scoped Sass component imported by `app.scss`, rebuilt `public/css/app.css` and its Mix manifest entry, and the focused web rendering regression. The existing AJAX URLs, `data-submit` hooks, popup dismissal, and folder-create controls remain in place.
+- Compatibility: no API route, controller, model, mobile JSON payload, database, or iOS behavior changed. The panel still uses the signed-in web account and the existing folder status/count query.
+- Verification: isolated PHP review suite passed (122 tests, 5,502 assertions), including selected/unsaved panel markup and the existing Save to query budget. JavaScript regressions and isolated production and development asset builds passed; the development CSS matches the repository's tracked output format. A local browser fixture was visually checked at desktop, 390px, and 320px; the create/cancel controls worked and the narrow panel had no horizontal overflow. `git diff --check` passed.
+- Remaining work: deploy the Blade templates, Sass output, and manifest together, refreshing compiled views if cached. The visual check used isolated sample folders; no production deployment or physical iOS client test was performed.
+
+### 2026-09-30 — Honor explicit solid icon colors (implemented locally)
+
+- Priority: P3 rendering defect. `@icon(..., ['solid' => '#fff'])` previously used `currentColor`, so the fill always matched the outline. The renderer now accepts hex, `rgb()`, and `rgba()` colors for the SVG fill while leaving the stroke as `currentColor`; `solid => true` retains the original fill behavior.
+- Affected files: `app/Support/Icon.php` and `tests/Review/IconTest.php`. Invalid color strings fall back to `currentColor` instead of being placed in a style attribute. No API payload, JavaScript, CSS, or mobile behavior changed.
+- Verification: the focused icon tests passed with examples for each supported color format, the boolean behavior, and invalid input. The full isolated PHP review suite passed (123 tests, 5,514 assertions); PHP syntax and `git diff --check` passed.
+- Remaining work: deploy the PHP change; no production browser check was performed.
+
+### 2026-09-30 — Remove delayed feedback from Save to folder toggles (implemented locally)
+
+- Priority: P3 reported interaction delay. The save-to handler showed a temporary success check and waited one second before replacing the folder list, so the selected state lagged behind a successful request.
+- Affected files: `resources/js/components/favorites.js`, the Save to folder Blade partial, focused JavaScript regression, and rebuilt `public/js/app.js` and `public/js/components/favorites.js` with the Mix manifest entry. The handler now renders the server-confirmed folder state immediately after the AJAX response and keeps the list scroll position. The temporary success icon and timer were removed.
+- Compatibility: the favorite toggle URL, response shape, create-folder action, folder-detail-page controls, and mobile API remain unchanged. Buttons stay disabled while the request is pending and recover on failure.
+- Verification: JavaScript regressions passed, including an asynchronous remove/re-add check with no timer. Isolated development and production asset builds passed. The PHP review suite passed on repeat (123 tests, 5,513 assertions); its first run hit a one-second timestamp boundary in the unrelated collections test, which also passed when run alone. `git diff --check` passed.
+- Remaining work: deploy the source templates, built JavaScript, and manifest together; no production browser check was performed.
+
+### 2026-09-30 — Close bottom popups on outside click (implemented locally)
+
+- Priority: P3 requested interaction consistency. The Save to popup previously closed only through its X button. The shared popup handler now closes an open popup when the click target is outside its content; clicks inside leave it open.
+- Affected files: `resources/js/components/popups.js`, its standalone and bundled tracked outputs, the Mix manifest, and a focused JavaScript regression. Outside clicks trigger the popup's existing dismiss control when present, preserving panel-specific close behavior such as stopping the audio player. Popups without a close control fall back to the standard fade out. Fixed side panels already close through their full-screen overlay.
+- Compatibility: no route, API payload, PHP view, or iOS behavior changed. The existing X controls remain available.
+- Verification: JavaScript regressions passed for inside, outside, fallback, and hidden-popup clicks; isolated development and production asset builds and `git diff --check` passed.
+- Remaining work: deploy the rebuilt JavaScript and manifest together; no production browser check was performed.

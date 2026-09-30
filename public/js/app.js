@@ -79370,11 +79370,15 @@ $(document).on('click', 'button[data-manage=save-to]', function () {
 $(document).on('click', 'button[data-submit=favorite]', function () {
     var $btn = $(this);
     var $btns = $btn.parent().find('button');
-    var $icons = $btn.find('.favorite-icons');
+    var $container = $btn.closest('#favorite-folders-container');
+    var scrollTop = $container.find('.save-to-panel__list').scrollTop();
     $btns.disable();
 
     axios.post($btn.data('url')).then(function (response) {
-        showIcon($icons, response.data);
+        if ($container.length) {
+            $container.html(response.data.html.list);
+            $container.find('.save-to-panel__list').scrollTop(scrollTop);
+        }
         updateFlag($btn.data('target'));
     }).catch(function (error) {
         alert('Something went wrong...');
@@ -79404,15 +79408,6 @@ $(document).on('click', 'button[data-submit=folder]', function () {
         //
     });
 });
-
-function showIcon($container, data) {
-    $container.find('i').hide();
-    $container.find('i[name="success"]').fadeIn('fast');
-
-    setTimeout(function () {
-        $container.closest('#favorite-folders-container').html(data.html.list);
-    }, 1000);
-}
 
 function updateFlag(flag) {
     $(flag).find('i').toggleClass('icon-filled');
@@ -79625,6 +79620,14 @@ $(document).ready(function () {
 
 $(document).on('click', '[data-dismiss=popup]', function () {
     $('#bottom-popup').fadeOut('fast');
+});
+
+$(document).on('click', function (event) {
+    var $popup = $('#bottom-popup:visible');
+    if (!$popup.length || $(event.target).closest('#bottom-popup-content').length) return;
+
+    var $close = $popup.find('[data-dismiss=popup]').first();
+    if ($close.length) $close.trigger('click');else $popup.fadeOut('fast');
 });
 
 $(document).on('click', 'button[data-manage="favorite"]', function (event) {

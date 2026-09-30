@@ -203,6 +203,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
         $piece = $this->pieces[11];
         $url = route('webapp.users.favorites.update', ['piece' => $piece, 'folder_id' => $this->folder->id]);
         $response = $this->postJson($url)->assertOk()->assertJsonPath('status', true);
+        $this->assertStringContainsString('class="save-to-folder is-saved"', $response->json('html.list'));
         $visibleSaved = function ($html) {
             $dom = new \DOMDocument;
             @$dom->loadHTML($html);
@@ -212,6 +213,11 @@ class WebAppQueryRegressionTest extends ReviewTestCase
         $this->postJson($url)->assertOk()->assertJsonPath('status', false);
         $response = $this->get(route('webapp.pieces.save-to', $piece))->assertOk();
         $this->assertSame(0, $visibleSaved($response->getContent()));
+        $response->assertSee('class="save-to-panel"', false)
+            ->assertSee('class="save-to-folder"', false)
+            ->assertSee('Create a new folder')
+            ->assertSee('data-submit="folder"', false)
+            ->assertSee('data-dismiss="popup"', false);
     }
 
     public function test_playlist_index_counts_match_mobile_without_loading_piece_models()

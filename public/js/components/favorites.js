@@ -22,12 +22,16 @@
     $(document).on('click', 'button[data-submit=favorite]', function() {
         let $btn = $(this);
         let $btns = $btn.parent().find('button');
-        let $icons = $btn.find('.favorite-icons');
+        let $container = $btn.closest('#favorite-folders-container');
+        let scrollTop = $container.find('.save-to-panel__list').scrollTop();
         $btns.disable();
 
         axios.post($btn.data('url'))
             .then(function(response) {
-                showIcon($icons, response.data);
+                if ($container.length) {
+                    $container.html(response.data.html.list);
+                    $container.find('.save-to-panel__list').scrollTop(scrollTop);
+                }
                 updateFlag($btn.data('target'));
             })
             .catch(function(error) {
@@ -62,15 +66,6 @@
                 //
             });
     });
-
-    function showIcon($container, data) {
-        $container.find('i').hide();
-        $container.find('i[name="success"]').fadeIn('fast');
-
-        setTimeout(function() {
-            $container.closest('#favorite-folders-container').html(data.html.list)
-        }, 1000);
-    }
 
     function updateFlag(flag) {
         $(flag).find('i').toggleClass('icon-filled');

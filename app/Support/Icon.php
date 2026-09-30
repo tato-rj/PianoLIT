@@ -9,6 +9,24 @@ class Icon
     protected static $icons;
     protected static $aliases;
 
+    protected static function solidColor($value): ?string
+    {
+        if (!is_string($value)) return null;
+        $color = trim($value);
+        if (preg_match('/^#(?:[a-f0-9]{3}|[a-f0-9]{4}|[a-f0-9]{6}|[a-f0-9]{8})$/i', $color)) return $color;
+        if (!preg_match('/^(rgb|rgba)\(([^()]*)\)$/i', $color, $matches)) return null;
+
+        $parts = array_map('trim', explode(',', $matches[2]));
+        if (count($parts) !== (strtolower($matches[1]) === 'rgb' ? 3 : 4)) return null;
+        foreach ($parts as $index => $part) {
+            if (!preg_match('/^(?:\d+(?:\.\d+)?|\.\d+)%?$/', $part)) return null;
+            $percent = substr($part, -1) === '%';
+            $limit = $index === 3 ? ($percent ? 100 : 1) : ($percent ? 100 : 255);
+            if ((float) $part > $limit) return null;
+        }
+        return $color;
+    }
+
     public static function resolve(string $name): string
     {
         if (static::$aliases === null) {
@@ -64,8 +82,13 @@ class Icon
         }
         $html .= '>';
         if (!$brand) {
-            $fill = !empty($options['solid']) ? 'currentColor' : 'none';
-            $html .= '<svg data-lucide-name="'.$name.'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="'.$fill.'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'.static::$icons[$name].'</svg>';
+            $solid = $options['solid'] ?? false;
+            $solidColor = static::solidColor($solid);
+            $fill = $solidColor ?? ($solid ? 'currentColor' : 'none');
+            // The icon-filled CSS class supports toggles; an inline fill lets an
+            // explicit solid color override it without changing the outline.
+            $fillStyle = $solidColor !== null ? ' style="fill: '.e($solidColor).'"' : '';
+            $html .= '<svg data-lucide-name="'.$name.'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="'.e($fill).'"'.$fillStyle.' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'.static::$icons[$name].'</svg>';
         }
         return new HtmlString($html.'</i>');
     }

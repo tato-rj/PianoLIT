@@ -1,7 +1,9 @@
 @include('webapp.piece.components.saveto.header')
 @include('webapp.piece.components.saveto.new')
-<div class="px-3 pt-1 mt-2 custom-scroll dragscroll dragscroll-horizontal" style="max-height: 280px">
-	@foreach($folders as $folder)
-		@include('webapp.piece.components.saveto.folder')
-	@endforeach
+<div class="save-to-panel__list custom-scroll dragscroll dragscroll-horizontal" role="group" aria-label="Favorite folders">
+    @forelse($folders as $folder)
+        @include('webapp.piece.components.saveto.folder')
+    @empty
+        <p class="save-to-panel__empty">Create a folder to start saving this piece.</p>
+    @endforelse
 </div>
