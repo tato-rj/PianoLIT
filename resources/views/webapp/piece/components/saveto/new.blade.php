@@ -10,9 +10,9 @@
         <div class="save-to-panel__form-fields">
             <input type="text" id="folder-name-{{ $piece->id }}" name="name" class="form-control" placeholder="Folder name" maxlength="80">
             <div class="save-to-panel__form-actions">
-                <button type="button" class="btn btn-primary" data-submit="folder" data-name="#folder-name-{{ $piece->id }}"
+                <button type="button" class="btn btn-primary btn-sm" data-submit="folder" data-name="#folder-name-{{ $piece->id }}"
                     data-url="{{ route('webapp.users.favorites.folders.store', ['piece_id' => $piece->id]) }}">Save</button>
-                <button type="button" class="btn btn-secondary cancel-new-folder" data-container="#new-folder-container-{{ $piece->id }}" data-target="#new-folder-button-{{ $piece->id }}">Cancel</button>
+                <button type="button" class="btn btn-secondary btn-sm cancel-new-folder" data-container="#new-folder-container-{{ $piece->id }}" data-target="#new-folder-button-{{ $piece->id }}">Cancel</button>
             </div>
         </div>
         <div class="invalid-feedback" role="alert"></div>
