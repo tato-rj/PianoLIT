@@ -36,7 +36,7 @@
 					@icon('heart', ['color' => 'red', 'filled' => true])
 				</button>
 
-				<a class="btn btn-sm btn-primary text-nowrap" href="{{route('webapp.pieces.show', $favorite->piece)}}">@icon('arrow-right', ['mr' => 0])</a>
+				<a class="btn btn-sm btn-secondary text-nowrap" href="{{route('webapp.pieces.show', $favorite->piece)}}">Go @icon('arrow-right', ['mr' => 0])</a>
 			</div>
 		@endslot
 		@endcomponent
