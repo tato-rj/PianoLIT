@@ -27,6 +27,7 @@ async function main() {
     require('./admin-subdomain')();
     require('./icons')();
     require('./popups')();
+    require('./fixed-panels')();
     await require('./favorites')();
     require('./build-icons')();
     require('./history-back')();

@@ -521,3 +521,12 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - Compatibility: no route, API payload, PHP view, or iOS behavior changed. The existing X controls remain available.
 - Verification: JavaScript regressions passed for inside, outside, fallback, and hidden-popup clicks; isolated development and production asset builds and `git diff --check` passed.
 - Remaining work: deploy the rebuilt JavaScript and manifest together; no production browser check was performed.
+
+### 2026-09-30 — Make panel scroll locking follow open state (implemented locally)
+
+- Priority: P2 interaction defect. The header favorites button has `data-dismiss="fixed-panel"` without a containing side panel. Its dismiss handler still toggled the body's inline overflow, locking the page even though no side panel was open. Repeated dismissal and queued fade toggles could also reverse the scroll state. Opening Share clicked every panel opener, which could toggle the same panel more than once.
+- Affected files: `resources/js/components/triggers.js`, `modals.js`, `resources/sass/_global.scss`, their shared web/admin bundles and standalone JavaScript outputs, the Mix manifest, and `tests/js/fixed-panels.js` registered in the JavaScript regression runner.
+- Implementation: explicit open/closed states replace fade and overflow toggles. Opening/closing cancels pending animations, empty panel targets do nothing, and a dedicated body class locks scrolling only while a side panel is open. Share sends an explicit close event. Closing the panel removes only its own scroll lock, preserving Bootstrap modal and fullscreen score locks.
+- Compatibility: existing panel triggers, outside-click dismissal, favorites actions, and mobile API contracts are unchanged.
+- Verification: JavaScript regressions passed for the header favorites dismiss, missing targets, repeated closes, rapid toggles, multiple panels, Share, and other components' scroll-lock classes. Isolated development and production builds, compiled JavaScript syntax checks, asset hash checks, and `git diff --check` passed.
+- Remaining work: deploy the JavaScript, CSS, and manifest together; no production browser check was performed.

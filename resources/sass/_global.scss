@@ -3,6 +3,10 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+body.fixed-panel-open {
+    overflow: hidden;
+}
+
 .show-on-sm {
 	display: none;
 }

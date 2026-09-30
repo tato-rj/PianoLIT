@@ -14,18 +14,28 @@ $('form[submit-on-enter] input').keypress(function(e) {
     }
 })
 
-$('[data-toggle="fixed-panel"]').on('click', function() {
+function setFixedPanelOpen($panel, open) {
+    if (!$panel.length) return;
+
+    $panel.stop(true, true).toggleClass('is-open', open);
+    $panel.find('.panel-content').css('right', open ? 0 : '-100%');
+    if (open) $panel.fadeIn();
+    else $panel.fadeOut();
+
+    $('body').toggleClass('fixed-panel-open', $('.fixed-panel.is-open').length > 0);
+}
+
+$(document).on('click', '[data-toggle="fixed-panel"]', function() {
 	let $link = $(this);
 	let $panel = $($link.attr('data-target'));
 	$link.removeClass('active');
-	$panel.fadeToggle();
-	$('body').toggleCssBetween('overflow', ['hidden', 'auto']);
-	$panel.find('.panel-content').css('right', 0);
+    setFixedPanelOpen($panel, !$panel.hasClass('is-open'));
 });
 
-$('button[data-dismiss="fixed-panel"], .fixed-panel .panel-overlay').on('click', function() {
-	let $panel = $(this).closest('.fixed-panel');
-	$panel.find('.panel-content').css('right', '-100%');
-	$panel.fadeToggle();
-	$('body').toggleCssBetween('overflow', ['hidden', 'auto']);
+$(document).on('click', 'button[data-dismiss="fixed-panel"], .fixed-panel .panel-overlay', function() {
+    setFixedPanelOpen($(this).closest('.fixed-panel'), false);
+});
+
+$(document).on('close.fixedPanel', '.fixed-panel', function() {
+    setFixedPanelOpen($(this), false);
 });

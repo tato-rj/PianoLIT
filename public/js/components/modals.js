@@ -18,5 +18,5 @@ $('[data-toggle="panel"]').on('click', function() {
 });
 
 $('#share-modal').on('show.bs.modal', function (e) {
-  $('[data-toggle="fixed-panel"]').click();
+  $('.fixed-panel').trigger('close.fixedPanel');
 });
