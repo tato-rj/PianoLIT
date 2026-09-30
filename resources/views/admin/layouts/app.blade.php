@@ -103,8 +103,6 @@
   </head>
 
   <body class="fixed-nav sticky-footer" id="page-top">
-    @include('admin.components.loader')
-
     @include('admin.layouts.header.bar')
 
     <div class="px-2 py-3">
@@ -132,31 +130,6 @@
     @endif
 
     <script type="text/javascript" src="{{mix('js/admin.js')}}"></script>
-
-    <script type="text/javascript">
-      function showLoader() {
-        $('#loading-overlay').find('>div').removeClass('animateLoader').parent().show();
-      }
-
-      function hideLoader() {
-        $('#loading-overlay > div:last-child').addClass('animateLoader').parent().fadeOut();
-      }
-
-      $(document).on('click', 'a:not([target])', function() {
-        let link = $(this).attr('href');
-
-        if (link && ! link.includes('#'))
-          showLoader();
-      });
-
-      $(document).on('submit', 'form:not([target])', function() {
-        showLoader();
-      })
-
-      $(window).bind('load', function() {
-          hideLoader();
-      });
-    </script>
 
     <script type="text/javascript">
 $('.editable-star').on('mouseover', function() {
