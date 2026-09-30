@@ -37,6 +37,7 @@ class PlaylistsController extends Controller
             'group' => $request->group ?? null,
             'description' => $request->description,
             'featured' => $request->featured ?? null,
+            'published_at' => null,
             'order' => Playlist::byGroup($request->group)->count()
         ]);
 
@@ -99,6 +100,15 @@ class PlaylistsController extends Controller
         }
 
         return redirect()->back()->with('status', 'The playlist has been successfully updated');
+    }
+
+    public function togglePublication(Playlist $playlist)
+    {
+        $playlist->update(['published_at' => $playlist->published_at ? null : now()]);
+
+        return redirect()->back()->with('status', $playlist->published_at
+            ? 'The playlist has been published.'
+            : 'The playlist has been unpublished.');
     }
 
     public function reorder(Request $request)

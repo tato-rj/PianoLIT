@@ -2,7 +2,7 @@
 
 namespace Tests\Review;
 
-use App\{Piece, Playlist, Tag, Tutorial};
+use App\{Admin, Piece, Playlist, Tag, Tutorial};
 use App\Services\WebApp\Collections;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Cache, DB, Redis};
@@ -23,7 +23,7 @@ class WebAppCollectionsTest extends ReviewTestCase
     private function playlist($name, $count = 6, $withTutorials = 6, $group = null)
     {
         return Model::withoutEvents(function () use ($name, $count, $withTutorials, $group) {
-            $playlist = create(Playlist::class, ['name' => $name, 'group' => $group, 'order' => 7]);
+            $playlist = create(Playlist::class, ['name' => $name, 'group' => $group, 'order' => 7, 'published_at' => now()]);
             for ($i = 0; $i < $count; $i++) {
                 $piece = create(Piece::class);
                 foreach (['level' => 'beginner', 'period' => 'romantic', 'length' => 'short'] as $type => $tagName) {
@@ -144,5 +144,82 @@ class WebAppCollectionsTest extends ReviewTestCase
         $this->assertTrue($data['categories']->isEmpty());
         $this->get(route('webapp.playlists'))->assertOk()->assertSee('Unmapped collection')
             ->assertDontSee('Too few pieces')->assertDontSee('Old journey');
+    }
+
+    public function test_admin_creates_unpublished_playlists_and_requires_admin_session_to_publish()
+    {
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->post(route('admin.playlists.store'), [
+            'name' => 'Editorial draft',
+            'subtitle' => 'Waiting for release',
+            'description' => 'A collection in progress.',
+        ])->assertRedirect();
+
+        $playlist = Playlist::where('name', 'Editorial draft')->firstOrFail();
+        $this->assertNull($playlist->published_at);
+        $this->get(route('admin.playlists.index'))->assertOk()
+            ->assertSee(route('admin.playlists.publication', $playlist), false)
+            ->assertSee('Publish</button>', false);
+
+        auth('admin')->logout();
+        $this->withExceptionHandling();
+        $this->patch(route('admin.playlists.publication', $playlist))
+            ->assertRedirect(route('admin.login.show'));
+        $this->assertNull($playlist->fresh()->published_at);
+    }
+
+    public function test_publication_controls_web_visibility_without_changing_mobile_playlists()
+    {
+        $playlist = $this->playlist('Editorial release');
+        $playlist->update(['published_at' => null]);
+        Cache::put('app.playlists.order', [$playlist->id], 60);
+
+        $mobileListUrl = route('api.playlists.index');
+        $mobilePiecesUrl = route('api.playlists.show', $playlist);
+        $mobileList = $this->getJson($mobileListUrl)->assertOk()->json();
+        $mobilePieces = $this->getJson($mobilePiecesUrl)->assertOk()->json();
+        $this->assertArrayNotHasKey('published_at', $mobileList[0]);
+        $this->get(route('webapp.playlists'))->assertOk()->assertDontSee('Editorial release');
+        $this->withExceptionHandling();
+        $this->get(route('webapp.playlists.show', $playlist))->assertRedirect(route('webapp.discover'));
+
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->patch(route('admin.playlists.publication', $playlist))
+            ->assertRedirect()->assertSessionHas('status', 'The playlist has been published.');
+        $this->assertNotNull($playlist->fresh()->published_at);
+        $this->get(route('admin.playlists.index'))->assertOk()->assertSee('Unpublish</button>', false);
+        $this->get(route('webapp.playlists'))->assertOk()->assertSee('Editorial release');
+        $this->get(route('webapp.playlists.show', $playlist))->assertOk();
+
+        $this->patch(route('admin.playlists.publication', $playlist))
+            ->assertRedirect()->assertSessionHas('status', 'The playlist has been unpublished.');
+        $this->assertNull($playlist->fresh()->published_at);
+        $this->get(route('webapp.playlists'))->assertOk()->assertDontSee('Editorial release');
+        $this->get(route('webapp.playlists.show', $playlist))->assertRedirect(route('webapp.discover'));
+        $this->assertSame($mobileList, $this->getJson($mobileListUrl)->assertOk()->json());
+        $this->assertSame($mobilePieces, $this->getJson($mobilePiecesUrl)->assertOk()->json());
+    }
+
+    public function test_future_publication_date_does_not_show_early_on_web()
+    {
+        $playlist = $this->playlist('Future collection');
+        $playlist->update(['published_at' => now()->addDay()]);
+        $this->get(route('webapp.playlists'))->assertOk()->assertDontSee('Future collection');
+        $this->withExceptionHandling();
+        $this->get(route('webapp.playlists.show', $playlist))->assertRedirect(route('webapp.discover'));
+    }
+
+    public function test_additive_migration_keeps_existing_collections_visible()
+    {
+        $legacy = $this->playlist('Existing collection');
+        $legacy->update(['published_at' => null]);
+        $alreadyPublished = $this->playlist('Already published');
+        $originalDate = $alreadyPublished->published_at;
+
+        (new \AddPublishedAtToPlaylistsTable)->up();
+
+        $this->assertNotNull($legacy->fresh()->published_at);
+        $this->assertTrue($alreadyPublished->fresh()->published_at->equalTo($originalDate));
+        $this->get(route('webapp.playlists'))->assertOk()->assertSee('Existing collection');
     }
 }

@@ -1,10 +1,12 @@
 # Web app Collections
 
-The web app's `/playlists` page is now titled **Collections**. Its route name remains `webapp.playlists`; existing `webapp.playlists.show` links still open the same playlist/piece pages. The iOS API routes, controllers, shared API builder, playlist model, stored covers, group values, and piece lists are unchanged.
+The web app's `/playlists` page is now titled **Collections**. Its route name remains `webapp.playlists`; existing `webapp.playlists.show` links still open the same playlist/piece pages. The iOS API routes, controllers, shared API builder, stored covers, group values, and piece lists are unchanged.
 
 ## Editorial controls
 
 Continue editing playlist names, subtitles, descriptions and piece selections in the existing administration. `config/collections.php` supplies **web-only** presentation:
+
+The admin playlist list has a **Publish/Unpublish** button beside **Edit**. New playlists start unpublished. Only playlists with a non-null publication date that is not in the future appear in web Collections; unpublished detail URLs redirect to Discover through the web app's existing 404 handler. The one-time migration marks existing playlists as published so the current page stays populated; use the button to remove any of them from the web app. The legacy iOS playlist list and pieces endpoints continue to return the same playlists and JSON fields.
 
 - `featured`: preferred playlist name normalized as a slug (apostrophes removed). If unavailable, the first eligible playlist in the stored order is featured. The label is **Featured collection**, with no promised automatic refresh.
 - `inspiration`: ordered names for the three editorial suggestions. Only existing eligible playlists appear. If none match, the page uses up to three other eligible collections. Mockup-only titles and difficulty claims were not added to real playlists.

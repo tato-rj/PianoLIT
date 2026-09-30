@@ -29,7 +29,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
                 $this->freePiece->tags()->attach($tag);
             }
             $this->tutorial = create(Tutorial::class, ['piece_id' => $this->piece->id, 'type' => 'synthesia', 'category' => 'lesson']);
-            $this->playlist = create(Playlist::class, ['order' => 1]);
+            $this->playlist = create(Playlist::class, ['order' => 1, 'published_at' => now()]);
             $this->playlist->pieces()->attach([$this->piece->id, $this->freePiece->id]);
             $this->post = create(Post::class, ['published_at' => now()]);
         });

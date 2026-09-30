@@ -22,7 +22,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
             $composer = create(Composer::class, ['gender' => 'female', 'ethnicity' => 'black', 'is_pedagogical' => false]);
             $tags = collect(['level' => 'elementary', 'period' => 'baroque', 'length' => 'short', 'mood' => 'happy'])
                 ->map(function ($name, $type) { return create(Tag::class, compact('name', 'type')); });
-            $this->playlist = create(Playlist::class, ['order' => 1]);
+            $this->playlist = create(Playlist::class, ['order' => 1, 'published_at' => now()]);
             $this->pieces = collect();
             for ($i = 0; $i < 12; $i++) {
                 $piece = create(Piece::class, ['composer_id' => $composer->id, 'name' => 'Query piece '.$i, 'is_free' => $i === 0, 'highlighted_at' => now(), 'videos' => serialize([])]);

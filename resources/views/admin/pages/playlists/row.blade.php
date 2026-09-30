@@ -6,6 +6,11 @@
 @slot('controls')
 	<div class="d-flex">
 		<a href="{{route('admin.playlists.edit', $playlist)}}" class="btn btn-sm btn-warning mr-2">Edit</a>
+		<form method="POST" action="{{ route('admin.playlists.publication', $playlist) }}" class="mr-2">
+			@csrf
+			@method('PATCH')
+			<button type="submit" class="btn btn-sm {{ $playlist->published_at ? 'btn-outline-secondary' : 'btn-success' }}">{{ $playlist->published_at ? 'Unpublish' : 'Publish' }}</button>
+		</form>
 		<a href="#" data-url="{{route('admin.playlists.destroy', $playlist->id)}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="btn btn-sm btn-danger delete d-none d-sm-block">
 			Remove
 		</a>

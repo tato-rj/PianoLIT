@@ -10,6 +10,8 @@ class Playlist extends PianoLit
     
     protected $appends = ['cover_image', 'is_featured'];
     protected $withCount = ['pieces'];
+    protected $dates = ['published_at'];
+    protected $hidden = ['published_at'];
 
     public static function boot()
     {
@@ -53,6 +55,11 @@ class Playlist extends PianoLit
     public function scopeFeatured($query)
     {
         return $query->where('order', 0);
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->whereNotNull('published_at')->where('published_at', '<=', now());
     }
 
     public function getIsFeaturedAttribute()

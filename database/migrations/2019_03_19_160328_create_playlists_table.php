@@ -23,6 +23,7 @@ class CreatePlaylistsTable extends Migration
             $table->string('description');
             $table->string('featured')->nullable();
             $table->unsignedInteger('order')->default(0);
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
 

@@ -11,7 +11,7 @@ class Collections
     {
         // Keep mobile eligibility/count semantics, without invoking the API's
         // shared ordering cache, which can write playlist order on a page visit.
-        $playlists = Playlist::whereNull('group')->has('pieces', '>', 5)
+        $playlists = Playlist::whereNull('group')->published()->has('pieces', '>', 5)
             ->select('playlists.*')
             ->withCount(['pieces' => function ($query) { $query->has('tutorials'); }])
             ->sorted()->orderBy('id')->get()
