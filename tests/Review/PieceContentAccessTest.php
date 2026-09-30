@@ -177,6 +177,8 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->actingAs($this->userWithSubscription(), 'web');
         $this->piece->updateQuietly(['is_free' => true]);
         $this->assertFullContent()->assertSee('data-manage="save-to"', false)
+            ->assertSee('data-bs-toggle="offcanvas"', false)
+            ->assertSee('id="save-to-offcanvas"', false)
             ->assertDontSee('data-annotations-url=""', false);
         $this->postJson(route('webapp.users.favorites.update', $this->piece))->assertOk();
         $this->piece->updateQuietly(['is_free' => false]);

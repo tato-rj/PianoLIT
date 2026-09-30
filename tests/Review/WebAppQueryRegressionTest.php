@@ -217,7 +217,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
             ->assertSee('class="save-to-folder"', false)
             ->assertSee('Create a new folder')
             ->assertSee('data-submit="folder"', false)
-            ->assertSee('data-dismiss="popup"', false);
+            ->assertSee('data-bs-dismiss="offcanvas"', false);
     }
 
     public function test_playlist_index_counts_match_mobile_without_loading_piece_models()

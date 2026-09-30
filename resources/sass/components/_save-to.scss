@@ -1,6 +1,14 @@
+#save-to-offcanvas.offcanvas.offcanvas-bottom {
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    // border-radius: 20px 20px 0 0;
+    box-shadow: 0 -12px 40px rgba(20, 29, 44, .12);
+    .offcanvas-body { width: 100%; max-width: 1040px; margin: 0 auto; padding: 0 0 env(safe-area-inset-bottom); }
+}
+
 .save-to-panel {
     overflow: hidden;
-    border-radius: 16px;
+    // border-radius: 16px;
     background: #fff;
     color: #212529;
 

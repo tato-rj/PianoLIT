@@ -1,5 +1,20 @@
 const mix = require('laravel-mix');
 
+// Mix 2 excludes node_modules from Babel. Bootstrap 5's offcanvas module
+// needs transpilation for this project's Webpack 3/Uglify production build.
+mix.webpackConfig({
+    module: {
+        rules: [{
+            test: /bootstrap5[\\/]js[\\/]dist[\\/].*\.js$/,
+            loader: 'babel-loader',
+            options: {
+                presets: [['env', {modules: false}]],
+                plugins: ['transform-object-rest-spread']
+            }
+        }]
+    }
+});
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management

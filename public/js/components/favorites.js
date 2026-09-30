@@ -1,23 +1,36 @@
+const Offcanvas = require('bootstrap5/js/dist/offcanvas');
+
     $('a.toggle-favorite span').click(function() {
     $(this).siblings('button').click();
 });
-    $(document).on('click', 'button[data-manage=save-to]', function() {
-        let $btn = $(this);
-        $btn.disable();
+    const saveToPanel = document.getElementById('save-to-offcanvas');
+    if (saveToPanel) {
+        let contentReady = false;
+        saveToPanel.addEventListener('show.bs.offcanvas', function(event) {
+            if (contentReady) {
+                contentReady = false;
+                return;
+            }
 
-        axios.get($btn.data('url'))
-            .then(function(response) {
-                $('#bottom-popup-content').html(response.data)
-                $('#bottom-popup-content > div').width($('main').width());
-                $('#bottom-popup').show();
-            })
-            .catch(function(error) {
-                $('#bottom-popup').fadeOut('fast');
-            })
-            .then(function() {
-                $btn.enable();
-            });
-    });
+            event.preventDefault();
+            const trigger = event.relatedTarget;
+            if (!trigger) return;
+            const $btn = $(trigger).disable();
+
+            axios.get($btn.data('url'))
+                .then(function(response) {
+                    $('#save-to-offcanvas-content').html(response.data);
+                    contentReady = true;
+                    Offcanvas.getOrCreateInstance(saveToPanel).show(trigger);
+                })
+                .catch(function(error) {
+                    console.log(error);
+                })
+                .then(function() {
+                    $btn.enable();
+                });
+        });
+    }
 
     $(document).on('click', 'button[data-submit=favorite]', function() {
         let $btn = $(this);

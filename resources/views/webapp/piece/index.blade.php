@@ -100,6 +100,9 @@ video::-webkit-media-controls-enclosure {
 </section>
 
 @include('webapp.piece.components.panel')
+<div class="offcanvas offcanvas-bottom" id="save-to-offcanvas" tabindex="-1" aria-labelledby="save-to-title">
+    <div class="offcanvas-body" id="save-to-offcanvas-content"></div>
+</div>
 @if($piece->hasAudio())
 <div class="piece-audio-popup">
     @include('webapp.components.popup')

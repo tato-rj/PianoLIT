@@ -530,3 +530,12 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - Compatibility: existing panel triggers, outside-click dismissal, favorites actions, and mobile API contracts are unchanged.
 - Verification: JavaScript regressions passed for the header favorites dismiss, missing targets, repeated closes, rapid toggles, multiple panels, Share, and other components' scroll-lock classes. Isolated development and production builds, compiled JavaScript syntax checks, asset hash checks, and `git diff --check` passed.
 - Remaining work: deploy the JavaScript, CSS, and manifest together; no production browser check was performed.
+
+### 2026-09-30 — Move Save to into a bottom offcanvas (implemented locally)
+
+- Priority: P3 requested panel consistency. The Save to folder content previously appeared inside the shared floating `#bottom-popup`, without the backdrop and scroll lock used by the Options panel.
+- Affected files: the piece page, favorites trigger and Save to header Blade templates, `resources/js/components/favorites.js`, `resources/js/app.js`, scoped offcanvas/Save to Sass, `package.json` and lockfile, focused review and JavaScript regressions, and their tracked web assets and manifest.
+- Implementation: the favorite button has `data-bs-toggle="offcanvas"` and targets a full-width `.offcanvas-bottom`. The native Bootstrap 5 offcanvas component handles the backdrop, scroll lock, focus, X/backdrop/Escape dismissal, and transitions. Its `show.bs.offcanvas` event waits for the existing session-authenticated folder request before showing the sheet; folder actions and content are unchanged. Bootstrap 4 remains the site's base library; only the Bootstrap 5 offcanvas JavaScript and scoped component CSS were added. The audio player's separate popup remains in place.
+- Compatibility: folder create/toggle URLs, response markup, ownership, and mobile API JSON contracts remain unchanged. The Save to partial still refreshes inside `#favorite-folders-container` after AJAX updates.
+- Verification: the PHP review suite passed (123 tests, 5,523 assertions) and JavaScript regressions passed, including loading before opening. The native component and compiled assets were checked in an isolated production build and browser preview.
+- Remaining work: deploy Blade, Sass, JavaScript, and manifest together. No production deployment or iOS client test was performed.
