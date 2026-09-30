@@ -70,7 +70,7 @@
     &__piece { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px 0;
         + .my-pieces-folder__piece { border-top: 1px solid #edf0f4; }
         > div { min-width: 0; }
-        strong, span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        strong, span { display: flex; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         strong { color: #273244; font-size: 13px; font-weight: 600; }
         span { color: #697386; font-size: 12px; }
     }

@@ -10,8 +10,8 @@
 			<small>{{$composer->country->name}}</small>
 		</div>
 		<div>
-			<a href="{{route('webapp.search.results', ['search' => $composer->name])}}" class="btn btn-secondary btn-sm">
-				@icon('search')Discover pieces by {{$composer->short_name}} @icon('chevron-right')</a>
+			<a href="{{route('webapp.search.results', ['search' => $composer->name])}}" class="btn btn-secondary">
+				@icon('search')Discover pieces @icon('chevron-right')</a>
 		</div>
 	</div>
 </div>

@@ -1,6 +1,6 @@
 {
     "/js/app.js": "/js/app.js?id=3e286406589ac75bfedb",
-    "/css/app.css": "/css/app.css?id=979fd2a960434149d512",
+    "/css/app.css": "/css/app.css?id=20b74a0e16a6d92fbad9",
     "/css/admin.css": "/css/admin.css?id=bb4e9fc1633e47b20c1b",
     "/css/design-system.css": "/css/design-system.css?id=d69b15634c2fbb8a4335",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=014df888e93f6477fdab",
@@ -13,6 +13,6 @@
     "/js/views/piece-access.js": "/js/views/piece-access.js?id=12ad9ebcc99a375f9c14",
     "/js/views/score-editor.js": "/js/views/score-editor.js?id=668763dbcf999c8cd14c",
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=242aa6c185b83538149d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf",
-    "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115"
+    "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf"
 }
