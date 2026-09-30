@@ -172,6 +172,40 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->get(route('webapp.discover', ['user_id' => 999]))->assertOk()->assertSee('For you');
     }
 
+    public function test_my_pieces_shows_only_the_signed_in_users_folders_with_real_previews()
+    {
+        $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
+        [$user, $folder, $emptyFolder, $otherFolder] = Model::withoutEvents(function () {
+            $user = create(User::class)->setAppends(['full_name']);
+            $other = create(User::class);
+            $folder = create(FavoriteFolder::class, ['user_id' => $user->id, 'name' => 'Practice favorites']);
+            $emptyFolder = create(FavoriteFolder::class, ['user_id' => $user->id, 'name' => 'New folder']);
+            $otherFolder = create(FavoriteFolder::class, ['user_id' => $other->id, 'name' => 'Private folder']);
+            Favorite::create(['user_id' => $user->id, 'favorite_folder_id' => $folder->id, 'piece_id' => $this->piece->id, 'order' => 0]);
+            Favorite::create(['user_id' => $user->id, 'favorite_folder_id' => $folder->id, 'piece_id' => $this->freePiece->id, 'order' => 1]);
+            Favorite::create(['user_id' => $other->id, 'favorite_folder_id' => $otherFolder->id, 'piece_id' => $this->piece->id]);
+            return [$user, $folder, $emptyFolder, $otherFolder];
+        });
+
+        $this->actingAs($user, 'web');
+        $response = $this->get(route('webapp.my-pieces'))->assertOk()
+            ->assertSee('Your favorites')->assertSee('2 folders · 2 pieces')
+            ->assertSee('Practice favorites')->assertSee('New folder')
+            ->assertSee('Guest repertoire test')->assertSee($this->piece->composer->short_name)
+            ->assertSee('No pieces saved yet')->assertDontSee($otherFolder->name)
+            ->assertSee('class="my-pieces-switch nav"', false)
+            ->assertSee('id="favorites-tab"', false)->assertSee('id="suggestions-tab"', false)
+            ->assertSee('data-target="#edit-folder-'.$folder->id.'"', false)
+            ->assertSee('data-target="#delete-folder-'.$folder->id.'"', false);
+
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame(2, $xpath->query('//article[contains(@class, "my-pieces-folder")]')->length);
+        $this->assertSame(2, $xpath->query('//article[contains(@class, "my-pieces-folder")][.//h3/a[text()="Practice favorites"]]//div[contains(@class, "my-pieces-folder__piece")]')->length);
+        $this->assertSame(0, $xpath->query('//article[contains(@class, "my-pieces-folder")][.//h3/a[text()="New folder"]]//div[contains(@class, "my-pieces-folder__piece")]')->length);
+    }
+
     public function test_folder_ordering_and_claps_use_the_signed_in_account()
     {
         $this->withExceptionHandling();
