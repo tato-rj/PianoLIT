@@ -8,6 +8,7 @@ use App\Api\Api;
 use App\{Composer, Piece};
 use App\Services\RecentlyViewedPieces;
 use App\Services\WebApp\PieceCards;
+use App\Services\WebApp\GalleryGradients;
 
 class TabsController extends Controller
 {
@@ -33,12 +34,17 @@ class TabsController extends Controller
 
         // Clone cached models before adding any request-local presentation data.
         $cards = [];
-        $rows = $rows->map(function ($row) use (&$cards) {
-            if (($row['type'] ?? null) === 'piece') {
-                $row['content'] = collect($row['content'])->map(function ($piece) use (&$cards) {
-                    $piece = clone $piece;
-                    $cards[] = $piece;
-                    return $piece;
+        $galleryIndex = 0;
+        $rows = $rows->map(function ($row) use (&$cards, &$galleryIndex) {
+            $isGallery = ($row['row'] ?? null) === 'gallery';
+            $color = $isGallery && collect($row['content'])->isNotEmpty()
+                ? GalleryGradients::at($galleryIndex++) : null;
+            if ($isGallery || ($row['type'] ?? null) === 'piece') {
+                $row['content'] = collect($row['content'])->map(function ($card) use (&$cards, $color) {
+                    $card = clone $card;
+                    if ($color) $card->color = $color;
+                    if ($card instanceof Piece) $cards[] = $card;
+                    return $card;
                 });
             }
             return $row;

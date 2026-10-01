@@ -28,7 +28,7 @@
 				<h5 class="mb-2">What's this piece like?</h5>
 				<div class="piece-description__content" id="piece-description">{{$piece->description}}</div>
 				<div class="d-flex justify-content-end">
-					<button type="button" class="piece-description__toggle" aria-controls="piece-description" aria-expanded="false" hidden>Read more @icon('chevron-down', ['mr' => 0])</button>
+					<button type="button" class="piece-description__toggle" aria-controls="piece-description" aria-expanded="false" hidden>Read more</button>
 				</div>
 			</div>
 			@else
@@ -76,22 +76,22 @@
 		</div>
 
 
-		@if(! $similar->isEmpty())
+		@foreach($recommendationRows as $recommendationRow)
 		<div class="mb-4">
 			<div class="d-flex d-apart mb-3">
-				<h5 class="m-0">More like this</h5>
-				<a href="{{route('webapp.pieces.similar', $piece)}}" class="btn-raw link-primary">View all</a>
+				<h5 class="m-0">{{$recommendationRow['title']}}</h5>
+				<a href="{{$recommendationRow['url']}}" class="btn-raw link-primary" aria-label="View all: {{$recommendationRow['title']}}">View all</a>
 			</div>
 			<div class="custom-scroll dragscroll dragscroll-horizontal">
 				<div class="d-flex pb-2" style="height: 144px;">
-					@foreach($similar as $card)
-						@php($card->color = 'yellow')
+					@foreach($recommendationRow['pieces'] as $card)
+						@php($card->color = $recommendationRow['color'])
 						@php($card->subtitle = $card->composer->short_name)
 						@include('webapp.discover.cards.piece', ['hasFullAccess' => $hasFullAccess])
 					@endforeach
 				</div>
 			</div>
 		</div>
-		@endif
+		@endforeach
 	</div>
 </div>

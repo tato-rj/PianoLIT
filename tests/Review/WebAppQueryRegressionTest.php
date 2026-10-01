@@ -75,7 +75,8 @@ class WebAppQueryRegressionTest extends ReviewTestCase
         if (getenv('WEBAPP_QUERY_REPORT')) file_put_contents(getenv('WEBAPP_QUERY_REPORT'), json_encode($counts, JSON_PRETTY_PRINT));
         $budgets = [
             'discover' => 52, 'explore' => 11, 'highlights' => 4, 'playlists' => 5,
-            'composers.index' => 2, 'composers.show' => 2, 'pieces.show' => 18,
+            // Three bounded tag queries plus one shared tags/composer/country load.
+            'composers.index' => 2, 'composers.show' => 2, 'pieces.show' => 24,
             'pieces.similar' => 10, 'pieces.collection' => 6, 'pieces.timeline' => 8,
             'playlists.show' => 6, 'search.results' => 7, 'search.count' => 3,
             'my-pieces' => 11, 'settings' => 1, 'users.profile' => 2,
@@ -194,6 +195,59 @@ class WebAppQueryRegressionTest extends ReviewTestCase
                 $this->assertArrayNotHasKey('webapp_is_favorited', $piece->getAttributes());
                 $this->assertArrayNotHasKey('webapp_has_performances', $piece->getAttributes());
             }
+        }
+    }
+
+    protected function populateGradientRows()
+    {
+        Model::withoutEvents(function () {
+            foreach (['suzuki', 'rcm', 'abrsm'] as $ranking) {
+                $tag = create(Tag::class, ['type' => 'ranking', 'name' => $ranking.' 1']);
+                $tag->pieces()->attach($this->pieces->pluck('id'));
+            }
+            // Discover's mood gallery requires more than twenty matches.
+            for ($i = 0; $i < 9; $i++) {
+                $piece = create(Piece::class, ['composer_id' => $this->pieces[0]->composer_id, 'name' => 'Extra gallery piece '.$i]);
+                $piece->tags()->attach($this->pieces[0]->tags->pluck('id'));
+            }
+        });
+    }
+
+    public function test_discover_advances_existing_gradients_per_visible_row_without_changing_mobile_colors()
+    {
+        $this->populateGradientRows();
+        $colors = function ($rows) {
+            return $rows->mapWithKeys(function ($row) {
+                return [$row['title'] => collect($row['content'])->pluck('color')->all()];
+            })->all();
+        };
+        $mobileBefore = $colors((new \App\Api\Api)->discover());
+        // The uncached mobile suggestion row randomly chooses its card count.
+        unset($mobileBefore['For you']);
+        $cachedBefore = $colors(Cache::get('app.discover'));
+        foreach (['guest', 'signed-in', 'with-history'] as $state) {
+            if ($state !== 'guest') $this->actingAs($this->user, 'web');
+            if ($state === 'with-history') {
+                (new \App\Services\RecentlyViewedPieces)->record($this->user, $this->pieces[0]);
+            }
+            $response = $this->get(route('webapp.discover'))->assertOk();
+            $galleries = $response->viewData('rows')->filter(function ($row) {
+                return $row['row'] === 'gallery' && collect($row['content'])->isNotEmpty();
+            })->values();
+            $this->assertCount($state === 'guest' ? 8 : ($state === 'signed-in' ? 9 : 10), $galleries);
+            $gradients = [];
+            foreach ($galleries as $index => $row) {
+                $expected = \App\Services\WebApp\GalleryGradients::at($index);
+                $this->assertSame([$expected], collect($row['content'])->pluck('color')->unique()->values()->all());
+                $gradients[] = implode(', ', gradient($expected));
+                $response->assertSee('linear-gradient(to right, '.end($gradients).')', false);
+            }
+            $this->assertCount($galleries->count(), array_unique($gradients));
+            $this->assertSame($cachedBefore, $colors(Cache::get('app.discover')));
+            $mobileAfter = $colors((new \App\Api\Api)->discover());
+            $this->assertSame(['orange'], array_values(array_unique($mobileAfter['For you'])));
+            unset($mobileAfter['For you']);
+            $this->assertSame($mobileBefore, $mobileAfter);
         }
     }
 

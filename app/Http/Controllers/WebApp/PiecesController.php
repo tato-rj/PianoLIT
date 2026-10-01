@@ -8,17 +8,18 @@ use App\{Piece, Timeline, Tutorial};
 use App\Events\PieceShared;
 use App\Services\RecentlyViewedPieces;
 use App\Services\WebApp\PieceCards;
+use App\Services\WebApp\PieceRecommendations;
 
 class PiecesController extends Controller
 {
-    public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed)
+    public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PieceRecommendations $recommendations)
     {
         $timeline = Timeline::for($piece, 4);
         $piece->loadMissing(['tags', 'tutorials']);
-        $similar = PieceCards::load($piece->similar()->take(16), false);
+        $recommendationRows = $recommendations->rows($piece);
         $sentences = ['Tuning the piano', 'Arranging rows of comfy seats', 'Adjusting the bench', 'Warming up fingers', 'Greeting the eager audience', 'Dimming the lights', 'Wrapping up'];
 
-        $response = response()->view('webapp.piece.index', compact(['piece', 'timeline', 'sentences', 'similar']));
+        $response = response()->view('webapp.piece.index', compact(['piece', 'timeline', 'sentences', 'recommendationRows']));
 
         if (request()->isMethod('GET') && auth('web')->check()) {
             $recentlyViewed->record(auth('web')->user(), $piece);
