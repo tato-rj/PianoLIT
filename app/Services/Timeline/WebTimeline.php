@@ -15,11 +15,20 @@ class WebTimeline
         $composed = $this->usableYear($piece->composed_in);
         $year = $composed ?: $this->usableYear($piece->published_in);
         if ($year) {
+            $composer = $piece->composer;
+            $born = $this->usableYear($composer->born_in);
+            $died = $this->usableYear($composer->died_in);
+            $description = $composer->name;
+            // Piece dates have year precision, matching the existing composer age convention.
+            if ($born && $year >= $born && (!$died || $year <= $died)) {
+                $age = $year - $born;
+                $description .= ' was '.$age.' '.str_plural('year', $age).' old';
+            }
             $events->push([
                 'year' => $year,
                 'event_date' => null,
                 'title' => $piece->timeline_name . ($composed ? ' was composed' : ' was published'),
-                'description' => $piece->composer->name,
+                'description' => $description,
                 'image_url' => null,
                 'source_url' => null,
                 'highlight' => true,

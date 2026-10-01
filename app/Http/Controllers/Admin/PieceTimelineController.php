@@ -30,9 +30,13 @@ class PieceTimelineController extends Controller
             throw ValidationException::withMessages(['search_id' => 'This search has expired. Start a new search.']);
         }
         $state = $sessions[$id] ?? ['piece_id' => $piece->id, 'year' => $year, 'range_index' => -1, 'pool' => [], 'shown' => [], 'expires' => time() + 7200];
-        $excluded = array_merge(array_keys($state['shown']), $piece->timelineEvents()->pluck('source_id')->all());
-        $available = function ($pool) use ($excluded) {
-            return array_values(array_filter($pool, function ($event) use ($excluded) { return !in_array($event['source_id'], $excluded, true); }));
+        $saved = $piece->timelineEvents()->get(['source_id', 'wikidata_id', 'event_kind', 'year']);
+        $excluded = array_merge(array_keys($state['shown']), $saved->pluck('source_id')->all());
+        $identities = array_map([$discovery, 'identity'], array_merge(array_values($state['shown']), $saved->toArray()));
+        $available = function ($pool) use ($excluded, $identities, $discovery) {
+            return array_values(array_filter($pool, function ($event) use ($excluded, $identities, $discovery) {
+                return !in_array($event['source_id'], $excluded, true) && !in_array($discovery->identity($event), $identities, true);
+            }));
         };
         $pool = $available($state['pool']);
         $ranges = config('wikimedia.ranges');
@@ -40,14 +44,17 @@ class PieceTimelineController extends Controller
             for ($attempt = 0; count($pool) < 10 && $state['range_index'] < count($ranges) - 1 && $attempt < 2; $attempt++) {
                 $state['range_index']++;
                 $pool = collect(array_merge($pool, $available($discovery->pool($year, $ranges[$state['range_index']]))))
-                    ->unique('source_id')->sortBy('rank')->values()->all();
+                    ->sortBy('rank')->unique(function ($event) use ($discovery) { return $discovery->identity($event); })->values()->all();
             }
-            $selected = array_slice($pool, 0, 10);
+            $selected = $discovery->select($pool);
             $candidates = $discovery->enrich($selected);
         } catch (\Throwable $e) {
             return response()->json(['message' => 'Wikimedia is unavailable right now. Please try again shortly.'], 503);
         }
-        $state['pool'] = array_slice($pool, count($selected));
+        $selectedIds = array_column($selected, 'source_id');
+        $state['pool'] = array_values(array_filter($pool, function ($event) use ($selectedIds) {
+            return !in_array($event['source_id'], $selectedIds, true);
+        }));
         foreach ($candidates as $candidate) $state['shown'][$candidate['source_id']] = $candidate;
         $state['expires'] = time() + 7200;
         // Bound session size and keep independent browser tabs/searches separate.
@@ -81,7 +88,7 @@ class PieceTimelineController extends Controller
                 if (!$event) throw $e;
             }
         }
-        return response()->json(['id' => $event->id, 'html' => view('admin.pages.pieces.timeline.saved', compact('piece', 'event'))->render()]);
+        return response()->json(['id' => $event->id, 'count' => $piece->timelineEvents()->count(), 'html' => view('admin.pages.pieces.timeline.saved', compact('piece', 'event'))->render()]);
     }
 
     public function update(Request $request, Piece $piece, PieceTimelineEvent $event)
@@ -103,10 +110,13 @@ class PieceTimelineController extends Controller
         return redirect()->route('admin.pieces.timeline.edit', $piece)->with('status', 'The timeline event has been updated.');
     }
 
-    public function destroy(Piece $piece, PieceTimelineEvent $event)
+    public function destroy(Request $request, Piece $piece, PieceTimelineEvent $event)
     {
         abort_unless($event->piece_id === $piece->id, 404);
         $event->delete();
+        if ($request->expectsJson()) {
+            return response()->json(['id' => $event->id, 'source_id' => $event->source_id, 'count' => $piece->timelineEvents()->count()]);
+        }
         return redirect()->route('admin.pieces.timeline.edit', $piece)->with('status', 'The timeline event has been removed.');
     }
 }

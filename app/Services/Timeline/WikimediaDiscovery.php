@@ -13,7 +13,7 @@ class WikimediaDiscovery
 
     public function pool(int $year, int $range): array
     {
-        return Cache::remember('timeline.wikimedia.v2.'.$year.'.'.$range, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range) {
+        return Cache::remember('timeline.wikimedia.v3.'.$year.'.'.$range, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range) {
             $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range), 'format' => 'json']);
             if (!isset($data['results']['bindings']) || !is_array($data['results']['bindings'])) {
                 throw new \RuntimeException('Invalid Wikidata response.');
@@ -27,18 +27,23 @@ class WikimediaDiscovery
                 $eventYear = (int) substr($date, 0, 4);
                 $label = $value('itemLabel');
                 if (!preg_match('/^Q[1-9][0-9]*$/', $qid) || !$label || $label === $qid || $eventYear < 1 || abs($eventYear - $year) > $range) continue;
-                $kind = ['P571' => 'created', 'P577' => 'published', 'P585' => 'event', 'P569' => 'birth', 'P570' => 'death'][$property] ?? null;
+                $kind = ['P571' => 'created', 'P577' => 'published', 'P585' => 'event', 'P580' => 'event', 'P569' => 'birth', 'P570' => 'death'][$property] ?? null;
                 if (!$kind) continue;
-                // A work's inception/publication in the same year is one candidate.
-                $sourceId = $qid.':'.(in_array($kind, ['created', 'published']) ? 'work' : $kind).':'.$eventYear;
                 $category = $this->category($row);
                 $sitelinks = (int) $value('sitelinks');
                 if ($sitelinks < 15) continue;
                 if (in_array($kind, ['birth', 'death']) ? ($category >= 5 && $sitelinks < 80) : $category > 5) continue;
-                if (preg_match('/\b(battle|siege|skirmish|appointment)\b/i', $label)) continue;
+                $worldEvent = $category === 5 && !in_array($kind, ['birth', 'death']);
+                if ($property === 'P580' && !$worldEvent) continue;
+                if ($worldEvent && $sitelinks < 30) continue;
+                if (preg_match('/\b(skirmish|appointment)\b/i', $label)) continue;
+                if (preg_match('/\b(battle|siege)\b/i', $label) && $sitelinks < 80) continue;
+                // Use one identifier for an event's inception/start/date in the same year.
+                if ($worldEvent) $kind = 'event';
+                $sourceId = $qid.':'.(in_array($kind, ['created', 'published']) ? 'work' : $kind).':'.$eventYear;
                 $suffix = ['created' => ' was created', 'published' => ' was published', 'event' => '', 'birth' => ' was born', 'death' => ' died'][$kind];
                 $candidate = [
-                    'source_id' => $sourceId, 'wikidata_id' => $qid, 'event_kind' => $kind,
+                    'source_id' => $sourceId, 'wikidata_id' => $qid, 'event_kind' => $kind, 'world_event' => $worldEvent,
                     'year' => $eventYear,
                     // Wikidata often stores January 1 for year-only dates. Respect precision.
                     'event_date' => (int) $value('precision', 9) >= 11 && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ? $date : null,
@@ -55,6 +60,24 @@ class WikimediaDiscovery
             }
             return collect($events)->sortBy('rank')->values()->all();
         });
+    }
+
+    public function select(array $pool, int $limit = 10): array
+    {
+        $ranked = collect($pool)->sortBy('rank')->values();
+        // Reserve three places for world context; fill unused places by cultural rank.
+        $world = $ranked->filter(function ($event) { return !empty($event['world_event']); })->take(min(3, $limit));
+        $ids = $world->pluck('source_id')->all();
+        return $world->concat($ranked->reject(function ($event) use ($ids) {
+            return in_array($event['source_id'], $ids, true);
+        })->take($limit - $world->count()))->sortBy('rank')->values()->all();
+    }
+
+    public function identity(array $event): string
+    {
+        // Inception, publication and start dates can describe the same milestone.
+        $kind = in_array($event['event_kind'], ['birth', 'death']) ? $event['event_kind'] : 'context';
+        return $event['wikidata_id'].':'.$kind.':'.$event['year'];
     }
 
     public function enrich(array $events): array
@@ -116,7 +139,7 @@ class WikimediaDiscovery
         }
         return array_map(function ($event) {
             foreach (['source_url', 'image_url', 'image_source_url', 'image_license_url'] as $field) $event[$field] = $this->safeUrl($event[$field]);
-            unset($event['article_title'], $event['rank'], $event['image_file'], $event['thumbnail']);
+            unset($event['article_title'], $event['rank'], $event['world_event'], $event['image_file'], $event['thumbnail']);
             return $event;
         }, $events);
     }
@@ -157,6 +180,9 @@ class WikimediaDiscovery
             'Q14208553' => 4, // invention
             'Q13418847' => 5, // historical event
             'Q10931' => 5, // revolution
+            'Q198' => 5, // war
+            'Q131569' => 5, // treaty
+            'Q124734' => 5, // rebellion
         ];
         $occupations = ['Q36834' => 1, 'Q639669' => 1, 'Q483501' => 2, 'Q36180' => 3, 'Q49757' => 3, 'Q901' => 4];
         $category = 6;
@@ -174,7 +200,7 @@ class WikimediaDiscovery
             2 => '/\b(painter|sculptor|artist|painting|sculpture|artwork|work of art)\b/i',
             3 => '/\b(writer|poet|novelist|novel|poem|literary work|playwright)\b/i',
             4 => '/\b(scientist|physicist|chemist|mathematician|astronomer|inventor|invention|discovery|scientific event)\b/i',
-            5 => '/\b(revolution|historical event)\b/i',
+            5 => '/\b(revolution|historical event|war|armed conflict|battle|siege|treaty|rebellion|uprising|independence|expedition|circumnavigation|earthquake|tsunami|volcanic eruption|famine|pandemic|epidemic|abolition|coronation)\b/i',
         ] as $priority => $pattern) {
             if (preg_match($pattern, $description)) $category = min($category, $priority);
         }
@@ -186,9 +212,10 @@ class WikimediaDiscovery
         $start = sprintf('%04d-01-01T00:00:00Z', max(1, $year - $range));
         $end = sprintf('%04d-12-31T23:59:59Z', min(9999, $year + $range));
         // Independent dated pools keep buildings/publications from crowding out births,
-        // deaths and historical events. Date-first execution avoids WDQS's broad joins.
+        // deaths and historical events. Start dates include wars and expeditions that
+        // have no single point-in-time value. Date-first execution avoids broad joins.
         $branches = [];
-        foreach (['P571', 'P577', 'P585', 'P569', 'P570'] as $property) {
+        foreach (['P571', 'P577', 'P585', 'P580', 'P569', 'P570'] as $property) {
             $branches[] = '{ SELECT ?item ?date ?article ?sitelinks ?property WHERE {
 '
                 .'hint:Query hint:optimizer "None" .
@@ -222,6 +249,7 @@ SELECT ?item ?itemLabel ?itemDescription ?property ?date ?precision ?article ?si
   OPTIONAL { ?item wdt:P106 ?occupation . }
   VALUES (?property ?claim ?valueProperty) {
     (wdt:P571 p:P571 psv:P571) (wdt:P577 p:P577 psv:P577) (wdt:P585 p:P585 psv:P585)
+    (wdt:P580 p:P580 psv:P580)
     (wdt:P569 p:P569 psv:P569) (wdt:P570 p:P570 psv:P570)
   }
   OPTIONAL { ?item ?claim ?statement . ?statement ?valueProperty ?node . ?node wikibase:timeValue ?date; wikibase:timePrecision ?precision . }

@@ -39,7 +39,19 @@
   .piece-timeline-copy p { line-height: 1.6; }
   .piece-timeline-no-image { grid-template-columns: 64px minmax(0, 1fr); }
   .piece-timeline-sources summary { cursor: pointer; }
-  .piece-timeline-label { display: block; font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: .5rem; }
+  .piece-timeline-label {
+    display: inline-block;
+    padding: .3rem .85rem;
+    border-radius: 999px;
+    background: rgba(0, 85, 254, .09);
+    color: var(--color-primary, #0055fe);
+    font-size: .7rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    margin-bottom: .65rem;
+  }
   .piece-timeline-highlighted {
     padding: 2rem 0;
     .piece-timeline-year { font-size: 1.35rem; line-height: 1.4; }

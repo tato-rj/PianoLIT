@@ -90,6 +90,8 @@ class PieceTimelineTest extends ReviewTestCase
         });
         $id = $first->json('search_id');
         $first->assertSee('Musical work 1');
+        $this->assertStringContainsString('data-year="1730"', $first->json('html'));
+        $this->assertStringContainsString('data-date="1730-01-01"', $first->json('html'));
         $this->assertDatabaseCount('piece_timeline_events', 0);
         $this->candidate($id)->assertOk();
         $this->candidate($id)->assertOk();
@@ -145,6 +147,10 @@ class PieceTimelineTest extends ReviewTestCase
         $this->delete(route('admin.pieces.timeline.destroy', [$this->piece, $event]))->assertRedirect();
         $this->assertDatabaseCount('piece_timeline_events', 0);
         $this->candidate($id);
+        $event = $this->piece->timelineEvents()->firstOrFail();
+        $this->deleteJson(route('admin.pieces.timeline.destroy', [$this->piece, $event]))->assertOk()->assertJsonPath('count', 0)->assertJsonPath('source_id', 'Q1:work:1730');
+        $this->assertDatabaseCount('piece_timeline_events', 0);
+        $this->candidate($id)->assertOk()->assertJsonPath('count', 1);
         DB::table('pieces')->where('id', $this->piece->id)->delete();
         $this->assertDatabaseCount('piece_timeline_events', 0);
     }
@@ -183,6 +189,30 @@ class PieceTimelineTest extends ReviewTestCase
         $this->assertArrayNotHasKey('timeline_events', $this->piece->getAttributes());
     }
 
+    public function test_piece_event_shows_composer_age_only_with_usable_lifetime_dates()
+    {
+        $composer = $this->piece->composer;
+        $composer->update(['name' => 'Johann Sebastian Bach', 'date_of_birth' => '1685-03-21', 'date_of_death' => '1750-07-28']);
+        $this->piece->update(['composed_in' => 1727]);
+        $ownEvent = function () { return (new WebTimeline)->forPiece($this->piece)->firstWhere('highlight', true); };
+        $event = $ownEvent();
+        $this->assertSame('Johann Sebastian Bach was 42 years old', $event['description']);
+        $html = view('webapp.piece.components.event', compact('event'))->render();
+        $this->assertStringContainsString('class="piece-timeline-label">This piece</span>', $html);
+        $this->assertStringNotContainsString('<img', $html);
+        $this->piece->update(['composed_in' => null, 'published_in' => 1732]);
+        $this->assertSame('Johann Sebastian Bach was 47 years old', $ownEvent()['description']);
+        $this->piece->update(['published_in' => 1751]);
+        $this->assertSame('Johann Sebastian Bach', $ownEvent()['description']);
+        $this->piece->update(['published_in' => 1684]);
+        $this->assertSame('Johann Sebastian Bach', $ownEvent()['description']);
+        $this->piece->update(['published_in' => 1686]);
+        $this->assertSame('Johann Sebastian Bach was 1 year old', $ownEvent()['description']);
+        $composer->update(['date_of_birth' => null]);
+        $this->assertSame('Johann Sebastian Bach', $ownEvent()['description']);
+        Http::assertNothingSent();
+    }
+
     public function test_cultural_ranking_filters_minor_events_and_collapses_same_year_work_dates()
     {
         $data = $this->bindings(8);
@@ -203,6 +233,74 @@ class PieceTimelineTest extends ReviewTestCase
         $pool = (new WikimediaDiscovery)->pool(1730, 3);
         $this->assertSame(['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6'], array_column($pool, 'wikidata_id'));
         $this->assertCount(6, $pool);
+    }
+
+    public function test_batches_mix_world_events_with_culture_and_keep_unselected_candidates()
+    {
+        $data = $this->bindings(30);
+        $world = $this->bindings(6, 1730, 101)['results']['bindings'];
+        foreach ($world as $index => &$row) {
+            unset($row['category']);
+            $row['property']['value'] = 'http://www.wikidata.org/prop/direct/P580';
+            $row['itemLabel']['value'] = 'World event '.($index + 1);
+            $row['itemDescription']['value'] = ['war', 'treaty', 'revolution', 'expedition', 'earthquake', 'rebellion'][$index];
+            $row['sitelinks']['value'] = '60';
+        }
+        unset($row);
+        $data['results']['bindings'] = array_merge($data['results']['bindings'], $world, [$world[0]]);
+        $data['results']['bindings'][36]['property']['value'] = 'http://www.wikidata.org/prop/direct/P585';
+        $this->fakeHttp([WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response($data), '*' => Http::response(['query' => ['pages' => []]])]);
+        $first = $this->discover()->assertOk()->assertJsonPath('count', 10);
+        for ($i = 1; $i <= 3; $i++) $this->assertStringContainsString('World event '.$i, $first->json('html'));
+        $this->assertStringNotContainsString('World event 4', $first->json('html'));
+        $id = $first->json('search_id');
+        $this->candidate($id, 'Q101:event:1730')->assertOk();
+        $second = $this->discover($id)->assertOk()->assertJsonPath('count', 10);
+        for ($i = 4; $i <= 6; $i++) $this->assertStringContainsString('World event '.$i, $second->json('html'));
+        $this->assertStringNotContainsString('data-candidate="Q101:event:1730"', $second->json('html'));
+        $this->assertStringContainsString('data-candidate="Q8:work:1730"', $second->json('html'));
+        $third = $this->discover($id)->assertOk()->assertJsonPath('count', 10);
+        $this->assertStringNotContainsString('World event', $third->json('html'));
+        Http::assertSent(function ($request) {
+            return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0 && strpos($request['query'], 'wdt:P580 p:P580 psv:P580') !== false;
+        });
+        $this->assertArrayNotHasKey('world_event', $this->app['session']->get('piece_timeline_searches.'.$id.'.shown.Q101:event:1730'));
+        // Existing curated content may use the earlier inception-based identifier.
+        $legacy = $this->piece->timelineEvents()->firstOrFail()->toArray();
+        $legacy['wikidata_id'] = 'Q106';
+        $legacy['source_id'] = 'Q106:work:1730';
+        $legacy['event_kind'] = 'created';
+        $this->piece->timelineEvents()->create($legacy);
+        $new = $this->discover()->assertOk()->assertJsonPath('count', 10);
+        $this->assertStringNotContainsString('data-candidate="Q106:event:1730"', $new->json('html'));
+        $this->assertStringNotContainsString('data-candidate="Q101:event:1730"', $new->json('html'));
+    }
+
+    public function test_world_context_keeps_notable_battles_but_filters_minor_history()
+    {
+        $data = $this->bindings(8);
+        foreach ($data['results']['bindings'] as &$row) {
+            unset($row['category']);
+            $row['property']['value'] = 'http://www.wikidata.org/prop/direct/P585';
+            $row['itemDescription']['value'] = 'historical event';
+            $row['sitelinks']['value'] = '100';
+        }
+        unset($row);
+        $data['results']['bindings'][0]['itemLabel']['value'] = 'Major Battle';
+        $data['results']['bindings'][1]['itemLabel']['value'] = 'Minor Battle';
+        $data['results']['bindings'][1]['sitelinks']['value'] = '20';
+        $data['results']['bindings'][2]['itemLabel']['value'] = 'Political appointment';
+        $data['results']['bindings'][3]['itemLabel']['value'] = 'A skirmish';
+        $data['results']['bindings'][4]['sitelinks']['value'] = '20';
+        // Direct Wikidata classes work even without a matching English description.
+        foreach ([5 => 'Q198', 6 => 'Q131569', 7 => 'Q124734'] as $index => $class) {
+            $data['results']['bindings'][$index]['itemDescription']['value'] = 'Significant event';
+            $data['results']['bindings'][$index]['class']['value'] = 'http://www.wikidata.org/entity/'.$class;
+        }
+        $this->fakeHttp([WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response($data)]);
+        $pool = (new WikimediaDiscovery)->pool(1730, 10);
+        $this->assertSame(['Q1', 'Q6', 'Q7', 'Q8'], array_column($pool, 'wikidata_id'));
+        $this->assertSame([true, true, true, true], array_column($pool, 'world_event'));
     }
 
     public function test_images_and_credits_are_saved_as_plain_content_and_date_precision_is_preserved()
