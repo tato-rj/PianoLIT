@@ -38,8 +38,10 @@
                     <template data-moment-template>
                         @include('admin.pages.pieces.videos.moment-row', ['index' => 0, 'moment' => []])
                     </template>
-                    <button type="button" class="btn btn-outline-secondary mb-3" data-moment-action="add">Add a section</button>
-                    <div class="text-end mb-4"><button type="submit" class="btn btn-default">Save sections</button></div>
+                    <div class="moment-editor__actions">
+                        <button type="button" class="btn btn-secondary" data-moment-action="add">@icon('plus', ['mr' => 1]) Add a section</button>
+                        <button type="submit" class="btn btn-primary">Save sections</button>
+                    </div>
                 </form>
             </div>
         </div>

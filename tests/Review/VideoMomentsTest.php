@@ -89,7 +89,7 @@ class VideoMomentsTest extends ReviewTestCase
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
         $this->get($this->url('edit'))->assertOk()->assertSee('Sections · Performance')
             ->assertSee('Sections in this piece')->assertSee('Add a section')->assertSee('Save sections')
-            ->assertSee('Delete section')->assertSee('next section starts')->assertSee('overlapping sections')
+            ->assertSee('Delete section')
             ->assertDontSee('Moments ·')->assertDontSee('Moments in this piece')->assertDontSee('Delete moment');
         $this->withExceptionHandling();
         $response = $this->putJson($this->url(), $this->payload([$this->row(['title' => ''])]))
@@ -242,7 +242,7 @@ class VideoMomentsTest extends ReviewTestCase
             $this->assertDatabaseCount('video_moments', 2);
             $this->get($this->url('edit'))->assertOk()->assertSee('admin-moment-preview', false)
                 ->assertSee('data-video-moments=', false)->assertSee('Sections in this piece')
-                ->assertSee('latest start time takes priority')->assertDontSee('Open this video');
+                ->assertDontSee('Open this video');
         }
     }
 

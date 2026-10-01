@@ -1,10 +1,10 @@
-<div class="moment-editor__row bg-light mb-2" data-moment-row>
+<div class="moment-editor__row" data-moment-row>
     @if(!empty($moment['id']))<input type="hidden" data-field="id" name="moments[{{$index}}][id]" value="{{$moment['id']}}">@endif
-    <div class="d-flex align-items-center justify-content-between mb-1">
-        <span class="small text-muted" data-moment-number>Section</span>
+    <div class="moment-editor__header">
+        <span class="moment-editor__number" data-moment-number>Section</span>
         <button type="button" class="moment-editor__delete" data-moment-action="delete" aria-label="Delete section" title="Delete section">@icon('trash-2', ['mr' => 0])</button>
     </div>
-    <div class="row g-2">
+    <div class="row g-3">
         @foreach(['start_time' => 'Start time', 'end_time' => 'End time (optional)'] as $field => $label)
         <div class="col-6 col-lg-3">
             <span class="moment-editor__label">{{$label}}</span>
