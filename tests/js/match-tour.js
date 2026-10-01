@@ -71,4 +71,54 @@ module.exports = async function () {
     stale.generation = 2;
     resolve({data: '<article>obsolete</article>'}); await response;
     assert.strictEqual(stale.state.count, 47);
+
+    // Completing the final choice opens the original modal outside the stage.
+    window.setTimeout = callback => callback();
+    const media = {events: {}, currentTime: 0, pause() { this.pauses = (this.pauses || 0) + 1; }, addEventListener(event, callback) { this.events[event] = callback; }};
+    const opener = {focus() { this.focused = true; }};
+    const modal = {events: {}, attributes: {}, setAttribute(key, value) { this.attributes[key] = value; }, addEventListener(event, callback) { this.events[event] = callback; },
+        querySelector() { return media; }, querySelectorAll() { return [media]; }, remove() { this.removed = true; }};
+    let appended;
+    window.document = {body: {appendChild(node) { appended = node; }}};
+    window.bootstrap = {Modal: class {
+        constructor(node) { this.node = node; this.shows = 0; }
+        show() { this.shows++; this.node.events['show.bs.modal'](); }
+        hide() { this.node.events['hide.bs.modal'](); }
+        dispose() { this.disposed = true; }
+    }};
+    let destroyed = false;
+    window.Plyr = class {destroy() { destroyed = true; }};
+    const result = {
+        state: {count: 2, answers: {}}, http: {post: () => Promise.resolve({data: 'chosen piece and modal'})},
+        element: {dataset: {url: '/result'}, querySelector: () => ({})},
+        stage: {classList: {add() {}, remove() {}}, querySelector: selector => selector === '#match-tour-result' ? modal : opener, querySelectorAll: () => []},
+        counter: {to: () => Promise.resolve(), cancel() {}}, generation: 1, reduced: true, data: {previewSeconds: 10}, previews: {stop() {}},
+        stopMedia: Controller.prototype.stopMedia, mountResult: Controller.prototype.mountResult, navigation() {}, focus() {}
+    };
+    await Controller.prototype.result.call(result, 1);
+    assert.strictEqual(result.state.count, 1);
+    assert.strictEqual(result.stage.innerHTML, 'chosen piece and modal');
+    assert.strictEqual(appended, modal);
+    assert.strictEqual(result.resultDialog.shows, 1);
+    assert.strictEqual(modal.attributes['aria-labelledby'], 'match-tour-result-title');
+    media.currentTime = 10; media.events.seeking();
+    assert.strictEqual(media.currentTime, 0);
+    const dialog = result.resultDialog;
+    dialog.hide(); modal.events['hidden.bs.modal']();
+    assert(media.pauses > 0); assert(opener.focused); assert(!modal.removed);
+    await Controller.prototype.click.call(result, {target: {closest: () => ({disabled: false, hasAttribute: name => name === 'data-result-open'})}});
+    assert.strictEqual(dialog.shows, 2, 'Reopen the same recommendation without another request');
+    Controller.prototype.dispose.call(result);
+    // A restart while the opening transition is pending also cleans up when it finishes.
+    modal.events['shown.bs.modal'](); modal.events['hidden.bs.modal']();
+    assert(destroyed); assert(dialog.disposed); assert(modal.removed);
+    assert.strictEqual(result.resultModal, null);
+
+    let failureReported;
+    const failed = {state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
+        counter: {to: () => Promise.resolve(), cancel() {}, set(value) { this.value = value; }}, generation: 1,
+        render() { this.rendered = true; }, report(message) { failureReported = message; }};
+    await Controller.prototype.result.call(failed, 1);
+    assert.strictEqual(failed.state.step, 6); assert.strictEqual(failed.counter.value, 2);
+    assert(failed.rendered); assert(!failed.busy); assert(failureReported.includes('retry'));
 };

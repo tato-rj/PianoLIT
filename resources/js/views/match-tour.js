@@ -158,10 +158,19 @@
         stopMedia() {
             this.previews.stop();
             this.stage.querySelectorAll('audio,video').forEach(media => media.pause());
+            if (this.resultModal) this.resultModal.querySelectorAll('audio,video').forEach(media => media.pause());
         }
         dispose() {
             this.generation++; this.counter.cancel(); this.stopMedia();
             if (this.resultPlayer) { this.resultPlayer.destroy(); this.resultPlayer = null; }
+            if (this.resultModal) {
+                const modal = this.resultModal;
+                this.resultModal = null;
+                // If the opening transition is pending, the shown listener closes it.
+                if (this.resultVisible) this.resultDialog.hide();
+                else { this.resultDialog.dispose(); modal.remove(); }
+                this.resultDialog = null;
+            }
             if (this.pdfTask) { this.pdfTask.destroy(); this.pdfTask = null; }
         }
         navigation() {
@@ -177,6 +186,7 @@
                 this.counter.set(this.state.count); this.render(); return;
             }
             if (this.busy) return;
+            if (button.hasAttribute('data-result-open')) { this.resultDialog.show(button); return; }
             if (button.hasAttribute('data-play')) {
                 this.report('');
                 this.previews.play(this.data.pieces.find(piece => piece.id === Number(button.dataset.play)), button); return;
@@ -288,15 +298,17 @@
                 await pause(this.reduced ? 0 : 140);
                 if (generation !== this.generation) return;
                 this.stage.innerHTML = results[0].data;
+                this.mountResult();
                 this.stage.classList.remove('leaving'); this.navigation(); this.focus(); this.busy = false;
                 this.element.querySelector('[data-count-announcement]').textContent = '1 piece. Your match is ready.';
-                const media = this.stage.querySelector('[data-result-media]');
+                const media = this.resultModal.querySelector('[data-result-media]');
                 if (media) {
                     ['timeupdate', 'seeking'].forEach(event => media.addEventListener(event, () => {
                         if (media.currentTime >= this.data.previewSeconds) { media.pause(); media.currentTime = 0; }
                     }));
                     if (root.Plyr) this.resultPlayer = new root.Plyr(media);
                 }
+                this.resultDialog.show(this.stage.querySelector('[data-result-open]'));
             } catch (error) {
                 if (generation !== this.generation) return;
                 this.counter.cancel(); this.state.back(); this.counter.set(previous);
@@ -305,6 +317,27 @@
                     ? 'The library has changed since you started. Please start over to refresh the listening choices.'
                     : 'We couldn’t find your match just now. Choose your intent again to retry; your earlier answers are saved.');
             }
+        }
+        mountResult() {
+            const modal = this.resultModal = this.stage.querySelector('#match-tour-result');
+            // Keep the modal outside the transitioning stage and its sticky counter.
+            root.document.body.appendChild(modal);
+            modal.setAttribute('tabindex', '-1');
+            modal.setAttribute('aria-labelledby', 'match-tour-result-title');
+            const dialog = this.resultDialog = new root.bootstrap.Modal(modal);
+            this.resultVisible = false;
+            modal.addEventListener('show.bs.modal', () => { this.resultVisible = true; });
+            modal.addEventListener('shown.bs.modal', () => {
+                if (this.resultModal !== modal) dialog.hide();
+            });
+            modal.addEventListener('hide.bs.modal', () => {
+                modal.querySelectorAll('audio,video').forEach(media => media.pause());
+            });
+            modal.addEventListener('hidden.bs.modal', () => {
+                if (this.resultModal !== modal) { dialog.dispose(); modal.remove(); return; }
+                this.resultVisible = false;
+                this.stage.querySelector('[data-result-open]').focus({preventScroll: true});
+            });
         }
     }
 

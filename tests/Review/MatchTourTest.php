@@ -77,7 +77,27 @@ class MatchTourTest extends ReviewTestCase
         $quiz->shouldReceive('search')->once()->andReturn($this->pieces[0]);
         $this->app->instance(Quiz::class, $quiz);
         $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your match')
-            ->assertSee('data-result-media', false)->assertSee('Learn more about this piece');
+            ->assertSee('id="match-tour-result"', false)->assertSee('data-result-open', false)
+            ->assertSee('data-result-media', false)->assertSee('<audio', false)
+            ->assertSee($this->pieces[0]->medium_name)->assertSee('Learn more about this piece')
+            ->assertSee('More like this')->assertDontSee('id="match-modal"', false);
+    }
+
+    public function test_result_reuses_the_original_modal_and_prefers_performance_video()
+    {
+        $piece = $this->pieces[0];
+        Model::withoutEvents(function () use ($piece) {
+            create(\App\Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Tutorial', 'video_url' => 'https://example.test/lesson.mp4']);
+            create(\App\Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance', 'video_url' => 'https://example.test/performance.mp4']);
+        });
+        $html = view('webapp.tour.result', ['piece' => $piece])->render();
+        $this->assertStringContainsString('id="match-tour-result"', $html);
+        $this->assertStringContainsString('performance.mp4', $html);
+        $this->assertStringNotContainsString('lesson.mp4', $html);
+        $this->assertStringContainsString("What's this piece like?", $html);
+        $legacy = view('funnels.find-your-match.results', ['piece' => $piece])->render();
+        $this->assertStringContainsString('id="match-modal"', $legacy);
+        $this->assertStringNotContainsString('data-result-media', $legacy);
     }
 
     public function test_real_engine_can_recommend_with_the_new_answers()
