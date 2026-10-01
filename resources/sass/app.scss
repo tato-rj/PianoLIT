@@ -58,6 +58,15 @@
   height: 3px;
 }
 
+.offcanvas-end {
+    max-width: max-content;
+}
+
+.offcanvas-bottom {
+    height: auto;
+    max-height: 45vh;
+}
+
 .dropdown-toggle::after {
     display: none;
 }
