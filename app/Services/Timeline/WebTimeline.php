@@ -20,7 +20,7 @@ class WebTimeline
                 'event_date' => null,
                 'title' => $piece->timeline_name . ($composed ? ' was composed' : ' was published'),
                 'description' => $piece->composer->name,
-                'image_url' => $piece->cover_path ? storage($piece->cover_path) : null,
+                'image_url' => null,
                 'source_url' => null,
                 'highlight' => true,
             ]);

@@ -76,7 +76,12 @@ class PieceTimelineTest extends ReviewTestCase
     public function test_ten_more_excludes_shown_and_saved_and_save_is_idempotent()
     {
         $this->fakeDiscovery();
-        $first = $this->discover()->assertOk()->assertJsonPath('count', 10);
+        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 10);
+        Http::assertSent(function ($request) {
+            return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0
+                && strpos($request['query'], '1720-01-01T00:00:00Z') !== false
+                && strpos($request['query'], '1740-12-31T23:59:59Z') !== false;
+        });
         $id = $first->json('search_id');
         $first->assertSee('Musical work 1');
         $this->assertDatabaseCount('piece_timeline_events', 0);
@@ -100,10 +105,12 @@ class PieceTimelineTest extends ReviewTestCase
             $ranges[] = $request['query'];
             return Http::response(count($ranges) === 1 ? $this->bindings(3) : $this->bindings(25));
         });
-        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 7);
+        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 15);
         $this->assertCount(2, $ranges);
-        $this->assertStringContainsString('1727-01-01', $ranges[0]);
-        $this->assertStringContainsString('1723-01-01', $ranges[1]);
+        $this->assertStringContainsString('1720-01-01', $ranges[0]);
+        $this->assertStringContainsString('1740-12-31', $ranges[0]);
+        $this->assertStringContainsString('1715-01-01', $ranges[1]);
+        $this->assertStringContainsString('1745-12-31', $ranges[1]);
         $id = $first->json('search_id');
         $this->withExceptionHandling();
         $this->candidate($id, 'Q999:work:1730')->assertUnprocessable();
@@ -147,6 +154,7 @@ class PieceTimelineTest extends ReviewTestCase
 
     public function test_public_uses_only_database_and_mobile_timeline_is_unchanged()
     {
+        $this->piece->update(['cover_path' => 'pieces/timeline-cover.jpg']);
         $legacyBefore = Timeline::for($this->piece->id, 4);
         $this->fakeDiscovery();
         $id = $this->discover()->json('search_id');
@@ -158,7 +166,10 @@ class PieceTimelineTest extends ReviewTestCase
         $this->get($url)->assertOk()->assertSee('Musical work 1 was created')->assertSee('This piece');
         Http::assertNothingSent();
         $events = (new WebTimeline)->forPiece($this->piece);
-        $this->assertSame(1730, $events->firstWhere('highlight', true)['year']);
+        $ownEvent = $events->firstWhere('highlight', true);
+        $this->assertSame(1730, $ownEvent['year']);
+        $this->assertNull($ownEvent['image_url']);
+        $this->assertStringNotContainsString('<img', view('webapp.piece.components.event', ['event' => $ownEvent])->render());
         $this->piece->update(['composed_in' => null]);
         $this->assertSame(1732, (new WebTimeline)->forPiece($this->piece)->firstWhere('highlight', true)['year']);
         $this->piece->update(['published_in' => null]);

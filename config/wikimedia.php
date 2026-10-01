@@ -5,5 +5,5 @@ return [
     'timeout' => 8,
     'query_timeout' => 20,
     'cache_minutes' => 360,
-    'ranges' => [3, 7, 15, 25, 40],
+    'ranges' => [10, 15, 25, 40],
 ];

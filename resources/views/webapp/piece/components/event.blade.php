@@ -1,4 +1,4 @@
-<article class="piece-timeline-event {{$event['highlight'] ? 'piece-timeline-highlighted' : ''}} {{empty($event['image_url']) ? 'piece-timeline-no-image' : ''}}">
+<article class="piece-timeline-event {{$event['highlight'] ? 'piece-timeline-highlighted' : ''}} {{$event['highlight'] || empty($event['image_url']) ? 'piece-timeline-no-image' : ''}}">
   <div class="piece-timeline-year">
     @if(!empty($event['event_date']))
     <time datetime="{{$event['event_date']}}">{{$event['year']}}<small>{{\Carbon\Carbon::parse($event['event_date'])->format('M j')}}</small></time>
@@ -6,7 +6,7 @@
     <time>{{$event['year']}}</time>
     @endif
   </div>
-  @if(!empty($event['image_url']))
+  @if(!$event['highlight'] && !empty($event['image_url']))
   <img class="piece-timeline-image" src="{{$event['image_url']}}" alt="" loading="lazy" onerror="this.closest('.piece-timeline-event').classList.add('piece-timeline-no-image'); this.remove();" width="160" height="112">
   @endif
   <div class="piece-timeline-copy">
