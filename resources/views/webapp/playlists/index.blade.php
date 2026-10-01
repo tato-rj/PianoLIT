@@ -37,7 +37,7 @@
     <section class="collections-section" id="pianolit-path" aria-labelledby="path-heading">
         <div class="collections-section__heading">
             <div>
-                <h2 id="path-heading">The PianoLit path</h2>
+                <h2 id="path-heading">The PianoLit series</h2>
                 <p>Grow through our Piano Solos series, one book at a time.</p>
             </div>
             <div class="collections-book-controls" data-book-controls hidden>

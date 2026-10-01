@@ -24,6 +24,7 @@ function element(value = '') {
 
 async function main() {
     require('./collections')();
+    require('./folders')();
     require('./admin-subdomain')();
     require('./icons')();
     require('./popups')();

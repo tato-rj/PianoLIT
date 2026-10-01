@@ -1,6 +1,6 @@
 {
     "/js/app.js": "/js/app.js?id=29dd6026bd2bb8cd5501",
-    "/css/app.css": "/css/app.css?id=ae3a3d41bbaf1785b633",
+    "/css/app.css": "/css/app.css?id=a9c69ef27443b8011b8e",
     "/css/admin.css": "/css/admin.css?id=9e4cdcc9797f141992c2",
     "/css/design-system.css": "/css/design-system.css?id=7ae98d40415b1d5056af",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
@@ -14,5 +14,6 @@
     "/js/views/score-editor.js": "/js/views/score-editor.js?id=668763dbcf999c8cd14c",
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=fdbff8185284fd251dc0",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf"
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf",
+    "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d"
 }

@@ -86,22 +86,28 @@ class TabsController extends Controller
         $user = auth('web')->user();
         $folders = $user ? $user->favoriteFolders()->alphabetical('name')->get() : collect();
         $folderPreviews = collect();
+        $folderSearch = collect();
         if ($user) {
             // Suggestions already need these favorites. Keep folder data on this web-only load.
             $user->setRelation('favorites', $user->favorites()
                 ->withPivot('favorite_folder_id', 'order')
                 ->with('tags')
                 ->get());
-            $folderPreviews = $user->favorites
+            $folderPieces = $user->favorites
                 ->filter(function ($piece) { return $piece->pivot->favorite_folder_id !== null; })
-                ->groupBy(function ($piece) { return $piece->pivot->favorite_folder_id; })
-                ->map(function ($pieces) {
-                    return $pieces->sortBy(function ($piece) { return $piece->pivot->order; })->take(2);
-                });
+                ->groupBy(function ($piece) { return $piece->pivot->favorite_folder_id; });
+            $folderPreviews = $folderPieces->map(function ($pieces) {
+                return $pieces->sortBy(function ($piece) { return $piece->pivot->order; })->take(2);
+            });
+            $folderSearch = $folderPieces->map(function ($pieces) {
+                return $pieces->map(function ($piece) {
+                    return implode(' ', [$piece->name, $piece->short_name, $piece->composer->name, $piece->composer->short_name]);
+                })->implode(' ');
+            });
         }
         $suggestions = $user ? PieceCards::load($user->suggestions(20)->shuffle()->take(10)) : collect();
 
-        return view('webapp.user.my-pieces.index', compact('folders', 'folderPreviews', 'suggestions'));
+        return view('webapp.user.my-pieces.index', compact('folders', 'folderPreviews', 'folderSearch', 'suggestions'));
     }
 
     public function settings()

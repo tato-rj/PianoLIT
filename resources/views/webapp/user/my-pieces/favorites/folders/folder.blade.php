@@ -1,4 +1,4 @@
-<article class="my-pieces-folder">
+<article class="my-pieces-folder" data-folder-search="{{ $folder->name }} {{ $folderSearch->get($folder->id, '') }}">
     <div class="my-pieces-folder__heading">
         <span class="my-pieces-folder__icon" aria-hidden="true">@icon('folder-open', ['mr' => 0])</span>
         <div class="my-pieces-folder__identity">

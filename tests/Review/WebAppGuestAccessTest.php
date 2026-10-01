@@ -208,7 +208,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
 
         $this->actingAs($user, 'web');
         $response = $this->get(route('webapp.my-pieces'))->assertOk()
-            ->assertSee('Your favorites')->assertSee('2 folders · 2 pieces')
+            ->assertSee('Your folders')->assertSee('2 folders · 2 pieces')
             ->assertSee('Practice favorites')->assertSee('New folder')
             ->assertSee('Guest repertoire test')->assertSee($this->piece->composer->short_name)
             ->assertSee('No pieces saved yet')->assertDontSee($otherFolder->name)
@@ -223,6 +223,63 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->assertSame(2, $xpath->query('//article[contains(@class, "my-pieces-folder")]')->length);
         $this->assertSame(2, $xpath->query('//article[contains(@class, "my-pieces-folder")][.//h3/a[text()="Practice favorites"]]//div[contains(@class, "my-pieces-folder__piece")]')->length);
         $this->assertSame(0, $xpath->query('//article[contains(@class, "my-pieces-folder")][.//h3/a[text()="New folder"]]//div[contains(@class, "my-pieces-folder__piece")]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="folder-grid"]/button[last()][@data-bs-target="#new-folder-modal"]')->length);
+        $response->assertSee('id="folder-search"', false)->assertSee('js/views/folders.js', false);
+
+        // Optional visual fixture uses only this suite's isolated SQLite data.
+        if ($destination = getenv('FOLDERS_PREVIEW_PATH')) {
+            Model::withoutEvents(function () use ($user) {
+                foreach (['Book 3', 'To record', 'Future freepicks'] as $name) {
+                    $folder = create(FavoriteFolder::class, ['user_id' => $user->id, 'name' => $name]);
+                    foreach ([$this->piece, $this->freePiece] as $order => $piece) {
+                        Favorite::create(['user_id' => $user->id, 'favorite_folder_id' => $folder->id, 'piece_id' => $piece->id, 'order' => $order]);
+                    }
+                }
+            });
+            file_put_contents($destination, $this->get(route('webapp.my-pieces'))->getContent());
+        }
+    }
+
+    public function test_folder_search_includes_all_saved_pieces_and_composer_names_without_exposing_other_accounts()
+    {
+        $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
+        [$user, $folder, $third, $privatePiece] = Model::withoutEvents(function () {
+            $user = create(User::class)->setAppends(['full_name']);
+            $folder = create(FavoriteFolder::class, ['user_id' => $user->id, 'name' => 'Practice & "perform"']);
+            $third = create(Piece::class, ['name' => 'Search beyond previews', 'nickname' => 'Rêverie search']);
+            $third->composer->update(['name' => 'Claude Debussy']);
+            foreach ([$this->piece, $this->freePiece, $third] as $order => $piece) {
+                Favorite::create(['user_id' => $user->id, 'favorite_folder_id' => $folder->id, 'piece_id' => $piece->id, 'order' => $order]);
+            }
+            $other = create(User::class);
+            $otherFolder = create(FavoriteFolder::class, ['user_id' => $other->id]);
+            $privatePiece = create(Piece::class, ['name' => 'Private search title']);
+            Favorite::create(['user_id' => $other->id, 'favorite_folder_id' => $otherFolder->id, 'piece_id' => $privatePiece->id]);
+            return [$user, $folder, $third, $privatePiece];
+        });
+        $response = $this->actingAs($user, 'web')->get(route('webapp.my-pieces', ['user_id' => 999]))->assertOk();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $cards = $xpath->query('//article[@data-folder-search]');
+        $this->assertSame(1, $cards->length);
+        $search = $cards->item(0)->getAttribute('data-folder-search');
+        foreach ([$folder->name, $third->name, $third->short_name, 'Claude Debussy', 'C. Debussy'] as $term) {
+            $this->assertStringContainsString($term, $search);
+        }
+        $this->assertStringNotContainsString($privatePiece->name, $search);
+        $this->assertStringNotContainsString($third->short_name, $cards->item(0)->textContent);
+    }
+
+    public function test_empty_folder_grid_keeps_the_create_folder_card()
+    {
+        $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
+        $user = Model::withoutEvents(function () { return create(User::class)->setAppends(['full_name']); });
+        $this->actingAs($user, 'web')->get(route('webapp.my-pieces'))->assertOk()
+            ->assertSee('0 folders · 0 pieces')
+            ->assertSee('my-pieces-folder--create', false)
+            ->assertSee('Create a folder to organize')
+            ->assertDontSee('data-folder-search=', false);
     }
 
     public function test_folder_ordering_and_claps_use_the_signed_in_account()

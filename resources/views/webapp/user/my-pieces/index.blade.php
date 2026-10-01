@@ -25,6 +25,7 @@
 
 @push('scripts')
 @auth('web')
+<script src="{{ mix('js/views/folders.js') }}"></script>
 <script type="text/javascript">
 $('#local-filter input[type="checkbox"]').change(function() {
     let filters = [];
