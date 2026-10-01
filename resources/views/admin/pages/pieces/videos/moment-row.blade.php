@@ -2,10 +2,10 @@
     @if(!empty($moment['id']))<input type="hidden" data-field="id" name="moments[{{$index}}][id]" value="{{$moment['id']}}">@endif
     <div class="row g-2">
         <div class="col-sm-6"><label class="w-100">Start time
-            <input type="text" class="form-control" data-field="start_time" name="moments[{{$index}}][start_time]" value="{{$moment['start_time'] ?? ''}}" placeholder="0:12" required maxlength="30">
+            <input type="text" class="form-control" data-field="start_time" data-moment-time name="moments[{{$index}}][start_time]" value="{{\App\VideoMoment::formatTimeInput($moment['start_time'] ?? null)}}" placeholder="MM:SS" inputmode="decimal" required maxlength="30">
         </label></div>
         <div class="col-sm-6"><label class="w-100">End time (optional)
-            <input type="text" class="form-control" data-field="end_time" name="moments[{{$index}}][end_time]" value="{{$moment['end_time'] ?? ''}}" placeholder="0:19.5" maxlength="30">
+            <input type="text" class="form-control" data-field="end_time" data-moment-time name="moments[{{$index}}][end_time]" value="{{\App\VideoMoment::formatTimeInput($moment['end_time'] ?? null)}}" placeholder="MM:SS" inputmode="decimal" maxlength="30">
         </label></div>
     </div>
     <label class="w-100 mt-2">Title

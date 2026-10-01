@@ -78,7 +78,7 @@ class VideoMomentsTest extends ReviewTestCase
     public function test_manager_can_add_edit_delete_and_reorder_without_changing_ids()
     {
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
-        $this->get($this->url('edit'))->assertOk()->assertSee('Add a moment')->assertSee('1:02:03');
+        $this->get($this->url('edit'))->assertOk()->assertSee('Add a moment')->assertSee('MM:SS');
         $this->get(route('admin.pieces.edit', $this->piece))->assertOk()->assertSee($this->url('edit'), false)->assertSee('Manage moments');
         $this->put($this->url(), $this->payload([$this->row(), $this->row(['start_time' => '12', 'end_time' => ''])]))->assertRedirect();
         $moments = $this->video->moments()->get();
@@ -127,7 +127,7 @@ class VideoMomentsTest extends ReviewTestCase
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
         $first = $this->moment();
         $second = $this->moment(null, ['sort_order' => 1]);
-        $payload = $this->payload([$this->row(['id' => $first->id]), $this->row()]);
+        $payload = $this->payload([$this->row(['id' => $first->id]), $this->row(['start_time' => '90', 'end_time' => '95'])]);
         VideoMoment::creating(function () { throw new \RuntimeException('Simulated storage failure'); });
         try {
             $this->put($this->url(), $payload);
@@ -175,5 +175,57 @@ class VideoMomentsTest extends ReviewTestCase
         $this->video->delete();
         $this->assertDatabaseCount('video_moments', 1);
         $this->assertNotNull($other->fresh());
+    }
+
+    public function test_edit_formats_times_without_losing_fractional_seconds()
+    {
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $this->moment(null, ['start_time' => 3723.125, 'end_time' => 7200.5]);
+        $this->get($this->url('edit'))->assertOk()->assertSee('value="62:03.125"', false)
+            ->assertSee('value="120:00.5"', false)->assertSee('data-moment-time', false);
+        $this->assertSame('00:00', VideoMoment::formatTimeInput(0));
+        $this->assertSame('', VideoMoment::formatTimeInput(null));
+        $this->assertSame('01:23.5', VideoMoment::formatTimeInput('1:23.5'));
+        $this->assertSame('1:99', VideoMoment::formatTimeInput('1:99'));
+    }
+
+    public function test_overlaps_and_duplicate_starts_can_be_saved_and_previewed()
+    {
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $this->withExceptionHandling();
+        foreach ([
+            [['00:12', '00:20'], ['00:19.999', '00:25']],
+            [['00:19', '00:25'], ['00:12', '00:20']], // Input order is independent of time order.
+            [['00:12', '00:40'], ['00:20', '00:21']], // Nested ranges.
+            [['00:12', '00:12'], ['00:12', '']], // Duplicate starts, including empty/zero ranges.
+            [['00:12', '00:20'], ['00:18', '']], // Optional end still cannot start inside a range.
+        ] as $times) {
+            $rows = array_map(function ($time) { return $this->row(['start_time' => $time[0], 'end_time' => $time[1]]); }, $times);
+            $this->putJson($this->url(), $this->payload($rows))->assertRedirect()->assertSessionHasNoErrors();
+            $this->assertDatabaseCount('video_moments', 2);
+            $this->get($this->url('edit'))->assertOk()->assertSee('admin-moment-preview', false)
+                ->assertSee('data-video-moments=', false)->assertSee('Moments in this piece')
+                ->assertSee('latest start time takes priority')->assertDontSee('Open this video');
+        }
+    }
+
+    public function test_adjacent_ranges_and_bounded_optional_ends_can_be_saved()
+    {
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $this->putJson($this->url(), $this->payload([
+            $this->row(['start_time' => '00:19.5', 'end_time' => '00:25']),
+            $this->row(['start_time' => '00:12.25', 'end_time' => '00:19.5']),
+            $this->row(['start_time' => '00:25', 'end_time' => '']),
+            $this->row(['start_time' => '00:26', 'end_time' => '00:30']),
+        ]))->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame([19.5, 12.25, 25.0, 26.0], $this->video->moments()->pluck('start_time')->all());
+    }
+
+    public function test_admin_video_preview_without_moments_has_no_guide_ui()
+    {
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $this->get($this->url('edit'))->assertOk()->assertSee('id="admin-moment-preview"', false)
+            ->assertSee(e($this->video->video_url), false)->assertSee('cdn.plyr.io/3.7.8/plyr.js', false)
+            ->assertDontSee('data-video-moments=', false)->assertDontSee('Moments in this piece');
     }
 }

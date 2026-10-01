@@ -16,9 +16,9 @@
 		<img src="{{asset('images/webapp/synthesia-missing.svg')}}" class="mx-auto mb-4" style="width: 132px; opacity:  .1">
 		<p class="text-muted">Would you like to watch a synthesia of this piece?<br>Tap below to make your request.</p>
 		@auth('web')
-		<button class="btn rounded-pill btn-outline-secondary btn-wide" data-bs-toggle="modal" data-bs-target="#synthesia-request-modal">Send my request</button>
+		<button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#synthesia-request-modal">Send my request</button>
 		@else
-		<a href="{{ route('login') }}" class="btn rounded-pill btn-outline-secondary btn-wide">Sign in to request</a>
+		<a href="{{ route('login') }}" class="btn btn-secondary">Sign in to request</a>
 		@endauth
 	</div>
 
