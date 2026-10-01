@@ -1,7 +1,7 @@
 {
     "/js/app.js": "/js/app.js?id=29dd6026bd2bb8cd5501",
-    "/css/app.css": "/css/app.css?id=e225fbd8cd2be52eb1c7",
-    "/css/admin.css": "/css/admin.css?id=1bb2e0d2c4e1f3547b91",
+    "/css/app.css": "/css/app.css?id=dd6aab018d7542881864",
+    "/css/admin.css": "/css/admin.css?id=14ded54a3afcf9514f3e",
     "/css/design-system.css": "/css/design-system.css?id=7ae98d40415b1d5056af",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
     "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=265bb693f4154efcaaec",
@@ -10,6 +10,7 @@
     "/js/admin.js": "/js/admin.js?id=76fe8bb0c36ed2ce6065",
     "/js/tone.js": "/js/tone.js?id=4a64023a6c3319687a16",
     "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e",
+    "/js/views/piece-timeline-admin.js": "/js/views/piece-timeline-admin.js?id=491591c6665dcc55239c",
     "/js/views/video-moments.js": "/js/views/video-moments.js?id=5b47b7b6dc8d04d5815d",
     "/js/views/video-moments-admin.js": "/js/views/video-moments-admin.js?id=06cd21330803569df9b5",
     "/js/views/piece-access.js": "/js/views/piece-access.js?id=12ad9ebcc99a375f9c14",
@@ -18,6 +19,5 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=fdbff8185284fd251dc0",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf",
-    "/js/views/piece-timeline-admin.js": "/js/views/piece-timeline-admin.js?id=491591c6665dcc55239c"
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf"
 }

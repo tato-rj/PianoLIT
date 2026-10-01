@@ -62,10 +62,16 @@ class PieceTimelineTest extends ReviewTestCase
         return $this->postJson(route('admin.pieces.timeline.store', $piece ?: $this->piece), ['search_id' => $searchId, 'source_id' => $sourceId]);
     }
 
-    public function test_admin_page_manual_year_and_session_guard()
+    public function test_admin_page_prefills_known_year_and_keeps_session_guard()
     {
         $response = $this->get(route('admin.pieces.timeline.edit', $this->piece))->assertOk()->assertSee('Reference year')->assertSee('Saved timeline');
-        $this->assertStringNotContainsString('value="1730"', $response->getContent());
+        $this->assertMatchesRegularExpression('/<input id="reference-year"[^>]*value="1730"/', $response->getContent());
+        $this->piece->update(['composed_in' => null]);
+        $response = $this->get(route('admin.pieces.timeline.edit', $this->piece))->assertOk();
+        $this->assertMatchesRegularExpression('/<input id="reference-year"[^>]*value="1732"/', $response->getContent());
+        $this->piece->update(['published_in' => null]);
+        $response = $this->get(route('admin.pieces.timeline.edit', $this->piece))->assertOk();
+        $this->assertMatchesRegularExpression('/<input id="reference-year"[^>]*value=""/', $response->getContent());
         auth('admin')->logout();
         $this->actingAs(Model::withoutEvents(function () { return create(User::class); }), 'web');
         $this->withExceptionHandling()->get(route('admin.pieces.timeline.edit', $this->piece))->assertRedirect(route('admin.login.show'));

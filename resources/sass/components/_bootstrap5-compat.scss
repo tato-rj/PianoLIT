@@ -34,6 +34,10 @@ select.form-control-lg:not([size]):not([multiple]) { height: calc(1.5em + 1rem +
 }
 
 .custom-file { position: relative; display: block; width: 100%; height: 2.375rem; flex: 1 1 auto; }
+// Inside an input group, leave room for the adjoining icon instead of wrapping.
+.input-group > .custom-file { width: 1%; min-width: 0; }
+.input-group > .input-group-prepend + .custom-file { margin-left: 0 !important; }
+.input-group > .input-group-prepend + .custom-file .custom-file-label { border-top-left-radius: 0; border-bottom-left-radius: 0; }
 .custom-file-input { position: relative; z-index: 2; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .custom-file-input:focus + .custom-file-label { border-color: #80bdff; box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25); }
 .custom-file-input.is-invalid + .custom-file-label { border-color: #dc3545; }

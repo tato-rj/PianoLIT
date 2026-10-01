@@ -8,11 +8,13 @@
 @endsection
 
 @section('content')
+@php($eventsCount = $piece->timelineEvents()->count())
+
 <div class="content-wrapper" id="piece-timeline-admin" data-discover-url="{{route('admin.pieces.timeline.discover', $piece)}}" data-save-url="{{route('admin.pieces.timeline.store', $piece)}}" data-piece-id="{{$piece->id}}" data-csrf="{{csrf_token()}}">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'theme' => 'edit', 'title' => 'Timeline · '.$piece->long_name,
-      'subtitle' => $piece->composer->name,
+      'theme' => 'edit', 'title' => 'Timeline · '.$eventsCount . ' ' . str_plural('event', $eventsCount),
+      'subtitle' => $piece->long_name,
       'back' => ['Edit piece' => route('admin.pieces.edit', $piece)]
     ])
     <section class="card mb-4">
@@ -20,7 +22,7 @@
         <form id="timeline-search" class="d-sm-flex align-items-end">
           <div class="me-sm-3 mb-3 mb-sm-0">
             <label for="reference-year" class="text-brand">Reference year</label>
-            <input id="reference-year" type="number" min="1" max="9999" required class="form-control" placeholder="1730">
+            <input id="reference-year" type="number" min="1500" max="{{now()->year}}" required class="form-control" value="{{$piece->composed_in ?: ($piece->published_in ?: '')}}" placeholder="">
           </div>
           <button class="btn btn-default" id="timeline-find" type="submit">Find 10 events</button>
         </form>

@@ -44,16 +44,13 @@
     padding: 2rem 0;
     .piece-timeline-year { font-size: 1.35rem; line-height: 1.4; }
     .piece-timeline-title { font-size: 1.15rem; }
-    .piece-timeline-year, .piece-timeline-title, .piece-timeline-label { color: var(--color-primary, #0055fe); }
+    .piece-timeline-year { color: var(--color-primary, #0055fe); }
     &:before {
       left: 78px; top: 2.4rem; width: 13px; height: 13px;
       background: var(--color-primary, #0055fe);
       box-shadow: 0 0 0 5px rgba(0, 85, 254, .1);
     }
     .piece-timeline-copy {
-      border-radius: .5rem;
-      border-left: 3px solid var(--color-primary, #0055fe);
-      background: rgba(0, 85, 254, .06);
       padding: 1.25rem 1.5rem;
       margin-top: -.5rem;
     }

@@ -178,7 +178,7 @@
           </div>
           {{-- Files --}}
           <div class="row g-2 form-group">
-            <div class="col input-group">
+            <div class="col-12 col-sm input-group mb-2 mb-sm-0">
               <div class="input-group-prepend">
                 <div class="input-group-text">@icon('mic', ['mr' => 0])</div>
               </div>
@@ -187,7 +187,7 @@
                 <label class="custom-file-label truncate" for="customFile">Both hands</label>
               </div>
             </div>
-            <div class="col input-group">
+            <div class="col-12 col-sm input-group">
               <div class="input-group-prepend">
                 <div class="input-group-text">@icon('file-text', ['mr' => 0])</div>
               </div>
@@ -198,7 +198,7 @@
             </div>
           </div>
           <div class="row g-2 form-group">
-            <div class="col input-group">
+            <div class="col-12 col-sm input-group mb-2 mb-sm-0">
               <div class="input-group-prepend">
                 <div class="input-group-text">@icon('hand', ['mr' => 0, 'styles' => 'transform: scaleX(-1)'])</div>
               </div>
@@ -207,7 +207,7 @@
                 <label class="custom-file-label truncate" for="customFile">Left hand audio</label>
               </div>
             </div>
-            <div class="col input-group">
+            <div class="col-12 col-sm input-group">
               <div class="input-group-prepend">
                 <div class="input-group-text">@icon('hand', ['mr' => 0])</div>
               </div>

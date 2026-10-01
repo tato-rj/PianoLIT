@@ -216,7 +216,7 @@
           {{-- Files --}}
           <label class="text-brand"><small>Uploads</small></label>
           <div class="row g-2 form-group">
-            <div class="col input-group">
+            <div class="col-12 col-sm input-group mb-2 mb-sm-0">
               <div class="input-group-prepend">
 
                 <a class="input-group-text no-underline {{$piece->lookup('audio_path')}}" href="{{storage($piece->audio_path)}}" target="_blank">@icon('mic', ['mr' => 0])</a>
@@ -227,7 +227,7 @@
               </div>
             </div>
 
-            <div class="col input-group">
+            <div class="col-12 col-sm input-group">
               <div class="input-group-prepend">
                 <a class="input-group-text no-underline {{$piece->lookup('score_path')}}" href="{{storage($piece->score_path)}}" target="_blank">@icon('file-text', ['mr' => 0])</a>
               </div>
@@ -238,7 +238,7 @@
             </div>
           </div>
           <div class="row g-2 form-group">
-            <div class="col input-group">
+            <div class="col-12 col-sm input-group mb-2 mb-sm-0">
               <div class="input-group-prepend">
                 <a class="input-group-text no-underline {{$piece->lookup('audio_path_lh')}}" href="{{storage($piece->audio_path_lh)}}" target="_blank">@icon('hand', ['mr' => 0, 'styles' => 'transform: scaleX(-1)'])</a>
               </div>
@@ -247,7 +247,7 @@
                 <label class="custom-file-label truncate" for="customFile">Left hand</label>
               </div>
             </div>
-            <div class="col input-group">
+            <div class="col-12 col-sm input-group">
               <div class="input-group-prepend">
                 <a class="input-group-text no-underline {{$piece->lookup('audio_path_rh')}}" href="{{storage($piece->audio_path_rh)}}" target="_blank">@icon('hand', ['mr' => 0])</a>
               </div>
