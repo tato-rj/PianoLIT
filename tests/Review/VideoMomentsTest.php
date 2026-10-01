@@ -62,6 +62,27 @@ class VideoMomentsTest extends ReviewTestCase
         $this->get(route('webapp.pieces.show', $this->piece))->assertOk()->assertDontSee('data-media-preview=', false);
     }
 
+    public function test_piece_and_admin_videos_request_inline_playback_with_and_without_moments()
+    {
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        foreach ([false, true] as $withMoments) {
+            if ($withMoments) $this->moment();
+            foreach ([
+                route('webapp.pieces.show', $this->piece),
+                route('webapp.pieces.tutorial', [$this->piece, $this->video]),
+                $this->url('edit'),
+            ] as $url) {
+                $html = $this->get($url)->assertOk()->getContent();
+                preg_match_all('/<video\b[^>]*>/i', $html, $matches);
+                $this->assertNotEmpty($matches[0]);
+                foreach ($matches[0] as $video) {
+                    $this->assertMatchesRegularExpression('/\splaysinline(?:\s|>)/', $video);
+                    $this->assertMatchesRegularExpression('/\swebkit-playsinline(?:\s|>)/', $video);
+                }
+            }
+        }
+    }
+
     public function test_moment_data_is_escaped_and_does_not_change_tutorial_mobile_serialization()
     {
         $title = '<img src=x onerror=alert(1)>';
@@ -75,16 +96,16 @@ class VideoMomentsTest extends ReviewTestCase
             ->assertDontSee('</script><script>alert(1)</script>', false);
     }
 
-    public function test_manager_can_add_edit_delete_and_reorder_without_changing_ids()
+    public function test_manager_can_add_edit_delete_and_automatically_sort_without_changing_ids()
     {
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
         $this->get($this->url('edit'))->assertOk()->assertSee('Add a moment')->assertSee('MM:SS');
         $this->get(route('admin.pieces.edit', $this->piece))->assertOk()->assertSee($this->url('edit'), false)->assertSee('Manage moments');
         $this->put($this->url(), $this->payload([$this->row(), $this->row(['start_time' => '12', 'end_time' => ''])]))->assertRedirect();
         $moments = $this->video->moments()->get();
-        $this->assertSame(83.125, $moments[0]->start_time);
-        $this->assertSame(89.5, $moments[0]->end_time);
-        $this->assertNull($moments[1]->end_time);
+        $this->assertSame(83.125, $moments[1]->start_time);
+        $this->assertSame(89.5, $moments[1]->end_time);
+        $this->assertNull($moments[0]->end_time);
         $this->put($this->url(), $this->payload([
             $this->row(['id' => $moments[1]->id, 'start_time' => '0', 'end_time' => '0', 'title' => 'First']),
             $this->row(['id' => $moments[0]->id, 'start_time' => '1:02:03.25', 'end_time' => '']),
@@ -218,7 +239,7 @@ class VideoMomentsTest extends ReviewTestCase
             $this->row(['start_time' => '00:25', 'end_time' => '']),
             $this->row(['start_time' => '00:26', 'end_time' => '00:30']),
         ]))->assertRedirect()->assertSessionHasNoErrors();
-        $this->assertSame([19.5, 12.25, 25.0, 26.0], $this->video->moments()->pluck('start_time')->all());
+        $this->assertSame([12.25, 19.5, 25.0, 26.0], $this->video->moments()->pluck('start_time')->all());
     }
 
     public function test_admin_video_preview_without_moments_has_no_guide_ui()
@@ -227,5 +248,23 @@ class VideoMomentsTest extends ReviewTestCase
         $this->get($this->url('edit'))->assertOk()->assertSee('id="admin-moment-preview"', false)
             ->assertSee(e($this->video->video_url), false)->assertSee('cdn.plyr.io/3.7.8/plyr.js', false)
             ->assertDontSee('data-video-moments=', false)->assertDontSee('Moments in this piece');
+    }
+
+    public function test_legacy_rows_display_in_time_order_with_a_valid_revision_and_stable_ties()
+    {
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $late = $this->moment(null, ['start_time' => 83, 'end_time' => null, 'sort_order' => 0]);
+        $early = $this->moment(null, ['start_time' => 12, 'end_time' => null, 'sort_order' => 1]);
+        $html = $this->get($this->url('edit'))->assertOk()->assertDontSee('Move moment up')
+            ->assertDontSee('Move moment down')->assertSee('Increase start time by one second')->getContent();
+        preg_match_all('/name="moments\[\d+\]\[start_time\]" value="([^"]*)"/', explode('<template', $html)[0], $times);
+        $this->assertSame(['00:12', '01:23'], $times[1]);
+        preg_match('/name="revision" value="([^"]*)"/', $html, $revision);
+        $this->put($this->url(), ['revision' => $revision[1], 'moments' => [
+            $this->row(['id' => $late->id, 'start_time' => '12', 'end_time' => '']),
+            $this->row(['id' => $early->id, 'start_time' => '12', 'end_time' => '']),
+        ]])->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame([$late->id, $early->id], $this->video->moments()->pluck('id')->all());
+        $this->assertSame([0, 1], $this->video->moments()->pluck('sort_order')->all());
     }
 }

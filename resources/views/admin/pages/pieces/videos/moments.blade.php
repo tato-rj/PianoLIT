@@ -24,7 +24,8 @@
                     @foreach($errors->all() as $error)<p class="mb-1">{{$error}}</p>@endforeach
                 </div>
                 @endif
-                <form method="POST" action="{{route('admin.pieces.videos.moments.update', [$piece, $tutorial])}}" data-moments-editor novalidate>
+                <p class="small text-muted">Moments are ordered automatically by start time. Use the chevrons or the ↑ / ↓ keys to adjust a time by one second.</p>
+                <form method="POST" action="{{route('admin.pieces.videos.moments.update', [$piece, $tutorial])}}" class="moment-editor" data-moments-editor novalidate>
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="revision" value="{{old('revision', $revision)}}">

@@ -1,7 +1,7 @@
 {
     "/js/app.js": "/js/app.js?id=bd827c49b11bcd621740",
     "/css/app.css": "/css/app.css?id=7fdc7783c4d7845cc9e9",
-    "/css/admin.css": "/css/admin.css?id=89f17f60da098a42328e",
+    "/css/admin.css": "/css/admin.css?id=9339297140b4a946b4bb",
     "/css/design-system.css": "/css/design-system.css?id=028bf611fbfbbd658b0d",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=014df888e93f6477fdab",
     "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=c5d73e29f9de8c09062a",
@@ -17,6 +17,6 @@
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
     "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf",
-    "/js/views/video-moments.js": "/js/views/video-moments.js?id=39390a34fce76b92bdc2",
-    "/js/views/video-moments-admin.js": "/js/views/video-moments-admin.js?id=073262a0fb35994f1a6a"
+    "/js/views/video-moments.js": "/js/views/video-moments.js?id=04cf1a5b069073f3ab51",
+    "/js/views/video-moments-admin.js": "/js/views/video-moments-admin.js?id=c71ddc2c11197c1a4441"
 }

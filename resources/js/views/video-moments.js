@@ -58,11 +58,12 @@
         var active = null;
         var pending = null;
         var detailsOpen = false;
+        var playbackStarted = !!player.playing;
         var previousTime = Number(player.currentTime) || 0;
         var overlay = doc.createElement('div');
         overlay.className = 'piece-moments__overlay';
         // Static markup only. Titles and commentary always use textContent below.
-        overlay.innerHTML = '<button type="button" class="piece-moments__about" hidden aria-expanded="false">ⓘ About this moment</button>' +
+        overlay.innerHTML = '<button type="button" class="piece-moments__about" hidden aria-expanded="false">ⓘ About</button>' +
             '<div class="piece-moments__popover" role="dialog" hidden tabindex="-1">' +
             '<button type="button" class="piece-moments__close" aria-label="Close moment commentary">×</button>' +
             '<div class="piece-moments__heading"><span class="piece-moments__timestamp"></span>' +
@@ -80,8 +81,8 @@
         about.setAttribute('aria-controls', popover.id);
 
         function renderDetails() {
-            about.hidden = !active;
-            popover.hidden = !active || !detailsOpen;
+            about.hidden = !playbackStarted || !active;
+            popover.hidden = !playbackStarted || !active || !detailsOpen;
             about.setAttribute('aria-expanded', popover.hidden ? 'false' : 'true');
         }
         function dismiss(restoreFocus) {
@@ -91,6 +92,8 @@
         }
         function synchronize(event) {
             var time = Number(player.currentTime) || 0;
+            // Metadata, pre-play seeking and rejected play requests do not reveal the guide.
+            if (event && event.type === 'playing') playbackStarted = true;
             // A new run starts collapsed; pausing/resuming elsewhere retains the preference.
             if (time === 0 && (previousTime > 0 || (event && event.type === 'play'))) detailsOpen = false;
             previousTime = time;
@@ -195,7 +198,7 @@
         section.addEventListener('click', listClick);
         doc.addEventListener('click', outside);
         doc.addEventListener('keydown', keyboard, true);
-        ['timeupdate', 'seeking', 'seeked', 'play', 'pause', 'ended'].forEach(function (event) {
+        ['timeupdate', 'seeking', 'seeked', 'play', 'playing', 'pause', 'ended'].forEach(function (event) {
             player.on(event, synchronize);
         });
         ['ready', 'loadedmetadata', 'durationchange'].forEach(function (event) { player.on(event, metadata); });

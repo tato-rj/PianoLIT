@@ -1,0 +1,40 @@
+.moment-editor {
+    &__row { padding: 12px; border-radius: 12px; }
+    &__label, &__row label { font-size: 12px; line-height: 1.4; }
+    &__label { display: block; margin-bottom: 2px; }
+    &__row .form-control { font-size: 13px; }
+    &__row textarea { min-height: 54px; resize: vertical; }
+    &__time { position: relative; }
+    &__time input { padding-right: 34px; font-variant-numeric: tabular-nums; }
+    &__steps {
+        position: absolute;
+        top: 1px;
+        bottom: 1px;
+        right: 1px;
+        width: 28px;
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid #dee2e6;
+    }
+    &__step, &__delete {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+    }
+    &__step {
+        flex: 1;
+        border-radius: 0;
+        color: #6c757d;
+        svg { width: 12px; height: 12px; }
+        &:first-child { border-bottom: 1px solid #dee2e6; }
+        &:hover { background: #e9ecef; }
+    }
+    &__delete { width: 24px; height: 24px; color: #dc3545; }
+    &__step:focus-visible, &__delete:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+}

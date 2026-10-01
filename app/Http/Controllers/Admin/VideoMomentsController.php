@@ -26,6 +26,8 @@ class VideoMomentsController extends Controller
         $this->authorizeVideo($piece, $tutorial);
         $moments = $tutorial->moments;
         $revision = $this->revision($moments);
+        $moments = $moments->sortBy('start_time')->values();
+        $tutorial->setRelation('moments', $moments);
 
         return view('admin.pages.pieces.videos.moments', compact('piece', 'tutorial', 'moments', 'revision'));
     }
@@ -57,6 +59,12 @@ class VideoMomentsController extends Controller
             $rows[] = ['id' => $row['id'] ?? null, 'start_time' => $start, 'end_time' => $end,
                 'title' => $row['title'], 'comment' => $row['comment'], 'sort_order' => count($rows)];
         }
+
+        usort($rows, function ($left, $right) {
+            return ($left['start_time'] <=> $right['start_time']) ?: ($left['sort_order'] <=> $right['sort_order']);
+        });
+        foreach ($rows as $index => &$row) $row['sort_order'] = $index;
+        unset($row);
 
         DB::transaction(function () use ($tutorial, $data, $rows) {
             // Serialize saves for this video and reject a stale tab's changes.
