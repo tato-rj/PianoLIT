@@ -27,7 +27,7 @@
 			<div class="mb-3 piece-description" data-piece-description>
 				<h5 class="mb-2">What's this piece like?</h5>
 				<div class="piece-description__content" id="piece-description">{{$piece->description}}</div>
-				<div class="text-right">
+				<div class="d-flex justify-content-end">
 					<button type="button" class="piece-description__toggle" aria-controls="piece-description" aria-expanded="false" hidden>Read more @icon('chevron-down', ['mr' => 0])</button>
 				</div>
 			</div>
