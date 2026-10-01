@@ -8,6 +8,7 @@ use App\Services\Timeline\WikimediaDiscovery;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class PieceTimelineController extends Controller
@@ -29,7 +30,9 @@ class PieceTimelineController extends Controller
         if (!empty($data['search_id']) && (!isset($sessions[$id]) || $sessions[$id]['piece_id'] !== $piece->id || $sessions[$id]['year'] !== $year)) {
             throw ValidationException::withMessages(['search_id' => 'This search has expired. Start a new search.']);
         }
-        $state = $sessions[$id] ?? ['piece_id' => $piece->id, 'year' => $year, 'range_index' => -1, 'pool' => [], 'shown' => [], 'expires' => time() + 7200];
+        $state = $sessions[$id] ?? ['piece_id' => $piece->id, 'year' => $year, 'pool' => [], 'shown' => [], 'expires' => time() + 7200];
+        // Existing open searches retain exclusions and any previously fetched candidates.
+        $state += ['batch_index' => 0, 'has_more' => true];
         $saved = $piece->timelineEvents()->get(['source_id', 'wikidata_id', 'event_kind', 'year']);
         $excluded = array_merge(array_keys($state['shown']), $saved->pluck('source_id')->all());
         $identities = array_map([$discovery, 'identity'], array_merge(array_values($state['shown']), $saved->toArray()));
@@ -39,16 +42,21 @@ class PieceTimelineController extends Controller
             }));
         };
         $pool = $available($state['pool']);
-        $ranges = config('wikimedia.ranges');
+        $range = config('wikimedia.ranges')[0];
         try {
-            for ($attempt = 0; count($pool) < 10 && $state['range_index'] < count($ranges) - 1 && $attempt < 2; $attempt++) {
-                $state['range_index']++;
-                $pool = collect(array_merge($pool, $available($discovery->pool($year, $ranges[$state['range_index']]))))
+            for ($attempt = 0; count($pool) < 10 && $state['has_more'] && $attempt < 2; $attempt++) {
+                $batch = $discovery->batch($year, $range, $state['batch_index']);
+                $state['has_more'] = $batch['has_more'];
+                if ($batch['complete']) $state['batch_index']++;
+                $pool = collect(array_merge($pool, $available($batch['events'])))
                     ->sortBy('rank')->unique(function ($event) use ($discovery) { return $discovery->identity($event); })->values()->all();
+                if (!$batch['complete']) break;
             }
             $selected = $discovery->select($pool);
             $candidates = $discovery->enrich($selected);
         } catch (\Throwable $e) {
+            Log::warning('Timeline discovery failed', ['piece_id' => $piece->id, 'reference_year' => $year, 'exception_type' => get_class($e),
+                'error_message' => Str::limit(preg_replace('/\s+for https?:\/\/\S+/s', '', $e->getMessage()), 1500, '')]);
             return response()->json(['message' => 'Wikimedia is unavailable right now. Please try again shortly.'], 503);
         }
         $selectedIds = array_column($selected, 'source_id');
@@ -61,10 +69,10 @@ class PieceTimelineController extends Controller
         unset($sessions[$id]);
         $sessions[$id] = $state;
         $request->session()->put('piece_timeline_searches', array_slice($sessions, -6, null, true));
-        $more = count($state['pool']) > 0 || $state['range_index'] < count($ranges) - 1;
+        $more = count($state['pool']) > 0 || $state['has_more'];
         return response()->json([
             'search_id' => $id, 'count' => count($candidates), 'has_more' => $more,
-            'range' => $ranges[max(0, $state['range_index'])],
+            'range' => $range,
             'html' => view('admin.pages.pieces.timeline.candidates', compact('candidates'))->render(),
         ]);
     }

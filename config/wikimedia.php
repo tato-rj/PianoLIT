@@ -1,9 +1,13 @@
 <?php
 
 return [
-    'user_agent' => env('WIKIMEDIA_USER_AGENT', 'PianoLITTimeline/1.0 (https://pianolit.com; admin timeline curation)'),
+    'user_agent' => env('WIKIMEDIA_USER_AGENT', 'PianoLIT/1.0 (https://pianolit.com; contact@pianolit.com; timeline curation)'),
     'timeout' => 8,
-    'query_timeout' => 20,
+    'query_timeout' => 8,
+    'discovery_budget' => 25,
     'cache_minutes' => 360,
-    'ranges' => [10, 15, 25, 40],
+    'ranges' => [10],
+    'candidate_limit' => 40,
+    'shortlist_per_property' => 10,
+    'max_batches' => 6,
 ];

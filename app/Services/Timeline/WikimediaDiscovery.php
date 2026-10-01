@@ -2,64 +2,158 @@
 
 namespace App\Services\Timeline;
 
-use Illuminate\Support\Facades\{Cache, Http};
+use Illuminate\Support\Facades\{Cache, Log};
 use Illuminate\Support\Str;
 
 class WikimediaDiscovery
 {
     const QUERY_ENDPOINT = 'https://query.wikidata.org/sparql';
+    const ENTITY_ENDPOINT = 'https://www.wikidata.org/w/api.php';
+    const PROPERTIES = ['P571', 'P577', 'P585', 'P580', 'P569', 'P570'];
     const WIKIPEDIA_ENDPOINT = 'https://en.wikipedia.org/w/api.php';
     const COMMONS_ENDPOINT = 'https://commons.wikimedia.org/w/api.php';
 
-    public function pool(int $year, int $range): array
+    private $client;
+    private $deadline;
+
+    public function __construct(?WikimediaClient $client = null)
     {
-        return Cache::remember('timeline.wikimedia.v3.'.$year.'.'.$range, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range) {
-            $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range), 'format' => 'json']);
-            if (!isset($data['results']['bindings']) || !is_array($data['results']['bindings'])) {
-                throw new \RuntimeException('Invalid Wikidata response.');
+        $this->client = $client ?: new WikimediaClient;
+    }
+
+    public function pool(int $year, int $range, int $batch = 0): array
+    {
+        return $this->batch($year, $range, $batch)['events'];
+    }
+
+    public function batch(int $year, int $range, int $batch = 0): array
+    {
+        $key = 'timeline.wikimedia.v4.'.$year.'.'.$range.'.'.$batch;
+        if ($cached = Cache::get($key)) return $cached;
+        $raw = [];
+        $complete = true;
+        $hasMore = false;
+        foreach (self::PROPERTIES as $property) {
+            try {
+                $rows = Cache::remember($key.'.'.$property, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range, $property, $batch) {
+                    $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range, $property, $batch), 'format' => 'json']);
+                    if (!isset($data['results']['bindings']) || !is_array($data['results']['bindings'])) {
+                        Log::warning('Invalid timeline Wikidata response', ['endpoint' => self::QUERY_ENDPOINT, 'http_status' => 200, 'property' => $property]);
+                        throw new \RuntimeException('Invalid Wikidata response.');
+                    }
+                    return $data['results']['bindings'];
+                });
+            } catch (\Throwable $e) {
+                $complete = false;
+                continue;
             }
-            $events = [];
-            foreach ($data['results']['bindings'] as $row) {
-                $value = function ($name, $default = '') use ($row) { return $row[$name]['value'] ?? $default; };
-                $qid = basename($value('item'));
-                $property = basename($value('property'));
-                $date = substr($value('date'), 0, 10);
+            $hasMore = $hasMore || count($rows) >= config('wikimedia.candidate_limit');
+            $dated = [];
+            foreach ($rows as $row) {
+                $qid = basename($row['item']['value'] ?? '');
+                $date = substr($row['date']['value'] ?? '', 0, 10);
                 $eventYear = (int) substr($date, 0, 4);
-                $label = $value('itemLabel');
-                if (!preg_match('/^Q[1-9][0-9]*$/', $qid) || !$label || $label === $qid || $eventYear < 1 || abs($eventYear - $year) > $range) continue;
-                $kind = ['P571' => 'created', 'P577' => 'published', 'P585' => 'event', 'P580' => 'event', 'P569' => 'birth', 'P570' => 'death'][$property] ?? null;
-                if (!$kind) continue;
-                $category = $this->category($row);
-                $sitelinks = (int) $value('sitelinks');
-                if ($sitelinks < 15) continue;
-                if (in_array($kind, ['birth', 'death']) ? ($category >= 5 && $sitelinks < 80) : $category > 5) continue;
-                $worldEvent = $category === 5 && !in_array($kind, ['birth', 'death']);
-                if ($property === 'P580' && !$worldEvent) continue;
-                if ($worldEvent && $sitelinks < 30) continue;
-                if (preg_match('/\b(skirmish|appointment)\b/i', $label)) continue;
-                if (preg_match('/\b(battle|siege)\b/i', $label) && $sitelinks < 80) continue;
-                // Use one identifier for an event's inception/start/date in the same year.
-                if ($worldEvent) $kind = 'event';
-                $sourceId = $qid.':'.(in_array($kind, ['created', 'published']) ? 'work' : $kind).':'.$eventYear;
-                $suffix = ['created' => ' was created', 'published' => ' was published', 'event' => '', 'birth' => ' was born', 'death' => ' died'][$kind];
-                $candidate = [
-                    'source_id' => $sourceId, 'wikidata_id' => $qid, 'event_kind' => $kind, 'world_event' => $worldEvent,
-                    'year' => $eventYear,
-                    // Wikidata often stores January 1 for year-only dates. Respect precision.
-                    'event_date' => (int) $value('precision', 9) >= 11 && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ? $date : null,
-                    'title' => Str::limit($label.$suffix, 255, ''),
-                    'description' => $value('itemDescription', $label),
-                    'source_url' => $value('article'), 'article_title' => $this->articleTitle($value('article')),
-                    'attribution' => 'Wikidata (CC0); Wikipedia contributors (CC BY-SA 4.0). Text may be edited by PianoLIT.',
-                    'image_url' => null, 'image_source_url' => null, 'image_credit' => null,
-                    'image_license' => null, 'image_license_url' => null,
-                    'rank' => abs($eventYear - $year) * 3 + ($category - 1) * 7
-                        + (in_array($kind, ['birth', 'death']) ? 8 : 0) - min(8, log(max(1, (int) $value('sitelinks')), 2)),
+                $sitelinks = (int) ($row['sitelinks']['value'] ?? 0);
+                if (!preg_match('/^Q[1-9][0-9]*$/', $qid) || $eventYear < 1 || abs($eventYear - $year) > $range || $sitelinks < 15) continue;
+                $dated[$qid.':'.$date] = [
+                    'wikidata_id' => $qid, 'property' => $property, 'date' => $date,
+                    'year' => $eventYear, 'sitelinks' => $sitelinks,
+                    'rank' => abs($eventYear - $year) * 3 - min(8, log($sitelinks, 2)),
                 ];
-                if (!isset($events[$sourceId]) || $candidate['rank'] < $events[$sourceId]['rank']) $events[$sourceId] = $candidate;
             }
-            return collect($events)->sortBy('rank')->values()->all();
-        });
+            // Shortlist separately so works and world events survive highly notable births.
+            $raw = array_merge($raw, collect($dated)->sortBy('rank')->take(config('wikimedia.shortlist_per_property'))->values()->all());
+        }
+        if (!$complete && !$raw) throw new \RuntimeException('Wikidata discovery unavailable.');
+        $entities = $this->entities(array_unique(array_column($raw, 'wikidata_id')));
+        $events = [];
+        foreach ($raw as $item) {
+            $entity = $entities[$item['wikidata_id']] ?? [];
+            $candidate = $this->candidate($item, $entity);
+            if (!$candidate) continue;
+            $identity = $this->identity($candidate);
+            if (!isset($events[$identity]) || $candidate['rank'] < $events[$identity]['rank']) $events[$identity] = $candidate;
+        }
+        $result = [
+            'events' => collect($events)->sortBy('rank')->values()->all(), 'complete' => $complete,
+            'has_more' => (!$complete || $hasMore) && $batch + 1 < config('wikimedia.max_batches'),
+        ];
+        // Partial results work, but failed properties remain retryable on the next request.
+        if ($complete) Cache::put($key, $result, now()->addMinutes(config('wikimedia.cache_minutes')));
+        return $result;
+    }
+
+    private function entities(array $ids): array
+    {
+        $entities = [];
+        $missing = [];
+        foreach ($ids as $id) {
+            $cached = Cache::get('timeline.wikimedia.entity.v1.'.$id);
+            if ($cached !== null) $entities[$id] = $cached;
+            else $missing[] = $id;
+        }
+        foreach (array_chunk($missing, 50) as $chunk) {
+            $data = $this->get(self::ENTITY_ENDPOINT, [
+                'action' => 'wbgetentities', 'format' => 'json', 'ids' => implode('|', $chunk),
+                'props' => 'labels|descriptions|claims|sitelinks', 'languages' => 'en', 'sitefilter' => 'enwiki', 'maxlag' => 5,
+            ]);
+            if (!isset($data['entities']) || !is_array($data['entities'])) {
+                Log::warning('Invalid timeline Wikidata entity response', ['endpoint' => self::ENTITY_ENDPOINT, 'http_status' => 200]);
+                throw new \RuntimeException('Invalid Wikidata entity response.');
+            }
+            foreach ($chunk as $id) {
+                $entities[$id] = $data['entities'][$id] ?? [];
+                Cache::put('timeline.wikimedia.entity.v1.'.$id, $entities[$id], now()->addMinutes(config('wikimedia.cache_minutes')));
+            }
+        }
+        return $entities;
+    }
+
+    private function candidate(array $item, array $entity): ?array
+    {
+        $label = $entity['labels']['en']['value'] ?? '';
+        $description = $entity['descriptions']['en']['value'] ?? $label;
+        $article = $entity['sitelinks']['enwiki']['title'] ?? '';
+        if (!$label || !$article) return null;
+        $row = ['itemDescription' => ['value' => $description]];
+        $category = $this->category($row);
+        foreach (['P31' => 'class', 'P106' => 'occupation'] as $property => $field) {
+            foreach ($entity['claims'][$property] ?? [] as $claim) {
+                $row[$field] = ['value' => $claim['mainsnak']['datavalue']['value']['id'] ?? ''];
+                $category = min($category, $this->category($row));
+            }
+        }
+        $kind = ['P571' => 'created', 'P577' => 'published', 'P585' => 'event', 'P580' => 'event', 'P569' => 'birth', 'P570' => 'death'][$item['property']];
+        if (in_array($kind, ['birth', 'death']) ? ($category >= 5 && $item['sitelinks'] < 80) : $category > 5) return null;
+        $worldEvent = $category === 5 && !in_array($kind, ['birth', 'death']);
+        if ($item['property'] === 'P580' && !$worldEvent) return null;
+        if ($worldEvent && $item['sitelinks'] < 30) return null;
+        if (preg_match('/\b(skirmish|appointment)\b/i', $label)) return null;
+        if (preg_match('/\b(battle|siege)\b/i', $label) && $item['sitelinks'] < 80) return null;
+        if ($worldEvent) $kind = 'event';
+        $eventDate = null;
+        foreach ($entity['claims'][$item['property']] ?? [] as $claim) {
+            if (($claim['rank'] ?? '') === 'deprecated') continue;
+            $value = $claim['mainsnak']['datavalue']['value'] ?? [];
+            $date = ltrim(substr($value['time'] ?? '', 0, 11), '+');
+            if ($date === $item['date'] && ($value['precision'] ?? 9) >= 11 && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                $eventDate = $date;
+                break;
+            }
+        }
+        $suffix = ['created' => ' was created', 'published' => ' was published', 'event' => '', 'birth' => ' was born', 'death' => ' died'][$kind];
+        return [
+            'source_id' => $item['wikidata_id'].':'.(in_array($kind, ['created', 'published']) ? 'work' : $kind).':'.$item['year'],
+            'wikidata_id' => $item['wikidata_id'], 'event_kind' => $kind, 'world_event' => $worldEvent,
+            'year' => $item['year'], 'event_date' => $eventDate, 'title' => Str::limit($label.$suffix, 255, ''),
+            'description' => $description,
+            'source_url' => 'https://en.wikipedia.org/wiki/'.rawurlencode(str_replace(' ', '_', $article)),
+            'article_title' => $article,
+            'attribution' => 'Wikidata (CC0); Wikipedia contributors (CC BY-SA 4.0). Text may be edited by PianoLIT.',
+            'image_url' => null, 'image_source_url' => null, 'image_credit' => null,
+            'image_license' => null, 'image_license_url' => null,
+            'rank' => $item['rank'] + ($category - 1) * 7 + (in_array($kind, ['birth', 'death']) ? 8 : 0),
+        ];
     }
 
     public function select(array $pool, int $limit = 10): array
@@ -85,20 +179,15 @@ class WikimediaDiscovery
         if (!$events) return [];
         // Text/image enrichment is optional; dated Wikidata candidates still work if it fails.
         try {
-            $data = $this->get(self::WIKIPEDIA_ENDPOINT, [
+            $pages = $this->pages(self::WIKIPEDIA_ENDPOINT, array_unique(array_column($events, 'article_title')), [
                 'action' => 'query', 'format' => 'json', 'formatversion' => 2,
-                'titles' => implode('|', array_unique(array_column($events, 'article_title'))),
                 'redirects' => 1, 'prop' => 'extracts|pageimages|info', 'inprop' => 'url',
                 'exintro' => 1, 'explaintext' => 1, 'exchars' => 450, 'exlimit' => 10,
-                'piprop' => 'thumbnail|name', 'pithumbsize' => 480, 'pilicense' => 'free', 'pilimit' => 10,
+                'piprop' => 'thumbnail|name', 'pithumbsize' => 480, 'pilicense' => 'free', 'pilimit' => 10, 'maxlag' => 5,
             ]);
-            $pages = collect($data['query']['pages'] ?? [])->keyBy('title');
-            $aliases = collect(array_merge($data['query']['normalized'] ?? [], $data['query']['redirects'] ?? []))->pluck('to', 'from');
             $files = [];
             foreach ($events as &$event) {
-                $title = $event['article_title'];
-                for ($i = 0; $i < 3 && isset($aliases[$title]); $i++) $title = $aliases[$title];
-                $page = $pages->get($title, []);
+                $page = $pages[$event['article_title']] ?? [];
                 if (!empty($page['extract'])) {
                     // Omit pronunciation/parenthetical digressions from the short card summary.
                     $summary = preg_replace('/\s*\([^()]*\)/u', '', $page['extract']);
@@ -112,18 +201,15 @@ class WikimediaDiscovery
             }
             unset($event);
             if ($files) {
-                $images = $this->get(self::COMMONS_ENDPOINT, [
+                $images = $this->pages(self::COMMONS_ENDPOINT, array_unique($files), [
                     'action' => 'query', 'format' => 'json', 'formatversion' => 2,
-                    'titles' => implode('|', array_unique($files)), 'redirects' => 1, 'prop' => 'imageinfo',
+                    'redirects' => 1, 'prop' => 'imageinfo', 'maxlag' => 5,
                     'iiprop' => 'url|extmetadata', 'iiurlwidth' => 480,
                     'iiextmetadatafilter' => 'Artist|Credit|LicenseShortName|LicenseUrl|UsageTerms',
                 ]);
-                $imageAliases = collect(array_merge($images['query']['normalized'] ?? [], $images['query']['redirects'] ?? []))->pluck('to', 'from');
-                $images = collect($images['query']['pages'] ?? [])->keyBy('title');
                 foreach ($events as &$event) {
                     $file = $event['image_file'] ?? '';
-                    for ($i = 0; $i < 3 && isset($imageAliases[$file]); $i++) $file = $imageAliases[$file];
-                    $info = $images->get($file, [])['imageinfo'][0] ?? [];
+                    $info = $images[$file]['imageinfo'][0] ?? [];
                     $meta = $info['extmetadata'] ?? [];
                     if (empty($info['descriptionurl']) || empty($meta['LicenseShortName']['value'])) continue;
                     $event['image_url'] = $info['thumburl'] ?? $event['thumbnail'] ?? null;
@@ -144,18 +230,37 @@ class WikimediaDiscovery
         }, $events);
     }
 
-    private function get($endpoint, array $params): array
+    private function pages(string $endpoint, array $titles, array $params): array
     {
-        $response = Http::withHeaders(['User-Agent' => config('wikimedia.user_agent'), 'Accept' => 'application/json'])
-            ->withOptions(['connect_timeout' => 3])->timeout(config($endpoint === self::QUERY_ENDPOINT ? 'wikimedia.query_timeout' : 'wikimedia.timeout'))->get($endpoint, $params)->throw();
-        $data = $response->json();
-        if (!is_array($data) || isset($data['error'])) throw new \RuntimeException('Wikimedia unavailable.');
-        return $data;
+        $pages = [];
+        $missing = [];
+        foreach ($titles as $title) {
+            $cached = Cache::get('timeline.wikimedia.page.v1.'.sha1($endpoint.$title));
+            if ($cached !== null) $pages[$title] = $cached;
+            else $missing[] = $title;
+        }
+        if ($missing) {
+            $data = $this->get($endpoint, array_merge($params, ['titles' => implode('|', $missing)]));
+            if (!isset($data['query']['pages']) || !is_array($data['query']['pages'])) {
+                Log::warning('Invalid timeline Wikimedia pages response', ['endpoint' => $endpoint, 'http_status' => 200]);
+                throw new \RuntimeException('Invalid Wikimedia pages response.');
+            }
+            $found = collect($data['query']['pages'])->keyBy('title');
+            $aliases = collect(array_merge($data['query']['normalized'] ?? [], $data['query']['redirects'] ?? []))->pluck('to', 'from');
+            foreach ($missing as $original) {
+                $title = $original;
+                for ($i = 0; $i < 3 && isset($aliases[$title]); $i++) $title = $aliases[$title];
+                $pages[$original] = $found->get($title, []);
+                Cache::put('timeline.wikimedia.page.v1.'.sha1($endpoint.$original), $pages[$original], now()->addMinutes(config('wikimedia.cache_minutes')));
+            }
+        }
+        return $pages;
     }
 
-    private function articleTitle($url)
+    private function get($endpoint, array $params): array
     {
-        return str_replace('_', ' ', rawurldecode(substr(parse_url($url, PHP_URL_PATH) ?: '', 6)));
+        if (!$this->deadline) $this->deadline = microtime(true) + config('wikimedia.discovery_budget');
+        return $this->client->get($endpoint, $params, $endpoint === self::QUERY_ENDPOINT ? $this->deadline - 8 : $this->deadline);
     }
 
     private function plain($text)
@@ -207,54 +312,27 @@ class WikimediaDiscovery
         return $category;
     }
 
-    public function query(int $year, int $range): string
+    public function query(int $year, int $range, string $property = 'P571', int $batch = 0): string
     {
+        if (!in_array($property, self::PROPERTIES, true) || $batch < 0 || $batch >= config('wikimedia.max_batches')) {
+            throw new \InvalidArgumentException('Invalid discovery batch.');
+        }
         $start = sprintf('%04d-01-01T00:00:00Z', max(1, $year - $range));
         $end = sprintf('%04d-12-31T23:59:59Z', min(9999, $year + $range));
-        // Independent dated pools keep buildings/publications from crowding out births,
-        // deaths and historical events. Start dates include wars and expeditions that
-        // have no single point-in-time value. Date-first execution avoids broad joins.
-        $branches = [];
-        foreach (['P571', 'P577', 'P585', 'P580', 'P569', 'P570'] as $property) {
-            $branches[] = '{ SELECT ?item ?date ?article ?sitelinks ?property WHERE {
-'
-                .'hint:Query hint:optimizer "None" .
-'
-                .'?item wdt:'.$property.' ?date . hint:Prior hint:rangeSafe true .
-'
-                .'FILTER(?date >= "'.$start.'"^^xsd:dateTime && ?date <= "'.$end.'"^^xsd:dateTime)
-'
-                .'?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= 15)
-'
-                .'?article schema:about ?item; schema:isPartOf <https://en.wikipedia.org/> .
-'
-                .'BIND(wdt:'.$property.' AS ?property)
-'
-                .'} ORDER BY DESC(?sitelinks) ASC(?date) ASC(?item) LIMIT 50 }';
-        }
-        $dates = implode(" UNION ", $branches);
+        $limit = (int) config('wikimedia.candidate_limit');
+        $offset = $batch * $limit;
+        // Indexed date lookup with one notability join. Metadata comes from wbgetentities.
         return <<<SPARQL
-PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-PREFIX p: <http://www.wikidata.org/prop/>
-PREFIX psv: <http://www.wikidata.org/prop/statement/value/>
 PREFIX wikibase: <http://wikiba.se/ontology#>
-PREFIX schema: <http://schema.org/>
 PREFIX hint: <http://www.bigdata.com/queryHints#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-SELECT ?item ?itemLabel ?itemDescription ?property ?date ?precision ?article ?sitelinks ?class ?occupation WHERE {
+SELECT ?item ?date ?sitelinks WHERE {
   hint:Query hint:optimizer "None" .
-  { $dates }
-  OPTIONAL { ?item wdt:P31 ?class . }
-  OPTIONAL { ?item wdt:P106 ?occupation . }
-  VALUES (?property ?claim ?valueProperty) {
-    (wdt:P571 p:P571 psv:P571) (wdt:P577 p:P577 psv:P577) (wdt:P585 p:P585 psv:P585)
-    (wdt:P580 p:P580 psv:P580)
-    (wdt:P569 p:P569 psv:P569) (wdt:P570 p:P570 psv:P570)
-  }
-  OPTIONAL { ?item ?claim ?statement . ?statement ?valueProperty ?node . ?node wikibase:timeValue ?date; wikibase:timePrecision ?precision . }
-  SERVICE wikibase:label { <http://www.bigdata.com/rdf#serviceParam> wikibase:language "en" . }
-}
+  ?item wdt:$property ?date . hint:Prior hint:rangeSafe true .
+  FILTER(?date >= "$start"^^xsd:dateTime && ?date <= "$end"^^xsd:dateTime)
+  ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= 15)
+} ORDER BY DESC(?sitelinks) ASC(?date) ASC(?item) LIMIT $limit OFFSET $offset
 SPARQL;
     }
 }
