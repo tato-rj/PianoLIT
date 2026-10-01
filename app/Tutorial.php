@@ -6,6 +6,8 @@ class Tutorial extends PianoLit
 {
 	protected $types = ['Performance', 'Tutorial', 'Harmonic analysis'];
     protected $appends = ['title'];
+    // Web-only listening-guide data must not change mobile serialization.
+    protected $hidden = ['moments'];
 	
     public static function boot()
     {
@@ -24,6 +26,18 @@ class Tutorial extends PianoLit
 	{
 		return $this->belongsTo(Piece::class);
 	}
+
+    public function moments()
+    {
+        return $this->hasMany(VideoMoment::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function listeningMoments()
+    {
+        return $this->moments->map(function ($moment) {
+            return $moment->only(['id', 'start_time', 'end_time', 'title', 'comment']);
+        })->values()->all();
+    }
 
     public function generateUrl()
     {

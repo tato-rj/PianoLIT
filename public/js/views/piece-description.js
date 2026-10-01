@@ -12,7 +12,10 @@
         if (!overflows) expanded = false;
         // Measure the row with the description collapsed, before restoring the
         // expanded text. This also refreshes the baseline after a width/font change.
-        if (video && !video.querySelector('.plyr--fullscreen-active')) {
+        var fullscreenElement = doc.fullscreenElement || doc.webkitFullscreenElement;
+        var videoFullscreen = video && ((fullscreenElement && video.contains(fullscreenElement)) ||
+            video.querySelector('.plyr--fullscreen-fallback'));
+        if (video && !videoFullscreen) {
             video.style.removeProperty('--piece-about-video-height');
             if (expanded) {
                 section.classList.toggle('is-collapsed', overflows);

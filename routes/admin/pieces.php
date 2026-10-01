@@ -2,6 +2,9 @@
 
 Route::prefix('pieces')->name('pieces.')->group(function() {
 
+    Route::get('{piece}/videos/{tutorial}/moments', 'Admin\VideoMomentsController@edit')->name('videos.moments.edit');
+    Route::put('{piece}/videos/{tutorial}/moments', 'Admin\VideoMomentsController@update')->name('videos.moments.update');
+
 	Route::post('single-lookup', 'Admin\PiecesController@singleLookup')->name('single-lookup');
 	
 	Route::post('multi-lookup', 'Admin\PiecesController@multiLookup')->name('multi-lookup');

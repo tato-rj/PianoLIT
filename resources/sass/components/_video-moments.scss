@@ -1,0 +1,127 @@
+.piece-moments {
+    &__list { display: grid; gap: 2px; }
+    &__row {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        width: 100%;
+        border: 0;
+        border-radius: var(--radius);
+        background: transparent;
+        padding: 8px 10px;
+        color: var(--color-text);
+        font: inherit;
+        font-size: 14px;
+        text-align: left;
+        cursor: pointer;
+        overflow-wrap: anywhere;
+        &:hover { background: var(--color-surface-muted, #f5f6f8); }
+        &.is-active { color: var(--color-primary); background: rgba(0, 85, 254, .07); }
+    }
+    &__time { flex-shrink: 0; color: var(--color-text-muted); font-variant-numeric: tabular-nums; min-width: 40px; }
+    &__overlay {
+        position: absolute;
+        top: 12px;
+        bottom: 62px;
+        right: 12px;
+        left: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        z-index: 5;
+        pointer-events: none;
+    }
+    &__about, &__popover {
+        pointer-events: auto;
+        border: 1px solid rgba(255,255,255,.3);
+        background: rgba(20, 24, 30, .75);
+        color: #f7f7f7;
+    }
+    &__about {
+        flex-shrink: 0;
+        min-height: 0;
+        border-radius: var(--radius);
+        padding: 7px 10px;
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    &__popover {
+        position: relative;
+        flex: 0 1 auto;
+        min-height: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        overflow: auto;
+        margin: 0;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.2);
+        font-size: 14px;
+        text-align: left;
+        transform-origin: top right;
+        animation: moment-details-expand 160ms ease-out;
+    }
+    &__heading {
+        border-left: 3px solid var(--plyr-color-main, #29a8ed);
+        padding-left: 14px;
+        margin: 0 24px 14px 0;
+    }
+    &__timestamp { display: block; margin-bottom: 4px; color: #b3b4b8; font-size: 13px; font-variant-numeric: tabular-nums; line-height: 1.3; }
+    &__title { margin: 0; color: #f7f7f7; font-size: 18px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+    &__comment { margin: 0 0 0 17px; color: #c3c4c7; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+    &__close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        border: 0;
+        background: transparent;
+        color: #b3b4b8;
+        width: 32px;
+        min-width: 0;
+        min-height: 0;
+        height: 32px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    @media (max-width: 480px) {
+        &__overlay { top: 8px; left: 8px; right: 8px; bottom: 76px; }
+        &__popover { padding: 14px; font-size: 13px; }
+        &__heading { margin-bottom: 10px; padding-left: 10px; }
+        &__comment { margin-left: 13px; }
+        &__title { font-size: 16px; }
+    }
+    &__about[aria-expanded="true"] { display: none; }
+    &__close:hover { color: #fff; }
+    @media (prefers-reduced-motion: reduce) { &__popover { animation: none; } }
+    &__about[hidden], &__popover[hidden] { display: none !important; }
+    &__row:focus-visible, &__about:focus-visible, &__close:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+}
+// Keep listening-guide rows outside the embedded player's existing height cap.
+#tabs-container .piece-moments-player .plyr--video:not(.plyr--fullscreen-fallback) { height: auto; }
+.plyr__progress__marker:focus-visible { outline: 2px solid var(--color-primary); }
+
+@media (max-width: 480px) {
+    .piece-moments-player .plyr__controls {
+        --plyr-control-spacing: 8px;
+        padding: 8px;
+        flex-wrap: wrap;
+        .plyr__volume {
+            min-width: 0;
+            max-width: 90px;
+            input[type="range"] { width: 45px; min-width: 24px; max-width: 45px; }
+        }
+        .plyr__progress__container {
+            flex: 1 0 100%;
+            order: -1;
+            margin: 0 0 4px;
+            padding: 0;
+        }
+    }
+}
+
+@keyframes moment-details-expand {
+    from { opacity: 0; transform: scale(.96); }
+    to { opacity: 1; transform: scale(1); }
+}

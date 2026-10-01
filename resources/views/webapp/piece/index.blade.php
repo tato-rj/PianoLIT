@@ -114,6 +114,7 @@ video::-webkit-media-controls-enclosure {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script src="{{ mix('js/views/piece-access.js') }}"></script>
+<script src="{{ mix('js/views/video-moments.js') }}"></script>
 <script src="{{ mix('js/views/piece-description.js') }}"></script>
 @if($hasMediaAccess && $piece->score_path && $piece->isPublicDomain)
 <script src="{{ mix('js/views/score-editor.js') }}"></script>
@@ -475,13 +476,21 @@ function showPlayer(player) {
 <script type="text/javascript">
 	let plyrsArray = [];
 
-	function initPlyrs(videoId)
+	function initPlyrs(videoId, options = {})
 	{
-		let player = new Plyr(videoId, {
-			ratio: '16:9',
-		});
+		let media = typeof videoId === 'string' ? document.querySelector(videoId) : videoId;
+        if (!media) return;
+        let player = new Plyr(media, Object.assign({}, options, VideoMoments.markerOptions(media)));
+        media.piecePlayer = player;
+        const cleanupMoments = VideoMoments.attach(player, media);
+        media.disposePiecePlayer = function () {
+            if (cleanupMoments) cleanupMoments();
+            plyrsArray = plyrsArray.filter(video => video !== player);
+            player.destroy();
+        };
 
 		plyrsArray.push(player);
+        player.elements.original.addEventListener('destroyed', function () { plyrsArray = plyrsArray.filter(video => video !== player); }, {once: true});
 
 		player.on('play', function() {
 			stopOtherPlyrs(player);
@@ -496,11 +505,11 @@ function showPlayer(player) {
 		});
 	}
 
-	$('.video-container').each(function() {
-		let videoId = '#'+ $(this).find('video').attr('id');
+	$('.video-container video').each(function() {
+        initPlyrs(this, {ratio: '16:9'});
+    });
 
-		initPlyrs(videoId);
-	});
+let videoRequest = 0;
 
 $('button[data-action="video"]').on('click', function() {
 	let $btn = $(this);
@@ -508,42 +517,48 @@ $('button[data-action="video"]').on('click', function() {
 
 	if ($icon.is(':visible')) {
 		stopVideo();
+        const requestId = videoRequest;
 		let $container = $btn.closest('.video-container');
 
 		$btn.addClass('opacity-4').disable();
 
 		axios.get($btn.data('url'))
 			 .then(function(response) {
-				let html = response.data;
-				let videoId = '#'+$(html).attr('id');
-
-				$btn.removeClass('opacity-4').enable();
-				$icon.hide();
-				$container.append(html);
-				$container.addClass('border rounded-1 p-2');
-				try {
-					new Plyr(videoId);
-				} catch(e) {
-					$(videoId).attr('controls', true);
-				}
+                $btn.removeClass('opacity-4').enable();
+                if (requestId !== videoRequest) return;
+                let $loaded = $('<div data-loaded-piece-video></div>').html(response.data);
+                let media = $loaded.find('video').get(0);
+                if (!media) return;
+                $icon.hide();
+                $container.append($loaded);
+                $container.addClass('border rounded-1 p-2');
+                try {
+                    initPlyrs(media);
+                } catch(e) {
+                    $(media).attr('controls', true);
+                }
 			 })
 			 .catch(function(error) {
-				console.log(error);
+                $btn.removeClass('opacity-4').enable();
+                if (requestId === videoRequest) alert('The video could not be loaded. Please try again.');
 			 });
 	}
 });
 
 function stopVideo(reset = true) {
-	$('video').each(function() {
-		let $video = $(this);
-		$video.get(0).pause();
-
-		if (reset && $video.parents('.video-container').length) {
-			$video.get(0).currentTime = 0;
-			$video.closest('.video-container').removeClass('border rounded-1 p-2 ').find('div').show();
-			$video.remove();
-		}
-	});
+    videoRequest++;
+    $('video').each(function() { this.pause(); });
+    if (reset) {
+        $('[data-loaded-piece-video]').each(function () {
+            const $loaded = $(this);
+            const media = $loaded.find('video').get(0);
+            if (media && media.disposePiecePlayer) media.disposePiecePlayer();
+            const $container = $loaded.closest('.video-container');
+            $container.removeClass('border rounded-1 p-2');
+            $container.find('button[data-action="video"] > div:first-of-type').show();
+            $loaded.remove();
+        });
+    }
 }
 </script>
 

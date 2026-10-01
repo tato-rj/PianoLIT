@@ -35,6 +35,7 @@ async function main() {
     await require('./score-editor')();
     await require('./webapp-search')();
     await require('./piece-access')();
+    await require('./video-moments')();
     await require('./match-tour')();
     const document = {cookie: 'first=one; second=two%20words; third=three'};
     const cookies = load('helpers/cookie.js', {document});

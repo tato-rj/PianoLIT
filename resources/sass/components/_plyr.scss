@@ -4,7 +4,7 @@
 
 #tabs-container {
 	.video-container { align-self: flex-start; }
-	.plyr--video:not(.plyr--fullscreen-active) {
+	.plyr--video:not(.plyr--fullscreen-fallback) {
 		height: auto;
 		max-height: 420px;
 		.plyr__video-wrapper, video { max-height: 420px; }
@@ -14,6 +14,22 @@
 		align-self: stretch;
 		height: var(--piece-about-video-height, auto);
 		max-height: 420px;
-		.plyr--video:not(.plyr--fullscreen-active) { height: 100%; }
+		.plyr--video:not(.plyr--fullscreen-fallback) { height: 100%; }
 	}
 }
+
+// Plyr 3 uses native fullscreen selectors or its fallback class. Reset both
+// the player and its media wrapper so the embedded height cap cannot carry over.
+@mixin piece-video-fullscreen {
+	height: 100%;
+	width: 100%;
+	max-height: none;
+	border-radius: 0 !important;
+	.plyr__video-wrapper, video { height: 100%; max-height: none; }
+	video { object-fit: contain; }
+}
+
+// Keep vendor fullscreen selectors separate for browsers that don't support both.
+#tabs-container .video-container .plyr.plyr--video:fullscreen { @include piece-video-fullscreen; }
+#tabs-container .video-container .plyr.plyr--video:-webkit-full-screen { @include piece-video-fullscreen; }
+#tabs-container .video-container .plyr.plyr--video.plyr--fullscreen-fallback { @include piece-video-fullscreen; }

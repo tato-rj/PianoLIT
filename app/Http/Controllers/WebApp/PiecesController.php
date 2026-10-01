@@ -15,7 +15,7 @@ class PiecesController extends Controller
     public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PieceRecommendations $recommendations)
     {
         $timeline = Timeline::for($piece, 4);
-        $piece->loadMissing(['tags', 'tutorials']);
+        $piece->loadMissing(['tags', 'tutorials.moments']);
         $recommendationRows = $recommendations->rows($piece);
         $sentences = ['Tuning the piano', 'Arranging rows of comfy seats', 'Adjusting the bench', 'Warming up fingers', 'Greeting the eager audience', 'Dimming the lights', 'Wrapping up'];
 
@@ -67,6 +67,7 @@ class PiecesController extends Controller
     public function tutorial(Piece $piece, Tutorial $tutorial)
     {
         abort_unless($tutorial->piece_id == $piece->id, 404);
+        $tutorial->loadMissing('moments');
 
         return view('webapp.piece.components.video.element', compact('piece', 'tutorial'))->render();
     }

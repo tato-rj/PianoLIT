@@ -1,10 +1,11 @@
 <div class="tab-pane fade show active mb-5" id="tab-about">
 	<div class="row">
 		@if($piece->media['performance'])
-		<div class="col-lg-6 col-12 mb-4 rounded-video video-container piece-about-video">
+		<div class="col-lg-6 col-12 mb-4 rounded-video video-container {{$piece->media['performance']->moments->isEmpty() ? 'piece-about-video' : ''}}">
 			@video([
 				'classes' => 'w-100',
 				'id' => 'piece-performance',
+                'moments' => $piece->media['performance']->listeningMoments(),
 	            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
 				'thumbnail' => asset('images/webapp/piano-thumbnail.jpg'),
 				'url' => $piece->media['performance']->video_url])
@@ -12,7 +13,7 @@
 		@endif
 
 		<div class="{{$piece->media['performance'] ? 'col-lg-6 col-12' : 'col-12'}} mb-4">
-			<div class="d-flex {{$piece->media['performance'] ? null : 'flex-center'}} flex-wrap mb-3">
+{{-- 			<div class="d-flex {{$piece->media['performance'] ? null : 'flex-center'}} flex-wrap mb-3">
 				<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 					@icon('file-text'){{$piece->number_of_pages}}
 				</div>
@@ -22,7 +23,7 @@
 				<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 					@icon('music'){{$piece->key}}
 				</div>
-			</div>
+			</div> --}}
 			@if($piece->hasDescription())
 			<div class="mb-3 piece-description" data-piece-description>
 				<h5 class="mb-2">What's this piece like?</h5>

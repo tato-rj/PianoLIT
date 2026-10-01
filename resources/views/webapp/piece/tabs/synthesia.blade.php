@@ -5,6 +5,7 @@
 		@video([
 			'classes' => 'w-100',
 			'id' => 'piece-synthesia',
+            'moments' => $piece->media['synthesia']->listeningMoments(),
             'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
 			'thumbnail' => asset('images/webapp/synthesia-thumbnail.gif'),
 			'url' => $piece->media['synthesia']->video_url])
