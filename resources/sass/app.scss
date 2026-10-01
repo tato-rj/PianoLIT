@@ -63,8 +63,8 @@
 }
 
 .offcanvas-bottom {
-    height: auto;
-    max-height: 45vh;
+    height: auto !important;
+    max-height: 45vh !important;
 }
 
 .dropdown-toggle::after {
