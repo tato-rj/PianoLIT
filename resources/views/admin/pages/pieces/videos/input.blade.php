@@ -31,11 +31,11 @@
 		<div class="input-group-prepend">
 			<a href="{{$tutorial->video_url}}" target="_blank" class="input-group-text no-underline">@icon('globe', ['mr' => 0, 'classes' => 'text-success'])</a>
 		</div>
-		<input rows="1" class="form-control videos-link" placeholder="File name" name="{{'videos['.$loop->index.'][filename]'}}" value="{{$tutorial->filename}}">		
+		<input rows="1" class="form-control videos-link" placeholder="File name" name="{{'videos['.$loop->index.'][filename]'}}" value="{{$tutorial->filename}}">
 	</div>
 	@endif
 
-	<a class="align-self-stretch btn btn-sm btn-block btn-danger text-white mr-1 remove-field mb-4">
+	<a class="align-self-stretch btn btn-sm d-block w-100 btn-danger text-white me-1 remove-field mb-4">
 		<strong>Remove</strong>
 	</a>
 

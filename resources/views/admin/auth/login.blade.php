@@ -21,7 +21,7 @@
                         <img class="w-100 mb-2" src="{{asset('images/brand/app-icon.svg')}}" style="border-radius: 50%; vertical-align: sub; max-width: 100px">
                         <h4 class="text-dark">Login</h4>
                     </div>
-                    
+
                     <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                         <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="E-mail" required autofocus>
                         @if ($errors->has('email'))
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-default btn-block">
+                        <button type="submit" class="btn btn-default d-block w-100">
                             Login
                         </button>
                     </div>

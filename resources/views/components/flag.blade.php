@@ -1,1 +1,1 @@
-<span class="flag-icon flag-icon-{{strtolower($code)}} rounded-sm shadow-center mr-1"></span>
+<span class="flag-icon flag-icon-{{strtolower($code)}} rounded-1 shadow-center me-1"></span>

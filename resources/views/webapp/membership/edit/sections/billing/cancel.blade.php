@@ -3,6 +3,6 @@
 	<p>You can still enjoy full access to your account until the end of your current billing cycle.</p>
 	<form method="POST" action="{{route('webapp.membership.cancel')}}" id="update-collection-form" class="mb-1" disable-on-submit>
 		@csrf
-		<button type="submit" class="btn btn-block btn-danger">Cancel my membership</button>
+		<button type="submit" class="btn d-block w-100 btn-danger">Cancel my membership</button>
 	</form>
 </div>

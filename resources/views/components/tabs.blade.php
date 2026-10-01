@@ -1,8 +1,8 @@
 <ul class="nav nav-tabs" id="{{$name}}-tabs" role="tablist">
   @foreach($headers as $header)
   <li class="nav-item">
-    <a class="nav-link {{$loop->first ? 'active' : null}}" id="{{str_slug($header)}}-tab" data-toggle="tab" href="#{{str_slug($header)}}" role="tab" aria-controls="{{str_slug($header)}}" aria-selected="true">{{$header}}</a>
-  </li>  
+    <a class="nav-link {{$loop->first ? 'active' : null}}" id="{{str_slug($header)}}-tab" data-bs-toggle="tab" href="#{{str_slug($header)}}" role="tab" aria-controls="{{str_slug($header)}}" aria-selected="true">{{$header}}</a>
+  </li>
   @endforeach
 </ul>
 <div class="tab-content" id="{{$name}}-panels">

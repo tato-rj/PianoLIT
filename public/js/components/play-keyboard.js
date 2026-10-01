@@ -142,7 +142,7 @@ $(document).on('click', 'button.play-notes', function() {
 ///////////////////
 // ON TAB CHANGE //
 ///////////////////
-$(document).on('show.bs.tab', '#pills-tab a[data-toggle="pill"]', function () {
+$(document).on('show.bs.tab', '#pills-tab a[data-bs-toggle="pill"]', function () {
     stopLoop();
     hideDots();
     resetFingerings();

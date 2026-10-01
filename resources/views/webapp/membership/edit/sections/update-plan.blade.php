@@ -2,13 +2,13 @@
 	<div class="d-flex justify-content-center mb-4">
 		@foreach($plans as $plan)
 		<button class="btn-raw border rounded p-4 text-center m-2 position-relative
-			{{auth()->user()->membership->source->plan == $plan->name ? 'selected-plan' : null}}" 
+			{{auth()->user()->membership->source->plan == $plan->name ? 'selected-plan' : null}}"
 			{{auth()->user()->membership->source->isCanceled() ? 'disabled' : null}}
 			data-name="{{$plan->name}}" name="plan" style="width: 50%; max-width: 160px">
 			@if(auth()->user()->membership->source->plan == $plan->name)
 			<div id="plan-check" class="absolute-top-right">@icon('circle-check', ['color' => 'green', 'size' => 'lg', 'mr' => 0])</div>
 			@endif
-			<div class="badge badge-pill alert-grey mb-3"><strong>{{strtoupper($plan->name)}}</strong></div>
+			<div class="badge rounded-pill alert-grey mb-3"><strong>{{strtoupper($plan->name)}}</strong></div>
 			<h2 class="text-brand">${{$plan->formattedPrice()}}</h2>
 			<p class="text-muted m-0"><small>billed each {{$plan->interval}}</small></p>
 		</button>

@@ -1,10 +1,10 @@
-<div class="text-right">
+<div class="text-end">
 @button([
 	'label' => \App\Support\Icon::render('smile', ['mr' => 1]) . 'Write a fake review',
 	'styles' => [
 		'theme' => 'warning'
-		], 
-	'classes' => 'rounded', 
+		],
+	'classes' => 'rounded',
 	'data' => ['toggle' => 'modal', 'target' => '#review-modal']])
 </div>
 

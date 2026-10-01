@@ -1,2 +1,2 @@
-<a href="{{config('app.stores.ios')}}" rel="nofollow" target="_blank" class="mr-2">
+<a href="{{config('app.stores.ios')}}" rel="nofollow" target="_blank" class="me-2">
 	<img class="{{$classes ?? null}}" style="width: 104px" alt="Download PianoLIT" src="{{asset('images/apple/download.svg')}}"></a>

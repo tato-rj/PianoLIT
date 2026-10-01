@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	$('.alert-temporary').fadeAfter(2);
-	$('[data-toggle="popover"]').popover();
+	$('[data-bs-toggle="popover"]').popover();
 
     (new Search).listenTo('#global-search-input')
                 .feedbackIn('#global-search-feedback')

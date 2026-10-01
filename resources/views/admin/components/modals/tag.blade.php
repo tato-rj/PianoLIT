@@ -1,12 +1,12 @@
 @component('components.modal', ['id' => 'tag-modal', 'header' => 'Edit tag'])
 @slot('body')
-  <form method="POST" id="edit-tag" class="form-row">
+  <form method="POST" id="edit-tag" class="row g-2">
     @csrf
     @method('PATCH')
     @input(['bag' => 'default', 'label' => 'Name', 'name' => 'name', 'id' => 'name', 'grid' => 'col'])
     @select(['bag' => 'default', 'label' => 'Type', 'name' => 'type', 'placeholder' => 'Type', 'optGroups' => \App\Tag::labels(), 'grid' => 'col'])
     @submit(['label' => 'Save changes', 'block' => true])
-  </form>  
+  </form>
 @endslot
 
 @slot('footer')

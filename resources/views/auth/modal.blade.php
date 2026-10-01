@@ -14,7 +14,7 @@
               @include('auth.fields.login')
 
               <div class="form-group text-center">
-                  <button type="submit" class="btn btn-primary shadow btn-block mb-3">Login</button>
+                  <button type="submit" class="btn btn-primary shadow d-block w-100 mb-3">Login</button>
                   <p><a href="{{ route('password.request') }}">Forgot Your Password?</a></p>
               </div>
           </form>

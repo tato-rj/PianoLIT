@@ -18,16 +18,16 @@
 
 @pagetitle([
 	'version' => '1.1',
-	'title' => 'The Circle of Fifths', 
+	'title' => 'The Circle of Fifths',
 	'subtitle' => 'An interactive and fun tool to explore music harmony in an innovative way. Enjoy!'])
-	
+
 <div class="container mb-5">
 	@component('components.display.layout', [
 		'ads' => ['ebook']
 	])
 
 	@slot('content')
-	<div class="container mb-4">	
+	<div class="container mb-4">
 		<div class="row mb-6">
 			<div class="col-lg-5 col-12 px-4 mb-6">
 				<div id="wheel-container" class="w-100 position-relative">
@@ -43,13 +43,13 @@
 				<div id="mode-controls" class=" mb-2">
 					<ul class="nav nav-tabs mode-tabs mb-3" id="mode-tabs" role="tablist">
 						<li class="nav-item">
-							<a class="nav-link active" data-name="major" id="major-tab" data-toggle="tab" href="#mode-major" role="tab" aria-controls="major" aria-selected="true">Major</a>
+							<a class="nav-link active" data-name="major" id="major-tab" data-bs-toggle="tab" href="#mode-major" role="tab" aria-controls="major" aria-selected="true">Major</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" data-name="minor" id="minor-tab" data-toggle="tab" href="#mode-minor" role="tab" aria-controls="minor" aria-selected="false">Minor</a>
+							<a class="nav-link" data-name="minor" id="minor-tab" data-bs-toggle="tab" href="#mode-minor" role="tab" aria-controls="minor" aria-selected="false">Minor</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" data-name="enharmonic" id="enharmonic-tab" data-toggle="tab" href="#mode-enharmonic" role="tab" aria-controls="minor" aria-selected="false">Enharmonic</a>
+							<a class="nav-link" data-name="enharmonic" id="enharmonic-tab" data-bs-toggle="tab" href="#mode-enharmonic" role="tab" aria-controls="minor" aria-selected="false">Enharmonic</a>
 						</li>
 					</ul>
 					<div class="tab-content p-1 t-2" id="mode-panels" style="opacity: 0;">
@@ -81,7 +81,7 @@
 		</div>
 	</div>
 	@endslot
-	
+
 	@endcomponent
 </div>
 

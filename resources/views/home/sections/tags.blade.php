@@ -12,19 +12,19 @@
 		@include('home.sections.composers')
 
 		@include('home.sections.freepicks')
-		
+
 		<div class="col-12">
 			<div class="mb-5 pb-3 custom-scroll dragscroll dragscroll-horizontal">
 				<div id="tags-search" class="d-flex " style="width: 2170px;">
 					@foreach($tags as $type => $group)
-					<div class="{{$loop->last ? null : 'border-right mr-4 pr-1'}}">
+					<div class="{{$loop->last ? null : 'border-end me-4 pe-1'}}">
 						<p class="h6">{{ucfirst($type)}}</p>
 						<div class="d-flex flex-wrap ">
 							@foreach($group as $tag)
-						    <button 
-						    	data-name="{{$tag->name}}"
-						    	data-id="{{$tag->id}}"
-						      class="tag btn btn-light badge-pill m-2 px-3 py-1 text-nowrap" style="font-weight: normal;">
+						    <button
+							data-name="{{$tag->name}}"
+							data-id="{{$tag->id}}"
+						      class="tag btn btn-light rounded-pill m-2 px-3 py-1 text-nowrap" style="font-weight: normal;">
 						      {{$tag->name}}
 						    </button>
 							@endforeach

@@ -95,7 +95,7 @@
                     @include('webapp.playlists.collection-card', ['expanded' => false])
                 @endforeach
             </div>
-            <p class="sr-only" data-collection-status role="status" aria-live="polite"></p>
+            <p class="visually-hidden" data-collection-status role="status" aria-live="polite"></p>
         @else
             <div class="collections-empty">
                 <h3>More music is on its way</h3>

@@ -8,21 +8,21 @@
 ]])
 @slot('body')
 	<div class="rounded-top bg-align-center position-relative" style="background-image: url({{$piece->image_background ?? $piece->period->cover_image}}); height: 200px;">
-      <button class="close text-white absolute-top-right" type="button" data-dismiss="modal">
+      <button class="close text-white absolute-top-right" type="button" data-bs-dismiss="modal">
           @icon('close', ['mr' => 0])
         </button>
 
 		<img src="{{$piece->composer->cover_image}}" class="rounded-circle position-absolute shadow border border-white border-2x" style="width: 100px; bottom: -50px; left: 25px">
 	</div>
 	<div class="p-4">
-		<div class="text-right">
+		<div class="text-end">
 			<h5 class="mb-0" style="padding-left: 108px"><strong>{{$piece->medium_name}}</strong></h5>
 			<p class="text-muted">by {{$piece->composer->name}}</p>
 		</div>
 
 		<div class="mb-4">
 			<h6 class="mb-2">What's this piece like?</h6>
-			<div style="white-space: pre-wrap;">{{$piece->description}}</div>		
+			<div style="white-space: pre-wrap;">{{$piece->description}}</div>
 		</div>
 
 		<div>

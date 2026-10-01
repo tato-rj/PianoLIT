@@ -1,4 +1,4 @@
-<div class="text-right">
+<div class="text-end">
   @include('components.datatable.actions', ['actions' => [
       'other' => [['route' => route('escores.show', $item->slug), 'title' => 'Preview this eBook', 'icon' => 'eye']],
       'edit' => route('admin.escores.edit', $item->slug),

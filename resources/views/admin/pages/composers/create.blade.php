@@ -4,7 +4,7 @@
   @csrf
   {{-- Name --}}
   <div class="d-flex">
-    <div class="flex-grow mr-2">
+    <div class="flex-grow me-2">
       @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Full name', 'limit' => 120])
     </div>
     <div>
@@ -14,18 +14,18 @@
   @textarea(['bag' => 'default', 'name' => 'biography', 'placeholder' => 'Life\'s summary', 'rows' => 6])
   @textarea(['bag' => 'default', 'name' => 'curiosity', 'placeholder' => 'Did you know?', 'limit' => 125, 'rows' => 3, 'required' => false])
 
-  <div class="form-row">
+  <div class="row g-2">
     @file(['bag' => 'default', 'name' => 'cover_image', 'placeholder' => 'Cover image', 'grid' => 'col'])
     @select(['bag' => 'default', 'name' => 'period', 'placeholder' => 'Period', 'options' => \App\Tag::periods()->get()->pluck('name'), 'grid' => 'col'])
   </div>
 
-  <div class="form-row">
+  <div class="row g-2">
     @select(['bag' => 'default', 'name' => 'country_id', 'placeholder' => 'Nationality', 'options' => $countries->pluck('id', 'nationality'), 'grid' => 'col'])
     @select(['bag' => 'default', 'name' => 'ethnicity', 'placeholder' => 'Ethnicity', 'options' => ethnicities(), 'grid' => 'col'])
     @select(['bag' => 'default', 'name' => 'mood', 'placeholder' => 'Mood', 'options' => $moods, 'grid' => 'col'])
   </div>
 
-  <div class="form-row">
+  <div class="row g-2">
     @input(['bag' => 'default', 'name' => 'date_of_birth', 'id' => 'born-in', 'placeholder' => 'Date born', 'grid' => 'col', 'required' => false])
     @input(['bag' => 'default', 'name' => 'date_of_death', 'id' => 'died-in', 'placeholder' => 'Date died', 'grid' => 'col', 'required' => false])
   </div>

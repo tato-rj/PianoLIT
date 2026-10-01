@@ -1,5 +1,5 @@
 <div class="d-flex mb-4">
-	<div class="mr-4">
+	<div class="me-4">
 		<img src="{{$composer->cover_image}}" style="width: 160px" class="rounded-circle shadow">
 	</div>
 	<div class="d-flex justify-content-center flex-column">

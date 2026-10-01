@@ -13,14 +13,14 @@
 				</a>
 			</div>
 			<div class="w-50 text-center">
-				<a class="link-grey delete" title="Delete" href="" data-url="{{route('users.studio-policies.destroy', $policy->id)}}" data-toggle="modal" data-target="#delete-modal">
+				<a class="link-grey delete" title="Delete" href="" data-url="{{route('users.studio-policies.destroy', $policy->id)}}" data-bs-toggle="modal" data-bs-target="#delete-modal">
 					<small class="d-block">DELETE</small>
 					@icon('trash-2', ['mr' => 0, 'classes' => 'icon-size-lg'])
 				</a>
 			</div>
 		</div>
 		<div>
-			<a class="btn btn-teal btn-block text-left" href="{{route('users.studio-policies.show', $policy->id)}}">
+			<a class="btn btn-teal d-block w-100 text-start" href="{{route('users.studio-policies.show', $policy->id)}}">
 				@icon('file-down', ['mr' => 2])Download
 			</a>
 		</div>

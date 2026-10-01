@@ -1,11 +1,11 @@
 <div>
 	<table class="table table-striped table-borderless">
 	  <tbody>
-		@include('admin.pages.users.show.list-item', 
+		@include('admin.pages.users.show.list-item',
 			['title' => 'Billing Source', 'value' => 'Apple In-App Purchases'])
-		@include('admin.pages.users.show.list-item', 
+		@include('admin.pages.users.show.list-item',
 			['title' => 'Membership ID', 'value' => $user->membership->source->latest_receipt_info ? $user->membership->source->latest_receipt_info->original_transaction_id : null])
-		@include('admin.pages.users.show.list-item', 
+		@include('admin.pages.users.show.list-item',
 			['title' => 'Plan', 'value' => $user->membership->source->latest_receipt_info ? ucfirst($user->membership->source->latest_receipt_info->product_id) : null])
 		@include('admin.pages.users.show.list-item',
 			['title' => 'Start date', 'value' => $user->membership->source->created_at->toDayDateTimeString()])
@@ -25,7 +25,7 @@
 			</form>
 		</div>
 	@endif
-	<button data-toggle="modal" data-target="#membership-history" class="btn btn-link">
+	<button data-bs-toggle="modal" data-bs-target="#membership-history" class="btn btn-link">
 		@icon('brand-apple')Request receipts history
 	</button>
 </div>

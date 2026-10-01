@@ -9,7 +9,7 @@
 @slot('body')
 <div class="text-center">
   <div id="game-feedback" class="mb-4"></div>
-  <button type="button" class="btn btn-teal btn-sm btn-wide" data-dismiss="modal"><strong>{{$button}}</strong></button>
+  <button type="button" class="btn btn-teal btn-sm btn-wide" data-bs-dismiss="modal"><strong>{{$button}}</strong></button>
 </div>
 @endslot
 

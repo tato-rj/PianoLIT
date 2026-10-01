@@ -1,0 +1,101 @@
+// Project markup still uses these few form wrappers and icon close buttons.
+// Keep their existing layout while Bootstrap 5 supplies all component styles.
+.form-group { margin-bottom: 1rem; }
+.form-inline { display: flex; flex-flow: row wrap; align-items: center; }
+@include media-breakpoint-up(sm) {
+    .form-inline .form-control { display: inline-block; width: auto; vertical-align: middle; }
+}
+label { display: inline-block; margin-bottom: .5rem; }
+.form-check-label { margin-bottom: 0; }
+.form-text { display: block; }
+select.form-control { appearance: auto; }
+select.form-control:not([size]):not([multiple]) { height: calc(1.5em + .75rem + 2px); }
+select.form-control-sm:not([size]):not([multiple]) { height: calc(1.5em + .5rem + 2px); }
+select.form-control-lg:not([size]):not([multiple]) { height: calc(1.5em + 1rem + 2px); }
+
+// These rows previously used Bootstrap's compact form-row gutters.
+.row.g-2 { --bs-gutter-x: 10px; --bs-gutter-y: 0; }
+
+.input-group-prepend, .input-group-append { display: flex; }
+.input-group-prepend { margin-right: -1px; }
+.input-group-append { margin-left: -1px; }
+.input-group-prepend > .input-group-text,
+.input-group-append > .input-group-text { height: 100%; }
+.input-group-prepend > .input-group-text { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.input-group-append > .input-group-text { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.input-group > .input-group-prepend + .form-control { margin-left: 0 !important; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.input-group > .form-control:not(:last-child) { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+@each $size, $padding, $font-size in (sm, .25rem .5rem, .875rem), (lg, .5rem 1rem, 1.25rem) {
+    .input-group-#{$size} > .input-group-prepend > .input-group-text,
+    .input-group-#{$size} > .input-group-append > .input-group-text {
+        padding: $padding;
+        font-size: $font-size;
+    }
+}
+
+.custom-file { position: relative; display: block; width: 100%; height: 2.375rem; flex: 1 1 auto; }
+.custom-file-input { position: relative; z-index: 2; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.custom-file-input:focus + .custom-file-label { border-color: #80bdff; box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25); }
+.custom-file-input.is-invalid + .custom-file-label { border-color: #dc3545; }
+.custom-file-label {
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+    display: block; overflow: hidden; margin-bottom: 0; font-weight: 400; color: #495057;
+    padding: .375rem .75rem; border: 1px solid #ced4da;
+    border-radius: .25rem; background: #fff; white-space: nowrap;
+}
+.custom-file-label::after {
+    content: "Browse"; position: absolute; top: 0; right: 0; bottom: 0;
+    padding: .375rem .75rem; border-left: 1px solid #ced4da;
+    background: #e9ecef; border-radius: 0 .25rem .25rem 0;
+}
+
+.close {
+    float: right; padding: 0; border: 0; background: transparent;
+    color: #000; font-size: 1.5rem; font-weight: 700; line-height: 1;
+    opacity: .5; cursor: pointer;
+}
+.close:hover, .close:focus { opacity: .75; }
+.modal-header { align-items: flex-start; }
+.modal-header .close { padding: 1rem; margin: -1rem -1rem -1rem auto; }
+.alert-dismissible .close { position: absolute; top: 0; right: 0; z-index: 2; padding: .75rem 1.25rem; color: inherit; }
+
+.breadcrumb { padding: .75rem 1rem; margin-bottom: 1rem; border-radius: .25rem; }
+
+// Preserve horizontal rules and the existing header treatment in admin tables.
+.table > :not(caption) > * > * { border-top: 1px solid var(--bs-table-border-color); border-bottom-width: 0; }
+.table > thead > tr > th { vertical-align: bottom; border-bottom: 2px solid var(--bs-table-border-color); }
+.table .thead-light th { color: #495057; background-color: #e9ecef; border-color: #dee2e6; }
+.table .thead-dark th { color: #fff; background-color: #343a40; border-color: #454d55; }
+.table-bordered > :not(caption) > * > * { border-bottom-width: 1px; }
+.table-borderless > :not(caption) > * > * { border: 0; }
+
+.btn-group-toggle .btn { position: relative; }
+.btn-group-toggle .btn > input { position: absolute; opacity: 0; pointer-events: none; }
+
+.badge.bg-primary, .badge.bg-secondary, .badge.bg-success,
+.badge.bg-danger, .badge.bg-info, .badge.bg-dark { color: #fff; }
+.badge.bg-warning, .badge.bg-light { color: #212529; }
+.badge.rounded-pill, .badge-pill { padding-right: .6em; padding-left: .6em; border-radius: 10rem !important; }
+
+// In the existing markup, border-0 takes precedence over side utilities.
+.border-0 { border: 0 !important; }
+hr { box-sizing: content-box; height: 0; overflow: visible; }
+
+// Server-generated status HTML is also returned to existing mobile clients.
+// Preserve its class strings while letting the website style them.
+@each $size, $length in $spacers {
+    .ml-#{$size} { margin-left: $length !important; }
+    .mr-#{$size} { margin-right: $length !important; }
+}
+.ml-auto { margin-left: auto !important; }
+.mr-auto { margin-right: auto !important; }
+.badge-pill { border-radius: 50rem; }
+
+// Primer supplied 6–8 in physical directions; templates now use BS5's
+// logical direction names for those same large spacing values.
+@each $size, $length in (6: 4rem, 7: 5rem, 8: 6rem) {
+    .ms-#{$size} { margin-left: $length !important; }
+    .me-#{$size} { margin-right: $length !important; }
+    .ps-#{$size} { padding-left: $length !important; }
+    .pe-#{$size} { padding-right: $length !important; }
+}

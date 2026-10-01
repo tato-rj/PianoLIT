@@ -13,17 +13,17 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => 'Edit ' . $piece->name, 
-      'subtitle' => 'Use this page to edit this piece.', 
+      'title' => 'Edit ' . $piece->name,
+      'subtitle' => 'Use this page to edit this piece.',
       'back' => ['view all pieces' => route('admin.pieces.index')]
     ])
     <div class="row mb-3">
-      <div class="col-12 text-right">
-        <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
-        <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
+      <div class="col-12 text-end">
+        <button class="btn btn-light me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#abrsm-modal"><strong>ABRSM</strong></button>
+        <button class="btn btn-light me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#rcm-modal"><strong>RCM</strong></button>
       </div>
     </div>
-    
+
     <form id="edit-form" method="POST" action="{{route('admin.pieces.update', $piece->id)}}" enctype="multipart/form-data">
       @csrf
       @method('PATCH')
@@ -34,7 +34,7 @@
           </div>
 
           {{-- Name --}}
-          <div class="form-group form-row">
+          <div class="form-group row g-2">
             <div class="col">
               <label class="text-brand"><small>Name</small></label>
               <input type="text" class="form-control" name="name" placeholder="Piece name" value="{{$piece->name}}" >
@@ -44,7 +44,7 @@
               <input type="text" class="form-control" name="nickname" placeholder="Nickname" value="{{$piece->nickname}}" >
             </div>
           </div>
-          <div class="form-group form-row">
+          <div class="form-group row g-2">
             <div class="col">
               <label class="text-brand"><small>Collection name</small></label>
               <input type="text" class="form-control" name="collection_name" placeholder="Collection name" value="{{$piece->collection_name}}">
@@ -59,7 +59,7 @@
                   @endforeach
                 </select>
               </div>
-              <div class="pl-2 d-flex flex-column">
+              <div class="ps-2 d-flex flex-column">
                 <label class="text-brand"><small>Attributed</small></label>
                 <div class="d-flex flex-center flex-grow">
                   <label class="switch cursor-pointer">
@@ -71,7 +71,7 @@
             </div>
           </div>
           {{-- Catalogue and number --}}
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col">
               <label class="text-brand"><small>Collection number
                 @include('admin.components.info', ['message' => 'This number will appear after the name of the piece. Ex: <i>Piece Name Op.1</i> <u>No.1</u>'])
@@ -98,7 +98,7 @@
               <label class="text-brand"><small>Catalogue</small></label>
               <div class="input-group">
                 <div class="input-group-prepend" style="width: 40%">
-                  <select class="form-control rounded-left" style="border-radius: 0" name="catalogue_name" >
+                  <select class="form-control rounded-start" style="border-radius: 0" name="catalogue_name" >
                     <option selected disabled>Catalogue</option>
                     @foreach(catalogues() as $catalogue)
                     <option value="{{$catalogue}}" {{($piece->catalogue_name == $catalogue) ? 'selected' : ''}}>{{$catalogue}}</option>
@@ -111,7 +111,7 @@
             </div>
           </div>
           {{-- Key and Composer --}}
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col">
               <label class="text-brand"><small>Composed in</small></label>
               <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Composed in" value="{{$piece->composed_in}}">
@@ -140,7 +140,7 @@
             </div>
           </div>
           {{-- Period, Length and Level --}}
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col">
               <label class="text-brand"><small>Period</small></label>
               <select class="form-control" name="period[]" >
@@ -214,7 +214,7 @@
           </div>
           {{-- Files --}}
           <label class="text-brand"><small>Uploads</small></label>
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
 
@@ -236,7 +236,7 @@
               </div>
             </div>
           </div>
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
                 <a class="input-group-text no-underline {{$piece->lookup('audio_path_lh')}}" href="{{storage($piece->audio_path_lh)}}" target="_blank">@icon('hand', ['mr' => 0, 'styles' => 'transform: scaleX(-1)'])</a>
@@ -258,7 +258,7 @@
           </div>
 
           <div class="bg-light px-3 py-2 text-muted form-group rounded d-flex d-apart">
-            <div class="mr-1">Should this piece show up in the <u>tour</u>?</div>
+            <div class="me-1">Should this piece show up in the <u>tour</u>?</div>
             @toggle(['toggle' => $piece->show_on_tour, 'name' => 'show_on_tour', 'autoToggle' => false])
           </div>
           @endmanager
@@ -267,7 +267,7 @@
         <div class="col-lg-6 col-sm-10 col-12 mx-auto">
 
             @image(['name' => null, 'image' => $piece->cover_image() ?? asset('images/misc/placeholder-image-wide.png'), 'empty' => true])
-          
+
             {{-- Tags --}}
             <div class="rounded bg-light px-3 py-2 mb-3">
               <p class="text-brand border-bottom pb-1 mb-1"><strong>TAGS</strong></p>
@@ -275,14 +275,14 @@
                 @foreach($types as $type => $tags)
                 <label class="p-2 mb-1 text-center w-100"><strong>{{ucfirst($type)}}</strong></label>
                   @foreach($tags as $tag)
-                  <div class="custom-control custom-checkbox mx-2 mb-2">
-                    <input type="checkbox" class="custom-control-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}" {{($piece->tags->contains($tag->id)) ? 'checked' : ''}}>
-                    <label class="custom-control-label" for="{{$tag->name}}">{{$tag->name}}</label>
+                  <div class="form-check mx-2 mb-2">
+                    <input type="checkbox" class="form-check-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}" {{($piece->tags->contains($tag->id)) ? 'checked' : ''}}>
+                    <label class="form-check-label" for="{{$tag->name}}">{{$tag->name}}</label>
                   </div>
                   @endforeach
                 @endforeach
               </div>
-              <div class="mb-1 mt-4 ml-2 text-muted">
+              <div class="mb-1 mt-4 ms-2 text-muted">
                 <small>Special tags are: {{\App\Tag::special()->get()->implode('name', ', ')}}</small>
               </div>
             </div>
@@ -298,7 +298,7 @@
             @endmanager
         </div>
 
-        <div class="col-12 text-right">
+        <div class="col-12 text-end">
             @can('update', $piece)
             <div class="">
               <button type="submit" class="btn btn-default">Save changes</button>
@@ -311,7 +311,7 @@
       </div>
     </form>
 
-    <div class="text-right">
+    <div class="text-end">
       <form method="POST" action="{{route('admin.pieces.destroy-file', $piece)}}">
         @csrf
         @method('DELETE')
@@ -381,7 +381,7 @@ function showTooltip(element) {
     },1000);
 }
 
-$('[data-toggle="tooltip"]').tooltip();
+$('[data-bs-toggle="tooltip"]').tooltip();
 
 var clipboard = new ClipboardJS('.clip');
 

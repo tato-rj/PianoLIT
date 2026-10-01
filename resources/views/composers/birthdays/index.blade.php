@@ -14,11 +14,11 @@
 @section('content')
 <div class="container mb-5">
 	@pagetitle([
-		'title' => 'Composers Birthdays', 
+		'title' => 'Composers Birthdays',
 		'subtitle' => 'Don\'t miss out on the birthday of any of your favorite composers'])
 
 	<div class="border pt-3 pb-1 px-3 rounded">
-		<div class="bg-light rounded py-1 pr-1 pl-3 d-flex d-apart mb-2">
+		<div class="bg-light rounded py-1 pe-1 ps-3 d-flex d-apart mb-2">
 			<h5 class="text-muted m-0">{{now()->year}} Calendar</h5>
 			<div>
 				<select name="composers-options" class="form-control form-control-sm rounded">
@@ -44,20 +44,20 @@ $('select[name="composers-options"]').on('change', function() {
 
 	axios.get(window.location.href, {params: {option: option}})
 		 .then(function(response) {
-		 	console.log(response.data);
-		 	$('#calendar').html(response.data).promise().done(function() {
+			console.log(response.data);
+			$('#calendar').html(response.data).promise().done(function() {
 				$('#calendar > div').show();
-		 	});
+			});
 		 })
 		 .catch(function(error) {
-		 	console.log(error);
+			console.log(error);
 		 });
 });
 </script>
 
 <script type="text/javascript">
 $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
+  $('[data-bs-toggle="tooltip"]').tooltip()
 })
 </script>
 

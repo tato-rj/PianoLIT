@@ -11,11 +11,11 @@
     <div class="match-count text-center">
         <div class="match-count-value"><span data-count>{{ number_format($tour['total']) }}</span> <span data-count-unit>pieces</span></div>
         <p class="text-muted small mb-0" data-count-note>In the PianoLIT library</p>
-        <span class="sr-only" role="status" data-count-announcement></span>
+        <span class="visually-hidden" role="status" data-count-announcement></span>
     </div>
     <div class="d-flex justify-content-between match-navigation">
-        <button type="button" class="btn btn-link text-muted pl-0" data-back disabled>← Back</button>
-        <button type="button" class="btn btn-link text-muted pr-0" data-restart>Start over</button>
+        <button type="button" class="btn btn-link text-muted ps-0" data-back disabled>← Back</button>
+        <button type="button" class="btn btn-link text-muted pe-0" data-restart>Start over</button>
     </div>
     <div data-stage></div>
     <p role="alert" class="text-danger mt-3" data-error hidden></p>

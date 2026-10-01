@@ -14,7 +14,7 @@ $fields = [
 		  <div class="input-group-prepend">
 		    <span class="input-group-text bg-light" id="addon-wrapping">$</span>
 		  </div>
-			<input class="form-control text-right {{validate($errors->default, 'lesson_fees[]')}}"
+			<input class="form-control text-end {{validate($errors->default, 'lesson_fees[]')}}"
 				step="5" type="number" name="withdrawal_fee" max="100" min="0"
 				value="{{$fields[0]}}"style="max-width: 72px">
 		</div>

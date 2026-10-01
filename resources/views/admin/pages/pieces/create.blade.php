@@ -5,44 +5,44 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'theme' => 'create', 
+      'theme' => 'create',
       'mb' => 0,
-      'title' => 'New piece', 
-      'subtitle' => 'Use this page to add a new piece.', 
+      'title' => 'New piece',
+      'subtitle' => 'Use this page to add a new piece.',
       'back' => ['view all pieces' => route('admin.pieces.index')]
     ])
     <div class="row mb-3">
-      <div class="col-12 text-right">
-        <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
-        <button class="btn btn-light mr-2 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
+      <div class="col-12 text-end">
+        <button class="btn btn-light me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#abrsm-modal"><strong>ABRSM</strong></button>
+        <button class="btn btn-light me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#rcm-modal"><strong>RCM</strong></button>
       </div>
     </div>
 
     <div class="row">
-      
+
       <div class="col-12" id="alerts-container"></div>
 
       <div class="col-lg-6 col-md-8 col-12">
         <form method="POST" id="create-piece" action="{{route('admin.pieces.store')}}" autocomplete="off" enctype="multipart/form-data">
           @csrf
           {{-- Name --}}
-          <div class="form-row">
+          <div class="row g-2">
             @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Piece name', 'grid' => 'col', 'classes' => 'validate-name'])
             @input(['bag' => 'default', 'name' => 'nickname', 'placeholder' => 'Nickname', 'grid' => 'col', 'required' => false])
           </div>
 
-          <div class="form-row">
+          <div class="row g-2">
             @input(['bag' => 'default', 'name' => 'collection_name', 'placeholder' => 'Collection name', 'grid' => 'col', 'classes' => 'validate-name', 'required' => false])
             @select(['bag' => 'default', 'name' => 'composer_id', 'placeholder' => 'Composer', 'options' => $composers->pluck('id', 'short_name'), 'grid' => 'col'])
           </div>
 
           <div class="bg-light px-3 py-2 text-muted form-group rounded d-flex d-apart">
-            <div class="mr-1">Is this piece just <u>attributed</u> to the composer?</div>
+            <div class="me-1">Is this piece just <u>attributed</u> to the composer?</div>
             @toggle(['toggle' => false, 'name' => 'is_attributed_to', 'autoToggle' => false])
           </div>
 
           {{-- Catalogue and number --}}
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col">
               <label class="text-brand"><small>Collection number
                 @include('admin.components.info', ['message' => 'This number will appear after the name of the piece. Ex: <i>Piece Name Op.1</i> <u>No.1</u>'])
@@ -71,7 +71,7 @@
               </small></label>
               <div class="input-group">
                 <div class="input-group-prepend" style="width: 40%">
-                  <select class="form-control rounded-left" style="border-radius: 0" name="catalogue_name" >
+                  <select class="form-control rounded-start" style="border-radius: 0" name="catalogue_name" >
                     <option class="default" selected disabled>Cat.</option>
                     @foreach(catalogues() as $catalogue)
                     <option value="{{$catalogue}}" {{ old('catalogue_name') == $catalogue ? 'selected' : ''}}>{{$catalogue}}</option>
@@ -84,7 +84,7 @@
             </div>
           </div>
           {{-- Key and Composer --}}
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col">
               <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Composed in" value="{{old('composed_in')}}">
               @include('admin.components.feedback', ['field' => 'composed_in'])
@@ -113,7 +113,7 @@
             </div>
           </div>
           {{-- Period, Length and Level --}}
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col">
               <select class="form-control required {{$errors->has('period') ? 'is-invalid' : ''}}" name="period[]" >
                 <option class="default" selected disabled>Period</option>
@@ -148,7 +148,7 @@
           </div>
           {{-- Description --}}
           <div class="form-group">
-            <div class="text-right">
+            <div class="text-end">
               <label class="text-brand cursor-pointer" id="description-auto-complete">@icon('wand-sparkles')</label>
             </div>
             <textarea class="form-control" rows="5" name="description" placeholder="Enter a description here">{{old('description')}}</textarea>
@@ -177,7 +177,7 @@
             </div>
           </div>
           {{-- Files --}}
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
                 <div class="input-group-text">@icon('mic', ['mr' => 0])</div>
@@ -197,7 +197,7 @@
               </div>
             </div>
           </div>
-          <div class="form-row form-group">
+          <div class="row g-2 form-group">
             <div class="col input-group">
               <div class="input-group-prepend">
                 <div class="input-group-text">@icon('hand', ['mr' => 0, 'styles' => 'transform: scaleX(-1)'])</div>
@@ -219,7 +219,7 @@
           </div>
 
           <div class="bg-light px-3 py-2 text-muted form-group rounded d-flex d-apart">
-            <div class="mr-1">Should this piece show up in the <u>tour</u>?</div>
+            <div class="me-1">Should this piece show up in the <u>tour</u>?</div>
             @toggle(['toggle' => false, 'name' => 'show_on_tour', 'autoToggle' => false])
           </div>
   {{--         <div class="form-group">
@@ -238,14 +238,14 @@
               @foreach($types as $type => $tags)
               <label class="p-2 mb-1 text-center w-100"><strong>{{ucfirst($type)}}</strong></label>
                 @foreach($tags as $tag)
-                <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input tag-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}">
-                  <label class="custom-control-label" for="{{$tag->name}}">{{$tag->name}}</label>
+                <div class="form-check mx-2 mb-2">
+                  <input type="checkbox" class="form-check-input tag-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}">
+                  <label class="form-check-label" for="{{$tag->name}}">{{$tag->name}}</label>
                 </div>
                 @endforeach
               @endforeach
             </div>
-            <div class="mb-1 mt-4 ml-2 text-muted">
+            <div class="mb-1 mt-4 ms-2 text-muted">
               <small>Special tags are: {{\App\Tag::special()->get()->implode('name', ', ')}}</small>
             </div>
           </div>
@@ -255,7 +255,7 @@
           @endmanager
 
           <div class="text-center my-5">
-            <button type="submit" id="submit-button" class="btn btn-block btn-default">Add piece</button>
+            <button type="submit" id="submit-button" class="btn d-block w-100 btn-default">Add piece</button>
           </div>
         </form>
       </div>
@@ -267,7 +267,7 @@
           <div id="validation-results">
             <p class="text-muted text-center mb-0 empty"><small><i>Start typing to view similar pieces here...</i></small></p>
             <div class="results row">
-              
+
             </div>
           </div>
         </div>
@@ -289,12 +289,12 @@
   $('input[name="alerts[]"]').on('click', function() {
     let alerts = [];
     let $alertsContainer = $('#alerts-container');
-    
+
     $(this).parent().toggleClass('active');
-    
+
     $alertsContainer.html(`<p class="text-muted text-center mb-4"><i>Loading...</i></p>`);
 
-    $.each($('input[name="alerts[]"]:checked'), function(){            
+    $.each($('input[name="alerts[]"]:checked'), function(){
       alerts.push($(this).val());
     });
     if (alerts.length == 0) {
@@ -333,7 +333,7 @@ function showTooltip(element) {
     },1000);
 }
 
-$('[data-toggle="tooltip"]').tooltip();
+$('[data-bs-toggle="tooltip"]').tooltip();
 
 var clipboard = new ClipboardJS('.clip');
 
@@ -482,7 +482,7 @@ function validateForm() {
 
   $('select.required').each(function() {
     if ($('option:selected', this).hasClass('default'))
-        isValid = false;    
+        isValid = false;
   });
 
   return isValid;

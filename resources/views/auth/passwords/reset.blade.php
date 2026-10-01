@@ -19,9 +19,9 @@
                 <div class="form-group">
                     <input required type="password" name="password_confirmation" placeholder="Confirm your new password" class="form-control w-100 input-light" value="{{ old('password') }}">
                 </div>
-                
+
                 <div class="form-group text-center">
-                    <button type="submit" class="btn btn-primary shadow btn-block mb-4">Reset my password</button>
+                    <button type="submit" class="btn btn-primary shadow d-block w-100 mb-4">Reset my password</button>
                 </div>
             </form>
         </div>

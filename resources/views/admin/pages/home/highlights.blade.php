@@ -1,4 +1,4 @@
-        <div class="row no-gutters mb-4" id="user-stats-overview">
+        <div class="row g-0 mb-4" id="user-stats-overview">
           <div class="col-lg-4 col-md-4 col-12 bg-primary text-white">
             <a class="link-none w-100 h-100 d-flex flex-center" href="{{$userStats['all']['url']}}">
               <div class="text-center py-4">
@@ -20,7 +20,7 @@
             @foreach($userStats['platforms'] as $platform)
             <a class="link-none" href="{{$platform['url']}}">
               <div class="p-4 align-items-center d-md-flex flex-wrap justify-content-between {{$loop->iteration == 2 ? 'border-y' : null}}" style="flex: 1">
-                <div class="mr-3">@icon(($platform['icon']['fa_type'] ?? null) === 'b' ? 'brand-' . $platform['icon']['icon'] : $platform['icon']['icon']){{$platform['total']}} {{$platform['label']}} Users</div>
+                <div class="me-3">@icon(($platform['icon']['fa_type'] ?? null) === 'b' ? 'brand-' . $platform['icon']['icon'] : $platform['icon']['icon']){{$platform['total']}} {{$platform['label']}} Users</div>
                 <div class="">
                   @if($platform['counts'][0] == $platform['counts'][1])
                   <small class="text-warning text-nowrap">@icon('circle-alert')Same as last week</small>

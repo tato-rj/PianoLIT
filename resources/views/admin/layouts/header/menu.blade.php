@@ -4,13 +4,13 @@
       @editor
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'My profile', 'icon' => 'pencil'])
       @endeditor
-  
+
       @manager
 
         @include('admin.layouts.header.divider', ['label' => 'TOOLS'])
-        
+
         @include('admin.layouts.header.item', ['route' => route('admin.settings.index'), 'name' => 'Settings', 'icon' => 'settings'])
-        
+
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
         'dropdown' => [
           ['route' => route('admin.api.discover'), 'name' => 'Discover Tab'],
@@ -31,7 +31,7 @@
         ]])
 
         @include('admin.layouts.header.divider', ['label' => 'ACQUISITION'])
-        
+
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Users', 'icon' => 'users',
         'dropdown' => [
           ['name' => 'Profiles', 'route' => route('admin.users.index')],
@@ -109,7 +109,7 @@
         ]])
 
         @include('admin.layouts.header.divider', ['label' => 'EXTRA'])
-        
+
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'circle-play',
         'dropdown' => [
           ['route' => route('admin.clips.index'), 'name' => 'Video Clips'],
@@ -120,11 +120,11 @@
 
     </ul>
 
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ms-auto">
       <li class="nav-item hide-on-collapse">
-        <a class="nav-link position-relative notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" data-toggle="fixed-panel" data-target="#notifications-panel">
-          @icon('bell', ['classes' => 'notification-bell', 'filled' => true])<span class="inline-on-collapse ml-1">Notifications</span>
-          <div class="notifications-count text-dark bg-white rounded-circle position-absolute font-weight-bold shadow-sm" style="bottom: 4px; right: 2px;">
+        <a class="nav-link position-relative notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" href="#notifications-panel" role="button" aria-label="Notifications" data-bs-toggle="offcanvas" data-bs-target="#notifications-panel" aria-controls="notifications-panel">
+          @icon('bell', ['classes' => 'notification-bell', 'filled' => true])<span class="inline-on-collapse ms-1">Notifications</span>
+          <div class="notifications-count text-dark bg-white rounded-circle position-absolute fw-bold shadow-sm" style="bottom: 4px; right: 2px;">
             <div class="d-flex flex-center w-100 h-100">{{auth()->user()->unreadNotifications->count()}}</div>
           </div>
         </a>
@@ -134,7 +134,7 @@
           @csrf
         </form>
         <a class="nav-link" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-          @icon('log-out', ['size' => 'lg'])<span class="ml-1 inline-on-collapse">Logout</span>
+          @icon('log-out', ['size' => 'lg'])<span class="ms-1 inline-on-collapse">Logout</span>
         </a>
       </li>
     </ul>

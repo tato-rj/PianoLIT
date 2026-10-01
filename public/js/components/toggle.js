@@ -22,3 +22,10 @@ $(document).on('change', 'input.status-toggle',function() {
     }
   });
 });
+
+$(document).on('change', '.btn-group-toggle .btn > input', function() {
+  let $input = $(this);
+  let $group = $input.closest('.btn-group-toggle');
+  if ($input.is('[type="radio"]')) $group.find('.btn').removeClass('active');
+  $input.closest('.btn').toggleClass('active', $input.is(':checked'));
+});

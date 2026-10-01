@@ -16,11 +16,11 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => $post->title, 
-      'subtitle' => 'Use this page to edit this post.', 
+      'title' => $post->title,
+      'subtitle' => 'Use this page to edit this post.',
       'back' => ['view all posts' => route('admin.posts.index')]
     ])
-  
+
       <form class="row my-3" method="POST" action="{{route('admin.posts.update', $post->slug)}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
@@ -29,9 +29,9 @@
             <p class="text-brand border-bottom pb-1 mb-1"><strong>TOPICS</strong></p>
             <div class="d-flex flex-wrap">
                 @foreach($topics as $topic)
-                <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="topic-{{$topic->name}}" {{($post->topics->contains($topic->id)) ? 'checked' : ''}}>
-                  <label class="custom-control-label" for="topic-{{$topic->name}}">{{$topic->name}}</label>
+                <div class="form-check mx-2 mb-2">
+                  <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="topic-{{$topic->name}}" {{($post->topics->contains($topic->id)) ? 'checked' : ''}}>
+                  <label class="form-check-label" for="topic-{{$topic->name}}">{{$topic->name}}</label>
                 </div>
                 @endforeach
             </div>
@@ -51,7 +51,7 @@
           @tinyeditor(['bag' => 'default', 'name' => 'content', 'value' => $post->content])
         </div>
 
-        <div class="col-12 mb-4"> 
+        <div class="col-12 mb-4">
           @component('admin.pages.blog.post.references.layout')
             @if($post->referencesArray)
               @foreach($post->referencesArray as $reference)
@@ -63,9 +63,9 @@
           @endcomponent
         </div>
 
-        <div class="col-12 text-right">
+        <div class="col-12 text-end">
           <div class="d-flex justify-content-end">
-            <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="btn btn-outline-dark mr-2">
+            <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="btn btn-outline-dark me-2">
               @if($post->published_at)
               @icon('globe', ['mr' => 2])Visit
               @else

@@ -1,4 +1,4 @@
-<div class="timeline-event position-relative {{$event['highlight'] ? 'timeline-highlighted' : null}} py-3 pr-3 pl-4 ml-3 border-left">
+<div class="timeline-event position-relative {{$event['highlight'] ? 'timeline-highlighted' : null}} py-3 pe-3 ps-4 ms-3 border-start">
 	@if($event['year'])
 	<h6 class="mb-1">{{$event['year']}}</h6>
 	@endif

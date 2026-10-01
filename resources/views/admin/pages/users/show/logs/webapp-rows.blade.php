@@ -3,11 +3,11 @@
     <td class="text-nowrap">{{carbon($date)->format('M j\\, Y \\a\\t h:i A')}}</td>
     <td class="dataTables_main_column"><a href="{{$event->url}}" target="_blank">{{$event->url}}</a></td>
     <td>
-      <button  
+      <button
         @if(! empty($event->data))
           data="{{json_encode($event->data)}}"
-          data-toggle="modal" 
-          data-target="#modal-log-data"
+          data-bs-toggle="modal"
+          data-bs-target="#modal-log-data"
         @endif
         class="bg-transparent border-0 {{empty($event->data) ? 'text-grey' : 'text-success'}}" title="{{empty($event->data) ? 'Nothing to show' : 'More details'}}">
         @icon('archive', ['mr' => 0])

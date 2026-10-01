@@ -12,7 +12,7 @@
 <div class="px-3">
   <p>We've been working a cool new update recently. Here's what you'll find:</p>
 
-  <div id="whatsnew-carousel" class="carousel slide" data-ride="carousel" data-interval="false">
+  <div id="whatsnew-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
     <div class="carousel-inner">
       @for($i=1; $i<=$tabscount; $i++)
       <div class="carousel-item {{$i == 1 ? 'active' : null}}">
@@ -23,7 +23,7 @@
 
     @if($tabscount <= 1)
     <div class="text-center">
-      <button class="btn btn-primary btn-wide" data-slide="end" data-dismiss="modal">Got it!</button>
+      <button class="btn btn-primary btn-wide" data-slide="end" data-bs-dismiss="modal">Got it!</button>
     </div>
     @else
     <div class="text-center">
@@ -32,8 +32,8 @@
         @icon('circle', ['mr' => 1, 'ml' => 1, 'size' => 'xs', 'color' => $i == 1 ? 'primary' : 'grey', 'filled' => true])
         @endfor
       </div>
-      <button class="btn btn-primary btn-wide" data-slide="next" href="#whatsnew-carousel">Next @icon('chevron-right', ['mr' => 0, 'ml' => 1])</button>
-      <button class="btn btn-primary btn-wide" data-slide="end" style="display: none;" data-dismiss="modal">Enjoy!</button>
+      <button class="btn btn-primary btn-wide" data-bs-slide="next" href="#whatsnew-carousel">Next @icon('chevron-right', ['mr' => 0, 'ml' => 1])</button>
+      <button class="btn btn-primary btn-wide" data-slide="end" style="display: none;" data-bs-dismiss="modal">Enjoy!</button>
     </div>
     @endif
   </div>

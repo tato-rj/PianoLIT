@@ -1,14 +1,10 @@
-const Offcanvas = require('bootstrap5/js/dist/offcanvas');
+const Offcanvas = window.bootstrap.Offcanvas;
 
-    $('a.toggle-favorite span').click(function() {
-    $(this).siblings('button').click();
-});
     const saveToPanel = document.getElementById('save-to-offcanvas');
     if (saveToPanel) {
         let contentReady = false;
         saveToPanel.addEventListener('show.bs.offcanvas', function(event) {
             if (contentReady) {
-                contentReady = false;
                 return;
             }
 
@@ -29,6 +25,9 @@ const Offcanvas = require('bootstrap5/js/dist/offcanvas');
                 .then(function() {
                     $btn.enable();
                 });
+        });
+        saveToPanel.addEventListener('shown.bs.offcanvas', function() {
+            contentReady = false;
         });
     }
 

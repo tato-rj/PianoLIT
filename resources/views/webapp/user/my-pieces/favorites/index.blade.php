@@ -4,7 +4,7 @@
             <h2 id="favorites-heading">Your favorites</h2>
             <p>{{ $folders->count() }} {{ str_plural('folder', $folders->count()) }} · {{ $folders->sum('favorites_count') }} {{ str_plural('piece', $folders->sum('favorites_count')) }}</p>
         </div>
-        <button type="button" data-toggle="modal" data-target="#new-folder-modal" class="btn btn-secondary">
+        <button type="button" data-bs-toggle="modal" data-bs-target="#new-folder-modal" class="btn btn-secondary">
             @icon('plus') New folder
         </button>
     </div>

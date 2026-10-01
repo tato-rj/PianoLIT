@@ -39,11 +39,11 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => $ebook->title, 
-      'subtitle' => 'Use this page to edit this eBook.', 
+      'title' => $ebook->title,
+      'subtitle' => 'Use this page to edit this eBook.',
       'back' => ['view all eBooks' => route('admin.ebooks.index')]
     ])
-    
+
     <div class="row">
       <div class="col-12 mb-3">
         <form action="{{route('admin.ebooks.previews.upload', $ebook)}}" class="dropzone" id="filesDropzone"></form>
@@ -52,11 +52,11 @@
         <div class="d-flex bg-light p-2 rounded">
           <img src="{{$ebook->cover_image()}}" style="width: 80px" class="p-2">
           @if($ebook->mockup_image())
-          <img src="{{$ebook->mockup_image()}}" style="width: 80px" class="ml-2">
+          <img src="{{$ebook->mockup_image()}}" style="width: 80px" class="ms-2">
           @endif
         </div>
         @foreach($ebook->previews as $preview)
-        <a href="#" data-url="{{route('admin.ebooks.previews.remove', ['ebook' => $ebook, 'preview_path' => $preview])}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete">
+        <a href="#" data-url="{{route('admin.ebooks.previews.remove', ['ebook' => $ebook, 'preview_path' => $preview])}}" title="Delete" data-bs-toggle="modal" data-bs-target="#delete-modal" class="delete">
           <div class="position-relative m-1" style="width: 80px">
             <img src="{{storage($preview)}}" class="w-100 border">
             <div class="absolute-center d-flex flex-center w-100 h-100 show-on-hover" style="background-color: rgba(0,0,0,0.4)">
@@ -77,9 +77,9 @@
           <div class="d-flex flex-wrap">
 
               @foreach($topics as $topic)
-              <div class="custom-control custom-checkbox mx-2 mb-2">
-                <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($ebook->topics->contains($topic->id)) ? 'checked' : ''}}>
-                <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
+              <div class="form-check mx-2 mb-2">
+                <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($ebook->topics->contains($topic->id)) ? 'checked' : ''}}>
+                <label class="form-check-label" for="{{$topic->name}}">{{$topic->name}}</label>
               </div>
               @endforeach
 
@@ -119,7 +119,7 @@
         </div>
       </div>
 
-      <div class="col-12 text-right">
+      <div class="col-12 text-end">
         <button type="submit" id="submit-button" class="btn btn-default">Update eBook</button>
       </div>
     </form>
@@ -156,7 +156,7 @@ Dropzone.options.filesDropzone = {
     console.log(request);
     if (request) {
       alert(response.message);
-    } else {  
+    } else {
       alert(response);
     }
   }

@@ -2,26 +2,26 @@
   <a class="navbar-brand" href="{{config('app.url')}}">
       @brandIcon
   </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-items">
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-items">
     <div class="animated-icon2"><span></span><span></span><span></span><span></span></div>
   </button>
 
   <div class="collapse navbar-collapse" id="navbar-items">
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ms-auto">
 
       @include('layouts.menu.dropdown', [
         'label' => 'Tools',
         'groups' => [
           [
-            'title' => 'Theory', 
+            'title' => 'Theory',
             'links' => ['Circle of Fifths' => route('tools.circle-of-fifths'), 'Chord Finder' => route('tools.chord-finder.index')]
           ],
           [
-            'title' => 'Technique', 
+            'title' => 'Technique',
             'links' => ['Scales' => route('tools.scales.index'), 'Arpeggios' => route('tools.arpeggios.index')]
           ],
           [
-            'title' => 'For teachers', 
+            'title' => 'For teachers',
             'links' => ['Studio Policy Generator' => route('tools.studio-policies'), 'Staff Generator' => route('tools.staff')]
           ],
         ]])
@@ -30,23 +30,23 @@
         'label' => 'Resources',
         'groups' => [
           [
-            'title' => 'Learn', 
+            'title' => 'Learn',
             'links' => [
-              'Crash Courses' => route('crashcourses.index'), 
-              'Infographics' => route('resources.infographs.index'), 
+              'Crash Courses' => route('crashcourses.index'),
+              'Infographics' => route('resources.infographs.index'),
               'Music Timeline' => route('resources.timeline'),
               'Famous birthdays' => route('composers.birthdays')]
           ],
           [
-            'title' => 'Listen', 
+            'title' => 'Listen',
             'links' => ['Great Pianists' => route('resources.pianists.index')]
           ],
           [
-            'title' => 'Games', 
+            'title' => 'Games',
             'links' => ['Quizzes' => route('quizzes.index'), 'True or False' => route('true-or-false.index'), 'Riddles' => route('riddles')]
           ],
         ]])
-  
+
       @include('layouts.menu.dropdown', [
         'label' => 'Shop',
         'groups' => [

@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     @include('layouts.html.verify')
-    
+
     @include('layouts.html.theme')
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -47,13 +47,13 @@
 
 <body>
     @qrcode
-    
+
     @include('layouts.html.google.manager-body')
 
 {{--     @confirmed(false)
     @include('auth.alerts.unconfirmed')
     @endconfirmed --}}
-    
+
     <div id="app">
 
         @include('layouts.header')
@@ -67,21 +67,21 @@
         @include('layouts.footer')
 
         @include('auth.modal')
-       
+
         @isset($popup)
         <div id="popup-container" {{istrue($popup['always'] ?? null, 'always')}}
             @isset($popup['product'])
-                 data-product-class="{{get_class($popup['product'])}}" 
-                 data-product-id="{{$popup['product']->id}}" 
+                 data-product-class="{{get_class($popup['product'])}}"
+                 data-product-id="{{$popup['product']->id}}"
              @endisset
-             data-view="{{$popup['view']}}" 
+             data-view="{{$popup['view']}}"
              data-url="{{route('subscriptions.modal')}}"></div>
         @endisset
 
         @if($message = session('status'))
         @alert([
             'color' => 'green',
-            'message' => '<strong class="mr-2">Success |  </strong>' . $message,
+            'message' => '<strong class="me-2">Success |  </strong>' . $message,
             'dismissible' => true,
             'floating' => 'top'])
         @endif
@@ -89,7 +89,7 @@
         @if($message = session('error') ?? $errors->first())
         @alert([
             'color' => 'red',
-            'message' => '<strong class="mr-2">Sorry |  </strong>' . $message,
+            'message' => '<strong class="me-2">Sorry |  </strong>' . $message,
             'dismissible' => true,
             'floating' => 'top'])
         @endif
@@ -142,7 +142,7 @@ jQuery.fn.checkCookie = function() {
     console.log('Will show again '+expiresAt.fromNow());
     return $();
 };
-    
+
 $(document).ready(function() {
     let $popup = $('#popup-container');
 
@@ -172,7 +172,7 @@ function loadPopup($container, callback = null)
         let view = $container.data('view');
         let productClass = $container.data('product-class');
         let productId = $container.data('product-id');
-   
+
         axios.get($container.data('url'), {params: {view: view, productClass: productClass, productId: productId}})
              .then(function(response) {
                 $('body').append(response.data);

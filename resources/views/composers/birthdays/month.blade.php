@@ -3,7 +3,7 @@
 <div class="col-lg-3 col-md-4 col-12 t-2 p-3 {{$hasBirthdays ? 'calendar-month' : null}}" style="user-select: none; display: none;">
 	<div class="{{$hasBirthdays ? 'shadow-center cursor-pointer' : 'border'}} rounded px-4 py-3 h-100">
 		<div class="d-flex d-apart mb-3">
-			<div class="badge badge-pill 
+			<div class="badge rounded-pill
 			@if(now()->month == $loop->iteration)
 			alert-green
 			@else

@@ -3,10 +3,6 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-body.fixed-panel-open {
-    overflow: hidden;
-}
-
 .show-on-sm {
 	display: none;
 }
@@ -21,6 +17,10 @@ body.fixed-panel-open {
 
 .nav-link {
 	color: $text-color !important;
+}
+
+.offcanvas-end {
+	max-width: max-content;
 }
 
 .blog-post h1, .blog-post h2, .blog-post h3, .blog-post h4 {

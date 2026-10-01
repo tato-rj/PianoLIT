@@ -1,12 +1,12 @@
 <tr>
   <td class="dataTables_main_column">
-    <img src="{{storage($item->cover_path)}}" class="d-inline rounded-circle mr-1" style="width: 18px; vertical-align: sub">{{$item->name}} ({{$item->alive_on}})
+    <img src="{{storage($item->cover_path)}}" class="d-inline rounded-circle me-1" style="width: 18px; vertical-align: sub">{{$item->name}} ({{$item->alive_on}})
   </td>
 
   <td>
     @toggle(['toggle' => $item->is_famous, 'route' => route('admin.composers.toggle-famous', $item->id), 'autoToggle' => true])
   </td>
-  
+
   <td>{{$item->pieces_count}} {{str_plural('piece', $item->pieces_count)}}</td>
 
   @include('components.datatable.actions', ['actions' => [

@@ -1,6 +1,6 @@
 <div class="col-12 p-3">
   <div class="border py-4 px-3">
-    <div class="ml-2 mb-4">
+    <div class="ms-2 mb-4">
       <h4 class="mb-1"><strong>Age</strong></h4>
       <p class="text-muted">Ranking of the composers by their dates of birth and death.</p>
     </div>

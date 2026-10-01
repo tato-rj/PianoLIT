@@ -8,9 +8,9 @@
 
     <title>{{local() ? '(local)' : null}} PianoLIT | Admin</title>
 
-    
+
     <link rel="stylesheet" type="text/css" href="{{mix('css/admin.css')}}">
-    
+
     @include('admin.layouts.html.js-app')
 <style type="text/css">
 /* Works on Firefox */
@@ -111,12 +111,12 @@
 
     {{-- @include('admin.layouts.footer') --}}
 
-    
-    
+
+
     @if($message = session('status'))
     @alert([
         'color' => 'green',
-        'message' => '<strong class="mr-2">Success |  </strong>' . $message,
+        'message' => '<strong class="me-2">Success |  </strong>' . $message,
         'dismissible' => true,
         'floating' => 'top'])
     @endif
@@ -124,7 +124,7 @@
     @if($message = session('error') ?? $errors->first())
     @alert([
         'color' => 'red',
-        'message' => '<strong class="mr-2">Sorry |  </strong>' . $message,
+        'message' => '<strong class="me-2">Sorry |  </strong>' . $message,
         'dismissible' => true,
         'floating' => 'top'])
     @endif
@@ -192,5 +192,5 @@ $('#review-modal').on('hidden.bs.modal', function (e) {
     </script>
     @yield('scripts')
   </body>
-    
+
 </html>

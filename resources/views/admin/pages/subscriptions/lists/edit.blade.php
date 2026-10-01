@@ -11,8 +11,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => $list->name, 
-      'subtitle' => 'Use this page to edit the list '.$list->name.'.', 
+      'title' => $list->name,
+      'subtitle' => 'Use this page to edit the list '.$list->name.'.',
       'back' => ['view all lists' => route('admin.subscriptions.lists.index')]
     ])
 
@@ -24,14 +24,14 @@
 
     <div class="row mb-4">
       <div class="col-12">
-        <form method="POST" action="{{route('admin.subscriptions.lists.update', $list)}}" class="form-row">
+        <form method="POST" action="{{route('admin.subscriptions.lists.update', $list)}}" class="row g-2">
           @csrf
           @method('PATCH')
           <div class="col-lg-3 col-md-6 col-12">
             <div class="form-group">
               <input type="text" class="form-control" name="name" placeholder="List name" required value="{{$list->name}}">
             </div>
-            <button type="submit" class="btn btn-default btn-block">Update list</button>
+            <button type="submit" class="btn btn-default d-block w-100">Update list</button>
           </div>
           <div class="col-lg-9 col-md-6 col-12">
             <div class="form-group h-100">
@@ -81,7 +81,7 @@ function getIds()
   }).toArray();
   console.log(ids);
 
-  $('form#export-form input[name="ids"]').val(JSON.stringify(ids));  
+  $('form#export-form input[name="ids"]').val(JSON.stringify(ids));
 }
 </script>
 @endsection

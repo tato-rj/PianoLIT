@@ -8,7 +8,7 @@
 		@endif
 	@endfor
 
-	<a class="align-self-stretch btn btn-sm btn-block btn-danger text-white mr-1 remove-field mb-4">
+	<a class="align-self-stretch btn btn-sm d-block w-100 btn-danger text-white me-1 remove-field mb-4">
 		<strong>Remove</strong>
 	</a>
 

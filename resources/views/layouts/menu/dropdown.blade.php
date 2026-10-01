@@ -1,5 +1,5 @@
 <li class="nav-item dropdown mx-2">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
     {{$label}}
     @icon('chevron-down', ['mr' => 0, 'styles' => 'font-size: 72%'])
   </a>
@@ -13,7 +13,7 @@
         @if(in_array($label, ['logout']))
         @include($url)
         @else
-        <a class="nav-link p-0 ml-1" href="{{$url}}">{{$label}}</a>
+        <a class="nav-link p-0 ms-1" href="{{$url}}">{{$label}}</a>
         @endif
       @endforeach
 

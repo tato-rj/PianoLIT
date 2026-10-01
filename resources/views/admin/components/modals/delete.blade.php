@@ -5,7 +5,7 @@
   <form method="POST">
     @csrf
     @method('DELETE')
-    <button type="submit" class="btn btn-sm btn-block btn-danger">Yes, I am sure</button>
+    <button type="submit" class="btn btn-sm d-block w-100 btn-danger">Yes, I am sure</button>
   </form>
 @endslot
 @endcomponent

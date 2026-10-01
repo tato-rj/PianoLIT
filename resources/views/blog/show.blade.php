@@ -30,7 +30,7 @@
 			</div>
 			@endif
 			<div class="mb-4">
-				
+
 				@topics(['model' => $post])
 
 				<h1 class="mb-4">{{$post->title}}</h1>
@@ -53,7 +53,7 @@
 			@if($post->references)
 			<div class="mb-5 pb-4 border-bottom text-muted">
 				<div class="mb-1"><strong>References</strong></div>
-				<ul class="pl-4">
+				<ul class="ps-4">
 					<small>
 						@foreach($post->referencesArray as $reference)
 							<li><div class="d-flex">{{$reference}}</div></li>
@@ -64,7 +64,7 @@
 			@endif
 			<div class="mb-5 d-apart">
 				<div>
-					<div class="d-inline-block align-middle mr-3">
+					<div class="d-inline-block align-middle me-3">
 						<img src="{{asset('images/brand/app-icon.svg')}}" class="rounded-circle" width="50">
 					</div>
 					<div class="d-inline-block align-middle" style="max-width: 320px; line-height: 1.12">
@@ -72,7 +72,7 @@
 						<div class="text-muted"><small>Where pianists discover new pieces and find inspiration to play only what they love.</small></div>
 					</div>
 				</div>
-				<div class="text-right">
+				<div class="text-end">
 
 					<button  show="subscription-modal" data-view="subscription" data-url="{{route('subscriptions.modal')}}" class="btn btn-primary-outline btn-sm">Subscribe</button>
 				</div>

@@ -1,3 +1,4 @@
+@import "bootstrap5-theme";
 @import "~bootstrap/scss/bootstrap";
 @import '~swiper/dist/css/swiper.min';
 // @import '~plyr/dist/plyr';
@@ -6,6 +7,7 @@
 @import 'vendor/animate';
 
 @import "bootstrap-custom";
+@import "components/bootstrap5-compat";
 @import "responsive";
 @import "variables";
 @import "global";
@@ -29,7 +31,6 @@
 @import "components/carousel";
 @import "components/tooltip";
 @import "components/scroll";
-@import "components/bootstrap-offcanvas";
 @import "components/save-to";
 @import "components/plyr";
 

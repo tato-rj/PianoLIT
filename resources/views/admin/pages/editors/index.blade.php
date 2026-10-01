@@ -7,7 +7,7 @@
     <div class="row">
       <div class="col-12 d-flex justify-content-between align-items-center">
         <div>
-          <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target="#add-modal">
+          <button type="button" class="btn btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#add-modal">
             @icon('plus', ['mr' => 2])Add a new editor
           </button>
         </div>
@@ -27,8 +27,8 @@
           <div>
             <strong>{{$editor->name}} | <small>{{$editor->pieces_count}} {{str_plural('piece', $editor->pieces_count)}} - joined on {{$editor->created_at->toFormattedDateString()}}</small></strong>
           </div>
-          <div class="text-right text-brand">
-            <a href="{{route('admin.editors.edit', $editor->id)}}">edit</a> | <a href="" data-name="{{$editor->name}}" data-url="{{route('admin.editors.destroy', $editor->id)}}" data-toggle="modal" data-target="#delete-modal" class="delete">delete</a>
+          <div class="text-end text-brand">
+            <a href="{{route('admin.editors.edit', $editor->id)}}">edit</a> | <a href="" data-name="{{$editor->name}}" data-url="{{route('admin.editors.destroy', $editor->id)}}" data-bs-toggle="modal" data-bs-target="#delete-modal" class="delete">delete</a>
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@
     {{-- PAGINATION --}}
     <div class="row mb-3">
           <div class="d-flex align-items-center w-100 justify-content-center my-4">
-        {{ $editors->links() }}    
+        {{ $editors->links() }}
         </div>
     </div>
 

@@ -14,11 +14,11 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'create',
-      'title' => 'New Crash Course', 
-      'subtitle' => 'Use this page to create a new course.', 
+      'title' => 'New Crash Course',
+      'subtitle' => 'Use this page to create a new course.',
       'back' => ['view all courses' => route('admin.crashcourses.index')]
     ])
-    
+
       <form id="create-quiz" class="row" method="POST" action="{{route('admin.crashcourses.store')}}" autocomplete="off" enctype="multipart/form-data">
         @csrf
         <div class="col-lg-4 col-md-6 col-12 mb-4">
@@ -29,9 +29,9 @@
             <p class="text-brand border-bottom pb-1 mb-1"><strong>TOPICS</strong></p>
             <div class="d-flex flex-wrap">
                 @foreach($topics as $topic)
-                <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="topic-{{$topic->name}}">
-                  <label class="custom-control-label" for="topic-{{$topic->name}}">{{$topic->name}}</label>
+                <div class="form-check mx-2 mb-2">
+                  <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="topic-{{$topic->name}}">
+                  <label class="form-check-label" for="topic-{{$topic->name}}">{{$topic->name}}</label>
                 </div>
                 @endforeach
             </div>
@@ -39,8 +39,8 @@
           @input(['bag' => 'default', 'name' => 'title', 'placeholder' => 'Course title', 'limit' => 120])
           @textarea(['bag' => 'default', 'name' => 'description', 'placeholder' => 'Course description', 'limit' => 238])
         </div>
-        <div class="col-12 text-right">
-          <button type="submit" id="submit-button" class="btn btn-default">Save and continue@icon('arrow-right', ['mr' => 0, 'classes' => 'ml-2'])</button>
+        <div class="col-12 text-end">
+          <button type="submit" id="submit-button" class="btn btn-default">Save and continue@icon('arrow-right', ['mr' => 0, 'classes' => 'ms-2'])</button>
         </div>
       </form>
 

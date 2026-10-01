@@ -9,7 +9,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
 
-    <div class="row"> 
+    <div class="row">
       @include('admin.pages.stats.row', [
         'title' => 'Topics',
         'subtitle' => 'How the ' . $topicsCount . ' topics are distributed in the database.',
@@ -20,7 +20,7 @@
     <div class="row">
       <div class="col-12">
         <div class="border py-4 px-3">
-          <div class="ml-2 mb-4">
+          <div class="ms-2 mb-4">
             <h4 class="mb-1"><strong>Quiz results</strong></h4>
             <p class="text-muted">Number of quizzes completed per day</p>
           </div>

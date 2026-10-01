@@ -27,7 +27,7 @@ $('#tags-search .tag').on('click', function() {
 	$('#tags-search button').disable();
 	$('#tags-search .tag').not(this).removeClass('btn-teal');
 	$(this).toggleClass('btn-teal');
-	
+
 	let $results = $(this).closest('.modal-body').find('.search-results');
 	let tags = $('#tags-search .tag.btn-teal').attrToArray('data-name');
 
@@ -40,16 +40,16 @@ $('#tags-search .tag').on('click', function() {
 
 	$results.html('<div class="text-muted text-center mb-3"><i>Searching...</i></div>');
 
-  	axios.get(window.urls.searchCount, {params: {search: tags.join(' ')}})
-  		.then(function(response) {
-  			$results.html(response.data);
-  		})
-  		.catch(function(error) {
-  			$results.html('<div class="text-red text-center mb-3"><i>Sorry, something went wrong...</i></div>');
-  		})
-  		.then(function() {
-  			$('#tags-search button').enable();
-  		});
+	axios.get(window.urls.searchCount, {params: {search: tags.join(' ')}})
+		.then(function(response) {
+			$results.html(response.data);
+		})
+		.catch(function(error) {
+			$results.html('<div class="text-red text-center mb-3"><i>Sorry, something went wrong...</i></div>');
+		})
+		.then(function() {
+			$('#tags-search button').enable();
+		});
 });
 </script>
 
@@ -95,7 +95,7 @@ function showRecent() {
 		let $recentContainer = $('#most-recent');
 
 		for (let i=0; i< recent.length; i++) {
-			$recentContainer.find('> div').append('<span class="recent-query cursor-pointer m-1 rounded-pill border border-grey px-2"><small style="line-height: 2"><i class="app-icon icon-search icon-size-sm text-muted mr-1"></i>'+recent[i]+'</small></span>');
+			$recentContainer.find('> div').append('<span class="recent-query cursor-pointer m-1 rounded-pill border border-grey px-2"><small style="line-height: 2"><i class="app-icon icon-search icon-size-sm text-muted me-1"></i>'+recent[i]+'</small></span>');
 		}
 
 		$recentContainer.show();

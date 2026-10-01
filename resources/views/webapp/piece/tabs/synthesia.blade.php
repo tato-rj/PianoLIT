@@ -3,8 +3,8 @@
 	<div class="rounded-video video-container" style="    max-width: 520px;
     margin: 0 auto;">
 		@video([
-			'classes' => 'w-100', 
-			'id' => 'piece-synthesia', 
+			'classes' => 'w-100',
+			'id' => 'piece-synthesia',
             'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
 			'thumbnail' => asset('images/webapp/synthesia-thumbnail.gif'),
 			'url' => $piece->media['synthesia']->video_url])
@@ -15,7 +15,7 @@
 		<img src="{{asset('images/webapp/synthesia-missing.svg')}}" class="mx-auto mb-4" style="width: 132px; opacity:  .1">
 		<p class="text-muted">Would you like to watch a synthesia of this piece?<br>Tap below to make your request.</p>
 		@auth('web')
-		<button class="btn rounded-pill btn-outline-secondary btn-wide" data-toggle="modal" data-target="#synthesia-request-modal">Send my request</button>
+		<button class="btn rounded-pill btn-outline-secondary btn-wide" data-bs-toggle="modal" data-bs-target="#synthesia-request-modal">Send my request</button>
 		@else
 		<a href="{{ route('login') }}" class="btn rounded-pill btn-outline-secondary btn-wide">Sign in to request</a>
 		@endauth

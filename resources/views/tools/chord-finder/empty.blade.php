@@ -1,6 +1,6 @@
 <div class="container" id="notes-container" data-url="{{route('tools.chord-finder.analyse')}}">
 	<p class="text-center text-grey">Tap/click on a note to select it</p>
-	<div class="row position-relative no-gutters justify-content-center mb-4">
+	<div class="row position-relative g-0 justify-content-center mb-4">
 		<div class="input-overlay"></div>
 		@include('tools.chord-finder.inputs.note', ['note' => 'A', 'octave' => 3])
 		@include('tools.chord-finder.inputs.note', ['note' => 'B', 'octave' => 3])
@@ -25,7 +25,7 @@
 	</div>
 
 	@include('tools.chord-finder.options.enharmonics')
-	
+
 	@include('tools.chord-finder.options.root')
 
 	<div class="row">

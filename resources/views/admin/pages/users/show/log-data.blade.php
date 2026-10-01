@@ -1,8 +1,8 @@
 <table class="table table-borderless">
   <thead class="thead-light">
     <tr>
-      <th class="py-2 rounded-left" scope="col">Key</th>
-      <th class="py-2 rounded-right" scope="col">Value</th>
+      <th class="py-2 rounded-start" scope="col">Key</th>
+      <th class="py-2 rounded-end" scope="col">Value</th>
     </tr>
   </thead>
   <tbody>

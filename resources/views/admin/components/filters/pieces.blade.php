@@ -1,7 +1,7 @@
 <div class="d-flex flex-wrap justify-content-end">
   <div class="d-flex hide-on-sm">
-    <button class="btn btn-light m-1 btn-sm" data-toggle="modal" data-target="#abrsm-modal"><strong>ABRSM</strong></button>
-    <button class="btn btn-light m-1 btn-sm" data-toggle="modal" data-target="#rcm-modal"><strong>RCM</strong></button>
+    <button class="btn btn-light m-1 btn-sm" data-bs-toggle="modal" data-bs-target="#abrsm-modal"><strong>ABRSM</strong></button>
+    <button class="btn btn-light m-1 btn-sm" data-bs-toggle="modal" data-bs-target="#rcm-modal"><strong>RCM</strong></button>
   </div>
   <form method="GET" action="{{\URL::current()}}" class="form-inline">
     <div class="btn-group btn-group-toggle m-1" title="Show only pieces created by me">
@@ -37,6 +37,6 @@
     </div>
   </form>
 </div>
-<div class="text-right">
-  <a href="{{url()->current()}}" class="text-muted pull-right"><small>reset filters</small></a>
+<div class="text-end">
+  <a href="{{url()->current()}}" class="text-muted float-end"><small>reset filters</small></a>
 </div>

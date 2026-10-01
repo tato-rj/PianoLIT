@@ -11,8 +11,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'create',
-      'title' => 'New lesson', 
-      'subtitle' => 'Use this page to create a new lesson for the course '.$crashcourse->title.'.', 
+      'title' => 'New lesson',
+      'subtitle' => 'Use this page to create a new lesson for the course '.$crashcourse->title.'.',
       'back' => ['back to the course' => route('admin.crashcourses.edit', $crashcourse)]
     ])
 
@@ -26,7 +26,7 @@
           @input(['bag' => 'default', 'name' => 'subject', 'placeholder' => 'Subject (will show as email subject)', 'limit' => 120])
 
           @tinyeditor(['bag' => 'default', 'name' => 'body'])
-          <div class="w-100 text-right">
+          <div class="w-100 text-end">
             <button type="submit" id="submit-button" class="btn btn-default">Create lesson</button>
           </div>
         </form>

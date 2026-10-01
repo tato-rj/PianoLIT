@@ -6,12 +6,12 @@
             <span>{{ $folder->favorites_count }} {{ str_plural('piece', $folder->favorites_count) }}</span>
         </div>
         <div class="my-pieces-folder__menu dropdown">
-            <button type="button" class="my-pieces-folder__menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Options for {{ $folder->name }}">
+            <button type="button" class="my-pieces-folder__menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Options for {{ $folder->name }}">
                 @icon('ellipsis-vertical', ['mr' => 0])
             </button>
-            <div class="dropdown-menu dropdown-menu-right">
-                <button type="button" class="dropdown-item" data-toggle="modal" data-target="#edit-folder-{{ $folder->id }}">Edit folder</button>
-                <button type="button" class="dropdown-item text-danger" data-toggle="modal" data-target="#delete-folder-{{ $folder->id }}">Delete folder</button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-folder-{{ $folder->id }}">Edit folder</button>
+                <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#delete-folder-{{ $folder->id }}">Delete folder</button>
             </div>
         </div>
     </div>

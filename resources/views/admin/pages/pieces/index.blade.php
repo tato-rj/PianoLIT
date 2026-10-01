@@ -3,7 +3,7 @@
 @section('head')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
 <style type="text/css">
-small .custom-control-label::before, small .custom-control-label::after {
+small .form-check-label::before, small .form-check-label::after {
     top: 0.10rem;
     left: -1.34rem;
 }
@@ -16,9 +16,9 @@ small .custom-control-label::before, small .custom-control-label::after {
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'music', 
-      'title' => 'Pieces', 
-      'subtitle' => 
+      'icon' => 'music',
+      'title' => 'Pieces',
+      'subtitle' =>
       'Manage all the pieces available on the app.',
       'action' => ['label' => 'Add a new piece', 'url' => route('admin.pieces.create')]
     ])
@@ -70,7 +70,7 @@ $(window).click(function(e) {
     return;
 
   if($(e.target).closest('.tags-quick-edit').length)
-    return; 
+    return;
 
   $('.popup').hide();
 });
@@ -83,7 +83,7 @@ $(document).on('click', '.badge-popup', function(event) {
   let $popup = $(this).next('div');
   let url = $popup.attr('data-url');
   event.stopPropagation();
-  $('.popup').hide();  
+  $('.popup').hide();
   $popup.show();
 
   if ($popup.find('.spinner').is(':visible')) {

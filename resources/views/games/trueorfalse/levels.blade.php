@@ -1,8 +1,8 @@
 <div id="level">
 	<div class="mb-4 text-center">
 		<p class="text-grey">Please select your level</p>
-		<button type="button" data-target="#game-easy" class="btn btn-light text-grey level p-4 rounded-pill btn-block"><strong>Easy</strong></button>
-		<button type="button" data-target="#game-difficult" class="btn btn-light text-grey level p-4 rounded-pill btn-block"><strong>Difficult</strong></button>
+		<button type="button" data-target="#game-easy" class="btn btn-light text-grey level p-4 rounded-pill d-block w-100"><strong>Easy</strong></button>
+		<button type="button" data-target="#game-difficult" class="btn btn-light text-grey level p-4 rounded-pill d-block w-100"><strong>Difficult</strong></button>
 	</div>
 	<div class="mb-4 text-center">
 		<p class="text-grey">Do you want a 30 seconds timer?</p>

@@ -14,8 +14,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'create',
-      'title' => 'New quiz', 
-      'subtitle' => 'Use this page to create a new quiz.', 
+      'title' => 'New quiz',
+      'subtitle' => 'Use this page to create a new quiz.',
       'back' => ['view all quizzes' => route('admin.quizzes.index')]
     ])
 
@@ -23,7 +23,7 @@
         @csrf
         <div class="col-lg-4 col-md-6 col-12 mb-4">
           @image(['name' => 'cover_image', 'image' => asset('images/misc/placeholder-image.png'), 'empty' => true])
-          
+
           <div class="form-group">
             <select class="form-control required {{$errors->has('level') ? 'is-invalid' : ''}}" name="level_id" >
               <option class="default" selected disabled>Level</option>
@@ -37,9 +37,9 @@
             <p class="text-brand border-bottom pb-1 mb-1"><strong>TOPICS</strong></p>
             <div class="d-flex flex-wrap">
                 @foreach($topics as $topic)
-                <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}">
-                  <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
+                <div class="form-check mx-2 mb-2">
+                  <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}">
+                  <label class="form-check-label" for="{{$topic->name}}">{{$topic->name}}</label>
                 </div>
                 @endforeach
             </div>
@@ -55,10 +55,10 @@
               @foreach($questions as $question)
               @php($array = $questions[$loop->index])
               @include('admin.pages.quizzes.question.input', [
-                'names' => ["questions[{$loop->index}][0]", 
-                            "questions[{$loop->index}][1]", 
-                            "questions[{$loop->index}][2]", 
-                            "questions[{$loop->index}][3]", 
+                'names' => ["questions[{$loop->index}][0]",
+                            "questions[{$loop->index}][1]",
+                            "questions[{$loop->index}][2]",
+                            "questions[{$loop->index}][3]",
                             "questions[{$loop->index}][4]"],
                 'question' => array_shift($array),
                 'answers' => $array])
@@ -67,7 +67,7 @@
           @endcomponent
         </div>
 
-        <div class="col-12 text-right">
+        <div class="col-12 text-end">
           <button type="submit" id="submit-button" class="btn btn-default">Create quiz</button>
         </div>
       </form>
@@ -124,7 +124,7 @@ $('a.add-new-field').on('click', function() {
 /////////////////////
 $(document).on('click', 'a.remove-field', function() {
   $(this).parent().remove();
-  
+
   updateCounters();
 });
 </script>

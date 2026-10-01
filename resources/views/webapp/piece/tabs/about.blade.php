@@ -1,10 +1,10 @@
 <div class="tab-pane fade show active mb-5" id="tab-about">
-	<div class="row"> 
+	<div class="row">
 		@if($piece->media['performance'])
 		<div class="col-lg-6 col-12 mb-4 rounded-video video-container">
 			@video([
-				'classes' => 'w-100', 
-				'id' => 'piece-performance', 
+				'classes' => 'w-100',
+				'id' => 'piece-performance',
 	            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
 				'thumbnail' => asset('images/webapp/piano-thumbnail.jpg'),
 				'url' => $piece->media['performance']->video_url])
@@ -13,13 +13,13 @@
 
 		<div class="{{$piece->media['performance'] ? 'col-lg-6 col-12' : 'col-12'}} mb-4">
 			<div class="d-flex {{$piece->media['performance'] ? null : 'flex-center'}} flex-wrap mb-3">
-				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+				<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 					@icon('file-text'){{$piece->number_of_pages}}
 				</div>
-				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+				<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 					@icon('palette'){{$piece->period_name}}
 				</div>
-				<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+				<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 					@icon('music'){{$piece->key}}
 				</div>
 			</div>
@@ -43,13 +43,13 @@
 {{-- 		<div class="mb-4 pb-4 border-bottom">
 			<div class="mb-2">
 				<div class="d-flex flex-center flex-wrap">
-					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+					<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 						@icon('file-text'){{$piece->number_of_pages}}
 					</div>
-					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+					<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 						@icon('palette'){{$piece->period_name}}
 					</div>
-					<div class="badge badge-pill alert-grey text-nowrap mx-2 mb-1">
+					<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 						@icon('music'){{$piece->key}}
 					</div>
 				</div>
@@ -65,7 +65,7 @@
 			@foreach($piece->rankings as $ranking => $label)
 			@if($label)
 			<div class="d-flex align-items-center mb-2">
-				<img class="mr-2" style="width: 40px" src="{{asset('images/webapp/icons/'.$ranking.'.png')}}">
+				<img class="me-2" style="width: 40px" src="{{asset('images/webapp/icons/'.$ranking.'.png')}}">
 				<div class="text-nowrap">{{$label}}</div>
 			</div>
 			@endif

@@ -8,7 +8,7 @@
 				<div class="d-flex">
 					<div>
 						@if($playlist->cover_image)
-						<div style="width: 138px" class="pr-2">
+						<div style="width: 138px" class="pe-2">
 							<img src="{{$playlist->cover_image}}" class="w-100 rounded">
 						</div>
 						@endif
@@ -27,7 +27,7 @@
 			</div>
 			<div class="col-7">
 				<label class="text-muted">Pieces</label>
-				<div id="playlist-pieces" class=""> 
+				<div id="playlist-pieces" class="">
 					@foreach($playlist->pieces as $piece)
 					@include('admin.pages.playlists.edit.piece')
 					@endforeach
@@ -35,7 +35,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-12 text-right">
+			<div class="col-12 text-end">
 				<button type="submit" class="btn btn-sm btn-default">Update playlist</button>
 			</div>
 		</div>

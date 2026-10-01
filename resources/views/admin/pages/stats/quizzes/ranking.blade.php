@@ -1,6 +1,6 @@
 <div class="col-12 p-3">
   <div class="border py-4 px-3">
-    <div class="ml-2 mb-4">
+    <div class="ms-2 mb-4">
       <h4 class="mb-1"><strong>Views</strong></h4>
       <p class="text-muted">Ranking of the number of times each quiz was viewed and completed.</p>
     </div>
@@ -28,9 +28,9 @@
             <td>{{$quiz->views}}</td>
             <td>{{$quiz->results_count}}</td>
             <td>{{$quiz->average_score}} out of {{count($quiz->questions)}}</td>
-            <td class="text-right text-nowrap">
-              <a href="{{route('quizzes.show', $quiz->slug)}}" target="_blank" class="text-muted mr-2">@icon('eye', ['mr' => 0, 'classes' => 'align-middle'])</a>
-              <a href="{{route('admin.quizzes.edit', $quiz->slug)}}" class="text-muted mr-2">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
+            <td class="text-end text-nowrap">
+              <a href="{{route('quizzes.show', $quiz->slug)}}" target="_blank" class="text-muted me-2">@icon('eye', ['mr' => 0, 'classes' => 'align-middle'])</a>
+              <a href="{{route('admin.quizzes.edit', $quiz->slug)}}" class="text-muted me-2">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
             </td>
           </tr>
           @endforeach

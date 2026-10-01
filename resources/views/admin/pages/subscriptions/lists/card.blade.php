@@ -11,13 +11,13 @@
             <p>@icon('users', ['mr' => 0]) {{$list->subscribers_count}} {{str_plural('subscriber', $list->subscribers_count)}}</p>
             <div class="d-flex d-apart mb-2">
               <div class="d-flex">
-                <a href="{{route('admin.subscriptions.lists.edit', $list)}}" class="btn btn-default btn-sm px-3 mr-2">Edit</a>
+                <a href="{{route('admin.subscriptions.lists.edit', $list)}}" class="btn btn-default btn-sm px-3 me-2">Edit</a>
                 @if(view()->exists($list->actions_view))
                 @include($list->actions_view)
                 @endif
                </div>
               <div>
-                <a href="#" data-url="{{route('admin.subscriptions.lists.destroy', $list)}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete text-danger">
+                <a href="#" data-url="{{route('admin.subscriptions.lists.destroy', $list)}}" title="Delete" data-bs-toggle="modal" data-bs-target="#delete-modal" class="delete text-danger">
                   @icon('trash-2', ['mr' => 0, 'classes' => 'align-middle'])
                 </a>
               </div>
@@ -27,7 +27,7 @@
                 @csrf
                 <input type="hidden" name="type" value="txt">
                 <input type="hidden" name="list_id" value="{{$list->id}}">
-                <button type="submit" class="btn btn-sm btn-outline-secondary btn-block">@icon('file-text', ['mr' => 2])Export emails</button>
+                <button type="submit" class="btn btn-sm btn-outline-secondary d-block w-100">@icon('file-text', ['mr' => 2])Export emails</button>
               </form>
             </div>
           </div>

@@ -11,35 +11,35 @@ $fields = [
 ];
 @endphp
 
-@component('users.studio-policies.create.steps.step', ['title' => 'General information', 'loop' => $loop, 'count' => count($fields), 'isNew' => empty($studioPolicy)])	
+@component('users.studio-policies.create.steps.step', ['title' => 'General information', 'loop' => $loop, 'count' => count($fields), 'isNew' => empty($studioPolicy)])
 	@input([
-		'label' => 'Name of this policy (only you will see this)', 
-		'value' => $fields[0], 
+		'label' => 'Name of this policy (only you will see this)',
+		'value' => $fields[0],
 		'placeholder' => 'Something that describes this policy, ex: General Policy, School Policy, etc...',
-		'name' => 'nickname', 
-		'bag' => 'default', 
+		'name' => 'nickname',
+		'bag' => 'default',
 		'asterisk' => true])
 
 	@input([
-		'label' => 'Your name (or your studio)', 
-		'value' => $fields[1], 
-		'name' => 'name', 
-		'bag' => 'default', 
+		'label' => 'Your name (or your studio)',
+		'value' => $fields[1],
+		'name' => 'name',
+		'bag' => 'default',
 		'asterisk' => true])
 
 	@textarea([
-		'label' => 'If you want to have a welcome message at the beginning of the policy, write it in the box below:', 
-		'value' => $fields[2], 
-		'name' => 'welcome', 
-		'bag' => 'default', 
-		'required' => 'not-required', 
-		'limit' => 280, 
+		'label' => 'If you want to have a welcome message at the beginning of the policy, write it in the box below:',
+		'value' => $fields[2],
+		'name' => 'welcome',
+		'bag' => 'default',
+		'required' => 'not-required',
+		'limit' => 280,
 		'rows' => 2])
 
-	<div class="form-group form-row"> 
+	<div class="form-group row g-2">
 		<div class="col">
 			@include('components.form.label', [
-				'label' => 'This policy is valid from', 
+				'label' => 'This policy is valid from',
 				'asterisk' => true])
 			<select class="form-control" name="start_year" required>
 				<option selected disabled>Select a year</option>
@@ -47,10 +47,10 @@ $fields = [
 				<option value="{{now()->year}}" {{$fields[3] == now()->year ? 'selected' : null}}>{{now()->year}}</option>
 				<option value="{{now()->year + 1}}" {{$fields[3] == now()->year + 1 ? 'selected' : null}}>{{now()->year + 1}}</option>
 			</select>
-		</div> 
+		</div>
 		<div class="col">
 			@include('components.form.label', [
-				'label' => 'This policy is valid until', 
+				'label' => 'This policy is valid until',
 				'asterisk' => true])
 			<select class="form-control" name="end_year" required>
 				<option selected disabled>Select a year</option>
@@ -61,10 +61,10 @@ $fields = [
 		</div>
 	</div>
 
-	<div class="form-group form-row"> 
+	<div class="form-group row g-2">
 		<div class="col">
 			@include('components.form.label', [
-				'label' => 'The month you start teaching', 
+				'label' => 'The month you start teaching',
 				'asterisk' => true])
 			<select class="form-control" name="start_month" required>
 				<option selected disabled>Select a month</option>
@@ -72,10 +72,10 @@ $fields = [
 				<option value="{{$date->format('m')}}" {{$fields[5] == $date->format('m') ? 'selected' : null}}>{{$date->format('F')}}</option>
 				@endforeach
 			</select>
-		</div> 
+		</div>
 		<div class="col">
 			@include('components.form.label', [
-				'label' => 'The last month before summer', 
+				'label' => 'The last month before summer',
 				'asterisk' => true])
 			<select class="form-control" name="end_month" required>
 				<option selected disabled>Select a month</option>
@@ -87,10 +87,10 @@ $fields = [
 	</div>
 
 	@options([
-		'label' => 'Select the best ways to contact you (if relevant)', 
-		'type' => 'checkbox', 
-		'values' => $fields[7], 
-		'options' => ['Phone call' => 'phone', 'Text message' => 'text', 'Email' => 'email'], 
+		'label' => 'Select the best ways to contact you (if relevant)',
+		'type' => 'checkbox',
+		'values' => $fields[7],
+		'options' => ['Phone call' => 'phone', 'Text message' => 'text', 'Email' => 'email'],
 		'name' => 'contact_methods',
 		'required' => 'not-required',
 		'bag' => 'default'])

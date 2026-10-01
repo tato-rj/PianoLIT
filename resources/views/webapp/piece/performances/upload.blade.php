@@ -7,7 +7,7 @@
 			@if($canUpload)
 			<button class="btn rounded-pill btn-primary btn-wide" id="choose-video">@icon('cloud-upload')Share my performance</button>
 			@else
-			<button class="btn rounded-pill btn-primary btn-wide" data-toggle="modal" data-target="#no-credits-modal">@icon('cloud-upload')Share my performance</button>
+			<button class="btn rounded-pill btn-primary btn-wide" data-bs-toggle="modal" data-bs-target="#no-credits-modal">@icon('cloud-upload')Share my performance</button>
 			@endif
 		</div>
 
@@ -40,7 +40,7 @@
 				<li>is clear of <u>background noises</u></li>
 			</ul>
 		</div>
-		
+
 		<form id="create-performance-form" action="{{route('webapp.users.performances.store', $piece)}}" method="POST">
 			@csrf
 			@input(['label' => 'Name of the performer', 'placeholder' => auth()->user()->first_name, 'bag' => 'default', 'name' => 'display_name', 'limit' => 200, 'required' => false])

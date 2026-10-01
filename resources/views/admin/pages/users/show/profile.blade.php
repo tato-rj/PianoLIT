@@ -7,9 +7,9 @@
     @list([
       'content' => array_merge([
         'Name' => $user->full_name . $user->countryFlag,
-        'Email' => $user->email_confirmed ? 
-          $user->email . '<span class="text-green ml-1" title="Email confirmed on ' . $user->email_verified_at->toFormattedDateString() . '">' . \App\Support\Icon::render('circle-check', ['mr' => 0]) . '</span>' :
-          $user->email . '<span class="text-muted ml-1" title="Email not yet confirmed">' . \App\Support\Icon::render('hourglass', ['mr' => 0]) . '</span>',
+        'Email' => $user->email_confirmed ?
+          $user->email . '<span class="text-green ms-1" title="Email confirmed on ' . $user->email_verified_at->toFormattedDateString() . '">' . \App\Support\Icon::render('circle-check', ['mr' => 0]) . '</span>' :
+          $user->email . '<span class="text-muted ms-1" title="Email not yet confirmed">' . \App\Support\Icon::render('hourglass', ['mr' => 0]) . '</span>',
         'Origin' => $user->formattedOrigin,
         'Favorites' => $user->favorites_count . ' ' . str_plural('piece', $user->favorites_count),
         'Tutorial Requests' => $user->tutorialRequests()->count() . ' ' . str_plural('request', $user->tutorialRequests()->count()),
@@ -25,7 +25,7 @@
         @include('admin.components.users.status.lg', ['elements' => $user->statusElements()])
       </div>
 {{--       <div class="px-4 pb-3 text-center text-nowrap">
-        <span class="text-muted mr-2 text-truncate">Super status</span>@toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id), 'autoToggle' => true])
+        <span class="text-muted me-2 text-truncate">Super status</span>@toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id), 'autoToggle' => true])
       </div> --}}
     </div>
     <div class="text-center">

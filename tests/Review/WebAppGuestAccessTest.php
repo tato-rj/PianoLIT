@@ -67,6 +67,25 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->withExceptionHandling()->get(route('webapp.pieces.score', $this->piece))->assertForbidden();
     }
 
+    public function test_piece_options_use_native_offcanvas_for_visitors_and_accounts()
+    {
+        $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+            ->assertSee('class="offcanvas offcanvas-end" id="options-panel"', false)
+            ->assertSee('aria-labelledby="options-panel-title"', false)
+            ->assertSee('data-bs-toggle="offcanvas" data-bs-target="#options-panel"', false)
+            ->assertSee('data-bs-dismiss="offcanvas"', false)
+            ->assertDontSee('fixed-panel', false)
+            ->assertDontSee('panel-overlay', false);
+
+        $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
+        $this->actingAs(Model::withoutEvents(function () { return create(User::class)->setAppends(['full_name']); }), 'web');
+        $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+            ->assertSee('data-bs-toggle="modal" data-bs-target="#share-modal"', false)
+            ->assertSee('data-bs-toggle="offcanvas" data-bs-target="#save-to-offcanvas"', false)
+            ->assertSee('Manage favorites')
+            ->assertDontSee('data-dismiss="fixed-panel"', false);
+    }
+
     public function test_piece_and_playlist_share_the_artwork_header_without_changing_playlist_content()
     {
         Model::withoutEvents(function () {
@@ -195,8 +214,8 @@ class WebAppGuestAccessTest extends ReviewTestCase
             ->assertSee('No pieces saved yet')->assertDontSee($otherFolder->name)
             ->assertSee('class="my-pieces-switch nav"', false)
             ->assertSee('id="favorites-tab"', false)->assertSee('id="suggestions-tab"', false)
-            ->assertSee('data-target="#edit-folder-'.$folder->id.'"', false)
-            ->assertSee('data-target="#delete-folder-'.$folder->id.'"', false);
+            ->assertSee('data-bs-target="#edit-folder-'.$folder->id.'"', false)
+            ->assertSee('data-bs-target="#delete-folder-'.$folder->id.'"', false);
 
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());

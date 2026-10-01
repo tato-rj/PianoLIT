@@ -1,30 +1,30 @@
 <tr>
   <td>{{$item->year}}</td>
-  
+
   <td class="text-nowrap">{{slug_str($item->type)}}</td>
-  
+
   <td>
     @if($item->url)
-    <a href="{{$item->url}}" target="_blank" class="link-blue mr-1">@icon($item->getIcon($item->type)['icon'], ['mr' => 0])</a>
+    <a href="{{$item->url}}" target="_blank" class="link-blue me-1">@icon($item->getIcon($item->type)['icon'], ['mr' => 0])</a>
     @endif
     {{$item->event}}
   </td>
-  
+
   <td class="text-muted text-nowrap"><i><small>Created by {{$item->creator->name}}</small></i></td>
-  
+
   <td>
     @component('components.datatable.actions', ['actions' => [
         'delete' => route('admin.timelines.destroy', $item->id)
     ]])
-      <a href="#" 
-      data-toggle="modal" 
-      data-target="#edit-modal" 
-      data-type="{{$item->type}}" 
-      data-year="{{$item->year}}" 
-      data-event="{{$item->event}}" 
-      data-url="{{$item->url}}" 
-      data-edit-url="{{route('admin.timelines.update', $item->id)}}" 
-      class="text-muted cursor-pointer mr-2 event" title="Edit">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
+      <a href="#"
+      data-bs-toggle="modal"
+      data-bs-target="#edit-modal"
+      data-type="{{$item->type}}"
+      data-year="{{$item->year}}"
+      data-event="{{$item->event}}"
+      data-url="{{$item->url}}"
+      data-edit-url="{{route('admin.timelines.update', $item->id)}}"
+      class="text-muted cursor-pointer me-2 event" title="Edit">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
     @endcomponent
   </td>
 </tr>

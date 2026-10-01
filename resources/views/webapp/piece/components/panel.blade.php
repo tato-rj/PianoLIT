@@ -1,42 +1,33 @@
-<div class="position-fixed w-100 h-100vh fixed-panel" id="options-panel" style="z-index: 100000000; top: 0; left: 0; display: none;">
-	@include('components.panel.overlay')
+<div class="offcanvas offcanvas-end" id="options-panel" tabindex="-1" aria-labelledby="options-panel-title">
+    <div class="offcanvas-header px-4 py-3">
+        <h6 class="offcanvas-title" id="options-panel-title">Options</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body px-2 py-3">
+        <div class="list-group">
+            <a href="{{route('webapp.pieces.composer', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Meet the composer @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
 
-	<div class="bg-white position-absolute h-100 panel-content" style="right: -100%; transition: .4s">
-		<div class="panel-header px-4 py-3">
-			<div class="d-flex d-apart">
-				<h6 class="m-0">Options</h6>
-				<button type="button" class="close" data-dismiss="fixed-panel" aria-label="Close">
-					<span aria-hidden="true">@icon('close', ['mr' => 0])</span>
-				</button>
-			</div>
-		</div>
+            @if($piece->siblingsExist())
+            <a href="{{route('webapp.pieces.collection', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">From the same collection @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+            @endif
 
-		<div class="panel-body px-2 py-3" style="overflow-y: auto; height: 85%;">
-			<div class="list-group">
-				<a href="{{route('webapp.pieces.composer', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Meet the composer @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+            <a href="{{route('webapp.pieces.similar', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">More like this @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
 
-				@if($piece->siblingsExist())
-				<a href="{{route('webapp.pieces.collection', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">From the same collection @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
-				@endif
+            {{-- <a href="{{route('webapp.pieces.timeline', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Timeline @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a> --}}
 
-				<a href="{{route('webapp.pieces.similar', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">More like this @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+            @auth('web')
+            <div class="dropdown-divider"></div>
 
-				{{-- <a href="{{route('webapp.pieces.timeline', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Timeline @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a> --}}
+            <div class="py-2 list-group">
+                <button type="button" class="btn-raw text-start share-piece link-none mb-3 px-3" data-bs-toggle="modal" data-bs-target="#share-modal">
+                    @icon('share') Share this piece
+                </button>
 
-				@auth('web')
-				<div class="dropdown-divider"></div>
-				
-				<div class="py-2 list-group">
-					<a class="cursor-pointer share-piece link-none mb-3 px-3" data-toggle="modal" data-target="#share-modal">
-						@icon('share') Share this piece
-					</a>
-
-					<a class="cursor-pointer toggle-favorite link-none mb-3 px-3 d-block d-md-none">
-						@include('webapp.components.favorite')<span>Manage favorites</span>
-					</a>
-				</div>
-				@endauth
-			</div>
-		</div>
-	</div>
+                <button type="button" class="btn-raw text-start link-none mb-3 px-3 d-block d-md-none" data-bs-toggle="offcanvas" data-bs-target="#save-to-offcanvas" aria-controls="save-to-offcanvas" data-manage="save-to" data-url="{{route('webapp.pieces.save-to', $piece)}}">
+                    @icon('heart', ['color' => 'red']) Manage favorites
+                </button>
+            </div>
+            @endauth
+        </div>
+    </div>
 </div>

@@ -7,8 +7,8 @@
 @else
     @component('webapp.layouts.header', ['title' => 'My Pieces', 'subtitle' => 'Your favorite music, beautifully organized.'])
         <div class="my-pieces-switch nav" role="tablist" aria-label="My pieces sections">
-            <a class="active" id="favorites-tab" data-toggle="tab" href="#list-favorites" role="tab" aria-controls="list-favorites" aria-selected="true">FAVORITES</a>
-            <a id="suggestions-tab" data-toggle="tab" href="#list-uploads" role="tab" aria-controls="list-uploads" aria-selected="false">SUGGESTIONS</a>
+            <a class="active" id="favorites-tab" data-bs-toggle="tab" href="#list-favorites" role="tab" aria-controls="list-favorites" aria-selected="true">FAVORITES</a>
+            <a id="suggestions-tab" data-bs-toggle="tab" href="#list-uploads" role="tab" aria-controls="list-uploads" aria-selected="false">SUGGESTIONS</a>
         </div>
     @endcomponent
 

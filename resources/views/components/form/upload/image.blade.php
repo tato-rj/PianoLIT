@@ -4,13 +4,13 @@
 
     <div class="position-relative image-container">
       @if($empty)
-      <div class="bg-light px-2 text-muted border-left border-top border-right rounded-top">
+      <div class="bg-light px-2 text-muted border-start border-top border-end rounded-top">
         <small><strong>@icon('image', ['mr' => 2])Cover image</strong></small>
       </div>
       @endif
 
       <img class="w-100 border rounded-bottom" id="image" src="{{$image}}">
-      
+
       <div class="controls d-flex justify-content-between mt-2">
         <button type="button" id="upload-button" class="btn btn-sm btn-warning">
           @icon('folder-open', ['mr' => 2]){{$empty ? 'Choose image' : 'Change image'}}
@@ -26,7 +26,7 @@
       </div>
     </div>
   </div>
-    
+
   @if ($errors->has($name))
   <div class="invalid-feedback">
     {{ $errors->first($name) }}

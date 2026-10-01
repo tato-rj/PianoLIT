@@ -9,18 +9,18 @@
 	</div>
 	<div class="row">
 		<div class="col-lg-8 col-md-10 col-12 mx-auto row">
-			@component('search.components.plan', ['color' => 'light', 
+			@component('search.components.plan', ['color' => 'light',
 				'items' => [
 					'iOS App',
 					'Desktop App',
 					'Advanced filters',]])
 
 			@slot('button')
-			<a href="{{route('webapp.discover')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-outline-primary text-nowrap btn-block mb-3">SIGN UP FOR FREE</a>
+			<a href="{{route('webapp.discover')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-outline-primary text-nowrap d-block w-100 mb-3">SIGN UP FOR FREE</a>
 			@endslot
 			@endcomponent
 
-			@component('search.components.plan', ['color' => 'light', 
+			@component('search.components.plan', ['color' => 'light',
 				'items' => [
 					'iOS App',
 					'Desktop App',
@@ -32,9 +32,9 @@
 					'Speed up/slow down audio',
 					'Separate hands recordings',
 					'Curated playlists']])
-			
+
 			@slot('button')
-			<a href="{{route('webapp.membership.pricing')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-primary text-nowrap btn-block mb-3">@icon('crown')GO PREMIUM</a>
+			<a href="{{route('webapp.membership.pricing')}}" data-ios="{{config('app.stores.ios')}}" class="btn btn-primary text-nowrap d-block w-100 mb-3">@icon('crown')GO PREMIUM</a>
 			@endslot
 			@endcomponent
 		</div>

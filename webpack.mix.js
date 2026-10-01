@@ -1,11 +1,32 @@
 const mix = require('laravel-mix');
 
-// Mix 2 excludes node_modules from Babel. Bootstrap 5's offcanvas module
-// needs transpilation for this project's Webpack 3/Uglify production build.
+// css-loader 0.28 uses cssnano 3, whose longhand merger mistakes custom
+// properties such as --bs-border-width/style for ordinary border properties.
+// Keep those variables intact in production; components resolve them at runtime.
+mix.extend('preserveCssVariables', config => {
+    config.module.rules.forEach(rule => {
+        ['use', 'loaders'].forEach(key => {
+            if (!Array.isArray(rule[key])) return;
+            rule[key] = rule[key].map(loader => {
+                if (loader === 'css-loader') loader = {loader};
+                if (loader.loader === 'css-loader') {
+                    loader.options = Object.assign({}, loader.options, {
+                        minimize: mix.inProduction() ? {mergeLonghand: false} : false
+                    });
+                }
+                return loader;
+            });
+        });
+    });
+});
+mix.preserveCssVariables();
+
+// Mix 2 excludes node_modules from Babel. Bootstrap 5 needs transpilation
+// for this project's Webpack 3/Uglify production build.
 mix.webpackConfig({
     module: {
         rules: [{
-            test: /bootstrap5[\\/]js[\\/]dist[\\/].*\.js$/,
+            test: /bootstrap[\\/]dist[\\/]js[\\/]bootstrap\.bundle\.js$|bootstrap[\\/]js[\\/]dist[\\/].*\.js$/,
             loader: 'babel-loader',
             options: {
                 presets: [['env', {modules: false}]],

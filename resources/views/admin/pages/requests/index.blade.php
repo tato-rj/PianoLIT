@@ -9,7 +9,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Tutorial Requests', 'subtitle' => 'Manage the tutorials requested by the users.'])
-    
+
     @datatable(['table' => 'requests', 'columns' => ['Date requested', 'Date published', 'Piece', 'User', '']])
   </div>
 </div>
@@ -27,7 +27,7 @@ Publish Tutorial
 <form method="POST">
   @csrf
   @method('PATCH')
-  <button type="submit" class="btn btn-sm btn-block btn-danger">Yes, the tutorial is ready</button>
+  <button type="submit" class="btn btn-sm d-block w-100 btn-danger">Yes, the tutorial is ready</button>
 </form>
 @endslot
 @endcomponent

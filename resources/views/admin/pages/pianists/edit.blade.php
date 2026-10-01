@@ -6,8 +6,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => $pianist->name, 
-      'subtitle' => 'Use this page to edit this pianist.', 
+      'title' => $pianist->name,
+      'subtitle' => 'Use this page to edit this pianist.',
       'back' => ['view all playists' => route('admin.pianists.index')]
     ])
 
@@ -37,7 +37,7 @@
           <input type="text" class="form-control" name="itunes_id" placeholder="iTunes ID" value="{{ $pianist->itunes_id }}">
         </div>
         {{-- Nationality and period --}}
-        <div class="form-row form-group">
+        <div class="row g-2 form-group">
           <div class="col">
             <div class="form-group">
               <label class="text-brand">Nationality</label>
@@ -50,7 +50,7 @@
             </div>
             <div class="form-group">
               <label class="text-brand">Born in</label>
-              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ $pianist->date_of_birth->format('m/d/Y') }}" required>      
+              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ $pianist->date_of_birth->format('m/d/Y') }}" required>
             </div>
           </div>
           <div class="col">
@@ -70,15 +70,15 @@
 
         @can('update', $pianist)
         <div class="text-center mt-5">
-          <button type="submit" class="btn btn-block btn-default">Save changes</button>
+          <button type="submit" class="btn d-block w-100 btn-default">Save changes</button>
         </div>
         @endcan
 
         <div class="mt-3">
-          <p class="text-muted text-right"><small><i>This pianist was created by <strong>{{$pianist->creator->name}}</strong></i></small></p>
+          <p class="text-muted text-end"><small><i>This pianist was created by <strong>{{$pianist->creator->name}}</strong></i></small></p>
         </div>
       </form>
-      
+
       <div class="col-lg-6 col-sm-10 col-12 mx-auto">
         <img src="{{storage($pianist->cover_path)}}" class="shadow rounded-circle d-block mx-auto mb-4" style="width: 120px">
         <div>
@@ -103,7 +103,7 @@ $(document).ready(function() {
       type: 'GET',
       crossDomain: true,
       dataType: 'jsonp',
-      success: function(response) { 
+      success: function(response) {
         let albums = response.results;
         albums.shift();
         let html = '<p class="text-muted">We found '+albums.length+' albums on iTunes</p>';
@@ -112,7 +112,7 @@ $(document).ready(function() {
         for (album in albums) {
           html += `
             <div class="d-flex mb-2 pb-2 border-bottom">
-              <div class="mr-3"><img src="`+albums[album].artworkUrl100+`"></div>
+              <div class="me-3"><img src="`+albums[album].artworkUrl100+`"></div>
               <div>
                 <a href="`+albums[album].collectionViewUrl+`" target="_blank"><p class="m-0">`+albums[album].collectionName+`</p></a>
                 <p>Price: `+albums[album].collectionPrice+` `+albums[album].currency+`</p>

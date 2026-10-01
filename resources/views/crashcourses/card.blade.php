@@ -2,7 +2,7 @@
       <div class="position-absolute cc-phone {{empty($hidePhoneOnMobile) ? null : 'hide-on-sm'}}" style="top: {{$phoneXpos ?? '32px'}}">
         <img src="{{asset('images/mockup/crashcourse.png')}}" class="w-100">
       </div>
-      <div class="bg-white pt-6 pr-6 pb-4 rounded cc-body">
+      <div class="bg-white pt-6 pe-6 pb-4 rounded cc-body">
         <div class="mb-4">
           <p class="text-warning text-uppercase"><strong>...by signing up to this {{$crashcourse->lessons_count}}-day course you'll learn about:</strong></p>
           <h4>{{$crashcourse->title}}</h4>
@@ -13,11 +13,11 @@
           @csrf
           @include('components.form.subscription.hidden', ['id' => 'crashcourse-form'])
           <input type="hidden" name="origin_url" value="{{url()->current()}}">
-            <div class="form-row">
-              <div class="col-lg-6 col-md-6 col-sm-6 col-12"> 
+            <div class="row g-2">
+              <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                 @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
               </div>
-              <div class="col-lg-6 col-md-6 col-sm-6 col-12"> 
+              <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                 @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
               </div>
             </div>

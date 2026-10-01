@@ -39,8 +39,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => $escore->title, 
-      'subtitle' => 'Use this page to edit this eScore.', 
+      'title' => $escore->title,
+      'subtitle' => 'Use this page to edit this eScore.',
       'back' => ['view all eScores' => route('admin.escores.index')]
     ])
 
@@ -52,11 +52,11 @@
         <div class="d-flex bg-light p-3 rounded">
           <img src="{{$escore->cover_image()}}" style="width: 80px">
           @if($escore->mockup_image())
-          <img src="{{$escore->mockup_image()}}" style="width: 80px" class="ml-2">
+          <img src="{{$escore->mockup_image()}}" style="width: 80px" class="ms-2">
           @endif
         </div>
         @foreach($escore->previews as $preview)
-        <a href="#" data-url="{{route('admin.escores.previews.remove', ['escore' => $escore, 'preview_path' => $preview])}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete">
+        <a href="#" data-url="{{route('admin.escores.previews.remove', ['escore' => $escore, 'preview_path' => $preview])}}" title="Delete" data-bs-toggle="modal" data-bs-target="#delete-modal" class="delete">
           <div class="position-relative m-1" style="width: 80px">
             <img src="{{storage($preview)}}" class="w-100 border">
             <div class="absolute-center d-flex flex-center w-100 h-100 show-on-hover" style="background-color: rgba(0,0,0,0.4)">
@@ -77,9 +77,9 @@
           <div class="d-flex flex-wrap">
 
               @foreach($topics as $topic)
-              <div class="custom-control custom-checkbox mx-2 mb-2">
-                <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($escore->topics->contains($topic->id)) ? 'checked' : ''}}>
-                <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
+              <div class="form-check mx-2 mb-2">
+                <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($escore->topics->contains($topic->id)) ? 'checked' : ''}}>
+                <label class="form-check-label" for="{{$topic->name}}">{{$topic->name}}</label>
               </div>
               @endforeach
 
@@ -91,7 +91,7 @@
         @input(['bag' => 'default', 'label' => 'Composer(s)', 'value' => $escore->author, 'name' => 'author', 'placeholder' => 'eScore composer(s)', 'limit' => 120, 'required' => false])
         @textarea(['bag' => 'default', 'label' => 'Short description', 'value' => $escore->subtitle, 'name' => 'subtitle', 'placeholder' => 'eScore subtitle', 'limit' => 238])
       </div>
-      <div class="col-4"> 
+      <div class="col-4">
         @input(['bag' => 'default', 'label' => 'Number of pages', 'value' => $escore->pages_count, 'type' => 'number', 'name' => 'pages_count', 'placeholder' => 'Number of pages', 'limit' => 400])
       </div>
       <div class="col-4">
@@ -120,7 +120,7 @@
         </div>
       </div>
 
-      <div class="col-12 text-right">
+      <div class="col-12 text-end">
         <button type="submit" id="submit-button" class="btn btn-default">Update eScore</button>
       </div>
     </form>
@@ -157,7 +157,7 @@ Dropzone.options.filesDropzone = {
     console.log(request);
     if (request) {
       alert(response.message);
-    } else {  
+    } else {
       alert(response);
     }
   }

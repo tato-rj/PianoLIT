@@ -15,7 +15,7 @@
 	<div id="pdf-loading" class="position-absolute w-100 h-100 bg-white opacity-4" style="top: 0; left: 0; display: none;">
 		<div class="d-flex flex-center w-100 h-100">
 			<div class="spinner-border text-secondary" style="width: 4rem; height: 4rem;" role="status">
-			  <span class="sr-only">Loading...</span>
+			  <span class="visually-hidden">Loading...</span>
 			</div>
 		</div>
 	</div>

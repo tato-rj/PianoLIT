@@ -1,7 +1,7 @@
 ////////////////////////////////////////
 // SECOND BREAKPOINT: less than 768px //
 ////////////////////////////////////////
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
 	.product-buttons {
 		width: 100% !important;
 		max-width: 100% !important;
@@ -254,7 +254,7 @@
 /////////////////////////////
 // Between 768px and 992px //
 /////////////////////////////
-@include media-breakpoint-between(sm, md) {
+@include media-breakpoint-between(sm, lg) {
 	#flipbook-container, #ebook-loading {
 		display: none !important;
 	}

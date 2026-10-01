@@ -1,5 +1,5 @@
 <div class="text-center w-100">
-	<a class="btn btn-secondary {{$classes ?? null}}" data-toggle="modal" data-target="#generate-pdf-folder-{{$folder->id}}">@icon('book', ['classes' => ''])Create eScore</a>
+	<a class="btn btn-secondary {{$classes ?? null}}" data-bs-toggle="modal" data-bs-target="#generate-pdf-folder-{{$folder->id}}">@icon('book', ['classes' => ''])Create eScore</a>
 </div>
 
 @component('components.modal', ['id' => 'generate-pdf-folder-'.$folder->id, 'header' => 'Create eScore'])
@@ -14,15 +14,15 @@
 <form target="_blank" method="GET" action="{{route('webapp.users.favorites.folders.pdf', $folder)}}">
 	<div class="mb-3 bg-white border mx-auto p-4 d-apart flex-column shadow-lg" style="height: 466px; max-width: 375px; font-family: serif;">
 		<div>
-			<div class="text-left w-100 mb-4">
+			<div class="text-start w-100 mb-4">
 				<input class="form-control border-0 bg-light" type="text" name="title" value="{{$folder->name}}" style="font-size: 2rem; font-weight: bold;" >
 			</div>
 
-			<div class="text-left w-100 border-bottom mb-1 pb-1">
+			<div class="text-start w-100 border-bottom mb-1 pb-1">
 				<input class="form-control border-0 bg-light" type="text" name="subtitle" value="A collection of pieces" style="font-size: 1.1rem;">
 			</div>
 
-			<div class="text-left w-100">
+			<div class="text-start w-100">
 				<input class="form-control border-0 bg-light" type="text" name="comment" value="for piano" style="font-size: 1rem;">
 			</div>
 		</div>

@@ -1,6 +1,6 @@
 <div class="col-12 p-3">
   <div class="border py-4 px-3">
-    <div class="ml-2 mb-4">
+    <div class="ms-2 mb-4">
       <h4 class="mb-1"><strong>Views</strong></h4>
       <p class="text-muted">Ranking of the number of times each post was viewed.</p>
     </div>
@@ -24,9 +24,9 @@
             @endif
             <td>{{$post->title}}</td>
             <td>{{$post->views}}</td>
-            <td class="text-right">
-              <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="text-muted mr-2">@icon('eye', ['mr' => 0, 'classes' => 'align-middle'])</a>
-              <a href="{{route('admin.posts.edit', $post->slug)}}" class="text-muted mr-2">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
+            <td class="text-end">
+              <a href="{{route('posts.show', $post->slug)}}" target="_blank" class="text-muted me-2">@icon('eye', ['mr' => 0, 'classes' => 'align-middle'])</a>
+              <a href="{{route('admin.posts.edit', $post->slug)}}" class="text-muted me-2">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
             </td>
           </tr>
           @endforeach

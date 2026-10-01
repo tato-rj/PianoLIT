@@ -23,7 +23,7 @@
         </a>
       </div>
       <div>
-        <a href="#" data-url="{{route('admin.crashcourses.lessons.destroy', compact(['crashcourse', 'lesson']))}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="delete btn btn-sm btn-danger">
+        <a href="#" data-url="{{route('admin.crashcourses.lessons.destroy', compact(['crashcourse', 'lesson']))}}" title="Delete" data-bs-toggle="modal" data-bs-target="#delete-modal" class="delete btn btn-sm btn-danger">
           @icon('trash-2', ['mr' => 2])Delete
         </a>
       </div>

@@ -17,20 +17,20 @@
 
 @section('content')
 <div class="content-wrapper">
-  <div class="container-fluid"> 
+  <div class="container-fluid">
     @include('admin.components.page.title', ['icon' => 'code', 'title' => 'Discover', 'subtitle' => 'See and refresh the collection for the discover tab.'])
-    
+
     <div class="text-center">
       <form method="POST" action="{{route('redis.update')}}" class="mb-2">
         @csrf
         <button class="btn btn-outline-success btn-sm">@icon('refresh-cw', ['mr' => 1])Refresh discover page</button>
       </form>
-      <div class="badge badge-pill alert-grey">Will auto refresh in {{carbon(intval(str_replace('app.discover-', '', $key)))->addDay()->diffForHumans()}}</div>
+      <div class="badge rounded-pill alert-grey">Will auto refresh in {{carbon(intval(str_replace('app.discover-', '', $key)))->addDay()->diffForHumans()}}</div>
     </div>
 
     <div class="row">
      <div class="col-lg-6 col-md-8 col-10 mx-auto mb-5">
-      
+
         @foreach($collection as $playlist)
         @if($loop->first)
         <section class="container-fluid">
@@ -47,7 +47,7 @@
                 <input type="hidden" name="discover">
                 @include('admin.pages.api.discover.card', ['model' => $playlist['content'][0], 'width' => '100%', 'height' => '151px'])
               </form>
-            </div>    
+            </div>
         </section>
         @else
           @if(! empty($playlist))

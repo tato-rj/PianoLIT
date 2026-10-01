@@ -28,7 +28,7 @@
 			<div class="mb-1">
 				<h4>Update my policy</h4>
 				<div class="d-flex d-apart flex-wrap">
-					<p class="text-right text-muted mb-2">
+					<p class="text-end text-muted mb-2">
 						<small>@icon('calendar', ['mr' => 1])last updated on {{$studioPolicy->updated_at->toFormattedDateString()}} at {{$studioPolicy->updated_at->format('g:i A')}}</small>
 					</p>
 					<div class="mb-2">

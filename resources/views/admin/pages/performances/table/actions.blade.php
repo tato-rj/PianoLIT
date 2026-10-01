@@ -3,7 +3,7 @@
       'delete' => route('admin.users.performances.destroy', $item)
   ]])
 {{--   <div>
-    <button class="btn-raw text-muted align-middle" data-toggle="modal" data-target="#update-performance-{{$item->id}}-modal">@icon('square-pen')</button>
+    <button class="btn-raw text-muted align-middle" data-bs-toggle="modal" data-bs-target="#update-performance-{{$item->id}}-modal">@icon('square-pen')</button>
 
   @component('components.modal', [
     'id' => 'update-performance-'.$item->id.'-modal',

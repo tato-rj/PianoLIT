@@ -5,7 +5,7 @@
 				<div class="alert alert-warning mb-4">
 					@icon('triangle-alert')Your membership was canceled on {{auth()->user()->membership->source->canceled_at->toFormattedDateString()}}
 				</div>
-	
+
 				<div class="mb-4 text-center">
 					<h6>Changed your mind?</h6>
 					<form method="POST" action="{{route('webapp.membership.resume')}}" disable-on-submit>
@@ -21,20 +21,20 @@
 		@else
 		  <div class="col-lg-4 col-md-4 col-sm-6 col-12 mb-4">
 			  <div class="list-group" id="list-tab">
-					<a class="list-group-item border-0 rounded mb-1 list-group-item-action text-muted active" data-toggle="list" href="#list-card">
+					<a class="list-group-item border-0 rounded mb-1 list-group-item-action text-muted active" data-bs-toggle="list" href="#list-card">
 					@icon('credit-card')Payment method</a>
-					<a class="list-group-item border-0 rounded mb-1 list-group-item-action text-muted" data-toggle="list" href="#list-pause">
+					<a class="list-group-item border-0 rounded mb-1 list-group-item-action text-muted" data-bs-toggle="list" href="#list-pause">
 					@icon('receipt')Billing status</a>
-					<a class="list-group-item border-0 rounded mb-1 list-group-item-action text-muted" data-toggle="list" href="#list-cancel">
+					<a class="list-group-item border-0 rounded mb-1 list-group-item-action text-muted" data-bs-toggle="list" href="#list-cancel">
 					@icon('circle-x')Cancel membership</a>
 			  </div>
 		  </div>
 		  <div class="col-lg-8 col-md-8 col-sm-6 col-12">
-	  		<div class="tab-content">
+			<div class="tab-content">
 				@include('webapp.membership.edit.sections.billing.card')
 				@include('webapp.membership.edit.sections.billing.pause')
 				@include('webapp.membership.edit.sections.billing.cancel')
-	  		</div>
+			</div>
 		  </div>
 		@endif
 	</div>

@@ -1,6 +1,6 @@
 <li class="nav-item">
-  <a class="nav-link {{!empty($dropdown) ? 'nav-link-collapse collapsed' : null}}" 
-    data-toggle="{{!empty($dropdown) ? 'collapse' : null}}"  
+  <a class="nav-link {{!empty($dropdown) ? 'nav-link-collapse collapsed' : null}}"
+    data-bs-toggle="{{!empty($dropdown) ? 'collapse' : null}}"
     href="{{!empty($dropdown) ? '#'.str_slug($name) : $route}}">
     <div>
       @icon($icon, ['mr' => 1, 'color' => 'muted'])
@@ -8,12 +8,12 @@
     </div>
     @if(!empty($dropdown))
     <div>
-      @icon('chevron-down', ['mr' => 0, 'classes' => 'ml-1'])
+      @icon('chevron-down', ['mr' => 0, 'classes' => 'ms-1'])
     </div>
     @endif
   </a>
   @if(!empty($dropdown))
-  <ul class="sidenav-second-level collapse collapsed" id="{{str_slug($name)}}" data-parent="#navbarResponsive">
+  <ul class="sidenav-second-level collapse collapsed" id="{{str_slug($name)}}" data-bs-parent="#navbarResponsive">
     @foreach($dropdown as $link)
     @if(empty($link))
     <div class="dropdown-divider hide-on-sm"></div>

@@ -25,7 +25,7 @@
 					<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 						<div class="">
 							<div class="mb-4 pb-4 border-bottom">
-								
+
 								@topics(['model' => $infograph])
 
 								<h4 class="mb-1">{{$infograph->name}}</h4>
@@ -49,9 +49,9 @@
 							</div>
 							<div style="line-height: 1.2">
 								<div class="d-flex align-items-center">
-									<div class="mr-2"><small><strong>Did you like this?</strong></small></div>
+									<div class="me-2"><small><strong>Did you like this?</strong></small></div>
 									<div class="d-flex align-items-center flex-nowrap">
-										<button title="Love it!" data-value="1" data-url="{{route('infographs.update-score', $infograph->slug)}}" class="animate review border-0 bg-transparent text-grey px-1 mr-2"><small>Yes</small> @icon('thumbs-up', ['mr' => 0])</button>
+										<button title="Love it!" data-value="1" data-url="{{route('infographs.update-score', $infograph->slug)}}" class="animate review border-0 bg-transparent text-grey px-1 me-2"><small>Yes</small> @icon('thumbs-up', ['mr' => 0])</button>
 										<button title="Not so much..." data-value="0" data-url="{{route('infographs.update-score', $infograph->slug)}}" class="animate review border-0 bg-transparent text-grey px-1">
 											<small>No</small> @icon('thumbs-down', ['mr' => 0])</button>
 									</div>

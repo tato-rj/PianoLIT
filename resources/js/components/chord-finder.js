@@ -129,7 +129,7 @@ function showRootOptions(notes) {
     if (array.length > 2) {
         for (var i=0; i<array.length; i++) {
             let html = `<div class="m-2 d-inline-block">
-                            <button class="btn btn-outline-secondary font-weight-bold" data-name="`+array[i]+`" type="button">`+noteToHumans(array[i])+`</button>
+                            <button class="btn btn-outline-secondary fw-bold" data-name="`+array[i]+`" type="button">`+noteToHumans(array[i])+`</button>
                         </div>`;
 
             $('#root-buttons').append(html);
@@ -152,7 +152,7 @@ function showEnharmonicOptions(notes) {
             let html = '<div class="btn-group m-2">';
 
             enharmonics.forEach(function(enharmonic) {
-                html += '<button class="btn btn-outline-secondary font-weight-bold" data-source="'+notes[i]+'" data-name="'+noteToMachine(enharmonic)+'" type="button">'+noteToHumans(enharmonic)+'</button>';
+                html += '<button class="btn btn-outline-secondary fw-bold" data-source="'+notes[i]+'" data-name="'+noteToMachine(enharmonic)+'" type="button">'+noteToHumans(enharmonic)+'</button>';
             });
             
             html += '</div>';

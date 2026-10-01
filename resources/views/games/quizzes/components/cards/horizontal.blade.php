@@ -1,7 +1,7 @@
 <div class="col-12 p-2 mb-3">
 	<div class="card rounded border-0">
 		<a class="link-none" href="{{route('quizzes.show', $quiz->slug)}}">
-		  <div class="row no-gutters">
+		  <div class="row g-0">
 		    <div class="col-lg-3">
 				<div class="card-img-top bg-align-center h-100" style="background-image: url({{$quiz->cover_image()}});"></div>
 		    </div>

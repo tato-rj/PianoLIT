@@ -10,10 +10,10 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'icon' => 'mail',
-      'title' => 'Email Reports', 
+      'title' => 'Email Reports',
       'subtitle' => 'See detailed reports from the email lists.'])
-    
-    <button class="btn btn-danger mb-4" id="delete-all-btn" disabled data-action="{{route('admin.subscriptions.reports.destroy-many')}}" data-toggle="modal" data-target="#delete-modal">Delete all selected</button>
+
+    <button class="btn btn-danger mb-4" id="delete-all-btn" disabled data-action="{{route('admin.subscriptions.reports.destroy-many')}}" data-bs-toggle="modal" data-bs-target="#delete-modal">Delete all selected</button>
 
     @datatable(['table' => 'reports', 'columns' => ['checkbox', 'Date', 'Name', 'Emails', 'Delivered', 'Failed', 'Opened', 'Clicked', '']])
 
@@ -68,14 +68,14 @@ function addSelectedIds()
 {
   let ids = Array.from(selectedReportIds);
 
-  $('button[data-target="#delete-modal"]').prop('disabled', ! ids.length);
+  $('button[data-bs-target="#delete-modal"]').prop('disabled', ! ids.length);
 
   $('#delete-modal form #selected-ids').remove();
 
   let inputs = `<div id="selected-ids">`;
 
   for (i=0; i<ids.length; i++) {
-    inputs += `<input type="hidden" name="ids[]" value="`+ids[i]+`">`; 
+    inputs += `<input type="hidden" name="ids[]" value="`+ids[i]+`">`;
   }
 
   inputs += `</div>`;

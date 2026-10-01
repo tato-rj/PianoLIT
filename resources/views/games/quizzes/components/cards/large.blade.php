@@ -3,7 +3,7 @@
 		<a class="link-none" href="{{route('quizzes.show', $quiz->slug)}}">
 			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$quiz->cover_image()}}); height: 160px">
 				@if($quiz->is_new)
-				<div class="absolute-top-right"><span class="badge badge-light text-green"><small><strong>NEW</strong></small></span></div>
+				<div class="absolute-top-right"><span class="badge bg-light text-green"><small><strong>NEW</strong></small></span></div>
 				@endif
 				<div class="card-overlay h-100 t-2" style="opacity: 0">
 					<div class="text-white overlay-blue d-flex flex-center rounded-top">@icon('eye', ['mr' => 0, 'classes' => 'icon-size-3x'])</div>

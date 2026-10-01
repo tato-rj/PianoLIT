@@ -24,7 +24,7 @@
 	<div>
 		@include('tools.circle-of-fifths.labels.title', ['title' => 'functional harmony'])
 		<div class="mt-1 mb-2 key-major-roman d-flex flex-wrap"></div>
-		<div class="row no-gutters">
+		<div class="row g-0">
 			<div class="col-4 mb-4">
 				<div class="">
 					<label class="mb-1"><small><strong>TONIC</strong></small></label>

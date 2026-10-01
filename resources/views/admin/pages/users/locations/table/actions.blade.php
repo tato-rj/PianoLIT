@@ -1,11 +1,11 @@
-<div class="text-right">
+<div class="text-end">
 @button([
 	'label' => \App\Support\Icon::render('map-pin', ['mr' => 2]) . 'Find on map',
 	'styles' => [
-		'size' => 'sm', 
+		'size' => 'sm',
 		'theme' => 'grey'
-		], 
-	'classes' => 'rounded', 
+		],
+	'classes' => 'rounded',
 	'external' => true,
 	'href' => $item->googlemap])
 </div>

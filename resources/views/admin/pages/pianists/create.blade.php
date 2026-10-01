@@ -6,11 +6,11 @@
   @textarea(['bag' => 'default', 'name' => 'biography', 'placeholder' => 'Life\'s summary', 'limit' => 255, 'rows' => 6])
   @include('admin.components.link', ['link' => 'https://linkmaker.itunes.apple.com/en-us'])
   @input(['bag' => 'default', 'name' => 'iteuns_id', 'placeholder' => 'iTunes ID'])
-  <div class="form-row">
+  <div class="row g-2">
     @select(['bag' => 'default', 'name' => 'country_id', 'placeholder' => 'Nationality', 'options' => $countries->pluck('id', 'nationality'), 'grid' => 'col'])
     @file(['bag' => 'default', 'name' => 'cover', 'placeholder' => 'Cover image', 'grid' => 'col'])
   </div>
-  <div class="form-row">
+  <div class="row g-2">
     @input(['bag' => 'default', 'name' => 'date_of_birth', 'id' => 'born-in', 'placeholder' => 'Date born', 'grid' => 'col'])
     @input(['bag' => 'default', 'name' => 'date_of_death', 'id' => 'died-in', 'placeholder' => 'Date died', 'grid' => 'col'])
   </div>

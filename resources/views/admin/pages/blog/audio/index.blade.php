@@ -32,14 +32,14 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">    
+  <div class="container-fluid">
     @include('admin.components.page.title', ['icon' => 'newspaper', 'title' => 'Blog Audio', 'subtitle' => 'Manage the audio used by blog posts.'])
     <div class="row mb-3">
       <div class="col-12">
         <form action="{{route('admin.posts.audio.store')}}" class="dropzone" id="filesDropzone"></form>
       </div>
     </div>
-    
+
     @if($audio)
     <div class="row my-3">
       <div class="col-12">
@@ -81,7 +81,7 @@ Dropzone.options.filesDropzone = {
   error: function(file, response, request) {
     if (request) {
       alert(response.message);
-    } else {  
+    } else {
       alert(response);
     }
   }
@@ -96,7 +96,7 @@ function showTooltip(element) {
     }, 1000);
 }
 
-$('[data-toggle="tooltip"]').tooltip();
+$('[data-bs-toggle="tooltip"]').tooltip();
 
 var clipboard = new ClipboardJS('.clip');
 

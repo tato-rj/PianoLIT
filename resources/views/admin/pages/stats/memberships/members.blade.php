@@ -13,12 +13,12 @@
     <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}}" style="width: 10%">
       <div class="text-truncate">{{$membership->source->plan_name}}</div>
     </td>
-    <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}} pr-0" style="width: 65%; vertical-align: inherit;">
+    <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}} pe-0" style="width: 65%; vertical-align: inherit;">
       <div class="text-{{$membership->source->renewal_color}}">
         <strong>{{$membership->source->renews_at->diffForHumans()}}</strong>
       </div>
     </td>
-    <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}} text-right pl-0" style="width: 10%">
+    <td class="{{$loop->last ? 'pt-1 pb-2 ' : 'py-1'}} text-end ps-0" style="width: 10%">
       <div class="text-nowrap">
         {{$membership->source->renews_at->toFormattedDateString()}}
       </div>

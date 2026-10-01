@@ -108,6 +108,11 @@ class AdminSubdomainTest extends ReviewTestCase
             $response->assertSee(json_encode(route('admin.pieces.'.$name)), false);
         }
         $response->assertDontSee('/admin/pieces/', false);
+        $response->assertSee('class="offcanvas offcanvas-end" id="notifications-panel"', false)
+            ->assertSee('data-bs-toggle="offcanvas" data-bs-target="#notifications-panel"', false)
+            ->assertSee('aria-labelledby="notifications-panel-title"', false)
+            ->assertSee('data-bs-dismiss="offcanvas"', false)
+            ->assertDontSee('fixed-panel', false);
     }
 
     /** @dataProvider legacyUrls */

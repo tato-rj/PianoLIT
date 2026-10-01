@@ -5,8 +5,8 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'music', 
-      'title' => 'Tags', 
+      'icon' => 'music',
+      'title' => 'Tags',
       'subtitle' => 'Manage all the tags used by pieces.',
       'action' => ['label' => 'Create a new tag', 'modal' => 'add-modal']
     ])
@@ -25,7 +25,7 @@
           </div>
         @endforeach
       </div>
-      <div class="col-12 mt-4 ml-2">
+      <div class="col-12 mt-4 ms-2">
         <p class="text-muted"><small>Ps: Tags with a @icon('star', ['mr' => 0, 'classes' => 'text-warning icon-size-xs', 'filled' => true]) are the ones showing in the tour screen on the app.</small></p>
       </div>
     </div>

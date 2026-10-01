@@ -9,8 +9,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => $infograph->title, 
-      'subtitle' => 'Use this page to edit this infographic.', 
+      'title' => $infograph->title,
+      'subtitle' => 'Use this page to edit this infographic.',
       'back' => ['view all infographics' => route('admin.infographs.index')]
     ])
 
@@ -26,12 +26,12 @@
 			<form method="POST" action="{{route('admin.infographs.update', $infograph)}}" enctype="multipart/form-data">
 				@method('PATCH')
 				@csrf
-				<div class="form-row form-group">
+				<div class="row g-2 form-group">
 					<div class="col">
 						<div class="form-group">
 							<input type="text" name="name" value="{{$infograph->name}}" placeholder="Infograph name" class="form-control" required>
 						</div>
-						<div class="form-row">
+						<div class="row g-2">
 							<div class="col">
 								<div class="custom-file">
 									<input type="file" class="custom-file-input" name="cover_image" id="customFile">
@@ -51,15 +51,15 @@
 				    <p class="text-brand border-bottom pb-1 mb-1"><strong>TOPICS</strong></p>
 				    <div class="d-flex flex-wrap">
 				        @foreach($topics as $topic)
-				        <div class="custom-control custom-checkbox mx-2 mb-2">
-				          <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($infograph->topics->contains($topic->id)) ? 'checked' : ''}}>
-				          <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
+				        <div class="form-check mx-2 mb-2">
+				          <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($infograph->topics->contains($topic->id)) ? 'checked' : ''}}>
+				          <label class="form-check-label" for="{{$topic->name}}">{{$topic->name}}</label>
 				        </div>
 				        @endforeach
 				    </div>
 				  </div>
 				</div>
-				<div class="form-group text-right">
+				<div class="form-group text-end">
 					<button type="submit" class="btn btn-sm btn-default">Update infograph</button>
 				</div>
 

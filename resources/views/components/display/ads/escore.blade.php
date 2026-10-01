@@ -1,6 +1,6 @@
 @component('components.display.ads.layout', [
-	'ad' => $ad['escore'], 
-	'mobile' => $mobile ?? null, 
+	'ad' => $ad['escore'],
+	'mobile' => $mobile ?? null,
 	'vertical' => $vertical,
 	'action' => 'MORE DETAILS'])
 
@@ -11,7 +11,7 @@
 	@endslot
 
 	@slot('afterTitle')
-	<div class="text-left">
+	<div class="text-start">
 		<ul class="list-unstyled">
 			<li class="
 			@isset($mobile)

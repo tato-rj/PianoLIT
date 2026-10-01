@@ -8,7 +8,7 @@
     <div id="error-report"></div>
   </div>
   <p>Give it another try!</p>
-  <button type="button" class="btn btn-primary btn-sm btn-wide mb-3" data-dismiss="modal" aria-label="Close">Try again</button>
+  <button type="button" class="btn btn-primary btn-sm btn-wide mb-3" data-bs-dismiss="modal" aria-label="Close">Try again</button>
 </div>
 @endslot
 @endcomponent

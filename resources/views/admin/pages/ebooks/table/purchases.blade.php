@@ -1,4 +1,4 @@
-<button class="btn-raw" data-toggle="modal" data-target="#purchases-{{$item->id}}-modal">{{$item->purchases_count}}</button>
+<button class="btn-raw" data-bs-toggle="modal" data-bs-target="#purchases-{{$item->id}}-modal">{{$item->purchases_count}}</button>
 
 @component('components.modal', ['id' => 'purchases-'.$item->id.'-modal'])
 @slot('body')
@@ -6,7 +6,7 @@
 <div class="text-muted"><small>Purchased at {{$purchase->created_at->toFormattedDateString()}}</small></div>
 <p>
 	@if($purchase->user()->exists())
-	<strong>({{$purchase->user->id}})</strong> 
+	<strong>({{$purchase->user->id}})</strong>
 	{{$purchase->user->full_name}}
 	@else
 	<i class="text-muted">(account deleted)</i>

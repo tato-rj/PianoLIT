@@ -6,8 +6,8 @@
 			<p class="text-muted my-2">What type of key is it?</p>
 			<div>
 				<div class="btn-group">
-					<button class="btn btn-outline-secondary font-weight-bold" data-name="" type="button">Major</button>
-					<button class="btn btn-outline-secondary font-weight-bold" data-name="m" type="button">Minor</button>
+					<button class="btn btn-outline-secondary fw-bold" data-name="" type="button">Major</button>
+					<button class="btn btn-outline-secondary fw-bold" data-name="m" type="button">Minor</button>
 				</div>
 			</div>
 		</div>

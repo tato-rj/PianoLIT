@@ -1,5 +1,5 @@
 <p class="text-center text-grey">Tap/click on a note to select it</p>
-<div class="row position-relative no-gutters justify-content-center mb-4">
+<div class="row position-relative g-0 justify-content-center mb-4">
 	<div class="input-overlay"></div>
 	@include('tools.chord-finder.inputs.note', ['note' => 'A'])
 	@include('tools.chord-finder.inputs.note', ['note' => 'B'])

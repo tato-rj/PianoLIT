@@ -12,7 +12,7 @@
 				<div class="flex-grow mb-4">
 					<label>WHERE</label>
 					<div class="d-flex align-items-center mb-3">
-						<img class="mr-2" style="width: 40px" src="{{$event->location->icon}}">
+						<img class="me-2" style="width: 40px" src="{{$event->location->icon}}">
 						<h5 class="m-0">{{$event->location->name}}</h5>
 					</div>
 					<p class="m-0">Venue: <span class="text-muted">{{$event->location->venue}}</span></p>
@@ -24,7 +24,7 @@
 			<div class="mb-4">
 				<div class="text-center">
 					@if($event->description)
-					<a href="{{$event->location->url}}" data-toggle="modal" data-target="#event-{{$event->id}}-description" class="d-block mb-1 btn rounded-pill btn-primary btn-wide">More info</a>
+					<a href="{{$event->location->url}}" data-bs-toggle="modal" data-bs-target="#event-{{$event->id}}-description" class="d-block mb-1 btn rounded-pill btn-primary btn-wide">More info</a>
 					@endif
 					@include('metaverse.go', ['block' => true])
 				</div>

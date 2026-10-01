@@ -13,6 +13,6 @@
 	@include('shop.components.mockup', ['maxWidth' => '200px', 'mb' => 4])
 </div>
 <p class="text-muted text-center">{{$product->subtitle}}</p>
-<a href="{{$product->showRoute()}}" class="btn btn-primary btn-block">Download this eBook now!</a>
+<a href="{{$product->showRoute()}}" class="btn btn-primary d-block w-100">Download this eBook now!</a>
 @endslot
 @endcomponent

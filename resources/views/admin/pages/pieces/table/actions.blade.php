@@ -1,24 +1,24 @@
-<div class="text-right"> 
+<div class="text-end">
 @component('components.datatable.actions', ['actions' => [
 	'edit' => route('admin.pieces.edit', $item->id),
 	'delete' => route('admin.pieces.destroy', $item->id)
 	]])
 	@if($item->is_free)
 	<div>
-		<button class="border-0 p-0 bg-transparent text-warning mr-2 align-middle" title="This piece is the current Freepick!" disabled>@icon('award', ['mr' => 0])</button>
+		<button class="border-0 p-0 bg-transparent text-warning me-2 align-middle" title="This piece is the current Freepick!" disabled>@icon('award', ['mr' => 0])</button>
 	</div>
 	@elseif($item->hasImage())
 	<form method="POST" action="{{route('admin.pieces.highlight', $item->id)}}">
 		@csrf
 		@method('PATCH')
-		<button type="submit" class="border-0 p-0 bg-transparent text-{{$item->highlighted_at ? 'blue' :'grey'}} mr-2 align-middle" title="Highlight this piece">@icon('award', ['mr' => 0])</button>
+		<button type="submit" class="border-0 p-0 bg-transparent text-{{$item->highlighted_at ? 'blue' :'grey'}} me-2 align-middle" title="Highlight this piece">@icon('award', ['mr' => 0])</button>
 	</form>
 	@endif
 
 	<form method="POST" action="{{route('admin.pieces.hijack', $item->id)}}">
 		@csrf
 		@method('PATCH')
-		<button type="submit" class="border-0 p-0 bg-transparent text-muted mr-2 align-middle" title="Change this piece creation date to today">@icon('calendar-days', ['mr' => 0])</button>
+		<button type="submit" class="border-0 p-0 bg-transparent text-muted me-2 align-middle" title="Change this piece creation date to today">@icon('calendar-days', ['mr' => 0])</button>
 	</form>
 @endcomponent
 </div>

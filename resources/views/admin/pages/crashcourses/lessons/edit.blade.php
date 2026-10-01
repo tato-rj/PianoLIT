@@ -11,8 +11,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => 'Edit lesson', 
-      'subtitle' => 'Use this page to edit this lesson.', 
+      'title' => 'Edit lesson',
+      'subtitle' => 'Use this page to edit this lesson.',
       'back' => ['back to the course' => route('admin.crashcourses.edit', $crashcourse)]
     ])
 
@@ -27,8 +27,8 @@
           @input(['bag' => 'default', 'value' => $lesson->subject, 'name' => 'subject', 'placeholder' => 'Subject (will show as email subject)', 'limit' => 120])
 
           @tinyeditor(['bag' => 'default', 'name' => 'body', 'value' => $lesson->body])
-          <div class="w-100 text-right">
-            <a href="{{route('admin.crashcourses.lessons.preview', compact(['crashcourse', 'lesson']))}}" target="_blank" class="btn btn-outline-dark mr-2">
+          <div class="w-100 text-end">
+            <a href="{{route('admin.crashcourses.lessons.preview', compact(['crashcourse', 'lesson']))}}" target="_blank" class="btn btn-outline-dark me-2">
               @icon('eye', ['mr' => 2])Preview
             </a>
             <button type="submit" id="submit-button" class="btn btn-default">Update lesson</button>

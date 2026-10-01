@@ -1,5 +1,4 @@
 window._ = require('lodash');
-window.Popper = require('popper.js').default;
 window.jQueryUI = require('jquery-ui-bundle');
 window.moment = require('moment');
 // window.Plyr = require('plyr');
@@ -8,13 +7,12 @@ window.axios = require('axios').default;
 window.Masonry = require('masonry-layout');
 
 /**
- * We'll load jQuery and the Bootstrap jQuery plugin which provides support
- * for JavaScript based Bootstrap features such as modals and tabs. This
- * code may be modified to fit the specific needs of your application.
+ * Bootstrap 5's bundle includes Popper and registers its optional jQuery
+ * interface when jQuery is present.
  */
 
 try {
     window.$ = window.jQuery = require('jquery');
 
-    require('bootstrap');
+    window.bootstrap = require('bootstrap/dist/js/bootstrap.bundle');
 } catch (e) {}

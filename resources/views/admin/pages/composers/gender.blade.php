@@ -1,4 +1,4 @@
-<div class="btn-group btn-group-toggle" data-toggle="buttons">
+<div class="btn-group btn-group-toggle">
 <label class="btn btn-light cursor-pointer {{$gender == 'male' ? 'active' : null}}">
   <input type="radio" required title="Male" name="gender" autocomplete="off" value="male" {{$gender == 'male' ? 'checked' : null}}>@icon('mars', ['mr' => 0])
 </label>

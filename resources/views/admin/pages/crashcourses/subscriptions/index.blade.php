@@ -21,7 +21,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -32,7 +32,7 @@
       <div class="modal-footer">
         <form method="POST">
           @csrf
-          <button type="submit" class="btn btn-sm btn-block btn-default">Yes, I am sure</button>
+          <button type="submit" class="btn btn-sm d-block w-100 btn-default">Yes, I am sure</button>
         </form>
       </div>
     </div>

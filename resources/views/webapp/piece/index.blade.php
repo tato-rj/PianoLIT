@@ -69,7 +69,7 @@ video::-webkit-media-controls-enclosure {
 }
 
 .nav-tabs .active {
-    font-weight: bold !important; 
+    font-weight: bold !important;
 }
 
 .score-preview-pages {
@@ -132,7 +132,7 @@ if (scoreEditorElement) {
             scoreEditor.render(scoreEditor.page).catch(function () { scoreEditor.renderError(); });
         }
     }
-    $('a[data-toggle="tab"]').on('shown.bs.tab', showScoreEditor);
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', showScoreEditor);
     showScoreEditor();
 }
 </script>
@@ -165,10 +165,10 @@ function startRequest()
 {
 	axios.get('{{ route('webapp.users.performances.upload-url', $piece) }}')
 			 .then(function(response) {
-			 	launchResumable(response.data);
+				launchResumable(response.data);
 			 })
 			 .catch(function(error) {
-			 	console.log(error);
+				console.log(error);
 			 });
 }
 
@@ -317,7 +317,7 @@ $('#confirm-performance-modal').on('hide.bs.modal', function() {
 <script type="text/javascript">
 function clap($hands) {
 	$hands.removeClass('text-grey').addClass('text-orange');
-	
+
 	let $clone = $hands.clone();
 
 	$clone.addClass('clap-shadow animated text-orange fadeOutUp').appendTo($hands.parent());
@@ -340,10 +340,10 @@ $('.clap').on('click', function() {
 
 		axios.post($(this).data('url'))
 				 .then(function(response) {
-				 	$counter.text(response.data['claps_sum']);
-				 	$counter.addClass('heartBeat');
+					$counter.text(response.data['claps_sum']);
+					$counter.addClass('heartBeat');
 
-				 	clap($hands);
+					clap($hands);
 				 });
 	}
 });
@@ -381,7 +381,7 @@ function toggleHand($hand) {
 
 function play(player) {
 	player.get(0).load();
-	
+
 	player.get(0).play();
 
 	player.get(0).oncanplay = function() {
@@ -394,14 +394,14 @@ $(document).on('click', '#select-hand button', function() {
 
 	let $hand = $(this);
 	let selection = toggleHand($hand);
-	
+
 	stopAudio();
 	resetSpeed();
 	hidePlayers();
-	
+
 	showPlayer(selection.player);
 
-	if (selection.play) {		
+	if (selection.play) {
 		play(selection.player);
 	} else {
 		$('#select-hand button').enable();
@@ -428,7 +428,7 @@ $(document).on('click', '#player-header > .flex-grow, #toggle-player', function(
 $(document).on('click', '#expand-player', function() {
 	$(this).find('i').toggleClass('icon-maximize icon-minimize');
 	$('#player-body > div:first-of-type').toggleClass('flex-column align-items-center');
-	$('#select-hand').toggleClass('mr-3 mb-3 hands-lg');
+	$('#select-hand').toggleClass('me-3 mb-3 hands-lg');
 	$('#select-hand button').toggleClass('mx-2').find('>div:last-of-type').toggle();
 });
 </script>
@@ -439,16 +439,16 @@ $('button#launch-audio').click(function() {
 
 	axios.get($btn.data('url'))
 		.then(function(response) {
-  			$('#bottom-popup-content').html(response.data)
-  			$('#bottom-popup-content > div').width($('main').width());
-  			$('#bottom-popup').show();
+			$('#bottom-popup-content').html(response.data)
+			$('#bottom-popup-content > div').width($('main').width());
+			$('#bottom-popup').show();
 		})
-  		.catch(function(error) {
-  			$('#bottom-popup').fadeOut('fast');
-  		})
-  		.then(function() {
-  			$btn.enable();
-  		});
+		.catch(function(error) {
+			$('#bottom-popup').fadeOut('fast');
+		})
+		.then(function() {
+			$btn.enable();
+		});
 });
 
 function stopAudio() {
@@ -471,8 +471,8 @@ function hidePlayers() {
 }
 
 function showPlayer(player) {
-	player.removeClass('d-none');	
-} 
+	player.removeClass('d-none');
+}
 </script>
 
 <script type="text/javascript">
@@ -517,13 +517,13 @@ $('button[data-action="video"]').on('click', function() {
 
 		axios.get($btn.data('url'))
 			 .then(function(response) {
-			 	let html = response.data;
-			 	let videoId = '#'+$(html).attr('id');
+				let html = response.data;
+				let videoId = '#'+$(html).attr('id');
 
-			 	$btn.removeClass('opacity-4').enable();
+				$btn.removeClass('opacity-4').enable();
 				$icon.hide();
-			 	$container.append(html);
-				$container.addClass('border rounded-sm p-2');
+				$container.append(html);
+				$container.addClass('border rounded-1 p-2');
 				try {
 					new Plyr(videoId);
 				} catch(e) {
@@ -531,7 +531,7 @@ $('button[data-action="video"]').on('click', function() {
 				}
 			 })
 			 .catch(function(error) {
-			 	console.log(error);
+				console.log(error);
 			 });
 	}
 });
@@ -543,7 +543,7 @@ function stopVideo(reset = true) {
 
 		if (reset && $video.parents('.video-container').length) {
 			$video.get(0).currentTime = 0;
-			$video.closest('.video-container').removeClass('border rounded-sm p-2 ').find('div').show();
+			$video.closest('.video-container').removeClass('border rounded-1 p-2 ').find('div').show();
 			$video.remove();
 		}
 	});
@@ -569,7 +569,7 @@ $('form#tutorial-request-form button[type="submit"]').on('click', function(e) {
 </script>
 
 <script type="text/javascript">
-var hidden, visibilityChange; 
+var hidden, visibilityChange;
 if (typeof document.hidden !== "undefined") {
   hidden = "hidden";
   visibilityChange = "visibilitychange";
@@ -583,8 +583,8 @@ if (typeof document.hidden !== "undefined") {
 
 function handleVisibilityChange() {
   if (document[hidden]) {
-  	stopAudio();
-  	stopVideo(reset = false);
+	stopAudio();
+	stopVideo(reset = false);
   }
 }
 
@@ -617,8 +617,8 @@ function iOS() {
 
 function safari()
 {
-	var ua = navigator.userAgent.toLowerCase(); 
-	if (ua.indexOf('safari') != -1) { 
+	var ua = navigator.userAgent.toLowerCase();
+	if (ua.indexOf('safari') != -1) {
 		if (ua.indexOf('chrome') > -1) {
 			return false;
 		} else {

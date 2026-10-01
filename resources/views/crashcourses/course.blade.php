@@ -2,7 +2,7 @@
 	<div class="card border-0 shadow-light w-100 t-2 rounded">
 		<a class="link-none" href="{{route('crashcourses.show', $crashcourse->slug)}}" target="_blank">
 			<div class="card-img-top rounded-top bg-align-center position-relative" style="background-image: url({{$crashcourse->cover_image()}}); height: 126px">
-				
+
 				@include('components.tags.new', ['is_new' => $crashcourse->is_new])
 
 				<div class="card-overlay h-100 t-2" style="opacity: 0">
@@ -43,8 +43,8 @@
 					<div class="">
 						@input(['styles' => 'border: none', 'classes' => 'border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
 						@input(['styles' => 'border: none', 'classes' => 'border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
-						<div class="text-right mt-4">
-							<button type="submit" class="btn btn-primary shadow btn-block">START LEARNING NOW</button>
+						<div class="text-end mt-4">
+							<button type="submit" class="btn btn-primary shadow d-block w-100">START LEARNING NOW</button>
 						</div>
 					</div>
 				</form>

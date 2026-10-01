@@ -1,5 +1,5 @@
 <button class="position-fixed bg-white shadow rounded-pill px-3 py-2 d-flex align-items-center border-0" id="gift" style="bottom: 40px; right: 30px">
-	<span class="mr-2 text-muted"><small>We have a gift for you!</small></span>
+	<span class="me-2 text-muted"><small>We have a gift for you!</small></span>
 	@icon('gift', ['mr' => 0, 'classes' => 'icon-size-1x animated infinite bounce delay-4s', 'styles' => 'color: #E92C59'])
 </button>
 
@@ -11,7 +11,7 @@
 		<div class="mb-3">
 			<div>We'll send you this gift directly on your inbox!</div>
 		</div>
-		
+
 		@include('components.form.subscription', ['formId' => 'gift-subscription-form', 'gift' => $post->gift_path, 'label' => 'SEND ME THE GIFT'])
 	</div>
 </div>

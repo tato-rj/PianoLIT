@@ -1,6 +1,6 @@
-<button class="btn-sm btn-primary btn w-100 mb-2 mt-2" data-toggle="modal" data-target="#insights-performance-{{$performance->id}}-modal">@icon('chart-line')Insights</button>
+<button class="btn-sm btn-primary btn w-100 mb-2 mt-2" data-bs-toggle="modal" data-bs-target="#insights-performance-{{$performance->id}}-modal">@icon('chart-line')Insights</button>
 
-<button class="btn-sm btn-red-outline btn w-100" data-toggle="modal" data-target="#delete-performance-{{$performance->id}}-modal">@icon('trash-2')Delete submission</button>
+<button class="btn-sm btn-red-outline btn w-100" data-bs-toggle="modal" data-bs-target="#delete-performance-{{$performance->id}}-modal">@icon('trash-2')Delete submission</button>
 
 @component('components.modal', [
   'id' => 'delete-performance-'.$performance->id.'-modal',
@@ -11,7 +11,7 @@
   <form method="POST" action="{{route('webapp.users.performances.destroy', $performance)}}" disable-on-submit>
     @csrf
     @method('DELETE')
-    <button type="submit" class="btn btn-sm btn-block btn-danger">Yes, I am sure</button>
+    <button type="submit" class="btn btn-sm d-block w-100 btn-danger">Yes, I am sure</button>
   </form>
 @endslot
 @endcomponent
@@ -22,11 +22,11 @@
   'header' => 'Insights'])
 @slot('body')
 <div class="d-apart">
-  <div class="text-left">
+  <div class="text-start">
     <h6 class="mb-2">@icon('calendar-days', ['color' => 'grey'])Uploaded on</h6>
     <h6 class="m-0">@icon('hand-heart', ['color' => 'grey'])Claps</h6>
   </div>
-  <div class="text-right">
+  <div class="text-end">
     <p class="mb-2">{{$performance->created_at->toFormattedDateString()}}</p>
     <p class="m-0">{{$performance->claps_sum}} {{str_plural('claps', $performance->claps_sum)}}</p>
   </div>

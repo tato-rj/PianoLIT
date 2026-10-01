@@ -1,17 +1,17 @@
-<div class="text-right">
+<div class="text-end">
 @if($item->hasContent())
 @button([
-	'label' => 'Details', 
+	'label' => 'Details',
 	'styles' => [
-		'size' => 'sm', 
+		'size' => 'sm',
 		'theme' => 'grey'
-		], 
-	'classes' => 'rounded', 
+		],
+	'classes' => 'rounded',
 	'data' => ['toggle' => 'modal', 'target' => '#details-modal-'.$item->id]])
 
 @component('components.modal', ['id' => 'details-modal-'.$item->id, 'header' => 'Review'])
 @slot('body')
-<div class="text-left">
+<div class="text-start">
 	@include('shop.components.reviews.stars', ['rating' => $item->rating])
 	<h6>{!! $item->title ?? '<i class="text-muted">No title</i>' !!}</h6>
 	<p>{!! $item->content ?? '<i class="text-muted">No content</i>' !!}</p>
@@ -23,15 +23,15 @@
 @button([
 	'label' => \App\Support\Icon::render('trash-2', ['mr' => 2]) . 'Delete',
 	'styles' => [
-		'size' => 'sm', 
+		'size' => 'sm',
 		'theme' => 'red'
-		], 
-	'classes' => 'rounded', 
+		],
+	'classes' => 'rounded',
 	'data' => ['toggle' => 'modal', 'target' => '#delete-modal-'.$item->id]])
 
 @component('components.modal', ['id' => 'delete-modal-'.$item->id, 'header' => 'Delete this review'])
 @slot('body')
-<form method="POST" action="{{route('admin.reviews.destroy', $item)}}" class="text-left">
+<form method="POST" action="{{route('admin.reviews.destroy', $item)}}" class="text-start">
 	@method('DELETE')
 	@csrf
     Are you sure you want to do this?

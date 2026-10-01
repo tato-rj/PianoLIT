@@ -9,10 +9,15 @@
 		line-height: 22px;
 
 		.btn-group-sm > & {
-			@include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-line-height-sm, $btn-border-radius-sm);
+			@include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-border-radius-sm);
+			font-size: $btn-font-size-sm;
+			line-height: $btn-line-height;
 		}
 		.btn-group-lg > & {
-			@include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, $btn-border-radius-lg);
+			@include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg);
+			padding: $btn-padding-y-lg $btn-padding-x-lg;
+			font-size: $btn-font-size-lg;
+			line-height: $btn-line-height;
 		}
 	}
 

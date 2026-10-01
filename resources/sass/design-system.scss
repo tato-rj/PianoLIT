@@ -26,14 +26,14 @@ small, .small { font-size: var(--font-size-small); }
 // Admin theme's .smaller has a deliberately smaller size than .small.
 .smaller { font-size: var(--font-size-tiny); }
 .lead { font-size: var(--font-size-lg); }
-.btn, .form-control, .custom-select, .dropdown-menu, .input-group-text {
+.btn, .form-control, .form-select, .dropdown-menu, .input-group-text {
     font-size: var(--font-size-base);
 }
 .btn-xs { font-size: var(--font-size-xs); }
-.btn-sm, .btn-group-sm > .btn, .form-control-sm, .custom-select-sm, .input-group-sm > .form-control, .input-group-sm > .custom-select, .input-group-sm > .input-group-prepend > .input-group-text, .input-group-sm > .input-group-append > .input-group-text, .input-group-sm > .input-group-prepend > .btn, .input-group-sm > .input-group-append > .btn {
+.btn-sm, .btn-group-sm > .btn, .form-control-sm, .form-select-sm, .input-group-sm > .form-control, .input-group-sm > .form-select, .input-group-sm > .input-group-prepend > .input-group-text, .input-group-sm > .input-group-append > .input-group-text, .input-group-sm > .input-group-prepend > .btn, .input-group-sm > .input-group-append > .btn {
     font-size: var(--font-size-sm);
 }
-.btn-lg, .btn-group-lg > .btn, .form-control-lg, .custom-select-lg, .input-group-lg > .form-control, .input-group-lg > .custom-select, .input-group-lg > .input-group-prepend > .input-group-text, .input-group-lg > .input-group-append > .input-group-text, .input-group-lg > .input-group-prepend > .btn, .input-group-lg > .input-group-append > .btn {
+.btn-lg, .btn-group-lg > .btn, .form-control-lg, .form-select-lg, .input-group-lg > .form-control, .input-group-lg > .form-select, .input-group-lg > .input-group-prepend > .input-group-text, .input-group-lg > .input-group-append > .input-group-text, .input-group-lg > .input-group-prepend > .btn, .input-group-lg > .input-group-append > .btn {
     font-size: var(--font-size-lg);
 }
 .btn-xl { font-size: var(--font-size-xl); }
@@ -55,6 +55,8 @@ small, .small { font-size: var(--font-size-small); }
 @each $side in top, right, bottom, left {
     .border-#{$side} { border-#{$side}-color: var(--color-border) !important; }
 }
+.border-start { border-left-color: var(--color-border) !important; }
+.border-end { border-right-color: var(--color-border) !important; }
 
 .shadow { box-shadow: var(--shadow) !important; }
 .shadow-light, .shadow-center, .hover-shadow:hover { box-shadow: var(--shadow-light) !important; }

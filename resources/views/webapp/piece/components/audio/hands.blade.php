@@ -1,5 +1,5 @@
 @if($piece->hasSeparateHandsAudio())
-<div class="d-flex align-items-center mr-3" id="select-hand">
+<div class="d-flex align-items-center me-3" id="select-hand">
 	<button class="btn-raw text-muted opacity-4" data-target="#lh-player" title="Left hand only">
 		<div>@icon('hand', ['size' => 'lg', 'classes' => 'mirror', 'mr' => 0])</div>
 		<div style="display: none; font-size: 40%"><strong>LEFT HAND</strong></div>

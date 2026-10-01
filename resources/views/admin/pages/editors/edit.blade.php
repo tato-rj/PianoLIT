@@ -27,21 +27,21 @@
         <div class="form-group row">
           <label class="col-sm-2 col-form-label text-brand">Password</label>
           <div class="col-sm-10">
-            <button type="button" class="btn btn-xs btn-light" data-toggle="modal" data-target="#password-modal">
+            <button type="button" class="btn btn-xs btn-light" data-bs-toggle="modal" data-bs-target="#password-modal">
               Change password
             </button>
           </div>
-        </div>        
+        </div>
 
         <div class="text-center mt-5">
-          <button type="submit" class="btn btn-block btn-default">Save changes</button>
+          <button type="submit" class="btn d-block w-100 btn-default">Save changes</button>
         </div>
       </form>
-      
+
       <div class="col-lg-6 col-sm-10 col-12 mx-auto">
         <p class="text-muted"><strong>{{$editor->name}} created {{$editor->pieces->count()}} {{str_plural('piece', $editor->pieces->count())}}</strong></p>
         @if($editor->pieces->count() > 0)
-        <ul class="list-style-none pl-2">
+        <ul class="list-style-none ps-2">
           @foreach($editor->pieces as $piece)
           <li class="mb-2">
             <a href="{{route('admin.pieces.edit', $piece)}}">

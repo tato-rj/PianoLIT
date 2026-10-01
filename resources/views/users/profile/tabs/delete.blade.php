@@ -6,7 +6,7 @@
     @include('users.profile.tabs.membership-alert')
 
 		<p class="text-danger mb-4"><u>Important</u>: This action cannot be undone.</p>
-		<a href="" data-name="{{auth()->user()->full_name}}" data-url="{{route('users.destroy', auth()->user()->id)}}" data-toggle="modal" data-target="#delete-modal" class="btn btn-wide btn-danger">
+		<a href="" data-name="{{auth()->user()->full_name}}" data-url="{{route('users.destroy', auth()->user()->id)}}" data-bs-toggle="modal" data-bs-target="#delete-modal" class="btn btn-wide btn-danger">
 			@icon('trash-2')I want to permanently delete my account
 		</a>
 	</div>
@@ -27,7 +27,7 @@ Are you sure?
 <form method="POST" action="{{route('users.destroy', auth()->user()->id)}}">
   @csrf
   @method('DELETE')
-  <button type="submit" class="btn btn-sm btn-block btn-danger">Yes, I am sure</button>
+  <button type="submit" class="btn btn-sm d-block w-100 btn-danger">Yes, I am sure</button>
 </form>
 @endslot
 @endcomponent

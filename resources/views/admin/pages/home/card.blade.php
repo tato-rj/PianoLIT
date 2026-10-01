@@ -15,7 +15,7 @@
       </div>
     </div>
     <a class="text-muted" href="{{$stat['url']}}">
-      <div class="d-flex flex-center p-2 bg-light rounded-right h-100">
+      <div class="d-flex flex-center p-2 bg-light rounded-end h-100">
         @icon('arrow-right', ['size' => 'g', 'mr' => 0])
       </div>
     </a>

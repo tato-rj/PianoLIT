@@ -10,7 +10,7 @@ class IconTest extends ReviewTestCase
     public function test_sparkles_renders_lucide_geometry_instead_of_the_unknown_icon_fallback()
     {
         $html = (string) Icon::render('sparkles');
-        $this->assertStringContainsString('app-icon icon-sparkles mr-2', $html);
+        $this->assertStringContainsString('app-icon icon-sparkles me-2', $html);
         $this->assertStringContainsString('data-lucide-name="sparkles"', $html);
         $this->assertStringContainsString('<path', $html);
         $this->assertStringNotContainsString('circle-help', $html);
@@ -22,8 +22,8 @@ class IconTest extends ReviewTestCase
         ob_start();
         eval('?>'.$compiled);
         $html = ob_get_clean();
-        $this->assertStringContainsString('app-icon icon-x mr-2', $html);
-        $this->assertStringContainsString('app-icon icon-x mr-0 icon-weight-thin', $html);
+        $this->assertStringContainsString('app-icon icon-x me-2', $html);
+        $this->assertStringContainsString('app-icon icon-x me-0 icon-weight-thin', $html);
         $this->assertSame(2, substr_count($html, 'data-lucide-name="x"'));
         $this->assertStringNotContainsString('fa-times', $html);
     }
@@ -35,7 +35,7 @@ class IconTest extends ReviewTestCase
             'name' => 'saved', 'if' => false, 'title' => '"><script>alert(1)</script>',
             'classes' => 'favorite-icons', 'attributes' => ['data-state' => 'saved', 'onclick' => 'alert(1)'],
         ]);
-        foreach (['mr-0', 'ml-1', 'text-red', 'icon-size-lg', 'icon-filled', 'favorite-icons', 'display: none;', 'name="saved"', 'data-state="saved"', 'role="img"', '&lt;script&gt;'] as $value) {
+        foreach (['me-0', 'ms-1', 'text-red', 'icon-size-lg', 'icon-filled', 'favorite-icons', 'display: none;', 'name="saved"', 'data-state="saved"', 'role="img"', '&lt;script&gt;'] as $value) {
             $this->assertStringContainsString($value, $html);
         }
         $this->assertStringNotContainsString('<script>', $html);
@@ -65,7 +65,7 @@ class IconTest extends ReviewTestCase
     {
         $this->assertStringContainsString('icon-smartphone', (string) Icon::render('fas fa-mobile'));
         $this->assertStringContainsString('icon-shield-user', (string) Icon::render('user-shield'));
-        $this->assertStringContainsString('app-brand-icon fab fa-apple mr-2', (string) Icon::render('fab fa-apple'));
+        $this->assertStringContainsString('app-brand-icon fab fa-apple me-2', (string) Icon::render('fab fa-apple'));
         $this->assertStringContainsString('app-brand-icon fab fa-youtube', (string) Icon::render('brand-youtube'));
         $this->assertStringContainsString('icon-circle-help', (string) Icon::render('../../.env'));
     }

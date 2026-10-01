@@ -14,8 +14,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => $quiz->title, 
-      'subtitle' => 'Use this page to edit this quiz.', 
+      'title' => $quiz->title,
+      'subtitle' => 'Use this page to edit this quiz.',
       'back' => ['view all quizzes' => route('admin.quizzes.index')]
     ])
 
@@ -39,9 +39,9 @@
             <p class="text-brand border-bottom pb-1 mb-1"><strong>TOPICS</strong></p>
             <div class="d-flex flex-wrap">
                 @foreach($topics as $topic)
-                <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($quiz->topics->contains($topic->id)) ? 'checked' : ''}}>
-                  <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
+                <div class="form-check mx-2 mb-2">
+                  <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}" {{($quiz->topics->contains($topic->id)) ? 'checked' : ''}}>
+                  <label class="form-check-label" for="{{$topic->name}}">{{$topic->name}}</label>
                 </div>
                 @endforeach
             </div>
@@ -49,16 +49,16 @@
         </div>
         <div class="col-lg-8 col-md-6 col-12 mb-4">
           @input(['bag' => 'default', 'value' => $quiz->title, 'name' => 'title', 'placeholder' => 'Quiz title', 'limit' => 120])
-          
+
           @textarea(['bag' => 'default', 'value' => $quiz->description, 'name' => 'description', 'placeholder' => 'Quiz description', 'limit' => 238])
-          
+
           @component('admin.pages.quizzes.question.layout')
             @foreach($quiz->questions as $question)
             @include('admin.pages.quizzes.question.input', [
-              'names' => ["questions[{$loop->index}][0]", 
-                          "questions[{$loop->index}][1]", 
-                          "questions[{$loop->index}][2]", 
-                          "questions[{$loop->index}][3]", 
+              'names' => ["questions[{$loop->index}][0]",
+                          "questions[{$loop->index}][1]",
+                          "questions[{$loop->index}][2]",
+                          "questions[{$loop->index}][3]",
                           "questions[{$loop->index}][4]"],
               'question' => $question['Q'],
               'answers' => $question['A']])
@@ -66,9 +66,9 @@
           @endcomponent
         </div>
 
-        <div class="col-12 text-right">
+        <div class="col-12 text-end">
           <div class="d-flex justify-content-end">
-            <a href="{{route('quizzes.show', $quiz->slug)}}" target="_blank" class="btn btn-outline-dark mr-2">
+            <a href="{{route('quizzes.show', $quiz->slug)}}" target="_blank" class="btn btn-outline-dark me-2">
               @if($quiz->published_at)
               @icon('globe', ['mr' => 2])Visit
               @else

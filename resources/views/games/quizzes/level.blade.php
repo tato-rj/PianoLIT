@@ -1,5 +1,5 @@
 <div class="text-center mb-5">
-	<div class="badge badge-pill badge-light mb-1"><small>DISCLAIMER</small></div>
+	<div class="badge rounded-pill bg-light mb-1"><small>DISCLAIMER</small></div>
 	<label class="d-block">This quiz is <strong>{{$quiz->level->name}}</strong></label>
 	<div class="w-100 d-flex px-5 mb-3" style="height: 12px">
 		@for($i=0; $i<5; $i++)

@@ -26,26 +26,26 @@
 	<div class="d-flex justify-content-between mb-4">
 		<div class="d-flex">
 			@include('admin.pages.reports.show.card', [
-				'color' => 'green', 
-				'type' => 'DELIVERED', 
-				'percentage' => percentage($event->delivered_count, $event->emails_count), 
+				'color' => 'green',
+				'type' => 'DELIVERED',
+				'percentage' => percentage($event->delivered_count, $event->emails_count),
 				'number' => $event->delivered_count])
 			@include('admin.pages.reports.show.card', [
-				'color' => 'warning', 
-				'type' => 'OPENED', 
-				'percentage' => percentage($event->opens_count, $event->emails_count), 
+				'color' => 'warning',
+				'type' => 'OPENED',
+				'percentage' => percentage($event->opens_count, $event->emails_count),
 				'number' => $event->opens_count])
 			@include('admin.pages.reports.show.card', [
-				'color' => 'blue', 
-				'type' => 'CLICKED', 
-				'percentage' => percentage($event->clicks_count, $event->emails_count), 
+				'color' => 'blue',
+				'type' => 'CLICKED',
+				'percentage' => percentage($event->clicks_count, $event->emails_count),
 				'number' => $event->clicks_count])
 		</div>
 		<div class="m-2">
-			<a href="#" data-url="{{route('admin.subscriptions.reports.destroy', $event->list_id)}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="btn btn-outline-danger">@icon('trash-2', ['mr' => 1])Delete report</a>
+			<a href="#" data-url="{{route('admin.subscriptions.reports.destroy', $event->list_id)}}" title="Delete" data-bs-toggle="modal" data-bs-target="#delete-modal" class="btn btn-outline-danger">@icon('trash-2', ['mr' => 1])Delete report</a>
 		</div>
 	</div>
-	
+
     @datatable(['table' => 'report', 'columns' => ['Status', 'Recipient', 'Delivered at', 'Failed at', 'Opened', 'Clicked']])
 
   </div>

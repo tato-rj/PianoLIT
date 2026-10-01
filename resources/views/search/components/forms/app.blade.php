@@ -7,7 +7,7 @@
 					<div>
 						<div>
 							<img class="animated fadeInLeft" src="{{asset('images/brand/app-icon.svg')}}" alt="PianoLIT icon" style="border-radius: 20%; width: 26px; display: none;">
-							<span class="ml-1 text-muted">
+							<span class="ms-1 text-muted">
 								@if(request('search'))
 									Search results for
 								@else
@@ -23,7 +23,7 @@
 					<div class="text-nowrap">
 						<span class="hide-on-sm">@cta(['type' => 'ios'])</span>
 						<span class="hide-on-sm">@cta(['type' => 'webapp'])</span>
-					
+
 						@button([
 							'href' => route('webapp.discover'),
 							'nofollow' => true,
@@ -42,7 +42,7 @@
 						<input type="hidden" name="lazy-load">
 						<div class="input-group input-group-lg">
 							<div class="input-group-prepend">
-								<button disabled class="btn-raw pl-3">@icon('music', ['mr' => 0, 'size' => 'lg', 'color' => 'grey'])</button>
+								<button disabled class="btn-raw ps-3">@icon('music', ['mr' => 0, 'size' => 'lg', 'color' => 'grey'])</button>
 							</div>
 							<input type="text" required name="search" value="{{request('search')}}" class="form-control border-0 form-transparent" placeholder="Search here...">
 							<div class="input-group-append">

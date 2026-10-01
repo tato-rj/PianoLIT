@@ -64,7 +64,7 @@
   	});
   }
 
-	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+	$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
 		highlightKeyboard();
 	});
 
@@ -172,7 +172,7 @@
 	$('.key-enharmonic-roman').html('');
 	for (key in enharmonicRoman) {
 		$('.key-enharmonic-roman').append(`
-			<div class="mr-2 mb-2 bg-light px-2 py-1">
+			<div class="me-2 mb-2 bg-light px-2 py-1">
 				<span class="roman-numeral">`+key+`</span> `+enharmonicRoman[key]+`</div>
 			</div>`);
 	}
@@ -198,7 +198,7 @@
 	$('.key-major-roman').html('');
 	for (key in majorRoman) {
 		$('.key-major-roman').append(`
-			<div class="mr-2 mb-2 bg-light px-2 py-1">
+			<div class="me-2 mb-2 bg-light px-2 py-1">
 				<span class="roman-numeral">`+key+`</span> `+majorRoman[key]+`</div>
 			</div>`);
 	}
@@ -223,7 +223,7 @@
 	$('.key-minor-roman').html('');
 	for (key in minorRoman) {
 		$('.key-minor-roman').append(`
-			<div class="mr-2 mb-2 bg-light px-2 py-1">
+			<div class="me-2 mb-2 bg-light px-2 py-1">
 				<span class="roman-numeral">`+key+`</span> `+minorRoman[key]+`</div>
 			</div>`);
 	}

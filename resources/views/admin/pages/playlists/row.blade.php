@@ -1,17 +1,17 @@
 @component('components.draggable.cards.small', ['model' => $playlist])
 
-<span class="badge alert-{{$playlist->is_featured ? 'green' : 'grey'}} align-text-bottom badge-pill">{{$playlist->order + 1}}</span>
+<span class="badge alert-{{$playlist->is_featured ? 'green' : 'grey'}} align-text-bottom rounded-pill">{{$playlist->order + 1}}</span>
 <span>{{$playlist->name}} <small class="text-muted">&middot; {{$playlist->pieces_count}} pieces</small></span>
 
 @slot('controls')
 	<div class="d-flex">
-		<a href="{{route('admin.playlists.edit', $playlist)}}" class="btn btn-sm btn-warning mr-2">Edit</a>
-		<form method="POST" action="{{ route('admin.playlists.publication', $playlist) }}" class="mr-2">
+		<a href="{{route('admin.playlists.edit', $playlist)}}" class="btn btn-sm btn-warning me-2">Edit</a>
+		<form method="POST" action="{{ route('admin.playlists.publication', $playlist) }}" class="me-2">
 			@csrf
 			@method('PATCH')
 			<button type="submit" class="btn btn-sm {{ $playlist->published_at ? 'btn-outline-secondary' : 'btn-success' }}">{{ $playlist->published_at ? 'Unpublish' : 'Publish' }}</button>
 		</form>
-		<a href="#" data-url="{{route('admin.playlists.destroy', $playlist->id)}}" title="Delete" data-toggle="modal" data-target="#delete-modal" class="btn btn-sm btn-danger delete d-none d-sm-block">
+		<a href="#" data-url="{{route('admin.playlists.destroy', $playlist->id)}}" title="Delete" data-bs-toggle="modal" data-bs-target="#delete-modal" class="btn btn-sm btn-danger delete d-none d-sm-block">
 			Remove
 		</a>
 	</div>

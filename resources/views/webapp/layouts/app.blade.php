@@ -36,11 +36,11 @@
 </head>
 <body>
     @qrcode
-    
+
     @auth('web')
         @include('layouts.html.google.manager-body')
     @endauth
-   
+
     <div id="webapp">
         @if(request()->routeIs('webapp.pieces.show'))
             @include('webapp.components.artwork-header', ['image' => asset($piece->image_background)])
@@ -57,7 +57,7 @@
                     @yield('content')
 
                 </main>
-                
+
                 @include('webapp.layouts.footer')
 
                 @unless(request()->routeIs('webapp.pieces.show'))
@@ -74,7 +74,7 @@
         @if($message = session('status'))
         @alert([
             'color' => 'green',
-            'message' => '<strong class="mr-2">Success |  </strong>' . $message,
+            'message' => '<strong class="me-2">Success |  </strong>' . $message,
             'dismissible' => true,
             'floating' => 'top'])
         @endif
@@ -82,7 +82,7 @@
         @if($message = session('error') ?? $errors->first())
         @alert([
             'color' => 'red',
-            'message' => '<strong class="mr-2">Sorry |  </strong>' . $message,
+            'message' => '<strong class="me-2">Sorry |  </strong>' . $message,
             'dismissible' => true,
             'floating' => 'top'])
         @endif
@@ -106,7 +106,7 @@
                 if ($optionsContainer.offset().top - scrollTop <= 0) {
                     $optionsContainer.addClass('border-bottom');
                 } else {
-                    $optionsContainer.removeClass('border-bottom');         
+                    $optionsContainer.removeClass('border-bottom');
                 }
             });
         }
@@ -133,7 +133,7 @@
 
 //  if (! getCookie(cookie) || getCookie(cookie) == 'null') {
 //      let options = {
-//          placement: 'bottom', 
+//          placement: 'bottom',
 //          title: '🎁 New feature!',
 //          trigger: 'manual'
 //      };

@@ -7,13 +7,13 @@
 @include('webapp.layouts.header')
 <div class="text-center mb-3 position-relative">
 	@include('webapp.components.back')
-	
+
 	<p class="text-muted mb-1"><small><i>last updated on {{$folder->updated_at->toFormattedDateString()}}</i></small></p>
 	<h3 class="px-3">@icon('folder-open', ['color' => 'grey']){{$folder->name}}</h3>
 	@include('webapp.user.my-pieces.favorites.folders.pieces-count')
 </div>
 
-<div class="mb-4"> 
+<div class="mb-4">
 @include('webapp.user.my-pieces.favorites.folders.pdf')
 </div>
 
@@ -24,7 +24,7 @@
 		@component('components.draggable.cards.small', ['model' => $favorite])
 
 		<div class="text-truncate">
-			<div style="width: 12px; height: 12px;" class="mr-1 d-inline-block rounded-circle bg-{{$favorite->piece->level_name}}-raw"></div>
+			<div style="width: 12px; height: 12px;" class="me-1 d-inline-block rounded-circle bg-{{$favorite->piece->level_name}}-raw"></div>
 
 			{{$favorite->piece->short_name}} <small class="text-muted">&middot; {{$favorite->piece->composer->short_name}}</small>
 		</div>
@@ -32,7 +32,7 @@
 
 		@slot('controls')
 			<div class="d-flex">
-				<button class="btn-raw t-2 mr-1" id="flag-{{$favorite->piece->id}}" data-submit="favorite" data-target="#flag-{{$favorite->piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $favorite->piece, 'folder_id' => $folder->id])}}" data-favorited="true" style="font-size: 120%" title="Remove from this folder">
+				<button class="btn-raw t-2 me-1" id="flag-{{$favorite->piece->id}}" data-submit="favorite" data-target="#flag-{{$favorite->piece->id}}" data-url="{{route('webapp.users.favorites.update', ['piece' => $favorite->piece, 'folder_id' => $folder->id])}}" data-favorited="true" style="font-size: 120%" title="Remove from this folder">
 					@icon('heart', ['color' => 'red', 'filled' => true])
 				</button>
 
@@ -86,7 +86,7 @@ $('div.favorites-container').each(function() {
         $('.alert-container').remove();
 
         $('body').append(response.data);
-        
+
         setTimeout(function() {
           $('.alert-temporary').fadeOut(function() {
             $(this).remove();

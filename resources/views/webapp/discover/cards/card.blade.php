@@ -1,4 +1,4 @@
-<div class="mr-2 cursor-pointer rounded h-100 d-flex align-items-end p-3 {{$type}} position-relative" 
+<div class="me-2 cursor-pointer rounded h-100 d-flex align-items-end p-3 {{$type}} position-relative"
 data-url="{{$url}}"
 style="@include('webapp.discover.rows.gradient-css', ['color' => $card->color])">
 	@icon('lock', ['classes' => 'absolute-top-left opacity-8', 'color' => 'white', 'if' => $locked])

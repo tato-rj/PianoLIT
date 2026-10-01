@@ -10,7 +10,7 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'icon' => 'mail',
-      'title' => 'Subscriptions', 
+      'title' => 'Subscriptions',
       'subtitle' => 'Manage all email subscriptions.',
       'action' => ['label' => 'Add new emails', 'modal' => 'add-modal']
     ])
@@ -21,21 +21,21 @@
         @include('admin.pages.subscriptions.create')
         </div>
         <div class="d-flex">
-          <div class="mr-2">
+          <div class="me-2">
             <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
               @csrf
               <input type="hidden" name="type" value="members">
               <button type="submit" class="btn btn-light">@icon('file-text', ['mr' => 2])Export members</button>
             </form>
           </div>
-          <div class="mr-2">
+          <div class="me-2">
             <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
               @csrf
               <input type="hidden" name="type" value="fans">
               <button type="submit" class="btn btn-light">@icon('file-text', ['mr' => 2])Export fans</button>
             </form>
           </div>
-          <button class="btn btn-danger" id="delete-all-btn" style="display: none;" data-action="{{route('admin.subscriptions.destroy-many')}}" data-toggle="modal" data-target="#delete-modal">Delete all selected</button>
+          <button class="btn btn-danger" id="delete-all-btn" style="display: none;" data-action="{{route('admin.subscriptions.destroy-many')}}" data-bs-toggle="modal" data-bs-target="#delete-modal">Delete all selected</button>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@ $('#check-all-datatable').change(function() {
 $(document).on('change', '.check-datatable', function() {
   if ($(this).is(':checked'))
     findUser($(this).data('id'));
-  
+
   getIds();
 });
 
@@ -86,10 +86,10 @@ function getIds()
   if (ids.length) {
     $('#delete-all-btn').show();
   } else {
-    $('#delete-all-btn').hide();    
+    $('#delete-all-btn').hide();
   }
 
-  $('form#export-form input[name="ids"]').val(JSON.stringify(ids));  
+  $('form#export-form input[name="ids"]').val(JSON.stringify(ids));
 }
 
 $('#delete-all-btn').click(function() {
@@ -106,7 +106,7 @@ function addSelectedIds()
   let inputs = `<div id="selected-ids">`;
 
   for (i=0; i<ids.length; i++) {
-    inputs += `<input type="hidden" name="ids[]" value="`+ids[i]+`">`; 
+    inputs += `<input type="hidden" name="ids[]" value="`+ids[i]+`">`;
   }
 
   inputs += `</div>`;
@@ -121,7 +121,7 @@ function findUser(id)
   let $table = $('#subscriptions-table');
   let $cell = $table.find('input[data-id="'+id+'"]').closest('td').next('td').next('td');
   $cell.find('span').remove();
-  $cell.append('<span class="text-warning ml-2"><i>searching for user...</span>');
+  $cell.append('<span class="text-warning ms-2"><i>searching for user...</span>');
 
   axios.get("{{route('admin.subscriptions.find-user')}}", {params: {id: id}})
       .then(function(response) {

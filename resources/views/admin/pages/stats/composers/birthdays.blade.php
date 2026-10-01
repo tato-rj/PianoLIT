@@ -1,5 +1,5 @@
 <div class="border py-4 px-3 h-100">
-    <div class="ml-2 mb-3">
+    <div class="ms-2 mb-3">
         <h4 class="mb-1"><strong>@icon('cake', ['mr' => 2])Upcoming birthdays</strong></h4>
         <p class="text-muted">We found {{$upcomingBirthdays->count()}} {{str_plural('birthday', $upcomingBirthdays->count())}} over the next 30 days.</p>
     </div>

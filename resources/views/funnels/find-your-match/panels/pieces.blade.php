@@ -7,7 +7,7 @@
 	<div data-carousel="answer" value="{{$piece->id}}" data-type="multi" style="font-weight: normal;" class="rounded cursor-pointer list-group-item list-group-item-action border-0 mb-1">
 		<div class="d-flex d-apart w-100">
 			<div class="d-flex align-items-center">
-				<div class="mr-2">
+				<div class="me-2">
 					<img src="{{$piece->composer->cover_image}}" class="rounded-circle" style="height: 40px; width: 40px">
 				</div>
 				<div>
@@ -21,7 +21,7 @@
 @endforeach
 </div>
 {{-- <div class="container-fluid">
-	<div class="carousel-answers row"> 
+	<div class="carousel-answers row">
 		@foreach($pieces as $piece)
 		@include('funnels.find-your-match.components.play')
 		@endforeach

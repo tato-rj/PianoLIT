@@ -26,7 +26,7 @@
 			@endif
 			<div class="mb-4">
 				@topics(['model' => $quiz])
-				
+
 				<h1 class="mb-4">QUIZ: {{$quiz->title}}</h1>
 				<p class="text-muted blog-font">{{$quiz->description}}</p>
 				<div class="d-apart text-muted">
@@ -53,7 +53,7 @@
 
 			<div class="mb-5 d-apart">
 				<div>
-					<div class="d-inline-block align-middle mr-3">
+					<div class="d-inline-block align-middle me-3">
 						<img src="{{asset('images/brand/app-icon.svg')}}" class="rounded-circle" width="50">
 					</div>
 					<div class="d-inline-block align-middle" style="max-width: 320px; line-height: 1.12">
@@ -61,7 +61,7 @@
 						<div class="text-muted"><small>Where pianists discover new pieces and find inspiration to play only what they love.</small></div>
 					</div>
 				</div>
-{{-- 				<div class="text-right">
+{{-- 				<div class="text-end">
 					<button  class="btn btn-primary-outline btn-sm btn-subscribe">Subscribe</button>
 				</div> --}}
 			</div>

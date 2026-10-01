@@ -13,11 +13,11 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">    
+  <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'create',
-      'title' => 'New blog post', 
-      'subtitle' => 'Use this page to create a new post.', 
+      'title' => 'New blog post',
+      'subtitle' => 'Use this page to create a new post.',
       'back' => ['view all posts' => route('admin.posts.index')]
     ])
 
@@ -29,9 +29,9 @@
             <div class="d-flex flex-wrap">
 
                 @foreach($topics as $topic)
-                <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="topic-{{$topic->name}}">
-                  <label class="custom-control-label" for="topic-{{$topic->name}}">{{$topic->name}}</label>
+                <div class="form-check mx-2 mb-2">
+                  <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="topic-{{$topic->name}}">
+                  <label class="form-check-label" for="topic-{{$topic->name}}">{{$topic->name}}</label>
                 </div>
                 @endforeach
 
@@ -57,7 +57,7 @@
           @include('admin.pages.blog.post.references.layout')
         </div>
 
-        <div class="col-12 text-right">
+        <div class="col-12 text-end">
           <button type="submit" id="submit-button" class="btn btn-default">Create post</button>
         </div>
       </form>

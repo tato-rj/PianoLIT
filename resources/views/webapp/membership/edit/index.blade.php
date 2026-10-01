@@ -16,16 +16,16 @@
 <section class=" mb-5">
 	<ul class="nav nav-tabs nav-responsive mb-4" id="membership-tabs" role="tablist">
 		<li class="nav-item">
-			<a class="nav-link active" data-toggle="tab" href="#overview-tab">Overview</a>
+			<a class="nav-link active" data-bs-toggle="tab" href="#overview-tab">Overview</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link" data-toggle="tab" href="#update-plan-tab">Change Plan</a>
+			<a class="nav-link" data-bs-toggle="tab" href="#update-plan-tab">Change Plan</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link" data-toggle="tab" href="#update-card-tab">Billing</a>
+			<a class="nav-link" data-bs-toggle="tab" href="#update-card-tab">Billing</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link" data-toggle="tab" href="#invoices-tab">Invoices</a>
+			<a class="nav-link" data-bs-toggle="tab" href="#invoices-tab">Invoices</a>
 		</li>
 	</ul>
 	<div class="tab-content" id="membership-panels">
@@ -88,7 +88,7 @@ $(document).ready(function() {
   var form = document.getElementById('update-card-form');
   form.addEventListener('submit', function(event) {
     event.preventDefault();
-    
+
     disableSubmitButton();
 
     stripe.createToken(card).then(function(result) {
@@ -104,12 +104,12 @@ $(document).ready(function() {
   function stripeTokenHandler(token) {
     var form = document.getElementById('update-card-form');
     var hiddenInput = document.createElement('input');
-    
+
     hiddenInput.setAttribute('type', 'hidden');
     hiddenInput.setAttribute('name', 'stripeToken');
     hiddenInput.setAttribute('value', token.id);
     form.appendChild(hiddenInput);
-    
+
     form.submit();
   }
 

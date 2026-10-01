@@ -12,11 +12,11 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container-fluid">    
+  <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'create',
-      'title' => 'New eBook', 
-      'subtitle' => 'Use this page to create a new eBook.', 
+      'title' => 'New eBook',
+      'subtitle' => 'Use this page to create a new eBook.',
       'back' => ['view all eBooks' => route('admin.ebooks.index')]
     ])
 
@@ -28,9 +28,9 @@
             <div class="d-flex flex-wrap">
 
                 @foreach($topics as $topic)
-                <div class="custom-control custom-checkbox mx-2 mb-2">
-                  <input type="checkbox" class="custom-control-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}">
-                  <label class="custom-control-label" for="{{$topic->name}}">{{$topic->name}}</label>
+                <div class="form-check mx-2 mb-2">
+                  <input type="checkbox" class="form-check-input" name="topics[]" value="{{$topic->id}}" id="{{$topic->name}}">
+                  <label class="form-check-label" for="{{$topic->name}}">{{$topic->name}}</label>
                 </div>
                 @endforeach
 
@@ -91,7 +91,7 @@
           </div>
         </div>
 
-        <div class="col-12 text-right">
+        <div class="col-12 text-end">
           <button type="submit" id="submit-button" class="btn btn-default">Create eBook</button>
         </div>
       </form>

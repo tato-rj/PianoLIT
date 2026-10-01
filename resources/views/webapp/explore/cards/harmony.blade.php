@@ -1,13 +1,13 @@
-	<div class="cursor-pointer col-lg-6 col-md-6 col-12 mb-3" 
+	<div class="cursor-pointer col-lg-6 col-md-6 col-12 mb-3"
 		@if($isAuthorized)
-		data-toggle="modal" data-target="#harmony-{{$loop->iteration}}"
+		data-bs-toggle="modal" data-bs-target="#harmony-{{$loop->iteration}}"
 		@else
-		onclick="location.href='{{route('webapp.pieces.show', $tutorial->piece)}}'" 
+		onclick="location.href='{{route('webapp.pieces.show', $tutorial->piece)}}'"
 		@endif
 	>
 		<div class="alert-grey px-4 py-3 rounded">
 			<div class="mb-2 d-flex align-items-center">
-				<img src="{{$tutorial->piece->composer->cover_image}}" style="width: 40px; height: 40px" class="rounded-circle mr-2">
+				<img src="{{$tutorial->piece->composer->cover_image}}" style="width: 40px; height: 40px" class="rounded-circle me-2">
 				<div>
 					<div class="text-dark clamp-1"><strong>{{$tutorial->piece->medium_name}}</strong></div>
 					<div class="clamp-1">by {{$tutorial->piece->composer->name}}</div>
@@ -22,7 +22,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	@if($isAuthorized)
 	@component('components.modal', ['id' => 'harmony-' . $loop->iteration])
 	@slot('header')

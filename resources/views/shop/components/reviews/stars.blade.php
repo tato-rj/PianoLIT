@@ -1,9 +1,9 @@
 @php($editable = isset($editable) && $editable)
 @php($rating = $rating ?? $product->publishedReviews()->ratings())
 @php($isSmall = isset($sm) && $sm)
-@php($classes = $editable ? 'pr-1 animated editable-star cursor-pointer' : 'pr-1 animated')
+@php($classes = $editable ? 'pe-1 animated editable-star cursor-pointer' : 'pe-1 animated')
 
-<div class="d-flex align-items-center mb-{{$mb ?? 2}} {{$editable ? 'justify-content-center mb-4' : null}}" 
+<div class="d-flex align-items-center mb-{{$mb ?? 2}} {{$editable ? 'justify-content-center mb-4' : null}}"
 	@if($isSmall)
 	style="font-size:86%"
 	@elseif($editable)
@@ -22,6 +22,6 @@
 		@endif
 	@endfor
 	@if(isset($complete) && $complete)
-	<span class="ml-1"><small>({{$product->publishedReviews()->count()}} {{str_plural('review', $product->publishedReviews()->count())}})</small></span>
+	<span class="ms-1"><small>({{$product->publishedReviews()->count()}} {{str_plural('review', $product->publishedReviews()->count())}})</small></span>
 	@endif
 </div>

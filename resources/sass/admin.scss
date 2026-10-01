@@ -1,9 +1,9 @@
+@import "bootstrap5-theme";
 @import "~bootstrap/scss/bootstrap";
 @import 'components/fontawesome-brands';
 @import "variables";
 
 @import "components/datatables";
-@import "components/panel";
 @import "components/toggle";
 @import "components/tinymce";
 @import "components/dropzone";
@@ -17,6 +17,7 @@ $body-bg: #e9ecef;
 
 @import "brand/corners";
 @import "bootstrap-custom";
+@import "components/bootstrap5-compat";
 @import "responsive";
 @import "global";
 @import "brand/buttons";

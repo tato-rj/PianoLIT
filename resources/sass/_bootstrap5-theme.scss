@@ -1,0 +1,61 @@
+// PianoLIT's existing component dimensions and colors, before importing BS5.
+// These are theme settings; Bootstrap 5 remains the only component stylesheet.
+$enable-negative-margins: true;
+$enable-rfs: false;
+$primary: #007bff;
+$success: #28a745;
+$info: #17a2b8;
+$link-decoration: none;
+$link-hover-decoration: underline;
+$grid-gutter-width: 30px;
+$container-max-widths: (sm: 540px, md: 720px, lg: 960px, xl: 1140px);
+$border-radius: .25rem;
+$border-radius-sm: .2rem;
+$border-radius-lg: .3rem;
+$input-color: #495057;
+$input-border-color: #ced4da;
+$input-focus-border-color: #80bdff;
+$input-btn-focus-width: .2rem;
+$input-btn-focus-color: rgba(0, 123, 255, .25);
+$input-focus-box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);
+$input-group-addon-color: #495057;
+$input-group-addon-bg: #e9ecef;
+$input-group-addon-border-color: #ced4da;
+$form-select-color: #495057;
+$form-select-border-color: #ced4da;
+$navbar-padding-x: 1rem;
+$card-spacer-y: 1.25rem;
+$card-spacer-x: 1.25rem;
+$card-cap-padding-y: .75rem;
+$card-cap-padding-x: 1.25rem;
+$card-border-color: rgba(0, 0, 0, .125);
+$card-cap-bg: rgba(0, 0, 0, .03);
+$list-group-item-padding-y: .75rem;
+$list-group-item-padding-x: 1.25rem;
+$list-group-border-color: rgba(0, 0, 0, .125);
+$badge-padding-y: .25em;
+$badge-padding-x: .4em;
+$dropdown-item-padding-x: 1.5rem;
+$dropdown-border-color: rgba(0, 0, 0, .15);
+$modal-content-border-color: rgba(0, 0, 0, .2);
+$offcanvas-horizontal-width: 420px;
+$pagination-padding-y: .5rem;
+$pagination-disabled-bg: #fff;
+$table-cell-padding-y: .75rem;
+$table-cell-padding-x: .75rem;
+$table-color: #212529;
+$table-bg: transparent;
+$alert-padding-y: .75rem;
+$alert-padding-x: 1.25rem;
+$alert-dismissible-padding-r: 4rem;
+$hr-border-color: rgba(0, 0, 0, .1);
+$hr-opacity: 1;
+
+// Retain the familiar alert text and outline shades in Bootstrap 5's maps.
+$pianolit-context-colors: (primary: #007bff, secondary: #6c757d, success: #28a745, info: #17a2b8, warning: #ffc107, danger: #dc3545, light: #f8f9fa, dark: #343a40);
+$theme-colors-text: ();
+$theme-colors-border-subtle: ();
+@each $name, $color in $pianolit-context-colors {
+    $theme-colors-text: map-merge($theme-colors-text, ($name: mix(#000, $color, 48%)));
+    $theme-colors-border-subtle: map-merge($theme-colors-border-subtle, ($name: mix(#fff, $color, 72%)));
+}

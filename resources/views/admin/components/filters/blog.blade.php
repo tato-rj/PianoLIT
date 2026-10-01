@@ -2,7 +2,7 @@
 
   @if(!empty($filters))
   @foreach($filters as $filter)
-  <select class="form-control form-control-sm mr-2" name="{{str_singular($filter)}}" onchange="this.form.submit()">
+  <select class="form-control form-control-sm me-2" name="{{str_singular($filter)}}" onchange="this.form.submit()">
     <option selected disabled>{{ucfirst(str_singular($filter))}}</option>
     @if($filter == 'composers')
       @foreach(\App\Composer::all() as $composer)
@@ -17,34 +17,34 @@
   @endforeach
   @endif
 
-  <div class="btn-group btn-group-toggle mr-2" title="Show only pieces created by me">
+  <div class="btn-group btn-group-toggle me-2" title="Show only pieces created by me">
     <label class="btn btn-light {{(request('creator_id') == auth()->guard('admin')->user()->id) ? 'active' : ''}}">
       <input type="checkbox" name="creator_id" autocomplete="off" value="{{auth()->guard('admin')->user()->id}}" onchange="this.form.submit()" {{(request('creator_id') == auth()->guard('admin')->user()->id) ? 'checked' : ''}}>@icon('user', ['mr' => 0])
     </label>
   </div>
-  <div class="btn-group btn-group-toggle mr-2" title="Pieces missing itunes links">
+  <div class="btn-group btn-group-toggle me-2" title="Pieces missing itunes links">
     <label class="btn btn-light {{request('missing_itunes') ? 'active' : ''}}">
       <input type="checkbox" name="missing_itunes" autocomplete="off" onchange="this.form.submit()" {{request('missing_itunes') ? 'checked' : ''}}>@icon('brand-itunes', ['mr' => 0])</i>
     </label>
   </div>
-  <div class="btn-group btn-group-toggle mr-2" title="Pieces missing youtube videos">
+  <div class="btn-group btn-group-toggle me-2" title="Pieces missing youtube videos">
     <label class="btn btn-light {{request('missing_youtube') ? 'active' : ''}}">
       <input type="checkbox" name="missing_youtube" autocomplete="off" onchange="this.form.submit()" {{request('missing_youtube') ? 'checked' : ''}}>@icon('brand-youtube', ['mr' => 0])</i>
     </label>
   </div>
-  <div class="btn-group btn-group-toggle mr-2" title="Pieces missing audio recordings">
+  <div class="btn-group btn-group-toggle me-2" title="Pieces missing audio recordings">
     <label class="btn btn-light {{request('missing_audio') ? 'active' : ''}}">
       <input type="checkbox" name="missing_audio" autocomplete="off" onchange="this.form.submit()" {{request('missing_audio') ? 'checked' : ''}}>@icon('volume-x', ['mr' => 0])</i>
     </label>
   </div>
-  <div class="btn-group btn-group-toggle mr-2" title="Pieces missing the score">
+  <div class="btn-group btn-group-toggle me-2" title="Pieces missing the score">
     <label class="btn btn-light {{request('missing_score') ? 'active' : ''}}">
       <input type="checkbox" name="missing_score" autocomplete="off" onchange="this.form.submit()" {{request('missing_score') ? 'checked' : ''}}>@icon('file-text', ['mr' => 0])</i>
     </label>
   </div>
 
   @if(!empty($sortable))
-  <div class="btn-group btn-group-toggle ml-2" data-toggle="buttons">
+  <div class="btn-group btn-group-toggle ms-2">
     <label class="btn btn-light {{(request('order') == 'asc') ? 'active' : ''}}">
       <input type="radio" name="order" autocomplete="off" value="asc" onchange="this.form.submit()" {{(request('order') == 'asc') ? 'checked' : ''}}>@icon('arrow-down-a-z', ['mr' => 0])
     </label>
@@ -55,6 +55,6 @@
   @endif
 
 </form>
-<div class="text-right">
-  <a href="{{url()->current()}}" class="text-muted pull-right"><small>reset filters</small></a>
+<div class="text-end">
+  <a href="{{url()->current()}}" class="text-muted float-end"><small>reset filters</small></a>
 </div>

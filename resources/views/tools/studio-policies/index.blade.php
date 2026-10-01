@@ -16,7 +16,7 @@
 
 @pagetitle([
 	'version' => '1.0',
-	'title' => 'Studio Policy Generator', 
+	'title' => 'Studio Policy Generator',
 	'subtitle' => 'Generate your studio policy in just a few seconds!'])
 
 <div class="container mb-4">
@@ -26,9 +26,9 @@
 				<p>Are you looking to create a professionally-looking policy for your studio? Do you want to dust off the one you have and improve it for your expanding studio? Then you're in the right place 🤗!</p>
 				<p>Just click on the button below, answer a few questions and we'll generate a <u>well crafted</u> and <u>straight forward</u> document in just a few steps.</p>
 			</div>
-			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow btn-block">@icon('wand-sparkles', ['mr' => 2])Create a Studio Policy now</a>
+			<a href="{{route('users.studio-policies.create')}}" class="btn btn-primary shadow d-block w-100">@icon('wand-sparkles', ['mr' => 2])Create a Studio Policy now</a>
 		</div>
-		<div class="col-lg-8 col-12 mx-auto">			
+		<div class="col-lg-8 col-12 mx-auto">
 			<div class="text-center">
 				@auth
 				<h6>Welcome back {{auth()->user()->first_name}}!</h6>
@@ -46,7 +46,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="row mb-6">
 		@include('tools.studio-policies.description')
 	</div>

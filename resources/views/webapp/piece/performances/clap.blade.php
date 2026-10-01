@@ -2,7 +2,7 @@
 	<label class="m-0"><strong>{!! $performance->user->countryFlag !!}{{$performance->displayName()}}</strong></label>
 
 	<div class="d-flex align-items-center">
-		<label class="mr-1 mb-0 text-muted claps-count font-weight-bold animated">{{$performance->claps_sum}}</label>
+		<label class="me-1 mb-0 text-muted claps-count fw-bold animated">{{$performance->claps_sum}}</label>
 		@auth('web')
 		<button class="btn-raw btn-lg text-grey position-relative clap" data-url="{{route('webapp.users.performances.clap', $performance)}}">@icon('hand-heart', ['mr' => 0])</button>
 		@endauth

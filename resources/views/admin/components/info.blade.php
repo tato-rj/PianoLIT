@@ -1,1 +1,1 @@
-@icon('info', ['mr' => 0, 'classes' => 'ml-1 cursor-pointer', 'attributes' => ['data-toggle' => 'popover', 'data-trigger' => 'hover', 'data-html' => 'true', 'data-content' => ($message)]])
+@icon('info', ['mr' => 0, 'classes' => 'ms-1 cursor-pointer', 'attributes' => ['data-bs-toggle' => 'popover', 'data-bs-trigger' => 'hover', 'data-bs-html' => 'true', 'data-bs-content' => ($message)]])

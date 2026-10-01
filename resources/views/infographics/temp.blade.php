@@ -3,7 +3,7 @@
 		<div class="modal-content border-0">
 			<div class="modal-header border-0">
 				<h5 class="modal-title">Inforgraph download</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -20,7 +20,7 @@
 									<h4 class="name mb-1"></h4>
 									<p class="description text-muted mb-4"></p>
 									<div>
-										<a href="" class="url btn btn-block btn-green py-2 font-weight-bold">@icon('file-down', ['mr' => 2])Download</a>
+										<a href="" class="url btn d-block w-100 btn-green py-2 fw-bold">@icon('file-down', ['mr' => 2])Download</a>
 									</div>
 									<div class="text-muted text-center mt-1" id="downloads-count" style="display: none;">
 										<small>@icon('star', ['mr' => 1, 'classes' => 'text-yellow', 'filled' => true])I've been downloaded <span></span> times!</small>
@@ -32,9 +32,9 @@
 								</div>
 								<div style="line-height: 1.2">
 									<div class="d-flex align-items-center">
-										<div class="mr-2"><small><strong>Did you like this?</strong></small></div>
+										<div class="me-2"><small><strong>Did you like this?</strong></small></div>
 										<div class="d-flex align-items-center flex-nowrap">
-											<button title="Love it!" data-value="1" data-url class="animate review border-0 bg-transparent text-grey px-1 mr-2"><small>Yes</small> @icon('thumbs-up', ['mr' => 0])</button>
+											<button title="Love it!" data-value="1" data-url class="animate review border-0 bg-transparent text-grey px-1 me-2"><small>Yes</small> @icon('thumbs-up', ['mr' => 0])</button>
 											<button title="Not so much..." data-value="0" data-url class="animate review border-0 bg-transparent text-grey px-1">
 												<small>No</small> @icon('thumbs-down', ['mr' => 0])</button>
 										</div>

@@ -1,7 +1,7 @@
 <div class="modal fade" id="piece-upgrade-modal" tabindex="-1" role="dialog" aria-labelledby="piece-upgrade-title" aria-describedby="piece-upgrade-description" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content border-0">
-            <button class="close piece-upgrade-close" type="button" data-dismiss="modal" aria-label="Close premium prompt">
+            <button class="close piece-upgrade-close" type="button" data-bs-dismiss="modal" aria-label="Close premium prompt">
                 @icon('close', ['mr' => 0, 'attributes' => ['aria-hidden' => 'true']])
             </button>
 

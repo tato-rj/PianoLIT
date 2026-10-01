@@ -1,7 +1,7 @@
 /////////////////
 // ALL SCREENS //
 /////////////////
-@include media-breakpoint-down(xl) {
+@include media-breakpoint-up(xs) {
 	.card-columns {
 	    column-count: 4;
 	}

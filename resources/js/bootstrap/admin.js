@@ -1,5 +1,4 @@
 window._ = require('lodash');
-window.Popper = require('popper.js').default;
 window.jQueryUI = require('jquery-ui-bundle');
 window.moment = require('moment');
 window.Calendar = require('fullcalendar');
@@ -9,13 +8,12 @@ window.Mark = require('mark.js/dist/jquery.mark.min.js');
 window.axios = require('axios').default;
 
 /**
- * We'll load jQuery and the Bootstrap jQuery plugin which provides support
- * for JavaScript based Bootstrap features such as modals and tabs. This
- * code may be modified to fit the specific needs of your application.
+ * Bootstrap 5's bundle includes Popper and registers its optional jQuery
+ * interface when jQuery is present.
  */
 
 try {
     window.$ = window.jQuery = require('jquery');
 
-    require('bootstrap');
+    window.bootstrap = require('bootstrap/dist/js/bootstrap.bundle');
 } catch (e) {}

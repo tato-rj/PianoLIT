@@ -1,4 +1,4 @@
-<div class="text-right"> 
+<div class="text-end">
 	@include('components.datatable.actions', ['actions' => [
 		'edit' => route('admin.pianists.edit', $item->slug),
 		'delete' => route('admin.pianists.destroy', $item->slug)

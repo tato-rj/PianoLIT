@@ -8,11 +8,11 @@
 	</p>
 	<form method="POST" action="{{route('webapp.membership.update.billing-status')}}" class="mb-1" id="update-collection-form" disable-on-submit>
 		@csrf
-	
+
 		@if(auth()->user()->membership->source->isPaused())
-		<button type="submit" class="btn btn-block btn-green">@icon('circle-play')Resume my membership</button>
+		<button type="submit" class="btn d-block w-100 btn-green">@icon('circle-play')Resume my membership</button>
 		@else
-		<button type="submit" class="btn btn-block btn-warning">@icon('circle-pause')Pause my membership</button>
+		<button type="submit" class="btn d-block w-100 btn-warning">@icon('circle-pause')Pause my membership</button>
 		@endif
 	</form>
 </div>

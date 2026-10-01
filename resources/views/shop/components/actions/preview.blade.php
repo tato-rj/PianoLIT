@@ -1,3 +1,3 @@
 @if($product->previews)
-<button data-toggle="modal" data-target="#preview-product" class="btn btn-block btn-outline-secondary mb-2">@icon('book-open')See a preview</a>
+<button data-bs-toggle="modal" data-bs-target="#preview-product" class="btn d-block w-100 btn-outline-secondary mb-2">@icon('book-open')See a preview</a>
 @endif

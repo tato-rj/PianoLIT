@@ -8,7 +8,7 @@
 }
 .input-group-vertical .input-group:first-child * {
     border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;    
+    border-bottom-right-radius: 0;
 }
 .input-group-vertical .input-group:last-child {
     padding-top: 0;
@@ -23,7 +23,7 @@
 }
 .input-group-vertical .input-group:not(:last-child):not(:first-child) * {
     border-radius: 0;
-}  
+}
 .input-group-vertical .input-group:not(:first-child) * {
     border-top: 0;
 }
@@ -36,7 +36,7 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'icon' => 'list',
-      'title' => 'Timeline', 
+      'title' => 'Timeline',
       'subtitle' => 'Manage events used in the timeline.',
       'action' => ['label' => 'Create a new event', 'modal' => 'add-modal']
     ])
@@ -45,7 +45,7 @@
       <div class="col-12 text-center mb-4">
         <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
           @foreach($centuries as $century => $array)
-          <a href="{{route('admin.timelines.index', ['century' => $century])}}" class="btn btn-{{$century == request('century') ? 'default' : 'light border'}}">{{$century}}s <span class="badge badge-light">{{count($array)}}</span></a>
+          <a href="{{route('admin.timelines.index', ['century' => $century])}}" class="btn btn-{{$century == request('century') ? 'default' : 'light border'}}">{{$century}}s <span class="badge bg-light">{{count($array)}}</span></a>
           @endforeach
         </div>
       </div>
@@ -80,7 +80,7 @@ $('.event').on('click', function (e) {
 });
 
 (new DataTableRaw({
-  table: '#timelines-table', 
+  table: '#timelines-table',
   options: {pageLength: 50, order: [[0, 'asc']]}
 })).create();
 

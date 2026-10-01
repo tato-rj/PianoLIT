@@ -8,7 +8,7 @@
 		<div>
 			<h5 class="text-nowrap">Premium {{ucfirst($plan->name)}}</h5>
 			<div class="d-flex align-items-baseline mb-3">
-				<h1 class="mb-0 mr-2">
+				<h1 class="mb-0 me-2">
 					${{$isYearly ? $plan->formattedMonthlyPrice() : $plan->formattedPrice()}}
 				</h1>
 				<div class="text-muted" style="font-size: 95%">monthly</div>
@@ -19,7 +19,7 @@
 		</div>
 		<div>
 			<p>{{$plan->description}}</p>
-			<a href="{{route('webapp.membership.checkout', $plan->name)}}" class="btn btn-default btn-block">Start 7-day FREE trial</a>
+			<a href="{{route('webapp.membership.checkout', $plan->name)}}" class="btn btn-default d-block w-100">Start 7-day FREE trial</a>
 		</div>
 	</div>
 </div>

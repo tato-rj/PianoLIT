@@ -6,8 +6,8 @@
 			style="border-radius: 20px; border: 6px solid; overflow: hidden;">
 			<div class="d-flex h-100 justify-content-between flex-column t-2 card-content">
 				<div class="mb-2" style="">
-					<span class="badge badge-pill mb-1 bg-{{$piece->level->name}}">{{$piece->level->name}}</span>
-					<p class="mb-0 clamp-2 font-weight-bold" style="max-width: 100%;">{{$piece->simple_name}}</p>
+					<span class="badge rounded-pill mb-1 bg-{{$piece->level->name}}">{{$piece->level->name}}</span>
+					<p class="mb-0 clamp-2 fw-bold" style="max-width: 100%;">{{$piece->simple_name}}</p>
 					<p class="clamp-1 m-0 text-muted"><small>by {{$piece->composer->short_name}}</small></p>
 				</div>
 				<div>
@@ -22,7 +22,7 @@
 				</div>
 			</div>
 			<div class="card-action position-absolute w-100 text-center t-2 h-100 d-flex flex-center" style="left: 0; bottom: -100%">
-				<p class="m-0 font-weight-bold">@icon('brand-apple', ['mr' => 0]) Learn more</p>
+				<p class="m-0 fw-bold">@icon('brand-apple', ['mr' => 0]) Learn more</p>
 			</div>
 		</div>
 	</a>

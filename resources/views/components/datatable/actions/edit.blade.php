@@ -1,1 +1,1 @@
-<a href="{{$action}}" title="Edit" class="text-muted mr-2">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>
+<a href="{{$action}}" title="Edit" class="text-muted me-2">@icon('square-pen', ['mr' => 0, 'classes' => 'align-middle'])</a>

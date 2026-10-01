@@ -6,8 +6,8 @@
   <div class="container-fluid">
     @include('admin.components.page.title', [
       'theme' => 'edit',
-      'title' => $composer->name, 
-      'subtitle' => 'Use this page to edit this composer.', 
+      'title' => $composer->name,
+      'subtitle' => 'Use this page to edit this composer.',
       'back' => ['view all composers' => route('admin.composers.index')]
     ])
 
@@ -20,7 +20,7 @@
           <label class="col-sm-2 col-form-label text-brand">Name</label>
           <div class="col-sm-10">
             <div class="d-flex">
-              <input type="text" class="form-control mr-2" name="name" placeholder="Full name" value="{{ $composer->name }}" required>
+              <input type="text" class="form-control me-2" name="name" placeholder="Full name" value="{{ $composer->name }}" required>
               @include('admin.pages.composers.gender', ['gender' => $composer->gender])
             </div>
           </div>
@@ -40,7 +40,7 @@
           </div>
         </div>
 
-        <div class="form-row form-group">
+        <div class="row g-2 form-group">
           <div class="col">
             <label class="text-brand">Cover image</label>
             <div class="custom-file">
@@ -61,7 +61,7 @@
           </div>
         </div>
         {{-- Nationality and period --}}
-        <div class="form-row">
+        <div class="row g-2">
           <div class="col">
             <div class="form-group">
               <label class="text-brand">Nationality</label>
@@ -96,11 +96,11 @@
             </div>
           </div>
         </div>
-        <div class="form-row">
+        <div class="row g-2">
           <div class="col">
             <div class="form-group">
               <label class="text-brand">Born in</label>
-              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ is_object($composer->date_of_birth) ? $composer->date_of_birth->format('m/d/Y') : null }}">      
+              <input type="text" class="form-control" id="born-in" name="date_of_birth" placeholder="Born in" value="{{ is_object($composer->date_of_birth) ? $composer->date_of_birth->format('m/d/Y') : null }}">
             </div>
           </div>
           <div class="col">
@@ -111,33 +111,33 @@
           </div>
         </div>
 
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" class="custom-control-input" name="is_famous" id="famous-check" {{$composer->is_famous ? 'checked' : null}}>
-          <label class="custom-control-label" for="famous-check">Is this composer famous?</label>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" name="is_famous" id="famous-check" {{$composer->is_famous ? 'checked' : null}}>
+          <label class="form-check-label" for="famous-check">Is this composer famous?</label>
         </div>
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" class="custom-control-input" name="is_pedagogical" id="pedagogical-check" {{$composer->is_pedagogical ? 'checked' : null}}>
-          <label class="custom-control-label" for="pedagogical-check">Is this mostly a pedagogical composer?</label>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" name="is_pedagogical" id="pedagogical-check" {{$composer->is_pedagogical ? 'checked' : null}}>
+          <label class="form-check-label" for="pedagogical-check">Is this mostly a pedagogical composer?</label>
         </div>
 
         @can('update', $composer)
         <div class="text-center mt-5">
-          <button type="submit" class="btn btn-block btn-default">Save changes</button>
+          <button type="submit" class="btn d-block w-100 btn-default">Save changes</button>
         </div>
         @endcan
 
         <div class="mt-3">
-          <p class="text-muted text-right"><small><i>This composer was created by <strong>{{$composer->creator->name}}</strong></i></small></p>
+          <p class="text-muted text-end"><small><i>This composer was created by <strong>{{$composer->creator->name}}</strong></i></small></p>
         </div>
       </form>
-      
+
       <div class="col-lg-6 col-sm-10 col-12 mx-auto">
         <div>
           <img src="{{storage($composer->cover_path)}}" class="rounded-circle shadow mb-4 mx-auto d-block" style="width: 160px">
         </div>
         <p class="text-muted"><strong>{{$composer->name}} has {{$composer->pieces_count}} {{str_plural('piece', $composer->pieces_count)}}</strong></p>
         @if($composer->pieces_count > 0)
-        <ul class="list-style-none pl-2">
+        <ul class="list-style-none ps-2">
           @foreach($composer->pieces as $piece)
           <li class="mb-2">
             <a href="{{route('admin.pieces.edit', $piece)}}">

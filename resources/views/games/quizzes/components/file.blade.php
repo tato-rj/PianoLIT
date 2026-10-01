@@ -8,7 +8,7 @@
 			@icon('trash-2', ['mr' => 2])<strong>Delete</strong>
 		</button>
 
-		<button class="btn btn-warning btn-sm px-2 clip" data-clipboard-text="/storage/{{$file['file']}}" data-toggle="tooltip" title="Copied!" data-trigger="manual" style="border-radius: 20px;">
+		<button class="btn btn-warning btn-sm px-2 clip" data-clipboard-text="/storage/{{$file['file']}}" data-bs-toggle="tooltip" title="Copied!" data-bs-trigger="manual" style="border-radius: 20px;">
 			@icon('copy', ['mr' => 2])<strong>Copy</strong>
 		</button>
 	</div>

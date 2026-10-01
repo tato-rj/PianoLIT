@@ -51,8 +51,8 @@ class Icon
         }
 
         $classes = [$brand ? 'app-brand-icon fab fa-'.substr($name, 6) : 'app-icon icon-'.$name];
-        $classes[] = 'mr-'.($options['mr'] ?? 2);
-        foreach (['ml' => 'ml-', 'color' => 'text-', 'size' => 'icon-size-', 'weight' => 'icon-weight-'] as $key => $prefix) {
+        $classes[] = 'me-'.($options['mr'] ?? 2);
+        foreach (['ml' => 'ms-', 'color' => 'text-', 'size' => 'icon-size-', 'weight' => 'icon-weight-'] as $key => $prefix) {
             if (isset($options[$key])) $classes[] = $prefix.$options[$key];
         }
         if (!empty($options['filled']) || !empty($options['solid'])) $classes[] = 'icon-filled';
