@@ -63,9 +63,9 @@
         var overlay = doc.createElement('div');
         overlay.className = 'piece-moments__overlay';
         // Static markup only. Titles and commentary always use textContent below.
-        overlay.innerHTML = '<button type="button" class="piece-moments__about" hidden aria-expanded="false">ⓘ About</button>' +
+        overlay.innerHTML = '<button type="button" class="piece-moments__about" hidden aria-expanded="false">ⓘ About this section</button>' +
             '<div class="piece-moments__popover" role="dialog" hidden tabindex="-1">' +
-            '<button type="button" class="piece-moments__close" aria-label="Close moment commentary">×</button>' +
+            '<button type="button" class="piece-moments__close" aria-label="Close section commentary">×</button>' +
             '<div class="piece-moments__heading"><span class="piece-moments__timestamp"></span>' +
             '<h6 class="piece-moments__title"></h6></div><p class="piece-moments__comment"></p></div>';
         container.appendChild(overlay);

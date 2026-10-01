@@ -49,7 +49,7 @@ class VideoMomentsTest extends ReviewTestCase
     public function test_empty_guides_have_no_ui_and_each_video_has_its_own_data()
     {
         $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
-            ->assertDontSee('Moments in this piece')->assertDontSee('data-video-moments=', false);
+            ->assertDontSee('Sections in this piece')->assertDontSee('data-video-moments=', false);
         $this->moment();
         $this->moment($this->otherVideo, ['title' => 'Synthesia only', 'end_time' => null]);
         $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
@@ -83,6 +83,22 @@ class VideoMomentsTest extends ReviewTestCase
         }
     }
 
+    public function test_section_labels_include_admin_validation_and_save_messages()
+    {
+        $this->moment();
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $this->get($this->url('edit'))->assertOk()->assertSee('Sections · Performance')
+            ->assertSee('Sections in this piece')->assertSee('Add a section')->assertSee('Save sections')
+            ->assertSee('Delete section')->assertSee('next section starts')->assertSee('overlapping sections')
+            ->assertDontSee('Moments ·')->assertDontSee('Moments in this piece')->assertDontSee('Delete moment');
+        $this->withExceptionHandling();
+        $response = $this->putJson($this->url(), $this->payload([$this->row(['title' => ''])]))
+            ->assertUnprocessable()->assertJsonValidationErrors('moments.0.title');
+        $this->assertStringContainsString('section title', $response->json('errors')['moments.0.title'][0]);
+        $this->put($this->url(), $this->payload([$this->row()]))->assertRedirect()
+            ->assertSessionHas('status', 'The video sections have been saved.');
+    }
+
     public function test_moment_data_is_escaped_and_does_not_change_tutorial_mobile_serialization()
     {
         $title = '<img src=x onerror=alert(1)>';
@@ -99,8 +115,8 @@ class VideoMomentsTest extends ReviewTestCase
     public function test_manager_can_add_edit_delete_and_automatically_sort_without_changing_ids()
     {
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
-        $this->get($this->url('edit'))->assertOk()->assertSee('Add a moment')->assertSee('MM:SS');
-        $this->get(route('admin.pieces.edit', $this->piece))->assertOk()->assertSee($this->url('edit'), false)->assertSee('Manage moments');
+        $this->get($this->url('edit'))->assertOk()->assertSee('Add a section')->assertSee('MM:SS');
+        $this->get(route('admin.pieces.edit', $this->piece))->assertOk()->assertSee($this->url('edit'), false)->assertSee('Manage sections');
         $this->put($this->url(), $this->payload([$this->row(), $this->row(['start_time' => '12', 'end_time' => ''])]))->assertRedirect();
         $moments = $this->video->moments()->get();
         $this->assertSame(83.125, $moments[1]->start_time);
@@ -225,7 +241,7 @@ class VideoMomentsTest extends ReviewTestCase
             $this->putJson($this->url(), $this->payload($rows))->assertRedirect()->assertSessionHasNoErrors();
             $this->assertDatabaseCount('video_moments', 2);
             $this->get($this->url('edit'))->assertOk()->assertSee('admin-moment-preview', false)
-                ->assertSee('data-video-moments=', false)->assertSee('Moments in this piece')
+                ->assertSee('data-video-moments=', false)->assertSee('Sections in this piece')
                 ->assertSee('latest start time takes priority')->assertDontSee('Open this video');
         }
     }
@@ -247,7 +263,7 @@ class VideoMomentsTest extends ReviewTestCase
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
         $this->get($this->url('edit'))->assertOk()->assertSee('id="admin-moment-preview"', false)
             ->assertSee(e($this->video->video_url), false)->assertSee('cdn.plyr.io/3.7.8/plyr.js', false)
-            ->assertDontSee('data-video-moments=', false)->assertDontSee('Moments in this piece');
+            ->assertDontSee('data-video-moments=', false)->assertDontSee('Sections in this piece');
     }
 
     public function test_legacy_rows_display_in_time_order_with_a_valid_revision_and_stable_ties()
@@ -255,8 +271,8 @@ class VideoMomentsTest extends ReviewTestCase
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
         $late = $this->moment(null, ['start_time' => 83, 'end_time' => null, 'sort_order' => 0]);
         $early = $this->moment(null, ['start_time' => 12, 'end_time' => null, 'sort_order' => 1]);
-        $html = $this->get($this->url('edit'))->assertOk()->assertDontSee('Move moment up')
-            ->assertDontSee('Move moment down')->assertSee('Increase start time by one second')->getContent();
+        $html = $this->get($this->url('edit'))->assertOk()->assertDontSee('Move section up')
+            ->assertDontSee('Move section down')->assertSee('Increase start time by one second')->getContent();
         preg_match_all('/name="moments\[\d+\]\[start_time\]" value="([^"]*)"/', explode('<template', $html)[0], $times);
         $this->assertSame(['00:12', '01:23'], $times[1]);
         preg_match('/name="revision" value="([^"]*)"/', $html, $revision);

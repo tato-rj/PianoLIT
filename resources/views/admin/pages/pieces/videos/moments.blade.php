@@ -8,7 +8,7 @@
 <div class="content-wrapper">
     <div class="container-fluid">
         @include('admin.components.page.title', [
-            'theme' => 'edit', 'title' => 'Moments · '.$tutorial->type,
+            'theme' => 'edit', 'title' => 'Sections · '.$tutorial->type,
             'subtitle' => $piece->name,
             'back' => ['back to piece' => route('admin.pieces.edit', $piece)]
         ])
@@ -16,15 +16,15 @@
             <div class="col-lg-8 mx-auto">
                 <div class="mb-4" data-moment-preview>
                     @video(['id' => 'admin-moment-preview', 'url' => $tutorial->video_url, 'thumbnail' => $tutorial->thumbnail, 'moments' => $tutorial->listeningMoments()])
-                    <p class="small text-muted mt-2 mb-0">Save changes to update the moments in this preview.</p>
+                    <p class="small text-muted mt-2 mb-0">Save changes to update the sections in this preview.</p>
                 </div>
-                <p class="text-muted">Enter times as MM:SS (01:23). Fractional seconds are optional (01:23.5); longer videos can use more minute digits (120:00). Without an end time, the info control appears for up to {{config('webapp.moment_display_seconds')}} seconds, ending early when the next moment starts. For overlapping moments, the latest start time takes priority.</p>
+
                 @if($errors->any())
                 <div class="alert alert-danger" role="alert">
                     @foreach($errors->all() as $error)<p class="mb-1">{{$error}}</p>@endforeach
                 </div>
                 @endif
-                <p class="small text-muted">Moments are ordered automatically by start time. Use the chevrons or the ↑ / ↓ keys to adjust a time by one second.</p>
+
                 <form method="POST" action="{{route('admin.pieces.videos.moments.update', [$piece, $tutorial])}}" class="moment-editor" data-moments-editor novalidate>
                     @csrf
                     @method('PUT')
@@ -38,8 +38,8 @@
                     <template data-moment-template>
                         @include('admin.pages.pieces.videos.moment-row', ['index' => 0, 'moment' => []])
                     </template>
-                    <button type="button" class="btn btn-outline-secondary mb-3" data-moment-action="add">Add a moment</button>
-                    <div class="text-end mb-4"><button type="submit" class="btn btn-default">Save moments</button></div>
+                    <button type="button" class="btn btn-outline-secondary mb-3" data-moment-action="add">Add a section</button>
+                    <div class="text-end mb-4"><button type="submit" class="btn btn-default">Save sections</button></div>
                 </form>
             </div>
         </div>

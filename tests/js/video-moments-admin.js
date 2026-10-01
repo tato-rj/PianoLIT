@@ -82,6 +82,7 @@ module.exports = function () {
     assert.strictEqual(preview.options.ratio, '16:9');
     assert.strictEqual(preview.options.markers.enabled, true);
     assert.strictEqual(attached, media, 'The admin preview reuses the shared guide');
+    assert.strictEqual(first.querySelector('[data-moment-number]').textContent, 'Section 1');
     function action(name, targetRow, field, step) {
         const button = {getAttribute: key => ({'data-moment-action': name, 'data-time-field': field, 'data-time-step': step})[key], closest: () => targetRow};
         events.click({target: {closest: () => button}});

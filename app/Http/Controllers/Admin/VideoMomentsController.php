@@ -44,6 +44,14 @@ class VideoMomentsController extends Controller
             'moments.*.end_time' => 'nullable|string|max:30',
             'moments.*.title' => 'required|string|max:255',
             'moments.*.comment' => 'required|string|max:2000',
+        ], [], [
+            'moments' => 'sections',
+            'moments.*' => 'section',
+            'moments.*.id' => 'section ID',
+            'moments.*.start_time' => 'section start time',
+            'moments.*.end_time' => 'section end time',
+            'moments.*.title' => 'section title',
+            'moments.*.comment' => 'section commentary',
         ]);
         $rows = [];
         foreach ($data['moments'] ?? [] as $index => $row) {
@@ -71,11 +79,11 @@ class VideoMomentsController extends Controller
             Tutorial::whereKey($tutorial->id)->lockForUpdate()->firstOrFail();
             $existing = $tutorial->moments()->get();
             if (!hash_equals($this->revision($existing), $data['revision'])) {
-                throw ValidationException::withMessages(['revision' => 'These moments changed in another tab. Reload this page before saving again.']);
+                throw ValidationException::withMessages(['revision' => 'These sections changed in another tab. Reload this page before saving again.']);
             }
             foreach ($rows as $row) {
                 if ($row['id'] && !$existing->contains('id', $row['id'])) {
-                    throw ValidationException::withMessages(['moments' => 'A moment does not belong to this video.']);
+                    throw ValidationException::withMessages(['moments' => 'A section does not belong to this video.']);
                 }
             }
             $kept = [];
@@ -89,6 +97,6 @@ class VideoMomentsController extends Controller
             $tutorial->moments()->whereNotIn('id', $kept)->delete();
         });
 
-        return back()->with('status', 'The video moments have been saved.');
+        return back()->with('status', 'The video sections have been saved.');
     }
 }

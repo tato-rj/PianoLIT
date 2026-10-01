@@ -54,9 +54,9 @@
             });
             var startTime = parseTime(start.value);
             var endTime = end.value.trim() ? parseTime(end.value) : null;
-            if (start.value && startTime === null) error(start, 'Moment ' + (index + 1) + ': enter a complete start time as MM:SS.');
+            if (start.value && startTime === null) error(start, 'Section ' + (index + 1) + ': enter a complete start time as MM:SS.');
             if (end.value && (endTime === null || (startTime !== null && endTime < startTime))) {
-                error(end, 'Moment ' + (index + 1) + ': enter an end time at or after the start time.');
+                error(end, 'Section ' + (index + 1) + ': enter an end time at or after the start time.');
             }
         });
         alert.textContent = Array.from(new Set(messages)).join(' ');
@@ -68,7 +68,7 @@
             row.querySelectorAll('[data-field]').forEach(function (input) {
                 input.name = 'moments[' + index + '][' + input.getAttribute('data-field') + ']';
             });
-            row.querySelector('[data-moment-number]').textContent = 'Moment ' + (index + 1);
+            row.querySelector('[data-moment-number]').textContent = 'Section ' + (index + 1);
         });
         validate();
     }

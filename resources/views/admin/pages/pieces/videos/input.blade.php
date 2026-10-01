@@ -33,7 +33,7 @@
 		</div>
 		<input rows="1" class="form-control videos-link" placeholder="File name" name="{{'videos['.$loop->index.'][filename]'}}" value="{{$tutorial->filename}}">
 	</div>
-    <a class="btn btn-sm btn-outline-secondary mb-2" href="{{route('admin.pieces.videos.moments.edit', [$piece, $tutorial])}}">Manage moments</a>
+    <a class="btn btn-sm btn-outline-secondary mb-2" href="{{route('admin.pieces.videos.moments.edit', [$piece, $tutorial])}}">Manage sections</a>
     @endif
 
 	<a class="align-self-stretch btn btn-sm d-block w-100 btn-danger text-white me-1 remove-field mb-4">

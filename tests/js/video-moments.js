@@ -90,7 +90,8 @@ module.exports = async function () {
     const popover = overlay.querySelector('.piece-moments__popover');
     const title = overlay.querySelector('.piece-moments__title');
     assert.strictEqual(about.hidden, true);
-    assert(overlay.innerHTML.includes('>ⓘ About</button>'));
+    assert(overlay.innerHTML.includes('>ⓘ About this section</button>'));
+    assert(overlay.innerHTML.includes('aria-label="Close section commentary"'));
     player.currentTime = 13;
     player.emit('loadedmetadata');
     player.emit('seeked');
