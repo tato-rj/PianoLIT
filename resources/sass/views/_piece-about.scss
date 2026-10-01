@@ -1,0 +1,18 @@
+.piece-description {
+    &__content { white-space: pre-wrap; }
+    &.is-collapsed &__content { max-height: 250px; overflow: hidden; }
+    &__toggle {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #697386;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        &:hover { color: #0055fe; text-decoration: underline; }
+        &:focus-visible { outline: 2px solid #0055fe; outline-offset: 3px; }
+        &[hidden] { display: none !important; }
+    }
+}

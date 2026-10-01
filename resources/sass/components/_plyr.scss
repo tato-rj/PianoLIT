@@ -1,3 +1,13 @@
 .rounded-video .plyr {
 	border-radius: var(--radius)!important;
 }
+
+#tabs-container {
+	.video-container { align-self: flex-start; }
+	.plyr--video:not(.plyr--fullscreen-active) {
+		height: auto;
+		max-height: 420px;
+		.plyr__video-wrapper, video { max-height: 420px; }
+		video { object-fit: contain; }
+	}
+}

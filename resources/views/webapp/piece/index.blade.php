@@ -39,10 +39,6 @@ video::-webkit-media-controls-enclosure {
 	animation-duration: .5s !important;
 }
 
-.plyr--video {
-	height: 100%;
-}
-
 #nav-border {
 	position: absolute;
 	bottom: 0;
@@ -118,6 +114,7 @@ video::-webkit-media-controls-enclosure {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/resumable.js/1.0.3/resumable.min.js"></script>
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script src="{{ mix('js/views/piece-access.js') }}"></script>
+<script src="{{ mix('js/views/piece-description.js') }}"></script>
 @if($hasMediaAccess && $piece->score_path && $piece->isPublicDomain)
 <script src="{{ mix('js/views/score-editor.js') }}"></script>
 <script>

@@ -24,9 +24,10 @@
 				</div>
 			</div>
 			@if($piece->hasDescription())
-			<div class="mb-3">
+			<div class="mb-3 piece-description" data-piece-description>
 				<h5 class="mb-2">What's this piece like?</h5>
-				<div style="white-space: pre-wrap;">{{$piece->description}}</div>
+				<div class="piece-description__content" id="piece-description">{{$piece->description}}</div>
+				<button type="button" class="piece-description__toggle" aria-controls="piece-description" aria-expanded="false" hidden>Read more</button>
 			</div>
 			@else
 			<div class="mb-3">
