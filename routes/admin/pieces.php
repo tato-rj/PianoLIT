@@ -2,6 +2,12 @@
 
 Route::prefix('pieces')->name('pieces.')->group(function() {
 
+    Route::get('{piece}/timeline', 'Admin\PieceTimelineController@edit')->name('timeline.edit');
+    Route::post('{piece}/timeline/discover', 'Admin\PieceTimelineController@discover')->middleware('throttle:20,1')->name('timeline.discover');
+    Route::post('{piece}/timeline/events', 'Admin\PieceTimelineController@store')->name('timeline.store');
+    Route::patch('{piece}/timeline/events/{event}', 'Admin\PieceTimelineController@update')->name('timeline.update');
+    Route::delete('{piece}/timeline/events/{event}', 'Admin\PieceTimelineController@destroy')->name('timeline.destroy');
+
     Route::get('{piece}/videos/{tutorial}/moments', 'Admin\VideoMomentsController@edit')->name('videos.moments.edit');
     Route::put('{piece}/videos/{tutorial}/moments', 'Admin\VideoMomentsController@update')->name('videos.moments.update');
 

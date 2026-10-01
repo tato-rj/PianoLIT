@@ -4,7 +4,8 @@ namespace App\Http\Controllers\WebApp;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\{Piece, Timeline, Tutorial};
+use App\{Piece, Tutorial};
+use App\Services\Timeline\WebTimeline;
 use App\Events\PieceShared;
 use App\Services\RecentlyViewedPieces;
 use App\Services\WebApp\PieceCards;
@@ -14,7 +15,7 @@ class PiecesController extends Controller
 {
     public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PieceRecommendations $recommendations)
     {
-        $timeline = Timeline::for($piece, 4);
+        $timeline = (new WebTimeline)->forPiece($piece);
         $piece->loadMissing(['tags', 'tutorials.moments']);
         $recommendationRows = $recommendations->rows($piece);
         $sentences = ['Tuning the piano', 'Arranging rows of comfy seats', 'Adjusting the bench', 'Warming up fingers', 'Greeting the eager audience', 'Dimming the lights', 'Wrapping up'];
@@ -42,7 +43,7 @@ class PiecesController extends Controller
 
     public function timeline(Piece $piece)
     {
-        $timeline = Timeline::for($piece, 4);
+        $timeline = (new WebTimeline)->forPiece($piece);
 
         return view('webapp.piece.options.timeline', compact(['piece', 'timeline']));
     }

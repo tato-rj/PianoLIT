@@ -19,6 +19,7 @@
     ])
     <div class="row mb-3">
       <div class="col-12 text-end">
+        <a class="btn btn-default me-2 btn-sm" href="{{route('admin.pieces.timeline.edit', $piece)}}">Edit timeline</a>
         <button class="btn btn-light me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#abrsm-modal"><strong>ABRSM</strong></button>
         <button class="btn btn-light me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#rcm-modal"><strong>RCM</strong></button>
       </div>

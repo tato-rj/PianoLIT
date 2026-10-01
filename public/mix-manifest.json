@@ -1,6 +1,6 @@
 {
     "/js/app.js": "/js/app.js?id=29dd6026bd2bb8cd5501",
-    "/css/app.css": "/css/app.css?id=d525fbe4eb8c274bef75",
+    "/css/app.css": "/css/app.css?id=c57c4c91b135e32beb74",
     "/css/admin.css": "/css/admin.css?id=1bb2e0d2c4e1f3547b91",
     "/css/design-system.css": "/css/design-system.css?id=7ae98d40415b1d5056af",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
@@ -18,5 +18,6 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=fdbff8185284fd251dc0",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf"
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf",
+    "/js/views/piece-timeline-admin.js": "/js/views/piece-timeline-admin.js?id=491591c6665dcc55239c"
 }
