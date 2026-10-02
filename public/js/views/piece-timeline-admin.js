@@ -19,7 +19,8 @@
     var searchId = null;
     var busy = false;
     var generation = 0;
-    var storageKey = 'pianolit.timeline.' + root.dataset.pieceId;
+    var storageKey = 'pianolit.timeline.' + (root.dataset.searchKey || root.dataset.pieceId);
+    var title = root.dataset.title || 'Timeline';
     try {
         var previous = JSON.parse(sessionStorage.getItem(storageKey));
         if (previous && previous.year) { year.value = previous.year; searchId = previous.searchId || null; }
@@ -31,7 +32,7 @@
     function updateSavedCount(count) {
         savedCount = count;
         savedCounter.textContent = String(count);
-        if (pageTitle) pageTitle.textContent = 'Timeline · ' + count + (count === 1 ? ' event' : ' events');
+        if (pageTitle && root.dataset.titleCount !== 'false') pageTitle.textContent = title + ' · ' + count + (count === 1 ? ' event' : ' events');
         document.getElementById('timeline-empty').hidden = count > 0;
     }
 
@@ -118,7 +119,7 @@
                 if (!candidateCount && !data.has_more) searchId = null;
                 try { sessionStorage.setItem(storageKey, JSON.stringify({year: year.value, searchId: searchId})); } catch (e) {}
                 status.textContent = data.count ? data.count + ' new events · within ' + data.range + ' years of ' + year.value + '. Save the ones you want to keep.' :
-                    (data.has_more ? 'No new events in this range. ' + (candidateCount ? 'Find 10 more' : 'Find 10 events again') + ' to search a wider period.' : 'No more events found within 40 years. Try a different reference year.');
+                    (data.has_more ? 'No new events in this batch. ' + (candidateCount ? 'Find 10 more' : 'Find 10 events again') + ' to check more candidates.' : 'No more events found within ' + data.range + ' years. Try a different reference year.');
             }).catch(function (error) {
                 if (current !== generation) return;
                 status.textContent = message(error, 'Could not find events. Please try again.');

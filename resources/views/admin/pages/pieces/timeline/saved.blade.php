@@ -14,7 +14,7 @@
       <span class="timeline-edit-label text-brand small">Edit @icon('chevron-down', ['mr' => 0])</span>
     </summary>
     <div class="timeline-event-fields">
-      <form id="timeline-update-{{$event->id}}" method="POST" action="{{route('admin.pieces.timeline.update', [$piece, $event])}}">
+      <form id="timeline-update-{{$event->id}}" method="POST" action="{{!empty($isLibrary) ? route('admin.timeline-events.update', $event) : route('admin.pieces.timeline.update', [$piece, $event])}}">
         @csrf
         @method('PATCH')
         <div class="timeline-event-inputs">
@@ -36,7 +36,7 @@
       <div class="timeline-event-actions">
         <button type="submit" form="timeline-update-{{$event->id}}" class="btn btn-default btn-sm">Update event</button>
         <a href="{{$event->source_url}}" target="_blank" rel="noopener noreferrer" class="small">Wikipedia source</a>
-        <form method="POST" action="{{route('admin.pieces.timeline.destroy', [$piece, $event])}}" class="ms-auto timeline-remove">
+        <form method="POST" action="{{!empty($isLibrary) ? route('admin.timeline-events.destroy', $event) : route('admin.pieces.timeline.destroy', [$piece, $event])}}" class="ms-auto timeline-remove">
           @csrf
           @method('DELETE')
           <button type="submit" class="btn btn-outline-danger btn-sm">Remove event</button>

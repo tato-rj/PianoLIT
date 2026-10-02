@@ -222,6 +222,40 @@ async function main() {
     requests[15].resolve({data: {search_id: 'single-period', count: 3, has_more: false, range: 10, html: 'ordered next'}});
     await settle();
     assert.deepStrictEqual(candidateRoot.children.map(group => group.dataset.period), ['before'], 'Empty date groups are omitted');
-    console.log('Passed: chronological grouping across batches, live title/counts, pagination, AJAX removal/retry, CSRF, restored searches, save races/idempotency, and expired sessions.');
+
+    const libraryIds = {};
+    Object.keys(ids).forEach(id => { libraryIds[id] = element(); });
+    libraryIds['piece-timeline-admin'].dataset = {searchKey: 'library', title: 'Timeline events', titleCount: 'false', discoverUrl: '/library/discover', saveUrl: '/library/save', csrf: 'library-csrf'};
+    libraryIds['piece-timeline-admin'].querySelector = () => libraryIds['page-heading'];
+    libraryIds['timeline-saved-count'].textContent = '2';
+    libraryIds['page-heading'].textContent = 'Timeline events';
+    const libraryStorage = new Map([['pianolit.timeline.1', JSON.stringify({year: '1730', searchId: 'piece-search'})]]);
+    const libraryRequests = [];
+    const libraryContext = {
+        document: {body: element(), createElement: () => element(), getElementById: id => libraryIds[id]},
+        sessionStorage: {getItem: key => libraryStorage.get(key), setItem: (key, value) => libraryStorage.set(key, value), removeItem: key => libraryStorage.delete(key)},
+        window: {axios: {post(url, data, options) {
+            return new Promise((resolve, reject) => libraryRequests.push({url, data, options, resolve, reject}));
+        }}}
+    };
+    vm.runInNewContext(fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8'), libraryContext);
+    assert.strictEqual(libraryIds['reference-year'].value, '', 'Piece search state cannot prefill the global library');
+    assert.strictEqual(libraryIds['page-heading'].textContent, 'Timeline events', 'The shared page heading has no live event count');
+    assert.strictEqual(libraryIds['timeline-more'].hidden, true);
+    libraryIds['reference-year'].value = '1800';
+    libraryIds['timeline-search'].events.submit({preventDefault() {}});
+    assert.strictEqual(libraryRequests[0].url, '/library/discover');
+    assert.strictEqual(libraryRequests[0].data.search_id, null);
+    libraryRequests[0].resolve({data: {search_id: 'library-search', count: 0, has_more: false, range: 5, html: ''}});
+    await settle();
+    assert.strictEqual(libraryIds['timeline-search-status'].textContent, 'No more events found within 5 years. Try a different reference year.');
+    assert.strictEqual(libraryIds['timeline-more'].hidden, true);
+    assert.strictEqual(JSON.parse(libraryStorage.get('pianolit.timeline.1')).searchId, 'piece-search', 'The library preserves independent piece searches');
+    libraryStorage.set('pianolit.timeline.library', JSON.stringify({year: '1850', searchId: 'library-resume'}));
+    vm.runInNewContext(fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8'), libraryContext);
+    assert.strictEqual(libraryIds['reference-year'].value, '1850', 'The library restores its own reference year');
+    libraryIds['timeline-search'].events.submit({preventDefault() {}});
+    assert.strictEqual(libraryRequests[1].data.search_id, 'library-resume');
+    console.log('Passed: shared library identity/title, isolated search state, chronological grouping, live counts, pagination, AJAX removal/retry, CSRF, save races/idempotency, and expired sessions.');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });
