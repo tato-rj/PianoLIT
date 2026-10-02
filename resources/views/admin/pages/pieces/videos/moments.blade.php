@@ -14,6 +14,9 @@
         ])
         <div class="row">
             <div class="col-lg-8 mx-auto">
+                @if($piece->score_path)
+                <a href="{{storage($piece->score_path)}}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm mb-3">@icon('file-text') Open score</a>
+                @endif
                 <div class="mb-4" data-moment-preview>
                     @video(['id' => 'admin-moment-preview', 'url' => $tutorial->video_url, 'thumbnail' => $tutorial->thumbnail, 'moments' => $tutorial->listeningMoments()])
                     <p class="small text-muted mt-2 mb-0">Save changes to update the sections in this preview.</p>
