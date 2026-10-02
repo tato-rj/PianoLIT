@@ -43,47 +43,54 @@ class WebTimelineLibraryTest extends ReviewTestCase
         return (new WebTimeline)->forPiece($this->piece);
     }
 
-    protected function undatedPiece(string $birth, ?string $death)
+    protected function undatedPiece(?string $birth, ?string $death)
     {
         $this->piece->update(['composed_in' => null, 'published_in' => null]);
         $this->piece->composer->update(['date_of_birth' => $birth, 'date_of_death' => $death]);
     }
 
-    public function test_composition_prefers_nearby_events_on_both_sides_and_caps_the_entire_timeline_at_eight()
+    public function test_composer_lifetime_always_drives_selection_and_piece_dates_are_milestones()
     {
-        foreach ([1789, 1790, 1796, 1797, 1798, 1799, 1800, 1801, 1802, 1803, 1804, 1810, 1811, 1830] as $year) $this->event($year);
-        for ($i = 0; $i < 15; $i++) $this->event(1800);
+        foreach ([1749, 1750, 1770, 1790, 1800, 1810, 1830, 1840, 1841] as $year) $this->event($year);
         $timeline = $this->timeline();
         $this->assertCount(8, $timeline);
-        $this->assertSame([1797, 1798, 1799, 1800, 1800, 1801, 1802, 1803], $timeline->pluck('year')->all());
-        $this->assertCount(7, $timeline->where('highlight', false)->pluck('id')->unique());
-        $this->assertSame(1800, $timeline->firstWhere('highlight', true)['year']);
+        $this->assertSame('birth', $timeline->first()['composer_milestone']);
+        $this->assertSame('death', $timeline->last()['composer_milestone']);
+        $this->assertSame([1800, 1830], $timeline->where('highlight', true)->pluck('year')->all());
         $this->assertSame('Test Composer was 50 years old', $timeline->firstWhere('highlight', true)['description']);
+        $context = $timeline->filter(function ($event) { return isset($event['id']); });
+        $this->assertCount(4, $context);
+        $this->assertSame(1750, $context->first()['year']);
+        $this->assertSame(1840, $context->last()['year']);
+        $this->piece->update(['composed_in' => 1770, 'published_in' => 1790]);
+        $this->assertSame($context->pluck('id')->all(), $this->timeline()->filter(function ($event) { return isset($event['id']); })->pluck('id')->all());
         Http::assertNothingSent();
     }
 
-    public function test_publication_is_used_only_when_composition_is_unusable()
+    public function test_piece_dates_combine_in_the_same_year_and_invalid_values_add_no_milestone()
     {
-        foreach ([1799, 1829, 1830, 1831] as $year) $this->event($year);
+        $this->piece->update(['composed_in' => 1800, 'published_in' => 1800]);
+        $pieceEvent = $this->timeline()->firstWhere('highlight', true);
+        $this->assertStringContainsString('was composed and published', $pieceEvent['title']);
+        $this->assertCount(1, $this->timeline()->where('highlight', true));
         foreach ([null, 0, 'unknown', 1800.5, 10000] as $invalid) {
             $this->piece->composed_in = $invalid;
             $timeline = $this->timeline();
-            $this->assertSame([1829, 1830, 1830, 1831], $timeline->pluck('year')->all());
+            $this->assertCount(1, $timeline->where('highlight', true));
             $this->assertStringContainsString('was published', $timeline->firstWhere('highlight', true)['title']);
+            $this->assertSame('birth', $timeline->first()['composer_milestone']);
         }
     }
 
-    public function test_window_bounds_sparse_sides_and_same_year_only_results()
+    public function test_posthumous_publication_is_shown_after_death_without_changing_library_period()
     {
-        foreach ([1789, 1790, 1810, 1811] as $year) $this->event($year);
-        $this->assertSame([1790, 1800, 1810], $this->timeline()->pluck('year')->all());
-        TimelineEvent::query()->delete();
-        for ($year = 1801; $year <= 1810; $year++) $this->event($year);
-        $this->assertSame(range(1800, 1807), $this->timeline()->pluck('year')->all());
-        TimelineEvent::query()->delete();
-        for ($i = 0; $i < 10; $i++) $this->event(1800, '1800-01-'.sprintf('%02d', $i + 1));
-        $this->assertCount(8, $this->timeline());
-        $this->assertCount(7, $this->timeline()->where('highlight', false));
+        $this->piece->update(['composed_in' => 1800, 'published_in' => 1850]);
+        $this->event(1840); $this->event(1850);
+        $timeline = $this->timeline();
+        $this->assertSame([1750, 1800, 1840, 1840, 1850], $timeline->pluck('year')->all());
+        $this->assertStringContainsString('was published', $timeline->last()['title']);
+        $this->assertSame('Test Composer', $timeline->last()['description']);
+        $this->assertCount(1, $timeline->filter(function ($event) { return isset($event['id']); }));
     }
 
     public function test_lifetime_selection_spreads_across_years_even_with_a_dense_birth_year()
@@ -125,13 +132,13 @@ class WebTimelineLibraryTest extends ReviewTestCase
     {
         $this->travelTo(\Carbon\Carbon::parse('2026-10-02'));
         $this->undatedPiece('1700-01-01', null);
-        foreach ([1699, 1700, 1710, 1720, 1730, 1740, 1750, 1760, 1770, 1780, 1781, 2026] as $year) $this->event($year);
+        foreach ([1699, 1700, 1705, 1710, 1715, 1720, 1730, 1740, 1750, 1751, 1780, 2026] as $year) $this->event($year);
         $timeline = $this->timeline();
         $this->assertCount(8, $timeline);
         $this->assertSame(1700, $timeline->first()['year']);
-        $this->assertSame(1780, $timeline->last()['year']);
+        $this->assertSame(1750, $timeline->last()['year']);
         $this->assertFalse($timeline->contains('year', 1699));
-        $this->assertFalse($timeline->contains('year', 1781));
+        $this->assertFalse($timeline->contains('year', 1751));
         TimelineEvent::query()->delete();
         $this->undatedPiece('2000-03-21', null);
         $past = $this->event(2026, '2026-10-02');
@@ -143,22 +150,34 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $this->travelBack();
     }
 
-    public function test_empty_library_missing_birth_or_invalid_lifetime_never_invents_a_piece_date()
+    public function test_death_only_uses_previous_fifty_years_and_missing_dates_hide_the_tab()
     {
-        $this->assertCount(1, $this->timeline());
-        $this->assertTrue($this->timeline()->first()['highlight']);
-        $this->undatedPiece('1700-01-01', '1780-01-01');
-        $this->assertCount(2, $this->timeline());
-        $this->assertSame('Test Composer was born', $this->timeline()->first()['title']);
-        $this->assertSame('Test Composer died', $this->timeline()->last()['title']);
-        $this->event(1750);
-        $this->piece->composer->update(['date_of_birth' => null]);
+        $this->undatedPiece(null, '1800-07-28');
+        foreach ([1749, 1750, 1760, 1770, 1780, 1790, 1800, 1801] as $year) $this->event($year);
+        $timeline = $this->timeline();
+        $this->assertSame(1750, $timeline->first()['year']);
+        $this->assertSame('death', $timeline->last()['composer_milestone']);
+        $this->assertFalse($timeline->contains('year', 1749));
+        $this->assertFalse($timeline->contains('year', 1801));
+        $this->assertFalse($timeline->contains('composer_milestone', 'birth'));
+        $period = (new WebTimeline)->periodForPiece($this->piece);
+        $this->assertSame([1750, 1800], [$period['start_year'], $period['end_year']]);
+        $this->get(route('webapp.pieces.show', $this->piece))->assertOk()->assertSee("Test Composer's world", false)->assertSee('1750–1800');
+        $this->piece->composer->update(['date_of_death' => null]);
+        $this->piece->update(['composed_in' => 1770]);
         $this->assertCount(0, $this->timeline());
+        $this->get(route('webapp.pieces.show', $this->piece))->assertOk()->assertDontSee('href="#tab-timeline"', false)->assertDontSee('Historical timeline');
         $this->piece->composer->update(['date_of_birth' => '1800-01-01', 'date_of_death' => '1780-01-01']);
         $this->assertCount(0, $this->timeline());
-        $html = view('webapp.piece.components.timeline', ['timeline' => $this->timeline()])->render();
-        $this->assertStringContainsString('Historical events have not been added', $html);
-        $this->assertStringNotContainsString('This piece', $html);
+    }
+
+    public function test_empty_library_still_shows_composer_boundaries_and_known_piece_dates()
+    {
+        $this->assertCount(4, $this->timeline());
+        $this->assertSame('Test Composer was born', $this->timeline()->first()['title']);
+        $this->assertSame('Test Composer died', $this->timeline()->last()['title']);
+        $this->undatedPiece('1700-01-01', '1780-01-01');
+        $this->assertCount(2, $this->timeline());
     }
 
     public function test_selected_content_is_live_curated_shared_content_without_wikimedia_or_mobile_changes()
@@ -169,9 +188,9 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $url = route('webapp.pieces.timeline', $this->piece);
         $this->get($url)->assertOk()->assertSee('&lt;script&gt;Shared curated event&lt;/script&gt;', false)->assertSee('This piece');
         $this->get(route('webapp.pieces.show', $this->piece))->assertOk()->assertSee('Shared curated event');
-        $other = Model::withoutEvents(function () { return create(Piece::class, ['composed_in' => 1800]); });
-        $this->assertSame($this->timeline()->where('highlight', false)->pluck('id')->all(),
-            (new WebTimeline)->forPiece($other)->where('highlight', false)->pluck('id')->all());
+        $other = Model::withoutEvents(function () { return create(Piece::class, ['composed_in' => 1800, 'published_in' => 1830, 'composer_id' => $this->piece->composer_id]); });
+        $this->assertSame($this->timeline()->filter(function ($event) { return isset($event['id']); })->pluck('id')->all(),
+            (new WebTimeline)->forPiece($other)->filter(function ($event) { return isset($event['id']); })->pluck('id')->all());
         $event->update(['title' => 'Updated curated title']);
         $this->get($url)->assertOk()->assertSee('Updated curated title')->assertDontSee('Shared curated event');
         $event->delete();
@@ -190,7 +209,7 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $this->assertCount(2, $queries);
         $this->assertStringContainsString('select "id", "year", "event_date"', $queries[0]['query']);
         $this->assertStringContainsString('select * from "timeline_events"', $queries[1]['query']);
-        $this->assertCount(7, $queries[1]['bindings']);
+        $this->assertCount(4, $queries[1]['bindings']);
         $this->assertCount(8, $timeline);
     }
 
@@ -198,7 +217,7 @@ class WebTimelineLibraryTest extends ReviewTestCase
     {
         $composer = $this->piece->composer;
         $composer->update(['name' => 'Johann Sebastian Bach', 'date_of_birth' => '1685-03-21', 'date_of_death' => '1750-07-28']);
-        $this->piece->update(['composed_in' => 1727]);
+        $this->piece->update(['composed_in' => 1727, 'published_in' => null]);
         $ownEvent = function () { return (new WebTimeline)->forPiece($this->piece)->firstWhere('highlight', true); };
         $event = $ownEvent();
         $this->assertSame('Johann Sebastian Bach was 42 years old', $event['description']);
@@ -234,8 +253,8 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $this->assertDatabaseCount('timeline_events', 3);
         foreach (['composed_in', 'published_in'] as $field) {
             $this->piece->update([$field => 1727]);
-            $this->assertFalse($this->timeline()->contains('composer_milestone', 'birth'));
-            $this->assertFalse($this->timeline()->contains('composer_milestone', 'death'));
+            $this->assertTrue($this->timeline()->contains('composer_milestone', 'birth'));
+            $this->assertTrue($this->timeline()->contains('composer_milestone', 'death'));
             $this->assertCount(1, $this->timeline()->where('highlight', true));
             $this->piece->update([$field => null]);
         }

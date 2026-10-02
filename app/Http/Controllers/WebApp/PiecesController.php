@@ -15,12 +15,14 @@ class PiecesController extends Controller
 {
     public function show(Piece $piece, RecentlyViewedPieces $recentlyViewed, PieceRecommendations $recommendations)
     {
-        $timeline = (new WebTimeline)->forPiece($piece);
+        $timelineService = new WebTimeline;
+        $timelinePeriod = $timelineService->periodForPiece($piece);
+        $timeline = $timelineService->forPiece($piece);
         $piece->loadMissing(['tags', 'tutorials.moments']);
         $recommendationRows = $recommendations->rows($piece);
         $sentences = ['Tuning the piano', 'Arranging rows of comfy seats', 'Adjusting the bench', 'Warming up fingers', 'Greeting the eager audience', 'Dimming the lights', 'Wrapping up'];
 
-        $response = response()->view('webapp.piece.index', compact(['piece', 'timeline', 'sentences', 'recommendationRows']));
+        $response = response()->view('webapp.piece.index', compact(['piece', 'timeline', 'timelinePeriod', 'sentences', 'recommendationRows']));
 
         if (request()->isMethod('GET') && auth('web')->check()) {
             $recentlyViewed->record(auth('web')->user(), $piece);
@@ -43,9 +45,11 @@ class PiecesController extends Controller
 
     public function timeline(Piece $piece)
     {
-        $timeline = (new WebTimeline)->forPiece($piece);
+        $timelineService = new WebTimeline;
+        $timelinePeriod = $timelineService->periodForPiece($piece);
+        $timeline = $timelineService->forPiece($piece);
 
-        return view('webapp.piece.options.timeline', compact(['piece', 'timeline']));
+        return view('webapp.piece.options.timeline', compact(['piece', 'timeline', 'timelinePeriod']));
     }
 
     public function appleMusic(Piece $piece)

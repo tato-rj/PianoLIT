@@ -6,78 +6,81 @@ use App\{Piece, TimelineEvent};
 
 class WebTimeline
 {
-    public function forPiece(Piece $piece)
+    public function periodForPiece(Piece $piece): ?array
     {
-        $composed = $this->usableYear($piece->composed_in);
-        $year = $composed ?: $this->usableYear($piece->published_in);
         $composer = $piece->composer;
+        if (!$composer) return null;
         $born = $this->usableYear($composer->born_in);
         $died = $this->usableYear($composer->died_in);
-        $limit = 8;
-        $query = TimelineEvent::query();
+        if (!$born && !$died) return null;
+        if (($born && $composer->date_of_birth->isFuture()) || ($died && $composer->date_of_death->isFuture())) return null;
+        if ($born && $died && $composer->date_of_death->lt($composer->date_of_birth)) return null;
 
-        if ($year) {
-            $range = config('webapp.timeline_year_range', 10);
-            $query->whereBetween('year', [max(1, $year - $range), min(9999, $year + $range)]);
-        } elseif ($born && (!$died || $died >= $born)) {
-            if ($composer->date_of_birth->isFuture() || ($died && $composer->date_of_death->lt($composer->date_of_birth))) {
-                return collect();
-            }
-            $end = $died ?: min(now()->year, $born + config('webapp.timeline_unknown_lifespan_years', 80));
-            $query->whereBetween('year', [$born, $end]);
-            // Year-only events retain their approximate precision at the lifetime boundaries.
-            $query->where(function ($query) use ($composer) {
-                $query->whereNull('event_date')->orWhere('event_date', '>=', $composer->date_of_birth->toDateString());
-            });
-            if ($died) {
-                $query->where(function ($query) use ($composer) {
-                    $query->whereNull('event_date')->orWhere('event_date', '<=', $composer->date_of_death->toDateString());
-                });
-            } else {
-                $query->where(function ($query) {
-                    $query->whereNull('event_date')->orWhere('event_date', '<=', now()->toDateString());
-                });
-            }
-        } else {
-            return collect();
-        }
+        $span = config('webapp.timeline_partial_lifespan_years', 50);
+        return [
+            'born' => $born,
+            'died' => $died,
+            'start_year' => $born ?: max(1, $died - $span),
+            'end_year' => $died ?: min(9999, $born + $span),
+        ];
+    }
 
-        // Select using lightweight dates; fetch curated text/images only for the chosen rows.
+    public function forPiece(Piece $piece)
+    {
+        $period = $this->periodForPiece($piece);
+        if (!$period) return collect();
+        $composer = $piece->composer;
+        $born = $period['born'];
+        $died = $period['died'];
+        $query = TimelineEvent::whereBetween('year', [$period['start_year'], min(now()->year, $period['end_year'])]);
+        $start = $born ? $composer->date_of_birth->toDateString() : sprintf('%04d-01-01', $period['start_year']);
+        $end = $died ? $composer->date_of_death->toDateString() : sprintf('%04d-12-31', min(now()->year, $period['end_year']));
+        if ($end > now()->toDateString()) $end = now()->toDateString();
+        // Year-only events retain their approximate precision at the boundaries.
+        $query->where(function ($query) use ($start) {
+            $query->whereNull('event_date')->orWhere('event_date', '>=', $start);
+        })->where(function ($query) use ($end) {
+            $query->whereNull('event_date')->orWhere('event_date', '<=', $end);
+        });
+
+        $milestones = $this->pieceMilestones($piece, $born, $died);
+        $slots = 8 - ($born ? 1 : 0) - ($died ? 1 : 0) - $milestones->count();
+        // Select lightweight dates across the whole composer period, then fetch curated content.
         $dates = $query->chronological()->get(['id', 'year', 'event_date']);
-        $selected = $year ? $this->aroundYear($dates, $year, $limit - 1) : $this->spreadAcrossLifetime($dates, $limit - ($died ? 2 : 1));
+        $selected = $this->spreadAcrossLifetime($dates, $slots);
         $events = $selected->isEmpty() ? collect() : TimelineEvent::whereKey($selected->pluck('id'))->chronological()->get()->map(function ($event) {
             return array_merge($event->getAttributes(), ['highlight' => false]);
         });
+        $events = $events->concat($milestones);
+        if ($born) $events->push($this->composerMilestone($composer, $born, 'birth'));
+        if ($died) $events->push($this->composerMilestone($composer, $died, 'death'));
 
-        if ($year) {
-            $description = $composer->name;
-            // Piece dates have year precision, matching the existing composer age convention.
-            if ($born && $year >= $born && (!$died || $year <= $died)) {
+        return $events->sortBy(function ($event) {
+            // Birth/death frame approximate events in their years. Posthumous piece dates remain chronological.
+            $rank = ($event['composer_milestone'] ?? null) === 'birth' ? 0 : (($event['composer_milestone'] ?? null) === 'death' ? 2 : 1);
+            return sprintf('%04d-%d-%s', $event['year'], $rank, $event['event_date'] ?: '0000-01-01');
+        })->values();
+    }
+
+    private function pieceMilestones(Piece $piece, ?int $born, ?int $died)
+    {
+        $dates = collect();
+        foreach (['composed_in' => 'composed', 'published_in' => 'published'] as $field => $verb) {
+            $year = $this->usableYear($piece->$field);
+            if ($year) $dates->put($year, array_merge($dates->get($year, []), [$verb]));
+        }
+        return $dates->map(function ($verbs, $year) use ($piece, $born, $died) {
+            $description = $piece->composer->name;
+            if ($born && $year >= $born && (!$died || $year <= $died) && $year <= now()->year) {
                 $age = $year - $born;
                 $description .= ' was '.$age.' '.str_plural('year', $age).' old';
             }
-            $events->push([
-                'year' => $year,
-                'event_date' => null,
-                'title' => $piece->timeline_name . ($composed ? ' was composed' : ' was published'),
-                'description' => $description,
-                'image_url' => null,
-                'source_url' => null,
-                'highlight' => true,
-            ]);
-        }
-
-        $events = $events->sortBy(function ($event) {
-            return $event['event_date'] ?: sprintf('%04d-01-01', $event['year']);
+            return [
+                'year' => (int) $year, 'event_date' => null,
+                'title' => $piece->timeline_name.' was '.implode(' and ', $verbs),
+                'description' => $description, 'image_url' => null, 'source_url' => null, 'highlight' => true,
+            ];
         })->values();
-
-        if (!$year) {
-            // Keep lifetime markers at the edges, including approximate events in those years.
-            $events->prepend($this->composerMilestone($composer, $born, 'birth'));
-            if ($died) $events->push($this->composerMilestone($composer, $died, 'death'));
-        }
-
-        return $events;
     }
 
     private function composerMilestone($composer, int $year, string $kind): array
@@ -87,24 +90,8 @@ class WebTimeline
             'event_date' => ($kind === 'birth' ? $composer->date_of_birth : $composer->date_of_death)->toDateString(),
             'title' => $composer->name.($kind === 'birth' ? ' was born' : ' died'),
             'description' => $kind === 'birth' ? 'Beginning of the composer’s lifetime.' : 'End of the composer’s lifetime.',
-            'image_url' => null,
-            'source_url' => null,
-            'highlight' => false,
-            'composer_milestone' => $kind,
+            'image_url' => null, 'source_url' => null, 'highlight' => false, 'composer_milestone' => $kind,
         ];
-    }
-
-    private function aroundYear($dates, int $year, int $limit)
-    {
-        $perSide = intdiv($limit, 2);
-        $selected = $dates->filter(function ($event) use ($year) { return $event->year < $year; })->reverse()->take($perSide)
-            ->concat($dates->filter(function ($event) use ($year) { return $event->year > $year; })->take($perSide))
-            ->concat($dates->filter(function ($event) use ($year) { return $event->year === $year; })->take($limit % 2));
-        // Fill sparse sides with the nearest remaining events, including the reference year.
-        $remaining = $dates->whereNotIn('id', $selected->pluck('id'))->sortBy(function ($event) use ($year) {
-            return abs($event->year - $year);
-        });
-        return $selected->concat($remaining->take($limit - $selected->count()))->values();
     }
 
     private function spreadAcrossLifetime($dates, int $limit)

@@ -13,10 +13,12 @@
 		<a class="nav-link" data-anchor="synthesia" data-bs-toggle="tab" href="#tab-synthesia">Synthesia</a>
 		<div class="nav-outline"></div>
 	</li>
+	@if($timeline->isNotEmpty())
 	<li class="nav-item">
 		<a class="nav-link" data-anchor="timeline" data-bs-toggle="tab" href="#tab-timeline" new-feature>Timeline</a>
 		<div class="nav-outline"></div>
 	</li>
+	@endif
 
 {{-- 	<li class="nav-item">
 		<a class="nav-link" data-anchor="lessons" data-bs-toggle="tab" href="#tab-lessons">Lessons</a>
