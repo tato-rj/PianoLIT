@@ -56,8 +56,9 @@
   }
   .piece-timeline-boundary {
     padding: 1.5rem 1.75rem;
-    background: var(--color-surface-subtle, #f6f7f9);
-    border-radius: 999px;
+    opacity: .5;
+    // background: var(--color-surface-subtle, #f6f7f9);
+    // border-radius: 999px;
     &:before { background: var(--color-surface, #fff); border: 2px solid var(--color-primary, #0055fe); box-shadow: 0 0 0 4px rgba(0, 85, 254, .06); }
     .piece-timeline-description { font-size: .8rem; }
   }
