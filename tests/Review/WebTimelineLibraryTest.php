@@ -95,9 +95,13 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $timeline = $this->timeline();
         $years = $timeline->pluck('year');
         $this->assertCount(8, $timeline);
-        $this->assertCount(8, $years->unique());
+        $this->assertCount(8, $years);
         $this->assertSame(1685, $years->first());
         $this->assertSame(1750, $years->last());
+        $this->assertSame('birth', $timeline->first()['composer_milestone']);
+        $this->assertSame('death', $timeline->last()['composer_milestone']);
+        $this->assertCount(6, $timeline->filter(function ($event) { return isset($event['id']); }));
+        $this->assertCount(6, $timeline->filter(function ($event) { return isset($event['id']); })->pluck('year')->unique());
         foreach ([[1685, 1700], [1701, 1717], [1718, 1734], [1735, 1750]] as $span) {
             $this->assertTrue($years->contains(function ($year) use ($span) { return $year >= $span[0] && $year <= $span[1]; }));
         }
@@ -110,7 +114,10 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $this->undatedPiece('1800-03-21', '1800-07-28');
         $outside = [$this->event(1800, '1800-03-20')->id, $this->event(1800, '1800-07-29')->id];
         $inside = [$this->event(1800, '1800-03-21')->id, $this->event(1800, '1800-07-28')->id, $this->event(1800)->id];
-        $this->assertEqualsCanonicalizing($inside, $this->timeline()->pluck('id')->all());
+        $timeline = $this->timeline();
+        $this->assertEqualsCanonicalizing($inside, $timeline->filter(function ($event) { return isset($event['id']); })->pluck('id')->all());
+        $this->assertSame('1800-03-21', $timeline->first()['event_date']);
+        $this->assertSame('1800-07-28', $timeline->last()['event_date']);
         $this->assertEmpty(array_intersect($outside, $this->timeline()->pluck('id')->all()));
     }
 
@@ -130,7 +137,9 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $past = $this->event(2026, '2026-10-02');
         $this->event(2026, '2026-10-03');
         $this->event(2027); $this->event(1999);
-        $this->assertSame([$past->id], $this->timeline()->pluck('id')->all());
+        $this->assertSame('birth', $this->timeline()->first()['composer_milestone']);
+        $this->assertSame([$past->id], $this->timeline()->filter(function ($event) { return isset($event['id']); })->pluck('id')->all());
+        $this->assertFalse($this->timeline()->contains('composer_milestone', 'death'));
         $this->travelBack();
     }
 
@@ -139,7 +148,9 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $this->assertCount(1, $this->timeline());
         $this->assertTrue($this->timeline()->first()['highlight']);
         $this->undatedPiece('1700-01-01', '1780-01-01');
-        $this->assertCount(0, $this->timeline());
+        $this->assertCount(2, $this->timeline());
+        $this->assertSame('Test Composer was born', $this->timeline()->first()['title']);
+        $this->assertSame('Test Composer died', $this->timeline()->last()['title']);
         $this->event(1750);
         $this->piece->composer->update(['date_of_birth' => null]);
         $this->assertCount(0, $this->timeline());
@@ -204,6 +215,46 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $this->assertSame('Johann Sebastian Bach was 1 year old', $ownEvent()['description']);
         $composer->update(['date_of_birth' => null]);
         $this->assertSame('Johann Sebastian Bach', $ownEvent()['description']);
+        Http::assertNothingSent();
+    }
+
+    public function test_lifetime_markers_render_first_and_last_without_a_piece_highlight_or_mobile_changes()
+    {
+        $this->undatedPiece('1685-03-21', '1750-07-28');
+        $this->piece->composer->update(['name' => 'Johann Sebastian Bach']);
+        $this->event(1685); $this->event(1727, null, 'Curated musical context'); $this->event(1750);
+        $mobile = (new \App\Http\Controllers\Api\PiecesController)->timeline($this->piece->id);
+        $this->get(route('webapp.pieces.timeline', $this->piece))->assertOk()
+            ->assertSeeInOrder(['Johann Sebastian Bach was born', 'Curated musical context', 'Johann Sebastian Bach died'])
+            ->assertSee('Beginning of the composer’s lifetime.')->assertSee('End of the composer’s lifetime.')
+            ->assertDontSee('This piece');
+        $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+            ->assertSee('Johann Sebastian Bach was born')->assertSee('Johann Sebastian Bach died');
+        $this->assertSame($mobile, (new \App\Http\Controllers\Api\PiecesController)->timeline($this->piece->id));
+        $this->assertDatabaseCount('timeline_events', 3);
+        foreach (['composed_in', 'published_in'] as $field) {
+            $this->piece->update([$field => 1727]);
+            $this->assertFalse($this->timeline()->contains('composer_milestone', 'birth'));
+            $this->assertFalse($this->timeline()->contains('composer_milestone', 'death'));
+            $this->assertCount(1, $this->timeline()->where('highlight', true));
+            $this->piece->update([$field => null]);
+        }
+        Http::assertNothingSent();
+    }
+
+    public function test_unknown_death_adds_only_birth_and_invalid_exact_dates_add_no_markers()
+    {
+        $this->undatedPiece('1800-03-21', null);
+        $this->assertCount(1, $this->timeline());
+        $this->assertSame('birth', $this->timeline()->first()['composer_milestone']);
+        foreach (range(1801, 1812) as $year) $this->event($year);
+        $this->assertCount(8, $this->timeline());
+        $this->assertCount(7, $this->timeline()->filter(function ($event) { return isset($event['id']); }));
+        $this->assertFalse($this->timeline()->contains('composer_milestone', 'death'));
+        $this->piece->composer->update(['date_of_death' => '1800-03-20']);
+        $this->assertCount(0, $this->timeline());
+        $this->piece->composer->update(['date_of_birth' => now()->addYear()->toDateString(), 'date_of_death' => null]);
+        $this->assertCount(0, $this->timeline());
         Http::assertNothingSent();
     }
 }

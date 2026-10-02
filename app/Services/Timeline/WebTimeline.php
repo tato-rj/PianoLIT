@@ -20,6 +20,9 @@ class WebTimeline
             $range = config('webapp.timeline_year_range', 10);
             $query->whereBetween('year', [max(1, $year - $range), min(9999, $year + $range)]);
         } elseif ($born && (!$died || $died >= $born)) {
+            if ($composer->date_of_birth->isFuture() || ($died && $composer->date_of_death->lt($composer->date_of_birth))) {
+                return collect();
+            }
             $end = $died ?: min(now()->year, $born + config('webapp.timeline_unknown_lifespan_years', 80));
             $query->whereBetween('year', [$born, $end]);
             // Year-only events retain their approximate precision at the lifetime boundaries.
@@ -41,7 +44,7 @@ class WebTimeline
 
         // Select using lightweight dates; fetch curated text/images only for the chosen rows.
         $dates = $query->chronological()->get(['id', 'year', 'event_date']);
-        $selected = $year ? $this->aroundYear($dates, $year, $limit - 1) : $this->spreadAcrossLifetime($dates, $limit);
+        $selected = $year ? $this->aroundYear($dates, $year, $limit - 1) : $this->spreadAcrossLifetime($dates, $limit - ($died ? 2 : 1));
         $events = $selected->isEmpty() ? collect() : TimelineEvent::whereKey($selected->pluck('id'))->chronological()->get()->map(function ($event) {
             return array_merge($event->getAttributes(), ['highlight' => false]);
         });
@@ -64,9 +67,31 @@ class WebTimeline
             ]);
         }
 
-        return $events->sortBy(function ($event) {
+        $events = $events->sortBy(function ($event) {
             return $event['event_date'] ?: sprintf('%04d-01-01', $event['year']);
         })->values();
+
+        if (!$year) {
+            // Keep lifetime markers at the edges, including approximate events in those years.
+            $events->prepend($this->composerMilestone($composer, $born, 'birth'));
+            if ($died) $events->push($this->composerMilestone($composer, $died, 'death'));
+        }
+
+        return $events;
+    }
+
+    private function composerMilestone($composer, int $year, string $kind): array
+    {
+        return [
+            'year' => $year,
+            'event_date' => ($kind === 'birth' ? $composer->date_of_birth : $composer->date_of_death)->toDateString(),
+            'title' => $composer->name.($kind === 'birth' ? ' was born' : ' died'),
+            'description' => $kind === 'birth' ? 'Beginning of the composer’s lifetime.' : 'End of the composer’s lifetime.',
+            'image_url' => null,
+            'source_url' => null,
+            'highlight' => false,
+            'composer_milestone' => $kind,
+        ];
     }
 
     private function aroundYear($dates, int $year, int $limit)
