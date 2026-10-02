@@ -21,14 +21,28 @@
     var generation = 0;
     var storageKey = 'pianolit.timeline.' + (root.dataset.searchKey || root.dataset.pieceId);
     var title = root.dataset.title || 'Timeline';
+    var typeInputs = Array.prototype.slice.call(form.querySelectorAll('.timeline-type'));
     try {
         var previous = JSON.parse(sessionStorage.getItem(storageKey));
         if (previous && previous.year) { year.value = previous.year; searchId = previous.searchId || null; }
+        if (previous && Array.isArray(previous.types) && previous.types.length && previous.types.every(function (type) {
+            return typeInputs.some(function (input) { return input.value === type; });
+        })) typeInputs.forEach(function (input) { input.checked = previous.types.indexOf(input.value) !== -1; });
+        else if (previous && previous.types) searchId = null;
     } catch (e) {}
     more.hidden = true;
     resultsHeading.hidden = true;
     updateSavedCount(savedCount);
     arrangeSaved();
+
+    function selectedTypes() {
+        return typeInputs.filter(function (input) { return input.checked; }).map(function (input) { return input.value; });
+    }
+    function rememberSearch() {
+        var state = {year: year.value, searchId: searchId};
+        if (typeInputs.length) state.types = selectedTypes();
+        try { sessionStorage.setItem(storageKey, JSON.stringify(state)); } catch (e) {}
+    }
 
     function arrangeSaved() {
         var rows = Array.prototype.slice.call(saved.querySelectorAll('[data-event-id]'));
@@ -132,6 +146,7 @@
         find.disabled = value;
         more.disabled = value;
         year.disabled = value;
+        typeInputs.forEach(function (input) { input.disabled = value; });
         Array.prototype.forEach.call(candidates.querySelectorAll('.timeline-save'), function (button) {
             button.disabled = value || button.dataset.saved === 'true';
         });
@@ -140,6 +155,11 @@
     }
     function discover(reset) {
         if (busy || !form.reportValidity()) return;
+        if (typeInputs.length && !selectedTypes().length) {
+            status.textContent = 'Choose at least one event type.';
+            typeInputs[0].focus();
+            return;
+        }
         if (reset) {
             searchId = null;
             candidates.textContent = '';
@@ -152,7 +172,9 @@
         var current = generation;
         setBusy(true);
         status.textContent = 'Finding historical events…';
-        request(root.dataset.discoverUrl, {reference_year: Number(year.value), search_id: searchId})
+        var data = {reference_year: Number(year.value), search_id: searchId};
+        if (typeInputs.length) data.types = selectedTypes();
+        request(root.dataset.discoverUrl, data)
             .then(function (response) {
                 if (current !== generation) return;
                 var data = response.data;
@@ -164,7 +186,7 @@
                 resultsHeading.hidden = !candidateCount;
                 more.hidden = !candidateCount || !data.has_more;
                 if (!candidateCount && !data.has_more) searchId = null;
-                try { sessionStorage.setItem(storageKey, JSON.stringify({year: year.value, searchId: searchId})); } catch (e) {}
+                rememberSearch();
                 var period = data.start_year !== undefined ? data.start_year + '–' + data.end_year : 'within ' + data.range + ' years of ' + year.value;
                 var exhaustedPeriod = data.start_year !== undefined ? 'from ' + data.start_year + ' to ' + data.end_year : 'within ' + data.range + ' years';
                 status.textContent = data.count ? data.count + ' new events · ' + period + '. Save the ones you want to keep.' :
@@ -181,7 +203,7 @@
     }
     form.addEventListener('submit', function (event) { event.preventDefault(); discover(candidateCount > 0 || !searchId); });
     more.addEventListener('click', function () { discover(false); });
-    year.addEventListener('input', function () {
+    function resetSearch() {
         generation++;
         searchId = null;
         more.hidden = true;
@@ -190,8 +212,10 @@
         candidateCounter.textContent = '0';
         resultsHeading.hidden = true;
         status.textContent = '';
-        try { sessionStorage.setItem(storageKey, JSON.stringify({year: year.value})); } catch (e) {}
-    });
+        rememberSearch();
+    }
+    year.addEventListener('input', resetSearch);
+    typeInputs.forEach(function (input) { input.addEventListener('change', resetSearch); });
     // A restored cursor can continue on Find, but More requires visible results.
     candidates.addEventListener('click', function (event) {
         var button = event.target.closest('.timeline-save');

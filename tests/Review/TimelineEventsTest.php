@@ -77,6 +77,9 @@ class TimelineEventsTest extends ReviewTestCase
         $this->assertMatchesRegularExpression('/<input id="reference-year"[^>]*value=""/', $response->getContent());
         $response->assertSee('data-search-key="library"', false)->assertSee(route('admin.timeline-events.discover'));
         $response->assertDontSee('Edit piece');
+        foreach (WikimediaDiscovery::TYPES as $type => $label) {
+            $response->assertSee($label)->assertSee('name="types[]" type="checkbox" value="'.$type.'" checked', false);
+        }
         auth('admin')->logout();
         $this->actingAs(Model::withoutEvents(function () { return create(User::class); }), 'web');
         $this->withExceptionHandling()->get(route('admin.timeline-events.index'))->assertRedirect(route('admin.login.show'));

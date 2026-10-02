@@ -9,7 +9,7 @@ function element() {
         set textContent(value) { this.text = String(value); this.children = []; this.html = ''; },
         classList: {add() {}, remove() {}},
         addEventListener(type, handler) { this.events[type] = handler; },
-        setAttribute() {}, reportValidity() { return true; },
+        setAttribute() {}, reportValidity() { return true; }, focus() { this.focused = true; },
         insertAdjacentHTML(position, html) { this.html += html; },
         querySelector(selector) { return this.querySelectorAll(selector)[0] || null; },
         querySelectorAll(selector) {
@@ -286,6 +286,68 @@ async function main() {
     assert.strictEqual(libraryCandidateRoot.children[0], libraryCards[1], 'Sorting retains the original saved card');
     assert.strictEqual(libraryCards[1].dataset.saved, 'true');
     assert.strictEqual(libraryIds['page-heading'].textContent, 'Timeline events');
+    // Exercise subject controls independently of saved-event/grouping fixtures.
+    const filterIds = {};
+    Object.keys(ids).forEach(id => { filterIds[id] = element(); });
+    filterIds['piece-timeline-admin'].dataset = {searchKey: 'library', discoverUrl: '/discover', saveUrl: '/save', titleCount: 'false', groupCandidates: 'false'};
+    filterIds['piece-timeline-admin'].querySelector = () => filterIds['page-heading'];
+    const types = ['music', 'art', 'literature', 'science', 'history', 'people'];
+    const inputs = types.map(type => {
+        const input = element(); input.className = 'timeline-type'; input.value = type; input.checked = true;
+        filterIds['timeline-search'].appendChild(input);
+        return input;
+    });
+    const filterRequests = [];
+    const filterStorage = new Map();
+    const filterContext = {
+        document: {body: element(), createElement: () => element(), getElementById: id => filterIds[id]},
+        sessionStorage: {getItem: key => filterStorage.get(key), setItem: (key, value) => filterStorage.set(key, value), removeItem: key => filterStorage.delete(key)},
+        window: {axios: {post(url, data) { return new Promise((resolve, reject) => filterRequests.push({data, resolve, reject})); }}}
+    };
+    const source = fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8');
+    vm.runInNewContext(source, filterContext);
+    filterIds['reference-year'].value = '1800';
+    const filteredSubmit = () => filterIds['timeline-search'].events.submit({preventDefault() {}});
+    const payloadTypes = index => Array.from(filterRequests[index].data.types);
+    filteredSubmit();
+    assert.deepStrictEqual(payloadTypes(0), types, 'All subject choices are sent by default');
+    assert.ok(inputs.every(input => input.disabled), 'Choices cannot change during discovery');
+    filterRequests[0].resolve({data: {search_id: 'all-search', count: 10, has_more: true, start_year: 1800, end_year: 1810, html: 'all results'}});
+    await settle();
+    assert.ok(inputs.every(input => !input.disabled));
+    filterIds['timeline-more'].events.click();
+    assert.deepStrictEqual(payloadTypes(1), types, 'More retains the chosen types');
+    assert.strictEqual(filterRequests[1].data.search_id, 'all-search');
+    filterRequests[1].reject({response: {status: 503, data: {message: 'Please retry.'}}});
+    await settle();
+    assert.ok(inputs.every(input => !input.disabled), 'Failures restore all controls');
+    inputs.forEach(input => { input.checked = input.value === 'science'; });
+    inputs[0].events.change();
+    assert.strictEqual(filterIds['timeline-candidates'].html, '');
+    assert.strictEqual(filterIds['timeline-more'].hidden, true);
+    assert.strictEqual(filterIds['timeline-results-heading'].hidden, true);
+    filteredSubmit();
+    assert.deepStrictEqual(payloadTypes(2), ['science']);
+    assert.strictEqual(filterRequests[2].data.search_id, null, 'Changed choices use a fresh search');
+    filterRequests[2].resolve({data: {search_id: 'science-search', count: 10, has_more: true, start_year: 1800, end_year: 1810, html: 'science results'}});
+    await settle();
+    assert.deepStrictEqual(JSON.parse(filterStorage.get('pianolit.timeline.library')).types, ['science']);
+    vm.runInNewContext(source, filterContext); // A page reload restores its cursor and choices.
+    assert.deepStrictEqual(inputs.filter(input => input.checked).map(input => input.value), ['science']);
+    assert.strictEqual(filterIds['timeline-more'].hidden, true, 'Restored choices still need visible results before More');
+    filteredSubmit();
+    assert.strictEqual(filterRequests[3].data.search_id, 'science-search');
+    assert.deepStrictEqual(payloadTypes(3), ['science']);
+    filterRequests[3].resolve({data: {search_id: 'science-search', count: 1, has_more: false, html: 'one science event'}});
+    await settle();
+    inputs.forEach(input => { input.checked = false; });
+    inputs[0].events.change();
+    filteredSubmit();
+    assert.strictEqual(filterRequests.length, 4, 'No selection never sends an API request');
+    assert.strictEqual(filterIds['timeline-search-status'].textContent, 'Choose at least one event type.');
+    assert.strictEqual(inputs[0].focused, true);
+    assert.strictEqual(filterIds['timeline-find'].disabled, false);
+    console.log('Passed: default/selected event types, filtered pagination, reset on changes, restored choices/cursors, empty selection and failure recovery.');
 
     const savedRoot = libraryIds['timeline-saved'];
     savedRoot.dataset.groupDecades = 'true';

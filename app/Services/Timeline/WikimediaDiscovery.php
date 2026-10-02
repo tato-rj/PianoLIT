@@ -12,6 +12,10 @@ class WikimediaDiscovery
     const PROPERTIES = ['P571', 'P577', 'P585', 'P580', 'P569', 'P570'];
     const WIKIPEDIA_ENDPOINT = 'https://en.wikipedia.org/w/api.php';
     const COMMONS_ENDPOINT = 'https://commons.wikimedia.org/w/api.php';
+    const TYPES = [
+        'music' => 'Music', 'art' => 'Art & architecture', 'literature' => 'Literature & theatre',
+        'science' => 'Science & inventions', 'history' => 'History & world events', 'people' => 'Other notable people',
+    ];
 
     private $client;
     private $deadline;
@@ -28,7 +32,7 @@ class WikimediaDiscovery
 
     public function batch(int $year, int $range, int $batch = 0, bool $forwardOnly = false): array
     {
-        $version = $forwardOnly ? 'v8-forward' : 'v7';
+        $version = $forwardOnly ? 'v9-types-forward' : 'v9-types';
         $key = 'timeline.wikimedia.'.$version.'.'.$year.'.'.$range.'.'.$batch;
         if ($cached = Cache::get($key)) return $cached;
         $raw = [];
@@ -139,13 +143,15 @@ class WikimediaDiscovery
         $article = $entity['sitelinks']['enwiki']['title'] ?? '';
         if (!$label || !$article) return null;
         $row = ['itemDescription' => ['value' => $description]];
-        $category = $this->category($row);
+        $categories = $this->categories($row);
         foreach (['P31' => 'class', 'P106' => 'occupation'] as $property => $field) {
             foreach ($entity['claims'][$property] ?? [] as $claim) {
                 $row[$field] = ['value' => $claim['mainsnak']['datavalue']['value']['id'] ?? ''];
-                $category = min($category, $this->category($row));
+                $categories = array_merge($categories, $this->categories($row));
             }
         }
+        $categories = array_values(array_unique($categories));
+        $category = $categories ? min($categories) : 6;
         $kind = ['P571' => 'created', 'P577' => 'published', 'P585' => 'event', 'P580' => 'event', 'P569' => 'birth', 'P570' => 'death'][$item['property']];
         if (in_array($kind, ['birth', 'death']) ? ($category >= 5 && $item['sitelinks'] < 80) : $category > 5) return null;
         $worldEvent = $category === 5 && !in_array($kind, ['birth', 'death']);
@@ -168,6 +174,8 @@ class WikimediaDiscovery
         return [
             'source_id' => $item['wikidata_id'].':'.(in_array($kind, ['created', 'published']) ? 'work' : $kind).':'.$item['year'],
             'wikidata_id' => $item['wikidata_id'], 'event_kind' => $kind, 'world_event' => $worldEvent,
+            'types' => array_map(function ($category) { return array_keys(self::TYPES)[$category - 1]; }, $categories ?: [6]),
+            'relevance_rank' => $item['rank'] + (in_array($kind, ['birth', 'death']) ? 8 : 0),
             'year' => $item['year'], 'event_date' => $eventDate, 'title' => Str::limit($label.$suffix, 255, ''),
             'description' => $description,
             'source_url' => 'https://en.wikipedia.org/wiki/'.rawurlencode(str_replace(' ', '_', $article)),
@@ -206,8 +214,23 @@ class WikimediaDiscovery
         return false;
     }
 
-    public function select(array $pool, int $limit = 10, ?int $year = null): array
+    public function select(array $pool, int $limit = 10, ?int $year = null, ?array $types = null): array
     {
+        if ($types !== null) {
+            $ranked = collect($pool)->sortBy(function ($event) { return $event['relevance_rank'] ?? $event['rank']; })->values()->all();
+            $selected = [];
+            if ($year !== null) {
+                foreach (['before', 'after'] as $side) {
+                    $matches = array_values(array_filter($ranked, function ($event) use ($year, $side) {
+                        return $side === 'before' ? $event['year'] < $year : $event['year'] > $year;
+                    }));
+                    $selected = array_merge($selected, $this->mixTypes($matches, $types, min(3, intdiv($limit, 3)), $selected));
+                }
+            }
+            $ids = array_column($selected, 'source_id');
+            $remaining = array_values(array_filter($ranked, function ($event) use ($ids) { return !in_array($event['source_id'], $ids, true); }));
+            return array_merge($selected, $this->mixTypes($remaining, $types, $limit - count($selected), $selected));
+        }
         $ranked = collect($pool)->sortBy('rank')->values();
         $selected = $ranked->filter(function ($event) { return !empty($event['world_event']); })->take(min(3, $limit));
         // Cultural rank alone can fill every place with same-year/older events.
@@ -226,6 +249,34 @@ class WikimediaDiscovery
         return $selected->concat($ranked->reject(function ($event) use ($ids) {
             return in_array($event['source_id'], $ids, true);
         })->take($limit - $selected->count()))->sortBy('rank')->values()->all();
+    }
+
+    private function mixTypes(array $pool, array $types, int $limit, array $existing = []): array
+    {
+        $selected = [];
+        $ids = [];
+        $counts = array_fill_keys($types, 0);
+        foreach ($existing as $event) {
+            $ids[$event['source_id']] = true;
+            foreach (array_intersect($types, $event['types'] ?? []) as $type) $counts[$type]++;
+        }
+        // Give each chosen subject a turn, without a fixed music priority or world-event quota.
+        while (count($selected) < $limit) {
+            $before = count($selected);
+            $ordered = collect($types)->sortBy(function ($type) use ($counts) { return $counts[$type]; })->all();
+            foreach ($ordered as $type) {
+                foreach ($pool as $event) {
+                    if (isset($ids[$event['source_id']]) || !in_array($type, $event['types'] ?? [], true)) continue;
+                    $selected[] = $event;
+                    $ids[$event['source_id']] = true;
+                    foreach (array_intersect($types, $event['types']) as $matched) $counts[$matched]++;
+                    break;
+                }
+                if (count($selected) > $before) break;
+            }
+            if (count($selected) === $before) break;
+        }
+        return $selected;
     }
 
     public function identity(array $event): string
@@ -286,7 +337,7 @@ class WikimediaDiscovery
         }
         return array_map(function ($event) {
             foreach (['source_url', 'image_url', 'image_source_url', 'image_license_url'] as $field) $event[$field] = $this->safeUrl($event[$field]);
-            unset($event['article_title'], $event['rank'], $event['world_event'], $event['image_file'], $event['thumbnail']);
+            unset($event['article_title'], $event['rank'], $event['world_event'], $event['types'], $event['relevance_rank'], $event['image_file'], $event['thumbnail']);
             return $event;
         }, $events);
     }
@@ -336,9 +387,9 @@ class WikimediaDiscovery
         return $url && filter_var($url, FILTER_VALIDATE_URL) && parse_url($url, PHP_URL_SCHEME) === 'https' ? $url : null;
     }
 
-    private function category(array $row): int
+    private function categories(array $row): array
     {
-        if (isset($row['category']['value'])) return (int) $row['category']['value'];
+        if (isset($row['category']['value'])) return [(int) $row['category']['value']];
         $roots = [
             'Q2188189' => 1, // musical work
             'Q838948' => 2, // work of art
@@ -352,26 +403,26 @@ class WikimediaDiscovery
             'Q124734' => 5, // rebellion
         ];
         $occupations = ['Q36834' => 1, 'Q639669' => 1, 'Q483501' => 2, 'Q36180' => 3, 'Q49757' => 3, 'Q901' => 4];
-        $category = 6;
+        $categories = [];
         foreach (['class'] as $field) {
-            $category = min($category, $roots[basename($row[$field]['value'] ?? '')] ?? 6);
+            if ($category = $roots[basename($row[$field]['value'] ?? '')] ?? null) $categories[] = $category;
         }
         foreach (['occupation'] as $field) {
-            $category = min($category, $occupations[basename($row[$field]['value'] ?? '')] ?? 6);
+            if ($category = $occupations[basename($row[$field]['value'] ?? '')] ?? null) $categories[] = $category;
         }
         // English Wikidata descriptions help recognize specific work/occupation types
         // without recursively traversing the whole taxonomy on the public query service.
         $description = $row['itemDescription']['value'] ?? '';
         foreach ([
-            1 => '/\b(composer|musician|pianist|organist|opera|oratorio|cantata|sonata|symphony|concerto|musical composition|musical work|ballet)\b/i',
-            2 => '/\b(painter|sculptor|artist|painting|sculpture|artwork|work of art)\b/i',
-            3 => '/\b(writer|poet|novelist|novel|poem|literary work|playwright)\b/i',
+            1 => '/\b(composer|musician|pianist|organist|violinist|singer|opera|oratorio|cantata|sonata|symphony|concerto|musical composition|musical work|ballet)\b/i',
+            2 => '/\b(painter|sculptor|artist|architect|architecture|painting|sculpture|artwork|work of art)\b/i',
+            3 => '/\b(writer|poet|novelist|novel|poem|literary work|playwright|theatre|theater|stage play)\b/i',
             4 => '/\b(scientist|physicist|chemist|mathematician|astronomer|inventor|invention|discovery|scientific event)\b/i',
             5 => '/\b(revolution|historical event|war|armed conflict|battle|siege|treaty|rebellion|uprising|independence|expedition|circumnavigation|earthquake|tsunami|volcanic eruption|famine|pandemic|epidemic|abolition|coronation)\b/i',
         ] as $priority => $pattern) {
-            if (preg_match($pattern, $description)) $category = min($category, $priority);
+            if (preg_match($pattern, $description)) $categories[] = $priority;
         }
-        return $category;
+        return array_values(array_unique($categories));
     }
 
     private function sideLimit(string $side, bool $forwardOnly = false): int

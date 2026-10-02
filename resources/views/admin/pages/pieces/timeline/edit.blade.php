@@ -36,6 +36,15 @@
         </div>
         <button class="btn btn-default btn-sm" id="timeline-find" type="submit">Find 10 events</button>
         <span class="small text-muted timeline-search-hint">{{$isLibrary ? 'Search this year through 10 years after it.' : 'Search nearby years.'}} Save only the events you want.</span>
+        <fieldset class="timeline-type-controls">
+          <legend>Event types</legend>
+          <div class="timeline-type-options">
+            @foreach(\App\Services\Timeline\WikimediaDiscovery::TYPES as $type => $label)
+            <label class="timeline-type-option" for="timeline-type-{{$type}}"><input class="timeline-type" id="timeline-type-{{$type}}" name="types[]" type="checkbox" value="{{$type}}" checked> {{$label}}</label>
+            @endforeach
+          </div>
+          <span class="small text-muted">Includes births and deaths within each subject. Choose at least one type.</span>
+        </fieldset>
       </form>
     </div>
     <section id="timeline-results" aria-labelledby="timeline-results-title" class="timeline-admin-section">

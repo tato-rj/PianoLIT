@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 // Shared admin discovery cursors; global and piece editors keep separate namespaces.
 class TimelineDiscoverySession
@@ -13,7 +14,11 @@ class TimelineDiscoverySession
     public function discover(Request $request, WikimediaDiscovery $discovery, $saved, ?int $pieceId = null)
     {
         $sessionKey = $this->sessionKey($pieceId);
-        $data = $request->validate(['reference_year' => 'required|integer|between:1,9999', 'search_id' => 'nullable|uuid']);
+        $data = $request->validate(['reference_year' => 'required|integer|between:1,9999', 'search_id' => 'nullable|uuid',
+            'types' => 'sometimes|required|array|min:1|max:'.count(WikimediaDiscovery::TYPES),
+            'types.*' => ['required', 'string', 'distinct', Rule::in(array_keys(WikimediaDiscovery::TYPES))]],
+            ['types.required' => 'Choose at least one event type.']);
+        $types = array_values(array_intersect(array_keys(WikimediaDiscovery::TYPES), $data['types'] ?? array_keys(WikimediaDiscovery::TYPES)));
         $year = (int) $data['reference_year'];
         $forwardOnly = $pieceId === null;
         $range = $forwardOnly ? config('wikimedia.library_range') : config('wikimedia.ranges')[0];
@@ -27,6 +32,15 @@ class TimelineDiscoverySession
             throw ValidationException::withMessages(['search_id' => 'This search has expired. Start a new search.']);
         }
         $state = $sessions[$id] ?? ['piece_id' => $pieceId, 'year' => $year, 'pool' => [], 'shown' => [], 'expires' => time() + 7200];
+        if (!empty($data['search_id']) && ($state['types'] ?? array_keys(WikimediaDiscovery::TYPES)) !== $types) {
+            throw ValidationException::withMessages(['types' => 'The event types changed. Start a new search.']);
+        }
+        if (isset($data['types']) && !isset($state['types'])) {
+            // Older cursors have unclassified pools. Retain shown exclusions, rebuild the pool.
+            $state = array_merge($state, ['pool' => [], 'batch_index' => 0, 'has_more' => true,
+                'periods' => ['before' => !$forwardOnly, 'after' => true]]);
+        }
+        $state['types'] = $types;
         if ($forwardOnly && ($state['window'] ?? null) !== 'forward-'.$range) {
             // Resume older searches with fresh forward-only pools but retain shown exclusions.
             $state = array_merge($state, ['window' => 'forward-'.$range, 'pool' => [], 'batch_index' => 0,
@@ -36,9 +50,11 @@ class TimelineDiscoverySession
         $state += ['batch_index' => 0, 'has_more' => true, 'periods' => ['before' => true, 'after' => true]];
         $excluded = array_merge(array_keys($state['shown']), $saved->pluck('source_id')->all());
         $identities = array_map([$discovery, 'identity'], array_merge(array_values($state['shown']), $saved->toArray()));
-        $available = function ($pool) use ($excluded, $identities, $discovery, $startYear, $endYear) {
-            return array_values(array_filter($pool, function ($event) use ($excluded, $identities, $discovery, $startYear, $endYear) {
+        $filterTypes = isset($data['types']);
+        $available = function ($pool) use ($excluded, $identities, $discovery, $startYear, $endYear, $types, $filterTypes) {
+            return array_values(array_filter($pool, function ($event) use ($excluded, $identities, $discovery, $startYear, $endYear, $types, $filterTypes) {
                 return $event['year'] >= $startYear && $event['year'] <= $endYear
+                    && (!$filterTypes || count(array_intersect($types, $event['types'] ?? [])) > 0)
                     && !in_array($event['source_id'], $excluded, true) && !in_array($discovery->identity($event), $identities, true);
             }));
         };
@@ -53,7 +69,7 @@ class TimelineDiscoverySession
                     ->sortBy('rank')->unique(function ($event) use ($discovery) { return $discovery->identity($event); })->values()->all();
                 if (!$batch['complete']) break;
             }
-            $selected = $discovery->select($pool, 10, $year);
+            $selected = $discovery->select($pool, 10, $year, $filterTypes ? $types : null);
             $candidates = $discovery->enrich($selected);
         } catch (\Throwable $e) {
             Log::warning('Timeline discovery failed', ['piece_id' => $pieceId, 'reference_year' => $year, 'exception_type' => get_class($e),
