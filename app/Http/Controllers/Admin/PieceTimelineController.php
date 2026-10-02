@@ -32,7 +32,7 @@ class PieceTimelineController extends Controller
         }
         $state = $sessions[$id] ?? ['piece_id' => $piece->id, 'year' => $year, 'pool' => [], 'shown' => [], 'expires' => time() + 7200];
         // Existing open searches retain exclusions and any previously fetched candidates.
-        $state += ['batch_index' => 0, 'has_more' => true];
+        $state += ['batch_index' => 0, 'has_more' => true, 'periods' => ['before' => true, 'after' => true]];
         $saved = $piece->timelineEvents()->get(['source_id', 'wikidata_id', 'event_kind', 'year']);
         $excluded = array_merge(array_keys($state['shown']), $saved->pluck('source_id')->all());
         $identities = array_map([$discovery, 'identity'], array_merge(array_values($state['shown']), $saved->toArray()));
@@ -44,15 +44,16 @@ class PieceTimelineController extends Controller
         $pool = $available($state['pool']);
         $range = config('wikimedia.ranges')[0];
         try {
-            for ($attempt = 0; count($pool) < 10 && $state['has_more'] && $attempt < 2; $attempt++) {
+            for ($attempt = 0; $discovery->needsCandidates($pool, $year, $state['periods']) && $state['has_more'] && $attempt < 2; $attempt++) {
                 $batch = $discovery->batch($year, $range, $state['batch_index']);
                 $state['has_more'] = $batch['has_more'];
+                $state['periods'] = $batch['periods'];
                 $state['batch_index'] = $batch['next_batch'];
                 $pool = collect(array_merge($pool, $available($batch['events'])))
                     ->sortBy('rank')->unique(function ($event) use ($discovery) { return $discovery->identity($event); })->values()->all();
                 if (!$batch['complete']) break;
             }
-            $selected = $discovery->select($pool);
+            $selected = $discovery->select($pool, 10, $year);
             $candidates = $discovery->enrich($selected);
         } catch (\Throwable $e) {
             Log::warning('Timeline discovery failed', ['piece_id' => $piece->id, 'reference_year' => $year, 'exception_type' => get_class($e),

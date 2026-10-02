@@ -141,8 +141,9 @@ class PieceTimelineTest extends ReviewTestCase
         $this->assertStringContainsString('data-candidate="Q11:work:1730"', $second->json('html'));
         $new = $this->discover()->assertOk();
         $this->assertStringNotContainsString('data-candidate="Q1:work:1730"', $new->json('html'));
-        // All twelve lightweight before/after date pools are reused across pagination and new searches.
-        $this->assertCount(12, Http::recorded(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0; }));
+        // Each lightweight date page is fetched once, including when a new search reuses it.
+        $queries = Http::recorded(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0; });
+        $this->assertSame($queries->count(), $queries->unique(function ($pair) { return $pair[0]['query']; })->count());
     }
 
     public function test_more_batches_keep_five_year_window_and_reject_forged_or_cross_piece_candidates()
@@ -153,8 +154,8 @@ class PieceTimelineTest extends ReviewTestCase
         for ($i = 0; $i < 4; $i++) $this->discover($id)->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 5);
         Http::assertSent(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0 && strpos($request['query'], 'OFFSET 40') !== false; });
         foreach (Http::recorded(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0; }) as $pair) {
-            $this->assertMatchesRegularExpression('/1725-01-01|1730-01-01/', $pair[0]['query']);
-            $this->assertMatchesRegularExpression('/1729-12-31|1735-12-31/', $pair[0]['query']);
+            $this->assertMatchesRegularExpression('/1725-01-01|1730-01-01|1731-01-01/', $pair[0]['query']);
+            $this->assertMatchesRegularExpression('/1729-12-31|1730-12-31|1735-12-31/', $pair[0]['query']);
             $this->assertStringNotContainsString('OPTIONAL', $pair[0]['query']);
             $this->assertStringNotContainsString('SERVICE', $pair[0]['query']);
             $this->assertStringNotContainsString('UNION', $pair[0]['query']);
@@ -400,7 +401,7 @@ class PieceTimelineTest extends ReviewTestCase
         Http::assertSent(function ($request) { return strpos($request->url(), WikimediaDiscovery::WIKIPEDIA_ENDPOINT) === 0 && count(explode('|', $request['titles'])) === 10; });
         foreach (Http::recorded(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0; }) as $pair) {
             $this->assertStringContainsString('SELECT ?item ?date ?sitelinks', $pair[0]['query']);
-            $this->assertStringContainsString('LIMIT 20', $pair[0]['query']);
+            $this->assertMatchesRegularExpression('/LIMIT (10|15) OFFSET/', $pair[0]['query']);
             $this->assertStringNotContainsString('ORDER BY', $pair[0]['query']);
         }
     }
@@ -420,5 +421,45 @@ class PieceTimelineTest extends ReviewTestCase
         \Illuminate\Support\Facades\Log::shouldHaveReceived('warning')->with('Timeline Wikimedia request failed', \Mockery::on(function ($context) {
             return $context['endpoint'] === WikimediaDiscovery::WIKIPEDIA_ENDPOINT && $context['http_status'] === 503 && $context['error_message'] === 'Upstream unavailable';
         }))->twice();
+    }
+
+    public function test_reference_year_cannot_crowd_future_events_out_of_the_shortlist()
+    {
+        $data = $this->bindings(20, 1800);
+        $data['results']['bindings'] = array_merge($data['results']['bindings'],
+            $this->bindings(15, 1797, 101)['results']['bindings'], $this->bindings(15, 1804, 201)['results']['bindings']);
+        $this->stagedDiscovery($data);
+        $first = $this->discover(null, 1800)->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 5);
+        $id = $first->json('search_id');
+        $shown = app('session')->get('piece_timeline_searches.'.$id.'.shown');
+        $this->assertGreaterThanOrEqual(3, count(array_filter($shown, function ($event) { return $event['year'] < 1800; })));
+        $this->assertGreaterThanOrEqual(3, count(array_filter($shown, function ($event) { return $event['year'] > 1800; })));
+        $this->assertNotEmpty(array_filter($shown, function ($event) { return $event['year'] === 1800; }));
+        $this->discover($id, 1800)->assertOk()->assertJsonPath('count', 10);
+        $all = app('session')->get('piece_timeline_searches.'.$id.'.shown');
+        $this->assertCount(20, $all);
+        $service = new WikimediaDiscovery;
+        $identities = array_map([$service, 'identity'], $all);
+        $this->assertCount(20, array_unique($identities));
+    }
+
+    public function test_date_balance_preserves_world_quota_and_fills_sparse_periods()
+    {
+        $pool = [];
+        foreach ([1800 => 20, 1799 => 5, 1801 => 5] as $year => $count) {
+            for ($i = 0; $i < $count; $i++) $pool[] = ['source_id' => $year.':'.$i, 'year' => $year, 'rank' => $year === 1800 ? 0 : 10, 'world_event' => false];
+        }
+        for ($i = 0; $i < 3; $i++) $pool[] = ['source_id' => 'world:'.$i, 'year' => 1800, 'rank' => 50, 'world_event' => true];
+        $service = new WikimediaDiscovery;
+        $selected = $service->select($pool, 10, 1800);
+        $this->assertCount(10, $selected);
+        $this->assertCount(3, array_filter($selected, function ($event) { return $event['world_event']; }));
+        $this->assertCount(3, array_filter($selected, function ($event) { return $event['year'] < 1800; }));
+        $this->assertCount(3, array_filter($selected, function ($event) { return $event['year'] > 1800; }));
+        $this->assertCount(10, array_unique(array_column($selected, 'source_id')));
+        $sparse = array_values(array_filter($pool, function ($event) { return $event['year'] <= 1800; }));
+        $this->assertCount(10, $service->select($sparse, 10, 1800));
+        $this->assertFalse($service->needsCandidates($sparse, 1800, ['before' => true, 'after' => false]));
+        $this->assertTrue($service->needsCandidates($sparse, 1800));
     }
 }
