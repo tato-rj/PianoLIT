@@ -2,7 +2,7 @@
 
 namespace Tests\Review;
 
-use App\{Admin, Piece, Timeline, User};
+use App\{Admin, Piece, Timeline, TimelineEvent, User};
 use App\Services\Timeline\{WebTimeline, WikimediaDiscovery};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Cache, DB, Http, Redis};
@@ -216,6 +216,7 @@ class PieceTimelineTest extends ReviewTestCase
         $this->candidate($id);
         $this->assertSame($legacyBefore, Timeline::for($this->piece->id, 4));
         $this->assertSame($legacyBefore, (new \App\Http\Controllers\Api\PiecesController)->timeline($this->piece->id));
+        TimelineEvent::create($this->piece->timelineEvents()->firstOrFail()->getAttributes());
         $this->fakeHttp();
         $url = route('webapp.pieces.timeline', $this->piece);
         $this->get($url)->assertOk()->assertSee('Musical work 1 was created')->assertSee('This piece');

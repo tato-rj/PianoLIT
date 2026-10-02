@@ -32,7 +32,7 @@
       <form id="timeline-search" class="timeline-search-form">
         <div class="timeline-year-field">
           <label for="reference-year">Reference year</label>
-          <input id="reference-year" type="number" min="{{$isLibrary ? $range->earliest_year : 1500}}" max="{{$isLibrary ? $range->latest_year : now()->year}}" step="10" required class="form-control form-control-sm" value="{{$isLibrary ? '' : ($piece->composed_in ?: ($piece->published_in ?: ''))}}">
+          <input id="reference-year" type="number" min="{{$isLibrary ? 1650 : 1500}}" max="{{$isLibrary ? $range->latest_year : now()->year}}" step="10" required class="form-control form-control-sm" value="{{$isLibrary ? '' : ($piece->composed_in ?: ($piece->published_in ?: ''))}}">
         </div>
         <button class="btn btn-default btn-sm" id="timeline-find" type="submit">Find 10 events</button>
         <span class="small text-muted timeline-search-hint">{{$isLibrary ? 'Search this year through 10 years after it.' : 'Search nearby years.'}} Save only the events you want.</span>

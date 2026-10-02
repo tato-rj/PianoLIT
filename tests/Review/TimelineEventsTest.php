@@ -239,14 +239,16 @@ class TimelineEventsTest extends ReviewTestCase
         $this->saveCandidate($this->candidate(1))->assertOk()->assertJsonPath('count', 1);
     }
 
-    public function test_library_does_not_change_public_or_mobile_piece_timelines()
+    public function test_library_supplies_web_timelines_without_changing_mobile_timelines()
     {
         $piece = Model::withoutEvents(function () { return create(Piece::class, ['composed_in' => 1800]); });
         $mobile = Timeline::for($piece->id, 4);
         $web = (new WebTimeline)->forPiece($piece)->all();
         $this->saveCandidate($this->candidate(1))->assertOk();
         $this->assertSame($mobile, (new \App\Http\Controllers\Api\PiecesController)->timeline($piece->id));
-        $this->assertSame($web, (new WebTimeline)->forPiece($piece)->all());
+        $updated = (new WebTimeline)->forPiece($piece);
+        $this->assertCount(count($web) + 1, $updated);
+        $this->assertSame('Library event 1', $updated->firstWhere('highlight', false)['title']);
         $this->assertDatabaseCount('piece_timeline_events', 0);
         Http::assertNothingSent();
     }
