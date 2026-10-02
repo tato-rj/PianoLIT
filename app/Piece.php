@@ -655,6 +655,11 @@ class Piece extends PianoLit
         return $results;
     }
 
+    public function adminTableHiddenAttributes()
+    {
+        return array_merge($this->appends, ['composer', 'tags']);
+    }
+
     public function scopeDatatable($query, $actions = null)
     {
         return datatable($query)->withDate()->withBlade([

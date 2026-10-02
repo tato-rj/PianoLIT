@@ -23,14 +23,24 @@ small .form-check-label::before, small .form-check-label::after {
       'action' => ['label' => 'Add a new piece', 'url' => route('admin.pieces.create')]
     ])
 
-{{--     <div class="row">
-
-      <div class="col-lg-8 col-md-8 col-12 mb-3">
-        @include('admin.components.filters.pieces')
+    <fieldset class="border rounded p-3 mb-3" data-piece-table-filters>
+      <legend class="float-none w-auto px-2 fs-6">Filters</legend>
+      <div class="d-flex flex-wrap gap-4">
+        @foreach(['with_videos' => 'Pieces with videos', 'with_sections' => 'Pieces with sections', 'with_synthesia' => 'Pieces with Synthesia'] as $filter => $label)
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="filter-{{$filter}}" name="{{$filter}}" {{request()->boolean($filter, true) ? 'checked' : ''}}>
+          <label class="form-check-label" for="filter-{{$filter}}">{{$label}}</label>
+        </div>
+        @endforeach
       </div>
-    </div> --}}
+      <p class="small text-muted mb-0 mt-2">Results match all checked filters. Uncheck all to show every piece.</p>
+    </fieldset>
+    <div class="alert alert-danger" role="alert" data-piece-table-error hidden>
+      The pieces could not be loaded. Please try again.
+      <button type="button" class="btn btn-sm btn-outline-danger ms-2" data-piece-table-retry>Retry</button>
+    </div>
 
-    @datatable(['table' => 'pieces', 'columns' => ['', 'ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']])
+    @datatable(['table' => 'pieces', 'columns' => ['ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']])
 
   </div>
 </div>
@@ -43,24 +53,13 @@ small .form-check-label::before, small .form-check-label::after {
 
 @section('scripts')
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+<script src="{{mix('js/views/admin-pieces.js')}}"></script>
 <script type="text/javascript">
 $('button#missing-image').on('click', function(e) {
   e.preventDefault();
   alert('This piece has no cover image.');
 });
 
-(new DataTable('#pieces-table')).columns([
-  {data: 'info', orderable: false, searchable: false},
-  {data: 'id', name: 'pieces.id'},
-  {data: 'name', name: 'pieces.name', class: 'dataTables_main_column'},
-  {data: 'composer.short_name', name: 'composer.name', class: 'text-nowrap'},
-  {data: 'tags', name: 'tags.name', orderable: false},
-  {data: 'level', name: 'tags.name', orderable: false},
-  {data: 'ranking', name: 'tags.name', orderable: false},
-  {data: 'favorited', orderable: false, searchable: false},
-  // {data: 'views', orderable: false, searchable: false},
-  {data: 'actions', orderable: false, searchable: false},
-]).create();
 </script>
 
 <script type="text/javascript">
