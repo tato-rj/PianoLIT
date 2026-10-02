@@ -47,7 +47,7 @@ class PieceTimelineController extends Controller
             for ($attempt = 0; count($pool) < 10 && $state['has_more'] && $attempt < 2; $attempt++) {
                 $batch = $discovery->batch($year, $range, $state['batch_index']);
                 $state['has_more'] = $batch['has_more'];
-                if ($batch['complete']) $state['batch_index']++;
+                $state['batch_index'] = $batch['next_batch'];
                 $pool = collect(array_merge($pool, $available($batch['events'])))
                     ->sortBy('rank')->unique(function ($event) use ($discovery) { return $discovery->identity($event); })->values()->all();
                 if (!$batch['complete']) break;

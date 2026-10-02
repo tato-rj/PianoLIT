@@ -6,8 +6,8 @@ return [
     'query_timeout' => 8,
     'discovery_budget' => 25,
     'cache_minutes' => 360,
-    'ranges' => [10],
+    'ranges' => [5],
     'candidate_limit' => 40,
     'shortlist_per_property' => 10,
-    'max_batches' => 6,
+    'max_batches' => 24, // Four shortlists per page, at most six pages.
 ];

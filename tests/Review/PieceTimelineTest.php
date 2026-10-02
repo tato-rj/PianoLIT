@@ -44,12 +44,48 @@ class PieceTimelineTest extends ReviewTestCase
         return ['results' => ['bindings' => $rows]];
     }
 
+    private function stagedDiscovery(array $data, array $pages = []): void
+    {
+        $entities = [];
+        foreach ($data['results']['bindings'] as $row) {
+            $id = basename($row['item']['value']);
+            $property = basename($row['property']['value']);
+            $entity = $entities[$id] ?? [
+                'labels' => ['en' => ['value' => $row['itemLabel']['value']]],
+                'descriptions' => ['en' => ['value' => $row['itemDescription']['value']]],
+                'sitelinks' => ['enwiki' => ['title' => str_replace('_', ' ', rawurldecode(substr(parse_url($row['article']['value'], PHP_URL_PATH), 6)))]],
+                'claims' => [],
+            ];
+            $entity['claims'][$property][] = ['mainsnak' => ['datavalue' => ['value' => ['time' => '+'.$row['date']['value'], 'precision' => (int) $row['precision']['value']]]]];
+            foreach (['class' => 'P31', 'occupation' => 'P106'] as $field => $prop) {
+                if (isset($row[$field])) $entity['claims'][$prop][] = ['mainsnak' => ['datavalue' => ['value' => ['id' => basename($row[$field]['value'])]]]];
+            }
+            if (isset($row['category']) && $row['category']['value'] === '1') {
+                $entity['claims']['P31'][] = ['mainsnak' => ['datavalue' => ['value' => ['id' => 'Q2188189']]]];
+            }
+            $entities[$id] = $entity;
+        }
+        $this->fakeHttp(function ($request) use ($data, $entities, $pages) {
+            if (strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0) {
+                preg_match('/\?item wdt:(P\d+) \?date/', $request['query'], $property);
+                preg_match('/LIMIT (\d+) OFFSET (\d+)/', $request['query'], $paging);
+                preg_match_all('/\"(\d{4}-[^\"]+)\"\^\^xsd:dateTime/', $request['query'], $bounds);
+                $rows = array_values(array_filter($data['results']['bindings'], function ($row) use ($property, $bounds) {
+                    return basename($row['property']['value']) === $property[1] && $row['date']['value'] >= $bounds[1][0] && $row['date']['value'] <= $bounds[1][1];
+                }));
+                return Http::response(['results' => ['bindings' => array_slice($rows, (int) $paging[2], (int) $paging[1])]]);
+            }
+            if (strpos($request->url(), WikimediaDiscovery::ENTITY_ENDPOINT) === 0) {
+                return Http::response(['entities' => array_intersect_key($entities, array_flip(explode('|', $request['ids'])))]);
+            }
+            foreach ($pages as $endpoint => $response) if (strpos($request->url(), $endpoint) === 0) return Http::response($response);
+            return Http::response(['query' => ['pages' => []]]);
+        });
+    }
+
     private function fakeDiscovery($count = 30)
     {
-        $this->fakeHttp([
-            WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response($this->bindings($count)),
-            '*' => Http::response(['query' => ['pages' => []]]),
-        ]);
+        $this->stagedDiscovery($this->bindings($count));
     }
 
     private function discover($searchId = null, $year = 1730)
@@ -82,11 +118,14 @@ class PieceTimelineTest extends ReviewTestCase
     public function test_ten_more_excludes_shown_and_saved_and_save_is_idempotent()
     {
         $this->fakeDiscovery();
-        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 10);
+        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 5);
         Http::assertSent(function ($request) {
             return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0
-                && strpos($request['query'], '1720-01-01T00:00:00Z') !== false
-                && strpos($request['query'], '1740-12-31T23:59:59Z') !== false;
+                && strpos($request['query'], '1725-01-01T00:00:00Z') !== false;
+        });
+        Http::assertSent(function ($request) {
+            return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0
+                && strpos($request['query'], '1735-12-31T23:59:59Z') !== false;
         });
         $id = $first->json('search_id');
         $first->assertSee('Musical work 1');
@@ -102,23 +141,24 @@ class PieceTimelineTest extends ReviewTestCase
         $this->assertStringContainsString('data-candidate="Q11:work:1730"', $second->json('html'));
         $new = $this->discover()->assertOk();
         $this->assertStringNotContainsString('data-candidate="Q1:work:1730"', $new->json('html'));
-        Http::assertSentCount(4); // One cached Wikidata pool, three optional summary requests.
+        // All twelve lightweight before/after date pools are reused across pagination and new searches.
+        $this->assertCount(12, Http::recorded(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0; }));
     }
 
-    public function test_progressively_widens_range_and_rejects_forged_or_cross_piece_candidates()
+    public function test_more_batches_keep_five_year_window_and_reject_forged_or_cross_piece_candidates()
     {
-        $ranges = [];
-        $this->fakeHttp(function ($request) use (&$ranges) {
-            if (strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) !== 0) return Http::response(['query' => ['pages' => []]]);
-            $ranges[] = $request['query'];
-            return Http::response(count($ranges) === 1 ? $this->bindings(3) : $this->bindings(25));
-        });
-        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 15);
-        $this->assertCount(2, $ranges);
-        $this->assertStringContainsString('1720-01-01', $ranges[0]);
-        $this->assertStringContainsString('1740-12-31', $ranges[0]);
-        $this->assertStringContainsString('1715-01-01', $ranges[1]);
-        $this->assertStringContainsString('1745-12-31', $ranges[1]);
+        $this->fakeDiscovery(100);
+        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 5);
+        $id = $first->json('search_id');
+        for ($i = 0; $i < 4; $i++) $this->discover($id)->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 5);
+        Http::assertSent(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0 && strpos($request['query'], 'OFFSET 40') !== false; });
+        foreach (Http::recorded(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0; }) as $pair) {
+            $this->assertMatchesRegularExpression('/1725-01-01|1730-01-01/', $pair[0]['query']);
+            $this->assertMatchesRegularExpression('/1729-12-31|1735-12-31/', $pair[0]['query']);
+            $this->assertStringNotContainsString('OPTIONAL', $pair[0]['query']);
+            $this->assertStringNotContainsString('SERVICE', $pair[0]['query']);
+            $this->assertStringNotContainsString('UNION', $pair[0]['query']);
+        }
         $id = $first->json('search_id');
         $this->withExceptionHandling();
         $this->candidate($id, 'Q999:work:1730')->assertUnprocessable();
@@ -159,9 +199,11 @@ class PieceTimelineTest extends ReviewTestCase
     {
         $this->fakeHttp([WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response([], 503)]);
         $this->discover()->assertStatus(503)->assertJsonPath('message', 'Wikimedia is unavailable right now. Please try again shortly.');
-        $this->fakeHttp([WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response($this->bindings()), '*' => Http::response([], 503)]);
+        Cache::flush();
+        $this->fakeDiscovery();
+        // Optional summary failures are covered separately by the client failure suite.
         $this->discover()->assertOk()->assertJsonPath('count', 10);
-        Http::assertSent(function ($request) { return strpos($request->header('User-Agent')[0], 'PianoLITTimeline/') === 0; });
+        Http::assertSent(function ($request) { return strpos($request->header('User-Agent')[0], 'PianoLIT/') === 0; });
     }
 
     public function test_public_uses_only_database_and_mobile_timeline_is_unchanged()
@@ -229,7 +271,7 @@ class PieceTimelineTest extends ReviewTestCase
         $duplicate = $data['results']['bindings'][0];
         $duplicate['property']['value'] = 'http://www.wikidata.org/prop/direct/P577';
         $data['results']['bindings'][] = $duplicate;
-        $this->fakeHttp([WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response($data)]);
+        $this->stagedDiscovery($data);
         $pool = (new WikimediaDiscovery)->pool(1730, 3);
         $this->assertSame(['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6'], array_column($pool, 'wikidata_id'));
         $this->assertCount(6, $pool);
@@ -249,7 +291,7 @@ class PieceTimelineTest extends ReviewTestCase
         unset($row);
         $data['results']['bindings'] = array_merge($data['results']['bindings'], $world, [$world[0]]);
         $data['results']['bindings'][36]['property']['value'] = 'http://www.wikidata.org/prop/direct/P585';
-        $this->fakeHttp([WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response($data), '*' => Http::response(['query' => ['pages' => []]])]);
+        $this->stagedDiscovery($data);
         $first = $this->discover()->assertOk()->assertJsonPath('count', 10);
         for ($i = 1; $i <= 3; $i++) $this->assertStringContainsString('World event '.$i, $first->json('html'));
         $this->assertStringNotContainsString('World event 4', $first->json('html'));
@@ -262,7 +304,7 @@ class PieceTimelineTest extends ReviewTestCase
         $third = $this->discover($id)->assertOk()->assertJsonPath('count', 10);
         $this->assertStringNotContainsString('World event', $third->json('html'));
         Http::assertSent(function ($request) {
-            return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0 && strpos($request['query'], 'wdt:P580 p:P580 psv:P580') !== false;
+            return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0 && strpos($request['query'], '?item wdt:P580 ?date') !== false;
         });
         $this->assertArrayNotHasKey('world_event', $this->app['session']->get('piece_timeline_searches.'.$id.'.shown.Q101:event:1730'));
         // Existing curated content may use the earlier inception-based identifier.
@@ -297,7 +339,7 @@ class PieceTimelineTest extends ReviewTestCase
             $data['results']['bindings'][$index]['itemDescription']['value'] = 'Significant event';
             $data['results']['bindings'][$index]['class']['value'] = 'http://www.wikidata.org/entity/'.$class;
         }
-        $this->fakeHttp([WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response($data)]);
+        $this->stagedDiscovery($data);
         $pool = (new WikimediaDiscovery)->pool(1730, 10);
         $this->assertSame(['Q1', 'Q6', 'Q7', 'Q8'], array_column($pool, 'wikidata_id'));
         $this->assertSame([true, true, true, true], array_column($pool, 'world_event'));
@@ -307,19 +349,18 @@ class PieceTimelineTest extends ReviewTestCase
     {
         $bindings = $this->bindings(1);
         $bindings['results']['bindings'][0]['precision']['value'] = '11';
-        $this->fakeHttp([
-            WikimediaDiscovery::QUERY_ENDPOINT.'*' => Http::response($bindings),
-            WikimediaDiscovery::WIKIPEDIA_ENDPOINT.'*' => Http::response(['query' => ['pages' => [[
+        $this->stagedDiscovery($bindings, [
+            WikimediaDiscovery::WIKIPEDIA_ENDPOINT => ['query' => ['pages' => [[
                 'title' => 'Musical work 1', 'extract' => 'Wikipedia introduction.', 'pageimage' => 'Artist_painting.jpg',
                 'thumbnail' => ['source' => 'https://upload.wikimedia.org/thumb.jpg'],
-            ]]]]),
-            WikimediaDiscovery::COMMONS_ENDPOINT.'*' => Http::response(['query' => ['pages' => [[
+            ]]]],
+            WikimediaDiscovery::COMMONS_ENDPOINT => ['query' => ['pages' => [[
                 'title' => 'File:Artist painting.jpg', 'imageinfo' => [[
                     'thumburl' => 'https://upload.wikimedia.org/480px-Painting.jpg',
                     'descriptionurl' => 'https://commons.wikimedia.org/wiki/File:Painting.jpg',
                     'extmetadata' => ['Artist' => ['value' => '<a href="/artist">Artist name</a>'], 'LicenseShortName' => ['value' => 'Public domain']],
                 ]],
-            ]]]]),
+            ]]]],
         ]);
         $service = new WikimediaDiscovery;
         $events = $service->enrich($service->pool(1730, 3));
@@ -328,5 +369,56 @@ class PieceTimelineTest extends ReviewTestCase
         $this->assertSame('Artist name', $events[0]['image_credit']);
         $this->assertSame('https://upload.wikimedia.org/480px-Painting.jpg', $events[0]['image_url']);
         $this->assertSame('Public domain', $events[0]['image_license']);
+        $before = Http::recorded()->count();
+        $again = (new WikimediaDiscovery)->enrich((new WikimediaDiscovery)->pool(1730, 3));
+        $this->assertSame($events, $again);
+        $this->assertSame($before, Http::recorded()->count());
+    }
+
+    public function test_metadata_shortlist_is_bounded_and_only_selected_events_receive_summaries()
+    {
+        $data = ['results' => ['bindings' => []]];
+        foreach (WikimediaDiscovery::PROPERTIES as $index => $property) {
+            $rows = $this->bindings(20, 1730, 1000 + $index * 100)['results']['bindings'];
+            foreach ($rows as &$row) $row['property']['value'] = 'http://www.wikidata.org/prop/direct/'.$property;
+            unset($row);
+            $data['results']['bindings'] = array_merge($data['results']['bindings'], $rows);
+        }
+        $this->stagedDiscovery($data);
+        $service = new WikimediaDiscovery;
+        $pool = $service->pool(1730, 5);
+        $entityCalls = Http::recorded(function ($request) { return strpos($request->url(), WikimediaDiscovery::ENTITY_ENDPOINT) === 0; });
+        $this->assertCount(2, $entityCalls);
+        $ids = [];
+        foreach ($entityCalls as $pair) {
+            $chunk = explode('|', $pair[0]['ids']);
+            $this->assertLessThanOrEqual(50, count($chunk));
+            $ids = array_merge($ids, $chunk);
+        }
+        $this->assertCount(60, $ids);
+        $service->enrich($service->select($pool));
+        Http::assertSent(function ($request) { return strpos($request->url(), WikimediaDiscovery::WIKIPEDIA_ENDPOINT) === 0 && count(explode('|', $request['titles'])) === 10; });
+        foreach (Http::recorded(function ($request) { return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0; }) as $pair) {
+            $this->assertStringContainsString('SELECT ?item ?date ?sitelinks', $pair[0]['query']);
+            $this->assertStringContainsString('LIMIT 20', $pair[0]['query']);
+            $this->assertStringNotContainsString('ORDER BY', $pair[0]['query']);
+        }
+    }
+
+    public function test_optional_summary_failure_keeps_candidates_and_logs_real_error()
+    {
+        $this->fakeDiscovery();
+        $service = new WikimediaDiscovery;
+        $pool = $service->select($service->pool(1730, 5));
+        $this->fakeHttp([WikimediaDiscovery::WIKIPEDIA_ENDPOINT.'*' => Http::response('Upstream unavailable', 503)]);
+        \Illuminate\Support\Facades\Log::spy();
+        $candidates = (new WikimediaDiscovery)->enrich($pool);
+        $this->assertCount(10, $candidates);
+        $this->assertNull($candidates[0]['image_url']);
+        $this->assertSame($pool[0]['title'], $candidates[0]['title']);
+        Http::assertSentCount(2); // One bounded retry, then a short endpoint cooldown.
+        \Illuminate\Support\Facades\Log::shouldHaveReceived('warning')->with('Timeline Wikimedia request failed', \Mockery::on(function ($context) {
+            return $context['endpoint'] === WikimediaDiscovery::WIKIPEDIA_ENDPOINT && $context['http_status'] === 503 && $context['error_message'] === 'Upstream unavailable';
+        }))->twice();
     }
 }

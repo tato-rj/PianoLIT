@@ -28,26 +28,38 @@ class WikimediaDiscovery
 
     public function batch(int $year, int $range, int $batch = 0): array
     {
-        $key = 'timeline.wikimedia.v4.'.$year.'.'.$range.'.'.$batch;
+        $key = 'timeline.wikimedia.v5.'.$year.'.'.$range.'.'.$batch;
         if ($cached = Cache::get($key)) return $cached;
         $raw = [];
         $complete = true;
         $hasMore = false;
+        $rawCount = 0;
+        $windows = (int) ceil(config('wikimedia.candidate_limit') / config('wikimedia.shortlist_per_property'));
+        $page = intdiv($batch, $windows);
+        $window = $batch % $windows;
         foreach (self::PROPERTIES as $property) {
-            try {
-                $rows = Cache::remember($key.'.'.$property, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range, $property, $batch) {
-                    $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range, $property, $batch), 'format' => 'json']);
-                    if (!isset($data['results']['bindings']) || !is_array($data['results']['bindings'])) {
-                        Log::warning('Invalid timeline Wikidata response', ['endpoint' => self::QUERY_ENDPOINT, 'http_status' => 200, 'property' => $property]);
-                        throw new \RuntimeException('Invalid Wikidata response.');
-                    }
-                    return $data['results']['bindings'];
-                });
-            } catch (\Throwable $e) {
-                $complete = false;
-                continue;
+            $rows = [];
+            foreach (['before', 'after'] as $side) {
+                if ($side === 'before' && $year === 1) continue;
+                try {
+                    $rawKey = 'timeline.wikimedia.raw.v5.'.$year.'.'.$range.'.'.$page.'.'.$property.'.'.$side;
+                    $part = Cache::remember($rawKey, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range, $property, $batch, $side) {
+                        $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range, $property, $batch, $side), 'format' => 'json']);
+                        if (!isset($data['results']['bindings']) || !is_array($data['results']['bindings'])) {
+                            Log::warning('Invalid timeline Wikidata response', ['endpoint' => self::QUERY_ENDPOINT, 'http_status' => 200, 'property' => $property,
+                                'error_message' => Str::limit(json_encode($data), 1500, '')]);
+                            throw new \RuntimeException('Invalid Wikidata response.');
+                        }
+                        return $data['results']['bindings'];
+                    });
+                    $hasMore = $hasMore || count($part) >= (int) ceil(config('wikimedia.candidate_limit') / 2);
+                    $rows = array_merge($rows, $part);
+                } catch (\Throwable $e) {
+                    $complete = false;
+                    // A failed side must not discard the other side's candidates.
+                }
             }
-            $hasMore = $hasMore || count($rows) >= config('wikimedia.candidate_limit');
+            $rawCount = max($rawCount, count($rows));
             $dated = [];
             foreach ($rows as $row) {
                 $qid = basename($row['item']['value'] ?? '');
@@ -62,7 +74,8 @@ class WikimediaDiscovery
                 ];
             }
             // Shortlist separately so works and world events survive highly notable births.
-            $raw = array_merge($raw, collect($dated)->sortBy('rank')->take(config('wikimedia.shortlist_per_property'))->values()->all());
+            $raw = array_merge($raw, collect($dated)->sortBy('rank')
+                ->slice($window * config('wikimedia.shortlist_per_property'), config('wikimedia.shortlist_per_property'))->values()->all());
         }
         if (!$complete && !$raw) throw new \RuntimeException('Wikidata discovery unavailable.');
         $entities = $this->entities(array_unique(array_column($raw, 'wikidata_id')));
@@ -74,9 +87,10 @@ class WikimediaDiscovery
             $identity = $this->identity($candidate);
             if (!isset($events[$identity]) || $candidate['rank'] < $events[$identity]['rank']) $events[$identity] = $candidate;
         }
+        $next = $rawCount > ($window + 1) * config('wikimedia.shortlist_per_property') ? $batch + 1 : ($page + 1) * $windows;
         $result = [
-            'events' => collect($events)->sortBy('rank')->values()->all(), 'complete' => $complete,
-            'has_more' => (!$complete || $hasMore) && $batch + 1 < config('wikimedia.max_batches'),
+            'events' => collect($events)->sortBy('rank')->values()->all(), 'complete' => $complete, 'next_batch' => $next,
+            'has_more' => (!$complete || $hasMore || $next === $batch + 1) && $next < config('wikimedia.max_batches'),
         ];
         // Partial results work, but failed properties remain retryable on the next request.
         if ($complete) Cache::put($key, $result, now()->addMinutes(config('wikimedia.cache_minutes')));
@@ -95,10 +109,11 @@ class WikimediaDiscovery
         foreach (array_chunk($missing, 50) as $chunk) {
             $data = $this->get(self::ENTITY_ENDPOINT, [
                 'action' => 'wbgetentities', 'format' => 'json', 'ids' => implode('|', $chunk),
-                'props' => 'labels|descriptions|claims|sitelinks', 'languages' => 'en', 'sitefilter' => 'enwiki', 'maxlag' => 5,
+                'props' => 'labels|descriptions|claims|sitelinks', 'languages' => 'en', 'sitefilter' => 'enwiki',
             ]);
             if (!isset($data['entities']) || !is_array($data['entities'])) {
-                Log::warning('Invalid timeline Wikidata entity response', ['endpoint' => self::ENTITY_ENDPOINT, 'http_status' => 200]);
+                Log::warning('Invalid timeline Wikidata entity response', ['endpoint' => self::ENTITY_ENDPOINT, 'http_status' => 200,
+                    'error_message' => Str::limit(json_encode($data), 1500, '')]);
                 throw new \RuntimeException('Invalid Wikidata entity response.');
             }
             foreach ($chunk as $id) {
@@ -171,7 +186,7 @@ class WikimediaDiscovery
     {
         // Inception, publication and start dates can describe the same milestone.
         $kind = in_array($event['event_kind'], ['birth', 'death']) ? $event['event_kind'] : 'context';
-        return $event['wikidata_id'].':'.$kind.':'.$event['year'];
+        return $event['wikidata_id'].':'.$kind;
     }
 
     public function enrich(array $events): array
@@ -183,7 +198,7 @@ class WikimediaDiscovery
                 'action' => 'query', 'format' => 'json', 'formatversion' => 2,
                 'redirects' => 1, 'prop' => 'extracts|pageimages|info', 'inprop' => 'url',
                 'exintro' => 1, 'explaintext' => 1, 'exchars' => 450, 'exlimit' => 10,
-                'piprop' => 'thumbnail|name', 'pithumbsize' => 480, 'pilicense' => 'free', 'pilimit' => 10, 'maxlag' => 5,
+                'piprop' => 'thumbnail|name', 'pithumbsize' => 480, 'pilicense' => 'free', 'pilimit' => 10,
             ]);
             $files = [];
             foreach ($events as &$event) {
@@ -203,7 +218,7 @@ class WikimediaDiscovery
             if ($files) {
                 $images = $this->pages(self::COMMONS_ENDPOINT, array_unique($files), [
                     'action' => 'query', 'format' => 'json', 'formatversion' => 2,
-                    'redirects' => 1, 'prop' => 'imageinfo', 'maxlag' => 5,
+                    'redirects' => 1, 'prop' => 'imageinfo',
                     'iiprop' => 'url|extmetadata', 'iiurlwidth' => 480,
                     'iiextmetadatafilter' => 'Artist|Credit|LicenseShortName|LicenseUrl|UsageTerms',
                 ]);
@@ -242,7 +257,8 @@ class WikimediaDiscovery
         if ($missing) {
             $data = $this->get($endpoint, array_merge($params, ['titles' => implode('|', $missing)]));
             if (!isset($data['query']['pages']) || !is_array($data['query']['pages'])) {
-                Log::warning('Invalid timeline Wikimedia pages response', ['endpoint' => $endpoint, 'http_status' => 200]);
+                Log::warning('Invalid timeline Wikimedia pages response', ['endpoint' => $endpoint, 'http_status' => 200,
+                    'error_message' => Str::limit(json_encode($data), 1500, '')]);
                 throw new \RuntimeException('Invalid Wikimedia pages response.');
             }
             $found = collect($data['query']['pages'])->keyBy('title');
@@ -312,16 +328,19 @@ class WikimediaDiscovery
         return $category;
     }
 
-    public function query(int $year, int $range, string $property = 'P571', int $batch = 0): string
+    public function query(int $year, int $range, string $property = 'P571', int $batch = 0, string $side = 'after'): string
     {
-        if (!in_array($property, self::PROPERTIES, true) || $batch < 0 || $batch >= config('wikimedia.max_batches')) {
+        if (!in_array($side, ['before', 'after'], true) || !in_array($property, self::PROPERTIES, true) || $batch < 0 || $batch >= config('wikimedia.max_batches')) {
             throw new \InvalidArgumentException('Invalid discovery batch.');
         }
-        $start = sprintf('%04d-01-01T00:00:00Z', max(1, $year - $range));
-        $end = sprintf('%04d-12-31T23:59:59Z', min(9999, $year + $range));
+        $start = sprintf('%04d-01-01T00:00:00Z', $side === 'before' ? max(1, $year - $range) : $year);
+        $end = sprintf('%04d-12-31T23:59:59Z', $side === 'before' ? max(1, $year - 1) : min(9999, $year + $range));
         $limit = (int) config('wikimedia.candidate_limit');
-        $offset = $batch * $limit;
-        // Indexed date lookup with one notability join. Metadata comes from wbgetentities.
+        $windows = (int) ceil($limit / config('wikimedia.shortlist_per_property'));
+        $limit = (int) ceil($limit / 2);
+        $offset = intdiv($batch, $windows) * $limit;
+        // Bound samples on each side of the reference year before any global sorting.
+        // These are cached by page; exclusions and relevance ranking happen in Laravel.
         return <<<SPARQL
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX wikibase: <http://wikiba.se/ontology#>
@@ -332,7 +351,7 @@ SELECT ?item ?date ?sitelinks WHERE {
   ?item wdt:$property ?date . hint:Prior hint:rangeSafe true .
   FILTER(?date >= "$start"^^xsd:dateTime && ?date <= "$end"^^xsd:dateTime)
   ?item wikibase:sitelinks ?sitelinks . FILTER(?sitelinks >= 15)
-} ORDER BY DESC(?sitelinks) ASC(?date) ASC(?item) LIMIT $limit OFFSET $offset
+} LIMIT $limit OFFSET $offset
 SPARQL;
     }
 }
