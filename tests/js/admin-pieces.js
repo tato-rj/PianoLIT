@@ -6,7 +6,7 @@ module.exports = function () {
     let options;
     const handlers = {};
     const reloads = [];
-    const inputs = ['with_videos', 'with_sections', 'with_synthesia'].map(name => ({name, checked: true}));
+    const inputs = ['without_videos', 'without_moments', 'without_synthesia'].map(name => ({name, checked: false}));
     const error = {hidden: true, prop(name, value) { this[name] = value; }};
     const head = {invisible: true, removeClass() { this.invisible = false; }};
     const wrapper = {loading: false, addClass() { this.loading = true; }, removeClass() { this.loading = false; }};
@@ -29,15 +29,15 @@ module.exports = function () {
     vm.runInNewContext(fs.readFileSync('resources/js/views/admin-pieces.js', 'utf8'), {jQuery: $, window: {location: {href: '/pieces'}}});
     const data = {draw: 1, start: 0};
     options.ajax.data(data);
-    assert.deepStrictEqual({...data}, {draw: 1, start: 0, with_videos: 1, with_sections: 1, with_synthesia: 1});
-    inputs[1].checked = false;
+    assert.deepStrictEqual({...data}, {draw: 1, start: 0, without_videos: 0, without_moments: 0, without_synthesia: 0});
+    inputs[1].checked = true;
     handlers.filter();
     options.ajax.data(data);
-    assert.strictEqual(data.with_sections, 0, 'Unchecked filters are sent explicitly, overriding server defaults');
+    assert.strictEqual(data.without_moments, 1, 'Checking a missing-moments filter sends the enabled requirement');
     assert.deepStrictEqual(reloads, [true], 'Filter changes return to the first page');
     inputs.forEach(input => { input.checked = false; });
     options.ajax.data(data);
-    assert.strictEqual(data.with_videos + data.with_sections + data.with_synthesia, 0);
+    assert.strictEqual(data.without_videos + data.without_moments + data.without_synthesia, 0);
     const current = {}, stale = {};
     handlers['xhr.dt']({}, {jqXHR: current}, null, stale);
     assert.strictEqual(error.hidden, true, 'Stale failures cannot replace the latest request status');

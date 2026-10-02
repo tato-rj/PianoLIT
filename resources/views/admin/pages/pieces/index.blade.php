@@ -26,9 +26,9 @@ small .form-check-label::before, small .form-check-label::after {
     <fieldset class="border rounded p-3 mb-3" data-piece-table-filters>
       <legend class="float-none w-auto px-2 fs-6">Filters</legend>
       <div class="d-flex flex-wrap gap-4">
-        @foreach(['with_videos' => 'Pieces with videos', 'with_sections' => 'Pieces with sections', 'with_synthesia' => 'Pieces with Synthesia'] as $filter => $label)
+        @foreach(['without_videos' => 'Pieces without video', 'without_moments' => 'Pieces without moments', 'without_synthesia' => 'Pieces without synthesia'] as $filter => $label)
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="filter-{{$filter}}" name="{{$filter}}" {{request()->boolean($filter, true) ? 'checked' : ''}}>
+          <input type="checkbox" class="form-check-input" id="filter-{{$filter}}" name="{{$filter}}" {{request()->boolean($filter) ? 'checked' : ''}}>
           <label class="form-check-label" for="filter-{{$filter}}">{{$label}}</label>
         </div>
         @endforeach

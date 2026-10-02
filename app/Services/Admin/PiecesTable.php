@@ -26,9 +26,9 @@ class PiecesTable
             'columns.*.name' => 'nullable|string|max:100',
             'columns.*.search' => 'sometimes|array',
             'columns.*.search.value' => 'nullable|string|max:255',
-            'with_videos' => 'sometimes|boolean',
-            'with_sections' => 'sometimes|boolean',
-            'with_synthesia' => 'sometimes|boolean',
+            'without_videos' => 'sometimes|boolean',
+            'without_moments' => 'sometimes|boolean',
+            'without_synthesia' => 'sometimes|boolean',
             'creator_id' => 'sometimes|integer|min:1',
             'itunes' => 'sometimes|string|max:255',
             'videos' => 'sometimes|string|max:255',
@@ -50,10 +50,10 @@ class PiecesTable
             ->whitelist([])
             ->addColumn('composer', function ($piece) { return ['short_name' => $piece->composer->short_name]; })
             ->filter(function ($query) use ($request) {
-                if ($request->boolean('with_videos', true)) $query->whereHas('tutorials');
-                if ($request->boolean('with_sections', true)) $query->whereHas('tutorials.moments');
-                if ($request->boolean('with_synthesia', true)) {
-                    $query->whereHas('tutorials', function ($videos) {
+                if ($request->boolean('without_videos')) $query->whereDoesntHave('tutorials');
+                if ($request->boolean('without_moments')) $query->whereDoesntHave('tutorials.moments');
+                if ($request->boolean('without_synthesia')) {
+                    $query->whereDoesntHave('tutorials', function ($videos) {
                         $videos->where(function ($videos) {
                             $videos->where('type', 'like', '%synthesia%')->orWhere('category', 'synthesia');
                         });

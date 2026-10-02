@@ -48,7 +48,7 @@ class AdminPiecesTableTest extends ReviewTestCase
         $this->app->forgetInstance('datatables.request');
         return $this->getJson(route('admin.pieces.index').'?'.http_build_query(array_replace_recursive([
             'draw' => 1, 'start' => 0, 'length' => 10,
-            'with_videos' => 0, 'with_sections' => 0, 'with_synthesia' => 0,
+            'without_videos' => 0, 'without_moments' => 0, 'without_synthesia' => 0,
         ], $parameters)), ['X-Requested-With' => 'XMLHttpRequest']);
     }
 
@@ -65,8 +65,10 @@ class AdminPiecesTableTest extends ReviewTestCase
         preg_match('/<table[^>]*id="pieces-table".*?<\/table>/s', $html, $table);
         preg_match_all('/<th\b[^>]*>(.*?)<\/th>/s', $table[0], $headers);
         $this->assertSame(['ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', ''], array_map('trim', $headers[1]));
-        foreach (['with_videos', 'with_sections', 'with_synthesia'] as $filter) {
-            $this->assertMatchesRegularExpression('/<input[^>]*name="'.$filter.'"[^>]*checked/', $html);
+        foreach (['without_videos', 'without_moments', 'without_synthesia'] as $filter) {
+            preg_match('/<input[^>]*name="'.$filter.'"[^>]*>/', $html, $input);
+            $this->assertNotEmpty($input);
+            $this->assertStringNotContainsString('checked', $input[0]);
         }
         $row = $this->table(['order' => [['column' => 0, 'dir' => 'asc']]])->assertOk()->json('data.0');
         $this->assertEqualsCanonicalizing(['id', 'name', 'composer', 'tags', 'level', 'ranking', 'favorited', 'actions'], array_keys($row));
@@ -77,25 +79,25 @@ class AdminPiecesTableTest extends ReviewTestCase
         }
     }
 
-    public function test_every_filter_combination_and_all_three_default_filters()
+    public function test_every_missing_filter_combination_and_unfiltered_default()
     {
         for ($mask = 0; $mask < 8; $mask++) {
             $expected = [];
             foreach ([[1, 1, 1], [1, 1, 0], [1, 0, 1], [0, 0, 0]] as $i => $flags) {
-                if ((!($mask & 1) || $flags[0]) && (!($mask & 2) || $flags[1]) && (!($mask & 4) || $flags[2])) $expected[] = $this->pieces[$i]->id;
+                if ((!($mask & 1) || !$flags[0]) && (!($mask & 2) || !$flags[1]) && (!($mask & 4) || !$flags[2])) $expected[] = $this->pieces[$i]->id;
             }
-            $response = $this->table(['with_videos' => (int) (bool) ($mask & 1), 'with_sections' => (int) (bool) ($mask & 2),
-                'with_synthesia' => (int) (bool) ($mask & 4)])->assertOk();
+            $response = $this->table(['without_videos' => (int) (bool) ($mask & 1), 'without_moments' => (int) (bool) ($mask & 2),
+                'without_synthesia' => (int) (bool) ($mask & 4)])->assertOk();
             $this->assertEqualsCanonicalizing($expected, array_column($response->json('data'), 'id'));
             $this->assertSame(4, $response->json('recordsTotal'));
             $this->assertSame(count($expected), $response->json('recordsFiltered'));
         }
         $this->app->forgetInstance('datatables.request');
         $this->getJson(route('admin.pieces.index'), ['X-Requested-With' => 'XMLHttpRequest'])
-            ->assertOk()->assertJsonPath('recordsFiltered', 1)->assertJsonPath('data.0.id', $this->pieces[0]->id);
+            ->assertOk()->assertJsonPath('recordsFiltered', 4)->assertJsonCount(4, 'data');
         // Existing data can identify Synthesia by category, as the removed icon did.
         Tutorial::where('piece_id', $this->pieces[2]->id)->update(['type' => 'Tutorial']);
-        $this->assertEqualsCanonicalizing([$this->pieces[0]->id, $this->pieces[2]->id], $this->ids(['with_synthesia' => 1]));
+        $this->assertEqualsCanonicalizing([$this->pieces[1]->id, $this->pieces[3]->id], $this->ids(['without_synthesia' => 1]));
     }
 
     public function test_each_data_column_sorts_in_both_directions_and_across_pages()
@@ -132,7 +134,7 @@ class AdminPiecesTableTest extends ReviewTestCase
         $this->assertStringNotContainsString('<script>', $row['name']);
         $this->assertStringNotContainsString('<img', $row['composer']['short_name']);
         $this->withExceptionHandling();
-        foreach ([['with_sections' => ['bad']], ['length' => 1000], ['start' => -1], ['search' => ['value' => ['bad']]],
+        foreach ([['without_moments' => ['bad']], ['length' => 1000], ['start' => -1], ['search' => ['value' => ['bad']]],
             ['columns' => [['name' => ['bad']]]], ['columns' => [['search' => ['value' => ['bad']]]]],
             ['order' => [['column' => 0, 'dir' => 'desc; DROP TABLE pieces']]]] as $bad) $this->table($bad)->assertUnprocessable();
         $this->assertCount(4, $this->ids(['columns' => [['data' => 'arbitrary', 'name' => 'malicious.column', 'searchable' => true, 'search' => ['value' => 'bad']]]]));
@@ -152,7 +154,7 @@ class AdminPiecesTableTest extends ReviewTestCase
         foreach ([10, 25] as $length) {
             DB::enableQueryLog(); DB::flushQueryLog();
             $response = $this->table(compact('length'))->assertOk();
-        $this->assertArrayNotHasKey('error', $response->json());
+            $this->assertArrayNotHasKey('error', $response->json());
             $this->assertCount($length, $response->json('data'));
             $counts[] = count(DB::getQueryLog());
             DB::disableQueryLog();
