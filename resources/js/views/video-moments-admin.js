@@ -34,14 +34,27 @@
             showMaskOnHover: false,
             clearIncomplete: false,
             // Inputmask emits jQuery events while handling keystrokes, so also
-            // validate through its callbacks after the masked value is updated.
-            onKeyValidation: validate,
-            oncomplete: validate,
-            onincomplete: validate,
-            oncleared: validate
+            // clear submitted errors through its callbacks as editing continues.
+            onKeyValidation: clearValidation,
+            oncomplete: clearValidation,
+            onincomplete: clearValidation,
+            oncleared: clearValidation
         });
     }
+    function clearValidation() {
+        Array.from(rows.children).forEach(function (row) {
+            ['start_time', 'end_time'].forEach(function (field) {
+                var input = row.querySelector('[data-field="' + field + '"]');
+                input.setCustomValidity('');
+                input.classList.remove('is-invalid');
+                input.removeAttribute('aria-invalid');
+            });
+        });
+        alert.textContent = '';
+        alert.hidden = true;
+    }
     function validate() {
+        clearValidation();
         var messages = [];
         function error(input, message) {
             input.setCustomValidity(message);
@@ -52,11 +65,6 @@
         Array.from(rows.children).forEach(function (row, index) {
             var start = row.querySelector('[data-field="start_time"]');
             var end = row.querySelector('[data-field="end_time"]');
-            [start, end].forEach(function (input) {
-                input.setCustomValidity('');
-                input.classList.remove('is-invalid');
-                input.removeAttribute('aria-invalid');
-            });
             var startTime = parseTime(start.value);
             var endTime = end.value.trim() ? parseTime(end.value) : null;
             if (start.value && startTime === null) error(start, 'Section ' + (index + 1) + ': enter a complete start time as MM:SS.');
@@ -75,7 +83,7 @@
             });
             row.querySelector('[data-moment-number]').textContent = 'Section ' + (index + 1);
         });
-        validate();
+        clearValidation();
     }
     function sortRows() {
         if (sorting) return;
@@ -99,13 +107,13 @@
         var input = row.querySelector('[data-field="' + field + '"]');
         var start = parseTime(row.querySelector('[data-field="start_time"]').value) || 0;
         var current = parseTime(input.value);
-        if (current === null && input.value.trim()) return validate();
+        if (current === null && input.value.trim()) return clearValidation();
         if (current === null) current = field === 'end_time' ? start : 0;
         var minimum = field === 'end_time' ? start : 0;
         var next = Math.min(9999999999, Math.max(minimum, current + direction * 1000));
         win.jQuery(input).inputmask('setvalue', formatTime(next));
         if (field === 'start_time') sortRows();
-        else validate();
+        else clearValidation();
     }
     form.addEventListener('click', function (event) {
         var button = event.target.closest('[data-moment-action]');
@@ -126,8 +134,8 @@
         sortRows();
         if (action === 'add') start.focus();
     });
-    form.addEventListener('input', validate);
-    form.addEventListener('change', validate);
+    form.addEventListener('input', clearValidation);
+    form.addEventListener('change', clearValidation);
     // Sort when leaving a row, after keyboard editing finishes. Row actions sort
     // after their click so moving a card cannot swallow a chevron/delete click.
     form.addEventListener('focusout', function (event) {

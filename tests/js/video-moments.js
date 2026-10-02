@@ -36,7 +36,7 @@ module.exports = async function () {
         const listeners = {};
         const classes = new Set();
         return {
-            attrs: {...attributes}, hidden: false, children: [], listeners,
+            attrs: {...attributes}, hidden: false, children: [], listeners, style: {},
             getAttribute(name) { return this.attrs[name] ?? null; },
             setAttribute(name, value) { this.attrs[name] = value; },
             removeAttribute(name) { delete this.attrs[name]; },
@@ -173,11 +173,47 @@ module.exports = async function () {
     player.emit('seeked');
     assert.strictEqual(popover.hidden, true, 'The X closes details for subsequent moments');
     about.emit('click');
+    player.currentTime = 87.999;
+    player.emit('timeupdate');
+    assert.strictEqual(overlay.hidden, false, 'The overlay remains available before the final two seconds');
+    player.currentTime = 88;
+    player.emit('timeupdate');
+    assert.strictEqual(overlay.hidden, true, 'The whole overlay hides exactly two seconds before the end');
+    assert.strictEqual(overlay.style.display, 'none');
+    assert.strictEqual(popover.hidden, true);
+    assert.strictEqual(about.hidden, true);
+    assert.strictEqual(about.getAttribute('aria-expanded'), 'false');
+    assert.strictEqual(doc.activeElement, player.elements.buttons.play, 'Focus leaves the hidden overlay');
+    player.emit('pause');
+    assert.strictEqual(overlay.hidden, true, 'Pausing near the end does not restore the overlay');
+    player.currentTime = 87;
+    player.emit('seeked');
+    assert.strictEqual(overlay.hidden, false, 'Seeking out of the final two seconds restores the overlay');
+    assert.strictEqual(overlay.style.display, '');
+    assert.strictEqual(popover.hidden, false, 'Seeking back preserves the reading preference');
+    overlay.querySelector('.piece-moments__close').emit('click');
+    player.currentTime = 88;
+    player.emit('seeked');
+    assert.strictEqual(doc.activeElement, player.elements.buttons.play, 'Focus also leaves a hidden About button');
+    player.currentTime = 87;
+    player.emit('seeked');
+    about.emit('click');
     player.currentTime = 90;
     player.emit('ended');
-    assert.strictEqual(popover.hidden, false, 'The final open-ended moment remains valid through the end');
+    assert.strictEqual(overlay.hidden, true, 'The overlay stays hidden after the video ends');
+    assert(rows[3].classList.contains('is-active'), 'Hiding the overlay does not change open-ended moment validity');
+    player.duration = 0;
+    player.emit('durationchange');
+    assert.strictEqual(overlay.hidden, false, 'Unknown duration does not hide the overlay');
+    player.duration = Infinity;
+    player.emit('durationchange');
+    assert.strictEqual(overlay.hidden, false, 'An indefinite duration has no final-two-second cutoff');
+    player.duration = 90;
+    player.emit('durationchange');
+    assert.strictEqual(overlay.hidden, true, 'Available metadata applies the cutoff');
     player.currentTime = 0;
     player.emit('play');
+    assert.strictEqual(overlay.hidden, false, 'Replaying restores the overlay');
     player.currentTime = 13;
     player.emit('timeupdate');
     assert.strictEqual(popover.hidden, true, 'Replaying from the beginning resets the preference');

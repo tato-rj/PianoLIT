@@ -33,19 +33,19 @@
 	@isset($action)
     <div class="mb-3">
 	@isset($action['url'])
-	      <a href="{{$action['url']}}" class="btn btn-sm btn-default">
+	      <a href="{{$action['url']}}" class="btn btn-sm btn-primary">
 	        @icon('plus'){{$action['label']}}
 	      </a>
 	    @endisset
 
 	@isset($action['external_link'])
-	      <a href="{{$action['external_link']}}" target="_blank" class="btn btn-sm btn-default">
+	      <a href="{{$action['external_link']}}" target="_blank" class="btn btn-sm btn-primary">
 	        @icon('external-link'){{$action['label']}}
 	      </a>
 	    @endisset
 
 	@isset($action['modal'])
-	      <button data-bs-toggle="modal" data-bs-target="#{{$action['modal']}}" class="btn btn-sm btn-default">
+	      <button data-bs-toggle="modal" data-bs-target="#{{$action['modal']}}" class="btn btn-sm btn-primary">
 	        @icon('plus'){{$action['label']}}
 	      </button>
 	    @endisset
@@ -55,7 +55,7 @@
 	@isset($back)
 		<div class="mb-3">
 		@foreach($back as $label => $url)
-	      <a href="{{$url}}" class="btn btn-sm btn-grey text-uppercase">
+	      <a href="{{$url}}" class="btn btn-sm btn-secondary text-uppercase">
 	        @icon('circle-arrow-left'){{$label}}
 	      </a>
 	    @endforeach

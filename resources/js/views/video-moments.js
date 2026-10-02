@@ -92,8 +92,13 @@
         about.setAttribute('aria-controls', popover.id);
 
         function renderDetails() {
-            about.hidden = !playbackStarted || !active;
-            popover.hidden = !playbackStarted || !active || !detailsOpen;
+            var duration = Number(player.duration);
+            var nearEnd = Number.isFinite(duration) && duration > 0 && Number(player.currentTime) >= Math.max(0, duration - 2);
+            overlay.hidden = nearEnd;
+            // The overlay's flex rule overrides the browser's default [hidden] style.
+            overlay.style.display = nearEnd ? 'none' : '';
+            about.hidden = nearEnd || !playbackStarted || !active;
+            popover.hidden = nearEnd || !playbackStarted || !active || !detailsOpen;
             about.setAttribute('aria-expanded', popover.hidden ? 'false' : 'true');
         }
         function dismiss(restoreFocus) {
@@ -109,7 +114,7 @@
             if (time === 0 && (previousTime > 0 || (event && event.type === 'play'))) detailsOpen = false;
             previousTime = time;
             var next = activeAt(moments, time);
-            var hadFocus = popover.contains(doc.activeElement);
+            var hadFocus = overlay.contains(doc.activeElement);
             if (next !== active) {
                 active = next;
                 if (active) {
@@ -122,7 +127,7 @@
             // Gaps hide the panel without forgetting the viewer's reading preference.
             renderDetails();
             if (hadFocus && popover.hidden) {
-                if (active) about.focus();
+                if (active && !about.hidden) about.focus();
                 else if (player.elements.buttons.play) {
                     var play = player.elements.buttons.play;
                     (Array.isArray(play) ? play[0] : play).focus();
