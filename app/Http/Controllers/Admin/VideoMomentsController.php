@@ -43,7 +43,7 @@ class VideoMomentsController extends Controller
             'moments.*.start_time' => 'required|string|max:30',
             'moments.*.end_time' => 'nullable|string|max:30',
             'moments.*.title' => 'required|string|max:255',
-            'moments.*.comment' => 'required|string|max:2000',
+            'moments.*.comment' => 'nullable|string|max:2000',
         ], [], [
             'moments' => 'sections',
             'moments.*' => 'section',
@@ -65,7 +65,7 @@ class VideoMomentsController extends Controller
             }
             if ($errors) throw ValidationException::withMessages($errors);
             $rows[] = ['id' => $row['id'] ?? null, 'start_time' => $start, 'end_time' => $end,
-                'title' => $row['title'], 'comment' => $row['comment'], 'sort_order' => count($rows)];
+                'title' => $row['title'], 'comment' => $row['comment'] ?? '', 'sort_order' => count($rows)];
         }
 
         usort($rows, function ($left, $right) {

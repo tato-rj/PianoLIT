@@ -22,17 +22,12 @@
         })}};
     }
 
-    function activeAt(moments, time, windowSeconds) {
+    function activeAt(moments, time) {
         var active = null;
         moments.forEach(function (moment) {
             var start = Number(moment.start_time);
-            var end = moment.end_time == null ? start + windowSeconds : Number(moment.end_time);
-            if (moment.end_time == null) {
-                moments.forEach(function (next) {
-                    if (next.start_time > start) end = Math.min(end, Number(next.start_time));
-                });
-            }
-            if (time >= start && time <= end && (!active || start > active.start_time)) active = moment;
+            var end = moment.end_time == null ? Infinity : Number(moment.end_time);
+            if (time >= start && time < end && (!active || start > active.start_time)) active = moment;
         });
         return active;
     }
@@ -53,7 +48,6 @@
         });
         if (!section || !player.elements || !player.elements.container) return;
         var container = player.elements.container;
-        var windowSeconds = Number(media.getAttribute('data-moment-window')) || 8;
         var rows = Array.from(section.querySelectorAll('[data-moment-id]'));
         var active = null;
         var pending = null;
@@ -97,14 +91,15 @@
             // A new run starts collapsed; pausing/resuming elsewhere retains the preference.
             if (time === 0 && (previousTime > 0 || (event && event.type === 'play'))) detailsOpen = false;
             previousTime = time;
-            var next = activeAt(moments, time, windowSeconds);
+            var next = activeAt(moments, time);
             var hadFocus = popover.contains(doc.activeElement);
             if (next !== active) {
                 active = next;
                 if (active) {
                     timestamp.textContent = formatTime(active.start_time);
                     title.textContent = active.title;
-                    comment.textContent = active.comment;
+                    comment.textContent = active.comment || '';
+                    comment.hidden = !comment.textContent;
                 }
             }
             // Gaps hide the panel without forgetting the viewer's reading preference.

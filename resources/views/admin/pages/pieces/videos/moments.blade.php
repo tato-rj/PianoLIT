@@ -29,6 +29,7 @@
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="revision" value="{{old('revision', $revision)}}">
+                    <p class="small text-muted">Leave the end time blank to keep a section valid through the end of the piece.</p>
                     <div class="alert alert-danger" role="alert" data-moment-alert hidden></div>
                     <div data-moment-rows>
                         @foreach(old('moments', $moments->toArray()) as $index => $moment)

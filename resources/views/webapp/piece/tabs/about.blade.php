@@ -2,7 +2,7 @@
 <div class="tab-pane fade show active mb-5" id="tab-about">
 	<div class="row">
 		@if($piece->media['performance'])
-		<div class="{{$hasMoments ? 'col-lg-12' : 'col-lg-6 piece-about-video'}} col-12 mb-4 rounded-video video-container">
+		<div class="{{$hasMoments ? 'col-lg-12' : 'col-lg-6 mx-auto piece-about-video'}} col-12 mb-4 rounded-video video-container">
 			@video([
 				'classes' => 'w-100',
 				'id' => 'piece-performance',
@@ -14,7 +14,7 @@
 		</div>
 		@endif
 
-		<div class="{{$piece->media['performance'] && ! $hasMoments ? 'col-lg-6 col-12' : 'col-12'}} mb-4">
+		<div class="col-12 mb-4">
 {{-- 			<div class="d-flex {{$piece->media['performance'] ? null : 'flex-center'}} flex-wrap mb-3">
 				<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 					@icon('file-text'){{$piece->number_of_pages}}

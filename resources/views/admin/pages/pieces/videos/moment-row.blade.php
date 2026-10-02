@@ -21,8 +21,8 @@
         <div class="col-lg-6"><label class="w-100 mb-0">Title
             <input type="text" class="form-control form-control-sm" data-field="title" name="moments[{{$index}}][title]" value="{{$moment['title'] ?? ''}}" required maxlength="255">
         </label></div>
-        <div class="col-12"><label class="w-100 mb-0">Commentary
-            <textarea class="form-control form-control-sm" data-field="comment" name="moments[{{$index}}][comment]" rows="2" required maxlength="2000">{{$moment['comment'] ?? ''}}</textarea>
+        <div class="col-12"><label class="w-100 mb-0">Commentary (optional)
+            <textarea class="form-control form-control-sm" data-field="comment" name="moments[{{$index}}][comment]" rows="2" maxlength="2000">{{$moment['comment'] ?? ''}}</textarea>
         </label></div>
     </div>
 </div>

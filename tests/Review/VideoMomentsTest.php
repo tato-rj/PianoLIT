@@ -149,6 +149,40 @@ class VideoMomentsTest extends ReviewTestCase
         $this->assertSame('Opening theme', $moment->fresh()->title);
     }
 
+    public function test_title_only_sections_accept_blank_null_or_omitted_commentary()
+    {
+        $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');
+        $html = $this->get($this->url('edit'))->assertOk()->assertSee('Commentary (optional)')->getContent();
+        preg_match('/<textarea[^>]*data-field="comment"[^>]*>/', $html, $textarea);
+        $this->assertNotEmpty($textarea);
+        $this->assertStringNotContainsString('required', $textarea[0]);
+
+        foreach (['', null, 'omitted'] as $comment) {
+            $row = $this->row(['end_time' => '', 'comment' => $comment]);
+            if ($comment === 'omitted') unset($row['comment']);
+            $this->put($this->url(), $this->payload([$row]))->assertRedirect()->assertSessionHasNoErrors();
+            $moment = $this->video->moments()->sole();
+            $this->assertSame('Theme', $moment->title);
+            $this->assertSame('', $moment->comment);
+            $this->assertNull($moment->end_time);
+            $this->get(route('webapp.pieces.show', $this->piece))->assertOk()->assertSee('Theme');
+        }
+
+        $this->put($this->url(), $this->payload([$this->row(['id' => $moment->id])]))
+            ->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame('Listen here.', $moment->fresh()->comment);
+        $this->put($this->url(), $this->payload([$this->row(['id' => $moment->id, 'comment' => ''])]))
+            ->assertRedirect()->assertSessionHasNoErrors();
+        $this->assertSame('', $moment->fresh()->comment);
+
+        $this->withExceptionHandling();
+        foreach ([['bad'], str_repeat('x', 2001)] as $comment) {
+            $this->putJson($this->url(), $this->payload([$this->row(['comment' => $comment])]))
+                ->assertUnprocessable()->assertJsonValidationErrors('moments.0.comment');
+        }
+        $this->assertSame('', $moment->fresh()->comment);
+    }
+
     public function test_stale_tabs_cannot_overwrite_newer_changes()
     {
         $this->actingAs(create(Admin::class, ['role' => 'manager']), 'admin');

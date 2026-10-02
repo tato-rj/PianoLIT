@@ -12,20 +12,25 @@ module.exports = async function () {
     const moments = [
         {id: 1, start_time: 12, end_time: 40, title: '<Opening>', comment: 'Main idea'},
         {id: 2, start_time: 28.2, end_time: 35, title: 'Left hand', comment: 'Accompaniment'},
-        {id: 3, start_time: 47, end_time: null, title: 'Second theme', comment: 'New idea'},
+        {id: 3, start_time: 47, end_time: null, title: 'Second theme', comment: ''},
         {id: 4, start_time: 50, end_time: null, title: 'Return', comment: 'Opening returns'}
     ];
-    assert.strictEqual(guide.activeAt(moments, 11.99, 8), null);
-    assert.strictEqual(guide.activeAt(moments, 12, 8), moments[0]);
-    assert.strictEqual(guide.activeAt(moments, 28.2, 8), moments[1]);
-    assert.strictEqual(guide.activeAt(moments, 35, 8), moments[1]);
-    assert.strictEqual(guide.activeAt(moments, 35.01, 8), moments[0]);
-    assert.strictEqual(guide.activeAt(moments, 40.01, 8), null);
-    assert.strictEqual(guide.activeAt(moments, 49.99, 8), moments[2]);
-    assert.strictEqual(guide.activeAt(moments, 50, 8), moments[3]);
-    assert.strictEqual(guide.activeAt(moments, 58, 8), moments[3]);
-    assert.strictEqual(guide.activeAt(moments, 58.01, 8), null);
-    assert.strictEqual(guide.activeAt(moments, 13, 8), moments[0], 'Backward seeking recalculates the correct moment');
+    assert.strictEqual(guide.activeAt(moments, 11.99), null);
+    assert.strictEqual(guide.activeAt(moments, 12), moments[0]);
+    assert.strictEqual(guide.activeAt(moments, 28.2), moments[1]);
+    assert.strictEqual(guide.activeAt(moments, 35), moments[0]);
+    assert.strictEqual(guide.activeAt(moments, 35.01), moments[0]);
+    assert.strictEqual(guide.activeAt(moments, 40.01), null);
+    assert.strictEqual(guide.activeAt(moments, 49.99), moments[2]);
+    assert.strictEqual(guide.activeAt(moments, 50), moments[3]);
+    assert.strictEqual(guide.activeAt(moments, 58), moments[3]);
+    assert.strictEqual(guide.activeAt(moments, 58.01), moments[3]);
+    assert.strictEqual(guide.activeAt(moments, 90), moments[3], 'An open-ended moment lasts through the end of the piece');
+    assert.strictEqual(guide.activeAt(moments, 40), null, 'An explicit end expires at that exact time');
+    const overlap = [{id: 1, start_time: 0, end_time: null}, {id: 2, start_time: 20, end_time: 30}];
+    assert.strictEqual(guide.activeAt(overlap, 25), overlap[1]);
+    assert.strictEqual(guide.activeAt(overlap, 30), overlap[0], 'An open-ended moment remains valid after a later finite moment ends');
+    assert.strictEqual(guide.activeAt(moments, 13), moments[0], 'Backward seeking recalculates the correct moment');
 
     function element(attributes = {}) {
         const listeners = {};
@@ -63,7 +68,7 @@ module.exports = async function () {
         overlay.querySelector = name => nodes[name];
         return overlay;
     };
-    const media = element({'data-video-moments': JSON.stringify(moments), 'data-moment-window': '8'});
+    const media = element({'data-video-moments': JSON.stringify(moments)});
     media.ownerDocument = doc;
     media.id = 'video';
     const options = guide.markerOptions(media);
@@ -121,6 +126,7 @@ module.exports = async function () {
     player.emit('timeupdate');
     assert.strictEqual(popover.hidden, false, 'Details reopen automatically after a gap');
     assert.strictEqual(title.textContent, 'Second theme');
+    assert.strictEqual(overlay.querySelector('.piece-moments__comment').hidden, true, 'Title-only moments hide the empty commentary');
     player.emit('pause');
     assert.strictEqual(about.hidden, false, 'After playback starts, pausing keeps the active guide available');
     player.emit('play');
@@ -135,6 +141,7 @@ module.exports = async function () {
     player.emit('timeupdate');
     assert.strictEqual(popover.hidden, true, 'Closing details restores the button for later moments');
     assert.strictEqual(about.getAttribute('aria-expanded'), 'false');
+    assert.strictEqual(overlay.querySelector('.piece-moments__comment').hidden, false, 'Commentary returns for a later moment with a description');
     about.emit('click');
     doc.emit('click', {target: element()});
     assert.strictEqual(popover.hidden, true);
@@ -152,9 +159,10 @@ module.exports = async function () {
     about.emit('click');
     player.currentTime = 80;
     player.emit('seeked');
-    assert.strictEqual(about.hidden, true);
-    assert.strictEqual(popover.hidden, true);
-    assert(rows.every(row => !row.classList.contains('is-active')));
+    assert.strictEqual(about.hidden, false);
+    assert.strictEqual(popover.hidden, false);
+    assert.strictEqual(title.textContent, 'Return');
+    assert(rows[3].classList.contains('is-active'), 'Open-ended moments remain selected beyond eight seconds');
     player.currentTime = 13;
     player.emit('seeking');
     assert(rows[0].classList.contains('is-active'));
@@ -166,7 +174,7 @@ module.exports = async function () {
     about.emit('click');
     player.currentTime = 90;
     player.emit('ended');
-    assert.strictEqual(popover.hidden, true, 'Ending hides details outside a moment');
+    assert.strictEqual(popover.hidden, false, 'The final open-ended moment remains valid through the end');
     player.currentTime = 0;
     player.emit('play');
     player.currentTime = 13;
