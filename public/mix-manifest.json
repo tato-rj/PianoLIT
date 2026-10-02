@@ -1,15 +1,16 @@
 {
-    "/js/app.js": "/js/app.js?id=29dd6026bd2bb8cd5501",
-    "/css/app.css": "/css/app.css?id=ebe09b7d047349a07a81",
+    "/js/app.js": "/js/app.js?id=e5830d003c2e095febb3",
+    "/css/app.css": "/css/app.css?id=2d6f9e32aa7237ea6cfa",
     "/css/admin.css": "/css/admin.css?id=a83d3d7bfb3dc248ed38",
     "/css/design-system.css": "/css/design-system.css?id=7ae98d40415b1d5056af",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
     "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=265bb693f4154efcaaec",
     "/css/studio-policies/elegant.css": "/css/studio-policies/elegant.css?id=4aae0c05002438971714",
     "/css/studio-policies/informal.css": "/css/studio-policies/informal.css?id=1d1105ead8ba3664484a",
-    "/js/admin.js": "/js/admin.js?id=76fe8bb0c36ed2ce6065",
+    "/js/admin.js": "/js/admin.js?id=16a8a6286aa29e796e83",
     "/js/tone.js": "/js/tone.js?id=4a64023a6c3319687a16",
     "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e",
+    "/js/views/admin-pieces.js": "/js/views/admin-pieces.js?id=f51ae1d3433e2ab69d7a",
     "/js/views/timeline-events-admin.js": "/js/views/timeline-events-admin.js?id=b716976e3f4aa91f02aa",
     "/js/views/video-moments.js": "/js/views/video-moments.js?id=151febc5a829efe5f6d1",
     "/js/views/video-moments-admin.js": "/js/views/video-moments-admin.js?id=316f56a2275f97c0a083",
@@ -19,6 +20,5 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=fdbff8185284fd251dc0",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf",
-    "/js/views/admin-pieces.js": "/js/views/admin-pieces.js?id=f51ae1d3433e2ab69d7a"
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf"
 }

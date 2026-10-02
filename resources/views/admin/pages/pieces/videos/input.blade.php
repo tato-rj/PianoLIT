@@ -34,12 +34,12 @@
 		<input rows="1" class="form-control videos-link" placeholder="File name" name="{{'videos['.$loop->index.'][filename]'}}" value="{{$tutorial->filename}}">
 	</div>
 		@if($tutorial->type == 'Performance')
-	    <a class="btn btn-primary w-100 btn-sm mb-2" href="{{route('admin.pieces.videos.moments.edit', [$piece, $tutorial])}}">Manage sections</a>
+	    <a class="btn btn-primary w-100 btn-sm mb-1 fw-bold" href="{{route('admin.pieces.videos.moments.edit', [$piece, $tutorial])}}">@icon('tag')Manage sections</a>
 	    @endif
     @endif
 
 	<a class="align-self-stretch btn btn-sm d-block w-100 btn-danger text-white me-1 remove-field mb-4">
-		<strong>Remove</strong>
+		<strong>@icon('trash')Remove</strong>
 	</a>
 
 </div>
