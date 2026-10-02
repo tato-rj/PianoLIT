@@ -1,4 +1,4 @@
-<article class="card timeline-saved-event" data-event-id="{{$event->id}}" data-sort="{{sprintf('%04d', $event->year)}}-{{$event->event_date ?: '01-01'}}">
+<article class="card timeline-saved-event" data-event-id="{{$event->id}}" data-year="{{$event->year}}" data-sort="{{sprintf('%04d', $event->year)}}-{{$event->event_date ?: '01-01'}}">
   <details class="timeline-event-editor">
     <summary class="timeline-event-summary">
       <span class="timeline-event-year text-brand" @if($event->event_date) title="{{$event->event_date}}" @endif>{{$event->year}}

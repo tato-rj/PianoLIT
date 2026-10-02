@@ -26,9 +26,10 @@ class WikimediaDiscovery
         return $this->batch($year, $range, $batch)['events'];
     }
 
-    public function batch(int $year, int $range, int $batch = 0): array
+    public function batch(int $year, int $range, int $batch = 0, bool $forwardOnly = false): array
     {
-        $key = 'timeline.wikimedia.v7.'.$year.'.'.$range.'.'.$batch;
+        $version = $forwardOnly ? 'v8-forward' : 'v7';
+        $key = 'timeline.wikimedia.'.$version.'.'.$year.'.'.$range.'.'.$batch;
         if ($cached = Cache::get($key)) return $cached;
         $raw = [];
         $complete = true;
@@ -40,15 +41,15 @@ class WikimediaDiscovery
         $window = $batch % $windows;
         foreach (self::PROPERTIES as $property) {
             $rows = [];
-            foreach (['before', 'same', 'after'] as $side) {
+            foreach ($forwardOnly ? ['same', 'after'] : ['before', 'same', 'after'] as $side) {
                 if (($side === 'before' && $year === 1) || ($side === 'after' && $year === 9999)) continue;
                 try {
-                    $endKey = 'timeline.wikimedia.end.v7.'.$year.'.'.$range.'.'.$property.'.'.$side;
+                    $endKey = 'timeline.wikimedia.end.'.$version.'.'.$year.'.'.$range.'.'.$property.'.'.$side;
                     $lastPage = Cache::get($endKey);
                     if ($lastPage !== null && $page > $lastPage) continue;
-                    $rawKey = 'timeline.wikimedia.raw.v7.'.$year.'.'.$range.'.'.$page.'.'.$property.'.'.$side;
-                    $part = Cache::remember($rawKey, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range, $property, $batch, $side) {
-                        $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range, $property, $batch, $side), 'format' => 'json']);
+                    $rawKey = 'timeline.wikimedia.raw.'.$version.'.'.$year.'.'.$range.'.'.$page.'.'.$property.'.'.$side;
+                    $part = Cache::remember($rawKey, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range, $property, $batch, $side, $forwardOnly) {
+                        $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range, $property, $batch, $side, $forwardOnly), 'format' => 'json']);
                         if (!isset($data['results']['bindings']) || !is_array($data['results']['bindings'])) {
                             Log::warning('Invalid timeline Wikidata response', ['endpoint' => self::QUERY_ENDPOINT, 'http_status' => 200, 'property' => $property,
                                 'error_message' => Str::limit(json_encode($data), 1500, '')]);
@@ -56,8 +57,8 @@ class WikimediaDiscovery
                         }
                         return $data['results']['bindings'];
                     });
-                    if (count($part) < $this->sideLimit($side)) Cache::put($endKey, $page, now()->addMinutes(config('wikimedia.cache_minutes')));
-                    $hasMore = $hasMore || count($part) >= $this->sideLimit($side);
+                    if (count($part) < $this->sideLimit($side, $forwardOnly)) Cache::put($endKey, $page, now()->addMinutes(config('wikimedia.cache_minutes')));
+                    $hasMore = $hasMore || count($part) >= $this->sideLimit($side, $forwardOnly);
                     if (isset($periods[$side])) $periods[$side] = $periods[$side] || count($part) > 0;
                     $rows = array_merge($rows, $part);
                 } catch (\Throwable $e) {
@@ -73,7 +74,7 @@ class WikimediaDiscovery
                 $date = substr($row['date']['value'] ?? '', 0, 10);
                 $eventYear = (int) substr($date, 0, 4);
                 $sitelinks = (int) ($row['sitelinks']['value'] ?? 0);
-                if (!preg_match('/^Q[1-9][0-9]*$/', $qid) || $eventYear < 1 || abs($eventYear - $year) > $range || $sitelinks < 15) continue;
+                if (!preg_match('/^Q[1-9][0-9]*$/', $qid) || $eventYear < 1 || abs($eventYear - $year) > $range || ($forwardOnly && $eventYear < $year) || $sitelinks < 15) continue;
                 $dated[$qid.':'.$date] = [
                     'wikidata_id' => $qid, 'property' => $property, 'date' => $date,
                     'year' => $eventYear, 'sitelinks' => $sitelinks,
@@ -373,22 +374,22 @@ class WikimediaDiscovery
         return $category;
     }
 
-    private function sideLimit(string $side): int
+    private function sideLimit(string $side, bool $forwardOnly = false): int
     {
         $same = (int) config('wikimedia.shortlist_per_property');
-        return $side === 'same' ? $same : (int) floor((config('wikimedia.candidate_limit') - $same) / 2);
+        return $side === 'same' ? $same : (int) floor((config('wikimedia.candidate_limit') - $same) / ($forwardOnly ? 1 : 2));
     }
 
-    public function query(int $year, int $range, string $property = 'P571', int $batch = 0, string $side = 'after'): string
+    public function query(int $year, int $range, string $property = 'P571', int $batch = 0, string $side = 'after', bool $forwardOnly = false): string
     {
-        if (!in_array($side, ['before', 'same', 'after'], true) || !in_array($property, self::PROPERTIES, true) || $batch < 0 || $batch >= config('wikimedia.max_batches')) {
+        if (!in_array($side, $forwardOnly ? ['same', 'after'] : ['before', 'same', 'after'], true) || !in_array($property, self::PROPERTIES, true) || $batch < 0 || $batch >= config('wikimedia.max_batches')) {
             throw new \InvalidArgumentException('Invalid discovery batch.');
         }
         $start = sprintf('%04d-01-01T00:00:00Z', $side === 'before' ? max(1, $year - $range) : ($side === 'same' ? $year : min(9999, $year + 1)));
         $end = sprintf('%04d-12-31T23:59:59Z', $side === 'before' ? max(1, $year - 1) : ($side === 'same' ? $year : min(9999, $year + $range)));
         $limit = (int) config('wikimedia.candidate_limit');
         $windows = (int) ceil($limit / config('wikimedia.shortlist_per_property'));
-        $limit = $this->sideLimit($side);
+        $limit = $this->sideLimit($side, $forwardOnly);
         $offset = intdiv($batch, $windows) * $limit;
         // Bound samples on each side of the reference year before any global sorting.
         // These are cached by page; exclusions and relevance ranking happen in Laravel.

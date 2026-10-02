@@ -57,6 +57,13 @@ body.piece-timeline-editor { overflow-x: clip; }
     .timeline-candidate.is-saved .timeline-save-status { color: #198754; }
     #timeline-more { margin-top: 12px; }
     .timeline-saved-event { margin-bottom: 8px; }
+    .timeline-saved-decade { margin-bottom: 8px; }
+    .timeline-decade-summary { padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .timeline-decade-summary::marker { color: var(--color-text-muted, #687386); }
+    .timeline-decade-summary:hover { background: #f8f9fa; }
+    .timeline-decade-summary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    .timeline-decade-count { float: right; margin-left: 8px; }
+    .timeline-decade-events { padding: 0 8px; }
     .timeline-event-summary { display: flex; align-items: center; gap: 12px; padding: 12px 16px; list-style: none; cursor: pointer; }
     .timeline-event-summary::-webkit-details-marker { display: none; }
     .timeline-event-summary:hover { background: #f8f9fa; }

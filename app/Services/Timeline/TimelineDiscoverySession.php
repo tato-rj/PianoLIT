@@ -15,6 +15,10 @@ class TimelineDiscoverySession
         $sessionKey = $this->sessionKey($pieceId);
         $data = $request->validate(['reference_year' => 'required|integer|between:1,9999', 'search_id' => 'nullable|uuid']);
         $year = (int) $data['reference_year'];
+        $forwardOnly = $pieceId === null;
+        $range = $forwardOnly ? config('wikimedia.library_range') : config('wikimedia.ranges')[0];
+        $startYear = $forwardOnly ? $year : max(1, $year - $range);
+        $endYear = min(9999, $year + $range);
         $sessions = array_filter($request->session()->get($sessionKey, []), function ($state) {
             return $state['expires'] > time();
         });
@@ -23,20 +27,25 @@ class TimelineDiscoverySession
             throw ValidationException::withMessages(['search_id' => 'This search has expired. Start a new search.']);
         }
         $state = $sessions[$id] ?? ['piece_id' => $pieceId, 'year' => $year, 'pool' => [], 'shown' => [], 'expires' => time() + 7200];
+        if ($forwardOnly && ($state['window'] ?? null) !== 'forward-'.$range) {
+            // Resume older searches with fresh forward-only pools but retain shown exclusions.
+            $state = array_merge($state, ['window' => 'forward-'.$range, 'pool' => [], 'batch_index' => 0,
+                'has_more' => true, 'periods' => ['before' => false, 'after' => true]]);
+        }
         // Existing open searches retain exclusions and any previously fetched candidates.
         $state += ['batch_index' => 0, 'has_more' => true, 'periods' => ['before' => true, 'after' => true]];
         $excluded = array_merge(array_keys($state['shown']), $saved->pluck('source_id')->all());
         $identities = array_map([$discovery, 'identity'], array_merge(array_values($state['shown']), $saved->toArray()));
-        $available = function ($pool) use ($excluded, $identities, $discovery) {
-            return array_values(array_filter($pool, function ($event) use ($excluded, $identities, $discovery) {
-                return !in_array($event['source_id'], $excluded, true) && !in_array($discovery->identity($event), $identities, true);
+        $available = function ($pool) use ($excluded, $identities, $discovery, $startYear, $endYear) {
+            return array_values(array_filter($pool, function ($event) use ($excluded, $identities, $discovery, $startYear, $endYear) {
+                return $event['year'] >= $startYear && $event['year'] <= $endYear
+                    && !in_array($event['source_id'], $excluded, true) && !in_array($discovery->identity($event), $identities, true);
             }));
         };
         $pool = $available($state['pool']);
-        $range = config('wikimedia.ranges')[0];
         try {
             for ($attempt = 0; $discovery->needsCandidates($pool, $year, $state['periods']) && $state['has_more'] && $attempt < 2; $attempt++) {
-                $batch = $discovery->batch($year, $range, $state['batch_index']);
+                $batch = $discovery->batch($year, $range, $state['batch_index'], $forwardOnly);
                 $state['has_more'] = $batch['has_more'];
                 $state['periods'] = $batch['periods'];
                 $state['batch_index'] = $batch['next_batch'];
@@ -62,11 +71,13 @@ class TimelineDiscoverySession
         $sessions[$id] = $state;
         $request->session()->put($sessionKey, array_slice($sessions, -6, null, true));
         $more = count($state['pool']) > 0 || $state['has_more'];
-        return response()->json([
+        $response = [
             'search_id' => $id, 'count' => count($candidates), 'has_more' => $more,
             'range' => $range,
             'html' => view('admin.pages.pieces.timeline.candidates', compact('candidates'))->render(),
-        ]);
+        ];
+        if ($forwardOnly) $response += ['start_year' => $startYear, 'end_year' => $endYear];
+        return response()->json($response);
     }
 
     public function candidate(Request $request, ?int $pieceId = null): array

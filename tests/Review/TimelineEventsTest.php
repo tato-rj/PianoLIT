@@ -87,12 +87,39 @@ class TimelineEventsTest extends ReviewTestCase
         Http::assertNothingSent();
     }
 
+    public function test_saved_library_events_render_in_closed_chronological_decades_with_edit_forms()
+    {
+        foreach ([1810, 1809, 1799, 1800] as $id => $year) {
+            TimelineEvent::create($this->candidate($id + 1, $year));
+        }
+        $html = $this->get(route('admin.timeline-events.index'))->assertOk()->getContent();
+        $document = new \DOMDocument();
+        @$document->loadHTML($html);
+        $xpath = new \DOMXPath($document);
+        $groups = $xpath->query('//*[@id="timeline-saved"]/details');
+        $this->assertCount(3, $groups);
+        $this->assertSame(['1790', '1800', '1810'], array_map(function ($group) {
+            $this->assertFalse($group->hasAttribute('open'));
+            return $group->getAttribute('data-decade');
+        }, iterator_to_array($groups)));
+        $this->assertStringContainsString('1800–1809', $groups[1]->textContent);
+        $this->assertStringContainsString('2 events', $groups[1]->textContent);
+        $rows = $xpath->query('.//*[@data-event-id]', $groups[1]);
+        $this->assertSame(['1800', '1809'], array_map(function ($row) {
+            return $row->getAttribute('data-year');
+        }, iterator_to_array($rows)));
+        $this->assertCount(4, $xpath->query('//*[@id="timeline-saved"]//form[contains(@id, "timeline-update-")]'));
+        $this->assertCount(4, $xpath->query('//*[@id="timeline-saved"]//form[contains(@class, "timeline-remove")]'));
+        Http::assertNothingSent();
+    }
+
     public function test_discovery_is_curated_and_more_excludes_shown_and_globally_saved_events()
     {
         $saved = $this->candidate(1, 1780, 'published');
         TimelineEvent::create($saved); // Same Wikidata context, a different curated year/kind.
         $this->fakeDiscovery();
-        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 5);
+        $first = $this->discover()->assertOk()->assertJsonPath('count', 10)->assertJsonPath('range', 10)
+            ->assertJsonPath('start_year', 1800)->assertJsonPath('end_year', 1810);
         $id = $first->json('search_id');
         $shown = app('session')->get('timeline_event_searches.'.$id.'.shown');
         $this->assertFalse(collect($shown)->contains('wikidata_id', 'Q1'));

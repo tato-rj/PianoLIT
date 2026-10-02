@@ -28,6 +28,49 @@
     more.hidden = true;
     resultsHeading.hidden = true;
     updateSavedCount(savedCount);
+    arrangeSaved();
+
+    function arrangeSaved() {
+        var rows = Array.prototype.slice.call(saved.querySelectorAll('[data-event-id]'));
+        rows.sort(function (a, b) { return a.dataset.sort.localeCompare(b.dataset.sort); });
+        if (saved.dataset.groupDecades !== 'true') {
+            rows.forEach(function (row) { saved.appendChild(row); });
+            return;
+        }
+        var decades = {};
+        rows.forEach(function (row) {
+            var decade = Math.floor(Number(row.dataset.year) / 10) * 10;
+            var group = saved.querySelector('[data-decade="' + decade + '"]');
+            if (!group) {
+                group = document.createElement('details');
+                group.className = 'card timeline-saved-decade';
+                group.dataset.decade = String(decade);
+                var summary = document.createElement('summary');
+                summary.className = 'timeline-decade-summary';
+                summary.textContent = decade + '–' + Math.min(9999, decade + 9) + ' ';
+                var count = document.createElement('span');
+                count.className = 'timeline-decade-count badge bg-light text-muted';
+                summary.appendChild(count);
+                var list = document.createElement('div');
+                list.className = 'timeline-decade-events';
+                group.appendChild(summary);
+                group.appendChild(list);
+                saved.appendChild(group);
+            }
+            group.querySelector('.timeline-decade-events').appendChild(row);
+            decades[decade] = group;
+        });
+        // Move existing nodes to preserve open decades and in-progress edits.
+        Array.prototype.forEach.call(saved.querySelectorAll('[data-decade]'), function (group) {
+            if (!decades[group.dataset.decade]) group.remove();
+        });
+        Object.keys(decades).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (decade) {
+            var group = decades[decade];
+            var count = group.querySelectorAll('[data-event-id]').length;
+            group.querySelector('.timeline-decade-count').textContent = count + (count === 1 ? ' event' : ' events');
+            saved.appendChild(group);
+        });
+    }
 
     function updateSavedCount(count) {
         savedCount = count;
@@ -41,6 +84,10 @@
         cards.sort(function (a, b) {
             return a.dataset.date.localeCompare(b.dataset.date) || a.dataset.candidate.localeCompare(b.dataset.candidate);
         });
+        if (root.dataset.groupCandidates === 'false') {
+            cards.forEach(function (card) { candidates.appendChild(card); });
+            return;
+        }
         [
             {key: 'before', label: 'Before ' + referenceYear, match: function (value) { return value < referenceYear; }},
             {key: 'same', label: 'In ' + referenceYear, match: function (value) { return value === referenceYear; }},
@@ -118,8 +165,10 @@
                 more.hidden = !candidateCount || !data.has_more;
                 if (!candidateCount && !data.has_more) searchId = null;
                 try { sessionStorage.setItem(storageKey, JSON.stringify({year: year.value, searchId: searchId})); } catch (e) {}
-                status.textContent = data.count ? data.count + ' new events · within ' + data.range + ' years of ' + year.value + '. Save the ones you want to keep.' :
-                    (data.has_more ? 'No new events in this batch. ' + (candidateCount ? 'Find 10 more' : 'Find 10 events again') + ' to check more candidates.' : 'No more events found within ' + data.range + ' years. Try a different reference year.');
+                var period = data.start_year !== undefined ? data.start_year + '–' + data.end_year : 'within ' + data.range + ' years of ' + year.value;
+                var exhaustedPeriod = data.start_year !== undefined ? 'from ' + data.start_year + ' to ' + data.end_year : 'within ' + data.range + ' years';
+                status.textContent = data.count ? data.count + ' new events · ' + period + '. Save the ones you want to keep.' :
+                    (data.has_more ? 'No new events in this batch. ' + (candidateCount ? 'Find 10 more' : 'Find 10 events again') + ' to check more candidates.' : 'No more events found ' + exhaustedPeriod + '. Try a different reference year.');
             }).catch(function (error) {
                 if (current !== generation) return;
                 status.textContent = message(error, 'Could not find events. Please try again.');
@@ -156,9 +205,7 @@
                 var data = response.data;
                 if (!saved.querySelector('[data-event-id="' + data.id + '"]')) {
                     saved.insertAdjacentHTML('beforeend', data.html);
-                    Array.prototype.slice.call(saved.children).sort(function (a, b) {
-                        return a.dataset.sort.localeCompare(b.dataset.sort);
-                    }).forEach(function (node) { saved.appendChild(node); });
+                    arrangeSaved();
                 }
                 updateSavedCount(data.count);
                 if (current === generation) {
@@ -189,6 +236,7 @@
             .then(function (response) {
                 var data = response.data;
                 row.remove();
+                arrangeSaved();
                 updateSavedCount(data.count);
                 Array.prototype.forEach.call(candidates.querySelectorAll('[data-candidate]'), function (card) {
                     if (card.dataset.candidate !== data.source_id) return;

@@ -4,7 +4,7 @@ const vm = require('vm');
 
 function element() {
     return {
-        dataset: {}, events: {}, children: [], hidden: false, disabled: false, value: '', html: '',
+        dataset: {}, events: {}, children: [], hidden: false, disabled: false, open: false, value: '', html: '',
         get textContent() { return this.text || ''; },
         set textContent(value) { this.text = String(value); this.children = []; this.html = ''; },
         classList: {add() {}, remove() {}},
@@ -18,6 +18,12 @@ function element() {
             visit(this);
             return descendants.filter(node => {
                 if (selector === '[data-candidate]') return node.dataset.candidate !== undefined;
+                if (selector === '[data-event-id]') return node.dataset.eventId !== undefined;
+                if (selector === '[data-decade]') return node.dataset.decade !== undefined;
+                const eventId = selector.match(/^\[data-event-id="([^"]+)"\]$/);
+                if (eventId) return node.dataset.eventId === eventId[1];
+                const decade = selector.match(/^\[data-decade="([^"]+)"\]$/);
+                if (decade) return node.dataset.decade === decade[1];
                 const period = selector.match(/^\[data-period="([^"]+)"\]$/);
                 if (period) return node.dataset.period === period[1];
                 if (selector.startsWith('.')) return (node.className || '').split(' ').includes(selector.slice(1));
@@ -28,6 +34,10 @@ function element() {
             if (child.parentElement) child.parentElement.children = child.parentElement.children.filter(node => node !== child);
             child.parentElement = this;
             this.children.push(child);
+        },
+        remove() {
+            if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(node => node !== this);
+            this.parentElement = null;
         }
     };
 }
@@ -225,7 +235,7 @@ async function main() {
 
     const libraryIds = {};
     Object.keys(ids).forEach(id => { libraryIds[id] = element(); });
-    libraryIds['piece-timeline-admin'].dataset = {searchKey: 'library', title: 'Timeline events', titleCount: 'false', discoverUrl: '/library/discover', saveUrl: '/library/save', csrf: 'library-csrf'};
+    libraryIds['piece-timeline-admin'].dataset = {searchKey: 'library', title: 'Timeline events', titleCount: 'false', groupCandidates: 'false', discoverUrl: '/library/discover', saveUrl: '/library/save', csrf: 'library-csrf'};
     libraryIds['piece-timeline-admin'].querySelector = () => libraryIds['page-heading'];
     libraryIds['timeline-saved-count'].textContent = '2';
     libraryIds['page-heading'].textContent = 'Timeline events';
@@ -246,9 +256,9 @@ async function main() {
     libraryIds['timeline-search'].events.submit({preventDefault() {}});
     assert.strictEqual(libraryRequests[0].url, '/library/discover');
     assert.strictEqual(libraryRequests[0].data.search_id, null);
-    libraryRequests[0].resolve({data: {search_id: 'library-search', count: 0, has_more: false, range: 5, html: ''}});
+    libraryRequests[0].resolve({data: {search_id: 'library-search', count: 0, has_more: false, range: 10, start_year: 1800, end_year: 1810, html: ''}});
     await settle();
-    assert.strictEqual(libraryIds['timeline-search-status'].textContent, 'No more events found within 5 years. Try a different reference year.');
+    assert.strictEqual(libraryIds['timeline-search-status'].textContent, 'No more events found from 1800 to 1810. Try a different reference year.');
     assert.strictEqual(libraryIds['timeline-more'].hidden, true);
     assert.strictEqual(JSON.parse(libraryStorage.get('pianolit.timeline.1')).searchId, 'piece-search', 'The library preserves independent piece searches');
     libraryStorage.set('pianolit.timeline.library', JSON.stringify({year: '1850', searchId: 'library-resume'}));
@@ -256,6 +266,101 @@ async function main() {
     assert.strictEqual(libraryIds['reference-year'].value, '1850', 'The library restores its own reference year');
     libraryIds['timeline-search'].events.submit({preventDefault() {}});
     assert.strictEqual(libraryRequests[1].data.search_id, 'library-resume');
-    console.log('Passed: shared library identity/title, isolated search state, chronological grouping, live counts, pagination, AJAX removal/retry, CSRF, save races/idempotency, and expired sessions.');
+
+    const libraryCards = [cardFor('after', '1860-03-01'), cardFor('same', '1850-01-07'), cardFor('before', '1853-05-02')];
+    const libraryNext = [cardFor('earlier', '1851-01-01'), cardFor('later', '1857-08-09')];
+    const libraryCandidateRoot = libraryIds['timeline-candidates'];
+    libraryCandidateRoot.insertAdjacentHTML = function (position, html) {
+        (html === 'library-first' ? libraryCards : libraryNext).forEach(card => this.appendChild(card));
+    };
+    libraryRequests[1].resolve({data: {search_id: 'library-resume', count: 3, has_more: true, range: 10, start_year: 1850, end_year: 1860, html: 'library-first'}});
+    await settle();
+    assert.deepStrictEqual(libraryCandidateRoot.children.map(card => card.dataset.candidate), ['same', 'before', 'after'], 'Library results form one chronological list');
+    assert.strictEqual(libraryIds['timeline-search-status'].textContent, '3 new events · 1850–1860. Save the ones you want to keep.');
+    assert.strictEqual(libraryCandidateRoot.querySelector('.timeline-candidate-group-heading'), null, 'The library has no period headings');
+    libraryCards[1].dataset.saved = 'true';
+    libraryIds['timeline-more'].events.click();
+    libraryRequests[2].resolve({data: {search_id: 'library-resume', count: 2, has_more: false, range: 10, start_year: 1850, end_year: 1860, html: 'library-next'}});
+    await settle();
+    assert.deepStrictEqual(libraryCandidateRoot.children.map(card => card.dataset.candidate), ['same', 'earlier', 'before', 'later', 'after'], 'More merges into the same sorted list');
+    assert.strictEqual(libraryCandidateRoot.children[0], libraryCards[1], 'Sorting retains the original saved card');
+    assert.strictEqual(libraryCards[1].dataset.saved, 'true');
+    assert.strictEqual(libraryIds['page-heading'].textContent, 'Timeline events');
+
+    const savedRoot = libraryIds['timeline-saved'];
+    savedRoot.dataset.groupDecades = 'true';
+    function savedRow(id, date) {
+        const row = element();
+        row.dataset = {eventId: String(id), year: date.slice(0, 4), sort: date};
+        return row;
+    }
+    const saved1799 = savedRow(1, '1799-01-01');
+    const saved1800 = savedRow(2, '1800-01-01');
+    const saved1809 = savedRow(3, '1809-07-01');
+    savedRoot.appendChild(saved1809);
+    savedRoot.appendChild(saved1799);
+    savedRoot.appendChild(saved1800);
+    vm.runInNewContext(fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8'), libraryContext);
+    assert.deepStrictEqual(savedRoot.children.map(group => group.dataset.decade), ['1790', '1800']);
+    const group1800 = savedRoot.children[1];
+    assert.strictEqual(group1800.open, false, 'Saved decades start collapsed');
+    assert.strictEqual(group1800.querySelector('.timeline-decade-count').textContent, '2 events');
+    assert.deepStrictEqual(group1800.querySelectorAll('[data-event-id]').map(row => row.dataset.eventId), ['2', '3']);
+    group1800.open = true;
+    saved1800.open = true;
+    const saved1805 = savedRow(4, '1805-01-01');
+    const saved1810 = savedRow(5, '1810-01-01');
+    savedRoot.insertAdjacentHTML = function (position, html) { this.appendChild(html === '1805' ? saved1805 : saved1810); };
+    const decadeSaveButton = element();
+    const decadeSaveStatus = element();
+    const decadeCard = element();
+    decadeCard.dataset.candidate = 'Q100:created:1805';
+    decadeCard.querySelector = selector => selector === '.timeline-save' ? decadeSaveButton : decadeSaveStatus;
+    decadeSaveButton.closest = () => decadeCard;
+    const saveInDecade = () => libraryCandidateRoot.events.click({target: {closest: () => decadeSaveButton}});
+    saveInDecade();
+    libraryRequests[3].resolve({data: {id: 4, count: 4, html: '1805'}});
+    await settle();
+    assert.strictEqual(savedRoot.children[1], group1800, 'Saving reuses the existing decade');
+    assert.strictEqual(group1800.open, true, 'Saving preserves an open decade');
+    assert.strictEqual(saved1800.open, true, 'Saving preserves the existing event editor');
+    assert.deepStrictEqual(group1800.querySelectorAll('[data-event-id]').map(row => row.dataset.eventId), ['2', '4', '3']);
+    assert.strictEqual(group1800.querySelector('.timeline-decade-count').textContent, '3 events');
+    decadeSaveButton.dataset.saved = 'false'; decadeSaveButton.disabled = false;
+    saveInDecade();
+    libraryRequests[4].resolve({data: {id: 5, count: 5, html: '1810'}});
+    await settle();
+    assert.deepStrictEqual(savedRoot.children.map(group => group.dataset.decade), ['1790', '1800', '1810']);
+    assert.strictEqual(savedRoot.children[2].open, false, 'A newly saved decade starts collapsed');
+    assert.strictEqual(savedRoot.children[2].querySelector('.timeline-decade-count').textContent, '1 event');
+    const deletionRequests = [];
+    libraryContext.window.axios.delete = () => new Promise((resolve, reject) => deletionRequests.push({resolve, reject}));
+    function deleteRow(row) {
+        const form = element(); const button = element(); const status = element();
+        form.closest = selector => selector === '.timeline-remove' ? form : row;
+        form.querySelector = selector => selector === 'button[type="submit"]' ? button : status;
+        savedRoot.events.submit({target: form, preventDefault() {}});
+    }
+    deleteRow(saved1805);
+    deletionRequests[0].reject({response: {status: 500}});
+    await settle();
+    assert.strictEqual(group1800.querySelector('.timeline-decade-count').textContent, '3 events', 'A failed removal preserves the decade count');
+    deleteRow(saved1805);
+    deletionRequests[1].resolve({data: {count: 4, source_id: 'other'}});
+    await settle();
+    assert.strictEqual(group1800.querySelector('.timeline-decade-count').textContent, '2 events');
+    assert.strictEqual(group1800.open, true);
+    deleteRow(saved1810);
+    deletionRequests[2].resolve({data: {count: 3, source_id: 'other'}});
+    await settle();
+    assert.deepStrictEqual(savedRoot.children.map(group => group.dataset.decade), ['1790', '1800'], 'Removing the final event removes its empty decade');
+    deleteRow(saved1799); deletionRequests[3].resolve({data: {count: 2, source_id: 'other'}}); await settle();
+    deleteRow(saved1800); deletionRequests[4].resolve({data: {count: 1, source_id: 'other'}}); await settle();
+    assert.strictEqual(group1800.querySelector('.timeline-decade-count').textContent, '1 event');
+    deleteRow(saved1809); deletionRequests[5].resolve({data: {count: 0, source_id: 'other'}}); await settle();
+    assert.strictEqual(savedRoot.children.length, 0);
+    assert.strictEqual(libraryIds['timeline-empty'].hidden, false);
+    assert.strictEqual(libraryIds['page-heading'].textContent, 'Timeline events');
+    console.log('Passed: flat chronological library results, grouped piece results, shared library identity/title, isolated search state, live counts, pagination, AJAX removal/retry, CSRF, save races/idempotency, and expired sessions.');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });
