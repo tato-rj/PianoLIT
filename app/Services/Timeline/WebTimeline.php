@@ -44,7 +44,7 @@ class WebTimeline
         });
 
         $milestones = $this->pieceMilestones($piece, $born, $died);
-        $slots = 8 - ($born ? 1 : 0) - ($died ? 1 : 0) - $milestones->count();
+        $slots = 10 - ($born ? 1 : 0) - ($died ? 1 : 0) - $milestones->count();
         // Select lightweight dates across the whole composer period, then fetch curated content.
         $dates = $query->chronological()->get(['id', 'year', 'event_date']);
         $selected = $this->spreadAcrossLifetime($dates, $slots);
