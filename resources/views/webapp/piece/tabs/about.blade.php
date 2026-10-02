@@ -1,10 +1,12 @@
+@php($hasMoments = $piece->media['performance'] && ! $piece->media['performance']->moments->isEmpty())
 <div class="tab-pane fade show active mb-5" id="tab-about">
 	<div class="row">
 		@if($piece->media['performance'])
-		<div class="col-lg-6 col-12 mb-4 rounded-video video-container {{$piece->media['performance']->moments->isEmpty() ? 'piece-about-video' : ''}}">
+		<div class="{{$hasMoments ? 'col-lg-12' : 'col-lg-6 piece-about-video'}} col-12 mb-4 rounded-video video-container">
 			@video([
 				'classes' => 'w-100',
 				'id' => 'piece-performance',
+                'splitMoments' => true,
                 'moments' => $piece->media['performance']->listeningMoments(),
 	            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
 				'thumbnail' => asset('images/webapp/piano-thumbnail.jpg'),
@@ -12,7 +14,7 @@
 		</div>
 		@endif
 
-		<div class="{{$piece->media['performance'] ? 'col-lg-6 col-12' : 'col-12'}} mb-4">
+		<div class="{{$piece->media['performance'] && ! $hasMoments ? 'col-lg-6 col-12' : 'col-12'}} mb-4">
 {{-- 			<div class="d-flex {{$piece->media['performance'] ? null : 'flex-center'}} flex-wrap mb-3">
 				<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 					@icon('file-text'){{$piece->number_of_pages}}
