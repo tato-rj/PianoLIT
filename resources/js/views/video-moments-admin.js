@@ -7,7 +7,12 @@
     var sorting = false;
     var media = doc.querySelector('[data-moment-preview] video');
     if (media && win.Plyr && win.VideoMoments) {
-        var player = new win.Plyr(media, Object.assign({ratio: '16:9'}, win.VideoMoments.markerOptions(media)));
+        var player = new win.Plyr(media, Object.assign({
+            ratio: '16:9',
+            invertTime: false,
+            toggleInvert: false,
+            displayDuration: false
+        }, win.VideoMoments.markerOptions(media)));
         win.VideoMoments.attach(player, media);
     }
     function parseTime(value) {
