@@ -2,7 +2,7 @@
 <div class="tab-pane fade show active mb-5" id="tab-about">
 	<div class="row">
 		@if($piece->media['performance'])
-		<div class="{{$hasMoments ? 'col-lg-12' : 'col-lg-6 mx-auto piece-about-video'}} col-12 mb-4 rounded-video video-container">
+		<div class="{{$hasMoments ? 'col-lg-12' : 'col-lg-6 mx-auto piece-about-video'}} col-12 rounded-video video-container" style="margin-bottom: 2rem;">
 			@video([
 				'classes' => 'w-100',
 				'id' => 'piece-performance',
@@ -14,7 +14,7 @@
 		</div>
 		@endif
 
-		<div class="col-12 mb-4">
+		<div class="col-12" style="margin-bottom: 2rem;">
 {{-- 			<div class="d-flex {{$piece->media['performance'] ? null : 'flex-center'}} flex-wrap mb-3">
 				<div class="badge rounded-pill alert-grey text-nowrap mx-2 mb-1">
 					@icon('file-text'){{$piece->number_of_pages}}
@@ -27,7 +27,7 @@
 				</div>
 			</div> --}}
 			@if($piece->hasDescription())
-			<div class="mb-3 piece-description" data-piece-description>
+			<div class="piece-description"  style="margin-bottom: 2rem;" data-piece-description>
 				<h5 class="mb-2">What's this piece like?</h5>
 				<div class="piece-description__content" id="piece-description">{{$piece->description}}</div>
 				<div class="d-flex justify-content-end">
@@ -66,7 +66,7 @@
 			@endif
 		</div> --}}
 
-		<div class="mb-4">
+		<div class="" style="margin-bottom: 2rem;">
 			<h5 class="mb-3">Ranking</h5>
 			@foreach($piece->rankings as $ranking => $label)
 			@if($label)

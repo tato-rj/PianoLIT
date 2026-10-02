@@ -1,8 +1,6 @@
 .piece-about-media {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    // Equal rows also keep the stacked guide as tall as the video.
-    grid-auto-rows: 1fr;
     gap: 24px;
 
     .piece-moments-player { min-width: 0; }
@@ -12,15 +10,20 @@
         margin-top: 0 !important;
     }
     .piece-moments__list {
-        // Rows scroll inside the video's height without enlarging the grid.
-        position: absolute;
-        inset: 0;
+        max-height: var(--piece-moments-video-height, none);
         align-content: start;
         overflow-y: auto;
     }
 
     @media (min-width: 576px) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        .piece-moments__list {
+            // Only the video sets the row height when the two share a row.
+            position: absolute;
+            inset: 0;
+            max-height: none;
+        }
     }
 }
 

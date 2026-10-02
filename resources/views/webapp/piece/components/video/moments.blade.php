@@ -1,6 +1,7 @@
 <section class="piece-moments mt-3" data-moments-for="{{$videoId}}" aria-label="Sections in this piece">
-    {{-- <h5 class="mb-2">Sections in this piece</h5> --}}
+    
     <div class="piece-moments__list" @if(empty($splitMoments)) style="max-height: 137px; overflow-y: scroll;" @endif>
+        <p class="mb-2 small fw-bold">@icon('info')Details about this piece</p>
         @foreach($moments as $moment)
         @php($seconds = (int) floor($moment['start_time']))
         <button type="button" class="piece-moments__row" data-moment-id="{{$moment['id']}}">

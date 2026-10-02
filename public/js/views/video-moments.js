@@ -48,6 +48,23 @@
         });
         if (!section || !player.elements || !player.elements.container) return;
         var container = player.elements.container;
+        var aboutLayout = section.closest('.piece-about-media');
+        var win = doc.defaultView || root;
+        var heightObserver = null;
+        function sizeList() {
+            if (!aboutLayout || (player.fullscreen && player.fullscreen.active)) return;
+            var height = container.getBoundingClientRect().height;
+            // Hidden tabs and fullscreen must not replace the inline player's height.
+            if (height > 0) section.style.setProperty('--piece-moments-video-height', height + 'px');
+        }
+        if (aboutLayout) {
+            if (win.ResizeObserver) {
+                heightObserver = new win.ResizeObserver(sizeList);
+                heightObserver.observe(container);
+            } else {
+                win.addEventListener('resize', sizeList);
+            }
+        }
         var rows = Array.from(section.querySelectorAll('[data-moment-id]'));
         var active = null;
         var pending = null;
@@ -159,6 +176,7 @@
             });
         }
         function metadata() {
+            sizeList();
             installMarkerLabels();
             if (pending) seek(pending.moment, pending.autoplay);
             synchronize();
@@ -198,6 +216,9 @@
         });
         ['ready', 'loadedmetadata', 'durationchange'].forEach(function (event) { player.on(event, metadata); });
         function cleanup() {
+            if (heightObserver) heightObserver.disconnect();
+            else if (aboutLayout) win.removeEventListener('resize', sizeList);
+            if (aboutLayout) section.style.removeProperty('--piece-moments-video-height');
             section.removeEventListener('click', listClick);
             doc.removeEventListener('click', outside);
             doc.removeEventListener('keydown', keyboard, true);

@@ -53,6 +53,7 @@ module.exports = async function () {
     }
     const rows = moments.map(moment => element({'data-moment-id': String(moment.id)}));
     const section = element({'data-moments-for': 'video'});
+    section.closest = () => null;
     section.children = rows;
     section.querySelectorAll = () => rows;
     let overlay;
@@ -224,5 +225,50 @@ module.exports = async function () {
     const disposePlaying = guide.attach(player, media);
     assert.strictEqual(overlay.querySelector('.piece-moments__about').hidden, false, 'Attaching to an already playing player reveals the active moment');
     disposePlaying();
+
+    // About's stacked list follows the rendered player, including resize/tab changes.
+    const heights = {};
+    section.closest = () => element();
+    section.style = {
+        setProperty(name, value) { heights[name] = value; },
+        removeProperty(name) { delete heights[name]; }
+    };
+    let videoHeight = 202.5;
+    container.getBoundingClientRect = () => ({height: videoHeight});
+    let resize;
+    let disconnected = false;
+    root.ResizeObserver = class {
+        constructor(callback) { resize = callback; }
+        observe(target) { assert.strictEqual(target, container); }
+        disconnect() { disconnected = true; }
+    };
+    const disposeSized = guide.attach(player, media);
+    assert.strictEqual(heights['--piece-moments-video-height'], '202.5px');
+    videoHeight = 306.5625;
+    resize();
+    assert.strictEqual(heights['--piece-moments-video-height'], '306.5625px');
+    videoHeight = 0;
+    resize();
+    assert.strictEqual(heights['--piece-moments-video-height'], '306.5625px', 'A hidden tab preserves the last visible height');
+    player.fullscreen = {active: true};
+    videoHeight = 900;
+    resize();
+    assert.strictEqual(heights['--piece-moments-video-height'], '306.5625px', 'Fullscreen does not enlarge the inline list');
+    player.fullscreen.active = false;
+    videoHeight = 180;
+    resize();
+    assert.strictEqual(heights['--piece-moments-video-height'], '180px');
+    disposeSized();
+    assert(disconnected);
+    assert.strictEqual(heights['--piece-moments-video-height'], undefined);
+    delete root.ResizeObserver;
+    const resizeListeners = element();
+    doc.defaultView = resizeListeners;
+    const disposeFallback = guide.attach(player, media);
+    videoHeight = 225;
+    resizeListeners.emit('resize');
+    assert.strictEqual(heights['--piece-moments-video-height'], '225px', 'Older browsers update the cap on window resize');
+    disposeFallback();
+    assert.strictEqual(resizeListeners.listeners.resize.length, 0);
     console.log('Passed: native markers, timing/seeking sync, persistent details through transitions/gaps, close/replay/reset, metadata and cleanup.');
 };
