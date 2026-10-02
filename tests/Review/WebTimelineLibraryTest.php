@@ -261,6 +261,31 @@ class WebTimelineLibraryTest extends ReviewTestCase
         Http::assertNothingSent();
     }
 
+    public function test_every_rendered_event_alternates_including_death_and_piece_milestones()
+    {
+        foreach ([[1, null, null], [2, null, null], [1, 1800, null], [2, 1800, 1810]] as [$count, $composed, $published]) {
+            TimelineEvent::query()->delete();
+            for ($index = 0; $index < $count; $index++) $this->event(1790 + $index);
+            $this->piece->update(['composed_in' => $composed, 'published_in' => $published]);
+            $timeline = $this->timeline();
+            $html = view('webapp.piece.components.timeline', [
+                'piece' => $this->piece, 'timeline' => $timeline,
+                'timelinePeriod' => (new WebTimeline)->periodForPiece($this->piece),
+            ])->render();
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($html);
+            $articles = $dom->getElementsByTagName('article');
+            $this->assertSame($timeline->count(), $articles->length);
+            $previousLeft = null;
+            foreach ($articles as $article) {
+                $left = strpos($article->getAttribute('class'), 'piece-timeline-left') !== false;
+                if ($previousLeft !== null) $this->assertNotSame($previousLeft, $left, 'Adjacent entries must alternate, including milestones.');
+                $previousLeft = $left;
+            }
+            $this->assertSame('death', $timeline->last()['composer_milestone']);
+        }
+    }
+
     public function test_unknown_death_adds_only_birth_and_invalid_exact_dates_add_no_markers()
     {
         $this->undatedPiece('1800-03-21', null);

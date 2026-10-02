@@ -29,7 +29,7 @@
   }
   .piece-timeline-year {
     grid-column: 1; grid-row: 1; text-align: right;
-    font-size: 2.4rem; line-height: 1.15; font-weight: 600;
+    font-size: 1.6rem; line-height: 1.15; font-weight: 600;
     letter-spacing: -.045em; color: var(--color-text, #212529);
     small { display: block; margin-top: .3rem; font-size: .75rem; line-height: 1.4; font-weight: 400; letter-spacing: 0; color: var(--color-text-muted, #6c757d); }
   }
@@ -80,7 +80,7 @@
       &:before { left: -28px; top: 1.9rem; }
       &:after { display: none; }
     }
-    .piece-timeline-year, .piece-timeline-left .piece-timeline-year { text-align: left; font-size: 2rem; }
+    .piece-timeline-year, .piece-timeline-left .piece-timeline-year { text-align: left; font-size: 1.4rem; }
     .piece-timeline-year small { display: inline; margin-left: .6rem; }
     .piece-timeline-content { align-items: flex-start; gap: 1rem; }
     .piece-timeline-image { order: 0; flex: 0 0 80px; width: 80px; height: 108px; }
