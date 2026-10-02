@@ -6,6 +6,8 @@ use App\{Piece, TimelineEvent};
 
 class WebTimeline
 {
+    protected $maxEvents = 10;
+
     public function periodForPiece(Piece $piece): ?array
     {
         $composer = $piece->composer;
@@ -44,7 +46,7 @@ class WebTimeline
         });
 
         $milestones = $this->pieceMilestones($piece, $born, $died);
-        $slots = 10 - ($born ? 1 : 0) - ($died ? 1 : 0) - $milestones->count();
+        $slots = $this->maxEvents - ($born ? 1 : 0) - ($died ? 1 : 0) - $milestones->count();
         // Select lightweight dates across the whole composer period, then fetch curated content.
         $dates = $query->chronological()->get(['id', 'year', 'event_date']);
         $selected = $this->spreadAcrossLifetime($dates, $slots);
