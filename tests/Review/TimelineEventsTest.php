@@ -37,13 +37,13 @@ class TimelineEventsTest extends ReviewTestCase
     {
         $events = [];
         for ($id = 1; $id <= 40; $id++) {
-            $events[] = $this->candidate($id, 1799 + ($id % 3)) + ['rank' => $id, 'world_event' => false];
+            $events[] = $this->candidate($id, 1799 + ($id % 3)) + ['rank' => $id, 'types' => ['music']];
         }
         $service = \Mockery::mock(WikimediaDiscovery::class)->makePartial();
         $service->shouldReceive('batch')->andReturn(['events' => $events, 'complete' => true,
             'next_batch' => 1, 'has_more' => false, 'periods' => ['before' => true, 'after' => true]]);
         $service->shouldReceive('enrich')->andReturnUsing(function ($selected) {
-            return array_map(function ($event) { unset($event['rank'], $event['world_event']); return $event; }, $selected);
+            return array_map(function ($event) { unset($event['rank'], $event['types']); return $event; }, $selected);
         });
         $this->app->instance(WikimediaDiscovery::class, $service);
     }
@@ -57,7 +57,7 @@ class TimelineEventsTest extends ReviewTestCase
     {
         $id = (string) Str::uuid();
         $this->withSession(['timeline_event_searches' => [$id => [
-            'piece_id' => null, 'year' => $candidate['year'], 'expires' => time() + 7200,
+            'year' => $candidate['year'], 'expires' => time() + 7200,
             'shown' => [$candidate['source_id'] => $candidate],
         ]]]);
         return $this->postJson(route('admin.timeline-events.store'), [
@@ -70,12 +70,10 @@ class TimelineEventsTest extends ReviewTestCase
     public function test_library_page_has_blank_year_shared_routes_and_admin_authorization()
     {
         $this->assertFalse(Schema::hasColumn('timeline_events', 'piece_id'));
-        $this->assertEqualsCanonicalizing(array_diff(Schema::getColumnListing('piece_timeline_events'), ['piece_id']),
-            array_diff(Schema::getColumnListing('timeline_events'), ['source_identity']));
         $response = $this->get(route('admin.timeline-events.index'))->assertOk()
             ->assertSee('Timeline events')->assertDontSee('Timeline events ·')->assertSee('Shared event library')->assertSee('Saved events');
         $this->assertMatchesRegularExpression('/<input id="reference-year"[^>]*value=""/', $response->getContent());
-        $response->assertSee('data-search-key="library"', false)->assertSee(route('admin.timeline-events.discover'));
+        $response->assertSee('id="timeline-events-admin"', false)->assertSee(route('admin.timeline-events.discover'));
         $response->assertDontSee('Edit piece');
         foreach (WikimediaDiscovery::TYPES as $type => $label) {
             $response->assertSee($label)->assertSee('name="types[]" type="checkbox" value="'.$type.'" checked', false);
@@ -127,7 +125,6 @@ class TimelineEventsTest extends ReviewTestCase
         $shown = app('session')->get('timeline_event_searches.'.$id.'.shown');
         $this->assertFalse(collect($shown)->contains('wikidata_id', 'Q1'));
         $this->assertDatabaseCount('timeline_events', 1);
-        $this->assertDatabaseCount('piece_timeline_events', 0);
         $second = $this->discover($id)->assertOk()->assertJsonPath('count', 10);
         $all = app('session')->get('timeline_event_searches.'.$id.'.shown');
         $this->assertCount(20, $all);
@@ -153,7 +150,6 @@ class TimelineEventsTest extends ReviewTestCase
         $this->saveCandidate($this->candidate(1, 1801, 'published'))->assertOk()->assertJsonPath('id', $event->id);
         $this->assertDatabaseCount('timeline_events', 1);
         $this->assertDatabaseHas('timeline_events', ['id' => $event->id, 'year' => 1798, 'title' => 'Curated title']);
-        $this->assertDatabaseCount('piece_timeline_events', 0);
     }
 
     public function test_database_uniqueness_blocks_alternate_date_claims_but_keeps_birth_and_death()
@@ -195,19 +191,13 @@ class TimelineEventsTest extends ReviewTestCase
         $this->assertDatabaseCount('timeline_events', 1);
     }
 
-    public function test_global_and_piece_cursors_cannot_cross_or_save_expired_and_forged_candidates()
+    public function test_cursors_reject_wrong_year_expired_and_forged_candidates()
     {
         $this->withExceptionHandling();
         $this->fakeDiscovery();
-        $piece = Model::withoutEvents(function () { return create(Piece::class); });
-        $pieceId = $this->postJson(route('admin.pieces.timeline.discover', $piece), ['reference_year' => 1800])->assertOk()->json('search_id');
-        $this->postJson(route('admin.timeline-events.store'), ['search_id' => $pieceId, 'source_id' => 'Q1:created:1800'])
-            ->assertUnprocessable()->assertJsonValidationErrors('source_id');
-        $this->discover($pieceId)->assertUnprocessable()->assertJsonValidationErrors('search_id');
         $id = $this->discover()->assertOk()->json('search_id');
         $state = app('session')->get('timeline_event_searches.'.$id);
         $source = array_key_first($state['shown']);
-        $this->postJson(route('admin.pieces.timeline.store', $piece), ['search_id' => $id, 'source_id' => $source])->assertUnprocessable();
         $this->discover($id, 1900)->assertUnprocessable()->assertJsonValidationErrors('search_id');
         $this->postJson(route('admin.timeline-events.store'), ['search_id' => $id, 'source_id' => 'Q999:created:1800'])
             ->assertUnprocessable()->assertJsonValidationErrors('source_id');
@@ -252,7 +242,6 @@ class TimelineEventsTest extends ReviewTestCase
         $updated = (new WebTimeline)->forPiece($piece);
         $this->assertCount(count($web) + 1, $updated);
         $this->assertSame('Library event 1', $updated->firstWhere('highlight', false)['title']);
-        $this->assertDatabaseCount('piece_timeline_events', 0);
         Http::assertNothingSent();
     }
 }

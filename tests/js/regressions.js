@@ -1,4 +1,4 @@
-require('./piece-timeline-admin');
+require('./timeline-events-admin');
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');

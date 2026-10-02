@@ -1,8 +1,8 @@
 (function () {
     'use strict';
-    var root = document.getElementById('piece-timeline-admin');
+    var root = document.getElementById('timeline-events-admin');
     if (!root) return;
-    document.body.classList.add('piece-timeline-editor');
+    document.body.classList.add('timeline-events-editor');
     var form = document.getElementById('timeline-search');
     var year = document.getElementById('reference-year');
     var find = document.getElementById('timeline-find');
@@ -13,14 +13,12 @@
     var resultsHeading = document.getElementById('timeline-results-heading');
     var candidateCounter = document.getElementById('timeline-candidate-count');
     var savedCounter = document.getElementById('timeline-saved-count');
-    var pageTitle = root.querySelector('#page-title h5');
     var candidateCount = 0;
     var savedCount = Number(savedCounter.textContent);
     var searchId = null;
     var busy = false;
     var generation = 0;
-    var storageKey = 'pianolit.timeline.' + (root.dataset.searchKey || root.dataset.pieceId);
-    var title = root.dataset.title || 'Timeline';
+    var storageKey = 'pianolit.timeline.library';
     var typeInputs = Array.prototype.slice.call(form.querySelectorAll('.timeline-type'));
     try {
         var previous = JSON.parse(sessionStorage.getItem(storageKey));
@@ -47,10 +45,6 @@
     function arrangeSaved() {
         var rows = Array.prototype.slice.call(saved.querySelectorAll('[data-event-id]'));
         rows.sort(function (a, b) { return a.dataset.sort.localeCompare(b.dataset.sort); });
-        if (saved.dataset.groupDecades !== 'true') {
-            rows.forEach(function (row) { saved.appendChild(row); });
-            return;
-        }
         var decades = {};
         rows.forEach(function (row) {
             var decade = Math.floor(Number(row.dataset.year) / 10) * 10;
@@ -89,46 +83,16 @@
     function updateSavedCount(count) {
         savedCount = count;
         savedCounter.textContent = String(count);
-        if (pageTitle && root.dataset.titleCount !== 'false') pageTitle.textContent = title + ' · ' + count + (count === 1 ? ' event' : ' events');
         document.getElementById('timeline-empty').hidden = count > 0;
     }
 
-    function arrangeCandidates(referenceYear) {
+    function arrangeCandidates() {
         var cards = Array.prototype.slice.call(candidates.querySelectorAll('[data-candidate]'));
         cards.sort(function (a, b) {
             return a.dataset.date.localeCompare(b.dataset.date) || a.dataset.candidate.localeCompare(b.dataset.candidate);
         });
-        if (root.dataset.groupCandidates === 'false') {
-            cards.forEach(function (card) { candidates.appendChild(card); });
-            return;
-        }
-        [
-            {key: 'before', label: 'Before ' + referenceYear, match: function (value) { return value < referenceYear; }},
-            {key: 'same', label: 'In ' + referenceYear, match: function (value) { return value === referenceYear; }},
-            {key: 'after', label: 'After ' + referenceYear, match: function (value) { return value > referenceYear; }}
-        ].forEach(function (period) {
-            var matches = cards.filter(function (card) { return period.match(Number(card.dataset.year)); });
-            if (!matches.length) return;
-            var group = candidates.querySelector('[data-period="' + period.key + '"]');
-            if (!group) {
-                group = document.createElement('section');
-                group.className = 'timeline-candidate-group';
-                group.dataset.period = period.key;
-                var heading = document.createElement('h6');
-                heading.className = 'timeline-candidate-group-heading';
-                heading.id = 'timeline-period-' + period.key;
-                group.setAttribute('aria-labelledby', heading.id);
-                var list = document.createElement('div');
-                list.className = 'timeline-candidates-list';
-                group.appendChild(heading);
-                group.appendChild(list);
-            }
-            group.querySelector('.timeline-candidate-group-heading').textContent = period.label + ' · ' + matches.length + (matches.length === 1 ? ' event' : ' events');
-            var list = group.querySelector('.timeline-candidates-list');
-            matches.forEach(function (card) { list.appendChild(card); });
-            // Move existing nodes so saved/expanded states survive later batches.
-            candidates.appendChild(group);
-        });
+        // Reuse card nodes to preserve saved/expanded states across batches.
+        cards.forEach(function (card) { candidates.appendChild(card); });
     }
 
     function request(url, data) {
@@ -180,15 +144,15 @@
                 var data = response.data;
                 searchId = data.search_id;
                 candidates.insertAdjacentHTML('beforeend', data.html);
-                arrangeCandidates(Number(year.value));
+                arrangeCandidates();
                 candidateCount += data.count;
                 candidateCounter.textContent = String(candidateCount);
                 resultsHeading.hidden = !candidateCount;
                 more.hidden = !candidateCount || !data.has_more;
                 if (!candidateCount && !data.has_more) searchId = null;
                 rememberSearch();
-                var period = data.start_year !== undefined ? data.start_year + '–' + data.end_year : 'within ' + data.range + ' years of ' + year.value;
-                var exhaustedPeriod = data.start_year !== undefined ? 'from ' + data.start_year + ' to ' + data.end_year : 'within ' + data.range + ' years';
+                var period = data.start_year + '–' + data.end_year;
+                var exhaustedPeriod = 'from ' + data.start_year + ' to ' + data.end_year;
                 status.textContent = data.count ? data.count + ' new events · ' + period + '. Save the ones you want to keep.' :
                     (data.has_more ? 'No new events in this batch. ' + (candidateCount ? 'Find 10 more' : 'Find 10 events again') + ' to check more candidates.' : 'No more events found ' + exhaustedPeriod + '. Try a different reference year.');
             }).catch(function (error) {
@@ -236,7 +200,7 @@
                     button.dataset.saved = 'true';
                     button.textContent = 'Saved';
                     card.classList.add('is-saved');
-                    card.querySelector('.timeline-save-status').textContent = 'Saved to timeline';
+                    card.querySelector('.timeline-save-status').textContent = 'Saved to library';
                 }
             }).catch(function (error) {
                 if (current !== generation) return;

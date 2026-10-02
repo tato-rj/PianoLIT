@@ -2,9 +2,8 @@
 
 namespace Tests\Review;
 
-use App\{Admin, Piece};
+use App\Admin;
 use App\Services\Timeline\WikimediaDiscovery;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Http, Redis};
 use Illuminate\Support\Str;
 
@@ -76,13 +75,11 @@ class TimelineDecadeTest extends ReviewTestCase
         }
     }
 
-    public function test_forward_cache_is_separate_from_surrounding_search_and_includes_both_boundary_dates()
+    public function test_forward_batches_include_both_boundary_dates_and_exclude_outside_dates()
     {
         $service = new WikimediaDiscovery;
-        $around = $service->batch(1800, 10);
-        $this->assertTrue(collect($around['events'])->contains('wikidata_id', 'Q1'));
         $forward = [];
-        for ($batch = 0; $batch < 4; $batch++) $forward = array_merge($forward, $service->batch(1800, 10, $batch, true)['events']);
+        for ($batch = 0; $batch < 4; $batch++) $forward = array_merge($forward, $service->batch(1800, 10, $batch)['events']);
         $this->assertFalse(collect($forward)->contains('wikidata_id', 'Q1'));
         $this->assertFalse(collect($forward)->contains('wikidata_id', 'Q2'));
         $this->assertSame('1800-01-01', collect($forward)->firstWhere('wikidata_id', 'Q3')['event_date']);
@@ -93,7 +90,7 @@ class TimelineDecadeTest extends ReviewTestCase
     {
         $id = (string) Str::uuid();
         $this->withSession(['timeline_event_searches' => [$id => [
-            'piece_id' => null, 'year' => 1800, 'expires' => time() + 7200, 'batch_index' => 23, 'has_more' => false,
+            'year' => 1800, 'expires' => time() + 7200, 'batch_index' => 23, 'has_more' => false,
             'pool' => [['source_id' => 'Q1:work:1799', 'wikidata_id' => 'Q1', 'event_kind' => 'created', 'year' => 1799]],
             'shown' => ['Q3:work:1800' => ['source_id' => 'Q3:work:1800', 'wikidata_id' => 'Q3', 'event_kind' => 'created', 'year' => 1800]],
         ]]]);
@@ -103,19 +100,6 @@ class TimelineDecadeTest extends ReviewTestCase
         $this->assertArrayNotHasKey('Q1:work:1799', $state['shown']);
         $this->assertCount(11, $state['shown']);
         foreach ($state['pool'] as $event) $this->assertGreaterThanOrEqual(1800, $event['year']);
-    }
-
-    public function test_piece_editor_keeps_its_surrounding_five_year_window()
-    {
-        $piece = Model::withoutEvents(function () { return create(Piece::class); });
-        $first = $this->postJson(route('admin.pieces.timeline.discover', $piece), ['reference_year' => 1800])
-            ->assertOk()->assertJsonPath('range', 5);
-        $this->assertArrayNotHasKey('start_year', $first->json());
-        $shown = app('session')->get('piece_timeline_searches.'.$first->json('search_id').'.shown');
-        $this->assertTrue(collect($shown)->contains('wikidata_id', 'Q1'));
-        Http::assertSent(function ($request) {
-            return strpos($request->url(), WikimediaDiscovery::QUERY_ENDPOINT) === 0 && strpos($request['query'], '1795-01-01') !== false;
-        });
     }
 
     public function test_forward_window_clamps_at_supported_calendar_limit()

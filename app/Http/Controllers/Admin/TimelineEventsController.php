@@ -14,7 +14,7 @@ class TimelineEventsController extends Controller
     public function index()
     {
         $events = TimelineEvent::chronological()->get();
-        return view('admin.pages.pieces.timeline.edit', ['events' => $events, 'isLibrary' => true]);
+        return view('admin.pages.timeline-events.index', compact('events'));
     }
 
     public function discover(Request $request, WikimediaDiscovery $discovery, TimelineDiscoverySession $search)
@@ -42,7 +42,7 @@ class TimelineEventsController extends Controller
             }
         }
         return response()->json(['id' => $event->id, 'count' => TimelineEvent::count(),
-            'html' => view('admin.pages.pieces.timeline.saved', ['event' => $event, 'isLibrary' => true])->render()]);
+            'html' => view('admin.pages.timeline-events.saved', compact('event'))->render()]);
     }
 
     public function update(TimelineEventForm $request, TimelineEvent $event)

@@ -46,11 +46,11 @@ async function settle() { for (let i = 0; i < 8; i++) await Promise.resolve(); }
 
 async function main() {
     const ids = {};
-    for (const id of ['piece-timeline-admin', 'timeline-search', 'reference-year', 'timeline-find', 'timeline-more', 'timeline-search-status', 'timeline-candidates', 'timeline-saved', 'timeline-empty', 'timeline-results-heading', 'timeline-candidate-count', 'timeline-saved-count', 'page-heading']) ids[id] = element();
-    ids['piece-timeline-admin'].dataset = {pieceId: '1', discoverUrl: '/discover', saveUrl: '/save', csrf: 'csrf'};
-    ids['piece-timeline-admin'].querySelector = () => ids['page-heading'];
+    for (const id of ['timeline-events-admin', 'timeline-search', 'reference-year', 'timeline-find', 'timeline-more', 'timeline-search-status', 'timeline-candidates', 'timeline-saved', 'timeline-empty', 'timeline-results-heading', 'timeline-candidate-count', 'timeline-saved-count', 'page-heading']) ids[id] = element();
+    ids['timeline-events-admin'].dataset = {discoverUrl: '/discover', saveUrl: '/save', csrf: 'csrf'};
+    ids['page-heading'].textContent = 'Timeline events';
     const requests = [];
-    const storage = new Map([['pianolit.timeline.1', JSON.stringify({year: '1730', searchId: 'old-search'})]]);
+    const storage = new Map([['pianolit.timeline.library', JSON.stringify({year: '1730', searchId: 'old-search'})]]);
     const context = {
         document: {body: element(), createElement: () => element(), getElementById: id => ids[id]},
         sessionStorage: {getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value), removeItem: key => storage.delete(key)},
@@ -60,18 +60,18 @@ async function main() {
             return new Promise((resolve, reject) => requests.push({url, options, method: 'DELETE', resolve, reject}));
         }}}
     };
-    vm.runInNewContext(fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8'), context);
+    vm.runInNewContext(fs.readFileSync('resources/js/views/timeline-events-admin.js', 'utf8'), context);
     assert.strictEqual(ids['reference-year'].value, '1730', 'Restore the manually selected year');
     assert.strictEqual(ids['timeline-more'].hidden, true, 'A stored cursor must not show More without results');
     assert.strictEqual(ids['timeline-results-heading'].hidden, true);
-    assert.strictEqual(ids['page-heading'].textContent, 'Timeline · 0 events');
+    assert.strictEqual(ids['page-heading'].textContent, 'Timeline events');
     const submit = () => ids['timeline-search'].events.submit({preventDefault() {}});
     ids['reference-year'].value = '1730';
     submit();
     assert.strictEqual(ids['timeline-find'].disabled, true);
     assert.strictEqual(requests[0].data.search_id, 'old-search', 'A reload continues the server exclusions without revealing More');
     assert.strictEqual(requests[0].options.headers['X-CSRF-TOKEN'], 'csrf');
-    requests[0].resolve({data: {search_id: 'search-1', count: 10, has_more: true, range: 3, html: 'first ten'}});
+    requests[0].resolve({data: {search_id: 'search-1', count: 10, has_more: true, range: 10, start_year: 1730, end_year: 1740, html: 'first ten'}});
     await settle();
     assert.strictEqual(ids['timeline-find'].disabled, false);
     assert.strictEqual(ids['timeline-more'].hidden, false);
@@ -86,7 +86,7 @@ async function main() {
     assert.strictEqual(ids['timeline-candidates'].html, 'first ten');
     assert.strictEqual(ids['timeline-search-status'].textContent, 'Wikimedia is unavailable right now.');
     ids['timeline-more'].events.click();
-    requests[2].resolve({data: {search_id: 'search-1', count: 10, has_more: true, range: 3, html: 'next ten'}});
+    requests[2].resolve({data: {search_id: 'search-1', count: 10, has_more: true, range: 10, start_year: 1730, end_year: 1740, html: 'next ten'}});
     await settle();
     assert.strictEqual(ids['timeline-candidates'].html, 'first tennext ten');
     assert.strictEqual(ids['timeline-candidate-count'].textContent, '20');
@@ -117,12 +117,12 @@ async function main() {
     assert.strictEqual(ids['timeline-empty'].hidden, true);
     assert.strictEqual(ids['timeline-saved'].html, 'saved event');
     assert.strictEqual(ids['timeline-saved-count'].textContent, '1');
-    assert.strictEqual(ids['page-heading'].textContent, 'Timeline · 1 event');
+    assert.strictEqual(ids['page-heading'].textContent, 'Timeline events');
     assert.strictEqual(ids['timeline-find'].disabled, false);
 
     submit();
     assert.strictEqual(requests[5].data.search_id, null, 'New search resets the editing cursor');
-    requests[5].resolve({data: {search_id: 'search-2', count: 10, has_more: true, range: 3, html: 'new results'}});
+    requests[5].resolve({data: {search_id: 'search-2', count: 10, has_more: true, range: 10, start_year: 1730, end_year: 1740, html: 'new results'}});
     await settle();
     ids['timeline-more'].events.click();
     requests[6].reject({response: {status: 422, data: {errors: {search_id: ['This search has expired. Start a new search.']}}}});
@@ -135,17 +135,17 @@ async function main() {
     assert.strictEqual(ids['timeline-more'].hidden, true, 'Changing the year hides More');
     assert.strictEqual(ids['timeline-results-heading'].hidden, true);
     submit();
-    requests[7].resolve({data: {search_id: 'empty-search', count: 0, has_more: true, range: 15, html: ''}});
+    requests[7].resolve({data: {search_id: 'empty-search', count: 0, has_more: true, range: 10, start_year: 1730, end_year: 1740, html: ''}});
     await settle();
     assert.strictEqual(ids['timeline-more'].hidden, true, 'An empty API response must not reveal More');
     assert.strictEqual(ids['timeline-results-heading'].hidden, true);
     submit();
-    assert.strictEqual(requests[8].data.search_id, 'empty-search', 'The single Find button can continue widening an empty search');
-    requests[8].resolve({data: {search_id: 'empty-search', count: 1, has_more: true, range: 25, html: 'one result'}});
+    assert.strictEqual(requests[8].data.search_id, 'empty-search', 'The single Find button can continue checking an empty batch');
+    requests[8].resolve({data: {search_id: 'empty-search', count: 1, has_more: true, range: 10, start_year: 1730, end_year: 1740, html: 'one result'}});
     await settle();
     assert.strictEqual(ids['timeline-more'].hidden, false);
     ids['timeline-more'].events.click();
-    requests[9].resolve({data: {search_id: 'empty-search', count: 0, has_more: false, range: 40, html: ''}});
+    requests[9].resolve({data: {search_id: 'empty-search', count: 0, has_more: false, range: 10, start_year: 1730, end_year: 1740, html: ''}});
     await settle();
     assert.strictEqual(ids['timeline-more'].hidden, true, 'Exhausted searches hide More');
     assert.strictEqual(ids['timeline-results-heading'].hidden, false, 'Existing results remain visible after exhaustion');
@@ -159,7 +159,7 @@ async function main() {
     removeForm.action = '/timeline/1';
     removeForm.closest = selector => selector === '.timeline-remove' ? removeForm : row;
     removeForm.querySelector = selector => selector === 'button[type="submit"]' ? removeButton : removeStatus;
-    ids['timeline-saved'].querySelectorAll = () => [removeButton];
+    ids['timeline-saved'].querySelectorAll = selector => selector === 'button[type="submit"]' ? [removeButton] : [];
     const remove = () => ids['timeline-saved'].events.submit({target: removeForm, preventDefault() {}});
     remove();
     remove();
@@ -171,7 +171,7 @@ async function main() {
     requests[10].reject({response: {status: 500}});
     await settle();
     assert.strictEqual(removed, false, 'A failed deletion preserves the event');
-    assert.strictEqual(ids['page-heading'].textContent, 'Timeline · 1 event');
+    assert.strictEqual(ids['page-heading'].textContent, 'Timeline events');
     assert.strictEqual(removeButton.disabled, false);
     assert.strictEqual(removeStatus.textContent, 'Could not remove this event. Please try again.');
     remove();
@@ -179,67 +179,29 @@ async function main() {
     await settle();
     assert.strictEqual(removed, true);
     assert.strictEqual(ids['timeline-saved-count'].textContent, '0');
-    assert.strictEqual(ids['page-heading'].textContent, 'Timeline · 0 events');
+    assert.strictEqual(ids['page-heading'].textContent, 'Timeline events');
     assert.strictEqual(ids['timeline-empty'].hidden, false);
     assert.strictEqual(button.disabled, false, 'The removed candidate can be saved again');
     assert.strictEqual(button.textContent, 'Save event');
     clickSave();
     requests[12].resolve({data: {id: 2, count: 4, html: 'saved again'}});
     await settle();
-    assert.strictEqual(ids['page-heading'].textContent, 'Timeline · 4 events', 'Use the authoritative server count');
+    assert.strictEqual(ids['page-heading'].textContent, 'Timeline events', 'Use the authoritative server count');
     assert.strictEqual(ids['timeline-saved-count'].textContent, '4');
 
-    // Feed deliberately unordered batches through discovery and inspect the resulting DOM order.
     const cardFor = (id, date) => {
         const card = element();
         card.dataset = {candidate: id, year: date.slice(0, 4), date};
         return card;
     };
-    const haydn = cardFor('haydn', '1732-03-31');
-    haydn.dataset.saved = 'true';
-    const firstBatch = [haydn, cardFor('elisabeth', '1729-06-27'), cardFor('vinci', '1730-05-27'), cardFor('orlando', '1727-01-01'), cardFor('year-only', '1730-01-01')];
-    const nextBatch = [cardFor('cristofori', '1731-01-27'), cardFor('marais', '1728-08-15'), cardFor('january-event', '1730-01-10')];
-    const candidateRoot = ids['timeline-candidates'];
-    candidateRoot.querySelectorAll = element().querySelectorAll;
-    candidateRoot.insertAdjacentHTML = function (position, html) {
-        this.html += html;
-        const batch = html === 'ordered first' ? firstBatch : html === 'ordered next' ? nextBatch : [];
-        batch.forEach(card => this.appendChild(card));
-    };
-    ids['reference-year'].events.input();
-    submit();
-    requests[13].resolve({data: {search_id: 'ordered-search', count: 5, has_more: true, range: 10, html: 'ordered first'}});
-    await settle();
-    assert.deepStrictEqual(candidateRoot.children.map(group => group.dataset.period), ['before', 'same', 'after']);
-    const groupIds = period => candidateRoot.querySelector('[data-period="' + period + '"]').querySelectorAll('[data-candidate]').map(card => card.dataset.candidate);
-    assert.deepStrictEqual(groupIds('before'), ['orlando', 'elisabeth']);
-    assert.deepStrictEqual(groupIds('same'), ['year-only', 'vinci']);
-    assert.deepStrictEqual(groupIds('after'), ['haydn']);
-    assert.strictEqual(candidateRoot.children[0].children[0].textContent, 'Before 1730 · 2 events');
-    ids['timeline-more'].events.click();
-    requests[14].resolve({data: {search_id: 'ordered-search', count: 3, has_more: false, range: 10, html: 'ordered next'}});
-    await settle();
-    assert.deepStrictEqual(groupIds('before'), ['orlando', 'marais', 'elisabeth']);
-    assert.deepStrictEqual(groupIds('same'), ['year-only', 'january-event', 'vinci']);
-    assert.deepStrictEqual(groupIds('after'), ['cristofori', 'haydn']);
-    assert.strictEqual(candidateRoot.children.length, 3, 'Pagination reuses groups instead of duplicating headings');
-    assert.strictEqual(candidateRoot.querySelectorAll('[data-candidate]')[7], haydn, 'Sorting moves the original card');
-    assert.strictEqual(haydn.dataset.saved, 'true', 'Sorting preserves saved state');
-    ids['reference-year'].value = '1800';
-    ids['reference-year'].events.input();
-    assert.strictEqual(candidateRoot.children.length, 0, 'Changing the reference year clears all old groups');
-    submit();
-    requests[15].resolve({data: {search_id: 'single-period', count: 3, has_more: false, range: 10, html: 'ordered next'}});
-    await settle();
-    assert.deepStrictEqual(candidateRoot.children.map(group => group.dataset.period), ['before'], 'Empty date groups are omitted');
 
     const libraryIds = {};
     Object.keys(ids).forEach(id => { libraryIds[id] = element(); });
-    libraryIds['piece-timeline-admin'].dataset = {searchKey: 'library', title: 'Timeline events', titleCount: 'false', groupCandidates: 'false', discoverUrl: '/library/discover', saveUrl: '/library/save', csrf: 'library-csrf'};
-    libraryIds['piece-timeline-admin'].querySelector = () => libraryIds['page-heading'];
+    libraryIds['timeline-events-admin'].dataset = {discoverUrl: '/library/discover', saveUrl: '/library/save', csrf: 'library-csrf'};
+    libraryIds['timeline-events-admin'].querySelector = () => libraryIds['page-heading'];
     libraryIds['timeline-saved-count'].textContent = '2';
     libraryIds['page-heading'].textContent = 'Timeline events';
-    const libraryStorage = new Map([['pianolit.timeline.1', JSON.stringify({year: '1730', searchId: 'piece-search'})]]);
+    const libraryStorage = new Map();
     const libraryRequests = [];
     const libraryContext = {
         document: {body: element(), createElement: () => element(), getElementById: id => libraryIds[id]},
@@ -248,8 +210,8 @@ async function main() {
             return new Promise((resolve, reject) => libraryRequests.push({url, data, options, resolve, reject}));
         }}}
     };
-    vm.runInNewContext(fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8'), libraryContext);
-    assert.strictEqual(libraryIds['reference-year'].value, '', 'Piece search state cannot prefill the global library');
+    vm.runInNewContext(fs.readFileSync('resources/js/views/timeline-events-admin.js', 'utf8'), libraryContext);
+    assert.strictEqual(libraryIds['reference-year'].value, '', 'The library starts with a blank reference year');
     assert.strictEqual(libraryIds['page-heading'].textContent, 'Timeline events', 'The shared page heading has no live event count');
     assert.strictEqual(libraryIds['timeline-more'].hidden, true);
     libraryIds['reference-year'].value = '1800';
@@ -260,9 +222,8 @@ async function main() {
     await settle();
     assert.strictEqual(libraryIds['timeline-search-status'].textContent, 'No more events found from 1800 to 1810. Try a different reference year.');
     assert.strictEqual(libraryIds['timeline-more'].hidden, true);
-    assert.strictEqual(JSON.parse(libraryStorage.get('pianolit.timeline.1')).searchId, 'piece-search', 'The library preserves independent piece searches');
     libraryStorage.set('pianolit.timeline.library', JSON.stringify({year: '1850', searchId: 'library-resume'}));
-    vm.runInNewContext(fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8'), libraryContext);
+    vm.runInNewContext(fs.readFileSync('resources/js/views/timeline-events-admin.js', 'utf8'), libraryContext);
     assert.strictEqual(libraryIds['reference-year'].value, '1850', 'The library restores its own reference year');
     libraryIds['timeline-search'].events.submit({preventDefault() {}});
     assert.strictEqual(libraryRequests[1].data.search_id, 'library-resume');
@@ -289,8 +250,8 @@ async function main() {
     // Exercise subject controls independently of saved-event/grouping fixtures.
     const filterIds = {};
     Object.keys(ids).forEach(id => { filterIds[id] = element(); });
-    filterIds['piece-timeline-admin'].dataset = {searchKey: 'library', discoverUrl: '/discover', saveUrl: '/save', titleCount: 'false', groupCandidates: 'false'};
-    filterIds['piece-timeline-admin'].querySelector = () => filterIds['page-heading'];
+    filterIds['timeline-events-admin'].dataset = {discoverUrl: '/discover', saveUrl: '/save'};
+    filterIds['timeline-events-admin'].querySelector = () => filterIds['page-heading'];
     const types = ['music', 'art', 'literature', 'science', 'history', 'people'];
     const inputs = types.map(type => {
         const input = element(); input.className = 'timeline-type'; input.value = type; input.checked = true;
@@ -304,7 +265,7 @@ async function main() {
         sessionStorage: {getItem: key => filterStorage.get(key), setItem: (key, value) => filterStorage.set(key, value), removeItem: key => filterStorage.delete(key)},
         window: {axios: {post(url, data) { return new Promise((resolve, reject) => filterRequests.push({data, resolve, reject})); }}}
     };
-    const source = fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8');
+    const source = fs.readFileSync('resources/js/views/timeline-events-admin.js', 'utf8');
     vm.runInNewContext(source, filterContext);
     filterIds['reference-year'].value = '1800';
     const filteredSubmit = () => filterIds['timeline-search'].events.submit({preventDefault() {}});
@@ -350,7 +311,6 @@ async function main() {
     console.log('Passed: default/selected event types, filtered pagination, reset on changes, restored choices/cursors, empty selection and failure recovery.');
 
     const savedRoot = libraryIds['timeline-saved'];
-    savedRoot.dataset.groupDecades = 'true';
     function savedRow(id, date) {
         const row = element();
         row.dataset = {eventId: String(id), year: date.slice(0, 4), sort: date};
@@ -362,7 +322,7 @@ async function main() {
     savedRoot.appendChild(saved1809);
     savedRoot.appendChild(saved1799);
     savedRoot.appendChild(saved1800);
-    vm.runInNewContext(fs.readFileSync('resources/js/views/piece-timeline-admin.js', 'utf8'), libraryContext);
+    vm.runInNewContext(fs.readFileSync('resources/js/views/timeline-events-admin.js', 'utf8'), libraryContext);
     assert.deepStrictEqual(savedRoot.children.map(group => group.dataset.decade), ['1790', '1800']);
     const group1800 = savedRoot.children[1];
     assert.strictEqual(group1800.open, false, 'Saved decades start collapsed');
@@ -423,6 +383,6 @@ async function main() {
     assert.strictEqual(savedRoot.children.length, 0);
     assert.strictEqual(libraryIds['timeline-empty'].hidden, false);
     assert.strictEqual(libraryIds['page-heading'].textContent, 'Timeline events');
-    console.log('Passed: flat chronological library results, grouped piece results, shared library identity/title, isolated search state, live counts, pagination, AJAX removal/retry, CSRF, save races/idempotency, and expired sessions.');
+    console.log('Passed: flat chronological library results, fixed title, restored search state, live saved/decade counts, pagination, AJAX removal/retry, CSRF, save races/idempotency, and expired sessions.');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

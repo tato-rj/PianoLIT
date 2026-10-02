@@ -25,35 +25,30 @@ class WikimediaDiscovery
         $this->client = $client ?: new WikimediaClient;
     }
 
-    public function pool(int $year, int $range, int $batch = 0): array
+    public function batch(int $year, int $range, int $batch = 0): array
     {
-        return $this->batch($year, $range, $batch)['events'];
-    }
-
-    public function batch(int $year, int $range, int $batch = 0, bool $forwardOnly = false): array
-    {
-        $version = $forwardOnly ? 'v9-types-forward' : 'v9-types';
+        $version = 'v9-types-forward';
         $key = 'timeline.wikimedia.'.$version.'.'.$year.'.'.$range.'.'.$batch;
         if ($cached = Cache::get($key)) return $cached;
         $raw = [];
         $complete = true;
         $hasMore = false;
         $rawCount = 0;
-        $periods = ['before' => false, 'after' => false];
+        $periods = ['after' => false];
         $windows = (int) ceil(config('wikimedia.candidate_limit') / config('wikimedia.shortlist_per_property'));
         $page = intdiv($batch, $windows);
         $window = $batch % $windows;
         foreach (self::PROPERTIES as $property) {
             $rows = [];
-            foreach ($forwardOnly ? ['same', 'after'] : ['before', 'same', 'after'] as $side) {
-                if (($side === 'before' && $year === 1) || ($side === 'after' && $year === 9999)) continue;
+            foreach (['same', 'after'] as $side) {
+                if ($side === 'after' && $year === 9999) continue;
                 try {
                     $endKey = 'timeline.wikimedia.end.'.$version.'.'.$year.'.'.$range.'.'.$property.'.'.$side;
                     $lastPage = Cache::get($endKey);
                     if ($lastPage !== null && $page > $lastPage) continue;
                     $rawKey = 'timeline.wikimedia.raw.'.$version.'.'.$year.'.'.$range.'.'.$page.'.'.$property.'.'.$side;
-                    $part = Cache::remember($rawKey, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range, $property, $batch, $side, $forwardOnly) {
-                        $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range, $property, $batch, $side, $forwardOnly), 'format' => 'json']);
+                    $part = Cache::remember($rawKey, now()->addMinutes(config('wikimedia.cache_minutes')), function () use ($year, $range, $property, $batch, $side) {
+                        $data = $this->get(self::QUERY_ENDPOINT, ['query' => $this->query($year, $range, $property, $batch, $side), 'format' => 'json']);
                         if (!isset($data['results']['bindings']) || !is_array($data['results']['bindings'])) {
                             Log::warning('Invalid timeline Wikidata response', ['endpoint' => self::QUERY_ENDPOINT, 'http_status' => 200, 'property' => $property,
                                 'error_message' => Str::limit(json_encode($data), 1500, '')]);
@@ -61,8 +56,8 @@ class WikimediaDiscovery
                         }
                         return $data['results']['bindings'];
                     });
-                    if (count($part) < $this->sideLimit($side, $forwardOnly)) Cache::put($endKey, $page, now()->addMinutes(config('wikimedia.cache_minutes')));
-                    $hasMore = $hasMore || count($part) >= $this->sideLimit($side, $forwardOnly);
+                    if (count($part) < $this->sideLimit($side)) Cache::put($endKey, $page, now()->addMinutes(config('wikimedia.cache_minutes')));
+                    $hasMore = $hasMore || count($part) >= $this->sideLimit($side);
                     if (isset($periods[$side])) $periods[$side] = $periods[$side] || count($part) > 0;
                     $rows = array_merge($rows, $part);
                 } catch (\Throwable $e) {
@@ -78,7 +73,7 @@ class WikimediaDiscovery
                 $date = substr($row['date']['value'] ?? '', 0, 10);
                 $eventYear = (int) substr($date, 0, 4);
                 $sitelinks = (int) ($row['sitelinks']['value'] ?? 0);
-                if (!preg_match('/^Q[1-9][0-9]*$/', $qid) || $eventYear < 1 || abs($eventYear - $year) > $range || ($forwardOnly && $eventYear < $year) || $sitelinks < 15) continue;
+                if (!preg_match('/^Q[1-9][0-9]*$/', $qid) || $eventYear < 1 || abs($eventYear - $year) > $range || $eventYear < $year || $sitelinks < 15) continue;
                 $dated[$qid.':'.$date] = [
                     'wikidata_id' => $qid, 'property' => $property, 'date' => $date,
                     'year' => $eventYear, 'sitelinks' => $sitelinks,
@@ -189,66 +184,38 @@ class WikimediaDiscovery
 
     private function balancedOrder(array $items, int $year): array
     {
-        $buckets = ['before' => [], 'after' => [], 'same' => []];
+        $buckets = ['after' => [], 'same' => []];
         foreach (collect($items)->sortBy('rank') as $item) {
-            $period = $item['year'] < $year ? 'before' : ($item['year'] > $year ? 'after' : 'same');
+            $period = $item['year'] > $year ? 'after' : 'same';
             $buckets[$period][] = $item;
         }
         $ordered = [];
-        while ($buckets['before'] || $buckets['after'] || $buckets['same']) {
-            foreach (['before' => 3, 'after' => 3, 'same' => 2] as $period => $count) {
+        while ($buckets['after'] || $buckets['same']) {
+            foreach (['after' => 3, 'same' => 2] as $period => $count) {
                 for ($i = 0; $i < $count && $buckets[$period]; $i++) $ordered[] = array_shift($buckets[$period]);
             }
         }
         return $ordered;
     }
 
-    public function needsCandidates(array $pool, int $year, array $periods = ['before' => true, 'after' => true]): bool
+    public function needsCandidates(array $pool, int $year, array $periods = ['after' => true]): bool
     {
         if (count($pool) < 10) return true;
-        foreach (['before', 'after'] as $period) {
-            if (!empty($periods[$period]) && count(array_filter($pool, function ($event) use ($period, $year) {
-                return $period === 'before' ? $event['year'] < $year : $event['year'] > $year;
-            })) < 3) return true;
-        }
-        return false;
+        return !empty($periods['after']) && count(array_filter($pool, function ($event) use ($year) {
+            return $event['year'] > $year;
+        })) < 3;
     }
 
     public function select(array $pool, int $limit = 10, ?int $year = null, ?array $types = null): array
     {
-        if ($types !== null) {
-            $ranked = collect($pool)->sortBy(function ($event) { return $event['relevance_rank'] ?? $event['rank']; })->values()->all();
-            $selected = [];
-            if ($year !== null) {
-                foreach (['before', 'after'] as $side) {
-                    $matches = array_values(array_filter($ranked, function ($event) use ($year, $side) {
-                        return $side === 'before' ? $event['year'] < $year : $event['year'] > $year;
-                    }));
-                    $selected = array_merge($selected, $this->mixTypes($matches, $types, min(3, intdiv($limit, 3)), $selected));
-                }
-            }
-            $ids = array_column($selected, 'source_id');
-            $remaining = array_values(array_filter($ranked, function ($event) use ($ids) { return !in_array($event['source_id'], $ids, true); }));
-            return array_merge($selected, $this->mixTypes($remaining, $types, $limit - count($selected), $selected));
-        }
-        $ranked = collect($pool)->sortBy('rank')->values();
-        $selected = $ranked->filter(function ($event) { return !empty($event['world_event']); })->take(min(3, $limit));
-        // Cultural rank alone can fill every place with same-year/older events.
-        // Reserve three places on each side when suitable unseen candidates exist.
+        $types = $types ?? array_keys(self::TYPES);
+        $ranked = collect($pool)->sortBy(function ($event) { return $event['relevance_rank'] ?? $event['rank']; })->values()->all();
+        $selected = [];
         if ($year !== null) {
-            foreach (['before', 'after'] as $period) {
-                $matches = function ($event) use ($period, $year) { return $period === 'before' ? $event['year'] < $year : $event['year'] > $year; };
-                $needed = max(0, min(3, intdiv($limit, 3)) - $selected->filter($matches)->count());
-                $ids = $selected->pluck('source_id')->all();
-                $selected = $selected->concat($ranked->filter($matches)->reject(function ($event) use ($ids) {
-                    return in_array($event['source_id'], $ids, true);
-                })->take(min($needed, $limit - $selected->count())));
-            }
+            $later = array_values(array_filter($ranked, function ($event) use ($year) { return $event['year'] > $year; }));
+            $selected = $this->mixTypes($later, $types, min(3, intdiv($limit, 3)));
         }
-        $ids = $selected->pluck('source_id')->all();
-        return $selected->concat($ranked->reject(function ($event) use ($ids) {
-            return in_array($event['source_id'], $ids, true);
-        })->take($limit - $selected->count()))->sortBy('rank')->values()->all();
+        return array_merge($selected, $this->mixTypes($ranked, $types, $limit - count($selected), $selected));
     }
 
     private function mixTypes(array $pool, array $types, int $limit, array $existing = []): array
@@ -425,24 +392,24 @@ class WikimediaDiscovery
         return array_values(array_unique($categories));
     }
 
-    private function sideLimit(string $side, bool $forwardOnly = false): int
+    private function sideLimit(string $side): int
     {
         $same = (int) config('wikimedia.shortlist_per_property');
-        return $side === 'same' ? $same : (int) floor((config('wikimedia.candidate_limit') - $same) / ($forwardOnly ? 1 : 2));
+        return $side === 'same' ? $same : (int) config('wikimedia.candidate_limit') - $same;
     }
 
-    public function query(int $year, int $range, string $property = 'P571', int $batch = 0, string $side = 'after', bool $forwardOnly = false): string
+    public function query(int $year, int $range, string $property = 'P571', int $batch = 0, string $side = 'after'): string
     {
-        if (!in_array($side, $forwardOnly ? ['same', 'after'] : ['before', 'same', 'after'], true) || !in_array($property, self::PROPERTIES, true) || $batch < 0 || $batch >= config('wikimedia.max_batches')) {
+        if (!in_array($side, ['same', 'after'], true) || !in_array($property, self::PROPERTIES, true) || $batch < 0 || $batch >= config('wikimedia.max_batches')) {
             throw new \InvalidArgumentException('Invalid discovery batch.');
         }
-        $start = sprintf('%04d-01-01T00:00:00Z', $side === 'before' ? max(1, $year - $range) : ($side === 'same' ? $year : min(9999, $year + 1)));
-        $end = sprintf('%04d-12-31T23:59:59Z', $side === 'before' ? max(1, $year - 1) : ($side === 'same' ? $year : min(9999, $year + $range)));
+        $start = sprintf('%04d-01-01T00:00:00Z', $side === 'same' ? $year : min(9999, $year + 1));
+        $end = sprintf('%04d-12-31T23:59:59Z', $side === 'same' ? $year : min(9999, $year + $range));
         $limit = (int) config('wikimedia.candidate_limit');
         $windows = (int) ceil($limit / config('wikimedia.shortlist_per_property'));
-        $limit = $this->sideLimit($side, $forwardOnly);
+        $limit = $this->sideLimit($side);
         $offset = intdiv($batch, $windows) * $limit;
-        // Bound samples on each side of the reference year before any global sorting.
+        // Bound same-year and following-year samples before any global sorting.
         // These are cached by page; exclusions and relevance ranking happen in Laravel.
         return <<<SPARQL
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>

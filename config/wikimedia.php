@@ -6,7 +6,6 @@ return [
     'query_timeout' => 8,
     'discovery_budget' => 25,
     'cache_minutes' => 360,
-    'ranges' => [5],
     'library_range' => 10,
     'candidate_limit' => 40,
     'shortlist_per_property' => 10,

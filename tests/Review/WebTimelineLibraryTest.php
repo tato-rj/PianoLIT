@@ -53,16 +53,12 @@ class WebTimelineLibraryTest extends ReviewTestCase
     {
         foreach ([1789, 1790, 1796, 1797, 1798, 1799, 1800, 1801, 1802, 1803, 1804, 1810, 1811, 1830] as $year) $this->event($year);
         for ($i = 0; $i < 15; $i++) $this->event(1800);
-        $legacy = TimelineEvent::where('year', 1799)->firstOrFail()->getAttributes();
-        $legacy['title'] = 'Piece-specific old event';
-        $this->piece->timelineEvents()->create($legacy);
         $timeline = $this->timeline();
         $this->assertCount(8, $timeline);
         $this->assertSame([1797, 1798, 1799, 1800, 1800, 1801, 1802, 1803], $timeline->pluck('year')->all());
         $this->assertCount(7, $timeline->where('highlight', false)->pluck('id')->unique());
         $this->assertSame(1800, $timeline->firstWhere('highlight', true)['year']);
         $this->assertSame('Test Composer was 50 years old', $timeline->firstWhere('highlight', true)['description']);
-        $this->assertFalse($timeline->contains('title', 'Piece-specific old event'));
         Http::assertNothingSent();
     }
 
@@ -171,7 +167,6 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $this->get($url)->assertOk()->assertDontSee('Updated curated title');
         $this->assertSame($mobile, (new \App\Http\Controllers\Api\PiecesController)->timeline($this->piece->id));
         $this->assertArrayNotHasKey('timeline_events', $this->piece->getAttributes());
-        $this->assertFalse($this->piece->relationLoaded('timelineEvents'));
         Http::assertNothingSent();
     }
 
@@ -186,5 +181,29 @@ class WebTimelineLibraryTest extends ReviewTestCase
         $this->assertStringContainsString('select * from "timeline_events"', $queries[1]['query']);
         $this->assertCount(7, $queries[1]['bindings']);
         $this->assertCount(8, $timeline);
+    }
+
+    public function test_piece_event_shows_composer_age_only_with_usable_lifetime_dates()
+    {
+        $composer = $this->piece->composer;
+        $composer->update(['name' => 'Johann Sebastian Bach', 'date_of_birth' => '1685-03-21', 'date_of_death' => '1750-07-28']);
+        $this->piece->update(['composed_in' => 1727]);
+        $ownEvent = function () { return (new WebTimeline)->forPiece($this->piece)->firstWhere('highlight', true); };
+        $event = $ownEvent();
+        $this->assertSame('Johann Sebastian Bach was 42 years old', $event['description']);
+        $html = view('webapp.piece.components.event', compact('event'))->render();
+        $this->assertStringContainsString('class="piece-timeline-label">This piece</span>', $html);
+        $this->assertStringNotContainsString('<img', $html);
+        $this->piece->update(['composed_in' => null, 'published_in' => 1732]);
+        $this->assertSame('Johann Sebastian Bach was 47 years old', $ownEvent()['description']);
+        $this->piece->update(['published_in' => 1751]);
+        $this->assertSame('Johann Sebastian Bach', $ownEvent()['description']);
+        $this->piece->update(['published_in' => 1684]);
+        $this->assertSame('Johann Sebastian Bach', $ownEvent()['description']);
+        $this->piece->update(['published_in' => 1686]);
+        $this->assertSame('Johann Sebastian Bach was 1 year old', $ownEvent()['description']);
+        $composer->update(['date_of_birth' => null]);
+        $this->assertSame('Johann Sebastian Bach', $ownEvent()['description']);
+        Http::assertNothingSent();
     }
 }

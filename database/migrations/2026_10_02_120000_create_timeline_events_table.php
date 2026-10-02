@@ -8,7 +8,7 @@ class CreateTimelineEventsTable extends Migration
 {
     public function up()
     {
-        // Shared curated library; legacy mobile timelines and piece events remain intact.
+        // Shared curated library; legacy mobile timelines remain intact.
         Schema::create('timeline_events', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedInteger('year');

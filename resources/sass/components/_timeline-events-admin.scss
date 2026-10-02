@@ -1,6 +1,6 @@
 // Clip horizontal overflow without creating an ancestor scroll container.
-body.piece-timeline-editor { overflow-x: clip; }
-#piece-timeline-admin {
+body.timeline-events-editor { overflow-x: clip; }
+#timeline-events-admin {
     overflow: visible;
     [hidden] { display: none !important; }
     .timeline-toolbar {
@@ -19,7 +19,7 @@ body.piece-timeline-editor { overflow-x: clip; }
         gap: 12px;
     }
     .timeline-toolbar-context { justify-content: space-between; margin-bottom: 10px; }
-    .timeline-piece-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+    .timeline-library-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
     .timeline-section-links { flex-shrink: 0; font-size: 12px; }
     .timeline-search-form { align-items: flex-end; flex-wrap: wrap; }
     .timeline-type-controls { flex-basis: 100%; min-width: 0; padding: 0; margin: 0; border: 0; }
@@ -37,8 +37,6 @@ body.piece-timeline-editor { overflow-x: clip; }
     #timeline-search-status { margin: 0 0 12px; }
     #timeline-search-status:empty { display: none; }
     .timeline-candidates-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .timeline-candidate-group + .timeline-candidate-group { margin-top: 20px; }
-    .timeline-candidate-group-heading { margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--color-border, #dee2e6); font-size: 13px; color: var(--color-text-muted, #687386); }
     .timeline-candidate { display: flex; flex-direction: row; align-items: flex-start; gap: 12px; padding: 12px; }
     .timeline-candidate-image { width: 64px; height: 80px; flex-shrink: 0; object-fit: cover; }
     .timeline-candidate-image, .timeline-thumbnail { border-radius: 6px; }
@@ -93,7 +91,7 @@ body.piece-timeline-editor { overflow-x: clip; }
         .timeline-section-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
         .timeline-search-hint { display: none; }
         .timeline-toolbar-context { flex-direction: column; align-items: flex-start; gap: 8px; }
-        .timeline-piece-name { max-width: 100%; }
+        .timeline-library-name { max-width: 100%; }
         .timeline-admin-section { scroll-margin-top: 380px; }
         .timeline-event-summary { padding: 10px; gap: 8px; }
         .timeline-event-year { width: 42px; font-size: 12px; }

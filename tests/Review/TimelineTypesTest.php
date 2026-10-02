@@ -133,10 +133,10 @@ class TimelineTypesTest extends ReviewTestCase
         $this->assertNotSame($id, $fresh->json('search_id'));
     }
 
-    public function test_selection_balances_subjects_across_both_sides_of_a_piece_year()
+    public function test_selection_balances_subjects_without_crowding_later_events_out()
     {
         $pool = [];
-        foreach ([1799, 1801] as $year) {
+        foreach ([1800, 1801] as $year) {
             foreach (array_keys(WikimediaDiscovery::TYPES) as $index => $type) {
                 $pool[] = ['year' => $year, 'source_id' => $year.':'.$type, 'types' => [$type], 'rank' => $index * 7, 'relevance_rank' => 0];
             }
@@ -147,7 +147,7 @@ class TimelineTypesTest extends ReviewTestCase
         $counts = array_count_values(array_merge(...array_column($selected, 'types')));
         $this->assertEqualsCanonicalizing(array_keys(WikimediaDiscovery::TYPES), array_keys($counts));
         $this->assertLessThanOrEqual(2, max($counts));
-        $this->assertGreaterThanOrEqual(3, collect($selected)->where('year', 1799)->count());
+        $this->assertGreaterThanOrEqual(3, collect($selected)->where('year', 1800)->count());
         $this->assertGreaterThanOrEqual(3, collect($selected)->where('year', 1801)->count());
     }
 

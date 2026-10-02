@@ -90,11 +90,6 @@ class Piece extends PianoLit
         return $array;
     }
 
-    public function timelineEvents()
-    {
-        return $this->hasMany(PieceTimelineEvent::class);
-    }
-
     public function creator()
     {
         return $this->belongsTo(Admin::class);
