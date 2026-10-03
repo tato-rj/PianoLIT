@@ -12,6 +12,8 @@
     var started = false, previewStopped = false, selection = 0;
     var seek = player.querySelector('[data-seek]');
     var volumeInput = player.querySelector('[data-volume]');
+    var volumeControl = player.querySelector('.playlist-player__volume');
+    var deviceVolume = win.matchMedia ? win.matchMedia('(max-width: 991px), (pointer: coarse)') : null;
     var main = page.closest('main');
     function rows() { return Array.prototype.slice.call(list.querySelectorAll('[data-track]')); }
     function playable() { return rows().filter(function (row) { return !!row.getAttribute('data-audio'); }); }
@@ -32,10 +34,19 @@
         }
     }
     function layout() {
+        syncVolume();
         var menu = doc.getElementById('menu');
         var menuHeight = menu ? menu.getBoundingClientRect().height : 0;
         page.style.setProperty('--playlist-menu-height', menuHeight + 'px');
         if (main) main.style.marginBottom = (menuHeight + (player.hidden ? 0 : player.getBoundingClientRect().height) + 32) + 'px';
+    }
+    function syncVolume() {
+        var useDevice = !!deviceVolume && deviceVolume.matches;
+        volumeControl.hidden = useDevice;
+        player.classList.toggle('playlist-player--device-volume', useDevice);
+        // Mobile browsers cannot synchronize this slider with system volume.
+        // Avoid a second attenuation/mute setting beneath the device controls.
+        if (audio) { audio.volume = useDevice ? 1 : volume; audio.muted = useDevice ? false : muted; }
     }
     function icons(button, playing) {
         button.querySelector('[data-play-icon]').hidden = playing;
@@ -99,16 +110,19 @@
         });
         paint();
     }
-    function select(row, autoplay, reuse) {
+    function select(row, autoplay) {
         if (!row || !row.getAttribute('data-audio')) return;
+        stopMetadata();
         selection++;
-        if (audio) { audio.pause(); audio.removeAttribute('src'); audio.load(); }
+        if (audio) audio.pause();
         current = row; previewStopped = false; started = !!autoplay;
         player.hidden = false;
         player.querySelector('[data-player-title]').textContent = row.getAttribute('data-title');
         player.querySelector('[data-player-composer]').textContent = row.getAttribute('data-composer');
         player.querySelector('[data-player-artwork]').src = row.getAttribute('data-artwork');
-        audio = reuse || new win.Audio();
+        // Keep the same media element for every selection, including manual
+        // changes, so iOS retains the playback permission granted by the tap.
+        audio = audio || new win.Audio();
         var target = audio, request = selection;
         (target.playlistListeners || []).forEach(function (listener) { target.removeEventListener(listener.event, listener.handler); });
         target.playlistListeners = [];
@@ -117,7 +131,7 @@
             target.playlistListeners.push({event: event, handler: handler});
             target.addEventListener(event, handler);
         }
-        target.preload = 'metadata'; target.volume = volume; target.muted = muted; target.playbackRate = rate;
+        target.preload = 'metadata'; syncVolume(); target.playbackRate = rate;
         ['play', 'playing', 'pause'].forEach(function (event) {
             listen(event, function () { enforcePreview(); paint(); });
         });
@@ -125,6 +139,7 @@
             listen(event, function () { enforcePreview(); timeline(); });
         });
         listen('loadedmetadata', timeline);
+        listen('durationchange', timeline);
         listen('ended', function () {
             if (target !== audio || enforcePreview()) return;
             if (loop === 2) { target.currentTime = 0; play(); }
@@ -147,8 +162,7 @@
         if (automatic && position >= queue.length && loop === 0) { paint(); return; }
         if (!queue.length) return;
         position = (position + queue.length) % queue.length;
-        // Reuse the authorized media element for automatic advancement on iOS.
-        select(queue[position], true, automatic ? audio : null);
+        select(queue[position], true);
     }
     function renumber() {
         rows().forEach(function (row, index) { row.querySelector('[data-track-number]').textContent = index + 1; });
@@ -304,11 +318,12 @@
     });
     seek.addEventListener('input', function () { if (audio) { audio.currentTime = Number(seek.value); enforcePreview(); timeline(); } });
     volumeInput.addEventListener('input', function () {
+        if (deviceVolume && deviceVolume.matches) return;
         volume = Number(volumeInput.value); muted = false;
         if (audio) { audio.volume = volume; audio.muted = false; }
         player.querySelector('[data-mute]').setAttribute('aria-pressed', 'false'); player.querySelector('[data-mute]').setAttribute('aria-label', 'Mute');
     });
-    player.querySelector('[data-mute]').addEventListener('click', function () { muted = !muted; if (audio) audio.muted = muted; this.setAttribute('aria-pressed', muted ? 'true' : 'false'); this.setAttribute('aria-label', muted ? 'Unmute' : 'Mute'); });
+    player.querySelector('[data-mute]').addEventListener('click', function () { if (deviceVolume && deviceVolume.matches) return; muted = !muted; if (audio) audio.muted = muted; this.setAttribute('aria-pressed', muted ? 'true' : 'false'); this.setAttribute('aria-label', muted ? 'Unmute' : 'Mute'); });
     Array.prototype.forEach.call(player.querySelectorAll('[data-speed]'), function (button) {
         button.addEventListener('click', function () {
             rate = Number(button.getAttribute('data-speed')); if (audio) audio.playbackRate = rate;
@@ -319,31 +334,53 @@
         });
     });
     win.addEventListener('resize', layout);
-    win.addEventListener('pagehide', function () { finishDrag(true); if (audio) audio.pause(); });
+    if (deviceVolume) {
+        if (deviceVolume.addEventListener) deviceVolume.addEventListener('change', layout);
+        else if (deviceVolume.addListener) deviceVolume.addListener(layout);
+    }
+    win.addEventListener('pagehide', function () { finishDrag(true); stopMetadata(); if (audio) audio.pause(); });
     if (win.ResizeObserver) { var resize = new win.ResizeObserver(layout); resize.observe(player); var menu = doc.getElementById('menu'); if (menu) resize.observe(menu); }
     player.hidden = true;
     renumber();
-    // The catalog has no audio-duration column. Read real metadata for nearby rows,
-    // at most two recordings at a time, without fetching entire playlist files.
-    var metadataQueue = [], probing = 0;
+    // Use one retained metadata element, and release it before playback. Loading
+    // more recordings in the background must never compete with the iOS player.
+    var metadataQueue = [], metadataAudio = null, metadataCancel = null, metadataStopped = false, observer = null;
+    function stopMetadata() {
+        metadataStopped = true; metadataQueue = [];
+        if (observer) observer.disconnect();
+        if (metadataCancel) metadataCancel();
+        metadataAudio = null;
+    }
     function probe() {
-        if (probing >= 2 || !metadataQueue.length) return;
-        var row = metadataQueue.shift(), media = new win.Audio(), finished = false;
-        probing++; media.preload = 'metadata';
-        var timer = win.setTimeout(done, 10000);
-        function done() {
-            if (finished) return; finished = true; win.clearTimeout(timer);
+        if (metadataStopped || metadataCancel || !metadataQueue.length) return;
+        var row = metadataQueue.shift(), media = metadataAudio || new win.Audio(), finished = false;
+        metadataAudio = media; media.preload = 'metadata';
+        var timer;
+        function cleanup() {
+            if (finished) return; finished = true;
+            win.clearTimeout(timer);
+            media.removeEventListener('loadedmetadata', loaded);
+            media.removeEventListener('durationchange', loaded);
+            media.removeEventListener('error', done);
+            metadataCancel = null;
+            media.removeAttribute('src'); media.load();
+        }
+        function loaded() {
+            if (finished || metadataStopped) return;
             if (Number.isFinite(media.duration) && media.duration > 0) {
                 row.querySelector('[data-track-duration]').textContent = time(media.duration);
-                if (row === current && !audio) player.querySelector('[data-duration]').textContent = time(media.duration);
+                done();
             }
-            media.removeAttribute('src'); media.load(); probing--; probe();
         }
-        media.addEventListener('loadedmetadata', done); media.addEventListener('error', done);
-        media.src = row.getAttribute('data-audio'); media.load(); probe();
+        function done() { if (finished) return; cleanup(); probe(); }
+        metadataCancel = cleanup;
+        timer = win.setTimeout(done, 10000);
+        media.addEventListener('loadedmetadata', loaded); media.addEventListener('durationchange', loaded); media.addEventListener('error', done);
+        media.src = row.getAttribute('data-audio'); media.load();
     }
     if (win.IntersectionObserver) {
-        var observer = new win.IntersectionObserver(function (entries) {
+        observer = new win.IntersectionObserver(function (entries) {
+            if (metadataStopped) return;
             entries.forEach(function (entry) { if (entry.isIntersecting) { observer.unobserve(entry.target); metadataQueue.push(entry.target); } }); probe();
         }, {rootMargin: '150px'});
         playable().forEach(function (row) { observer.observe(row); });
