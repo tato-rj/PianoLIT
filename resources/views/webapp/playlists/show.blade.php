@@ -18,5 +18,7 @@
 @endsection
 
 @push('scripts')
+<script src="{{mix('js/views/video-moments.js')}}"></script>
+<script src="{{mix('js/views/playlist-moments.js')}}"></script>
 <script src="{{mix('js/views/playlist-player.js')}}"></script>
 @endpush

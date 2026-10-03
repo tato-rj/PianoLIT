@@ -78,10 +78,11 @@ class WebAppQueryRegressionTest extends ReviewTestCase
             // Three bounded tag queries plus one shared tags/composer/country load.
             'composers.index' => 2, 'composers.show' => 2, 'pieces.show' => 24,
             'pieces.similar' => 10, 'pieces.collection' => 6, 'pieces.timeline' => 8,
-            'playlists.show' => 6, 'search.results' => 7, 'search.count' => 3,
+            // Audio sections add two fixed bulk reads: performance videos and their moments.
+            'playlists.show' => 8, 'search.results' => 7, 'search.count' => 3,
             'my-pieces' => 11, 'settings' => 1, 'users.profile' => 2,
             // Folder playback now resolves the account membership and its source (two fixed queries).
-            'pieces.save-to' => 4, 'users.favorites.folders.show' => 7,
+            'pieces.save-to' => 4, 'users.favorites.folders.show' => 9,
         ];
         foreach ($counts as $key => $count) {
             $name = explode(' ', $key, 2)[1];

@@ -20,6 +20,9 @@ class UsersController extends Controller
         abort_unless($folder->user_id == auth()->id(), 403);
 
         $folder->loadMissing('favorites.piece.tags');
+        $folder->loadMissing(['favorites.piece.tutorials' => function ($query) {
+            $query->where('type', 'Performance')->orderBy('id')->with('moments');
+        }]);
 
     	return view('webapp.user.my-pieces.favorites.folders.show', compact('folder'));
     }

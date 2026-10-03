@@ -27,6 +27,7 @@ async function main() {
     require('./collections')();
     require('./folders')();
     await require('./playlist-player')();
+    require('./playlist-moments')();
     require('./admin-subdomain')();
     require('./icons')();
     require('./popups')();

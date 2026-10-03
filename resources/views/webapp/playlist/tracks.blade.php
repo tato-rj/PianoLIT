@@ -10,6 +10,7 @@
     <article class="playlist-track border-bottom" data-track data-id="{{isset($favorites) ? $favorites->values()->get($loop->index)->id : $piece->id}}"
         data-has-score="{{$piece->score_path ? 'true' : 'false'}}" data-piece-id="{{$piece->id}}" data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
         data-audio="{{$piece->audio_path ? $piece->audio : ''}}" data-preview="{{$hasTrackAccess ? 0 : config('webapp.media_preview_seconds')}}"
+        data-audio-moments="{{json_encode(optional($piece->tutorials->first())->listeningMoments() ?: [])}}"
         data-artwork="{{$piece->cover_path ? storage($piece->cover_path) : asset(optional($piece->period)->cover_image ?: 'images/webapp/thumbnail.jpg')}}">
         <span class="playlist-track__number text-muted" data-track-number>{{$loop->iteration}}</span>
         <button class="btn btn-secondary btn-sm playlist-track__play" type="button" data-track-play aria-label="Play {{$piece->short_name}}" @unless($piece->audio_path) disabled title="Audio unavailable" @endunless>
@@ -37,7 +38,7 @@
 <div class="playlist-player border-top border-bottom bg-white" data-playlist-player hidden aria-label="Playlist audio player">
     <div class="playlist-player__inner">
         <div class="playlist-player__identity"><img class="rounded-sm" data-player-artwork src="{{asset('images/webapp/thumbnail.jpg')}}" alt=""><div><span data-player-title>Select a piece</span><span class="text-muted" data-player-composer></span></div></div>
-        <div class="playlist-player__timeline text-muted"><span data-elapsed>0:00</span><input class="form-range" type="range" min="0" max="0" step="0.1" value="0" data-seek aria-label="Playback position" disabled><span data-duration>0:00</span></div>
+        <div class="playlist-player__timeline text-muted"><span data-elapsed>0:00</span><div class="playlist-player__progress"><input class="form-range" type="range" min="0" max="0" step="0.1" value="0" data-seek aria-label="Playback position" disabled><div class="playlist-player__markers" data-section-markers aria-label="Section markers"></div></div><span data-duration>0:00</span></div>
         <div class="playlist-player__transport">
             <button class="btn-raw" type="button" data-previous aria-label="Previous piece">@icon('skip-back', ['mr' => 0, 'filled' => true])</button>
             <button class="btn btn-secondary btn-sm playlist-player__toggle" type="button" data-player-toggle aria-label="Play" disabled><span data-play-icon>@icon('play', ['mr' => 0, 'filled' => true])</span><span data-pause-icon hidden>@icon('pause', ['mr' => 0, 'filled' => true])</span></button>
@@ -52,6 +53,8 @@
                 @endforeach
             </div>
         </div>
+        <button class="btn btn-secondary btn-sm playlist-player__sections-toggle d-flex align-items-center justify-content-center gap-2" type="button" data-sections-toggle aria-label="Sections" aria-expanded="false" aria-controls="playlist-sections" hidden>@icon('list', ['mr' => 0])<span data-sections-chevron>@icon('chevron-down', ['mr' => 0])</span></button>
     </div>
+    @include('webapp.playlist.sections')
 </div>
 @include('webapp.piece.components.upgrade')

@@ -15,6 +15,8 @@
     var volumeControl = player.querySelector('.playlist-player__volume');
     var deviceVolume = win.matchMedia ? win.matchMedia('(max-width: 991px), (pointer: coarse)') : null;
     var main = page.closest('main');
+    var pendingSection = null;
+    var sections = win.PlaylistMoments && win.VideoMoments ? win.PlaylistMoments.create(doc, player, win.VideoMoments, {seek: seekSection, layout: layout}) : null;
     function rows() { return Array.prototype.slice.call(list.querySelectorAll('[data-track]')); }
     function playable() { return rows().filter(function (row) { return !!row.getAttribute('data-audio'); }); }
     function time(seconds) {
@@ -22,6 +24,20 @@
         return Math.floor(seconds / 60) + ':' + ('0' + seconds % 60).slice(-2);
     }
     function message(value) { status.textContent = value; }
+    function setSource(media, url) {
+        // Legacy MP3 uploads use .mpga and are served as application/octet-stream.
+        // Safari needs a typed source to recognize those recordings.
+        var extension = url.split(/[?#]/)[0].split('.').pop().toLowerCase();
+        var types = {mpga: 'audio/mpeg', mp3: 'audio/mpeg', mp4: 'video/mp4', m4a: 'audio/mp4'};
+        if (!media.playlistSource) {
+            media.playlistSource = doc.createElement('source');
+            media.appendChild(media.playlistSource);
+        }
+        media.removeAttribute('src');
+        if (types[extension]) media.playlistSource.setAttribute('type', types[extension]);
+        else media.playlistSource.removeAttribute('type');
+        media.playlistSource.setAttribute('src', url);
+    }
     function rebuildQueue() {
         queue = playable();
         if (shuffle) {
@@ -78,6 +94,7 @@
         player.querySelector('[data-duration]').textContent = time(duration);
         seek.setAttribute('aria-valuetext', time(Number(seek.value)) + ' of ' + time(Number(seek.max)));
         if (duration && current) current.querySelector('[data-track-duration]').textContent = time(duration);
+        if (sections) sections.synchronize(audio);
     }
     function upgrade() {
         message('Your preview has ended. Go Premium to hear the full piece.');
@@ -110,16 +127,35 @@
         });
         paint();
     }
+    function seekSection(seconds, autoplay) {
+        if (!audio) return;
+        if (!Number.isFinite(audio.duration) || !audio.duration) {
+            pendingSection = {seconds: seconds, autoplay: autoplay};
+            if (autoplay) play();
+            return;
+        }
+        pendingSection = null;
+        audio.currentTime = Math.min(seconds, audio.duration);
+        if (enforcePreview()) return;
+        timeline();
+        if (autoplay) play();
+    }
+    function metadataReady() {
+        if (pendingSection && audio && Number.isFinite(audio.duration) && audio.duration > 0) seekSection(pendingSection.seconds, pendingSection.autoplay);
+        timeline();
+    }
     function select(row, autoplay) {
         if (!row || !row.getAttribute('data-audio')) return;
         stopMetadata();
         selection++;
         if (audio) audio.pause();
         current = row; previewStopped = false; started = !!autoplay;
+        pendingSection = null;
         player.hidden = false;
         player.querySelector('[data-player-title]').textContent = row.getAttribute('data-title');
         player.querySelector('[data-player-composer]').textContent = row.getAttribute('data-composer');
         player.querySelector('[data-player-artwork]').src = row.getAttribute('data-artwork');
+        if (sections) sections.select(row);
         // Keep the same media element for every selection, including manual
         // changes, so iOS retains the playback permission granted by the tap.
         audio = audio || new win.Audio();
@@ -133,13 +169,13 @@
         }
         target.preload = 'metadata'; syncVolume(); target.playbackRate = rate;
         ['play', 'playing', 'pause'].forEach(function (event) {
-            listen(event, function () { enforcePreview(); paint(); });
+            listen(event, function () { enforcePreview(); paint(); if (sections) sections.synchronize(target, event); });
         });
         ['timeupdate', 'seeking', 'seeked'].forEach(function (event) {
             listen(event, function () { enforcePreview(); timeline(); });
         });
-        listen('loadedmetadata', timeline);
-        listen('durationchange', timeline);
+        listen('loadedmetadata', metadataReady);
+        listen('durationchange', metadataReady);
         listen('ended', function () {
             if (target !== audio || enforcePreview()) return;
             if (loop === 2) { target.currentTime = 0; play(); }
@@ -149,7 +185,7 @@
             if (target !== audio || request !== selection) return;
             target.pause(); paint(); message('This recording is unavailable. Try another piece or open it with Go.');
         });
-        target.src = row.getAttribute('data-audio');
+        setSource(target, row.getAttribute('data-audio'));
         target.load(); timeline(); paint(); layout();
         if (autoplay) play();
     }
@@ -363,7 +399,7 @@
             media.removeEventListener('durationchange', loaded);
             media.removeEventListener('error', done);
             metadataCancel = null;
-            media.removeAttribute('src'); media.load();
+            media.playlistSource.removeAttribute('src'); media.load();
         }
         function loaded() {
             if (finished || metadataStopped) return;
@@ -376,7 +412,7 @@
         metadataCancel = cleanup;
         timer = win.setTimeout(done, 10000);
         media.addEventListener('loadedmetadata', loaded); media.addEventListener('durationchange', loaded); media.addEventListener('error', done);
-        media.src = row.getAttribute('data-audio'); media.load();
+        setSource(media, row.getAttribute('data-audio')); media.load();
     }
     if (win.IntersectionObserver) {
         observer = new win.IntersectionObserver(function (entries) {

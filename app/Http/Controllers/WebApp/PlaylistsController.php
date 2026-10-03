@@ -12,7 +12,9 @@ class PlaylistsController extends Controller
     {
         abort_unless($playlist->published_at && $playlist->published_at->lte(now()), 404);
 
-        $query = $playlist->pieces()->has('tutorials');
+        $query = $playlist->pieces()->has('tutorials')->with(['tutorials' => function ($query) {
+            $query->where('type', 'Performance')->orderBy('id')->with('moments');
+        }]);
 
         if (auth('web')->check()) {
             $query->withExists(['favorites as webapp_playlist_favorited' => function ($query) {

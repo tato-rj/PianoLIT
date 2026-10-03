@@ -7,6 +7,7 @@ module.exports = async function () {
         getAttribute(name) { return this.attributes[name] || null; }
         setAttribute(name, value) { this.attributes[name] = value; }
         removeAttribute(name) { delete this.attributes[name]; }
+        appendChild(child) { (this.nodes || (this.nodes = [])).push(child); }
         querySelector(selector) { return this.children[selector] || (this.children[selector] = new Element()); }
         querySelectorAll(selector) { return this.children[selector] || []; }
         addEventListener(event, handler) { this.events[event] = handler; }
@@ -31,10 +32,11 @@ module.exports = async function () {
         pause() { const changed = !this.paused; this.paused = true; if (changed) this.fire('pause'); }
         load() {}
     }
+    function sourceUrl(media) { return media.playlistSource.getAttribute('src') || ''; }
     const recordings = [], patches = [], posts = [];
     let upgrades = 0;
     const page = new Element(), list = new Element({'data-url-reorder': '/folders/1/reorder'}), player = new Element();
-    list.items = [0, 1, 2].map(index => new Element({'data-id': String(index + 1), 'data-title': 'Piece ' + index, 'data-composer': 'Composer', 'data-audio': index === 2 ? '' : '/audio-' + index, 'data-preview': index === 1 ? '10' : '0', 'data-artwork': '/art.jpg'}));
+    list.items = [0, 1, 2].map(index => new Element({'data-id': String(index + 1), 'data-title': 'Piece ' + index, 'data-composer': 'Composer', 'data-audio': index === 2 ? '' : index === 0 ? '/legacy.MPGA?version=1' : '/recording.mp4', 'data-preview': index === 1 ? '10' : '0', 'data-artwork': '/art.jpg'}));
     const tracks = list.items.slice();
     list.querySelectorAll = () => list.items.filter(item => item.getAttribute('data-id'));
     Object.defineProperty(list, 'lastElementChild', {get: () => list.items[list.items.length - 1] || null});
@@ -64,6 +66,9 @@ module.exports = async function () {
     const first = recordings[0];
     const firstRejection = first.reject, firstEnded = first.events.ended;
     assert(!first.paused);
+    assert.strictEqual(first.getAttribute('src'), null, 'A direct src must not override the typed source');
+    assert.strictEqual(sourceUrl(first), '/legacy.MPGA?version=1');
+    assert.strictEqual(first.playlistSource.getAttribute('type'), 'audio/mpeg', 'Legacy MPGA recordings declare MP3 for Safari');
     player.querySelector('[data-player-toggle]').fire('click');
     assert(first.paused);
     player.querySelector('[data-player-toggle]').fire('click');
@@ -73,7 +78,9 @@ module.exports = async function () {
     tracks[1].querySelector('[data-track-play]').fire('click');
     const second = recordings[0];
     assert.strictEqual(recordings.length, 1, 'Manual track changes reuse the authorized audio element');
-    assert.strictEqual(second.src, '/audio-1');
+    assert.strictEqual(sourceUrl(second), '/recording.mp4');
+    assert.strictEqual(second.playlistSource.getAttribute('type'), 'video/mp4', 'Mixed-format playlists update the source type');
+    assert.deepStrictEqual(second.nodes, [second.playlistSource], 'Track changes retain one source child');
     assert.strictEqual(second.playbackRate, 1.5, 'Speed persists when changing tracks');
     const status = page.querySelector('[data-playlist-status]');
     const previousStatus = status.textContent;
@@ -81,7 +88,7 @@ module.exports = async function () {
     await settle();
     assert.strictEqual(status.textContent, previousStatus, 'Stale play promises cannot change current status');
     firstEnded();
-    assert.strictEqual(second.src, '/audio-1', 'Stale ended handlers cannot advance the new track');
+    assert.strictEqual(sourceUrl(second), '/recording.mp4', 'Stale ended handlers cannot advance the new track');
     second.currentTime = 25;
     second.fire('seeking');
     assert(second.paused);
@@ -101,7 +108,7 @@ module.exports = async function () {
     page.querySelector('[data-loop]').fire('click');
     second.fire('ended');
     assert.strictEqual(recordings.length, 1, 'Automatic advance reuses the media element for iOS playback');
-    assert.strictEqual(second.src, '/audio-0');
+    assert.strictEqual(sourceUrl(second), '/legacy.MPGA?version=1');
     page.querySelector('[data-loop]').fire('click');
     const looped = second; looped.currentTime = 154; looped.paused = true; looped.ended = true; looped.fire('ended');
     assert.strictEqual(recordings.length, 1);
@@ -184,26 +191,28 @@ module.exports = async function () {
         unobserve() {}
         disconnect() { this.disconnected = true; }
     };
-    tracks[0].attributes['data-audio'] = '/audio-0';
+    tracks[0].attributes['data-audio'] = '/legacy.MPGA?version=1';
     list.items = tracks.slice();
     initialize(doc, win);
     const initialCount = recordings.length;
     observer.callback(tracks.slice(0, 2).map(target => ({target, isIntersecting: true})));
     assert.strictEqual(recordings.length, initialCount + 1, 'Metadata reads use a single retained audio element');
     const metadata = recordings[initialCount];
+    assert.strictEqual(metadata.playlistSource.getAttribute('type'), 'audio/mpeg', 'Duration probes also type legacy MPGA');
     const staleMetadata = metadata.events.loadedmetadata;
     metadata.duration = NaN;
     metadata.fire('loadedmetadata');
-    assert.strictEqual(metadata.src, '/audio-0', 'Unknown duration waits for a later durationchange');
+    assert.strictEqual(sourceUrl(metadata), '/legacy.MPGA?version=1', 'Unknown duration waits for a later durationchange');
     metadata.duration = 154; metadata.fire('durationchange');
     assert.strictEqual(tracks[0].querySelector('[data-track-duration]').textContent, '2:34');
-    assert.strictEqual(metadata.src, '/audio-1');
+    assert.strictEqual(sourceUrl(metadata), '/recording.mp4');
+    assert.strictEqual(metadata.playlistSource.getAttribute('type'), 'video/mp4');
     assert.strictEqual(recordings.length, initialCount + 1, 'Reading the next duration reuses the metadata element');
     tracks[0].querySelector('[data-track-play]').fire('click');
     assert(observer.disconnected, 'Playback disconnects background metadata observation');
     assert.strictEqual(timers.size, 0, 'Playback cancels background metadata timeouts');
     assert.strictEqual(metadata.events.loadedmetadata, undefined, 'Cancelled metadata listeners are removed');
-    assert.strictEqual(metadata.src, '', 'Playback releases the background recording source');
+    assert.strictEqual(sourceUrl(metadata), '', 'Playback releases the background recording source');
     const playback = recordings[initialCount + 1];
     playback.duration = NaN; playback.fire('loadedmetadata');
     playback.duration = 186; playback.fire('durationchange');
@@ -224,10 +233,51 @@ module.exports = async function () {
     timedMetadata.duration = NaN;
     const timeout = timers.values().next().value;
     timeout();
-    assert.strictEqual(timedMetadata.src, '/audio-1', 'Timed-out metadata advances to the next track');
+    assert.strictEqual(sourceUrl(timedMetadata), '/recording.mp4', 'Timed-out metadata advances to the next track');
     timedMetadata.fire('error');
     assert.strictEqual(timers.size, 0, 'Failed metadata clears its timeout');
     hiddenPage();
+
+    // Known MP3/M4A types are explicit; unknown extensions keep browser detection.
+    delete win.IntersectionObserver;
+    initialize(doc, win);
+    for (const [url, type] of [['/recording.mp3#fragment', 'audio/mpeg'], ['/recording.m4a', 'audio/mp4'], ['/recording.wav', null]]) {
+        tracks[0].attributes['data-audio'] = url;
+        tracks[0].querySelector('[data-track-play]').fire('click');
+        const media = recordings[recordings.length - 1];
+        assert.strictEqual(sourceUrl(media), url);
+        assert.strictEqual(media.playlistSource.getAttribute('type'), type, 'Source type updates without stale MP3 hints');
+        tracks[1].querySelector('[data-track-play]').fire('click');
+    }
+    hiddenPage();
+
+    let sectionCallbacks, sectionSelections = [];
+    win.VideoMoments = {};
+    win.PlaylistMoments = {create(document, dock, guide, callbacks) {
+        sectionCallbacks = callbacks;
+        return {select(row) { sectionSelections.push(row); }, synchronize() {}};
+    }};
+    initialize(doc, win);
+    tracks[0].querySelector('[data-track-play]').fire('click');
+    const sectionAudio = recordings[recordings.length - 1];
+    sectionAudio.pause(); sectionCallbacks.seek(28.2, false);
+    assert.strictEqual(sectionAudio.currentTime, 28.2); assert(sectionAudio.paused, 'Markers preserve paused playback');
+    sectionCallbacks.seek(47, true);
+    assert.strictEqual(sectionAudio.currentTime, 47); assert(!sectionAudio.paused, 'Section rows seek and play');
+    sectionAudio.duration = NaN; sectionCallbacks.seek(83, true);
+    sectionAudio.duration = 154; sectionAudio.fire('loadedmetadata');
+    assert.strictEqual(sectionAudio.currentTime, 83, 'Section seek waits for metadata');
+    sectionAudio.duration = NaN; sectionCallbacks.seek(91, true);
+    sectionAudio.currentTime = 0; // Loading the next real media source resets its time.
+    tracks[1].querySelector('[data-track-play]').fire('click');
+    sectionAudio.duration = 154; sectionAudio.currentTime = 0; sectionAudio.fire('loadedmetadata');
+    assert.strictEqual(sectionAudio.currentTime, 0, 'Changing track clears pending section seek');
+    const previousUpgrades = upgrades;
+    sectionCallbacks.seek(47, true);
+    assert(sectionAudio.paused); assert.strictEqual(sectionAudio.currentTime, 10);
+    assert.strictEqual(upgrades, previousUpgrades + 1, 'Sections obey the preview cutoff');
+    assert.deepStrictEqual(sectionSelections, [tracks[0], tracks[1]]);
+    delete win.PlaylistMoments; delete win.VideoMoments;
 
     let volumeChange;
     const deviceVolume = {matches: true, addEventListener(event, callback) { volumeChange = callback; }};
@@ -254,5 +304,5 @@ module.exports = async function () {
     assert.strictEqual(mobileAudio.volume, 1); assert(!mobileAudio.muted, 'Hidden controls cannot mute mobile playback');
     deviceVolume.matches = false; volumeChange();
     assert.strictEqual(mobileAudio.volume, .3); assert(mobileAudio.muted, 'Returning to desktop restores its volume/mute preferences');
-    console.log('Passed: playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
+    console.log('Passed: typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
 };

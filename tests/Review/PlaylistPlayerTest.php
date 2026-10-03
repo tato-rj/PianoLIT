@@ -36,7 +36,12 @@ class PlaylistPlayerTest extends ReviewTestCase
                     $piece->tags()->attach(Tag::firstOrCreate(['type' => $type, 'name' => $tagName]));
                 }
                 $piece->composer->update(['name' => ['Muzio Clementi', 'Muzio Clementi', 'Muzio Clementi', 'Christian Petzold', 'Friedrich Kuhlau', 'Robert Schumann', 'Cornelius Gurlitt', 'Ludwig van Beethoven'][$index]]);
-                create(Tutorial::class, ['piece_id' => $piece->id]);
+                $video = create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance', 'category' => 'performance']);
+                if ($index === 0 || $index === 2) {
+                    foreach (['Theme A', 'Theme B', 'Theme C', 'Return to theme B', 'Return to theme A'] as $section => $title) {
+                        $video->moments()->create(['start_time' => $section * 4, 'end_time' => $section === 4 ? null : ($section + 1) * 4, 'title' => $title, 'comment' => 'Listen to the melody and how it changes in this section.', 'sort_order' => $section]);
+                    }
+                }
                 $this->playlist->pieces()->attach($piece->id);
                 Favorite::create(['user_id' => $this->user->id, 'piece_id' => $piece->id, 'favorite_folder_id' => $this->folder->id, 'order' => $index]);
                 $this->pieces->push($piece);
@@ -77,6 +82,50 @@ class PlaylistPlayerTest extends ReviewTestCase
     {
         $html = str_replace(['http://my.localhost', 'http://localhost'], 'http://127.0.0.1:8769', $html);
         return str_replace(['href="/css/', 'src="/js/'], ['href="http://127.0.0.1:8769/css/', 'src="http://127.0.0.1:8769/js/'], $html);
+    }
+
+    public function test_audio_uses_only_normal_performance_moments_and_escapes_the_payload()
+    {
+        $piece = $this->pieces[0];
+        $video = $piece->tutorials()->where('type', 'Performance')->first();
+        $unsafeTitle = '<img src=x onerror=alert(1)> "Theme"';
+        $video->moments()->first()->update(['title' => $unsafeTitle]);
+        Model::withoutEvents(function () use ($piece) {
+            foreach (['Slow performance', 'Tutorial', 'Synthesia', 'Performance'] as $type) {
+                $video = create(Tutorial::class, ['piece_id' => $piece->id, 'type' => $type]);
+                $video->moments()->create(['start_time' => 0, 'title' => 'Wrong recording '.$type, 'comment' => '', 'sort_order' => 0]);
+            }
+        });
+        foreach ([route('webapp.playlists.show', $this->playlist), route('webapp.users.favorites.folders.show', $this->folder)] as $url) {
+            if (strpos($url, '/users/') !== false) $this->actingAs($this->user, 'web');
+            $response = $this->get($url)->assertOk()->assertSee('playlist-moments.js')->assertDontSee('Wrong recording');
+            $html = $response->getContent();
+            $this->assertStringNotContainsString($unsafeTitle, $html);
+            preg_match_all('/data-audio-moments="([^"]*)"/', $html, $matches);
+            $moments = array_map(function ($value) { return json_decode(html_entity_decode($value, ENT_QUOTES), true); }, $matches[1]);
+            $this->assertCount(8, $moments);
+            $this->assertSame($unsafeTitle, $moments[0][0]['title']);
+            $this->assertCount(5, $moments[0]);
+            $this->assertSame([], $moments[1]);
+            $this->assertSame(['id', 'start_time', 'end_time', 'title', 'comment'], array_keys($moments[0][0]));
+        }
+        $this->assertArrayNotHasKey('moments', $video->load('moments')->toArray(), 'Web guide data stays hidden from mobile serialization');
+    }
+
+    public function test_audio_guide_query_counts_do_not_grow_with_track_count()
+    {
+        $counts = [];
+        foreach ([2, 8] as $size) {
+            $this->playlist->pieces()->sync($this->pieces->take($size)->pluck('id')->all());
+            \DB::enableQueryLog(); \DB::flushQueryLog();
+            $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk();
+            $queries = \DB::getQueryLog(); \DB::disableQueryLog();
+            $counts[] = count($queries);
+            $this->assertSame($size, substr_count($response->getContent(), 'data-audio-moments='));
+            $this->assertCount(1, array_filter($queries, function ($query) { return strpos($query['query'], 'from "video_moments"') !== false; }));
+        }
+        $this->assertSame($counts[0], $counts[1]);
+        $this->assertLessThanOrEqual(8, $counts[1]);
     }
 
     public function test_dragged_folder_order_is_saved_only_for_its_owner()
