@@ -8,7 +8,7 @@ use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
 
 class PDFGenerator
 {
-    protected $pieces, $content;
+    protected $pieces, $content, $collectionCoverPath;
     protected $entries, $frontPages, $sections = [];
 
     public function pieces($pieces)
@@ -57,6 +57,25 @@ class PDFGenerator
     }
 
     public function generate()
+    {
+        $image = EscoreCoverImage::fromStorage($this->collectionCoverPath, $this->content['page_size']);
+        $this->content['cover_image'] = $image ? $image->path() : null;
+        if ($image) $this->content['cover_style'] = 'modern';
+        try {
+            return $this->compose();
+        } finally {
+            if ($image) $image->delete();
+        }
+    }
+
+    // Only a server-owned collection path may select the image; never a request field.
+    public function collectionCover($path)
+    {
+        $this->collectionCoverPath = $path;
+        return $this;
+    }
+
+    private function compose()
     {
         $reader = new Fpdi();
         $entries = $this->pieces->map(function ($piece) use ($reader) {

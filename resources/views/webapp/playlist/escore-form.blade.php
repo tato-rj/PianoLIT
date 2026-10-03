@@ -1,5 +1,11 @@
 <div class="modal fade escore-modal" id="{{ $escoreModalId }}" tabindex="-1" aria-labelledby="{{ $escoreId }}-heading" aria-hidden="true">
 <div class="modal-dialog modal-fullscreen"><div class="modal-content border-0 rounded-0">
+@php
+    $imageCover = !empty($escoreCoverImage);
+    $coverDefaultColor = $imageCover ? \App\PDF\EscoreOptions::IMAGE_COVER_DEFAULT_COLOR : \App\PDF\EscoreOptions::DEFAULT_COLOR;
+    $coverColors = ['#00a2ff' => 'Blue', '#c4e8dc' => 'Mint', '#fff0c4' => 'Cream', '#ffc4cb' => 'Rose', '#d5c4ff' => 'Lavender', '#d1d7e2' => 'Slate'];
+    if ($imageCover) $coverColors = [$coverDefaultColor => 'Light gray'] + $coverColors;
+@endphp
 <form action="{{ $escoreUrl }}" method="POST" data-escore-form data-step="1" data-folder="{{ isset($folder) ? 'true' : 'false' }}">
     @csrf
     <input type="hidden" name="cover_style" value="modern">
@@ -17,11 +23,11 @@
                 @endforeach
             </nav>
             <section data-escore-panel="1" aria-label="Cover settings">
-                <fieldset class="escore-palette"><legend class="form-label">Cover style</legend><div class="escore-swatches">
-                    @foreach(['#00a2ff' => 'Blue', '#c4e8dc' => 'Mint', '#fff0c4' => 'Cream', '#ffc4cb' => 'Rose', '#d5c4ff' => 'Lavender', '#d1d7e2' => 'Slate'] as $color => $label)
+                <fieldset class="escore-palette"><legend class="form-label">{{ !empty($escoreCoverImage) ? 'Top background color' : 'Cover style' }}</legend><div class="escore-swatches">
+                    @foreach($coverColors as $color => $label)
                     <button class="escore-swatch {{ $loop->first ? 'active' : '' }}" type="button" style="--swatch-color:{{ $color }}" data-escore-color="{{ $color }}" aria-label="{{ $label }} cover" aria-pressed="{{ $loop->first ? 'true' : 'false' }}"></button>
                     @endforeach
-                    <label class="escore-custom-color" title="Choose a custom color"><span class="visually-hidden">Custom cover color</span><input type="color" name="color" value="{{ \App\PDF\EscoreOptions::DEFAULT_COLOR }}" aria-label="Custom cover color"></label>
+                    <label class="escore-custom-color" title="Choose a custom color"><span class="visually-hidden">Custom cover color</span><input type="color" name="color" value="{{ $coverDefaultColor }}" aria-label="Custom cover color"></label>
                 </div></fieldset>
                 <div class="escore-field"><label class="form-label" for="{{ $escoreId }}-title">Title</label><input class="form-control" id="{{ $escoreId }}-title" name="title" value="{{ $escoreName }}" maxlength="160" required></div>
                 <div class="escore-field"><label class="form-label" for="{{ $escoreId }}-subtitle">Subtitle <span class="text-muted">(optional)</span></label><input class="form-control" id="{{ $escoreId }}-subtitle" name="subtitle" value="A collection of pieces" maxlength="160"></div>
@@ -62,7 +68,8 @@
             <div class="escore-preview-heading"><div><h2 class="h5 mb-1">Preview</h2><p class="small text-muted mb-0" data-escore-preview-caption>This is how your eScore will look.</p></div>@include('webapp.playlist.escore-tabs')</div>
             <div class="escore-stage">
                 <div class="escore-page escore-book shadow-dark" data-escore-main-page>
-                    <figure class="escore-cover-preview" data-escore-cover aria-label="Cover preview">
+                    <figure class="escore-cover-preview {{ !empty($escoreCoverImage) ? 'escore-cover-preview--image' : '' }}" data-escore-cover @if(!empty($escoreCoverImage)) data-escore-image-cover="true" @endif aria-label="Cover preview">
+                        @if(!empty($escoreCoverImage))<img class="escore-cover-preview__image" src="{{ $escoreCoverImage }}" alt="">@endif
                         <div class="escore-cover-preview__title" data-escore-preview="title">{{ $escoreName }}</div><div class="escore-cover-preview__subtitle" data-escore-preview="subtitle">A collection of pieces</div><div class="escore-cover-preview__description" data-escore-preview="comment">{{ $escoreDescription ?: 'for piano' }}</div><div class="escore-cover-preview__brand"><span data-escore-preview="bottom_text">PianoLIT eScore</span><small>created by {{ auth('web')->user()->full_name }}</small></div>
                     </figure>
                     <canvas data-escore-main-canvas hidden aria-label="Preview page"></canvas>

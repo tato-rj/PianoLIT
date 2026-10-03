@@ -102,6 +102,10 @@ class EscoreDocument
 
     private function cover($content, $colored)
     {
+        if ($colored && !empty($content['cover_image'])) {
+            $this->imageFocusCover($content);
+            return;
+        }
         if ($colored) {
             $this->pdf->setColor($this->color($content['color']));
             $this->pdf->filledRectangle(0, 0, 612, 792);
@@ -133,6 +137,52 @@ class EscoreDocument
     public function sections()
     {
         return $this->sections;
+    }
+
+    private function imageFocusCover($content)
+    {
+        [$width, $height] = EscoreCoverImage::pageDimensions($content['page_size']);
+        $imageHeight = $height * EscoreCoverImage::IMAGE_HEIGHT_RATIO;
+        // Cpdf exposes per-page boxes. Size this cover only; other front matter keeps its layout.
+        $this->pdf->objects[$this->pdf->currentPage]['info']['mediaBox'] = [0, 0, $width, $height];
+        $this->pdf->setColor($this->color($content['color']));
+        $this->pdf->filledRectangle(0, $imageHeight, $width, $height - $imageHeight);
+        $this->pdf->addJpegFromFile($content['cover_image'], 0, 0, $width, $imageHeight);
+        // Uniformly scale type, anchoring the header at the top and branding at the bottom.
+        $scale = $width / 612;
+        $this->pdf->save();
+        $this->pdf->transform([$scale, 0, 0, $scale, 0, $height - 792 * $scale]);
+        $this->pdf->setColor($this->color($content['textColor']));
+        $title = $this->fit(mb_strtoupper($content['title']), 60, 460, 110);
+        $this->drawLines(76, 130 - max(0, count($title['lines']) - 1) * $title['size'] * 1.2, $title['lines'], $title['size'] * 1.2);
+        $subtitle = $this->fit($content['subtitle'], 34, 460, 90, true);
+        $this->drawLines(76, 185, $subtitle['lines'], $subtitle['size'] * 1.2);
+        $baseline = 185 + count($subtitle['lines']) * $subtitle['size'] * 1.2 + 1.2;
+        $this->block(76, $baseline, $content['comment'], 26, 460, max(20, 350 - $baseline));
+        $this->pdf->restore();
+        $this->pdf->save();
+        $this->pdf->transform([$scale, 0, 0, $scale, 0, 0]);
+        $this->pdf->setColor([1, 1, 1]);
+        $this->pdf->setStrokeColor([1, 1, 1]);
+        $brand = $this->fit($content['bottom_text'] === 'PianoLIT eScore' ? "PianoLIT\neScore" : $content['bottom_text'], 20, 125, 60);
+        $baseline = 734 - max(0, count($brand['lines']) - 2) * $brand['size'] * 1.2;
+        foreach ($brand['lines'] as $line) {
+            $text = implode('', array_column($line, 'text'));
+            $this->font(false);
+            $x = (612 - $this->pdf->getTextWidth($brand['size'], $text)) / 2;
+            // Keep white branding legible when the collection image has a pale lower edge.
+            $this->pdf->setColor([0.15, 0.15, 0.15]);
+            $this->text($x + 0.65, $baseline + 0.65, $brand['size'], $text);
+            $this->pdf->setColor([1, 1, 1]);
+            $this->text($x, $baseline, $brand['size'], $text);
+            $baseline += $brand['size'] * 1.2;
+        }
+        if ($content['bottom_text'] !== '') {
+            $this->pdf->setLineStyle(0.5);
+            $this->pdf->line(0, 53, 244, 53);
+            $this->pdf->line(368, 53, 612, 53);
+        }
+        $this->pdf->restore();
     }
 
     private function modernCover($content)

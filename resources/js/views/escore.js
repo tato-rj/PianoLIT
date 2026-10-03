@@ -76,16 +76,30 @@
             var color = form.elements.color.value, context = document.createElement('canvas').getContext('2d');
             cover.style.backgroundColor = color;
             cover.style.color = textColor(color);
-            var subtitleLayout;
+            var subtitleLayout, imageCover = cover.dataset.escoreImageCover === 'true';
             ['title', 'subtitle', 'comment', 'bottom_text'].forEach(function (name) {
                 var sizes = {title: [54, 460, 140], subtitle: [26, 408, 74], comment: [24, 408, 205], bottom_text: [18, 250, 38]};
+                if (imageCover) sizes = {title: [60, 460, 110], subtitle: [34, 460, 90], comment: [26, 460, 110], bottom_text: [20, 125, 60]};
                 var spec = sizes[name], node = q('[data-escore-preview="' + name + '"]');
-                var layout = fitText(form.elements[name].value, spec[0], spec[1], spec[2], function (text, size) {
-                    context.font = size + 'px "Escore Bodoni"';
+                var text = form.elements[name].value, commentBaseline;
+                if (imageCover && name === 'title') text = text.toUpperCase();
+                if (imageCover && name === 'bottom_text' && text === 'PianoLIT eScore') text = 'PianoLIT\neScore';
+                if (imageCover && name === 'comment') {
+                    commentBaseline = 185 + (subtitleLayout.text ? subtitleLayout.text.split('\n').length : 0) * subtitleLayout.size * 1.2 + 1.2;
+                    spec[2] = Math.max(20, 350 - commentBaseline);
+                }
+                var layout = fitText(text, spec[0], spec[1], spec[2], function (text, size) {
+                    context.font = (imageCover && name === 'subtitle' ? 'bold ' : '') + size + 'px "Escore Bodoni"';
                     return context.measureText(text).width;
                 });
                 if (name === 'subtitle') subtitleLayout = layout;
-                if (name === 'comment') node.style.top = ((335 + Math.max(1, subtitleLayout.text.split('\n').length) * subtitleLayout.size * 1.2 + 6 - layout.size) / 792 * 100) + '%';
+                if (imageCover) {
+                    var lineCount = layout.text ? layout.text.split('\n').length : 0;
+                    var baseline = name === 'title' ? 130 - Math.max(0, lineCount - 1) * layout.size * 1.2 : (name === 'subtitle' ? 185 : (name === 'comment' ? commentBaseline : 734 - Math.max(0, lineCount - 2) * layout.size * 1.2));
+                    if (name === 'bottom_text') q('.escore-cover-preview__brand').style.top = ((baseline - layout.size) / 792 * 100) + '%';
+                    else node.style.top = ((baseline - layout.size) / 792 * 100) + '%';
+                    cover.classList.toggle('escore-cover-preview--no-brand', form.elements.bottom_text.value === '');
+                } else if (name === 'comment') node.style.top = ((335 + Math.max(1, subtitleLayout.text.split('\n').length) * subtitleLayout.size * 1.2 + 6 - layout.size) / 792 * 100) + '%';
                 node.textContent = layout.text;
                 node.style.fontSize = (layout.size / 612 * 100) + 'cqw';
             });

@@ -38,9 +38,11 @@ class PlaylistsController extends Controller
         $pieces = \App\PDF\EscoreOptions::selectPieces($pieces, $options);
         abort_if($pieces->isEmpty(), 403, 'No eligible scores are available in this collection.');
         $options['creator'] = auth('web')->user()->full_name;
+        if ($playlist->cover_path && !isset($options['color'])) $options['color'] = \App\PDF\EscoreOptions::IMAGE_COVER_DEFAULT_COLOR;
 
         try {
             $generator = app(\App\PDF\PDFGenerator::class)->pieces($pieces)->request($options);
+            if ($playlist->cover_path) $generator->collectionCover($playlist->cover_path);
             $pdf = $generator->generate();
             if ($request->boolean('preview')) {
                 return response()->json(array_merge($generator->metadata(), ['pdf' => base64_encode($pdf->output())]))->header('Cache-Control', 'private, no-store');

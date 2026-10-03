@@ -5,6 +5,7 @@ namespace App\PDF;
 class EscoreOptions
 {
     public const DEFAULT_COLOR = '#00a2ff';
+    public const IMAGE_COVER_DEFAULT_COLOR = '#ebebeb';
 
     public static function rules()
     {

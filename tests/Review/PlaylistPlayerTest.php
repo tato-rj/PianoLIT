@@ -184,6 +184,27 @@ class PlaylistPlayerTest extends ReviewTestCase
         $this->withExceptionHandling()->get($url)->assertRedirect(route('webapp.discover'));
     }
 
+    public function test_collection_image_cover_uses_saved_image_and_custom_top_color()
+    {
+        $this->actingAs($this->user, 'web');
+        $this->playlist->update(['cover_path' => 'app/playlists/collection-cover.png']);
+        $generator = \Mockery::mock(PDFGenerator::class);
+        $generator->shouldReceive('pieces')->once()->andReturnSelf();
+        $generator->shouldReceive('request')->once()->withArgs(function ($options) {
+            return $options['color'] === '#c4e8dc' && !isset($options['cover_image']) && !isset($options['cover_path']);
+        })->andReturnSelf();
+        $generator->shouldReceive('collectionCover')->once()->with('app/playlists/collection-cover.png')->andReturnSelf();
+        $generator->shouldReceive('generate')->once()->andReturnSelf();
+        $generator->shouldReceive('download')->once()->andReturn(response('%PDF-fixture'));
+        $this->app->instance(PDFGenerator::class, $generator);
+        $this->postJson(route('webapp.playlists.pdf', $this->playlist), ['title' => 'Book', 'color' => '#c4e8dc', 'cover_image' => 'https://example.com/untrusted.jpg', 'cover_path' => '/etc/passwd'])->assertOk();
+        $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()->assertSee('data-escore-image-cover="true"', false)->assertSee('Top background color')->assertSee($this->playlist->cover_image, false);
+        $response->assertSee('name="color" value="#ebebeb"', false);
+        if ($destination = getenv('ESCORE_IMAGE_COLLECTION_HTML')) file_put_contents($destination, $this->previewHtml($response->getContent()));
+        $this->playlist->update(['cover_path' => null]);
+        $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()->assertDontSee('data-escore-image-cover', false);
+    }
+
     public function test_empty_collection_and_invalid_escore_input_are_safe()
     {
         $this->playlist->pieces()->detach();
