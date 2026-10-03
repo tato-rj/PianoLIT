@@ -86,7 +86,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
             ->assertDontSee('data-dismiss="fixed-panel"', false);
     }
 
-    public function test_piece_and_playlist_share_the_artwork_header_without_changing_playlist_content()
+    public function test_piece_and_playlist_share_the_artwork_header_with_playlist_controls()
     {
         Model::withoutEvents(function () {
             $this->playlist->update([
@@ -99,7 +99,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $piece = $this->get(route('webapp.pieces.show', $this->piece))->assertOk();
         $playlist = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()
             ->assertSee('Lullabies')->assertSee('Quiet pieces for the evening.')
-            ->assertSee('Sort by')->assertSee('Filter by')
+            ->assertSee('Play all')->assertSee('Shuffle')->assertSee('Create eScore')
             ->assertSee($this->playlist->cover_image, false)
             ->assertDontSee('navbar-brand')->assertDontSee('width: 180px');
 

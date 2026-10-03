@@ -17,7 +17,7 @@
                         ['icon' => 'layers', 'color' => 'green', 'title' => 'A world of repertoire', 'description' => 'Explore pieces across all levels, styles, and moods.'],
                         ['icon' => 'music', 'color' => 'blue', 'title' => 'Read and annotate scores', 'description' => 'Follow the score and add your own practice markings.'],
                         ['icon' => 'compass', 'color' => 'pink', 'title' => 'Discover new composers', 'description' => 'Find your next favorite, from familiar names to hidden gems.'],
-                        ['icon' => 'sliders-horizontal', 'color' => 'purple', 'title' => 'Synthesia & audio', 'description' => 'Follow falling notes and listen to each hand separately.'],
+                        ['icon' => 'sliders-horizontal', 'color' => 'purple', 'title' => 'Synthesia & audio', 'description' => 'Follow falling notes and listen to piano recordings.'],
                         ['icon' => 'folder-open', 'color' => 'indigo', 'title' => 'Organize your repertoire', 'description' => 'Save your favorites and create collections for your practice.'],
                     ] as $benefit)
                         <li class="piece-upgrade-benefit">

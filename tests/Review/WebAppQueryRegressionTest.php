@@ -80,7 +80,8 @@ class WebAppQueryRegressionTest extends ReviewTestCase
             'pieces.similar' => 10, 'pieces.collection' => 6, 'pieces.timeline' => 8,
             'playlists.show' => 6, 'search.results' => 7, 'search.count' => 3,
             'my-pieces' => 11, 'settings' => 1, 'users.profile' => 2,
-            'pieces.save-to' => 4, 'users.favorites.folders.show' => 6,
+            // Folder playback now resolves the account membership and its source (two fixed queries).
+            'pieces.save-to' => 4, 'users.favorites.folders.show' => 7,
         ];
         foreach ($counts as $key => $count) {
             $name = explode(' ', $key, 2)[1];

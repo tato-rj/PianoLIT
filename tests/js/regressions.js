@@ -26,6 +26,7 @@ function element(value = '') {
 async function main() {
     require('./collections')();
     require('./folders')();
+    await require('./playlist-player')();
     require('./admin-subdomain')();
     require('./icons')();
     require('./popups')();

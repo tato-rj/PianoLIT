@@ -1,5 +1,5 @@
 <div class="text-center w-100">
-	<a class="btn btn-secondary {{$classes ?? null}}" data-bs-toggle="modal" data-bs-target="#generate-pdf-folder-{{$folder->id}}">@icon('book', ['classes' => ''])Create eScore</a>
+	<button type="button" class="btn btn-secondary {{$classes ?? null}}" data-bs-toggle="modal" data-bs-target="#generate-pdf-folder-{{$folder->id}}">@icon('tablet', ['classes' => ''])Create eScore</button>
 </div>
 
 @component('components.modal', ['id' => 'generate-pdf-folder-'.$folder->id, 'header' => 'Create eScore'])
@@ -7,7 +7,7 @@
 
 <div class="text-center mb-3">
 	@php($count = $folder->favorites->whereNotNull('piece.score_path')->count())
-	<p class="mb-1">Your eScore will include <strong>{{$count}}</strong> {{str_plural('piece', $count)}}!</p>
+	<p class="mb-1">Your eScore will include <strong data-folder-score-count>{{$count}}</strong> {{str_plural('piece', $count)}}!</p>
 	<p><u>Customize the cover page below</u>👇</p>
 </div>
 

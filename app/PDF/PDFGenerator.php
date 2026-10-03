@@ -34,11 +34,15 @@ class PDFGenerator
 	{
         $pdf = \PDF::loadView($this->view, $this->content)->download()->getOriginalContent();
 
-        \Storage::disk('public')->put('pdf/file.pdf', $pdf);
+        $temporaryPath = 'pdf/'.\Illuminate\Support\Str::uuid().'.pdf';
+        try {
+            \Storage::disk('public')->put($temporaryPath, $pdf);
+            $pdfpath = \Storage::disk('public')->path($temporaryPath);
 
-        $pdfpath = \Storage::disk('public')->path('pdf/file.pdf');
-
-        return $this->merge($pdfpath)->setFileName('escore.pdf');
+            return $this->merge($pdfpath)->setFileName('escore.pdf');
+        } finally {
+            \Storage::disk('public')->delete($temporaryPath);
+        }
 	}
 
 	public function merge($pdfpath)
@@ -53,8 +57,6 @@ class PDFGenerator
         }
         
         $merger->merge();
-
-        \Storage::disk('public')->delete('pdf/file.pdf');
 
         return $merger;
 	}
