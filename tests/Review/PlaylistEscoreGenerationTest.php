@@ -11,10 +11,18 @@ class PlaylistEscoreGenerationTest extends ReviewTestCase
     private function cover()
     {
         Storage::fake('public');
-        $document = \Mockery::mock();
-        $document->shouldReceive('download')->andReturnSelf();
-        $document->shouldReceive('getOriginalContent')->andReturn('Cover fixture');
-        \PDF::shouldReceive('loadView')->andReturn($document);
+    }
+
+    private function generator()
+    {
+        return new class extends PDFGenerator {
+            protected function frontMatter($entries)
+            {
+                $fixture = new \FPDF();
+                $fixture->AddPage();
+                return $fixture->Output('S');
+            }
+        };
     }
 
     public function test_each_escore_has_its_own_temporary_cover_and_cleans_up()
@@ -30,7 +38,7 @@ class PlaylistEscoreGenerationTest extends ReviewTestCase
         $merger->shouldReceive('merge')->twice();
         $merger->shouldReceive('setFileName')->twice()->with('escore.pdf')->andReturnSelf();
         PDFMerger::shouldReceive('init')->twice()->andReturn($merger);
-        for ($i = 0; $i < 2; $i++) (new PDFGenerator)->pieces(collect())->request([])->generate();
+        for ($i = 0; $i < 2; $i++) $this->generator()->pieces(collect())->request([])->generate();
         $this->assertNotSame($paths[0], $paths[1]);
         $this->assertSame([], Storage::disk('public')->allFiles('pdf'));
     }
@@ -43,7 +51,7 @@ class PlaylistEscoreGenerationTest extends ReviewTestCase
         $merger->shouldReceive('merge')->once()->andThrow(new \RuntimeException('Broken score'));
         PDFMerger::shouldReceive('init')->once()->andReturn($merger);
         try {
-            (new PDFGenerator)->pieces(collect())->request([])->generate();
+            $this->generator()->pieces(collect())->request([])->generate();
             $this->fail('The merge should fail.');
         } catch (\RuntimeException $exception) {
             $this->assertSame('Broken score', $exception->getMessage());

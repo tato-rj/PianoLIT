@@ -10,7 +10,7 @@
     @php($hasTrackAccess = $piece->hasWebMediaAccess(auth('web')->user()))
     @php($audioMoments = collect(optional($piece->tutorials->first())->listeningMoments() ?: [])->map(function ($moment) { return \Illuminate\Support\Arr::except($moment, ['comment']); })->all())
     <article class="playlist-track border-bottom" data-track data-id="{{isset($favorites) ? $favorites->values()->get($loop->index)->id : $piece->id}}"
-        data-has-score="{{$piece->score_path ? 'true' : 'false'}}" data-piece-id="{{$piece->id}}" data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
+        data-has-score="{{$piece->score_path && $piece->is_public_domain && $hasTrackAccess ? 'true' : 'false'}}" data-piece-id="{{$piece->id}}" data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
         data-audio="{{$piece->audio_path ? $piece->audio : ''}}" data-preview="{{$hasTrackAccess ? 0 : config('webapp.media_preview_seconds')}}"
         data-audio-moments="{{json_encode($audioMoments)}}"
         data-artwork="{{$piece->cover_path ? storage($piece->cover_path) : asset(optional($piece->period)->cover_image ?: 'images/webapp/thumbnail.jpg')}}">

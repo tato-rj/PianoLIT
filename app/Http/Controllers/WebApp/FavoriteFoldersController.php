@@ -37,25 +37,36 @@ class FavoriteFoldersController extends Controller
     {
         abort_unless($folder->user_id == auth()->id(), 403);
 
-        $request->validate([
-            'title' => 'required',
-            'subtitle' => 'required',
-            'comment' => 'required'
-        ]);
+        $options = \App\PDF\EscoreOptions::validate($request);
+        $options['comment'] = $options['comment'] ?? ($folder->description ?: 'for piano');
+        $pieces = $folder->favorites->pluck('piece')->filter(function ($piece) {
+            return $piece && $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user());
+        });
+        $pieces = \App\PDF\EscoreOptions::selectPieces($pieces, $options);
+        abort_if($pieces->isEmpty(), 403, 'No eligible scores are available in this folder.');
+        $options['creator'] = auth('web')->user()->full_name;
 
         try {
-            $pdf = (new PDFGenerator)->pieces($folder->favorites->pluck('piece'))
-                                     ->request($request->all())
-                                     ->generate();
+            $generator = app(PDFGenerator::class)->pieces($pieces)
+                ->request($options);
+            $pdf = $generator->generate();
 
-            event(new eScoreGenerated(auth()->user(), $folder));  
+            if ($request->boolean('preview')) {
+                return response()->json(array_merge($generator->metadata(), ['pdf' => base64_encode($pdf->output())]))->header('Cache-Control', 'private, no-store');
+            }
+
+            event(new eScoreGenerated(auth()->user(), $folder));
         } catch (\Exception $e) {
+            if ($request->boolean('preview')) {
+                report($e);
+                return response()->json(['message' => 'One of these scores could not be processed. Adjust your selection or try again.'], 422);
+            }
             bugreport($e);
 
             return back()->with('error', 'Sorry, one of the scores in this folder cannot be processed. This error has been reported and we will fix this issue soon!');
         }
 
-        return $pdf->stream();
+        return $request->isMethod('post') ? $pdf->download() : $pdf->stream();
     }
 
     public function store(Request $request, FavoriteFoldersForm $form)

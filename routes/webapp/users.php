@@ -32,7 +32,7 @@ Route::namespace('WebApp')->name('users.')->group(function() {
 	
 				Route::get('{folder}', 'UsersController@folder')->name('show');
 
-				Route::get('{folder}/pdf', 'FavoriteFoldersController@pdf')->name('pdf');
+				Route::match(['GET', 'POST'], '{folder}/pdf', 'FavoriteFoldersController@pdf')->name('pdf');
 	
 				Route::post('', 'FavoriteFoldersController@store')->name('store');
 

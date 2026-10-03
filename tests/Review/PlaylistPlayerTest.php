@@ -160,7 +160,7 @@ class PlaylistPlayerTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         $generator = \Mockery::mock(PDFGenerator::class);
         $generator->shouldReceive('pieces')->once()->withArgs(function ($pieces) { return $pieces->pluck('id')->all() === [$this->pieces[0]->id]; })->andReturnSelf();
-        $generator->shouldReceive('request')->once()->with(['title' => 'My book', 'subtitle' => 'Piano', 'comment' => 'Practice'])->andReturnSelf();
+        $generator->shouldReceive('request')->once()->with(['title' => 'My book', 'subtitle' => 'Piano', 'comment' => 'Practice', 'creator' => $this->user->full_name])->andReturnSelf();
         $generator->shouldReceive('generate')->once()->andReturnSelf();
         $generator->shouldReceive('stream')->once()->andReturn(response('PDF fixture'));
         $this->app->instance(PDFGenerator::class, $generator);

@@ -30,22 +30,25 @@ class PlaylistsController extends Controller
     public function pdf(Request $request, Playlist $playlist)
     {
         abort_unless($playlist->published_at && $playlist->published_at->lte(now()), 404);
-        $request->validate([
-            'title' => 'required|string|max:160',
-            'subtitle' => 'required|string|max:160',
-            'comment' => 'required|string|max:160',
-        ]);
+        $options = \App\PDF\EscoreOptions::validate($request);
 
         $pieces = $playlist->pieces()->has('tutorials')->get()->filter(function ($piece) {
             return $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user());
         });
+        $pieces = \App\PDF\EscoreOptions::selectPieces($pieces, $options);
         abort_if($pieces->isEmpty(), 403, 'No eligible scores are available in this collection.');
+        $options['creator'] = auth('web')->user()->full_name;
 
         try {
-            return app(\App\PDF\PDFGenerator::class)->pieces($pieces)
-                ->request($request->only(['title', 'subtitle', 'comment']))->generate()->stream();
+            $generator = app(\App\PDF\PDFGenerator::class)->pieces($pieces)->request($options);
+            $pdf = $generator->generate();
+            if ($request->boolean('preview')) {
+                return response()->json(array_merge($generator->metadata(), ['pdf' => base64_encode($pdf->output())]))->header('Cache-Control', 'private, no-store');
+            }
+            return $request->isMethod('post') ? $pdf->download() : $pdf->stream();
         } catch (\Exception $exception) {
             report($exception);
+            if ($request->boolean('preview')) return response()->json(['message' => 'The preview could not be created. Adjust your selection or try again.'], 422);
             return back()->with('error', 'The eScore could not be created. Please try again later.');
         }
     }

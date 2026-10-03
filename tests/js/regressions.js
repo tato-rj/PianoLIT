@@ -24,6 +24,7 @@ function element(value = '') {
 }
 
 async function main() {
+    await require('./escore-wizard')();
     require('./collections')();
     require('./folders')();
     await require('./playlist-player')();
@@ -166,3 +167,5 @@ async function main() {
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });
+
+require('./escore');
