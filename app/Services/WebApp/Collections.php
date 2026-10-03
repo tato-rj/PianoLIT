@@ -3,6 +3,7 @@
 namespace App\Services\WebApp;
 
 use App\Playlist;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class Collections
@@ -28,20 +29,45 @@ class Collections
                 ];
             })->values();
 
-        $featured = $playlists->firstWhere('key', config('collections.featured')) ?? $playlists->first();
-        $inspiration = collect(config('collections.inspiration', []))
-            ->map(function ($key) use ($playlists) { return $playlists->firstWhere('key', $key); })
-            ->filter()->unique(function ($card) { return $card['playlist']->id; })->values();
-
-        if ($inspiration->isEmpty()) {
-            $inspiration = $playlists->reject(function ($card) use ($featured) {
-                return $featured && $card['playlist']->id === $featured['playlist']->id;
-            })->take(3)->values();
-        }
+        [$featured, $inspiration] = $this->weeklySelection($playlists);
 
         $categories = collect(['mood' => 'Mood', 'composer' => 'Composer', 'level' => 'Level'])
             ->filter(function ($label, $key) use ($playlists) { return $playlists->contains('category', $key); });
 
         return compact('playlists', 'featured', 'inspiration', 'categories') + ['books' => config('collections.books', [])];
+    }
+
+    private function weeklySelection($playlists)
+    {
+        if ($playlists->isEmpty()) {
+            return [null, collect()];
+        }
+
+        $cards = $playlists->keyBy(function ($card) { return $card['playlist']->id; });
+        $ids = $cards->keys()->all();
+        $count = min(3, count($ids));
+        $key = 'webapp.collections.weekly-selection';
+        $selection = Cache::get($key);
+
+        // Cache only IDs so admin edits and publication eligibility stay current.
+        // Replace withdrawn selections, or fill slots when a small catalog grows.
+        if (! $selection || ! in_array($selection['featured'], $ids, true)
+            || count($selection['inspiration']) !== $count
+            || array_diff($selection['inspiration'], $ids)) {
+            $selection = [
+                'featured' => $playlists->random()['playlist']->id,
+                'inspiration' => $playlists->random($count)->map(function ($card) {
+                    return $card['playlist']->id;
+                })->all(),
+            ];
+            Cache::put($key, $selection, now()->addWeek());
+        }
+
+        return [
+            $cards->get($selection['featured']),
+            collect($selection['inspiration'])->map(function ($id) use ($cards) {
+                return $cards->get($id);
+            }),
+        ];
     }
 }

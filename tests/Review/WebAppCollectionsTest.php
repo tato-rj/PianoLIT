@@ -43,7 +43,8 @@ class WebAppCollectionsTest extends ReviewTestCase
         $this->playlist('Hidden gems');
         $this->playlist("Burgmüller's studies");
         $response = $this->get(route('webapp.playlists', ['user_id' => 123]));
-        $response->assertOk()->assertSee('Collections')->assertSee('The PianoLit path')
+        $response->assertViewHas('inspiration', function ($cards) { return $cards->count() === 3; });
+        $response->assertOk()->assertSee('Collections')->assertSee('The PianoLit series')
             ->assertSee('What would you like to play next?')->assertSee('Coming soon')
             ->assertSee('6 pieces')->assertDontSee('7 pieces')->assertDontSee('YOUR PATH')
             ->assertDontSee('Continue')->assertDontSee('THIS WEEK')
@@ -52,8 +53,8 @@ class WebAppCollectionsTest extends ReviewTestCase
         $this->assertSame(8, substr_count($response->getContent(), 'collections-coming-soon'));
         $response->assertSeeInOrder(array_map(function ($number) {
             return 'Piano Solos · Book '.$number;
-        }, range(1, 8)))->assertSee('Late intermediate to early advanced')
-            ->assertSee('Early advanced')->assertSee('Previous books')->assertSee('Next books');
+        }, range(1, 8)))->assertSee('Intermediate to advanced')
+            ->assertSee('Advanced')->assertSee('Previous books')->assertSee('Next books');
         $this->assertLessThan(strpos($response->getContent(), 'inspiration-heading'), strpos($response->getContent(), 'id="pianolit-path"'));
 
         // Optional browser fixture from the isolated SQLite suite, never the local catalog.
@@ -108,7 +109,6 @@ class WebAppCollectionsTest extends ReviewTestCase
     public function test_admin_cover_controls_featured_inspiration_and_browse_images()
     {
         $playlist = $this->playlist('Lullabies');
-        config(['collections.inspiration' => ['lullabies']]);
         Model::withoutEvents(function () use ($playlist) {
             $playlist->update(['cover_path' => 'app/playlists/admin-selected.jpg']);
         });
@@ -127,6 +127,84 @@ class WebAppCollectionsTest extends ReviewTestCase
         });
         $this->get(route('webapp.playlists'))->assertOk()
             ->assertSee($playlist->cover_image, false)->assertDontSee('admin-selected.jpg');
+    }
+
+    public function test_random_selections_are_shared_and_cached_for_seven_days()
+    {
+        $startedAt = now()->startOfSecond();
+        $this->travelTo($startedAt);
+        try {
+            $ids = [];
+            foreach (['Lullabies', 'Great for Beginners', 'Hidden gems', 'Sunday morning', 'At night'] as $name) {
+                $ids[] = $this->playlist($name)->id;
+            }
+
+            $key = 'webapp.collections.weekly-selection';
+            $data = app(Collections::class)->data();
+            $selection = Cache::get($key);
+            $this->assertContains($selection['featured'], $ids);
+            $this->assertCount(3, array_unique($selection['inspiration']));
+            $this->assertEmpty(array_diff($selection['inspiration'], $ids));
+            $this->assertSame($selection['featured'], $data['featured']['playlist']->id);
+            $this->assertSame($selection['inspiration'], $data['inspiration']->pluck('playlist.id')->all());
+
+            // Adding more eligible collections must not reshuffle a full selection.
+            $this->playlist('New collection');
+            $this->travelTo($startedAt->copy()->addDays(7)->subSecond());
+            $response = $this->get(route('webapp.playlists'))->assertOk();
+            $response->assertViewHas('featured', function ($card) use ($selection) {
+                return $card['playlist']->id === $selection['featured'];
+            })->assertViewHas('inspiration', function ($cards) use ($selection) {
+                return $cards->pluck('playlist.id')->all() === $selection['inspiration'];
+            });
+            $this->assertSame($selection, Cache::get($key));
+
+            $this->travelTo($startedAt->copy()->addDays(7)->addSecond());
+            $this->assertFalse(Cache::has($key));
+            $renewed = app(Collections::class)->data();
+            $this->assertTrue(Cache::has($key));
+            $this->assertCount(3, $renewed['inspiration']);
+            $this->assertSame(Cache::get($key)['featured'], $renewed['featured']['playlist']->id);
+        } finally {
+            $this->travelBack();
+        }
+    }
+
+    public function test_withdrawn_cached_collections_are_replaced_immediately()
+    {
+        foreach (['One', 'Two', 'Three', 'Four', 'Five'] as $name) $this->playlist($name);
+        $data = app(Collections::class)->data();
+        $withdrawnIds = array_unique(array_merge(
+            [$data['featured']['playlist']->id], $data['inspiration']->pluck('playlist.id')->all()
+        ));
+        Model::withoutEvents(function () use ($withdrawnIds) {
+            Playlist::whereIn('id', $withdrawnIds)->update(['published_at' => null]);
+        });
+
+        $data = app(Collections::class)->data();
+        $this->assertNotContains($data['featured']['playlist']->id, $withdrawnIds);
+        $this->assertEmpty(array_intersect($data['inspiration']->pluck('playlist.id')->all(), $withdrawnIds));
+        $this->assertCount(min(3, 5 - count($withdrawnIds)), $data['inspiration']);
+    }
+
+    public function test_small_catalog_fills_available_slots_and_grows_without_waiting_a_week()
+    {
+        $empty = app(Collections::class)->data();
+        $this->assertNull($empty['featured']);
+        $this->assertTrue($empty['inspiration']->isEmpty());
+        $this->assertFalse(Cache::has('webapp.collections.weekly-selection'));
+
+        foreach (['One', 'Two', 'Three'] as $index => $name) {
+            $this->playlist($name);
+            $data = app(Collections::class)->data();
+            $this->assertCount($index + 1, $data['inspiration']);
+            $this->assertCount($index + 1, $data['inspiration']->pluck('playlist.id')->unique());
+        }
+
+        Model::withoutEvents(function () { Playlist::query()->update(['published_at' => null]); });
+        $empty = app(Collections::class)->data();
+        $this->assertNull($empty['featured']);
+        $this->assertTrue($empty['inspiration']->isEmpty());
     }
 
     public function test_eligibility_fallback_and_empty_state()

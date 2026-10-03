@@ -3,8 +3,6 @@
 // Web-only presentation. Playlist contents continue to be maintained in admin.
 // Match by normalized name so local/production database IDs need not agree.
 return [
-    'featured' => 'lullabies',
-    'inspiration' => ['great-for-beginners', 'hidden-gems', 'burgmullers-studies'],
     // Covers always come from the existing admin upload. Only browse categories live here.
     'categories' => [
         'lullabies' => 'mood',
