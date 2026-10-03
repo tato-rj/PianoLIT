@@ -169,7 +169,7 @@
         }
         target.preload = 'metadata'; syncVolume(); target.playbackRate = rate;
         ['play', 'playing', 'pause'].forEach(function (event) {
-            listen(event, function () { enforcePreview(); paint(); if (sections) sections.synchronize(target, event); });
+            listen(event, function () { enforcePreview(); paint(); if (sections) sections.synchronize(target); });
         });
         ['timeupdate', 'seeking', 'seeked'].forEach(function (event) {
             listen(event, function () { enforcePreview(); timeline(); });
@@ -214,9 +214,9 @@
     }
     function restore(snapshot) { snapshot.forEach(function (row) { list.appendChild(row); }); renumber(); }
     function saveOrder(snapshot) {
-        renumber();
         var url = list.getAttribute('data-url-reorder');
-        if (!url) { message('Playback order updated for this visit.'); return; }
+        if (!url) return;
+        renumber();
         busy = true;
         win.axios.patch(url, {ids: rows().map(function (row) { return Number(row.getAttribute('data-id')); })})
             .then(function () { message('Folder order saved.'); })
@@ -317,6 +317,7 @@
                 .then(function () { busy = false; favorite.disabled = false; });
         });
         var handle = row.querySelector('[data-track-handle]');
+        if (!handle || !list.getAttribute('data-url-reorder')) return;
         handle.addEventListener('keydown', function (event) {
             if (busy || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
             event.preventDefault();

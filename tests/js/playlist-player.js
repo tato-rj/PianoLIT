@@ -304,5 +304,22 @@ module.exports = async function () {
     assert.strictEqual(mobileAudio.volume, 1); assert(!mobileAudio.muted, 'Hidden controls cannot mute mobile playback');
     deviceVolume.matches = false; volumeChange();
     assert.strictEqual(mobileAudio.volume, .3); assert(mobileAudio.muted, 'Returning to desktop restores its volume/mute preferences');
+    // Collections have neither reorder permission nor a handle in their markup.
+    delete list.attributes['data-url-reorder'];
+    tracks.forEach(row => { row.querySelector('[data-track-handle]').events = {}; });
+    initialize(doc, win);
+    tracks.forEach(row => {
+        const handle = row.querySelector('[data-track-handle]');
+        assert.strictEqual(handle.events.pointerdown, undefined, 'Read-only lists never bind drag handlers');
+        assert.strictEqual(handle.events.keydown, undefined, 'Read-only lists never bind keyboard ordering');
+    });
+    const originalSelectors = tracks.map(row => row.querySelector);
+    tracks.forEach(row => { row.querySelector = function (selector) { return selector === '[data-track-handle]' ? null : Element.prototype.querySelector.call(this, selector); }; });
+    const collectionOrder = list.items.slice();
+    initialize(doc, win);
+    page.querySelector('[data-play-all]').fire('click');
+    assert(!recordings[recordings.length - 1].paused, 'Collections without handles still initialize and play');
+    assert.deepStrictEqual(list.items, collectionOrder);
+    tracks.forEach((row, index) => { row.querySelector = originalSelectors[index]; });
     console.log('Passed: typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
 };

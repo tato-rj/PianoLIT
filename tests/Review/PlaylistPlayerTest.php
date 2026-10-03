@@ -55,7 +55,8 @@ class PlaylistPlayerTest extends ReviewTestCase
             ->assertSee('data-playlist-page', false)->assertSee('Create eScore')
             ->assertSee('data-preview="0"', false)->assertSee('data-preview="10"', false)
             ->assertSee('data-speed="0.75"', false)->assertSee('Audio unavailable')
-            ->assertSee('Sign in to favorite')->assertDontSee('data-playlist-favorite', false);
+            ->assertSee('Sign in to favorite')->assertDontSee('data-playlist-favorite', false)
+            ->assertDontSee('data-track-handle', false)->assertDontSee('data-url-reorder', false);
         $this->assertSame(8, substr_count($response->getContent(), 'data-track data-id='));
         $this->assertSame(7, substr_count($response->getContent(), 'data-preview="10"'));
         $this->assertSame(0, substr_count($response->getContent(), 'piece-result'));
@@ -68,7 +69,7 @@ class PlaylistPlayerTest extends ReviewTestCase
     {
         $this->actingAs($this->user, 'web');
         $response = $this->get(route('webapp.users.favorites.folders.show', $this->folder))->assertOk()
-            ->assertSee('data-url-reorder=', false)->assertSee('Edit folder')->assertSee('Delete folder')
+            ->assertSee('data-url-reorder=', false)->assertSee('data-track-handle', false)->assertSee('Edit folder')->assertSee('Delete folder')
             ->assertSee('data-preview="10"', false);
         $response->assertSeeInOrder($this->pieces->map(function ($piece) { return 'data-piece-id="'.$piece->id.'"'; })->all(), false);
         $this->user->update(['super_user' => true]);
@@ -98,7 +99,7 @@ class PlaylistPlayerTest extends ReviewTestCase
         });
         foreach ([route('webapp.playlists.show', $this->playlist), route('webapp.users.favorites.folders.show', $this->folder)] as $url) {
             if (strpos($url, '/users/') !== false) $this->actingAs($this->user, 'web');
-            $response = $this->get($url)->assertOk()->assertSee('playlist-moments.js')->assertDontSee('Wrong recording');
+            $response = $this->get($url)->assertOk()->assertSee('playlist-moments.js')->assertDontSee('Wrong recording')->assertDontSee('data-section-about', false)->assertDontSee('data-section-commentary', false)->assertDontSee('Listen to the melody and how it changes in this section.');
             $html = $response->getContent();
             $this->assertStringNotContainsString($unsafeTitle, $html);
             preg_match_all('/data-audio-moments="([^"]*)"/', $html, $matches);
@@ -107,7 +108,7 @@ class PlaylistPlayerTest extends ReviewTestCase
             $this->assertSame($unsafeTitle, $moments[0][0]['title']);
             $this->assertCount(5, $moments[0]);
             $this->assertSame([], $moments[1]);
-            $this->assertSame(['id', 'start_time', 'end_time', 'title', 'comment'], array_keys($moments[0][0]));
+            $this->assertSame(['id', 'start_time', 'end_time', 'title'], array_keys($moments[0][0]));
         }
         $this->assertArrayNotHasKey('moments', $video->load('moments')->toArray(), 'Web guide data stays hidden from mobile serialization');
     }
@@ -145,7 +146,7 @@ class PlaylistPlayerTest extends ReviewTestCase
     public function test_collection_hearts_reflect_the_default_folder_only()
     {
         $this->actingAs($this->user, 'web');
-        $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk();
+        $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()->assertDontSee('data-track-handle', false)->assertDontSee('data-url-reorder', false);
         $this->assertSame(8, substr_count($response->getContent(), 'data-favorited="false"'));
         Favorite::create(['user_id' => $this->user->id, 'piece_id' => $this->pieces[0]->id]);
         $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk();

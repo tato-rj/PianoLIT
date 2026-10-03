@@ -1,16 +1,18 @@
+@php($canReorder = isset($folder) && $folder->user_id == auth('web')->id())
 <div class="playlist-actions">
     <button class="btn btn-primary" type="button" data-play-all disabled>@icon('play', ['mr' => 0, 'filled' => true])<span>Play all</span></button>
     <button class="btn btn-secondary" type="button" data-shuffle aria-pressed="false" disabled>@icon('shuffle', ['mr' => 0])Shuffle</button>
     <button class="btn btn-secondary" type="button" data-loop aria-pressed="false" disabled>@icon('repeat', ['mr' => 0])<span>Loop: Off</span></button>
 </div>
 <p class="playlist-status small text-muted" role="status" aria-live="polite" data-playlist-status></p>
-<div class="playlist-tracks border-top" data-playlist-tracks @isset($folder) data-url-reorder="{{route('webapp.users.favorites.folders.reorder', $folder)}}" @endisset>
+<div class="playlist-tracks border-top {{$canReorder ? '' : 'playlist-tracks--readonly'}}" data-playlist-tracks @if($canReorder) data-url-reorder="{{route('webapp.users.favorites.folders.reorder', $folder)}}" @endif>
     @forelse($pieces as $piece)
     @php($hasTrackAccess = $piece->hasWebMediaAccess(auth('web')->user()))
+    @php($audioMoments = collect(optional($piece->tutorials->first())->listeningMoments() ?: [])->map(function ($moment) { return \Illuminate\Support\Arr::except($moment, ['comment']); })->all())
     <article class="playlist-track border-bottom" data-track data-id="{{isset($favorites) ? $favorites->values()->get($loop->index)->id : $piece->id}}"
         data-has-score="{{$piece->score_path ? 'true' : 'false'}}" data-piece-id="{{$piece->id}}" data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
         data-audio="{{$piece->audio_path ? $piece->audio : ''}}" data-preview="{{$hasTrackAccess ? 0 : config('webapp.media_preview_seconds')}}"
-        data-audio-moments="{{json_encode(optional($piece->tutorials->first())->listeningMoments() ?: [])}}"
+        data-audio-moments="{{json_encode($audioMoments)}}"
         data-artwork="{{$piece->cover_path ? storage($piece->cover_path) : asset(optional($piece->period)->cover_image ?: 'images/webapp/thumbnail.jpg')}}">
         <span class="playlist-track__number text-muted" data-track-number>{{$loop->iteration}}</span>
         <button class="btn btn-secondary btn-sm playlist-track__play" type="button" data-track-play aria-label="Play {{$piece->short_name}}" @unless($piece->audio_path) disabled title="Audio unavailable" @endunless>
@@ -29,7 +31,9 @@
         <a class="btn-raw text-danger playlist-track__favorite" href="{{route('login')}}" aria-label="Sign in to favorite {{$piece->short_name}}">@icon('heart', ['mr' => 0])</a>
         @endauth
         <a class="btn btn-secondary btn-sm playlist-track__go" href="{{route('webapp.pieces.show', $piece)}}">Go @icon('arrow-right', ['mr' => 0])</a>
+        @if($canReorder)
         <button class="btn-raw text-muted playlist-track__handle" type="button" data-track-handle aria-label="Reorder {{$piece->short_name}}; use up and down arrow keys" title="Drag to reorder; use arrow keys with keyboard">@icon('grip-vertical', ['mr' => 0])</button>
+        @endif
     </article>
     @empty
     <p class="playlist-empty text-muted">No pieces here yet.</p>
