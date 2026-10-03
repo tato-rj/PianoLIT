@@ -132,6 +132,8 @@ class FolderEscoreTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         $html = view('webapp.user.my-pieces.favorites.folders.pdf', ['folder' => $this->folder])->render();
         foreach (['escore-modal', 'data-escore-panel="1"', 'data-escore-panel="2"', 'data-escore-panel="3"', 'name="page_numbers"', 'name="composer_names"', 'name="include_edition"', 'name="blank_pages"', 'name="page_size"', 'name="_token"'] as $token) $this->assertStringContainsString($token, $html);
+        $this->assertStringContainsString('data-escore-drag', $html);
+        $this->assertStringNotContainsString('data-escore-order', $html);
         $this->assertStringNotContainsString('Landscape', $html);
         $this->assertStringNotContainsString('name="orientation"', $html);
     }

@@ -49,7 +49,7 @@
     function initWizard(form) {
         var modal = form.closest('.modal'), step = 1, pageNumber = 1, doc = null, metadata = null;
         var revision = 0, controller = null, timer = null, visible = false, downloading = false;
-        var summaryObserver = null;
+        var summaryObserver = null, endDrag = null;
         var imageCache = {}, thumbnailLimit = 24, renderRevision = 0;
         var q = function (selector) { return form.querySelector(selector); };
         var qa = function (selector) { return Array.from(form.querySelectorAll(selector)); };
@@ -68,9 +68,8 @@
             next.disabled = downloading || !valid() || (step === 3 && !metadata);
             qa('[data-escore-step]').forEach(function (button) { button.disabled = downloading; });
             q('[data-escore-back]').disabled = downloading;
-            qa('[data-escore-panel] input:not([data-escore-select]):not([data-escore-order]), [data-escore-panel] textarea, [data-escore-panel] select, [data-escore-color]').forEach(function (input) { input.disabled = downloading; });
+            qa('[data-escore-panel] input:not([data-escore-select]), [data-escore-panel] textarea, [data-escore-panel] select, [data-escore-color]').forEach(function (input) { input.disabled = downloading; });
             qa('[data-escore-select]').forEach(function (input) { input.disabled = downloading || input.closest('[data-escore-piece]').dataset.eligible !== 'true'; });
-            qa('[data-escore-order]').forEach(function (input) { input.disabled = downloading || !input.closest('[data-escore-piece]').querySelector('[data-escore-select]').checked; });
             qa('[data-escore-drag]').forEach(function (input) { input.disabled = downloading || input.closest('[data-escore-piece]').dataset.eligible !== 'true'; });
         }
         function refreshCover() {
@@ -103,12 +102,9 @@
             q('[data-escore-piece-label]').textContent = count === 1 ? 'piece' : 'pieces';
             q('[data-escore-selection-count]').textContent = count + ' of ' + availableRows.length + ' selected';
             availableRows.forEach(function (row, index) {
-                var position = ids.indexOf(row.dataset.escorePiece), input = row.querySelector('[data-escore-order]');
+                var position = ids.indexOf(row.dataset.escorePiece);
                 row.classList.toggle('selected', position !== -1);
                 row.querySelector('[data-escore-row-number]').textContent = index + 1;
-                input.disabled = position === -1;
-                input.value = position === -1 ? '' : position + 1;
-                input.max = count;
             });
             controls();
         }
@@ -138,7 +134,6 @@
             q('[data-escore-back]').setAttribute('aria-label', q('[data-escore-back-label]').textContent);
             q('[data-escore-thumbnail-panel]').hidden = step === 3;
             q('[data-escore-summary]').hidden = step !== 3;
-            q('.escore-spread-secondary').hidden = step !== 2;
             q('[data-escore-preview-caption]').textContent = step === 2 ? 'See how your selected pieces will look in the eScore.' : "Here’s how your eScore will look.";
             q('.escore-body').scrollTop = 0;
             q('.escore-controls').scrollTop = 0;
@@ -242,23 +237,15 @@
             q('[data-escore-page-label]').textContent = pageNumber + ' / ' + doc.numPages;
             q('[data-escore-previous-page]').disabled = pageNumber <= 1;
             q('[data-escore-next-page]').disabled = pageNumber >= doc.numPages;
-            var mainNumber = step === 2 ? 1 : pageNumber;
-            var tasks = [pageCanvas(mainNumber, Math.min(1200, Math.max(600, q('[data-escore-main-page]').clientWidth * (window.devicePixelRatio || 1))))];
-            if (step === 2) tasks.push(pageCanvas(pageNumber === 1 ? 1 + metadata.sections.cover + metadata.sections.title : pageNumber, 850));
             try {
-                var pages = await Promise.all(tasks);
+                var page = await pageCanvas(pageNumber, Math.min(1200, Math.max(600, q('[data-escore-main-page]').clientWidth * (window.devicePixelRatio || 1))));
                 if (token !== renderRevision || version !== revision || !visible) return;
-                [mainCanvas, q('[data-escore-secondary-canvas]')].forEach(function (canvas, index) {
-                    if (!pages[index]) return;
-                    canvas.width = pages[index].width; canvas.height = pages[index].height;
-                    canvas.getContext('2d').drawImage(pages[index], 0, 0);
-                    canvas.hidden = false;
-                });
+                mainCanvas.width = page.width; mainCanvas.height = page.height;
+                mainCanvas.getContext('2d').drawImage(page, 0, 0);
+                mainCanvas.hidden = false;
                 cover.hidden = true;
-                q('[data-escore-main-page]').classList.toggle('escore-book', mainNumber === 1);
-                var ratio = pages[0].width + ' / ' + pages[0].height;
-                q('[data-escore-main-page]').style.aspectRatio = ratio;
-                q('.escore-spread-secondary').style.aspectRatio = ratio;
+                q('[data-escore-main-page]').classList.toggle('escore-book', pageNumber === 1);
+                q('[data-escore-main-page]').style.aspectRatio = page.width + ' / ' + page.height;
             } catch (error) {
                 if (version === revision && visible) message('This preview page could not be displayed. Try refreshing the preview.', true);
             }
@@ -348,36 +335,22 @@
             });
         });
         form.addEventListener('submit', function (event) { event.preventDefault(); if (step < 3) goStep(step + 1); else download(); });
-        form.addEventListener('input', function (event) { if (!event.target.matches('[data-escore-order]')) invalidate(); });
-        function commitOrder(input) {
-            var row = input.closest('[data-escore-piece]'), ids = selectedIds(form);
-            var rows = qa('[data-escore-piece]').filter(function (item) { return ids.indexOf(item.dataset.escorePiece) !== -1; });
-            var old = rows.indexOf(row), position = Math.max(0, Math.min(rows.length - 1, Number(input.value) - 1)), destination = rows[position];
-            if (destination && old !== position) {
-                if (position < old) destination.before(row); else destination.after(row);
-                invalidate();
-            } else refreshSelection();
-        }
-        qa('[data-escore-order]').forEach(function (input) {
-            input.addEventListener('blur', function () { commitOrder(input); });
-            input.addEventListener('keydown', function (event) { if (event.key === 'Enter') { event.preventDefault(); commitOrder(input); } });
-        });
+        form.addEventListener('input', invalidate);
         form.addEventListener('change', function (event) {
             if (event.target.matches('select, [data-escore-select], [type="checkbox"]')) invalidate();
-            if (event.target.matches('[data-escore-order]')) {
-                commitOrder(event.target);
-            }
         });
         qa('[data-escore-drag]').forEach(function (handle) {
             handle.addEventListener('keydown', function (event) {
                 if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); moveRow(handle.closest('[data-escore-piece]'), event.key === 'ArrowUp' ? -1 : 1); handle.focus(); }
             });
             handle.addEventListener('pointerdown', function (event) {
-                if (event.button !== 0 || handle.disabled || downloading) return;
+                if (event.button !== 0 || handle.disabled || downloading || endDrag) return;
                 event.preventDefault();
                 var row = handle.closest('[data-escore-piece]'), changed = false;
-                row.classList.add('dragging'); handle.setPointerCapture(event.pointerId);
+                var pointerId = event.pointerId;
+                row.classList.add('dragging');
                 function move(event) {
+                    if (event.pointerId !== pointerId) return;
                     var hit = document.elementFromPoint(event.clientX, event.clientY), other = hit && hit.closest('[data-escore-piece]');
                     if (!other || other === row || !form.contains(other)) return;
                     var rect = other.getBoundingClientRect();
@@ -389,11 +362,16 @@
                     if (event.clientY < bounds.top + 35) list.scrollTop -= 15;
                     if (event.clientY > bounds.bottom - 35) list.scrollTop += 15;
                 }
-                function end() {
-                    row.classList.remove('dragging'); handle.removeEventListener('pointermove', move); handle.removeEventListener('pointerup', end); handle.removeEventListener('pointercancel', end);
+                function end(event) {
+                    if (event && event.pointerId !== pointerId) return;
+                    row.classList.remove('dragging'); document.removeEventListener('pointermove', move); document.removeEventListener('pointerup', end); document.removeEventListener('pointercancel', end);
+                    endDrag = null;
                     if (changed) invalidate();
                 }
-                handle.addEventListener('pointermove', move); handle.addEventListener('pointerup', end); handle.addEventListener('pointercancel', end);
+                // Moving the captured handle's row can release pointer capture.
+                // Follow the gesture on the document so drop always cleans up.
+                document.addEventListener('pointermove', move); document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
+                endDrag = end;
             });
         });
         // Folder changes may remove or reorder tracks while this editor is closed.
@@ -421,6 +399,7 @@
         });
         modal.addEventListener('hidden.bs.modal', function () {
             visible = false; revision++; renderRevision++; clearTimeout(timer);
+            if (endDrag) endDrag();
             if (controller) controller.abort();
             if (doc) { doc.destroy(); doc = null; }
             if (summaryObserver) summaryObserver.disconnect();

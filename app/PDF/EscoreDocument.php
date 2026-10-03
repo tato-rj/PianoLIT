@@ -139,11 +139,7 @@ class EscoreDocument
     {
         $layout = $this->fit($content['title'], 54, 460, 140);
         $baseline = 242 - max(0, count($layout['lines']) - 1) * $layout['size'] * 1.2;
-        foreach ($layout['lines'] as $line) {
-            $text = implode('', array_column($line, 'text'));
-            $this->centered($baseline, $layout['size'], $text);
-            $baseline += $layout['size'] * 1.2;
-        }
+        $this->drawLines(76, $baseline, $layout['lines'], $layout['size'] * 1.2);
         $this->pdf->setLineStyle(0.7);
         $this->pdf->line(92, 792 - 282, 520, 792 - 282);
         $subtitle = $this->fit($content['subtitle'], 26, 408, 74);

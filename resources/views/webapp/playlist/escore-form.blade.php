@@ -39,11 +39,10 @@
                         <span class="small text-muted" data-escore-row-number>{{ $loop->iteration }}</span>
                         <div class="escore-piece-identity"><span data-escore-piece-title>{{ $piece->medium_name }}</span><span class="text-muted" data-escore-piece-composer> · {{ $piece->composer->short_name }}</span>@unless($eligible)<small class="text-muted d-block">{{ !$piece->score_path ? 'Score unavailable' : (!$piece->is_public_domain ? 'Public-domain score required' : 'Subscription required') }}</small>@endunless</div>
                         <span class="small text-muted escore-piece-duration" data-escore-duration>—</span>
-                        <input class="form-control escore-piece-order" type="number" min="1" max="{{ $scoreCount }}" data-escore-order aria-label="Export position for {{ $piece->medium_name }}" @unless($eligible) disabled @endunless>
                     </article>
                     @endforeach
                 </div>
-                <p class="small text-muted mt-2">This order applies to your eScore.</p>
+                <p class="small text-muted mt-2">Drag pieces to reorder them. This order applies to your eScore.</p>
             </section>
             <section data-escore-panel="3" aria-label="Final details" hidden>
                 <h2 class="h5 mb-1">Final details</h2><p class="small text-muted mb-3">Review your eScore and make final adjustments.</p>
@@ -68,7 +67,6 @@
                     </figure>
                     <canvas data-escore-main-canvas hidden aria-label="Preview page"></canvas>
                 </div>
-                <div class="escore-page shadow-light escore-spread-secondary" hidden><canvas data-escore-secondary-canvas aria-label="Next preview page"></canvas></div>
             </div>
             <div class="escore-pager"><button type="button" class="btn btn-secondary" data-escore-previous-page aria-label="Previous preview page" disabled>@icon('chevron-left', ['mr' => 0])</button><span class="text-muted" data-escore-page-label>1 / —</span><button type="button" class="btn btn-secondary" data-escore-next-page aria-label="Next preview page" disabled>@icon('chevron-right', ['mr' => 0])</button></div>
         </section>
