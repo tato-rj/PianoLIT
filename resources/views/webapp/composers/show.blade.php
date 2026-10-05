@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => $composer->name])
+@extends('webapp.layouts.app', ['title' => $composer->name, 'wideContent' => true])
 
 
 @push('header')
@@ -9,12 +9,7 @@
 @section('content')
 @include('webapp.layouts.header')
 
-<section>
-	@include('webapp.composers.profile')
+<section id="composer-profile" aria-labelledby="composer-name">
+	@include('webapp.composers.page-profile')
 </section>
 @endsection
-
-@push('scripts')
-<script type="text/javascript">
-</script>
-@endpush

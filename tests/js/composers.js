@@ -13,8 +13,8 @@ module.exports = function () {
         };
     }
     const cards = [
-        ['Bach', 'Johann Sebastian Bach Germany Prelude and Fugue', true, 1, 20],
-        ['Chopin', 'Frédéric Chopin Poland Étude', true, 2, 15],
+        ['Bach', 'Johann Sebastian Bach Germany Prelude and Fugue The Well-Tempered Clavier', true, 1, 20],
+        ['Chopin', 'Frédéric Chopin Poland Étude Douze Études', true, 2, 15],
         ['Price', 'Florence Price United States Fantasie', false, 3, 2],
     ].map(([name, search, popular, created, pieces]) => node({
         'data-composer-name': name, 'data-composer-search': search,
@@ -34,6 +34,14 @@ module.exports = function () {
     initialize({getElementById() { return page; }});
     assert.strictEqual(status.textContent, '3 composers shown');
     assert.strictEqual(control.hidden, false);
+    search.value = 'well tempered clavier'; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, true, true], 'Collection names find their composer');
+    letters[2].events.click();
+    assert.strictEqual(empty.hidden, false, 'Collection search combines with surname filters');
+    reset.events.click();
+    search.value = 'douze etudes'; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [true, false, true], 'Collection searches ignore accents');
+    reset.events.click();
     search.value = 'poland etude'; search.events.input();
     assert.deepStrictEqual(cards.map(card => card.hidden), [true, false, true], 'Country/work search ignores accents');
     letters[1].events.click();

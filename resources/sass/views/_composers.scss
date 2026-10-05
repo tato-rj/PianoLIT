@@ -75,3 +75,20 @@
         }
     }
 }
+
+// Profile geometry only; use shared typography, colors, corners and controls.
+#composer-profile {
+    .composer-profile-portrait {
+        aspect-ratio: 8 / 3;
+        object-fit: cover;
+        object-position: center;
+    }
+    .composer-biography { white-space: pre-wrap; }
+    h1, p { overflow-wrap: anywhere; }
+    h1 { font-size: var(--font-size-h2); }
+
+    @media (min-width: 768px) {
+        .composer-profile-portrait { aspect-ratio: 1; }
+        h1 { font-size: var(--font-size-h1); }
+    }
+}

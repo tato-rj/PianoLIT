@@ -1,6 +1,8 @@
 @php
     $country = $composer->country;
-    $works = $composerWorks->get($composer->id, collect())->pluck('name')->implode(' ');
+    $works = $composerWorks->get($composer->id, collect())->flatMap(function ($work) {
+        return [$work->name, $work->collection_name];
+    })->filter()->unique()->implode(' ');
 @endphp
 <div class="col-xl-3 col-md-6 col-12 composer-card"
     data-composer-name="{{ $composer->last_name }}"

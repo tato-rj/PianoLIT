@@ -29,7 +29,11 @@ class ComposersDirectoryTest extends ReviewTestCase
                     'cover_path' => 'composer/cover_image/pianolit-cecile-chaminade-8811.jpg',
                 ]);
                 for ($i = 0; $i < 2; $i++) {
-                    create(Piece::class, ['composer_id' => $composer->id, 'name' => $index === 0 ? 'Prelude "<Test>" & Fugue' : 'Sonata '.$index]);
+                    create(Piece::class, [
+                        'composer_id' => $composer->id,
+                        'name' => $index === 0 ? 'Prelude "<Test>" & Fugue' : 'Sonata '.$index,
+                        'collection_name' => $index === 0 ? 'The Well-Tempered Clavier "<Book>" & Studies' : null,
+                    ]);
                 }
                 return $composer;
             });
@@ -43,6 +47,7 @@ class ComposersDirectoryTest extends ReviewTestCase
         DB::disableQueryLog();
         $response->assertOk()->assertViewHas('composers', function ($items) use ($composers) { return $items->count() === $composers->count(); })
             ->assertSee('Prelude &quot;&lt;Test&gt;&quot; &amp; Fugue', false)
+            ->assertSee('The Well-Tempered Clavier &quot;&lt;Book&gt;&quot; &amp; Studies', false)
             ->assertDontSee('No repertoire')->assertSee('Recently added')
             ->assertSee(route('webapp.composers.show', $composers->first()), false);
         $this->assertCount(3, $queries, 'Composer/country/work-title reads stay bounded as the directory grows.');

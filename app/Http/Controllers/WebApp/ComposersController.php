@@ -13,9 +13,9 @@ class ComposersController extends Controller
     {
         $composers = Composer::atLeast(1)->get()->sortByDesc('pieces_count');
 
-        // Only titles are needed for directory search; avoid serializing piece media.
+        // Only piece/collection names are needed for search; avoid serializing piece media.
         $composerWorks = DB::table('pieces')->whereIn('composer_id', $composers->pluck('id'))
-            ->select('composer_id', 'name')->get()->groupBy('composer_id');
+            ->select('composer_id', 'name', 'collection_name')->get()->groupBy('composer_id');
 
         return view('webapp.composers.index', compact('composers', 'composerWorks'));
     }
