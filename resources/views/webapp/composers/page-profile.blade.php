@@ -3,10 +3,10 @@
         <img src="{{ $composer->cover_image }}" alt="Portrait of {{ $composer->name }}" class="composer-profile-portrait rounded w-100 d-block" fetchpriority="high">
     </div>
     <div class="col-md-8 col-lg-9">
-        <p class="small text-muted text-uppercase fw-semibold mb-2">Composer</p>
-        <h1 id="composer-name" class="mb-2">{{ $composer->name }}</h1>
+        <p class="small text-muted text-uppercase fw-semibold mb-0">Composer</p>
+        <h3 id="composer-name" class="mb-1">{{ $composer->name }}</h3>
         @if($composer->lifespan)
-        <p class="lead text-muted mb-2">{{ $composer->lifespan }}</p>
+        <p class="text-muted mb-2">{{ $composer->lifespan }}</p>
         @endif
         @if($composer->country)
         <p class="text-muted mb-3">
