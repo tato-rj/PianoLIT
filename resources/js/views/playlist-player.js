@@ -124,6 +124,7 @@
     function play() {
         if (!current) return;
         if (!audio) { select(current, true); return; }
+        if (player.hidden) { player.hidden = false; layout(); }
         started = true;
         if (piecePage) Array.prototype.forEach.call(doc.querySelectorAll('video'), function (media) { media.pause(); });
         if (previewStopped || audio.ended) { previewStopped = false; audio.currentTime = 0; }
@@ -187,7 +188,7 @@
         listen('loadedmetadata', metadataReady);
         listen('durationchange', metadataReady);
         listen('ended', function () {
-            if (target !== audio || enforcePreview()) return;
+            if (target !== audio || player.hidden || enforcePreview()) return;
             if (loop === 2) { target.currentTime = 0; play(); }
             else if (!piecePage) advance(1, true);
             else paint();
@@ -199,6 +200,12 @@
         setSource(target, row.getAttribute('data-audio'));
         target.load(); timeline(); paint(); layout();
         if (autoplay) play();
+    }
+    function closePlayer() {
+        player.hidden = true;
+        pendingSection = null;
+        if (audio) audio.pause();
+        paint(); layout();
     }
     function toggle() {
         if (audio && !audio.paused) audio.pause();
@@ -392,6 +399,7 @@
     }
     win.addEventListener('pagehide', function () { finishDrag(true); stopMetadata(); if (audio) audio.pause(); });
     if (win.ResizeObserver) { var resize = new win.ResizeObserver(layout); resize.observe(player); var menu = piecePage ? null : doc.getElementById('menu'); if (menu) resize.observe(menu); }
+    doc.addEventListener('show.bs.offcanvas', closePlayer);
     player.hidden = true;
     if (piecePage) {
         if (launch) {
@@ -402,8 +410,7 @@
             });
         }
         player.querySelector('[data-player-close]').addEventListener('click', function () {
-            if (audio) audio.pause();
-            player.hidden = true; paint(); layout();
+            closePlayer();
             if (launch) launch.focus();
         });
         win.PieceAudioPlayer = {pause: function () { if (audio) audio.pause(); }};

@@ -69,6 +69,20 @@ module.exports = async function () {
     assert.strictEqual(first.getAttribute('src'), null, 'A direct src must not override the typed source');
     assert.strictEqual(sourceUrl(first), '/legacy.MPGA?version=1');
     assert.strictEqual(first.playlistSource.getAttribute('type'), 'audio/mpeg', 'Legacy MPGA recordings declare MP3 for Safari');
+    first.currentTime = 4;
+    doc.fire('show.bs.offcanvas', {target: new Element({'id': 'folder-options'})});
+    assert(player.hidden, 'Opening an offcanvas hides the folder player before its transition');
+    assert(first.paused, 'Opening an offcanvas pauses folder audio');
+    assert.strictEqual(first.currentTime, 4, 'Closing for a panel preserves the playback position');
+    first.fire('ended');
+    assert(player.hidden, 'A queued ended event cannot reopen the player behind a panel');
+    assert.strictEqual(sourceUrl(first), '/legacy.MPGA?version=1', 'A closed player cannot advance the queue');
+    doc.fire('hidden.bs.offcanvas');
+    assert(player.hidden, 'Closing the panel does not restart playback');
+    tracks[0].querySelector('[data-track-play]').fire('click');
+    assert(!player.hidden && !first.paused, 'The current folder track reopens and resumes the band');
+    assert.strictEqual(recordings.length, 1, 'Offcanvas dismissal retains the existing media element');
+
     player.querySelector('[data-player-toggle]').fire('click');
     assert(first.paused);
     player.querySelector('[data-player-toggle]').fire('click');
@@ -267,6 +281,12 @@ module.exports = async function () {
     sectionAudio.duration = NaN; sectionCallbacks.seek(83, true);
     sectionAudio.duration = 154; sectionAudio.fire('loadedmetadata');
     assert.strictEqual(sectionAudio.currentTime, 83, 'Section seek waits for metadata');
+    sectionAudio.duration = NaN; sectionCallbacks.seek(84, true);
+    doc.fire('show.bs.offcanvas', {target: new Element({'id': 'sections-options'})});
+    sectionAudio.duration = 154; sectionAudio.fire('loadedmetadata');
+    assert(player.hidden && sectionAudio.paused, 'Late section metadata cannot restart playback after a panel opens');
+    assert.strictEqual(sectionAudio.currentTime, 83, 'Closing cancels the queued section seek');
+
     sectionAudio.duration = NaN; sectionCallbacks.seek(91, true);
     sectionAudio.currentTime = 0; // Loading the next real media source resets its time.
     tracks[1].querySelector('[data-track-play]').fire('click');
@@ -320,6 +340,12 @@ module.exports = async function () {
     page.querySelector('[data-play-all]').fire('click');
     assert(!recordings[recordings.length - 1].paused, 'Collections without handles still initialize and play');
     assert.deepStrictEqual(list.items, collectionOrder);
+    const collectionAudio = recordings[recordings.length - 1];
+    doc.fire('show.bs.offcanvas', {target: new Element({'id': 'new-dynamic-panel'})});
+    assert(player.hidden && collectionAudio.paused, 'Collection players close for any dynamically added offcanvas');
+    page.querySelector('[data-play-all]').fire('click');
+    assert(!player.hidden && !collectionAudio.paused, 'Play all can reopen the collection player');
+
     tracks.forEach((row, index) => { row.querySelector = originalSelectors[index]; });
     // Piece pages reuse the band without playlist action buttons or visible rows.
     const piecePage = new Element(), pieceList = new Element(), pieceBand = new Element(), launch = new Element();
@@ -357,6 +383,14 @@ module.exports = async function () {
     assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '80px', 'Score toolbar receives the band height');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'true');
     assert.strictEqual(videoPauses, 1, 'Listen pauses piece videos');
+    pieceDoc.fire('show.bs.offcanvas', {target: new Element({'id': 'save-to-offcanvas'})});
+    assert(pieceBand.hidden && pieceAudio.paused, 'Piece players close and pause when an offcanvas opens');
+    assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px', 'Panel opening releases the score toolbar offset');
+    assert.strictEqual(pieceMain.style.marginBottom, '24px');
+    assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
+    launch.fire('click');
+    assert(!pieceBand.hidden && !pieceAudio.paused, 'Listen reopens the player after panel dismissal');
+
     pieceBand.querySelector('[data-speed]');
     pieceBand.querySelector('[data-player-toggle]').fire('click'); assert(pieceAudio.paused);
     launch.fire('click'); assert(!pieceAudio.paused);
@@ -381,5 +415,5 @@ module.exports = async function () {
     assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3', 'Ending a piece retains its main recording');
     launch.fire('click'); assert.strictEqual(pieceAudio.currentTime, 0); assert(!pieceAudio.paused);
     pieceBand.querySelector('[data-player-close]').fire('click');
-    console.log('Passed: piece Listen/Close, score spacing, main recording, full playback and previews; typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
+    console.log('Passed: offcanvas dismissal across folder, collection and piece players; piece Listen/Close, score spacing, main recording, full playback and previews; typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
 };
