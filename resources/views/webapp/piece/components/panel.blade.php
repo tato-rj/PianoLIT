@@ -5,7 +5,7 @@
     </div>
     <div class="offcanvas-body px-2 py-3">
         <div class="list-group">
-            <a href="{{route('webapp.pieces.composer', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">Meet the composer @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
+            <a href="{{route('webapp.composers.show', $piece->composer)}}" class="link-none mb-3 px-3 d-flex d-apart">Meet the composer @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>
 
             @if($piece->siblingsExist())
             <a href="{{route('webapp.pieces.collection', $piece)}}" class="link-none mb-3 px-3 d-flex d-apart">From the same collection @icon('chevron-right', ['color' => 'muted', 'mr' => 0, 'ml' => 4])</a>

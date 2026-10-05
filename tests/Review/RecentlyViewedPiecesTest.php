@@ -74,7 +74,8 @@ class RecentlyViewedPiecesTest extends ReviewTestCase
     public function test_only_opening_the_piece_page_counts_as_a_visit()
     {
         $this->actingAs($this->user, 'web');
-        $this->get(route('webapp.pieces.composer', $this->first))->assertOk();
+        $this->get(route('webapp.pieces.composer', $this->first))->assertStatus(301)
+            ->assertRedirect(route('webapp.composers.show', $this->first->composer));
         $this->call('HEAD', route('webapp.pieces.show', $this->first))->assertOk();
         $this->withExceptionHandling()->get(route('webapp.pieces.show', 'missing-piece'))->assertNotFound();
         $this->assertDatabaseCount('recently_viewed_pieces', 0);

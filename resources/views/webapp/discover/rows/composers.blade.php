@@ -6,6 +6,7 @@
 
 	@include('webapp.components.grids.circles', [
 		'collection' => $row['content'],
+		'composerLinks' => true,
 		'name' => 'name',
 		'image' => 'cover_image',
 		'count' => 'pieces_count'])

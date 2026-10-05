@@ -40,7 +40,7 @@ class PiecesController extends Controller
 
     public function composer(Piece $piece)
     {
-    	return view('webapp.piece.options.composer', compact('piece'));
+        return redirect()->route('webapp.composers.show', $piece->composer_id, 301);
     }
 
     public function timeline(Piece $piece)

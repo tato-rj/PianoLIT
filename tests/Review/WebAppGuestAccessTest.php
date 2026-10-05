@@ -58,13 +58,50 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->get(route('webapp.composers.show', $this->piece->composer))->assertOk();
         $this->get(route('webapp.blog.show', $this->post))->assertOk();
 
-        foreach (['collection', 'composer', 'timeline', 'similar', 'audio'] as $name) {
+        foreach (['collection', 'timeline', 'similar', 'audio'] as $name) {
             $this->get(route('webapp.pieces.'.$name, $this->piece))->assertOk();
         }
+        $this->get(route('webapp.pieces.composer', $this->piece))->assertStatus(301)
+            ->assertRedirect(route('webapp.composers.show', $this->piece->composer));
         $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk();
         Storage::fake('public');
         Storage::disk('public')->put('test-score.pdf', 'test PDF fixture');
         $this->withExceptionHandling()->get(route('webapp.pieces.score', $this->piece))->assertForbidden();
+    }
+
+    public function test_composer_entry_points_share_the_redesigned_detail_page()
+    {
+        $composer = $this->piece->composer;
+        $url = route('webapp.composers.show', $composer);
+        $legacyUrl = route('webapp.pieces.composer', $this->piece);
+
+        $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+            ->assertDontSee($legacyUrl, false);
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame(1, $xpath->query('//a[@href="'.$url.'"]/img[contains(@class, "piece__composer-image")]')->length);
+        $this->assertSame(3, $xpath->query('//a[@href="'.$url.'"]')->length, 'Portrait, options and biography link to the same composer page.');
+
+        $explore = view('webapp.explore.rows.composer', ['row' => ['label' => 'Composer', 'collection' => $composer]])->render();
+        $this->assertStringContainsString('href="'.$url.'"', $explore);
+        $this->assertStringNotContainsString('data-bs-toggle="modal"', $explore);
+        $this->assertStringNotContainsString('composer-curiosity__text', $explore);
+        $discover = view('webapp.discover.rows.composers', ['row' => ['content' => collect([$composer])]])->render();
+        $this->assertStringContainsString('data-url="'.$url.'"', $discover);
+        $list = view('webapp.discover.composers.modal', ['composers' => collect([$composer])])->render();
+        $this->assertStringContainsString('href="'.$url.'"', $list);
+
+        $this->get($legacyUrl)->assertStatus(301)->assertRedirect($url);
+        $this->get($url)->assertOk()->assertSee('id="composer-profile"', false);
+        $this->assertGuest('web');
+        $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
+        $user = Model::withoutEvents(function () { return create(User::class)->setAppends(['full_name']); });
+        $this->actingAs($user, 'web')->get($legacyUrl)->assertStatus(301)->assertRedirect($url);
+        $this->get($url)->assertOk()->assertSee('id="composer-profile"', false);
+        $this->assertFalse(view()->exists('webapp.piece.options.composer'));
+        $this->assertFalse(view()->exists('webapp.composers.profile'));
+        $this->withExceptionHandling()->get(route('webapp.pieces.composer', 'missing-piece'))->assertNotFound();
     }
 
     public function test_piece_options_use_native_offcanvas_for_visitors_and_accounts()

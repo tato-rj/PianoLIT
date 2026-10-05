@@ -11,7 +11,7 @@
 			<p class="text-muted">{{$piece->attribution}}{{$piece->composer->name}}</p>
 		</div>
 
-		<a href="{{route('webapp.pieces.composer', $piece)}}" class="">
+		<a href="{{route('webapp.composers.show', $piece->composer)}}" class="">
 			<img src="{{$piece->composer->cover_image}}" style="width: 100px; top: -90px; left: 30px;" class="rounded-circle shadow border border-white border-1x position-absolute piece__composer-image">
 		</a>
 	</div>

@@ -38,7 +38,7 @@
 			<div class="mb-3">
 				<h5 class="mb-2">About the composer</h5>
 				<div id="composer-bio" class="mb-2">{{$piece->composer->biography}}</div>
-				<div>To learn more about {{$piece->composer->last_name}} <a href="{{route('webapp.pieces.composer', $piece)}}">click here</a>.</div>
+				<div>To learn more about {{$piece->composer->last_name}} <a href="{{route('webapp.composers.show', $piece->composer)}}">click here</a>.</div>
 			</div>
 			@endif
 				<h5 class="mb-2">Who's this piece for?</h5>

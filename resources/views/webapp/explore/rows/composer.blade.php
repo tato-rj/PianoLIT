@@ -1,5 +1,5 @@
 @component('webapp.explore.rows.row', ['data' => $row])
-<a href="" data-bs-toggle="modal" data-bs-target="#composer-{{$row['collection']->id}}" class="link-none">
+<a href="{{ route('webapp.composers.show', $row['collection']) }}" class="link-none">
 	<div class="border rounded row g-0 mb-3">
 		<div class="col-lg-8 col-md-8 col-8 p-3">
 			<div class="d-flex flex-wrap justify-content-between">
@@ -18,11 +18,4 @@
 	</div>
 </a>
 
-@component('components.modal', ['id' => 'composer-' . $row['collection']->id])
-@slot('body')
-	<div class="px-2">
-		@include('webapp.composers.profile', ['composer' => $row['collection']])
-	</div>
-@endslot
-@endcomponent
 @endcomponent
