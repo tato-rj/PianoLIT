@@ -57,12 +57,14 @@ class PlaylistPlayerTest extends ReviewTestCase
             ->assertSee('data-speed="0.75"', false)->assertSee('Audio unavailable')
             ->assertSee('Sign in to favorite')->assertDontSee('data-playlist-favorite', false)
             ->assertDontSee('data-track-handle', false)->assertDontSee('data-url-reorder', false);
+        $response->assertSee('data-bs-target="#piece-upgrade-modal"', false)->assertDontSee('data-escore-form', false);
         $this->assertSame(8, substr_count($response->getContent(), 'data-track data-id='));
         $this->assertSame(7, substr_count($response->getContent(), 'data-preview="10"'));
         $this->assertSame(0, substr_count($response->getContent(), 'piece-result'));
         if ($destination = getenv('PLAYLIST_PREVIEW_DIR')) {
             file_put_contents($destination.'/collection.html', $this->previewHtml($response->getContent()));
         }
+        if ($destination = getenv('ESCORE_PREMIUM_PREVIEW_DIR')) file_put_contents($destination.'/guest-collection.html', $this->previewHtml($response->getContent()));
     }
 
     public function test_folder_player_preserves_account_order_and_super_user_access()
@@ -153,18 +155,34 @@ class PlaylistPlayerTest extends ReviewTestCase
         $this->assertSame(1, substr_count($response->getContent(), 'data-favorited="true"'));
     }
 
-    public function test_collection_escore_requires_a_session_and_filters_content_access()
+    public function test_collection_escore_requires_premium_and_filters_copyrighted_scores()
     {
         $url = route('webapp.playlists.pdf', $this->playlist);
         $this->withExceptionHandling()->get($url)->assertRedirect(route('login'));
         $this->actingAs($this->user, 'web');
+        $this->getJson($url.'?title=Book')->assertForbidden()->assertJsonPath('message', 'Go Premium to create eScores.');
+        \Illuminate\Database\Eloquent\Model::withoutEvents(function () {
+            $source = create(\App\Billing\Sources\Stripe::class, ['status' => 'active', 'renews_at' => now()->addMonth()]);
+            \App\Billing\Membership::create(['user_id' => $this->user->id, 'source_type' => \App\Billing\Sources\Stripe::class, 'source_id' => $source->id]);
+        });
+        $this->user->unsetRelation('membership');
         $generator = \Mockery::mock(PDFGenerator::class);
-        $generator->shouldReceive('pieces')->once()->withArgs(function ($pieces) { return $pieces->pluck('id')->all() === [$this->pieces[0]->id]; })->andReturnSelf();
+        $generator->shouldReceive('pieces')->once()->withArgs(function ($pieces) { return $pieces->count() === 7 && !$pieces->contains('id', $this->pieces[6]->id); })->andReturnSelf();
         $generator->shouldReceive('request')->once()->with(['title' => 'My book', 'subtitle' => 'Piano', 'comment' => 'Practice', 'creator' => $this->user->full_name])->andReturnSelf();
         $generator->shouldReceive('generate')->once()->andReturnSelf();
         $generator->shouldReceive('stream')->once()->andReturn(response('PDF fixture'));
         $this->app->instance(PDFGenerator::class, $generator);
         $this->get($url.'?'.http_build_query(['title' => 'My book', 'subtitle' => 'Piano', 'comment' => 'Practice', 'user_id' => 999]))->assertOk()->assertSee('PDF fixture');
+    }
+
+    public function test_free_account_escore_buttons_open_the_existing_premium_prompt()
+    {
+        $this->actingAs($this->user, 'web');
+        foreach (['free-collection' => route('webapp.playlists.show', $this->playlist), 'free-folder' => route('webapp.users.favorites.folders.show', $this->folder)] as $name => $url) {
+            $response = $this->get($url)->assertOk()->assertSee('data-bs-target="#piece-upgrade-modal"', false)->assertDontSee('data-escore-form', false)->assertSee(route('webapp.membership.pricing'), false);
+            $this->assertSame(1, substr_count($response->getContent(), 'id="piece-upgrade-modal"'));
+            if ($destination = getenv('ESCORE_PREMIUM_PREVIEW_DIR')) file_put_contents($destination.'/'.$name.'.html', $this->previewHtml($response->getContent()));
+        }
     }
 
     public function test_collection_escore_excludes_copyrighted_and_unpublished_content()
@@ -187,6 +205,7 @@ class PlaylistPlayerTest extends ReviewTestCase
     public function test_collection_image_cover_uses_saved_image_and_custom_top_color()
     {
         $this->actingAs($this->user, 'web');
+        $this->user->update(['super_user' => true]);
         $this->playlist->update(['cover_path' => 'app/playlists/collection-cover.png']);
         $generator = \Mockery::mock(PDFGenerator::class);
         $generator->shouldReceive('pieces')->once()->andReturnSelf();
@@ -210,6 +229,7 @@ class PlaylistPlayerTest extends ReviewTestCase
         $this->playlist->pieces()->detach();
         $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()->assertSee('No pieces here yet.');
         $this->actingAs($this->user, 'web');
+        $this->user->update(['super_user' => true]);
         $this->withExceptionHandling()->getJson(route('webapp.playlists.pdf', $this->playlist), ['Accept' => 'application/json'])->assertStatus(422);
         $this->getJson(route('webapp.playlists.pdf', $this->playlist).'?'.http_build_query(['title' => 'Book', 'subtitle' => 'Piano', 'comment' => 'Practice']))->assertForbidden();
     }

@@ -30,6 +30,8 @@ class PlaylistsController extends Controller
     public function pdf(Request $request, Playlist $playlist)
     {
         abort_unless($playlist->published_at && $playlist->published_at->lte(now()), 404);
+        $user = auth('web')->user();
+        abort_unless($user && $user->hasActiveSubscription(), 403, 'Go Premium to create eScores.');
         $options = \App\PDF\EscoreOptions::validate($request);
 
         $pieces = $playlist->pieces()->has('tutorials')->get()->filter(function ($piece) {

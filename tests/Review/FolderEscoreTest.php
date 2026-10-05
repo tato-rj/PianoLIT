@@ -53,29 +53,34 @@ class FolderEscoreTest extends ReviewTestCase
         Event::assertDispatched(\App\Events\eScoreGenerated::class);
     }
 
-    public function test_unsubscribed_folder_owner_can_export_only_the_free_pick()
+    public function test_unsubscribed_folder_owner_cannot_export_even_the_free_pick()
     {
-        $this->actingAs($this->user, 'web');
-        $options = ['title' => 'My book', 'subtitle' => 'Practice', 'comment' => 'My description', 'color' => '#aa88cc'];
-        $this->expectExport([$this->pieces[0]->id], $options);
-        $this->get($this->url($options))->assertOk();
+        $this->actingAs($this->user, 'web')->withExceptionHandling();
+        $this->getJson($this->url())->assertForbidden()->assertJsonPath('message', 'Go Premium to create eScores.');
+        foreach ([true, false] as $preview) $this->postJson(route('webapp.users.favorites.folders.pdf', $this->folder), ['title' => 'Book', 'piece_ids' => [$this->pieces[0]->id], 'preview' => $preview])->assertForbidden();
+        $html = view('webapp.user.my-pieces.favorites.folders.pdf', ['folder' => $this->folder])->render();
+        $this->assertStringContainsString('data-bs-target="#piece-upgrade-modal"', $html);
+        $this->assertStringNotContainsString('data-escore-form', $html);
+        Event::assertNotDispatched(\App\Events\eScoreGenerated::class);
     }
 
     public function test_cover_form_prefills_folder_metadata_and_counts_only_eligible_scores()
     {
         $this->actingAs($this->user, 'web');
+        $this->user->update(['super_user' => true]);
         $html = view('webapp.user.my-pieces.favorites.folders.pdf', ['folder' => $this->folder])->render();
         $this->assertStringContainsString('value="'.$this->folder->name.'"', $html);
         $this->assertStringContainsString($this->folder->description.'</textarea>', $html);
-        $this->assertStringContainsString('data-folder-score-count>1</span>', $html);
+        $this->assertStringContainsString('data-folder-score-count>2</span>', $html);
         $this->assertStringContainsString('name="color" value="#00a2ff"', $html);
     }
 
     public function test_deliberately_blank_description_and_subtitle_stay_blank()
     {
         $this->actingAs($this->user, 'web');
+        $this->user->update(['super_user' => true]);
         $options = ['title' => $this->folder->name, 'subtitle' => '', 'comment' => ''];
-        $this->expectExport([$this->pieces[0]->id], $options);
+        $this->expectExport([$this->pieces[1]->id, $this->pieces[0]->id], $options);
         $this->get($this->url($options))->assertOk();
     }
 
@@ -85,7 +90,8 @@ class FolderEscoreTest extends ReviewTestCase
         $other = Model::withoutEvents(function () { return create(User::class); });
         $this->actingAs($other, 'web')->getJson($this->url())->assertForbidden();
         $this->actingAs($this->user, 'web');
-        $this->pieces[0]->update(['is_free' => false]);
+        $this->user->update(['super_user' => true]);
+        $this->pieces->each(function ($piece) { $piece->update(['score_path' => null]); });
         $this->getJson($this->url())->assertForbidden();
         Event::assertNotDispatched(\App\Events\eScoreGenerated::class);
     }
@@ -93,6 +99,7 @@ class FolderEscoreTest extends ReviewTestCase
     public function test_cover_fields_reject_arrays_long_text_and_css_injection()
     {
         $this->actingAs($this->user, 'web')->withExceptionHandling();
+        $this->user->update(['super_user' => true]);
         foreach ([['title' => ['wrong']], ['title' => str_repeat('a', 161)], ['comment' => str_repeat('a', 601)], ['color' => 'red; background: url(x)'], ['subtitle' => ['wrong']]] as $parameters) {
             $this->getJson($this->url($parameters))->assertStatus(422);
         }
@@ -120,7 +127,8 @@ class FolderEscoreTest extends ReviewTestCase
     public function test_selection_rejects_foreign_restricted_duplicate_and_empty_piece_ids()
     {
         $this->actingAs($this->user, 'web')->withExceptionHandling();
-        foreach ([[999999], [$this->pieces[1]->id], [$this->pieces[2]->id], [$this->pieces[3]->id], [$this->pieces[0]->id, $this->pieces[0]->id], []] as $ids) {
+        $this->user->update(['super_user' => true]);
+        foreach ([[999999], [$this->pieces[2]->id], [$this->pieces[3]->id], [$this->pieces[0]->id, $this->pieces[0]->id], []] as $ids) {
             $this->postJson(route('webapp.users.favorites.folders.pdf', $this->folder), ['title' => 'Book', 'piece_ids' => $ids, 'preview' => true])->assertStatus(422);
         }
         $this->postJson(route('webapp.users.favorites.folders.pdf', $this->folder), ['title' => 'Book', 'page_size' => 'landscape'])->assertStatus(422)->assertJsonValidationErrors('page_size');
@@ -130,6 +138,7 @@ class FolderEscoreTest extends ReviewTestCase
     public function test_three_step_editor_has_all_options_and_no_orientation_selector()
     {
         $this->actingAs($this->user, 'web');
+        $this->user->update(['super_user' => true]);
         $html = view('webapp.user.my-pieces.favorites.folders.pdf', ['folder' => $this->folder])->render();
         foreach (['escore-modal', 'data-escore-panel="1"', 'data-escore-panel="2"', 'data-escore-panel="3"', 'name="page_numbers"', 'name="composer_names"', 'name="include_edition"', 'name="blank_pages"', 'name="page_size"', 'name="_token"'] as $token) $this->assertStringContainsString($token, $html);
         $this->assertStringContainsString('data-escore-drag', $html);
@@ -141,6 +150,7 @@ class FolderEscoreTest extends ReviewTestCase
     public function test_post_download_returns_a_pdf_and_dispatches_the_existing_generation_event()
     {
         $this->actingAs($this->user, 'web');
+        $this->user->update(['super_user' => true]);
         $generator = \Mockery::mock(PDFGenerator::class);
         $generator->shouldReceive('pieces')->once()->withArgs(function ($pieces) { return $pieces->pluck('id')->all() === [$this->pieces[0]->id]; })->andReturnSelf();
         $generator->shouldReceive('request')->once()->andReturnSelf();

@@ -36,6 +36,8 @@ class FavoriteFoldersController extends Controller
     public function pdf(Request $request, FavoriteFolder $folder)
     {
         abort_unless($folder->user_id == auth()->id(), 403);
+        $user = auth('web')->user();
+        abort_unless($user && $user->hasActiveSubscription(), 403, 'Go Premium to create eScores.');
 
         $options = \App\PDF\EscoreOptions::validate($request);
         $options['comment'] = $options['comment'] ?? ($folder->description ?: 'for piano');

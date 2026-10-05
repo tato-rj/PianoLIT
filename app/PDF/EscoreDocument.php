@@ -266,7 +266,6 @@ class EscoreDocument
     private function indexHeader()
     {
         if ($this->content['cover_style'] === 'modern') {
-            $this->centered(70, 11, $this->content['bottom_text']);
             $this->centered(152, 30, 'TABLE OF CONTENTS');
             $this->pdf->setLineStyle(0.5);
             $this->pdf->line(76, 792 - 180, 536, 792 - 180);
