@@ -1,5 +1,5 @@
 <div class="text-center position-relative" id="menu-{{str_slug($label)}}">
-	<a class="menu-link {{url()->current() == $url ? 'active' : null}}" href="{{$url}}">
+	<a class="menu-link {{url()->current() == $url || ($label === 'Explore' && request()->routeIs('webapp.composers.*')) ? 'active' : null}}" href="{{$url}}">
 		<div>@icon($icon, ['classes' => 'menu-icon', 'mr' => 0])</div>
 		<div><small>{{$label}}</small></div>
 		<small>@icon('circle', ['color' => 'orange', 'styles' => 'position: absolute;

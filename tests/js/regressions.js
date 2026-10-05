@@ -26,6 +26,7 @@ function element(value = '') {
 async function main() {
     await require('./escore-wizard')();
     require('./collections')();
+    require('./composers')();
     require('./folders')();
     await require('./playlist-player')();
     require('./playlist-moments')();

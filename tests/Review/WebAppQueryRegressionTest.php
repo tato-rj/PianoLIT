@@ -76,7 +76,8 @@ class WebAppQueryRegressionTest extends ReviewTestCase
         $budgets = [
             'discover' => 52, 'explore' => 11, 'highlights' => 4, 'playlists' => 5,
             // Three bounded tag queries plus one shared tags/composer/country load.
-            'composers.index' => 2, 'composers.show' => 2, 'pieces.show' => 24,
+            'composers.index' => 3, // Directory work-title index adds one fixed bulk read.
+            'composers.show' => 2, 'pieces.show' => 24,
             'pieces.similar' => 10, 'pieces.collection' => 6, 'pieces.timeline' => 8,
             // Audio sections add two fixed bulk reads: performance videos and their moments.
             'playlists.show' => 8, 'search.results' => 7, 'search.count' => 3,
