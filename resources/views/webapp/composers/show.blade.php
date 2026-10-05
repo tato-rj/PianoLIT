@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => $composer->name, 'wideContent' => true])
+@extends('webapp.layouts.app', ['title' => $composer->name])
 
 
 @push('header')

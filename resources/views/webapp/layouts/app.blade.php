@@ -50,7 +50,7 @@
 
         <div class="container">
             <div class="row">
-                <div class="{{ !empty($wideContent) ? 'col-12' : 'col-lg-10 col-md-12' }} mx-auto">
+                <div class="col-lg-10 col-md-12 mx-auto">
 
                 <main>
 

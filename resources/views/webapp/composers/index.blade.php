@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => 'Composers', 'wideContent' => true])
+@extends('webapp.layouts.app', ['title' => 'Composers'])
 
 @push('header')
 <link rel="preload" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" as="style">
