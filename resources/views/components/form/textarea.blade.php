@@ -1,7 +1,7 @@
 <div class="form-group">
 	@include('components.form.label', ['asterisk' => $asterisk ?? null])
 	<textarea 
-		class="form-control {{$classes ?? null}} {{validate($errors->$bag, $name)}}" 
+		class="form-control pianolit-input {{$classes ?? null}} {{validate($errors->$bag, $name)}}"
 		{{$required ?? 'required'}}  
 		name="{{$name}}" 
 		rows="{{$rows ?? 4}}" 

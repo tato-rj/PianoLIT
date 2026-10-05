@@ -41,8 +41,8 @@
 					@csrf
 					@include('components.form.subscription.hidden', ['id' => 'crashcourse-form'])
 					<div class="">
-						@input(['styles' => 'border: none', 'classes' => 'border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
-						@input(['styles' => 'border: none', 'classes' => 'border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
+						@input(['bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
+						@input(['bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
 						<div class="text-end mt-4">
 							<button type="submit" class="btn btn-primary shadow d-block w-100">START LEARNING NOW</button>
 						</div>

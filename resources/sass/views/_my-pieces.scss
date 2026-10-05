@@ -41,7 +41,7 @@
     display: flex; align-items: center; gap: 12px; width: 100%; max-width: 360px;
     padding: 11px 14px; margin: 0; border: 1px solid #dfe5ed; border-radius: 12px;
     background: #f8f9fb; color: #697386;
-    &:focus-within { border-color: #0055fe; box-shadow: 0 0 0 3px rgba(0, 85, 254, .12); }
+    &:focus-within { border-color: #697386; }
     input { width: 100%; min-width: 0; padding: 0; border: 0; outline: 0; background: transparent; color: #273244; font-size: 14px;
         &::placeholder { color: #697386; }
     }

@@ -15,10 +15,10 @@
           <input type="hidden" name="origin_url" value="{{url()->current()}}">
             <div class="row g-2">
               <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
+                @input(['bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
               </div>
               <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
+                @input(['bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
               </div>
             </div>
             <div class="my-2">

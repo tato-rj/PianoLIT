@@ -10,7 +10,7 @@ module.exports = async function () {
         appendChild(child) { (this.nodes || (this.nodes = [])).push(child); }
         querySelector(selector) { return this.children[selector] || (this.children[selector] = new Element()); }
         querySelectorAll(selector) { return this.children[selector] || []; }
-        addEventListener(event, handler) { this.events[event] = handler; }
+        addEventListener(event, handler, options) { this.events[event] = handler; (this.listenerOptions || (this.listenerOptions = {}))[event] = options; }
         removeEventListener(event, handler) { if (this.events[event] === handler) delete this.events[event]; }
         fire(event, extra = {}) { if (this.events[event]) this.events[event].call(this, extra); }
         getBoundingClientRect() {
@@ -345,6 +345,12 @@ module.exports = async function () {
     assert(player.hidden && collectionAudio.paused, 'Collection players close for any dynamically added offcanvas');
     page.querySelector('[data-play-all]').fire('click');
     assert(!player.hidden && !collectionAudio.paused, 'Play all can reopen the collection player');
+    assert.strictEqual(doc.listenerOptions.play, true, 'Video play is captured because native media events do not bubble');
+    doc.fire('play', {target: {tagName: 'AUDIO'}});
+    assert(!player.hidden && !collectionAudio.paused, 'Audio playback does not close its own band');
+    doc.fire('play', {target: {tagName: 'VIDEO', id: 'loaded-later-video'}});
+    assert(player.hidden && collectionAudio.paused, 'Video playback closes the shared player on collection pages too');
+
 
     tracks.forEach((row, index) => { row.querySelector = originalSelectors[index]; });
     // Piece pages reuse the band without playlist action buttons or visible rows.
@@ -415,5 +421,17 @@ module.exports = async function () {
     assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3', 'Ending a piece retains its main recording');
     launch.fire('click'); assert.strictEqual(pieceAudio.currentTime, 0); assert(!pieceAudio.paused);
     pieceBand.querySelector('[data-player-close]').fire('click');
-    console.log('Passed: offcanvas dismissal across folder, collection and piece players; piece Listen/Close, score spacing, main recording, full playback and previews; typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
+    assert.strictEqual(pieceDoc.listenerOptions.play, true);
+    for (const videoId of ['piece-performance', 'piece-synthesia', 'piece-video-42']) {
+        launch.fire('click');
+        assert(!pieceBand.hidden && !pieceAudio.paused);
+        pieceDoc.fire('play', {target: {tagName: 'VIDEO', id: videoId}});
+        assert(pieceBand.hidden && pieceAudio.paused, videoId + ' playback hides and pauses audio');
+        assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px');
+        assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
+    }
+    launch.fire('click');
+    assert(!pieceBand.hidden && !pieceAudio.paused, 'Listen reopens after video playback');
+    pieceBand.querySelector('[data-player-close]').fire('click');
+    console.log('Passed: performance/Synthesia/dynamic video dismissal, captured media events and audio exclusion; offcanvas dismissal across folder, collection and piece players; piece Listen/Close, score spacing, main recording, full playback and previews; typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
 };

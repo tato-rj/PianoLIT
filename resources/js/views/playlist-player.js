@@ -400,6 +400,10 @@
     win.addEventListener('pagehide', function () { finishDrag(true); stopMetadata(); if (audio) audio.pause(); });
     if (win.ResizeObserver) { var resize = new win.ResizeObserver(layout); resize.observe(player); var menu = piecePage ? null : doc.getElementById('menu'); if (menu) resize.observe(menu); }
     doc.addEventListener('show.bs.offcanvas', closePlayer);
+    // Media events do not bubble; capture also covers videos loaded later.
+    doc.addEventListener('play', function (event) {
+        if (event.target && event.target.tagName === 'VIDEO') closePlayer();
+    }, true);
     player.hidden = true;
     if (piecePage) {
         if (launch) {

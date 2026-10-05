@@ -1,0 +1,77 @@
+// Shared by @input, @textarea and ordinary hand-written text fields.
+// Loaded after theme/utility CSS so public and admin forms use the same finish.
+.pianolit-input,
+input.form-control:not([type=file]):not([type=color]):not([type=range]),
+textarea.form-control {
+    min-height: 44px;
+    padding: 11px 14px;
+    border: 1px solid #dfe5ed;
+    border-radius: 12px;
+    background-color: #f8f9fb;
+    color: #273244;
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    box-shadow: none;
+    transition: border-color .18s ease;
+
+    &::placeholder { color: #697386; opacity: 1; }
+
+    // Text fields also match :focus-visible on mouse clicks. A darker border
+    // gives both mouse and keyboard users a focus cue without an outer ring.
+    &:focus {
+        border-color: #697386;
+        background-color: #f8f9fb;
+        color: #273244;
+        outline: none;
+        box-shadow: none;
+    }
+
+    &:disabled {
+        background-color: #edf0f4;
+        color: #697386;
+    }
+
+    &.is-invalid, .was-validated &:invalid {
+        border-color: var(--color-danger);
+        padding-right: calc(1.5em + .75rem);
+        &:focus { box-shadow: none; }
+    }
+
+    &.is-valid, .was-validated &:valid {
+        border-color: var(--color-success);
+        padding-right: calc(1.5em + .75rem);
+        &:focus { box-shadow: none; }
+    }
+
+    &.form-control-sm { min-height: 36px; padding-top: 7px; padding-bottom: 7px; }
+    &.form-control-lg { min-height: 56px; font-size: var(--font-size-lg); }
+}
+
+textarea.form-control { resize: vertical; }
+
+#search-form .input-icon {
+    > i {
+        top: 50%;
+        bottom: auto;
+        transform: translateY(-50%);
+        color: #697386 !important;
+    }
+    > i:first-of-type { left: 14px; }
+    > i:last-of-type { right: 14px; }
+    input { padding-right: 80px !important; }
+    .input-erase { top: 50%; right: 42px; transform: translateY(-50%); }
+}
+
+// Keep text entry from triggering browser zoom on small touch screens.
+@media (max-width: 575px) {
+    .pianolit-input,
+    input.form-control:not([type=file]):not([type=color]):not([type=range]),
+    textarea.form-control,
+    .my-pieces-favorites__search input { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pianolit-input,
+    input.form-control:not([type=file]):not([type=color]):not([type=range]),
+    textarea.form-control { transition: none; }
+}

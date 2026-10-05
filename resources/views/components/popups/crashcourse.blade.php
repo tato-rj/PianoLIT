@@ -24,8 +24,8 @@ PianoLIT Crashcourses
           @csrf
           @include('components.form.subscription.hidden', ['formId' => 'crashcourse-form'])
           <input type="hidden" name="origin_url" value="{{url()->current()}}">
-                @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
-                @input(['styles' => 'border: none', 'classes' => 'border-dark border-bottom rounded-0 bg-transparent','bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
+                @input(['bag' => 'default', 'name' => 'first_name', 'placeholder' => 'First name', 'limit' => 120])
+                @input(['bag' => 'default', 'name' => 'email', 'placeholder' => 'Your email', 'limit' => 120])
             </div>
             <div class="my-2 text-center">
               <button disable-on-submit type="submit" class="btn btn-primary btn-sm-block shadow btn-wide mb-2"><strong>START FREE COURSE!</strong></button>
