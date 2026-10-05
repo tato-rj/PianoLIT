@@ -14,12 +14,6 @@
             {{ $composer->country->name }}
         </p>
         @endif
-        <div class="d-flex flex-wrap gap-2 mb-4">
-            @if($composer->period)
-            <span class="small bg-lightest-primary text-primary rounded-pill px-3 py-1">{{ $composer->period }} era</span>
-            @endif
-            <span class="small bg-lightest-primary text-primary rounded-pill px-3 py-1">Piano</span>
-        </div>
         <div class="d-grid d-md-flex">
             <a href="{{ route('webapp.search.results', ['search' => $composer->name]) }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-3">
                 @icon('search', ['mr' => 0])Discover pieces @icon('chevron-right', ['mr' => 0])
