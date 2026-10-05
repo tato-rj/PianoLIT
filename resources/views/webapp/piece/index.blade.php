@@ -82,9 +82,7 @@ video::-webkit-media-controls-enclosure {
     <div class="offcanvas-body" id="save-to-offcanvas-content"></div>
 </div>
 @if($piece->hasAudio())
-<div class="piece-audio-popup">
-    @include('webapp.components.popup')
-</div>
+@include('webapp.piece.components.audio-band')
 @endif
 @unless($hasMediaAccess)
     @include('webapp.piece.components.upgrade')
@@ -97,6 +95,10 @@ video::-webkit-media-controls-enclosure {
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script src="{{ mix('js/views/piece-access.js') }}"></script>
 <script src="{{ mix('js/views/video-moments.js') }}"></script>
+@if($piece->hasAudio())
+<script src="{{ mix('js/views/playlist-moments.js') }}"></script>
+<script src="{{ mix('js/views/playlist-player.js') }}"></script>
+@endif
 <script src="{{ mix('js/views/piece-description.js') }}"></script>
 @if($hasMediaAccess && $piece->score_path && $piece->isPublicDomain)
 <script src="{{ mix('js/views/score-editor.js') }}"></script>
@@ -345,113 +347,8 @@ if (url.match('#')) {
 </script>
 
 <script type="text/javascript">
-function toggleHand($hand) {
-	let play = false;
-	let $selected = null;
-	$hand.toggleClass('text-muted opacity-4 text-teal');
-	$selected = $('#select-hand').find('.text-teal');
-	play = $selected.length > 0;
-
-	if ($selected.length != 1) {
-		return {play: play, player: $('#full-player')};
-	} else {
-		return {play: play, player: $($selected.data('target'))};
-	}
-}
-
-function play(player) {
-	player.get(0).load();
-
-	player.get(0).play();
-
-	player.get(0).oncanplay = function() {
-	    $('#select-hand button').enable();
-	};
-}
-
-$(document).on('click', '#select-hand button', function() {
-	$('#select-hand button').disable();
-
-	let $hand = $(this);
-	let selection = toggleHand($hand);
-
-	stopAudio();
-	resetSpeed();
-	hidePlayers();
-
-	showPlayer(selection.player);
-
-	if (selection.play) {
-		play(selection.player);
-	} else {
-		$('#select-hand button').enable();
-	}
-});
-
-$(document).on('change', 'input#audio-speed', function() {
-	let speed = $(this).val();
-	let label = speed != 1 ? ' - ' + speed + 'x normal speed' : null;
-
-	$('.audio-control:visible').get(0).playbackRate = speed;
-	$('#speed-label').text(label);
-});
-
-$(document).on('click', '#close-player', function() {
-	stopAudio();
-});
-
-$(document).on('click', '#player-header > .flex-grow, #toggle-player', function() {
-	$('#player-body').toggle();
-	$('#toggle-player i').toggleClass('icon-chevron-down icon-chevron-up');
-});
-
-$(document).on('click', '#expand-player', function() {
-	$(this).find('i').toggleClass('icon-maximize icon-minimize');
-	$('#player-body > div:first-of-type').toggleClass('flex-column align-items-center');
-	$('#select-hand').toggleClass('me-3 mb-3 hands-lg');
-	$('#select-hand button').toggleClass('mx-2').find('>div:last-of-type').toggle();
-});
-</script>
-<script type="text/javascript">
-$('button#launch-audio').click(function() {
-	let $btn = $(this);
-	$btn.disable();
-
-	axios.get($btn.data('url'))
-		.then(function(response) {
-			$('#bottom-popup-content').html(response.data)
-			$('#bottom-popup-content > div').width($('main').width());
-			$('#bottom-popup').show();
-		})
-		.catch(function(error) {
-			$('#bottom-popup').fadeOut('fast');
-		})
-		.then(function() {
-			$btn.enable();
-		});
-});
-
 function stopAudio() {
-	$('audio').each(function() {
-		$(this).get(0).pause();
-		$(this).get(0).currentTime = 0;
-	});
-}
-
-function resetSpeed() {
-	$('#audio-speed').val(1);
-	$('#speed-label').text('');
-	$('.audio-control').each(function() {
-		$(this).get(0).playbackRate = 1;
-	});
-}
-
-function hidePlayers() {
-	$('.audio-control').addClass('d-none');
-}
-
-function showPlayer(player) {
-	player.removeClass('d-none');
+    if (window.PieceAudioPlayer) window.PieceAudioPlayer.pause();
 }
 </script>
 

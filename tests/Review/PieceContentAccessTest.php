@@ -53,11 +53,45 @@ class PieceContentAccessTest extends ReviewTestCase
             ->assertDontSee('Download score')->assertDontSee('<embed', false)
             ->assertDontSee('id="score-editor"', false);
         $this->assertSame(2, substr_count($response->getContent(), 'data-media-preview="10"'));
+        $this->assertSame(1, substr_count($response->getContent(), 'data-preview="10"'));
+        $response->assertSee('data-piece-player-page', false)->assertSee('data-player-close', false);
         $audio = $this->get(route('webapp.pieces.audio', $this->piece))->assertOk();
         $this->assertSame(3, substr_count($audio->getContent(), 'data-media-preview="10"'));
         $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk()->assertSee('data-media-preview="10"', false);
         $this->withExceptionHandling()->get(route('webapp.pieces.score', $this->piece))->assertForbidden();
         return $response;
+    }
+
+    public function test_piece_audio_band_has_shared_controls_and_only_the_main_recording()
+    {
+        $this->piece->updateQuietly(['is_free' => true]);
+        $this->tutorial->moments()->create(['title' => 'Audio theme', 'start_time' => 0, 'sort_order' => 0, 'comment' => 'Audio detail stays out of the band.']);
+        $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+            ->assertSee('data-piece-player-page', false)->assertDontSee('data-player-hands', false)
+            ->assertSee('data-audio="'.storage('full.mp3').'"', false)
+            ->assertDontSee('data-audio="'.storage('right.mp3').'"', false)->assertDontSee('data-audio="'.storage('left.mp3').'"', false)
+            ->assertSee('data-player-close', false)->assertSee('data-speed="0.75"', false)
+            ->assertSee('/js/views/playlist-player.js?id=', false)->assertSee('/js/views/playlist-moments.js?id=', false)
+            ->assertSee('Audio theme')
+            ->assertDontSee('piece-audio-popup', false)->assertDontSee('id="piece-upgrade-modal"', false);
+        preg_match_all('/data-audio-moments="([^"]*)"/', $response->getContent(), $matches);
+        $moments = array_map(function ($json) { return json_decode(html_entity_decode($json, ENT_QUOTES), true); }, $matches[1]);
+        $this->assertCount(1, $moments);
+        $this->assertSame('Audio theme', $moments[0][0]['title']);
+        $this->assertArrayNotHasKey('comment', $moments[0][0]);
+        $this->assertSame(1, substr_count($response->getContent(), 'data-playlist-player hidden'));
+        $this->assertSame(1, substr_count($response->getContent(), 'data-preview="0"'));
+        if ($destination = getenv('PIECE_PLAYER_PREVIEW_DIR')) {
+            $html = $response->getContent();
+            $html = preg_replace('~(?:https?://[^/]+)?(/(?:css|js|images|fonts)/)~', '$1', $html);
+            $html = str_replace('/storage/test-score.pdf', '/score.pdf', $html);
+            foreach (['full', 'right', 'left'] as $audio) $html = str_replace('/storage/'.$audio.'.mp3', '/recording.wav', $html);
+            $html = preg_replace('~https?://[^/]+(/(?:score\.pdf|recording\.wav))~', '$1', $html);
+            file_put_contents($destination.'/piece.html', $html);
+        }
+        $this->piece->updateQuietly(['audio_path' => null]);
+        $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+            ->assertDontSee('data-piece-player-page', false)->assertDontSee('id="launch-audio"', false);
     }
 
     public function test_visitors_and_nonpaying_accounts_receive_the_same_content_restrictions()
@@ -91,8 +125,9 @@ class PieceContentAccessTest extends ReviewTestCase
             ->assertDontSee('data-media-preview=', false)->assertDontSee('id="score-preview"', false)
             ->assertDontSee('id="piece-upgrade-modal"', false)->assertSee('Download score')->assertSee('id="score-pdf"', false)
             ->assertSee('id="score-editor"', false)->assertSee('data-tool="pen"', false)
-            ->assertSee('id="launch-audio"', false)->assertSee('id="bottom-popup-content"', false);
-        $this->assertSame(1, substr_count($response->getContent(), 'id="bottom-popup"'));
+            ->assertSee('id="launch-audio"', false)->assertSee('data-piece-player-page', false)
+            ->assertSee('playlist-player--piece', false)->assertDontSee('piece-audio-popup', false);
+        $this->assertSame(1, substr_count($response->getContent(), 'data-preview="0"'));
         $this->get(route('webapp.pieces.audio', $this->piece))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->get(route('webapp.pieces.score', $this->piece))->assertOk();

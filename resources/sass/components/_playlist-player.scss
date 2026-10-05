@@ -152,3 +152,15 @@
     #webapp.playlist-layout > .container > .row > .col-lg-10 { width: 100%; }
     .playlist-heading { margin-top: -32px; }
 }
+
+// The piece page has no bottom navigation. Keep the band available in score fullscreen.
+[data-piece-player-page] [hidden] { display: none !important; }
+.playlist-player--piece {
+    bottom: 0;
+    z-index: 1051;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    .playlist-player__close { flex-shrink: 0; width: 32px; height: 40px; margin-left: auto; }
+    .playlist-player__status { max-width: 1220px; margin: 8px auto 0; &:empty { display: none; } }
+    [data-next]:disabled { opacity: .3; cursor: default; }
+}
+body.score-editor-fullscreen-open .playlist-player--piece { z-index: 2010; }

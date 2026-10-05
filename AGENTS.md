@@ -2,7 +2,7 @@
 
 ## Purpose and compatibility
 
-PianoLIT serves the public website, the `my.*` web app, administration, and mobile app APIs from one Laravel application. Preserve existing appearance, working behavior, route names, and mobile JSON contracts unless a task explicitly calls for a change. Favor small, demonstrated fixes over broad rewrites. Do not assume a route is unused simply because this repository has no caller: mobile clients are separate.
+PianoLIT serves the public website, the `my.*` web app, administration, and mobile app APIs from one Laravel application. Preserve existing appearance, working behavior, route names, and mobile JSON contracts unless a task explicitly calls for a change. Favor small, demonstrated fixes over broad rewrites. The user has deferred iOS updates to a later task: web changes must not affect iOS behavior, mobile API contracts, or existing mobile media delivery. Do not assume a route is unused simply because this repository has no caller: mobile clients are separate.
 
 Administration lives at `admin.pianolit.com` (locally `admin.pianolit.test`), with no `/admin` path prefix. Register admin routes before host-independent public routes, preserve `admin.*` names and the admin session guard, and keep public preview links on the public website. Legacy `/admin/...` GET links redirect permanently to the matching subdomain path with the query string intact. Editor uploads send the session CSRF token.
 

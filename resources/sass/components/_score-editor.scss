@@ -5,7 +5,7 @@
     width: 100%;
     max-width: 1100px;
     // margin-left: -550px;
-    padding-bottom: 94px;
+    padding-bottom: calc(94px + var(--piece-player-height, 0px));
     color: #172033;
 
     [hidden] { display: none !important; }
@@ -148,7 +148,7 @@
         z-index: 1050;
         left: 50%;
         bottom: 12px;
-        bottom: calc(12px + env(safe-area-inset-bottom));
+        bottom: calc(12px + env(safe-area-inset-bottom) + var(--piece-player-height, 0px));
         transform: translateX(-50%);
         display: flex;
         align-items: center;
@@ -217,7 +217,7 @@
         max-width: none;
         height: 100dvh;
         margin: 0 !important;
-        padding: 12px 12px 100px;
+        padding: 12px 12px calc(100px + var(--piece-player-height, 0px));
         overflow-y: auto;
         background: #eef3f9;
         .score-scroll { min-height: calc(100dvh - 190px); }
@@ -225,7 +225,7 @@
     @media (max-width: 767px) {
         // width: calc(100vw - 20px);
         // margin-left: calc(-50vw + 10px);
-        padding-bottom: 126px;
+        padding-bottom: calc(126px + var(--piece-player-height, 0px));
         .score-toolbar { gap: 3px; padding: 0 8px 2px; }
         .score-tools, .score-history { flex: 0 0 auto; width: auto; gap: 2px; }
         .score-history { margin-left: auto; }
@@ -258,18 +258,6 @@
         .score-icon-button, .score-clear-button { width: 32px; height: 32px; min-height: 32px; }
         .score-control-button { width: 34px; }
         .score-page-label, .score-zoom-label { min-width: 42px; }
-    }
-}
-.piece-audio-popup {
-    position: fixed;
-    z-index: 2100;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    pointer-events: none;
-    #bottom-popup > div { bottom: calc(92px + env(safe-area-inset-bottom)) !important; pointer-events: auto; }
-    @media (max-width: 767px) {
-        #bottom-popup > div { bottom: calc(132px + env(safe-area-inset-bottom)) !important; }
     }
 }
 body.score-editor-fullscreen-open { overflow: hidden; }

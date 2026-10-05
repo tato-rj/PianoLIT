@@ -48,7 +48,7 @@ module.exports = async function () {
     page.children['[data-playlist-tracks]'] = list;
     page.children['[data-playlist-player]'] = player;
     player.children['[data-speed]'] = [.5, .75, 1, 1.25, 1.5, 2].map(speed => new Element({'data-speed': String(speed)}));
-    const doc = new Element(); doc.querySelector = () => page; doc.getElementById = () => new Element(); doc.createElement = () => new Element();
+    const doc = new Element(); doc.querySelector = selector => selector === '[data-playlist-page]' ? page : null; doc.getElementById = () => new Element(); doc.createElement = () => new Element();
     const win = {Audio, bootstrap: {Modal: {getOrCreateInstance: () => ({show() { upgrades++; }})}}, innerHeight: 800, requestAnimationFrame() { return 1; }, cancelAnimationFrame() {}, scrollBy() {}, addEventListener() {}, axios: {
         patch(url, data) { return new Promise((resolve, reject) => patches.push({url, data, resolve, reject})); },
         post(url) { return new Promise((resolve, reject) => posts.push({url, resolve, reject})); }
@@ -321,5 +321,65 @@ module.exports = async function () {
     assert(!recordings[recordings.length - 1].paused, 'Collections without handles still initialize and play');
     assert.deepStrictEqual(list.items, collectionOrder);
     tracks.forEach((row, index) => { row.querySelector = originalSelectors[index]; });
-    console.log('Passed: typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
+    // Piece pages reuse the band without playlist action buttons or visible rows.
+    const piecePage = new Element(), pieceList = new Element(), pieceBand = new Element(), launch = new Element();
+    const pieceMain = new Element(); pieceMain.style.marginBottom = '24px';
+    piecePage.closest = () => pieceMain;
+    piecePage.style.setProperty = function (name, value) { this[name] = value; };
+    const pieceTracks = ['full'].map(hand => {
+        const row = new Element({'data-hand': hand, 'data-title': 'The Storm', 'data-composer': 'Burgmüller', 'data-audio': '/' + hand + '.mp3', 'data-preview': '10', 'data-artwork': '/art.jpg'});
+        row.querySelector = () => null;
+        return row;
+    });
+    pieceList.querySelectorAll = () => pieceTracks;
+    const pieceStatus = pieceBand.querySelector('[data-playlist-status]');
+    piecePage.children = {'[data-playlist-tracks]': pieceList, '[data-playlist-player]': pieceBand, '[data-playlist-status]': pieceStatus};
+    piecePage.querySelector = selector => piecePage.children[selector] || null;
+    const pieceDoc = new Element();
+    pieceDoc.querySelector = selector => selector === '[data-piece-player-page]' ? piecePage : null;
+    pieceDoc.getElementById = id => id === 'launch-audio' ? launch : new Element();
+    pieceDoc.createElement = () => new Element();
+    pieceDoc.documentElement = new Element();
+    pieceDoc.documentElement.style.setProperty = function (name, value) { this[name] = value; };
+    let videoPauses = 0;
+    pieceDoc.querySelectorAll = () => [{pause() { videoPauses++; }}];
+    const pieceWin = {...win};
+    const beforePiece = recordings.length;
+    initialize(pieceDoc, pieceWin);
+    assert(pieceBand.hidden);
+    assert.strictEqual(recordings.length, beforePiece, 'Piece recordings remain unloaded before Listen');
+    assert.strictEqual(pieceMain.style.marginBottom, '24px', 'Hidden band preserves the original page spacing');
+    launch.fire('click');
+    const pieceAudio = recordings[beforePiece];
+    assert(!pieceBand.hidden); assert(!pieceAudio.paused);
+    assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3');
+    assert.strictEqual(piecePage.style['--playlist-menu-height'], '0px', 'Piece band has no menu offset');
+    assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '80px', 'Score toolbar receives the band height');
+    assert.strictEqual(launch.getAttribute('aria-expanded'), 'true');
+    assert.strictEqual(videoPauses, 1, 'Listen pauses piece videos');
+    pieceBand.querySelector('[data-speed]');
+    pieceBand.querySelector('[data-player-toggle]').fire('click'); assert(pieceAudio.paused);
+    launch.fire('click'); assert(!pieceAudio.paused);
+    pieceAudio.currentTime = 14; pieceAudio.fire('timeupdate');
+    assert(pieceAudio.paused); assert.strictEqual(pieceAudio.currentTime, 10);
+    assert(pieceStatus.textContent.includes('preview has ended'));
+    launch.fire('click'); assert.strictEqual(pieceAudio.currentTime, 0); assert(!pieceAudio.paused);
+    pieceBand.querySelector('[data-player-close]').fire('click');
+    assert(pieceAudio.paused); assert(pieceBand.hidden);
+    assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px');
+    assert.strictEqual(pieceMain.style.marginBottom, '24px');
+    assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
+    launch.fire('click'); assert(!pieceBand.hidden); assert(!pieceAudio.paused);
+    pieceWin.PieceAudioPlayer.pause(); assert(pieceAudio.paused, 'Visibility lifecycle pauses the retained recording');
+    pieceAudio.reject(new Error('Playback blocked')); await settle();
+    assert(pieceStatus.textContent.includes('could not start'));
+    pieceTracks.forEach(row => row.setAttribute('data-preview', '0'));
+    launch.fire('click');
+    pieceAudio.currentTime = 25; pieceAudio.fire('timeupdate');
+    assert(!pieceAudio.paused, 'Full-access recordings continue beyond the preview limit');
+    pieceAudio.currentTime = 154; pieceAudio.paused = true; pieceAudio.ended = true; pieceAudio.fire('ended');
+    assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3', 'Ending a piece retains its main recording');
+    launch.fire('click'); assert.strictEqual(pieceAudio.currentTime, 0); assert(!pieceAudio.paused);
+    pieceBand.querySelector('[data-player-close]').fire('click');
+    console.log('Passed: piece Listen/Close, score spacing, main recording, full playback and previews; typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
 };
