@@ -150,6 +150,14 @@
     }
 
     .page-item:not(:last-child):not(:first-child) .page-link {border: none;}
+
+.search-input {
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-left: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
 @import 'components/score-editor';
 @import 'components/match-tour';
 @import 'components/piece-upgrade';
