@@ -166,6 +166,7 @@ input[type=checkbox], input[type=radio], input[type=range] { accent-color: var(-
     &:focus { border-color: var(--field-muted); box-shadow: none; }
     &:focus-visible { outline: 2px solid var(--field-muted); outline-offset: 2px; }
 }
+.form-switch .form-check-input { border-radius: var(--radius-pill); }
 .switch {
     .slider { background-color: var(--field-border); transition-duration: .18s; }
     input:checked + .slider { background-color: var(--color-primary); }
