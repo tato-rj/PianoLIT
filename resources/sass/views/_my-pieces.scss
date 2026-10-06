@@ -63,7 +63,7 @@
     border-radius: 14px;
     background: white;
     transition: border-color .18s ease, box-shadow .18s ease;
-    &:hover { border-color: #cfdbed; box-shadow: 0 8px 24px rgba(26, 48, 85, .07); }
+    // &:hover { border-color: #cfdbed; box-shadow: 0 8px 24px rgba(26, 48, 85, .07); }
     a:focus-visible, button:focus-visible { outline: 3px solid #0055fe; outline-offset: 3px; }
     &__heading { display: flex; align-items: center; gap: 14px; min-width: 0; padding-bottom: 18px; }
     &__icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 56px; height: 56px; border-radius: 12px; background: #edf4ff; color: #0055fe; font-size: 30px; line-height: 1; }
