@@ -14,7 +14,7 @@
         </p>
         @endif
         <div class="d-md-flex">
-            <a href="{{ route('webapp.search.results', ['search' => $composer->name]) }}" class="btn btn-secondary btn-sm d-inline-flex align-items-center justify-content-center gap-3">
+            <a href="{{ route('webapp.search.results', ['search' => $composer->name]) }}" class="btn btn-secondary d-inline-flex align-items-center justify-content-center gap-3">
                 @icon('search', ['mr' => 0])Discover pieces @icon('chevron-right', ['mr' => 0])
             </a>
         </div>
