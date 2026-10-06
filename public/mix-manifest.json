@@ -1,13 +1,13 @@
 {
     "/js/app.js": "/js/app.js?id=c819b6c992bd9f223304",
     "/css/app.css": "/css/app.css?id=8097ad8fd9857ecd7923",
-    "/css/admin.css": "/css/admin.css?id=92ba04c39d577e86853e",
+    "/css/admin.css": "/css/admin.css?id=53b85b714d16ff38dd01",
     "/css/design-system.css": "/css/design-system.css?id=117ed746da64ed108404",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
     "/css/studio-policies/simple.css": "/css/studio-policies/simple.css?id=265bb693f4154efcaaec",
     "/css/studio-policies/elegant.css": "/css/studio-policies/elegant.css?id=4aae0c05002438971714",
     "/css/studio-policies/informal.css": "/css/studio-policies/informal.css?id=1d1105ead8ba3664484a",
-    "/js/admin.js": "/js/admin.js?id=b13bc26ebcea0298180b",
+    "/js/admin.js": "/js/admin.js?id=dbdc6e6ac4c26a3a6493",
     "/js/tone.js": "/js/tone.js?id=4a64023a6c3319687a16",
     "/fonts/escore/LibreBodoni-Regular.ttf": "/fonts/escore/LibreBodoni-Regular.ttf?id=3785670950bc34fb90c6",
     "/fonts/escore/LibreBodoni-Bold.ttf": "/fonts/escore/LibreBodoni-Bold.ttf?id=b076f46fa91e52656126",
@@ -27,6 +27,6 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=fdbff8185284fd251dc0",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=e017e6578ab976938cdf",
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da",
     "/js/views/composer-biography-admin.js": "/js/views/composer-biography-admin.js?id=2a9ab9a59b955337ca69"
 }

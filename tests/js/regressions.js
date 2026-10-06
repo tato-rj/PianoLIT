@@ -25,6 +25,7 @@ function element(value = '') {
 
 async function main() {
     require('./composer-biography-admin')();
+    require('./admin-text-improver')();
     await require('./escore-wizard')();
     require('./collections')();
     require('./composers')();

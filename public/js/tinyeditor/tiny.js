@@ -16,7 +16,7 @@ tinymce.init({
     },
 
     setup: function(editor) {
-        editor.on('keyup', function(e) {
+        editor.on('input change keyup', function(e) {
             formChanged = true;
             console.log('Editor contents was modified. Contents: ' + editor.getContent());
         });

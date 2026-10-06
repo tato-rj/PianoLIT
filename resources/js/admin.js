@@ -21,6 +21,7 @@ require('./components/toggle');
 require('./components/forms');
 require('./components/triggers');
 require('./components/audio');
+require('./components/admin-text-improver');
 
 require('./startup');
 

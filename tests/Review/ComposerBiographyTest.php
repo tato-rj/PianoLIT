@@ -103,13 +103,15 @@ class ComposerBiographyTest extends ReviewTestCase
         $this->regenerate()->assertOk();
     }
 
-    public function test_edit_page_shows_button_only_with_update_permission()
+    public function test_edit_page_uses_shared_improvement_without_the_old_bio_button()
     {
         $this->get(route('admin.composers.edit', $this->composer))->assertOk()
-            ->assertSee('Regenerate bio')->assertSee(route('admin.composers.regenerate-biography', $this->composer))
-            ->assertSee('composer-biography-admin.js')->assertDontSee('fake-review-key');
+            ->assertSee('"improveText":'.json_encode(route('admin.text.improve')), false)->assertSee('name="biography"', false)
+            ->assertDontSee('Regenerate bio')->assertDontSee('biography-status')
+            ->assertDontSee('composer-biography-admin.js')->assertDontSee('fake-review-key');
         $this->actingAs(create(Admin::class, ['role' => 'editor']), 'admin');
-        $this->get(route('admin.composers.edit', $this->composer))->assertOk()->assertDontSee('Regenerate bio');
+        $this->get(route('admin.composers.edit', $this->composer))->assertOk()
+            ->assertDontSee('Regenerate bio')->assertSee("$('#edit-form input, #edit-form select, #edit-form textarea').attr('disabled', true);", false);
     }
 
     /** @dataProvider invalidSources */
