@@ -16,7 +16,9 @@ class EscorePageNumberMaskTest extends ReviewTestCase
         foreach (['letter' => [215.9, 279.4], 'a4' => [210, 297], 'landscape' => [279.4, 215.9]] as $source => $dimensions) {
             foreach (['letter', 'a4'] as $output) {
                 foreach ([true, false] as $numbered) {
-                    $cases[$source.'-'.$output.'-'.($numbered ? 'numbered' : 'original')] = [$source, $dimensions, $output, $numbered];
+                    foreach ([false, true] as $fromFirstPiece) {
+                        $cases[$source.'-'.$output.'-'.($numbered ? 'numbered' : 'original').($fromFirstPiece ? '-piece-folios' : '')] = [$source, $dimensions, $output, $numbered, $fromFirstPiece];
+                    }
                 }
             }
         }
@@ -24,7 +26,7 @@ class EscorePageNumberMaskTest extends ReviewTestCase
     }
 
     /** @dataProvider paperSizes */
-    public function test_masks_overlay_only_score_templates_and_follow_the_imported_page($sourceName, $dimensions, $outputSize, $numbered)
+    public function test_masks_overlay_only_score_templates_and_follow_the_imported_page($sourceName, $dimensions, $outputSize, $numbered, $fromFirstPiece)
     {
         Storage::fake('public');
         $disk = Storage::disk('public');
@@ -74,6 +76,7 @@ class EscorePageNumberMaskTest extends ReviewTestCase
         $merger = (new EscoreMerger(app(Filesystem::class)))->settings([
             'page_size' => $outputSize, 'color' => '#00a2ff',
             'page_numbers' => $numbered, 'blank_pages' => true,
+            'number_pieces_from_one' => $fromFirstPiece,
         ]);
         $merger->addPDF($disk->path('front.pdf'), 'all');
         $merger->addPDF($disk->path('score.pdf'), 'all');
@@ -95,6 +98,8 @@ class EscorePageNumberMaskTest extends ReviewTestCase
             $stream = $reader->pageStream($page);
             preg_match_all('/(-?[\d.]+) (-?[\d.]+) (-?[\d.]+) (-?[\d.]+) re f/', $stream, $rectangles, PREG_SET_ORDER);
             $isScore = $page >= 4 && $page !== 7;
+            $label = $fromFirstPiece ? $page - 3 : $page;
+            $hasFolio = $numbered && ($fromFirstPiece ? $page >= 4 : $page > 1);
             $expected = $page === 1 ? 1 : ($isScore && $numbered ? 2 : 0);
             $this->assertCount($expected, $rectangles, 'Unexpected overlay on page '.$page);
             if ($isScore && $numbered) {
@@ -115,24 +120,22 @@ class EscorePageNumberMaskTest extends ReviewTestCase
                     $this->assertLessThanOrEqual(20.01, $y + $h);
                     $this->assertLessThanOrEqual(20.01, $w);
                 }
-                $this->assertGreaterThan(strrpos($stream, ' re f'), strpos($stream, '('.$page.') Tj'));
+                $this->assertGreaterThan(strrpos($stream, ' re f'), strpos($stream, '('.$label.') Tj'));
             }
-            if ($page > 1) {
-                $this->assertSame($numbered, strpos($stream, '('.$page.') Tj') !== false, 'Collection folio on page '.$page);
-                if ($numbered) {
-                    $this->assertSame(1, preg_match('/BT ([\d.]+) ([\d.]+) Td \('.$page.'\) Tj ET/', $stream, $folio));
-                    $font = new \FPDF();
-                    $font->SetFont('Helvetica', '', 9);
-                    $right = (float) $folio[1] / (72 / 25.4) + $font->GetStringWidth((string) $page);
-                    $top = $height - (float) $folio[2] / (72 / 25.4);
-                    $this->assertEqualsWithDelta($width - 18, $right, 0.01, 'Right-aligned folio has breathing room, including double digits');
-                    $this->assertEqualsWithDelta(18, $top, 0.01, 'Folio sits inside the upper margin');
-                }
+            $this->assertSame($hasFolio, (bool) preg_match('/BT ([\d.]+) ([\d.]+) Td \(\d+\) Tj ET/', $stream), 'Collection folio on PDF page '.$page);
+            if ($hasFolio) {
+                $this->assertSame(1, preg_match('/BT ([\d.]+) ([\d.]+) Td \('.$label.'\) Tj ET/', $stream, $folio));
+                $font = new \FPDF();
+                $font->SetFont('Helvetica', '', 9);
+                $right = (float) $folio[1] / (72 / 25.4) + $font->GetStringWidth((string) $label);
+                $top = $height - (float) $folio[2] / (72 / 25.4);
+                $this->assertEqualsWithDelta($width - 18, $right, 0.01, 'Right-aligned folio has breathing room, including double digits');
+                $this->assertEqualsWithDelta(18, $top, 0.01, 'Folio sits inside the upper margin');
             }
         }
         $this->assertSame($sourceHashes, [hash_file('sha256', $disk->path('front.pdf')), hash_file('sha256', $disk->path('score.pdf'))]);
         if ($directory = getenv('ESCORE_MASK_PREVIEW_DIR')) {
-            file_put_contents($directory.'/'.$sourceName.'-'.$outputSize.'-'.($numbered ? 'numbered' : 'original').'.pdf', $output);
+            file_put_contents($directory.'/'.$sourceName.'-'.$outputSize.'-'.($numbered ? 'numbered' : 'original').($fromFirstPiece ? '-piece-folios' : '').'.pdf', $output);
         }
     }
 }

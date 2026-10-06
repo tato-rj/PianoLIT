@@ -75,6 +75,12 @@ class EscorePdfLayoutTest extends ReviewTestCase
         $this->assertSame($total - 64, $generator->renderedEntries->first()['start']);
         $this->assertSame($total, $generator->renderedEntries->last()['start']);
         if ($destination = getenv('ESCORE_LARGE_PREVIEW_PDF')) file_put_contents($destination, $pdf);
+        $web = $this->generator();
+        $web->pieces($pieces)->request(['title' => 'My repertoire', 'page_size' => 'letter', 'title_page' => false], true, true)->generate();
+        $this->assertGreaterThan(1, $web->metadata()['sections']['index']);
+        $this->assertSame(1, $web->renderedEntries->first()['folio']);
+        $this->assertSame(65, $web->renderedEntries->last()['folio']);
+        $this->assertSame($web->metadata()['pages'], $web->metadata()['entries'][64]['start']);
     }
 
     public function test_cover_treats_markup_as_text_and_colors_have_readable_contrast()
@@ -161,6 +167,57 @@ class EscorePdfLayoutTest extends ReviewTestCase
         $this->assertSame($total, $generator->metadata()['entries'][0]['start']);
         $this->assertSame($total, $generator->metadata()['pages']);
         if ($destination = getenv('ESCORE_EDITION_PREVIEW_PDF')) file_put_contents($destination, $pdf);
+    }
+
+    public function test_web_numbering_starts_at_first_piece_without_changing_preview_positions_or_source_sizes()
+    {
+        $pieces = collect([$this->score('First piece', 2, 1), $this->score('Second piece', 1, 2)]);
+        $landscape = new \FPDF('L');
+        $landscape->AddPage(); $landscape->SetFont('Helvetica', '', 16); $landscape->Text(20, 30, 'Landscape score');
+        Storage::disk('public')->put('score-2.pdf', $landscape->Output('S'));
+        foreach ([null, 'letter', 'a4'] as $size) {
+            foreach ([false, true] as $blank) {
+                foreach ([false, true] as $numbered) {
+                    $generator = $this->generator();
+                    $pdf = $generator->pieces($pieces)->request([
+                        'title' => 'Piece numbering', 'cover_style' => 'modern', 'page_size' => $size,
+                        'title_page' => $blank, 'include_edition' => true,
+                        'edition_notes' => str_repeat('Edition notes that continue across several pages. ', 90),
+                        'blank_pages' => $blank, 'page_numbers' => $numbered,
+                    ], true, true)->generate()->output();
+                    $metadata = $generator->metadata();
+                    $first = $metadata['entries'][0]['start'];
+                    $this->assertGreaterThan(1, $metadata['sections']['edition']);
+                    $this->assertSame([1, $blank ? 4 : 3], $generator->renderedEntries->pluck('folio')->all());
+                    $this->assertSame([$first, $first + ($blank ? 3 : 2)], array_column($metadata['entries'], 'start'));
+                    $this->assertSame(['id', 'title', 'composer', 'pages', 'start'], array_keys($metadata['entries'][0]));
+                    $reader = new class extends Fpdi {
+                        public function pageStream($page) { return $this->getPdfReader($this->currentReaderId)->getPage($page)->getContentStream(); }
+                    };
+                    $this->assertSame($first + ($blank ? 3 : 2), $reader->setSourceFile(StreamReader::createByString($pdf)));
+                    for ($page = 1; $page <= $metadata['pages']; $page++) {
+                        $stream = $reader->pageStream($page);
+                        $hasFolio = preg_match('/BT [\d.]+ [\d.]+ Td \((\d+)\) Tj ET/', $stream, $match);
+                        $this->assertSame($numbered && $page >= $first, (bool) $hasFolio);
+                        if ($hasFolio) $this->assertSame((string) ($page - $first + 1), $match[1]);
+                    }
+                    if ($size === null) {
+                        $firstSize = $reader->getTemplateSize($reader->importPage($first));
+                        $lastSize = $reader->getTemplateSize($reader->importPage($metadata['pages']));
+                        $this->assertEqualsWithDelta(210, $firstSize['width'], 0.01);
+                        $this->assertEqualsWithDelta(297, $firstSize['height'], 0.01);
+                        $this->assertEqualsWithDelta(297, $lastSize['width'], 0.01);
+                        $this->assertEqualsWithDelta(210, $lastSize['height'], 0.01);
+                    }
+                    if ($size === 'letter' && $blank && $numbered && ($destination = getenv('ESCORE_PIECE_NUMBERING_PREVIEW_PDF'))) file_put_contents($destination, $pdf);
+                }
+            }
+        }
+        // Only the trusted server argument can change legacy mobile numbering.
+        $legacy = $this->generator();
+        $legacy->pieces($pieces)->request(['title' => 'Legacy', 'page_size' => 'letter', 'number_pieces_from_one' => true])->generate();
+        $this->assertArrayNotHasKey('folio', $legacy->renderedEntries->first());
+        $this->assertSame(4, $legacy->metadata()['entries'][0]['start']);
     }
 
 }

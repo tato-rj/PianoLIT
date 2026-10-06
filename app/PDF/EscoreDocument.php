@@ -56,7 +56,7 @@ class EscoreDocument
                     $x += $run['width'];
                 }
                 if ($lineIndex === 0) {
-                    $number = (string) $entry['start'];
+                    $number = (string) ($entry['folio'] ?? $entry['start']);
                     $this->font(false);
                     $this->text(536 - $this->pdf->getTextWidth(14, $number), $baseline, 14, $number);
                 }
@@ -96,8 +96,24 @@ class EscoreDocument
         $this->page++;
         $this->pdf->setColor([0, 0, 0]);
         $this->pdf->setStrokeColor([0, 0, 0]);
-        if ($this->content['page_numbers'] && !$this->content['page_size']) $this->text(533, 50, 11, (string) $this->page);
-        $this->centered(762, 10, $this->content['bottom_text']);
+        if ($this->content['page_numbers'] && !$this->content['page_size'] && empty($this->content['number_pieces_from_one'])) $this->text(533, 50, 11, (string) $this->page);
+        if (empty($this->content['uniform_footer'])) $this->centered(762, 10, $this->content['bottom_text']);
+    }
+
+    /** Transparent page-sized footer for placement after all imported content. */
+    public function renderFooter($text, $width, $height)
+    {
+        $this->pdf = new Cpdf([0, 0, $width, $height], true, sys_get_temp_dir(), sys_get_temp_dir());
+        $this->pdf->setColor([0, 0, 0]);
+        $layout = $this->fit($text, 10, max(20, $width - 152), 24);
+        $baseline = 30 + max(0, count($layout['lines']) - 1) * $layout['size'] * 1.2;
+        foreach ($layout['lines'] as $line) {
+            $label = implode('', array_column($line, 'text'));
+            $this->font(false);
+            $this->pdf->addText(($width - $this->pdf->getTextWidth($layout['size'], $label)) / 2, $baseline, $layout['size'], $label);
+            $baseline -= $layout['size'] * 1.2;
+        }
+        return $this->pdf->output();
     }
 
     private function cover($content, $colored)
@@ -303,7 +319,7 @@ class EscoreDocument
             }
             if ($line === 0) {
                 $this->font(false);
-                $page = (string) $entry['start'];
+                $page = (string) ($entry['folio'] ?? $entry['start']);
                 $this->text(536 - $this->pdf->getTextWidth(12, $page), $baseline, 12, $page);
             }
             $baseline += 22;

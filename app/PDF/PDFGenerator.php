@@ -21,7 +21,8 @@ class PDFGenerator
         return $this;
     }
 
-    public function request($request, $alignCoverText = false)
+    // Web controllers opt in through trusted arguments; mobile defaults stay intact.
+    public function request($request, $alignCoverText = false, $numberPiecesFromOne = false)
     {
         $color = $request['color'] ?? EscoreOptions::DEFAULT_COLOR;
         if (!is_string($color) || !preg_match('/^#[0-9a-fA-F]{6}$/', $color)) {
@@ -38,6 +39,9 @@ class PDFGenerator
             'edition_notes' => $request['edition_notes'] ?? '',
             'cover_style' => $request['cover_style'] ?? 'reference',
             'align_cover_text' => $alignCoverText,
+            'number_pieces_from_one' => $numberPiecesFromOne,
+            // The same trusted web export mode applies the shared page footer.
+            'uniform_footer' => $numberPiecesFromOne,
             'page_size' => $request['page_size'] ?? null,
             'page_numbers' => !isset($request['page_numbers']) || (bool) $request['page_numbers'],
             'composer_names' => !isset($request['composer_names']) || (bool) $request['composer_names'],
@@ -94,8 +98,10 @@ class PDFGenerator
         $frontPages = 0;
         for ($pass = 0; $pass < 5; $pass++) {
             $nextPage = $frontPages + 1;
-            $entries = $entries->map(function ($entry, $index) use (&$nextPage, $entries) {
+            $entries = $entries->map(function ($entry, $index) use (&$nextPage, $entries, $frontPages) {
                 $entry['start'] = $nextPage;
+                // The printed index uses piece folios; previews use PDF positions.
+                if ($this->content['number_pieces_from_one']) $entry['folio'] = $nextPage - $frontPages;
                 $nextPage += $entry['pages'] + ($this->content['blank_pages'] && $index < $entries->count() - 1 ? 1 : 0);
                 return $entry;
             });
@@ -127,7 +133,8 @@ class PDFGenerator
     {
         $blank = $this->content['blank_pages'] ? max(0, $this->entries->count() - 1) : 0;
         return [
-            'entries' => $this->entries->values()->all(),
+            // Keep absolute PDF positions and the existing preview/API shape.
+            'entries' => $this->entries->map(function ($entry) { unset($entry['folio']); return $entry; })->values()->all(),
             'sections' => array_merge($this->sections, ['blank' => $blank]),
             'pages' => $this->frontPages + $this->entries->sum('pages') + $blank,
         ];
@@ -135,7 +142,7 @@ class PDFGenerator
 
     public function merge($pdfpath)
     {
-        $merger = $this->content['page_size']
+        $merger = $this->content['page_size'] || $this->content['number_pieces_from_one']
             ? (new EscoreMerger(app(\Illuminate\Filesystem\Filesystem::class)))->settings($this->content)
             : PDFMerger::init();
         $merger->addPDF($pdfpath, 'all');
