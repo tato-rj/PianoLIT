@@ -5,6 +5,7 @@ return [
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+        'max_output_tokens' => env('OPENAI_MAX_OUTPUT_TOKENS', 4096),
     ],
 
     'chatgpt' => [

@@ -21,7 +21,8 @@ class ComposerBiographyTest extends ReviewTestCase
             return create(Composer::class, ['creator_id' => $this->admin->id, 'name' => 'Clara Schumann', 'biography' => 'Original bio']);
         });
         $this->actingAs($this->admin, 'admin');
-        config(['services.openai.key' => 'fake-review-key', 'services.openai.model' => 'gpt-4o-mini']);
+        config(['services.openai.key' => 'fake-review-key', 'services.openai.model' => 'gpt-4o-mini',
+            'services.openai.max_output_tokens' => 4096]);
         Http::swap(new \Illuminate\Http\Client\Factory);
         $this->withExceptionHandling();
     }
@@ -51,7 +52,7 @@ class ComposerBiographyTest extends ReviewTestCase
             $input = json_decode($request['input'], true);
             return $request->method() === 'POST' && $request->hasHeader('Authorization', 'Bearer fake-review-key')
                 && $request['model'] === 'gpt-4o-mini' && $request['store'] === false
-                && $request['max_output_tokens'] === 1600
+                && $request['max_output_tokens'] === 4096
                 && $input === ['composer' => 'Clara Schumann', 'source_biography' => 'Edited source']
                 && $request['text']['format']['schema']['properties']['paragraphs']['minItems'] === 3
                 && $request['text']['format']['schema']['properties']['paragraphs']['maxItems'] === 4
@@ -132,6 +133,34 @@ class ComposerBiographyTest extends ReviewTestCase
         Http::assertNothingSent();
     }
 
+    public function test_configured_token_budget_is_used_without_relaxing_paragraph_limits()
+    {
+        config(['services.openai.max_output_tokens' => '12000']);
+        Http::fake(['*' => Http::response($this->output(['Early life.', 'Her work.', 'Later life.']))]);
+        $this->regenerate(['biography' => 'Current source', 'max_output_tokens' => 999999])->assertOk();
+        Http::assertSent(function ($request) {
+            $paragraphs = $request['text']['format']['schema']['properties']['paragraphs'];
+            return $request['max_output_tokens'] === 12000 && $paragraphs['minItems'] === 3
+                && $paragraphs['maxItems'] === 4 && $paragraphs['items']['maxLength'] === 1000;
+        });
+    }
+
+    /** @dataProvider invalidTokenBudgets */
+    public function test_invalid_token_budgets_fail_before_calling_openai($budget)
+    {
+        config(['services.openai.max_output_tokens' => $budget]);
+        Http::fake();
+        $this->regenerate()->assertStatus(503)->assertJsonFragment([
+            'message' => 'OPENAI_MAX_OUTPUT_TOKENS must be an integer between 256 and 32768.',
+        ]);
+        Http::assertNothingSent();
+    }
+
+    public static function invalidTokenBudgets(): array
+    {
+        return [[0], [32769], ['not-an-integer'], ['4096 extra']];
+    }
+
     /** @dataProvider invalidParagraphs */
     public function test_invalid_generated_bios_are_rejected_without_saving($paragraphs)
     {
@@ -191,6 +220,10 @@ class ComposerBiographyTest extends ReviewTestCase
     {
         return [
             [['status' => 'incomplete', 'incomplete_details' => ['reason' => 'max_output_tokens']],
+                'OpenAI reached the response token limit before finishing the bio. Increase OPENAI_MAX_OUTPUT_TOKENS or retry.'],
+            [['status' => 'incomplete', 'incomplete_details' => ['reason' => 'content_filter']],
+                'OpenAI stopped this rewrite because of its content filter. Please review the source bio.'],
+            [['status' => 'incomplete', 'incomplete_details' => ['reason' => 'secret-upstream-text']],
                 'OpenAI stopped before the bio was finished. Please try again.'],
             [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'refusal', 'refusal' => 'secret-upstream-text']]]]],
                 'OpenAI could not rewrite this source bio. Please review the source and try again.'],

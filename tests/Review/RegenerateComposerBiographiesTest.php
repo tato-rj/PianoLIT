@@ -15,7 +15,8 @@ class RegenerateComposerBiographiesTest extends ReviewTestCase
     public function setUp(): void
     {
         parent::setUp();
-        config(['services.openai.key' => 'fake-review-key', 'services.openai.model' => 'gpt-4.1-mini']);
+        config(['services.openai.key' => 'fake-review-key', 'services.openai.model' => 'gpt-4.1-mini',
+            'services.openai.max_output_tokens' => 4096]);
         Http::swap(new \Illuminate\Http\Client\Factory);
         Storage::fake('local');
     }
@@ -120,6 +121,23 @@ class RegenerateComposerBiographiesTest extends ReviewTestCase
         Http::assertSentCount(2);
         $this->assertSame('Original source', $second->fresh()->biography);
         $this->assertSame([$first->id, $third->id], array_column($this->backup(), 'id'));
+    }
+
+    public function test_incomplete_generation_keeps_the_source_reports_the_reason_and_continues()
+    {
+        $first = $this->composer();
+        $second = $this->composer();
+        Http::fake(['*' => Http::sequence()->push([
+            'status' => 'incomplete', 'incomplete_details' => ['reason' => 'max_output_tokens'],
+            'usage' => ['output_tokens' => 4096, 'output_tokens_details' => ['reasoning_tokens' => 4096]],
+        ])->push($this->response())]);
+        $this->assertSame(1, $this->runCommand());
+        Http::assertSentCount(2);
+        $this->assertSame('Original source', $first->fresh()->biography);
+        $this->assertSame("Early life.\n\nMusic.\n\nLater life.", $second->fresh()->biography);
+        $this->assertStringContainsString('OpenAI reached the response token limit', $this->output);
+        $this->assertStringContainsString('--composer='.$first->id, $this->output);
+        $this->assertSame([$second->id], array_column($this->backup(), 'id'));
     }
 
     public function test_every_composer_is_processed_once_across_database_chunks()
