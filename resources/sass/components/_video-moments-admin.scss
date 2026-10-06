@@ -21,19 +21,6 @@
     &__label, &__row label { color: var(--color-text, #172033); font-size: 13px; font-weight: 500; line-height: 1.4; }
     &__label { display: block; margin-bottom: 6px; }
     &__row label .form-control { margin-top: 6px; }
-    &__row .form-control {
-        min-height: 40px;
-        padding: 9px 11px;
-        border-color: var(--color-border, #e4eaf3);
-        border-radius: 8px;
-        background: #fff;
-        color: var(--color-text, #172033);
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 20px;
-        &:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(0, 85, 254, .09); }
-        &.is-invalid { border-color: #dc3545; }
-    }
     &__row textarea { min-height: 70px; resize: vertical; }
     &__time { position: relative; }
     &__time input { padding-right: 43px; font-variant-numeric: tabular-nums; }
@@ -45,7 +32,7 @@
         width: 34px;
         display: flex;
         flex-direction: column;
-        border-left: 1px solid var(--color-border, #e4eaf3);
+        border-left: 1px solid var(--field-border);
     }
     &__step, &__delete {
         display: flex;

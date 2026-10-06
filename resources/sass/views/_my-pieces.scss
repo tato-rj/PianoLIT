@@ -39,11 +39,12 @@
 .my-pieces-favorites__actions { display: flex; align-items: center; gap: 16px; flex: 1; justify-content: flex-end; min-width: 0; }
 .my-pieces-favorites__search {
     display: flex; align-items: center; gap: 12px; width: 100%; max-width: 360px;
-    padding: 11px 14px; margin: 0; border: 1px solid #dfe5ed; border-radius: 12px;
-    background: #f8f9fb; color: #697386;
-    &:focus-within { border-color: #697386; }
-    input { width: 100%; min-width: 0; padding: 0; border: 0; outline: 0; background: transparent; color: #273244; font-size: 14px;
-        &::placeholder { color: #697386; }
+    min-height: var(--field-min-height);
+    padding: var(--field-padding-y) var(--field-padding-x); margin: 0; border: 1px solid var(--field-border); border-radius: var(--radius-input);
+    background: var(--field-background); color: var(--field-muted);
+    &:focus-within { border-color: var(--field-muted); }
+    input { width: 100%; min-width: 0; padding: 0; border: 0; outline: 0; background: transparent; color: var(--field-text); font-size: var(--field-font-size);
+        &::placeholder { color: var(--field-muted); }
     }
 }
 .my-pieces-favorites__search-status { margin: 0 0 16px; color: #697386; font-size: 13px; &:empty { display: none; } }

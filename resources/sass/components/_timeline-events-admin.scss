@@ -30,7 +30,6 @@ body.timeline-events-editor { overflow-x: clip; }
     .timeline-search-hint { align-self: center; margin-top: 16px; }
     .timeline-year-field { width: 110px; flex-shrink: 0; }
     label { display: block; margin-bottom: 4px; font-size: 12px; color: var(--color-text-muted, #687386); }
-    .form-control { border-radius: .25rem; }
     .btn-sm { padding: 7px 12px; line-height: 20px; white-space: nowrap; }
     .timeline-admin-section { scroll-margin-top: 280px; margin-bottom: 24px; }
     .timeline-section-heading { justify-content: space-between; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--color-border, #dee2e6); }

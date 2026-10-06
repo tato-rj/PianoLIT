@@ -42,11 +42,11 @@
 						<input type="hidden" name="lazy-load">
 						<div class="input-group input-group-lg">
 							<div class="input-group-prepend">
-								<button disabled class="btn-raw ps-3">@icon('music', ['mr' => 0, 'size' => 'lg', 'color' => 'grey'])</button>
+								<button disabled class="input-group-text">@icon('music', ['mr' => 0, 'size' => 'lg', 'color' => 'grey'])</button>
 							</div>
-							<input type="text" required name="search" value="{{request('search')}}" class="form-control border-0 form-transparent" placeholder="Search here...">
+							<input type="text" required name="search" value="{{request('search')}}" class="form-control" aria-label="Search repertoire" placeholder="Search here...">
 							<div class="input-group-append">
-								<button class="btn-raw px-3" type="submit">@icon('arrow-right', ['mr' => 0, 'size' => 'lg', 'color' => 'primary'])</button>
+								<button class="input-group-text" type="submit" aria-label="Search">@icon('arrow-right', ['mr' => 0, 'size' => 'lg', 'color' => 'primary'])</button>
 							</div>
 						</div>
 					</form>

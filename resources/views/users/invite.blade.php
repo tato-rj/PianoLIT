@@ -33,7 +33,7 @@
                 <p>Share this link to invite your friends</p>
                 <div class="inner-addon right-addon">
                     @icon('link', ['mr' => 0, 'classes' => 'text-muted'])
-                    <input type="text" class="form-control" readonly="readonly" value="{{auth()->user()->referralUrl()}}" style="background-color: white">
+                    <input type="text" class="form-control" readonly="readonly" value="{{auth()->user()->referralUrl()}}">
                 </div>
             </div>
         </div>

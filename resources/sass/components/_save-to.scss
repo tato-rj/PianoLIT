@@ -12,7 +12,7 @@
     background: #fff;
     color: #212529;
 
-    button:focus-visible, input:focus-visible { outline: 3px solid #0055fe; outline-offset: 3px; }
+    button:focus-visible { outline: 3px solid #0055fe; outline-offset: 3px; }
 
     &__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px 16px; border-bottom: 1px solid #e6eaf0;
         h2 { margin: 0; font-family: Poppins, sans-serif; font-size: 20px; font-weight: 600; line-height: 1.3; }
@@ -29,7 +29,7 @@
     &__create-arrow { margin-left: auto; color: #8ca9da; font-size: 17px; }
     &__form { padding: 4px 0 10px;
         label { display: block; margin: 0 0 7px; color: #505c70; font-size: 12px; font-weight: 600; }
-        .form-control { min-width: 0; height: 42px; border-color: #dce3ed; border-radius: 9px; font-size: 14px; }
+        .form-control { min-width: 0; }
         .invalid-feedback { margin-top: 7px; }
     }
     &__form-fields { display: flex; align-items: center; gap: 10px; }

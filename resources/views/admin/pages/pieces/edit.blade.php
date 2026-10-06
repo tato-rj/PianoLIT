@@ -171,11 +171,6 @@
           </div>
           {{-- Did you know? --}}
           <div class="form-group">
-            <label class="text-brand"><small>Did you know?</small></label>
-            <textarea class="form-control" rows="3" name="curiosity" placeholder="Enter a curiosity here">{{ $piece->curiosity }}</textarea>
-          </div>
-          {{-- Did you know? --}}
-          <div class="form-group">
             <div class="d-flex d-apart">
               <label class="text-brand"><small>Description</small></label>
               <label class="text-brand cursor-pointer" data-piece-id="{{$piece->id}}" id="description-auto-complete">@icon('wand-sparkles')</label>

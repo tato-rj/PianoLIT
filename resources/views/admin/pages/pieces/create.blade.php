@@ -142,10 +142,6 @@
               @include('admin.components.feedback', ['field' => 'level'])
             </div>
           </div>
-          {{-- Did you know? --}}
-          <div class="form-group">
-            <textarea class="form-control" rows="3" name="curiosity" placeholder="Enter a curiosity here">{{old('curiosity')}}</textarea>
-          </div>
           {{-- Description --}}
           <div class="form-group">
             <div class="text-end">
