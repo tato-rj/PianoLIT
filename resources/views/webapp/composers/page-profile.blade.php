@@ -1,6 +1,6 @@
 <div class="row g-4 align-items-center mb-4">
     <div class="col-md-4 col-lg-3">
-        <img src="{{ $composer->cover_image }}" alt="Portrait of {{ $composer->name }}" class="composer-profile-portrait rounded-circle shadow border border-white border-1x w-100 d-block" fetchpriority="high">
+        <img src="{{ $composer->cover_image }}" alt="Portrait of {{ $composer->name }}" class="composer-profile-portrait rounded-circle shadow border border-3x w-100 d-block" style="border-color: white" fetchpriority="high">
     </div>
     <div class="col-md-8 col-lg-9">
         <p class="small text-muted text-uppercase fw-semibold mb-0">Composer</p>
@@ -15,7 +15,7 @@
         </p>
         @endif
         <div class="d-grid d-md-flex">
-            <a href="{{ route('webapp.search.results', ['search' => $composer->name]) }}" class="btn btn-secondary d-inline-flex align-items-center justify-content-center gap-3">
+            <a href="{{ route('webapp.search.results', ['search' => $composer->name]) }}" class="btn btn-secondary btn-sm d-inline-flex align-items-center justify-content-center gap-3">
                 @icon('search', ['mr' => 0])Discover pieces @icon('chevron-right', ['mr' => 0])
             </a>
         </div>
