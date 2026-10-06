@@ -1,6 +1,6 @@
 <div class="row g-4 align-items-center mb-4">
     <div class="col-md-4 col-lg-3">
-        <img src="{{ $composer->cover_image }}" alt="Portrait of {{ $composer->name }}" class="composer-profile-portrait rounded w-100 d-block" fetchpriority="high">
+        <img src="{{ $composer->cover_image }}" alt="Portrait of {{ $composer->name }}" class="composer-profile-portrait rounded-circle shadow border border-white border-1x w-100 d-block" fetchpriority="high">
     </div>
     <div class="col-md-8 col-lg-9">
         <p class="small text-muted text-uppercase fw-semibold mb-0">Composer</p>
