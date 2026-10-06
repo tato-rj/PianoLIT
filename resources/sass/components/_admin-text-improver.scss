@@ -23,6 +23,7 @@
 }
 
 .admin-text-improve-toggle {
+    @extend .btn-sm;
     display: block;
     width: 100%;
     padding: .5rem .75rem;
