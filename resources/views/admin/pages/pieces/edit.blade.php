@@ -98,7 +98,7 @@
               <label class="text-brand"><small>Catalogue</small></label>
               <div class="input-group">
                 <div class="input-group-prepend" style="width: 40%">
-                  <select class="form-control rounded-start" style="border-radius: 0" name="catalogue_name" >
+                  <select class="form-control" name="catalogue_name" >
                     <option selected disabled>Catalogue</option>
                     @foreach(catalogues() as $catalogue)
                     <option value="{{$catalogue}}" {{($piece->catalogue_name == $catalogue) ? 'selected' : ''}}>{{$catalogue}}</option>

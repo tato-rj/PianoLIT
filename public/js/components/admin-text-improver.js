@@ -54,6 +54,7 @@
         state.toggle.addEventListener('click', function () {
             if (unavailable(field, state)) return;
             state.options.hidden = !state.options.hidden;
+            state.bar.classList.toggle('bg-light', !state.options.hidden);
             state.toggle.setAttribute('aria-expanded', String(!state.options.hidden));
             if (!state.options.hidden) {
                 Array.prototype.forEach.call(state.selects, function (select) { select.value = 'same'; });
@@ -169,6 +170,7 @@
             field.dispatchEvent(new Event('change', {bubbles: true}));
             status(state, '');
             state.options.hidden = true;
+            state.bar.classList.toggle('bg-light', false);
             state.toggle.setAttribute('aria-expanded', 'false');
             if (state.editor) state.editor.focus(); else field.focus();
         }).fail(function (xhr) {

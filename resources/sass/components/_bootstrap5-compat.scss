@@ -8,10 +8,6 @@
 label { display: inline-block; margin-bottom: .5rem; }
 .form-check-label { margin-bottom: 0; }
 .form-text { display: block; }
-select.form-control { appearance: auto; }
-select.form-control:not([size]):not([multiple]) { height: calc(1.5em + .75rem + 2px); }
-select.form-control-sm:not([size]):not([multiple]) { height: calc(1.5em + .5rem + 2px); }
-select.form-control-lg:not([size]):not([multiple]) { height: calc(1.5em + 1rem + 2px); }
 
 // These rows previously used Bootstrap's compact form-row gutters.
 .row.g-2 { --bs-gutter-x: 10px; --bs-gutter-y: 0; }

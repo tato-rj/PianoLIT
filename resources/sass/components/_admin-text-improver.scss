@@ -11,6 +11,7 @@
     border: 1px solid #dce3ed;
     border-top: 0;
     border-radius: 0 0 .75rem .75rem;
+    overflow: hidden;
     background: #fff;
     color: #263247;
 
@@ -36,6 +37,11 @@
 
     &:hover:not(:disabled) { background: #f6f8fb; }
     &:disabled { opacity: .55; cursor: default; }
+
+    &[aria-expanded="true"], &[aria-expanded="true"]:hover {
+        border-radius: 0;
+        background: transparent;
+    }
 }
 
 .admin-text-improve-options {

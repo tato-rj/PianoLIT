@@ -21,7 +21,7 @@
 		<div class="bg-light rounded py-1 pe-1 ps-3 d-flex d-apart mb-2">
 			<h5 class="text-muted m-0">{{now()->year}} Calendar</h5>
 			<div>
-				<select name="composers-options" class="form-control form-control-sm rounded">
+				<select name="composers-options" class="form-control form-control-sm">
 					<option value="famous">Most famous</option>
 					<option value="all">Show all</option>
 				</select>

@@ -1,53 +1,203 @@
-// Shared by @input, @textarea and ordinary hand-written text fields.
-// Loaded after theme/utility CSS so public and admin forms use the same finish.
-.pianolit-input,
-input.form-control:not([type=file]):not([type=color]):not([type=range]),
-textarea.form-control {
-    min-height: 44px;
-    padding: 11px 14px;
-    border: 1px solid #dfe5ed;
-    border-radius: 12px;
-    background-color: #f8f9fb;
-    color: #273244;
-    font-size: var(--font-size-sm);
+// Appended after Bootstrap, theme and utility CSS in both public and admin.
+// Keep the finish and dimensions in one place for every standard form control.
+@mixin pianolit-field {
+    min-height: var(--field-min-height);
+    padding: var(--field-padding-y) var(--field-padding-x);
+    border: 1px solid var(--field-border);
+    border-radius: var(--radius-input);
+    background-color: var(--field-background);
+    color: var(--field-text);
+    font-family: var(--font-family-body);
+    font-size: var(--field-font-size);
     line-height: 1.5;
     box-shadow: none;
     transition: border-color .18s ease;
 
-    &::placeholder { color: #697386; opacity: 1; }
-
-    // Text fields also match :focus-visible on mouse clicks. A darker border
-    // gives both mouse and keyboard users a focus cue without an outer ring.
+    &::placeholder { color: var(--field-muted); opacity: 1; }
     &:focus {
-        border-color: #697386;
-        background-color: #f8f9fb;
-        color: #273244;
+        border-color: var(--field-muted);
+        background-color: var(--field-background);
+        color: var(--field-text);
         outline: none;
         box-shadow: none;
     }
-
-    &:disabled {
-        background-color: #edf0f4;
-        color: #697386;
+    &:disabled, &[disabled] {
+        background-color: var(--field-disabled-background);
+        color: var(--field-muted);
     }
-
     &.is-invalid, .was-validated &:invalid {
         border-color: var(--color-danger);
-        padding-right: calc(1.5em + .75rem);
         &:focus { box-shadow: none; }
     }
-
     &.is-valid, .was-validated &:valid {
         border-color: var(--color-success);
-        padding-right: calc(1.5em + .75rem);
         &:focus { box-shadow: none; }
     }
-
-    &.form-control-sm { min-height: 36px; padding-top: 7px; padding-bottom: 7px; }
-    &.form-control-lg { min-height: 56px; font-size: var(--font-size-lg); }
 }
 
+.form-control, .form-select, .pianolit-input,
+.custom-file-label, .input-group-text,
+.admin-text-improve-options select {
+    @include pianolit-field;
+}
+
+.form-control-sm, .form-select-sm, .input-group-sm {
+    --field-min-height: 36px;
+    --field-padding-y: 7px;
+}
+.form-control-lg, .form-select-lg, .input-group-lg {
+    --field-min-height: 56px;
+    --field-font-size: var(--font-size-lg);
+}
 textarea.form-control { resize: vertical; }
+
+// Use the same chevron for legacy .form-control and Bootstrap 5 .form-select.
+// Multiple/size selects remain list boxes and keep their native row count.
+select.form-control, select.form-select, .admin-text-improve-options select {
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23697386' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--field-padding-x) center;
+    background-size: 16px 16px;
+
+    &:not([multiple]):not([size]), &[size="1"] { height: auto; }
+    &[multiple], &[size]:not([size="1"]) {
+        padding-right: var(--field-padding-x);
+        background-image: none;
+    }
+}
+
+// Override Bootstrap's compact group padding using the inherited size tokens.
+// Joined controls share a seam, with rounding only at the outside edges.
+.input-group {
+    > .form-control, > .form-select, > .input-group-text,
+    > .input-group-prepend > .form-control,
+    > .input-group-prepend > .form-select,
+    > .input-group-prepend > .input-group-text,
+    > .input-group-append > .form-control,
+    > .input-group-append > .form-select,
+    > .input-group-append > .input-group-text {
+        min-height: var(--field-min-height);
+        padding: var(--field-padding-y) var(--field-padding-x);
+        font-size: var(--field-font-size);
+        border-radius: 0;
+    }
+    > select.form-control, > select.form-select,
+    > .input-group-prepend > select, > .input-group-append > select { padding-right: 40px; }
+    > :first-child:not(.input-group-append),
+    > .input-group-prepend:first-child > :first-child {
+        border-top-left-radius: var(--radius-input);
+        border-bottom-left-radius: var(--radius-input);
+    }
+    > :last-child:not(.input-group-prepend),
+    > .input-group-append:last-child > :last-child,
+    > .custom-file:last-child .custom-file-label,
+    > .custom-file:last-child .custom-file-label::after {
+        border-top-right-radius: var(--radius-input);
+        border-bottom-right-radius: var(--radius-input);
+    }
+    > .input-group-prepend + .form-control,
+    > .input-group-prepend + .form-select,
+    > .input-group-prepend + .custom-file .custom-file-label {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    > .form-control:not(:last-child), > .form-select:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    > .btn, > .input-group-prepend > .btn, > .input-group-append > .btn {
+        font-size: var(--field-font-size);
+        border-radius: 0 !important;
+    }
+    > .btn:first-child, > .input-group-prepend:first-child > .btn:first-child {
+        border-top-left-radius: var(--radius-input) !important;
+        border-bottom-left-radius: var(--radius-input) !important;
+    }
+    > .btn:last-child, > .input-group-append:last-child > .btn:last-child {
+        border-top-right-radius: var(--radius-input) !important;
+        border-bottom-right-radius: var(--radius-input) !important;
+    }
+}
+.input-group-text { background-color: var(--field-disabled-background); }
+
+.custom-file {
+    min-height: var(--field-min-height);
+    height: calc(1.5em + 2 * var(--field-padding-y) + 2px);
+    font-size: var(--field-font-size);
+}
+.custom-file-label {
+    padding-right: 100px;
+    text-overflow: ellipsis;
+    &::after {
+        padding: var(--field-padding-y) var(--field-padding-x);
+        border-color: var(--field-border);
+        border-radius: 0 var(--radius-input) var(--radius-input) 0;
+        background-color: var(--field-disabled-background);
+        color: var(--field-text);
+    }
+}
+.custom-file-input {
+    &:focus + .custom-file-label { border-color: var(--field-muted); box-shadow: none; }
+    &:disabled + .custom-file-label { background-color: var(--field-disabled-background); color: var(--field-muted); }
+    &.is-invalid + .custom-file-label, .was-validated &:invalid + .custom-file-label { border-color: var(--color-danger); }
+    &.is-valid + .custom-file-label, .was-validated &:valid + .custom-file-label { border-color: var(--color-success); }
+}
+input.form-control[type=file] {
+    &::file-selector-button {
+        padding: var(--field-padding-y) var(--field-padding-x);
+        margin: calc(-1 * var(--field-padding-y)) var(--field-padding-x) calc(-1 * var(--field-padding-y)) calc(-1 * var(--field-padding-x));
+        border-color: var(--field-border);
+        background-color: var(--field-disabled-background);
+        color: var(--field-text);
+        font: inherit;
+    }
+}
+
+// Choice controls retain their compact shape and use the shared palette.
+input[type=checkbox], input[type=radio], input[type=range] { accent-color: var(--color-primary); }
+.form-check-input {
+    background-color: var(--field-background);
+    border: 1px solid var(--field-border);
+    &[type=checkbox] { border-radius: 5px; }
+    &[type=radio] { border-radius: 50%; }
+    &:checked, &:indeterminate { background-color: var(--color-primary); border-color: var(--color-primary); }
+    &:focus { border-color: var(--field-muted); box-shadow: none; }
+    &:focus-visible { outline: 2px solid var(--field-muted); outline-offset: 2px; }
+}
+.switch {
+    .slider { background-color: var(--field-border); transition-duration: .18s; }
+    input:checked + .slider { background-color: var(--color-primary); }
+    input:focus + .slider { box-shadow: none; }
+    input:focus-visible + .slider { outline: 2px solid var(--field-muted); outline-offset: 2px; }
+    input:disabled + .slider { opacity: .5; cursor: default; }
+}
+.form-range {
+    &::-webkit-slider-runnable-track { background-color: var(--field-border); }
+    &::-moz-range-track { background-color: var(--field-border); }
+    &::-webkit-slider-thumb { background-color: var(--color-primary); }
+    &::-moz-range-thumb { background-color: var(--color-primary); }
+    &:disabled::-webkit-slider-thumb { background-color: var(--field-muted); }
+    &:disabled::-moz-range-thumb { background-color: var(--field-muted); }
+}
+
+// Hosted card fields expose focus/invalid classes on their outer container.
+.StripeElement--focus { border-color: var(--field-muted); box-shadow: none; }
+.StripeElement--invalid { border-color: var(--color-danger); }
+.tox.tox-tinymce {
+    border: 1px solid var(--field-border);
+    border-radius: var(--radius-input);
+    &:focus-within { border-color: var(--field-muted); }
+}
+.dropzone {
+    border: 1px dashed var(--field-border);
+    border-radius: var(--radius-input);
+    background-color: var(--field-background);
+    color: var(--field-text);
+    &:focus-within { border-color: var(--field-muted); }
+    .dz-message { color: var(--field-muted); }
+}
 
 #search-form .input-icon {
     > i {
@@ -64,14 +214,13 @@ textarea.form-control { resize: vertical; }
 
 // Keep text entry from triggering browser zoom on small touch screens.
 @media (max-width: 575px) {
-    .pianolit-input,
-    input.form-control:not([type=file]):not([type=color]):not([type=range]),
-    textarea.form-control,
+    .form-control, .form-select, .pianolit-input, .input-group,
+    .custom-file, .custom-file-label, .input-group-text,
+    .admin-text-improve-options select { --field-font-size: 16px; }
     .my-pieces-favorites__search input { font-size: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .pianolit-input,
-    input.form-control:not([type=file]):not([type=color]):not([type=range]),
-    textarea.form-control { transition: none; }
+    .form-control, .form-select, .pianolit-input, .custom-file-label,
+    .admin-text-improve-options select, .switch .slider, .switch .slider:before { transition: none; }
 }

@@ -148,6 +148,17 @@ $social-whatsapp: #25D366;
         --radius-modal: var(--radius);
         --radius-dropdown: 9px;
 
+        // Shared form controls, including selects, uploads and grouped fields.
+        --field-background: #f8f9fb;
+        --field-border: #dfe5ed;
+        --field-text: #273244;
+        --field-muted: #697386;
+        --field-disabled-background: #edf0f4;
+        --field-min-height: 44px;
+        --field-padding-y: 11px;
+        --field-padding-x: 14px;
+        --field-font-size: var(--font-size-sm);
+
         // Brand defaults and their interaction states derive from the Sass defaults above.
         --color-primary: #{$brand-primary};
         --color-primary-hover: #{darken($brand-primary, 4%)};
