@@ -37,5 +37,9 @@ for (const entry of ['app', 'admin']) {
     assert.strictEqual(rootValues['--bs-border-width'], '1px', entry + ': missing border width');
     assert.strictEqual(rootValues['--bs-border-style'], 'solid', entry + ': missing border style');
     assert.strictEqual(rootValues.border, undefined, entry + ': minifier created a page border');
+    postcss.parse(built).walkRules(rule => {
+        rule.selector.split(',').filter(selector => selector.includes('.form-check-input') && selector.includes(':indeterminate'))
+            .forEach(selector => assert(/\[type=["']?checkbox["']?\]/.test(selector), entry + ': indeterminate color must not fill unselected radios'));
+    });
     console.log('Passed: ' + entry + ' production preserves ' + shippedVariables.size + ' Bootstrap CSS variables.');
 }

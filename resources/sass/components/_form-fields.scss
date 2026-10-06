@@ -162,7 +162,8 @@ input[type=checkbox], input[type=radio], input[type=range] { accent-color: var(-
     border: 1px solid var(--field-border);
     &[type=checkbox] { border-radius: 5px; }
     &[type=radio] { border-radius: 50%; }
-    &:checked, &:indeterminate { background-color: var(--color-primary); border-color: var(--color-primary); }
+    // A radio group with no selection also matches :indeterminate.
+    &:checked, &[type=checkbox]:indeterminate { background-color: var(--color-primary); border-color: var(--color-primary); }
     &:focus { border-color: var(--field-muted); box-shadow: none; }
     &:focus-visible { outline: 2px solid var(--field-muted); outline-offset: 2px; }
 }
