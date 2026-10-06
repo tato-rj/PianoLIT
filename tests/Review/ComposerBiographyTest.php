@@ -51,11 +51,13 @@ class ComposerBiographyTest extends ReviewTestCase
             $input = json_decode($request['input'], true);
             return $request->method() === 'POST' && $request->hasHeader('Authorization', 'Bearer fake-review-key')
                 && $request['model'] === 'gpt-4o-mini' && $request['store'] === false
+                && $request['max_output_tokens'] === 1600
                 && $input === ['composer' => 'Clara Schumann', 'source_biography' => 'Edited source']
                 && $request['text']['format']['schema']['properties']['paragraphs']['maxItems'] === 3
                 && $request['text']['format']['schema']['properties']['paragraphs']['items']['minLength'] === 1
-                && $request['text']['format']['schema']['properties']['paragraphs']['items']['maxLength'] === 600
-                && $request['text']['format']['schema']['properties']['paragraphs']['items']['pattern'] === '^\\S+(?:[ \\t]+\\S+){0,59}$'
+                && $request['text']['format']['schema']['properties']['paragraphs']['items']['maxLength'] === 1000
+                && $request['text']['format']['schema']['properties']['paragraphs']['items']['pattern'] === '^\\S+(?:[ \\t]+\\S+){0,99}$'
+                && strpos($request['instructions'], 'four to six short sentences') !== false
                 && strpos($request['instructions'], 'Never use jargon') !== false
                 && strpos($request['instructions'], 'do not invent') !== false;
         });
@@ -136,20 +138,29 @@ class ComposerBiographyTest extends ReviewTestCase
     public static function invalidParagraphs(): array
     {
         return [[[]], [['One.', 'Two.', 'Three.', 'Four.']], [['']], [[123]], [["One.\n\nTwo."]],
-            [['<p>Bio</p>']], [[str_repeat('word ', 61)]], [[str_repeat('a', 601)]], [['first' => 'Bio']]];
+            [['<p>Bio</p>']], [[str_repeat('word ', 101)]], [[str_repeat('a', 1001)]], [['first' => 'Bio']]];
     }
 
-    public function test_schema_and_server_accept_the_exact_sixty_word_boundary()
+    public function test_schema_and_server_accept_three_longer_paragraphs_at_the_hundred_word_boundary()
     {
-        $paragraph = implode(' ', array_fill(0, 60, 'music'));
-        Http::fake(['*' => Http::response($this->output([$paragraph]))]);
-        $this->regenerate()->assertOk()->assertExactJson(['biography' => $paragraph]);
+        $paragraph = implode(' ', array_fill(0, 100, 'music'));
+        Http::fake(['*' => Http::response($this->output([$paragraph, $paragraph, $paragraph]))]);
+        $this->regenerate()->assertOk()->assertExactJson(['biography' => implode("\n\n", [$paragraph, $paragraph, $paragraph])]);
+        $this->assertSame('Original bio', $this->composer->fresh()->biography);
         Http::assertSent(function ($request) use ($paragraph) {
             $pattern = $request['text']['format']['schema']['properties']['paragraphs']['items']['pattern'];
             return preg_match('/'.$pattern.'/u', $paragraph) === 1
                 && preg_match('/'.$pattern.'/u', $paragraph.' music') === 0
                 && preg_match('/'.$pattern.'/u', "music\nmusic") === 0;
         });
+    }
+
+    public function test_server_accepts_the_exact_thousand_character_boundary()
+    {
+        $paragraph = implode(' ', array_fill(0, 90, 'abcdefghij')).' abcdefghij';
+        $this->assertSame(1000, mb_strlen($paragraph));
+        Http::fake(['*' => Http::response($this->output([$paragraph]))]);
+        $this->regenerate()->assertOk()->assertExactJson(['biography' => $paragraph]);
     }
 
     /** @dataProvider specificRejections */
@@ -167,7 +178,7 @@ class ComposerBiographyTest extends ReviewTestCase
                 'OpenAI stopped before the bio was finished. Please try again.'],
             [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'refusal', 'refusal' => 'secret-upstream-text']]]]],
                 'OpenAI could not rewrite this source bio. Please review the source and try again.'],
-            [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'output_text', 'text' => json_encode(['paragraphs' => [str_repeat('word ', 61)]])]]]]],
+            [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'output_text', 'text' => json_encode(['paragraphs' => [str_repeat('word ', 101)]])]]]]],
                 'OpenAI returned a paragraph that was too long. Please try again.'],
         ];
     }
