@@ -53,12 +53,17 @@ class ComposerBiographyTest extends ReviewTestCase
                 && $request['model'] === 'gpt-4o-mini' && $request['store'] === false
                 && $request['max_output_tokens'] === 1600
                 && $input === ['composer' => 'Clara Schumann', 'source_biography' => 'Edited source']
-                && $request['text']['format']['schema']['properties']['paragraphs']['maxItems'] === 3
+                && $request['text']['format']['schema']['properties']['paragraphs']['minItems'] === 3
+                && $request['text']['format']['schema']['properties']['paragraphs']['maxItems'] === 4
                 && $request['text']['format']['schema']['properties']['paragraphs']['items']['minLength'] === 1
                 && $request['text']['format']['schema']['properties']['paragraphs']['items']['maxLength'] === 1000
                 && $request['text']['format']['schema']['properties']['paragraphs']['items']['pattern'] === '^\\S+(?:[ \\t]+\\S+){0,99}$'
                 && strpos($request['instructions'], 'four to six short sentences') !== false
+                && strpos($request['instructions'], 'Keep all paragraphs similar in length') !== false
                 && strpos($request['instructions'], 'Never use jargon') !== false
+                && strpos($request['instructions'], 'the current source biography is the sole source of information') !== false
+                && strpos($request['instructions'], 'Do not use outside knowledge') !== false
+                && strpos($request['instructions'], 'Source fidelity takes priority over paragraph length') !== false
                 && strpos($request['instructions'], 'do not invent') !== false;
         });
     }
@@ -80,7 +85,7 @@ class ComposerBiographyTest extends ReviewTestCase
                 protected function runningUnitTests() { return false; }
             };
         });
-        Http::fake(['*' => Http::response($this->output(['A short bio.']))]);
+        Http::fake(['*' => Http::response($this->output(['Her early life.', 'Her work.', 'Her later life.']))]);
         $this->withSession(['_token' => 'review-session-token']);
         $this->regenerate()->assertStatus(419);
         Http::assertNothingSent();
@@ -89,7 +94,7 @@ class ComposerBiographyTest extends ReviewTestCase
 
     public function test_another_editor_cannot_regenerate_but_a_manager_can()
     {
-        Http::fake(['*' => Http::response($this->output(['A short bio.']))]);
+        Http::fake(['*' => Http::response($this->output(['Her early life.', 'Her work.', 'Her later life.']))]);
         $this->actingAs(create(Admin::class, ['role' => 'editor']), 'admin');
         $this->regenerate()->assertForbidden();
         Http::assertNothingSent();
@@ -137,8 +142,18 @@ class ComposerBiographyTest extends ReviewTestCase
 
     public static function invalidParagraphs(): array
     {
-        return [[[]], [['One.', 'Two.', 'Three.', 'Four.']], [['']], [[123]], [["One.\n\nTwo."]],
-            [['<p>Bio</p>']], [[str_repeat('word ', 101)]], [[str_repeat('a', 1001)]], [['first' => 'Bio']]];
+        return [[[]], [['One.']], [['One.', 'Two.']], [['One.', 'Two.', 'Three.', 'Four.', 'Five.']],
+            [['', 'Two.', 'Three.']], [[123, 'Two.', 'Three.']], [["One.\n\nTwo.", 'Two.', 'Three.']],
+            [['<p>Bio</p>', 'Two.', 'Three.']], [[str_repeat('word ', 101), 'Two.', 'Three.']],
+            [[str_repeat('a', 1001), 'Two.', 'Three.']], [['first' => 'Bio', 'second' => 'Bio', 'third' => 'Bio']]];
+    }
+
+    public function test_four_paragraphs_are_accepted_as_an_unsaved_draft()
+    {
+        $paragraphs = ['Her early life.', 'Her work.', 'Her later life.', 'Her lasting influence.'];
+        Http::fake(['*' => Http::response($this->output($paragraphs))]);
+        $this->regenerate()->assertOk()->assertExactJson(['biography' => implode("\n\n", $paragraphs)]);
+        $this->assertSame('Original bio', $this->composer->fresh()->biography);
     }
 
     public function test_schema_and_server_accept_three_longer_paragraphs_at_the_hundred_word_boundary()
@@ -159,8 +174,9 @@ class ComposerBiographyTest extends ReviewTestCase
     {
         $paragraph = implode(' ', array_fill(0, 90, 'abcdefghij')).' abcdefghij';
         $this->assertSame(1000, mb_strlen($paragraph));
-        Http::fake(['*' => Http::response($this->output([$paragraph]))]);
-        $this->regenerate()->assertOk()->assertExactJson(['biography' => $paragraph]);
+        $paragraphs = [$paragraph, 'Her work.', 'Her later life.'];
+        Http::fake(['*' => Http::response($this->output($paragraphs))]);
+        $this->regenerate()->assertOk()->assertExactJson(['biography' => implode("\n\n", $paragraphs)]);
     }
 
     /** @dataProvider specificRejections */
@@ -178,7 +194,7 @@ class ComposerBiographyTest extends ReviewTestCase
                 'OpenAI stopped before the bio was finished. Please try again.'],
             [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'refusal', 'refusal' => 'secret-upstream-text']]]]],
                 'OpenAI could not rewrite this source bio. Please review the source and try again.'],
-            [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'output_text', 'text' => json_encode(['paragraphs' => [str_repeat('word ', 101)]])]]]]],
+            [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'output_text', 'text' => json_encode(['paragraphs' => [str_repeat('word ', 101), 'Two.', 'Three.']])]]]]],
                 'OpenAI returned a paragraph that was too long. Please try again.'],
         ];
     }
