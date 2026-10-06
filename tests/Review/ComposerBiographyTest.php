@@ -53,6 +53,9 @@ class ComposerBiographyTest extends ReviewTestCase
                 && $request['model'] === 'gpt-4o-mini' && $request['store'] === false
                 && $input === ['composer' => 'Clara Schumann', 'source_biography' => 'Edited source']
                 && $request['text']['format']['schema']['properties']['paragraphs']['maxItems'] === 3
+                && $request['text']['format']['schema']['properties']['paragraphs']['items']['minLength'] === 1
+                && $request['text']['format']['schema']['properties']['paragraphs']['items']['maxLength'] === 600
+                && $request['text']['format']['schema']['properties']['paragraphs']['items']['pattern'] === '^\\S+(?:[ \\t]+\\S+){0,59}$'
                 && strpos($request['instructions'], 'Never use jargon') !== false
                 && strpos($request['instructions'], 'do not invent') !== false;
         });
@@ -134,6 +137,39 @@ class ComposerBiographyTest extends ReviewTestCase
     {
         return [[[]], [['One.', 'Two.', 'Three.', 'Four.']], [['']], [[123]], [["One.\n\nTwo."]],
             [['<p>Bio</p>']], [[str_repeat('word ', 61)]], [[str_repeat('a', 601)]], [['first' => 'Bio']]];
+    }
+
+    public function test_schema_and_server_accept_the_exact_sixty_word_boundary()
+    {
+        $paragraph = implode(' ', array_fill(0, 60, 'music'));
+        Http::fake(['*' => Http::response($this->output([$paragraph]))]);
+        $this->regenerate()->assertOk()->assertExactJson(['biography' => $paragraph]);
+        Http::assertSent(function ($request) use ($paragraph) {
+            $pattern = $request['text']['format']['schema']['properties']['paragraphs']['items']['pattern'];
+            return preg_match('/'.$pattern.'/u', $paragraph) === 1
+                && preg_match('/'.$pattern.'/u', $paragraph.' music') === 0
+                && preg_match('/'.$pattern.'/u', "music\nmusic") === 0;
+        });
+    }
+
+    /** @dataProvider specificRejections */
+    public function test_rejections_explain_the_reason_without_exposing_response_content($body, $message)
+    {
+        Http::fake(['*' => Http::response($body)]);
+        $this->regenerate()->assertStatus(502)->assertExactJson(['message' => $message])->assertDontSee('secret-upstream-text');
+        $this->assertSame('Original bio', $this->composer->fresh()->biography);
+    }
+
+    public static function specificRejections(): array
+    {
+        return [
+            [['status' => 'incomplete', 'incomplete_details' => ['reason' => 'max_output_tokens']],
+                'OpenAI stopped before the bio was finished. Please try again.'],
+            [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'refusal', 'refusal' => 'secret-upstream-text']]]]],
+                'OpenAI could not rewrite this source bio. Please review the source and try again.'],
+            [['status' => 'completed', 'output' => [['type' => 'message', 'content' => [['type' => 'output_text', 'text' => json_encode(['paragraphs' => [str_repeat('word ', 61)]])]]]]],
+                'OpenAI returned a paragraph that was too long. Please try again.'],
+        ];
     }
 
     /** @dataProvider failedResponses */

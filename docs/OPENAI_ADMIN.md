@@ -6,7 +6,7 @@ Set `OPENAI_API_KEY` in the server environment using an OpenAI API project key w
 
 On an existing composer's edit page, click **Regenerate bio**. It rewrites the current text in the biography field. Add source facts first if the field is empty. The request sends only the composer's saved name and current source bio to OpenAI; no account data is included. Requests use `store: false`.
 
-The prompt requires English, simple everyday words, short sentences, no jargon, and only facts from the source. The API receives a structured schema of one to three paragraphs. Server validation rejects empty, incomplete, refused, malformed, or oversized responses and caps each paragraph at 60 words and 600 characters. Language simplicity and factual accuracy still require editorial review.
+The prompt requires English, simple everyday words, short sentences, no jargon, and only facts from the source. The API receives a structured schema of one to three paragraphs. Its string length and pattern constraints also enforce nonempty paragraphs, at most 600 characters and 60 whitespace-separated words, with no embedded line breaks. Server validation independently checks those limits and rejects incomplete, refused, malformed, or HTML responses. Incomplete responses, refusals and oversized paragraphs have distinct safe error messages. Language simplicity and factual accuracy still require editorial review.
 
 The returned draft fills the text box without changing the database. Review it and use **Save changes** to publish it through the existing update flow. Editing the bio while generation runs prevents the pending response from replacing your newer text. Failures retain your text and restore controls.
 

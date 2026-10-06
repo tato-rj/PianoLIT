@@ -70,6 +70,9 @@ class AdminPiecesTableTest extends ReviewTestCase
             $this->assertNotEmpty($input);
             $this->assertStringNotContainsString('checked', $input[0]);
         }
+        foreach (['Missing video', 'Missing moments', 'Missing synthesia'] as $label) {
+            $this->assertStringContainsString('>'.$label.'</label>', $html);
+        }
         $row = $this->table(['order' => [['column' => 0, 'dir' => 'asc']]])->assertOk()->json('data.0');
         $this->assertEqualsCanonicalizing(['id', 'name', 'composer', 'tags', 'level', 'ranking', 'favorited', 'actions'], array_keys($row));
         $this->assertSame('A. Adams', $row['composer']['short_name']);
@@ -81,10 +84,11 @@ class AdminPiecesTableTest extends ReviewTestCase
 
     public function test_every_missing_filter_combination_and_unfiltered_default()
     {
+        $this->pieces[1]->tutorials->first()->moments()->delete();
         for ($mask = 0; $mask < 8; $mask++) {
             $expected = [];
-            foreach ([[1, 1, 1], [1, 1, 0], [1, 0, 1], [0, 0, 0]] as $i => $flags) {
-                if ((!($mask & 1) || !$flags[0]) && (!($mask & 2) || !$flags[1]) && (!($mask & 4) || !$flags[2])) $expected[] = $this->pieces[$i]->id;
+            foreach ([[1, 1, 1], [1, 0, 0], [0, 0, 1], [0, 0, 0]] as $i => $flags) {
+                if ((!($mask & 1) || !$flags[0]) && (!($mask & 2) || ($flags[0] && !$flags[1])) && (!($mask & 4) || !$flags[2])) $expected[] = $this->pieces[$i]->id;
             }
             $response = $this->table(['without_videos' => (int) (bool) ($mask & 1), 'without_moments' => (int) (bool) ($mask & 2),
                 'without_synthesia' => (int) (bool) ($mask & 4)])->assertOk();
@@ -98,6 +102,37 @@ class AdminPiecesTableTest extends ReviewTestCase
         // Existing data can identify Synthesia by category, as the removed icon did.
         Tutorial::where('piece_id', $this->pieces[2]->id)->update(['type' => 'Tutorial']);
         $this->assertEqualsCanonicalizing([$this->pieces[1]->id, $this->pieces[3]->id], $this->ids(['without_synthesia' => 1]));
+    }
+
+    public function test_missing_video_and_moments_only_consider_performance_videos()
+    {
+        $this->assertEqualsCanonicalizing([$this->pieces[2]->id, $this->pieces[3]->id], $this->ids(['without_videos' => 1]));
+        $this->assertSame([], $this->ids(['without_moments' => 1]));
+
+        Model::withoutEvents(function () {
+            foreach (['Synthesia', 'Slow performance', 'Harmonic analysis'] as $type) {
+                $video = create(Tutorial::class, ['piece_id' => $this->pieces[2]->id, 'type' => $type,
+                    'category' => $type === 'Synthesia' ? 'synthesia' : 'other']);
+                $video->moments()->create(['start_time' => 0, 'title' => 'Theme', 'comment' => '']);
+            }
+        });
+        $this->assertEqualsCanonicalizing([$this->pieces[2]->id, $this->pieces[3]->id], $this->ids(['without_videos' => 1]));
+        $this->assertSame([], $this->ids(['without_moments' => 1]));
+
+        $performance = Model::withoutEvents(function () {
+            return create(Tutorial::class, ['piece_id' => $this->pieces[2]->id, 'type' => 'Performance', 'category' => 'performance']);
+        });
+        $this->assertSame([$this->pieces[3]->id], $this->ids(['without_videos' => 1]));
+        $this->assertSame([$this->pieces[2]->id], $this->ids(['without_moments' => 1]));
+        $this->assertSame([], $this->ids(['without_moments' => 1, 'without_videos' => 1]));
+        $this->assertSame([], $this->ids(['without_moments' => 1, 'without_synthesia' => 1]));
+
+        // Legacy records identified by category still count as a performance.
+        $performance->updateQuietly(['type' => 'Tutorial']);
+        $this->assertSame([$this->pieces[3]->id], $this->ids(['without_videos' => 1]));
+        $this->assertSame([$this->pieces[2]->id], $this->ids(['without_moments' => 1]));
+        $performance->moments()->create(['start_time' => 0, 'title' => 'Theme', 'comment' => '']);
+        $this->assertSame([], $this->ids(['without_moments' => 1]));
     }
 
     public function test_each_data_column_sorts_in_both_directions_and_across_pages()

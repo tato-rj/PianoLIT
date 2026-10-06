@@ -28,7 +28,12 @@ class ComposerBiography
                             'required' => ['paragraphs'],
                             'properties' => ['paragraphs' => [
                                 'type' => 'array', 'minItems' => 1, 'maxItems' => 3,
-                                'items' => ['type' => 'string'],
+                                // Enforce the same short-paragraph rules during generation,
+                                // rather than relying on the model to follow prose limits.
+                                'items' => [
+                                    'type' => 'string', 'minLength' => 1, 'maxLength' => 600,
+                                    'pattern' => '^\\S+(?:[ \\t]+\\S+){0,59}$',
+                                ],
                             ]],
                         ],
                     ]],
@@ -44,6 +49,10 @@ class ComposerBiography
                 : 'OpenAI could not regenerate the bio. Please try again or check the server API settings.');
         }
 
+        if ($response->json('status') === 'incomplete') {
+            throw new BiographyGenerationException('OpenAI stopped before the bio was finished. Please try again.');
+        }
+
         if ($response->json('status') !== 'completed' || ! is_array($response->json('output'))) {
             throw $this->invalidOutput();
         }
@@ -55,7 +64,9 @@ class ComposerBiography
             if (! is_array($output['content'] ?? null)) throw $this->invalidOutput();
             foreach ($output['content'] ?? [] as $content) {
                 if (! is_array($content)) throw $this->invalidOutput();
-                if (($content['type'] ?? null) === 'refusal') throw $this->invalidOutput();
+                if (($content['type'] ?? null) === 'refusal') {
+                    throw new BiographyGenerationException('OpenAI could not rewrite this source bio. Please review the source and try again.');
+                }
                 if (($content['type'] ?? null) === 'output_text') {
                     if (! is_string($content['text'] ?? null)) throw $this->invalidOutput();
                     $text .= $content['text'];
@@ -73,9 +84,11 @@ class ComposerBiography
         foreach ($paragraphs as &$paragraph) {
             if (! is_string($paragraph)) throw $this->invalidOutput();
             $paragraph = trim($paragraph);
+            if (mb_strlen($paragraph) > 600 || count(preg_split('/\s+/u', $paragraph)) > 60) {
+                throw new BiographyGenerationException('OpenAI returned a paragraph that was too long. Please try again.');
+            }
             if ($paragraph === '' || preg_match('/[\r\n\x{2028}\x{2029}]/u', $paragraph)
-                || strip_tags($paragraph) !== $paragraph || mb_strlen($paragraph) > 600
-                || count(preg_split('/\s+/u', $paragraph)) > 60) {
+                || strip_tags($paragraph) !== $paragraph) {
                 throw $this->invalidOutput();
             }
         }

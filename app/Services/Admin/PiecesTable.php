@@ -50,8 +50,19 @@ class PiecesTable
             ->whitelist([])
             ->addColumn('composer', function ($piece) { return ['short_name' => $piece->composer->short_name]; })
             ->filter(function ($query) use ($request) {
-                if ($request->boolean('without_videos')) $query->whereDoesntHave('tutorials');
-                if ($request->boolean('without_moments')) $query->whereDoesntHave('tutorials.moments');
+                $performance = function ($videos) {
+                    $videos->where(function ($videos) {
+                        $videos->where('type', 'Performance')->orWhere('category', 'performance');
+                    });
+                };
+                if ($request->boolean('without_videos')) $query->whereDoesntHave('tutorials', $performance);
+                if ($request->boolean('without_moments')) {
+                    $query->whereHas('tutorials', $performance)
+                        ->whereDoesntHave('tutorials', function ($videos) use ($performance) {
+                            $performance($videos);
+                            $videos->whereHas('moments');
+                        });
+                }
                 if ($request->boolean('without_synthesia')) {
                     $query->whereDoesntHave('tutorials', function ($videos) {
                         $videos->where(function ($videos) {
