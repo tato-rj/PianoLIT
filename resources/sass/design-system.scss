@@ -57,6 +57,8 @@ small, .small { font-size: var(--font-size-small); }
 }
 .border-start { border-left-color: var(--color-border) !important; }
 .border-end { border-right-color: var(--color-border) !important; }
+// Explicit white borders must win over the default border and side colors.
+.border-white { border-color: var(--color-white) !important; }
 
 .shadow { box-shadow: var(--shadow) !important; }
 .shadow-light, .shadow-center, .hover-shadow:hover { box-shadow: var(--shadow-light) !important; }
