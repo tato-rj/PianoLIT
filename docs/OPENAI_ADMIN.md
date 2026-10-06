@@ -14,4 +14,20 @@ The returned draft fills the text box without changing the database. Review it a
 
 Generation requires the admin session, CSRF token, and the existing composer update permission. It is limited to 10 requests per minute per signed-in admin. Upstream calls have a 45-second timeout and are not automatically retried. API billing and model access belong to the configured OpenAI project.
 
+To rewrite every composer's saved biography, run this from the deployed application's directory:
+
+```sh
+php artisan composers:regenerate-bios
+```
+
+This command saves successful drafts immediately using the same rewrite service and configured `OPENAI_MODEL` as the button. It processes composers sequentially in database batches, makes one API request per nonempty source within the editor's 20000-character input limit, and skips empty biographies. It does not require a queue worker. Each API request uses the project's API billing. Running the full command again rewrites successful composers again.
+
+The command displays progress and a final saved/skipped/failed count. Failures retain the existing bio and processing continues. A name or biography edit made during generation prevents that pending draft from being saved; other composer fields are preserved. The command returns exit code 1 if any composer fails. It prints a targeted retry command so successful composers are not generated again, for example:
+
+```sh
+php artisan composers:regenerate-bios --composer=12 --composer=37
+```
+
+Before each attempted save, it writes the original text and generated draft to a private JSON Lines file in `storage/app/composer-bio-backups/`. The command prints the exact path. Entries identify composers by ID and include `original_biography` and `generated_biography`; an entry can also describe a failed or conflicted save, so it does not itself prove the database was updated. Backup creation must succeed before API requests begin, and backup write failures stop processing before saving that draft. The printed retry command includes any remaining unprocessed composers when backup storage fails. No automatic schedule is added.
+
 Documentation: [Structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses), [GPT-4o mini](https://developers.openai.com/api/docs/models/gpt-4o-mini).
