@@ -146,6 +146,7 @@ $social-whatsapp: #25D366;
         --radius-button: .75rem;
         --radius-input: .75rem;
         --radius-modal: var(--radius);
+        --radius-dropdown: 9px;
 
         // Brand defaults and their interaction states derive from the Sass defaults above.
         --color-primary: #{$brand-primary};
@@ -162,6 +163,7 @@ $social-whatsapp: #25D366;
         --color-surface-subtle: #f8f9fa;
         --color-surface-dark: #343a40;
         --color-border: #dee2e6;
+        --color-dropdown-border: #e6eaf0;
         --color-white: #fff;
         --color-black: #000;
 
@@ -213,5 +215,6 @@ $social-whatsapp: #25D366;
         --shadow: 0 .12rem 1.2rem rgba(0, 0, 0, .15);
         --shadow-light: 0 0 1rem rgba(0, 0, 0, .085);
         --shadow-dark: 0 5px 30px rgba(0, 0, 0, .25);
+        --shadow-dropdown: 0 8px 24px rgba(26, 48, 85, .1);
     }
 }

@@ -53,6 +53,13 @@ Spacing tokens provide `--space-1` through `--space-5` and opt-in `.gap-1` throu
 `.gap-5` utilities. Existing Bootstrap margin/padding utilities and custom layout
 spacing are unchanged. Shared shadow utilities use the shadow tokens.
 
+All `.dropdown-menu` surfaces share `--radius-dropdown` (9 px),
+`--color-dropdown-border` (`#e6eaf0`, 1 px solid) and `--shadow-dropdown`
+(`0 8px 24px rgba(26, 48, 85, .1)`) on desktop and mobile. Their background uses
+`--color-surface`. Keep menu-specific font sizes, widths and positioning local;
+avoid `.rounded` on menus so its general container radius does not override the
+dropdown standard.
+
 For a temporary browser experiment, override tokens in DevTools:
 
 ```css

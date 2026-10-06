@@ -145,7 +145,8 @@
     }
     .score-footer {
         position: fixed;
-        z-index: 1050;
+        // Keep page controls below Bootstrap's offcanvas panel and backdrop.
+        z-index: $zindex-fixed;
         left: 50%;
         bottom: 12px;
         bottom: calc(12px + env(safe-area-inset-bottom) + var(--piece-player-height, 0px));

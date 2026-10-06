@@ -1,0 +1,13 @@
+// One menu surface across public, webapp and admin; local sizes stay intact.
+.dropdown-menu {
+    --bs-dropdown-bg: var(--color-surface);
+    --bs-dropdown-border-width: 1px;
+    --bs-dropdown-border-color: var(--color-dropdown-border);
+    --bs-dropdown-border-radius: var(--radius-dropdown);
+    --bs-dropdown-box-shadow: var(--shadow-dropdown);
+
+    background-color: var(--bs-dropdown-bg);
+    border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
+    border-radius: var(--bs-dropdown-border-radius);
+    box-shadow: var(--bs-dropdown-box-shadow);
+}

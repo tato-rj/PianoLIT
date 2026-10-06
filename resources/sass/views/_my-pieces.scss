@@ -76,7 +76,7 @@
     &__menu-button { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #697386; cursor: pointer;
         &:hover, &[aria-expanded=true] { background: #f1f4f8; color: #212529; }
     }
-    .dropdown-menu { min-width: 148px; border: 1px solid #e6eaf0; border-radius: 9px; box-shadow: 0 8px 24px rgba(26, 48, 85, .1); }
+    .dropdown-menu { min-width: 148px; }
     .dropdown-item { cursor: pointer; font-size: 13px; }
     &__preview { flex: 1; border-top: 1px solid #e6eaf0; }
     &__label { display: block; padding: 10px 0 3px; color: #697386; font-size: 11px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
