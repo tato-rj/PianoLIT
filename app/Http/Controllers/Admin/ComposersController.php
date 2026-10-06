@@ -7,6 +7,8 @@ use App\Http\Requests\ComposerForm;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Files\Uploaders\ImageUpload;
+use App\Services\OpenAI\ComposerBiography;
+use App\Services\OpenAI\BiographyGenerationException;
 
 class ComposersController extends Controller
 {
@@ -124,6 +126,19 @@ class ComposersController extends Controller
         ]);
 
         return redirect()->back()->with('status', "$request->name has been updated");
+    }
+
+    public function regenerateBiography(Request $request, Composer $composer, ComposerBiography $generator)
+    {
+        $this->authorize('update', $composer);
+
+        $data = $request->validate(['biography' => 'required|string|max:20000']);
+
+        try {
+            return response()->json(['biography' => $generator->generate($composer->name, $data['biography'])]);
+        } catch (BiographyGenerationException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $exception->getCode());
+        }
     }
 
     public function toggleFamous(Request $request, Composer $composer)

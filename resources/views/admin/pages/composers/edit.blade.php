@@ -30,6 +30,12 @@
           <label class="col-sm-2 col-form-label text-brand">Biography</label>
           <div class="col-sm-10">
             <textarea class="form-control" rows="6" name="biography" placeholder="Composer's biography" required>{{ $composer->biography }}</textarea>
+            @can('update', $composer)
+            <button type="button" id="regenerate-biography" class="btn btn-sm btn-outline-secondary mt-2"
+              data-url="{{ route('admin.composers.regenerate-biography', $composer) }}">Regenerate bio</button>
+            <small class="d-block text-muted mt-2">Up to 3 short paragraphs in simple language. Review the result, then save your changes.</small>
+            <small id="biography-status" class="d-block mt-2" role="status" aria-live="polite"></small>
+            @endcan
           </div>
         </div>
         {{-- Did you know? --}}
@@ -155,6 +161,9 @@
 @endsection
 
 @section('scripts')
+@can('update', $composer)
+<script src="{{ mix('js/views/composer-biography-admin.js') }}"></script>
+@endcan
 @cannot('update', $composer)
 <script type="text/javascript">
 $('#edit-form input, #edit-form select, #edit-form textarea').attr('disabled', true);
