@@ -22,20 +22,19 @@
 </div>
 
 <div class="row g-4 pt-lg-2">
+    @if($composer->curiosity)
     <div class="col-lg-5 order-lg-2">
-        @include('webapp.composers.at-a-glance')
-        @if($composer->curiosity)
-        <aside class="bg-light border rounded p-4 mt-4" aria-labelledby="composer-curiosity-title">
+        <aside class="bg-light border rounded p-4" aria-labelledby="composer-curiosity-title">
             <div class="d-flex align-items-center gap-3 mb-3">
                 <span class="bg-orange-lightest text-orange rounded-circle p-3 d-inline-flex">@icon('lightbulb', ['size' => 'xl', 'mr' => 0])</span>
                 <h2 id="composer-curiosity-title" class="h6 text-uppercase mb-0">Did you know?</h2>
             </div>
             <p class="mb-0">{{ $composer->curiosity }}</p>
         </aside>
-        @endif
     </div>
+    @endif
     @if($composer->biography)
-    <div class="col-lg-7 order-lg-1">
+    <div class="{{ $composer->curiosity ? 'col-lg-7' : 'col-12' }} order-lg-1">
         <section aria-labelledby="composer-biography-title">
             <p class="composer-biography mb-0">{{ $composer->biography }}</p>
         </section>
