@@ -167,7 +167,10 @@
             draft.apply(data.texts);
             field.dispatchEvent(new Event('input', {bubbles: true}));
             field.dispatchEvent(new Event('change', {bubbles: true}));
-            status(state, 'Text improved. Review it, then save the form to keep it.');
+            status(state, '');
+            state.options.hidden = true;
+            state.toggle.setAttribute('aria-expanded', 'false');
+            if (state.editor) state.editor.focus(); else field.focus();
         }).fail(function (xhr) {
             var message = xhr.status === 419 || xhr.status === 401 ? 'Your session expired. Reload the page and sign in again.' :
                 xhr.status === 429 ? 'Too many rewrites. Please wait a minute and try again.' : 'Text could not be improved. Please try again.';

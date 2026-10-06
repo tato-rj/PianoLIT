@@ -63,7 +63,11 @@ module.exports = function () {
     assert(prevented, 'Saving waits for the draft request');
     requests[0].success({texts: ['Improved text']}); requests[0].finish();
     assert.strictEqual(field.value, 'Improved text');
-    assert(bar.status.textContent.includes('save the form'));
+    assert.strictEqual(bar.status.textContent, '');
+    assert.strictEqual(bar.status.hidden, true, 'Success has no message box');
+    assert.strictEqual(bar.options.hidden, true, 'Successful rewrites collapse the options');
+    assert.strictEqual(bar.toggle.attrs['aria-expanded'], 'false');
+    assert(field.focused, 'Return focus to the textarea after rewriting');
     assert.strictEqual(bar.run.disabled, false);
     assert.strictEqual(field.attrs['aria-busy'], undefined);
 
@@ -108,8 +112,9 @@ module.exports = function () {
     bars[1].run.dispatchEvent({type: 'click'});
     requests[requests.length - 1].success({texts: ['Dynamic draft']}); requests[requests.length - 1].finish();
     assert.strictEqual(dynamic.value, 'Dynamic draft');
-    bar.toggle.dispatchEvent({type: 'click'}); // Close and reopen with defaults.
+    if (!bar.options.hidden) bar.toggle.dispatchEvent({type: 'click'});
     bar.toggle.dispatchEvent({type: 'click'});
+    assert.strictEqual(bar.options.hidden, false);
     assert.deepStrictEqual(bar.selects.map(select => select.value), ['same', 'same']);
 
     const rich = element(), container = element(); rich.id = 'editor'; rich.form = form; fields.push(rich);
