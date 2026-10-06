@@ -193,26 +193,6 @@
               </div>
             </div>
           </div>
-          <div class="row g-2 form-group">
-            <div class="col-12 col-sm input-group mb-2 mb-sm-0">
-              <div class="input-group-prepend">
-                <div class="input-group-text">@icon('hand', ['mr' => 0, 'styles' => 'transform: scaleX(-1)'])</div>
-              </div>
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio_lh" id="customFile">
-                <label class="custom-file-label truncate" for="customFile">Left hand audio</label>
-              </div>
-            </div>
-            <div class="col-12 col-sm input-group">
-              <div class="input-group-prepend">
-                <div class="input-group-text">@icon('hand', ['mr' => 0])</div>
-              </div>
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio_rh" id="customFile">
-                <label class="custom-file-label truncate" for="customFile">Right hand audio</label>
-              </div>
-            </div>
-          </div>
 
           <div class="bg-light px-3 py-2 text-muted form-group rounded d-flex d-apart">
             <div class="me-1">Should this piece show up in the <u>tour</u>?</div>

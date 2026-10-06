@@ -13,15 +13,30 @@ public website, web app and admin. Commit the rebuilt CSS and Mix manifest toget
 This updates `.rounded`, directional `.rounded-top/bottom/left/right`, the media
 player, the shared modal, pricing badges, admin overview corners, buttons, and unstyled form fields.
 Images and divs opt into these rules through their existing rounded classes.
-`--radius-button`, `--radius-input`, and `--radius-modal` inherit `--radius`; give one
-its own value if you want that component to differ.
+`--radius-button` and `--radius-input` have independent .75rem defaults;
+`--radius-modal` inherits `--radius`.
 
 `--radius-sm` controls `.rounded-sm` and its directional variants. Existing pill/circle and
-square utility precedence is retained. Bootstrap's smaller component
-corners (for example plain `.card` and `.form-control`), custom score controls,
-Match cards, decorative shapes, email templates and standalone policy documents
-retain their current independent styles. These are candidates for a later design
-pass; changing the standard radius does not silently restyle them.
+square utility precedence is retained. Custom score tools, Match cards, decorative
+shapes, email templates and standalone policy documents keep their own layouts.
+
+## Form controls
+
+Standard `.form-control`, `.form-select`, shared input/textarea components, file
+uploads and input-group labels use the same `--radius-input` and `--field-*`
+tokens. The default finish is a `#f8f9fb` background, `#dfe5ed` border, `#273244`
+text, `#697386` placeholder/focus border, 12 px corners and 11 px by 14 px padding.
+Small and large fields inherit matching size settings through `.form-control-sm`,
+`.form-select-sm`, `.form-control-lg`, `.form-select-lg` and input-group sizes.
+Touch-screen text entry uses 16 px type. Textareas retain their row counts and resizing;
+multiple selects retain their native list rows. Joined controls round only their
+outside edges. Avoid local field colors, heights, corner utilities or padding overrides;
+keep page-specific widths, layout and room for icons local.
+
+Checkboxes, radios, switches and ranges use the shared brand and field colors.
+TinyMCE and Dropzone containers and hosted Stripe card-field containers use the
+same border treatment. Third-party iframe contents are still managed by their
+respective editors/payment libraries; field styling does not change their behavior.
 
 ## Colors
 
