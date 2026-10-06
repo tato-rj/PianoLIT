@@ -119,6 +119,15 @@ class EscorePageNumberMaskTest extends ReviewTestCase
             }
             if ($page > 1) {
                 $this->assertSame($numbered, strpos($stream, '('.$page.') Tj') !== false, 'Collection folio on page '.$page);
+                if ($numbered) {
+                    $this->assertSame(1, preg_match('/BT ([\d.]+) ([\d.]+) Td \('.$page.'\) Tj ET/', $stream, $folio));
+                    $font = new \FPDF();
+                    $font->SetFont('Helvetica', '', 9);
+                    $right = (float) $folio[1] / (72 / 25.4) + $font->GetStringWidth((string) $page);
+                    $top = $height - (float) $folio[2] / (72 / 25.4);
+                    $this->assertEqualsWithDelta($width - 18, $right, 0.01, 'Right-aligned folio has breathing room, including double digits');
+                    $this->assertEqualsWithDelta(18, $top, 0.01, 'Folio sits inside the upper margin');
+                }
             }
         }
         $this->assertSame($sourceHashes, [hash_file('sha256', $disk->path('front.pdf')), hash_file('sha256', $disk->path('score.pdf'))]);

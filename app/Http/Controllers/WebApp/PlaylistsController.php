@@ -43,7 +43,7 @@ class PlaylistsController extends Controller
         if ($playlist->cover_path && !isset($options['color'])) $options['color'] = \App\PDF\EscoreOptions::IMAGE_COVER_DEFAULT_COLOR;
 
         try {
-            $generator = app(\App\PDF\PDFGenerator::class)->pieces($pieces)->request($options);
+            $generator = app(\App\PDF\PDFGenerator::class)->pieces($pieces)->request($options, true);
             if ($playlist->cover_path) $generator->collectionCover($playlist->cover_path);
             $pdf = $generator->generate();
             if ($request->boolean('preview')) {

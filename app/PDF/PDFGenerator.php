@@ -21,7 +21,7 @@ class PDFGenerator
         return $this;
     }
 
-    public function request($request)
+    public function request($request, $alignCoverText = false)
     {
         $color = $request['color'] ?? EscoreOptions::DEFAULT_COLOR;
         if (!is_string($color) || !preg_match('/^#[0-9a-fA-F]{6}$/', $color)) {
@@ -37,6 +37,7 @@ class PDFGenerator
             'creator' => $request['creator'] ?? '',
             'edition_notes' => $request['edition_notes'] ?? '',
             'cover_style' => $request['cover_style'] ?? 'reference',
+            'align_cover_text' => $alignCoverText,
             'page_size' => $request['page_size'] ?? null,
             'page_numbers' => !isset($request['page_numbers']) || (bool) $request['page_numbers'],
             'composer_names' => !isset($request['composer_names']) || (bool) $request['composer_names'],

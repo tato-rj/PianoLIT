@@ -14,6 +14,8 @@ class EscoreMerger extends \Webklex\PDFMerger\PDFMerger
     public const SOURCE_PAGE_NUMBER_MASK_WIDTH_MM = 20;
     public const SOURCE_PAGE_NUMBER_MASK_HEIGHT_MM = 12;
 
+    public const FOLIO_INSET_MM = 18;
+
     private $settings;
 
     public function settings(array $settings)
@@ -52,11 +54,11 @@ class EscoreMerger extends \Webklex\PDFMerger\PDFMerger
                 if ($fileIndex > 0 && $this->settings['page_numbers']) {
                     $this->maskSourcePageNumbers($pdf, $pageX, $pageY, $pageWidth, $scale);
                 }
-                $this->folio($pdf, $number, $width, $height);
+                $this->folio($pdf, $number, $width);
             }
             if ($fileIndex > 0 && $fileIndex < $this->aFiles->count() - 1 && $this->settings['blank_pages']) {
                 $pdf->AddPage('P', [$width, $height]);
-                $this->folio($pdf, ++$number, $width, $height);
+                $this->folio($pdf, ++$number, $width);
             }
         }
     }
@@ -72,11 +74,12 @@ class EscoreMerger extends \Webklex\PDFMerger\PDFMerger
         $pdf->Rect($pageX + $pageWidth - $inset - $width, $top, $width, $height, 'F');
     }
 
-    private function folio($pdf, $number, $width, $height)
+    private function folio($pdf, $number, $width)
     {
         if (!$this->settings['page_numbers'] || $number === 1) return;
         $pdf->SetFont('Helvetica', '', 9);
         $pdf->SetTextColor(90, 90, 90);
-        $pdf->Text($width - 14, $height - 4, (string) $number);
+        $label = (string) $number;
+        $pdf->Text($width - self::FOLIO_INSET_MM - $pdf->GetStringWidth($label), self::FOLIO_INSET_MM, $label);
     }
 }

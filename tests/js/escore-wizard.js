@@ -9,7 +9,7 @@ module.exports = async function () {
         addEventListener(name, handler) { (this.events[name] || (this.events[name] = [])).push(handler); }
         removeEventListener(name, handler) { this.events[name] = (this.events[name] || []).filter(item => item !== handler); }
         fire(name, event = {}) { (this.events[name] || []).forEach(handler => handler(event)); }
-        setAttribute() {} removeAttribute() {} append(...nodes) { this.children.push(...nodes); } replaceChildren() { this.children = []; }
+        setAttribute() {} removeAttribute() {} append(...nodes) { this.children.push(...nodes); } replaceChildren(...nodes) { this.children = nodes; }
         getContext() { return {measureText: text => ({width: text.length * 6}), drawImage() {}}; }
         toDataURL() { return 'data:image/png;base64,AA=='; }
         getBoundingClientRect() { return {top: 0, bottom: 300, height: 300}; }
@@ -22,11 +22,11 @@ module.exports = async function () {
     ['title', 'subtitle', 'comment', 'bottom_text', 'color', '_token', 'page_numbers', 'composer_names', 'include_edition', 'blank_pages'].forEach(name => { form.elements[name] = new Node(); });
     form.elements.title.value = 'My book'; form.elements.color.value = '#00a2ff'; form.elements._token.value = 'session-token';
     form.lists = {'[data-escore-piece]': [row], '[data-escore-select]': [selected], '[data-escore-drag]': [handle]};
-    const requests = [], renderedPages = [], timers = new Map(); let nextTimer = 0, destroyed = 0;
+    const requests = [], renderedPages = [], timers = new Map(); let nextTimer = 0, destroyed = 0, renderGate = null;
     const document = new Node();
     Object.assign(document, {readyState: 'loading', createElement: () => new Node(), querySelector: () => null});
     const context = vm.createContext({module: {exports: {}}, document,
-        window: {pdfjsLib: {GlobalWorkerOptions: {}, getDocument: () => ({promise: Promise.resolve({numPages: 3, destroy() { destroyed++; }, getPage: async number => { renderedPages.push(number); return {getViewport: ({scale}) => ({width: 612 * scale, height: 792 * scale}), render: () => ({promise: Promise.resolve()})}; }})})}},
+        window: {pdfjsLib: {GlobalWorkerOptions: {}, getDocument: () => ({promise: Promise.resolve({numPages: 3, destroy() { destroyed++; }, getPage: async number => { renderedPages.push(number); return {getViewport: ({scale}) => ({width: 612 * scale, height: 792 * scale}), render: () => { const promise = renderGate || Promise.resolve(); renderGate = null; return {promise}; }}; }})})}},
         Uint8Array, atob: text => Buffer.from(text, 'base64').toString('binary'),
         AbortController: class { constructor() { this.signal = {aborted: false}; } abort() { this.signal.aborted = true; } },
         FormData: class { constructor() { this.values = {}; } set(key, value) { this.values[key] = value; } append(key, value) { (this.values[key] || (this.values[key] = [])).push(value); } },
@@ -55,14 +55,28 @@ module.exports = async function () {
     const settle = async () => { for (let i = 0; i < 4; i++) await new Promise(resolve => setImmediate(resolve)); };
     const response = pages => ({ok: true, headers: {get: () => 'application/json'}, json: async () => ({pdf: Buffer.from('%PDF').toString('base64'), pages, sections: {cover: 1, title: 0, index: 1, edition: 0, blank: 0}, entries: [{id: 7, title: 'Solo', composer: 'Composer', pages: 1, start: 3}]})});
     modal.fire('shown.bs.modal');
+    const previewPage = form.querySelector('[data-escore-main-page]');
+    const loader = form.querySelector('[data-escore-loader]');
+    assert(previewPage.classes.has('escore-page--pending'), 'Initial HTML cover stays concealed');
+    assert.strictEqual(loader.hidden, false, 'Opening shows the initial preview loader');
+    assert(!previewPage.classes.has('escore-page--updating'), 'Opening the modal does not fade its initial preview');
     assert.strictEqual(requests.length, 1);
     assert.strictEqual(requests[0].options.method, 'POST');
     assert.strictEqual(requests[0].options.headers['X-CSRF-TOKEN'], 'session-token');
     assert.deepStrictEqual(Array.from(requests[0].options.body.values['piece_ids[]']), ['7']);
     form.fire('input', {target: form.elements.title});
+    assert(!previewPage.classes.has('escore-page--updating'), 'Initial edits keep the placeholder concealed instead of fading it');
     assert(requests[0].options.signal.aborted, 'Editing cancels the previous preview');
     form.querySelector('[data-escore-retry]').fire('click');
+    let finishInitialRender;
+    renderGate = new Promise(resolve => { finishInitialRender = resolve; });
     requests[1].resolve(response(3)); await settle();
+    assert(previewPage.classes.has('escore-page--pending'), 'Receiving the PDF does not expose unfinished text');
+    assert.strictEqual(loader.hidden, false, 'Loader remains visible until the first canvas is rendered');
+    finishInitialRender(); await settle();
+    assert(!previewPage.classes.has('escore-page--pending'), 'Only the completed PDF is revealed');
+    assert.strictEqual(loader.hidden, true, 'Completed rendering removes the loader');
+    assert(!previewPage.classes.has('escore-page--updating'), 'A completed preview restores full opacity');
     assert.strictEqual(form.querySelector('[data-escore-status]').textContent, 'Preview ready · 3 pages');
     renderedPages.length = 0;
     form.querySelector('[data-escore-next]').fire('click'); await settle();
@@ -73,21 +87,49 @@ module.exports = async function () {
     form.querySelector('[data-escore-back]').fire('click'); await settle();
     requests[0].resolve(response(99)); await settle();
     assert.strictEqual(form.querySelector('[data-escore-status]').textContent, 'Preview ready · 3 pages', 'An older response cannot replace the latest PDF');
+    const mainCanvas = form.querySelector('[data-escore-main-canvas]');
+    const thumbnails = form.querySelector('[data-escore-thumbnails]');
+    const previousThumbnails = thumbnails.children;
+    const previousAspect = form.querySelector('[data-escore-main-page]').style.aspectRatio;
+    assert.strictEqual(previousThumbnails.length, 3, 'All thumbnails are committed together');
     form.fire('input', {target: form.elements.title});
+    assert.strictEqual(mainCanvas.hidden, false, 'Typing keeps the rendered PDF visible');
+    assert(previewPage.classes.has('escore-page--updating'), 'Typing fades the retained PDF during the debounce');
+    assert.strictEqual(loader.hidden, true, 'Later edits preserve the page without the initial loader');
+    assert.strictEqual(cover.hidden, true, 'Typing never switches back to different HTML text metrics');
+    assert.strictEqual(form.querySelector('[data-escore-main-page]').style.aspectRatio, previousAspect, 'Typing retains the paper geometry');
+    assert.strictEqual(thumbnails.children, previousThumbnails, 'Typing keeps completed thumbnails in place');
     form.querySelector('[data-escore-retry]').fire('click');
     requests[2].reject(new Error('Preview failed')); await settle();
+    assert(!previewPage.classes.has('escore-page--updating'), 'Failure clears the updating fade');
     assert.strictEqual(form.querySelector('[data-escore-retry]').hidden, false, 'Failure exposes retry');
     assert.strictEqual(form.querySelector('[data-escore-status]').textContent, 'Preview failed');
+    assert.strictEqual(mainCanvas.hidden, false, 'Request failure preserves the last rendered page');
+    assert.strictEqual(cover.hidden, true);
+    assert.strictEqual(thumbnails.children, previousThumbnails, 'Request failure preserves completed thumbnails');
+    let finishRender;
+    renderGate = new Promise(resolve => { finishRender = resolve; });
+    form.querySelector('[data-escore-retry]').fire('click');
+    requests[3].resolve(response(3)); await settle();
+    assert.strictEqual(mainCanvas.hidden, false, 'A pending PDF render preserves the last visible canvas');
+    assert.strictEqual(cover.hidden, true, 'Even during slow PDF rendering the HTML cover stays hidden');
+    assert.strictEqual(thumbnails.children, previousThumbnails, 'Pending rendering preserves the thumbnail grid');
+    finishRender(); await settle();
+    assert.strictEqual(form.querySelector('[data-escore-status]').textContent, 'Preview ready · 3 pages');
+    assert.strictEqual(thumbnails.children.length, 3, 'Completed replacement contains all thumbnails');
+    assert.notStrictEqual(thumbnails.children, previousThumbnails, 'Ready thumbnails replace the old set together');
     form.querySelector('[data-escore-retry]').fire('click');
     modal.fire('hidden.bs.modal');
-    assert(requests[3].options.signal.aborted, 'Closing cancels the current request');
+    assert(!previewPage.classes.has('escore-page--updating'), 'Closing clears any updating fade');
+    assert(requests[4].options.signal.aborted, 'Closing cancels the current request');
     assert(destroyed > 0, 'Closing releases the loaded PDF');
-    requests[3].resolve(response(88)); await settle();
+    requests[4].resolve(response(88)); await settle();
     assert.notStrictEqual(form.querySelector('[data-escore-status]').textContent, 'Preview ready · 88 pages');
     assert.strictEqual(timers.size, 0, 'Closing clears scheduled previews');
     selected.checked = false;
     modal.fire('shown.bs.modal');
-    assert.strictEqual(requests.length, 4, 'Empty selections never submit a preview');
+    assert(!previewPage.classes.has('escore-page--updating'), 'Reopening never retains a stale updating fade');
+    assert.strictEqual(requests.length, 5, 'Empty selections never submit a preview');
     assert.strictEqual(form.querySelector('[data-escore-next]').disabled, true, 'Empty selections cannot advance or download');
     const second = new Node(), third = new Node(), rows = form.lists['[data-escore-piece]'];
     second.dataset = {escorePiece: '8', eligible: 'true'}; third.dataset = {escorePiece: '9', eligible: 'true'};
@@ -110,10 +152,29 @@ module.exports = async function () {
     assert(!row.classes.has('dragging'), 'Drop clears the drag state');
     assert.strictEqual(document.events.pointermove.length, 0, 'Drop removes pointer listeners');
     form.querySelector('[data-escore-retry]').fire('click');
-    assert.deepStrictEqual(Array.from(requests[4].options.body.values['piece_ids[]']), ['8', '9', '7'], 'Preview submits the dropped order');
+    assert.deepStrictEqual(Array.from(requests[5].options.body.values['piece_ids[]']), ['8', '9', '7'], 'Preview submits the dropped order');
     handle.fire('pointerdown', event); document.fire('pointercancel', {pointerId: 1});
     assert(!row.classes.has('dragging'), 'Cancellation clears the drag state');
     handle.fire('pointerdown', event); modal.fire('hidden.bs.modal');
     assert(!row.classes.has('dragging'), 'Closing clears an active drag');
-    console.log('Passed: eScore image-cover text/color/branding, drag/drop export order without number inputs, pointer cleanup, session POST, preview races, failures/retry and modal cleanup.');
+    const coldForm = new Node(), coldModal = new Node();
+    coldForm.closest = () => coldModal; coldForm.elements = form.elements; coldForm.action = form.action;
+    coldForm.lists = {'[data-escore-piece]': [row]};
+    context.module.exports.initWizard(coldForm);
+    coldModal.fire('show.bs.modal');
+    const coldPage = coldForm.querySelector('[data-escore-main-page]'), coldLoader = coldForm.querySelector('[data-escore-loader]');
+    assert(coldPage.classes.has('escore-page--pending'), 'Placeholder is concealed before the modal opening transition');
+    assert.strictEqual(coldLoader.hidden, false);
+    coldModal.fire('shown.bs.modal');
+    requests[requests.length - 1].reject(new Error('Initial preview failed')); await settle();
+    assert(coldPage.classes.has('escore-page--pending'), 'Initial failure never reveals the HTML placeholder');
+    assert.strictEqual(coldLoader.hidden, true, 'Initial failure stops the loader');
+    assert.strictEqual(coldForm.querySelector('[data-escore-retry]').hidden, false);
+    coldForm.querySelector('[data-escore-retry]').fire('click');
+    assert.strictEqual(coldLoader.hidden, false, 'Retry resumes the initial loader');
+    coldModal.fire('hidden.bs.modal');
+    requests[requests.length - 1].resolve(response(3)); await settle();
+    assert.strictEqual(coldLoader.hidden, true, 'Closing stops the loader');
+    assert(coldPage.classes.has('escore-page--pending'), 'A response after closing cannot reveal the page');
+    console.log('Passed: eScore image-cover text/color/branding, drag/drop export order without number inputs, pointer cleanup, session POST, stable typing and delayed renders, atomic thumbnails, preview races, failures/retry and modal cleanup.');
 };

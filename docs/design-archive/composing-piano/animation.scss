@@ -1,0 +1,25 @@
+@keyframes escore-piano-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-3px) rotate(2deg); } }
+@keyframes escore-piano-blink { 0%, 44%, 48%, 100% { transform: scaleY(1); } 46% { transform: scaleY(.15); } }
+@keyframes escore-piano-key { 0%, 35%, 65%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.72); background: #efdff8; } }
+@keyframes escore-note-float { 0% { opacity: 0; transform: translate(0, 2px) rotate(-10deg) scale(.8); } 20% { opacity: 1; } 85%, 100% { opacity: 0; transform: translate(7px, -18px) rotate(12deg) scale(1); } }
+.escore-modal {
+    .escore-composing { display: none; position: absolute; z-index: 2; bottom: 18px; left: 50%; transform: translateX(-50%); width: 238px; max-width: calc(100% - 24px); min-height: 78px; align-items: center; justify-content: center; gap: 17px; padding: 10px 18px; border: 1px solid #e8e0f6; border-radius: 22px; background: #fffafef5; box-shadow: 0 5px 20px rgba(53, 31, 82, .14); pointer-events: none; }
+    .escore-page[aria-busy='true'] .escore-composing { display: flex; }
+    .escore-composing__character { position: relative; width: 64px; height: 56px; flex-shrink: 0; }
+    .escore-composing__piano { position: absolute; bottom: 0; width: 64px; height: 43px; border: 2px solid #665285; border-radius: 11px 11px 6px 6px; background: #c5b0eb; box-shadow: 0 3px 0 #eadff7; animation: escore-piano-bob 1.6s ease-in-out infinite; }
+    .escore-composing__face { position: relative; height: 25px; }
+    .escore-composing__face::before, .escore-composing__face::after { content: ''; position: absolute; top: 13px; width: 9px; height: 5px; border-radius: 50%; background: #f3aac6; }
+    .escore-composing__face::before { left: 9px; } .escore-composing__face::after { right: 9px; }
+    .escore-composing__eyes { position: absolute; top: 9px; left: 19px; width: 4px; height: 5px; border-radius: 50%; background: #47335e; box-shadow: 18px 0 #47335e; animation: escore-piano-blink 3.2s ease-in-out infinite; }
+    .escore-composing__smile { position: absolute; top: 13px; left: 27px; width: 7px; height: 5px; border: 1.5px solid #47335e; border-top: 0; border-radius: 0 0 8px 8px; }
+    .escore-composing__keys { display: flex; height: 14px; padding: 0 3px 2px; gap: 1px; }
+    .escore-composing__keys span { position: relative; flex: 1; border-radius: 0 0 2px 2px; background: #fffdf9; transform-origin: top; animation: escore-piano-key 1.2s ease-in-out infinite; }
+    .escore-composing__keys span:nth-child(2n) { animation-delay: -.6s; }
+    .escore-composing__keys span:nth-child(3n) { animation-delay: -.3s; }
+    .escore-composing__keys span:not(:nth-child(3)):not(:last-child)::after { content: ''; position: absolute; z-index: 1; top: 0; right: -3px; width: 4px; height: 7px; border-radius: 0 0 1px 1px; background: #665285; }
+    .escore-composing__note { position: absolute; z-index: 1; top: 8px; font: bold 19px Georgia, serif; color: #9470ce; opacity: 0; animation: escore-note-float 1.8s ease-out infinite; }
+    .escore-composing__note--one { left: 5px; } .escore-composing__note--two { left: 43px; color: #db82a9; animation-delay: -.6s; } .escore-composing__note--three { left: 29px; font-size: 12px; color: #d7a344; animation-delay: -1.2s; }
+    .escore-composing__label { color: #665285; font-size: 13px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+    .escore-composing__label > span { display: block; font-size: 12px; font-weight: 400; }
+    @media (prefers-reduced-motion: reduce) { .escore-composing__piano, .escore-composing__eyes, .escore-composing__keys span, .escore-composing__note { animation: none; } .escore-composing__note { opacity: 1; transform: translateY(-8px); } }
+}

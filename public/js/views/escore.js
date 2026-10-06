@@ -49,13 +49,14 @@
     function initWizard(form) {
         var modal = form.closest('.modal'), step = 1, pageNumber = 1, doc = null, metadata = null;
         var revision = 0, controller = null, timer = null, visible = false, downloading = false;
-        var summaryObserver = null, endDrag = null;
-        var imageCache = {}, thumbnailLimit = 24, renderRevision = 0;
+        var summaryObserver = null, endDrag = null, hasRenderedPreview = false;
+        var imageCache = {}, thumbnailLimit = 24, renderRevision = 0, thumbnailRevision = 0;
         var q = function (selector) { return form.querySelector(selector); };
         var qa = function (selector) { return Array.from(form.querySelectorAll(selector)); };
         var status = q('[data-escore-status]'), next = q('[data-escore-next]');
         var cover = q('[data-escore-cover]'), mainCanvas = q('[data-escore-main-canvas]');
         var toggles = ['page_numbers', 'composer_names', 'include_edition', 'blank_pages'];
+        var textContext = document.createElement('canvas').getContext('2d');
 
         function message(text, failed) {
             status.textContent = text;
@@ -63,6 +64,14 @@
         }
         function valid() {
             return form.elements.title.value.trim().length > 0 && selectedIds(form).length > 0;
+        }
+        function setPreviewBusy(busy, fromEdit) {
+            var page = q('[data-escore-main-page]');
+            page.setAttribute('aria-busy', String(busy));
+            // Reveal the first preview only after the PDF canvas is complete.
+            page.classList.toggle('escore-page--pending', !hasRenderedPreview);
+            q('[data-escore-loader]').hidden = hasRenderedPreview || !busy;
+            if (!busy || fromEdit) page.classList.toggle('escore-page--updating', !!busy && !!fromEdit && hasRenderedPreview);
         }
         function controls() {
             next.disabled = downloading || !valid() || (step === 3 && !metadata);
@@ -73,13 +82,14 @@
             qa('[data-escore-drag]').forEach(function (input) { input.disabled = downloading || input.closest('[data-escore-piece]').dataset.eligible !== 'true'; });
         }
         function refreshCover() {
-            var color = form.elements.color.value, context = document.createElement('canvas').getContext('2d');
+            var color = form.elements.color.value;
             cover.style.backgroundColor = color;
             cover.style.color = textColor(color);
             var subtitleLayout, imageCover = cover.dataset.escoreImageCover === 'true';
-            ['title', 'subtitle', 'comment', 'bottom_text'].forEach(function (name) {
-                var sizes = {title: [54, 460, 140], subtitle: [26, 408, 74], comment: [24, 408, 205], bottom_text: [18, 250, 38]};
-                if (imageCover) sizes = {title: [60, 460, 110], subtitle: [34, 460, 90], comment: [26, 460, 110], bottom_text: [20, 125, 60]};
+            var sizes = imageCover
+                ? {title: [60, 460, 110], subtitle: [34, 460, 90], comment: [26, 460, 110], bottom_text: [20, 125, 60]}
+                : {title: [54, 460, 140], subtitle: [26, 460, 74], comment: [24, 460, 205], bottom_text: [18, 250, 38]};
+            if (!cover.hidden) ['title', 'subtitle', 'comment', 'bottom_text'].forEach(function (name) {
                 var spec = sizes[name], node = q('[data-escore-preview="' + name + '"]');
                 var text = form.elements[name].value, commentBaseline;
                 if (imageCover && name === 'title') text = text.toUpperCase();
@@ -89,8 +99,8 @@
                     spec[2] = Math.max(20, 350 - commentBaseline);
                 }
                 var layout = fitText(text, spec[0], spec[1], spec[2], function (text, size) {
-                    context.font = (imageCover && name === 'subtitle' ? 'bold ' : '') + size + 'px "Escore Bodoni"';
-                    return context.measureText(text).width;
+                    textContext.font = (imageCover && name === 'subtitle' ? 'bold ' : '') + size + 'px "Escore Bodoni"';
+                    return textContext.measureText(text).width;
                 });
                 if (name === 'subtitle') subtitleLayout = layout;
                 if (imageCover) {
@@ -183,10 +193,9 @@
             q('[data-escore-retry]').hidden = true;
             q('[data-escore-total]').textContent = '— pages';
             q('[data-escore-summary-label]').textContent = selectedIds(form).length + ' pieces · Updating pages';
-            if (step === 1 || step === 3) {
-                mainCanvas.hidden = true; cover.hidden = false;
-                q('[data-escore-main-page]').classList.add('escore-book');
-            }
+            // Keep the last PDF visible until the next page has finished rendering.
+            // Switching back to the HTML cover changes font metrics and text positions.
+            setPreviewBusy(visible && valid(), true);
             refreshCover(); refreshSelection();
             message(valid() ? 'Updating preview…' : 'Select at least one available score and enter a title.', !valid());
             if (visible && valid()) timer = setTimeout(loadPreview, 650);
@@ -198,6 +207,7 @@
             if (controller) controller.abort();
             controller = new AbortController();
             var token = ++revision, signal = controller.signal;
+            setPreviewBusy(true);
             message('Preparing your preview…');
             try {
                 var result = await request(true, signal);
@@ -211,8 +221,9 @@
                 doc = loaded; metadata = result; delete metadata.pdf;
                 imageCache = {}; thumbnailLimit = 24;
                 pageNumber = Math.min(pageNumber, doc.numPages);
-                await renderPages();
+                var rendered = await renderPages();
                 if (token !== revision || !visible) return;
+                if (!rendered) throw new Error('This preview page could not be displayed. Try refreshing the preview.');
                 renderSummary(); renderThumbnails();
                 message('Preview ready · ' + metadata.pages + ' pages');
                 q('[data-escore-retry]').hidden = true;
@@ -220,6 +231,7 @@
             } catch (error) {
                 if (token !== revision || error.name === 'AbortError' || !visible) return;
                 metadata = null; controls();
+                setPreviewBusy(false);
                 message(error.message || 'The preview could not be loaded. Please try again.', true);
                 q('[data-escore-retry]').hidden = false;
             }
@@ -260,29 +272,38 @@
                 cover.hidden = true;
                 q('[data-escore-main-page]').classList.toggle('escore-book', pageNumber === 1);
                 q('[data-escore-main-page]').style.aspectRatio = page.width + ' / ' + page.height;
+                hasRenderedPreview = true;
+                setPreviewBusy(false);
+                return true;
             } catch (error) {
-                if (version === revision && visible) message('This preview page could not be displayed. Try refreshing the preview.', true);
+                if (token === renderRevision && version === revision && visible) {
+                    setPreviewBusy(false);
+                    message('This preview page could not be displayed. Try refreshing the preview.', true);
+                }
+                return false;
             }
         }
         async function renderThumbnails() {
-            var target = q('[data-escore-thumbnails]'), version = revision;
-            target.replaceChildren();
+            var target = q('[data-escore-thumbnails]'), version = revision, token = ++thumbnailRevision;
+            var thumbnails = [], count = doc.numPages;
             // Bound rendering work for large folders; all pages remain available via the pager.
-            for (var number = 1; number <= Math.min(doc.numPages, thumbnailLimit); number++) {
+            for (var number = 1; number <= Math.min(count, thumbnailLimit); number++) {
                 var button = document.createElement('button'), image = document.createElement('img'), label = document.createElement('span');
                 button.type = 'button'; button.className = 'escore-thumbnail'; button.dataset.escoreThumbnail = number;
                 button.setAttribute('aria-label', 'Preview page ' + number);
-                image.alt = ''; label.textContent = number; button.append(image, label); target.append(button);
-                button.addEventListener('click', function (event) { pageNumber = Number(event.currentTarget.dataset.escoreThumbnail); renderPages(); });
+                image.alt = ''; label.textContent = number; button.append(image, label); thumbnails.push(button);
+                button.addEventListener('click', function (event) { if (!metadata) return; pageNumber = Math.min(Number(event.currentTarget.dataset.escoreThumbnail), doc.numPages); renderPages(); });
                 try {
                     image.src = await pageImage(number);
-                    if (version !== revision || !visible) return;
-                } catch (error) { if (version !== revision) return; }
+                    if (version !== revision || token !== thumbnailRevision || !visible) return;
+                } catch (error) { if (version !== revision || token !== thumbnailRevision || !visible) return; }
             }
-            if (thumbnailLimit < doc.numPages) {
+            if (thumbnailLimit < count) {
                 var more = document.createElement('button'); more.type = 'button'; more.className = 'btn btn-secondary btn-sm'; more.textContent = 'More pages';
-                more.addEventListener('click', function () { thumbnailLimit += 24; renderThumbnails(); }); target.append(more);
+                more.addEventListener('click', function () { thumbnailLimit += 24; renderThumbnails(); }); thumbnails.push(more);
             }
+            // Commit a complete set together, avoiding blank cards and scroll jumps.
+            target.replaceChildren.apply(target, thumbnails);
             activePreviews();
         }
         function renderSummary() {
@@ -349,7 +370,9 @@
             });
         });
         form.addEventListener('submit', function (event) { event.preventDefault(); if (step < 3) goStep(step + 1); else download(); });
-        form.addEventListener('input', invalidate);
+        form.addEventListener('input', function (event) {
+            if (!event.target || !event.target.matches('select, [data-escore-select], [type="checkbox"]')) invalidate();
+        });
         form.addEventListener('change', function (event) {
             if (event.target.matches('select, [data-escore-select], [type="checkbox"]')) invalidate();
         });
@@ -389,8 +412,10 @@
             });
         });
         // Folder changes may remove or reorder tracks while this editor is closed.
+        modal.addEventListener('show.bs.modal', function () { setPreviewBusy(!hasRenderedPreview && valid()); });
         modal.addEventListener('shown.bs.modal', function () {
             visible = true;
+            setPreviewBusy(false);
             var playlist = modal.closest('[data-playlist-page]') || document.querySelector('[data-playlist-page]');
             if (playlist) {
                 qa('[data-escore-piece]').forEach(function (row) {
@@ -413,6 +438,7 @@
         });
         modal.addEventListener('hidden.bs.modal', function () {
             visible = false; revision++; renderRevision++; clearTimeout(timer);
+            setPreviewBusy(false);
             if (endDrag) endDrag();
             if (controller) controller.abort();
             if (doc) { doc.destroy(); doc = null; }

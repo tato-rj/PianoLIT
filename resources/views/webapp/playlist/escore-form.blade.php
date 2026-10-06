@@ -67,7 +67,8 @@
         <section class="escore-preview" aria-label="Document preview">
             <div class="escore-preview-heading"><div><h2 class="h5 mb-1">Preview</h2><p class="small text-muted mb-0" data-escore-preview-caption>This is how your eScore will look.</p></div>@include('webapp.playlist.escore-tabs')</div>
             <div class="escore-stage">
-                <div class="escore-page escore-book shadow-dark" data-escore-main-page>
+                <div class="escore-preview-loader" data-escore-loader role="status"><span class="escore-preview-loader__ring" aria-hidden="true"></span><span>Preparing preview…</span></div>
+                <div class="escore-page escore-book shadow-dark escore-page--pending" data-escore-main-page aria-busy="true">
                     <figure class="escore-cover-preview {{ !empty($escoreCoverImage) ? 'escore-cover-preview--image' : '' }}" data-escore-cover @if(!empty($escoreCoverImage)) data-escore-image-cover="true" @endif aria-label="Cover preview">
                         @if(!empty($escoreCoverImage))<img class="escore-cover-preview__image" src="{{ $escoreCoverImage }}" alt="">@endif
                         <div class="escore-cover-preview__title" data-escore-preview="title">{{ $escoreName }}</div><div class="escore-cover-preview__subtitle" data-escore-preview="subtitle">A collection of pieces</div><div class="escore-cover-preview__description" data-escore-preview="comment">{{ $escoreDescription ?: 'for piano' }}</div><div class="escore-cover-preview__brand"><span data-escore-preview="bottom_text">PianoLIT eScore</span><small>created by {{ auth('web')->user()->full_name }}</small></div>
@@ -82,7 +83,14 @@
             <div data-escore-summary hidden><h2 class="h5 mb-1">eScore summary</h2><p class="small text-muted mb-3" data-escore-summary-label>{{ $scoreCount }} pieces · Calculating pages</p><div class="escore-summary-pieces border rounded" data-escore-summary-pieces></div><div class="escore-page-breakdown"><h3 class="h6 mb-3">Pages</h3><div data-escore-breakdown></div><div class="escore-total border-top mt-3 pt-3"><strong>Total</strong><strong data-escore-total>— pages</strong></div></div></div>
         </aside>
     </div>
-    <footer class="escore-footer"><button class="btn btn-secondary" type="button" data-escore-back hidden>@icon('arrow-left', ['mr' => 0])<span data-escore-back-label>Back to cover</span><span class="escore-back-short" aria-hidden="true">Back</span></button><div class="escore-status small text-muted" role="status" aria-live="polite" data-escore-status>Select a cover style to begin.</div><button class="btn btn-secondary btn-sm" type="button" data-escore-retry hidden>Retry preview</button><button class="btn btn-primary escore-continue" type="button" data-escore-next @unless($scoreCount) disabled @endunless><span data-escore-next-label>Continue to pieces</span><span class="escore-next-short" aria-hidden="true">Continue</span><span data-escore-next-icon>@icon('arrow-right', ['mr' => 0])</span></button></footer>
+    <footer class="escore-footer">
+        <button class="btn btn-secondary" type="button" data-escore-back hidden>@icon('arrow-left', ['mr' => 0])<span data-escore-back-label>Back to cover</span><span class="escore-back-short" aria-hidden="true">Back</span></button>
+        <button class="btn btn-secondary btn-sm" type="button" data-escore-retry hidden>Retry preview</button>
+        <div class="escore-footer-primary">
+            <div class="escore-status small text-muted" role="status" aria-live="polite" data-escore-status>Select a cover style to begin.</div>
+            <button class="btn btn-primary escore-continue" type="button" data-escore-next @unless($scoreCount) disabled @endunless><span data-escore-next-label>Continue to pieces</span><span class="escore-next-short" aria-hidden="true">Continue</span><span data-escore-next-icon>@icon('arrow-right', ['mr' => 0])</span></button>
+        </div>
+    </footer>
 </form>
 </div></div></div>
 @once

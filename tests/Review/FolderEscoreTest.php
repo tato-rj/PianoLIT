@@ -38,7 +38,7 @@ class FolderEscoreTest extends ReviewTestCase
     {
         $generator = \Mockery::mock(PDFGenerator::class);
         $generator->shouldReceive('pieces')->once()->withArgs(function ($pieces) use ($ids) { return $pieces->pluck('id')->values()->all() === $ids; })->andReturnSelf();
-        $generator->shouldReceive('request')->once()->with(array_merge($options, ['creator' => $this->user->full_name]))->andReturnSelf();
+        $generator->shouldReceive('request')->once()->with(array_merge($options, ['creator' => $this->user->full_name]), true)->andReturnSelf();
         $generator->shouldReceive('generate')->once()->andReturnSelf();
         $generator->shouldReceive('stream')->once()->andReturn(response('PDF fixture'));
         $this->app->instance(PDFGenerator::class, $generator);

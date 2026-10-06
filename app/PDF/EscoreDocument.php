@@ -191,11 +191,15 @@ class EscoreDocument
         $baseline = 242 - max(0, count($layout['lines']) - 1) * $layout['size'] * 1.2;
         $this->drawLines(76, $baseline, $layout['lines'], $layout['size'] * 1.2);
         $this->pdf->setLineStyle(0.7);
-        $this->pdf->line(92, 792 - 282, 520, 792 - 282);
-        $subtitle = $this->fit($content['subtitle'], 26, 408, 74);
-        $this->drawLines(112, 335, $subtitle['lines'], $subtitle['size'] * 1.2);
+        // Web exports opt in; legacy mobile exports retain their existing layout.
+        $aligned = !empty($content['align_cover_text']);
+        $textX = $aligned ? 76 : 112;
+        $textWidth = $aligned ? 460 : 408;
+        $this->pdf->line($aligned ? 76 : 92, 792 - 282, $aligned ? 536 : 520, 792 - 282);
+        $subtitle = $this->fit($content['subtitle'], 26, $textWidth, 74);
+        $this->drawLines($textX, 335, $subtitle['lines'], $subtitle['size'] * 1.2);
         $commentBaseline = 335 + max(1, count($subtitle['lines'])) * $subtitle['size'] * 1.2 + 6;
-        $this->block(112, $commentBaseline, $content['comment'], 24, 408, 205);
+        $this->block($textX, $commentBaseline, $content['comment'], 24, $textWidth, 205);
         $brand = $this->fit($content['bottom_text'], 18, 250, 38);
         $baseline = 704 - max(0, count($brand['lines']) - 1) * $brand['size'] * 1.2;
         foreach ($brand['lines'] as $line) {

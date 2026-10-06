@@ -34,11 +34,11 @@ class EscorePdfLayoutTest extends ReviewTestCase
     private function generator()
     {
         return new class extends PDFGenerator {
-            public $renderedEntries;
+            public $renderedEntries, $frontPdf;
             protected function frontMatter($entries)
             {
                 $this->renderedEntries = $entries;
-                return parent::frontMatter($entries);
+                return $this->frontPdf = parent::frontMatter($entries);
             }
         };
     }
@@ -86,6 +86,34 @@ class EscorePdfLayoutTest extends ReviewTestCase
         $pdf = $generator->pieces(collect())->request(['title' => '<script>bad</script>', 'comment' => '<img src=x>', 'color' => '#000000'])->generate()->output();
         $reader = new Fpdi();
         $this->assertSame(3, $reader->setSourceFile(StreamReader::createByString($pdf)));
+    }
+
+    public function test_modern_cover_title_divider_and_supporting_text_share_one_left_edge()
+    {
+        foreach ([true, false] as $alignCoverText) {
+            $generator = $this->generator();
+            $generator->pieces(collect())->request([
+                'title' => 'Test', 'subtitle' => 'A collection of pieces',
+                'comment' => 'for piano', 'cover_style' => 'modern', 'title_page' => false,
+                // Submitted options cannot opt the legacy mobile generator in.
+                'align_cover_text' => true,
+            ], $alignCoverText)->generate();
+            $reader = new class extends Fpdi {
+                public function firstPageStream()
+                {
+                    return $this->getPdfReader($this->currentReaderId)->getPage(1)->getContentStream();
+                }
+            };
+            $reader->setSourceFile(StreamReader::createByString($generator->frontPdf));
+            $stream = $reader->firstPageStream();
+            $this->assertStringContainsString('BT 76.000 550.000 Td', $stream);
+            $textX = $alignCoverText ? '76.000' : '112.000';
+            foreach (['457.000', '419.800'] as $baseline) {
+                $this->assertStringContainsString('BT '.$textX.' '.$baseline.' Td', $stream);
+            }
+            $line = $alignCoverText ? '76.000 510.000 m 536.000 510.000 l S' : '92.000 510.000 m 520.000 510.000 l S';
+            $this->assertStringContainsString($line, $stream);
+        }
     }
 
     public function test_maximum_cover_text_and_manual_line_breaks_fit_without_extra_pages()

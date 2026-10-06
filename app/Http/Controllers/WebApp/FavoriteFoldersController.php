@@ -50,7 +50,7 @@ class FavoriteFoldersController extends Controller
 
         try {
             $generator = app(PDFGenerator::class)->pieces($pieces)
-                ->request($options);
+                ->request($options, true);
             $pdf = $generator->generate();
 
             if ($request->boolean('preview')) {

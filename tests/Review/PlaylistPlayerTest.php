@@ -76,6 +76,8 @@ class PlaylistPlayerTest extends ReviewTestCase
         $response->assertSeeInOrder($this->pieces->map(function ($piece) { return 'data-piece-id="'.$piece->id.'"'; })->all(), false);
         $this->user->update(['super_user' => true]);
         $response = $this->get(route('webapp.users.favorites.folders.show', $this->folder))->assertOk()->assertDontSee('data-preview="10"', false);
+        $response->assertSee('escore-page--pending" data-escore-main-page aria-busy="true"', false)
+            ->assertSee('data-escore-loader role="status"', false);
         if ($destination = getenv('PLAYLIST_PREVIEW_DIR')) {
             file_put_contents($destination.'/folder.html', $this->previewHtml($response->getContent()));
         }
@@ -168,7 +170,7 @@ class PlaylistPlayerTest extends ReviewTestCase
         $this->user->unsetRelation('membership');
         $generator = \Mockery::mock(PDFGenerator::class);
         $generator->shouldReceive('pieces')->once()->withArgs(function ($pieces) { return $pieces->count() === 7 && !$pieces->contains('id', $this->pieces[6]->id); })->andReturnSelf();
-        $generator->shouldReceive('request')->once()->with(['title' => 'My book', 'subtitle' => 'Piano', 'comment' => 'Practice', 'creator' => $this->user->full_name])->andReturnSelf();
+        $generator->shouldReceive('request')->once()->with(['title' => 'My book', 'subtitle' => 'Piano', 'comment' => 'Practice', 'creator' => $this->user->full_name], true)->andReturnSelf();
         $generator->shouldReceive('generate')->once()->andReturnSelf();
         $generator->shouldReceive('stream')->once()->andReturn(response('PDF fixture'));
         $this->app->instance(PDFGenerator::class, $generator);
