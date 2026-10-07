@@ -20,11 +20,11 @@
     }
     &__content { max-width: 520px; }
     &__title {
-        font-size: clamp(26px, 3.2vw, 38px);
+        font-size: clamp(22px, 2.2vw, 28px);
         line-height: 1.2;
         overflow-wrap: anywhere;
     }
-    &__metadata { font-size: var(--font-size-lg); overflow-wrap: anywhere; }
+    &__metadata { overflow-wrap: anywhere; }
     &__media .app-icon { width: 1.4em; height: 1.4em; }
 }
 
