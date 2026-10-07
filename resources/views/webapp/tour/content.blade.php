@@ -1,8 +1,10 @@
 <section id="match-tour" class="match-tour mx-auto" data-url="{{ route('webapp.tour.result') }}" aria-label="Find your match">
     @if($tour['ready'])
     <div class="match-count text-center">
-        <div class="match-count-number"><span data-count>{{ number_format($tour['total']) }}</span></div>
-        <div class="match-count-unit" data-count-unit>pieces</div>
+        <div class="match-count-number">
+            <span data-count>{{ number_format($tour['total']) }}</span>
+            <span class="match-count-unit" data-count-unit>pieces</span>
+        </div>
         <span class="visually-hidden" data-count-note>In the PianoLIT library</span>
         <span class="visually-hidden" role="status" data-count-announcement></span>
     </div>
