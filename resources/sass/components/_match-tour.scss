@@ -77,8 +77,15 @@
     .is-playing .match-waveform span { animation: match-wave 640ms ease-in-out infinite alternate; animation-delay: var(--bar-delay); }
     .match-main-action { min-height: 82px; display: flex; align-items: flex-end; justify-content: center; }
     .match-primary, .match-outline { min-height: 56px; width: 100%; max-width: 420px; padding: 15px 24px; border-radius: 32px !important; font-size: 17px; display: inline-flex; gap: 16px; align-items: center; justify-content: center; }
-    .match-primary { color: #fff; background: var(--match-accent); border-color: var(--match-accent); box-shadow: 0 5px 12px rgba(92,64,171,.15); }
-    .match-primary:hover, .match-primary:focus-visible { color: #fff; background: var(--match-accent); border-color: var(--match-accent); filter: brightness(.95); }
+    .match-primary { box-shadow: 0 5px 12px rgba(92,64,171,.15); }
+    .match-primary, .match-primary:hover, .match-primary:focus, .match-primary.focus,
+    .match-primary:disabled, .match-primary.disabled,
+    .match-primary:not(:disabled):not(.disabled):active, .match-primary:not(:disabled):not(.disabled).active {
+        color: #fff; background: var(--match-accent) !important; border-color: var(--match-accent) !important;
+    }
+    .match-primary:hover, .match-primary:focus-visible { filter: brightness(.95); }
+    .match-primary:focus, .match-primary.focus { box-shadow: 0 0 0 3px var(--match-accent) !important; }
+    .match-primary:not(:disabled):not(.disabled):active, .match-primary:not(:disabled):not(.disabled).active { filter: brightness(.9); }
     .match-outline { color: var(--match-ink); background: rgba(255,255,255,.45); border-color: var(--match-accent); }
     .match-navigation { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
     .match-navigation .btn { padding: 8px 0; font-size: 14px; color: var(--match-ink); }
@@ -92,7 +99,10 @@
     .match-score p { color: var(--match-muted); font-size: 14px; padding: 12px; }
     .match-score canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     .match-score-choice { display: block; width: 100%; min-height: 46px; border-radius: 25px !important; background: transparent; border-color: #536780; color: var(--match-ink); }
-    .match-score-choice:not(:disabled):hover { color: white; background: var(--match-accent); }
+    .match-score-choice:not(:disabled):hover, .match-score-choice:not(:disabled):focus-visible,
+    .match-score-choice:not(:disabled):active, .match-score-choice.selected {
+        color: #fff !important; background: var(--match-accent); border-color: var(--match-accent);
+    }
     .match-cards--duel { max-width: 690px; margin: 0 auto; gap: 76px; }
     .match-card--duel { overflow: hidden; }
     .match-card--duel .match-select { flex-direction: column; text-align: center; padding: 0; }
