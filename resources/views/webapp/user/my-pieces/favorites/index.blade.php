@@ -1,7 +1,7 @@
 <section class="my-pieces-favorites" id="folders-list" aria-labelledby="favorites-heading">
     <div class="my-pieces-favorites__heading">
         <div>
-            <h2 id="favorites-heading">Your folders</h2>
+
             <p>{{ $folders->count() }} {{ str_plural('folder', $folders->count()) }} · {{ $folders->sum('favorites_count') }} {{ str_plural('piece', $folders->sum('favorites_count')) }}</p>
         </div>
         <div class="my-pieces-favorites__actions">
