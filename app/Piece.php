@@ -524,13 +524,20 @@ class Piece extends PianoLit
         return $pieces;
     }
 
-    public function similar($strict = true)
+    public function similar($strict = true, $completeTagsOnly = false)
     {
         $mood = $this->mood()->pluck('id');
 
-        $similar = Piece::exceptThis()->with(['tags', 'composer'])->whereHas('tags', function(Builder $query) use ($mood) {
+        $query = Piece::exceptThis()->with(['tags', 'composer'])->whereHas('tags', function(Builder $query) use ($mood) {
             $query->whereIn('id', $mood);
-        })->get();
+        });
+        // The web discovery cards can encounter incompletely tagged library entries.
+        // Opt in without changing the existing public/mobile recommendation contract.
+        if ($completeTagsOnly) {
+            $query->whereHas('tags', function ($q) { $q->where('type', 'level'); });
+            if ($strict) $query->whereHas('tags', function ($q) { $q->where('type', 'period'); });
+        }
+        $similar = $query->get();
 
         foreach ($similar as $key => $piece) {
             if (! in_array($piece->level->id, [$this->level->id - 1, $this->level->id, $this->level->id + 1]))

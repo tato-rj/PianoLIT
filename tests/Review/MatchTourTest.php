@@ -54,7 +54,7 @@ class MatchTourTest extends ReviewTestCase
         $this->assertSame($before['pieces'], $data['pieces']);
         $this->assertSame($before['scores'], $data['scores']);
         $this->assertSame($queryCount, count($queries));
-        $this->assertLessThanOrEqual(10, count($queries));
+        $this->assertLessThanOrEqual(12, count($queries));
         foreach ($queries as $query) $this->assertStringNotContainsString('pieces_count', $query['query']);
     }
 
@@ -88,8 +88,9 @@ class MatchTourTest extends ReviewTestCase
         $this->assertSame(12, $data['total']);
         $this->assertSame($data, $tour->data());
         $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
-        $this->assertCount(3, array_unique(array_column($data['scores'], 'id')));
-        $this->get(route('webapp.tour'))->assertOk()->assertSee('Let’s narrow down')
+        $this->assertCount(4, array_unique(array_column($data['scores'], 'id')));
+        $this->assertCount(9, $data['moods']);
+        $this->get(route('webapp.tour'))->assertOk()->assertSee('data-progress-step', false)
             ->assertSee('modal-fullscreen', false)->assertSee('Close Find your match')
             ->assertSee('id="menu"', false)
             ->assertDontSee('QUESTION')->assertDontSee('id="find-match-carousel"', false)
@@ -148,12 +149,13 @@ class MatchTourTest extends ReviewTestCase
         $this->app->instance(Quiz::class, $quiz);
         $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your match')
             ->assertSee('id="match-result-heading"', false)->assertDontSee('data-bs-dismiss', false)
-            ->assertSee('data-result-media', false)->assertSee('<audio', false)
-            ->assertSee($this->pieces[0]->medium_name)->assertSee('Learn more about this piece')
-            ->assertSee('More like this')->assertDontSee('id="match-modal"', false);
+            ->assertSee('data-result-data', false)->assertDontSee('<video', false)
+            ->assertSee($this->pieces[0]->medium_name)->assertSee('View piece')
+            ->assertSee('You might also like')->assertSee('Explore more pieces')
+            ->assertDontSee('data-submit="favorite"', false)->assertDontSee('id="match-modal"', false);
     }
 
-    public function test_inline_result_shares_legacy_content_and_prefers_performance_video()
+    public function test_inline_result_uses_existing_media_and_preserves_legacy_modal()
     {
         $piece = $this->pieces[0];
         Model::withoutEvents(function () use ($piece) {
@@ -166,16 +168,59 @@ class MatchTourTest extends ReviewTestCase
         $this->assertStringNotContainsString('modal-dialog', $html);
         $this->assertStringContainsString('performance.mp4', $html);
         $this->assertStringNotContainsString('lesson.mp4', $html);
-        $this->assertStringContainsString("What's this piece like?", $html);
+        $this->assertStringContainsString('data-result-card', $html);
         $legacy = view('funnels.find-your-match.results', ['piece' => $piece])->render();
         $this->assertStringContainsString('id="match-modal"', $legacy);
         $this->assertStringNotContainsString('data-result-media', $legacy);
         $this->assertStringContainsString('data-bs-dismiss="modal"', $legacy);
+        $this->assertStringContainsString("What's this piece like?", $legacy);
     }
 
     public function test_real_engine_can_recommend_with_the_new_answers()
     {
         $this->postJson(route('webapp.tour.result'), $this->answers())->assertOk()->assertSee('Your match');
+    }
+
+    public function test_moods_and_skips_use_existing_tags_and_preferred_piece_level()
+    {
+        $tour = new MatchTour;
+        foreach (MatchTour::MOODS as $mood => $definition) {
+            $answers = $this->answers();
+            $answers['mood'] = $mood; $answers['intent'] = null;
+            $answers['reading'] = [null, null]; $answers['winners'] = [null, null, null];
+            $piece = Piece::with('tags')->find($answers['preferredPiece']);
+            $expected = array_merge([$piece->id, $piece->level->name], $definition['tags']);
+            $this->assertSame($expected, $tour->keywords($answers));
+            $this->postJson(route('webapp.tour.result'), $answers)->assertOk();
+        }
+        $this->assertSame('beginner', $tour->level([false, null]));
+        $this->assertSame('intermediate', $tour->level([true, null]));
+        $answers['mood'] = 'arbitrary';
+        $this->withExceptionHandling()->postJson(route('webapp.tour.result'), $answers)->assertStatus(422);
+    }
+
+    public function test_result_reuses_session_favorite_and_excludes_match_from_recommendations()
+    {
+        Model::withoutEvents(function () {
+            $incomplete = create(Piece::class);
+            $incomplete->tags()->attach($this->pieces[0]->tags()->where('type', 'mood')->pluck('tags.id')->all());
+        });
+        $user = Model::withoutEvents(function () { return create(\App\User::class); });
+        $this->actingAs($user, 'web');
+        $answers = $this->answers(); $answers['mood'] = 'open';
+        $quiz = \Mockery::mock(Quiz::class);
+        $quiz->shouldReceive('getKeywords')->andReturnSelf();
+        $quiz->shouldReceive('exclude')->andReturnSelf();
+        $quiz->shouldReceive('search')->andReturn($this->pieces[0]);
+        $this->app->instance(Quiz::class, $quiz);
+        $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()
+            ->assertSee('data-submit="favorite"', false)->assertSee('aria-pressed="false"', false);
+        preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
+        $result = json_decode($matches[1], true);
+        $this->assertLessThanOrEqual(4, count($result['recommendations']));
+        $this->assertNotContains($result['piece']['id'], array_column($result['recommendations'], 'id'));
+        $this->assertNull($result['piece']['video']);
+        $this->assertStringEndsWith('/tour.mp3', $result['piece']['audio']);
     }
 
     public function test_malformed_answers_and_out_of_round_choices_are_rejected()

@@ -22,11 +22,7 @@
 			<div class="mb-4 video-container">
 				@php
 					$video = $piece->tutorials->first();
-					if (isset($previewSeconds)) {
-						$video = $piece->tutorials->first(function ($tutorial) {
-							return strtolower($tutorial->type) === 'performance';
-							}) ?? $video;
-					}
+					if (isset($previewSeconds)) $video = \App\Services\WebApp\MatchTour::video($piece);
 				@endphp
 				@if($video)
 				<video class="w-100" id="piece-video-{{$video->id}}" controls playsinline preload="metadata" @isset($previewSeconds) data-result-media @endisset>

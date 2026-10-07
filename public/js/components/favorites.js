@@ -80,7 +80,9 @@ const Offcanvas = window.bootstrap.Offcanvas;
     });
 
     function updateFlag(flag) {
-        $(flag).find('i').toggleClass('icon-filled');
+        const $flag = $(flag);
+        const $icon = $flag.find('i').toggleClass('icon-filled');
+        if ($flag.is('[aria-pressed]')) $flag.attr('aria-pressed', $icon.hasClass('icon-filled') ? 'true' : 'false');
     }
 
     $(document).on('click', 'button.new-folder', function() {

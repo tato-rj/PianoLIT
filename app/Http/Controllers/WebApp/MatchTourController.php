@@ -18,18 +18,24 @@ class MatchTourController extends Controller
         $answers = $request->validate([
             'preferredPiece' => ['required', 'integer', Rule::in(array_slice($ids, 0, 4))],
             'reading' => 'required|array|size:2',
-            'reading.0' => 'required|boolean',
-            'reading.1' => 'required|boolean',
+            'reading.0' => 'present|nullable|boolean',
+            'reading.1' => 'present|nullable|boolean',
             'winners' => 'required|array|size:3',
-            'winners.0' => ['required', 'integer', Rule::in(array_slice($ids, 4, 2))],
-            'winners.1' => ['required', 'integer', Rule::in(array_slice($ids, 6, 2))],
-            'winners.2' => ['required', 'integer', Rule::in(array_slice($ids, 8, 2))],
-            'intent' => ['required', Rule::in(array_keys(MatchTour::INTENTS))],
+            'winners.0' => ['present', 'nullable', 'integer', Rule::in(array_slice($ids, 4, 2))],
+            'winners.1' => ['present', 'nullable', 'integer', Rule::in(array_slice($ids, 6, 2))],
+            'winners.2' => ['present', 'nullable', 'integer', Rule::in(array_slice($ids, 8, 2))],
+            'mood' => ['nullable', Rule::in(array_keys(MatchTour::MOODS))],
+            'intent' => ['required_without:mood', 'nullable', Rule::in(array_keys(MatchTour::INTENTS))],
         ]);
         // Derive the level server-side; never trust a submitted level or user identity.
         $piece = $quiz->getKeywords($tour->keywords($answers))->exclude($tour->exclusions($answers))->search();
         abort_unless($piece, 503, 'No match is available right now.');
         $piece->loadMissing(['composer', 'tags', 'tutorials']);
-        return view('webapp.tour.result', compact('piece'));
+        // Reuse the existing More like this recommendations, with a short web presentation.
+        $recommendations = ($piece->level && $piece->period ? $piece->similar(true, true) : collect())->reject(function ($other) use ($piece) { return $other->id === $piece->id; })->take(4)->values();
+        if (auth('web')->check()) {
+            $piece->loadExists(['favorites as webapp_is_favorited' => function ($query) { $query->where('user_id', auth('web')->id()); }]);
+        }
+        return view('webapp.tour.result', compact('piece', 'recommendations'));
     }
 }

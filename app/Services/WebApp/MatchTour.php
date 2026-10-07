@@ -15,6 +15,42 @@ class MatchTour
         'unfamiliar' => 'Something unfamiliar',
     ];
 
+    const MOODS = [
+        'calm' => ['label' => 'Calm & peaceful', 'icon' => 'moon', 'tags' => ['calm', 'dreamy']],
+        'energetic' => ['label' => 'Energetic', 'icon' => 'sun', 'tags' => ['fast', 'flashy']],
+        'romantic' => ['label' => 'Romantic', 'icon' => 'heart', 'tags' => ['dreamy', 'elegant']],
+        'joyful' => ['label' => 'Joyful', 'icon' => 'sprout', 'tags' => ['happy']],
+        'dramatic' => ['label' => 'Dramatic', 'icon' => 'cloud', 'tags' => ['agitated', 'agitaded', 'crazy']],
+        'mysterious' => ['label' => 'Mysterious', 'icon' => 'mountain', 'tags' => ['mysterious', 'melancholic']],
+        'playful' => ['label' => 'Playful', 'icon' => 'sparkles', 'tags' => ['happy', 'elegant']],
+        'reflective' => ['label' => 'Reflective', 'icon' => 'waves', 'tags' => ['calm', 'melancholic']],
+        'open' => ['label' => 'Open to anything', 'icon' => 'sparkles', 'tags' => []],
+    ];
+
+    public static function artwork(Piece $piece)
+    {
+        return $piece->cover_path ? storage($piece->cover_path)
+            : (optional($piece->tags->firstWhere('type', 'period'))->cover_image ?: asset('images/webapp/thumbnail.jpg'));
+    }
+
+    public static function video(Piece $piece)
+    {
+        return $piece->tutorials->first(function ($tutorial) {
+            return strtolower($tutorial->type) === 'performance';
+        }) ?? $piece->tutorials->first();
+    }
+
+    public static function card(Piece $piece, $withVideo = false)
+    {
+        $video = $withVideo ? self::video($piece) : null;
+        return [
+            'id' => $piece->id, 'title' => $piece->medium_name, 'composer' => $piece->composer->short_name,
+            'image' => $piece->composer->cover_image, 'artwork' => self::artwork($piece),
+            'audio' => $piece->audio_path ? storage($piece->audio_path) : null,
+            'video' => $video ? $video->video_url : null, 'url' => route('webapp.pieces.show', $piece),
+        ];
+    }
+
     public function catalog()
     {
         // The Quiz uses these tagged pieces for similarity, with free picks as fallback.
@@ -29,7 +65,7 @@ class MatchTour
 
     public function data()
     {
-        $pool = $this->catalog()->select(['pieces.id', 'composer_id', 'name', 'audio_path', 'show_on_tour'])
+        $pool = $this->catalog()->select(['pieces.id', 'composer_id', 'name', 'audio_path', 'cover_path', 'show_on_tour'])
             ->with(['composer' => function ($query) {
                 $query->select(['id', 'name', 'cover_path'])->withCount([])->setEagerLoads([]);
             }, 'tags' => function ($query) { $query->select(['tags.id', 'name', 'type']); }])->withCount([])
@@ -70,12 +106,13 @@ class MatchTour
             return [
                 'id' => $piece->id, 'title' => $piece->name,
                 'composer' => $piece->composer->short_name, 'image' => $piece->composer->cover_image,
-                'audio' => storage($piece->audio_path),
+                'audio' => storage($piece->audio_path), 'artwork' => self::artwork($piece),
+                'level' => optional($piece->tags->firstWhere('type', 'level'))->name,
                 'traits' => $piece->tags->whereIn('type', ['period', 'mood', 'genre'])->pluck('name')->values()->all(),
             ];
         })->values()->all();
         $scores = [];
-        foreach (['easy' => 'elementary', 'middle' => 'intermediate', 'hard' => 'advanced'] as $key => $level) {
+        foreach (['easy' => 'elementary', 'beginner' => 'beginner', 'middle' => 'intermediate', 'hard' => 'advanced'] as $key => $level) {
             $piece = Piece::select(['pieces.id', 'composer_id', 'name', 'score_path'])
                 ->with(['composer' => function ($query) {
                     $query->select(['id', 'name'])->withCount([])->setEagerLoads([]);
@@ -90,13 +127,15 @@ class MatchTour
         }
         return [
             'total' => $this->catalog()->count(), 'pieces' => $cards, 'scores' => $scores,
-            'intents' => self::INTENTS, 'previewSeconds' => config('webapp.media_preview_seconds', 10),
-            'ready' => count($cards) === 10 && !in_array(null, $scores, true),
+            'intents' => self::INTENTS, 'moods' => collect(self::MOODS)->map(function ($mood) { return \Illuminate\Support\Arr::except($mood, 'tags'); })->all(), 'previewSeconds' => config('webapp.media_preview_seconds', 10),
+            'ready' => count($cards) === 10 && !in_array(null, \Illuminate\Support\Arr::except($scores, 'beginner'), true),
         ];
     }
 
-    public function level(array $reading)
+    public function level(array $reading, $fallback = 'intermediate')
     {
+        if ($reading[0] === null) return $fallback;
+        if ($reading[1] === null) return $reading[0] ? 'intermediate' : 'beginner';
         return $reading[0] ? ($reading[1] ? 'advanced' : 'intermediate') : ($reading[1] ? 'beginner' : 'elementary');
     }
 
@@ -106,13 +145,19 @@ class MatchTour
             'quick' => ['short'], 'work' => ['long'], 'personal' => ['dreamy', 'calm', 'elegant'],
             'impressive' => ['flashy', 'fast'], 'unfamiliar' => [],
         ];
-        return array_merge([$answers['preferredPiece']], $answers['winners'],
-            [$this->level($answers['reading'])], $intentTags[$answers['intent']]);
+        $fallback = 'intermediate';
+        if ($answers['reading'][0] === null) {
+            $preferred = Piece::with('tags')->withCount([])->find($answers['preferredPiece']);
+            $fallback = optional($preferred ? $preferred->tags->firstWhere('type', 'level') : null)->name ?? $fallback;
+        }
+        $tags = isset($answers['mood']) ? self::MOODS[$answers['mood']]['tags'] : $intentTags[$answers['intent']];
+        return array_merge([$answers['preferredPiece']], array_values(array_filter($answers['winners'], function ($id) { return $id !== null; })),
+            [$this->level($answers['reading'], $fallback)], $tags);
     }
 
     public function exclusions(array $answers)
     {
         // Use the engine's existing exclusion input for unfamiliar repertoire.
-        return $answers['intent'] === 'unfamiliar' ? Piece::famous()->pluck('id')->all() : [];
+        return ($answers['intent'] ?? null) === 'unfamiliar' ? Piece::famous()->pluck('id')->all() : [];
     }
 }

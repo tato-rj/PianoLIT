@@ -7,7 +7,7 @@ module.exports = async function () {
     const window = {};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/match-tour.js'), 'utf8'), {window});
     const {State, Candidates, AnimatedCount, Previews, Controller} = window.MatchTour;
-    const pieces = Array.from({length: 10}, (_, i) => ({id: i + 1, audio: i + '.mp3', traits: [i % 2 ? 'calm' : 'flashy', 'romantic']}));
+    const pieces = Array.from({length: 10}, (_, i) => ({id: i + 1, audio: i + '.mp3', level: 'beginner', traits: [i % 2 ? 'calm' : 'flashy', 'romantic']}));
     for (const total of [10, 50, 381, 2847, 10000]) {
         for (const reading of [[true, true], [true, false], [false, true], [false, false]]) {
             const state = new State(total);
@@ -24,8 +24,8 @@ module.exports = async function () {
             state.choose(9, pieces);
             assert(state.count < second && state.count > 1);
             assert.strictEqual(state.count, Candidates.after(total, second, 'preferences', state.answers, pieces));
-            state.choose('quick', pieces);
-            state.back(); assert.strictEqual(state.step, 6); assert.strictEqual(state.answers.intent, null);
+            state.choose('calm', pieces);
+            state.back(); assert.strictEqual(state.step, 6); assert.strictEqual(state.answers.mood, null);
             for (let i = 0; i < 6; i++) state.back();
             assert.strictEqual(state.count, total); assert.strictEqual(state.step, 0);
             assert.strictEqual(state.answers.reading.length, 0); assert.strictEqual(state.answers.winners.length, 0);
@@ -72,27 +72,20 @@ module.exports = async function () {
     resolve({data: '<article>obsolete</article>'}); await response;
     assert.strictEqual(stale.state.count, 47);
 
-    // The result stays in the fullscreen tour's stage with no second modal.
+    // Successful results reuse the stage and do not require a second modal/player.
     window.setTimeout = callback => callback();
-    const media = {events: {}, currentTime: 0, pause() { this.pauses = (this.pauses || 0) + 1; }, addEventListener(event, callback) { this.events[event] = callback; }};
-    window.bootstrap = {Modal: class {constructor() { throw Error('Result must not open a second modal'); }}};
-    let destroyed = false;
-    window.Plyr = class {destroy() { destroyed = true; }};
+    window.bootstrap = {Modal: class {constructor() { throw Error('No second modal'); }}};
+    let mounted = false, mediaStopped = false;
     const result = {
         state: {count: 2, answers: {}}, http: {post: () => Promise.resolve({data: 'chosen piece'})},
         element: {dataset: {url: '/result'}, querySelector: () => ({})},
-        stage: {classList: {add() {}, remove() {}}, querySelector: () => media, querySelectorAll: () => [media]},
-        counter: {to: () => Promise.resolve(), cancel() {}}, generation: 1, reduced: true, data: {previewSeconds: 10}, previews: {stop() {}},
-        stopMedia: Controller.prototype.stopMedia, navigation() {}, focus() {}
+        stage: {classList: {add() {}, remove() {}}},
+        counter: {to: () => Promise.resolve()}, generation: 1, reduced: true,
+        stopMedia() { mediaStopped = true; }, mountResult() { mounted = true; }, navigation() {}, focus() {}
     };
     await Controller.prototype.result.call(result, 1);
     assert.strictEqual(result.state.count, 1);
-    assert.strictEqual(result.stage.innerHTML, 'chosen piece');
-    media.currentTime = 10; media.events.seeking();
-    assert.strictEqual(media.currentTime, 0);
-    Controller.prototype.dispose.call(result);
-    assert(destroyed); assert(media.pauses > 0);
-    assert.strictEqual(result.resultPlayer, null);
+    assert.strictEqual(result.stage.innerHTML, 'chosen piece'); assert(mounted && mediaStopped);
 
     let failureReported;
     const failed = {state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
@@ -133,29 +126,53 @@ module.exports = async function () {
     // Use a fresh script context to exercise a pending first reading load.
     const pendingWindow = Object.assign({}, window);
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/match-tour.js'), 'utf8'), {window: pendingWindow});
-    const container = {};
-    const reader = {state: {step: 1}, generation: 1, data: {scores: {middle: {title: 'Score', composer: 'Composer', url: '/score.pdf'}}},
-        stage: {querySelector: () => container}, heading: () => '', pdfjs: null};
+    const reader = {state: {step: 1}, generation: 1, readingPair: () => [{title: 'A'}, {title: 'B'}],
+        pdfTasks: new Set(), stage: {}, heading: () => '', pdfjs: null};
     const reading = pendingWindow.MatchTour.Controller.prototype.reading.call(reader);
     reader.generation++;
     pendingWindow.pdfjsLib = pdf; scripts[3].onload();
     await reading;
-    assert.strictEqual(reader.pdfTask, undefined);
+    assert.strictEqual(reader.pdfTasks.size, 0);
 
-    delete window.Plyr;
-    const player = window.MatchTour.loadPlayer();
-    assert.strictEqual(scripts[4].tag, 'link');
-    assert.strictEqual(scripts[5].tag, 'script');
-    window.Plyr = class {};
-    scripts[5].onload();
-    assert.strictEqual(await player, window.Plyr);
-    await window.MatchTour.loadPlayer();
-    assert.strictEqual(scripts.length, 6);
+    // Every difficulty outcome and optional skip retains its intended level.
+    for (const [answers, expected] of [[[false,false],'elementary'], [[false,true],'beginner'], [[true,false],'intermediate'], [[true,true],'advanced'], [[null,null],'beginner'], [[false,null],'beginner'], [[true,null],'intermediate']]) {
+        assert.strictEqual(window.MatchTour.level(answers, 'beginner'), expected);
+    }
+    const skipped = new State(961);
+    [1, null, null, null, null, null, 'open'].forEach(value => skipped.choose(value, pieces));
+    assert.strictEqual(skipped.step, 7); assert.strictEqual(skipped.answers.estimatedLevel, 'beginner');
+    assert.deepStrictEqual(Array.from(skipped.answers.winners), [null,null,null]);
+    for (const difficulty of ['early beginner', 'late beginner', 'early intermediate', 'late intermediate']) {
+        const catalog = pieces.map(piece => Object.assign({}, piece, {level: difficulty}));
+        const skip = new State(961);
+        [1, null, null].forEach(value => skip.choose(value, catalog));
+        assert(Number.isFinite(skip.count), 'Existing split difficulty names keep valid countdown estimates');
+        assert.strictEqual(skip.answers.estimatedLevel, difficulty);
+    }
+    const scores = {easy: 'easy', beginner: 'beginner', middle: 'middle', hard: 'hard'};
+    const pairs = {data: {scores}, state: {step: 1, answers: {reading: []}}};
+    assert.deepStrictEqual(Array.from(Controller.prototype.readingPair.call(pairs)), ['easy','middle']);
+    pairs.state.step = 2; pairs.state.answers.reading = [false];
+    assert.deepStrictEqual(Array.from(Controller.prototype.readingPair.call(pairs)), ['easy','beginner']);
+    pairs.state.answers.reading = [true];
+    assert.deepStrictEqual(Array.from(Controller.prototype.readingPair.call(pairs)), ['middle','hard']);
+
+    // Reused card renderer safely escapes names and uses inline media only for reward.
+    const card = {id:1,title:'<danger>',composer:'A & B',image:'/portrait',artwork:'/art',audio:'/audio',video:'/video',url:'/pieces/1'};
+    const renderer = {pendingPiece: 1, waveform: Controller.prototype.waveform};
+    const listening = Controller.prototype.cards.call(renderer, [card], 'listening');
+    assert(listening.includes('&lt;danger&gt;')); assert(listening.includes('data-select-piece="1"'));
+    assert(!listening.includes('<video'));
+    const reward = Controller.prototype.cards.call(renderer, [card], 'reward');
+    assert(reward.includes('<video data-result-media controls playsinline preload="none"'));
+    assert(reward.includes('match-artwork')); assert(reward.includes('data-play="1"'));
+    const recommendations = Controller.prototype.cards.call(renderer, [card], 'recommendation');
+    assert(recommendations.includes('href="/pieces/1"')); assert(!recommendations.includes('<video'));
 
     // Closing the shell discards a pending load and restores the launcher's focus.
     const events = {}, documentEvents = {};
     const content = {innerHTML: ''};
-    const shell = {dataset: {tourUrl: '/tour'}, querySelector: () => content, addEventListener(name, callback) { events[name] = callback; }};
+    const shell = {dataset: {tourUrl: '/tour'}, querySelector: selector => selector === '[data-tour-content]' ? content : null, querySelectorAll: () => [], addEventListener(name, callback) { events[name] = callback; }};
     window.document.addEventListener = (name, callback) => { documentEvents[name] = callback; };
     window.bootstrap.Modal = class {show() { events['show.bs.modal'](); }};
     let loaded, requests = 0;
