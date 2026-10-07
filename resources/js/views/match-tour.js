@@ -350,10 +350,10 @@
         render(focus = true) {
             this.stage.classList.remove('leaving'); this.report(''); this.navigation();
             const step = this.state.step;
-            if (step === 0) this.stage.innerHTML = this.heading('Which piece do you like best?', 'Listen to a short excerpt from each piece, then choose the one you enjoy most.') + this.cards(this.data.pieces.slice(0, 4), 'listening') +
+            if (step === 0) this.stage.innerHTML = this.heading('Which piece do you like more?', 'Listen and pick your favorite.') + this.cards(this.data.pieces.slice(0, 4), 'listening') +
                 '<div class="match-main-action"><button type="button" class="btn btn-primary match-primary" data-listen-confirm' + (!this.pendingPiece ? ' hidden' : '') + '>I like this one ' + arrow + '</button></div>';
             else if (step <= 2) this.reading();
-            else if (step <= 5) this.stage.innerHTML = this.heading('Which would you rather play?', 'Choose the piece that attracts you more.', (step - 2) + ' of 3') + this.cards(this.data.pieces.slice(4 + (step - 3) * 2, 6 + (step - 3) * 2), 'duel');
+            else if (step <= 5) this.stage.innerHTML = this.heading('Which feels more like you?', 'Pick the piece that speaks to you.', (step - 2) + ' of 3') + this.cards(this.data.pieces.slice(4 + (step - 3) * 2, 6 + (step - 3) * 2), 'duel');
             else if (step === 6) this.stage.innerHTML = this.heading('What mood are you in?', "Choose the vibe you're looking for.") + '<div class="match-moods">' + Object.keys(this.data.moods).map(key => {
                 const mood = this.data.moods[key];
                 return '<button type="button" class="match-mood" data-choice="' + key + '"><span class="match-mood-icon" aria-hidden="true">' + icon(mood.icon) + '</span><span>' + escape(mood.label) + '</span></button>';
@@ -372,7 +372,7 @@
         async reading() {
             const generation = ++this.generation, score = this.readingScore();
             this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
-            this.stage.innerHTML = this.heading('How does this score feel to sight-read?', 'Imagine playing it for the first time, with both hands at a slow, steady pace.', this.state.step + ' of 2') +
+            this.stage.innerHTML = this.heading('Which feels easier to sight-read?', 'Imagine playing it for the first time at a slow pace.', this.state.step + ' of 2') +
                 '<article class="match-score-card match-score-single"><div class="match-score" data-score-slot="0" aria-busy="true"><p role="status">Opening score…</p></div></article>' +
                 '<div class="match-score-answers mt-3" role="group" aria-label="Sight-reading difficulty"><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Easy for me</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Difficult for me</button></div>';
             try {

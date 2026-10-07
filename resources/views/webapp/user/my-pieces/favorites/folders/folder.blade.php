@@ -31,7 +31,7 @@
         @endforelse
     </div>
 
-    <a class="my-pieces-folder__open" href="{{ route('webapp.users.favorites.folders.show', $folder) }}">
+    <a class="my-pieces-folder__open btn-primary" href="{{ route('webapp.users.favorites.folders.show', $folder) }}">
         <span>Open folder</span>
         @icon('arrow-right', ['mr' => 0])
     </a>

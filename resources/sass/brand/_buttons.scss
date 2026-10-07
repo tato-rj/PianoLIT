@@ -30,7 +30,7 @@
 .btn-primary {
 	color: white !important;
 	background-color: var(--color-primary);
-	box-shadow: 0 5px 12px rgba(var(--color-primary-rgb), 0.15);
+	box-shadow: 0 5px 12px rgba(0,0,0, 0.25);
 
 	&:hover {
 		color: white !important;
@@ -60,6 +60,7 @@
 	color: #172033 !important;
 	background-color: #fff;
 	border-color: #e4eaf3;
+	box-shadow: 0 5px 12px rgba(0,0,0, 0.05);
 
 	&:hover, &:focus, &.focus {
 		color: #172033 !important;
