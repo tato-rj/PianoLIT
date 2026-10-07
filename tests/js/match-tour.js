@@ -77,6 +77,7 @@ module.exports = async function () {
     video.events.ended(); assert(video.paused); assert.strictEqual(previews.media, null);
     video.events.play(); assert(video.paused, 'Disposed native media cannot resume');
 
+    window.setTimeout = callback => callback();
     // A result delivered after restart/back must never replace the current screen.
     let resolve;
     const stale = {data: {draw: 'current-draw'}, finding() { this.waiting = true; }, state: {count: 47, answers: {}}, http: {post: (url, answers) => { assert.strictEqual(answers.draw, 'current-draw'); return new Promise(done => { resolve = done; }); }}, element: {dataset: {url: '/result'}}, counter: {to: () => Promise.resolve()}, generation: 1};
@@ -87,7 +88,6 @@ module.exports = async function () {
     assert.strictEqual(stale.state.count, 47);
 
     // Successful results reuse the stage and do not require a second modal/player.
-    window.setTimeout = callback => callback();
     window.bootstrap = {Modal: class {constructor() { throw Error('No second modal'); }}};
     let mounted = false, mediaStopped = false;
     const result = {
@@ -102,6 +102,28 @@ module.exports = async function () {
     await Controller.prototype.result.call(result, 1);
     assert.strictEqual(result.state.count, 1);
     assert.strictEqual(result.stage.innerHTML, 'chosen piece'); assert(mounted && mediaStopped && result.finishedWaiting);
+
+    // Fast responses wait for the countdown; Back during that wait discards the reveal.
+    let finishCountdown, resolveMatch;
+    const countTargets = [];
+    const waitingResult = Object.assign({}, result, {
+        reduced: false, generation: 1, state: {count: 15, answers: {}},
+        stage: {innerHTML: 'waiting'},
+        http: {post: () => new Promise(done => { resolveMatch = done; })},
+        counter: {to(target, duration, linear) {
+            countTargets.push([target, duration, linear]);
+            return new Promise(done => { finishCountdown = done; });
+        }}
+    });
+    const pendingReveal = Controller.prototype.result.call(waitingResult, 1);
+    assert.deepStrictEqual(countTargets, [[2, 2200, true]], 'Countdown begins before the result arrives');
+    resolveMatch({data: 'premature match'});
+    await Promise.resolve(); await Promise.resolve();
+    assert.strictEqual(waitingResult.stage.innerHTML, 'waiting', 'Fast responses cannot bypass the countdown');
+    waitingResult.generation++;
+    finishCountdown(); await pendingReveal;
+    assert.strictEqual(waitingResult.stage.innerHTML, 'waiting', 'Back during the reveal wait keeps the current screen');
+    assert.strictEqual(waitingResult.state.count, 15);
 
     let failureReported;
     const failed = {data: {draw: 'current-draw'}, finding() {}, finishFinding() { this.finishedWaiting = true; }, state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},

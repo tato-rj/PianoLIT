@@ -34,6 +34,7 @@
     .is-current .match-progress-dot { transform: scale(1.14); }
     .match-progress-label { display: flex; justify-content: center; gap: 18px; font-size: 13px; color: var(--match-ink); }
     .match-progress-label [data-step-number]:empty { display: none; }
+    &.has-match-result .match-progress-label { font-size: 1rem; }
 }
 
 .match-tour {
@@ -119,12 +120,14 @@
     .match-card--reward.has-played .match-play { inset: auto; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 84px; height: 84px; }
     .match-card--reward .match-play:focus-visible, .match-artwork video:focus-visible { outline: 3px solid var(--color-primary); outline-offset: -4px; }
     .match-card--reward.has-played.is-playing .match-artwork.has-video .match-play { visibility: hidden; }
-    .match-card--reward .match-piece-copy { padding: 14px 10px 10px; }
-    .match-card--reward .match-piece-copy strong { font-size: 21px; }
+    .match-card--reward .match-piece-copy { padding: 22px 14px 18px; }
+    .match-card--reward .match-piece-copy strong { font-size: 21px; line-height: 1.45; }
+    .match-card--reward .match-piece-copy small { margin-top: 12px; }
     .match-result-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 24px auto 0; }
-    .match-result-explanation { max-width: 560px; margin: 14px auto 0; text-align: center; }
-    .match-result-explanation h4 { font-size: 16px; font-weight: 700; margin: 0 0 5px; }
-    .match-result-explanation p { font-size: 14px; line-height: 1.45; margin: 0; color: var(--match-muted); }
+    .match-result-explanation { max-width: 560px; margin: 28px auto 0; text-align: center; }
+    .match-result-explanation h4 { font-size: 16px; font-weight: 700; margin: 0 0 12px; }
+    .match-result-explanation p { font-size: 14px; line-height: 1.65; margin: 0; color: var(--match-muted); }
+    [data-result-view] { padding-top: 24px; }
     .match-cards--recommendation { gap: 14px; max-width: 650px; margin: auto; }
     .match-card--recommendation { border: 0; border-radius: 18px; }
     .match-card--recommendation .match-select { padding: 14px 80px 14px 14px; gap: 18px; min-height: 104px; }
@@ -192,14 +195,11 @@
 }
 .match-tour {
     .match-finding { text-align: center; padding: 24px 0; }
-    .match-finding-visual { position: relative; display: grid; place-items: center; width: 160px; height: 160px; margin: 0 auto 32px; }
-    .match-finding-orbit { position: absolute; inset: 0; border: 2px solid rgba(128,98,239,.15); border-radius: 50%; animation: match-orbit 2.4s linear infinite; }
+    .match-finding-orbit { position: absolute; inset: -20px; border: 2px solid rgba(128,98,239,.15); border-radius: 50%; animation: match-orbit 2.4s linear infinite; }
     .match-finding-orbit::before, .match-finding-orbit::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--match-accent); top: 20px; left: 12px; box-shadow: 0 0 20px rgba(128,98,239,.25); }
     .match-finding-orbit::after { background: #ffc64c; top: auto; left: auto; bottom: 20px; right: 12px; width: 12px; height: 12px; }
-    .match-finding-symbol { display: grid; place-items: center; width: 112px; height: 112px; border-radius: 32px; color: var(--match-accent); background: rgba(255,255,255,.85); box-shadow: 0 12px 35px rgba(98,79,172,.12); animation: match-breathe 1.5s ease-in-out infinite alternate; }
-    .match-finding-symbol .app-icon { width: 52px; height: 52px; margin: 0; }
     .match-finding .match-waveform { width: 180px; margin: 0 auto; }
-    &.is-finding .match-count { animation: match-breathe 1.5s ease-in-out infinite alternate; }
+    &.is-finding .match-count { padding: 36px 0 40px; }
 }
 // Fit the common laptop viewport without clipping content or disabling scrolling.
 @media (min-width: 900px) {
@@ -227,8 +227,7 @@
         .match-moods { gap: 12px; }
         .match-mood { min-height: 100px; padding: 14px 12px; gap: 8px; }
         .match-card--reward .match-artwork > img { height: unquote('clamp(140px, 22vh, 190px)'); }
-        .match-result-explanation { margin-top: 10px; }
-        .match-result-actions { max-width: 420px; margin-top: 12px; gap: 8px; }
+        .match-result-actions { max-width: 420px; margin-top: 24px; gap: 12px; }
         .match-card--recommendation .match-select { min-height: 82px; padding-top: 12px; padding-bottom: 12px; }
         .match-card--recommendation .match-select img { width: 64px; height: 58px; }
         .match-finding { padding: 12px 0; }
@@ -250,7 +249,6 @@
         .match-score-choice { min-height: 40px; }
         .match-mood { min-height: 86px; }
         .match-card--reward .match-artwork > img { height: 140px; }
-        .match-card--reward .match-piece-copy { padding: 8px 8px 6px; }
         .match-card--reward .match-piece-copy strong { font-size: 18px; }
         .match-card--recommendation .match-select { min-height: 74px; padding-top: 8px; padding-bottom: 8px; }
         .match-card--recommendation .match-select img { height: 56px; }
@@ -258,7 +256,6 @@
     }
 }
 @keyframes match-orbit { to { transform: rotate(360deg); } }
-@keyframes match-breathe { to { transform: scale(1.045); } }
 @media (prefers-reduced-motion: reduce) {
-    .match-tour .match-finding-orbit, .match-tour .match-finding-symbol, .match-tour.is-finding .match-count { animation: none; }
+    .match-tour .match-finding-orbit { animation: none; }
 }

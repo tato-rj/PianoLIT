@@ -51,7 +51,7 @@ abstract class QuizFactory
 		$level = $this->preferredLevel();
 
 		foreach ($this->pieces as $piece) {
-			$similar = $similar->merge($piece->similar(false, false, $withVideoAndScore, $onlyFreePicks)->whereNotIn('composer_id', $this->exclude['composers']));
+			$similar = $similar->merge($piece->similar(false, $onlyFreePicks, $withVideoAndScore, $onlyFreePicks)->whereNotIn('composer_id', $this->exclude['composers']));
 		}
 
 		$similar = $similar->filter(function($piece, $key) use ($level) {

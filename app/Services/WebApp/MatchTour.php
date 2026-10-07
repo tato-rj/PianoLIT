@@ -188,26 +188,29 @@ class MatchTour
 
     public function explanation(array $answers, array $context)
     {
-        if ($context['fallback']) {
-            return 'We couldn’t find a close match from your answers, so here’s a past free pick to explore, with a video and score ready for you.';
-        }
         $describe = function ($tags) {
             return collect($tags)->map(function ($tag) { return $tag === 'agitaded' ? 'agitated' : $tag; })->unique()->take(2)->implode(' and ');
         };
         $shared = $describe($context['sharedMoods']);
-        $reasons = [$shared ? "It shares the {$shared} character of the pieces you enjoyed." : 'It connects with the pieces you enjoyed.'];
+        $reasons = $shared ? ["It shares the {$shared} character of the pieces you enjoyed."] : [];
         $mood = $answers['mood'] ?? null;
         if ($mood && $mood !== 'open' && array_intersect(self::MOODS[$mood]['tags'], $context['matchedTags'])) {
-            $reasons[] = 'That fits your mood: '.lcfirst(self::MOODS[$mood]['label']).'.';
+            $reasons[] = 'Its character fits your mood: '.lcfirst(self::MOODS[$mood]['label']).'.';
         } elseif (!$mood) {
             $intent = $answers['intent'] ?? null;
             if ($intent === 'quick' && in_array('short', $context['matchedTags'])) $reasons[] = 'Its shorter length suits your wish for a quick piece.';
             if ($intent === 'work' && in_array('long', $context['matchedTags'])) $reasons[] = 'Its longer format gives you a piece to spend time with.';
             if ($intent === 'impressive' && array_intersect(['flashy', 'fast'], $context['matchedTags'])) $reasons[] = 'Its showy character fits your wish for something impressive.';
         }
-        if ($answers['reading'][0] !== null && $context['level']) {
+        if ($answers['reading'][0] !== null && $context['level'] && ($context['levelMatched'] ?? !$context['fallback'])) {
             $reasons[] = 'Your sight-reading answers guided us toward '.$context['level'].' repertoire.';
+        } elseif ($answers['reading'][0] === null && ($context['levelMatched'] ?? false)) {
+            $reasons[] = 'Its difficulty is in the same range as the piece you enjoyed.';
+        } elseif (($context['nearestLevel'] ?? false) && $context['pieceLevel']) {
+            $reasons[] = 'Its '.$context['pieceLevel'].' difficulty is the closest available to '.($answers['reading'][0] !== null ? 'the level indicated by your sight-reading answers.' : 'the piece you enjoyed.');
         }
+        if ($context['fallback']) array_unshift($reasons, 'Here is the best match we could find, with a video and score ready for you.');
+        if (!$reasons) $reasons[] = 'Explore this piece with its video and score ready for you.';
         return implode(' ', $reasons);
     }
 }

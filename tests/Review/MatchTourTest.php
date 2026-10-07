@@ -311,12 +311,16 @@ class MatchTourTest extends ReviewTestCase
 
     public function test_fallback_explanation_does_not_claim_personalized_traits_or_difficulty()
     {
+        // Make the legacy fallback deterministically disagree with the requested traits/level.
+        Tutorial::query()->where('piece_id', '!=', $this->pieces[1]->id)->delete();
         $quiz = (new Quiz)->getKeywords(['elementary', 'calm']);
         $piece = $quiz->search(true);
         $context = $quiz->matchContext($piece);
         $this->assertTrue($context['fallback']);
         $explanation = (new MatchTour)->explanation($this->answers(), $context);
-        $this->assertStringContainsString('past free pick', $explanation);
+        $this->assertStringContainsString('Here is the best match we could find', $explanation);
+        $this->assertStringNotContainsString('couldn’t find', $explanation);
+        $this->assertStringNotContainsString('free pick', $explanation);
         $this->assertStringNotContainsString('sight-reading', $explanation);
         $this->assertStringNotContainsString('character', $explanation);
         $this->copyWithMedia();
@@ -442,6 +446,140 @@ class MatchTourTest extends ReviewTestCase
         });
         $this->assertSame($this->pieces[2]->id, (new Quiz)->getKeywords(['elementary'])->search(true)->id);
         $this->assertSame($this->pieces[2]->id, (new Quiz)->getKeywords(['elementary'])->search(true, true)->id);
+    }
+
+    private function partialCandidate($level, array $moods = [], array $attributes = [], $video = 'https://example.test/partial.mp4')
+    {
+        $piece = $this->copyWithMedia(array_merge(['audio_path' => null], $attributes), $video);
+        Model::withoutEvents(function () use ($piece, $level, $moods) {
+            $tags = collect(array_filter(array_merge([$level], $moods)))->map(function ($name) use ($level) {
+                return Tag::firstOrCreate(['name' => $name, 'type' => $name === $level ? 'level' : 'mood'])->id;
+            });
+            $piece->tags()->sync($tags->all());
+        });
+        return $piece;
+    }
+
+    public function test_partial_matching_accepts_split_difficulty_without_musical_overlap()
+    {
+        Tutorial::query()->delete();
+        $best = $this->partialCandidate('late intermediate');
+        $this->partialCandidate('advanced', ['calm', 'dreamy']);
+        $quiz = (new Quiz)->getKeywords([$this->pieces[0]->id, 'intermediate', 'dreamy']);
+        $piece = $quiz->search(true, true);
+        $this->assertSame($best->id, $piece->id);
+        \DB::enableQueryLog(); \DB::flushQueryLog();
+        $context = $quiz->matchContext($piece);
+        $this->assertCount(0, \DB::getQueryLog(), 'Partial explanation reuses eager-loaded tags');
+        \DB::disableQueryLog();
+        $this->assertTrue($context['fallback']);
+        $this->assertTrue($context['levelMatched']);
+        $this->assertSame([], $context['sharedMoods']);
+        $answers = $this->answers(); $answers['reading'] = [true, false]; $answers['mood'] = 'romantic';
+        $explanation = (new MatchTour)->explanation($answers, $context);
+        $this->assertStringContainsString('Here is the best match we could find', $explanation);
+        $this->assertStringContainsString('intermediate repertoire', $explanation);
+        $this->assertStringNotContainsString('romantic', $explanation);
+        $this->assertStringNotContainsString('character', $explanation);
+    }
+
+    public function test_web_result_can_match_only_the_selected_mood_without_claiming_the_requested_level()
+    {
+        Tutorial::query()->delete();
+        $best = $this->partialCandidate('advanced', ['happy']);
+        $this->partialCandidate('elementary', ['mysterious']);
+        $answers = $this->answers();
+        $answers['reading'] = [false, true]; $answers['winners'] = [null, null, null]; $answers['mood'] = 'joyful';
+        $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk();
+        preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
+        $this->assertSame($best->id, json_decode($matches[1], true)['piece']['id']);
+        $response->assertSee('Here is the best match we could find')->assertSee('fits your mood: joyful')
+            ->assertDontSee('guided us toward beginner repertoire')->assertDontSee('past free pick')->assertDontSee('couldn’t find');
+    }
+
+    public function test_partial_matching_can_use_only_the_character_of_a_listening_choice()
+    {
+        Tutorial::query()->delete();
+        $best = $this->partialCandidate('beginner', ['calm']);
+        $this->partialCandidate('intermediate', ['mysterious']);
+        $quiz = (new Quiz)->getKeywords([$this->pieces[0]->id, 'advanced']);
+        $piece = $quiz->search(true, true);
+        $this->assertSame($best->id, $piece->id);
+        $context = $quiz->matchContext($piece);
+        $this->assertFalse($context['levelMatched']);
+        $this->assertSame(['calm'], $context['sharedMoods']);
+        $answers = $this->answers(); $answers['reading'] = [true, true]; $answers['mood'] = 'open';
+        $explanation = (new MatchTour)->explanation($answers, $context);
+        $this->assertStringContainsString('calm character', $explanation);
+        $this->assertStringNotContainsString('advanced repertoire', $explanation);
+    }
+
+    public function test_web_partial_match_can_use_a_mood_when_the_candidate_has_no_level_tag()
+    {
+        Tutorial::query()->delete();
+        $best = $this->partialCandidate(null, ['calm']);
+        $quiz = (new Quiz)->getKeywords([$this->pieces[0]->id, 'advanced']);
+        $piece = $quiz->search(true, true);
+        $this->assertSame($best->id, $piece->id);
+        $context = $quiz->matchContext($piece);
+        $this->assertSame(['calm'], $context['sharedMoods']);
+        $this->assertFalse($context['levelMatched']);
+        $this->assertNull($context['pieceLevel']);
+    }
+
+    public function test_partial_match_ranking_selects_the_strongest_fit_across_the_eligible_pool()
+    {
+        Tutorial::query()->delete();
+        for ($i = 0; $i < 6; $i++) $this->partialCandidate('elementary', ['calm']);
+        $best = $this->partialCandidate('elementary', ['dreamy']);
+        $quiz = (new Quiz)->getKeywords(['elementary', 'dreamy']);
+        for ($i = 0; $i < 5; $i++) $this->assertSame($best->id, $quiz->search(true, true)->id);
+    }
+
+    public function test_partial_match_preserves_history_media_and_exclusion_requirements()
+    {
+        Tutorial::query()->delete();
+        $best = $this->partialCandidate('elementary');
+        $this->partialCandidate('elementary', ['dreamy'], ['highlighted_at' => null]);
+        $this->partialCandidate('elementary', ['dreamy'], [], '   ');
+        $this->partialCandidate('elementary', ['dreamy'], ['score_path' => null]);
+        $this->partialCandidate('elementary', ['dreamy'], ['score_url' => 'https://example.test/buy-score']);
+        $excluded = $this->partialCandidate('elementary', ['dreamy']);
+        $quiz = (new Quiz)->getKeywords(['elementary', 'dreamy'])->exclude([$excluded->id]);
+        $this->assertSame($best->id, $quiz->search(true, true)->id);
+        $quiz->exclude([$best->id, $excluded->id]);
+        $this->assertNull($quiz->search(true, true));
+        $this->assertNotNull($quiz->search(true), 'Legacy fallback keeps its original eligibility/exclusion behavior');
+    }
+
+    public function test_when_no_exact_trait_matches_the_closest_available_level_is_explained_truthfully()
+    {
+        Tutorial::query()->delete();
+        $this->partialCandidate('elementary', ['calm']);
+        $best = $this->partialCandidate('early intermediate', ['calm']);
+        $quiz = (new Quiz)->getKeywords(['advanced', 'happy']);
+        $piece = $quiz->search(true, true);
+        $this->assertSame($best->id, $piece->id);
+        $context = $quiz->matchContext($piece);
+        $this->assertTrue($context['nearestLevel']);
+        $this->assertFalse($context['levelMatched']);
+        $answers = $this->answers(); $answers['reading'] = [true, true]; $answers['mood'] = 'joyful';
+        $explanation = (new MatchTour)->explanation($answers, $context);
+        $this->assertStringContainsString('early intermediate difficulty is the closest available', $explanation);
+        $this->assertStringNotContainsString('fits your mood', $explanation);
+        $this->assertStringNotContainsString('advanced repertoire', $explanation);
+        $this->partialCandidate('elementary', ['calm']);
+        $quiz->getKeywords([$this->pieces[0]->id, 'elementary'])->search(true, true);
+        $this->assertFalse($quiz->matchContext($this->pieces[0])['nearestLevel'], 'A reused engine clears partial-match state');
+    }
+
+    public function test_web_match_does_not_invent_a_fit_for_an_untagged_candidate()
+    {
+        Tutorial::query()->delete();
+        $this->partialCandidate(null);
+        $quiz = (new Quiz)->getKeywords(['advanced', 'happy']);
+        $this->assertNull($quiz->search(true, true));
+        $this->assertNotNull($quiz->search(true), 'Default mobile/public fallback remains unchanged');
     }
 
     public function test_historical_free_pick_filter_runs_before_the_top_five_ranking()

@@ -67,7 +67,7 @@
             this.unit.textContent = value === 1 ? 'piece' : 'pieces';
         }
         cancel() { this.generation++; }
-        to(target, duration) {
+        to(target, duration, linear = false) {
             const generation = ++this.generation;
             const from = this.value;
             if (this.reduced || from === target) { this.set(target); return Promise.resolve(); }
@@ -77,7 +77,7 @@
                     if (generation !== this.generation) return resolve();
                     if (start === undefined) start = now;
                     const progress = Math.min(1, (now - start) / duration);
-                    const eased = 1 - Math.pow(1 - progress, 3);
+                    const eased = linear ? progress : 1 - Math.pow(1 - progress, 3);
                     this.set(Math.round(from + (target - from) * eased));
                     if (progress < 1) this.frame(tick); else resolve();
                 };
@@ -250,7 +250,8 @@
             this.element.querySelector('.match-navigation [data-skip]').hidden = step === 0 || step === 7;
             this.element.querySelector('[data-skip-label]').textContent = step < 6 ? 'Not sure? Skip' : 'Skip';
             this.element.querySelector('[data-restart]').hidden = step < 7;
-            this.element.querySelector('.match-count').hidden = !!this.suggestions;
+            this.element.querySelector('.match-count').hidden = !!this.suggestions || (step === 7 && !this.waiting);
+            if (this.shell) this.shell.classList.toggle('has-match-result', step === 7 && !this.waiting && !this.suggestions);
             const unit = this.element.querySelector('[data-count-unit]');
             unit.hidden = step === 7 && !this.waiting;
             unit.textContent = unit.hidden ? '' : 'pieces';
@@ -432,23 +433,31 @@
         finding() {
             this.waiting = true; this.element.classList.add('is-finding');
             this.stage.classList.remove('leaving'); this.stage.setAttribute('aria-busy', 'true');
-            this.stage.innerHTML = '<div class="match-finding is-playing"><div class="match-finding-visual" aria-hidden="true"><span class="match-finding-orbit"></span><span class="match-finding-symbol">' + icon('sparkles') + '</span></div>' +
+            this.element.querySelector('.match-count-number').insertAdjacentHTML('beforeend', '<span class="match-finding-orbit" aria-hidden="true"></span>');
+            this.stage.innerHTML = '<div class="match-finding is-playing">' +
                 this.heading('Your answers are in!', 'Finding the piece you’ll love…') + this.waveform() + '</div>';
             this.navigation(); this.focus();
             this.element.querySelector('[data-count-announcement]').textContent = 'Your answers are complete. Finding your match.';
         }
         finishFinding() {
             this.waiting = false; this.element.classList.remove('is-finding'); this.stage.removeAttribute('aria-busy');
+            const orbit = this.element.querySelector('.match-finding-orbit');
+            if (orbit) orbit.remove();
         }
         async result(generation) {
             const previous = this.state.count;
             this.finding();
             try {
+                // Narrow the estimate while fetching; reserve the final piece for a ready result.
+                const duration = this.reduced ? 0 : 2200;
+                const countdown = Promise.all([this.counter.to(2, duration, true), pause(duration)]);
                 // Keep the current estimated count if recommendation retrieval fails.
                 const response = await this.http.post(this.element.dataset.url, Object.assign(clone(this.state.answers), {draw: this.data.draw}), {timeout: 20000});
                 if (generation !== this.generation) return;
+                await countdown;
+                if (generation !== this.generation) return;
                 this.stage.querySelector('h3').textContent = 'Your match is ready!';
-                await this.counter.to(1, this.reduced ? 0 : 900);
+                await this.counter.to(1, this.reduced ? 0 : 450, true);
                 if (generation !== this.generation) return;
                 this.state.count = 1; this.stopMedia();
                 this.stage.classList.add('leaving'); await pause(this.reduced ? 0 : 130);
