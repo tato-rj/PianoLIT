@@ -6,8 +6,8 @@
 			<span>{{ ucfirst($piece->extended_level_name) }}</span>
 		</p>
 		{{-- @pill(['label' => 'FREE THIS WEEK', 'color' => 'primary', 'text' => 'white', 'classes' => 'mb-3 px-3 py-2']) --}}
-		<h4 class="free-pick-card__title text-white mb-3">{{ $piece->collection_name === 'Sonata' ? $piece->getRawOriginal('name') : ($piece->nickname ?: $piece->getRawOriginal('name')) }}</h4>
-		<p class="free-pick-card__metadata mb-2">@if(trim($piece->catalogue)){{ $piece->catalogue }} · @endif{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
+		<h4 class="free-pick-card__title text-white mb-0">{{ $piece->collection_name === 'Sonata' ? $piece->getRawOriginal('name') : ($piece->nickname ?: $piece->getRawOriginal('name')) }}</h4>
+		<p class="free-pick-card__metadata mb-3">@if(trim($piece->catalogue)){{ $piece->catalogue }} · @endif{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
 
 		<a class="btn btn-secondary d-inline-flex align-items-center gap-3" href="{{ route('webapp.pieces.show', $piece) }}">Explore piece @icon('arrow-right', ['mr' => 0])</a>
 		<ul class="free-pick-card__media small list-unstyled d-flex flex-wrap gap-4 mb-0 mt-4" aria-label="Available media">
