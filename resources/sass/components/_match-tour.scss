@@ -92,7 +92,7 @@
     .match-score p { color: var(--match-muted); font-size: 14px; padding: 12px; }
     .match-score canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     .match-score-choice { display: block; width: 100%; min-height: 46px; border-radius: 25px !important; background: transparent; border-color: #536780; color: var(--match-ink); }
-    .match-score-choice:not(:disabled):hover { color: #fff; background: var(--match-accent); }
+    .match-score-choice:not(:disabled):hover { color: white; background: var(--match-accent); }
     .match-cards--duel { max-width: 690px; margin: 0 auto; gap: 76px; }
     .match-card--duel { overflow: hidden; }
     .match-card--duel .match-select { flex-direction: column; text-align: center; padding: 0; }
