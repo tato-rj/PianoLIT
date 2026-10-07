@@ -1,9 +1,5 @@
 @extends('webapp.layouts.app', ['title' => 'Find your match'])
 
-@push('header')
-<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-@endpush
-
 @section('content')
 @include('webapp.layouts.header', ['title' => 'Find your match', 'subtitle' => 'Let’s narrow down the PianoLIT library to one piece.'])
 <section id="match-tour" class="match-tour mx-auto" data-url="{{ route('webapp.tour.result') }}" aria-label="Find your match">
@@ -28,8 +24,6 @@
 
 @push('scripts')
 @if($tour['ready'])
-<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
 <script id="match-tour-data" type="application/json">@json($tour)</script>
 <script src="{{ mix('js/views/match-tour.js') }}"></script>
 <script>new MatchTour.Controller(document.getElementById('match-tour'), JSON.parse(document.getElementById('match-tour-data').textContent), axios, window.pdfjsLib);</script>

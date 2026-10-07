@@ -29,25 +29,42 @@ class MatchTour
 
     public function data()
     {
-        $pool = $this->catalog()->with(['composer', 'tags'])->withCount([])
+        $pool = $this->catalog()->select(['pieces.id', 'composer_id', 'name', 'audio_path', 'show_on_tour'])
+            ->with(['composer' => function ($query) {
+                $query->select(['id', 'name', 'cover_path'])->withCount([])->setEagerLoads([]);
+            }, 'tags' => function ($query) { $query->select(['tags.id', 'name', 'type']); }])->withCount([])
             ->whereNotNull('audio_path')->where('audio_path', '!=', '')
             ->whereHas('tags', function ($q) { $q->where('type', 'level'); })
-            ->orderByDesc('show_on_tour')->orderBy('id')->get();
+            ->orderByDesc('show_on_tour')->orderBy('id')->get()->keyBy('id');
         $selected = collect();
-        // Prefer editorial tour picks, then maximize contrast in period, mood and composer.
+        // Calculate each candidate's trait set once. Keep its nearest distance as
+        // picks are added instead of sorting/rebuilding every pair on every round.
+        $traits = [];
+        $distances = [];
+        foreach ($pool as $piece) {
+            $traits[$piece->id] = array_fill_keys($piece->tags
+                ->whereIn('type', ['period', 'mood', 'genre'])->pluck('id')->all(), true);
+        }
+        $previous = null;
         while ($selected->count() < 10 && $pool->isNotEmpty()) {
-            $piece = $pool->sortByDesc(function ($piece) use ($selected) {
-                if ($selected->isEmpty()) return $piece->show_on_tour ? 1 : 0;
-                return $selected->map(function ($other) use ($piece) {
-                    $types = ['period', 'mood', 'genre'];
-                    $a = $piece->tags->whereIn('type', $types)->pluck('id');
-                    $b = $other->tags->whereIn('type', $types)->pluck('id');
-                    return ($piece->composer_id !== $other->composer_id ? 3 : 0)
-                        + $a->diff($b)->count() + $b->diff($a)->count();
-                })->min() + ($piece->show_on_tour ? 0.5 : 0);
-            })->first();
-            $selected->push($piece);
-            $pool = $pool->reject(function ($other) use ($piece) { return $other->id === $piece->id; });
+            $winner = null;
+            $best = -INF;
+            foreach ($pool as $piece) {
+                if ($previous) {
+                    $distance = ($piece->composer_id !== $previous->composer_id ? 3 : 0)
+                        + count(array_diff_key($traits[$piece->id], $traits[$previous->id]))
+                        + count(array_diff_key($traits[$previous->id], $traits[$piece->id]));
+                    $distances[$piece->id] = min($distances[$piece->id] ?? INF, $distance);
+                    $score = $distances[$piece->id] + ($piece->show_on_tour ? 0.5 : 0);
+                } else {
+                    $score = $piece->show_on_tour ? 1 : 0;
+                }
+                // Preserve editorial/ID ordering when scores tie.
+                if ($score > $best) { $winner = $piece; $best = $score; }
+            }
+            $selected->push($winner);
+            $pool->forget($winner->id);
+            $previous = $winner;
         }
         $cards = $selected->map(function ($piece) {
             return [
@@ -59,7 +76,10 @@ class MatchTour
         })->values()->all();
         $scores = [];
         foreach (['easy' => 'elementary', 'middle' => 'intermediate', 'hard' => 'advanced'] as $key => $level) {
-            $piece = Piece::with('composer')->withCount([])->byLevel($level)
+            $piece = Piece::select(['pieces.id', 'composer_id', 'name', 'score_path'])
+                ->with(['composer' => function ($query) {
+                    $query->select(['id', 'name'])->withCount([])->setEagerLoads([]);
+                }])->withCount([])->byLevel($level)
                 ->whereNotNull('score_path')->where('score_path', '!=', '')
                 ->where(function ($q) { $q->whereNull('score_url')->orWhere('score_url', ''); })
                 ->orderByDesc('show_on_tour')->orderBy('id')->first();

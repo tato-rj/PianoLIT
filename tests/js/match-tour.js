@@ -121,4 +121,55 @@ module.exports = async function () {
     await Controller.prototype.result.call(failed, 1);
     assert.strictEqual(failed.state.step, 6); assert.strictEqual(failed.counter.value, 2);
     assert(failed.rendered); assert(!failed.busy); assert(failureReported.includes('retry'));
+
+    // Media tools are requested only on demand; failures/timeouts permit retry.
+    const scripts = [], timers = new Map();
+    let timerId = 0;
+    window.setTimeout = callback => { timers.set(++timerId, callback); return timerId; };
+    window.clearTimeout = id => timers.delete(id);
+    window.document = {
+        createElement: tag => ({tag, remove() { this.removed = true; }}),
+        head: {appendChild(script) { scripts.push(script); }}
+    };
+    const pdfFirst = window.MatchTour.loadPdf();
+    const pdfSecond = window.MatchTour.loadPdf();
+    assert.strictEqual(scripts.length, 1, 'Concurrent reading loads share one script');
+    scripts[0].onerror();
+    await assert.rejects(pdfFirst); await assert.rejects(pdfSecond);
+    assert(scripts[0].removed); assert.strictEqual(timers.size, 0);
+    const timedOut = window.MatchTour.loadPdf();
+    timers.values().next().value();
+    await assert.rejects(timedOut); assert(scripts[1].removed);
+    const retried = window.MatchTour.loadPdf();
+    const pdf = {GlobalWorkerOptions: {}, getDocument() { throw Error('Obsolete reading must not open a PDF'); }};
+    window.pdfjsLib = pdf; scripts[2].onload();
+    assert.strictEqual(await retried, pdf);
+    assert(pdf.GlobalWorkerOptions.workerSrc.endsWith('/pdf.worker.min.js'));
+    assert.strictEqual(await window.MatchTour.loadPdf(), pdf);
+    assert.strictEqual(scripts.length, 3, 'Successful library loads are reused');
+
+    // Back/restart during library loading must not fetch or replace an old score.
+    delete window.pdfjsLib;
+    // Use a fresh script context to exercise a pending first reading load.
+    const pendingWindow = Object.assign({}, window);
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/match-tour.js'), 'utf8'), {window: pendingWindow});
+    const container = {};
+    const reader = {state: {step: 1}, generation: 1, data: {scores: {middle: {title: 'Score', composer: 'Composer', url: '/score.pdf'}}},
+        stage: {querySelector: () => container}, heading: () => '', pdfjs: null};
+    const reading = pendingWindow.MatchTour.Controller.prototype.reading.call(reader);
+    reader.generation++;
+    pendingWindow.pdfjsLib = pdf; scripts[3].onload();
+    await reading;
+    assert.strictEqual(reader.pdfTask, undefined);
+
+    delete window.Plyr;
+    const player = window.MatchTour.loadPlayer();
+    assert.strictEqual(scripts[4].tag, 'link');
+    assert.strictEqual(scripts[5].tag, 'script');
+    window.Plyr = class {};
+    scripts[5].onload();
+    assert.strictEqual(await player, window.Plyr);
+    await window.MatchTour.loadPlayer();
+    assert.strictEqual(scripts.length, 6);
+
 };

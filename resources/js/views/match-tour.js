@@ -139,6 +139,51 @@
     const escape = value => String(value).replace(/[&<>"']/g, character => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[character]));
     const pause = duration => new Promise(resolve => root.setTimeout(resolve, duration));
 
+    const libraries = {};
+    function loadLibrary(name, url) {
+        if (root[name]) return Promise.resolve(root[name]);
+        if (libraries[name]) return libraries[name];
+        libraries[name] = new Promise((resolve, reject) => {
+            const script = root.document.createElement('script');
+            let settled = false;
+            const fail = () => {
+                if (settled) return;
+                settled = true;
+                script.onload = script.onerror = null;
+                root.clearTimeout(timer); script.remove(); delete libraries[name];
+                reject(new Error('Media tool unavailable'));
+            };
+            const timer = root.setTimeout(fail, 15000);
+            script.src = url;
+            script.async = true;
+            script.onerror = fail;
+            script.onload = () => {
+                if (!root[name]) { fail(); return; }
+                settled = true;
+                script.onload = script.onerror = null;
+                root.clearTimeout(timer);
+                resolve(root[name]);
+            };
+            root.document.head.appendChild(script);
+        });
+        return libraries[name];
+    }
+    function loadPdf() {
+        return loadLibrary('pdfjsLib', 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js').then(pdfjs => {
+            pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.worker.min.js';
+            return pdfjs;
+        });
+    }
+    let playerStyle;
+    function loadPlayer() {
+        if (!playerStyle) {
+            playerStyle = root.document.createElement('link');
+            playerStyle.rel = 'stylesheet'; playerStyle.href = 'https://cdn.plyr.io/3.7.8/plyr.css';
+            root.document.head.appendChild(playerStyle);
+        }
+        return loadLibrary('Plyr', 'https://cdn.plyr.io/3.7.8/plyr.js');
+    }
+
     class Controller {
         constructor(element, data, http, pdfjs) {
             this.element = element; this.data = data; this.http = http; this.pdfjs = pdfjs;
@@ -255,7 +300,8 @@
             const container = this.stage.querySelector('.match-score');
             let task;
             try {
-                if (!this.pdfjs) throw new Error('PDF renderer unavailable');
+                if (!this.pdfjs) this.pdfjs = await loadPdf();
+                if (generation !== this.generation) return;
                 if (this.pdfTask) this.pdfTask.destroy();
                 task = this.pdfTask = this.pdfjs.getDocument({url: score.url});
                 const pdf = await task.promise;
@@ -307,6 +353,9 @@
                         if (media.currentTime >= this.data.previewSeconds) { media.pause(); media.currentTime = 0; }
                     }));
                     if (root.Plyr) this.resultPlayer = new root.Plyr(media);
+                    else loadPlayer().then(Player => {
+                        if (generation === this.generation && this.resultModal && !this.resultPlayer) this.resultPlayer = new Player(media);
+                    }).catch(() => {}); // Native controls remain usable if the CDN fails.
                 }
                 this.resultDialog.show(this.stage.querySelector('[data-result-open]'));
             } catch (error) {
@@ -341,5 +390,5 @@
         }
     }
 
-    root.MatchTour = {Candidates, State, AnimatedCount, Previews, Controller, level};
+    root.MatchTour = {Candidates, State, AnimatedCount, Previews, Controller, level, loadPdf, loadPlayer};
 })(typeof window !== 'undefined' ? window : globalThis);

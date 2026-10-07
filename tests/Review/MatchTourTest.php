@@ -29,6 +29,50 @@ class MatchTourTest extends ReviewTestCase
         });
     }
 
+    public function test_large_catalog_has_bounded_queries_and_preserves_choices()
+    {
+        $tour = new MatchTour;
+        \DB::enableQueryLog();
+        $before = $tour->data();
+        $queryCount = count(\DB::getQueryLog());
+        \DB::disableQueryLog();
+        Model::withoutEvents(function () {
+            for ($i = 0; $i < 600; $i++) {
+                $source = $this->pieces[$i % 12];
+                $copy = $source->replicate();
+                $copy->save();
+                $copy->tags()->attach($source->tags()->pluck('tags.id')->all());
+            }
+        });
+        \DB::enableQueryLog();
+        \DB::flushQueryLog();
+        $data = $tour->data();
+        $queries = \DB::getQueryLog();
+        \DB::disableQueryLog();
+        $this->assertTrue($data['ready']);
+        $this->assertSame(612, $data['total']);
+        $this->assertSame($before['pieces'], $data['pieces']);
+        $this->assertSame($before['scores'], $data['scores']);
+        $this->assertSame($queryCount, count($queries));
+        $this->assertLessThanOrEqual(10, count($queries));
+        foreach ($queries as $query) $this->assertStringNotContainsString('pieces_count', $query['query']);
+    }
+
+    public function test_contrast_and_editorial_order_remain_stable()
+    {
+        Model::withoutEvents(function () {
+            $genre = create(Tag::class, ['name' => 'dance', 'type' => 'genre']);
+            foreach ($this->pieces as $i => $piece) {
+                $piece->update(['composer_id' => $this->pieces[intdiv($i, 3)]->composer_id, 'show_on_tour' => in_array($i, [2, 5, 9])]);
+                if ($i % 2 === 0) $piece->tags()->attach($genre);
+            }
+        });
+        $data = (new MatchTour)->data();
+        // Existing choices for this fixture, including editorial boosts and ties.
+        $expected = array_map(function ($i) { return $this->pieces[$i]->id; }, [2, 9, 1, 5, 0, 4, 3, 6, 7, 8]);
+        $this->assertSame($expected, array_column($data['pieces'], 'id'));
+    }
+
     private function answers()
     {
         $data = (new MatchTour)->data();
@@ -47,7 +91,9 @@ class MatchTourTest extends ReviewTestCase
         $this->assertCount(3, array_unique(array_column($data['scores'], 'id')));
         $this->get(route('webapp.tour'))->assertOk()->assertSee('Let’s narrow down')
             ->assertSee('data-count', false)->assertSee('id="menu"', false)
-            ->assertDontSee('QUESTION')->assertDontSee('id="find-match-carousel"', false);
+            ->assertDontSee('QUESTION')->assertDontSee('id="find-match-carousel"', false)
+            ->assertDontSee('build/pdf.min.js', false)
+            ->assertDontSee('cdn.plyr.io', false);
     }
 
     public function test_all_reading_branches_and_intents_adapt_to_legacy_keywords()
