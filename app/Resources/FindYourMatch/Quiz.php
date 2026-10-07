@@ -25,12 +25,12 @@ class Quiz extends QuizFactory
 		return $this;
 	}
 
-	public function search($withVideoAndScore = false)
+	public function search($withVideoAndScore = false, $onlyFreePicks = false)
 	{
 		// The web tour opts in; existing public/mobile callers keep their original pool.
 		$this->sortLevels();
 
-		$this->findSimilar($withVideoAndScore);
+		$this->findSimilar($withVideoAndScore, $onlyFreePicks);
 
 		$this->rankByKeywords();
 

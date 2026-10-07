@@ -1,5 +1,5 @@
 <div id="onboarding" class="carousel slide py-4" data-bs-ride="carousel">
-  <ol class="carousel-indicators">
+  <ol class="carousel-indicators list-style-none">
     <li data-bs-target="#onboarding" data-bs-slide-to="0" class="active"></li>
     <li data-bs-target="#onboarding" data-bs-slide-to="1"></li>
     <li data-bs-target="#onboarding" data-bs-slide-to="2"></li>

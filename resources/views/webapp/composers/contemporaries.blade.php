@@ -1,8 +1,5 @@
-<aside class="composer-contemporaries border rounded p-3 p-sm-4 {{ $composer->curiosity ? 'mt-4' : '' }}" aria-labelledby="composer-contemporaries-title">
-    <a href="{{ route('webapp.composers.index') }}" class="link-none d-flex align-items-center justify-content-between gap-3 mb-3">
-        <h2 id="composer-contemporaries-title" class="h5 mb-0">Contemporary composers</h2>
-        @icon('chevron-right', ['mr' => 0, 'classes' => 'flex-shrink-0'])
-    </a>
+<aside class="composer-contemporaries border rounded p-4" aria-labelledby="composer-contemporaries-title">
+    <h2 id="composer-contemporaries-title" class="h5 mb-3">Contemporary composers</h2>
     <ul class="list-unstyled mb-0">
         @foreach($contemporaries as $contemporary)
         <li>

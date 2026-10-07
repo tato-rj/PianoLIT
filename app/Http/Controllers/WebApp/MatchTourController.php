@@ -28,7 +28,7 @@ class MatchTourController extends Controller
             'intent' => ['required_without:mood', 'nullable', Rule::in(array_keys(MatchTour::INTENTS))],
         ]);
         // Derive the level server-side; never trust a submitted level or user identity.
-        $piece = $quiz->getKeywords($tour->keywords($answers))->exclude($tour->exclusions($answers))->search(true);
+        $piece = $quiz->getKeywords($tour->keywords($answers))->exclude($tour->exclusions($answers))->search(true, true);
         abort_unless($piece, 503, 'No match is available right now.');
         $piece->loadMissing(['composer', 'tags', 'tutorials']);
         $explanation = $tour->explanation($answers, $quiz->matchContext($piece));

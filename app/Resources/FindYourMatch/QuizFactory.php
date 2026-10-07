@@ -45,13 +45,13 @@ abstract class QuizFactory
 		return $levels->contains($keyword);
 	}
 
-	public function findSimilar($withVideoAndScore = false)
+	public function findSimilar($withVideoAndScore = false, $onlyFreePicks = false)
 	{
 		$similar = collect();
 		$level = $this->preferredLevel();
 
 		foreach ($this->pieces as $piece) {
-			$similar = $similar->merge($piece->similar(false, false, $withVideoAndScore)->whereNotIn('composer_id', $this->exclude['composers']));
+			$similar = $similar->merge($piece->similar(false, false, $withVideoAndScore, $onlyFreePicks)->whereNotIn('composer_id', $this->exclude['composers']));
 		}
 
 		$similar = $similar->filter(function($piece, $key) use ($level) {

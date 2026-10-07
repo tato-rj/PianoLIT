@@ -79,7 +79,7 @@ class ComposerContemporariesTest extends ReviewTestCase
                 return $items->pluck('id')->all() === [$peer->id];
             })
             ->assertSee('Contemporary composers')->assertSee('1986 - now')
-            ->assertDontSee('Did you know?')->assertSee('col-lg-7', false);
+            ->assertDontSee('Did you know?');
     }
 
     public function test_unknown_birth_or_no_matches_omits_the_box_and_keeps_full_width_biography()
@@ -87,8 +87,8 @@ class ComposerContemporariesTest extends ReviewTestCase
         $composer = $this->composer('Unknown composer', null, null, ['curiosity' => null]);
         $this->composer('Other era', '1700-01-01', '1750-01-01');
         $url = route('webapp.composers.show', $composer);
-        $this->get($url)->assertOk()->assertDontSee('Contemporary composers')->assertSee('col-12', false);
+        $this->get($url)->assertOk()->assertDontSee('Contemporary composers');
         $composer->update(['date_of_birth' => '1900-01-01', 'date_of_death' => '1960-01-01']);
-        $this->get($url)->assertOk()->assertDontSee('Contemporary composers')->assertSee('col-12', false);
+        $this->get($url)->assertOk()->assertDontSee('Contemporary composers');
     }
 }

@@ -36,6 +36,31 @@
         object-position: center;
     }
     .composer-biography { white-space: pre-wrap; }
+    .composer-profile-details {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-4);
+        align-items: start;
+        > * { min-width: 0; }
+    }
+    @media (max-width: 991.98px) {
+        .composer-contemporaries {
+            border: 0 !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+        }
+    }
+    @media (min-width: 992px) {
+        .composer-profile-details.has-sidebar {
+            grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+            .composer-profile-biography { grid-column: 1; grid-row: 1; }
+            &.has-curiosity {
+                grid-template-rows: auto 1fr;
+                .composer-profile-biography { grid-row: 1 / span 2; }
+            }
+            .composer-profile-curiosity, .composer-contemporaries { grid-column: 2; }
+        }
+    }
     .composer-contemporary-portrait {
         width: 56px;
         height: 56px;

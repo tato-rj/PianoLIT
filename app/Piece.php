@@ -534,7 +534,7 @@ class Piece extends PianoLit
             });
     }
 
-    public function similar($strict = true, $completeTagsOnly = false, $withVideoAndScore = false)
+    public function similar($strict = true, $completeTagsOnly = false, $withVideoAndScore = false, $onlyFreePicks = false)
     {
         $mood = $this->mood()->pluck('id');
 
@@ -548,6 +548,7 @@ class Piece extends PianoLit
             if ($strict) $query->whereHas('tags', function ($q) { $q->where('type', 'period'); });
         }
         if ($withVideoAndScore) $query->withVideoAndScore();
+        if ($onlyFreePicks) $query->freePicks(false);
         $similar = $query->get();
 
         foreach ($similar as $key => $piece) {

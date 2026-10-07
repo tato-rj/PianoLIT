@@ -239,7 +239,7 @@ class MatchTourTest extends ReviewTestCase
         $quiz = \Mockery::mock(Quiz::class);
         $quiz->shouldReceive('getKeywords')->once()->with((new MatchTour)->keywords($answers))->andReturnSelf();
         $quiz->shouldReceive('exclude')->once()->with([])->andReturnSelf();
-        $quiz->shouldReceive('search')->once()->with(true)->andReturn($this->pieces[0]);
+        $quiz->shouldReceive('search')->once()->with(true, true)->andReturn($this->pieces[0]);
         $quiz->shouldReceive('matchContext')->with($this->pieces[0])->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => ['calm'], 'matchedTags' => ['calm']]);
         $this->app->instance(Quiz::class, $quiz);
         $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your match')
@@ -354,7 +354,7 @@ class MatchTourTest extends ReviewTestCase
         $quiz = \Mockery::mock(Quiz::class);
         $quiz->shouldReceive('getKeywords')->andReturnSelf();
         $quiz->shouldReceive('exclude')->andReturnSelf();
-        $quiz->shouldReceive('search')->with(true)->andReturn($this->pieces[0]);
+        $quiz->shouldReceive('search')->with(true, true)->andReturn($this->pieces[0]);
         $quiz->shouldReceive('matchContext')->with($this->pieces[0])->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => ['calm'], 'matchedTags' => ['calm']]);
         $this->app->instance(Quiz::class, $quiz);
         $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()
@@ -367,10 +367,10 @@ class MatchTourTest extends ReviewTestCase
         $this->assertStringEndsWith('/tour.mp3', $result['piece']['audio']);
     }
 
-    private function copyWithMedia(array $attributes = [], $video = 'https://example.test/copy.mp4')
+    private function copyWithMedia(array $attributes = [], $video = 'https://example.test/copy.mp4', Piece $source = null)
     {
-        return Model::withoutEvents(function () use ($attributes, $video) {
-            $source = $this->pieces[0];
+        return Model::withoutEvents(function () use ($attributes, $video, $source) {
+            $source = $source ?? $this->pieces[0];
             $piece = $source->replicate();
             $piece->fill($attributes)->save();
             $piece->tags()->attach($source->tags()->pluck('tags.id')->all());
@@ -441,6 +441,59 @@ class MatchTourTest extends ReviewTestCase
             create(Tutorial::class, ['piece_id' => $this->pieces[3]->id, 'video_url' => 'https://example.test/purchase.mp4']);
         });
         $this->assertSame($this->pieces[2]->id, (new Quiz)->getKeywords(['elementary'])->search(true)->id);
+        $this->assertSame($this->pieces[2]->id, (new Quiz)->getKeywords(['elementary'])->search(true, true)->id);
+    }
+
+    public function test_historical_free_pick_filter_runs_before_the_top_five_ranking()
+    {
+        $nonPicks = collect();
+        for ($i = 0; $i < 6; $i++) {
+            // Currently free/editorially preferred flags cannot replace free-pick history.
+            $piece = $this->copyWithMedia(['highlighted_at' => null, 'is_free' => true, 'show_on_tour' => true]);
+            $piece->tags()->attach(Tag::name('dreamy')->first());
+            $nonPicks->push($piece);
+        }
+        $pastPick = $this->copyWithMedia(['highlighted_at' => now()->subYear(), 'is_free' => false, 'show_on_tour' => false]);
+        $keywords = [$this->pieces[0]->id, 'elementary', 'dreamy'];
+        $excluded = $this->pieces->pluck('id')->all();
+        $quiz = (new Quiz)->getKeywords($keywords)->exclude($excluded);
+        $match = $quiz->search(true, true);
+        $this->assertSame($pastPick->id, $match->id);
+        $this->assertFalse($quiz->matchContext($match)['fallback'], 'The eligible past pick is ranked, not rescued by fallback');
+        $this->assertContains((new Quiz)->getKeywords($keywords)->exclude($excluded)->search(true)->id, $nonPicks->pluck('id')->all());
+    }
+
+    public function test_perfect_match_uses_past_free_picks_but_more_options_include_other_pieces()
+    {
+        $answers = $this->answers();
+        $answers['reading'] = [null, null]; $answers['winners'] = [null, null, null]; $answers['mood'] = 'open';
+        $source = $this->pieces->firstWhere('id', $answers['preferredPiece']);
+        $pastPick = $this->copyWithMedia(['highlighted_at' => now()->subYear(), 'is_free' => false], 'https://example.test/past-pick.mp4', $source);
+        $nonPicks = collect();
+        for ($i = 0; $i < 5; $i++) $nonPicks->push($this->copyWithMedia(['highlighted_at' => null], 'https://example.test/other.mp4', $source));
+        $invalid = $this->copyWithMedia(['highlighted_at' => null, 'score_path' => null], 'https://example.test/no-score.mp4', $source);
+
+        $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk();
+        preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
+        $result = json_decode($matches[1], true);
+        $this->assertContains($result['piece']['id'], $this->pieces->pluck('id')->push($pastPick->id)->all());
+        $this->assertNotEmpty($result['piece']['video']);
+        $ids = collect($result['recommendations'])->pluck('id');
+        $this->assertCount(4, $ids);
+        $this->assertNotEmpty($ids->intersect($nonPicks->pluck('id'))->all());
+        $this->assertNotContains($invalid->id, $ids);
+        $this->assertNotContains($result['piece']['id'], $ids);
+    }
+
+    public function test_no_eligible_past_pick_does_not_substitute_an_unhighlighted_perfect_match()
+    {
+        $answers = $this->answers();
+        $answers['reading'] = [null, null]; $answers['winners'] = [null, null, null]; $answers['mood'] = 'open';
+        $source = $this->pieces->firstWhere('id', $answers['preferredPiece']);
+        Tutorial::query()->delete();
+        $nonPick = $this->copyWithMedia(['highlighted_at' => null], 'https://example.test/other.mp4', $source);
+        $this->assertSame($nonPick->id, (new Quiz)->getKeywords((new MatchTour)->keywords($answers))->search(true)->id);
+        $this->withExceptionHandling()->postJson(route('webapp.tour.result'), $answers)->assertStatus(503);
     }
 
     public function test_no_eligible_match_returns_unavailable_without_changing_legacy_fallback()
