@@ -2,7 +2,7 @@
 
 namespace Tests\Review;
 
-use App\{Piece, Tag};
+use App\{Piece, Tag, Tutorial};
 use App\Resources\FindYourMatch\Quiz;
 use App\Services\WebApp\MatchTour;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +24,7 @@ class MatchTourTest extends ReviewTestCase
             return collect(range(0, 11))->map(function ($i) use ($levels, $moods, $period) {
                 $piece = create(Piece::class, ['name' => 'Tour piece '.$i, 'audio_path' => 'tour.mp3', 'score_path' => 'excerpt.pdf', 'score_url' => null, 'show_on_tour' => true, 'highlighted_at' => now()]);
                 $piece->tags()->attach([$levels->values()[$i % 4]->id, $moods[$i % 3]->id, $period->id]);
+                create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Tutorial', 'video_url' => 'https://example.test/tour.mp4']);
                 return $piece;
             });
         });
@@ -141,13 +142,13 @@ class MatchTourTest extends ReviewTestCase
         $this->assertContains($this->pieces[0]->id, $tour->exclusions($answers));
     }
 
-    public function test_result_calls_existing_engine_and_handles_audio_only_piece()
+    public function test_result_opts_into_media_eligibility_in_the_existing_engine()
     {
         $answers = $this->answers();
         $quiz = \Mockery::mock(Quiz::class);
         $quiz->shouldReceive('getKeywords')->once()->with((new MatchTour)->keywords($answers))->andReturnSelf();
         $quiz->shouldReceive('exclude')->once()->with([])->andReturnSelf();
-        $quiz->shouldReceive('search')->once()->andReturn($this->pieces[0]);
+        $quiz->shouldReceive('search')->once()->with(true)->andReturn($this->pieces[0]);
         $this->app->instance(Quiz::class, $quiz);
         $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your match')
             ->assertSee('id="match-result-heading"', false)->assertDontSee('data-bs-dismiss', false)
@@ -162,6 +163,7 @@ class MatchTourTest extends ReviewTestCase
         $piece = $this->pieces[0];
         Model::withoutEvents(function () use ($piece) {
             create(\App\Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Tutorial', 'video_url' => 'https://example.test/lesson.mp4']);
+            create(\App\Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance', 'video_url' => '   ']);
             create(\App\Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance', 'video_url' => 'https://example.test/performance.mp4']);
         });
         $html = view('webapp.tour.result', ['piece' => $piece])->render();
@@ -213,7 +215,7 @@ class MatchTourTest extends ReviewTestCase
         $quiz = \Mockery::mock(Quiz::class);
         $quiz->shouldReceive('getKeywords')->andReturnSelf();
         $quiz->shouldReceive('exclude')->andReturnSelf();
-        $quiz->shouldReceive('search')->andReturn($this->pieces[0]);
+        $quiz->shouldReceive('search')->with(true)->andReturn($this->pieces[0]);
         $this->app->instance(Quiz::class, $quiz);
         $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()
             ->assertDontSee('data-submit="favorite"', false)->assertDontSee('match-confetti', false);
@@ -221,8 +223,93 @@ class MatchTourTest extends ReviewTestCase
         $result = json_decode($matches[1], true);
         $this->assertLessThanOrEqual(4, count($result['recommendations']));
         $this->assertNotContains($result['piece']['id'], array_column($result['recommendations'], 'id'));
-        $this->assertNull($result['piece']['video']);
+        $this->assertSame('https://example.test/tour.mp4', $result['piece']['video']);
         $this->assertStringEndsWith('/tour.mp3', $result['piece']['audio']);
+    }
+
+    private function copyWithMedia(array $attributes = [], $video = 'https://example.test/copy.mp4')
+    {
+        return Model::withoutEvents(function () use ($attributes, $video) {
+            $source = $this->pieces[0];
+            $piece = $source->replicate();
+            $piece->fill($attributes)->save();
+            $piece->tags()->attach($source->tags()->pluck('tags.id')->all());
+            create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance', 'video_url' => $video]);
+            return $piece;
+        });
+    }
+
+    public function test_media_eligibility_is_applied_before_the_top_five_matches_are_ranked()
+    {
+        $invalid = collect();
+        foreach ([null, '', '   '] as $video) $invalid->push($this->copyWithMedia([], $video));
+        foreach ([null, '', '   '] as $score) $invalid->push($this->copyWithMedia(['score_path' => $score]));
+        $invalid->push($this->copyWithMedia(['score_url' => 'https://example.test/buy-score']));
+        $dreamy = Tag::name('dreamy')->first();
+        foreach ($invalid as $piece) $piece->tags()->attach($dreamy);
+        $valid = $this->copyWithMedia();
+        $keywords = [$this->pieces[0]->id, 'elementary', 'dreamy'];
+        $excluded = $this->pieces->pluck('id')->all();
+
+        $match = (new Quiz)->getKeywords($keywords)->exclude($excluded)->search(true);
+        $this->assertSame($valid->id, $match->id);
+        // Legacy callers still use their original unrestricted ranking by default.
+        $legacy = (new Quiz)->getKeywords($keywords)->exclude($excluded)->search();
+        $this->assertContains($legacy->id, $invalid->pluck('id')->all());
+    }
+
+    public function test_perfect_match_and_all_more_options_have_video_and_available_score()
+    {
+        // Invalid entries precede valid ones, so filtering after take(4) would lose options.
+        $this->copyWithMedia([], null);
+        $this->copyWithMedia([], '');
+        $this->copyWithMedia([], '   ');
+        $this->copyWithMedia(['score_path' => null]);
+        $this->copyWithMedia(['score_path' => '']);
+        $this->copyWithMedia(['score_path' => '   ']);
+        $this->copyWithMedia(['score_path' => null, 'score_url' => 'https://example.test/buy-score']);
+        $this->copyWithMedia(['score_url' => 'https://example.test/buy-score']);
+        $eligible = $this->pieces->pluck('id')->all();
+        for ($i = 0; $i < 6; $i++) $eligible[] = $this->copyWithMedia()->id;
+        $answers = $this->answers();
+        $answers['preferredPiece'] = $this->pieces[0]->id;
+        $answers['reading'] = [null, null];
+        $answers['winners'] = [null, null, null];
+        $answers['mood'] = 'open';
+        $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk();
+        preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
+        $result = json_decode($matches[1], true);
+        $this->assertContains($result['piece']['id'], $eligible);
+        $this->assertNotEmpty($result['piece']['video']);
+        $this->assertCount(4, $result['recommendations']);
+        foreach ($result['recommendations'] as $card) {
+            $this->assertContains($card['id'], $eligible);
+            $this->assertNotSame($result['piece']['id'], $card['id']);
+        }
+    }
+
+    public function test_free_pick_fallback_also_requires_both_video_and_score()
+    {
+        Tutorial::query()->delete();
+        Model::withoutEvents(function () {
+            create(Tutorial::class, ['piece_id' => $this->pieces[0]->id, 'video_url' => '   ']);
+            $this->pieces[1]->update(['score_path' => null]);
+            create(Tutorial::class, ['piece_id' => $this->pieces[1]->id, 'video_url' => 'https://example.test/video-only.mp4']);
+            create(Tutorial::class, ['piece_id' => $this->pieces[2]->id, 'video_url' => 'https://example.test/full.mp4']);
+            $this->pieces[3]->update(['score_url' => 'https://example.test/buy-score']);
+            create(Tutorial::class, ['piece_id' => $this->pieces[3]->id, 'video_url' => 'https://example.test/purchase.mp4']);
+        });
+        $this->assertSame($this->pieces[2]->id, (new Quiz)->getKeywords(['elementary'])->search(true)->id);
+    }
+
+    public function test_no_eligible_match_returns_unavailable_without_changing_legacy_fallback()
+    {
+        Tutorial::query()->delete();
+        Piece::where('id', '!=', $this->pieces[0]->id)->update(['highlighted_at' => null]);
+        $this->assertNull((new Quiz)->getKeywords(['elementary'])->search(true));
+        $this->assertSame($this->pieces[0]->id, (new Quiz)->getKeywords(['elementary'])->search()->id);
+        $this->assertTrue((new MatchTour)->data()['ready']);
+        $this->withExceptionHandling()->postJson(route('webapp.tour.result'), $this->answers())->assertStatus(503);
     }
 
     public function test_malformed_answers_and_out_of_round_choices_are_rejected()

@@ -524,7 +524,17 @@ class Piece extends PianoLit
         return $pieces;
     }
 
-    public function similar($strict = true, $completeTagsOnly = false)
+    public function scopeWithVideoAndScore($query)
+    {
+        // Recommend playable video plus an in-app PDF, rather than a score purchase link.
+        return $query->whereNotNull('score_path')->whereRaw("TRIM(score_path) <> ''")
+            ->where(function ($q) { $q->whereNull('score_url')->orWhere('score_url', ''); })
+            ->whereHas('tutorials', function ($q) {
+                $q->whereNotNull('video_url')->whereRaw("TRIM(video_url) <> ''");
+            });
+    }
+
+    public function similar($strict = true, $completeTagsOnly = false, $withVideoAndScore = false)
     {
         $mood = $this->mood()->pluck('id');
 
@@ -537,6 +547,7 @@ class Piece extends PianoLit
             $query->whereHas('tags', function ($q) { $q->where('type', 'level'); });
             if ($strict) $query->whereHas('tags', function ($q) { $q->where('type', 'period'); });
         }
+        if ($withVideoAndScore) $query->withVideoAndScore();
         $similar = $query->get();
 
         foreach ($similar as $key => $piece) {

@@ -35,9 +35,12 @@ class MatchTour
 
     public static function video(Piece $piece)
     {
-        return $piece->tutorials->first(function ($tutorial) {
+        $videos = $piece->tutorials->filter(function ($tutorial) {
+            return trim((string) $tutorial->video_url) !== '';
+        });
+        return $videos->first(function ($tutorial) {
             return strtolower($tutorial->type) === 'performance';
-        }) ?? $piece->tutorials->first();
+        }) ?? $videos->first();
     }
 
     public static function card(Piece $piece, $withVideo = false)

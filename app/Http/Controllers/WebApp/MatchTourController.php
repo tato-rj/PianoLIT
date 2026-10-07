@@ -28,11 +28,11 @@ class MatchTourController extends Controller
             'intent' => ['required_without:mood', 'nullable', Rule::in(array_keys(MatchTour::INTENTS))],
         ]);
         // Derive the level server-side; never trust a submitted level or user identity.
-        $piece = $quiz->getKeywords($tour->keywords($answers))->exclude($tour->exclusions($answers))->search();
+        $piece = $quiz->getKeywords($tour->keywords($answers))->exclude($tour->exclusions($answers))->search(true);
         abort_unless($piece, 503, 'No match is available right now.');
         $piece->loadMissing(['composer', 'tags', 'tutorials']);
         // Reuse the existing More like this recommendations, with a short web presentation.
-        $recommendations = ($piece->level && $piece->period ? $piece->similar(true, true) : collect())->reject(function ($other) use ($piece) { return $other->id === $piece->id; })->take(4)->values();
+        $recommendations = ($piece->level && $piece->period ? $piece->similar(true, true, true) : collect())->reject(function ($other) use ($piece) { return $other->id === $piece->id; })->take(4)->values();
         return view('webapp.tour.result', compact('piece', 'recommendations'));
     }
 }

@@ -23,14 +23,18 @@ class Quiz extends QuizFactory
 		return $this;
 	}
 
-	public function search()
+	public function search($withVideoAndScore = false)
 	{
+		// The web tour opts in; existing public/mobile callers keep their original pool.
 		$this->sortLevels();
 
-		$this->findSimilar();
+		$this->findSimilar($withVideoAndScore);
 
 		$this->rankByKeywords();
 
-		return $this->ranking->shuffle()->first() ?? Piece::freePicks()->inRandomOrder()->first();
+		$fallback = Piece::freePicks();
+		if ($withVideoAndScore) $fallback->withVideoAndScore();
+
+		return $this->ranking->shuffle()->first() ?? $fallback->inRandomOrder()->first();
 	}
 }
