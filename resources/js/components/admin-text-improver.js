@@ -143,7 +143,7 @@
         state.busy = true;
         field.setAttribute('aria-busy', 'true');
         state.run.textContent = 'Rewriting…';
-        status(state, 'Improving the wording…');
+        status(state, '');
         sync(field, state);
         $.ajax({url: window.app.routes.improveText, method: 'POST', dataType: 'json', timeout: 55000,
             contentType: 'application/json', headers: {'X-CSRF-TOKEN': window.app.csrfToken},
