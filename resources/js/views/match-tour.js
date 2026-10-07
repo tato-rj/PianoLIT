@@ -116,8 +116,10 @@
             if (!button) return;
             const play = button.querySelector && button.querySelector('[data-play-icon]');
             const pause = button.querySelector && button.querySelector('[data-pause-icon]');
+            const label = button.querySelector && button.querySelector('[data-play-label]');
             if (play && pause) { play.hidden = playing; pause.hidden = !playing; }
             else button.innerHTML = icon(playing ? 'pause' : 'play');
+            if (label) label.textContent = playing ? 'Pause' : 'Play';
             button.setAttribute('aria-pressed', playing ? 'true' : 'false');
             if (button.dataset && button.dataset.pieceTitle) button.setAttribute('aria-label', (playing ? 'Pause preview: ' : 'Play preview: ') + button.dataset.pieceTitle);
             const card = button.closest && button.closest('[data-piece-card]');
@@ -330,17 +332,17 @@
         // All music cards share one renderer and the same preview controller.
         cards(pieces, variant) {
             return '<div class="match-cards match-cards--' + variant + '">' + pieces.map(piece => {
-                const listening = variant === 'listening', reward = variant === 'reward', recommendation = variant === 'recommendation';
+                const listening = variant === 'listening', duel = variant === 'duel', reward = variant === 'reward', recommendation = variant === 'recommendation';
                 const play = '<button type="button" class="btn match-play" data-play="' + piece.id + '" data-piece-title="' + escape(piece.title) + '" aria-pressed="false" aria-label="Play preview: ' + escape(piece.title) + '"' +
-                    (!piece.audio && !piece.video ? ' disabled' : '') + '><span data-play-icon>' + icon('play') + '</span><span data-pause-icon hidden>' + icon('pause') + '</span></button>';
+                    (!piece.audio && !piece.video ? ' disabled' : '') + '><span data-play-icon>' + icon('play') + '</span><span data-pause-icon hidden>' + icon('pause') + '</span>' + (duel ? '<span data-play-label>Play</span>' : '') + '</button>';
                 const action = listening ? 'data-select-piece="' + piece.id + '" aria-pressed="' + (this.pendingPiece === piece.id) + '"' : 'data-choice="' + piece.id + '"';
                 const tag = recommendation ? 'a' : 'button';
-                const attrs = recommendation ? 'href="' + escape(piece.url) + '"' : 'type="button" ' + action;
+                const attrs = recommendation ? 'href="' + escape(piece.url) + '"' : 'type="button" ' + action + (duel ? ' aria-label="Choose ' + escape(piece.title + ' by ' + piece.composer) + '"' : '');
                 const image = '<img src="' + escape(listening ? piece.image : piece.artwork) + '" alt=""' + (recommendation ? ' loading="lazy"' : '') + '>';
                 const copy = '<span class="match-piece-copy"><strong>' + escape(piece.title) + '</strong><small>' + escape(piece.composer) + '</small></span>';
                 const media = reward ? (piece.video ? '<video data-result-media controls playsinline preload="none" poster="' + escape(piece.artwork) + '" src="' + escape(piece.video) + '"></video>' : piece.audio ? '<audio data-result-media preload="none" src="' + escape(piece.audio) + '"></audio>' : '') : '';
                 const content = reward ? '<div class="match-artwork' + (piece.video ? ' has-video' : '') + '">' + image + media + play + '</div>' + copy :
-                    '<' + tag + ' class="match-select" ' + attrs + '>' + image + copy + '</' + tag + '><div class="match-card-player">' + play + (listening ? this.waveform() : '') + '</div>';
+                    '<' + tag + ' class="match-select" ' + attrs + '>' + image + (duel ? '' : copy) + '</' + tag + '>' + (duel ? copy : '') + '<div class="match-card-player">' + play + (listening ? this.waveform() : '') + '</div>';
                 return '<article class="match-card match-card--' + variant + (listening && this.pendingPiece === piece.id ? ' selected' : '') + '" data-piece-card>' + content + '</article>';
             }).join('') + (variant === 'duel' ? '<span class="match-duel-or" aria-hidden="true">OR</span>' : '') + '</div>';
         }

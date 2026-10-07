@@ -3,13 +3,14 @@
     --match-shape-a: #abcaff;
     --match-shape-b: #d9c8ff;
     --match-accent: #8062ef;
+    --match-count-border: #d5e2ff;
     --match-ink: #18243a;
     --match-muted: #526179;
-    &[data-theme=reading] { --match-bg: #f0fbf2; --match-shape-a: #9cd8b6; --match-shape-b: #d4edc2; --match-accent: #357d70; }
-    &[data-theme=duel] { --match-bg: #fff0f0; --match-shape-a: #f5b6aa; --match-shape-b: #f5c0d4; --match-accent: #c95177; }
-    &[data-theme=mood] { --match-bg: #fffaeb; --match-shape-a: #f3d58d; --match-shape-b: #f7e7b1; --match-accent: #a37626; }
-    &[data-theme=reward] { --match-bg: #f7efff; --match-shape-a: #d4b6fb; --match-shape-b: #f3b5dc; --match-accent: #8062ef; }
-    &[data-theme=recommendations] { --match-bg: #eff9ff; --match-shape-a: #b3dcf6; --match-shape-b: #c7e9ed; --match-accent: #193249; }
+    &[data-theme=reading] { --match-count-border: #cdebd9; --match-bg: #f0fbf2; --match-shape-a: #9cd8b6; --match-shape-b: #d4edc2; --match-accent: #357d70; }
+    &[data-theme=duel] { --match-count-border: #faddd5; --match-bg: #fff0f0; --match-shape-a: #f5b6aa; --match-shape-b: #f5c0d4; --match-accent: #c95177; }
+    &[data-theme=mood] { --match-count-border: #f9eac6; --match-bg: #fffaeb; --match-shape-a: #f3d58d; --match-shape-b: #f7e7b1; --match-accent: #a37626; }
+    &[data-theme=reward] { --match-count-border: #eadbfc; --match-bg: #f7efff; --match-shape-a: #d4b6fb; --match-shape-b: #f3b5dc; --match-accent: #8062ef; }
+    &[data-theme=recommendations] { --match-count-border: #d9edfb; --match-bg: #eff9ff; --match-shape-a: #b3dcf6; --match-shape-b: #c7e9ed; --match-accent: #193249; }
     .modal-content { position: relative; isolation: isolate; color: var(--match-ink); background: linear-gradient(135deg, rgba(255,255,255,.65), transparent 65%), var(--match-bg); transition: background-color 240ms ease; }
     .fullscreen-modal-header { position: relative; z-index: 2; align-items: center; padding: 24px 4vw 12px; }
     .fullscreen-modal-close { color: var(--match-ink); border-color: rgba(60,77,106,.24); background: rgba(255,255,255,.45); }
@@ -38,8 +39,8 @@
 .match-tour {
     max-width: 840px; padding-bottom: 12px; position: relative;
     .match-count { text-align: center; padding: 20px 0 28px; }
-    .match-count-number { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 160px; height: 160px; padding: 12px; border-radius: 50%; background: #fff; font-size: 44px; font-weight: 700; letter-spacing: -.025em; line-height: 1; font-variant-numeric: tabular-nums; }
-    .match-count-unit { position: absolute; top: 50%; left: 50%; transform: translate(-50%, 26px); font-size: 1rem; font-weight: 400; letter-spacing: normal; line-height: 1.3; opacity: .5; margin: 0; }
+    .match-count-number { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 160px; height: 160px; padding: 12px; border-radius: 50%; background: #fff; font-size: 44px; font-weight: 700; letter-spacing: -.025em; line-height: 1; font-variant-numeric: tabular-nums; border: 9px solid var(--match-count-border); }
+    .match-count-unit { position: absolute; top: 50%; left: 50%; transform: translate(-50%, 20px); font-size: 1rem; font-weight: 400; letter-spacing: normal; line-height: 1.3; opacity: .5; margin: 0; }
     .match-heading { text-align: center; max-width: 660px; margin: 0 auto 26px; }
     h3 { font-size: 30px; line-height: 1.22; margin: 0 0 10px; color: var(--match-ink); }
     h3[tabindex='-1']:focus { outline: none; }
@@ -91,8 +92,9 @@
     .match-card--duel { overflow: hidden; }
     .match-card--duel .match-select { flex-direction: column; text-align: center; padding: 0; }
     .match-card--duel .match-select img { width: 100%; height: 230px; object-fit: cover; }
-    .match-card--duel .match-piece-copy { padding: 16px 18px 12px; }
+    .match-card--duel .match-piece-copy { padding: 16px 18px 12px; text-align: center; }
     .match-card--duel .match-card-player { justify-content: center; padding: 0 0 18px; }
+    .match-card--duel .match-play { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: auto; padding: 0 16px !important; border-radius: 24px !important; font-size: 14px; }
     .match-duel-or { position: absolute; top: 42%; left: 50%; transform: translate(-50%,-50%); display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,.95); font-size: 14px; font-weight: 600; box-shadow: 0 0 0 10px rgba(255,255,255,.18); pointer-events: none; }
     .match-moods { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; max-width: 660px; margin: auto; }
     .match-mood { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px 12px; min-height: 120px; border: 1.5px solid transparent; border-radius: 18px; background: rgba(255,255,255,.85); color: var(--match-ink); line-height: 1.3; font-size: 15px; transition: transform 160ms, background-color 160ms; }
