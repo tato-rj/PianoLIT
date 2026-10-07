@@ -40,8 +40,8 @@
 .match-tour {
     max-width: 840px; padding-bottom: 12px; position: relative;
     .match-count { text-align: center; padding: 20px 0 28px; }
-    .match-count-number { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 160px; height: 160px; padding: 12px; border-radius: 50%; background: #fff; font-size: 44px; font-weight: 700; letter-spacing: -.025em; line-height: 1; font-variant-numeric: tabular-nums; border: 9px solid var(--match-count-border); }
-    .match-count-unit { position: absolute; top: 50%; left: 50%; transform: translate(-50%, 20px); font-size: 1rem; font-weight: 400; letter-spacing: normal; line-height: 1.3; opacity: .5; margin: 0; }
+    .match-count-number { position: relative; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 160px; height: 160px; padding: 12px; border-radius: 50%; background: #fff; font-size: 44px; font-weight: 700; letter-spacing: -.025em; line-height: 1; font-variant-numeric: tabular-nums; border: 9px solid var(--match-count-border); }
+    .match-count-unit { color: var(--match-count-border); font-size: 1rem; font-weight: 400; letter-spacing: normal; line-height: 1.3; margin: 0; }
     .match-heading { text-align: center; max-width: 660px; margin: 0 auto 26px; }
     h3 { font-size: 30px; line-height: 1.22; margin: 0 0 10px; color: var(--match-ink); }
     h3[tabindex='-1']:focus { outline: none; }
