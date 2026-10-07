@@ -74,6 +74,55 @@ class MatchTourTest extends ReviewTestCase
         $this->assertSame($expected, array_column($data['pieces'], 'id'));
     }
 
+    public function test_all_questionnaire_examples_come_from_historical_free_picks()
+    {
+        Model::withoutEvents(function () {
+            foreach ($this->pieces as $piece) {
+                $piece->update(['highlighted_at' => now()->subYear(), 'is_free' => false, 'show_on_tour' => false]);
+            }
+            foreach ($this->pieces->take(4) as $source) {
+                $decoy = $source->replicate();
+                // Even editorially preferred/currently free entries need free-pick history.
+                $decoy->fill(['highlighted_at' => null, 'is_free' => true, 'show_on_tour' => true])->save();
+                $decoy->tags()->attach($source->tags()->pluck('tags.id')->all());
+            }
+        });
+        $tour = new MatchTour;
+        $data = $tour->data();
+        $this->assertTrue($data['ready']);
+        $this->assertSame(16, $data['total']);
+        $this->assertCount(10, $data['pieces']);
+        $eligible = $this->pieces->pluck('id')->all();
+        foreach ($data['pieces'] as $card) $this->assertContains($card['id'], $eligible);
+        $this->assertSame(array_slice($eligible, 0, 4), array_column($data['scores'], 'id'));
+        $response = $this->getJson(route('webapp.tour'))->assertOk();
+        $this->assertSame($tour->data(), $response->json('tour'));
+    }
+
+    public function test_free_pick_examples_require_only_the_media_used_by_their_screen()
+    {
+        Model::withoutEvents(function () {
+            $this->pieces[0]->update(['audio_path' => null]);
+            $this->pieces[1]->update(['score_path' => null]);
+        });
+        $data = (new MatchTour)->data();
+        $this->assertTrue($data['ready']);
+        $this->assertSame($this->pieces[0]->id, $data['scores']['easy']['id']);
+        $this->assertNotContains($this->pieces[0]->id, array_column($data['pieces'], 'id'));
+        $this->assertContains($this->pieces[1]->id, array_column($data['pieces'], 'id'));
+        $this->assertSame($this->pieces[5]->id, $data['scores']['beginner']['id']);
+    }
+
+    public function test_questionnaire_does_not_fill_missing_free_picks_with_other_pieces()
+    {
+        Piece::query()->update(['highlighted_at' => null]);
+        $data = (new MatchTour)->data();
+        $this->assertFalse($data['ready']);
+        $this->assertSame([], $data['pieces']);
+        $this->assertSame(['easy' => null, 'beginner' => null, 'middle' => null, 'hard' => null], $data['scores']);
+        $this->assertSame(12, $data['total']);
+    }
+
     private function answers()
     {
         $data = (new MatchTour)->data();
@@ -305,9 +354,8 @@ class MatchTourTest extends ReviewTestCase
     public function test_no_eligible_match_returns_unavailable_without_changing_legacy_fallback()
     {
         Tutorial::query()->delete();
-        Piece::where('id', '!=', $this->pieces[0]->id)->update(['highlighted_at' => null]);
         $this->assertNull((new Quiz)->getKeywords(['elementary'])->search(true));
-        $this->assertSame($this->pieces[0]->id, (new Quiz)->getKeywords(['elementary'])->search()->id);
+        $this->assertContains((new Quiz)->getKeywords(['elementary'])->search()->id, $this->pieces->pluck('id')->all());
         $this->assertTrue((new MatchTour)->data()['ready']);
         $this->withExceptionHandling()->postJson(route('webapp.tour.result'), $this->answers())->assertStatus(503);
     }

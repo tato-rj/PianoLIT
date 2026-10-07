@@ -379,8 +379,9 @@
         async reading() {
             const generation = ++this.generation, pair = this.readingPair();
             this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
-            this.stage.innerHTML = this.heading('Which score feels more comfortable to read at first sight?', 'Take a quick look at each score.', this.state.step + ' of 2') +
-                '<div class="match-score-pair">' + pair.map((score, i) => '<article class="match-score-card"><span class="match-score-label">' + (i ? 'B' : 'A') + '</span><div class="match-score" data-score-slot="' + i + '" aria-busy="true"><p role="status">Opening score…</p></div><button type="button" class="btn btn-secondary match-score-choice" data-choice="' + (i ? 'yes' : 'no') + '" disabled>Choose ' + (i ? 'B' : 'A') + '</button></article>').join('') + '</div>';
+            this.stage.innerHTML = this.heading('Could you read score B without practicing first?', 'Imagine playing both hands together at a slow, steady pace. If both scores feel comfortable, choose Yes.', this.state.step + ' of 2') +
+                '<div class="match-score-pair">' + pair.map((score, i) => '<article class="match-score-card"><span class="match-score-label">' + (i ? 'B' : 'A') + '</span><div class="match-score" data-score-slot="' + i + '" aria-busy="true"><p role="status">Opening score…</p></div></article>').join('') + '</div>' +
+                '<div class="match-score-pair mt-3" role="group" aria-label="Comfort reading score B"><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Not yet — I’d need practice</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Yes — B feels comfortable</button></div>';
             try {
                 if (!this.pdfjs) this.pdfjs = await loadPdf();
                 if (generation !== this.generation) return;

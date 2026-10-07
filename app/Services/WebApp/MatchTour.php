@@ -68,7 +68,8 @@ class MatchTour
 
     public function data()
     {
-        $pool = $this->catalog()->select(['pieces.id', 'composer_id', 'name', 'audio_path', 'cover_path', 'show_on_tour'])
+        // Reuse the historical free-pick list for every questionnaire example.
+        $pool = Piece::freePicks(false)->select(['pieces.id', 'composer_id', 'name', 'audio_path', 'cover_path', 'show_on_tour'])
             ->with(['composer' => function ($query) {
                 $query->select(['id', 'name', 'cover_path'])->withCount([])->setEagerLoads([]);
             }, 'tags' => function ($query) { $query->select(['tags.id', 'name', 'type']); }])->withCount([])
@@ -116,7 +117,7 @@ class MatchTour
         })->values()->all();
         $scores = [];
         foreach (['easy' => 'elementary', 'beginner' => 'beginner', 'middle' => 'intermediate', 'hard' => 'advanced'] as $key => $level) {
-            $piece = Piece::select(['pieces.id', 'composer_id', 'name', 'score_path'])
+            $piece = Piece::freePicks(false)->select(['pieces.id', 'composer_id', 'name', 'score_path'])
                 ->with(['composer' => function ($query) {
                     $query->select(['id', 'name'])->withCount([])->setEagerLoads([]);
                 }])->withCount([])->byLevel($level)
