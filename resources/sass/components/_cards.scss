@@ -8,6 +8,26 @@
 	right: 0;
 }
 
+// Discover's weekly feature reuses the artwork, badge, button and media icons.
+.free-pick-card {
+    background-color: var(--color-surface-dark);
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(0,0,0,.75), rgba(0,0,0,.35));
+        pointer-events: none;
+    }
+    &__content { max-width: 520px; }
+    &__title {
+        font-size: clamp(26px, 3.2vw, 38px);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+    &__metadata { font-size: var(--font-size-lg); overflow-wrap: anywhere; }
+    &__media .app-icon { width: 1.4em; height: 1.4em; }
+}
+
 // Shared webapp piece/collection cards and circular composer/period tiles.
 .piece-card, .search-card {
     transition: transform .18s ease;
