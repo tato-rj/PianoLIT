@@ -191,7 +191,7 @@
     }
     function progress(shell, section, suggestions, finding) {
         if (!shell) return;
-        const names = ['Listening', 'Sight-reading', 'Your taste', 'Mood', 'Your match'];
+        const names = ['Listening', 'Sight-reading', 'Your taste', 'Mood', 'We found your perfect match!'];
         const themes = ['listening', 'reading', 'duel', 'mood', 'reward'];
         shell.dataset.theme = suggestions ? 'recommendations' : themes[section];
         const number = shell.querySelector('[data-step-number]');
@@ -249,7 +249,9 @@
             this.element.querySelector('[data-skip-label]').textContent = step < 6 ? 'Not sure? Skip' : 'Skip';
             this.element.querySelector('[data-restart]').hidden = step < 7;
             this.element.querySelector('.match-count').hidden = !!this.suggestions;
-            this.element.querySelector('[data-count-unit]').textContent = step === 7 && !this.waiting ? 'perfect match' : 'pieces';
+            const unit = this.element.querySelector('[data-count-unit]');
+            unit.hidden = step === 7 && !this.waiting;
+            unit.textContent = unit.hidden ? '' : 'pieces';
             this.element.querySelector('[data-count-note]').textContent = step === 0 ? 'In the PianoLIT library' : this.waiting ? 'Finding your match' : step === 7 ? 'Chosen for you' : 'Estimated pieces remaining';
         }
         async click(event) {
@@ -369,7 +371,7 @@
             this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
             this.stage.innerHTML = this.heading('How does this score feel to sight-read?', 'Imagine playing it for the first time, with both hands at a slow, steady pace.', this.state.step + ' of 2') +
                 '<article class="match-score-card match-score-single"><div class="match-score" data-score-slot="0" aria-busy="true"><p role="status">Opening score…</p></div></article>' +
-                '<div class="match-score-answers mt-3" role="group" aria-label="Sight-reading difficulty"><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Difficult for me</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Easy for me</button></div>';
+                '<div class="match-score-answers mt-3" role="group" aria-label="Sight-reading difficulty"><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Easy for me</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Difficult for me</button></div>';
             try {
                 if (!this.pdfjs) this.pdfjs = await loadPdf();
                 if (generation !== this.generation) return;

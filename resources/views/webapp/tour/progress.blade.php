@@ -1,7 +1,7 @@
 <div class="match-progress" data-tour-progress>
     <h1 id="match-tour-heading" class="visually-hidden">Find your match</h1>
     <ol class="match-progress-track" aria-label="Discovery progress">
-        @foreach(['Listening', 'Sight-reading', 'Your taste', 'Mood', 'Your match'] as $label)
+        @foreach(['Listening', 'Sight-reading', 'Your taste', 'Mood', 'We found your perfect match!'] as $label)
         <li data-progress-step="{{ $loop->index }}" class="{{ $loop->first ? 'is-current' : '' }}" @if($loop->first) aria-current="step" @endif><span class="match-progress-dot"></span><span class="visually-hidden">{{ $label }}</span></li>
         @endforeach
     </ol>

@@ -242,7 +242,7 @@ class MatchTourTest extends ReviewTestCase
         $quiz->shouldReceive('search')->once()->with(true, true)->andReturn($this->pieces[0]);
         $quiz->shouldReceive('matchContext')->with($this->pieces[0])->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => ['calm'], 'matchedTags' => ['calm']]);
         $this->app->instance(Quiz::class, $quiz);
-        $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your match')
+        $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('We found your perfect match!')
             ->assertSee('id="match-result-heading"', false)->assertDontSee('data-bs-dismiss', false)
             ->assertSee('data-result-data', false)->assertDontSee('<video', false)
             ->assertSee($this->pieces[0]->medium_name)->assertSee('View piece')
@@ -274,7 +274,7 @@ class MatchTourTest extends ReviewTestCase
 
     public function test_real_engine_can_recommend_with_the_new_answers()
     {
-        $this->postJson(route('webapp.tour.result'), $this->answers())->assertOk()->assertSee('Your match')->assertSee('Why this piece?');
+        $this->postJson(route('webapp.tour.result'), $this->answers())->assertOk()->assertSee('We found your perfect match!')->assertSee('Why this piece?');
     }
 
     public function test_explanation_uses_matching_traits_without_inventing_skipped_or_unmatched_answers()

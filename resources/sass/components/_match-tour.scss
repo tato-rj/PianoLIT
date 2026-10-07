@@ -23,7 +23,7 @@
     .match-ambience span:nth-child(3) { top: 32%; right: -42%; opacity: .42; transform: rotate(-55deg); animation-delay: -4s; }
     .match-ambience span:nth-child(4) { width: 34vw; height: 42vh; bottom: -24%; left: -6%; background: var(--match-shape-b); transform: rotate(45deg); }
     .match-progress { width: unquote('min(420px, calc(100% - 76px))'); margin: 0 auto; }
-    .match-progress-track { list-style: none; display: flex; padding: 0; margin: 0 0 12px; }
+    .match-progress-track { list-style: none; display: flex; padding: 0; margin: 0 0 18px; }
     .match-progress-track li { flex: 1; position: relative; }
     .match-progress-track li:last-child { flex: 0 0 12px; }
     .match-progress-track li:not(:last-child)::after { content: ''; position: absolute; height: 2px; background: rgba(70,92,120,.28); top: 5px; left: 12px; right: 0; transition: background-color 240ms; }
@@ -37,13 +37,9 @@
 
 .match-tour {
     max-width: 840px; padding-bottom: 12px; position: relative;
-    .match-count { text-align: center; padding: 18px 0 22px; }
-    .match-count-number { position: relative; display: inline-block; font-size: 84px; font-weight: 700; letter-spacing: -.045em; line-height: 1; font-variant-numeric: tabular-nums; }
-    .match-count-unit { font-size: 23px; font-weight: 600; line-height: 1.4; }
-    .match-count-rays { position: absolute; inset: 0 -36px; pointer-events: none; }
-    .match-count-rays::before, .match-count-rays::after { content: ''; position: absolute; top: 50%; width: 15px; height: 3px; border-radius: 2px; background: #ffbd28; box-shadow: 0 -26px 0 #ffbd28, 0 26px 0 #ffbd28; }
-    .match-count-rays::before { left: 0; transform: rotate(-12deg); }
-    .match-count-rays::after { right: 0; transform: rotate(12deg); }
+    .match-count { text-align: center; padding: 20px 0 28px; }
+    .match-count-number { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 160px; height: 160px; padding: 12px; border-radius: 50%; background: #fff; font-size: 44px; font-weight: 700; letter-spacing: -.025em; line-height: 1; font-variant-numeric: tabular-nums; }
+    .match-count-unit { font-size: 20px; font-weight: 600; line-height: 1.4; margin-top: 10px; }
     .match-heading { text-align: center; max-width: 660px; margin: 0 auto 26px; }
     h3 { font-size: 30px; line-height: 1.22; margin: 0 0 10px; color: var(--match-ink); }
     h3[tabindex='-1']:focus { outline: none; }
@@ -133,8 +129,8 @@
     .match-card--recommendation .match-select img { width: 80px; height: 76px; flex-shrink: 0; object-fit: cover; border-radius: 10px; }
     .match-card--recommendation .match-card-player { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
     @media (max-width: 699px) {
-        .match-count { padding: 12px 0 20px; }
-        .match-count-number { font-size: 64px; }
+        .match-count { padding: 16px 0 24px; }
+        .match-count-number { width: 144px; height: 144px; font-size: 40px; }
         .match-count-unit { font-size: 20px; }
         h3 { font-size: 25px; }
         .match-heading { margin-bottom: 22px; }
@@ -208,10 +204,9 @@
 @media (min-width: 900px) {
     .match-tour-modal.fullscreen-modal .fullscreen-modal-header { padding-top: 12px; padding-bottom: 8px; }
     .match-tour-modal .match-tour-body { padding-bottom: 12px; }
-    .match-tour-modal[data-theme=reward] .match-count-number { font-size: unquote('clamp(40px, 6vh, 64px)'); }
     .match-tour {
-        .match-count { padding: 4px 0; }
-        .match-count-number { font-size: unquote('clamp(48px, 8vh, 76px)'); }
+        .match-count { padding: 16px 0 24px; }
+        .match-count-number { width: 136px; height: 136px; font-size: 40px; }
         .match-count-unit { font-size: 20px; }
         .match-heading { margin-bottom: 14px; }
         h3 { font-size: unquote('clamp(22px, 3.4vh, 30px)'); margin-bottom: 6px; }
@@ -242,9 +237,8 @@
 @media (min-width: 900px) and (max-height: 700px) {
     .match-tour-modal.fullscreen-modal .fullscreen-modal-header { padding-top: 10px; }
     .match-tour-modal .fullscreen-modal-close { width: 40px; height: 40px; }
-    .match-tour-modal[data-theme=reward] .match-count-number { font-size: 32px; }
     .match-tour {
-        .match-count-number { font-size: 48px; }
+        .match-count-number { width: 120px; height: 120px; font-size: 34px; }
         .match-count-unit { font-size: 18px; }
         .match-heading { margin-bottom: 10px; }
         .match-heading p { font-size: 14px; }
