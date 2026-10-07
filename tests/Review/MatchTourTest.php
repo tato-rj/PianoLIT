@@ -90,10 +90,34 @@ class MatchTourTest extends ReviewTestCase
         $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
         $this->assertCount(3, array_unique(array_column($data['scores'], 'id')));
         $this->get(route('webapp.tour'))->assertOk()->assertSee('Let’s narrow down')
-            ->assertSee('data-count', false)->assertSee('id="menu"', false)
+            ->assertSee('modal-fullscreen', false)->assertSee('Close Find your match')
+            ->assertSee('id="menu"', false)
             ->assertDontSee('QUESTION')->assertDontSee('id="find-match-carousel"', false)
             ->assertDontSee('build/pdf.min.js', false)
             ->assertDontSee('cdn.plyr.io', false);
+        $response = $this->getJson(route('webapp.tour'))->assertOk()->assertJsonPath('tour.ready', true);
+        $this->assertSame($tour->data(), $response->json('tour'));
+        $this->assertStringContainsString('data-count', $response->json('html'));
+        $this->assertStringNotContainsString('<script', $response->json('html'));
+    }
+
+    public function test_direct_page_opens_a_shell_without_preparing_the_catalog()
+    {
+        $tour = \Mockery::mock(MatchTour::class);
+        $tour->shouldNotReceive('data');
+        $this->app->instance(MatchTour::class, $tour);
+        $this->get(route('webapp.tour'))->assertOk()->assertSee('MatchTour.Launcher', false)
+            ->assertSee('data-match-tour-open', false)->assertDontSee('data-count', false);
+    }
+
+    public function test_discover_launches_the_fullscreen_tour_without_the_old_carousel()
+    {
+        $html = view('webapp.discover.index', ['rows' => collect(), 'composers' => collect(), 'hasFullAccess' => true, 'errors' => new \Illuminate\Support\ViewErrorBag])->render();
+        $this->assertStringContainsString('data-match-tour-open', $html);
+        $this->assertStringContainsString('modal-fullscreen', $html);
+        $this->assertStringContainsString('Close Find your match', $html);
+        $this->assertStringNotContainsString('find-match-carousel', $html);
+        $this->assertStringNotContainsString('resetTour()', $html);
     }
 
     public function test_all_reading_branches_and_intents_adapt_to_legacy_keywords()
@@ -123,13 +147,13 @@ class MatchTourTest extends ReviewTestCase
         $quiz->shouldReceive('search')->once()->andReturn($this->pieces[0]);
         $this->app->instance(Quiz::class, $quiz);
         $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your match')
-            ->assertSee('id="match-tour-result"', false)->assertSee('data-result-open', false)
+            ->assertSee('id="match-result-heading"', false)->assertDontSee('data-bs-dismiss', false)
             ->assertSee('data-result-media', false)->assertSee('<audio', false)
             ->assertSee($this->pieces[0]->medium_name)->assertSee('Learn more about this piece')
             ->assertSee('More like this')->assertDontSee('id="match-modal"', false);
     }
 
-    public function test_result_reuses_the_original_modal_and_prefers_performance_video()
+    public function test_inline_result_shares_legacy_content_and_prefers_performance_video()
     {
         $piece = $this->pieces[0];
         Model::withoutEvents(function () use ($piece) {
@@ -137,13 +161,16 @@ class MatchTourTest extends ReviewTestCase
             create(\App\Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance', 'video_url' => 'https://example.test/performance.mp4']);
         });
         $html = view('webapp.tour.result', ['piece' => $piece])->render();
-        $this->assertStringContainsString('id="match-tour-result"', $html);
+        $this->assertStringContainsString('id="match-result-heading"', $html);
+        $this->assertStringNotContainsString('data-bs-dismiss', $html);
+        $this->assertStringNotContainsString('modal-dialog', $html);
         $this->assertStringContainsString('performance.mp4', $html);
         $this->assertStringNotContainsString('lesson.mp4', $html);
         $this->assertStringContainsString("What's this piece like?", $html);
         $legacy = view('funnels.find-your-match.results', ['piece' => $piece])->render();
         $this->assertStringContainsString('id="match-modal"', $legacy);
         $this->assertStringNotContainsString('data-result-media', $legacy);
+        $this->assertStringContainsString('data-bs-dismiss="modal"', $legacy);
     }
 
     public function test_real_engine_can_recommend_with_the_new_answers()

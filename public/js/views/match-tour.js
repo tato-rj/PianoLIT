@@ -195,28 +195,26 @@
             this.previews = new Previews(data.previewSeconds, message => this.report(message));
             this.counter.set(data.total);
             element.addEventListener('click', event => this.click(event));
-            root.addEventListener('pagehide', () => this.dispose());
-            root.document.addEventListener('visibilitychange', () => { if (root.document.hidden) this.stopMedia(); });
+            this.onPageHide = () => this.dispose();
+            this.onVisibility = () => { if (root.document.hidden) this.stopMedia(); };
+            root.addEventListener('pagehide', this.onPageHide);
+            root.document.addEventListener('visibilitychange', this.onVisibility);
             this.render(false);
         }
         report(message) { this.error.textContent = message; this.error.hidden = !message; }
         stopMedia() {
             this.previews.stop();
             this.stage.querySelectorAll('audio,video').forEach(media => media.pause());
-            if (this.resultModal) this.resultModal.querySelectorAll('audio,video').forEach(media => media.pause());
         }
         dispose() {
             this.generation++; this.counter.cancel(); this.stopMedia();
             if (this.resultPlayer) { this.resultPlayer.destroy(); this.resultPlayer = null; }
-            if (this.resultModal) {
-                const modal = this.resultModal;
-                this.resultModal = null;
-                // If the opening transition is pending, the shown listener closes it.
-                if (this.resultVisible) this.resultDialog.hide();
-                else { this.resultDialog.dispose(); modal.remove(); }
-                this.resultDialog = null;
-            }
             if (this.pdfTask) { this.pdfTask.destroy(); this.pdfTask = null; }
+        }
+        destroy() {
+            this.dispose();
+            root.removeEventListener('pagehide', this.onPageHide);
+            root.document.removeEventListener('visibilitychange', this.onVisibility);
         }
         navigation() {
             this.element.querySelector('[data-back]').disabled = !this.state.history.length;
@@ -231,7 +229,6 @@
                 this.counter.set(this.state.count); this.render(); return;
             }
             if (this.busy) return;
-            if (button.hasAttribute('data-result-open')) { this.resultDialog.show(button); return; }
             if (button.hasAttribute('data-play')) {
                 this.report('');
                 this.previews.play(this.data.pieces.find(piece => piece.id === Number(button.dataset.play)), button); return;
@@ -284,11 +281,15 @@
                     '<button type="button" class="btn btn-outline-secondary match-intent rounded" data-choice="' + key + '">' + escape(this.data.intents[key]) + '</button>').join('') + '</div>';
             }
             if (focus) {
-                if (this.element.getBoundingClientRect().top < 0) this.element.scrollIntoView({block: 'start'});
                 this.focus();
             }
         }
-        focus() { const heading = this.stage.querySelector('h3'); if (heading) heading.focus({preventScroll: true}); }
+        focus() {
+            const body = this.element.closest('.match-tour-body');
+            if (body) body.scrollTop = 0;
+            const heading = this.stage.querySelector('h3');
+            if (heading) heading.focus({preventScroll: true});
+        }
         async reading() {
             const generation = ++this.generation;
             const score = this.data.scores[this.state.step === 1 ? 'middle' : (this.state.answers.reading[0] ? 'hard' : 'easy')];
@@ -344,20 +345,18 @@
                 await pause(this.reduced ? 0 : 140);
                 if (generation !== this.generation) return;
                 this.stage.innerHTML = results[0].data;
-                this.mountResult();
                 this.stage.classList.remove('leaving'); this.navigation(); this.focus(); this.busy = false;
                 this.element.querySelector('[data-count-announcement]').textContent = '1 piece. Your match is ready.';
-                const media = this.resultModal.querySelector('[data-result-media]');
+                const media = this.stage.querySelector('[data-result-media]');
                 if (media) {
                     ['timeupdate', 'seeking'].forEach(event => media.addEventListener(event, () => {
                         if (media.currentTime >= this.data.previewSeconds) { media.pause(); media.currentTime = 0; }
                     }));
                     if (root.Plyr) this.resultPlayer = new root.Plyr(media);
                     else loadPlayer().then(Player => {
-                        if (generation === this.generation && this.resultModal && !this.resultPlayer) this.resultPlayer = new Player(media);
+                        if (generation === this.generation && media.isConnected && !this.resultPlayer) this.resultPlayer = new Player(media);
                     }).catch(() => {}); // Native controls remain usable if the CDN fails.
                 }
-                this.resultDialog.show(this.stage.querySelector('[data-result-open]'));
             } catch (error) {
                 if (generation !== this.generation) return;
                 this.counter.cancel(); this.state.back(); this.counter.set(previous);
@@ -367,28 +366,58 @@
                     : 'We couldn’t find your match just now. Choose your intent again to retry; your earlier answers are saved.');
             }
         }
-        mountResult() {
-            const modal = this.resultModal = this.stage.querySelector('#match-tour-result');
-            // Keep the modal outside the transitioning stage and its sticky counter.
-            root.document.body.appendChild(modal);
-            modal.setAttribute('tabindex', '-1');
-            modal.setAttribute('aria-labelledby', 'match-tour-result-title');
-            const dialog = this.resultDialog = new root.bootstrap.Modal(modal);
-            this.resultVisible = false;
-            modal.addEventListener('show.bs.modal', () => { this.resultVisible = true; });
-            modal.addEventListener('shown.bs.modal', () => {
-                if (this.resultModal !== modal) dialog.hide();
+    }
+
+    class Launcher {
+        constructor(element, http) {
+            this.element = element; this.http = http; this.generation = 0;
+            this.content = element.querySelector('[data-tour-content]');
+            this.dialog = new root.bootstrap.Modal(element);
+            element.addEventListener('show.bs.modal', () => this.load());
+            element.addEventListener('shown.bs.modal', () => {
+                this.shown = true;
+                if (this.controller) this.controller.focus();
             });
-            modal.addEventListener('hide.bs.modal', () => {
-                modal.querySelectorAll('audio,video').forEach(media => media.pause());
+            element.addEventListener('hide.bs.modal', () => {
+                this.shown = false; this.generation++; this.loading = false;
+                if (this.controller) { this.controller.destroy(); this.controller = null; }
             });
-            modal.addEventListener('hidden.bs.modal', () => {
-                if (this.resultModal !== modal) { dialog.dispose(); modal.remove(); return; }
-                this.resultVisible = false;
-                this.stage.querySelector('[data-result-open]').focus({preventScroll: true});
+            element.addEventListener('hidden.bs.modal', () => {
+                this.content.innerHTML = '';
+                if (this.opener && this.opener.isConnected) this.opener.focus({preventScroll: true});
             });
+            element.addEventListener('click', event => {
+                if (event.target.closest('[data-tour-retry]')) this.load();
+            });
+            root.document.addEventListener('click', event => {
+                const opener = event.target.closest('[data-match-tour-open]');
+                if (!opener || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+                event.preventDefault(); this.open(opener);
+            });
+        }
+        open(opener) { this.opener = opener; this.dialog.show(opener); }
+        async load() {
+            if (this.loading) return;
+            this.loading = true;
+            this.content.scrollTop = 0;
+            const generation = ++this.generation;
+            this.content.innerHTML = '<div class="match-tour-loading text-center" role="status"><i class="app-icon icon-loader-circle spin" aria-hidden="true"></i><p class="text-muted mt-3">Opening your listening choices…</p></div>';
+            try {
+                const response = await this.http.get(this.element.dataset.tourUrl, {headers: {Accept: 'application/json'}, timeout: 20000});
+                if (generation !== this.generation) return;
+                this.content.innerHTML = response.data.html;
+                if (response.data.tour.ready) {
+                    this.controller = new Controller(this.content.querySelector('#match-tour'), response.data.tour, this.http);
+                    if (this.shown) this.controller.focus();
+                }
+            } catch (error) {
+                if (generation !== this.generation) return;
+                this.content.innerHTML = '<div class="match-tour-loading text-center"><p role="alert">The listening tour could not be opened.</p><button type="button" class="btn btn-secondary" data-tour-retry>Try again</button></div>';
+            } finally {
+                if (generation === this.generation) this.loading = false;
+            }
         }
     }
 
-    root.MatchTour = {Candidates, State, AnimatedCount, Previews, Controller, level, loadPdf, loadPlayer};
+    root.MatchTour = {Candidates, State, AnimatedCount, Previews, Controller, Launcher, level, loadPdf, loadPlayer};
 })(typeof window !== 'undefined' ? window : globalThis);

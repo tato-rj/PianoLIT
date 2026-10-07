@@ -1,0 +1,17 @@
+.fullscreen-modal {
+    .modal-dialog { width: 100%; max-width: none; margin: 0; height: 100%; }
+    .modal-content { height: 100vh; height: 100dvh; border-radius: 0 !important; background: var(--color-white); }
+    .fullscreen-modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; padding: 32px 4vw 22px; flex: 0 0 auto; }
+    .fullscreen-modal-header h1 { font-size: 32px; }
+    // Center the icon despite the shared button padding.
+    .fullscreen-modal-close { width: 48px; height: 48px; padding: 0 !important; border-radius: 50% !important; display: grid; place-items: center; flex-shrink: 0; }
+    [hidden] { display: none !important; }
+    @media (min-width: 1100px) and (max-height: 820px) { .fullscreen-modal-header { padding-top: 22px; padding-bottom: 14px; } }
+    @media (max-width: 1099px) { .fullscreen-modal-header { padding: 24px; } }
+    @media (max-width: 699px) {
+        .fullscreen-modal-header { padding: 20px 18px 18px; }
+        .fullscreen-modal-header h1 { font-size: 24px; }
+        .fullscreen-modal-header p { font-size: 12px; }
+        .fullscreen-modal-close { width: 38px; height: 38px; }
+    }
+}

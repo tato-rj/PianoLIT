@@ -82,9 +82,14 @@ class TabsController extends Controller
         return view('webapp.playlists.index', $collections->data());
     }
 
-    public function tour(\App\Services\WebApp\MatchTour $tour)
+    public function tour(Request $request, \App\Services\WebApp\MatchTour $tour)
     {
-        return view('webapp.tour.index', ['tour' => $tour->data()]);
+        if ($request->wantsJson()) {
+            $data = $tour->data();
+            return response()->json(['html' => view('webapp.tour.content', ['tour' => $data])->render(), 'tour' => $data]);
+        }
+
+        return view('webapp.tour.index');
     }
 
     public function myPieces()

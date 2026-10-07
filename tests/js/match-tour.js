@@ -72,47 +72,27 @@ module.exports = async function () {
     resolve({data: '<article>obsolete</article>'}); await response;
     assert.strictEqual(stale.state.count, 47);
 
-    // Completing the final choice opens the original modal outside the stage.
+    // The result stays in the fullscreen tour's stage with no second modal.
     window.setTimeout = callback => callback();
     const media = {events: {}, currentTime: 0, pause() { this.pauses = (this.pauses || 0) + 1; }, addEventListener(event, callback) { this.events[event] = callback; }};
-    const opener = {focus() { this.focused = true; }};
-    const modal = {events: {}, attributes: {}, setAttribute(key, value) { this.attributes[key] = value; }, addEventListener(event, callback) { this.events[event] = callback; },
-        querySelector() { return media; }, querySelectorAll() { return [media]; }, remove() { this.removed = true; }};
-    let appended;
-    window.document = {body: {appendChild(node) { appended = node; }}};
-    window.bootstrap = {Modal: class {
-        constructor(node) { this.node = node; this.shows = 0; }
-        show() { this.shows++; this.node.events['show.bs.modal'](); }
-        hide() { this.node.events['hide.bs.modal'](); }
-        dispose() { this.disposed = true; }
-    }};
+    window.bootstrap = {Modal: class {constructor() { throw Error('Result must not open a second modal'); }}};
     let destroyed = false;
     window.Plyr = class {destroy() { destroyed = true; }};
     const result = {
-        state: {count: 2, answers: {}}, http: {post: () => Promise.resolve({data: 'chosen piece and modal'})},
+        state: {count: 2, answers: {}}, http: {post: () => Promise.resolve({data: 'chosen piece'})},
         element: {dataset: {url: '/result'}, querySelector: () => ({})},
-        stage: {classList: {add() {}, remove() {}}, querySelector: selector => selector === '#match-tour-result' ? modal : opener, querySelectorAll: () => []},
+        stage: {classList: {add() {}, remove() {}}, querySelector: () => media, querySelectorAll: () => [media]},
         counter: {to: () => Promise.resolve(), cancel() {}}, generation: 1, reduced: true, data: {previewSeconds: 10}, previews: {stop() {}},
-        stopMedia: Controller.prototype.stopMedia, mountResult: Controller.prototype.mountResult, navigation() {}, focus() {}
+        stopMedia: Controller.prototype.stopMedia, navigation() {}, focus() {}
     };
     await Controller.prototype.result.call(result, 1);
     assert.strictEqual(result.state.count, 1);
-    assert.strictEqual(result.stage.innerHTML, 'chosen piece and modal');
-    assert.strictEqual(appended, modal);
-    assert.strictEqual(result.resultDialog.shows, 1);
-    assert.strictEqual(modal.attributes['aria-labelledby'], 'match-tour-result-title');
+    assert.strictEqual(result.stage.innerHTML, 'chosen piece');
     media.currentTime = 10; media.events.seeking();
     assert.strictEqual(media.currentTime, 0);
-    const dialog = result.resultDialog;
-    dialog.hide(); modal.events['hidden.bs.modal']();
-    assert(media.pauses > 0); assert(opener.focused); assert(!modal.removed);
-    await Controller.prototype.click.call(result, {target: {closest: () => ({disabled: false, hasAttribute: name => name === 'data-result-open'})}});
-    assert.strictEqual(dialog.shows, 2, 'Reopen the same recommendation without another request');
     Controller.prototype.dispose.call(result);
-    // A restart while the opening transition is pending also cleans up when it finishes.
-    modal.events['shown.bs.modal'](); modal.events['hidden.bs.modal']();
-    assert(destroyed); assert(dialog.disposed); assert(modal.removed);
-    assert.strictEqual(result.resultModal, null);
+    assert(destroyed); assert(media.pauses > 0);
+    assert.strictEqual(result.resultPlayer, null);
 
     let failureReported;
     const failed = {state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
@@ -171,5 +151,32 @@ module.exports = async function () {
     assert.strictEqual(await player, window.Plyr);
     await window.MatchTour.loadPlayer();
     assert.strictEqual(scripts.length, 6);
+
+    // Closing the shell discards a pending load and restores the launcher's focus.
+    const events = {}, documentEvents = {};
+    const content = {innerHTML: ''};
+    const shell = {dataset: {tourUrl: '/tour'}, querySelector: () => content, addEventListener(name, callback) { events[name] = callback; }};
+    window.document.addEventListener = (name, callback) => { documentEvents[name] = callback; };
+    window.bootstrap.Modal = class {show() { events['show.bs.modal'](); }};
+    let loaded, requests = 0;
+    const launcher = new window.MatchTour.Launcher(shell, {get() { requests++; return new Promise(resolve => loaded = resolve); }});
+    const launchButton = {isConnected: true, focus() { this.focused = true; }};
+    launcher.open(launchButton);
+    assert.strictEqual(requests, 1);
+    await launcher.load(); assert.strictEqual(requests, 1, 'Do not duplicate an active load');
+    events['hide.bs.modal'](); events['hidden.bs.modal']();
+    loaded({data: {html: 'obsolete question', tour: {ready: false}}});
+    await Promise.resolve();
+    assert.strictEqual(content.innerHTML, '');assert(launchButton.focused);
+    let stopped = false;
+    launcher.controller = {destroy() { stopped = true; }};
+    events['hide.bs.modal'](); assert(stopped); assert.strictEqual(launcher.controller, null);
+    launcher.http.get = () => Promise.reject(Error('offline'));
+    await launcher.load(); assert(content.innerHTML.includes('data-tour-retry'));assert(!launcher.loading);
+    launcher.http.get = () => Promise.resolve({data: {html: 'unavailable', tour: {ready: false}}});
+    await launcher.load(); assert.strictEqual(content.innerHTML, 'unavailable');
+    let prevented = false;
+    documentEvents.click({target: {closest: () => launchButton}, button: 0, ctrlKey: true, preventDefault() { prevented = true; }});
+    assert(!prevented, 'Modified clicks keep normal new-tab navigation');
 
 };
