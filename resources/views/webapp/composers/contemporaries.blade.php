@@ -1,4 +1,4 @@
-<aside class="composer-contemporaries border rounded p-4" aria-labelledby="composer-contemporaries-title">
+<aside class="composer-contemporaries p-3" aria-labelledby="composer-contemporaries-title">
     <h2 id="composer-contemporaries-title" class="h5 mb-3">Contemporary composers</h2>
     <ul class="list-unstyled mb-0">
         @foreach($contemporaries as $contemporary)
