@@ -7,3 +7,22 @@
 	bottom: 0; 
 	right: 0;
 }
+
+// Shared webapp piece/collection cards and circular composer/period tiles.
+.piece-card, .search-card {
+    transition: transform .18s ease;
+    &:hover { transform: translateY(-3px); }
+}
+
+// Keep the lift inside horizontal scrollports without moving the resting cards.
+.card-scroll-row {
+    padding-top: 3px;
+    margin-top: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .piece-card, .search-card {
+        transition: none;
+        &:hover { transform: none; }
+    }
+}

@@ -10,7 +10,7 @@ Share with a friend!
 
 	<p>I'd like to send the {{$piece->medium_name}} to</p>
 	@input(['bag' => 'default', 'type' => 'email', 'name' => 'recipient_email', 'placeholder' => 'Which email should we send this to?', 'classes' => 'input-light'])
-	<button type="submit" class="btn rounded-pill d-block w-100 btn-default">Share</button>
+	<button type="submit" class="btn d-block w-100 btn-primary">Share</button>
 </form>
 @endslot
 

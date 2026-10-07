@@ -90,7 +90,7 @@
     }
     &__piece-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 9px; background: #f1f3f7; color: #708098; font-size: 17px; }
     &__empty { margin: 16px 0 24px; color: #697386; font-size: 13px; }
-    &__open { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 6px 0 0; padding: 11px 16px; background: #edf4ff; color: #0055fe; font-size: 14px; font-weight: 600; text-decoration: none;
+    &__open { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 6px 0 0; padding: 11px 16px; font-size: 14px; text-decoration: none;
         border-radius: 10px;
         &:hover { background: #e2edff; color: #0045ce; text-decoration: none; }
     }

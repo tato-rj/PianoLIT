@@ -37,8 +37,8 @@
         var id = 'admin-text-options-' + (++sequence);
         bar.innerHTML = '<button type="button" class="admin-text-improve-toggle" aria-expanded="false" aria-controls="' + id + '">Improve text</button>' +
             '<div class="admin-text-improve-options" id="' + id + '" hidden>' +
-            '<label>Length<select aria-label="Rewrite length"><option value="shorter">Shorter</option><option value="same" selected>Same length</option><option value="longer">Longer</option></select></label>' +
-            '<label>Tone<select aria-label="Rewrite tone"><option value="casual">Casual</option><option value="same" selected>Same tone</option><option value="formal">Formal</option></select></label>' +
+            '<label><select class="form-select-sm" aria-label="Rewrite length"><option value="shorter">Shorter</option><option value="same" selected>Same length</option><option value="longer">Longer</option></select></label>' +
+            '<label><select class="form-select-sm" aria-label="Rewrite tone"><option value="casual">Casual</option><option value="same" selected>Same tone</option><option value="formal">Formal</option></select></label>' +
             '<button type="button" class="btn btn-sm btn-primary admin-text-improve-run">Rewrite text</button></div>' +
             '<div class="admin-text-improve-status" role="status" aria-live="polite" hidden></div>';
         field.insertAdjacentElement('afterend', bar);

@@ -85,7 +85,7 @@
 				<h5 class="m-0">{{$recommendationRow['title']}}</h5>
 				<a href="{{$recommendationRow['url']}}" class="btn-raw link-primary" aria-label="View all: {{$recommendationRow['title']}}">View all</a>
 			</div>
-			<div class="custom-scroll dragscroll dragscroll-horizontal">
+			<div class="custom-scroll dragscroll dragscroll-horizontal card-scroll-row">
 				<div class="d-flex pb-2" style="height: 144px;">
 					@foreach($recommendationRow['pieces'] as $card)
 						@php($card->color = $recommendationRow['color'])
