@@ -10,16 +10,16 @@
 		<p class="free-pick-card__metadata mb-3">@if(trim($piece->catalogue)){{ $piece->catalogue }} · @endif{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
 
 		<a class="btn btn-secondary d-inline-flex align-items-center gap-3" href="{{ route('webapp.pieces.show', $piece) }}">Explore piece @icon('arrow-right', ['mr' => 0])</a>
-		<ul class="free-pick-card__media small list-unstyled d-flex flex-wrap gap-4 mb-0 mt-4" aria-label="Available media">
-			<li class="d-flex align-items-center">@icon('video', ['mr' => 2])Video</li>
+		<ul class="free-pick-card__media list-unstyled d-flex flex-wrap gap-4 mb-0 mt-4" style="font-size: 76%;" aria-label="Available media">
+			<li class="d-flex align-items-center">@icon('video', ['mr' => 1])Video</li>
 			@if($piece->hasAudio())
-			<li class="d-flex align-items-center">@icon('headphones', ['mr' => 2])Audio</li>
+			<li class="d-flex align-items-center">@icon('headphones', ['mr' => 1])Audio</li>
 			@endif
 			@if($piece->hasScore(true))
-			<li class="d-flex align-items-center">@icon('file-text', ['mr' => 2])Score</li>
+			<li class="d-flex align-items-center">@icon('file-text', ['mr' => 1])Score</li>
 			@endif
 			@if($piece->webapp_has_synthesia ?? $piece->hasTutorials(['synthesia']))
-			<li class="d-flex align-items-center">@icon('flame', ['mr' => 2])Synthesia</li>
+			<li class="d-flex align-items-center">@icon('flame', ['mr' => 0])Synthesia</li>
 			@endif
 		</ul>
 	</div>
