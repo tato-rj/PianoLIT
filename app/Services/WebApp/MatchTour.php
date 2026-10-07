@@ -185,4 +185,29 @@ class MatchTour
         // Use the engine's existing exclusion input for unfamiliar repertoire.
         return ($answers['intent'] ?? null) === 'unfamiliar' ? Piece::famous()->pluck('id')->all() : [];
     }
+
+    public function explanation(array $answers, array $context)
+    {
+        if ($context['fallback']) {
+            return 'We couldn’t find a close match from your answers, so here’s a past free pick to explore, with a video and score ready for you.';
+        }
+        $describe = function ($tags) {
+            return collect($tags)->map(function ($tag) { return $tag === 'agitaded' ? 'agitated' : $tag; })->unique()->take(2)->implode(' and ');
+        };
+        $shared = $describe($context['sharedMoods']);
+        $reasons = [$shared ? "It shares the {$shared} character of the pieces you enjoyed." : 'It connects with the pieces you enjoyed.'];
+        $mood = $answers['mood'] ?? null;
+        if ($mood && $mood !== 'open' && array_intersect(self::MOODS[$mood]['tags'], $context['matchedTags'])) {
+            $reasons[] = 'That fits your mood: '.lcfirst(self::MOODS[$mood]['label']).'.';
+        } elseif (!$mood) {
+            $intent = $answers['intent'] ?? null;
+            if ($intent === 'quick' && in_array('short', $context['matchedTags'])) $reasons[] = 'Its shorter length suits your wish for a quick piece.';
+            if ($intent === 'work' && in_array('long', $context['matchedTags'])) $reasons[] = 'Its longer format gives you a piece to spend time with.';
+            if ($intent === 'impressive' && array_intersect(['flashy', 'fast'], $context['matchedTags'])) $reasons[] = 'Its showy character fits your wish for something impressive.';
+        }
+        if ($answers['reading'][0] !== null && $context['level']) {
+            $reasons[] = 'Your sight-reading answers guided us toward '.$context['level'].' repertoire.';
+        }
+        return implode(' ', $reasons);
+    }
 }

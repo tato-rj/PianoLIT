@@ -240,6 +240,7 @@ class MatchTourTest extends ReviewTestCase
         $quiz->shouldReceive('getKeywords')->once()->with((new MatchTour)->keywords($answers))->andReturnSelf();
         $quiz->shouldReceive('exclude')->once()->with([])->andReturnSelf();
         $quiz->shouldReceive('search')->once()->with(true)->andReturn($this->pieces[0]);
+        $quiz->shouldReceive('matchContext')->with($this->pieces[0])->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => ['calm'], 'matchedTags' => ['calm']]);
         $this->app->instance(Quiz::class, $quiz);
         $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your match')
             ->assertSee('id="match-result-heading"', false)->assertDontSee('data-bs-dismiss', false)
@@ -273,7 +274,54 @@ class MatchTourTest extends ReviewTestCase
 
     public function test_real_engine_can_recommend_with_the_new_answers()
     {
-        $this->postJson(route('webapp.tour.result'), $this->answers())->assertOk()->assertSee('Your match');
+        $this->postJson(route('webapp.tour.result'), $this->answers())->assertOk()->assertSee('Your match')->assertSee('Why this piece?');
+    }
+
+    public function test_explanation_uses_matching_traits_without_inventing_skipped_or_unmatched_answers()
+    {
+        $tour = new MatchTour;
+        $answers = $this->answers();
+        $answers['mood'] = 'calm'; $answers['reading'] = [false, false];
+        $this->copyWithMedia();
+        $quiz = (new Quiz)->getKeywords([$this->pieces[0]->id, 'elementary', 'calm']);
+        $piece = $quiz->search(true);
+        \DB::enableQueryLog(); \DB::flushQueryLog();
+        $context = $quiz->matchContext($piece);
+        $this->assertCount(0, \DB::getQueryLog(), 'Explanation reuses the engine’s loaded choice tags');
+        \DB::disableQueryLog();
+        $this->assertFalse($context['fallback']);
+        $this->assertSame(['calm'], $context['sharedMoods']);
+        $this->assertSame(['calm'], $context['matchedTags']);
+        $explanation = $tour->explanation($answers, $context);
+        $this->assertStringContainsString('calm character', $explanation);
+        $this->assertStringContainsString('calm & peaceful', $explanation);
+        $this->assertStringContainsString('elementary repertoire', $explanation);
+
+        $answers['mood'] = 'romantic'; $answers['reading'] = [null, null];
+        $explanation = $tour->explanation($answers, $context);
+        $this->assertStringNotContainsString('romantic', $explanation);
+        $this->assertStringNotContainsString('sight-reading', $explanation);
+        $this->assertStringNotContainsString('repertoire', $explanation);
+
+        $answers['mood'] = null; $answers['intent'] = 'quick';
+        $this->assertStringNotContainsString('shorter', $tour->explanation($answers, $context));
+        $context['matchedTags'][] = 'short';
+        $this->assertStringContainsString('shorter length', $tour->explanation($answers, $context));
+    }
+
+    public function test_fallback_explanation_does_not_claim_personalized_traits_or_difficulty()
+    {
+        $quiz = (new Quiz)->getKeywords(['elementary', 'calm']);
+        $piece = $quiz->search(true);
+        $context = $quiz->matchContext($piece);
+        $this->assertTrue($context['fallback']);
+        $explanation = (new MatchTour)->explanation($this->answers(), $context);
+        $this->assertStringContainsString('past free pick', $explanation);
+        $this->assertStringNotContainsString('sight-reading', $explanation);
+        $this->assertStringNotContainsString('character', $explanation);
+        $this->copyWithMedia();
+        $quiz->getKeywords([$this->pieces[0]->id, 'elementary'])->search(true);
+        $this->assertFalse($quiz->matchContext($this->pieces[0])['fallback']);
     }
 
     public function test_moods_and_skips_use_existing_tags_and_preferred_piece_level()
@@ -307,6 +355,7 @@ class MatchTourTest extends ReviewTestCase
         $quiz->shouldReceive('getKeywords')->andReturnSelf();
         $quiz->shouldReceive('exclude')->andReturnSelf();
         $quiz->shouldReceive('search')->with(true)->andReturn($this->pieces[0]);
+        $quiz->shouldReceive('matchContext')->with($this->pieces[0])->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => ['calm'], 'matchedTags' => ['calm']]);
         $this->app->instance(Quiz::class, $quiz);
         $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()
             ->assertDontSee('data-submit="favorite"', false)->assertDontSee('match-confetti', false);

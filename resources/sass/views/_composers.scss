@@ -36,6 +36,24 @@
         object-position: center;
     }
     .composer-biography { white-space: pre-wrap; }
+    .composer-contemporary-portrait {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+    }
+    .composer-contemporary-copy { min-width: 0; }
+    .composer-contemporary-copy h3 { overflow-wrap: anywhere; }
+    .composer-contemporaries li + li .composer-contemporary-copy {
+        position: relative;
+        &::before {
+            content: '';
+            position: absolute;
+            top: calc(-1 * var(--space-2));
+            left: 0;
+            right: 0;
+            border-top: 1px solid var(--color-border);
+        }
+    }
     h1, p { overflow-wrap: anywhere; }
     h1 { font-size: var(--font-size-h2); }
 

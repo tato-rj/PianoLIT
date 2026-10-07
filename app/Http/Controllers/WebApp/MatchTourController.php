@@ -31,8 +31,9 @@ class MatchTourController extends Controller
         $piece = $quiz->getKeywords($tour->keywords($answers))->exclude($tour->exclusions($answers))->search(true);
         abort_unless($piece, 503, 'No match is available right now.');
         $piece->loadMissing(['composer', 'tags', 'tutorials']);
+        $explanation = $tour->explanation($answers, $quiz->matchContext($piece));
         // Reuse the existing More like this recommendations, with a short web presentation.
         $recommendations = ($piece->level && $piece->period ? $piece->similar(true, true, true) : collect())->reject(function ($other) use ($piece) { return $other->id === $piece->id; })->take(4)->values();
-        return view('webapp.tour.result', compact('piece', 'recommendations'));
+        return view('webapp.tour.result', compact('piece', 'recommendations', 'explanation'));
     }
 }

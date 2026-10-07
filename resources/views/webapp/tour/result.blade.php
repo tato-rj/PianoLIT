@@ -1,6 +1,12 @@
 <div data-result-view>
     <h3 id="match-result-heading" class="visually-hidden" tabindex="-1">Your match</h3>
     <div data-result-card></div>
+    @if(!empty($explanation))
+        <div class="match-result-explanation">
+            <h4>Why this piece?</h4>
+            <p>{{ $explanation }}</p>
+        </div>
+    @endif
     <div class="match-result-actions">
         @button(['href' => route('webapp.pieces.show', $piece), 'label' => 'View piece →', 'styles' => ['theme' => 'primary'], 'classes' => 'match-primary'])
         @button(['label' => 'You might also like →', 'data' => ['recommendations' => ''], 'styles' => ['theme' => 'secondary'], 'classes' => 'match-outline'])
