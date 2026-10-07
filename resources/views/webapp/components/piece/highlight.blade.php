@@ -10,7 +10,7 @@
 		<p class="free-pick-card__metadata mb-3">@if(trim($piece->catalogue)){{ $piece->catalogue }} · @endif{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
 
 		<a class="btn btn-secondary d-inline-flex align-items-center gap-3" href="{{ route('webapp.pieces.show', $piece) }}">Explore piece @icon('arrow-right', ['mr' => 0])</a>
-		<ul class="free-pick-card__media list-unstyled d-flex flex-wrap gap-2 mb-0 mt-3 opacity-6" style="font-size: 76%;" aria-label="Available media">
+		<ul class="free-pick-card__media list-unstyled d-flex flex-wrap gap-2 mb-0 mt-3 opacity-8" style="font-size: 76%;" aria-label="Available media">
 			<li class="d-flex align-items-center">@icon('video', ['mr' => 1])Video</li>
 			@if($piece->hasAudio())
 			<li class="d-flex align-items-center">@icon('headphones', ['mr' => 1])Audio</li>
