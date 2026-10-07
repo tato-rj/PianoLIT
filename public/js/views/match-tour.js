@@ -99,7 +99,7 @@
             if (this.bound.has(media)) return;
             this.bound.add(media);
             ['timeupdate', 'seeking'].forEach(event => media.addEventListener(event, () => {
-                if (this.media === media && media.currentTime >= this.seconds) { this.stop(); media.currentTime = 0; }
+                if (this.media === media && media.tagName !== 'VIDEO' && media.currentTime >= this.seconds) { this.stop(); media.currentTime = 0; }
             }));
             media.addEventListener('ended', () => { if (this.media === media) this.stop(); });
             media.addEventListener('pause', () => { if (this.media === media && this.button) this.paint(false); });
@@ -203,7 +203,7 @@
             return pdfjs;
         });
     }
-    function progress(shell, section, suggestions) {
+    function progress(shell, section, suggestions, finding) {
         if (!shell) return;
         const names = ['Listening', 'Sight-reading', 'Your taste', 'Mood', 'Your match'];
         const themes = ['listening', 'reading', 'duel', 'mood', 'reward'];
@@ -211,7 +211,7 @@
         const number = shell.querySelector('[data-step-number]');
         if (number) number.textContent = section < 4 ? (section + 1) + ' / 4' : '';
         const name = shell.querySelector('[data-step-name]');
-        if (name) name.textContent = suggestions ? 'Your discoveries' : names[section];
+        if (name) name.textContent = finding ? 'Finding your match' : suggestions ? 'Your discoveries' : names[section];
         shell.querySelectorAll('[data-progress-step]').forEach((dot, index) => {
             dot.classList.toggle('is-current', index === section); dot.classList.toggle('is-complete', index < section);
             if (index === section) dot.setAttribute('aria-current', 'step'); else dot.removeAttribute('aria-current');
@@ -242,6 +242,7 @@
         }
         dispose() {
             this.generation++; this.counter.cancel(); this.stopMedia();
+            this.finishFinding();
             this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
         }
         destroy() {
@@ -253,14 +254,16 @@
         navigation() {
             const step = this.state.step;
             const section = step === 0 ? 0 : step <= 2 ? 1 : step <= 5 ? 2 : step === 6 ? 3 : 4;
-            progress(this.shell, section, this.suggestions);
+            progress(this.shell, section, this.suggestions, this.waiting);
             const back = this.element.querySelector('[data-back]');
             back.disabled = !this.state.history.length && !this.suggestions; back.hidden = step === 0;
-            this.element.querySelector('.match-navigation [data-skip]').hidden = step !== 6;
+            this.element.querySelector('.match-navigation').hidden = step === 0;
+            this.element.querySelector('.match-navigation [data-skip]').hidden = step === 0 || step === 7;
+            this.element.querySelector('[data-skip-label]').textContent = step < 6 ? 'Not sure? Skip' : 'Skip';
             this.element.querySelector('[data-restart]').hidden = step < 7;
             this.element.querySelector('.match-count').hidden = !!this.suggestions;
-            if (step === 7) this.element.querySelector('[data-count-unit]').textContent = 'perfect match';
-            this.element.querySelector('[data-count-note]').textContent = step === 0 ? 'In the PianoLIT library' : step === 7 ? 'Chosen for you' : 'Estimated pieces remaining';
+            this.element.querySelector('[data-count-unit]').textContent = step === 7 && !this.waiting ? 'perfect match' : 'pieces';
+            this.element.querySelector('[data-count-note]').textContent = step === 0 ? 'In the PianoLIT library' : this.waiting ? 'Finding your match' : step === 7 ? 'Chosen for you' : 'Estimated pieces remaining';
         }
         async click(event) {
             const button = event.target.closest('button');
@@ -357,8 +360,7 @@
             if (step === 0) this.stage.innerHTML = this.heading('Which piece do you like best?', 'Listen to a short excerpt from each piece, then choose the one you enjoy most.') + this.cards(this.data.pieces.slice(0, 4), 'listening') +
                 '<div class="match-main-action"><button type="button" class="btn btn-primary match-primary" data-listen-confirm' + (!this.pendingPiece ? ' hidden' : '') + '>I like this one ' + arrow + '</button></div>';
             else if (step <= 2) this.reading();
-            else if (step <= 5) this.stage.innerHTML = this.heading('Which would you rather play?', 'Choose the piece that attracts you more.', (step - 2) + ' of 3') + this.cards(this.data.pieces.slice(4 + (step - 3) * 2, 6 + (step - 3) * 2), 'duel') +
-                '<button type="button" class="btn btn-link match-skip-link" data-skip>Not sure? Skip ' + arrow + '</button>';
+            else if (step <= 5) this.stage.innerHTML = this.heading('Which would you rather play?', 'Choose the piece that attracts you more.', (step - 2) + ' of 3') + this.cards(this.data.pieces.slice(4 + (step - 3) * 2, 6 + (step - 3) * 2), 'duel');
             else if (step === 6) this.stage.innerHTML = this.heading('What mood are you in?', "Choose the vibe you're looking for.") + '<div class="match-moods">' + Object.keys(this.data.moods).map(key => {
                 const mood = this.data.moods[key];
                 return '<button type="button" class="match-mood" data-choice="' + key + '"><span class="match-mood-icon" aria-hidden="true">' + icon(mood.icon) + '</span><span>' + escape(mood.label) + '</span></button>';
@@ -378,8 +380,7 @@
             const generation = ++this.generation, pair = this.readingPair();
             this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
             this.stage.innerHTML = this.heading('Which score feels more comfortable to read at first sight?', 'Take a quick look at each score.', this.state.step + ' of 2') +
-                '<div class="match-score-pair">' + pair.map((score, i) => '<article class="match-score-card"><span class="match-score-label">' + (i ? 'B' : 'A') + '</span><div class="match-score" data-score-slot="' + i + '" aria-busy="true"><p role="status">Opening score…</p></div><button type="button" class="btn btn-secondary match-score-choice" data-choice="' + (i ? 'yes' : 'no') + '" disabled>Choose ' + (i ? 'B' : 'A') + '</button></article>').join('') + '</div>' +
-                '<button type="button" class="btn btn-link match-skip-link" data-skip>Not sure? Skip ' + arrow + '</button>';
+                '<div class="match-score-pair">' + pair.map((score, i) => '<article class="match-score-card"><span class="match-score-label">' + (i ? 'B' : 'A') + '</span><div class="match-score" data-score-slot="' + i + '" aria-busy="true"><p role="status">Opening score…</p></div><button type="button" class="btn btn-secondary match-score-choice" data-choice="' + (i ? 'yes' : 'no') + '" disabled>Choose ' + (i ? 'B' : 'A') + '</button></article>').join('') + '</div>';
             try {
                 if (!this.pdfjs) this.pdfjs = await loadPdf();
                 if (generation !== this.generation) return;
@@ -431,26 +432,38 @@
         mountResult() {
             this.resultData = JSON.parse(this.stage.querySelector('[data-result-data]').textContent);
             this.stage.querySelector('[data-result-card]').innerHTML = this.cards([this.resultData.piece], 'reward');
-            const favorite = this.stage.querySelector('[data-result-favorite]');
-            if (favorite && favorite.content) this.stage.querySelector('.match-artwork').appendChild(favorite.content.cloneNode(true));
             this.stage.querySelector('[data-recommendation-cards]').innerHTML = this.resultData.recommendations.length ? this.cards(this.resultData.recommendations, 'recommendation') : '<p class="text-center">Explore the library for more pieces to discover.</p>';
+        }
+        finding() {
+            this.waiting = true; this.element.classList.add('is-finding');
+            this.stage.classList.remove('leaving'); this.stage.setAttribute('aria-busy', 'true');
+            this.stage.innerHTML = '<div class="match-finding is-playing"><div class="match-finding-visual" aria-hidden="true"><span class="match-finding-orbit"></span><span class="match-finding-symbol">' + icon('sparkles') + '</span></div>' +
+                this.heading('Your answers are in!', 'Finding the piece you’ll love…') + this.waveform() + '</div>';
+            this.navigation(); this.focus();
+            this.element.querySelector('[data-count-announcement]').textContent = 'Your answers are complete. Finding your match.';
+        }
+        finishFinding() {
+            this.waiting = false; this.element.classList.remove('is-finding'); this.stage.removeAttribute('aria-busy');
         }
         async result(generation) {
             const previous = this.state.count;
+            this.finding();
             try {
                 // Keep the current estimated count if recommendation retrieval fails.
                 const response = await this.http.post(this.element.dataset.url, clone(this.state.answers), {timeout: 20000});
                 if (generation !== this.generation) return;
+                this.stage.querySelector('h3').textContent = 'Your match is ready!';
                 await this.counter.to(1, this.reduced ? 0 : 900);
                 if (generation !== this.generation) return;
                 this.state.count = 1; this.stopMedia();
                 this.stage.classList.add('leaving'); await pause(this.reduced ? 0 : 130);
                 if (generation !== this.generation) return;
-                this.stage.innerHTML = response.data; this.mountResult();
+                this.finishFinding(); this.stage.innerHTML = response.data; this.mountResult();
                 this.stage.classList.remove('leaving'); this.navigation(); this.focus(); this.busy = false;
                 this.element.querySelector('[data-count-announcement]').textContent = '1 perfect match. Your match is ready.';
             } catch (error) {
                 if (generation !== this.generation) return;
+                this.finishFinding();
                 this.counter.cancel(); this.state.back(); this.counter.set(previous); this.suggestions = false;
                 this.busy = false; this.render();
                 this.report(error.response && error.response.status === 422 ? 'The library has changed. Start over to refresh the listening choices.' : 'We couldn’t find your match just now. Choose your mood again to retry; your earlier answers are saved.');

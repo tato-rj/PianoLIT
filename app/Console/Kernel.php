@@ -26,6 +26,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('pianolit:admin-report')->weeklyOn(7, '22:30');
 
+        $schedule->command('attribution:prune')->daily();
+
         $schedule->command('subscriptions:remove-spam')->weeklyOn(7, '10:30');
 
         // $schedule->command('pianolit:unconfirmed-emails')->weeklyOn(2, '10:00');

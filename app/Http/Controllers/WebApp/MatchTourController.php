@@ -33,9 +33,6 @@ class MatchTourController extends Controller
         $piece->loadMissing(['composer', 'tags', 'tutorials']);
         // Reuse the existing More like this recommendations, with a short web presentation.
         $recommendations = ($piece->level && $piece->period ? $piece->similar(true, true) : collect())->reject(function ($other) use ($piece) { return $other->id === $piece->id; })->take(4)->values();
-        if (auth('web')->check()) {
-            $piece->loadExists(['favorites as webapp_is_favorited' => function ($query) { $query->where('user_id', auth('web')->id()); }]);
-        }
         return view('webapp.tour.result', compact('piece', 'recommendations'));
     }
 }

@@ -90,6 +90,8 @@ class MatchTourTest extends ReviewTestCase
         $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
         $this->assertCount(4, array_unique(array_column($data['scores'], 'id')));
         $this->assertCount(9, $data['moods']);
+        $this->assertSame(60, $data['previewSeconds']);
+        $this->assertSame(10, config('webapp.media_preview_seconds'));
         $this->get(route('webapp.tour'))->assertOk()->assertSee('data-progress-step', false)
             ->assertSee('modal-fullscreen', false)->assertSee('Close Find your match')
             ->assertSee('id="menu"', false)
@@ -199,7 +201,7 @@ class MatchTourTest extends ReviewTestCase
         $this->withExceptionHandling()->postJson(route('webapp.tour.result'), $answers)->assertStatus(422);
     }
 
-    public function test_result_reuses_session_favorite_and_excludes_match_from_recommendations()
+    public function test_signed_in_result_has_no_favorite_or_confetti_and_excludes_match_from_recommendations()
     {
         Model::withoutEvents(function () {
             $incomplete = create(Piece::class);
@@ -214,7 +216,7 @@ class MatchTourTest extends ReviewTestCase
         $quiz->shouldReceive('search')->andReturn($this->pieces[0]);
         $this->app->instance(Quiz::class, $quiz);
         $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()
-            ->assertSee('data-submit="favorite"', false)->assertSee('aria-pressed="false"', false);
+            ->assertDontSee('data-submit="favorite"', false)->assertDontSee('match-confetti', false);
         preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
         $result = json_decode($matches[1], true);
         $this->assertLessThanOrEqual(4, count($result['recommendations']));

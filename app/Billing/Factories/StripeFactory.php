@@ -10,6 +10,8 @@ use App\Billing\Sources\Concerns\StripeJurisdiction;
 class StripeFactory
 {
   public $customer, $subscription, $newMember, $coupon, $saveCard, $token, $quickCheckout;
+  // The exact newly created subscription, for web attribution only.
+  public $purchasedSubscription;
 
 	public function __construct()
 	{
@@ -113,7 +115,7 @@ class StripeFactory
 	public function subscribe(Plan $plan, $stripeToken)
 	{
     if ($this->newMember) {
-      return Customer::create([
+      $customer = Customer::create([
           'description' => auth()->user()->full_name,
           'email' => auth()->user()->email,
           'source' => $stripeToken,
@@ -121,11 +123,13 @@ class StripeFactory
           'trial_from_plan' => true,
           'coupon' => $this->coupon
       ]);
+      $this->purchasedSubscription = $customer->subscriptions->data[0] ?? null;
+      return $customer;
     }
 
     $this->updateCard($stripeToken);
 
-    Subscription::create([
+    $this->purchasedSubscription = Subscription::create([
       'customer' => $this->customer->id,
       'items' => [['plan' => $plan->name]],
     ]);

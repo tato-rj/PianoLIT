@@ -90,6 +90,8 @@
 
     @include('components.popups.whatsnew', ['tabscount' => 1])
 
+    @include('webapp.components.campaign-attribution')
+
     <script src="{{ mix('js/app.js') }}"></script>
 
     <script type="text/javascript">

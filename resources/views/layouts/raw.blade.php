@@ -46,6 +46,8 @@
         'floating' => 'top'])
     @endif
 
+    @include('webapp.components.campaign-attribution')
+
     <script src="{{ mix('js/app.js') }}"></script>
 
     @stack('scripts')

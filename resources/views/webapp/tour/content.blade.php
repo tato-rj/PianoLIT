@@ -10,7 +10,7 @@
     <p role="alert" class="text-danger text-center mt-3" data-error hidden></p>
     <nav class="match-navigation" aria-label="Question navigation">
         <button type="button" class="btn btn-link" data-back disabled>@icon('arrow-left', ['mr' => 1]) Back</button>
-        <button type="button" class="btn btn-link" data-skip hidden>Skip @icon('arrow-right', ['mr' => 0, 'ml' => 1])</button>
+        <button type="button" class="btn btn-link" data-skip hidden><span data-skip-label>Skip</span> @icon('arrow-right', ['mr' => 0, 'ml' => 1])</button>
         <button type="button" class="btn btn-link" data-restart hidden>Start over @icon('rotate-ccw', ['mr' => 0, 'ml' => 1])</button>
     </nav>
     @else

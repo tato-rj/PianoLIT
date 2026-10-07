@@ -43,15 +43,18 @@ class MembershipsController extends Controller
         return view('webapp.membership.checkout.index', compact('plan'));
     }
 
-    public function purchase(Request $request, Plan $plan, StripeMembershipForm $form)
+    public function purchase(Request $request, Plan $plan, StripeMembershipForm $form, StripeFactory $factory)
     {
         try {
-            $customer = (new StripeFactory)->customer()->withCoupon(strtoupper($form->coupon))->subscribe($plan, $form->stripeToken);
+            $factory->customer()->withCoupon(strtoupper($form->coupon));
+            $customer = $factory->subscribe($plan, $form->stripeToken);
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
 
         StripeMembership::subscribe(auth()->user(), $customer);
+
+        (new \App\Services\CampaignAttribution)->subscribed($request, auth('web')->user(), $customer, $factory->purchasedSubscription);
 
         if (auth()->user()->membership->source->isOnTrial())
             event(new NewTrial(auth()->user()));

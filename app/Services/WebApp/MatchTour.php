@@ -127,7 +127,7 @@ class MatchTour
         }
         return [
             'total' => $this->catalog()->count(), 'pieces' => $cards, 'scores' => $scores,
-            'intents' => self::INTENTS, 'moods' => collect(self::MOODS)->map(function ($mood) { return \Illuminate\Support\Arr::except($mood, 'tags'); })->all(), 'previewSeconds' => config('webapp.media_preview_seconds', 10),
+            'intents' => self::INTENTS, 'moods' => collect(self::MOODS)->map(function ($mood) { return \Illuminate\Support\Arr::except($mood, 'tags'); })->all(), 'previewSeconds' => config('webapp.match_tour_audio_seconds', 60),
             'ready' => count($cards) === 10 && !in_array(null, \Illuminate\Support\Arr::except($scores, 'beginner'), true),
         ];
     }

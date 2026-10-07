@@ -56,18 +56,32 @@ module.exports = async function () {
         pause() { this.paused = true; }
         play() { this.paused = false; return this.failure ? Promise.reject(new Error()) : Promise.resolve(); }
     };
-    const previews = new Previews(10, () => warnings++);
+    const previews = new Previews(60, () => warnings++);
     const button = () => ({innerHTML: '', setAttribute() {}});
     const a = button(), b = button();
     await previews.play(pieces[0], a); await previews.play(pieces[1], b);
     assert(a.innerHTML.includes('icon-play')); assert(b.innerHTML.includes('icon-pause'));
-    previews.audio.currentTime = 10.5; previews.audio.events.timeupdate(); assert(previews.audio.paused);
+    previews.audio.currentTime = 60; previews.audio.events.timeupdate(); assert(previews.audio.paused);
     previews.audio.failure = true; await previews.play(pieces[0], a); assert.strictEqual(warnings, 1); assert.strictEqual(previews.button, null);
+
+    previews.audio.failure = false;
+    await previews.play(pieces[0], a);
+    previews.audio.currentTime = 59.9; previews.audio.events.seeking();
+    assert(!previews.audio.paused, 'Audio plays until the full 60-second boundary');
+    previews.audio.currentTime = 60; previews.audio.events.seeking();
+    assert(previews.audio.paused); assert.strictEqual(previews.audio.currentTime, 0);
+    const video = new window.Audio(); video.tagName = 'VIDEO';
+    await previews.play(pieces[0], b, video);
+    video.currentTime = 125; video.events.timeupdate(); video.events.seeking();
+    assert(!video.paused, 'Result video plays beyond the audio cutoff');
+    video.events.ended(); assert(video.paused); assert.strictEqual(previews.media, null);
+    video.events.play(); assert(video.paused, 'Disposed native media cannot resume');
 
     // A result delivered after restart/back must never replace the current screen.
     let resolve;
-    const stale = {state: {count: 47, answers: {}}, http: {post: () => new Promise(done => { resolve = done; })}, element: {dataset: {url: '/result'}}, counter: {to: () => Promise.resolve()}, generation: 1};
+    const stale = {finding() { this.waiting = true; }, state: {count: 47, answers: {}}, http: {post: () => new Promise(done => { resolve = done; })}, element: {dataset: {url: '/result'}}, counter: {to: () => Promise.resolve()}, generation: 1};
     const response = Controller.prototype.result.call(stale, 1);
+    assert(stale.waiting, 'Completion feedback appears before the response arrives');
     stale.generation = 2;
     resolve({data: '<article>obsolete</article>'}); await response;
     assert.strictEqual(stale.state.count, 47);
@@ -77,23 +91,24 @@ module.exports = async function () {
     window.bootstrap = {Modal: class {constructor() { throw Error('No second modal'); }}};
     let mounted = false, mediaStopped = false;
     const result = {
+        finding() {}, finishFinding() { this.finishedWaiting = true; },
         state: {count: 2, answers: {}}, http: {post: () => Promise.resolve({data: 'chosen piece'})},
         element: {dataset: {url: '/result'}, querySelector: () => ({})},
-        stage: {classList: {add() {}, remove() {}}},
+        stage: {querySelector: () => ({}), classList: {add() {}, remove() {}}},
         counter: {to: () => Promise.resolve()}, generation: 1, reduced: true,
         stopMedia() { mediaStopped = true; }, mountResult() { mounted = true; }, navigation() {}, focus() {}
     };
     await Controller.prototype.result.call(result, 1);
     assert.strictEqual(result.state.count, 1);
-    assert.strictEqual(result.stage.innerHTML, 'chosen piece'); assert(mounted && mediaStopped);
+    assert.strictEqual(result.stage.innerHTML, 'chosen piece'); assert(mounted && mediaStopped && result.finishedWaiting);
 
     let failureReported;
-    const failed = {state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
+    const failed = {finding() {}, finishFinding() { this.finishedWaiting = true; }, state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
         counter: {to: () => Promise.resolve(), cancel() {}, set(value) { this.value = value; }}, generation: 1,
         render() { this.rendered = true; }, report(message) { failureReported = message; }};
     await Controller.prototype.result.call(failed, 1);
     assert.strictEqual(failed.state.step, 6); assert.strictEqual(failed.counter.value, 2);
-    assert(failed.rendered); assert(!failed.busy); assert(failureReported.includes('retry'));
+    assert(failed.rendered && failed.finishedWaiting); assert(!failed.busy); assert(failureReported.includes('retry'));
 
     // Media tools are requested only on demand; failures/timeouts permit retry.
     const scripts = [], timers = new Map();

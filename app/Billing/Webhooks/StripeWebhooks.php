@@ -29,12 +29,19 @@ class StripeWebhooks
 
     public static function whenChargeSucceeded($payload)
     {
-        Payment::create([
-            'user_id' => self::handleChargeCustomer($payload),
-            'charge_id' => $payload['data']['object']['id'],
-            'amount' => $payload['data']['object']['amount'],
-            'refund' => $payload['data']['object']['amount_refunded']
-        ]);
+        (new \App\Services\StripePaymentReceipts)->oncePerCharge($payload, function () use ($payload) {
+            Payment::create([
+                'user_id' => self::handleChargeCustomer($payload),
+                'charge_id' => $payload['data']['object']['id'],
+                'amount' => $payload['data']['object']['amount'],
+                'refund' => $payload['data']['object']['amount_refunded']
+            ]);
+        });
+    }
+
+    public static function whenInvoicePaymentSucceeded($payload)
+    {
+        (new \App\Services\StripePaymentReceipts)->invoiceSucceeded($payload);
     }
 
     public static function handleChargeCustomer($payload)

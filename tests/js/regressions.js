@@ -24,6 +24,7 @@ function element(value = '') {
 }
 
 async function main() {
+    await require('./campaign-attribution')();
     require('./composer-biography-admin')();
     require('./admin-text-improver')();
     await require('./escore-wizard')();
