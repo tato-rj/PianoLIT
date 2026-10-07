@@ -3,6 +3,8 @@
 namespace App\Services\WebApp;
 
 use App\Piece;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 
 /** Web-only presentation and adapter for the existing FindYourMatch Quiz. */
 class MatchTour
@@ -66,16 +68,31 @@ class MatchTour
         });
     }
 
+    private function listeningPool()
+    {
+        return Piece::freePicks(false)->whereNotNull('audio_path')->where('audio_path', '!=', '')
+            ->whereHas('tags', function ($q) { $q->where('type', 'level'); });
+    }
+
+    public function drawIds($token)
+    {
+        try { $draw = json_decode(Crypt::decryptString($token), true); }
+        catch (DecryptException $exception) { return null; }
+        $ids = $draw['ids'] ?? null;
+        if (($draw['version'] ?? null) !== 1 || !is_int($draw['expires'] ?? null) || $draw['expires'] < now()->timestamp
+            || !is_array($ids) || count($ids) !== 10 || count(array_filter($ids, 'is_int')) !== 10
+            || count(array_unique($ids)) !== 10) return null;
+        return $this->listeningPool()->whereIn('pieces.id', $ids)->count() === 10 ? $ids : null;
+    }
+
     public function data()
     {
         // Reuse the historical free-pick list for every questionnaire example.
-        $pool = Piece::freePicks(false)->select(['pieces.id', 'composer_id', 'name', 'audio_path', 'cover_path', 'show_on_tour'])
+        $pool = $this->listeningPool()->select(['pieces.id', 'composer_id', 'name', 'audio_path', 'cover_path', 'show_on_tour'])
             ->with(['composer' => function ($query) {
                 $query->select(['id', 'name', 'cover_path'])->withCount([])->setEagerLoads([]);
             }, 'tags' => function ($query) { $query->select(['tags.id', 'name', 'type']); }])->withCount([])
-            ->whereNotNull('audio_path')->where('audio_path', '!=', '')
-            ->whereHas('tags', function ($q) { $q->where('type', 'level'); })
-            ->orderByDesc('show_on_tour')->orderBy('id')->get()->keyBy('id');
+            ->get()->shuffle()->keyBy('id');
         $selected = collect();
         // Calculate each candidate's trait set once. Keep its nearest distance as
         // picks are added instead of sorting/rebuilding every pair on every round.
@@ -99,7 +116,9 @@ class MatchTour
                 } else {
                     $score = $piece->show_on_tour ? 1 : 0;
                 }
-                // Preserve editorial/ID ordering when scores tie.
+                // Sample the opening four from the whole pool, then favor contrasting duels.
+                if ($selected->count() < 4) $score = 0;
+                // Random pool order also breaks contrast ties differently on each tour.
                 if ($score > $best) { $winner = $piece; $best = $score; }
             }
             $selected->push($winner);
@@ -129,10 +148,12 @@ class MatchTour
                 'composer' => $piece->composer->short_name, 'url' => storage($piece->score_path),
             ] : null;
         }
+        $ready = count($cards) === 10 && !in_array(null, \Illuminate\Support\Arr::except($scores, 'beginner'), true);
         return [
+            'draw' => $ready ? Crypt::encryptString(json_encode(['version' => 1, 'ids' => array_column($cards, 'id'), 'expires' => now()->addHours(2)->timestamp])) : null,
             'total' => $this->catalog()->count(), 'pieces' => $cards, 'scores' => $scores,
             'intents' => self::INTENTS, 'moods' => collect(self::MOODS)->map(function ($mood) { return \Illuminate\Support\Arr::except($mood, 'tags'); })->all(), 'previewSeconds' => config('webapp.match_tour_audio_seconds', 60),
-            'ready' => count($cards) === 10 && !in_array(null, \Illuminate\Support\Arr::except($scores, 'beginner'), true),
+            'ready' => $ready,
         ];
     }
 

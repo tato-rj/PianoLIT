@@ -86,7 +86,8 @@ class TabsController extends Controller
     {
         if ($request->wantsJson()) {
             $data = $tour->data();
-            return response()->json(['html' => view('webapp.tour.content', ['tour' => $data])->render(), 'tour' => $data]);
+            return response()->json(['html' => view('webapp.tour.content', ['tour' => $data])->render(), 'tour' => $data])
+                ->header('Cache-Control', 'no-store, private');
         }
 
         return view('webapp.tour.index');

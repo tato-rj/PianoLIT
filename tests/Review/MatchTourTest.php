@@ -30,7 +30,7 @@ class MatchTourTest extends ReviewTestCase
         });
     }
 
-    public function test_large_catalog_has_bounded_queries_and_preserves_choices()
+    public function test_large_catalog_has_bounded_queries_and_unique_choices()
     {
         $tour = new MatchTour;
         \DB::enableQueryLog();
@@ -52,14 +52,14 @@ class MatchTourTest extends ReviewTestCase
         \DB::disableQueryLog();
         $this->assertTrue($data['ready']);
         $this->assertSame(612, $data['total']);
-        $this->assertSame($before['pieces'], $data['pieces']);
+        $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
         $this->assertSame($before['scores'], $data['scores']);
         $this->assertSame($queryCount, count($queries));
         $this->assertLessThanOrEqual(12, count($queries));
         foreach ($queries as $query) $this->assertStringNotContainsString('pieces_count', $query['query']);
     }
 
-    public function test_contrast_and_editorial_order_remain_stable()
+    public function test_opening_choices_are_randomized_across_the_entire_free_pick_pool()
     {
         Model::withoutEvents(function () {
             $genre = create(Tag::class, ['name' => 'dance', 'type' => 'genre']);
@@ -68,10 +68,18 @@ class MatchTourTest extends ReviewTestCase
                 if ($i % 2 === 0) $piece->tags()->attach($genre);
             }
         });
-        $data = (new MatchTour)->data();
-        // Existing choices for this fixture, including editorial boosts and ties.
-        $expected = array_map(function ($i) { return $this->pieces[$i]->id; }, [2, 9, 1, 5, 0, 4, 3, 6, 7, 8]);
-        $this->assertSame($expected, array_column($data['pieces'], 'id'));
+        $openings = []; $seen = [];
+        $tour = new MatchTour;
+        for ($i = 0; $i < 12; $i++) {
+            $data = $tour->data();
+            $ids = array_column($data['pieces'], 'id');
+            $this->assertCount(10, array_unique($ids));
+            $this->assertSame($ids, $tour->drawIds($data['draw']));
+            $opening = array_slice($ids, 0, 4); sort($opening);
+            $openings[] = implode(',', $opening); $seen = array_merge($seen, $opening);
+        }
+        $this->assertGreaterThan(1, count(array_unique($openings)), 'Randomization changes the pieces, not only their order');
+        $this->assertGreaterThan(4, count(array_unique($seen)));
     }
 
     public function test_all_questionnaire_examples_come_from_historical_free_picks()
@@ -96,13 +104,14 @@ class MatchTourTest extends ReviewTestCase
         foreach ($data['pieces'] as $card) $this->assertContains($card['id'], $eligible);
         $this->assertSame(array_slice($eligible, 0, 4), array_column($data['scores'], 'id'));
         $response = $this->getJson(route('webapp.tour'))->assertOk();
-        $this->assertSame($tour->data(), $response->json('tour'));
+        $this->assertSame(array_column($response->json('tour.pieces'), 'id'), $tour->drawIds($response->json('tour.draw')));
     }
 
     public function test_free_pick_examples_require_only_the_media_used_by_their_screen()
     {
         Model::withoutEvents(function () {
             $this->pieces[0]->update(['audio_path' => null]);
+            $this->pieces[11]->update(['audio_path' => null]);
             $this->pieces[1]->update(['score_path' => null]);
         });
         $data = (new MatchTour)->data();
@@ -123,20 +132,20 @@ class MatchTourTest extends ReviewTestCase
         $this->assertSame(12, $data['total']);
     }
 
-    private function answers()
+    private function answers($data = null)
     {
-        $data = (new MatchTour)->data();
+        $data = $data ?? (new MatchTour)->data();
         $ids = array_column($data['pieces'], 'id');
-        return ['preferredPiece' => $ids[0], 'reading' => [true, false], 'estimatedLevel' => 'elementary', 'winners' => [$ids[4], $ids[6], $ids[8]], 'intent' => 'personal'];
+        return ['draw' => $data['draw'], 'preferredPiece' => $ids[0], 'reading' => [true, false], 'estimatedLevel' => 'elementary', 'winners' => [$ids[4], $ids[6], $ids[8]], 'intent' => 'personal'];
     }
 
-    public function test_catalog_and_web_only_flow_are_deterministic_and_guest_safe()
+    public function test_catalog_and_web_only_flow_are_guest_safe_with_verified_draws()
     {
         $tour = new MatchTour;
         $data = $tour->data();
         $this->assertTrue($data['ready']);
         $this->assertSame(12, $data['total']);
-        $this->assertSame($data, $tour->data());
+        $this->assertSame(array_column($data['pieces'], 'id'), $tour->drawIds($data['draw']));
         $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
         $this->assertCount(4, array_unique(array_column($data['scores'], 'id')));
         $this->assertCount(9, $data['moods']);
@@ -148,8 +157,8 @@ class MatchTourTest extends ReviewTestCase
             ->assertDontSee('QUESTION')->assertDontSee('id="find-match-carousel"', false)
             ->assertDontSee('build/pdf.min.js', false)
             ->assertDontSee('cdn.plyr.io', false);
-        $response = $this->getJson(route('webapp.tour'))->assertOk()->assertJsonPath('tour.ready', true);
-        $this->assertSame($tour->data(), $response->json('tour'));
+        $response = $this->getJson(route('webapp.tour'))->assertOk()->assertHeader('Cache-Control', 'no-store, private')->assertJsonPath('tour.ready', true);
+        $this->assertSame(array_column($response->json('tour.pieces'), 'id'), $tour->drawIds($response->json('tour.draw')));
         $this->assertStringContainsString('data-count', $response->json('html'));
         $this->assertStringNotContainsString('<script', $response->json('html'));
     }
@@ -161,6 +170,39 @@ class MatchTourTest extends ReviewTestCase
         $this->app->instance(MatchTour::class, $tour);
         $this->get(route('webapp.tour'))->assertOk()->assertSee('MatchTour.Launcher', false)
             ->assertSee('data-match-tour-open', false)->assertDontSee('data-count', false);
+    }
+
+    public function test_results_use_each_displayed_draw_even_after_another_tour_opens()
+    {
+        $first = $this->getJson(route('webapp.tour'))->assertOk()->json('tour');
+        $second = $this->getJson(route('webapp.tour'))->assertOk()->json('tour');
+        $this->getJson(route('webapp.tour'))->assertOk();
+        $tour = \Mockery::mock(MatchTour::class)->makePartial();
+        $tour->shouldNotReceive('data');
+        $this->app->instance(MatchTour::class, $tour);
+        $this->postJson(route('webapp.tour.result'), $this->answers($first))->assertOk();
+        $this->postJson(route('webapp.tour.result'), $this->answers($second))->assertOk();
+    }
+
+    public function test_missing_tampered_and_expired_draws_are_rejected()
+    {
+        $this->withExceptionHandling();
+        $answers = $this->answers();
+        $missing = $answers; unset($missing['draw']);
+        $this->postJson(route('webapp.tour.result'), $missing)->assertStatus(422);
+        $tampered = $answers; $tampered['draw'] .= '-tampered';
+        $this->postJson(route('webapp.tour.result'), $tampered)->assertStatus(422);
+        $this->travel(121)->minutes();
+        $this->postJson(route('webapp.tour.result'), $answers)->assertStatus(422);
+        $this->travelBack();
+    }
+
+    public function test_a_draw_with_a_removed_free_pick_cannot_be_submitted()
+    {
+        $this->withExceptionHandling();
+        $answers = $this->answers();
+        Piece::where('id', $answers['preferredPiece'])->update(['highlighted_at' => null]);
+        $this->postJson(route('webapp.tour.result'), $answers)->assertStatus(422);
     }
 
     public function test_discover_launches_the_fullscreen_tour_without_the_old_carousel()
@@ -320,8 +362,9 @@ class MatchTourTest extends ReviewTestCase
         $this->copyWithMedia(['score_url' => 'https://example.test/buy-score']);
         $eligible = $this->pieces->pluck('id')->all();
         for ($i = 0; $i < 6; $i++) $eligible[] = $this->copyWithMedia()->id;
+        // Keep the randomized examples on the shared elementary/calm branch for this assertion.
+        Piece::whereIn('id', $this->pieces->slice(1)->pluck('id'))->update(['audio_path' => null]);
         $answers = $this->answers();
-        $answers['preferredPiece'] = $this->pieces[0]->id;
         $answers['reading'] = [null, null];
         $answers['winners'] = [null, null, null];
         $answers['mood'] = 'open';

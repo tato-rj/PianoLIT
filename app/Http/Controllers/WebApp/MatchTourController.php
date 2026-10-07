@@ -12,9 +12,9 @@ class MatchTourController extends Controller
 {
     public function result(Request $request, MatchTour $tour, Quiz $quiz)
     {
-        $data = $tour->data();
-        abort_unless($data['ready'], 503, 'The tour is temporarily unavailable.');
-        $ids = array_column($data['pieces'], 'id');
+        $request->validate(['draw' => 'required|string|max:4096']);
+        $ids = $tour->drawIds($request->input('draw'));
+        abort_unless($ids, 422, 'The listening choices have expired or changed. Start over.');
         $answers = $request->validate([
             'preferredPiece' => ['required', 'integer', Rule::in(array_slice($ids, 0, 4))],
             'reading' => 'required|array|size:2',

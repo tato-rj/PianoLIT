@@ -30,7 +30,7 @@
 .btn-primary {
 	color: white !important;
 	background-color: var(--color-primary);
-	border-color: var(--color-primary);
+	box-shadow: 0 5px 12px rgba(var(--color-primary-rgb), 0.15);
 
 	&:hover {
 		color: white !important;

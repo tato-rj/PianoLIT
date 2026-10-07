@@ -79,7 +79,7 @@ module.exports = async function () {
 
     // A result delivered after restart/back must never replace the current screen.
     let resolve;
-    const stale = {finding() { this.waiting = true; }, state: {count: 47, answers: {}}, http: {post: () => new Promise(done => { resolve = done; })}, element: {dataset: {url: '/result'}}, counter: {to: () => Promise.resolve()}, generation: 1};
+    const stale = {data: {draw: 'current-draw'}, finding() { this.waiting = true; }, state: {count: 47, answers: {}}, http: {post: (url, answers) => { assert.strictEqual(answers.draw, 'current-draw'); return new Promise(done => { resolve = done; }); }}, element: {dataset: {url: '/result'}}, counter: {to: () => Promise.resolve()}, generation: 1};
     const response = Controller.prototype.result.call(stale, 1);
     assert(stale.waiting, 'Completion feedback appears before the response arrives');
     stale.generation = 2;
@@ -91,6 +91,7 @@ module.exports = async function () {
     window.bootstrap = {Modal: class {constructor() { throw Error('No second modal'); }}};
     let mounted = false, mediaStopped = false;
     const result = {
+        data: {draw: 'current-draw'},
         finding() {}, finishFinding() { this.finishedWaiting = true; },
         state: {count: 2, answers: {}}, http: {post: () => Promise.resolve({data: 'chosen piece'})},
         element: {dataset: {url: '/result'}, querySelector: () => ({})},
@@ -103,7 +104,7 @@ module.exports = async function () {
     assert.strictEqual(result.stage.innerHTML, 'chosen piece'); assert(mounted && mediaStopped && result.finishedWaiting);
 
     let failureReported;
-    const failed = {finding() {}, finishFinding() { this.finishedWaiting = true; }, state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
+    const failed = {data: {draw: 'current-draw'}, finding() {}, finishFinding() { this.finishedWaiting = true; }, state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
         counter: {to: () => Promise.resolve(), cancel() {}, set(value) { this.value = value; }}, generation: 1,
         render() { this.rendered = true; }, report(message) { failureReported = message; }};
     await Controller.prototype.result.call(failed, 1);
@@ -141,13 +142,45 @@ module.exports = async function () {
     // Use a fresh script context to exercise a pending first reading load.
     const pendingWindow = Object.assign({}, window);
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/match-tour.js'), 'utf8'), {window: pendingWindow});
-    const reader = {state: {step: 1}, generation: 1, readingPair: () => [{title: 'A'}, {title: 'B'}],
+    const reader = {state: {step: 1}, generation: 1, readingScore: () => ({title: 'Single score'}),
         pdfTasks: new Set(), stage: {}, heading: () => '', pdfjs: null};
     const reading = pendingWindow.MatchTour.Controller.prototype.reading.call(reader);
     reader.generation++;
     pendingWindow.pdfjsLib = pdf; scripts[3].onload();
     await reading;
     assert.strictEqual(reader.pdfTasks.size, 0);
+
+    // A title-heavy first page must yield its middle music, not the header.
+    const savedCreateElement = window.document.createElement;
+    let pageLoads = 0;
+    for (const [width, height] of [[700,1000], [1000,300]]) {
+        const canvases = [];
+        window.document.createElement = () => {
+            const canvas = {draws: [], setAttribute() {}, getContext() {
+                return {drawImage: (...args) => this.draws.push(args)};
+            }};
+            canvases.push(canvas); return canvas;
+        };
+        const slot = {setAttribute() {}, appendChild(canvas) { this.canvas = canvas; }};
+        const scoreAnswers = [{disabled: true}, {disabled: true}];
+        const scorer = {generation: 1, pdfTasks: new Set(), scoreExcerpts: new Map(), pdfjs: {
+            getDocument() { pageLoads++; return {destroy() {}, promise: Promise.resolve({getPage: () => Promise.resolve({
+                getViewport: () => ({width, height}), render: () => ({promise: Promise.resolve()})
+            })})}; }
+        }, stage: {querySelector: () => slot, querySelectorAll: selector => selector === '[data-choice]' ? scoreAnswers : []}, scoreFailure() { throw Error('Unexpected PDF failure'); }};
+        await Controller.prototype.score.call(scorer, {url: 'fixture.pdf', title: 'Title above notes', composer: 'Composer'}, 0, 1);
+        const [source, x, top, cropWidth, cropHeight] = canvases[1].draws[0];
+        assert.strictEqual(source, canvases[0]); assert.strictEqual(x, 0); assert.strictEqual(cropWidth, width);
+        assert(top >= 0 && top + cropHeight <= height, 'Portrait and landscape crops stay within the page');
+        assert(Math.abs(top + cropHeight / 2 - height / 2) <= 1, 'The excerpt includes the middle of the page');
+        if (height > width) assert(top > height * 0.25, 'Title/header area is excluded');
+        assert.strictEqual(slot.canvas.width, cropWidth); assert.strictEqual(slot.canvas.height, cropHeight);
+        assert(scoreAnswers.every(button => !button.disabled), 'One rendered excerpt enables both difficulty answers');
+        const loaded = pageLoads;
+        await Controller.prototype.score.call(scorer, {url: 'fixture.pdf', title: 'Title above notes', composer: 'Composer'}, 0, 1);
+        assert.strictEqual(pageLoads, loaded, 'Revisiting the excerpt reuses its cached crop');
+    }
+    window.document.createElement = savedCreateElement;
 
     // Every difficulty outcome and optional skip retains its intended level.
     for (const [answers, expected] of [[[false,false],'elementary'], [[false,true],'beginner'], [[true,false],'intermediate'], [[true,true],'advanced'], [[null,null],'beginner'], [[false,null],'beginner'], [[true,null],'intermediate']]) {
@@ -165,12 +198,14 @@ module.exports = async function () {
         assert.strictEqual(skip.answers.estimatedLevel, difficulty);
     }
     const scores = {easy: 'easy', beginner: 'beginner', middle: 'middle', hard: 'hard'};
-    const pairs = {data: {scores}, state: {step: 1, answers: {reading: []}}};
-    assert.deepStrictEqual(Array.from(Controller.prototype.readingPair.call(pairs)), ['easy','middle']);
-    pairs.state.step = 2; pairs.state.answers.reading = [false];
-    assert.deepStrictEqual(Array.from(Controller.prototype.readingPair.call(pairs)), ['easy','beginner']);
-    pairs.state.answers.reading = [true];
-    assert.deepStrictEqual(Array.from(Controller.prototype.readingPair.call(pairs)), ['middle','hard']);
+    const readerState = {data: {scores}, state: {step: 1, answers: {reading: []}}};
+    assert.strictEqual(Controller.prototype.readingScore.call(readerState), 'middle');
+    readerState.state.step = 2; readerState.state.answers.reading = [false];
+    assert.strictEqual(Controller.prototype.readingScore.call(readerState), 'beginner');
+    readerState.state.answers.reading = [true];
+    assert.strictEqual(Controller.prototype.readingScore.call(readerState), 'hard');
+    readerState.state.answers.reading = [false]; readerState.data.scores.beginner = null;
+    assert.strictEqual(Controller.prototype.readingScore.call(readerState), 'easy', 'Missing beginner excerpt still gives a genuinely easier follow-up');
 
     // Reused card renderer safely escapes names and uses inline media only for reward.
     const card = {id:1,title:'<danger>',composer:'A & B',image:'/portrait',artwork:'/art',audio:'/audio',video:'/video',url:'/pieces/1'};
@@ -183,6 +218,12 @@ module.exports = async function () {
     assert(reward.includes('match-artwork')); assert(reward.includes('data-play="1"'));
     const recommendations = Controller.prototype.cards.call(renderer, [card], 'recommendation');
     assert(recommendations.includes('href="/pieces/1"')); assert(!recommendations.includes('<video'));
+
+    let freshDraws = 0;
+    await Controller.prototype.click.call({onRestart: () => { freshDraws++; }}, {
+        target: {closest: () => ({disabled: false, hasAttribute: attribute => attribute === 'data-restart'})}
+    });
+    assert.strictEqual(freshDraws, 1, 'Start over requests a fresh draw instead of resetting the old choices');
 
     // Closing the shell discards a pending load and restores the launcher's focus.
     const events = {}, documentEvents = {};

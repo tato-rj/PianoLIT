@@ -146,23 +146,9 @@
         }
     }
 
-    function excerptHeight(canvas) {
-        const width = canvas.width, height = canvas.height;
-        const pixels = canvas.getContext('2d').getImageData(0, 0, width, height).data;
-        let blankStart = null, end = Math.round(height * 0.48);
-        for (let y = Math.round(height * 0.24); y < height * 0.58; y++) {
-            let ink = 0;
-            for (let x = Math.round(width * 0.04); x < width * 0.96; x++) {
-                const offset = (y * width + x) * 4;
-                if (pixels[offset + 3] > 0 && pixels[offset] < 210 && pixels[offset + 1] < 210 && pixels[offset + 2] < 210) ink++;
-            }
-            if (ink <= 2) { if (blankStart === null) blankStart = y; }
-            else {
-                if (blankStart !== null && y - blankStart > height * 0.022) end = Math.round((y + blankStart) / 2);
-                blankStart = null;
-            }
-        }
-        return end;
+    function excerptBounds(canvas) {
+        const height = Math.max(1, Math.min(canvas.height, Math.round(canvas.width * 0.4)));
+        return {top: Math.floor((canvas.height - height) / 2), height};
     }
 
     const escape = value => String(value).replace(/[&<>"']/g, character => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[character]));
@@ -218,7 +204,8 @@
         });
     }
     class Controller {
-        constructor(element, data, http, pdfjs) {
+        constructor(element, data, http, pdfjs, onRestart) {
+            this.onRestart = onRestart;
             this.element = element; this.data = data; this.http = http; this.pdfjs = pdfjs;
             this.state = new State(data.total); this.generation = 0; this.busy = false;
             this.stage = element.querySelector('[data-stage]'); this.error = element.querySelector('[data-error]');
@@ -268,6 +255,7 @@
         async click(event) {
             const button = event.target.closest('button');
             if (!button || button.disabled) return;
+            if (button.hasAttribute('data-restart') && this.onRestart) { await this.onRestart(); return; }
             if (button.hasAttribute('data-back') || button.hasAttribute('data-restart')) {
                 if (this.suggestions && button.hasAttribute('data-back')) { this.showSuggestions(false); return; }
                 this.dispose(); this.busy = false; this.suggestions = false; this.resultData = null;
@@ -372,28 +360,28 @@
             const heading = this.suggestions ? this.stage.querySelector('[data-recommendations-view] h3') : this.stage.querySelector('h3');
             if (heading) heading.focus({preventScroll: true});
         }
-        readingPair() {
+        readingScore() {
             const scores = this.data.scores;
-            return this.state.step === 1 ? [scores.easy, scores.middle] : this.state.answers.reading[0] ? [scores.middle, scores.hard] : [scores.easy, scores.beginner || scores.middle];
+            return this.state.step === 1 ? scores.middle : this.state.answers.reading[0] ? scores.hard : (scores.beginner || scores.easy);
         }
         async reading() {
-            const generation = ++this.generation, pair = this.readingPair();
+            const generation = ++this.generation, score = this.readingScore();
             this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
-            this.stage.innerHTML = this.heading('Could you read score B without practicing first?', 'Imagine playing both hands together at a slow, steady pace. If both scores feel comfortable, choose Yes.', this.state.step + ' of 2') +
-                '<div class="match-score-pair">' + pair.map((score, i) => '<article class="match-score-card"><span class="match-score-label">' + (i ? 'B' : 'A') + '</span><div class="match-score" data-score-slot="' + i + '" aria-busy="true"><p role="status">Opening score…</p></div></article>').join('') + '</div>' +
-                '<div class="match-score-pair mt-3" role="group" aria-label="Comfort reading score B"><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Not yet — I’d need practice</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Yes — B feels comfortable</button></div>';
+            this.stage.innerHTML = this.heading('How does this score feel to sight-read?', 'Imagine playing it for the first time, with both hands at a slow, steady pace.', this.state.step + ' of 2') +
+                '<article class="match-score-card match-score-single"><div class="match-score" data-score-slot="0" aria-busy="true"><p role="status">Opening score…</p></div></article>' +
+                '<div class="match-score-answers mt-3" role="group" aria-label="Sight-reading difficulty"><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Difficult for me</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Easy for me</button></div>';
             try {
                 if (!this.pdfjs) this.pdfjs = await loadPdf();
                 if (generation !== this.generation) return;
-                await Promise.all(pair.map((score, index) => this.score(score, index, generation)));
+                await this.score(score, 0, generation);
             } catch (error) {
                 if (generation === this.generation) this.scoreFailure();
             }
         }
         scoreFailure() {
             this.stage.querySelectorAll('.match-score').forEach(slot => { slot.setAttribute('aria-busy', 'false'); slot.innerHTML = '<p>The score could not be opened.</p>'; });
-            this.report('The score previews could not be opened. Try again or skip this step.');
-            if (!this.stage.querySelector('[data-score-retry]')) this.stage.insertAdjacentHTML('beforeend', '<div class="text-center"><button type="button" class="btn btn-secondary" data-score-retry>Retry scores</button></div>');
+            this.report('The score preview could not be opened. Try again or skip this step.');
+            if (!this.stage.querySelector('[data-score-retry]')) this.stage.insertAdjacentHTML('beforeend', '<div class="text-center"><button type="button" class="btn btn-secondary" data-score-retry>Retry score</button></div>');
         }
         async score(score, index, generation) {
             const slot = this.stage.querySelector('[data-score-slot="' + index + '"]');
@@ -411,16 +399,18 @@
                     canvas.width = viewport.width; canvas.height = viewport.height;
                     await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
                     if (generation !== this.generation) return;
-                    cropped = root.document.createElement('canvas'); cropped.width = canvas.width; cropped.height = excerptHeight(canvas);
-                    cropped.getContext('2d').drawImage(canvas, 0, 0); this.scoreExcerpts.set(score.url, cropped);
+                    const excerpt = excerptBounds(canvas);
+                    cropped = root.document.createElement('canvas'); cropped.width = canvas.width; cropped.height = excerpt.height;
+                    cropped.getContext('2d').drawImage(canvas, 0, excerpt.top, canvas.width, excerpt.height, 0, 0, cropped.width, cropped.height);
+                    this.scoreExcerpts.set(score.url, cropped);
                 }
                 if (generation !== this.generation) return;
                 const copy = root.document.createElement('canvas'); copy.width = cropped.width; copy.height = cropped.height;
                 copy.getContext('2d').drawImage(cropped, 0, 0); copy.setAttribute('role', 'img');
-                copy.setAttribute('aria-label', 'Opening score excerpt: ' + score.title + ' by ' + score.composer);
+                copy.setAttribute('aria-label', 'Middle of score page: ' + score.title + ' by ' + score.composer);
                 slot.innerHTML = ''; slot.appendChild(copy); slot.setAttribute('aria-busy', 'false');
-                // Choices enable only when both actual excerpts are ready.
-                if (this.stage.querySelectorAll('.match-score[aria-busy="true"]').length === 0 && this.stage.querySelectorAll('.match-score canvas').length === 2) this.stage.querySelectorAll('[data-choice]').forEach(button => { button.disabled = false; });
+                // Answer only after the actual excerpt is ready.
+                this.stage.querySelectorAll('[data-choice]').forEach(button => { button.disabled = false; });
             } catch (error) { if (generation === this.generation) this.scoreFailure(); }
             finally { root.clearTimeout(timer); if (task) { task.destroy(); this.pdfTasks.delete(task); } }
         }
@@ -451,7 +441,7 @@
             this.finding();
             try {
                 // Keep the current estimated count if recommendation retrieval fails.
-                const response = await this.http.post(this.element.dataset.url, clone(this.state.answers), {timeout: 20000});
+                const response = await this.http.post(this.element.dataset.url, Object.assign(clone(this.state.answers), {draw: this.data.draw}), {timeout: 20000});
                 if (generation !== this.generation) return;
                 this.stage.querySelector('h3').textContent = 'Your match is ready!';
                 await this.counter.to(1, this.reduced ? 0 : 900);
@@ -467,7 +457,9 @@
                 this.finishFinding();
                 this.counter.cancel(); this.state.back(); this.counter.set(previous); this.suggestions = false;
                 this.busy = false; this.render();
-                this.report(error.response && error.response.status === 422 ? 'The library has changed. Start over to refresh the listening choices.' : 'We couldn’t find your match just now. Choose your mood again to retry; your earlier answers are saved.');
+                const staleChoices = error.response && error.response.status === 422;
+                if (staleChoices) this.element.querySelector('[data-restart]').hidden = false;
+                this.report(staleChoices ? 'Your listening choices have expired or changed. Start over for a fresh tour.' : 'We couldn’t find your match just now. Choose your mood again to retry; your earlier answers are saved.');
             }
         }
     }
@@ -502,6 +494,7 @@
         open(opener) { this.opener = opener; this.dialog.show(opener); }
         async load() {
             if (this.loading) return;
+            if (this.controller) { this.controller.destroy(); this.controller = null; }
             progress(this.element, 0, false);
             this.loading = true;
             this.content.scrollTop = 0;
@@ -512,7 +505,7 @@
                 if (generation !== this.generation) return;
                 this.content.innerHTML = response.data.html;
                 if (response.data.tour.ready) {
-                    this.controller = new Controller(this.content.querySelector('#match-tour'), response.data.tour, this.http);
+                    this.controller = new Controller(this.content.querySelector('#match-tour'), response.data.tour, this.http, undefined, () => this.load());
                     if (this.shown) this.controller.focus();
                 }
             } catch (error) {

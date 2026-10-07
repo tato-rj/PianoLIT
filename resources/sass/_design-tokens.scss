@@ -1,7 +1,7 @@
 // Canonical design settings; _variables.scss imports these for legacy consumers.
 $body-bg: #161d25;
 $brand-primary: #0055fe; // Change here to rebuild all derived brand states.
-
+$brand-primary-rgb: 0, 85, 254;
 
 // Borders
 $laravel-border-color: darken($body-bg, 10%);
@@ -161,6 +161,7 @@ $social-whatsapp: #25D366;
 
         // Brand defaults and their interaction states derive from the Sass defaults above.
         --color-primary: #{$brand-primary};
+        --color-primary-rgb: #{$brand-primary-rgb};
         --color-primary-hover: #{darken($brand-primary, 4%)};
         --color-primary-active: #{darken($brand-primary, 6%)};
         --color-primary-disabled: #{lighten($brand-primary, 6%)};
