@@ -1,7 +1,7 @@
 @if($freePick ?? false)
 <a href="{{ route('webapp.pieces.show', $piece) }}" class="link-none">
-	<article class="free-pick-card bg-align-center d-flex flex-column justify-content-between rounded overflow-hidden position-relative p-3 p-md-4 text-white" style="background-image: url('{{ $piece->image_background }}')">
-		<div class="free-pick-card__content position-relative">
+	<article class="free-pick-card bg-align-center rounded overflow-hidden position-relative p-3 p-md-4 text-white" style="background-image: url('{{ $piece->image_background }}')">
+		<div class="free-pick-card__content position-relative d-flex flex-column justify-content-between h-100">
 			<div>
 				<h4 class="free-pick-card__title text-white mb-0">{{ $piece->collection_name === 'Sonata' ? $piece->getRawOriginal('name') : ($piece->nickname ?: $piece->getRawOriginal('name')) }}</h4>
 				<p class="free-pick-card__metadata mb-3">@if(trim($piece->catalogue)){{ $piece->catalogue }} · @endif{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
