@@ -62,13 +62,52 @@
     .piece-media-icons { margin-top: auto !important; }
 }
 .piece-media-icons .app-icon { width: 1.25em; height: 1.25em; }
+.discover-panel { padding: 24px; }
+.discover-compact-card {
+    gap: 14px;
+    padding: 14px;
+    border-radius: var(--radius-button);
+    background: var(--color-surface);
+    &__art { flex-shrink: 0; width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-button); }
+    &__copy { flex: 1; min-width: 0; }
+    &__title { line-height: 1.35; overflow-wrap: anywhere; }
+    &__media .app-icon { width: 1.25em; height: 1.25em; }
+}
+.discover-for-you {
+    // Existing Match tour reward background.
+    background: #f7efff;
+    .discover-compact-card { flex: 0 0 calc((100% - 32px) / 3); }
+}
+.discover-women {
+    // Existing Collections feature background.
+    background: #faf8f4;
+    &__layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; align-items: center; }
+    &__feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: center; }
+    &__portrait-link { display: block; min-width: 0; border-radius: var(--radius-button); }
+    &__portrait { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-button); }
+    &__biography { min-width: 0; overflow-wrap: anywhere; }
+    &__action { grid-column: 1 / -1; justify-self: start; }
+    &__pieces { display: grid; gap: 8px; max-height: 292px; overflow-y: auto; padding: 3px 0; }
+    .discover-compact-card { min-height: 90px; padding: 10px 16px; }
+    .discover-compact-card__art { width: 68px; height: 68px; }
+}
 .discover-latest__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 991px) {
     .discover-recent-card, .discover-latest-card { flex-basis: calc((100% - 16px) / 2); }
+    .discover-for-you .discover-compact-card { flex-basis: calc((100% - 16px) / 2); }
     .discover-latest__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+    .discover-women__layout { grid-template-columns: minmax(0, 1fr); }
+    .discover-women__feature { grid-template-columns: minmax(0, 140px) minmax(0, 1fr); }
 }
 @media (max-width: 575px) {
     .discover-recent-card, .discover-latest-card { flex-basis: 88%; }
+    .discover-panel { padding: 16px; }
+    .discover-for-you .discover-compact-card { flex-basis: 94%; }
+    .discover-for-you .discover-compact-card__art { width: 72px; height: 72px; }
+    .discover-women__feature { grid-template-columns: minmax(0, 100px) minmax(0, 1fr); }
+    .discover-women .discover-compact-card { gap: 10px; padding: 10px; }
     .discover-latest__grid { grid-template-columns: minmax(0, 1fr); }
 }
 

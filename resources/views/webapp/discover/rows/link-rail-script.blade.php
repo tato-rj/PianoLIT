@@ -2,7 +2,7 @@
 @push('scripts')
 <script>
 (function () {
-    document.querySelectorAll('#discover-composers-rail, .discover-recent__rail, .discover-latest__rail').forEach(function (rail) {
+    document.querySelectorAll('#discover-composers-rail, .discover-recent__rail, .discover-latest__rail, .discover-for-you__rail').forEach(function (rail) {
         var dragStart = null;
         var dragged = false;
         rail.addEventListener('mousedown', function (event) { dragStart = event.clientX; dragged = false; });
