@@ -41,7 +41,7 @@
         @include('layouts.html.google.manager-body')
     @endauth
 
-    <div id="webapp" @if(request()->routeIs('webapp.users.favorites.folders.show', 'webapp.playlists.show')) class="playlist-layout" @endif>
+    <div id="webapp" @if(request()->routeIs('webapp.playlists.show')) class="playlist-layout" @endif>
         @if(request()->routeIs('webapp.pieces.show'))
             @include('webapp.components.artwork-header', ['image' => asset($piece->image_background)])
         @elseif(request()->routeIs('webapp.playlists.show'))

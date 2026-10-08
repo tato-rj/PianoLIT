@@ -15,7 +15,7 @@ window.searchRequestId = 0;
 @section('content')
 @include('webapp.layouts.header', ['subtitle' => 'Results for <i>"' . request('search') . '"</i>'])
 
-<section class="mb-2">
+<section class="mb-2 mt-4">
 	@include('webapp.search.form')
 </section>
 
