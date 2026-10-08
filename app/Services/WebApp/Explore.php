@@ -27,7 +27,7 @@ class Explore
         $browseTags = $tags->whereNotIn('name', ['beginner', 'intermediate'])->groupBy(function ($tag) {
             return $tag->type === 'sublevel' ? 'level' : $tag->type;
         });
-        $composers = Composer::has('pieces')->orderByDesc('is_famous')->orderByDesc('pieces_count')->orderBy('id')->take(3)->get();
+        $composers = Composer::has('pieces')->inRandomOrder()->take(3)->get();
         $countries = Country::has('pieces')->orderBy('name')->get();
         $freePicks = Piece::freePicks()->orderByDesc('id')->with(['tags', 'composer'])->take(3)->get();
 
