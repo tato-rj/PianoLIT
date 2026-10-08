@@ -71,10 +71,32 @@ class TabsController extends Controller
 
     public function highlights(Api $api, Request $request)
     {
-        if ($request->wantsJson())
-            return view('webapp.highlights.pieces', ['pieces' =>  Piece::freePicks($ordered = false)->with('tags')->filtered()->get()])->render();
+        $request->validate([
+            'filters' => 'nullable|array|max:5',
+            'filters.*' => ['bail', 'required', 'string', 'max:1024', function ($attribute, $value, $fail) {
+                $names = json_decode($value);
+                if (!is_array($names) || array_values($names) !== $names || count($names) > 6) {
+                    return $fail('Invalid filters.');
+                }
+                foreach ($names as $name) {
+                    if (!is_string($name) || strlen($name) > 64) return $fail('Invalid filters.');
+                }
+            }],
+        ]);
 
-        return view('webapp.highlights.index');
+        // All card metadata stays available for the existing client-side sorting.
+        // Only the popularity count is used here; omit the other default counts
+        // and the composer's country relationship from this web-only query.
+        $pieces = Piece::freePicks(false)->select('pieces.*')->withCount('views')
+            ->with(['tags', 'composer' => function ($query) {
+                $query->select('composers.*')->setEagerLoads([]);
+            }])->filtered()->get();
+
+        if ($request->wantsJson()) {
+            return view('webapp.highlights.pieces', compact('pieces'))->render();
+        }
+
+        return view('webapp.highlights.index', compact('pieces'));
     }
 
     public function playlists(\App\Services\WebApp\Collections $collections)

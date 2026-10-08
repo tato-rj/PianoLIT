@@ -1,106 +1,27 @@
 @extends('webapp.layouts.app', ['title' => 'Highlights'])
 
-@push('header')
-<script type="text/javascript">
-window.page = 1;
-window.loading = window.done = false;
-window.filters = [];
-</script>
-@endpush
-
 @section('content')
 @include('webapp.layouts.header', ['title' => 'Highlights', 'subtitle' => 'What would you like to play next?'])
 
-@include('webapp.components.sorting', ['disabled' => true])
+@include('webapp.components.sorting', ['disabled' => false])
 
-<section id="pieces-list" class="row mt-3">
+<section id="pieces-list" class="row mt-3" data-highlights-url="{{ route('webapp.highlights') }}" aria-busy="false">
+    @include('webapp.highlights.pieces')
 </section>
 
-@include('webapp.components.spinner')
-
-<div id="empty" class="text-grey text-center pt-5 pb-4" style="display: none;">
-	@icon('package-open', ['mr' => 0, 'size' => 'lg'])
-	<div><strong></strong></div>
+<div id="highlights-loading" hidden>
+    @include('webapp.components.spinner')
+</div>
+<div id="highlights-empty" class="text-grey text-center pt-5 pb-4" role="status" @if($pieces->isNotEmpty()) hidden @endif>
+    @icon('package-open', ['mr' => 0, 'size' => 'lg'])
+    <div><strong>Sorry, nothing to show!</strong></div>
+</div>
+<div id="highlights-error" class="text-center py-4" role="alert" hidden>
+    <p>We couldn't load these pieces. Please try again.</p>
+    <button id="highlights-retry" type="button" class="btn btn-secondary btn-sm">Try again</button>
 </div>
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
-$(document).ready(function() {
-	loadResults();
-
-	// $(window).on('scroll', function() {
-	// 	let scrollHeight = $(document).height();
-	// 	let scrollPosition = $(window).height() + $(window).scrollTop();
-	// 	let endOfScreen = Math.floor((scrollHeight - scrollPosition) / scrollHeight) === 0;
-	// 	let notLoading = ! window.loading;
-
-	// 	if (endOfScreen && notLoading)
-	// 	    loadResults();
-	// });
-});
-
-function loadResults() {
-	window.loading = true;
-	
-	if (! window.done) {
-		axios.get(makeUrl(), {params: {filters: window.filters}})
-		.then(function(response) {
-			window.loading = false;
-			window.done = response.data == '';
-
-			if (window.done) {
-				$('#empty strong').text(window.page == 1 ? 'Sorry, nothing to show!' : 'We found a total of '+$('.piece-result').length+' results')
-				$('#empty').show();
-			} else {
-				$('#pieces-list').append(response.data);
-				window.page++;
-			}
-		})
-		.catch(function(error) {
-			console.log(error);
-		})
-		.then(function() {
-			$('#spinner').hide();
-			$('#options button, .options-columns input').enable();
-		});
-	}
-};
-
-$('#server-filter input[type="checkbox"]').change(function() {
-	let filters = [];
-
-	$('#server-filter .options-columns > div').each(function(index) {
-		let arr = $(this).find('input[type="checkbox"]:checked').attrToArray('value');
-
-		if (arr.length)
-			filters.push(arr);
-	});
-
-	reset();
-
-    applyFilters(filters);
-});
-</script>
-
-<script type="text/javascript">
-function makeUrl() {
-	return window.location.href + '?lazy-load&page=' + window.page;
-}
-
-function reset() {
-	$('#spinner').show();
-	$('#options button, .options-columns input').disable();
-	$('#pieces-list').empty();
-	$('#empty').hide();
-}
-
-function applyFilters(filters) {
-	window.page = 1;
-	window.loading = window.done = false;
-	window.filters = filters;
-
-	loadResults();
-}
-</script>
+<script src="{{ mix('js/views/highlights.js') }}"></script>
 @endpush

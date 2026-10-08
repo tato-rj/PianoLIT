@@ -31,6 +31,7 @@ async function main() {
     require('./collections')();
     require('./composers')();
     require('./explore')();
+    await require('./highlights')();
     require('./folders')();
     await require('./playlist-player')();
     require('./playlist-moments')();

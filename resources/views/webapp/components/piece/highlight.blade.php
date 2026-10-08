@@ -31,7 +31,10 @@
 	</article>
 </a>
 @else
-<div class=" cursor-pointer bg-align-center rounded d-flex d-apart flex-column p-3 piece-card" role="img" aria-label="{{$piece->name}}" data-url="{{route('webapp.pieces.show', $piece)}}" style="background-image: url({{$piece->web_image_background}}); height: {{$height ?? '200px'}}; width: {{$width ?? '100%'}}">
+<div class="cursor-pointer bg-align-center rounded d-flex d-apart flex-column p-3 piece-card {{ ($lazyArtwork ?? false) ? 'highlight-lazy-card' : '' }}" role="img" aria-label="{{$piece->name}}" data-url="{{route('webapp.pieces.show', $piece)}}" style="@unless($lazyArtwork ?? false)background-image: url({{$piece->web_image_background}}); @endunless height: {{$height ?? '200px'}}; width: {{$width ?? '100%'}}">
+	@if($lazyArtwork ?? false)
+	<img class="highlight-lazy-card__art" src="{{ $piece->web_image_background }}" alt="" width="440" height="220" loading="{{ ($eagerArtwork ?? false) ? 'eager' : 'lazy' }}">
+	@endif
 	<div class="w-100 text-white">
 		<p class="h6 m-0 text-white clamp-2">{{$piece->name}}</p>
 		<p class="m-0 text-white">{{$piece->attribution}}{{$piece->composer->short_name}}</p>

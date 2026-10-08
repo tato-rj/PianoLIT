@@ -30,6 +30,21 @@
 }
 
 // Shared webapp piece/collection cards and circular composer/period tiles.
+.highlight-result {
+    // The fixed card height reserves the complete layout while offscreen.
+    // Keep the card's positioning and rounded artwork inside the column.
+    content-visibility: auto;
+    contain-intrinsic-size: auto 220px;
+    overflow-clip-margin: 4px;
+}
+.highlight-lazy-card {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-surface-dark);
+    &__art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    > div { position: relative; }
+}
+
 .piece-card, .search-card, .composer-tile, .discover-piece-link {
     transition: transform .18s ease;
     &:hover { transform: translateY(-3px); }
