@@ -106,9 +106,9 @@
 .discover-for-you {
     // Existing Match tour reward background.
     background: #f7efff;
-    .discover-compact-card { flex: 0 0 calc((100% - 100px) / 3); }
+    .discover-compact-card { flex: 0 0 calc((100% - 32px) / 3); }
 }
-.discover-women {
+.discover-composer-feature {
     // Existing Collections feature background.
     background: #faf8f4;
     &__layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; align-items: center; }
@@ -121,9 +121,11 @@
     .discover-compact-card { min-height: 90px; padding: 10px 16px; }
     .discover-compact-card__art { width: 68px; height: 68px; }
 }
+// Existing Match tour reading background.
+.discover-black { background: #f0fbf2; }
 .discover-latest__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 1199px) {
-    .discover-for-you .discover-compact-card { flex-basis: calc((100% - 200px) / 2); }
+    .discover-for-you .discover-compact-card { flex-basis: calc((100% - 16px) / 2); }
 }
 @media (max-width: 991px) {
     .discover-level-card { flex-basis: calc((100% - 48px) / 4); }
@@ -133,8 +135,8 @@
 @media (max-width: 767px) {
     .discover-levels__tabs { width: 100%; }
     .discover-level-card { flex-basis: calc((100% - 32px) / 3); }
-    .discover-women__layout { grid-template-columns: minmax(0, 1fr); }
-    .discover-women__feature { grid-template-columns: minmax(0, 140px) minmax(0, 1fr); }
+    .discover-composer-feature__layout { grid-template-columns: minmax(0, 1fr); }
+    .discover-composer-feature__feature { grid-template-columns: minmax(0, 140px) minmax(0, 1fr); }
 }
 @media (max-width: 575px) {
     .discover-level-card { flex-basis: 46%; min-width: 140px; }
@@ -142,8 +144,8 @@
     .discover-panel { padding: 16px; }
     .discover-for-you .discover-compact-card { flex-basis: 94%; }
     .discover-for-you .discover-compact-card__art { width: 72px; height: 72px; }
-    .discover-women__feature { grid-template-columns: minmax(0, 100px) minmax(0, 1fr); }
-    .discover-women .discover-compact-card { gap: 10px; padding: 10px; }
+    .discover-composer-feature__feature { grid-template-columns: minmax(0, 100px) minmax(0, 1fr); }
+    .discover-composer-feature .discover-compact-card { gap: 10px; padding: 10px; }
     .discover-latest__grid { grid-template-columns: minmax(0, 1fr); }
 }
 

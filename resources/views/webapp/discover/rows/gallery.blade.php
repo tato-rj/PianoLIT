@@ -6,6 +6,8 @@
 	@include('webapp.discover.rows.for-you')
 @elseif($row['title'] === 'From women composers')
 	@include('webapp.discover.rows.women-composers')
+@elseif($row['title'] === 'From black composers')
+	@include('webapp.discover.rows.composer-feature', ['featureKey' => 'black'])
 @else
 <div class="mb-4">
 	<h5 class="mb-3">{{$row['title']}}</h5>

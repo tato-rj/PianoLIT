@@ -105,14 +105,23 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->assertStringNotContainsString('for-you-heading', view('webapp.discover.rows.gallery', compact('row'))->render());
     }
 
-    public function test_women_feature_reuses_loaded_composer_and_retains_all_piece_links()
+    public function composerFeatureRows()
+    {
+        return [
+            ['From women composers', 'women-composers-heading'],
+            ['From black composers', 'black-composers-heading'],
+        ];
+    }
+
+    /** @dataProvider composerFeatureRows */
+    public function test_composer_feature_reuses_loaded_composer_and_retains_all_piece_links($title, $heading)
     {
         $cards = PieceCards::load($this->pieces, false);
         $composer = $cards->first()->composer;
         $composer->biography = '<script>alert("unsafe")</script>A biography from the existing composer profile.';
         \DB::enableQueryLog();
         \DB::flushQueryLog();
-        $row = ['title' => 'From women composers', 'type' => 'piece', 'content' => $cards];
+        $row = ['title' => $title, 'type' => 'piece', 'content' => $cards];
         $html = view('webapp.discover.rows.gallery', compact('row'))->render();
         $this->assertCount(0, \DB::getQueryLog());
         \DB::disableQueryLog();
@@ -121,12 +130,14 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->assertStringContainsString('A biography from the existing composer profile.', $html);
         $this->assertStringContainsString(e(route('webapp.search.results', ['search' => $composer->name, 'model' => \App\Composer::class])), $html);
         $this->assertSame(14, substr_count($html, 'class="discover-compact-card discover-piece-link'));
+        $this->assertStringContainsString('id="'.$heading.'"', $html);
+        $this->assertSame(14, substr_count($html, 'Late intermediate'));
         foreach ($cards as $piece) $this->assertStringContainsString(route('webapp.pieces.show', $piece), $html);
         $composer->biography = $composer->curiosity = $composer->cover_path = null;
         $html = view('webapp.discover.rows.gallery', compact('row'))->render();
         $this->assertStringContainsString('Explore this composer’s piano repertoire.', $html);
         $this->assertStringContainsString(asset('images/misc/placeholder-image.png'), $html);
         $row['content'] = [];
-        $this->assertStringNotContainsString('women-composers-heading', view('webapp.discover.rows.gallery', compact('row'))->render());
+        $this->assertStringNotContainsString($heading, view('webapp.discover.rows.gallery', compact('row'))->render());
     }
 }
