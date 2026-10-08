@@ -64,19 +64,9 @@ class TabsController extends Controller
         return view('webapp.discover.latest', compact('pieces'));
     }
 
-    public function explore(Api $api)
+    public function explore(\App\Services\WebApp\Explore $explore)
     {
-        $explore = $api->for('webapp')->explore()->map(function ($row) {
-            if ($row['celltype'] === 'highlight') {
-                $row['collection'] = new \Illuminate\Database\Eloquent\Collection(
-                    $row['collection']->map(function ($piece) { return clone $piece; })->all()
-                );
-                $row['collection']->loadMissing('tags');
-            }
-            return $row;
-        });
-
-        return view('webapp.explore.index', compact('explore'));
+        return view('webapp.explore.index', $explore->data());
     }
 
     public function highlights(Api $api, Request $request)
