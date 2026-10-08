@@ -14,7 +14,7 @@
 					@icon('circle', ['mr' => 2, 'classes' => 'color-' . $piece->level_name, 'filled' => true])
 					<span>{{ ucfirst($piece->extended_level_name) }}</span>
 				</p>
-				<ul class="free-pick-card__media list-unstyled d-flex flex-wrap gap-2 mb-0 mt-3 opacity-8" style="font-size: 76%;" aria-label="Available media">
+				<ul class="free-pick-card__media list-unstyled d-flex flex-wrap gap-2 mb-0 opacity-8" style="font-size: 76%;" aria-label="Available media">
 					<li class="d-flex align-items-center">@icon('video', ['mr' => 1])Video</li>
 					@if($piece->hasAudio())
 					<li class="d-flex align-items-center">@icon('headphones', ['mr' => 1])Audio</li>
