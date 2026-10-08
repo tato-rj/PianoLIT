@@ -30,9 +30,36 @@
 }
 
 // Shared webapp piece/collection cards and circular composer/period tiles.
-.piece-card, .search-card {
+.piece-card, .search-card, .composer-tile {
     transition: transform .18s ease;
     &:hover { transform: translateY(-3px); }
+}
+
+.discover-composers {
+    &__gallery { padding: 0 52px; }
+    .collections-book-controls button:not(:disabled) { color: var(--color-text); }
+    &__previous, &__next {
+        position: absolute;
+        top: 31px;
+        &[hidden] { display: none !important; }
+    }
+    &__previous { left: 0; }
+    &__next { right: 0; }
+    .composer-tile {
+        flex: 0 0 100px;
+        width: 100px;
+        color: var(--color-text);
+        &:last-child { margin-right: 0 !important; }
+        &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; border-radius: var(--radius-sm); }
+        &__portrait { width: 100%; height: 100px; background-size: cover; background-position: center; }
+        &__name { line-height: 1.3; overflow-wrap: anywhere; }
+    }
+    @media (max-width: 767px) {
+        .composer-tile { flex-basis: 114px; width: 114px;
+            &__portrait { height: 114px; }
+        }
+        &__previous, &__next { top: 38px; }
+    }
 }
 
 // Keep the lift inside horizontal scrollports without moving the resting cards.
@@ -42,7 +69,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .piece-card, .search-card {
+    .piece-card, .search-card, .composer-tile {
         transition: none;
         &:hover { transform: none; }
     }
