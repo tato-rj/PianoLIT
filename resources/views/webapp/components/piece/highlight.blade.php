@@ -10,7 +10,7 @@
 			{{-- <a class="btn btn-secondary d-inline-flex align-items-center gap-3" href="{{ route('webapp.pieces.show', $piece) }}">Explore piece @icon('arrow-right', ['mr' => 0])</a> --}}
 
 			<div>
-				<p class="d-flex align-items-center mb-3">
+				<p class="d-flex align-items-center mb-2">
 					@icon('circle', ['mr' => 2, 'classes' => 'color-' . $piece->level_name, 'filled' => true])
 					<span>{{ ucfirst($piece->extended_level_name) }}</span>
 				</p>
