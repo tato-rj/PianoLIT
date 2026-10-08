@@ -47,8 +47,7 @@
         position: relative; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; width: 160px; height: 160px; padding: 12px; border-radius: 50%; background: #fff; font-size: 44px; font-weight: 700; letter-spacing: -.025em; line-height: 1; font-variant-numeric: tabular-nums; border: 9px solid var(--match-count-border); 
     }
     // Reuse the themed border as the track; SVG gives the progress arc round ends.
-    .match-count-ring { position: absolute; inset: -9px; width: calc(100% + 18px); height: calc(100% + 18px); overflow: visible; pointer-events: none; transform: rotate(-90deg); transition: transform 450ms cubic-bezier(.2, 1.55, .45, 1); }
-    .match-count-ring.is-counting { transform: rotate(-90deg) scale(1.025); }
+    .match-count-ring { position: absolute; inset: -9px; width: calc(100% + 18px); height: calc(100% + 18px); overflow: visible; pointer-events: none; transform: rotate(-90deg); }
     .match-count-arc {
         fill: none; stroke: var(--match-accent); stroke-width: 9px;
         stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 100;
@@ -291,8 +290,7 @@
 @keyframes match-orbit { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
     .match-tour .match-finding-orbit { animation: none; }
-    .match-tour .match-count-arc, .match-tour .match-count-ring { transition: none; }
-    .match-tour .match-count-ring.is-counting { transform: rotate(-90deg); }
+    .match-tour .match-count-arc { transition: none; }
 }
 
 // Level examples inherit the listening card, selection, portrait and playback styles.

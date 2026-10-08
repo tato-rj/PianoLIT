@@ -75,13 +75,13 @@
             this.frame = frame || root.requestAnimationFrame.bind(root);
             this.reduced = reduced; this.generation = 0; this.onChange = onChange;
         }
-        set(value, moving = false) {
+        set(value) {
             this.value = value;
             this.element.textContent = value.toLocaleString('en-US');
             this.unit.textContent = value === 1 ? 'piece' : 'pieces';
-            if (this.onChange) this.onChange(value, moving);
+            if (this.onChange) this.onChange(value);
         }
-        cancel() { this.generation++; if (this.onChange) this.onChange(this.value, false); }
+        cancel() { this.generation++; }
         to(target, duration, linear = false) {
             const generation = ++this.generation;
             const from = this.value;
@@ -93,7 +93,7 @@
                     if (start === undefined) start = now;
                     const progress = Math.min(1, (now - start) / duration);
                     const eased = linear ? progress : 1 - Math.pow(1 - progress, 3);
-                    this.set(Math.round(from + (target - from) * eased), progress < 1);
+                    this.set(Math.round(from + (target - from) * eased));
                     if (progress < 1) this.frame(tick); else resolve();
                 };
                 this.frame(tick);
@@ -264,7 +264,7 @@
             this.stage = element.querySelector('[data-stage]'); this.error = element.querySelector('[data-error]');
             this.shell = element.closest('.match-tour-modal');
             this.reduced = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            this.counter = new AnimatedCount(element.querySelector('[data-count]'), element.querySelector('[data-count-unit]'), null, this.reduced, (value, moving) => this.countProgress(value, moving));
+            this.counter = new AnimatedCount(element.querySelector('[data-count]'), element.querySelector('[data-count-unit]'), null, this.reduced, value => this.countProgress(value));
             this.previews = new Previews(data.previewSeconds, message => this.report(message));
             this.counter.set(data.total); this.pdfTasks = new Set(); this.scoreExcerpts = new Map();
             this.onClick = event => this.click(event);
@@ -291,16 +291,17 @@
             root.removeEventListener('pagehide', this.onPageHide);
             root.document.removeEventListener('visibilitychange', this.onVisibility);
         }
-        countProgress(value, moving) {
+        countProgress(value) {
             if (!this.shell) return;
-            const percent = value <= 1 ? 0 : Math.max(0, Math.min(100, value / this.data.total * 100));
+            const percent = value <= 1 ? 100 : Math.max(0, Math.min(100, (this.data.total - value) / Math.max(1, this.data.total - 1) * 100));
             this.shell.style.setProperty('--match-progress', percent + '%');
             const arc = this.shell.querySelector('[data-count-arc]');
             if (!arc) return;
             // Follow the displayed count on every frame, including Back and failure recovery.
-            arc.style.strokeDashoffset = String(100 - percent);
+            // Rounded caps would touch early; reserve a visible final gap until one piece remains.
+            const fill = value > 1 ? Math.min(percent, 95) : 100;
+            arc.style.strokeDashoffset = String(100 - fill);
             arc.style.opacity = percent === 0 ? '0' : '1';
-            arc.ownerSVGElement.classList.toggle('is-counting', !!moving);
         }
         navigation() {
             const step = quizStep(this);

@@ -75,23 +75,22 @@ module.exports = async function () {
     reduced.set(500); await reduced.to(2, 850); assert.strictEqual(node.textContent, '2');
 
     // The ring follows every displayed count, independently of the question section.
-    const arc = {style: {}, ownerSVGElement: {classList: {toggle(name, moving) { arc.moving = moving; }}}};
+    const arc = {style: {}};
     const ring = {data: {total: 1000}, shell: {style: {setProperty(name, value) { ring.percent = parseFloat(value); }}, querySelector: () => arc}};
-    const linked = new AnimatedCount({}, {}, callback => frames.push(callback), false, (value, moving) => Controller.prototype.countProgress.call(ring, value, moving));
-    linked.set(1000); assert.strictEqual(ring.percent, 100); assert.strictEqual(arc.style.strokeDashoffset, '0');
-    const shrinking = linked.to(200, 650);
+    const linked = new AnimatedCount({}, {}, callback => frames.push(callback), false, value => Controller.prototype.countProgress.call(ring, value));
+    linked.set(1000); assert.strictEqual(ring.percent, 0); assert.strictEqual(arc.style.strokeDashoffset, '100'); assert.strictEqual(arc.style.opacity, '0');
+    const filling = linked.to(200, 650);
     for (let time = 0; frames.length; time += 50) {
         frames.shift()(time);
-        assert(Math.abs(ring.percent - linked.value / 1000 * 100) < 0.000001, 'Visible number and ring stay proportional throughout animation');
+        assert(Math.abs(ring.percent - (1000 - linked.value) / 999 * 100) < 0.000001, 'Visible number and ring stay proportional throughout animation');
     }
-    await shrinking; assert.strictEqual(ring.percent, 20); assert(!arc.moving);
-    linked.set(15); assert.strictEqual(ring.percent, 1.5); assert.strictEqual(arc.style.opacity, '1', 'The last question still has a remaining sliver');
-    linked.set(2); assert.strictEqual(ring.percent, 0.2); assert.strictEqual(arc.style.opacity, '1', 'Waiting for the result cannot complete the ring');
-    linked.set(1); assert.strictEqual(ring.percent, 0); assert.strictEqual(arc.style.opacity, '0', 'Rounded caps disappear exactly at one piece');
+    await filling; assert(Math.abs(ring.percent - 800 / 999 * 100) < 0.000001);
+    linked.set(15); assert(ring.percent > 98); assert.strictEqual(arc.style.strokeDashoffset, '5', 'The last question keeps a visible gap despite rounded caps');
+    linked.set(2); assert(ring.percent > 99); assert.strictEqual(arc.style.strokeDashoffset, '5', 'Waiting for the result cannot complete the ring');
+    linked.set(1); assert.strictEqual(ring.percent, 100); assert.strictEqual(arc.style.strokeDashoffset, '0', 'The ring completes exactly at one piece'); assert.strictEqual(arc.style.opacity, '1');
     linked.set(15); assert.strictEqual(arc.style.opacity, '1', 'Back or failure restores the remaining arc');
     const abandoned = linked.to(2, 2200); frames.shift()(0); linked.cancel();
-    assert(!arc.moving, 'Cancelling the countdown restores the resting ring');
-    frames.shift()(50); await abandoned; assert.strictEqual(ring.percent, 1.5);
+    frames.shift()(50); await abandoned; assert(Math.abs(ring.percent - 985 / 999 * 100) < 0.000001);
 
     let warnings = 0;
     window.document = {createElement: () => ({
