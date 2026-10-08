@@ -52,7 +52,7 @@ class MatchTourTest extends ReviewTestCase
         \DB::disableQueryLog();
         $this->assertTrue($data['ready']);
         $this->assertSame(612, $data['total']);
-        $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
+        $this->assertCount(8, array_unique(array_column($data['pieces'], 'id')));
         $this->assertSame($before['scores'], $data['scores']);
         $this->assertSame($queryCount, count($queries));
         $this->assertLessThanOrEqual(12, count($queries));
@@ -73,13 +73,52 @@ class MatchTourTest extends ReviewTestCase
         for ($i = 0; $i < 12; $i++) {
             $data = $tour->data();
             $ids = array_column($data['pieces'], 'id');
-            $this->assertCount(10, array_unique($ids));
+            $this->assertCount(8, array_unique($ids));
             $this->assertSame($ids, $tour->drawIds($data['draw']));
             $opening = array_slice($ids, 0, 4); sort($opening);
             $openings[] = implode(',', $opening); $seen = array_merge($seen, $opening);
         }
         $this->assertGreaterThan(1, count(array_unique($openings)), 'Randomization changes the pieces, not only their order');
         $this->assertGreaterThan(4, count(array_unique($seen)));
+    }
+
+    public function test_level_and_listening_screens_always_show_distinct_pieces()
+    {
+        $tour = new MatchTour;
+        for ($i = 0; $i < 20; $i++) {
+            $data = $tour->data();
+            $this->assertTrue($data['ready']);
+            $levelIds = array_column($data['levelPieces'], 'id');
+            $listeningIds = array_column(array_slice($data['pieces'], 0, 4), 'id');
+            $this->assertCount(4, $levelIds);
+            $this->assertCount(4, $listeningIds);
+            $this->assertSame([], array_values(array_intersect($levelIds, $listeningIds)));
+            $this->assertSame(array_column($data['pieces'], 'id'), $tour->drawIds($data['draw']));
+        }
+    }
+
+    public function test_scarce_listening_examples_are_reserved_without_repeating_level_cards()
+    {
+        Model::withoutEvents(function () {
+            $this->pieces[1]->tags()->attach(create(Tag::class, ['type' => 'sublevel', 'name' => 'late beginner']));
+            $this->pieces[11]->update(['audio_path' => null]);
+        });
+        for ($i = 0; $i < 12; $i++) {
+            $data = (new MatchTour)->data();
+            $this->assertTrue($data['ready']);
+            $levelIds = array_column($data['levelPieces'], 'id');
+            $opening = array_column(array_slice($data['pieces'], 0, 4), 'id');
+            $this->assertNotContains($this->pieces[1]->id, $levelIds, 'Other beginner examples preserve the scarce late beginner for listening');
+            $this->assertContains($this->pieces[1]->id, $opening);
+            $this->assertSame([], array_values(array_intersect($levelIds, $opening)));
+        }
+        // With only three distinct eligible choices, never repeat a level example or add a simple piece.
+        $this->pieces[1]->update(['audio_path' => null]);
+        $data = (new MatchTour)->data();
+        $this->assertFalse($data['ready']);
+        $this->assertNull($data['draw']);
+        $this->assertCount(3, $data['pieces']);
+        $this->assertSame([], array_values(array_intersect(array_column($data['levelPieces'], 'id'), array_column($data['pieces'], 'id'))));
     }
 
     public function test_listening_choices_start_at_late_beginner_and_keep_lower_levels_in_other_sections()
@@ -103,11 +142,11 @@ class MatchTourTest extends ReviewTestCase
             $this->assertTrue($data['ready']);
             $opening = array_column(array_slice($data['pieces'], 0, 4), 'id');
             foreach ($opening as $id) $this->assertContains($id, $allowed);
-            $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
+            $this->assertCount(8, array_unique(array_column($data['pieces'], 'id')));
             $this->assertSame(array_keys(MatchTour::LEVELS), array_map([MatchTour::class, 'baseLevel'], array_column($data['levelPieces'], 'level')));
         }
-        // Exactly four eligible recordings make boundary inclusion deterministic.
-        Piece::whereIn('id', $this->pieces->only([6, 7, 10, 11])->pluck('id'))->update(['audio_path' => null]);
+        // Reserving the intermediate/advanced examples leaves exactly four listening choices.
+        Piece::whereIn('id', $this->pieces->only([6, 7])->pluck('id'))->update(['audio_path' => null]);
         $opening = array_column(array_slice((new MatchTour)->data()['pieces'], 0, 4), 'id');
         $this->assertCount(4, $opening);
         $this->assertContains($this->pieces[1]->id, $opening, 'Late beginner sublevels remain eligible');
@@ -141,7 +180,7 @@ class MatchTourTest extends ReviewTestCase
         $data = $tour->data();
         $this->assertTrue($data['ready']);
         $this->assertSame(16, $data['total']);
-        $this->assertCount(10, $data['pieces']);
+        $this->assertCount(8, $data['pieces']);
         $eligible = $this->pieces->pluck('id')->all();
         foreach ($data['pieces'] as $card) $this->assertContains($card['id'], $eligible);
         $this->assertSame(array_slice($eligible, 0, 4), array_column($data['scores'], 'id'));
@@ -154,14 +193,16 @@ class MatchTourTest extends ReviewTestCase
         Model::withoutEvents(function () {
             $this->pieces[0]->update(['audio_path' => null]);
             $this->pieces[11]->update(['audio_path' => null]);
-            $this->pieces[1]->update(['score_path' => null]);
+            // Keep four distinct eligible listening examples after reserving level cards.
+            $this->pieces[5]->tags()->attach(create(Tag::class, ['type' => 'sublevel', 'name' => 'late beginner']));
+            $this->pieces[5]->update(['score_path' => null]);
         });
         $data = (new MatchTour)->data();
         $this->assertTrue($data['ready']);
         $this->assertSame($this->pieces[0]->id, $data['scores']['easy']['id']);
         $this->assertNotContains($this->pieces[0]->id, array_column($data['pieces'], 'id'));
-        $this->assertContains($this->pieces[1]->id, array_column($data['pieces'], 'id'));
-        $this->assertSame($this->pieces[5]->id, $data['scores']['beginner']['id']);
+        $this->assertContains($this->pieces[5]->id, array_column($data['pieces'], 'id'));
+        $this->assertSame($this->pieces[1]->id, $data['scores']['beginner']['id']);
     }
 
     public function test_questionnaire_does_not_fill_missing_free_picks_with_other_pieces()
@@ -178,9 +219,10 @@ class MatchTourTest extends ReviewTestCase
     {
         $data = $data ?? (new MatchTour)->data();
         $ids = array_column($data['pieces'], 'id');
-        // Retain coverage of tours already open at deployment; new-flow tests opt into an anchor.
+        // Retain coverage of three-pair tours already open; new-flow tests use two pairs.
+        if (!$playingLevel) $ids = array_merge($ids, $this->pieces->pluck('id')->diff($ids)->take(2)->values()->all());
         $draw = $playingLevel ? $data['draw'] : \Crypt::encryptString(json_encode(['version' => 1, 'ids' => $ids, 'expires' => now()->addHours(2)->timestamp]));
-        $answers = ['draw' => $draw, 'preferredPiece' => $ids[0], 'reading' => [true, false], 'estimatedLevel' => 'elementary', 'winners' => [$ids[4], $ids[6], $ids[8]], 'intent' => 'personal'];
+        $answers = ['draw' => $draw, 'preferredPiece' => $ids[0], 'reading' => [true, false], 'estimatedLevel' => 'elementary', 'winners' => $playingLevel ? [$ids[4], $ids[6]] : [$ids[4], $ids[6], $ids[8]], 'intent' => 'personal'];
         if ($playingLevel) $answers['levelPiece'] = collect($data['levelPieces'])->first(function ($piece) use ($playingLevel) { return MatchTour::baseLevel($piece['level']) === $playingLevel; })['id'];
         return $answers;
     }
@@ -238,6 +280,45 @@ class MatchTourTest extends ReviewTestCase
         $this->assertNull($tour->drawChoices($data['draw']));
     }
 
+    public function test_new_tours_validate_exactly_two_preference_pairs()
+    {
+        $data = (new MatchTour)->data();
+        $draw = json_decode(\Crypt::decryptString($data['draw']), true);
+        $this->assertSame(3, $draw['version']);
+        $this->assertCount(8, $draw['ids']);
+        $answers = $this->answers($data, 'intermediate');
+        $this->assertCount(2, $answers['winners']);
+        $this->postJson(route('webapp.tour.result'), $answers)->assertOk();
+        $skipped = $answers; $skipped['winners'] = [null, null];
+        $this->postJson(route('webapp.tour.result'), $skipped)->assertOk();
+        $this->withExceptionHandling();
+        $invalid = $answers; $invalid['winners'][] = null;
+        $this->postJson(route('webapp.tour.result'), $invalid)->assertStatus(422)->assertJsonValidationErrors('winners');
+        $invalid = $answers; array_pop($invalid['winners']);
+        $this->postJson(route('webapp.tour.result'), $invalid)->assertStatus(422)->assertJsonValidationErrors(['winners', 'winners.1']);
+        $invalid = $answers; $invalid['winners'][1] = $invalid['winners'][0];
+        $this->postJson(route('webapp.tour.result'), $invalid)->assertStatus(422)->assertJsonValidationErrors('winners.1');
+    }
+
+    public function test_previous_three_pair_draw_versions_can_still_finish()
+    {
+        $data = (new MatchTour)->data();
+        $answers = $this->answers($data);
+        $this->assertCount(3, $answers['winners']);
+        $this->postJson(route('webapp.tour.result'), $answers)->assertOk();
+        $draw = json_decode(\Crypt::decryptString($answers['draw']), true);
+        $draw['version'] = 2;
+        $draw['levels'] = array_combine(array_keys(MatchTour::LEVELS), array_column($data['levelPieces'], 'id'));
+        $answers['draw'] = \Crypt::encryptString(json_encode($draw));
+        $answers['levelPiece'] = $draw['levels']['intermediate'];
+        $this->postJson(route('webapp.tour.result'), $answers)->assertOk();
+        $this->withExceptionHandling();
+        array_pop($answers['winners']);
+        $this->postJson(route('webapp.tour.result'), $answers)->assertStatus(422)->assertJsonValidationErrors('winners');
+        $draw['version'] = 3;
+        $this->assertNull((new MatchTour)->drawChoices(\Crypt::encryptString(json_encode($draw))), 'New draws cannot keep an unseen third pair');
+    }
+
     public function test_playing_level_is_refined_by_reading_and_preserved_when_skipped()
     {
         $tour = new MatchTour;
@@ -274,7 +355,7 @@ class MatchTourTest extends ReviewTestCase
     {
         $data = (new MatchTour)->data();
         $answers = $this->answers($data, 'advanced');
-        $answers['reading'] = [null, null]; $answers['winners'] = [null, null, null]; $answers['mood'] = 'open';
+        $answers['reading'] = [null, null]; $answers['winners'] = [null, null]; $answers['mood'] = 'open';
         $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('playing level you chose');
         preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
         $piece = Piece::with('tags')->find(json_decode($matches[1], true)['piece']['id']);
@@ -288,7 +369,7 @@ class MatchTourTest extends ReviewTestCase
         $this->assertTrue($data['ready']);
         $this->assertSame(12, $data['total']);
         $this->assertSame(array_column($data['pieces'], 'id'), $tour->drawIds($data['draw']));
-        $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
+        $this->assertCount(8, array_unique(array_column($data['pieces'], 'id')));
         $this->assertCount(4, array_unique(array_column($data['scores'], 'id')));
         $this->assertCount(9, $data['moods']);
         $this->assertSame(60, $data['previewSeconds']);
@@ -377,6 +458,7 @@ class MatchTourTest extends ReviewTestCase
 
     public function test_result_opts_into_media_eligibility_in_the_existing_engine()
     {
+        $this->copyWithMedia(); $this->copyWithMedia();
         $answers = $this->answers();
         $quiz = \Mockery::mock(Quiz::class);
         $quiz->shouldReceive('getKeywords')->once()->with((new MatchTour)->keywords($answers))->andReturnSelf();
@@ -523,6 +605,96 @@ class MatchTourTest extends ReviewTestCase
             create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance', 'video_url' => $video]);
             return $piece;
         });
+    }
+
+    private function resultFor(Piece $piece)
+    {
+        $quiz = \Mockery::mock(Quiz::class);
+        $quiz->shouldReceive('getKeywords')->once()->andReturnSelf();
+        $quiz->shouldReceive('exclude')->once()->andReturnSelf();
+        $quiz->shouldReceive('search')->once()->with(true, true)->andReturn($piece);
+        $quiz->shouldReceive('matchContext')->once()->with($piece)->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => [], 'matchedTags' => []]);
+        $this->app->instance(Quiz::class, $quiz);
+        return $this->postJson(route('webapp.tour.result'), $this->answers(null, 'intermediate'))->assertOk();
+    }
+
+    private function resultData($response)
+    {
+        preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
+        return json_decode($matches[1], true);
+    }
+
+    public function test_more_options_match_level_and_mood_before_limiting_and_can_cross_periods()
+    {
+        $source = $this->pieces[0];
+        $neighbors = collect();
+        for ($i = 0; $i < 5; $i++) $neighbors->push($this->copyWithMedia([], 'https://example.test/neighbor.mp4', $this->pieces[9]));
+        $wrongMood = $this->copyWithMedia([], 'https://example.test/wrong-mood.mp4', $this->pieces[4]);
+        $valid = collect([$this->copyWithMedia(['highlighted_at' => null]), $this->copyWithMedia(['highlighted_at' => null])]);
+        Model::withoutEvents(function () use ($valid) {
+            $periods = Tag::where('type', 'period')->pluck('id');
+            $valid[0]->tags()->detach($periods);
+            $valid[0]->tags()->attach(create(Tag::class, ['type' => 'period', 'name' => 'baroque']));
+            $valid[1]->tags()->detach($periods);
+        });
+        $result = $this->resultData($this->resultFor($source));
+        $this->assertSame($valid->pluck('id')->all(), array_column($result['recommendations'], 'id'));
+        $this->assertNotContains($wrongMood->id, array_column($result['recommendations'], 'id'));
+        $this->assertNotContains($source->id, array_column($result['recommendations'], 'id'));
+        foreach ($neighbors as $neighbor) $this->assertNotContains($neighbor->id, array_column($result['recommendations'], 'id'));
+        $this->assertContains($neighbors[0]->id, $source->similar(false, true, true)->pluck('id')->all(), 'Existing callers retain neighboring levels');
+    }
+
+    public function test_more_options_require_two_matches_and_show_two_three_or_four_without_fillers()
+    {
+        $source = $this->pieces[0];
+        for ($count = 0; $count <= 5; $count++) {
+            if ($count) $this->copyWithMedia();
+            $response = $this->resultFor($source);
+            $result = $this->resultData($response);
+            $this->assertCount($count < 2 ? 0 : min($count, 4), $result['recommendations']);
+            if ($count < 2) {
+                $response->assertDontSee('data-recommendations=', false)->assertDontSee('data-recommendations-view', false)
+                    ->assertDontSee('You might also like')->assertDontSee('Explore more pieces');
+            } else {
+                $response->assertSee('data-recommendations=', false)->assertSee('data-recommendations-view', false)
+                    ->assertSee('You might also like')->assertSee('Explore more pieces');
+            }
+        }
+    }
+
+    public function test_more_options_match_the_actual_sublevel_including_split_level_tags()
+    {
+        $source = $this->pieces[1];
+        $late = Model::withoutEvents(function () { return create(Tag::class, ['type' => 'sublevel', 'name' => 'late beginner']); });
+        $source->tags()->attach($late); $source->load('tags');
+        $valid = $this->copyWithMedia([], 'https://example.test/late.mp4', $source);
+        $split = $this->copyWithMedia([], 'https://example.test/split.mp4', $source);
+        $early = $this->copyWithMedia([], 'https://example.test/early.mp4', $source);
+        $generic = $this->copyWithMedia([], 'https://example.test/generic.mp4', $source);
+        Model::withoutEvents(function () use ($split, $early, $generic, $late) {
+            $split->tags()->detach([$late->id, Tag::where('type', 'level')->where('name', 'beginner')->first()->id]);
+            $split->tags()->attach(create(Tag::class, ['type' => 'level', 'name' => 'late beginner']));
+            $early->tags()->detach($late);
+            $early->tags()->attach(create(Tag::class, ['type' => 'sublevel', 'name' => 'early beginner']));
+            $generic->tags()->detach($late);
+        });
+        $result = $this->resultData($this->resultFor($source));
+        $this->assertSame([$valid->id, $split->id], array_column($result['recommendations'], 'id'));
+    }
+
+    public function test_more_options_are_omitted_when_the_match_has_no_level_or_no_mood()
+    {
+        $source = $this->pieces[0];
+        $source->tags()->detach(Tag::where('type', 'level')->pluck('id'));
+        $response = $this->resultFor($source);
+        $this->assertSame([], $this->resultData($response)['recommendations']);
+        $response->assertDontSee('data-recommendations-view', false);
+        $source = $this->pieces[1];
+        $source->tags()->detach(Tag::where('type', 'mood')->pluck('id'));
+        $response = $this->resultFor($source);
+        $this->assertSame([], $this->resultData($response)['recommendations']);
+        $response->assertDontSee('data-recommendations-view', false);
     }
 
     public function test_media_eligibility_is_applied_before_the_top_five_matches_are_ranked()

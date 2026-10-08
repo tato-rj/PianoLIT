@@ -7,7 +7,7 @@ module.exports = async function () {
     const window = {};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/match-tour.js'), 'utf8'), {window});
     const {State, Candidates, AnimatedCount, Previews, Controller} = window.MatchTour;
-    const pieces = Array.from({length: 10}, (_, i) => ({id: i + 1, audio: i + '.mp3', level: 'beginner', traits: [i % 2 ? 'calm' : 'flashy', 'romantic']}));
+    const pieces = Array.from({length: 8}, (_, i) => ({id: i + 1, audio: i + '.mp3', level: 'beginner', traits: [i % 2 ? 'calm' : 'flashy', 'romantic']}));
     for (const total of [10, 50, 381, 2847, 10000]) {
         for (const reading of [[true, true], [true, false], [false, true], [false, false]]) {
             const state = new State(total);
@@ -19,14 +19,15 @@ module.exports = async function () {
             state.choose(reading[1], pieces);
             const second = state.count;
             assert(second < first && second > 1);
-            state.choose(5, pieces); state.choose(7, pieces);
+            state.choose(5, pieces);
             assert.strictEqual(state.count, second);
-            state.choose(9, pieces);
+            state.choose(7, pieces);
+            assert.deepStrictEqual(Array.from(state.answers.winners), [5, 7]);
             assert(state.count < second && state.count > 1);
             assert.strictEqual(state.count, Candidates.after(total, second, 'preferences', state.answers, pieces));
             state.choose('calm', pieces);
-            state.back(); assert.strictEqual(state.step, 6); assert.strictEqual(state.answers.mood, null);
-            for (let i = 0; i < 6; i++) state.back();
+            state.back(); assert.strictEqual(state.step, 5); assert.strictEqual(state.answers.mood, null);
+            for (let i = 0; i < 5; i++) state.back();
             assert.strictEqual(state.count, total); assert.strictEqual(state.step, 0);
             assert.strictEqual(state.answers.reading.length, 0); assert.strictEqual(state.answers.winners.length, 0);
         }
@@ -44,17 +45,17 @@ module.exports = async function () {
             state.choose(1, pieces); assert(state.count < afterLevel);
             state.choose(reading[0], pieces); state.choose(reading[1], pieces);
             assert.strictEqual(state.answers.estimatedLevel, ranges[Math.round((2 * anchorIndex + readingIndex) / 3)]);
-            state.choose(5, pieces); state.choose(7, pieces); state.choose(9, pieces); state.choose('calm', pieces);
-            assert.strictEqual(state.step, 8);
-            for (let i = 0; i < 8; i++) state.back();
+            state.choose(5, pieces); state.choose(7, pieces); state.choose('calm', pieces);
+            assert.strictEqual(state.step, 7);
+            for (let i = 0; i < 7; i++) state.back();
             assert.strictEqual(state.step, 0); assert.strictEqual(state.count, 961);
             assert.strictEqual(state.answers.levelPiece, null); assert.strictEqual(state.answers.playingLevel, null);
         }
         assert.strictEqual(window.MatchTour.level([null,null], 'beginner', anchor), anchor);
     }
     const newSkipped = new State(961, levelPieces);
-    [104, 1, null, null, null, null, null, 'open'].forEach(value => newSkipped.choose(value, pieces));
-    assert.strictEqual(newSkipped.step, 8); assert.strictEqual(newSkipped.answers.estimatedLevel, 'advanced');
+    [104, 1, null, null, null, null, 'open'].forEach(value => newSkipped.choose(value, pieces));
+    assert.strictEqual(newSkipped.step, 7); assert.strictEqual(newSkipped.answers.estimatedLevel, 'advanced');
 
     const frames = [];
     const node = {}; const unit = {};
@@ -129,8 +130,8 @@ module.exports = async function () {
     assert(previews.audio.paused, 'The active button pauses its recording');
     await previews.play(pieces[0], a);
     assert(!previews.audio.paused);
-    assert.strictEqual(previews.audio.currentTime, 12, 'Resume keeps the listening position');
-    assert.strictEqual(previews.audio.loads, loads, 'Resume does not reload the typed source');
+    assert.strictEqual(previews.audio.currentTime, 0, 'Replay resets to the excerpt start, including when metadata is not loaded');
+    assert.strictEqual(previews.audio.loads, loads, 'Replaying the current button does not reload the typed source');
     await previews.play(pieces[0], a); await previews.play(pieces[1], b);
     assert(a.innerHTML.includes('icon-play')); assert(b.innerHTML.includes('icon-pause'));
     previews.audio.currentTime = 60; previews.audio.events.timeupdate(); assert(previews.audio.paused);
@@ -162,18 +163,36 @@ module.exports = async function () {
     middle.audio.currentTime = 165; middle.audio.events.durationchange();
     assert.strictEqual(middle.audio.currentTime, 165, 'Duration updates cannot select a new start during playback');
     await middle.play(pieces[0], c); await middle.play(pieces[0], c);
-    assert.strictEqual(middle.audio.currentTime, 165, 'Pause/resume preserves the random excerpt and position');
+    assert.strictEqual(middle.audio.currentTime, 150, 'Pause/play restarts at the chosen middle excerpt');
+    // Switching players cannot reroll a recording's excerpt within the same tour.
+    middle.audio.currentTime = 175; middle.audio.readyState = 0; middleMath.random = () => 0.9;
+    await middle.play(pieces[1], d); middle.audio.readyState = 1; middle.audio.events.loadedmetadata();
+    assert.strictEqual(middle.audio.currentTime, 174);
+    middle.audio.currentTime = 190; middle.audio.readyState = 0;
+    await middle.play(pieces[0], c); middle.audio.readyState = 1; middle.audio.events.loadedmetadata();
+    assert.strictEqual(middle.audio.currentTime, 150, 'Returning to a piece reuses its first chosen start');
+    middleMath.random = () => 0.5;
     middle.audio.currentTime = 209.9; middle.audio.events.timeupdate(); assert(!middle.audio.paused);
     middle.audio.currentTime = 210; middle.audio.events.seeking(); assert(middle.audio.paused, 'The limit is sixty seconds after the random start');
+    assert.strictEqual(middle.audio.currentTime, 150, 'The cutoff also resets to the chosen excerpt');
 
     const inlineAudio = new randomWindow.Audio(); inlineAudio.tagName = 'AUDIO'; inlineAudio.readyState = 1; inlineAudio.duration = 300;
     await middle.play(pieces[0], c, inlineAudio);
     assert.strictEqual(inlineAudio.currentTime, 150, 'Audio-only result cards use the same random start');
+    inlineAudio.currentTime = 165; inlineAudio.pause(); inlineAudio.events.pause();
+    assert.strictEqual(inlineAudio.currentTime, 150, 'Native audio pause also resets the excerpt');
+    await middle.play(pieces[0], c, inlineAudio); assert.strictEqual(inlineAudio.currentTime, 150);
+    inlineAudio.currentTime = 175;
+    await middle.play(pieces[0], d, new randomWindow.Audio());
+    assert.strictEqual(inlineAudio.currentTime, 150, 'Switching away rewinds the previous native audio');
+    await middle.play(pieces[0], c, inlineAudio);
     inlineAudio.currentTime = 210; inlineAudio.events.timeupdate(); assert(inlineAudio.paused);
     const fullVideo = new randomWindow.Audio(); fullVideo.tagName = 'VIDEO'; fullVideo.readyState = 1; fullVideo.duration = 300;
     await middle.play(pieces[0], d, fullVideo);
     fullVideo.events.loadedmetadata(); assert.strictEqual(fullVideo.currentTime, 0, 'Video still starts at the beginning');
     fullVideo.currentTime = 270; fullVideo.events.timeupdate(); assert(!fullVideo.paused, 'Video still plays to completion');
+    await middle.play(pieces[0], d, fullVideo); await middle.play(pieces[0], d, fullVideo);
+    assert.strictEqual(fullVideo.currentTime, 270, 'Video retains ordinary pause/resume behavior');
 
     middle.audio.readyState = 0; middle.audio.duration = NaN;
     await middle.play(pieces[0], c); middle.stop();
@@ -189,11 +208,16 @@ module.exports = async function () {
     assert.strictEqual(middle.audio.currentTime, 15, 'Short recordings start around their middle and can end naturally');
     middle.stop();
     for (const random of [0, 0.9999]) {
-        middleMath.random = () => random; middle.audio.readyState = 0; middle.audio.duration = NaN;
-        await middle.play(pieces[0], c);
-        middle.audio.readyState = 1; middle.audio.duration = 300; middle.audio.events.loadedmetadata();
-        assert(Math.abs(middle.audio.currentTime - (120 + random * 60)) < 0.000001, 'Fresh playback rerolls the excerpt across the middle range');
-        middle.stop();
+        middleMath.random = () => random;
+        const fresh = new randomWindow.MatchTour.Previews(60, () => {});
+        await fresh.play(pieces[0], c);
+        fresh.audio.readyState = 1; fresh.audio.duration = 300; fresh.audio.events.loadedmetadata();
+        const start = fresh.startTime;
+        assert(Math.abs(start - (120 + random * 60)) < 0.000001, 'A new tour can choose a fresh random starting point');
+        fresh.stop(); middleMath.random = () => 0.4;
+        await fresh.play(pieces[0], c);
+        assert.strictEqual(fresh.audio.currentTime, start, 'Stopping and replaying in the same tour retains the excerpt');
+        fresh.stop();
     }
     middle.audio.readyState = 0; middle.audio.duration = NaN;
     let rejectLoading;
@@ -230,6 +254,31 @@ module.exports = async function () {
     assert.strictEqual(result.state.count, 1);
     assert.strictEqual(result.stage.innerHTML, 'chosen piece'); assert(mounted && mediaStopped && result.finishedWaiting);
 
+    // Results with fewer than two alternatives omit the optional screen entirely.
+    for (const size of [0, 1, 2, 3, 4]) {
+        const alternatives = pieces.slice(0, size), reward = {}, view = {hidden: true}, cards = {};
+        const optional = size >= 2;
+        const slots = {'[data-result-data]': {textContent: JSON.stringify({piece: pieces[0], recommendations: alternatives})},
+            '[data-result-card]': reward, '[data-result-view]': {hidden: false},
+            '[data-recommendations-view]': optional ? view : null, '[data-recommendation-cards]': optional ? cards : null};
+        const mountedViews = {stage: {querySelector: selector => slots[selector]},
+            cards(items, variant) { return variant + ':' + items.length; },
+            stopMedia() { this.stopped = true; }, navigation() {}, focus() {}};
+        Controller.prototype.mountResult.call(mountedViews);
+        assert.strictEqual(reward.innerHTML, 'reward:1');
+        Controller.prototype.showSuggestions.call(mountedViews, true);
+        assert.strictEqual(!!mountedViews.suggestions, optional);
+        assert.strictEqual(slots['[data-result-view]'].hidden, optional);
+        if (optional) {
+            assert.strictEqual(cards.innerHTML, 'recommendation:' + size);
+            assert.strictEqual(view.hidden, false);
+            Controller.prototype.showSuggestions.call(mountedViews, false);
+            assert.strictEqual(view.hidden, true); assert.strictEqual(slots['[data-result-view]'].hidden, false);
+        } else assert(!mountedViews.stopped, 'Absent recommendations keep the match visible and playing');
+    }
+    const singleOption = {stage: {querySelector: () => ({})}, resultData: {recommendations: [pieces[0]]}, stopMedia() { throw Error('A single option must not open the screen'); }};
+    Controller.prototype.showSuggestions.call(singleOption, true);
+
     // Fast responses wait for the countdown; Back during that wait discards the reveal.
     let finishCountdown, resolveMatch;
     const countTargets = [];
@@ -253,11 +302,11 @@ module.exports = async function () {
     assert.strictEqual(waitingResult.state.count, 15);
 
     let failureReported;
-    const failed = {data: {draw: 'current-draw'}, finding() {}, finishFinding() { this.finishedWaiting = true; }, state: {count: 2, answers: {}, back() { this.step = 6; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
+    const failed = {data: {draw: 'current-draw'}, finding() {}, finishFinding() { this.finishedWaiting = true; }, state: {count: 2, answers: {}, back() { this.step = 5; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
         counter: {to: () => Promise.resolve(), cancel() {}, set(value) { this.value = value; }}, generation: 1,
         render() { this.rendered = true; }, report(message) { failureReported = message; }};
     await Controller.prototype.result.call(failed, 1);
-    assert.strictEqual(failed.state.step, 6); assert.strictEqual(failed.counter.value, 2);
+    assert.strictEqual(failed.state.step, 5); assert.strictEqual(failed.counter.value, 2);
     assert(failed.rendered && failed.finishedWaiting); assert(!failed.busy); assert(failureReported.includes('retry'));
 
     // Media tools are requested only on demand; failures/timeouts permit retry.
@@ -336,9 +385,9 @@ module.exports = async function () {
         assert.strictEqual(window.MatchTour.level(answers, 'beginner'), expected);
     }
     const skipped = new State(961);
-    [1, null, null, null, null, null, 'open'].forEach(value => skipped.choose(value, pieces));
-    assert.strictEqual(skipped.step, 7); assert.strictEqual(skipped.answers.estimatedLevel, 'beginner');
-    assert.deepStrictEqual(Array.from(skipped.answers.winners), [null,null,null]);
+    [1, null, null, null, null, 'open'].forEach(value => skipped.choose(value, pieces));
+    assert.strictEqual(skipped.step, 6); assert.strictEqual(skipped.answers.estimatedLevel, 'beginner');
+    assert.deepStrictEqual(Array.from(skipped.answers.winners), [null,null]);
     for (const difficulty of ['early beginner', 'late beginner', 'early intermediate', 'late intermediate']) {
         const catalog = pieces.map(piece => Object.assign({}, piece, {level: difficulty}));
         const skip = new State(961);

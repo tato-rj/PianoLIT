@@ -3,6 +3,7 @@
 
     const clone = value => JSON.parse(JSON.stringify(value));
     const readingLevel = (reading, fallback = 'intermediate') => reading[0] === null ? fallback : reading[1] === null ? (reading[0] ? 'intermediate' : 'beginner') : reading[0] ? (reading[1] ? 'advanced' : 'intermediate') : (reading[1] ? 'beginner' : 'elementary');
+    const preferenceRounds = 2, moodStep = 3 + preferenceRounds, resultStep = moodStep + 1;
     const levels = ['elementary', 'beginner', 'intermediate', 'advanced'];
     const baseLevel = name => String(name).replace(/^(early|late) /, '');
     const level = (reading, fallback = 'intermediate', playingLevel = null) => {
@@ -59,9 +60,9 @@
             else if (step <= 2) {
                 this.answers.reading[step - 1] = value;
                 if (step === 2) { this.answers.estimatedLevel = level(this.answers.reading, pieces.find(piece => piece.id === this.answers.preferredPiece).level, this.answers.playingLevel); stage = 'reading'; }
-            } else if (step <= 5) {
+            } else if (step < moodStep) {
                 this.answers.winners[step - 3] = value;
-                if (step === 5) stage = 'preferences';
+                if (step === moodStep - 1) stage = 'preferences';
             } else { this.answers.mood = value; }
             if (stage) this.count = Candidates.after(this.total, this.count, stage, this.answers, pieces);
             this.step++;
@@ -112,17 +113,17 @@
         constructor(seconds, report) {
             this.audio = new root.Audio(); this.audio.preload = 'none';
             this.seconds = seconds; this.report = report; this.generation = 0;
-            this.bound = new WeakSet(); this.attach(this.audio);
+            this.bound = new WeakSet(); this.starts = new Map(); this.attach(this.audio);
         }
         attach(media) {
             if (this.bound.has(media)) return;
             this.bound.add(media);
             ['loadedmetadata', 'durationchange', 'canplay'].forEach(event => media.addEventListener(event, () => this.seekStart(media)));
             ['timeupdate', 'seeking'].forEach(event => media.addEventListener(event, () => {
-                if (this.media === media && media.tagName !== 'VIDEO' && media.currentTime >= this.startTime + this.seconds) { this.stop(); media.currentTime = 0; }
+                if (this.media === media && media.tagName !== 'VIDEO' && media.currentTime >= this.startTime + this.seconds) this.stop();
             }));
             media.addEventListener('ended', () => { if (this.media === media) this.stop(); });
-            media.addEventListener('pause', () => { if (this.media === media && this.button) this.paint(false); });
+            media.addEventListener('pause', () => { if (this.media === media && this.button) { this.paint(false); this.resetAudio(); } });
             media.addEventListener('play', () => {
                 if (this.media === media && this.button) this.paint(true);
                 else media.pause(); // A hidden/stale native video may never resume.
@@ -138,10 +139,12 @@
             // Keep a full minute when a middle excerpt has enough recording left.
             const latest = media.duration - this.seconds > earliest
                 ? Math.min(media.duration * 0.6, media.duration - this.seconds) : media.duration * 0.6;
-            const start = earliest + Math.random() * (latest - earliest);
+            const saved = this.starts.get(this.audioKey);
+            const start = saved !== undefined && saved < media.duration ? saved : earliest + Math.random() * (latest - earliest);
             try {
                 this.startTime = start; this.awaitingStart = false;
                 media.currentTime = start;
+                this.starts.set(this.audioKey, start);
             } catch (error) {
                 // Some browsers cannot seek until a later metadata/duration event.
                 this.startTime = 0; this.awaitingStart = true;
@@ -161,10 +164,16 @@
             const card = button.closest && button.closest('[data-piece-card]');
             if (card) card.classList.toggle('is-playing', playing);
         }
+        resetAudio() {
+            if (!this.media || this.media.tagName === 'VIDEO') return;
+            try { this.media.currentTime = this.startTime || 0; }
+            catch (error) { /* Metadata will position an unloaded recording before playback. */ }
+        }
         stop() {
-            this.generation++; this.awaitingStart = false; this.startTime = 0;
-            if (this.media) this.media.pause();
-            this.paint(false); this.button = null; this.media = null;
+            this.generation++; this.awaitingStart = false;
+            if (this.media) { this.media.pause(); this.resetAudio(); }
+            this.startTime = 0;
+            this.paint(false); this.button = null; this.media = null; this.audioKey = null;
         }
         setSource(url) {
             if (!this.source) {
@@ -180,15 +189,16 @@
         }
         async play(piece, button, media) {
             const same = this.button === button;
-            if (same && this.media && !this.media.paused) { this.generation++; this.media.pause(); return; }
+            if (same && this.media && !this.media.paused) { this.generation++; this.media.pause(); this.resetAudio(); return; }
             if (!same) {
-                this.stop(); this.button = button; this.media = media || this.audio;
+                this.stop(); this.button = button; this.media = media || this.audio; this.audioKey = piece.audio || piece.id;
                 this.attach(this.media);
                 if (!media) this.setSource(piece.audio);
                 this.media.currentTime = 0;
                 this.awaitingStart = this.media.tagName !== 'VIDEO';
                 this.seekStart(this.media);
             }
+            this.resetAudio();
             const generation = ++this.generation;
             this.paint(true);
             try { await this.media.play(); }
@@ -305,20 +315,20 @@
         }
         navigation() {
             const step = quizStep(this);
-            const section = step < 0 ? 0 : step === 0 ? 1 : step <= 2 ? 2 : step <= 5 ? 3 : step === 6 ? 4 : 5;
+            const section = step < 0 ? 0 : step === 0 ? 1 : step <= 2 ? 2 : step < moodStep ? 3 : step === moodStep ? 4 : 5;
             progress(this.shell, section, this.suggestions, this.waiting);
             const back = this.element.querySelector('[data-back]');
             back.disabled = !this.state.history.length && !this.suggestions; back.hidden = this.state.step === 0;
             this.element.querySelector('.match-navigation').hidden = this.state.step === 0;
-            this.element.querySelector('.match-navigation [data-skip]').hidden = step <= 0 || step === 7;
-            this.element.querySelector('[data-skip-label]').textContent = step < 6 ? 'Not sure? Skip' : 'Skip';
-            this.element.querySelector('[data-restart]').hidden = step < 7;
-            this.element.querySelector('.match-count').hidden = !!this.suggestions || (step === 7 && !this.waiting);
-            if (this.shell) this.shell.classList.toggle('has-match-result', step === 7 && !this.waiting && !this.suggestions);
+            this.element.querySelector('.match-navigation [data-skip]').hidden = step <= 0 || step === resultStep;
+            this.element.querySelector('[data-skip-label]').textContent = step < moodStep ? 'Not sure? Skip' : 'Skip';
+            this.element.querySelector('[data-restart]').hidden = step < resultStep;
+            this.element.querySelector('.match-count').hidden = !!this.suggestions || (step === resultStep && !this.waiting);
+            if (this.shell) this.shell.classList.toggle('has-match-result', step === resultStep && !this.waiting && !this.suggestions);
             const unit = this.element.querySelector('[data-count-unit]');
-            unit.hidden = step === 7 && !this.waiting;
+            unit.hidden = step === resultStep && !this.waiting;
             unit.textContent = unit.hidden ? '' : 'pieces';
-            this.element.querySelector('[data-count-note]').textContent = step <= 0 ? 'In the PianoLIT library' : this.waiting ? 'Finding your match' : step === 7 ? 'Chosen for you' : 'Estimated pieces remaining';
+            this.element.querySelector('[data-count-note]').textContent = step <= 0 ? 'In the PianoLIT library' : this.waiting ? 'Finding your match' : step === resultStep ? 'Chosen for you' : 'Estimated pieces remaining';
         }
         async click(event) {
             const button = event.target.closest('button');
@@ -366,7 +376,7 @@
             }
             if (button.hasAttribute('data-skip')) {
                 if (quizStep(this) === 1) { if (await this.choose(null) && quizStep(this) === 2) await this.choose(null); }
-                else await this.choose(quizStep(this) === 6 ? 'open' : null);
+                else await this.choose(quizStep(this) === moodStep ? 'open' : null);
                 return;
             }
             if (button.hasAttribute('data-level-confirm')) { await this.choose(this.pendingLevel); return; }
@@ -374,7 +384,7 @@
             if (!button.hasAttribute('data-choice')) return;
             let value = button.dataset.choice;
             if (quizStep(this) <= 2) value = value === 'yes';
-            else if (quizStep(this) < 6) value = Number(value);
+            else if (quizStep(this) < moodStep) value = Number(value);
             (button.closest('[data-piece-card]') || button).classList.add('selected');
             await this.choose(value);
         }
@@ -383,7 +393,7 @@
             this.stage.querySelectorAll('button').forEach(button => { button.disabled = true; });
             const generation = ++this.generation;
             this.state.choose(value, this.data.pieces);
-            if (quizStep(this) === 7) { await this.result(generation); return; }
+            if (quizStep(this) === resultStep) { await this.result(generation); return; }
             await this.counter.to(this.state.count, this.reduced ? 0 : 650);
             if (generation !== this.generation) return;
             this.element.querySelector('[data-count-announcement]').textContent = this.state.count.toLocaleString('en-US') + ' estimated pieces remaining';
@@ -431,8 +441,8 @@
             else if (step === 0) this.stage.innerHTML = this.heading('Which piece do you like more?', 'Listen and pick your favorite.') + this.cards(this.data.pieces.slice(0, 4), 'listening') +
                 '<div class="match-main-action"><button type="button" class="btn btn-primary match-primary" data-listen-confirm' + (!this.pendingPiece ? ' hidden' : '') + '>I like this one ' + arrow + '</button></div>';
             else if (step <= 2) this.reading();
-            else if (step <= 5) this.stage.innerHTML = this.heading('Which feels more like you?', 'Pick the piece that speaks to you.', (step - 2) + ' of 3') + this.cards(this.data.pieces.slice(4 + (step - 3) * 2, 6 + (step - 3) * 2), 'duel');
-            else if (step === 6) this.stage.innerHTML = this.heading('What mood are you in?', "Choose the vibe you're looking for.") + '<div class="match-moods">' + Object.keys(this.data.moods).map(key => {
+            else if (step < moodStep) this.stage.innerHTML = this.heading('Which feels more like you?', 'Pick the piece that speaks to you.', (step - 2) + ' of ' + preferenceRounds) + this.cards(this.data.pieces.slice(4 + (step - 3) * 2, 6 + (step - 3) * 2), 'duel');
+            else if (step === moodStep) this.stage.innerHTML = this.heading('What mood are you in?', "Choose the vibe you're looking for.") + '<div class="match-moods">' + Object.keys(this.data.moods).map(key => {
                 const mood = this.data.moods[key];
                 return '<button type="button" class="match-mood" data-choice="' + key + '"><span class="match-mood-icon" aria-hidden="true">' + icon(mood.icon) + '</span><span>' + escape(mood.label) + '</span></button>';
             }).join('') + '</div>';
@@ -498,15 +508,18 @@
             finally { root.clearTimeout(timer); if (task) { task.destroy(); this.pdfTasks.delete(task); } }
         }
         showSuggestions(show) {
+            const view = this.stage.querySelector('[data-recommendations-view]');
+            if (!view || (show && this.resultData.recommendations.length < 2)) return;
             this.stopMedia(); this.suggestions = show;
             this.stage.querySelector('[data-result-view]').hidden = show;
-            this.stage.querySelector('[data-recommendations-view]').hidden = !show;
+            view.hidden = !show;
             this.navigation(); this.focus();
         }
         mountResult() {
             this.resultData = JSON.parse(this.stage.querySelector('[data-result-data]').textContent);
             this.stage.querySelector('[data-result-card]').innerHTML = this.cards([this.resultData.piece], 'reward');
-            this.stage.querySelector('[data-recommendation-cards]').innerHTML = this.resultData.recommendations.length ? this.cards(this.resultData.recommendations, 'recommendation') : '<p class="text-center">Explore the library for more pieces to discover.</p>';
+            const cards = this.stage.querySelector('[data-recommendation-cards]');
+            if (cards) cards.innerHTML = this.cards(this.resultData.recommendations, 'recommendation');
         }
         finding() {
             this.waiting = true; this.element.classList.add('is-finding');

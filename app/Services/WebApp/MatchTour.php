@@ -96,11 +96,12 @@ class MatchTour
         try { $draw = json_decode(Crypt::decryptString($token), true); }
         catch (DecryptException $exception) { return null; }
         $ids = $draw['ids'] ?? null;
-        if (!in_array($draw['version'] ?? null, [1, 2], true) || !is_int($draw['expires'] ?? null) || $draw['expires'] < now()->timestamp
-            || !is_array($ids) || count($ids) !== 10 || count(array_filter($ids, 'is_int')) !== 10
-            || count(array_unique($ids)) !== 10) return null;
-        if ($this->listeningPool()->whereIn('pieces.id', $ids)->count() !== 10) return null;
-        // Version-one tours already open at deployment can still finish for two hours.
+        $choiceCount = ($draw['version'] ?? null) === 3 ? 8 : 10;
+        if (!in_array($draw['version'] ?? null, [1, 2, 3], true) || !is_int($draw['expires'] ?? null) || $draw['expires'] < now()->timestamp
+            || !is_array($ids) || count($ids) !== $choiceCount || count(array_filter($ids, 'is_int')) !== $choiceCount
+            || count(array_unique($ids)) !== $choiceCount) return null;
+        if ($this->listeningPool()->whereIn('pieces.id', $ids)->count() !== $choiceCount) return null;
+        // Older tours already open at deployment can still finish their three pairs for two hours.
         if ($draw['version'] === 1) { $draw['levels'] = []; return $draw; }
         $levels = $draw['levels'] ?? null;
         if (!is_array($levels) || array_keys($levels) !== array_keys(self::LEVELS)
@@ -132,12 +133,6 @@ class MatchTour
                 $query->select(['id', 'name', 'cover_path'])->withCount([])->setEagerLoads([]);
             }, 'tags' => function ($query) { $query->select(['tags.id', 'name', 'type']); }])->withCount([])
             ->get()->shuffle()->keyBy('id');
-        // Sample one real example per playing range from the same loaded, shuffled pool.
-        $levelPieces = collect(self::LEVELS)->map(function ($definition, $level) use ($pool) {
-            return $pool->first(function ($piece) use ($level) {
-                return self::baseLevel(optional($piece->tags->firstWhere('type', 'level'))->name) === $level;
-            });
-        })->filter()->map(function ($piece) { return $this->questionCard($piece); });
         // Listening measures taste, so omit examples below late beginner. Reuse
         // the existing extended-level accessor (sublevel first) and loaded tags.
         $openingPool = $pool->filter(function ($piece) {
@@ -146,6 +141,19 @@ class MatchTour
                 'advanced', 'early advanced', 'late advanced',
             ], true);
         });
+        // Reserve one example per playing range, preferring pieces outside the
+        // listening range so scarce eligible recordings stay available there.
+        $levelPieces = collect(self::LEVELS)->map(function ($definition, $level) use ($pool, $openingPool) {
+            $examples = $pool->filter(function ($piece) use ($level) {
+                return self::baseLevel(optional($piece->tags->firstWhere('type', 'level'))->name) === $level;
+            });
+            return $examples->first(function ($piece) use ($openingPool) {
+                return !$openingPool->has($piece->id);
+            }) ?? $examples->first();
+        })->filter()->map(function ($piece) { return $this->questionCard($piece); });
+        // The first two screens must never repeat a piece. These examples can
+        // still appear in later taste duels, which use the remaining shared pool.
+        $openingPool = $openingPool->except($levelPieces->pluck('id')->all())->keyBy('id');
         $selected = collect();
         // Calculate each candidate's trait set once. Keep its nearest distance as
         // picks are added instead of sorting/rebuilding every pair on every round.
@@ -156,7 +164,7 @@ class MatchTour
                 ->whereIn('type', ['period', 'mood', 'genre'])->pluck('id')->all(), true);
         }
         $previous = null;
-        while ($selected->count() < 10 && $pool->isNotEmpty()) {
+        while ($selected->count() < 8 && $pool->isNotEmpty()) {
             $winner = null;
             $best = -INF;
             foreach ($pool as $piece) {
@@ -199,9 +207,9 @@ class MatchTour
                 'composer' => $piece->composer->short_name, 'url' => storage($piece->score_path),
             ] : null;
         }
-        $ready = $levelPieces->count() === 4 && count($cards) === 10 && !in_array(null, \Illuminate\Support\Arr::except($scores, 'beginner'), true);
+        $ready = $levelPieces->count() === 4 && count($cards) === 8 && !in_array(null, \Illuminate\Support\Arr::except($scores, 'beginner'), true);
         return [
-            'draw' => $ready ? Crypt::encryptString(json_encode(['version' => 2, 'levels' => $levelPieces->map(function ($piece) { return $piece['id']; })->all(), 'ids' => array_column($cards, 'id'), 'expires' => now()->addHours(2)->timestamp])) : null,
+            'draw' => $ready ? Crypt::encryptString(json_encode(['version' => 3, 'levels' => $levelPieces->map(function ($piece) { return $piece['id']; })->all(), 'ids' => array_column($cards, 'id'), 'expires' => now()->addHours(2)->timestamp])) : null,
             'levelPieces' => $levelPieces->values()->all(), 'levels' => self::LEVELS,
             'total' => $this->catalog()->count(), 'pieces' => $cards, 'scores' => $scores,
             'intents' => self::INTENTS, 'moods' => collect(self::MOODS)->map(function ($mood) { return \Illuminate\Support\Arr::except($mood, 'tags'); })->all(), 'previewSeconds' => config('webapp.match_tour_audio_seconds', 60),

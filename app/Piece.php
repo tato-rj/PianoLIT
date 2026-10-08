@@ -534,7 +534,7 @@ class Piece extends PianoLit
             });
     }
 
-    public function similar($strict = true, $completeTagsOnly = false, $withVideoAndScore = false, $onlyFreePicks = false)
+    public function similar($strict = true, $completeTagsOnly = false, $withVideoAndScore = false, $onlyFreePicks = false, $sameLevel = false)
     {
         $mood = $this->mood()->pluck('id');
 
@@ -552,8 +552,14 @@ class Piece extends PianoLit
         $similar = $query->get();
 
         foreach ($similar as $key => $piece) {
-            if (! in_array($piece->level->id, [$this->level->id - 1, $this->level->id, $this->level->id + 1]))
+            // The web match tour opts into the same difficulty, including sublevels.
+            // Other web/mobile callers retain their existing neighboring-level range.
+            if ($sameLevel) {
+                if (!$this->extended_level || !$piece->extended_level || $piece->extended_level->name !== $this->extended_level->name)
+                    $similar->forget($key);
+            } elseif (! in_array($piece->level->id, [$this->level->id - 1, $this->level->id, $this->level->id + 1])) {
                 $similar->forget($key);
+            }
         }
 
         if ($strict) {
