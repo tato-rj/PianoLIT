@@ -2,6 +2,10 @@
     @if($tour['ready'])
     <div class="match-count text-center">
         <div class="match-count-number">
+            {{-- Keep SVG radius inline: the legacy CSS optimizer drops geometry properties. --}}
+            <svg class="match-count-ring" aria-hidden="true" focusable="false">
+                <circle class="match-count-arc" data-count-arc cx="50%" cy="50%" r="45.5%" pathLength="100" style="r: calc(50% - 4.5px)"></circle>
+            </svg>
             <span data-count>{{ number_format($tour['total']) }}</span>
             <span class="match-count-unit" data-count-unit>pieces</span>
         </div>

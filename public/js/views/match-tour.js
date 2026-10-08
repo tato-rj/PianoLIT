@@ -70,17 +70,18 @@
     }
 
     class AnimatedCount {
-        constructor(element, unit, frame, reduced) {
+        constructor(element, unit, frame, reduced, onChange) {
             this.element = element; this.unit = unit;
             this.frame = frame || root.requestAnimationFrame.bind(root);
-            this.reduced = reduced; this.generation = 0;
+            this.reduced = reduced; this.generation = 0; this.onChange = onChange;
         }
-        set(value) {
+        set(value, moving = false) {
             this.value = value;
             this.element.textContent = value.toLocaleString('en-US');
             this.unit.textContent = value === 1 ? 'piece' : 'pieces';
+            if (this.onChange) this.onChange(value, moving);
         }
-        cancel() { this.generation++; }
+        cancel() { this.generation++; if (this.onChange) this.onChange(this.value, false); }
         to(target, duration, linear = false) {
             const generation = ++this.generation;
             const from = this.value;
@@ -92,7 +93,7 @@
                     if (start === undefined) start = now;
                     const progress = Math.min(1, (now - start) / duration);
                     const eased = linear ? progress : 1 - Math.pow(1 - progress, 3);
-                    this.set(Math.round(from + (target - from) * eased));
+                    this.set(Math.round(from + (target - from) * eased), progress < 1);
                     if (progress < 1) this.frame(tick); else resolve();
                 };
                 this.frame(tick);
@@ -245,7 +246,6 @@
         if (!shell) return;
         const names = ['Your level', 'Listening', 'Sight-reading', 'Your taste', 'Mood', 'We found your perfect match!'];
         const themes = ['level', 'listening', 'reading', 'duel', 'mood', 'reward'];
-        if (shell.style) shell.style.setProperty('--match-progress', Math.min(100, (section + 1) * 20) + '%');
         shell.dataset.theme = suggestions ? 'recommendations' : themes[section];
         const number = shell.querySelector('[data-step-number]');
         if (number) number.textContent = section < 5 ? (section + 1) + ' / 5' : '';
@@ -264,7 +264,7 @@
             this.stage = element.querySelector('[data-stage]'); this.error = element.querySelector('[data-error]');
             this.shell = element.closest('.match-tour-modal');
             this.reduced = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            this.counter = new AnimatedCount(element.querySelector('[data-count]'), element.querySelector('[data-count-unit]'), null, this.reduced);
+            this.counter = new AnimatedCount(element.querySelector('[data-count]'), element.querySelector('[data-count-unit]'), null, this.reduced, (value, moving) => this.countProgress(value, moving));
             this.previews = new Previews(data.previewSeconds, message => this.report(message));
             this.counter.set(data.total); this.pdfTasks = new Set(); this.scoreExcerpts = new Map();
             this.onClick = event => this.click(event);
@@ -290,6 +290,17 @@
             this.element.removeEventListener('click', this.onClick);
             root.removeEventListener('pagehide', this.onPageHide);
             root.document.removeEventListener('visibilitychange', this.onVisibility);
+        }
+        countProgress(value, moving) {
+            if (!this.shell) return;
+            const percent = value <= 1 ? 0 : Math.max(0, Math.min(100, value / this.data.total * 100));
+            this.shell.style.setProperty('--match-progress', percent + '%');
+            const arc = this.shell.querySelector('[data-count-arc]');
+            if (!arc) return;
+            // Follow the displayed count on every frame, including Back and failure recovery.
+            arc.style.strokeDashoffset = String(100 - percent);
+            arc.style.opacity = percent === 0 ? '0' : '1';
+            arc.ownerSVGElement.classList.toggle('is-counting', !!moving);
         }
         navigation() {
             const step = quizStep(this);
