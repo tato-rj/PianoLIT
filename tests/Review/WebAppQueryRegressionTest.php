@@ -245,12 +245,13 @@ class WebAppQueryRegressionTest extends ReviewTestCase
                 $expected = \App\Services\WebApp\GalleryGradients::at($index);
                 $this->assertSame([$expected], collect($row['content'])->pluck('color')->unique()->values()->all());
                 $gradients[] = implode(', ', gradient($expected));
-                if (!in_array($row['title'], ['Recently viewed', 'Latest pieces', 'For you', 'From women composers'])) {
+                if (!in_array($row['title'], ['Recently viewed', 'Latest pieces', 'For you', 'From women composers', 'Equivalent to the Suzuki series', 'Equivalent to the RCM levels', 'Equivalent to the ABRSM levels'])) {
                     $response->assertSee('linear-gradient(to right, '.end($gradients).')', false);
                 }
             }
             $this->assertCount($galleries->count(), array_unique($gradients));
             $response->assertSee('discover-latest-card', false);
+            $this->assertSame(1, substr_count($response->getContent(), 'id="discover-levels-heading"'));
             if ($state === 'with-history') $response->assertSee('discover-recent-card', false);
             $this->assertSame($cachedBefore, $colors(Cache::get('app.discover')));
             $mobileAfter = $colors((new \App\Api\Api)->discover());

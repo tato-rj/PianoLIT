@@ -7,7 +7,13 @@
 
 <section id="discover-rows">
 	@foreach($rows as $row)
-		@include('webapp.discover.rows.' . $row['row'], compact('hasFullAccess'))
+		@if(in_array($row['title'], ['Equivalent to the Suzuki series', 'Equivalent to the RCM levels', 'Equivalent to the ABRSM levels']))
+			@once
+				@include('webapp.discover.rows.levels')
+			@endonce
+		@else
+			@include('webapp.discover.rows.' . $row['row'], compact('hasFullAccess'))
+		@endif
 	@endforeach
 </section>
 

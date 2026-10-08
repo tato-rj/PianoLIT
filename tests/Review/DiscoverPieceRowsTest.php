@@ -45,7 +45,7 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->withExceptionHandling()->getJson(route('webapp.latest', ['page' => -1]))->assertUnprocessable();
     }
 
-    public function test_latest_cards_show_level_and_only_available_non_audio_icons()
+    public function test_latest_cards_show_level_and_only_available_media_icons()
     {
         $cards = PieceCards::load($this->pieces->take(1)->push($this->pieces->last()), false);
         foreach ($cards as $index => $piece) {
@@ -55,16 +55,18 @@ class DiscoverPieceRowsTest extends ReviewTestCase
             $xpath = new \DOMXPath($dom);
             $this->assertStringContainsString('Late intermediate', $html);
             $this->assertStringContainsString('color-intermediate', $html);
-            $this->assertSame(0, $xpath->query('//i[@title="Audio"]')->length);
+            $this->assertSame(1, $xpath->query('//i[@title="Audio"]')->length);
             $this->assertSame($index === 0 ? 0 : 1, $xpath->query('//i[@title="Video"]')->length);
             $this->assertSame(1, $xpath->query('//i[@title="Score"]')->length);
             $this->assertSame(1, $xpath->query('//i[@title="Synthesia"]')->length);
             $this->assertSame('', trim($xpath->query('//ul')->item(0)->textContent));
         }
         $piece = $cards->first();
+        $piece->audio_path = null;
         $piece->score_path = null;
         $piece->webapp_has_synthesia = false;
         $html = view('webapp.discover.cards.latest-piece', compact('piece'))->render();
+        $this->assertStringNotContainsString('title="Audio"', $html);
         $this->assertStringNotContainsString('title="Score"', $html);
         $this->assertStringNotContainsString('title="Synthesia"', $html);
         $piece->cover_path = null;
@@ -78,7 +80,7 @@ class DiscoverPieceRowsTest extends ReviewTestCase
 
     public function test_for_you_requires_a_web_account_and_omits_unavailable_media()
     {
-        $row = ['title' => 'For you', 'type' => 'piece', 'content' => $this->pieces->take(2)];
+        $row = ['title' => 'For you', 'type' => 'piece', 'content' => PieceCards::load($this->pieces->take(1)->push($this->pieces->last()), false)];
         $this->assertStringNotContainsString('for-you-heading', view('webapp.discover.rows.gallery', compact('row'))->render());
         $this->actingAs(Model::withoutEvents(function () { return create(User::class); }), 'web');
         $row['content'][1]->audio_path = null;
@@ -87,6 +89,17 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->assertSame(2, substr_count($html, 'class="discover-compact-card discover-piece-link'));
         $this->assertSame(1, substr_count($html, 'icon-headphones'));
         $this->assertSame(1, substr_count($html, 'icon-file-text'));
+        $this->assertSame(1, substr_count($html, 'icon-video'));
+        $this->assertSame(2, substr_count($html, 'icon-flame'));
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $media = (new \DOMXPath($dom))->query('//ul[@aria-label="Available media"]');
+        foreach ($media as $icons) {
+            $this->assertSame('', trim($icons->textContent));
+            foreach ($icons->getElementsByTagName('i') as $icon) {
+                $this->assertSame($icon->getAttribute('title'), $icon->getAttribute('aria-label'));
+            }
+        }
         foreach ($row['content'] as $piece) $this->assertStringContainsString(route('webapp.pieces.show', $piece), $html);
         $row['content'] = [];
         $this->assertStringNotContainsString('for-you-heading', view('webapp.discover.rows.gallery', compact('row'))->render());

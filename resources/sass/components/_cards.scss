@@ -62,6 +62,34 @@
     .piece-media-icons { margin-top: auto !important; }
 }
 .piece-media-icons .app-icon { width: 1.25em; height: 1.25em; }
+.discover-levels {
+    &__header { flex-wrap: wrap; }
+    &__tabs {
+        flex-shrink: 0;
+        padding: 4px;
+        border: 1px solid var(--color-dropdown-border);
+        border-radius: var(--radius-button);
+        background: var(--color-primary-soft);
+        .nav-link { padding: 8px 18px; border-radius: var(--radius-button); color: var(--color-text); font-size: var(--font-size-small); }
+        .nav-link.active { color: var(--color-surface) !important; background: var(--color-primary); }
+        .nav-link:disabled { opacity: .5; }
+    }
+}
+.discover-level-card {
+    flex: 0 0 calc((100% - 64px) / 5);
+    overflow: hidden;
+    border: 1px solid var(--color-dropdown-border);
+    border-radius: var(--radius-button);
+    background: linear-gradient(135deg, rgba(var(--level-shade), .04), rgba(var(--level-shade), .16));
+    &__art { min-height: 76px; padding: 12px 16px 4px; gap: 8px; }
+    &__number { color: var(--level-tone); font-size: 44px; line-height: 1; font-weight: 400; }
+    &__books { position: relative; flex: 0 0 48px; height: 48px; color: var(--level-tone);
+        .app-icon { position: absolute; width: 44px; height: 44px; transform: rotate(12deg); opacity: .14; }
+        .app-icon:nth-child(1) { left: -8px; top: -3px; transform: rotate(5deg); opacity: .08; }
+        .app-icon:nth-child(2) { left: -3px; top: -1px; transform: rotate(9deg); opacity: .1; }
+    }
+    &__copy { min-height: 68px; padding: 10px 16px 12px; background: rgba(255, 255, 255, .6); }
+}
 .discover-panel { padding: 24px; }
 .discover-compact-card {
     gap: 14px;
@@ -93,15 +121,19 @@
 }
 .discover-latest__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 991px) {
+    .discover-level-card { flex-basis: calc((100% - 48px) / 4); }
     .discover-recent-card, .discover-latest-card { flex-basis: calc((100% - 16px) / 2); }
     .discover-for-you .discover-compact-card { flex-basis: calc((100% - 16px) / 2); }
     .discover-latest__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 767px) {
+    .discover-levels__tabs { width: 100%; .nav-link { flex: 1; padding: 8px 12px; } }
+    .discover-level-card { flex-basis: calc((100% - 32px) / 3); }
     .discover-women__layout { grid-template-columns: minmax(0, 1fr); }
     .discover-women__feature { grid-template-columns: minmax(0, 140px) minmax(0, 1fr); }
 }
 @media (max-width: 575px) {
+    .discover-level-card { flex-basis: 46%; min-width: 140px; }
     .discover-recent-card, .discover-latest-card { flex-basis: 88%; }
     .discover-panel { padding: 16px; }
     .discover-for-you .discover-compact-card { flex-basis: 94%; }

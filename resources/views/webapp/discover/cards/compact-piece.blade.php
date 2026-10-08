@@ -4,14 +4,9 @@
 		<p class="discover-compact-card__title clamp-2 mb-1" title="{{ $piece->name }}"><strong>{{ $piece->name }}</strong></p>
 		<p class="text-muted small m-0">{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
 		@if($showMedia ?? false)
-		<ul class="discover-compact-card__media list-unstyled d-flex flex-wrap gap-2 text-muted small mt-2 mb-0" aria-label="Available media">
-			@if($piece->hasAudio())
-			<li class="d-flex align-items-center">@icon('headphones', ['mr' => 1])Audio</li>
-			@endif
-			@if($piece->hasScore(true))
-			<li class="d-flex align-items-center">@icon('file-text', ['mr' => 1])Score</li>
-			@endif
-		</ul>
+		<div class="discover-compact-card__media small mt-2">
+			@include('webapp.components.piece.media-icons', ['compactMedia' => true])
+		</div>
 		@endif
 	</div>
 	@icon('chevron-right', ['mr' => 0, 'classes' => 'text-muted'])
