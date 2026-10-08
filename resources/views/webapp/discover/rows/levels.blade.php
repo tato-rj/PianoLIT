@@ -18,9 +18,9 @@
 			<h5 id="discover-levels-heading" class="mb-1">Find pieces at your level</h5>
 			<p class="text-muted mb-0">Browse pieces of a similar difficulty.</p>
 		</div>
-		<div class="discover-levels__tabs nav nav-pills" role="tablist" aria-label="Level system">
+		<div class="discover-levels__tabs tab-switch nav m-0" role="tablist" aria-label="Level system">
 			@foreach($levelSystems as $system)
-			<button class="nav-link {{ $system['key'] === $firstLevelSystem['key'] ? 'active' : '' }}" id="discover-levels-{{ $system['key'] }}-tab" data-bs-toggle="pill" data-bs-target="#discover-levels-{{ $system['key'] }}" type="button" role="tab" aria-controls="discover-levels-{{ $system['key'] }}" aria-selected="{{ $system['key'] === $firstLevelSystem['key'] ? 'true' : 'false' }}" tabindex="{{ $system['key'] === $firstLevelSystem['key'] ? '0' : '-1' }}" @if($system['cards']->isEmpty()) disabled aria-disabled="true" @endif>{{ $system['label'] }}</button>
+			<button class="{{ $system['key'] === $firstLevelSystem['key'] ? 'active' : '' }}" id="discover-levels-{{ $system['key'] }}-tab" data-bs-toggle="pill" data-bs-target="#discover-levels-{{ $system['key'] }}" type="button" role="tab" aria-controls="discover-levels-{{ $system['key'] }}" aria-selected="{{ $system['key'] === $firstLevelSystem['key'] ? 'true' : 'false' }}" tabindex="{{ $system['key'] === $firstLevelSystem['key'] ? '0' : '-1' }}" @if($system['cards']->isEmpty()) disabled aria-disabled="true" @endif>{{ $system['label'] }}</button>
 			@endforeach
 		</div>
 	</div>
@@ -46,13 +46,8 @@
 						$shade = implode(', ', sscanf(ltrim($tones[1], '#'), '%2x%2x%2x'));
 					@endphp
 					<a class="discover-level-card discover-piece-link link-none" href="{{ route('webapp.search.results', ['search' => $card->name]) }}" aria-label="{{ $system['label'] }} {{ $system['unit'] }} {{ $levelNumber }}, {{ $card->pieces_count }} {{ str_plural('piece', $card->pieces_count) }}" style="--level-tone: {{ $tones[0] }}; --level-shade: {{ $shade }};">
-						<div class="discover-level-card__art d-flex align-items-center justify-content-between" aria-hidden="true">
-							<span class="discover-level-card__number">{{ $levelNumber }}</span>
-							<span class="discover-level-card__books">
-								@icon('book', ['mr' => 0, 'solid' => '#fff'])
-								@icon('book', ['mr' => 0, 'solid' => '#fff'])
-								@icon('book', ['mr' => 0, 'solid' => '#fff'])
-							</span>
+						<div class="discover-level-card__art" aria-hidden="true">
+							<span class="discover-level-card__watermark">{{ strtoupper($system['label']) }}</span>
 						</div>
 						<div class="discover-level-card__copy d-flex align-items-center justify-content-between gap-2">
 							<div>

@@ -1,4 +1,4 @@
-.my-pieces-switch {
+.my-pieces-switch, .tab-switch {
     display: flex;
     max-width: 320px;
     padding: 3px;
@@ -6,10 +6,12 @@
     border-radius: 999px;
     background: #f1f4f8;
 
-    a {
+    a, button {
         flex: 1;
         padding: 9px 14px;
         border-radius: 999px;
+        border: 0;
+        background: transparent;
         color: #5b6574;
         font-size: 13px;
         font-weight: 600;
@@ -119,5 +121,5 @@
     .my-pieces-folders { grid-template-columns: 1fr; gap: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .my-pieces-switch a, .my-pieces-folder { transition: none; }
+    .my-pieces-switch a, .tab-switch a, .tab-switch button, .my-pieces-folder { transition: none; }
 }
