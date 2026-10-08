@@ -16,7 +16,7 @@
 	<div class="discover-levels__header d-flex justify-content-between align-items-start gap-3 mb-3">
 		<div>
 			<h5 id="discover-levels-heading" class="mb-1">Find pieces at your level</h5>
-			<p class="text-muted mb-0">Browse pieces of a similar difficulty.</p>
+			<p class="text-muted mb-0">Browse pieces of a similar difficulty to RCM, ABRSM or Suzuki books.</p>
 		</div>
 		<div class="discover-levels__tabs nav nav-pills" role="tablist" aria-label="Level system">
 			@foreach($levelSystems as $system)

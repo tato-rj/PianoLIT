@@ -165,7 +165,7 @@
         &:last-child { margin-right: 0 !important; }
         &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; border-radius: var(--radius-sm); }
         &__portrait { width: 100%; height: 100px; background-size: cover; background-position: center; }
-        &__name { line-height: 1.3; overflow-wrap: anywhere; }
+        &__name { line-height: 1; overflow-wrap: anywhere; }
     }
     @media (max-width: 767px) {
         .composer-tile { flex-basis: 114px; width: 114px;
