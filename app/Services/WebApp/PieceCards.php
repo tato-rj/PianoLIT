@@ -16,6 +16,9 @@ class PieceCards
         $relations = [
             'performances as webapp_has_performances' => function ($query) { $query->approved(); },
             'tutorials as webapp_has_synthesia' => function ($query) { $query->where('category', 'synthesia'); },
+            'tutorials as webapp_has_video' => function ($query) {
+                $query->where(function ($query) { $query->where('category', '!=', 'synthesia')->orWhereNull('category'); });
+            },
         ];
         if ($favorites && auth('web')->check()) {
             $relations['favorites as webapp_is_favorited'] = function ($query) {

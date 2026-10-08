@@ -198,6 +198,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
             foreach ($row['content'] as $piece) {
                 $this->assertArrayNotHasKey('webapp_is_favorited', $piece->getAttributes());
                 $this->assertArrayNotHasKey('webapp_has_performances', $piece->getAttributes());
+                $this->assertArrayNotHasKey('webapp_has_video', $piece->getAttributes());
             }
         }
     }
@@ -244,9 +245,13 @@ class WebAppQueryRegressionTest extends ReviewTestCase
                 $expected = \App\Services\WebApp\GalleryGradients::at($index);
                 $this->assertSame([$expected], collect($row['content'])->pluck('color')->unique()->values()->all());
                 $gradients[] = implode(', ', gradient($expected));
-                $response->assertSee('linear-gradient(to right, '.end($gradients).')', false);
+                if (!in_array($row['title'], ['Recently viewed', 'Latest pieces'])) {
+                    $response->assertSee('linear-gradient(to right, '.end($gradients).')', false);
+                }
             }
             $this->assertCount($galleries->count(), array_unique($gradients));
+            $response->assertSee('discover-latest-card', false);
+            if ($state === 'with-history') $response->assertSee('discover-recent-card', false);
             $this->assertSame($cachedBefore, $colors(Cache::get('app.discover')));
             $mobileAfter = $colors((new \App\Api\Api)->discover());
             $this->assertSame(['orange'], array_values(array_unique($mobileAfter['For you'])));

@@ -1,3 +1,8 @@
+@if($row['title'] === 'Recently viewed')
+	@include('webapp.discover.rows.recently-viewed')
+@elseif($row['title'] === 'Latest pieces')
+	@include('webapp.discover.rows.latest')
+@else
 <div class="mb-4">
 	<h5 class="mb-3">{{$row['title']}}</h5>
 	<div class="custom-scroll dragscroll dragscroll-horizontal card-scroll-row">
@@ -8,3 +13,4 @@
 		</div>
 	</div>
 </div>
+@endif

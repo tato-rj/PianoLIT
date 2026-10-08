@@ -54,6 +54,16 @@ class TabsController extends Controller
         return view('webapp.discover.index', compact(['rows', 'composers']));
     }
 
+    public function latest(Request $request, Api $api)
+    {
+        $request->validate(['page' => 'nullable|integer|min:1']);
+        $pieces = Piece::with('tags')->withVideos()->latest()->orderByDesc('id')->paginate(12);
+        PieceCards::load($pieces->getCollection(), false);
+        $api->withAttributes($pieces, ['type' => 'piece', 'source' => route('api.pieces.find')]);
+
+        return view('webapp.discover.latest', compact('pieces'));
+    }
+
     public function explore(Api $api)
     {
         $explore = $api->for('webapp')->explore()->map(function ($row) {

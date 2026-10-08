@@ -12,6 +12,8 @@ Route::namespace('WebApp')->group(function() {
 
 	Route::get('explore', 'TabsController@explore')->name('explore');
 
+    Route::get('latest', 'TabsController@latest')->name('latest');
+
 	Route::get('highlights', 'TabsController@highlights')->name('highlights');
 
 	Route::get('playlists', 'TabsController@playlists')->name('playlists');
