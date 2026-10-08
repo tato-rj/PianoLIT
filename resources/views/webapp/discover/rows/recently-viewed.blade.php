@@ -7,7 +7,8 @@
 				<img class="discover-recent-card__art" src="{{ $piece->cover_path ? storage($piece->cover_path) : asset(optional($piece->period)->cover_image ?: 'images/webapp/thumbnail.jpg') }}" alt="" width="72" height="72" loading="lazy">
 				<div class="discover-recent-card__copy">
 					<p class="discover-recent-card__title m-0" title="{{ $piece->name }}"><strong>{{ $piece->name }}</strong></p>
-					<p class="text-muted small m-0">{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
+					<p class="discover-recent-card__composer text-muted small m-0">{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
+					@include('webapp.components.piece.level-indicator')
 				</div>
 				@icon('chevron-right', ['mr' => 0, 'classes' => 'text-muted'])
 			</a>

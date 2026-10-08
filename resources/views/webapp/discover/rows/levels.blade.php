@@ -47,7 +47,7 @@
 					@endphp
 					<a class="discover-level-card discover-piece-link link-none" href="{{ route('webapp.search.results', ['search' => $card->name]) }}" aria-label="{{ $system['label'] }} {{ $system['unit'] }} {{ $levelNumber }}, {{ $card->pieces_count }} {{ str_plural('piece', $card->pieces_count) }}" style="--level-tone: {{ $tones[0] }}; --level-shade: {{ $shade }};">
 						<div class="discover-level-card__art" aria-hidden="true">
-							<span class="discover-level-card__watermark">{{ strtoupper($system['label']) }}</span>
+							@include('webapp.discover.cards.level-shapes')
 						</div>
 						<div class="discover-level-card__copy d-flex align-items-center justify-content-between gap-2">
 							<div>

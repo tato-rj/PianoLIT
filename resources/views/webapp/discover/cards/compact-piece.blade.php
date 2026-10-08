@@ -3,6 +3,7 @@
 	<div class="discover-compact-card__copy">
 		<p class="discover-compact-card__title clamp-2 mb-1" title="{{ $piece->name }}"><strong>{{ $piece->name }}</strong></p>
 		<p class="text-muted small m-0">{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
+		@include('webapp.components.piece.level-indicator')
 		@if($showMedia ?? false)
 		<div class="discover-compact-card__media small mt-2">
 			@include('webapp.components.piece.media-icons', ['compactMedia' => true])
