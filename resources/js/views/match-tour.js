@@ -2,18 +2,27 @@
     'use strict';
 
     const clone = value => JSON.parse(JSON.stringify(value));
-    const level = (reading, fallback = 'intermediate') => reading[0] === null ? fallback : reading[1] === null ? (reading[0] ? 'intermediate' : 'beginner') : reading[0] ? (reading[1] ? 'advanced' : 'intermediate') : (reading[1] ? 'beginner' : 'elementary');
+    const readingLevel = (reading, fallback = 'intermediate') => reading[0] === null ? fallback : reading[1] === null ? (reading[0] ? 'intermediate' : 'beginner') : reading[0] ? (reading[1] ? 'advanced' : 'intermediate') : (reading[1] ? 'beginner' : 'elementary');
+    const levels = ['elementary', 'beginner', 'intermediate', 'advanced'];
+    const baseLevel = name => String(name).replace(/^(early|late) /, '');
+    const level = (reading, fallback = 'intermediate', playingLevel = null) => {
+        if (!playingLevel) return readingLevel(reading, fallback);
+        if (reading[0] === null) return playingLevel;
+        return levels[Math.round((2 * levels.indexOf(playingLevel) + levels.indexOf(readingLevel(reading))) / 3)];
+    };
 
     // Estimates, not backend candidate pools. Replace this object when counts become available.
     const Candidates = {
         after(total, previous, stage, answers, pieces) {
             let ratio;
-            if (stage === 'listen') {
+            if (stage === 'level') {
+                ratio = 0.75;
+            } else if (stage === 'listen') {
                 const piece = pieces.find(piece => piece.id === answers.preferredPiece);
                 ratio = 0.50 - Math.min(5, new Set(piece.traits || []).size) * 0.03;
             } else if (stage === 'reading') {
                 const preferred = pieces.find(piece => piece.id === answers.preferredPiece);
-                const difficulty = String(level(answers.reading, preferred.level)).replace(/^(early|late) /, '');
+                const difficulty = String(level(answers.reading, preferred.level, answers.playingLevel)).replace(/^(early|late) /, '');
                 ratio = {elementary: 0.12, beginner: 0.15, intermediate: 0.18, advanced: 0.14}[difficulty] || 0.18;
             } else {
                 const winners = pieces.filter(piece => answers.winners.indexOf(piece.id) !== -1);
@@ -22,16 +31,16 @@
                 ratio = 0.018 - overlap * 0.012;
             }
             // Reserve a distinct count for each remaining stage, even in small catalogs.
-            const floor = stage === 'listen' ? 4 : (stage === 'reading' ? 3 : 2);
+            const floor = stage === 'level' ? 5 : stage === 'listen' ? 4 : (stage === 'reading' ? 3 : 2);
             return Math.max(floor, Math.min(previous - 1, Math.round(total * ratio)));
         }
     };
 
     class State {
-        constructor(total) { this.total = total; this.reset(); }
+        constructor(total, levelPieces = []) { this.total = total; this.levelPieces = levelPieces; this.offset = levelPieces.length ? 1 : 0; this.reset(); }
         reset() {
             this.step = 0; this.count = this.total; this.history = [];
-            this.answers = {preferredPiece: null, reading: [], estimatedLevel: null, winners: [], intent: null, mood: null};
+            this.answers = {levelPiece: null, playingLevel: null, preferredPiece: null, reading: [], estimatedLevel: null, winners: [], intent: null, mood: null};
         }
         remember() { this.history.push(clone({step: this.step, count: this.count, answers: this.answers})); }
         back() {
@@ -41,13 +50,18 @@
         choose(value, pieces) {
             this.remember();
             let stage;
-            if (this.step === 0) { this.answers.preferredPiece = value; stage = 'listen'; }
-            else if (this.step <= 2) {
-                this.answers.reading[this.step - 1] = value;
-                if (this.step === 2) { this.answers.estimatedLevel = level(this.answers.reading, pieces.find(piece => piece.id === this.answers.preferredPiece).level); stage = 'reading'; }
-            } else if (this.step <= 5) {
-                this.answers.winners[this.step - 3] = value;
-                if (this.step === 5) stage = 'preferences';
+            const step = this.step - this.offset;
+            if (step === -1) {
+                this.answers.levelPiece = value;
+                this.answers.playingLevel = baseLevel(this.levelPieces.find(piece => piece.id === value).level);
+                this.answers.estimatedLevel = this.answers.playingLevel; stage = 'level';
+            } else if (step === 0) { this.answers.preferredPiece = value; stage = 'listen'; }
+            else if (step <= 2) {
+                this.answers.reading[step - 1] = value;
+                if (step === 2) { this.answers.estimatedLevel = level(this.answers.reading, pieces.find(piece => piece.id === this.answers.preferredPiece).level, this.answers.playingLevel); stage = 'reading'; }
+            } else if (step <= 5) {
+                this.answers.winners[step - 3] = value;
+                if (step === 5) stage = 'preferences';
             } else { this.answers.mood = value; }
             if (stage) this.count = Candidates.after(this.total, this.count, stage, this.answers, pieces);
             this.step++;
@@ -207,13 +221,15 @@
             return pdfjs;
         });
     }
+    const quizStep = controller => controller.state.step - (controller.data && controller.data.levelPieces && controller.data.levelPieces.length ? 1 : 0);
     function progress(shell, section, suggestions, finding) {
         if (!shell) return;
-        const names = ['Listening', 'Sight-reading', 'Your taste', 'Mood', 'We found your perfect match!'];
-        const themes = ['listening', 'reading', 'duel', 'mood', 'reward'];
+        const names = ['Your level', 'Listening', 'Sight-reading', 'Your taste', 'Mood', 'We found your perfect match!'];
+        const themes = ['level', 'listening', 'reading', 'duel', 'mood', 'reward'];
+        if (shell.style) shell.style.setProperty('--match-progress', Math.min(100, (section + 1) * 20) + '%');
         shell.dataset.theme = suggestions ? 'recommendations' : themes[section];
         const number = shell.querySelector('[data-step-number]');
-        if (number) number.textContent = section < 4 ? (section + 1) + ' / 4' : '';
+        if (number) number.textContent = section < 5 ? (section + 1) + ' / 5' : '';
         const name = shell.querySelector('[data-step-name]');
         if (name) name.textContent = finding ? 'Finding your match' : suggestions ? 'Your discoveries' : names[section];
         shell.querySelectorAll('[data-progress-step]').forEach((dot, index) => {
@@ -225,7 +241,7 @@
         constructor(element, data, http, pdfjs, onRestart) {
             this.onRestart = onRestart;
             this.element = element; this.data = data; this.http = http; this.pdfjs = pdfjs;
-            this.state = new State(data.total); this.generation = 0; this.busy = false;
+            this.state = new State(data.total, data.levelPieces || []); this.generation = 0; this.busy = false;
             this.stage = element.querySelector('[data-stage]'); this.error = element.querySelector('[data-error]');
             this.shell = element.closest('.match-tour-modal');
             this.reduced = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -257,13 +273,13 @@
             root.document.removeEventListener('visibilitychange', this.onVisibility);
         }
         navigation() {
-            const step = this.state.step;
-            const section = step === 0 ? 0 : step <= 2 ? 1 : step <= 5 ? 2 : step === 6 ? 3 : 4;
+            const step = quizStep(this);
+            const section = step < 0 ? 0 : step === 0 ? 1 : step <= 2 ? 2 : step <= 5 ? 3 : step === 6 ? 4 : 5;
             progress(this.shell, section, this.suggestions, this.waiting);
             const back = this.element.querySelector('[data-back]');
-            back.disabled = !this.state.history.length && !this.suggestions; back.hidden = step === 0;
-            this.element.querySelector('.match-navigation').hidden = step === 0;
-            this.element.querySelector('.match-navigation [data-skip]').hidden = step === 0 || step === 7;
+            back.disabled = !this.state.history.length && !this.suggestions; back.hidden = this.state.step === 0;
+            this.element.querySelector('.match-navigation').hidden = this.state.step === 0;
+            this.element.querySelector('.match-navigation [data-skip]').hidden = step <= 0 || step === 7;
             this.element.querySelector('[data-skip-label]').textContent = step < 6 ? 'Not sure? Skip' : 'Skip';
             this.element.querySelector('[data-restart]').hidden = step < 7;
             this.element.querySelector('.match-count').hidden = !!this.suggestions || (step === 7 && !this.waiting);
@@ -271,7 +287,7 @@
             const unit = this.element.querySelector('[data-count-unit]');
             unit.hidden = step === 7 && !this.waiting;
             unit.textContent = unit.hidden ? '' : 'pieces';
-            this.element.querySelector('[data-count-note]').textContent = step === 0 ? 'In the PianoLIT library' : this.waiting ? 'Finding your match' : step === 7 ? 'Chosen for you' : 'Estimated pieces remaining';
+            this.element.querySelector('[data-count-note]').textContent = step <= 0 ? 'In the PianoLIT library' : this.waiting ? 'Finding your match' : step === 7 ? 'Chosen for you' : 'Estimated pieces remaining';
         }
         async click(event) {
             const button = event.target.closest('button');
@@ -281,7 +297,8 @@
                 if (this.suggestions && button.hasAttribute('data-back')) { this.showSuggestions(false); return; }
                 this.dispose(); this.busy = false; this.suggestions = false; this.resultData = null;
                 if (button.hasAttribute('data-back')) this.state.back(); else this.state.reset();
-                this.pendingPiece = this.state.step === 0 ? this.state.answers.preferredPiece : null;
+                this.pendingLevel = quizStep(this) === -1 ? this.state.answers.levelPiece : null;
+                this.pendingPiece = quizStep(this) === 0 ? this.state.answers.preferredPiece : null;
                 this.counter.set(this.state.count); this.render(); return;
             }
             if (this.busy) return;
@@ -289,7 +306,7 @@
             if (button.hasAttribute('data-play')) {
                 this.report('');
                 const id = Number(button.dataset.play);
-                const pieces = this.data.pieces.concat(this.resultData ? [this.resultData.piece].concat(this.resultData.recommendations) : []);
+                const pieces = (this.data.levelPieces || []).concat(this.data.pieces).concat(this.resultData ? [this.resultData.piece].concat(this.resultData.recommendations) : []);
                 const piece = pieces.find(piece => piece.id === id);
                 // Result data takes precedence if the chosen match is also an opening card.
                 const actual = this.resultData && this.resultData.piece.id === id ? this.resultData.piece : piece;
@@ -301,26 +318,30 @@
                 return;
             }
             if (button.hasAttribute('data-score-retry')) { this.reading(); return; }
-            if (button.hasAttribute('data-select-piece')) {
-                this.pendingPiece = Number(button.dataset.selectPiece);
-                this.stage.querySelectorAll('[data-select-piece]').forEach(control => {
-                    const selected = Number(control.dataset.selectPiece) === this.pendingPiece;
+            if (button.hasAttribute('data-select-piece') || button.hasAttribute('data-select-level')) {
+                const isLevel = button.hasAttribute('data-select-level');
+                const attribute = isLevel ? 'data-select-level' : 'data-select-piece';
+                const id = Number(button.getAttribute(attribute));
+                if (isLevel) this.pendingLevel = id; else this.pendingPiece = id;
+                this.stage.querySelectorAll('[' + attribute + ']').forEach(control => {
+                    const selected = Number(control.getAttribute(attribute)) === id;
                     control.setAttribute('aria-pressed', selected ? 'true' : 'false');
                     control.closest('[data-piece-card]').classList.toggle('selected', selected);
                 });
-                this.stage.querySelector('[data-listen-confirm]').hidden = false;
+                this.stage.querySelector(isLevel ? '[data-level-confirm]' : '[data-listen-confirm]').hidden = false;
                 return;
             }
             if (button.hasAttribute('data-skip')) {
-                if (this.state.step === 1) { if (await this.choose(null) && this.state.step === 2) await this.choose(null); }
-                else await this.choose(this.state.step === 6 ? 'open' : null);
+                if (quizStep(this) === 1) { if (await this.choose(null) && quizStep(this) === 2) await this.choose(null); }
+                else await this.choose(quizStep(this) === 6 ? 'open' : null);
                 return;
             }
+            if (button.hasAttribute('data-level-confirm')) { await this.choose(this.pendingLevel); return; }
             if (button.hasAttribute('data-listen-confirm')) { await this.choose(this.pendingPiece); return; }
             if (!button.hasAttribute('data-choice')) return;
             let value = button.dataset.choice;
-            if (this.state.step <= 2) value = value === 'yes';
-            else if (this.state.step < 6) value = Number(value);
+            if (quizStep(this) <= 2) value = value === 'yes';
+            else if (quizStep(this) < 6) value = Number(value);
             (button.closest('[data-piece-card]') || button).classList.add('selected');
             await this.choose(value);
         }
@@ -329,7 +350,7 @@
             this.stage.querySelectorAll('button').forEach(button => { button.disabled = true; });
             const generation = ++this.generation;
             this.state.choose(value, this.data.pieces);
-            if (this.state.step === 7) { await this.result(generation); return; }
+            if (quizStep(this) === 7) { await this.result(generation); return; }
             await this.counter.to(this.state.count, this.reduced ? 0 : 650);
             if (generation !== this.generation) return;
             this.element.querySelector('[data-count-announcement]').textContent = this.state.count.toLocaleString('en-US') + ' estimated pieces remaining';
@@ -348,25 +369,32 @@
         }
         // All music cards share one renderer and the same preview controller.
         cards(pieces, variant) {
-            return '<div class="match-cards match-cards--' + variant + '">' + pieces.map(piece => {
-                const listening = variant === 'listening', duel = variant === 'duel', reward = variant === 'reward', recommendation = variant === 'recommendation';
+            return '<div class="match-cards match-cards--' + variant + (variant === 'level' ? ' match-cards--listening' : '') + '">' + pieces.map(piece => {
+                const isLevel = variant === 'level', listening = variant === 'listening' || isLevel, duel = variant === 'duel', reward = variant === 'reward', recommendation = variant === 'recommendation';
                 const play = '<button type="button" class="btn match-play" data-play="' + piece.id + '" data-piece-title="' + escape(piece.title) + '" aria-pressed="false" aria-label="Play preview: ' + escape(piece.title) + '"' +
                     (!piece.audio && !piece.video ? ' disabled' : '') + '><span data-play-icon>' + icon('play') + '</span><span data-pause-icon hidden>' + icon('pause') + '</span>' + (duel ? '<span data-play-label>Play</span>' : '') + '</button>';
-                const action = listening ? 'data-select-piece="' + piece.id + '" aria-pressed="' + (this.pendingPiece === piece.id) + '"' : 'data-choice="' + piece.id + '"';
+                const selected = (isLevel ? this.pendingLevel : this.pendingPiece) === piece.id;
+                const action = isLevel ? 'data-select-level="' + piece.id + '" aria-pressed="' + selected + '"' : listening ? 'data-select-piece="' + piece.id + '" aria-pressed="' + (this.pendingPiece === piece.id) + '"' : 'data-choice="' + piece.id + '"';
                 const tag = recommendation ? 'a' : 'button';
-                const attrs = recommendation ? 'href="' + escape(piece.url) + '"' : 'type="button" ' + action + (duel ? ' aria-label="Choose ' + escape(piece.title + ' by ' + piece.composer) + '"' : '');
+                const attrs = recommendation ? 'href="' + escape(piece.url) + '"' : 'type="button" ' + action + (duel || isLevel ? ' aria-label="Choose ' + escape((isLevel ? this.data.levels[baseLevel(piece.level)].label + ' level: ' : '') + piece.title + ' by ' + piece.composer) + '"' : '');
                 const image = '<img src="' + escape(listening ? piece.image : piece.artwork) + '" alt=""' + (recommendation ? ' loading="lazy"' : '') + '>';
+                const difficulty = baseLevel(piece.level);
+                const definition = isLevel ? this.data.levels[difficulty] : null;
+                const badge = isLevel ? '<span class="match-level-badge">' + escape(definition.label) + '</span>' : '';
+                const skills = isLevel ? '<span class="match-level-skills"><span class="match-level-scale">' + badge + '<span class="match-level-dots" aria-hidden="true">' + levels.map((name, index) => '<span' + (index <= levels.indexOf(difficulty) ? ' class="filled"' : '') + '></span>').join('') + '</span></span><span class="match-level-hint">' + escape(definition.hint) + '</span></span>' : '';
                 const copy = '<span class="match-piece-copy"><strong>' + escape(piece.title) + '</strong><small>' + escape(piece.composer) + '</small></span>';
                 const media = reward ? (piece.video ? '<video data-result-media controls playsinline preload="none" poster="' + escape(piece.artwork) + '" src="' + escape(piece.video) + '"></video>' : piece.audio ? '<audio data-result-media preload="none"><source src="' + escape(piece.audio) + '"' + (audioType(piece.audio) ? ' type="' + audioType(piece.audio) + '"' : '') + '></audio>' : '') : '';
                 const content = reward ? '<div class="match-artwork' + (piece.video ? ' has-video' : '') + '">' + image + media + play + '</div>' + copy :
-                    '<' + tag + ' class="match-select" ' + attrs + '>' + image + (duel ? '' : copy) + '</' + tag + '>' + (duel ? copy : '') + '<div class="match-card-player">' + play + (listening ? this.waveform() : '') + '</div>';
-                return '<article class="match-card match-card--' + variant + (listening && this.pendingPiece === piece.id ? ' selected' : '') + '" data-piece-card>' + content + '</article>';
+                    '<' + tag + ' class="match-select" ' + attrs + '>' + image + (duel ? '' : copy) + '</' + tag + '>' + (duel ? copy : '') + '<div class="match-card-player">' + play + (isLevel ? skills : listening ? this.waveform() : '') + '</div>';
+                return '<article class="match-card match-card--' + variant + (isLevel ? ' match-card--listening' : '') + (listening && selected ? ' selected' : '') + '"' + (isLevel ? ' data-level="' + difficulty + '"' : '') + ' data-piece-card>' + content + '</article>';
             }).join('') + (variant === 'duel' ? '<span class="match-duel-or" aria-hidden="true">OR</span>' : '') + '</div>';
         }
         render(focus = true) {
             this.stage.classList.remove('leaving'); this.report(''); this.navigation();
-            const step = this.state.step;
-            if (step === 0) this.stage.innerHTML = this.heading('Which piece do you like more?', 'Listen and pick your favorite.') + this.cards(this.data.pieces.slice(0, 4), 'listening') +
+            const step = quizStep(this);
+            if (step === -1) this.stage.innerHTML = this.heading('What feels closest to your level?', 'Pick the closest fit, not necessarily your favorite') + this.cards(this.data.levelPieces, 'level') +
+                '<div class="match-main-action"><button type="button" class="btn btn-primary match-primary" data-level-confirm' + (!this.pendingLevel ? ' hidden' : '') + '>This feels right ' + arrow + '</button></div>';
+            else if (step === 0) this.stage.innerHTML = this.heading('Which piece do you like more?', 'Listen and pick your favorite.') + this.cards(this.data.pieces.slice(0, 4), 'listening') +
                 '<div class="match-main-action"><button type="button" class="btn btn-primary match-primary" data-listen-confirm' + (!this.pendingPiece ? ' hidden' : '') + '>I like this one ' + arrow + '</button></div>';
             else if (step <= 2) this.reading();
             else if (step <= 5) this.stage.innerHTML = this.heading('Which feels more like you?', 'Pick the piece that speaks to you.', (step - 2) + ' of 3') + this.cards(this.data.pieces.slice(4 + (step - 3) * 2, 6 + (step - 3) * 2), 'duel');
@@ -383,12 +411,12 @@
         }
         readingScore() {
             const scores = this.data.scores;
-            return this.state.step === 1 ? scores.middle : this.state.answers.reading[0] ? scores.hard : (scores.beginner || scores.easy);
+            return quizStep(this) === 1 ? scores.middle : this.state.answers.reading[0] ? scores.hard : (scores.beginner || scores.easy);
         }
         async reading() {
             const generation = ++this.generation, score = this.readingScore();
             this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
-            this.stage.innerHTML = this.heading('Which feels easier to sight-read?', 'Imagine playing it for the first time at a slow pace.', this.state.step + ' of 2') +
+            this.stage.innerHTML = this.heading('Which feels easier to sight-read?', 'Imagine playing it for the first time at a slow pace.', quizStep(this) + ' of 2') +
                 '<article class="match-score-card match-score-single"><div class="match-score" data-score-slot="0" aria-busy="true"><p role="status">Opening score…</p></div></article>' +
                 '<div class="match-score-answers mt-3" role="group" aria-label="Sight-reading difficulty"><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Easy for me</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Difficult for me</button></div>';
             try {
@@ -528,7 +556,7 @@
             this.loading = true;
             this.content.scrollTop = 0;
             const generation = ++this.generation;
-            this.content.innerHTML = '<div class="match-tour-loading text-center" role="status"><i class="app-icon icon-loader-circle spin" aria-hidden="true"></i><p class="text-muted mt-3">Opening your listening choices…</p></div>';
+            this.content.innerHTML = '<div class="match-tour-loading text-center" role="status"><i class="app-icon icon-loader-circle spin" aria-hidden="true"></i><p class="text-muted mt-3">Opening your choices…</p></div>';
             try {
                 const response = await this.http.get(this.element.dataset.tourUrl, {headers: {Accept: 'application/json'}, timeout: 20000});
                 if (generation !== this.generation) return;
@@ -539,7 +567,7 @@
                 }
             } catch (error) {
                 if (generation !== this.generation) return;
-                this.content.innerHTML = '<div class="match-tour-loading text-center"><p role="alert">The listening tour could not be opened.</p><button type="button" class="btn btn-secondary" data-tour-retry>Try again</button></div>';
+                this.content.innerHTML = '<div class="match-tour-loading text-center"><p role="alert">The tour could not be opened.</p><button type="button" class="btn btn-secondary" data-tour-retry>Try again</button></div>';
             } finally {
                 if (generation === this.generation) this.loading = false;
             }

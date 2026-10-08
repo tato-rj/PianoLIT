@@ -132,11 +132,111 @@ class MatchTourTest extends ReviewTestCase
         $this->assertSame(12, $data['total']);
     }
 
-    private function answers($data = null)
+    private function answers($data = null, $playingLevel = null)
     {
         $data = $data ?? (new MatchTour)->data();
         $ids = array_column($data['pieces'], 'id');
-        return ['draw' => $data['draw'], 'preferredPiece' => $ids[0], 'reading' => [true, false], 'estimatedLevel' => 'elementary', 'winners' => [$ids[4], $ids[6], $ids[8]], 'intent' => 'personal'];
+        // Retain coverage of tours already open at deployment; new-flow tests opt into an anchor.
+        $draw = $playingLevel ? $data['draw'] : \Crypt::encryptString(json_encode(['version' => 1, 'ids' => $ids, 'expires' => now()->addHours(2)->timestamp]));
+        $answers = ['draw' => $draw, 'preferredPiece' => $ids[0], 'reading' => [true, false], 'estimatedLevel' => 'elementary', 'winners' => [$ids[4], $ids[6], $ids[8]], 'intent' => 'personal'];
+        if ($playingLevel) $answers['levelPiece'] = collect($data['levelPieces'])->first(function ($piece) use ($playingLevel) { return MatchTour::baseLevel($piece['level']) === $playingLevel; })['id'];
+        return $answers;
+    }
+
+    public function test_playing_examples_cover_each_real_level_and_stay_bound_to_the_draw()
+    {
+        $tour = new MatchTour;
+        $seen = [];
+        for ($i = 0; $i < 8; $i++) {
+            $data = $tour->data();
+            $this->assertSame(array_keys(MatchTour::LEVELS), array_map([MatchTour::class, 'baseLevel'], array_column($data['levelPieces'], 'level')));
+            \DB::enableQueryLog(); \DB::flushQueryLog();
+            $draw = $tour->drawChoices($data['draw']);
+            $this->assertCount(3, \DB::getQueryLog(), 'Draw validation batches levels without loading composer counts');
+            \DB::disableQueryLog();
+            $this->assertSame(array_column($data['levelPieces'], 'id'), array_values($draw['levels']));
+            foreach ($data['levelPieces'] as $piece) {
+                $this->assertContains($piece['id'], $this->pieces->pluck('id')->all());
+                $this->assertNotEmpty($piece['audio']);
+            }
+            $seen[] = implode(',', array_column($data['levelPieces'], 'id'));
+        }
+        $this->assertGreaterThan(1, count(array_unique($seen)));
+        $this->withExceptionHandling();
+        $answers = $this->answers($data, 'advanced');
+        $missing = $answers; unset($missing['levelPiece']);
+        $this->postJson(route('webapp.tour.result'), $missing)->assertStatus(422)->assertJsonValidationErrors('levelPiece');
+        $invalid = $answers; $invalid['levelPiece'] = collect($data['pieces'])->pluck('id')->diff(array_column($data['levelPieces'], 'id'))->first();
+        $this->postJson(route('webapp.tour.result'), $invalid)->assertStatus(422)->assertJsonValidationErrors('levelPiece');
+        $source = Piece::find($answers['levelPiece']);
+        $source->update(['highlighted_at' => null]);
+        $this->postJson(route('webapp.tour.result'), $answers)->assertStatus(422);
+    }
+
+    public function test_split_levels_keep_their_range_and_changed_level_examples_expire_the_draw()
+    {
+        Model::withoutEvents(function () {
+            foreach (['beginner' => 'early beginner', 'intermediate' => 'late intermediate'] as $base => $split) {
+                $baseTag = Tag::where('type', 'level')->where('name', $base)->first();
+                $splitTag = create(Tag::class, ['type' => 'level', 'name' => $split]);
+                foreach ($baseTag->pieces as $piece) { $piece->tags()->detach($baseTag); $piece->tags()->attach($splitTag); }
+            }
+        });
+        $tour = new MatchTour;
+        $data = $tour->data();
+        $this->assertTrue($data['ready']);
+        $this->assertSame(['elementary', 'early beginner', 'late intermediate', 'advanced'], array_column($data['levelPieces'], 'level'));
+        $answers = $this->answers($data, 'intermediate');
+        $answers['reading'] = [null, null];
+        $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('playing level you chose');
+        $answers = $this->answers($data, 'advanced');
+        $source = Piece::find($answers['levelPiece']);
+        $source->tags()->detach(Tag::where('name', 'advanced')->first()->id);
+        $source->tags()->attach(Tag::where('name', 'elementary')->first()->id);
+        $this->assertNull($tour->drawChoices($data['draw']));
+    }
+
+    public function test_playing_level_is_refined_by_reading_and_preserved_when_skipped()
+    {
+        $tour = new MatchTour;
+        $levels = array_keys(MatchTour::LEVELS);
+        $readings = [[false, false], [false, true], [true, false], [true, true]];
+        foreach ($levels as $anchorIndex => $anchor) {
+            $this->assertSame($anchor, $tour->level([null, null], 'intermediate', $anchor));
+            foreach ($readings as $readingIndex => $reading) {
+                $expected = $levels[(int) round((2 * $anchorIndex + $readingIndex) / 3)];
+                $this->assertSame($expected, $tour->level($reading, 'intermediate', $anchor));
+                $this->assertLessThanOrEqual(1, abs(array_search($expected, $levels) - $anchorIndex));
+            }
+        }
+    }
+
+    public function test_new_result_derives_level_from_the_verified_example_not_client_level_fields()
+    {
+        $data = (new MatchTour)->data();
+        $answers = $this->answers($data, 'advanced');
+        $answers['reading'] = [false, false];
+        $answers['playingLevel'] = 'elementary'; $answers['estimatedLevel'] = 'elementary';
+        $quiz = \Mockery::mock(Quiz::class);
+        $quiz->shouldReceive('getKeywords')->once()->with(\Mockery::on(function ($keywords) {
+            return in_array('intermediate', $keywords, true) && !in_array('elementary', $keywords, true);
+        }))->andReturnSelf();
+        $quiz->shouldReceive('exclude')->andReturnSelf();
+        $quiz->shouldReceive('search')->with(true, true)->andReturn($this->pieces[2]);
+        $quiz->shouldReceive('matchContext')->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => [], 'matchedTags' => [], 'levelMatched' => true]);
+        $this->app->instance(Quiz::class, $quiz);
+        $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your playing level and sight-reading answers');
+    }
+
+    public function test_new_flow_can_finish_after_skipping_reading_and_uses_the_chosen_playing_range()
+    {
+        $data = (new MatchTour)->data();
+        $answers = $this->answers($data, 'advanced');
+        $answers['reading'] = [null, null]; $answers['winners'] = [null, null, null]; $answers['mood'] = 'open';
+        $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('playing level you chose');
+        preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
+        $piece = Piece::with('tags')->find(json_decode($matches[1], true)['piece']['id']);
+        $this->assertSame('advanced', MatchTour::baseLevel($piece->level->name));
     }
 
     public function test_catalog_and_web_only_flow_are_guest_safe_with_verified_draws()
@@ -180,8 +280,8 @@ class MatchTourTest extends ReviewTestCase
         $tour = \Mockery::mock(MatchTour::class)->makePartial();
         $tour->shouldNotReceive('data');
         $this->app->instance(MatchTour::class, $tour);
-        $this->postJson(route('webapp.tour.result'), $this->answers($first))->assertOk();
-        $this->postJson(route('webapp.tour.result'), $this->answers($second))->assertOk();
+        $this->postJson(route('webapp.tour.result'), $this->answers($first, 'intermediate'))->assertOk();
+        $this->postJson(route('webapp.tour.result'), $this->answers($second, 'intermediate'))->assertOk();
     }
 
     public function test_missing_tampered_and_expired_draws_are_rejected()

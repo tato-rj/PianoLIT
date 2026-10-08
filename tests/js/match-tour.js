@@ -31,6 +31,31 @@ module.exports = async function () {
             assert.strictEqual(state.answers.reading.length, 0); assert.strictEqual(state.answers.winners.length, 0);
         }
     }
+    // The new first question anchors playing ability independently of musical taste.
+    const ranges = ['elementary', 'beginner', 'intermediate', 'advanced'];
+    const levelPieces = ranges.map((name, i) => ({id: 101 + i, level: name}));
+    for (const [anchorIndex, anchor] of ranges.entries()) {
+        for (const [readingIndex, reading] of [[false,false], [false,true], [true,false], [true,true]].entries()) {
+            const state = new State(961, levelPieces);
+            state.choose(levelPieces[anchorIndex].id, pieces);
+            assert.strictEqual(state.step, 1); assert.strictEqual(state.answers.playingLevel, anchor);
+            assert(state.count < 961 && state.count > 1);
+            const afterLevel = state.count;
+            state.choose(1, pieces); assert(state.count < afterLevel);
+            state.choose(reading[0], pieces); state.choose(reading[1], pieces);
+            assert.strictEqual(state.answers.estimatedLevel, ranges[Math.round((2 * anchorIndex + readingIndex) / 3)]);
+            state.choose(5, pieces); state.choose(7, pieces); state.choose(9, pieces); state.choose('calm', pieces);
+            assert.strictEqual(state.step, 8);
+            for (let i = 0; i < 8; i++) state.back();
+            assert.strictEqual(state.step, 0); assert.strictEqual(state.count, 961);
+            assert.strictEqual(state.answers.levelPiece, null); assert.strictEqual(state.answers.playingLevel, null);
+        }
+        assert.strictEqual(window.MatchTour.level([null,null], 'beginner', anchor), anchor);
+    }
+    const newSkipped = new State(961, levelPieces);
+    [104, 1, null, null, null, null, null, 'open'].forEach(value => newSkipped.choose(value, pieces));
+    assert.strictEqual(newSkipped.step, 8); assert.strictEqual(newSkipped.answers.estimatedLevel, 'advanced');
+
     const frames = [];
     const node = {}; const unit = {};
     const count = new AnimatedCount(node, unit, callback => frames.push(callback), false);
@@ -271,6 +296,16 @@ module.exports = async function () {
     assert(audioReward.includes('<audio data-result-media preload="none"><source src="/legacy.MPGA?name=a&amp;version=1" type="audio/mpeg"></audio>'), 'Audio-only rewards also type legacy recordings and escape URLs');
     const recommendations = Controller.prototype.cards.call(renderer, [card], 'recommendation');
     assert(recommendations.includes('href="/pieces/1"')); assert(!recommendations.includes('<video'));
+
+    renderer.pendingLevel = 1;
+    renderer.data = {levels: {intermediate: {label: 'Intermediate', hint: 'Independent hands & pedal'}}};
+    const levelCard = Controller.prototype.cards.call(renderer, [Object.assign({}, card, {level: 'early intermediate'})], 'level');
+    assert(levelCard.includes('match-card--level match-card--listening selected'), 'Level cards reuse the existing listening card');
+    assert(levelCard.includes('data-select-level="1"'));
+    assert(levelCard.includes('aria-label="Choose Intermediate level: &lt;danger&gt; by A &amp; B"'), 'The level is part of the accessible selection name');
+    assert(levelCard.includes('Intermediate')); assert(levelCard.includes('Independent hands &amp; pedal'));
+    assert(levelCard.indexOf('</button>') < levelCard.indexOf('data-play="1"'), 'Playback remains outside selection');
+    assert.strictEqual((levelCard.match(/class="filled"/g) || []).length, 3);
 
     let freshDraws = 0;
     await Controller.prototype.click.call({onRestart: () => { freshDraws++; }}, {

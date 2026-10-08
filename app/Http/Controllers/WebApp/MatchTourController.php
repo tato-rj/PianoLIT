@@ -13,9 +13,11 @@ class MatchTourController extends Controller
     public function result(Request $request, MatchTour $tour, Quiz $quiz)
     {
         $request->validate(['draw' => 'required|string|max:4096']);
-        $ids = $tour->drawIds($request->input('draw'));
+        $draw = $tour->drawChoices($request->input('draw'));
+        $ids = $draw['ids'] ?? null;
         abort_unless($ids, 422, 'The listening choices have expired or changed. Start over.');
         $answers = $request->validate([
+            'levelPiece' => [$draw['levels'] ? 'required' : 'nullable', 'integer', Rule::in(array_values($draw['levels']))],
             'preferredPiece' => ['required', 'integer', Rule::in(array_slice($ids, 0, 4))],
             'reading' => 'required|array|size:2',
             'reading.0' => 'present|nullable|boolean',
@@ -27,6 +29,7 @@ class MatchTourController extends Controller
             'mood' => ['nullable', Rule::in(array_keys(MatchTour::MOODS))],
             'intent' => ['required_without:mood', 'nullable', Rule::in(array_keys(MatchTour::INTENTS))],
         ]);
+        $answers['playingLevel'] = isset($answers['levelPiece']) ? array_search((int) $answers['levelPiece'], $draw['levels'], true) : null;
         // Derive the level server-side; never trust a submitted level or user identity.
         $piece = $quiz->getKeywords($tour->keywords($answers))->exclude($tour->exclusions($answers))->search(true, true);
         abort_unless($piece, 503, 'No match is available right now.');
