@@ -116,8 +116,9 @@
         attach(media) {
             if (this.bound.has(media)) return;
             this.bound.add(media);
+            ['loadedmetadata', 'durationchange', 'canplay'].forEach(event => media.addEventListener(event, () => this.seekStart(media)));
             ['timeupdate', 'seeking'].forEach(event => media.addEventListener(event, () => {
-                if (this.media === media && media.tagName !== 'VIDEO' && media.currentTime >= this.seconds) { this.stop(); media.currentTime = 0; }
+                if (this.media === media && media.tagName !== 'VIDEO' && media.currentTime >= this.startTime + this.seconds) { this.stop(); media.currentTime = 0; }
             }));
             media.addEventListener('ended', () => { if (this.media === media) this.stop(); });
             media.addEventListener('pause', () => { if (this.media === media && this.button) this.paint(false); });
@@ -128,6 +129,22 @@
             media.addEventListener('error', () => {
                 if (this.media === media && this.button) { this.stop(); this.report('This preview could not be played. You can still choose or view the piece.'); }
             });
+        }
+        seekStart(media) {
+            if (this.media !== media || !this.awaitingStart || media.readyState < 1
+                || !Number.isFinite(media.duration) || media.duration <= 0) return;
+            const earliest = media.duration * 0.4;
+            // Keep a full minute when a middle excerpt has enough recording left.
+            const latest = media.duration - this.seconds > earliest
+                ? Math.min(media.duration * 0.6, media.duration - this.seconds) : media.duration * 0.6;
+            const start = earliest + Math.random() * (latest - earliest);
+            try {
+                this.startTime = start; this.awaitingStart = false;
+                media.currentTime = start;
+            } catch (error) {
+                // Some browsers cannot seek until a later metadata/duration event.
+                this.startTime = 0; this.awaitingStart = true;
+            }
         }
         paint(playing) {
             const button = this.button;
@@ -144,7 +161,7 @@
             if (card) card.classList.toggle('is-playing', playing);
         }
         stop() {
-            this.generation++;
+            this.generation++; this.awaitingStart = false; this.startTime = 0;
             if (this.media) this.media.pause();
             this.paint(false); this.button = null; this.media = null;
         }
@@ -162,12 +179,14 @@
         }
         async play(piece, button, media) {
             const same = this.button === button;
-            if (same && this.media && !this.media.paused) { this.media.pause(); return; }
+            if (same && this.media && !this.media.paused) { this.generation++; this.media.pause(); return; }
             if (!same) {
                 this.stop(); this.button = button; this.media = media || this.audio;
                 this.attach(this.media);
                 if (!media) this.setSource(piece.audio);
                 this.media.currentTime = 0;
+                this.awaitingStart = this.media.tagName !== 'VIDEO';
+                this.seekStart(this.media);
             }
             const generation = ++this.generation;
             this.paint(true);
@@ -326,6 +345,8 @@
                 this.stage.querySelectorAll('[' + attribute + ']').forEach(control => {
                     const selected = Number(control.getAttribute(attribute)) === id;
                     control.setAttribute('aria-pressed', selected ? 'true' : 'false');
+                    const label = control.querySelector('[data-select-label]');
+                    if (label) label.textContent = selected ? 'Selected' : 'Select';
                     control.closest('[data-piece-card]').classList.toggle('selected', selected);
                 });
                 this.stage.querySelector(isLevel ? '[data-level-confirm]' : '[data-listen-confirm]').hidden = false;
@@ -382,10 +403,11 @@
                 const definition = isLevel ? this.data.levels[difficulty] : null;
                 const badge = isLevel ? '<span class="match-level-badge">' + escape(definition.label) + '</span>' : '';
                 const skills = isLevel ? '<span class="match-level-skills"><span class="match-level-scale">' + badge + '<span class="match-level-dots" aria-hidden="true">' + levels.map((name, index) => '<span' + (index <= levels.indexOf(difficulty) ? ' class="filled"' : '') + '></span>').join('') + '</span></span><span class="match-level-hint">' + escape(definition.hint) + '</span></span>' : '';
+                const select = listening ? '<span class="match-select-label" data-select-label aria-hidden="true">' + (selected ? 'Selected' : 'Select') + '</span>' : '';
                 const copy = '<span class="match-piece-copy"><strong>' + escape(piece.title) + '</strong><small>' + escape(piece.composer) + '</small></span>';
                 const media = reward ? (piece.video ? '<video data-result-media controls playsinline preload="none" poster="' + escape(piece.artwork) + '" src="' + escape(piece.video) + '"></video>' : piece.audio ? '<audio data-result-media preload="none"><source src="' + escape(piece.audio) + '"' + (audioType(piece.audio) ? ' type="' + audioType(piece.audio) + '"' : '') + '></audio>' : '') : '';
                 const content = reward ? '<div class="match-artwork' + (piece.video ? ' has-video' : '') + '">' + image + media + play + '</div>' + copy :
-                    '<' + tag + ' class="match-select" ' + attrs + '>' + image + (duel ? '' : copy) + '</' + tag + '>' + (duel ? copy : '') + '<div class="match-card-player">' + play + (isLevel ? skills : listening ? this.waveform() : '') + '</div>';
+                    '<' + tag + ' class="match-select" ' + attrs + '>' + image + (duel ? '' : copy) + select + '</' + tag + '>' + (duel ? copy : '') + '<div class="match-card-player">' + play + (isLevel ? skills : listening ? this.waveform() : '') + '</div>';
                 return '<article class="match-card match-card--' + variant + (isLevel ? ' match-card--listening' : '') + (listening && selected ? ' selected' : '') + '"' + (isLevel ? ' data-level="' + difficulty + '"' : '') + ' data-piece-card>' + content + '</article>';
             }).join('') + (variant === 'duel' ? '<span class="match-duel-or" aria-hidden="true">OR</span>' : '') + '</div>';
         }

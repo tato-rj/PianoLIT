@@ -131,6 +131,61 @@ module.exports = async function () {
     video.events.ended(); assert(video.paused); assert.strictEqual(previews.media, null);
     video.events.play(); assert(video.paused, 'Disposed native media cannot resume');
 
+    // Every shared audio preview starts around its midpoint after metadata arrives.
+    const randomWindow = Object.assign({}, window);
+    const middleMath = Object.assign(Object.create(Math), {random: () => 0.5});
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/match-tour.js'), 'utf8'), {window: randomWindow, Math: middleMath});
+    const middle = new randomWindow.MatchTour.Previews(60, () => { throw Error('Unexpected preview error'); });
+    const c = button(), d = button();
+    await middle.play(pieces[0], c);
+    assert.strictEqual(middle.audio.currentTime, 0, 'Seeking waits for usable metadata');
+    middle.audio.duration = 300; middle.audio.readyState = 1; middle.audio.events.loadedmetadata();
+    assert.strictEqual(middle.audio.currentTime, 150);
+    middle.audio.currentTime = 165; middle.audio.events.durationchange();
+    assert.strictEqual(middle.audio.currentTime, 165, 'Duration updates cannot select a new start during playback');
+    await middle.play(pieces[0], c); await middle.play(pieces[0], c);
+    assert.strictEqual(middle.audio.currentTime, 165, 'Pause/resume preserves the random excerpt and position');
+    middle.audio.currentTime = 209.9; middle.audio.events.timeupdate(); assert(!middle.audio.paused);
+    middle.audio.currentTime = 210; middle.audio.events.seeking(); assert(middle.audio.paused, 'The limit is sixty seconds after the random start');
+
+    const inlineAudio = new randomWindow.Audio(); inlineAudio.tagName = 'AUDIO'; inlineAudio.readyState = 1; inlineAudio.duration = 300;
+    await middle.play(pieces[0], c, inlineAudio);
+    assert.strictEqual(inlineAudio.currentTime, 150, 'Audio-only result cards use the same random start');
+    inlineAudio.currentTime = 210; inlineAudio.events.timeupdate(); assert(inlineAudio.paused);
+    const fullVideo = new randomWindow.Audio(); fullVideo.tagName = 'VIDEO'; fullVideo.readyState = 1; fullVideo.duration = 300;
+    await middle.play(pieces[0], d, fullVideo);
+    fullVideo.events.loadedmetadata(); assert.strictEqual(fullVideo.currentTime, 0, 'Video still starts at the beginning');
+    fullVideo.currentTime = 270; fullVideo.events.timeupdate(); assert(!fullVideo.paused, 'Video still plays to completion');
+
+    middle.audio.readyState = 0; middle.audio.duration = NaN;
+    await middle.play(pieces[0], c); middle.stop();
+    middle.audio.readyState = 1; middle.audio.duration = 300; middle.audio.currentTime = 8; middle.audio.events.loadedmetadata();
+    assert.strictEqual(middle.audio.currentTime, 8, 'Late metadata after Back/close cannot seek abandoned media');
+    middle.audio.readyState = 0; middle.audio.duration = NaN;
+    await middle.play(pieces[1], d);
+    middle.audio.readyState = 1; middle.audio.duration = 120; middle.audio.events.loadedmetadata();
+    assert.strictEqual(middle.audio.currentTime, 54, 'A shorter recording keeps a full minute where a middle start allows it');
+    middle.stop(); middle.audio.readyState = 0; middle.audio.duration = Infinity;
+    await middle.play(pieces[0], c); middle.audio.events.durationchange(); assert.strictEqual(middle.audio.currentTime, 0);
+    middle.audio.readyState = 1; middle.audio.duration = 30; middle.audio.events.durationchange();
+    assert.strictEqual(middle.audio.currentTime, 15, 'Short recordings start around their middle and can end naturally');
+    middle.stop();
+    for (const random of [0, 0.9999]) {
+        middleMath.random = () => random; middle.audio.readyState = 0; middle.audio.duration = NaN;
+        await middle.play(pieces[0], c);
+        middle.audio.readyState = 1; middle.audio.duration = 300; middle.audio.events.loadedmetadata();
+        assert(Math.abs(middle.audio.currentTime - (120 + random * 60)) < 0.000001, 'Fresh playback rerolls the excerpt across the middle range');
+        middle.stop();
+    }
+    middle.audio.readyState = 0; middle.audio.duration = NaN;
+    let rejectLoading;
+    middle.audio.play = function () { this.paused = false; return new Promise((resolve, reject) => { rejectLoading = reject; }); };
+    const loadingPreview = middle.play(pieces[0], c);
+    await middle.play(pieces[0], c);
+    rejectLoading(Error('Playback was paused before metadata')); await loadingPreview;
+    assert(middle.audio.paused); assert.strictEqual(middle.button, c, 'Pausing during loading preserves selection without reporting a false playback error');
+    middle.stop();
+
     window.setTimeout = callback => callback();
     // A result delivered after restart/back must never replace the current screen.
     let resolve;

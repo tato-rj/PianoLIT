@@ -59,7 +59,7 @@ class MatchTourTest extends ReviewTestCase
         foreach ($queries as $query) $this->assertStringNotContainsString('pieces_count', $query['query']);
     }
 
-    public function test_opening_choices_are_randomized_across_the_entire_free_pick_pool()
+    public function test_opening_choices_are_randomized_across_the_eligible_free_pick_pool()
     {
         Model::withoutEvents(function () {
             $genre = create(Tag::class, ['name' => 'dance', 'type' => 'genre']);
@@ -80,6 +80,48 @@ class MatchTourTest extends ReviewTestCase
         }
         $this->assertGreaterThan(1, count(array_unique($openings)), 'Randomization changes the pieces, not only their order');
         $this->assertGreaterThan(4, count(array_unique($seen)));
+    }
+
+    public function test_listening_choices_start_at_late_beginner_and_keep_lower_levels_in_other_sections()
+    {
+        Model::withoutEvents(function () {
+            $late = create(Tag::class, ['type' => 'sublevel', 'name' => 'late beginner']);
+            $early = create(Tag::class, ['type' => 'sublevel', 'name' => 'early beginner']);
+            $this->pieces[1]->tags()->attach($late);
+            $this->pieces[5]->tags()->attach($early);
+            $this->pieces[2]->tags()->attach(create(Tag::class, ['type' => 'sublevel', 'name' => 'early intermediate']));
+            $this->pieces[6]->tags()->attach(create(Tag::class, ['type' => 'sublevel', 'name' => 'late intermediate']));
+            // Also support split names stored directly as level tags.
+            $beginner = Tag::where('type', 'level')->where('name', 'beginner')->first();
+            $split = create(Tag::class, ['type' => 'level', 'name' => 'late beginner']);
+            $this->pieces[9]->tags()->detach($beginner);
+            $this->pieces[9]->tags()->attach($split);
+        });
+        $allowed = $this->pieces->filter(function ($piece, $i) { return in_array($i % 4, [2, 3]) || in_array($i, [1, 9]); })->pluck('id')->all();
+        for ($i = 0; $i < 12; $i++) {
+            $data = (new MatchTour)->data();
+            $this->assertTrue($data['ready']);
+            $opening = array_column(array_slice($data['pieces'], 0, 4), 'id');
+            foreach ($opening as $id) $this->assertContains($id, $allowed);
+            $this->assertCount(10, array_unique(array_column($data['pieces'], 'id')));
+            $this->assertSame(array_keys(MatchTour::LEVELS), array_map([MatchTour::class, 'baseLevel'], array_column($data['levelPieces'], 'level')));
+        }
+        // Exactly four eligible recordings make boundary inclusion deterministic.
+        Piece::whereIn('id', $this->pieces->only([6, 7, 10, 11])->pluck('id'))->update(['audio_path' => null]);
+        $opening = array_column(array_slice((new MatchTour)->data()['pieces'], 0, 4), 'id');
+        $this->assertCount(4, $opening);
+        $this->assertContains($this->pieces[1]->id, $opening, 'Late beginner sublevels remain eligible');
+        $this->assertContains($this->pieces[9]->id, $opening, 'Late beginner level tags remain eligible');
+    }
+
+    public function test_listening_choices_do_not_backfill_with_simple_pieces_when_eligible_examples_are_missing()
+    {
+        Piece::whereIn('id', $this->pieces->filter(function ($piece, $i) { return in_array($i % 4, [2, 3]); })->pluck('id'))->update(['audio_path' => null]);
+        $data = (new MatchTour)->data();
+        $this->assertFalse($data['ready']);
+        $this->assertNull($data['draw']);
+        $this->assertSame([], $data['pieces']);
+        $this->assertNotNull($data['scores']['easy'], 'Easy score examples are unaffected');
     }
 
     public function test_all_questionnaire_examples_come_from_historical_free_picks()
@@ -515,10 +557,15 @@ class MatchTourTest extends ReviewTestCase
         $this->copyWithMedia(['score_url' => 'https://example.test/buy-score']);
         $eligible = $this->pieces->pluck('id')->all();
         for ($i = 0; $i < 6; $i++) $eligible[] = $this->copyWithMedia()->id;
-        // Keep the randomized examples on the shared elementary/calm branch for this assertion.
-        Piece::whereIn('id', $this->pieces->slice(1)->pluck('id'))->update(['audio_path' => null]);
+        // Isolate media eligibility from the randomized listening level/mood.
+        // All examples share the fixtures' calm character; reading selects elementary.
+        Model::withoutEvents(function () {
+            $moods = Tag::where('type', 'mood')->pluck('id');
+            $calm = Tag::where('type', 'mood')->where('name', 'calm')->first();
+            foreach ($this->pieces as $piece) { $piece->tags()->detach($moods); $piece->tags()->attach($calm); }
+        });
         $answers = $this->answers();
-        $answers['reading'] = [null, null];
+        $answers['reading'] = [false, false];
         $answers['winners'] = [null, null, null];
         $answers['mood'] = 'open';
         $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk();

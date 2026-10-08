@@ -139,6 +139,14 @@ class MatchTour
                 return self::baseLevel(optional($piece->tags->firstWhere('type', 'level'))->name) === $level;
             });
         })->filter()->map(function ($piece) { return $this->questionCard($piece); });
+        // Listening measures taste, so omit examples below late beginner. Reuse
+        // the existing extended-level accessor (sublevel first) and loaded tags.
+        $openingPool = $pool->filter(function ($piece) {
+            return in_array(optional($piece->extended_level)->name, [
+                'late beginner', 'intermediate', 'early intermediate', 'late intermediate',
+                'advanced', 'early advanced', 'late advanced',
+            ], true);
+        });
         $selected = collect();
         // Calculate each candidate's trait set once. Keep its nearest distance as
         // picks are added instead of sorting/rebuilding every pair on every round.
@@ -162,11 +170,15 @@ class MatchTour
                 } else {
                     $score = $piece->show_on_tour ? 1 : 0;
                 }
-                // Sample the opening four from the whole pool, then favor contrasting duels.
-                if ($selected->count() < 4) $score = 0;
+                // Randomize the eligible listening choices, then favor contrasting duels.
+                if ($selected->count() < 4) {
+                    if (!$openingPool->has($piece->id)) continue;
+                    $score = 0;
+                }
                 // Random pool order also breaks contrast ties differently on each tour.
                 if ($score > $best) { $winner = $piece; $best = $score; }
             }
+            if (!$winner) break; // Never fill a missing listening choice with a simpler piece.
             $selected->push($winner);
             $pool->forget($winner->id);
             $previous = $winner;
