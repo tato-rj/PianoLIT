@@ -1,5 +1,13 @@
 @extends('webapp.layouts.app', ['title' => 'Discover'])
 
+@push('header')
+<style>
+.mb-4 {
+    margin-bottom: 3rem !important;
+}
+</style>
+@endpush
+
 @section('content')
 @component('webapp.layouts.header', ['title' => 'Discover', 'subtitle' => 'Take a quick tour to find the perfect piece for you'])
     @include('webapp.tour.button')
