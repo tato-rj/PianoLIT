@@ -106,7 +106,7 @@
 .discover-for-you {
     // Existing Match tour reward background.
     background: #f7efff;
-    .discover-compact-card { flex: 0 0 calc((100% - 32px) / 3); }
+    .discover-compact-card { flex: 0 0 calc((100% - 100px) / 3); }
 }
 .discover-women {
     // Existing Collections feature background.
@@ -123,7 +123,7 @@
 }
 .discover-latest__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 1199px) {
-    .discover-for-you .discover-compact-card { flex-basis: calc((100% - 16px) / 2); }
+    .discover-for-you .discover-compact-card { flex-basis: calc((100% - 200px) / 2); }
 }
 @media (max-width: 991px) {
     .discover-level-card { flex-basis: calc((100% - 48px) / 4); }
