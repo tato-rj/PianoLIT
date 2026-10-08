@@ -59,7 +59,7 @@
     h3[tabindex='-1']:focus { outline: none; }
     .match-heading p { max-width: 550px; margin: 0 auto; line-height: 1.5; color: var(--match-muted); }
     .match-rounds { display: inline-block; margin-top: 8px; font-size: 12px; color: var(--match-muted); letter-spacing: .08em; }
-    [data-stage] { position: relative; transition: opacity 130ms ease, transform 130ms ease; animation: match-enter 220ms ease both; }
+    [data-stage] { position: relative; transition: opacity 130ms ease, transform 130ms ease; animation: match-enter 220ms ease backwards; }
     [data-stage].leaving { opacity: 0; transform: translateY(-8px); }
     .match-cards { display: grid; gap: 18px; position: relative; }
     .match-cards--listening, .match-cards--duel { grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -288,9 +288,59 @@
     }
 }
 @keyframes match-orbit { to { transform: rotate(360deg); } }
+
+// A single, short reward beat after the real result is ready and the count is one.
+.match-tour-modal .match-ambience::after {
+    content: ''; position: absolute; inset: 0; opacity: 0;
+    background: radial-gradient(ellipse at 50% 25%, rgba(255,226,147,.72), rgba(238,219,255,.28) 45%, transparent 75%);
+    pointer-events: none;
+}
+.match-tour-modal.is-celebrating .match-ambience::after { animation: match-reward-light 950ms ease-out both; }
+.match-tour.is-celebrating {
+    .match-finding-orbit { display: none; }
+    .match-count-number { animation: match-reward-pop 850ms cubic-bezier(.22,.8,.3,1) both; box-shadow: 0 0 44px rgba(236,182,65,.25); }
+    .match-count-arc { stroke: #dba638; }
+    .match-count-unit { color: #8b651b; font-size: 14px; }
+    .match-count-number::before, .match-count-number::after {
+        content: ''; position: absolute; inset: -17px; border: 2px solid rgba(224,172,61,.6); border-radius: 50%;
+        pointer-events: none; animation: match-reward-halo 900ms ease-out both;
+    }
+    .match-count-number::after { animation-delay: 120ms; border-color: rgba(128,98,239,.3); }
+    .match-reward-heading { animation: match-reward-copy 400ms ease-out both; }
+}
+.match-reward-sparks { position: absolute; inset: 0; pointer-events: none; }
+.match-reward-sparks > span {
+    position: absolute; left: 50%; top: 50%; margin: -5px 0 0 -3px; width: 6px; height: 10px;
+    border-radius: 3px; background: #dfac42; opacity: 0;
+    animation: match-reward-spark 850ms cubic-bezier(.16,.7,.3,1) both;
+}
+.match-reward-sparks > span:nth-child(3n) { background: #a38aea; width: 7px; height: 7px; border-radius: 50%; }
+@keyframes match-reward-pop {
+    0% { transform: scale(1); }
+    32% { transform: scale(1.17); }
+    58% { transform: scale(1.07); }
+    100% { transform: scale(1.1); }
+}
+@keyframes match-reward-halo {
+    0% { transform: scale(.88); opacity: 0; }
+    20% { opacity: .8; }
+    100% { transform: scale(1.55); opacity: 0; }
+}
+@keyframes match-reward-spark {
+    0% { transform: translate(0, 0) rotate(var(--spark-turn)) scale(.3); opacity: 0; }
+    18% { opacity: 1; }
+    65% { opacity: 1; }
+    100% { transform: translate(var(--spark-x), var(--spark-y)) rotate(var(--spark-turn)) scale(.7); opacity: 0; }
+}
+@keyframes match-reward-copy { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes match-reward-light { from { opacity: 0; } 35%, to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
     .match-tour .match-finding-orbit { animation: none; }
     .match-tour .match-count-arc { transition: none; }
+    .match-tour.is-celebrating .match-count-number, .match-tour.is-celebrating .match-reward-heading,
+    .match-tour-modal.is-celebrating .match-ambience::after { animation: none; }
+    .match-tour.is-celebrating .match-count-number::before, .match-tour.is-celebrating .match-count-number::after,
+    .match-reward-sparks { display: none; }
 }
 
 // Level examples inherit the listening card, selection, portrait and playback styles.

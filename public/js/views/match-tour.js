@@ -77,6 +77,7 @@
             this.reduced = reduced; this.generation = 0; this.onChange = onChange;
         }
         set(value) {
+            if (value === this.value) return;
             this.value = value;
             this.element.textContent = value.toLocaleString('en-US');
             this.unit.textContent = value === 1 ? 'piece' : 'pieces';
@@ -174,6 +175,12 @@
             if (this.media) { this.media.pause(); this.resetAudio(); }
             this.startTime = 0;
             this.paint(false); this.button = null; this.media = null; this.audioKey = null;
+        }
+        destroy() {
+            this.stop();
+            // Release the detached Audio element's network/decoder resources.
+            if (this.source) this.source.removeAttribute('src');
+            this.audio.removeAttribute('src'); this.audio.load(); this.starts.clear();
         }
         setSource(url) {
             if (!this.source) {
@@ -280,8 +287,15 @@
             this.onClick = event => this.click(event);
             element.addEventListener('click', this.onClick);
             this.onPageHide = () => this.dispose();
+            this.onPageShow = event => {
+                if (!event.persisted) return;
+                // A bfcache restore has no live request/animation to finish.
+                if (quizStep(this) === resultStep && !this.resultData) this.state.back();
+                this.busy = false; this.counter.set(this.state.count); this.render(false);
+            };
             this.onVisibility = () => { if (root.document.hidden) this.stopMedia(); };
             root.addEventListener('pagehide', this.onPageHide);
+            root.addEventListener('pageshow', this.onPageShow);
             root.document.addEventListener('visibilitychange', this.onVisibility);
             this.render(false);
         }
@@ -293,12 +307,23 @@
         dispose() {
             this.generation++; this.counter.cancel(); this.stopMedia();
             this.finishFinding();
-            this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
+            this.cancelScores();
+        }
+        cancelScores() {
+            this.pdfTasks.forEach(task => { Promise.resolve(task.destroy()).catch(() => {}); });
+            this.pdfTasks.clear();
         }
         destroy() {
             this.dispose();
+            this.previews.destroy(); this.scoreExcerpts.clear();
+            this.stage.querySelectorAll('audio,video').forEach(media => {
+                media.removeAttribute('src');
+                media.querySelectorAll('source').forEach(source => source.removeAttribute('src'));
+                media.load();
+            });
             this.element.removeEventListener('click', this.onClick);
             root.removeEventListener('pagehide', this.onPageHide);
+            root.removeEventListener('pageshow', this.onPageShow);
             root.document.removeEventListener('visibilitychange', this.onVisibility);
         }
         countProgress(value) {
@@ -392,6 +417,7 @@
             this.busy = true; this.report(''); this.stopMedia();
             this.stage.querySelectorAll('button').forEach(button => { button.disabled = true; });
             const generation = ++this.generation;
+            this.cancelScores();
             this.state.choose(value, this.data.pieces);
             if (quizStep(this) === resultStep) { await this.result(generation); return; }
             await this.counter.to(this.state.count, this.reduced ? 0 : 650);
@@ -459,7 +485,7 @@
         }
         async reading() {
             const generation = ++this.generation, score = this.readingScore();
-            this.pdfTasks.forEach(task => task.destroy()); this.pdfTasks.clear();
+            this.cancelScores();
             this.stage.innerHTML = this.heading('Which feels easier to sight-read?', 'Imagine playing it for the first time at a slow pace.', quizStep(this) + ' of 2') +
                 '<article class="match-score-card match-score-single"><div class="match-score" data-score-slot="0" aria-busy="true"><p role="status">Opening score…</p></div></article>' +
                 '<div class="match-score-answers mt-3" role="group" aria-label="Sight-reading difficulty"><button type="button" class="btn btn-secondary match-score-choice" data-choice="yes" disabled>Easy for me</button><button type="button" class="btn btn-secondary match-score-choice" data-choice="no" disabled>Difficult for me</button></div>';
@@ -478,23 +504,28 @@
         }
         async score(score, index, generation) {
             const slot = this.stage.querySelector('[data-score-slot="' + index + '"]');
-            let task, timer;
+            let task, timer, abandoned = false;
             try {
                 let cropped = this.scoreExcerpts.get(score.url);
                 if (!cropped) {
                     task = this.pdfjs.getDocument({url: score.url}); this.pdfTasks.add(task);
-                    const pdf = await Promise.race([task.promise, new Promise((resolve, reject) => { timer = root.setTimeout(() => reject(new Error('Score timed out')), 15000); })]);
-                    root.clearTimeout(timer);
-                    if (generation !== this.generation) return;
-                    const page = await pdf.getPage(1);
-                    if (generation !== this.generation) return;
-                    const viewport = page.getViewport({scale: 1.5}), canvas = root.document.createElement('canvas');
-                    canvas.width = viewport.width; canvas.height = viewport.height;
-                    await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
-                    if (generation !== this.generation) return;
-                    const excerpt = excerptBounds(canvas);
-                    cropped = root.document.createElement('canvas'); cropped.width = canvas.width; cropped.height = excerpt.height;
-                    cropped.getContext('2d').drawImage(canvas, 0, excerpt.top, canvas.width, excerpt.height, 0, 0, cropped.width, cropped.height);
+                    const render = async () => {
+                        const pdf = await task.promise;
+                        if (abandoned || generation !== this.generation) return;
+                        const page = await pdf.getPage(1);
+                        if (abandoned || generation !== this.generation) return;
+                        const viewport = page.getViewport({scale: 1.5}), canvas = root.document.createElement('canvas');
+                        canvas.width = viewport.width; canvas.height = viewport.height;
+                        await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+                        if (abandoned || generation !== this.generation) return;
+                        const excerpt = excerptBounds(canvas);
+                        const crop = root.document.createElement('canvas'); crop.width = canvas.width; crop.height = excerpt.height;
+                        crop.getContext('2d').drawImage(canvas, 0, excerpt.top, canvas.width, excerpt.height, 0, 0, crop.width, crop.height);
+                        return crop;
+                    };
+                    // Bound the complete PDF operation, including getPage/render.
+                    cropped = await Promise.race([render(), new Promise((resolve, reject) => { timer = root.setTimeout(() => reject(new Error('Score timed out')), 15000); })]);
+                    if (!cropped || generation !== this.generation) return;
                     this.scoreExcerpts.set(score.url, cropped);
                 }
                 if (generation !== this.generation) return;
@@ -505,7 +536,10 @@
                 // Answer only after the actual excerpt is ready.
                 this.stage.querySelectorAll('[data-choice]').forEach(button => { button.disabled = false; });
             } catch (error) { if (generation === this.generation) this.scoreFailure(); }
-            finally { root.clearTimeout(timer); if (task) { task.destroy(); this.pdfTasks.delete(task); } }
+            finally {
+                abandoned = true; root.clearTimeout(timer);
+                if (task && this.pdfTasks.delete(task)) Promise.resolve(task.destroy()).catch(() => {});
+            }
         }
         showSuggestions(show) {
             const view = this.stage.querySelector('[data-recommendations-view]');
@@ -531,9 +565,28 @@
             this.element.querySelector('[data-count-announcement]').textContent = 'Your answers are complete. Finding your match.';
         }
         finishFinding() {
-            this.waiting = false; this.element.classList.remove('is-finding'); this.stage.removeAttribute('aria-busy');
+            this.waiting = false; this.element.classList.remove('is-finding', 'is-celebrating'); this.stage.removeAttribute('aria-busy');
+            if (this.shell) this.shell.classList.remove('is-celebrating');
             const orbit = this.element.querySelector('.match-finding-orbit');
             if (orbit) orbit.remove();
+            const sparks = this.element.querySelector('.match-reward-sparks');
+            if (sparks) sparks.remove();
+        }
+        celebrate() {
+            this.element.classList.add('is-celebrating');
+            if (this.shell) {
+                this.shell.classList.add('is-celebrating');
+                this.shell.querySelector('[data-step-name]').textContent = 'Your match is ready';
+            }
+            this.element.querySelector('[data-count-unit]').textContent = 'perfect match';
+            this.element.querySelector('.match-count-number').insertAdjacentHTML('beforeend',
+                '<span class="match-reward-sparks" aria-hidden="true">' + Array.from({length: 12}, (_, i) => {
+                    const angle = i * Math.PI / 6;
+                    return '<span style="--spark-x:' + Math.round(Math.cos(angle) * 120) + 'px;--spark-y:' + Math.round(Math.sin(angle) * 120) + 'px;--spark-turn:' + (i * 30) + 'deg"></span>';
+                }).join('') + '</span>');
+            this.stage.innerHTML = '<div class="match-finding match-reward-heading">' +
+                this.heading('We found your perfect match!', 'One piece, chosen for you.') + '</div>';
+            this.element.querySelector('[data-count-announcement]').textContent = 'One perfect match. Ready to meet your next piece.';
         }
         async result(generation) {
             const previous = this.state.count;
@@ -547,10 +600,12 @@
                 if (generation !== this.generation) return;
                 await countdown;
                 if (generation !== this.generation) return;
-                this.stage.querySelector('h3').textContent = 'Your match is ready!';
                 await this.counter.to(1, this.reduced ? 0 : 450, true);
                 if (generation !== this.generation) return;
                 this.state.count = 1; this.stopMedia();
+                this.celebrate();
+                await pause(this.reduced ? 0 : 950);
+                if (generation !== this.generation) return;
                 this.stage.classList.add('leaving'); await pause(this.reduced ? 0 : 130);
                 if (generation !== this.generation) return;
                 this.finishFinding(); this.stage.innerHTML = response.data; this.mountResult();
@@ -600,6 +655,7 @@
             if (this.loading) return;
             if (this.controller) { this.controller.destroy(); this.controller = null; }
             progress(this.element, 0, false);
+            this.element.classList.remove('has-match-result');
             this.loading = true;
             this.content.scrollTop = 0;
             const generation = ++this.generation;

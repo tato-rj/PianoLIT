@@ -4,7 +4,7 @@ namespace Tests\Review;
 
 use App\{Piece, Tag, Tutorial};
 use App\Resources\FindYourMatch\Quiz;
-use App\Services\WebApp\MatchTour;
+use App\Services\WebApp\{MatchTour, MatchQuiz};
 use Illuminate\Database\Eloquent\Model;
 
 class MatchTourTest extends ReviewTestCase
@@ -57,6 +57,71 @@ class MatchTourTest extends ReviewTestCase
         $this->assertSame($queryCount, count($queries));
         $this->assertLessThanOrEqual(12, count($queries));
         foreach ($queries as $query) $this->assertStringNotContainsString('pieces_count', $query['query']);
+    }
+
+    public function test_web_ranking_keeps_only_the_best_mood_matches_and_batches_queries()
+    {
+        for ($i = 0; $i < 6; $i++) $this->copyWithMedia();
+        $best = $this->copyWithMedia();
+        $best->tags()->attach(Tag::name('dreamy')->first());
+        $keywords = [$this->pieces[0]->id, $this->pieces[4]->id, $this->pieces[8]->id, 'elementary', 'dreamy'];
+        $excluded = $this->pieces->pluck('id')->all();
+        $counts = [];
+        foreach ([Quiz::class, MatchQuiz::class] as $engine) {
+            \DB::enableQueryLog(); \DB::flushQueryLog();
+            $quiz = (new $engine)->getKeywords($keywords)->exclude($excluded);
+            $piece = $quiz->search(true, true);
+            $counts[$engine] = count(\DB::getQueryLog());
+            \DB::disableQueryLog();
+            if ($engine === MatchQuiz::class) $this->assertSame($best->id, $piece->id);
+        }
+        $this->assertSame(6, $counts[MatchQuiz::class], 'Keywords, choices and candidates each load in batches');
+        $this->assertLessThan($counts[Quiz::class], $counts[MatchQuiz::class]);
+        for ($i = 0; $i < 12; $i++) $this->assertSame($best->id, $quiz->search(true, true)->id);
+    }
+
+    public function test_web_options_limit_hydration_and_reuse_loaded_card_relations()
+    {
+        for ($i = 0; $i < 20; $i++) $this->copyWithMedia();
+        $source = $this->pieces[0]->load('tags');
+        \DB::enableQueryLog(); \DB::flushQueryLog();
+        $options = (new MatchTour)->recommendations($source);
+        $queries = \DB::getQueryLog();
+        $this->assertCount(4, $options);
+        $this->assertCount(3, $queries);
+        $this->assertStringContainsString('limit 4', $queries[0]['query']);
+        foreach ($queries as $query) $this->assertStringNotContainsString('_count', $query['query']);
+        \DB::flushQueryLog();
+        foreach ($options as $piece) MatchTour::card($piece);
+        $this->assertCount(0, \DB::getQueryLog());
+        \DB::disableQueryLog();
+    }
+
+    public function test_web_ranking_retains_all_equally_good_matches()
+    {
+        $ids = [];
+        for ($i = 0; $i < 7; $i++) $ids[] = $this->copyWithMedia()->id;
+        $quiz = new class extends MatchQuiz {
+            public function rankedIds() { return $this->ranking->pluck('id')->all(); }
+        };
+        $quiz->getKeywords([$this->pieces[0]->id, 'elementary', 'calm'])
+            ->exclude($this->pieces->pluck('id')->all())->search(true, true);
+        $this->assertEqualsCanonicalizing($ids, $quiz->rankedIds(), 'Equally suitable newer pieces are not discarded by a top-five cutoff');
+    }
+
+    public function test_web_matching_uses_playing_range_independently_of_listening_difficulty_and_tag_ids()
+    {
+        Tutorial::query()->delete();
+        $best = $this->partialCandidate('late beginner', ['calm']);
+        $this->partialCandidate('advanced', ['calm', 'dreamy']);
+        // This advanced recording is a taste choice, and the split beginner tag
+        // was created much later than the initial four broad level tags.
+        $quiz = (new MatchQuiz)->getKeywords([$this->pieces[3]->id, 'beginner', 'dreamy']);
+        $piece = $quiz->search(true, true);
+        $this->assertSame($best->id, $piece->id);
+        $context = $quiz->matchContext($piece);
+        $this->assertFalse($context['fallback'], 'A matching mood and playing range are a direct fit');
+        $this->assertTrue($context['levelMatched']);
     }
 
     public function test_opening_choices_are_randomized_across_the_eligible_free_pick_pool()
@@ -340,14 +405,14 @@ class MatchTourTest extends ReviewTestCase
         $answers = $this->answers($data, 'advanced');
         $answers['reading'] = [false, false];
         $answers['playingLevel'] = 'elementary'; $answers['estimatedLevel'] = 'elementary';
-        $quiz = \Mockery::mock(Quiz::class);
+        $quiz = \Mockery::mock(MatchQuiz::class);
         $quiz->shouldReceive('getKeywords')->once()->with(\Mockery::on(function ($keywords) {
             return in_array('intermediate', $keywords, true) && !in_array('elementary', $keywords, true);
         }))->andReturnSelf();
         $quiz->shouldReceive('exclude')->andReturnSelf();
         $quiz->shouldReceive('search')->with(true, true)->andReturn($this->pieces[2]);
         $quiz->shouldReceive('matchContext')->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => [], 'matchedTags' => [], 'levelMatched' => true]);
-        $this->app->instance(Quiz::class, $quiz);
+        $this->app->instance(MatchQuiz::class, $quiz);
         $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('Your playing level and sight-reading answers');
     }
 
@@ -460,12 +525,12 @@ class MatchTourTest extends ReviewTestCase
     {
         $this->copyWithMedia(); $this->copyWithMedia();
         $answers = $this->answers();
-        $quiz = \Mockery::mock(Quiz::class);
+        $quiz = \Mockery::mock(MatchQuiz::class);
         $quiz->shouldReceive('getKeywords')->once()->with((new MatchTour)->keywords($answers))->andReturnSelf();
         $quiz->shouldReceive('exclude')->once()->with([])->andReturnSelf();
         $quiz->shouldReceive('search')->once()->with(true, true)->andReturn($this->pieces[0]);
         $quiz->shouldReceive('matchContext')->with($this->pieces[0])->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => ['calm'], 'matchedTags' => ['calm']]);
-        $this->app->instance(Quiz::class, $quiz);
+        $this->app->instance(MatchQuiz::class, $quiz);
         $this->postJson(route('webapp.tour.result'), $answers)->assertOk()->assertSee('We found your perfect match!')
             ->assertSee('id="match-result-heading"', false)->assertDontSee('data-bs-dismiss', false)
             ->assertSee('data-result-data', false)->assertDontSee('<video', false)
@@ -579,12 +644,12 @@ class MatchTourTest extends ReviewTestCase
         $user = Model::withoutEvents(function () { return create(\App\User::class); });
         $this->actingAs($user, 'web');
         $answers = $this->answers(); $answers['mood'] = 'open';
-        $quiz = \Mockery::mock(Quiz::class);
+        $quiz = \Mockery::mock(MatchQuiz::class);
         $quiz->shouldReceive('getKeywords')->andReturnSelf();
         $quiz->shouldReceive('exclude')->andReturnSelf();
         $quiz->shouldReceive('search')->with(true, true)->andReturn($this->pieces[0]);
         $quiz->shouldReceive('matchContext')->with($this->pieces[0])->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => ['calm'], 'matchedTags' => ['calm']]);
-        $this->app->instance(Quiz::class, $quiz);
+        $this->app->instance(MatchQuiz::class, $quiz);
         $response = $this->postJson(route('webapp.tour.result'), $answers)->assertOk()
             ->assertDontSee('data-submit="favorite"', false)->assertDontSee('match-confetti', false);
         preg_match('/<script type="application\/json" data-result-data>(.*?)<\/script>/s', $response->getContent(), $matches);
@@ -609,12 +674,12 @@ class MatchTourTest extends ReviewTestCase
 
     private function resultFor(Piece $piece)
     {
-        $quiz = \Mockery::mock(Quiz::class);
+        $quiz = \Mockery::mock(MatchQuiz::class);
         $quiz->shouldReceive('getKeywords')->once()->andReturnSelf();
         $quiz->shouldReceive('exclude')->once()->andReturnSelf();
         $quiz->shouldReceive('search')->once()->with(true, true)->andReturn($piece);
         $quiz->shouldReceive('matchContext')->once()->with($piece)->andReturn(['fallback' => false, 'level' => 'intermediate', 'sharedMoods' => [], 'matchedTags' => []]);
-        $this->app->instance(Quiz::class, $quiz);
+        $this->app->instance(MatchQuiz::class, $quiz);
         return $this->postJson(route('webapp.tour.result'), $this->answers(null, 'intermediate'))->assertOk();
     }
 

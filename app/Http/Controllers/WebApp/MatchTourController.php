@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\WebApp;
 
 use App\Http\Controllers\Controller;
-use App\Resources\FindYourMatch\Quiz;
+use App\Services\WebApp\MatchQuiz;
 use App\Services\WebApp\MatchTour;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class MatchTourController extends Controller
 {
-    public function result(Request $request, MatchTour $tour, Quiz $quiz)
+    public function result(Request $request, MatchTour $tour, MatchQuiz $quiz)
     {
         $request->validate(['draw' => 'required|string|max:4096']);
         $draw = $tour->drawChoices($request->input('draw'));
@@ -38,7 +38,7 @@ class MatchTourController extends Controller
         $piece->loadMissing(['composer', 'tags', 'tutorials']);
         $explanation = $tour->explanation($answers, $quiz->matchContext($piece));
         // Reuse shared-mood recommendations at the match's exact difficulty; period can vary.
-        $recommendations = $piece->similar(false, true, true, false, true)->take(4)->values();
+        $recommendations = $tour->recommendations($piece);
         if ($recommendations->count() < 2) $recommendations = collect();
         return view('webapp.tour.result', compact('piece', 'recommendations', 'explanation'));
     }

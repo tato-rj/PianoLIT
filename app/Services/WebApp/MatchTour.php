@@ -79,6 +79,27 @@ class MatchTour
         });
     }
 
+    public function recommendations(Piece $piece)
+    {
+        $level = optional($piece->extended_level)->name;
+        $moods = $piece->mood()->pluck('id');
+        if (!$level || $moods->isEmpty()) return collect();
+
+        // Filter before LIMIT and hydration. Extended level prefers a sublevel
+        // over the broad level, just like Piece::extended_level.
+        return Piece::where('pieces.id', '!=', $piece->id)->withVideoAndScore()
+            ->whereHas('tags', function ($q) use ($moods) { $q->whereIn('tags.id', $moods); })
+            ->whereHas('tags', function ($q) { $q->where('type', 'level'); })
+            ->where(function ($q) use ($level) {
+                $q->whereHas('tags', function ($q) use ($level) { $q->where('type', 'sublevel')->where('name', $level); })
+                    ->orWhere(function ($q) use ($level) {
+                        $q->whereDoesntHave('tags', function ($q) { $q->where('type', 'sublevel'); })
+                            ->whereHas('tags', function ($q) use ($level) { $q->where('type', 'level')->where('name', $level); });
+                    });
+            })->select('pieces.*')->with(['tags', 'composer' => function ($q) { $q->select('composers.*')->setEagerLoads([]); }])
+            ->orderBy('pieces.id')->limit(4)->get();
+    }
+
     private function listeningPool()
     {
         return Piece::freePicks(false)->whereNotNull('audio_path')->where('audio_path', '!=', '')

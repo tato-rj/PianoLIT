@@ -149,6 +149,12 @@ module.exports = async function () {
     assert(!video.paused, 'Result video plays beyond the audio cutoff');
     video.events.ended(); assert(video.paused); assert.strictEqual(previews.media, null);
     video.events.play(); assert(video.paused, 'Disposed native media cannot resume');
+    const loadsBeforeDestroy = previews.audio.loads;
+    previews.starts.set('recording', 12);
+    previews.destroy();
+    assert.strictEqual(previews.source.getAttribute('src'), null, 'Closing a tour releases the detached recording URL');
+    assert.strictEqual(previews.audio.loads, loadsBeforeDestroy + 1);
+    assert.strictEqual(previews.starts.size, 0);
 
     // Every shared audio preview starts around its midpoint after metadata arrives.
     const randomWindow = Object.assign({}, window);
@@ -244,6 +250,7 @@ module.exports = async function () {
     const result = {
         data: {draw: 'current-draw'},
         finding() {}, finishFinding() { this.finishedWaiting = true; },
+        celebrate() { assert.strictEqual(this.state.count, 1, 'Celebrate only after the counter reaches one'); },
         state: {count: 2, answers: {}}, http: {post: () => Promise.resolve({data: 'chosen piece'})},
         element: {dataset: {url: '/result'}, querySelector: () => ({})},
         stage: {querySelector: () => ({}), classList: {add() {}, remove() {}}},
@@ -301,6 +308,23 @@ module.exports = async function () {
     assert.strictEqual(waitingResult.stage.innerHTML, 'waiting', 'Back during the reveal wait keeps the current screen');
     assert.strictEqual(waitingResult.state.count, 15);
 
+    // Hold the actual match until the reward beat finishes; leaving during it cancels the reveal.
+    let finishCelebration, celebrated = false;
+    window.setTimeout = (callback, duration) => { if (duration === 950) finishCelebration = callback; else callback(); };
+    const celebrating = Object.assign({}, result, {
+        state: {count: 15, answers: {}}, reduced: false, generation: 1,
+        stage: {innerHTML: 'celebration', classList: {add() {}, remove() {}}},
+        celebrate() { celebrated = true; assert.strictEqual(this.state.count, 1); },
+        mountResult() { throw Error('An abandoned reward must not reveal its result'); }
+    });
+    const rewardWait = Controller.prototype.result.call(celebrating, 1);
+    for (let i = 0; i < 10 && !finishCelebration; i++) await Promise.resolve();
+    assert(celebrated && finishCelebration, 'A short reward beat precedes the reveal');
+    assert.strictEqual(celebrating.stage.innerHTML, 'celebration');
+    celebrating.generation++; finishCelebration(); await rewardWait;
+    assert.strictEqual(celebrating.stage.innerHTML, 'celebration');
+    window.setTimeout = callback => callback();
+
     let failureReported;
     const failed = {data: {draw: 'current-draw'}, finding() {}, finishFinding() { this.finishedWaiting = true; }, state: {count: 2, answers: {}, back() { this.step = 5; }}, http: {post: () => Promise.reject(new Error('offline'))}, element: {dataset: {url: '/result'}},
         counter: {to: () => Promise.resolve(), cancel() {}, set(value) { this.value = value; }}, generation: 1,
@@ -340,7 +364,7 @@ module.exports = async function () {
     // Use a fresh script context to exercise a pending first reading load.
     const pendingWindow = Object.assign({}, window);
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/match-tour.js'), 'utf8'), {window: pendingWindow});
-    const reader = {state: {step: 1}, generation: 1, readingScore: () => ({title: 'Single score'}),
+    const reader = {state: {step: 1}, generation: 1, cancelScores: Controller.prototype.cancelScores, readingScore: () => ({title: 'Single score'}),
         pdfTasks: new Set(), stage: {}, heading: () => '', pdfjs: null};
     const reading = pendingWindow.MatchTour.Controller.prototype.reading.call(reader);
     reader.generation++;
@@ -379,6 +403,21 @@ module.exports = async function () {
         assert.strictEqual(pageLoads, loaded, 'Revisiting the excerpt reuses its cached crop');
     }
     window.document.createElement = savedCreateElement;
+
+    // Timeout includes page retrieval/rendering, and late pages cannot mutate the UI/cache.
+    let finishPage, destroyed = 0, scoreFailed = 0;
+    const hung = {generation: 1, pdfTasks: new Set(), scoreExcerpts: new Map(), pdfjs: {
+        getDocument() { return {destroy() { destroyed++; return Promise.reject(Error('Worker already stopped')); },
+            promise: Promise.resolve({getPage: () => new Promise(resolve => { finishPage = resolve; })})}; }
+    }, stage: {querySelector: () => ({})}, scoreFailure() { scoreFailed++; }};
+    const stalled = Controller.prototype.score.call(hung, {url: 'slow.pdf'}, 0, 1);
+    await Promise.resolve(); await Promise.resolve();
+    timers.values().next().value(); await stalled;
+    assert.strictEqual(scoreFailed, 1); assert.strictEqual(destroyed, 1);
+    finishPage({getViewport() { throw Error('A timed-out page must never render'); }});
+    await Promise.resolve(); await Promise.resolve();
+    assert.strictEqual(hung.scoreExcerpts.size, 0); assert.strictEqual(hung.pdfTasks.size, 0);
+    assert.strictEqual(timers.size, 0);
 
     // Every difficulty outcome and optional skip retains its intended level.
     for (const [answers, expected] of [[[false,false],'elementary'], [[false,true],'beginner'], [[true,false],'intermediate'], [[true,true],'advanced'], [[null,null],'beginner'], [[false,null],'beginner'], [[true,null],'intermediate']]) {
@@ -438,7 +477,7 @@ module.exports = async function () {
     // Closing the shell discards a pending load and restores the launcher's focus.
     const events = {}, documentEvents = {};
     const content = {innerHTML: ''};
-    const shell = {dataset: {tourUrl: '/tour'}, querySelector: selector => selector === '[data-tour-content]' ? content : null, querySelectorAll: () => [], addEventListener(name, callback) { events[name] = callback; }};
+    const shell = {dataset: {tourUrl: '/tour'}, classList: {remove() {}}, querySelector: selector => selector === '[data-tour-content]' ? content : null, querySelectorAll: () => [], addEventListener(name, callback) { events[name] = callback; }};
     window.document.addEventListener = (name, callback) => { documentEvents[name] = callback; };
     window.bootstrap.Modal = class {show() { events['show.bs.modal'](); }};
     let loaded, requests = 0;
