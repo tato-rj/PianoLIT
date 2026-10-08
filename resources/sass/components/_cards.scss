@@ -109,7 +109,8 @@
 .discover-for-you {
     // Existing Match tour reward background.
     background: #f7efff;
-    .discover-compact-card { flex: 0 0 calc((100% - 280px) / 3); }
+    // Two full cards, two 16px gaps and a tenth of the next card.
+    .discover-compact-card { flex: 0 0 calc((100% - 32px) / 2.1); min-width: 0; }
 }
 .discover-composer-feature {
     // Existing Collections feature background.
@@ -132,15 +133,13 @@
 // Existing Match tour reading background.
 .discover-black { background: #f0fbf2; }
 .discover-latest__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-@media (max-width: 1199px) {
-    .discover-for-you .discover-compact-card { flex-basis: calc((100% - 16px) / 2); flex-basis: 64%;}
-}
 @media (max-width: 991px) {
     .discover-level-card { flex-basis: calc((100% - 48px) / 4); }
     .discover-recent-card, .discover-latest-card { flex-basis: calc((100% - 16px) / 2); }
     .discover-latest__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 767px) {
+    .discover-for-you .discover-compact-card { flex-basis: 94%; }
     .discover-levels__tabs { width: 100%; .nav-link { flex: 1; padding: 8px 12px; } }
     .discover-level-card { flex-basis: calc((100% - 32px) / 3); }
     .discover-composer-feature__layout { grid-template-columns: minmax(0, 1fr); }
@@ -150,7 +149,6 @@
     .discover-level-card { flex-basis: 46%; min-width: 140px; }
     .discover-recent-card, .discover-latest-card { flex-basis: 88%; }
     .discover-panel { padding: 16px; }
-    .discover-for-you .discover-compact-card { flex-basis: 94%; }
     .discover-for-you .discover-compact-card__art { width: 72px; height: 72px; }
     .discover-composer-feature__feature { grid-template-columns: minmax(0, 100px) minmax(0, 1fr); }
     .discover-composer-feature .discover-compact-card { gap: 10px; padding: 10px; }
