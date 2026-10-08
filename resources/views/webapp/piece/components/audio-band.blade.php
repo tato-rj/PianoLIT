@@ -4,7 +4,7 @@
         <div data-track data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
             data-audio="{{$piece->audio}}" data-preview="{{$hasMediaAccess ? 0 : $previewSeconds}}"
             data-audio-moments="{{json_encode($audioMoments)}}"
-            data-artwork="{{$piece->cover_path ? storage($piece->cover_path) : asset(optional($piece->period)->cover_image ?: 'images/webapp/thumbnail.jpg')}}"></div>
+            data-artwork="{{$piece->web_image_background}}"></div>
     </div>
     @include('webapp.playlist.player', ['piecePlayer' => true])
 </div>

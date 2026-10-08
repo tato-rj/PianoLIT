@@ -1,5 +1,5 @@
 <a class="discover-latest-card discover-piece-link link-none" href="{{ route('webapp.pieces.show', $piece) }}">
-	<img class="discover-latest-card__art" src="{{ $piece->cover_path ? storage($piece->cover_path) : asset(optional($piece->period)->cover_image ?: 'images/webapp/thumbnail.jpg') }}" alt="" width="600" height="280" loading="lazy">
+	<img class="discover-latest-card__art" src="{{ $piece->web_image_background }}" alt="" width="600" height="280" loading="lazy">
 	<div class="discover-latest-card__copy">
 		<p class="discover-latest-card__title clamp-2 mb-1" title="{{ $piece->name }}"><strong>{{ $piece->name }}</strong></p>
 		<p class="text-muted small mb-2">{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>

@@ -2,6 +2,6 @@
 	@include('webapp.components.grids.circles', [
 		'collection' => $row['collection'],
 		'name' => 'name',
-		'image' => 'cover_image',
+		'image' => 'web_cover_image',
 		'count' => 'pieces_count'])
 @endcomponent

@@ -145,4 +145,20 @@ class Tag extends PianoLit
     {
         return $this->type == 'period' ? asset('images/backgrounds/periods/'.strtolower($this->name).'.jpg') : null;
     }
+
+    /** Web artwork only; keep the appended mobile cover_image unchanged. */
+    public function getWebCoverImageAttribute()
+    {
+        $folder = strtolower((string) $this->name);
+        if (!in_array($this->type, ['period', 'genre'], true) || !preg_match('/^[a-z0-9_-]+$/D', $folder)) {
+            return $this->cover_image;
+        }
+
+        $path = 'images/backgrounds/periods/'.$folder;
+        $images = array_values(array_filter(glob(public_path($path.'/*')) ?: [], function ($file) {
+            return is_file($file) && in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'], true);
+        }));
+
+        return $images ? asset($path.'/'.rawurlencode(basename($images[array_rand($images)]))) : $this->cover_image;
+    }
 }

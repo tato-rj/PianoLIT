@@ -647,6 +647,16 @@ class Piece extends PianoLit
         return $this->period->cover_image;
     }
 
+    /** Resolve at render time so cached feeds can still show different artwork. */
+    public function getWebImageBackgroundAttribute()
+    {
+        if ($this->cover_path) {
+            return storage($this->cover_path);
+        }
+
+        return optional($this->period)->web_cover_image ?: asset('images/webapp/thumbnail.jpg');
+    }
+
     public function scopeLocalSearch($query, $array, $request = null)
     {
         if (empty($array))

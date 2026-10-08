@@ -1,6 +1,6 @@
 @if($freePick ?? false)
 <a href="{{ route('webapp.pieces.show', $piece) }}" class="link-none">
-	<article class="free-pick-card bg-align-center rounded overflow-hidden position-relative p-4 text-white" style="background-image: url('{{ $piece->image_background }}')">
+	<article class="free-pick-card bg-align-center rounded overflow-hidden position-relative p-4 text-white" style="background-image: url('{{ $piece->web_image_background }}')">
 		<div class="free-pick-card__content position-relative d-flex flex-column justify-content-between h-100">
 			<div>
 				<h4 class="free-pick-card__title text-white mb-1">{{ $piece->collection_name === 'Sonata' ? $piece->getRawOriginal('name') : ($piece->nickname ?: $piece->getRawOriginal('name')) }}</h4>
@@ -31,7 +31,7 @@
 	</article>
 </a>
 @else
-<div class=" cursor-pointer bg-align-center rounded d-flex d-apart flex-column p-3 piece-card" role="img" aria-label="{{$piece->name}}" data-url="{{route('webapp.pieces.show', $piece)}}" style="background-image: url({{$piece->image_background}}); height: {{$height ?? '200px'}}; width: {{$width ?? '100%'}}">
+<div class=" cursor-pointer bg-align-center rounded d-flex d-apart flex-column p-3 piece-card" role="img" aria-label="{{$piece->name}}" data-url="{{route('webapp.pieces.show', $piece)}}" style="background-image: url({{$piece->web_image_background}}); height: {{$height ?? '200px'}}; width: {{$width ?? '100%'}}">
 	<div class="w-100 text-white">
 		<p class="h6 m-0 text-white clamp-2">{{$piece->name}}</p>
 		<p class="m-0 text-white">{{$piece->attribution}}{{$piece->composer->short_name}}</p>

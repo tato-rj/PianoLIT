@@ -43,8 +43,7 @@ class MatchTour
 
     public static function artwork(Piece $piece)
     {
-        return $piece->cover_path ? storage($piece->cover_path)
-            : (optional($piece->tags->firstWhere('type', 'period'))->cover_image ?: asset('images/webapp/thumbnail.jpg'));
+        return $piece->web_image_background;
     }
 
     public static function video(Piece $piece)

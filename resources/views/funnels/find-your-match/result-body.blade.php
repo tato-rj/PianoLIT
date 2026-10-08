@@ -1,4 +1,4 @@
-	<div class="rounded-top bg-align-center position-relative" style="background-image: url({{$piece->image_background ?? $piece->period->cover_image}}); height: 200px;">
+	<div class="rounded-top bg-align-center position-relative" style="background-image: url({{$piece->web_image_background}}); height: 200px;">
       @unless($inlineResult ?? false)
       <button class="close text-white absolute-top-right" type="button" data-bs-dismiss="modal" aria-label="Close result">
           @icon('close', ['mr' => 0])

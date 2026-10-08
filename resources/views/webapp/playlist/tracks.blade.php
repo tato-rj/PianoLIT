@@ -13,7 +13,7 @@
         data-has-score="{{$piece->score_path && $piece->is_public_domain && $hasTrackAccess ? 'true' : 'false'}}" data-piece-id="{{$piece->id}}" data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
         data-audio="{{$piece->audio_path ? $piece->audio : ''}}" data-preview="{{$hasTrackAccess ? 0 : config('webapp.media_preview_seconds')}}"
         data-audio-moments="{{json_encode($audioMoments)}}"
-        data-artwork="{{$piece->cover_path ? storage($piece->cover_path) : asset(optional($piece->period)->cover_image ?: 'images/webapp/thumbnail.jpg')}}">
+        data-artwork="{{$piece->web_image_background}}">
         <span class="playlist-track__number text-muted" data-track-number>{{$loop->iteration}}</span>
         <button class="btn btn-secondary btn-sm playlist-track__play" type="button" data-track-play aria-label="Play {{$piece->short_name}}" @unless($piece->audio_path) disabled title="Audio unavailable" @endunless>
             <span data-play-icon>@icon('play', ['mr' => 0, 'filled' => true])</span><span data-pause-icon hidden>@icon('pause', ['mr' => 0, 'filled' => true])</span>

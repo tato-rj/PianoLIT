@@ -9,7 +9,7 @@
 		<div class="discover-recent__items d-flex gap-3 pb-2">
 			@foreach($row['content'] as $piece)
 			<a class="discover-recent-card discover-piece-link link-none d-flex align-items-center" href="{{ route('webapp.pieces.show', $piece) }}">
-				<img class="discover-recent-card__art" src="{{ $piece->cover_path ? storage($piece->cover_path) : asset(optional($piece->period)->cover_image ?: 'images/webapp/thumbnail.jpg') }}" alt="" width="72" height="72" loading="lazy">
+				<img class="discover-recent-card__art" src="{{ $piece->web_image_background }}" alt="" width="72" height="72" loading="lazy">
 				<div class="discover-recent-card__copy">
 					<p class="{{ ($wrapPieceTitles ?? false) ? 'discover-compact-card__title clamp-2' : 'discover-recent-card__title' }} m-0" title="{{ $piece->name }}"><strong>{{ $piece->name }}</strong></p>
 					<p class="discover-recent-card__composer text-muted small m-0">{{ $piece->attribution }}{{ $piece->composer->short_name }}</p>
