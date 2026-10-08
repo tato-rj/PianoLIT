@@ -109,7 +109,7 @@
 .discover-for-you {
     // Existing Match tour reward background.
     background: #f7efff;
-    .discover-compact-card { flex: 0 0 calc((100% - 32px) / 3); }
+    .discover-compact-card { flex: 0 0 calc((100% - 280px) / 3); }
 }
 .discover-composer-feature {
     // Existing Collections feature background.
@@ -120,7 +120,12 @@
     &__portrait { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-button); }
     &__biography { min-width: 0; overflow-wrap: anywhere; }
     &__action { grid-column: 1 / -1; justify-self: start; }
-    &__pieces { display: grid; gap: 8px; max-height: 292px; overflow-y: auto; padding: 3px 0; }
+    &__pieces {
+        display: grid; gap: 8px; max-height: 292px; overflow-y: auto; padding: 3px 0;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, .3) rgba(0, 0, 0, .05);
+        &.custom-scroll::-webkit-scrollbar { width: 4px; }
+    }
     .discover-compact-card { min-height: 90px; padding: 10px 16px; }
     .discover-compact-card__art { width: 68px; height: 68px; }
 }
@@ -128,7 +133,7 @@
 .discover-black { background: #f0fbf2; }
 .discover-latest__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 1199px) {
-    .discover-for-you .discover-compact-card { flex-basis: calc((100% - 16px) / 2); }
+    .discover-for-you .discover-compact-card { flex-basis: calc((100% - 16px) / 2); flex-basis: 64%;}
 }
 @media (max-width: 991px) {
     .discover-level-card { flex-basis: calc((100% - 48px) / 4); }
