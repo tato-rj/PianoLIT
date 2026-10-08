@@ -84,9 +84,9 @@
     &__art { min-height: 76px; padding: 12px 16px 4px; gap: 8px; }
     &__number { color: var(--level-tone); font-size: 44px; line-height: 1; font-weight: 400; }
     &__books { position: relative; flex: 0 0 48px; height: 48px; color: var(--level-tone);
-        .app-icon { position: absolute; width: 44px; height: 44px; transform: rotate(12deg); opacity: .14; }
-        .app-icon:nth-child(1) { left: -8px; top: -3px; transform: rotate(5deg); opacity: .08; }
-        .app-icon:nth-child(2) { left: -3px; top: -1px; transform: rotate(9deg); opacity: .1; }
+        .app-icon { position: absolute; left: 4px; top: 4px; width: 40px; height: 40px; }
+        .app-icon:nth-child(1) { left: -4px; top: 0; color: rgba(var(--level-shade), 1); }
+        .app-icon:nth-child(2) { left: 0; top: 2px; color: rgba(var(--level-shade), 1); }
     }
     &__copy { min-height: 68px; padding: 10px 16px 12px; background: rgba(255, 255, 255, .6); }
 }

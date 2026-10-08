@@ -33,6 +33,8 @@ class DiscoverLevelsTest extends ReviewTestCase
         @$dom->loadHTML($html);
         $xpath = new \DOMXPath($dom);
         $this->assertSame(3, $xpath->query('//button[@role="tab"]')->length);
+        $this->assertSame(['RCM', 'ABRSM', 'Suzuki'], array_map(function ($tab) { return trim($tab->textContent); }, iterator_to_array($xpath->query('//button[@role="tab"]'))));
+        $this->assertSame('true', $xpath->query('//button[@id="discover-levels-rcm-tab"]')->item(0)->getAttribute('aria-selected'));
         foreach (['suzuki' => 7, 'rcm' => 10, 'abrsm' => 8] as $key => $count) {
             $cards = $xpath->query('//div[@id="discover-levels-'.$key.'"]//a');
             $this->assertSame($count, $cards->length);
@@ -55,14 +57,14 @@ class DiscoverLevelsTest extends ReviewTestCase
     public function test_empty_systems_are_disabled_and_the_first_available_system_opens()
     {
         $rows = $this->rows();
-        $rows[0]['content']->splice(0);
+        $rows[1]['content']->splice(0);
         $html = view('webapp.discover.rows.levels', compact('rows'))->render();
         $dom = new \DOMDocument;
         @$dom->loadHTML($html);
         $xpath = new \DOMXPath($dom);
-        $this->assertSame(1, $xpath->query('//button[@id="discover-levels-suzuki-tab" and @disabled]')->length);
-        $this->assertSame('true', $xpath->query('//button[@id="discover-levels-rcm-tab"]')->item(0)->getAttribute('aria-selected'));
-        $this->assertSame('tab-pane active', $xpath->query('//div[@id="discover-levels-rcm"]')->item(0)->getAttribute('class'));
+        $this->assertSame(1, $xpath->query('//button[@id="discover-levels-rcm-tab" and @disabled]')->length);
+        $this->assertSame('true', $xpath->query('//button[@id="discover-levels-abrsm-tab"]')->item(0)->getAttribute('aria-selected'));
+        $this->assertSame('tab-pane active', $xpath->query('//div[@id="discover-levels-abrsm"]')->item(0)->getAttribute('class'));
         $rows = collect();
         $this->assertStringNotContainsString('discover-levels-heading', view('webapp.discover.rows.levels', compact('rows'))->render());
     }

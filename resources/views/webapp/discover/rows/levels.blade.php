@@ -1,8 +1,8 @@
 @php
 	$levelSystems = collect([
-		['key' => 'suzuki', 'label' => 'Suzuki', 'unit' => 'Book', 'title' => 'Equivalent to the Suzuki series'],
 		['key' => 'rcm', 'label' => 'RCM', 'unit' => 'Level', 'title' => 'Equivalent to the RCM levels'],
 		['key' => 'abrsm', 'label' => 'ABRSM', 'unit' => 'Level', 'title' => 'Equivalent to the ABRSM levels'],
+		['key' => 'suzuki', 'label' => 'Suzuki', 'unit' => 'Book', 'title' => 'Equivalent to the Suzuki series'],
 	])->map(function ($system) use ($rows) {
 		$feedRow = collect($rows)->firstWhere('title', $system['title']);
 		$system['cards'] = collect($feedRow['content'] ?? [])->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)->values();
@@ -49,9 +49,9 @@
 						<div class="discover-level-card__art d-flex align-items-center justify-content-between" aria-hidden="true">
 							<span class="discover-level-card__number">{{ $levelNumber }}</span>
 							<span class="discover-level-card__books">
-								@icon('book', ['mr' => 0])
-								@icon('book', ['mr' => 0])
-								@icon('book', ['mr' => 0])
+								@icon('book', ['mr' => 0, 'solid' => '#fff'])
+								@icon('book', ['mr' => 0, 'solid' => '#fff'])
+								@icon('book', ['mr' => 0, 'solid' => '#fff'])
 							</span>
 						</div>
 						<div class="discover-level-card__copy d-flex align-items-center justify-content-between gap-2">
