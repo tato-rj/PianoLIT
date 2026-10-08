@@ -4,7 +4,7 @@
 	@include('webapp.discover.rows.recently-viewed', [
 		'rowHeadingId' => 'pieces-by-mood-heading',
 		'rowHeading' => $row['title'],
-		'rowSubtitle' => 'Pieces by mood',
+		// 'rowSubtitle' => 'Pieces by mood',
 		'wrapPieceTitles' => true,
 	])
 @elseif($row['title'] === "Like today's free pick")
