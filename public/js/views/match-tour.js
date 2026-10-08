@@ -89,6 +89,10 @@
     const icon = name => '<i class="app-icon icon-' + name + '" aria-hidden="true"></i>';
     const arrow = icon('arrow-right');
 
+    // Match the piece player: Safari needs a typed source for legacy .mpga
+    // recordings served as application/octet-stream.
+    const audioType = url => ({mpga: 'audio/mpeg', mp3: 'audio/mpeg', mp4: 'video/mp4', m4a: 'audio/mp4'})[url.split(/[?#]/)[0].split('.').pop().toLowerCase()];
+
     class Previews {
         constructor(seconds, report) {
             this.audio = new root.Audio(); this.audio.preload = 'none';
@@ -130,13 +134,25 @@
             if (this.media) this.media.pause();
             this.paint(false); this.button = null; this.media = null;
         }
+        setSource(url) {
+            if (!this.source) {
+                this.source = root.document.createElement('source');
+                this.audio.appendChild(this.source);
+            }
+            this.audio.removeAttribute('src');
+            const type = audioType(url);
+            if (type) this.source.setAttribute('type', type);
+            else this.source.removeAttribute('type');
+            this.source.setAttribute('src', url);
+            this.audio.load();
+        }
         async play(piece, button, media) {
             const same = this.button === button;
             if (same && this.media && !this.media.paused) { this.media.pause(); return; }
             if (!same) {
                 this.stop(); this.button = button; this.media = media || this.audio;
                 this.attach(this.media);
-                if (!media) this.media.src = piece.audio;
+                if (!media) this.setSource(piece.audio);
                 this.media.currentTime = 0;
             }
             const generation = ++this.generation;
@@ -341,7 +357,7 @@
                 const attrs = recommendation ? 'href="' + escape(piece.url) + '"' : 'type="button" ' + action + (duel ? ' aria-label="Choose ' + escape(piece.title + ' by ' + piece.composer) + '"' : '');
                 const image = '<img src="' + escape(listening ? piece.image : piece.artwork) + '" alt=""' + (recommendation ? ' loading="lazy"' : '') + '>';
                 const copy = '<span class="match-piece-copy"><strong>' + escape(piece.title) + '</strong><small>' + escape(piece.composer) + '</small></span>';
-                const media = reward ? (piece.video ? '<video data-result-media controls playsinline preload="none" poster="' + escape(piece.artwork) + '" src="' + escape(piece.video) + '"></video>' : piece.audio ? '<audio data-result-media preload="none" src="' + escape(piece.audio) + '"></audio>' : '') : '';
+                const media = reward ? (piece.video ? '<video data-result-media controls playsinline preload="none" poster="' + escape(piece.artwork) + '" src="' + escape(piece.video) + '"></video>' : piece.audio ? '<audio data-result-media preload="none"><source src="' + escape(piece.audio) + '"' + (audioType(piece.audio) ? ' type="' + audioType(piece.audio) + '"' : '') + '></audio>' : '') : '';
                 const content = reward ? '<div class="match-artwork' + (piece.video ? ' has-video' : '') + '">' + image + media + play + '</div>' + copy :
                     '<' + tag + ' class="match-select" ' + attrs + '>' + image + (duel ? '' : copy) + '</' + tag + '>' + (duel ? copy : '') + '<div class="match-card-player">' + play + (listening ? this.waveform() : '') + '</div>';
                 return '<article class="match-card match-card--' + variant + (listening && this.pendingPiece === piece.id ? ' selected' : '') + '" data-piece-card>' + content + '</article>';

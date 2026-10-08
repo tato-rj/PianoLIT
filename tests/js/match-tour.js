@@ -50,8 +50,17 @@ module.exports = async function () {
     reduced.set(500); await reduced.to(2, 850); assert.strictEqual(node.textContent, '2');
 
     let warnings = 0;
+    window.document = {createElement: () => ({
+        attributes: {},
+        setAttribute(name, value) { this.attributes[name] = value; },
+        removeAttribute(name) { delete this.attributes[name]; },
+        getAttribute(name) { return this.attributes[name] || null; }
+    })};
     window.Audio = class {
-        constructor() { this.events = {}; }
+        constructor() { this.events = {}; this.nodes = []; }
+        appendChild(node) { this.nodes.push(node); }
+        removeAttribute(name) { delete this[name]; }
+        load() { this.currentTime = 0; this.loads = (this.loads || 0) + 1; }
         addEventListener(name, callback) { this.events[name] = callback; }
         pause() { this.paused = true; }
         play() { this.paused = false; return this.failure ? Promise.reject(new Error()) : Promise.resolve(); }
@@ -59,6 +68,26 @@ module.exports = async function () {
     const previews = new Previews(60, () => warnings++);
     const button = () => ({innerHTML: '', setAttribute() {}});
     const a = button(), b = button();
+    for (const [url, type] of [['/legacy.MPGA?version=1', 'audio/mpeg'], ['/recording.mp3#fragment', 'audio/mpeg'], ['/recording.mp4', 'video/mp4'], ['/recording.m4a', 'audio/mp4'], ['/recording.wav', null]]) {
+        await previews.play({audio: url}, a);
+        assert.strictEqual(previews.audio.src, undefined, 'Direct src must not override the typed source');
+        const source = previews.audio.nodes[0];
+        assert(source, 'Tour previews need a typed source for legacy Safari recordings');
+        assert.strictEqual(source.getAttribute('src'), url);
+        assert.strictEqual(source.getAttribute('type'), type);
+        assert.strictEqual(previews.audio.nodes.length, 1, 'Switching formats reuses one source');
+        previews.stop();
+    }
+    assert.strictEqual(previews.audio.loads, 5, 'Source changes explicitly restart media selection');
+    await previews.play(pieces[0], a);
+    previews.audio.currentTime = 12;
+    const loads = previews.audio.loads;
+    await previews.play(pieces[0], a);
+    assert(previews.audio.paused, 'The active button pauses its recording');
+    await previews.play(pieces[0], a);
+    assert(!previews.audio.paused);
+    assert.strictEqual(previews.audio.currentTime, 12, 'Resume keeps the listening position');
+    assert.strictEqual(previews.audio.loads, loads, 'Resume does not reload the typed source');
     await previews.play(pieces[0], a); await previews.play(pieces[1], b);
     assert(a.innerHTML.includes('icon-play')); assert(b.innerHTML.includes('icon-pause'));
     previews.audio.currentTime = 60; previews.audio.events.timeupdate(); assert(previews.audio.paused);
@@ -238,6 +267,8 @@ module.exports = async function () {
     const reward = Controller.prototype.cards.call(renderer, [card], 'reward');
     assert(reward.includes('<video data-result-media controls playsinline preload="none"'));
     assert(reward.includes('match-artwork')); assert(reward.includes('data-play="1"'));
+    const audioReward = Controller.prototype.cards.call(renderer, [Object.assign({}, card, {video: null, audio: '/legacy.MPGA?name=a&version=1'})], 'reward');
+    assert(audioReward.includes('<audio data-result-media preload="none"><source src="/legacy.MPGA?name=a&amp;version=1" type="audio/mpeg"></audio>'), 'Audio-only rewards also type legacy recordings and escape URLs');
     const recommendations = Controller.prototype.cards.call(renderer, [card], 'recommendation');
     assert(recommendations.includes('href="/pieces/1"')); assert(!recommendations.includes('<video'));
 
