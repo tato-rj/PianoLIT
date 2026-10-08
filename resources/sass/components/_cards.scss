@@ -67,10 +67,13 @@
     &__header { flex-wrap: wrap; }
     &__tabs {
         flex-shrink: 0;
-        width: 320px;
-        max-width: 100%;
-        margin: 0;
-        button { text-transform: uppercase; &:disabled { opacity: .5; } }
+        padding: 4px;
+        border: 1px solid var(--color-dropdown-border);
+        border-radius: var(--radius-button);
+        background: var(--color-primary-soft);
+        .nav-link { padding: 8px 18px; border-radius: var(--radius-button); color: var(--color-text); font-size: var(--font-size-small); }
+        .nav-link.active { color: var(--color-surface) !important; background: var(--color-primary); }
+        .nav-link:disabled { opacity: .5; }
     }
 }
 .discover-level-card {
@@ -133,7 +136,7 @@
     .discover-latest__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 767px) {
-    .discover-levels__tabs { width: 100%; }
+    .discover-levels__tabs { width: 100%; .nav-link { flex: 1; padding: 8px 12px; } }
     .discover-level-card { flex-basis: calc((100% - 32px) / 3); }
     .discover-composer-feature__layout { grid-template-columns: minmax(0, 1fr); }
     .discover-composer-feature__feature { grid-template-columns: minmax(0, 140px) minmax(0, 1fr); }

@@ -3,7 +3,7 @@
 @elseif(\Illuminate\Support\Str::startsWith($row['title'], 'Pieces that are '))
 	@include('webapp.discover.rows.recently-viewed', [
 		'rowHeadingId' => 'pieces-by-mood-heading',
-		'rowHeading' => ucfirst(($row['tag'] ?? null) ?: trim(\Illuminate\Support\Str::after($row['title'], 'Pieces that are '))) ?: 'By mood',
+		'rowHeading' => $row['title'],
 		'rowSubtitle' => 'Pieces by mood',
 		'wrapPieceTitles' => true,
 	])
