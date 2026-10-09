@@ -12,7 +12,7 @@
 @if($hasSelection && $guide)
 @push('page-navigation')
 <div class="explore-mobile-navigation d-lg-none bg-light border-bottom">
-    @include('webapp.explore.path', ['pathClasses' => 'py-4 px-3'])
+    @include('webapp.explore.path', ['pathClasses' => 'p-3'])
 </div>
 @endpush
 @endif
