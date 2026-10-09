@@ -41,12 +41,12 @@
                 @include('webapp.explore.link', ['href' => route('webapp.explore', ['composers' => $group]), 'label' => $option['label'], 'icon' => $option['icon'], 'current' => request('composers') === $group, 'classes' => request('composers') === $group ? 'is-selected' : ''])
             @endif
         @endforeach
-        <details class="explore-countries" @if(request()->filled('country')) open @endif>
+{{--         <details class="explore-countries" @if(request()->filled('country')) open @endif>
             <summary>@icon('globe', ['mr' => 0])<span>By country</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
             @foreach($countries as $country)
                 @include('webapp.explore.link', ['href' => route('webapp.explore', ['country' => $country->id]), 'label' => $country->name, 'current' => (int) request('country') === $country->id, 'classes' => (int) request('country') === $country->id ? 'is-selected' : ''])
             @endforeach
-        </details>
+        </details> --}}
     </div>
 </details>
 <details class="explore-section" @if($activeSection === 'style') open @endif>
