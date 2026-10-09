@@ -2185,3 +2185,11 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** The Explore directory, desktop guides and all other pages retain their menu. Routes, transitions, media access and mobile APIs remain unchanged.
 - **Verification:** Live browser checks confirm the menu is hidden at 390px on a nested guide, visible at 1280px, and visible again after returning to the mobile directory. Isolated Explore suite passes (15 tests / 380 assertions); scoped diff checks pass.
 - **Remaining work / limits:** Not deployed; physical mobile devices were not tested.
+
+### 2026-10-09 — Keep the Explore menu underneath the sliding guide (P3, complete locally)
+
+- **Request / evidence:** The mobile guide's menu appeared to disappear only after the slide ended. The directory menu still had its own `explore-menu` View Transition snapshot at z-index 3, above the incoming root snapshot.
+- **Implementation / affected files:** Removed the separate menu snapshot and its animation/stacking rules from `_explore.scss`. The directory menu now belongs to the ordinary root snapshot: the incoming guide covers it, and the outgoing guide reveals it on return. Rebuilt app CSS in an isolated production build and updated the manifest hash.
+- **Compatibility:** No changes to navigation JavaScript, routes, mobile APIs, menu visibility outside mobile guides, transition timing, or reduced-motion handling.
+- **Verification:** Production build and app/admin CSS-variable checks pass. Live 390px inspection confirms the directory menu now has `view-transition-name: none`. Screenshots captured during active forward and back transitions show the guide covering/revealing the underlying page; the guide menu is hidden during the forward transition and the directory menu is visible during return. `git diff --check` passes.
+- **Remaining work / limits:** Not deployed; physical-device browsers were not tested.

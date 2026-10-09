@@ -57,13 +57,10 @@
     }
 }
 
-// Cross-document transitions keep normal links and the fixed bottom menu.
+// Keep the directory menu in its page snapshot so the incoming guide covers it.
 @media (max-width: 991.98px) and (prefers-reduced-motion: no-preference) {
-    html[data-explore-page] #menu { view-transition-name: explore-menu; }
     html[data-explore-transition] {
-        &::view-transition-group(root), &::view-transition-group(explore-menu),
-        &::view-transition-old(explore-menu), &::view-transition-new(explore-menu) { animation: none; }
-        &::view-transition-group(explore-menu) { z-index: 3; }
+        &::view-transition-group(root) { animation: none; }
         &::view-transition-old(root), &::view-transition-new(root) {
             animation: none; mix-blend-mode: normal;
         }
