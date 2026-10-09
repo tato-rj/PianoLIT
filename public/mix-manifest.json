@@ -1,6 +1,6 @@
 {
-    "/js/app.js": "/js/app.js?id=6b89d157fa536b3ca598",
-    "/css/app.css": "/css/app.css?id=7cf7b88d7792140a8bdf",
+    "/js/app.js": "/js/app.js?id=d8cc88662512cae66cf9",
+    "/css/app.css": "/css/app.css?id=f7a470c37664e2fe4976",
     "/css/admin.css": "/css/admin.css?id=2393ae2535e93b422956",
     "/css/design-system.css": "/css/design-system.css?id=45ae72f54ce5720a7c3f",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
@@ -30,6 +30,5 @@
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
     "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da",
-    "/js/views/explore.js": "/js/views/explore.js?id=7ebf7792023d993b1b73",
     "/js/views/highlights.js": "/js/views/highlights.js?id=1a0751279b65876cc274"
 }

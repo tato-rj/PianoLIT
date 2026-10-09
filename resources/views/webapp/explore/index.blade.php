@@ -1,84 +1,163 @@
 @extends('webapp.layouts.app', ['title' => 'Explore'])
 
+@push('header')
+<link rel="preload" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" as="style">
+<link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
-@include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Follow your curiosity. Find something new to play.'])
+@include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Search or explore the repertoire by moods, genres, levels and more'])
 
-<div id="explore-page">
-    <section class="explore-search mb-5" aria-label="Search repertoire">
-        @include('webapp.search.form', ['exploreSearch' => true, 'searchPlaceholder' => 'Search pieces, composers...'])
-    </section>
+<section class="mb-4">
+	@include('webapp.search.form')
+</section>
 
-    @component('webapp.explore.rows.row', ['data' => ['label' => 'Periods & styles']])
-        @slot('action')
-            <button type="button" class="btn-raw link-primary" data-bs-toggle="modal" data-bs-target="#explore-styles">View all @icon('arrow-right', ['ml' => 1, 'mr' => 0])</button>
-        @endslot
-        <div class="explore-periods">
-            @foreach($featuredPeriods as $tag)
-                @include('webapp.explore.tag-link', ['kind' => 'period', 'tagName' => $tag->name])
-            @endforeach
-        </div>
-        <div class="explore-other-periods mt-3">
-            @foreach($otherPeriods as $tagName)
-                @include('webapp.explore.tag-link', ['kind' => 'simple', 'tagName' => $tagName])
-            @endforeach
-        </div>
-    @endcomponent
+<section id="tags-search">
 
-    @if($moods->isNotEmpty())
-    @component('webapp.explore.rows.row', ['data' => ['label' => 'Explore a mood']])
-        <div class="explore-moods">
-            @foreach($moods as $tagName)
-                @include('webapp.explore.tag-link', ['kind' => 'mood', 'tagName' => $tagName])
-            @endforeach
-        </div>
-    @endcomponent
-    @endif
+	@foreach($explore as $row)
+		@include('webapp.explore.rows.'.strtolower(firstword($row['celltype'])))
+	@endforeach
 
-    @component('webapp.explore.rows.row', ['data' => ['label' => 'Browse by level']])
-        <div class="explore-levels">
-            @foreach($levels as $tag)
-                @include('webapp.explore.tag-link', ['kind' => 'level', 'tagName' => $tag->name])
-            @endforeach
-        </div>
-    @endcomponent
-
-    @component('webapp.explore.rows.row', ['data' => ['label' => 'Explore composers']])
-        <div class="explore-composers border rounded overflow-hidden">
-            <a href="{{ route('webapp.composers.index') }}" class="explore-composers-intro link-none d-flex align-items-center gap-4 p-3">
-                @if($composers->isNotEmpty())
-                <span class="explore-portraits d-flex flex-shrink-0">
-                    @foreach($composers as $composer)
-                    <img src="{{ $composer->cover_image }}" alt="" class="rounded-circle" loading="lazy" width="88" height="88">
-                    @endforeach
-                </span>
-                @endif
-                <span>
-                    <span class="h5 d-block mb-2">Meet someone new</span>
-                    <span class="text-muted">Explore the people behind the music.</span>
-                </span>
-            </a>
-            <div class="explore-composer-links">
-                <a href="{{ route('webapp.composers.index') }}">All composers @icon('arrow-right', ['mr' => 0])</a>
-                <a href="{{ route('webapp.search.results', ['search' => 'women composers']) }}">Women composers @icon('arrow-right', ['mr' => 0])</a>
-                <button type="button" class="btn-raw text-primary" data-bs-toggle="modal" data-bs-target="#explore-countries">By country @icon('arrow-right', ['mr' => 0])</button>
-            </div>
-        </div>
-    @endcomponent
-
-    @component('webapp.explore.rows.row', ['data' => ['label' => 'Recent free picks'], 'link' => ['url' => route('webapp.highlights'), 'label' => 'View all']])
-        <div class="explore-free-picks">
-            @forelse($freePicks as $piece)
-                @include('webapp.discover.cards.compact-piece', ['pieceTitle' => $piece->medium_name])
-            @empty
-                <p class="text-muted">New picks are on their way. Explore a style or mood above.</p>
-            @endforelse
-        </div>
-    @endcomponent
-</div>
-
-@include('webapp.explore.browse')
+</section>
 @endsection
 
 @push('scripts')
-<script src="{{ mix('js/views/explore.js') }}"></script>
+<script type="text/javascript">
+$('#tags-search .tag').on('click', function() {
+	$('#tags-search button').disable();
+	$('#tags-search .tag').not(this).removeClass('btn-teal');
+	$(this).toggleClass('btn-teal');
+
+	let $results = $(this).closest('.modal-body').find('.search-results');
+	let tags = $('#tags-search .tag.btn-teal').attrToArray('data-name');
+
+	$results.empty();
+
+	if (tags.length == 0) {
+		$('#tags-search button').enable();
+		return;
+	}
+
+	$results.html('<div class="text-muted text-center mb-3"><i>Searching...</i></div>');
+
+	axios.get(window.urls.searchCount, {params: {search: tags.join(' ')}})
+		.then(function(response) {
+			$results.html(response.data);
+		})
+		.catch(function(error) {
+			$results.html('<div class="text-red text-center mb-3"><i>Sorry, something went wrong...</i></div>');
+		})
+		.then(function() {
+			$('#tags-search button').enable();
+		});
+});
+</script>
+
+<script type="text/javascript">
+let recent = app.user ? getRecent() : [];
+
+showRecent();
+$('input[name="search"]').keyup(function() {
+	let length = $(this).val().length;
+
+	if (length > 3) {
+		$('[data-erase]').show();
+	} else {
+		$('[data-erase]').hide();
+	}
+});
+$('[data-erase]').click(function() {
+    let name = $(this).data('erase');
+    $('[name="'+name+'"]').val('');
+    $(this).hide();
+});
+
+$('#search-form').on('submit', function() {
+	let query = $(this).find('input[name="search"]').val();
+	saveRecent(query, recent);
+});
+
+$('.recent-query').on('click', function() {
+	submitRecent($(this).text());
+});
+
+function getRecent() {
+	let cookie = getCookie('pl_recent');
+
+	if (typeof cookie === 'undefined' || cookie === null)
+		return [];
+
+	try {
+		let saved = JSON.parse(cookie || '[]');
+		return Array.isArray(saved) ? saved.filter(query => typeof query === 'string' && query.trim().length > 0 && query.length <= 18).slice(0, 5) : [];
+	} catch (error) {
+		return [];
+	}
+}
+
+function showRecent() {
+	if (recent.length) {
+		let $recentContainer = $('#most-recent');
+
+		for (let i=0; i< recent.length; i++) {
+			$recentContainer.find('> div').append('<span class="recent-query cursor-pointer m-1 rounded-pill border border-grey px-2"><small style="line-height: 2"><i class="app-icon icon-search icon-size-sm text-muted me-1"></i>'+$('<span>').text(recent[i]).html()+'</small></span>');
+		}
+
+		$recentContainer.show();
+	}
+}
+
+function saveRecent(query, recent) {
+	if (! app.user) return;
+
+	if (! recent.includes(query) && query.length <= 18)
+		recent.unshift(query);
+
+	if (recent.length > 5)
+		recent.pop();
+
+	setCookie('pl_recent', JSON.stringify(recent), 30);
+}
+
+function submitRecent(recent) {
+	let $form = $('#search-form');
+	$form.find('input[name="search"]').val(recent);
+	$form.submit();
+}
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.video-container').each(function() {
+		let videoId = '#'+ $(this).find('video').attr('id');
+
+		new Plyr(videoId);
+	});
+});
+</script>
+{{-- TRIGGER LINK ON CLICK, NOT WHILE DRAGGING --}}
+<script type="text/javascript">
+ $(function() {
+    var isDragging = false;
+    $('.search-card, .piece-card')
+    .mousedown(function() {
+        $(window).mousemove(function() {
+            isDragging = true;
+            $(window).unbind("mousemove");
+        });
+    })
+    .mouseup(function() {
+        var wasDragging = isDragging;
+        isDragging = false;
+        $(window).unbind("mousemove");
+        if (!wasDragging) {
+            search($(this));
+        }
+    });
+  });
+
+function search(element) {
+	goTo(element.attr('data-url'));
+}
+</script>
 @endpush
