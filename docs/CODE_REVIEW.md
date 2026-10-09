@@ -2137,3 +2137,11 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Presentation only; destinations, catalogue data, mobile APIs and media access are unchanged. No asset rebuild or migration required.
 - **Verification:** Explore suite passes (13 tests / 270 assertions). Live desktop and 390px browser checks confirm portraits above the copy, icon alignment with neighboring composer options, single-line All composers text, and no phone overflow. Scoped diff checks pass.
 - **Remaining work / limits:** Not deployed; physical devices were not evaluated.
+
+### 2026-10-09 — Collapse contextual Explore groups and omit single choices (P3, complete locally)
+
+- **Request / evidence:** Start the Other ways groups collapsed and omit any dropdown with only one available option, including Length when all matching pieces have the same length.
+- **Implementation / affected files:** `explore/level.blade.php` renders Technique, Length and Periods only when their contextual collections contain at least two options. Removed Technique’s automatic open state and the now-unreachable empty-group messages. Hides the Other ways heading when no groups qualify. Updated existing Explore tests for single-option omission, two-option retention and initially collapsed groups.
+- **Compatibility:** Counts, direct result links, selected filters, directory disclosures and media/mobile contracts remain unchanged. No asset rebuild or migration required.
+- **Verification:** Explore suite passes (13 tests / 280 assertions). Browser checks confirm the populated fixture’s Technique/Length/Periods groups begin closed with 2/3/2 options, and the live one-piece guide omits all unhelpful groups and the empty heading while retaining View all. `git diff --check` passes.
+- **Remaining work / limits:** Not deployed; physical devices were not evaluated.

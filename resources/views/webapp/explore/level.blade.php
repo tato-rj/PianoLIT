@@ -43,32 +43,38 @@
 @elseif(!$guide['count'])
 <p class="text-muted mb-4">No pieces match this combination yet. Follow the path above to try another choice.</p>
 @endif
-@if(!$selectedTag)
+@if(!$selectedTag && ($techniques->count() > 1 || $lengths->count() > 1 || $periods->count() > 1))
 <h5 class="mb-3">{{ $selected ? 'Other ways into this level' : 'Other ways to explore' }}</h5>
-<details class="explore-mood border rounded-sm mb-3" @if($selected && request()->filled('mood')) open @endif>
+@if($techniques->count() > 1)
+<details class="explore-mood border rounded-sm mb-3">
     <summary>@icon('hand', ['mr' => 0, 'size' => 'lg'])<span class="explore-copy"><strong>Technique</strong><small class="d-block text-muted">Hands, patterns & more</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-mood-options">
-    @forelse($techniques as $tag)
+    @foreach($techniques as $tag)
         @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url($guide['params'] + ['tag' => $tag->id], $selectionLabel.' · '.ucfirst($tag->name)), 'label' => ucfirst($tag->name), 'matchingCount' => $tag->matching_pieces_count])
-    @empty<p class="text-muted py-3">No techniques match this selection.</p>@endforelse
+    @endforeach
     </div>
 </details>
+@endif
+@if($lengths->count() > 1)
 <details class="explore-mood border rounded-sm mb-3">
     <summary>@icon('clock', ['mr' => 0, 'size' => 'lg'])<span class="explore-copy"><strong>Length</strong><small class="d-block text-muted">Short, medium & long</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-mood-options">
-    @forelse($lengths as $length)
+    @foreach($lengths as $length)
         @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url($guide['params'] + ['length' => $length->name], $selectionLabel.' · '.ucfirst($length->name)), 'label' => ucfirst($length->name), 'matchingCount' => $length->matching_pieces_count])
-    @empty<p class="text-muted py-3">No lengths match this selection.</p>@endforelse
+    @endforeach
     </div>
 </details>
+@endif
+@if($periods->count() > 1)
 <details class="explore-mood border rounded-sm mb-3">
     <summary>@icon('layers', ['mr' => 0, 'size' => 'lg'])<span class="explore-copy"><strong>Periods</strong><small class="d-block text-muted">Explore by musical era</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-mood-options">
-    @forelse($periods as $period)
+    @foreach($periods as $period)
         @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url($guide['params'] + ['tag' => $period->id], $selectionLabel.' · '.ucfirst($period->name)), 'label' => ucfirst($period->name), 'matchingCount' => $period->matching_pieces_count])
-    @empty<p class="text-muted py-3">No periods match this selection.</p>@endforelse
+    @endforeach
     </div>
 </details>
+@endif
 @endif
 @if($selected && count($guide['params']) === 1)
 @include('webapp.explore.link', ['href' => route('webapp.highlights', ['filters' => [json_encode([$selected->name])]]), 'label' => 'Past free picks at this level', 'icon' => 'clock', 'classes' => ''])

@@ -197,17 +197,16 @@ class ExploreCatalogueTest extends ReviewTestCase
         $this->assertSame([$tag->id], $response->viewData('techniques')->pluck('id')->all());
         $this->assertSame(1, $response->viewData('techniques')->first()->matching_pieces_count);
         $url = ExploreCatalogue::url($params + ['tag' => $tag->id], $response->viewData('selectionLabel').' · Left hand');
-        $response->assertSee($url)->assertDontSee(route('webapp.explore', $params + ['tag' => $tag->id]));
-        $dom = new \DOMDocument;
-        @$dom->loadHTML($response->getContent());
-        $links = (new \DOMXPath($dom))->query('//a');
-        foreach ($links as $link) {
-            if ($link->getAttribute('href') === $url) $this->assertStringContainsString('1 piece', $link->textContent);
-        }
+        $response->assertDontSee($url)->assertDontSee('Other ways into this level');
         $this->getJson($url)->assertOk()->assertSee('Guided fixture 12')->assertDontSee('Guided fixture 0');
         $elementary = $this->get(route('webapp.explore', ['level' => 'elementary', 'mood' => 'dramatic']))->assertOk();
         $this->assertSame(8, $elementary->viewData('techniques')->first()->matching_pieces_count);
-        $elementary->assertSee('8 pieces');
+        $elementary->assertDontSee('<strong>Technique</strong>', false);
+        $second = Model::withoutEvents(function () { return create(Tag::class, ['type' => 'technique', 'name' => 'legato']); });
+        foreach ($this->pieces->take(8)->push($this->pieces[12]) as $piece) $piece->tags()->attach($second);
+        $multiple = $this->get(route('webapp.explore', $params))->assertOk()->assertSee($url);
+        $this->assertCount(2, $multiple->viewData('techniques'));
+        $this->assertStringNotContainsString(' open', view('webapp.explore.level', $multiple->original->getData())->render());
         $this->assertSame(1, app(ExploreCatalogue::class)->query($params + ['tag' => $tag->id])->count());
         $this->get(route('webapp.explore', ['tag' => $tag->id]))->assertOk()->assertViewHas('techniques', function ($techniques) {
             return $techniques->isEmpty();
@@ -242,7 +241,8 @@ class ExploreCatalogueTest extends ReviewTestCase
             }
         });
         $params = ['level' => 'elementary', 'mood' => 'dramatic'];
-        $response = $this->get(route('webapp.explore', $params))->assertOk()->assertSee('Length')->assertSee('Periods');
+        $response = $this->get(route('webapp.explore', $params))->assertOk()->assertSee('<strong>Length</strong>', false)->assertDontSee('<strong>Periods</strong>', false);
+        $this->assertStringNotContainsString(' open', view('webapp.explore.level', $response->original->getData())->render());
         $this->assertSame(ExploreCatalogue::LENGTHS, $response->viewData('lengths')->pluck('name')->all());
         $this->assertSame([4, 4, 4], $response->viewData('lengths')->pluck('matching_pieces_count')->all());
         $this->assertSame([$this->tags['baroque']->id], $response->viewData('periods')->pluck('id')->all());
@@ -259,9 +259,14 @@ class ExploreCatalogueTest extends ReviewTestCase
             $this->assertSame($expected, app(ExploreCatalogue::class)->results(\Illuminate\Http\Request::create($url))->pluck('id')->all());
         }
         $periodUrl = ExploreCatalogue::url($params + ['tag' => $this->tags['baroque']->id], $response->viewData('selectionLabel').' · Baroque');
-        $response->assertSee($periodUrl);
+        $response->assertDontSee($periodUrl);
+        $second = Model::withoutEvents(function () { return create(Tag::class, ['type' => 'period', 'name' => 'romantic']); });
+        foreach ($this->pieces->take(12) as $piece) $piece->tags()->attach($second);
+        $multiple = $this->get(route('webapp.explore', $params))->assertOk()->assertSee($periodUrl)->assertSee('<strong>Periods</strong>', false);
+        $this->assertStringNotContainsString(' open', view('webapp.explore.level', $multiple->original->getData())->render());
         $this->getJson($periodUrl)->assertOk()->assertDontSee('Guided fixture 12');
         $advanced = $this->get(route('webapp.explore', ['level' => 'advanced']))->assertOk();
+        $advanced->assertDontSee('Other ways into this level')->assertDontSee('<strong>Length</strong>', false);
         $this->assertSame(['short'], $advanced->viewData('lengths')->pluck('name')->all());
         $this->assertSame(1, $advanced->viewData('lengths')->first()->matching_pieces_count);
         $this->assertSame(1, $advanced->viewData('periods')->first()->matching_pieces_count);
