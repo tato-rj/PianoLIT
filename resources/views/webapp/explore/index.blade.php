@@ -42,6 +42,7 @@
 @endsection
 
 @push('scripts')
+<script src="{{ mix('js/views/explore-moods.js') }}"></script>
 <script type="text/javascript">
 let recent = app.user ? getRecent() : [];
 

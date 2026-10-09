@@ -26,6 +26,7 @@ function element(value = '') {
 async function main() {
     await require('./explore')();
     await require('./explore-transitions')();
+    require('./explore-moods')();
     await require('./campaign-attribution')();
     require('./composer-biography-admin')();
     require('./admin-text-improver')();

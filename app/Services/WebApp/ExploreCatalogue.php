@@ -63,20 +63,9 @@ class ExploreCatalogue
             }, 'pieces as matching_pieces_count' => function ($query) use ($matchingPieces) {
                 $query->whereIn('pieces.id', $matchingPieces)->select(DB::raw('count(distinct pieces.id)'));
             }])->orderByDesc('pieces_count')->orderBy('name')->orderBy('id')->get();
-        // Count a piece once per combined category even if it has several of
-        // that category's tags. Keep these counts in one aggregate query.
-        $groupCounts = DB::query();
-        foreach (self::MOODS as $key => $definition) {
-            foreach (['total' => ['mood' => $key], 'matching' => array_merge($params, ['mood' => $key])] as $scope => $filters) {
-                $groupCounts->selectSub($this->query($filters)->setEagerLoads([])->withCount([])
-                    ->select(DB::raw('count(*)')), $key.'_'.$scope);
-            }
-        }
-        $groupCounts = $groupCounts->first();
-        $representedTags = collect(self::MOODS)->pluck('tags')->flatten()->all();
-        $additionalMoods = $moodTags->filter(function ($tag) use ($representedTags) {
-                return $tag->pieces_count > 0 && !in_array($tag->name, $representedTags, true);
-            })
+        // Use the catalogue's own mood names. Legacy combined keys remain
+        // accepted by query()/moodRules() only for existing saved links.
+        $allMoods = $moodTags->filter(function ($tag) { return $tag->pieces_count > 0; })
             ->mapWithKeys(function ($tag) use ($params) {
                 $key = 'tag-'.$tag->id;
                 return [$key => [
@@ -85,14 +74,6 @@ class ExploreCatalogue
                     'params' => array_merge($params, ['mood' => $key]),
                 ]];
             });
-        $allMoods = collect(self::MOODS)->map(function ($mood, $key) use ($groupCounts, $params) {
-            return array_merge($mood, [
-                'total_count' => (int) $groupCounts->{$key.'_total'},
-                'count' => (int) $groupCounts->{$key.'_matching'},
-                'params' => array_merge($params, ['mood' => $key]),
-            ]);
-        })->merge($additionalMoods)->filter(function ($mood) { return $mood['total_count'] > 0; })
-            ->sort(function ($a, $b) { return ($b['total_count'] <=> $a['total_count']) ?: strcmp($a['label'], $b['label']); });
         $directoryKeys = $allMoods->take(8)->keys();
         $contextualMoods = $selected && !isset($params['mood'])
             ? $allMoods->filter(function ($mood) { return $mood['count'] > 0; })
@@ -103,9 +84,8 @@ class ExploreCatalogue
         $visibleKeys = $directoryKeys->merge($contextualMoods->keys())->unique();
         $usedMoodImages = [];
         $moodImages = [];
-        // Preserve the existing combined categories' artwork precedence, then
-        // assign artwork to additional moods in their ranked order.
-        collect(self::MOODS)->merge($allMoods)->only($visibleKeys->all())->each(function ($mood, $key) use (&$usedMoodImages, &$moodImages) {
+        // Give moods with fewer cover candidates the first choice of artwork.
+        $allMoods->only($visibleKeys->all())->sortBy('total_count')->each(function ($mood, $key) use (&$usedMoodImages, &$moodImages) {
             $image = $this->moodImage($key, $usedMoodImages);
             if ($image) $usedMoodImages[] = $image;
             $moodImages[$key] = $image;

@@ -16,7 +16,7 @@
 @endif
 @if($choices->isNotEmpty())
 <h5 class="mb-3">{{ $guide['heading'] }}</h5>
-<div class="d-flex flex-column gap-3 mb-4">
+<div class="d-flex flex-column gap-3 mb-4" @if($guide['heading'] === 'By character') id="explore-mood-choices" data-explore-mood-choices @endif>
 @foreach($choices as $choice)
     <details class="explore-mood border rounded-sm">
         <summary>
@@ -39,6 +39,9 @@
     </details>
 @endforeach
 </div>
+@if($guide['heading'] === 'By character' && $choices->count() > 5)
+<button class="btn btn-secondary mb-4" type="button" data-explore-moods-more aria-controls="explore-mood-choices" hidden>Show more</button>
+@endif
 @elseif(!$guide['count'])
 <p class="text-muted mb-4">No pieces match this combination yet. Follow the path above to try another choice.</p>
 @endif

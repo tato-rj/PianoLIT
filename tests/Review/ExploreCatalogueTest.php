@@ -40,7 +40,8 @@ class ExploreCatalogueTest extends ReviewTestCase
             ->assertSee('Technique')->assertSee('Periods & Styles', false)
             ->assertDontSee('Playing needs')->assertSee('View all 12 pieces');
         $data = $response->viewData('moods');
-        $this->assertSame(12, $data['dramatic']['count']);
+        $this->assertSame(6, $data['tag-'.$this->tags['agitated']->id]['count']);
+        $this->assertSame(6, $data['tag-'.$this->tags['crazy']->id]['count']);
         $this->assertSame(ExploreCatalogue::LEVELS, $response->viewData('levels')->pluck('name')->all());
         $this->get(route('webapp.explore', ['level' => 'advanced']))->assertOk()->assertSee('View all 1 piece');
         if (getenv('EXPLORE_PREVIEW')) {
@@ -62,17 +63,17 @@ class ExploreCatalogueTest extends ReviewTestCase
         $this->pieces[2]->tags()->attach($reflective);
         $response = $this->get(route('webapp.explore', ['level' => 'elementary']))->assertOk();
         $moods = $response->viewData('moods');
-        $this->assertSame(storage('shared.jpg'), $moods['dreamy']['image']);
-        $this->assertSame(storage('unique.jpg'), $moods['reflective']['image']);
-        $this->assertSame($moods['reflective']['image'], $response->viewData('choices')['reflective']['image']);
+        $this->assertSame(storage('shared.jpg'), $moods['tag-'.$dreamy->id]['image']);
+        $this->assertSame(storage('unique.jpg'), $moods['tag-'.$reflective->id]['image']);
+        $this->assertSame($moods['tag-'.$reflective->id]['image'], $response->viewData('choices')['tag-'.$reflective->id]['image']);
         $this->pieces[2]->tags()->detach($reflective);
         $moods = $this->get(route('webapp.explore'))->assertOk()->viewData('moods');
-        $this->assertNull($moods['reflective']['image'], 'Use the existing icon when all related covers are already used.');
+        $this->assertNull($moods['tag-'.$reflective->id]['image'], 'Use the existing icon when all related covers are already used.');
         Piece::query()->update(['cover_path' => null]);
         $moods = $this->get(route('webapp.explore'))->assertOk()->viewData('moods');
-        $this->assertNotNull($moods['dreamy']['image']);
-        $this->assertNotNull($moods['reflective']['image']);
-        $this->assertNotSame($moods['dreamy']['image'], $moods['reflective']['image']);
+        $this->assertNotNull($moods['tag-'.$dreamy->id]['image']);
+        $this->assertNotNull($moods['tag-'.$reflective->id]['image']);
+        $this->assertNotSame($moods['tag-'.$dreamy->id]['image'], $moods['tag-'.$reflective->id]['image']);
     }
 
     public function test_mood_artwork_comes_from_matching_pieces_and_is_shared_by_both_columns()
@@ -87,13 +88,13 @@ class ExploreCatalogueTest extends ReviewTestCase
         $response = $this->get(route('webapp.explore', ['level' => 'elementary']))->assertOk();
         $covers = array_map('storage', $covers);
         $moods = $response->viewData('moods');
-        $this->assertContains($moods['dramatic']['image'], $covers);
-        $this->assertSame($covers[0], $moods['playful']['image']);
+        $this->assertContains($moods['tag-'.$this->tags['agitated']->id]['image'], $covers);
+        $this->assertSame($covers[0], $moods['tag-'.$this->tags['happy']->id]['image']);
         $this->assertFalse($moods->has('gentle'), 'Empty moods are omitted from the ranked directory.');
-        $this->assertSame($moods['dramatic']['image'], $response->viewData('choices')['dramatic']['image']);
-        $this->assertSame(4, substr_count($response->getContent(), 'class="explore-artwork"'));
+        $this->assertSame($moods['tag-'.$this->tags['agitated']->id]['image'], $response->viewData('choices')['tag-'.$this->tags['agitated']->id]['image']);
+        $this->assertSame(6, substr_count($response->getContent(), 'class="explore-artwork"'));
         Piece::query()->update(['cover_path' => null]);
-        $fallback = $this->get(route('webapp.explore'))->assertOk()->viewData('moods')['playful']['image'];
+        $fallback = $this->get(route('webapp.explore'))->assertOk()->viewData('moods')['tag-'.$this->tags['happy']->id]['image'];
         $this->assertStringContainsString('/images/backgrounds/periods/baroque', $fallback);
     }
 
@@ -172,10 +173,10 @@ class ExploreCatalogueTest extends ReviewTestCase
         $this->pieces[12]->tags()->attach($this->tags['happy']);
         $params = ['tag' => $this->tags['baroque']->id, 'level' => 'advanced'];
         $response = $this->get(route('webapp.explore', $params))->assertOk();
-        $this->assertSame(['playful'], $response->viewData('choices')->keys()->all());
-        $this->assertSame(1, $response->viewData('choices')['playful']['count']);
+        $this->assertSame(['tag-'.$this->tags['happy']->id], $response->viewData('choices')->keys()->all());
+        $this->assertSame(1, $response->viewData('choices')['tag-'.$this->tags['happy']->id]['count']);
         $response->assertDontSee(route('webapp.explore', $params + ['mood' => 'dramatic']));
-        $response->assertSee(route('webapp.explore', $params + ['mood' => 'playful']));
+        $response->assertSee(route('webapp.explore', $params + ['mood' => 'tag-'.$this->tags['happy']->id]));
         $response = $this->get(route('webapp.explore', ['mood' => 'dramatic']))->assertOk();
         $this->assertSame(['Elementary'], $response->viewData('choices')->pluck('label')->all());
         $this->pieces[12]->tags()->detach($this->tags['happy']);
@@ -229,7 +230,7 @@ class ExploreCatalogueTest extends ReviewTestCase
         if ($path = getenv('EXPLORE_PREVIEW')) {
             file_put_contents(dirname($path).'/technique.html', $this->get(route('webapp.explore', ['tag' => $tag->id]))->getContent());
         }
-        $response->assertSee(route('webapp.explore', ['mood' => 'dramatic']), false)
+        $response->assertSee(route('webapp.explore', ['mood' => 'tag-'.$this->tags['agitated']->id]), false)
             ->assertSee(route('webapp.explore', ['tag' => $tag->id]), false)
             ->assertSee(route('webapp.explore', ['tag' => $this->tags['baroque']->id]), false)
             ->assertSee(route('webapp.highlights'), false);
@@ -385,7 +386,7 @@ class ExploreCatalogueTest extends ReviewTestCase
                     return $tag;
                 });
         });
-        // Multiple dramatic tags on one piece must never inflate group counts.
+        // Each mood is counted independently even when a piece has several moods.
         $this->pieces[0]->tags()->attach($this->tags['crazy']);
         $this->pieces[0]->tags()->attach($this->tags['happy']);
         $advancedOnly = Model::withoutEvents(function () { return create(Tag::class, ['type' => 'mood', 'name' => 'advanced only']); });
@@ -396,14 +397,17 @@ class ExploreCatalogueTest extends ReviewTestCase
         $moods = $response->viewData('moods');
         $choices = $response->viewData('choices');
         $this->assertCount(8, $moods);
-        $this->assertSame([13, 9, 8, 7, 6, 5, 4, 3], $moods->pluck('total_count')->all());
-        $this->assertSame('Dramatic', $moods->first()['label']);
-        $this->assertCount(11, $choices, 'No eight-mood cap applies to contextual matches.');
-        $this->assertSame(12, $choices['dramatic']['count']);
-        $this->assertSame(1, $choices['playful']['count']);
+        $this->assertSame([9, 8, 7, 7, 7, 6, 5, 4], $moods->pluck('total_count')->all());
+        $this->assertSame('Tender', $moods->first()['label']);
+        $response->assertDontSee('Gentle &amp; lyrical', false)->assertDontSee('Playful &amp; lively', false);
+        $response->assertSee('data-explore-mood-choices', false)->assertSee('data-explore-moods-more', false);
+        $this->assertCount(12, $choices, 'No eight-mood cap applies to contextual matches.');
+        $this->assertSame(6, $choices['tag-'.$this->tags['agitated']->id]['count']);
+        $this->assertSame(7, $choices['tag-'.$this->tags['crazy']->id]['count']);
+        $this->assertSame(1, $choices['tag-'.$this->tags['happy']->id]['count']);
         $this->assertFalse($choices->has('tag-'.$advancedOnly->id));
         $this->assertFalse($choices->has('tag-'.$empty->id));
-        $this->assertFalse($choices->has('tag-'.$this->tags['crazy']->id), 'Tags already represented by combined categories are not duplicated.');
+        $this->assertSame('Crazy', $choices['tag-'.$this->tags['crazy']->id]['label'], 'Use individual names rather than combined categories.');
         foreach ($extra as $index => $tag) {
             $key = 'tag-'.$tag->id;
             $this->assertSame($index + 1, $choices[$key]['count']);
@@ -414,9 +418,10 @@ class ExploreCatalogueTest extends ReviewTestCase
         $this->assertSame($images->count(), $images->unique()->count());
         $advanced = $this->get(route('webapp.explore', ['level' => 'advanced']))->assertOk();
         $this->assertSame($moods->keys()->all(), $advanced->viewData('moods')->keys()->all(), 'Directory ranking remains global.');
-        $this->assertEqualsCanonicalizing(['dramatic', 'tag-'.$advancedOnly->id], $advanced->viewData('choices')->keys()->all());
+        $this->assertEqualsCanonicalizing(['tag-'.$this->tags['agitated']->id, 'tag-'.$advancedOnly->id], $advanced->viewData('choices')->keys()->all());
         $this->assertSame([1, 1], $advanced->viewData('choices')->pluck('count')->all());
-        $this->assertSame(['Advanced only', 'Dramatic'], $advanced->viewData('choices')->pluck('label')->all(), 'Tied counts sort by label.');
+        $advanced->assertDontSee('data-explore-moods-more', false);
+        $this->assertSame(['Advanced only', 'Agitated'], $advanced->viewData('choices')->pluck('label')->all(), 'Tied counts sort by label.');
 
         if ($path = getenv('EXPLORE_MOODS_PREVIEW')) {
             file_put_contents($path, $response->getContent());
