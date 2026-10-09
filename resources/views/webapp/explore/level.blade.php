@@ -40,7 +40,7 @@
 @endforeach
 </div>
 @if($guide['heading'] === 'By character' && $choices->count() > 5)
-<button class="btn btn-secondary mb-4" type="button" data-explore-moods-more aria-controls="explore-mood-choices" hidden>Show more</button>
+<button class="btn btn-secondary btn-sm mb-4" type="button" data-explore-moods-more aria-controls="explore-mood-choices" hidden>Show more @icon('plus', ['mr' => 0])</button>
 @endif
 @elseif(!$guide['count'])
 <p class="text-muted mb-4">No pieces match this combination yet. Follow the path above to try another choice.</p>
