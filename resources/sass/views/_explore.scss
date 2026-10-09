@@ -46,3 +46,26 @@
         .explore-view-all { width: auto; }
     }
 }
+
+// Cross-document transitions keep normal links and the fixed bottom menu.
+@media (max-width: 991.98px) and (prefers-reduced-motion: no-preference) {
+    html[data-explore-page] #menu { view-transition-name: explore-menu; }
+    html[data-explore-transition] {
+        &::view-transition-group(root), &::view-transition-group(explore-menu),
+        &::view-transition-old(explore-menu), &::view-transition-new(explore-menu) { animation: none; }
+        &::view-transition-group(explore-menu) { z-index: 3; }
+        &::view-transition-old(root), &::view-transition-new(root) {
+            animation: none; mix-blend-mode: normal;
+        }
+    }
+    html[data-explore-transition="forward"] {
+        &::view-transition-old(root) { z-index: 1; }
+        &::view-transition-new(root) { z-index: 2; animation: explore-slide-in 260ms cubic-bezier(.2, .7, .2, 1) both; }
+    }
+    html[data-explore-transition="back"] {
+        &::view-transition-new(root) { z-index: 1; }
+        &::view-transition-old(root) { z-index: 2; animation: explore-slide-out 260ms cubic-bezier(.2, .7, .2, 1) both; }
+    }
+}
+@keyframes explore-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes explore-slide-out { from { transform: translateX(0); } to { transform: translateX(100%); } }

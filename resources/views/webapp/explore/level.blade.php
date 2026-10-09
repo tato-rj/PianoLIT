@@ -83,4 +83,4 @@
     'Composers' => 'Past highlights by these composers',
     'Periods & Styles' => 'Past highlights from this period/style',
 ][$guide['kind']])
-@include('webapp.explore.link', ['href' => route('webapp.highlights', ['explore' => $guide['params']]), 'label' => $highlightsLabel, 'icon' => 'clock', 'classes' => ''])
+@include('webapp.explore.link', ['href' => route('webapp.highlights', ['explore' => $guide['params']]), 'label' => $highlightsLabel, 'icon' => 'clock', 'classes' => 'rounded-sm'])

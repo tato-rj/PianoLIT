@@ -1,5 +1,14 @@
 @extends('webapp.layouts.app', ['title' => 'Explore'])
 
+@push('header')
+<style>
+@media (max-width: 991.98px) and (prefers-reduced-motion: no-preference) {
+    @view-transition { navigation: auto; }
+}
+</style>
+<script src="{{ mix('js/views/explore-transitions.js') }}"></script>
+@endpush
+
 @section('content')
 <div @if($hasSelection) class="d-none d-lg-block" @endif>
 @include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Find your way through the repertoire.'])
