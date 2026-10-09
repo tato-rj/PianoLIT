@@ -5,9 +5,11 @@ module.exports = async function () {
     const base = 'http://my.pianolit.test/explore';
     const storage = new Map();
     function page(url, options = {}) {
-        const events = {}, attrs = {}, sections = [{open: true}, {open: false}];
+        const events = {}, attrs = {}, timers = new Map(), sections = [{open: true}, {open: false}];
         const root = {
             location: {href: url}, scrollY: 240,
+            setTimeout: callback => { timers.set(1, callback); return 1; },
+            clearTimeout: id => timers.delete(id),
             matchMedia: query => ({matches: query.includes('max-width') ? !options.desktop : !!options.reduced}),
             sessionStorage: {
                 getItem: key => storage.get(key) || null,
@@ -25,6 +27,7 @@ module.exports = async function () {
                 addEventListener: (name, callback) => { events[name] = callback; }
             }
         };
+        if (!options.legacy) root.onpagereveal = null;
         const api = install(root);
         function transition(activation) {
             let finish;
@@ -36,7 +39,7 @@ module.exports = async function () {
             result.finish = finish;
             return result;
         }
-        return {root, events, attrs, sections, api, transition};
+        return {root, events, attrs, sections, api, transition, timers};
     }
     const directory = page(base);
     const level = base + '?level=elementary';
@@ -95,5 +98,34 @@ module.exports = async function () {
     Object.defineProperty(unavailable.root, 'sessionStorage', {get() { throw new Error('Disabled'); }});
     unavailable.events.pageswap(unavailable.transition({entry: {url: level}}));
     unavailable.events.pagereveal({});
-    console.log('Passed: native Explore transition direction, cleanup, history, directory restoration and motion fallbacks.');
+    // Pre-18.2 Safari: no pageswap/pagereveal or Navigation API required.
+    storage.clear();
+    const oldDirectory = page(base, {legacy: true});
+    const destination = {href: level, target: '', hasAttribute: () => false};
+    oldDirectory.events.click({button: 0, target: {closest: () => destination}});
+    const oldGuide = page(level, {legacy: true});
+    oldGuide.events.DOMContentLoaded();
+    assert.strictEqual(oldGuide.attrs['data-explore-fallback'], 'forward');
+    assert.strictEqual(oldGuide.attrs['data-explore-transition'], undefined);
+    oldGuide.timers.get(1)();
+    assert.strictEqual(oldGuide.attrs['data-explore-fallback'], undefined);
+    oldGuide.events.click({button: 0, target: {closest: () => link}});
+    const oldReturn = page(base, {legacy: true});
+    oldReturn.events.DOMContentLoaded();
+    assert.strictEqual(oldReturn.attrs['data-explore-fallback'], 'back');
+    assert.strictEqual(oldReturn.root.scrollY, 240);
+
+    // A supporting browser can skip the native transition on a slow navigation.
+    const skipped = page(level);
+    skipped.root.navigation = {activation: {from: {url: base}}};
+    skipped.events.pagereveal({viewTransition: null});
+    assert.strictEqual(skipped.attrs['data-explore-fallback'], 'forward');
+    const reducedFallback = page(level, {reduced: true, legacy: true});
+    reducedFallback.root.navigation = {activation: {from: {url: base}}};
+    reducedFallback.events.DOMContentLoaded();
+    assert.strictEqual(reducedFallback.attrs['data-explore-fallback'], undefined);
+    const reload = page(level, {legacy: true});
+    reload.events.DOMContentLoaded();
+    assert.strictEqual(reload.attrs['data-explore-fallback'], undefined);
+    console.log('Passed: native Explore transition direction, cleanup, history, directory restoration motion preferences and legacy Safari slide fallbacks.');
 };

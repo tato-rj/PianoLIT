@@ -59,20 +59,35 @@
 
 // Keep the directory menu in its page snapshot so the incoming guide covers it.
 @media (max-width: 991.98px) and (prefers-reduced-motion: no-preference) {
+    html[data-explore-fallback] { overflow-x: hidden; }
+    // Older Safari keeps real page navigation and animates the arriving content.
+    // The fixed bottom menu stays outside this transformed container.
+    html[data-explore-fallback] #webapp main,
+    html[data-explore-fallback] .explore-mobile-navigation {
+        animation: explore-slide-in 360ms cubic-bezier(.4, 0, .2, 1) both;
+        will-change: transform;
+    }
+    html[data-explore-fallback="back"] #webapp main,
+    html[data-explore-fallback="back"] .explore-mobile-navigation {
+        animation-name: explore-return-in;
+    }
     html[data-explore-transition] {
         &::view-transition-group(root) { animation: none; }
         &::view-transition-old(root), &::view-transition-new(root) {
             animation: none; mix-blend-mode: normal;
+            will-change: transform;
         }
     }
     html[data-explore-transition="forward"] {
         &::view-transition-old(root) { z-index: 1; }
-        &::view-transition-new(root) { z-index: 2; animation: explore-slide-in 260ms cubic-bezier(.2, .7, .2, 1) both; }
+        &::view-transition-new(root) { z-index: 2; animation: explore-slide-in 360ms cubic-bezier(.4, 0, .2, 1) both; }
     }
     html[data-explore-transition="back"] {
         &::view-transition-new(root) { z-index: 1; }
-        &::view-transition-old(root) { z-index: 2; animation: explore-slide-out 260ms cubic-bezier(.2, .7, .2, 1) both; }
+        &::view-transition-old(root) { z-index: 2; animation: explore-slide-out 360ms cubic-bezier(.4, 0, .2, 1) both; }
     }
 }
-@keyframes explore-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
-@keyframes explore-slide-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
+@keyframes explore-slide-in { from { transform: translate3d(100%, 0, 0); } to { transform: translate3d(0, 0, 0); } }
+@keyframes explore-slide-out { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(100%, 0, 0); } }
+
+@keyframes explore-return-in { from { transform: translate3d(-15%, 0, 0); opacity: 0; } to { transform: translate3d(0, 0, 0); opacity: 1; } }
