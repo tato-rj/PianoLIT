@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 class ExploreCatalogue
 {
     const LEVELS = ['elementary', 'early beginner', 'late beginner', 'early intermediate', 'late intermediate', 'advanced'];
+    const LENGTHS = ['short', 'medium', 'long'];
     const MOODS = [
         'gentle' => ['label' => 'Gentle & lyrical', 'description' => 'Flowing melodies and a softer touch.', 'icon' => 'feather', 'tags' => ['calm', 'elegant', 'lyrical']],
         'playful' => ['label' => 'Playful & lively', 'description' => 'Light rhythms and bright character.', 'icon' => 'sun', 'tags' => ['happy', 'playful', 'fast']],
@@ -97,21 +98,31 @@ class ExploreCatalogue
             $query->whereIn('type', ['period', 'genre'])->has('pieces', '>=', 10);
         })->orderBy('name')->get();
         $techniques = collect();
+        $lengths = collect();
+        $periods = collect();
         if (!$selectedTag && $guide) {
             $matchingPieces = $this->query($params)->select('pieces.id')->setEagerLoads([])->withCount([]);
-            $matchingTechniquePieces = function ($query) use ($matchingPieces) {
+            $matchingChoicePieces = function ($query) use ($matchingPieces) {
                 $query->whereIn('pieces.id', $matchingPieces);
             };
             $techniques = Tag::whereIn('id', $tags->where('type', 'technique')->pluck('id'))
-                ->whereHas('pieces', $matchingTechniquePieces)
-                ->withCount(['pieces as matching_pieces_count' => $matchingTechniquePieces])
+                ->whereHas('pieces', $matchingChoicePieces)
+                ->withCount(['pieces as matching_pieces_count' => $matchingChoicePieces])
                 ->orderBy('name')->get();
+            $lengths = Tag::where('type', 'length')->whereIn('name', self::LENGTHS)
+                ->whereHas('pieces', $matchingChoicePieces)
+                ->withCount(['pieces as matching_pieces_count' => $matchingChoicePieces])->get()
+                ->sortBy(function ($tag) { return array_search($tag->name, self::LENGTHS, true); })->values();
+            $periods = Tag::whereIn('id', $tags->where('type', 'period')->pluck('id'))
+                ->whereHas('pieces', $matchingChoicePieces)
+                ->withCount(['pieces as matching_pieces_count' => $matchingChoicePieces])
+                ->orderBy('order')->orderBy('name')->get();
         }
         $composers = Composer::select(['id', 'name', 'cover_path', 'country_id'])->withCount([])->has('pieces')->get();
         $countries = $composers->pluck('country')->filter()->unique('id')->sortBy('name')->values();
         $portraits = $composers->shuffle()->take(3);
         return compact('levels', 'selected', 'moods', 'tags', 'countries', 'portraits',
-            'guide', 'choices', 'breadcrumbs', 'selectionLabel', 'selectedTag', 'activeSection', 'hasSelection', 'techniques');
+            'guide', 'choices', 'breadcrumbs', 'selectionLabel', 'selectedTag', 'activeSection', 'hasSelection', 'techniques', 'lengths', 'periods');
     }
 
     private function choice(array $params)
@@ -149,6 +160,9 @@ class ExploreCatalogue
         if (!empty($params['short'])) $query->whereHas('tags', function ($q) {
             $q->where('type', 'length')->where('name', 'short');
         });
+        if (!empty($params['length'])) $query->whereHas('tags', function ($q) use ($params) {
+            $q->where('type', 'length')->where('name', $params['length']);
+        });
         if (!empty($params['past'])) $query->whereNotNull('highlighted_at')->where('is_free', false);
         return $query;
     }
@@ -160,6 +174,7 @@ class ExploreCatalogue
             'mood' => ['nullable', Rule::in(array_keys(self::MOODS))],
             'composers' => ['nullable', Rule::in(array_keys(ComposerGroups::OPTIONS))], 'country' => 'nullable|integer|min:1',
             'tag' => 'nullable|integer|min:1', 'short' => 'nullable|boolean', 'past' => 'nullable|boolean',
+            'length' => ['nullable', Rule::in(self::LENGTHS)],
             'filters' => 'nullable|array|max:6', 'filters.*' => ['string', 'max:1024', function ($attribute, $value, $fail) {
                 $names = json_decode($value, true);
                 if (!is_array($names) || array_values($names) !== $names || count($names) > 20

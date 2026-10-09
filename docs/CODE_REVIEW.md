@@ -2121,3 +2121,19 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Zero-match techniques remain omitted, the main directory’s eight-piece technique threshold remains intact, and the initial directory can still open technique guides. Counts reflect all matching catalogue pieces before guest result limits. Membership, media and mobile contracts remain unchanged. No asset rebuild or migration required.
 - **Verification:** Isolated Explore suite passes (12 tests / 233 assertions), covering one/eight contextual matches, direct result destinations, retained level/mood constraints and returned matching pieces. A populated isolated Blade preview verifies row counts and direct URLs at desktop and 390px widths without overflow. PHP syntax and `git diff --check` pass.
 - **Remaining work / limits:** Not deployed. Production-scale query timings, MySQL execution and physical devices were not evaluated.
+
+### 2026-10-09 — Add Length and Periods to contextual Explore choices (P3, complete locally)
+
+- **Request / evidence:** Add Length (Short, Medium, Long) and Periods alongside Technique under Other ways into this level.
+- **Implementation / affected files:** `ExploreCatalogue` loads contextual length/period tags and matching counts using the current guide constraints. Added a validated `length` result filter against length-type tags. `explore/level.blade.php` renders both groups with the existing disclosure and counted-link components, leading directly to results. Lengths follow Short/Medium/Long order; periods follow catalogue order. Options with zero matches are omitted and empty groups explain the absence of matches. Added isolated coverage in `ExploreCatalogueTest`.
+- **Compatibility:** Retains selected level/mood/composer/country criteria, existing catalogue period eligibility, guest result limits, legacy short-filter URLs, and one-open-group behavior. No mobile API, media access, asset source or migration changes. Concurrent directory styling/navigation edits were preserved.
+- **Verification:** Explore suite passes (13 tests / 270 assertions), including contextual counts, all three length filters, exact returned guest piece IDs, period result links, single/empty choices and invalid length shapes. Populated isolated Blade preview checks desktop/390px layouts, direct URLs, counts and accordion behavior without horizontal overflow. PHP syntax and scoped diff checks pass.
+- **Remaining work / limits:** Not deployed. Physical devices, production catalogue data and MySQL execution were not evaluated.
+
+### 2026-10-09 — Give All composers a decorative portrait row (P3, complete locally)
+
+- **Request / evidence:** Side-by-side portraits squeezed the All composers label and subtitle. Move the portraits above the copy and align the option with the icon-based rows beneath it.
+- **Implementation / affected files:** `explore/directory.blade.php` now stacks a centered decorative portrait strip above a full-width label row containing the existing users icon, title/subtitle and chevron. Uses existing layout utilities and icon assets; retains the existing clickable option and selected state. Preserves concurrent directory navigation/styling edits.
+- **Compatibility:** Presentation only; destinations, catalogue data, mobile APIs and media access are unchanged. No asset rebuild or migration required.
+- **Verification:** Explore suite passes (13 tests / 270 assertions). Live desktop and 390px browser checks confirm portraits above the copy, icon alignment with neighboring composer options, single-line All composers text, and no phone overflow. Scoped diff checks pass.
+- **Remaining work / limits:** Not deployed; physical devices were not evaluated.

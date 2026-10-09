@@ -232,6 +232,48 @@ class ExploreCatalogueTest extends ReviewTestCase
         $this->get(route('webapp.explore', ['composers' => 'all']))->assertOk()->assertViewHas('guide', function ($guide) { return $guide['count'] === 13; });
     }
 
+    public function test_length_and_period_refinements_show_contextual_counts_and_open_results()
+    {
+        Model::withoutEvents(function () {
+            foreach (['long', 'medium'] as $name) $this->tags[$name] = create(Tag::class, ['type' => 'length', 'name' => $name]);
+            foreach ($this->pieces->take(12) as $index => $piece) {
+                $piece->tags()->detach($this->tags['short']);
+                $piece->tags()->attach($this->tags[ExploreCatalogue::LENGTHS[$index % 3]]);
+            }
+        });
+        $params = ['level' => 'elementary', 'mood' => 'dramatic'];
+        $response = $this->get(route('webapp.explore', $params))->assertOk()->assertSee('Length')->assertSee('Periods');
+        $this->assertSame(ExploreCatalogue::LENGTHS, $response->viewData('lengths')->pluck('name')->all());
+        $this->assertSame([4, 4, 4], $response->viewData('lengths')->pluck('matching_pieces_count')->all());
+        $this->assertSame([$this->tags['baroque']->id], $response->viewData('periods')->pluck('id')->all());
+        $this->assertSame(12, $response->viewData('periods')->first()->matching_pieces_count);
+        foreach (ExploreCatalogue::LENGTHS as $length) {
+            $url = ExploreCatalogue::url($params + ['length' => $length], $response->viewData('selectionLabel').' · '.ucfirst($length));
+            $response->assertSee($url);
+            $this->assertSame(4, app(ExploreCatalogue::class)->query($params + ['length' => $length])->count());
+            $result = $this->getJson($url)->assertOk()->assertDontSee('Guided fixture 12');
+            $this->assertSame(3, substr_count($result->getContent(), 'data-sort-name='));
+            $expected = $this->pieces->take(12)->filter(function ($piece, $index) use ($length) {
+                return ExploreCatalogue::LENGTHS[$index % 3] === $length;
+            })->reverse()->take(3)->pluck('id')->values()->all();
+            $this->assertSame($expected, app(ExploreCatalogue::class)->results(\Illuminate\Http\Request::create($url))->pluck('id')->all());
+        }
+        $periodUrl = ExploreCatalogue::url($params + ['tag' => $this->tags['baroque']->id], $response->viewData('selectionLabel').' · Baroque');
+        $response->assertSee($periodUrl);
+        $this->getJson($periodUrl)->assertOk()->assertDontSee('Guided fixture 12');
+        $advanced = $this->get(route('webapp.explore', ['level' => 'advanced']))->assertOk();
+        $this->assertSame(['short'], $advanced->viewData('lengths')->pluck('name')->all());
+        $this->assertSame(1, $advanced->viewData('lengths')->first()->matching_pieces_count);
+        $this->assertSame(1, $advanced->viewData('periods')->first()->matching_pieces_count);
+        $empty = $this->get(route('webapp.explore', ['level' => 'elementary', 'mood' => 'gentle']))->assertOk();
+        $this->assertEmpty($empty->viewData('lengths'));
+        $this->assertEmpty($empty->viewData('periods'));
+        $this->withExceptionHandling();
+        foreach (['invalid', ['short']] as $length) {
+            $this->getJson(ExploreCatalogue::url($params + ['length' => $length]))->assertStatus(422);
+        }
+    }
+
     public function test_composer_groups_match_catalogue_metadata_in_guides_results_and_directory()
     {
         Composer::query()->update(['date_of_birth' => '1800-01-01', 'date_of_death' => '1880-01-01', 'ethnicity' => 'white', 'is_pedagogical' => false]);

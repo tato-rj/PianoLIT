@@ -2,7 +2,7 @@
     <summary>@icon('layers', ['mr' => 0, 'size' => 'lg'])<span>Level</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         @forelse($levels as $level)
-        <a class="explore-link link-none {{ $selected && $selected->id === $level->id ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['level' => $level->name]) }}" @if(request('level') === $level->name) aria-current="page" @endif>
+        <a class="explore-link rounded-sm link-none {{ $selected && $selected->id === $level->id ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['level' => $level->name]) }}" @if(request('level') === $level->name) aria-current="page" @endif>
             @icon('circle', ['filled' => true, 'classes' => 'color-'.lastword($level->name), 'mr' => 0])
             <span class="explore-copy">{{ ucwords($level->name) }}</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])
         </a>
@@ -28,9 +28,13 @@
 <details class="explore-section" @if($activeSection === 'composers') open @endif>
     <summary>@icon('user', ['mr' => 0, 'size' => 'lg'])<span>Composers</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
-        <a class="explore-link link-none {{ request('composers') === 'all' ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['composers' => 'all']) }}" @if(request('composers') === 'all') aria-current="page" @endif>
-            <span class="explore-portraits">@foreach($portraits as $composer)<img src="{{ $composer->cover_image }}" alt="" class="rounded-circle" loading="lazy">@endforeach</span>
-            <span class="explore-copy">All composers<small class="d-block text-muted">Explore by level</small></span>@icon('chevron-right', ['mr' => 0])
+        <a class="explore-link rounded-sm link-none flex-column align-items-stretch {{ request('composers') === 'all' ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['composers' => 'all']) }}" @if(request('composers') === 'all') aria-current="page" @endif>
+            <span class="explore-portraits align-self-center mb-1" aria-hidden="true">@foreach($portraits as $composer)<img src="{{ $composer->cover_image }}" alt="" class="rounded-circle" loading="lazy">@endforeach</span>
+            <span class="d-flex align-items-center gap-2">
+                <span class="explore-icon">@icon('users', ['mr' => 0, 'size' => 'lg'])</span>
+                <span class="explore-copy">All composers<small class="d-block text-muted">Explore by level</small></span>
+                @icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])
+            </span>
         </a>
         @foreach(\App\Services\WebApp\ComposerGroups::OPTIONS as $group => $option)
             @if($group !== 'all')
@@ -51,7 +55,7 @@
         @if($tags->where('type', 'period')->isNotEmpty())
             <p class="explore-group-label text-muted">Periods</p>
             @foreach($tags->where('type', 'period') as $tag)
-                <a class="explore-link explore-period link-none {{ $selectedTag && $selectedTag->id === $tag->id ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['tag' => $tag->id]) }}" @if($selectedTag && $selectedTag->id === $tag->id) aria-current="page" @endif>
+                <a class="explore-link rounded-sm explore-period link-none {{ $selectedTag && $selectedTag->id === $tag->id ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['tag' => $tag->id]) }}" @if($selectedTag && $selectedTag->id === $tag->id) aria-current="page" @endif>
                     <img src="{{ $tag->web_cover_image }}" alt="" class="explore-period-image" width="44" height="44" loading="lazy">
                     <span class="explore-copy">{{ ucfirst($tag->name) }}</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])
                 </a>
@@ -66,4 +70,3 @@
         @if($tags->whereIn('type', ['period', 'genre'])->isEmpty())<p class="text-muted p-3">Periods and styles are being prepared.</p>@endif
     </div>
 </details>
-@include('webapp.explore.link', ['href' => route('webapp.highlights'), 'label' => 'Past free picks', 'icon' => 'clock', 'classes' => 'explore-past fw-bold'])

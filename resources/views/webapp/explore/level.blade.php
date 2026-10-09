@@ -53,6 +53,22 @@
     @empty<p class="text-muted py-3">No techniques match this selection.</p>@endforelse
     </div>
 </details>
+<details class="explore-mood border rounded-sm mb-3">
+    <summary>@icon('clock', ['mr' => 0, 'size' => 'lg'])<span class="explore-copy"><strong>Length</strong><small class="d-block text-muted">Short, medium & long</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
+    <div class="explore-mood-options">
+    @forelse($lengths as $length)
+        @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url($guide['params'] + ['length' => $length->name], $selectionLabel.' · '.ucfirst($length->name)), 'label' => ucfirst($length->name), 'matchingCount' => $length->matching_pieces_count])
+    @empty<p class="text-muted py-3">No lengths match this selection.</p>@endforelse
+    </div>
+</details>
+<details class="explore-mood border rounded-sm mb-3">
+    <summary>@icon('layers', ['mr' => 0, 'size' => 'lg'])<span class="explore-copy"><strong>Periods</strong><small class="d-block text-muted">Explore by musical era</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
+    <div class="explore-mood-options">
+    @forelse($periods as $period)
+        @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url($guide['params'] + ['tag' => $period->id], $selectionLabel.' · '.ucfirst($period->name)), 'label' => ucfirst($period->name), 'matchingCount' => $period->matching_pieces_count])
+    @empty<p class="text-muted py-3">No periods match this selection.</p>@endforelse
+    </div>
+</details>
 @endif
 @if($selected && count($guide['params']) === 1)
 @include('webapp.explore.link', ['href' => route('webapp.highlights', ['filters' => [json_encode([$selected->name])]]), 'label' => 'Past free picks at this level', 'icon' => 'clock', 'classes' => ''])
