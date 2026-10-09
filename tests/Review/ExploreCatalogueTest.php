@@ -89,7 +89,7 @@ class ExploreCatalogueTest extends ReviewTestCase
         $moods = $response->viewData('moods');
         $this->assertContains($moods['dramatic']['image'], $covers);
         $this->assertSame($covers[0], $moods['playful']['image']);
-        $this->assertNull($moods['gentle']['image']);
+        $this->assertFalse($moods->has('gentle'), 'Empty moods are omitted from the ranked directory.');
         $this->assertSame($moods['dramatic']['image'], $response->viewData('choices')['dramatic']['image']);
         $this->assertSame(4, substr_count($response->getContent(), 'class="explore-artwork"'));
         Piece::query()->update(['cover_path' => null]);
@@ -229,7 +229,7 @@ class ExploreCatalogueTest extends ReviewTestCase
         if ($path = getenv('EXPLORE_PREVIEW')) {
             file_put_contents(dirname($path).'/technique.html', $this->get(route('webapp.explore', ['tag' => $tag->id]))->getContent());
         }
-        $response->assertSee(route('webapp.explore', ['mood' => 'gentle']), false)
+        $response->assertSee(route('webapp.explore', ['mood' => 'dramatic']), false)
             ->assertSee(route('webapp.explore', ['tag' => $tag->id]), false)
             ->assertSee(route('webapp.explore', ['tag' => $this->tags['baroque']->id]), false)
             ->assertSee(route('webapp.highlights'), false);
@@ -372,6 +372,87 @@ class ExploreCatalogueTest extends ReviewTestCase
             $this->getJson(route('webapp.explore', ['composers' => $group]))->assertStatus(422);
             $this->getJson(ExploreCatalogue::url(['composers' => $group]))->assertStatus(422);
             $this->getJson(route('webapp.composers.index', ['composers' => $group]))->assertStatus(422);
+        }
+    }
+
+    public function test_mood_directory_ranks_top_eight_while_contextual_choices_include_every_match()
+    {
+        $extra = Model::withoutEvents(function () {
+            return collect(['bright', 'bold', 'bouncy', 'energetic', 'festive', 'heroic', 'nostalgic', 'peaceful', 'tender'])
+                ->map(function ($name, $index) {
+                    $tag = create(Tag::class, ['type' => 'mood', 'name' => $name]);
+                    foreach ($this->pieces->take($index + 1) as $piece) $piece->tags()->attach($tag);
+                    return $tag;
+                });
+        });
+        // Multiple dramatic tags on one piece must never inflate group counts.
+        $this->pieces[0]->tags()->attach($this->tags['crazy']);
+        $this->pieces[0]->tags()->attach($this->tags['happy']);
+        $advancedOnly = Model::withoutEvents(function () { return create(Tag::class, ['type' => 'mood', 'name' => 'advanced only']); });
+        $empty = Model::withoutEvents(function () { return create(Tag::class, ['type' => 'mood', 'name' => 'empty mood']); });
+        $this->pieces[12]->tags()->attach($advancedOnly);
+
+        $response = $this->get(route('webapp.explore', ['level' => 'elementary']))->assertOk();
+        $moods = $response->viewData('moods');
+        $choices = $response->viewData('choices');
+        $this->assertCount(8, $moods);
+        $this->assertSame([13, 9, 8, 7, 6, 5, 4, 3], $moods->pluck('total_count')->all());
+        $this->assertSame('Dramatic', $moods->first()['label']);
+        $this->assertCount(11, $choices, 'No eight-mood cap applies to contextual matches.');
+        $this->assertSame(12, $choices['dramatic']['count']);
+        $this->assertSame(1, $choices['playful']['count']);
+        $this->assertFalse($choices->has('tag-'.$advancedOnly->id));
+        $this->assertFalse($choices->has('tag-'.$empty->id));
+        $this->assertFalse($choices->has('tag-'.$this->tags['crazy']->id), 'Tags already represented by combined categories are not duplicated.');
+        foreach ($extra as $index => $tag) {
+            $key = 'tag-'.$tag->id;
+            $this->assertSame($index + 1, $choices[$key]['count']);
+            $this->assertSame(['level' => 'elementary', 'mood' => $key], $choices[$key]['params']);
+            if ($moods->has($key)) $this->assertSame($moods[$key]['image'], $choices[$key]['image']);
+        }
+        $images = $choices->pluck('image')->filter();
+        $this->assertSame($images->count(), $images->unique()->count());
+        $advanced = $this->get(route('webapp.explore', ['level' => 'advanced']))->assertOk();
+        $this->assertSame($moods->keys()->all(), $advanced->viewData('moods')->keys()->all(), 'Directory ranking remains global.');
+        $this->assertEqualsCanonicalizing(['dramatic', 'tag-'.$advancedOnly->id], $advanced->viewData('choices')->keys()->all());
+        $this->assertSame([1, 1], $advanced->viewData('choices')->pluck('count')->all());
+        $this->assertSame(['Advanced only', 'Dramatic'], $advanced->viewData('choices')->pluck('label')->all(), 'Tied counts sort by label.');
+
+        if ($path = getenv('EXPLORE_MOODS_PREVIEW')) {
+            file_put_contents($path, $response->getContent());
+        }
+    }
+
+    public function test_additional_moods_work_through_guides_results_and_highlights_with_all_filters()
+    {
+        $tag = Model::withoutEvents(function () { return create(Tag::class, ['type' => 'mood', 'name' => 'wistful']); });
+        foreach ([0, 1, 12] as $index) $this->pieces[$index]->tags()->attach($tag);
+        $key = 'tag-'.$tag->id;
+        $guide = $this->get(route('webapp.explore', ['mood' => $key]))->assertOk();
+        $this->assertSame('Wistful', $guide->viewData('guide')['title']);
+        $this->assertSame(3, $guide->viewData('guide')['count']);
+        $params = ['mood' => $key, 'level' => 'elementary', 'country' => $this->pieces[0]->composer->country_id];
+        $context = $this->get(route('webapp.explore', array_diff_key($params, ['mood' => true])))->assertOk();
+        $this->assertSame(1, $context->viewData('choices')[$key]['count'], 'Additional moods respect the selected country as well as level.');
+        $response = $this->get(route('webapp.explore', $params))->assertOk();
+        $this->assertSame(1, $response->viewData('guide')['count']);
+        $this->assertSame(['mood' => $key], $response->viewData('breadcrumbs')[0]['params']);
+        $this->getJson(ExploreCatalogue::url($params))->assertOk()->assertSee('Guided fixture 0')->assertDontSee('Guided fixture 1');
+        $highlightsUrl = route('webapp.highlights', ['explore' => $params]);
+        $response->assertSee($highlightsUrl);
+        $highlights = $this->get($highlightsUrl)->assertOk();
+        $this->assertStringContainsString('Wistful', $highlights->viewData('exploreLabels'));
+        $this->assertSame([$this->pieces[0]->id], $highlights->viewData('pieces')->pluck('id')->all());
+        $this->getJson($highlightsUrl)->assertOk()->assertSee('Guided fixture 0')->assertDontSee('Guided fixture 1');
+    }
+
+    public function test_dynamic_mood_validation_rejects_other_tag_types_missing_ids_and_invalid_shapes()
+    {
+        $this->withExceptionHandling();
+        foreach (['tag-'.$this->tags['baroque']->id, 'tag-999999', 'tag-0', 'tag-1 OR 1=1', ['dramatic']] as $mood) {
+            $this->getJson(route('webapp.explore', ['mood' => $mood]))->assertStatus(422);
+            $this->getJson(ExploreCatalogue::url(['mood' => $mood]))->assertStatus(422);
+            $this->getJson(route('webapp.highlights', ['explore' => ['mood' => $mood]]))->assertStatus(422);
         }
     }
 

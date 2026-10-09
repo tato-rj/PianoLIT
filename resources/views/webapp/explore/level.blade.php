@@ -3,7 +3,7 @@
     @include('webapp.explore.path', ['pathClasses' => 'flex-wrap'])
 </div>
 @endif
-<div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div>
         <p class="text-muted mb-1">{{ $guide['kind'] }}</p>
         <h2 class="mb-2">{{ $guide['title'] }}</h2>

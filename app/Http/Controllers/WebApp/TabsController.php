@@ -87,7 +87,7 @@ class TabsController extends Controller
         $validated = $request->validate([
             'explore' => 'nullable|array:level,mood,tag,composers,country',
             'explore.level' => ['nullable', Rule::in(ExploreCatalogue::LEVELS)],
-            'explore.mood' => ['nullable', Rule::in(array_keys(ExploreCatalogue::MOODS))],
+            'explore.mood' => $catalogue->moodRules(),
             'explore.tag' => 'nullable|integer|min:1',
             'explore.composers' => ['nullable', Rule::in(array_keys(ComposerGroups::OPTIONS))],
             'explore.country' => 'nullable|integer|min:1',
@@ -118,9 +118,9 @@ class TabsController extends Controller
             return view('webapp.highlights.pieces', compact('pieces'))->render();
         }
 
-        $exploreLabels = collect($explore)->map(function ($value, $facet) {
+        $exploreLabels = collect($explore)->map(function ($value, $facet) use ($catalogue) {
             if ($facet === 'level') return ucwords($value);
-            if ($facet === 'mood') return ExploreCatalogue::MOODS[$value]['label'];
+            if ($facet === 'mood') return $catalogue->moodLabel($value);
             if ($facet === 'composers') return ComposerGroups::OPTIONS[$value]['label'];
             if ($facet === 'country') return optional(Country::find($value))->name;
             return ucfirst(optional(Tag::whereIn('type', ['technique', 'period', 'genre'])->find($value))->name ?? 'Selected tag');

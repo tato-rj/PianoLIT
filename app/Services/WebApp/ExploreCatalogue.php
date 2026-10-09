@@ -4,6 +4,7 @@ namespace App\Services\WebApp;
 
 use App\{Composer, Country, Piece, Tag};
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 /** Guided browsing belongs to the web app, never the shared mobile feed. */
@@ -19,11 +20,28 @@ class ExploreCatalogue
         'reflective' => ['label' => 'Reflective & melancholy', 'description' => 'Thoughtful melodies with a wistful feel.', 'icon' => 'waves', 'tags' => ['melancholic', 'reflective']],
     ];
 
+    public function moodRules(): array
+    {
+        return ['bail', 'nullable', 'string', 'max:64', function ($attribute, $value, $fail) {
+            if (isset(self::MOODS[$value])) return; // Keep existing bookmarked groups working.
+            if (!preg_match('/^tag-([1-9][0-9]*)$/', $value, $match)
+                || !Tag::where('type', 'mood')->whereKey($match[1])->exists()) {
+                $fail('Invalid mood.');
+            }
+        }];
+    }
+
+    public function moodLabel(string $key): string
+    {
+        if (isset(self::MOODS[$key])) return self::MOODS[$key]['label'];
+        return ucfirst(Tag::where('type', 'mood')->findOrFail(substr($key, 4))->name);
+    }
+
     public function data(Request $request)
     {
         $params = array_filter($request->validate([
             'level' => ['nullable', Rule::in(self::LEVELS)],
-            'mood' => ['nullable', Rule::in(array_keys(self::MOODS))],
+            'mood' => $this->moodRules(),
             'tag' => 'nullable|integer|min:1',
             'composers' => ['nullable', Rule::in(array_keys(ComposerGroups::OPTIONS))], 'country' => 'nullable|integer|min:1',
         ]), function ($value) { return $value !== null && $value !== ''; });
@@ -38,15 +56,65 @@ class ExploreCatalogue
         abort_if(isset($params['level']) && !$selected, 404);
         if ($selected) $params['level'] = $selected->name;
         $activeSection = 'level';
+        $matchingPieces = $this->query($params)->select('pieces.id')->setEagerLoads([])->withCount([]);
+        $moodTags = Tag::where('type', 'mood')->select(['tags.id', 'tags.name'])
+            ->withCount(['pieces' => function ($query) {
+                $query->select(DB::raw('count(distinct pieces.id)'));
+            }, 'pieces as matching_pieces_count' => function ($query) use ($matchingPieces) {
+                $query->whereIn('pieces.id', $matchingPieces)->select(DB::raw('count(distinct pieces.id)'));
+            }])->orderByDesc('pieces_count')->orderBy('name')->orderBy('id')->get();
+        // Count a piece once per combined category even if it has several of
+        // that category's tags. Keep these counts in one aggregate query.
+        $groupCounts = DB::query();
+        foreach (self::MOODS as $key => $definition) {
+            foreach (['total' => ['mood' => $key], 'matching' => array_merge($params, ['mood' => $key])] as $scope => $filters) {
+                $groupCounts->selectSub($this->query($filters)->setEagerLoads([])->withCount([])
+                    ->select(DB::raw('count(*)')), $key.'_'.$scope);
+            }
+        }
+        $groupCounts = $groupCounts->first();
+        $representedTags = collect(self::MOODS)->pluck('tags')->flatten()->all();
+        $additionalMoods = $moodTags->filter(function ($tag) use ($representedTags) {
+                return $tag->pieces_count > 0 && !in_array($tag->name, $representedTags, true);
+            })
+            ->mapWithKeys(function ($tag) use ($params) {
+                $key = 'tag-'.$tag->id;
+                return [$key => [
+                    'label' => ucfirst($tag->name), 'description' => '', 'icon' => 'music',
+                    'total_count' => $tag->pieces_count, 'count' => $tag->matching_pieces_count,
+                    'params' => array_merge($params, ['mood' => $key]),
+                ]];
+            });
+        $allMoods = collect(self::MOODS)->map(function ($mood, $key) use ($groupCounts, $params) {
+            return array_merge($mood, [
+                'total_count' => (int) $groupCounts->{$key.'_total'},
+                'count' => (int) $groupCounts->{$key.'_matching'},
+                'params' => array_merge($params, ['mood' => $key]),
+            ]);
+        })->merge($additionalMoods)->filter(function ($mood) { return $mood['total_count'] > 0; })
+            ->sort(function ($a, $b) { return ($b['total_count'] <=> $a['total_count']) ?: strcmp($a['label'], $b['label']); });
+        $directoryKeys = $allMoods->take(8)->keys();
+        $contextualMoods = $selected && !isset($params['mood'])
+            ? $allMoods->filter(function ($mood) { return $mood['count'] > 0; })
+                ->sort(function ($a, $b) { return ($b['count'] <=> $a['count']) ?: strcmp($a['label'], $b['label']); })
+            : collect();
+        // Generate artwork only for displayed options, sharing one unique image
+        // per mood across both columns even when the contextual list exceeds eight.
+        $visibleKeys = $directoryKeys->merge($contextualMoods->keys())->unique();
         $usedMoodImages = [];
-        $moods = collect(self::MOODS)->map(function ($mood, $key) use (&$usedMoodImages) {
+        $moodImages = [];
+        // Preserve the existing combined categories' artwork precedence, then
+        // assign artwork to additional moods in their ranked order.
+        collect(self::MOODS)->merge($allMoods)->only($visibleKeys->all())->each(function ($mood, $key) use (&$usedMoodImages, &$moodImages) {
             $image = $this->moodImage($key, $usedMoodImages);
             if ($image) $usedMoodImages[] = $image;
-            return array_merge($mood, ['image' => $image]);
+            $moodImages[$key] = $image;
         });
-        if ($selected && !isset($params['mood'])) $moods = $moods->map(function ($mood, $key) use ($params) {
-            return array_merge($mood, $this->choice(array_merge($params, ['mood' => $key])));
+        $visibleMoods = $allMoods->only($visibleKeys->all())->map(function ($mood, $key) use ($moodImages) {
+            return array_merge($mood, ['image' => $moodImages[$key]]);
         });
+        $moods = $visibleMoods->only($directoryKeys->all());
+        $contextualMoods = $contextualMoods->map(function ($mood, $key) use ($visibleMoods) { return $visibleMoods[$key]; });
         $guide = null;
         $choices = collect();
         $breadcrumbs = [];
@@ -59,7 +127,7 @@ class ExploreCatalogue
                 $kind = $selectedTag->type === 'technique' ? 'Technique' : 'Periods & Styles';
                 $activeSection = $selectedTag->type === 'technique' ? 'technique' : 'style';
             } elseif ($facet === 'mood') {
-                $label = self::MOODS[$value]['label'];
+                $label = $this->moodLabel($value);
                 $kind = 'Mood';
                 $activeSection = 'mood';
             } elseif ($facet === 'composers' || $facet === 'country') {
@@ -85,7 +153,7 @@ class ExploreCatalogue
                 });
                 $guide['heading'] = 'By level';
             } elseif (!isset($params['mood'])) {
-                $choices = $moods;
+                $choices = $contextualMoods;
                 $guide['heading'] = 'By character';
             } else {
                 $guide['heading'] = 'Keep exploring';
@@ -166,7 +234,14 @@ class ExploreCatalogue
             $q->whereIn('type', ['level', 'sublevel'])->where('name', $params['level']);
         });
         if (!empty($params['mood'])) $query->whereHas('tags', function ($q) use ($params) {
-            $q->where('type', 'mood')->whereIn('name', self::MOODS[$params['mood']]['tags']);
+            $q->where('type', 'mood');
+            if (isset(self::MOODS[$params['mood']])) {
+                $q->whereIn('name', self::MOODS[$params['mood']]['tags']);
+            } elseif (preg_match('/^tag-([1-9][0-9]*)$/', $params['mood'], $match)) {
+                $q->where('tags.id', $match[1]);
+            } else {
+                $q->whereRaw('1 = 0');
+            }
         });
         if (!empty($params['tag'])) $query->whereHas('tags', function ($q) use ($params) {
             $q->whereIn('type', ['technique', 'period', 'genre'])->where('tags.id', $params['tag']);
@@ -191,7 +266,7 @@ class ExploreCatalogue
     {
         $params = $request->validate([
             'level' => ['nullable', Rule::in(self::LEVELS)],
-            'mood' => ['nullable', Rule::in(array_keys(self::MOODS))],
+            'mood' => $this->moodRules(),
             'composers' => ['nullable', Rule::in(array_keys(ComposerGroups::OPTIONS))], 'country' => 'nullable|integer|min:1',
             'tag' => 'nullable|integer|min:1', 'short' => 'nullable|boolean', 'past' => 'nullable|boolean',
             'length' => ['nullable', Rule::in(self::LENGTHS)],
