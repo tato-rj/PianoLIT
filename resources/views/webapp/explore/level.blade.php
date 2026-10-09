@@ -19,7 +19,7 @@
 <h5 class="mb-3">{{ $guide['heading'] }}</h5>
 <div class="d-flex flex-column gap-3 mb-4">
 @foreach($choices as $choice)
-    <details class="explore-mood border rounded">
+    <details class="explore-mood border rounded-sm">
         <summary>
             @if(!empty($choice['image']))
                 <img src="{{ $choice['image'] }}" alt="" class="explore-artwork" width="56" height="56" loading="lazy">
@@ -51,7 +51,7 @@
 @endif
 @if(!$selectedTag)
 <h5 class="mb-3">{{ $selected ? 'Other ways into this level' : 'Other ways to explore' }}</h5>
-<details class="explore-mood border rounded mb-3" @if($selected && request()->filled('mood')) open @endif>
+<details class="explore-mood border rounded-sm mb-3" @if($selected && request()->filled('mood')) open @endif>
     <summary>@icon('hand', ['mr' => 0, 'size' => 'lg'])<span class="explore-copy"><strong>Technique</strong><small class="d-block text-muted">Hands, patterns & more</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-mood-options">
     @forelse($techniques as $tag)
