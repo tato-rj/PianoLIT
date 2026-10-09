@@ -147,6 +147,11 @@
 }
 // Existing Match tour reading background.
 .discover-black { background: #f0fbf2; }
+.discover-past-highlights {
+    background: transparent;
+    .free-pick-card { height: 292px; }
+    .discover-compact-card { background: transparent; }
+}
 .discover-latest__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 991px) {
     .discover-level-card { flex-basis: calc((100% - 48px) / 4); }

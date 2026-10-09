@@ -83,4 +83,31 @@ class WebAppHighlightsTest extends ReviewTestCase
             $this->getJson(route('webapp.highlights', compact('filters')))->assertStatus(422);
         }
     }
+
+    public function test_discover_features_the_seven_latest_past_picks_without_changing_the_shared_feed()
+    {
+        $pieces = $this->catalogue(10);
+        $pieces[9]->update(['highlighted_at' => now()->addWeek()]);
+        $response = $this->get(route('webapp.discover'))->assertOk()
+            ->assertSee('Past highlights')->assertDontSee('From Black composers');
+        $row = $response->viewData('rows')->firstWhere('title', 'Past highlights');
+        $this->assertSame($pieces->slice(1, 7)->pluck('id')->all(), $row['content']->pluck('id')->all());
+        $html = view('webapp.discover.rows.gallery', compact('row'))->render();
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame(route('webapp.highlights'), $xpath->query('//section/div/a')->item(0)->getAttribute('href'));
+        $this->assertSame(route('webapp.pieces.show', $pieces[1]), $xpath->query('//article/parent::a')->item(0)->getAttribute('href'));
+        $this->assertSame(6, $xpath->query('//div[@aria-label="Earlier highlights"]/a')->length);
+        $this->assertNotNull(\Cache::get('app.discover')->firstWhere('title', 'From black composers'));
+        $this->assertNull(\Cache::get('app.discover')->firstWhere('title', 'Past highlights'));
+        $this->assertFalse($pieces[1]->hasWebMediaAccess());
+
+        Piece::where('id', '!=', $pieces[1]->id)->update(['highlighted_at' => null]);
+        $single = $this->get(route('webapp.discover'))->assertOk()->viewData('rows')->firstWhere('title', 'Past highlights');
+        $this->assertCount(1, $single['content']);
+        $this->assertStringNotContainsString('Earlier highlights', view('webapp.discover.rows.gallery', ['row' => $single])->render());
+        $pieces[1]->update(['is_free' => true]);
+        $this->get(route('webapp.discover'))->assertOk()->assertDontSee('past-highlights-heading');
+    }
 }

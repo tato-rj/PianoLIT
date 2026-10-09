@@ -245,7 +245,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
                 $expected = \App\Services\WebApp\GalleryGradients::at($index);
                 $this->assertSame([$expected], collect($row['content'])->pluck('color')->unique()->values()->all());
                 $gradients[] = implode(', ', gradient($expected));
-                if (!in_array($row['title'], ['Recently viewed', 'Latest pieces', 'For you', 'From women composers', 'From black composers', "Like today's free pick", 'Equivalent to the Suzuki series', 'Equivalent to the RCM levels', 'Equivalent to the ABRSM levels']) && !\Illuminate\Support\Str::startsWith($row['title'], 'Pieces that are ')) {
+                if (!in_array($row['title'], ['Recently viewed', 'Latest pieces', 'For you', 'From women composers', 'Past highlights', "Like today's free pick", 'Equivalent to the Suzuki series', 'Equivalent to the RCM levels', 'Equivalent to the ABRSM levels']) && !\Illuminate\Support\Str::startsWith($row['title'], 'Pieces that are ')) {
                     $response->assertSee('linear-gradient(to right, '.end($gradients).')', false);
                 }
             }

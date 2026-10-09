@@ -17,6 +17,17 @@ class TabsController extends Controller
         $composers = Composer::atLeast(1)->get()->sortBy('last_name')->values();
         $rows = $api->for('webapp')->discover();
 
+        // Replace this band only on the web; leave the shared/mobile feed intact.
+        $rows = $rows->map(function ($row) use ($api) {
+            if ($row['title'] === 'From black composers') {
+                $row['title'] = 'Past highlights';
+                $row['content'] = Piece::freePicks()->free(false)
+                    ->where('highlighted_at', '<=', now())->orderByDesc('id')->with('composer')->take(7)->get();
+                $api->withAttributes($row['content'], ['type' => 'piece', 'source' => route('api.pieces.find')]);
+            }
+            return $row;
+        });
+
         if (auth('web')->check()) {
             $pieces = $recentlyViewed->forUser(auth('web')->user());
             if ($pieces->isNotEmpty()) {
