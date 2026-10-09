@@ -62,7 +62,7 @@
             @endforeach
         @endif
         @if($tags->where('type', 'genre')->isNotEmpty())
-            {{-- <p class="explore-group-label text-muted">Styles</p> --}}
+            <p class="explore-group-label text-muted">Styles</p>
             @foreach($tags->where('type', 'genre') as $tag)
                 @include('webapp.explore.link', ['href' => route('webapp.explore', ['tag' => $tag->id]), 'label' => ucfirst($tag->name), 'current' => $selectedTag && $selectedTag->id === $tag->id, 'classes' => 'explore-style'.($selectedTag && $selectedTag->id === $tag->id ? ' is-selected' : '')])
             @endforeach
