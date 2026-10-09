@@ -32942,7 +32942,8 @@ select {
 }
 
 .rounded-1,
-.rounded-sm {
+.rounded-sm,
+#explore-catalogue .explore-branch .explore-link {
   border-radius: var(--radius-sm) !important;
 }
 

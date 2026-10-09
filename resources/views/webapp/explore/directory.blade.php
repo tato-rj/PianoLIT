@@ -13,7 +13,7 @@
     <summary class="rounded-sm px-2">@icon('music', ['mr' => 0, 'size' => 'lg'])<span>Mood</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         @foreach($moods as $key => $mood)
-            @include('webapp.explore.link', ['href' => route('webapp.explore', ['mood' => $key]), 'label' => $mood['label'], 'description' => $mood['description'], 'icon' => $mood['icon'], 'image' => $mood['image'], 'current' => request('mood') === $key, 'classes' => request('mood') === $key ? 'is-selected' : ''])
+            @include('webapp.explore.link', ['href' => route('webapp.explore', ['mood' => $key]), 'label' => $mood['label'], 'icon' => $mood['icon'], 'image' => $mood['image'], 'current' => request('mood') === $key, 'classes' => request('mood') === $key ? 'is-selected' : ''])
         @endforeach
     </div>
 </details>
