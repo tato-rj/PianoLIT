@@ -48,6 +48,18 @@ class PeriodArtworkTest extends ReviewTestCase
         }
     }
 
+    public function test_web_artwork_can_exclude_used_images_without_repeating_exhausted_choices()
+    {
+        $tag = new Tag(['type' => 'period', 'name' => 'romantic']);
+        $first = $tag->webCoverImageExcept();
+        $second = $tag->webCoverImageExcept([$first]);
+        $this->assertNotNull($second);
+        $this->assertNotSame($first, $second);
+        $this->assertNull($tag->webCoverImageExcept([$first, $second]));
+        $fallback = new Tag(['type' => 'period', 'name' => 'baroque']);
+        $this->assertNull($fallback->webCoverImageExcept([$fallback->cover_image]));
+    }
+
     public function test_missing_empty_and_unrelated_folders_use_existing_fallbacks()
     {
         mkdir($this->publicDirectory.'/images/backgrounds/periods/baroque');

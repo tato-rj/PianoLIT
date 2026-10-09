@@ -3,7 +3,7 @@ const mount = require('../../resources/js/views/highlights');
 module.exports = async function () {
     function node() {
         return {hidden: true, events: {}, attrs: {}, children: [], innerHTML: 'initial cards',
-            getAttribute() { return '/highlights'; },
+            getAttribute() { return '/highlights?explore%5Bmood%5D=dramatic'; },
             setAttribute(key, value) { this.attrs[key] = value; },
             addEventListener(event, fn) { this.events[event] = fn; }};
     }
@@ -24,6 +24,7 @@ module.exports = async function () {
     assert.strictEqual(requests.length, 0, 'Initial cards need no duplicate AJAX request');
     change(); selected = ['elementary']; change();
     assert(requests[0].options.cancelToken.cancelled);
+    assert.strictEqual(requests[1].url, '/highlights?explore%5Bmood%5D=dramatic', 'Filtering preserves the Explore context in the endpoint');
     assert.deepStrictEqual(requests[1].options.params.filters, ['["elementary"]']);
     requests[0].resolve({data: 'stale'}); await flush();
     assert.strictEqual(ids['pieces-list'].innerHTML, '');

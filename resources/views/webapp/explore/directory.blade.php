@@ -53,7 +53,7 @@
     <summary class="rounded-sm px-2">@icon('layers', ['mr' => 0, 'size' => 'lg'])<span>Periods & Styles</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch explore-styles">
         @if($tags->where('type', 'period')->isNotEmpty())
-            <p class="explore-group-label text-muted">Periods</p>
+            {{-- <p class="explore-group-label text-muted">Periods</p> --}}
             @foreach($tags->where('type', 'period') as $tag)
                 <a class="explore-link rounded-sm explore-period link-none {{ $selectedTag && $selectedTag->id === $tag->id ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['tag' => $tag->id]) }}" @if($selectedTag && $selectedTag->id === $tag->id) aria-current="page" @endif>
                     <img src="{{ $tag->web_cover_image }}" alt="" class="explore-period-image" width="44" height="44" loading="lazy">
@@ -62,7 +62,7 @@
             @endforeach
         @endif
         @if($tags->where('type', 'genre')->isNotEmpty())
-            <p class="explore-group-label text-muted">Styles</p>
+            {{-- <p class="explore-group-label text-muted">Styles</p> --}}
             @foreach($tags->where('type', 'genre') as $tag)
                 @include('webapp.explore.link', ['href' => route('webapp.explore', ['tag' => $tag->id]), 'label' => ucfirst($tag->name), 'current' => $selectedTag && $selectedTag->id === $tag->id, 'classes' => 'explore-style'.($selectedTag && $selectedTag->id === $tag->id ? ' is-selected' : '')])
             @endforeach

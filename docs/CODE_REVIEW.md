@@ -2145,3 +2145,19 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Counts, direct result links, selected filters, directory disclosures and media/mobile contracts remain unchanged. No asset rebuild or migration required.
 - **Verification:** Explore suite passes (13 tests / 280 assertions). Browser checks confirm the populated fixture’s Technique/Length/Periods groups begin closed with 2/3/2 options, and the live one-piece guide omits all unhelpful groups and the empty heading while retaining View all. `git diff --check` passes.
 - **Remaining work / limits:** Not deployed; physical devices were not evaluated.
+
+### 2026-10-09 — Prevent duplicate images across Explore moods (P3, complete locally)
+
+- **Request / evidence:** Dreamy and Reflective could randomly select the same artwork on one page.
+- **Implementation / affected files:** `ExploreCatalogue` tracks used mood image URLs per request and checks other matching pieces when a cover is already used. `Tag::webCoverImageExcept()` selects from unused period artwork without random retries; the existing web accessor delegates with no exclusions. Each mood still shares its chosen URL across both columns. Exhausted image choices use the existing icon fallback. Added focused Explore and period-artwork regressions.
+- **Compatibility:** Existing mobile cover-image serialization, other web artwork calls, source image files, filters and media access remain unchanged. No schema or asset changes/build required.
+- **Verification:** Isolated Explore and period-artwork tests pass (19 tests / 440 assertions), including different pieces with the same cover, an alternate cover, exhausted choices, unique period fallbacks and cross-column consistency. Browser preview confirms five loaded, distinct mood images; the live local Explore route renders successfully. PHP syntax and `git diff --check` pass.
+- **Remaining work / limits:** Not deployed. Uniqueness is by artwork URL, not visual similarity between separate files; production-scale timings were not evaluated.
+
+### 2026-10-09 — Add contextual Past highlights links throughout Explore (P3, complete locally)
+
+- **Request / evidence:** Replace “free picks” with “highlights” and offer the contextual gallery link for moods, techniques, composers and periods/styles as well as levels.
+- **Implementation / affected files:** `explore/level.blade.php` now renders the requested category-specific Past highlights label for every guide, including combined selections. `WebApp/TabsController::highlights` validates a whitelisted nested Explore context and intersects it with the existing Highlights query. `highlights/index.blade.php` carries that context in the AJAX endpoint, displays a labeled return link and offers All highlights to clear it. Added PHP and JavaScript regressions for destinations, scoped results and endpoint persistence.
+- **Compatibility:** The existing full card gallery, including the current pick, legacy filter URLs, sorting, guest access and media restrictions remain unchanged. Context stays applied when gallery filters change. Main unscoped fragment query count remains three under the existing test. No mobile API, database, asset-source or dependency changes; no asset rebuild required.
+- **Verification:** Isolated Explore and Highlights suites pass (20 tests / 434 assertions), covering each category, genre tags, country/composer combinations, cumulative constraints, exclusion of unfeatured pieces, AJAX filtering and malformed request shapes. Full JavaScript regressions pass with the previously documented unrelated harness warnings. Live browser checks confirm the mood link opens the matching card gallery and retains its scope through filter changes; mobile link layout has no horizontal overflow. PHP syntax and `git diff --check` pass.
+- **Remaining work / limits:** Not deployed; production-scale query timings and physical-device browsers were not evaluated.

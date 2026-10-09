@@ -149,9 +149,14 @@ class Tag extends PianoLit
     /** Web artwork only; keep the appended mobile cover_image unchanged. */
     public function getWebCoverImageAttribute()
     {
+        return $this->webCoverImageExcept();
+    }
+
+    public function webCoverImageExcept(array $excluded = [])
+    {
         $folder = strtolower((string) $this->name);
         if (!in_array($this->type, ['period', 'genre'], true) || !preg_match('/^[a-z0-9_-]+$/D', $folder)) {
-            return $this->cover_image;
+            return in_array($this->cover_image, $excluded, true) ? null : $this->cover_image;
         }
 
         $path = 'images/backgrounds/periods/'.$folder;
@@ -159,6 +164,10 @@ class Tag extends PianoLit
             return is_file($file) && in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'], true);
         }));
 
-        return $images ? asset($path.'/'.rawurlencode(basename($images[array_rand($images)]))) : $this->cover_image;
+        $urls = $images ? array_map(function ($file) use ($path) {
+            return asset($path.'/'.rawurlencode(basename($file)));
+        }, $images) : [$this->cover_image];
+        $available = array_values(array_diff(array_filter($urls), $excluded));
+        return $available ? $available[array_rand($available)] : null;
     }
 }

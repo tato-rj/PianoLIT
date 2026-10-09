@@ -3,9 +3,15 @@
 @section('content')
 @include('webapp.layouts.header', ['title' => 'Highlights', 'subtitle' => 'What would you like to play next?'])
 
+@if($explore)
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <a href="{{ route('webapp.explore', $explore) }}">@icon('chevron-left', ['mr' => 0]) {{ $exploreLabels }}</a>
+    <a href="{{ route('webapp.highlights') }}">All highlights</a>
+</div>
+@endif
 @include('webapp.components.sorting', ['disabled' => false, 'selectedFilterNames' => collect(request('filters', []))->flatMap(function ($names) { return json_decode($names, true); })->all()])
 
-<section id="pieces-list" class="row mt-3" data-highlights-url="{{ route('webapp.highlights') }}" aria-busy="false">
+<section id="pieces-list" class="row mt-3" data-highlights-url="{{ route('webapp.highlights', $explore ? ['explore' => $explore] : []) }}" aria-busy="false">
     @include('webapp.highlights.pieces')
 </section>
 

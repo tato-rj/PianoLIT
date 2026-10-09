@@ -49,6 +49,32 @@ class ExploreCatalogueTest extends ReviewTestCase
         }
     }
 
+    public function test_different_moods_never_repeat_an_image_even_for_shared_piece_covers()
+    {
+        foreach ($this->pieces as $piece) $piece->tags()->detach($this->tags->only(['agitated', 'crazy'])->pluck('id'));
+        [$dreamy, $reflective] = Model::withoutEvents(function () {
+            return [create(Tag::class, ['name' => 'dreamy', 'type' => 'mood']), create(Tag::class, ['name' => 'reflective', 'type' => 'mood'])];
+        });
+        Piece::whereIn('id', $this->pieces->take(2)->pluck('id'))->update(['cover_path' => 'shared.jpg']);
+        Piece::whereKey($this->pieces[2]->id)->update(['cover_path' => 'unique.jpg']);
+        $this->pieces[0]->tags()->attach($dreamy);
+        $this->pieces[1]->tags()->attach($reflective);
+        $this->pieces[2]->tags()->attach($reflective);
+        $response = $this->get(route('webapp.explore', ['level' => 'elementary']))->assertOk();
+        $moods = $response->viewData('moods');
+        $this->assertSame(storage('shared.jpg'), $moods['dreamy']['image']);
+        $this->assertSame(storage('unique.jpg'), $moods['reflective']['image']);
+        $this->assertSame($moods['reflective']['image'], $response->viewData('choices')['reflective']['image']);
+        $this->pieces[2]->tags()->detach($reflective);
+        $moods = $this->get(route('webapp.explore'))->assertOk()->viewData('moods');
+        $this->assertNull($moods['reflective']['image'], 'Use the existing icon when all related covers are already used.');
+        Piece::query()->update(['cover_path' => null]);
+        $moods = $this->get(route('webapp.explore'))->assertOk()->viewData('moods');
+        $this->assertNotNull($moods['dreamy']['image']);
+        $this->assertNotNull($moods['reflective']['image']);
+        $this->assertNotSame($moods['dreamy']['image'], $moods['reflective']['image']);
+    }
+
     public function test_mood_artwork_comes_from_matching_pieces_and_is_shared_by_both_columns()
     {
         $covers = [];
@@ -156,6 +182,39 @@ class ExploreCatalogueTest extends ReviewTestCase
         $response = $this->get(route('webapp.explore', $params))->assertOk();
         $this->assertCount(0, $response->viewData('choices'));
         $response->assertDontSee('By character')->assertDontSee('View all matching pieces')->assertSee('View all 1 piece');
+    }
+
+    public function test_every_guide_links_to_highlights_with_its_complete_selection()
+    {
+        $genre = Model::withoutEvents(function () { return create(Tag::class, ['name' => 'jazz', 'type' => 'genre']); });
+        $this->pieces[2]->tags()->attach($genre);
+        $this->pieces[1]->tags()->attach($this->tags['happy']);
+        $this->pieces[12]->tags()->attach($this->tags['happy']);
+        Piece::whereKey($this->pieces[12]->id)->update(['highlighted_at' => null]);
+        Composer::query()->update(['gender' => 'male']);
+        Composer::whereKey($this->pieces[0]->composer_id)->update(['gender' => 'female']);
+        $cases = [
+            [['level' => 'elementary'], 'at this level', range(0, 11)],
+            [['mood' => 'playful'], 'with this mood', [1]],
+            [['tag' => $this->tags['left hand']->id], 'with this technique', [0, 1]],
+            [['composers' => 'women'], 'by these composers', [0]],
+            [['tag' => $this->tags['baroque']->id], 'from this period/style', range(0, 11)],
+            [['tag' => $genre->id], 'from this period/style', [2]],
+            [['level' => 'elementary', 'mood' => 'playful', 'tag' => $this->tags['left hand']->id], 'with this technique', [1]],
+            [['composers' => 'women', 'country' => $this->pieces[0]->composer->country_id], 'by these composers', [0]],
+        ];
+        foreach ($cases as [$params, $label, $indexes]) {
+            $url = route('webapp.highlights', ['explore' => $params]);
+            $this->get(route('webapp.explore', $params))->assertOk()->assertSee('Past highlights '.$label)
+                ->assertSee($url)->assertDontSee('Past free picks');
+            $response = $this->get($url)->assertOk()->assertSee('All highlights')->assertSee($url);
+            $this->assertSame(array_map('strval', $params), $response->viewData('explore'));
+            $this->assertEqualsCanonicalizing($this->pieces->only($indexes)->pluck('id')->all(), $response->viewData('pieces')->pluck('id')->all());
+            $fragment = $this->getJson($url)->assertOk();
+            $this->assertSame(count($indexes), substr_count($fragment->getContent(), 'data-sort-views='));
+        }
+        $response = $this->getJson(route('webapp.highlights', ['explore' => ['mood' => 'playful'], 'filters' => ['["advanced"]']]))->assertOk();
+        $this->assertSame('', $response->getContent());
     }
 
     public function test_directory_links_start_fresh_guides_and_keep_menu_thresholds()

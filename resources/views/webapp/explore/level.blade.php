@@ -76,6 +76,11 @@
 </details>
 @endif
 @endif
-@if($selected && count($guide['params']) === 1)
-@include('webapp.explore.link', ['href' => route('webapp.highlights', ['filters' => [json_encode([$selected->name])]]), 'label' => 'Past free picks at this level', 'icon' => 'clock', 'classes' => ''])
-@endif
+@php($highlightsLabel = [
+    'Level' => 'Past highlights at this level',
+    'Mood' => 'Past highlights with this mood',
+    'Technique' => 'Past highlights with this technique',
+    'Composers' => 'Past highlights by these composers',
+    'Periods & Styles' => 'Past highlights from this period/style',
+][$guide['kind']])
+@include('webapp.explore.link', ['href' => route('webapp.highlights', ['explore' => $guide['params']]), 'label' => $highlightsLabel, 'icon' => 'clock', 'classes' => ''])

@@ -38,11 +38,11 @@ class ExploreCatalogue
         abort_if(isset($params['level']) && !$selected, 404);
         if ($selected) $params['level'] = $selected->name;
         $activeSection = 'level';
-        $moods = collect(self::MOODS)->map(function ($mood, $key) {
-            $piece = $this->query(['mood' => $key])->select(['pieces.id', 'pieces.cover_path'])
-                ->setEagerLoads([])->withCount([])->inRandomOrder()->first();
-            if ($piece && !$piece->cover_path) $piece->loadMissing('tags');
-            return array_merge($mood, ['image' => $piece ? $piece->web_image_background : null]);
+        $usedMoodImages = [];
+        $moods = collect(self::MOODS)->map(function ($mood, $key) use (&$usedMoodImages) {
+            $image = $this->moodImage($key, $usedMoodImages);
+            if ($image) $usedMoodImages[] = $image;
+            return array_merge($mood, ['image' => $image]);
         });
         if ($selected && !isset($params['mood'])) $moods = $moods->map(function ($mood, $key) use ($params) {
             return array_merge($mood, $this->choice(array_merge($params, ['mood' => $key])));
@@ -123,6 +123,26 @@ class ExploreCatalogue
         $portraits = $composers->shuffle()->take(3);
         return compact('levels', 'selected', 'moods', 'tags', 'countries', 'portraits',
             'guide', 'choices', 'breadcrumbs', 'selectionLabel', 'selectedTag', 'activeSection', 'hasSelection', 'techniques', 'lengths', 'periods');
+    }
+
+    private function moodImage($mood, array $excluded)
+    {
+        $pieces = $this->query(['mood' => $mood])->select(['pieces.id', 'pieces.cover_path'])
+            ->setEagerLoads([])->withCount([])->inRandomOrder()->cursor();
+        $checkedPeriods = [];
+        foreach ($pieces as $piece) {
+            if ($piece->cover_path) {
+                $image = $piece->web_image_background;
+            } else {
+                $piece->loadMissing('tags');
+                $period = $piece->period;
+                if ($period && in_array($period->id, $checkedPeriods, true)) continue;
+                if ($period) $checkedPeriods[] = $period->id;
+                $image = $period ? $period->webCoverImageExcept($excluded) : asset('images/webapp/thumbnail.jpg');
+            }
+            if ($image && !in_array($image, $excluded, true)) return $image;
+        }
+        return null;
     }
 
     private function choice(array $params)

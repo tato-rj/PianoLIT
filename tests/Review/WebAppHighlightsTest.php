@@ -84,6 +84,14 @@ class WebAppHighlightsTest extends ReviewTestCase
         }
     }
 
+    public function test_invalid_explore_context_is_rejected()
+    {
+        $this->withExceptionHandling();
+        foreach (['bad', ['mood' => 'invalid'], ['level' => ['elementary']], ['tag' => 'x'], ['country' => -1], ['composers' => 'unknown'], ['unexpected' => 'value']] as $explore) {
+            $this->getJson(route('webapp.highlights', compact('explore')))->assertStatus(422);
+        }
+    }
+
     public function test_discover_features_the_seven_latest_past_picks_without_changing_the_shared_feed()
     {
         $pieces = $this->catalogue(10);
