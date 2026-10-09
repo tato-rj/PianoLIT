@@ -61,5 +61,5 @@
 </details>
 @endif
 @if($selected && count($guide['params']) === 1)
-@include('webapp.explore.link', ['href' => route('webapp.highlights', ['filters' => [json_encode([$selected->name])]]), 'label' => 'Past free picks at this level', 'icon' => 'clock', 'classes' => 'border rounded'])
+@include('webapp.explore.link', ['href' => route('webapp.highlights', ['filters' => [json_encode([$selected->name])]]), 'label' => 'Past free picks at this level', 'icon' => 'clock', 'classes' => ''])
 @endif
