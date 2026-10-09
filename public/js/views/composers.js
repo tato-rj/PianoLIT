@@ -23,8 +23,11 @@
     }
     // Cache normalized metadata once, rather than inspecting every work on each keystroke.
     var entries = cards.map(function (card, index) {
+        var regions = normalize(card.getAttribute('data-composer-regions') || '').split('|');
+        if (regions.indexOf('north america') !== -1 || regions.indexOf('south america') !== -1) regions.push('america');
         return {
             card: card, index: index,
+            regions: regions,
             name: normalize(card.getAttribute('data-composer-name') || ''),
             search: normalize(card.getAttribute('data-composer-search') || ''),
             popular: card.getAttribute('data-composer-popular') === 'true',
@@ -40,7 +43,14 @@
         });
     }
     function update() {
-        var words = normalize(search.value).split(/\s+/).filter(Boolean);
+        // Complete geographic terms filter country metadata, never incidental
+        // substrings in names (Goolkasian) or works (Fantasia).
+        var regions = [];
+        var terms = normalize(search.value).replace(/\s+/g, ' ').replace(
+            /(^|\s)(north america|south america|latin america|africa|antarctica|asia|europe|oceania|america)(?=\s|$)/g,
+            function (match, space, region) { regions.push(region); return ' '; }
+        );
+        var words = terms.split(/\s+/).filter(Boolean);
         var count = 0;
         entries.sort(function (a, b) {
             var difference = sort === 'name' ? a.name.localeCompare(b.name) :
@@ -49,6 +59,7 @@
         }).forEach(function (entry) {
             entry.card.hidden = (filter === 'popular' && !entry.popular) ||
                 (letter !== 'all' && entry.name.charAt(0) !== letter) ||
+                !regions.every(function (region) { return entry.regions.indexOf(region) !== -1; }) ||
                 !words.every(function (word) { return entry.search.indexOf(word) !== -1; });
             if (!entry.card.hidden) count++;
             list.appendChild(entry.card);

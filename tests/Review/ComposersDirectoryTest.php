@@ -49,6 +49,7 @@ class ComposersDirectoryTest extends ReviewTestCase
             ->assertSee('Prelude &quot;&lt;Test&gt;&quot; &amp; Fugue', false)
             ->assertSee('The Well-Tempered Clavier &quot;&lt;Book&gt;&quot; &amp; Studies', false)
             ->assertSee('data-composer-search="Johann Sebastian Bach Germany Europe Prelude', false)
+            ->assertSee('data-composer-regions="Europe"', false)
             ->assertSee('Search composers, countries, continents, or works')
             ->assertDontSee('No repertoire')->assertSee('Recently added')
             ->assertSee(route('webapp.composers.show', $composers->first()), false);
@@ -78,5 +79,40 @@ class ComposersDirectoryTest extends ReviewTestCase
         $this->get(route('webapp.composers.index'))->assertOk()
             ->assertSee('data-composer-search="Without country   Study"', false)
             ->assertSee('data-composer-search="Without continent Unmapped country  Study"', false);
+    }
+
+    public function test_latin_america_alias_includes_the_americas_except_us_and_canada()
+    {
+        $countries = [
+            ['Brazil', 'br', 'South America', true],
+            ['Mexico', 'mx', 'North America', true],
+            ['Guatemala', 'gt', 'North America', true],
+            ['Cuba', 'cu', 'North America', true],
+            ['Jamaica', 'jm', 'North America', true],
+            ['Puerto Rico', 'pr', 'North America', true],
+            ['United States', ' US ', 'North America', false],
+            ['Canada', 'CA', 'North America', false],
+            ['United States of America', null, 'North America', false],
+            ['Canada', null, 'North America', false],
+            ['France', 'fr', 'Europe', false],
+            ['Unknown', null, null, false],
+        ];
+        Model::withoutEvents(function () use ($countries) {
+            foreach ($countries as $index => [$name, $code, $continent]) {
+                $country = create(Country::class, ['name' => $name, 'flag_code' => $code, 'continent' => $continent]);
+                $composer = create(Composer::class, ['name' => 'Composer '.$index, 'country_id' => $country->id]);
+                create(Piece::class, ['composer_id' => $composer->id, 'name' => 'Study', 'collection_name' => null], 2);
+            }
+        });
+
+        $response = $this->get(route('webapp.composers.index'))->assertOk();
+        foreach ($countries as $index => [$name, $code, $continent, $matches]) {
+            $response->assertSee('data-composer-search="Composer '.$index.' '.$name.' '.$continent.' Study'.($matches ? ' Latin America' : '').'"', false);
+        }
+        $this->assertSame(6, substr_count($response->getContent(), '|Latin America"'));
+        $response->assertSee('data-composer-regions="South America|Latin America"', false)
+            ->assertSee('data-composer-regions="North America|Latin America"', false)
+            ->assertSee('data-composer-regions="North America"', false)
+            ->assertSee('data-composer-regions=""', false);
     }
 }

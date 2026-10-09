@@ -13,11 +13,12 @@ module.exports = function () {
         };
     }
     const cards = [
-        ['Bach', 'Johann Sebastian Bach Germany Europe Prelude and Fugue The Well-Tempered Clavier', true, 1, 20],
-        ['Chopin', 'Frédéric Chopin Poland Europe Étude Douze Études', true, 2, 15],
-        ['Price', 'Florence Price United States North America Fantasie', false, 3, 2],
-    ].map(([name, search, popular, created, pieces]) => node({
+        ['Bach', 'Johann Sebastian Bach Germany Europe Prelude and Fugue The Well-Tempered Clavier', true, 1, 20, 'Europe'],
+        ['Chopin', 'Frédéric Chopin Poland Europe Étude Douze Études', true, 2, 15, 'Europe'],
+        ['Price', 'Florence Price United States North America Fantasie', false, 3, 2, 'North America'],
+    ].map(([name, search, popular, created, pieces, regions]) => node({
         'data-composer-name': name, 'data-composer-search': search,
+        'data-composer-regions': regions,
         'data-composer-popular': String(popular), 'data-composer-created': created, 'data-composer-pieces': pieces
     }));
     const filters = ['all', 'popular', 'recent'].map(value => node({'data-composer-filter': value}));
@@ -82,5 +83,45 @@ module.exports = function () {
     let prevented = false;
     form.events.submit({preventDefault() { prevented = true; }});
     assert.strictEqual(prevented, true, 'Directory search never submits to mobile or global search');
+
+    // Reuse the directory harness with Americas fixtures to exercise its real
+    // word matching and filter behavior with the server-generated region alias.
+    cards[0].attrs['data-composer-search'] = 'Mexican Composer Mexico North America Study Latin America';
+    cards[1].attrs['data-composer-search'] = 'Canadian Composer Canada North America Study';
+    cards[2].attrs['data-composer-search'] = 'American Composer United States North America Study';
+    cards[0].attrs['data-composer-regions'] = 'North America|Latin America';
+    cards[1].attrs['data-composer-regions'] = 'North America';
+    cards[2].attrs['data-composer-regions'] = 'North America';
+    initialize({getElementById() { return page; }});
+    search.value = ' LATIN AMERICA '; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, true, true], 'Latin America matches the regional alias and excludes US/Canada');
+    search.value = 'latin america study'; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, true, true], 'Regional alias combines with work searches');
+    filters[1].events.click();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, true, true], 'Regional alias respects popular filtering');
+    search.value = 'america'; search.events.input();
+    filters[0].events.click();
+    assert(cards.every(card => !card.hidden), 'America alone still includes the US and Canada');
+
+    reset.events.click();
+    cards[0].attrs['data-composer-search'] = 'Dianne Goolkasian Rahbee United States North America Fantasia Latin America';
+    cards[0].attrs['data-composer-regions'] = 'North America';
+    cards[1].attrs['data-composer-search'] = 'Carl Philipp Emanuel Bach Germany Europe Fantasia';
+    cards[1].attrs['data-composer-regions'] = 'Europe';
+    cards[2].attrs['data-composer-search'] = 'Naoko Ikeda Japan Asia Study';
+    cards[2].attrs['data-composer-regions'] = 'Asia';
+    search.value = 'asia';
+    initialize({getElementById() { return page; }});
+    assert.deepStrictEqual(cards.map(card => card.hidden), [true, true, false], 'Initial Asia search excludes Goolkasian and Fantasia substring matches');
+    search.value = ' ASIA   study '; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [true, true, false], 'Geographic filter combines with remaining work terms');
+    search.value = 'study asia'; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [true, true, false], 'Geographic terms work after ordinary terms');
+    search.value = 'fantasia'; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, false, true], 'Fantasia remains an ordinary work search');
+    search.value = 'goolkas'; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, true, true], 'Partial name searches remain supported');
+    search.value = 'latin america'; search.events.input();
+    assert(cards.every(card => card.hidden), 'A US work title containing Latin America cannot bypass the geographic exclusion');
     initialize({getElementById() { return null; }});
 };

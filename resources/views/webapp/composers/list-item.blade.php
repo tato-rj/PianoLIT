@@ -6,7 +6,8 @@
 @endphp
 <div class="col-xl-4 col-md-6 col-12 composer-card"
     data-composer-name="{{ $composer->last_name }}"
-    data-composer-search="{{ $composer->name }} {{ $country->name ?? '' }} {{ $country->continent ?? '' }} {{ $works }}"
+    data-composer-regions="{{ $country->continent ?? '' }}{{ $country && $country->matchesLatinAmericaSearch() ? '|Latin America' : '' }}"
+    data-composer-search="{{ $composer->name }} {{ $country->name ?? '' }} {{ $country->continent ?? '' }} {{ $works }}{{ $country && $country->matchesLatinAmericaSearch() ? ' Latin America' : '' }}"
     data-composer-popular="{{ $composer->is_famous ? 'true' : 'false' }}"
     data-composer-created="{{ $composer->created_at ? $composer->created_at->getTimestamp() : 0 }}"
     data-composer-pieces="{{ $composer->pieces_count }}">
