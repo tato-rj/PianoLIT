@@ -3,13 +3,13 @@
     @include('webapp.explore.path', ['pathClasses' => 'flex-wrap'])
 </div>
 @endif
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+<div class="d-flex align-items-center justify-content-between gap-3 mb-4">
     <div>
         <p class="text-muted mb-1">{{ $guide['kind'] }}</p>
         <h2 class="mb-2">{{ $guide['title'] }}</h2>
         <span class="text-muted">@if($guide['kind'] === 'Level')@icon('circle', ['filled' => true, 'classes' => 'color-'.lastword($selected->name)])@endif{{ $guide['count'] }} {{ Str::plural('piece', $guide['count']) }}</span>
     </div>
-    <a class="btn btn-secondary explore-view-all" href="{{ \App\Services\WebApp\ExploreCatalogue::url($guide['params'], $selectionLabel) }}">View all {{ $guide['count'] }} {{ Str::plural('piece', $guide['count']) }} @icon('arrow-right', ['mr' => 0])</a>
+    <a class="btn btn-secondary explore-view-all text-nowrap" href="{{ \App\Services\WebApp\ExploreCatalogue::url($guide['params'], $selectionLabel) }}">View all {{ $guide['count'] }} {{ Str::plural('piece', $guide['count']) }} @icon('arrow-right', ['mr' => 0])</a>
 </div>
 @if(!$selected && !$selectedTag && !request()->filled('mood') && (request()->filled('composers') || request()->filled('country')))
 <p class="mb-4"><a href="{{ route('webapp.composers.index', array_filter(['sort' => 'name', 'composers' => request('composers'), 'country' => request('country')])) }}">Browse these composers A–Z @icon('arrow-right', ['mr' => 0])</a></p>
