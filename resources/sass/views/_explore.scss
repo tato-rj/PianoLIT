@@ -49,7 +49,7 @@
 
 // The full-width guide keeps its back path above the scrolling content.
 @media (max-width: 991.98px) {
-    #explore-catalogue.has-selection .explore-content { margin-top: 94px; }
+    #explore-catalogue.has-selection .explore-content { margin-top: 74px; }
     .explore-mobile-navigation {
         position: fixed; top: 0; left: 0; width: 100%; z-index: 10;
         nav { overflow-x: auto; }
