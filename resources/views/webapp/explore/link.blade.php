@@ -5,5 +5,6 @@
         @isset($icon)<span class="explore-icon {{ $iconClass ?? '' }}">@icon($icon, ['mr' => 0, 'size' => 'lg'])</span>@endisset
     @endif
     <span class="explore-copy"><span class="{{ !empty($description) ? 'fw-bold' : '' }}">{{ $label }}</span>@if(!empty($description))<small class="d-block text-muted">{{ $description }}</small>@endif</span>
+    @isset($matchingCount)<small class="text-muted text-nowrap">{{ $matchingCount }} {{ Str::plural('piece', $matchingCount) }}</small>@endisset
     @icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])
 </a>

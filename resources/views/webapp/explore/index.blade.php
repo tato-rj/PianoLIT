@@ -25,7 +25,6 @@
 @endsection
 
 @push('scripts')
-<script src="{{ mix('js/views/explore.js') }}"></script>
 <script type="text/javascript">
 let recent = app.user ? getRecent() : [];
 

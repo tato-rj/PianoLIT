@@ -41,7 +41,6 @@ class ExploreCatalogueTest extends ReviewTestCase
             ->assertDontSee('Playing needs')->assertSee('View all 12 pieces');
         $data = $response->viewData('moods');
         $this->assertSame(12, $data['dramatic']['count']);
-        $this->assertNotNull($data['dramatic']['example']);
         $this->assertSame(ExploreCatalogue::LEVELS, $response->viewData('levels')->pluck('name')->all());
         $this->get(route('webapp.explore', ['level' => 'advanced']))->assertOk()->assertSee('View all 1 piece');
         if (getenv('EXPLORE_PREVIEW')) {
@@ -72,19 +71,19 @@ class ExploreCatalogueTest extends ReviewTestCase
         $this->assertStringContainsString('/images/backgrounds/periods/baroque', $fallback);
     }
 
-    public function test_inline_examples_include_identity_and_preserve_web_media_access()
+    public function test_explore_omits_audio_examples_and_duplicate_terminal_actions()
     {
+        foreach ([[], ['level' => 'elementary'], ['mood' => 'dramatic'], ['tag' => $this->tags['baroque']->id]] as $params) {
+            $this->get(route('webapp.explore', $params))->assertOk()
+                ->assertDontSee('Hear an example')->assertDontSee('data-explore-example', false)
+                ->assertDontSee('js/views/explore.js', false)->assertSee('View all matching pieces');
+        }
         $params = ['level' => 'elementary', 'mood' => 'dramatic'];
-        $response = $this->get(route('webapp.explore', $params))->assertOk();
-        $example = $response->viewData('guide')['example'];
-        $this->assertTrue($example->relationLoaded('composer'));
-        $response->assertSee('data-explore-example', false)->assertSee('data-preview="0"', false)
-            ->assertSee($example->short_name)->assertSee($example->composer->short_name)
-            ->assertSee(route('webapp.pieces.show', $example))->assertSee($example->audio);
-        Piece::whereKey($example->id)->update(['is_free' => false]);
-        $this->get(route('webapp.explore', $params))->assertOk()->assertSee('data-preview="10"', false);
-        $user = Model::withoutEvents(function () { return create(User::class, ['super_user' => true]); });
-        $this->actingAs($user, 'web')->get(route('webapp.explore', $params))->assertOk()->assertSee('data-preview="0"', false);
+        $response = $this->get(route('webapp.explore', $params))->assertOk()
+            ->assertDontSee('View all matching pieces')->assertDontSee('Hear an example')
+            ->assertSee('View all 12 pieces');
+        $this->assertEmpty($response->viewData('choices'));
+        $response->assertSee(ExploreCatalogue::url($params, $response->viewData('selectionLabel')));
     }
 
     public function test_guided_filters_intersect_before_guest_limit_and_members_can_page()
@@ -156,7 +155,7 @@ class ExploreCatalogueTest extends ReviewTestCase
         $this->pieces[12]->tags()->detach($this->tags['happy']);
         $response = $this->get(route('webapp.explore', $params))->assertOk();
         $this->assertCount(0, $response->viewData('choices'));
-        $response->assertDontSee('By character')->assertSee('View all matching pieces');
+        $response->assertDontSee('By character')->assertDontSee('View all matching pieces')->assertSee('View all 1 piece');
     }
 
     public function test_directory_links_start_fresh_guides_and_keep_menu_thresholds()
@@ -196,7 +195,19 @@ class ExploreCatalogueTest extends ReviewTestCase
         $params = ['level' => 'advanced', 'mood' => 'playful'];
         $response = $this->get(route('webapp.explore', $params))->assertOk();
         $this->assertSame([$tag->id], $response->viewData('techniques')->pluck('id')->all());
-        $response->assertSee(route('webapp.explore', $params + ['tag' => $tag->id]));
+        $this->assertSame(1, $response->viewData('techniques')->first()->matching_pieces_count);
+        $url = ExploreCatalogue::url($params + ['tag' => $tag->id], $response->viewData('selectionLabel').' · Left hand');
+        $response->assertSee($url)->assertDontSee(route('webapp.explore', $params + ['tag' => $tag->id]));
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $links = (new \DOMXPath($dom))->query('//a');
+        foreach ($links as $link) {
+            if ($link->getAttribute('href') === $url) $this->assertStringContainsString('1 piece', $link->textContent);
+        }
+        $this->getJson($url)->assertOk()->assertSee('Guided fixture 12')->assertDontSee('Guided fixture 0');
+        $elementary = $this->get(route('webapp.explore', ['level' => 'elementary', 'mood' => 'dramatic']))->assertOk();
+        $this->assertSame(8, $elementary->viewData('techniques')->first()->matching_pieces_count);
+        $elementary->assertSee('8 pieces');
         $this->assertSame(1, app(ExploreCatalogue::class)->query($params + ['tag' => $tag->id])->count());
         $this->get(route('webapp.explore', ['tag' => $tag->id]))->assertOk()->assertViewHas('techniques', function ($techniques) {
             return $techniques->isEmpty();

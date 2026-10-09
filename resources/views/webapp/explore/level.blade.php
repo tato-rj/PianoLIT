@@ -40,14 +40,8 @@
     </details>
 @endforeach
 </div>
-@else
-<div class="border rounded-sm mb-4 p-2">
-    @if($guide['count'])
-        @include('webapp.explore.choice-actions', ['choice' => $guide, 'choiceLabel' => $selectionLabel])
-    @else
-        <p class="text-muted p-3 mb-0">No pieces match this combination yet. Follow the path above to try another choice.</p>
-    @endif
-</div>
+@elseif(!$guide['count'])
+<p class="text-muted mb-4">No pieces match this combination yet. Follow the path above to try another choice.</p>
 @endif
 @if(!$selectedTag)
 <h5 class="mb-3">{{ $selected ? 'Other ways into this level' : 'Other ways to explore' }}</h5>
@@ -55,7 +49,7 @@
     <summary>@icon('hand', ['mr' => 0, 'size' => 'lg'])<span class="explore-copy"><strong>Technique</strong><small class="d-block text-muted">Hands, patterns & more</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-mood-options">
     @forelse($techniques as $tag)
-        @include('webapp.explore.link', ['href' => route('webapp.explore', $guide['params'] + ['tag' => $tag->id]), 'label' => ucfirst($tag->name)])
+        @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url($guide['params'] + ['tag' => $tag->id], $selectionLabel.' · '.ucfirst($tag->name)), 'label' => ucfirst($tag->name), 'matchingCount' => $tag->matching_pieces_count])
     @empty<p class="text-muted py-3">No techniques match this selection.</p>@endforelse
     </div>
 </details>

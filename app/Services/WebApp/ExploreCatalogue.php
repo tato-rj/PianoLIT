@@ -99,10 +99,13 @@ class ExploreCatalogue
         $techniques = collect();
         if (!$selectedTag && $guide) {
             $matchingPieces = $this->query($params)->select('pieces.id')->setEagerLoads([])->withCount([]);
+            $matchingTechniquePieces = function ($query) use ($matchingPieces) {
+                $query->whereIn('pieces.id', $matchingPieces);
+            };
             $techniques = Tag::whereIn('id', $tags->where('type', 'technique')->pluck('id'))
-                ->whereHas('pieces', function ($query) use ($matchingPieces) {
-                    $query->whereIn('pieces.id', $matchingPieces);
-                })->orderBy('name')->get();
+                ->whereHas('pieces', $matchingTechniquePieces)
+                ->withCount(['pieces as matching_pieces_count' => $matchingTechniquePieces])
+                ->orderBy('name')->get();
         }
         $composers = Composer::select(['id', 'name', 'cover_path', 'country_id'])->withCount([])->has('pieces')->get();
         $countries = $composers->pluck('country')->filter()->unique('id')->sortBy('name')->values();
@@ -117,9 +120,6 @@ class ExploreCatalogue
         return [
             'params' => $params,
             'count' => (clone $query)->count(),
-            'example' => (clone $query)->select('pieces.*')->setEagerLoads([])->withCount([])
-                ->with(['composer' => function ($query) { $query->withCount([]); }])
-                ->whereNotNull('audio_path')->where('audio_path', '!=', '')->orderBy('pieces.id')->first(),
         ];
     }
 
