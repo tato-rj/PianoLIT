@@ -2081,3 +2081,19 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Existing filter URLs remain supported; the mobile-only root Explore link and desktop selection breadcrumbs retain their current visibility and destinations. No media, mobile API, asset source, or database changes.
 - **Verification:** Existing isolated Explore suite passes (11 tests / 199 assertions). Desktop and 390px browser checks confirm matching arrows and preserved responsive navigation. Source search confirms no remaining Short pieces option in Explore templates; `git diff --check` passes. Blade-only change requires no asset rebuild.
 - **Remaining work / limits:** Not deployed.
+
+### 2026-10-09 — Hide empty contextual Explore choices (P3, complete locally)
+
+- **Request / evidence:** Mood cards such as Dramatic appeared under a period/level selection even when opening them produced no matches.
+- **Implementation / affected files:** `ExploreCatalogue` filters contextual mood and level choices by their already-computed combined result count. Only choices with at least one match are rendered; if none remain, the existing matching-results actions remain available for the current guide. Added a focused regression in `ExploreCatalogueTest` for period-plus-level moods, one-match retention, zero-match exclusion, level refinements and an entirely empty refinement list.
+- **Compatibility:** Existing directory shortcuts, technique thresholds/filtering, cumulative query parameters, media rules and mobile contracts remain unchanged. No extra queries, assets or migrations.
+- **Verification:** Isolated Explore suite passes (12 tests / 210 assertions). Live browser checks confirm Dramatic offers only its matching Advanced level and Advanced offers only its matching Dramatic mood. PHP syntax and `git diff --check` pass.
+- **Remaining work / limits:** Not deployed; production catalogue was not exercised directly.
+
+### 2026-10-09 — Remove Explore directory item separators (P3, complete locally)
+
+- **Request / evidence:** Remove the horizontal lines between directory items shown in the mood screenshot.
+- **Implementation / affected files:** Removed the adjacent-link top-border rule from `resources/sass/views/_explore.scss`; rebuilt app CSS and refreshed its manifest hash. Section dividers, vertical guides, card borders and spacing remain unchanged.
+- **Compatibility:** Presentation-only; navigation, data filters, media access and mobile contracts are unchanged.
+- **Verification:** Isolated production build and CSS-variable checks pass. Live browser inspection confirms all five mood links have zero-width top borders. `git diff --check` passes.
+- **Remaining work / limits:** Not deployed.

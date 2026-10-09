@@ -41,7 +41,7 @@
 @endforeach
 </div>
 @else
-<div class="border rounded mb-4 p-2">
+<div class="border rounded-sm mb-4 p-2">
     @if($guide['count'])
         @include('webapp.explore.choice-actions', ['choice' => $guide, 'choiceLabel' => $selectionLabel])
     @else

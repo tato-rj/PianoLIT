@@ -141,6 +141,24 @@ class ExploreCatalogueTest extends ReviewTestCase
         }
     }
 
+    public function test_contextual_mood_and_level_choices_exclude_zero_matches()
+    {
+        $this->pieces[12]->tags()->detach($this->tags->only(['agitated', 'crazy'])->pluck('id'));
+        $this->pieces[12]->tags()->attach($this->tags['happy']);
+        $params = ['tag' => $this->tags['baroque']->id, 'level' => 'advanced'];
+        $response = $this->get(route('webapp.explore', $params))->assertOk();
+        $this->assertSame(['playful'], $response->viewData('choices')->keys()->all());
+        $this->assertSame(1, $response->viewData('choices')['playful']['count']);
+        $response->assertDontSee(route('webapp.explore', $params + ['mood' => 'dramatic']));
+        $response->assertSee(route('webapp.explore', $params + ['mood' => 'playful']));
+        $response = $this->get(route('webapp.explore', ['mood' => 'dramatic']))->assertOk();
+        $this->assertSame(['Elementary'], $response->viewData('choices')->pluck('label')->all());
+        $this->pieces[12]->tags()->detach($this->tags['happy']);
+        $response = $this->get(route('webapp.explore', $params))->assertOk();
+        $this->assertCount(0, $response->viewData('choices'));
+        $response->assertDontSee('By character')->assertSee('View all matching pieces');
+    }
+
     public function test_directory_links_start_fresh_guides_and_keep_menu_thresholds()
     {
         $tag = $this->tags['left hand'];

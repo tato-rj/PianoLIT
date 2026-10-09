@@ -90,6 +90,7 @@ class ExploreCatalogue
                 $guide['heading'] = 'Keep exploring';
             }
         }
+        $choices = $choices->filter(function ($choice) { return $choice['count'] > 0; });
         $tags = Tag::where(function ($query) {
             $query->where('type', 'technique')->has('pieces', '>=', 8);
         })->orWhere(function ($query) {
