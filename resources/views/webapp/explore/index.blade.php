@@ -1,58 +1,30 @@
 @extends('webapp.layouts.app', ['title' => 'Explore'])
 
-@push('header')
-<link rel="preload" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" as="style">
-<link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">
-@endpush
-
 @section('content')
-@include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Search or explore the repertoire by moods, genres, levels and more'])
-
+<div @if(request()->filled('level')) class="d-none d-lg-block" @endif>
+@include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Find your way through the repertoire.'])
 <section class="mb-4">
-	@include('webapp.search.form')
+    @include('webapp.search.form', ['searchPlaceholder' => 'Know the title? Search here...', 'accessibleSearch' => true])
 </section>
+</div>
 
-<section id="tags-search">
-
-	@foreach($explore as $row)
-		@include('webapp.explore.rows.'.strtolower(firstword($row['celltype'])))
-	@endforeach
-
-</section>
+<div id="explore-catalogue" class="explore-layout {{ request()->filled('level') ? 'has-selection' : '' }}">
+    <nav class="explore-directory" aria-label="Explore repertoire">
+        <h4 class="mb-2">Start with</h4>
+        @include('webapp.explore.directory')
+    </nav>
+    <section class="explore-content" aria-label="Explore within a level">
+        @if($selected)
+            @include('webapp.explore.level')
+        @else
+            <h3>Find your next piece</h3>
+            <p class="text-muted">Choose a mood, technique, composer or style to explore the repertoire.</p>
+        @endif
+    </section>
+</div>
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
-$('#tags-search .tag').on('click', function() {
-	$('#tags-search button').disable();
-	$('#tags-search .tag').not(this).removeClass('btn-teal');
-	$(this).toggleClass('btn-teal');
-
-	let $results = $(this).closest('.modal-body').find('.search-results');
-	let tags = $('#tags-search .tag.btn-teal').attrToArray('data-name');
-
-	$results.empty();
-
-	if (tags.length == 0) {
-		$('#tags-search button').enable();
-		return;
-	}
-
-	$results.html('<div class="text-muted text-center mb-3"><i>Searching...</i></div>');
-
-	axios.get(window.urls.searchCount, {params: {search: tags.join(' ')}})
-		.then(function(response) {
-			$results.html(response.data);
-		})
-		.catch(function(error) {
-			$results.html('<div class="text-red text-center mb-3"><i>Sorry, something went wrong...</i></div>');
-		})
-		.then(function() {
-			$('#tags-search button').enable();
-		});
-});
-</script>
-
 <script type="text/javascript">
 let recent = app.user ? getRecent() : [];
 
@@ -126,38 +98,14 @@ function submitRecent(recent) {
 }
 </script>
 
-<script type="text/javascript">
-$(document).ready(function() {
-	$('.video-container').each(function() {
-		let videoId = '#'+ $(this).find('video').attr('id');
-
-		new Plyr(videoId);
-	});
-});
-</script>
-{{-- TRIGGER LINK ON CLICK, NOT WHILE DRAGGING --}}
-<script type="text/javascript">
- $(function() {
-    var isDragging = false;
-    $('.search-card, .piece-card')
-    .mousedown(function() {
-        $(window).mousemove(function() {
-            isDragging = true;
-            $(window).unbind("mousemove");
+<script>
+document.querySelectorAll('.explore-directory > details').forEach(function (section) {
+    section.addEventListener('toggle', function () {
+        if (!section.open) return;
+        document.querySelectorAll('.explore-directory > details').forEach(function (other) {
+            if (other !== section) other.open = false;
         });
-    })
-    .mouseup(function() {
-        var wasDragging = isDragging;
-        isDragging = false;
-        $(window).unbind("mousemove");
-        if (!wasDragging) {
-            search($(this));
-        }
     });
-  });
-
-function search(element) {
-	goTo(element.attr('data-url'));
-}
+});
 </script>
 @endpush

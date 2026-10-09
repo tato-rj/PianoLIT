@@ -9,9 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class ComposersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $composers = Composer::atLeast(1)->get()->sortByDesc('pieces_count');
+        $request->validate(['gender' => 'nullable|in:female', 'country' => 'nullable|integer|min:1']);
+        $query = Composer::atLeast(1);
+        if ($request->filled('gender')) $query->where('gender', $request->gender);
+        if ($request->filled('country')) $query->where('country_id', $request->country);
+        $composers = $query->get()->sortByDesc('pieces_count');
 
         // Only piece/collection names are needed for search; avoid serializing piece media.
         $composerWorks = DB::table('pieces')->whereIn('composer_id', $composers->pluck('id'))

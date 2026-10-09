@@ -1,0 +1,45 @@
+// Explore uses the shared design tokens and controls; only directory geometry is local.
+#explore-catalogue {
+    .explore-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+    .explore-chevron { flex-shrink: 0; width: 16px; height: 16px; }
+    .explore-link, summary {
+        display: flex; align-items: center; gap: var(--space-3);
+        padding: var(--space-3); color: var(--color-text); text-align: left;
+    }
+    summary { cursor: pointer; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::marker { content: ''; }
+    summary:hover, .explore-link:hover { background: var(--color-surface-subtle); text-decoration: none; }
+    summary:focus-visible, a:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    details[open] > summary > .explore-chevron { transform: rotate(-90deg); }
+    .explore-section { border-bottom: 1px solid var(--color-border); padding: var(--space-2) 0; }
+    .explore-section > summary { padding-left: 0; padding-right: 0; font-weight: var(--font-weight-heading); }
+    .explore-section > summary > span { flex: 1; }
+    .explore-section[open] > summary { color: var(--color-primary); }
+    .explore-branch { border-left: 1px solid var(--color-border); margin: var(--space-2) 0 var(--space-3) var(--space-3); padding-left: var(--space-2); }
+    .explore-branch .explore-link { padding: var(--space-3) var(--space-2); }
+    .explore-branch .is-selected { color: var(--color-primary); background: var(--color-primary-soft); border-radius: var(--radius-button); }
+    .explore-branch .explore-link + .explore-link { border-top: 1px solid var(--color-border); }
+    .explore-section:first-of-type .explore-link { border: 0; }
+    .explore-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; }
+    .explore-directory .explore-icon { width: 28px; height: 32px; }
+    .explore-past { padding-left: 0; padding-right: 0; }
+    .explore-portraits { display: flex; padding-right: var(--space-2); }
+    .explore-portraits img { width: 30px; height: 30px; object-fit: cover; border: 2px solid var(--color-surface); margin-right: -8px; }
+    .explore-mood { overflow: hidden; }
+    .explore-mood[open] { border-color: var(--color-primary) !important; }
+    .explore-mood[open] > summary > .explore-chevron { color: var(--color-primary); }
+    .explore-mood-options { margin: 0 var(--space-3); }
+    .explore-mood-options > * { border-top: 1px solid var(--color-border); }
+    .explore-content { display: none; }
+    &.has-selection { .explore-directory { display: none; } .explore-content { display: block; } }
+    .explore-view-all { width: 100%; }
+    @media (min-width: 992px) {
+        display: grid; grid-template-columns: minmax(240px, 1fr) minmax(0, 2.35fr); gap: var(--space-4);
+        .explore-directory, &.has-selection .explore-directory { display: block; padding-right: var(--space-4); border-right: 1px solid var(--color-border); }
+        .explore-content { display: block; min-width: 0; }
+        .explore-directory small { font-size: var(--font-size-xs); }
+        .explore-directory .explore-link { gap: var(--space-2); }
+        .explore-view-all { width: auto; }
+    }
+}

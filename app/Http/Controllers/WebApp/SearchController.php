@@ -15,7 +15,9 @@ class SearchController extends Controller
             // A visitor cannot reveal additional results by requesting another page.
             if (! auth('web')->check() && (int) $request->input('page', 1) > 1) return '';
 
-            $pieces = $api->search($request)->filtered()->forWebApp();
+            $pieces = $request->has('catalogue')
+                ? app(\App\Services\WebApp\ExploreCatalogue::class)->results($request)
+                : $api->search($request)->filtered()->forWebApp();
             return view('webapp.search.results', compact('pieces'))->render();
         }
 

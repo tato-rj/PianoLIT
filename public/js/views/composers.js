@@ -16,7 +16,7 @@
     var status = page.querySelector('[data-composer-status]');
     var reset = page.querySelector('[data-composer-reset]');
     var erase = form.querySelector('[data-erase]');
-    var filter = 'all', letter = 'all', sort = 'pieces';
+    var filter = 'all', letter = 'all', sort = /[?&]sort=name(?:&|$)/.test(doc.location ? doc.location.search : '') ? 'name' : 'pieces';
 
     function normalize(value) {
         return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();

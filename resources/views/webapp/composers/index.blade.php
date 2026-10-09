@@ -6,8 +6,11 @@
 @endpush
 
 @section('content')
-@include('webapp.layouts.header', ['title' => 'Composers', 'subtitle' => 'Explore our list of composers'])
+@include('webapp.layouts.header', ['title' => request('gender') === 'female' ? 'Women composers' : 'Composers', 'subtitle' => 'Explore our list of composers'])
 
+@if(request()->filled('gender') || request()->filled('country'))
+<p><a href="{{ route('webapp.composers.index') }}">@icon('arrow-left') All composers</a>@if(request()->filled('country') && $composers->first())<span class="text-muted ms-3">{{ optional($composers->first()->country)->name }}</span>@endif</p>
+@endif
 <section id="composers-directory" aria-label="Composer directory">
     <div class="d-flex align-items-center gap-3 mb-4">
         <div class="flex-grow-1 composer-search">
