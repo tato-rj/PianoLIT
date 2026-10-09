@@ -1,9 +1,8 @@
-<nav class="d-flex {{ empty($breadcrumbs) ? 'd-lg-none' : '' }} flex-wrap align-items-center gap-2 mb-3 mt-4 mt-lg-0" aria-label="Explore path">
-    <a class="d-lg-none" href="{{ route('webapp.explore') }}">@icon('chevron-left', ['mr' => 0]) Explore</a>
-    @foreach($breadcrumbs as $breadcrumb)
-        <a href="{{ route('webapp.explore', $breadcrumb['params']) }}">@icon('chevron-left', ['mr' => 0]) {{ $breadcrumb['label'] }}</a>
-    @endforeach
-</nav>
+@if(!empty($breadcrumbs))
+<div class="d-none d-lg-block mb-3">
+    @include('webapp.explore.path', ['pathClasses' => 'flex-wrap'])
+</div>
+@endif
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div>
         <p class="text-muted mb-1">{{ $guide['kind'] }}</p>

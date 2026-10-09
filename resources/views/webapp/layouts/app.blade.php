@@ -71,6 +71,8 @@
             </div>
         </div>
 
+        @stack('page-navigation')
+
         @if($message = session('status'))
         @alert([
             'color' => 'green',

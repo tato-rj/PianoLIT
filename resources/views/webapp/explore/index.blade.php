@@ -9,6 +9,14 @@
 <script src="{{ mix('js/views/explore-transitions.js') }}"></script>
 @endpush
 
+@if($hasSelection && $guide)
+@push('page-navigation')
+<div class="explore-mobile-navigation d-lg-none bg-light border-bottom">
+    @include('webapp.explore.path', ['pathClasses' => 'py-4 px-3'])
+</div>
+@endpush
+@endif
+
 @section('content')
 <div @if($hasSelection) class="d-none d-lg-block" @endif>
 @include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Find your way through the repertoire.'])
