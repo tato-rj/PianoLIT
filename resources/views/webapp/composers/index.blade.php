@@ -14,7 +14,7 @@
 <section id="composers-directory" aria-label="Composer directory">
     <div class="d-flex align-items-center gap-3 mb-4">
         <div class="flex-grow-1 composer-search">
-            @include('webapp.search.form', ['directorySearch' => true, 'searchLabel' => 'Search composers, countries, or works', 'searchPlaceholder' => 'Search composers, countries, or works...'])
+            @include('webapp.search.form', ['directorySearch' => true, 'searchLabel' => 'Search composers, countries, continents, or works', 'searchPlaceholder' => 'Search composers, countries, continents, or works...'])
         </div>
         <div class="dropdown" data-composer-controls hidden>
             <button class="btn btn-secondary d-flex align-items-center gap-2" type="button" id="composer-sort" aria-label="Sort composers" data-bs-toggle="dropdown" aria-expanded="false">

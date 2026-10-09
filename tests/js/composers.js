@@ -13,9 +13,9 @@ module.exports = function () {
         };
     }
     const cards = [
-        ['Bach', 'Johann Sebastian Bach Germany Prelude and Fugue The Well-Tempered Clavier', true, 1, 20],
-        ['Chopin', 'Frédéric Chopin Poland Étude Douze Études', true, 2, 15],
-        ['Price', 'Florence Price United States Fantasie', false, 3, 2],
+        ['Bach', 'Johann Sebastian Bach Germany Europe Prelude and Fugue The Well-Tempered Clavier', true, 1, 20],
+        ['Chopin', 'Frédéric Chopin Poland Europe Étude Douze Études', true, 2, 15],
+        ['Price', 'Florence Price United States North America Fantasie', false, 3, 2],
     ].map(([name, search, popular, created, pieces]) => node({
         'data-composer-name': name, 'data-composer-search': search,
         'data-composer-popular': String(popular), 'data-composer-created': created, 'data-composer-pieces': pieces
@@ -34,6 +34,18 @@ module.exports = function () {
     initialize({getElementById() { return page; }});
     assert.strictEqual(status.textContent, '3 composers shown');
     assert.strictEqual(control.hidden, false);
+    search.value = '  EUROPE  '; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, false, true], 'Continent search ignores case and whitespace');
+    letters[2].events.click();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [true, false, true], 'Continent search combines with surname filters');
+    reset.events.click();
+    search.value = 'europe prelude'; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, true, true], 'Continent and work terms combine');
+    search.value = 'north america'; search.events.input();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [true, true, false], 'Multiword continents find their composers');
+    filters[1].events.click();
+    assert.strictEqual(empty.hidden, false, 'Continent search respects the popular filter');
+    reset.events.click();
     search.value = 'well tempered clavier'; search.events.input();
     assert.deepStrictEqual(cards.map(card => card.hidden), [false, true, true], 'Collection names find their composer');
     letters[2].events.click();
