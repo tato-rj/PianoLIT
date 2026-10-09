@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => 'Explore'])
+@extends('webapp.layouts.app', ['title' => 'Explore', 'hideMobileMenu' => $hasSelection && $guide])
 
 @push('header')
 <style>

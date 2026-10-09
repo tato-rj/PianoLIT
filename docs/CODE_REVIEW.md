@@ -2177,3 +2177,11 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Directory-only screens have no fixed header or offset. Desktop retains its inline breadcrumbs and zero extra margin. Existing links, native page transitions, bottom navigation, media rules and mobile API contracts are unchanged.
 - **Verification:** Isolated Explore suite passes (15 tests / 380 assertions); production build and CSS-variable checks pass. Live 390px inspection confirms the header is a direct child of `#webapp`, full viewport width, top 0, 73px tall, and content top/margin 94px. Scrolling to 117.5px leaves the header at top 0. Nested guide navigation retains both Explore and the parent breadcrumb; at 1280px the mobile header is hidden and content margin is 0. `git diff --check` passes.
 - **Remaining work / limits:** Not deployed; physical mobile devices were not tested.
+
+### 2026-10-09 — Hide the bottom menu in mobile Explore guides (P3, complete locally)
+
+- **Request / evidence:** Hide the bottom menu on the full-width guide screen with the fixed Explore/back header.
+- **Implementation / affected files:** `explore/index.blade.php` passes a mobile-menu flag only when an explicit guide selection exists. `layouts/menu.blade.php` applies the existing `d-none d-lg-block` utilities when that flag is set. No new assets or rebuild required.
+- **Compatibility:** The Explore directory, desktop guides and all other pages retain their menu. Routes, transitions, media access and mobile APIs remain unchanged.
+- **Verification:** Live browser checks confirm the menu is hidden at 390px on a nested guide, visible at 1280px, and visible again after returning to the mobile directory. Isolated Explore suite passes (15 tests / 380 assertions); scoped diff checks pass.
+- **Remaining work / limits:** Not deployed; physical mobile devices were not tested.
