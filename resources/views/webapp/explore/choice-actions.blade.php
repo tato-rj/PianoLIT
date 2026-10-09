@@ -1,4 +1,3 @@
-@include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url($choice['params'] + ['short' => 1], $choiceLabel.' · Short pieces'), 'label' => 'Short pieces', 'description' => 'A smaller time commitment', 'icon' => 'clock'])
 @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url($choice['params'], $choiceLabel), 'label' => 'View all matching pieces', 'description' => $choice['count'].' '.Str::plural('piece', $choice['count']).' to explore', 'icon' => 'list'])
 @if($choice['example'])
 @php($example = $choice['example'])

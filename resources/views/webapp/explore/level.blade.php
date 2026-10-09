@@ -1,7 +1,7 @@
 <nav class="d-flex {{ empty($breadcrumbs) ? 'd-lg-none' : '' }} flex-wrap align-items-center gap-2 mb-3 mt-4 mt-lg-0" aria-label="Explore path">
     <a class="d-lg-none" href="{{ route('webapp.explore') }}">@icon('chevron-left', ['mr' => 0]) Explore</a>
     @foreach($breadcrumbs as $breadcrumb)
-        @icon('chevron-right', ['mr' => 0, 'classes' => $loop->first ? 'd-lg-none' : ''])<a href="{{ route('webapp.explore', $breadcrumb['params']) }}">{{ $breadcrumb['label'] }}</a>
+        <a href="{{ route('webapp.explore', $breadcrumb['params']) }}">@icon('chevron-left', ['mr' => 0]) {{ $breadcrumb['label'] }}</a>
     @endforeach
 </nav>
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
