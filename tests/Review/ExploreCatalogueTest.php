@@ -50,6 +50,17 @@ class ExploreCatalogueTest extends ReviewTestCase
         }
     }
 
+    public function test_explore_disables_ipad_auto_shrinking_without_changing_other_pages()
+    {
+        foreach ([[], ['level' => 'elementary']] as $params) {
+            $html = $this->get(route('webapp.explore', $params))->assertOk()->getContent();
+            preg_match('/<meta name="viewport" content="([^"]+)"/', $html, $viewport);
+            $this->assertStringContainsString('width=device-width', $viewport[1]);
+            $this->assertStringContainsString('shrink-to-fit=no', $viewport[1]);
+        }
+        $this->get(route('webapp.highlights'))->assertOk()->assertDontSee('shrink-to-fit=no');
+    }
+
     public function test_different_moods_never_repeat_an_image_even_for_shared_piece_covers()
     {
         foreach ($this->pieces as $piece) $piece->tags()->detach($this->tags->only(['agitated', 'crazy'])->pluck('id'));

@@ -1,3 +1,11 @@
+// Sliding snapshots must not expand Safari's layout viewport and trigger auto-zoom.
+// Keep this outside the width query so overflow cannot switch off its own guard.
+html[data-explore-page], html[data-explore-page] body {
+    overflow-x: hidden;
+    overflow-x: clip;
+}
+html[data-explore-page]::view-transition { overflow: hidden; }
+
 // Explore uses the shared design tokens and controls; only directory geometry is local.
 #explore-catalogue {
     .explore-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
@@ -59,7 +67,6 @@
 
 // Keep the directory menu in its page snapshot so the incoming guide covers it.
 @media (max-width: 991.98px) and (prefers-reduced-motion: no-preference) {
-    html[data-explore-fallback] { overflow-x: hidden; }
     // Older Safari keeps real page navigation and animates the arriving content.
     // The fixed bottom menu stays outside this transformed container.
     html[data-explore-fallback] #webapp main,
