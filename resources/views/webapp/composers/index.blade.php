@@ -6,9 +6,9 @@
 @endpush
 
 @section('content')
-@include('webapp.layouts.header', ['title' => request('gender') === 'female' ? 'Women composers' : 'Composers', 'subtitle' => 'Explore our list of composers'])
+@include('webapp.layouts.header', ['title' => $directoryTitle ?? 'Composers', 'subtitle' => 'Explore our list of composers'])
 
-@if(request()->filled('gender') || request()->filled('country'))
+@if(request()->filled('gender') || request()->filled('country') || (request()->filled('composers') && request('composers') !== 'all'))
 <p><a href="{{ route('webapp.composers.index') }}">@icon('arrow-left') All composers</a>@if(request()->filled('country') && $composers->first())<span class="text-muted ms-3">{{ optional($composers->first()->country)->name }}</span>@endif</p>
 @endif
 <section id="composers-directory" aria-label="Composer directory">

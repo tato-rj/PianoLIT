@@ -5,14 +5,20 @@ namespace App\Http\Controllers\WebApp;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Composer;
+use App\Services\WebApp\ComposerGroups;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
 class ComposersController extends Controller
 {
     public function index(Request $request)
     {
-        $request->validate(['gender' => 'nullable|in:female', 'country' => 'nullable|integer|min:1']);
-        $query = Composer::atLeast(1);
+        $request->validate([
+            'gender' => 'nullable|in:female', 'country' => 'nullable|integer|min:1',
+            'composers' => ['nullable', Rule::in(array_keys(ComposerGroups::OPTIONS))],
+        ]);
+        $query = ComposerGroups::apply(Composer::atLeast(1), $request->input('composers'));
+        $directoryTitle = ComposerGroups::OPTIONS[$request->input('composers')]['label'] ?? ($request->gender === 'female' ? 'Women composers' : 'Composers');
         if ($request->filled('gender')) $query->where('gender', $request->gender);
         if ($request->filled('country')) $query->where('country_id', $request->country);
         $composers = $query->get()->sortByDesc('pieces_count');
@@ -21,7 +27,7 @@ class ComposersController extends Controller
         $composerWorks = DB::table('pieces')->whereIn('composer_id', $composers->pluck('id'))
             ->select('composer_id', 'name', 'collection_name')->get()->groupBy('composer_id');
 
-        return view('webapp.composers.index', compact('composers', 'composerWorks'));
+        return view('webapp.composers.index', compact('composers', 'composerWorks', 'directoryTitle'));
     }
 
     public function show(Composer $composer)

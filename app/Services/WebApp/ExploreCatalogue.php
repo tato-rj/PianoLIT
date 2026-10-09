@@ -2,7 +2,7 @@
 
 namespace App\Services\WebApp;
 
-use App\{Composer, Piece, Tag};
+use App\{Composer, Country, Piece, Tag};
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -20,26 +20,106 @@ class ExploreCatalogue
 
     public function data(Request $request)
     {
-        $request->validate(['level' => ['nullable', Rule::in(self::LEVELS)]]);
+        $params = array_filter($request->validate([
+            'level' => ['nullable', Rule::in(self::LEVELS)],
+            'mood' => ['nullable', Rule::in(array_keys(self::MOODS))],
+            'tag' => 'nullable|integer|min:1',
+            'composers' => ['nullable', Rule::in(array_keys(ComposerGroups::OPTIONS))], 'country' => 'nullable|integer|min:1',
+        ]), function ($value) { return $value !== null && $value !== ''; });
+        // Preserve the order of selections in links so breadcrumbs retrace the actual path.
+        $params = array_replace(array_intersect_key($request->query(), $params), $params);
+        $hasSelection = count($params) > 0;
+        $selectedTag = isset($params['tag']) ? Tag::whereIn('type', ['technique', 'period', 'genre'])->findOrFail($params['tag']) : null;
+        $selectedCountry = isset($params['country']) ? Country::findOrFail($params['country']) : null;
         $levels = Tag::whereIn('type', ['level', 'sublevel'])->whereIn('name', self::LEVELS)->withCount('pieces')->get()
             ->sortBy(function ($tag) { return array_search($tag->name, self::LEVELS, true); })->values();
-        $selected = $request->filled('level') ? $levels->firstWhere('name', $request->level) : $levels->first();
-        abort_if($request->filled('level') && !$selected, 404);
-        $moods = collect(self::MOODS)->map(function ($mood, $key) use ($selected) {
-            $params = ['mood' => $key];
-            if ($selected) $params['level'] = $selected->name;
-            $query = $this->query($params);
-            $mood['count'] = (clone $query)->count();
-            // Examples open the existing piece player, retaining its access rules.
-            $mood['example'] = (clone $query)->select(['pieces.id'])->setEagerLoads([])->withCount([])
-                ->whereNotNull('audio_path')->where('audio_path', '!=', '')->orderBy('pieces.id')->first();
-            return $mood;
+        $selected = isset($params['level']) ? $levels->firstWhere('name', $params['level']) : (!$hasSelection ? $levels->first() : null);
+        abort_if(isset($params['level']) && !$selected, 404);
+        if ($selected) $params['level'] = $selected->name;
+        $activeSection = 'level';
+        $moods = collect(self::MOODS)->map(function ($mood, $key) {
+            $piece = $this->query(['mood' => $key])->select(['pieces.id', 'pieces.cover_path'])
+                ->setEagerLoads([])->withCount([])->inRandomOrder()->first();
+            if ($piece && !$piece->cover_path) $piece->loadMissing('tags');
+            return array_merge($mood, ['image' => $piece ? $piece->web_image_background : null]);
         });
-        $tags = Tag::whereIn('type', ['technique', 'period', 'genre'])->has('pieces')->orderBy('name')->get();
+        if ($selected && !isset($params['mood'])) $moods = $moods->map(function ($mood, $key) use ($params) {
+            return array_merge($mood, $this->choice(array_merge($params, ['mood' => $key])));
+        });
+        $guide = null;
+        $choices = collect();
+        $breadcrumbs = [];
+        $selectionLabels = [];
+        $trail = [];
+        foreach ($params as $facet => $value) {
+            $trail[$facet] = $value;
+            if ($facet === 'tag') {
+                $label = ucfirst($selectedTag->name);
+                $kind = $selectedTag->type === 'technique' ? 'Technique' : 'Periods & Styles';
+                $activeSection = $selectedTag->type === 'technique' ? 'technique' : 'style';
+            } elseif ($facet === 'mood') {
+                $label = self::MOODS[$value]['label'];
+                $kind = 'Mood';
+                $activeSection = 'mood';
+            } elseif ($facet === 'composers' || $facet === 'country') {
+                $label = $facet === 'country' ? $selectedCountry->name : ComposerGroups::OPTIONS[$value]['label'];
+                $kind = 'Composers';
+                $activeSection = 'composers';
+            } else {
+                $label = ucwords($value);
+                $kind = 'Level';
+                $activeSection = 'level';
+            }
+            $selectionLabels[] = $label;
+            $breadcrumbs[] = ['label' => $label, 'params' => $trail];
+        }
+        $selectionLabel = implode(' · ', $selectionLabels);
+        if ($params) {
+            $title = array_pop($breadcrumbs)['label'];
+            $guide = array_merge(['title' => $title, 'kind' => $kind, 'params' => $params], $this->choice($params));
+            if (!$selected) {
+                $choices = $levels->map(function ($level) use ($params) {
+                    return array_merge(['label' => ucwords($level->name), 'description' => '', 'icon' => 'circle', 'level' => $level->name],
+                        $this->choice(array_merge($params, ['level' => $level->name])));
+                });
+                $guide['heading'] = 'By level';
+            } elseif (!isset($params['mood'])) {
+                $choices = $moods;
+                $guide['heading'] = 'By character';
+            } else {
+                $guide['heading'] = 'Keep exploring';
+            }
+        }
+        $tags = Tag::where(function ($query) {
+            $query->where('type', 'technique')->has('pieces', '>=', 8);
+        })->orWhere(function ($query) {
+            $query->whereIn('type', ['period', 'genre'])->has('pieces', '>=', 10);
+        })->orderBy('name')->get();
+        $techniques = collect();
+        if (!$selectedTag && $guide) {
+            $matchingPieces = $this->query($params)->select('pieces.id')->setEagerLoads([])->withCount([]);
+            $techniques = Tag::whereIn('id', $tags->where('type', 'technique')->pluck('id'))
+                ->whereHas('pieces', function ($query) use ($matchingPieces) {
+                    $query->whereIn('pieces.id', $matchingPieces);
+                })->orderBy('name')->get();
+        }
         $composers = Composer::select(['id', 'name', 'cover_path', 'country_id'])->withCount([])->has('pieces')->get();
         $countries = $composers->pluck('country')->filter()->unique('id')->sortBy('name')->values();
         $portraits = $composers->shuffle()->take(3);
-        return compact('levels', 'selected', 'moods', 'tags', 'countries', 'portraits');
+        return compact('levels', 'selected', 'moods', 'tags', 'countries', 'portraits',
+            'guide', 'choices', 'breadcrumbs', 'selectionLabel', 'selectedTag', 'activeSection', 'hasSelection', 'techniques');
+    }
+
+    private function choice(array $params)
+    {
+        $query = $this->query($params);
+        return [
+            'params' => $params,
+            'count' => (clone $query)->count(),
+            'example' => (clone $query)->select('pieces.*')->setEagerLoads([])->withCount([])
+                ->with(['composer' => function ($query) { $query->withCount([]); }])
+                ->whereNotNull('audio_path')->where('audio_path', '!=', '')->orderBy('pieces.id')->first(),
+        ];
     }
 
     public static function url($params = [], $label = 'Explore repertoire')
@@ -59,6 +139,12 @@ class ExploreCatalogue
         if (!empty($params['tag'])) $query->whereHas('tags', function ($q) use ($params) {
             $q->whereIn('type', ['technique', 'period', 'genre'])->where('tags.id', $params['tag']);
         });
+        if (!empty($params['composers']) && $params['composers'] !== 'all') $query->whereHas('composer', function ($q) use ($params) {
+            ComposerGroups::apply($q, $params['composers']);
+        });
+        if (!empty($params['country'])) $query->whereHas('composer', function ($q) use ($params) {
+            $q->where('country_id', $params['country']);
+        });
         if (!empty($params['short'])) $query->whereHas('tags', function ($q) {
             $q->where('type', 'length')->where('name', 'short');
         });
@@ -71,6 +157,7 @@ class ExploreCatalogue
         $params = $request->validate([
             'level' => ['nullable', Rule::in(self::LEVELS)],
             'mood' => ['nullable', Rule::in(array_keys(self::MOODS))],
+            'composers' => ['nullable', Rule::in(array_keys(ComposerGroups::OPTIONS))], 'country' => 'nullable|integer|min:1',
             'tag' => 'nullable|integer|min:1', 'short' => 'nullable|boolean', 'past' => 'nullable|boolean',
             'filters' => 'nullable|array|max:6', 'filters.*' => ['string', 'max:1024', function ($attribute, $value, $fail) {
                 $names = json_decode($value, true);

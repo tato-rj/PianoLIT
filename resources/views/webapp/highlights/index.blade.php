@@ -3,7 +3,7 @@
 @section('content')
 @include('webapp.layouts.header', ['title' => 'Highlights', 'subtitle' => 'What would you like to play next?'])
 
-@include('webapp.components.sorting', ['disabled' => false])
+@include('webapp.components.sorting', ['disabled' => false, 'selectedFilterNames' => collect(request('filters', []))->flatMap(function ($names) { return json_decode($names, true); })->all()])
 
 <section id="pieces-list" class="row mt-3" data-highlights-url="{{ route('webapp.highlights') }}" aria-busy="false">
     @include('webapp.highlights.pieces')

@@ -1,20 +1,20 @@
 @extends('webapp.layouts.app', ['title' => 'Explore'])
 
 @section('content')
-<div @if(request()->filled('level')) class="d-none d-lg-block" @endif>
+<div @if($hasSelection) class="d-none d-lg-block" @endif>
 @include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Find your way through the repertoire.'])
 <section class="mb-4">
     @include('webapp.search.form', ['searchPlaceholder' => 'Know the title? Search here...', 'accessibleSearch' => true])
 </section>
 </div>
 
-<div id="explore-catalogue" class="explore-layout {{ request()->filled('level') ? 'has-selection' : '' }}">
+<div id="explore-catalogue" class="explore-layout {{ $hasSelection ? 'has-selection' : '' }}">
     <nav class="explore-directory" aria-label="Explore repertoire">
         <h4 class="mb-2">Start with</h4>
         @include('webapp.explore.directory')
     </nav>
-    <section class="explore-content" aria-label="Explore within a level">
-        @if($selected)
+    <section class="explore-content" aria-label="Explore your selection">
+        @if($guide)
             @include('webapp.explore.level')
         @else
             <h3>Find your next piece</h3>
@@ -25,6 +25,7 @@
 @endsection
 
 @push('scripts')
+<script src="{{ mix('js/views/explore.js') }}"></script>
 <script type="text/javascript">
 let recent = app.user ? getRecent() : [];
 
@@ -99,11 +100,14 @@ function submitRecent(recent) {
 </script>
 
 <script>
-document.querySelectorAll('.explore-directory > details').forEach(function (section) {
-    section.addEventListener('toggle', function () {
-        if (!section.open) return;
-        document.querySelectorAll('.explore-directory > details').forEach(function (other) {
-            if (other !== section) other.open = false;
+document.querySelectorAll('.explore-directory, .explore-content').forEach(function (column) {
+    column.querySelectorAll('details').forEach(function (section) {
+        section.addEventListener('toggle', function () {
+            if (!section.open) return;
+            column.querySelectorAll('details').forEach(function (other) {
+                // Keep a nested section's parent open so its contents stay reachable.
+                if (other !== section && !other.contains(section)) other.open = false;
+            });
         });
     });
 });

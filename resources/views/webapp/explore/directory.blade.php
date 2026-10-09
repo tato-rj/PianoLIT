@@ -1,4 +1,4 @@
-<details class="explore-section" open>
+<details class="explore-section" @if($activeSection === 'level') open @endif>
     <summary>@icon('layers', ['mr' => 0, 'size' => 'lg'])<span>Level</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         @forelse($levels as $level)
@@ -9,44 +9,61 @@
         @empty<p class="text-muted p-3">Levels are being prepared.</p>@endforelse
     </div>
 </details>
-<details class="explore-section">
+<details class="explore-section" @if($activeSection === 'mood') open @endif>
     <summary>@icon('music', ['mr' => 0, 'size' => 'lg'])<span>Mood<small class="d-block text-muted fw-normal">Calm, playful, dramatic...</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         @foreach($moods as $key => $mood)
-            @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url(['mood' => $key], $mood['label']), 'label' => $mood['label'], 'description' => $mood['description'], 'icon' => $mood['icon']])
+            @include('webapp.explore.link', ['href' => route('webapp.explore', ['mood' => $key]), 'label' => $mood['label'], 'description' => $mood['description'], 'icon' => $mood['icon'], 'image' => $mood['image'], 'current' => request('mood') === $key, 'classes' => request('mood') === $key ? 'is-selected' : ''])
         @endforeach
     </div>
 </details>
-<details class="explore-section">
+<details class="explore-section" @if($activeSection === 'technique') open @endif>
     <summary>@icon('hand', ['mr' => 0, 'size' => 'lg'])<span>Technique<small class="d-block text-muted fw-normal">Hands, patterns & more</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         @forelse($tags->where('type', 'technique') as $tag)
-            @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url(['tag' => $tag->id], ucfirst($tag->name)), 'label' => ucfirst($tag->name)])
+            @include('webapp.explore.link', ['href' => route('webapp.explore', ['tag' => $tag->id]), 'label' => ucfirst($tag->name), 'current' => $selectedTag && $selectedTag->id === $tag->id, 'classes' => $selectedTag && $selectedTag->id === $tag->id ? 'is-selected' : ''])
         @empty<p class="text-muted p-3">Technique collections are being prepared.</p>@endforelse
     </div>
 </details>
-<details class="explore-section">
+<details class="explore-section" @if($activeSection === 'composers') open @endif>
     <summary>@icon('user', ['mr' => 0, 'size' => 'lg'])<span>Composers</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
-        <a class="explore-link link-none" href="{{ route('webapp.composers.index', ['sort' => 'name']) }}">
+        <a class="explore-link link-none {{ request('composers') === 'all' ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['composers' => 'all']) }}" @if(request('composers') === 'all') aria-current="page" @endif>
             <span class="explore-portraits">@foreach($portraits as $composer)<img src="{{ $composer->cover_image }}" alt="" class="rounded-circle" loading="lazy">@endforeach</span>
-            <span class="explore-copy">All composers<small class="d-block text-muted">Browse A–Z</small></span>@icon('chevron-right', ['mr' => 0])
+            <span class="explore-copy">All composers<small class="d-block text-muted">Explore by level</small></span>@icon('chevron-right', ['mr' => 0])
         </a>
-        @include('webapp.explore.link', ['href' => route('webapp.composers.index', ['gender' => 'female', 'sort' => 'name']), 'label' => 'Women composers', 'icon' => 'venus'])
-        <details class="explore-countries">
+        @foreach(\App\Services\WebApp\ComposerGroups::OPTIONS as $group => $option)
+            @if($group !== 'all')
+                @include('webapp.explore.link', ['href' => route('webapp.explore', ['composers' => $group]), 'label' => $option['label'], 'icon' => $option['icon'], 'current' => request('composers') === $group, 'classes' => request('composers') === $group ? 'is-selected' : ''])
+            @endif
+        @endforeach
+        <details class="explore-countries" @if(request()->filled('country')) open @endif>
             <summary>@icon('globe', ['mr' => 0])<span>By country</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
             @foreach($countries as $country)
-                @include('webapp.explore.link', ['href' => route('webapp.composers.index', ['country' => $country->id, 'sort' => 'name']), 'label' => $country->name])
+                @include('webapp.explore.link', ['href' => route('webapp.explore', ['country' => $country->id]), 'label' => $country->name, 'current' => (int) request('country') === $country->id, 'classes' => (int) request('country') === $country->id ? 'is-selected' : ''])
             @endforeach
         </details>
     </div>
 </details>
-<details class="explore-section">
+<details class="explore-section" @if($activeSection === 'style') open @endif>
     <summary>@icon('layers', ['mr' => 0, 'size' => 'lg'])<span>Periods & Styles</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch explore-styles">
-        @forelse($tags->whereIn('type', ['period', 'genre']) as $tag)
-            @include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url(['tag' => $tag->id], ucfirst($tag->name)), 'label' => ucfirst($tag->name)])
-        @empty<p class="text-muted p-3">Styles are being prepared.</p>@endforelse
+        @if($tags->where('type', 'period')->isNotEmpty())
+            <p class="explore-group-label text-muted">Periods</p>
+            @foreach($tags->where('type', 'period') as $tag)
+                <a class="explore-link explore-period link-none {{ $selectedTag && $selectedTag->id === $tag->id ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['tag' => $tag->id]) }}" @if($selectedTag && $selectedTag->id === $tag->id) aria-current="page" @endif>
+                    <img src="{{ $tag->web_cover_image }}" alt="" class="explore-period-image" width="44" height="44" loading="lazy">
+                    <span class="explore-copy">{{ ucfirst($tag->name) }}</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])
+                </a>
+            @endforeach
+        @endif
+        @if($tags->where('type', 'genre')->isNotEmpty())
+            <p class="explore-group-label text-muted">Styles</p>
+            @foreach($tags->where('type', 'genre') as $tag)
+                @include('webapp.explore.link', ['href' => route('webapp.explore', ['tag' => $tag->id]), 'label' => ucfirst($tag->name), 'current' => $selectedTag && $selectedTag->id === $tag->id, 'classes' => 'explore-style'.($selectedTag && $selectedTag->id === $tag->id ? ' is-selected' : '')])
+            @endforeach
+        @endif
+        @if($tags->whereIn('type', ['period', 'genre'])->isEmpty())<p class="text-muted p-3">Periods and styles are being prepared.</p>@endif
     </div>
 </details>
-@include('webapp.explore.link', ['href' => \App\Services\WebApp\ExploreCatalogue::url(['past' => 1], 'Past free picks'), 'label' => 'Past free picks', 'icon' => 'clock', 'classes' => 'explore-past fw-bold'])
+@include('webapp.explore.link', ['href' => route('webapp.highlights'), 'label' => 'Past free picks', 'icon' => 'clock', 'classes' => 'explore-past fw-bold'])
