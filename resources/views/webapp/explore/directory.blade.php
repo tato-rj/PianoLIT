@@ -1,5 +1,5 @@
 <details class="explore-section" @if($activeSection === 'level') open @endif>
-    <summary>@icon('layers', ['mr' => 0, 'size' => 'lg'])<span>Level</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
+    <summary class="rounded-sm px-2">@icon('layers', ['mr' => 0, 'size' => 'lg'])<span>Level</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         @forelse($levels as $level)
         <a class="explore-link rounded-sm link-none {{ $selected && $selected->id === $level->id ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['level' => $level->name]) }}" @if(request('level') === $level->name) aria-current="page" @endif>
@@ -10,7 +10,7 @@
     </div>
 </details>
 <details class="explore-section" @if($activeSection === 'mood') open @endif>
-    <summary>@icon('music', ['mr' => 0, 'size' => 'lg'])<span>Mood<small class="d-block text-muted fw-normal">Calm, playful, dramatic...</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
+    <summary class="rounded-sm px-2">@icon('music', ['mr' => 0, 'size' => 'lg'])<span>Mood</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         @foreach($moods as $key => $mood)
             @include('webapp.explore.link', ['href' => route('webapp.explore', ['mood' => $key]), 'label' => $mood['label'], 'description' => $mood['description'], 'icon' => $mood['icon'], 'image' => $mood['image'], 'current' => request('mood') === $key, 'classes' => request('mood') === $key ? 'is-selected' : ''])
@@ -18,7 +18,7 @@
     </div>
 </details>
 <details class="explore-section" @if($activeSection === 'technique') open @endif>
-    <summary>@icon('hand', ['mr' => 0, 'size' => 'lg'])<span>Technique<small class="d-block text-muted fw-normal">Hands, patterns & more</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
+    <summary class="rounded-sm px-2">@icon('hand', ['mr' => 0, 'size' => 'lg'])<span>Technique</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         @forelse($tags->where('type', 'technique') as $tag)
             @include('webapp.explore.link', ['href' => route('webapp.explore', ['tag' => $tag->id]), 'label' => ucfirst($tag->name), 'current' => $selectedTag && $selectedTag->id === $tag->id, 'classes' => $selectedTag && $selectedTag->id === $tag->id ? 'is-selected' : ''])
@@ -26,7 +26,7 @@
     </div>
 </details>
 <details class="explore-section" @if($activeSection === 'composers') open @endif>
-    <summary>@icon('user', ['mr' => 0, 'size' => 'lg'])<span>Composers</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
+    <summary class="rounded-sm px-2">@icon('user', ['mr' => 0, 'size' => 'lg'])<span>Composers</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
         <a class="explore-link rounded-sm link-none flex-column align-items-stretch {{ request('composers') === 'all' ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['composers' => 'all']) }}" @if(request('composers') === 'all') aria-current="page" @endif>
             {{-- <span class="explore-portraits align-self-center mb-1" aria-hidden="true">@foreach($portraits as $composer)<img src="{{ $composer->cover_image }}" alt="" class="rounded-circle" loading="lazy">@endforeach</span> --}}
@@ -50,7 +50,7 @@
     </div>
 </details>
 <details class="explore-section" @if($activeSection === 'style') open @endif>
-    <summary>@icon('layers', ['mr' => 0, 'size' => 'lg'])<span>Periods & Styles</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
+    <summary class="rounded-sm px-2">@icon('layers', ['mr' => 0, 'size' => 'lg'])<span>Periods & Styles</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch explore-styles">
         @if($tags->where('type', 'period')->isNotEmpty())
             <p class="explore-group-label text-muted">Periods</p>

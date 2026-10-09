@@ -4,7 +4,7 @@
 <div @if($hasSelection) class="d-none d-lg-block" @endif>
 @include('webapp.layouts.header', ['title' => 'Explore', 'subtitle' => 'Find your way through the repertoire.'])
 <section class="mb-4">
-    @include('webapp.search.form', ['searchPlaceholder' => 'Know the title? Search here...', 'accessibleSearch' => true])
+    @include('webapp.search.form', ['searchPlaceholder' => 'Know the title or composer? Search here...', 'accessibleSearch' => true])
 </section>
 </div>
 
