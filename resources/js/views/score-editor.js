@@ -81,6 +81,7 @@
             this.stroke = null; this.textDrag = null; this.pointerId = null; this.pdf = null; this.textDraft = null;
             this.store = new Markings(data => this.http.put(this.url, Object.assign({}, this.identity, data)).then(response => response.data), () => this.changed());
             this.url = container.getAttribute('data-annotations-url');
+            this.restoreWidth();
             this.bind(); this.start();
         }
         find(selector) { return this.root.querySelector(selector); }
@@ -146,10 +147,27 @@
             this.updatePaletteColor();
         }
         updatePaletteColor() {
-            this.find('.score-color-button .icon-palette').style.color = this.find('[data-color]').value;
+            const color = this.find('[data-color]').value;
+            this.find('.score-color-button .icon-palette').style.color = color;
+            this.all('[data-color-option]').forEach(option => {
+                const selected = option.getAttribute('data-color-option') === color;
+                option.setAttribute('aria-pressed', String(selected));
+                option.querySelector('[data-color-check]').hidden = !selected;
+            });
         }
-        selectWidth(value) {
+        selectColor(value) {
+            if (!/^#[0-9a-f]{6}$/i.test(value)) return;
+            this.find('[data-color]').value = value.toLowerCase();
+            this.updatePaletteColor();
+        }
+        restoreWidth() {
+            let value;
+            try { value = root.localStorage.getItem('pianolit.score.pen-width'); } catch (error) { return; }
+            if (value) this.selectWidth(value, false);
+        }
+        selectWidth(value, remember = true) {
             if (![0.001, 0.002, 0.004, 0.006, 0.009, 0.013, 0.018].includes(Number(value))) return;
+            value = String(Number(value));
             this.find('[data-width]').value = value;
             this.all('[data-width-option]').forEach(option => {
                 const selected = option.getAttribute('data-width-option') === value;
@@ -158,6 +176,9 @@
                 option.querySelector('[data-width-check]').hidden = !selected;
                 if (selected) this.find('[data-width-preview]').setAttribute('stroke-width', option.querySelector('[data-width-sample]').getAttribute('stroke-width'));
             });
+            if (remember) {
+                try { root.localStorage.setItem('pianolit.score.pen-width', value); } catch (error) { /* Editing still works when browser storage is unavailable. */ }
+            }
         }
         clearAll() {
             if (!this.ready || this.rendering || this.store.conflict) return;
@@ -191,21 +212,25 @@
             color.addEventListener('input', updateColor);
             color.addEventListener('change', updateColor);
             this.updatePaletteColor();
+            this.all('[data-color-option]').forEach(el => el.addEventListener('click', () => {
+                this.selectColor(el.getAttribute('data-color-option'));
+                root.bootstrap.Dropdown.getOrCreateInstance(this.find('#score-color-picker')).hide();
+            }));
             this.all('button[data-tool]').forEach(el => el.addEventListener('click', () => this.selectTool(el.getAttribute('data-tool'))));
             this.all('[data-width-option]').forEach(el => el.addEventListener('click', () => this.selectWidth(el.getAttribute('data-width-option'))));
-            this.find('.score-width-control').addEventListener('keydown', event => {
-                if (event.key !== 'Escape' || !this.find('.score-width-menu').classList.contains('show')) return;
+            this.all('.score-color-control, .score-width-control').forEach(control => control.addEventListener('keydown', event => {
+                if (event.key !== 'Escape' || !control.querySelector('.dropdown-menu').classList.contains('show')) return;
                 event.stopPropagation();
-                const button = this.find('#score-pen-width');
+                const button = control.querySelector('[data-bs-toggle="dropdown"]');
                 root.bootstrap.Dropdown.getOrCreateInstance(button).hide();
                 button.focus();
-            });
+            }));
             // Inspect the original target before editing replaces an SVG mark in the DOM.
             document.addEventListener('pointerdown', event => {
                 if (this.tool === 'read' || this.sheet.contains(event.target)) return;
                 const button = event.target.closest('button[data-tool]');
                 if (button && this.root.contains(button)) return;
-                const palette = event.target.closest('.score-color-button');
+                const palette = event.target.closest('.score-color-control');
                 if (palette && this.root.contains(palette)) return;
                 const thickness = event.target.closest('.score-width-control');
                 if (thickness && this.root.contains(thickness)) return;

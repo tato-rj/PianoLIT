@@ -65,6 +65,41 @@
         cursor: pointer;
         &.disabled { opacity: .45; cursor: default; }
     }
+    .score-color-control { flex: 0 0 auto; }
+    .score-color-menu {
+        min-width: 202px;
+        padding: 14px;
+        border: 1px solid #e4eaf3;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(37, 54, 80, .16);
+    }
+    .score-color-swatches { display: grid; grid-template-columns: repeat(4, 34px); gap: 12px; }
+    .score-color-swatch {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        min-height: 34px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        &[aria-pressed="true"] { outline: 2px solid #1555dc; outline-offset: 3px; }
+        &:disabled { opacity: .45; cursor: default; }
+    }
+    .score-custom-color {
+        position: relative;
+        display: block;
+        margin-top: 14px;
+        padding: 10px;
+        border: 1px solid #e4eaf3;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 13px;
+        cursor: pointer;
+        &:focus-within { outline: 2px solid #1b59e9; outline-offset: 2px; }
+    }
     .score-color-input {
         position: absolute;
         inset: 0;

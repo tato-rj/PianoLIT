@@ -137,19 +137,27 @@ module.exports = async function () {
 
     const sharedColor = {value: '#20252b'};
     const palette = {style: {}};
+    const colorOptions = ['#20252b', '#e53935', '#f57c00', '#fbc02d', '#2eaf4a', '#1565d8', '#8e44ad', '#e14d9b'].map(value => ({
+        value, check: {hidden: true}, getAttribute: () => value,
+        setAttribute(name, state) { this[name] = state; },
+        querySelector() { return this.check; }
+    }));
     pen.find = selector => selector === '[data-color]' ? sharedColor : (selector === '.score-color-button .icon-palette' ? palette : null);
+    pen.all = selector => selector === '[data-color-option]' ? colorOptions : [];
     pen.controls = () => {}; pen.finishTextDrag = () => {};
     for (const tool of ['pen', 'highlight']) {
         for (const timing of ['before', 'after']) {
             pen.selectTool('read');
             sharedColor.value = '#20252b';
-            const selectedColor = timing === 'before' ? '#e63245' : '#1959e9';
-            if (timing === 'before') sharedColor.value = selectedColor;
+            const selectedColor = timing === 'before' ? '#2eaf4a' : '#1565d8';
+            if (timing === 'before') pen.selectColor(selectedColor);
             pen.selectTool(tool);
-            if (timing === 'after') sharedColor.value = selectedColor;
+            if (timing === 'after') pen.selectColor(selectedColor);
             pen.updatePaletteColor();
             assert.strictEqual(sharedColor.value, selectedColor, tool + ': choosing color ' + timing + ' selecting the tool retains that color');
             assert.strictEqual(palette.style.color, selectedColor, 'Palette reflects the shared writing color');
+            assert.strictEqual(colorOptions.filter(option => !option.check.hidden).length, 1, 'Only the selected color shows a check');
+            assert.strictEqual(colorOptions.find(option => option.value === selectedColor)['aria-pressed'], 'true');
             pen.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 3, preventDefault: () => {}});
             pen.finishStroke();
             const mark = pen.store.marks[pen.store.marks.length - 1];
@@ -165,6 +173,12 @@ module.exports = async function () {
     }
     assert.strictEqual(pen.store.marks[0].color, '#20252b', 'Changing the picker does not recolor existing marks');
     assert.strictEqual(pen.store.marks[1].color, '#ffe066', 'Existing highlights retain their original color');
+    pen.selectColor('invalid');
+    assert.strictEqual(sharedColor.value, '#1565d8', 'Invalid color selections do not change the writing color');
+    pen.selectColor('#21AA55');
+    assert.strictEqual(sharedColor.value, '#21aa55', 'Custom colors use the same selection path');
+    assert.strictEqual(colorOptions.filter(option => !option.check.hidden).length, 0, 'A custom color does not leave a preset incorrectly checked');
+    pen.selectColor('#1565d8');
 
     const widthInput = {value: '0.004'};
     const widthPreview = {setAttribute(name, value) { this[name] = value; }};
@@ -179,7 +193,7 @@ module.exports = async function () {
     }));
     pen.find = selector => ({'[data-color]': sharedColor, '[data-width]': widthInput,
         '[data-width-preview]': widthPreview, '.score-color-button .icon-palette': palette})[selector] || null;
-    pen.all = () => widthOptions;
+    pen.all = selector => selector === '[data-width-option]' ? widthOptions : colorOptions;
     for (const option of widthOptions) {
         pen.selectWidth(option.value);
         assert.strictEqual(widthInput.value, option.value);
@@ -204,7 +218,46 @@ module.exports = async function () {
     pen.finishStroke();
     assert.strictEqual(pen.store.marks[pen.store.marks.length - 1].width, .02, 'Pen thickness leaves highlighter width unchanged');
     assert.strictEqual(pen.store.marks[0].width, .004, 'Changing thickness does not alter saved pencil strokes');
-    assert.strictEqual(sharedColor.value, '#1959e9', 'Thickness selection retains the chosen color');
+    assert.strictEqual(sharedColor.value, '#1565d8', 'Thickness selection retains the chosen color');
+
+    const browserPreferences = new Map();
+    window.localStorage = {getItem: key => browserPreferences.get(key) || null, setItem: (key, value) => browserPreferences.set(key, value)};
+    pen.selectWidth('0.013');
+    assert.strictEqual(browserPreferences.get('pianolit.score.pen-width'), '0.013', 'Choosing a brush persists its width in this browser');
+    function openAnotherPiece() {
+        const input = {value: '0.004'};
+        const preview = {setAttribute(name, value) { this[name] = value; }};
+        const options = widthOptions.map(option => Object.assign({}, option, {
+            check: {hidden: option.value !== '0.004'}, 'aria-checked': String(option.value === '0.004')
+        }));
+        const reopened = new ConstructedEditor({
+            querySelector(selector) {
+                if (selector === '[data-width]') return input;
+                if (selector === '[data-width-preview]') return preview;
+                return {};
+            },
+            querySelectorAll: () => options,
+            getAttribute: () => '/another-piece/annotations'
+        }, {}, {});
+        return {reopened, input, preview, options};
+    }
+    const otherPiece = openAnotherPiece();
+    assert.strictEqual(otherPiece.input.value, '0.013', 'A new piece editor restores the saved brush');
+    assert.strictEqual(otherPiece.reopened.tool, 'read', 'Restoring brush preferences does not activate drawing automatically');
+    assert.strictEqual(otherPiece.options.find(option => option.value === '0.013').check.hidden, false);
+    assert.strictEqual(otherPiece.options.filter(option => !option.check.hidden).length, 1);
+    assert.strictEqual(otherPiece.preview['stroke-width'], '6', 'The restored brush updates the toolbar sample');
+    pen.selectWidth('invalid');
+    assert.strictEqual(browserPreferences.get('pianolit.score.pen-width'), '0.013', 'Invalid choices cannot replace the saved brush');
+    browserPreferences.set('pianolit.score.pen-width', '0.5');
+    assert.strictEqual(openAnotherPiece().input.value, '0.004', 'Unsupported stored widths retain the default');
+    browserPreferences.set('pianolit.score.pen-width', '0.00400');
+    assert.strictEqual(openAnotherPiece().input.value, '0.004', 'Stored widths are normalized to a supported preset');
+    window.localStorage = {getItem() { throw new Error('Storage blocked'); }, setItem() { throw new Error('Storage full'); }};
+    assert.strictEqual(openAnotherPiece().input.value, '0.004', 'Blocked storage does not prevent opening the editor');
+    pen.selectWidth('0.009');
+    assert.strictEqual(widthInput.value, '0.009', 'Brush selection still works when preferences cannot be saved');
+    delete window.localStorage;
 
     let newText;
     const textTool = Object.create(Editor.prototype);
@@ -219,6 +272,7 @@ module.exports = async function () {
         target: {closest: () => null}, preventDefault: () => {}});
     assert.strictEqual(newText.size, .02, 'Text defaults to Small without a size selector');
     textTool.find = selector => selector === '[data-color]' ? sharedColor : palette;
+    textTool.all = () => colorOptions;
     textTool.controls = () => {}; textTool.finishTextDrag = () => {}; textTool.finishStroke = () => {};
     textTool.tool = 'highlight';
     textTool.selectTool('text');

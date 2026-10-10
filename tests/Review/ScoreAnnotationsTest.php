@@ -228,6 +228,9 @@ class ScoreAnnotationsTest extends ReviewTestCase
         $this->assertSame(7, $xpath->query('//*[@data-width-check]')->length);
         $this->assertSame(1, $xpath->query('//*[@data-width-check and not(@hidden)]')->length);
         $this->assertSame(0, $xpath->query('//*[@id="score-pen-width"]//*[@data-lucide-name="chevron-down"]')->length);
+        $this->assertSame(8, $xpath->query('//*[@data-color-option]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-color-check and not(@hidden)]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-color-option="#2eaf4a"]')->length);
         if ($directory = getenv('SCORE_EDITOR_PREVIEW_DIR')) {
             for ($id = 1; $id <= 2; $id++) {
                 $preview = preg_replace('/data-pdf-url="[^"]*"/', 'data-pdf-url="/score.pdf"', $html);

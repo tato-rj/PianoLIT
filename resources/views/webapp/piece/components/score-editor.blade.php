@@ -7,10 +7,17 @@
             <button type="button" data-tool="text" data-edit-control class="score-icon-button" aria-label="Text" title="Text" aria-pressed="false" disabled>@icon('text-cursor', ['mr' => 0])</button>
             <button type="button" data-tool="erase" data-edit-control class="score-icon-button" aria-label="Eraser" title="Eraser" aria-pressed="false" disabled>@icon('eraser', ['mr' => 0])</button>
             <button type="button" data-tool="highlight" data-edit-control class="score-icon-button" aria-label="Highlighter" title="Highlighter" aria-pressed="false" disabled>@icon('highlighter', ['mr' => 0])</button>
-            <label class="score-color-button score-icon-button mb-0" title="Annotation color">
-                @icon('palette', ['mr' => 0])
-                <input data-color data-edit-control type="color" value="#20252b" class="score-color-input" aria-label="Annotation color" disabled>
-            </label>
+            <div class="dropdown score-color-control">
+                <button type="button" id="score-color-picker" data-edit-control class="score-color-button score-icon-button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-label="Annotation color" aria-haspopup="true" aria-expanded="false" title="Annotation color" disabled>@icon('palette', ['mr' => 0])</button>
+                <div class="dropdown-menu score-color-menu" aria-labelledby="score-color-picker">
+                    <div class="score-color-swatches" role="group" aria-label="Writing colors">
+                        @foreach(['#20252b' => 'Black', '#e53935' => 'Red', '#f57c00' => 'Orange', '#fbc02d' => 'Yellow', '#2eaf4a' => 'Green', '#1565d8' => 'Blue', '#8e44ad' => 'Purple', '#e14d9b' => 'Pink'] as $color => $label)
+                            <button type="button" data-color-option="{{ $color }}" data-edit-control class="score-color-swatch" style="background-color: {{ $color }}; color: {{ $label === 'Yellow' ? '#172033' : '#fff' }}" aria-label="{{ $label }}" aria-pressed="{{ $color === '#20252b' ? 'true' : 'false' }}" disabled><span data-color-check @if($color !== '#20252b') hidden @endif>@icon('check', ['mr' => 0])</span></button>
+                        @endforeach
+                    </div>
+                    <label class="score-custom-color mb-0">Custom color<input data-color data-edit-control type="color" value="#20252b" class="score-color-input" aria-label="Custom annotation color" disabled></label>
+                </div>
+            </div>
             <div class="dropdown score-width-control">
                 <input type="hidden" data-width value="0.004">
                 <button type="button" id="score-pen-width" data-edit-control class="score-icon-button score-width-toggle" data-bs-toggle="dropdown" aria-label="Pen thickness" aria-haspopup="true" aria-expanded="false" title="Pen thickness" disabled>
