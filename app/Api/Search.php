@@ -108,6 +108,9 @@ class Search
     {
         if (! $this->query) return collect();
 
+        $controls = new \App\Services\WebApp\SearchOptions($this->request);
+        if ($controls->active()) return $controls->results($this->query, $this->request->filters ?? []);
+
         $guest = ! auth('web')->check();
         if ($guest && $this->lateFilter) {
             // Filters run after Scout hydration. Scan in relevance order until the

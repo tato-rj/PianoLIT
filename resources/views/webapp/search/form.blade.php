@@ -8,11 +8,11 @@
     <div data-erase="search" class="input-erase position-absolute cursor-pointer p-1 px-2 text-dark" style="display: none;">&times;</div>
     @endif
 
-    @icon('sliders-horizontal', ['mr' => 0])
-    
-{{--     @unless(!empty($directorySearch))
-    @icon('brand-algolia', ['color' => 'grey', 'size' => 'lg', 'title' => 'Powered by Algolia'])
-    @endunless --}}
+    @empty($directorySearch)
+    <button type="button" class="btn-raw search-controls-toggle" data-bs-toggle="offcanvas" data-bs-target="#search-controls" aria-controls="search-controls" aria-label="Sort and filter pieces">
+      @icon('sliders-horizontal', ['mr' => 0])
+    </button>
+    @endempty
   </div>
 </form>
 
@@ -20,3 +20,11 @@
 	<p class="mb-1 text-muted"><small>Most recent searches...</small></p>
 	<div class="d-flex flex-wrap justify-content-center"></div>
 </div>
+
+@empty($directorySearch)
+    @once
+        @push('page-navigation')
+            @include('webapp.search.controls')
+        @endpush
+    @endonce
+@endempty

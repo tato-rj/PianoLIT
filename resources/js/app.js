@@ -1,6 +1,7 @@
 require('./components/icons');
 require('./bootstrap/app');
 require('./components/offcanvas');
+require('./components/search-controls')(window);
 require('dragscroll/dragscroll.js');
 require('./vendor/clamp');
 require('./vendor/jquery.knob.min');

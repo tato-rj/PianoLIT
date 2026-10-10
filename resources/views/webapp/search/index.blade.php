@@ -7,7 +7,7 @@
 <script type="text/javascript">
 window.page = 1;
 window.loading = window.done = false;
-window.filters = [];
+window.filters = @json(request('filters', []));
 window.searchRequestId = 0;
 </script>
 @endpush
@@ -18,8 +18,6 @@ window.searchRequestId = 0;
 <section class="mb-2 mt-4">
 	@include('webapp.search.form')
 </section>
-
-@include('webapp.components.sorting', ['disabled' => true])
 
 <section id="pieces-list">
 </section>
@@ -76,27 +74,10 @@ function loadResults() {
             if (requestId !== window.searchRequestId) return;
             window.loading = false;
             $('#spinner').hide();
-            $('#options button, .options-columns input').enable();
         });
 }
 </script>
 
-<script type="text/javascript">
-$('#server-filter input[type="checkbox"]').change(function() {
-	let filters = [];
-
-	$('#server-filter .options-columns > div').each(function(index) {
-		let arr = $(this).find('input[type="checkbox"]:checked').attrToArray('value');
-
-		if (arr.length)
-			filters.push(arr);
-	});
-
-	reset();
-
-    applyFilters(filters);
-});
-</script>
 <script type="text/javascript">
 function makeUrl() {
 	const url = new URL(window.location.href);
@@ -107,7 +88,6 @@ function makeUrl() {
 
 function reset() {
 	$('#spinner').show();
-	$('#options button, .options-columns input').disable();
 	$('#pieces-list').empty();
 	$('#empty').hide();
 }

@@ -260,6 +260,8 @@ class ExploreCatalogue
         foreach ($params['filters'] ?? [] as $names) $query->whereHas('tags', function ($q) use ($names) {
             $q->whereIn('name', json_decode($names, true));
         });
+        $controls = new SearchOptions($request);
+        $controls->sortQuery($controls->filterQuery($query));
         $pieces = auth('web')->guest() ? $query->limit(3)->get() : $query->simplePaginate(10)->getCollection();
         return PieceCards::load($pieces);
     }

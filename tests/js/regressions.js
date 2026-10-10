@@ -46,6 +46,7 @@ async function main() {
     require('./history-back')();
     await require('./score-editor')();
     await require('./webapp-search')();
+    require('./search-controls')();
     await require('./piece-access')();
     await require('./video-moments')();
     require('./video-moments-admin')();

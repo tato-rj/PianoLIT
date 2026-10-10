@@ -1,0 +1,76 @@
+#search-form .input-icon {
+    > i:first-of-type { right: auto; }
+    .search-controls-toggle {
+        position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+        display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+        border-radius: var(--radius-button); color: var(--field-muted);
+        i { position: static; transform: none; }
+        &:hover, &.is-active { color: var(--color-primary); background: var(--color-primary-soft); }
+    }
+}
+// Match Save to's constrained content width, with enough height for the filters.
+#search-controls.offcanvas-bottom {
+    max-height: calc(100vh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+    box-shadow: 0 -12px 40px rgba(20, 29, 44, .12);
+    .offcanvas-body { width: 100%; max-width: 1040px; margin: 0 auto; padding: 0; display: flex; overflow: hidden; }
+}
+.search-controls {
+    display: flex; flex-direction: column; width: 100%; max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px);
+    .save-to-panel__header { border-bottom: 0; flex-shrink: 0; }
+    [data-search-reset] { font-size: 14px; padding: 3px 0; }
+    &__content { padding: 0 20px 20px; overflow-y: auto; min-height: 0; }
+    legend, h3 { float: none; width: auto; margin: 0 0 12px; font-family: Poppins, sans-serif; font-size: 14px; font-weight: 600; }
+    h3 { font-size: 16px; }
+    &__sort { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); }
+    &__sort-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    &__sort-option {
+        display: flex; align-items: center; gap: 12px; padding: 12px; margin: 0;
+        border: 1px solid var(--color-border); border-radius: var(--radius-button); cursor: pointer;
+        &:has(input:checked) { border-color: var(--color-primary); background: var(--color-primary-soft); }
+        input { flex-shrink: 0; margin: 0; }
+        strong { display: block; font-size: 13px; font-weight: 600; }
+        small { display: block; margin-top: 3px; font-size: 12px; color: var(--field-muted); }
+    }
+    &__facets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;
+        fieldset { min-width: 0; }
+        .pill-filters { gap: 6px; button { padding: 7px 12px; } }
+    }
+    &__media { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; margin-top: 24px;
+        label { margin: 0; font-size: 13px; color: var(--field-muted); }
+    }
+    &__footer { flex-shrink: 0; display: flex; justify-content: space-between; gap: 12px;
+        padding: 16px 20px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); background: white;
+        .btn { font-size: 14px; }
+    }
+}
+.search-length {
+    position: relative; height: 32px; margin: 0 10px;
+    &__track { position: absolute; top: 14px; height: 4px; width: 100%; border-radius: 4px; background: var(--color-border);
+        span { position: absolute; left: var(--range-start); right: calc(100% - var(--range-end)); height: 100%; background: var(--color-primary); }
+    }
+    input { position: absolute; inset: 0; width: 100%; height: 32px; padding: 0; margin: 0; appearance: none; -webkit-appearance: none; background: transparent; pointer-events: none;
+        &::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 3px solid var(--color-primary); border-radius: 50%; background: white; pointer-events: auto; cursor: grab; }
+        &::-moz-range-thumb { width: 12px; height: 12px; border: 3px solid var(--color-primary); border-radius: 50%; background: white; pointer-events: auto; cursor: grab; }
+        &::-moz-range-track { background: transparent; }
+        &:focus-visible { outline: none;
+            &::-webkit-slider-thumb { outline: 2px solid var(--field-muted); outline-offset: 3px; }
+            &::-moz-range-thumb { outline: 2px solid var(--field-muted); outline-offset: 3px; }
+        }
+    }
+    &__labels { display: flex; justify-content: space-between; color: var(--field-muted); font-size: 12px; }
+    &__selection { margin: 5px 0 10px; color: var(--field-muted); font-size: 12px; }
+}
+@media (min-width: 992px) {
+    .search-controls__facets { grid-template-columns: 1.15fr 1fr 1fr .9fr .9fr; gap: 16px;
+        fieldset + fieldset { padding-left: 16px; border-left: 1px solid var(--color-border); }
+        .pill-filters button { padding: 7px 10px; }
+    }
+}
+@media (max-width: 575px) {
+    .search-controls__content { padding: 0 16px 16px; }
+    .search-controls__sort-options, .search-controls__facets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .search-controls__sort-option { padding: 10px; gap: 8px; }
+    .search-controls__facets fieldset[data-search-facet=length] { grid-column: 1 / -1; }
+    .search-controls__footer { padding-left: 16px; padding-right: 16px; }
+}
