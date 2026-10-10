@@ -162,11 +162,11 @@
     .composer-globe-label-country { font-size: 11px; font-weight: 400; letter-spacing: 0; }
     .composer-globe-portraits {
         display: flex; flex-direction: column; align-items: center; gap: 12px;
-        pointer-events: none; text-align: center;
+        pointer-events: auto; text-align: center;
     }
-    .composer-globe-portrait-row { display: flex; align-items: center; gap: 12px; padding: 10px 8px; }
+    .composer-globe-portrait-row { display: flex; align-items: center; gap: 12px; padding: 0px 8px; }
     .composer-globe-polaroid {
-        display: block; width: 132px; padding: 8px 8px 10px; border: 1px solid #f0ece1;
+        display: block; width: 100px; padding: 4px 4px 6px; border: 1px solid #f0ece1;
         background: #fffdf7; color: #203441 !important; text-decoration: none !important;
         box-shadow: 0 14px 28px rgba(0, 0, 0, .35), 0 2px 5px rgba(0, 0, 0, .18);
         transform: rotate(-5deg); transition: transform .18s ease, box-shadow .18s ease;
@@ -177,14 +177,14 @@
         &:hover, &:focus-visible { transform: translateY(-12px) rotate(0); box-shadow: 0 20px 36px rgba(0, 0, 0, .42); }
     }
     .composer-globe-polaroid-photo {
-        position: relative; display: grid; place-items: center; height: 126px; overflow: hidden;
+        position: relative; display: grid; place-items: center; height: 100px; overflow: hidden;
         background: linear-gradient(145deg, #e8e1d1, #c4d5d5); color: #49606a;
         img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
     }
     .composer-globe-polaroid-initials { font-family: Georgia, serif; font-size: 32px; letter-spacing: .03em; }
     .composer-globe-polaroid-name {
         display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
-        min-height: 30px; margin-top: 9px; font-size: 12px; font-weight: 600; line-height: 15px; overflow-wrap: anywhere;
+        min-height: 30px; margin-top: 6px; font-size: 12px; font-weight: 600; line-height: 15px; overflow-wrap: anywhere;
     }
     .composer-globe-polaroid-count { display: block; margin-top: 4px; color: #68747a; font-size: 10px; line-height: 1.2; font-variant-numeric: tabular-nums; }
     .composer-globe-portrait-nav {
@@ -201,7 +201,12 @@
     .composer-globe-portrait-pin {
         position: relative; padding: 5px 10px; border-radius: 14px; background: rgba(7, 23, 37, .8);
         color: #f1d69e; font-size: 11px; letter-spacing: .04em;
-        &::after { content: ''; display: block; width: 5px; height: 5px; border-radius: 50%; background: #e7c88b; margin: 6px auto 0; }
+    }
+    .composer-globe-portrait-close {
+        display: block; min-width: 44px; min-height: 24px; margin: 4px auto 0; padding: 2px 8px;
+        border: 1px solid rgba(231, 200, 139, .35); border-radius: 6px; background: transparent;
+        color: #f1d69e; font-size: 10px; line-height: 1.2; cursor: pointer; pointer-events: auto;
+        &:hover { background: #264b60; border-color: #e7c88b; }
     }
     .composer-globe-portrait-status {
         font-size: 12px; color: #afc6d4; margin: 0 0 16px;
@@ -265,7 +270,7 @@
         .composer-globe-stage { height: 42vh; height: 42dvh; min-height: 290px; }
         .composer-globe-mode { top: 16px; left: 18px; font-size: 10px; }
         .composer-globe-legend { top: 39px; left: 18px; font-size: 9px; }
-        .composer-globe-help { left: 18px; right: 72px; bottom: 26px; font-size: 10px; }
+        .composer-globe-help { z-index: 0; left: 18px; right: 72px; bottom: 26px; font-size: 10px; }
         .composer-globe-tools { right: 12px; bottom: 28px; button { width: 38px; height: 38px; } }
         .composer-globe-panel { padding: 22px; overflow: visible; border-left: 0; border-top: 1px solid #263f52; }
         .composer-globe-panel .form-select { margin-bottom: 24px; }

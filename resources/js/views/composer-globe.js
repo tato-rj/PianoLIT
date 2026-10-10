@@ -66,10 +66,25 @@
         var home = element('home'), closer = element('closer');
         var globe = null, model = null, selection = null, hovered = null;
         var hoveredCountry = null, tooltipCountry = null, tooltipTitle = null, tooltipDetail = null;
-        var portraitCache = {}, renderPortraitPage = null;
+        var portraitCache = {}, renderPortraitPage = null, hoveredPortrait = null;
+        var stopWaitingForRender = null;
         var countryMode = false, open = false, pending = null, libraryPromise = null;
         var reducedMotion = win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var duration = reducedMotion ? 0 : 650;
+        var initialPlace = null;
+        try {
+            var initialUrl = new URL(win.location.href);
+            if (initialUrl.searchParams.get('modal') === 'composer-globe-modal') initialPlace = initialUrl.searchParams.get('globe-place');
+        } catch (reason) { /* URL state is optional when history is unavailable. */ }
+
+        function rememberPlace() {
+            try {
+                var url = new URL(win.location.href);
+                if (open && selection && selection.kind !== 'World') url.searchParams.set('globe-place', selection.key);
+                else url.searchParams.delete('globe-place');
+                if (url.href !== win.location.href) win.history.replaceState(win.history.state, '', url.href);
+            } catch (reason) { /* Exploration still works without URL updates. */ }
+        }
 
         function loadLibrary() {
             if (win.Globe) return Promise.resolve();
@@ -117,6 +132,7 @@
         function updateDetails(place) {
             if (!selection || selection.key !== place.key) renderPortraitPage = null;
             selection = place;
+            if (open) rememberPlace();
             picker.value = place.key;
             element('kind').textContent = place.kind === 'World' ? 'OUR LIBRARY, WORLDWIDE' : place.kind === 'Country' ? (place.continent || 'Country') : 'CONTINENT';
             element('title').textContent = place.name;
@@ -163,6 +179,16 @@
             element('portrait-message').textContent = failed ? 'Composer portraits could not load.' : 'Loading composer portraits…';
             element('portrait-retry').hidden = !failed;
         }
+        function setPortraitHover(group) {
+            if (hoveredPortrait === group) return;
+            hoveredPortrait = group;
+            if (globe) {
+                // HTML overlays sit above the canvas, but globe.gl raycasts beneath
+                // them independently. Disabling tracking also clears its open tooltip.
+                globe.enablePointerInteraction(!group);
+                refreshColors();
+            }
+        }
         function portraitElement(marker) {
             var entry = portraitCache[marker.countryKey];
             var group = doc.createElement('div'); group.className = 'composer-globe-portraits';
@@ -176,7 +202,20 @@
             range.setAttribute('aria-live', 'polite'); range.setAttribute('aria-atomic', 'true');
             navigation.appendChild(previous); navigation.appendChild(range); navigation.appendChild(next);
             var pin = doc.createElement('span'); pin.className = 'composer-globe-portrait-pin'; pin.textContent = marker.name;
+            var close = doc.createElement('button'); close.type = 'button'; close.className = 'composer-globe-portrait-close';
+            close.textContent = 'Close'; close.setAttribute('aria-label', 'Close ' + marker.name + ' selection');
+            close.addEventListener('click', function (event) {
+                event.stopPropagation();
+                hovered = null; hoveredCountry = null;
+                updateDetails(model.world);
+                canvas.focus({preventScroll: true});
+            });
+            pin.appendChild(close);
             group.appendChild(row); group.appendChild(navigation); group.appendChild(pin);
+            group.addEventListener('pointerenter', function () { setPortraitHover(group); });
+            ['pointerleave', 'pointercancel'].forEach(function (type) {
+                group.addEventListener(type, function () { if (hoveredPortrait === group) setPortraitHover(null); });
+            });
             ['pointerdown', 'mousedown', 'touchstart', 'click', 'dblclick'].forEach(function (type) {
                 group.addEventListener(type, function (event) { event.stopPropagation(); });
             });
@@ -259,7 +298,7 @@
             if (other.children.length) picker.appendChild(other);
             picker.disabled = false;
             element('unmapped').hidden = !model.unmapped.composers;
-            updateDetails(model.world);
+            updateDetails(Object.prototype.hasOwnProperty.call(model.places, initialPlace) ? model.places[initialPlace] : model.world);
         }
         function selected(place, target) {
             return target && (target.key === place.key || (!countryMode && target.kind === 'Continent' && target.name === place.continent));
@@ -269,7 +308,7 @@
         }
         function capColor(place) {
             if (!inScope(place)) return '#264b60';
-            if (selected(place, hovered)) return '#e1bd77';
+            if (!hoveredPortrait && selected(place, hovered)) return '#e1bd77';
             if (selected(place, selection)) return '#c8a76a';
             if (countryMode && !place.composers) return '#264b60';
             return colors[place.continent] || '#457b88';
@@ -284,7 +323,7 @@
         }
         function refreshColors() {
             globe.polygonCapColor(capColor).polygonStrokeColor(strokeColor).polygonAltitude(function (place) {
-                return inScope(place) && (selected(place, hovered) || selected(place, selection)) ? 0.007 : 0.005;
+                return inScope(place) && ((!hoveredPortrait && selected(place, hovered)) || selected(place, selection)) ? 0.007 : 0.005;
             });
         }
         function tooltip(place) {
@@ -321,7 +360,10 @@
             }
             // Reuse the same objects so CSS2D labels need not be rebuilt on rotation.
             var key = labels.map(function (place) { return place.key; }).join('|');
-            if (key !== updateLabels.key) { updateLabels.key = key; globe.htmlElementsData(labels); }
+            if (key !== updateLabels.key) {
+                setPortraitHover(null);
+                updateLabels.key = key; globe.htmlElementsData(labels);
+            }
         }
         function setMode(next) {
             if (countryMode === next) return;
@@ -360,6 +402,7 @@
             }
         }
         function createGlobe() {
+            loading.hidden = false;
             try {
                 globe = new win.Globe(canvas, {animateIn: false, rendererConfig: {antialias: true, alpha: true}})
                     .width(stage.clientWidth).height(stage.clientHeight).backgroundColor('rgba(0,0,0,0)')
@@ -367,7 +410,9 @@
                     .polygonsData(model.countries.filter(function (country) { return country.geometry; }))
                     .polygonCapColor(capColor).polygonSideColor(function () { return '#173c50'; }).polygonStrokeColor(strokeColor)
                     .polygonAltitude(0.005).polygonCapCurvatureResolution(4).polygonsTransitionDuration(reducedMotion ? 0 : 180)
-                    .polygonLabel(tooltip).onPolygonHover(hover).onPolygonClick(function (place) { choose(interactivePlace(place)); })
+                    .polygonLabel(tooltip).onPolygonHover(hover).onPolygonClick(function (place) {
+                        if (!hoveredPortrait) choose(interactivePlace(place));
+                    })
                     .htmlAltitude(0.023).htmlTransitionDuration(0).htmlElement(function (place) {
                         if (place.kind === 'Portraits') return portraitElement(place);
                         var label = doc.createElement('button'); label.type = 'button';
@@ -387,11 +432,36 @@
                 globe.renderer().domElement.addEventListener('webglcontextlost', function (event) {
                     event.preventDefault(); disposeGlobe(); showRenderError();
                 });
-                controlsEnabled(true); updateLabels.key = null; reset(); updateLabels();
+                waitForFirstRender();
+                updateLabels.key = null; choose(selection || model.world); updateLabels();
                 if (doc.hidden) globe.pauseAnimation();
             } catch (reason) { disposeGlobe(); showRenderError(); }
         }
+        function waitForFirstRender() {
+            var scene = globe.scene(), renderer = globe.renderer(), previous = scene.onAfterRender;
+            var ready = false, cancelled = false, frame = null;
+            globe.onGlobeReady(function () { ready = true; });
+            stopWaitingForRender = function () {
+                cancelled = true;
+                scene.onAfterRender = previous;
+                if (frame !== null) win.cancelAnimationFrame(frame);
+                stopWaitingForRender = null;
+            };
+            scene.onAfterRender = function () {
+                if (previous) previous.apply(this, arguments);
+                if (!ready || cancelled || !open || doc.hidden || frame !== null || !renderer.info.render.triangles) return;
+                // Readiness precedes drawing. Keep the overlay through the completed
+                // WebGL frame, then let the browser present it before revealing it.
+                frame = win.requestAnimationFrame(function () {
+                    frame = null;
+                    if (cancelled || !open || doc.hidden) return;
+                    loading.hidden = true; controlsEnabled(true);
+                    stopWaitingForRender();
+                });
+            };
+        }
         function disposeGlobe() {
+            if (stopWaitingForRender) stopWaitingForRender();
             if (globe) {
                 globe.pauseAnimation();
                 globe._destructor();
@@ -399,7 +469,7 @@
             }
             canvas.textContent = ''; controlsEnabled(false);
             hovered = null; hoveredCountry = null; tooltipCountry = null; tooltipTitle = null; tooltipDetail = null;
-            renderPortraitPage = null;
+            renderPortraitPage = null; hoveredPortrait = null;
         }
         function showRenderError() {
             loading.hidden = true; error.hidden = false;
@@ -414,7 +484,7 @@
             pending = Promise.all([loadLibrary(), fetchJson(modal.getAttribute('data-globe-map')), fetchJson(modal.getAttribute('data-globe-catalogue'))])
                 .then(function (results) {
                     model = buildModel(results[1], results[2]); populatePicker();
-                    loading.hidden = true; pending = null;
+                    pending = null;
                     if (open) createGlobe();
                 }).catch(function () {
                     loading.hidden = true; pending = null; error.hidden = false;
@@ -422,8 +492,9 @@
                 });
         }
         controlsEnabled(false);
-        modal.addEventListener('shown.bs.modal', function () { open = true; start(); });
-        modal.addEventListener('hide.bs.modal', function () { open = false; if (globe) globe.pauseAnimation(); });
+        modal.addEventListener('shown.bs.modal', function () { open = true; start(); if (selection) rememberPlace(); });
+        modal.addEventListener('hide.bs.modal', function () { open = false; setPortraitHover(null); if (globe) globe.pauseAnimation(); });
+        modal.addEventListener('hidden.bs.modal', rememberPlace);
         doc.addEventListener('visibilitychange', function () {
             if (globe) { if (doc.hidden || !open) globe.pauseAnimation(); else globe.resumeAnimation(); }
         });

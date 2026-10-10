@@ -45,6 +45,7 @@ async function main() {
     await require('./favorites')();
     require('./build-icons')();
     require('./history-back')();
+    require('./fullscreen-modals')();
     await require('./score-editor')();
     await require('./webapp-search')();
     require('./search-controls')();

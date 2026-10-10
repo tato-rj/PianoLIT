@@ -30,12 +30,13 @@ module.exports = async function () {
         const element = {events: {}, children: [], hidden: false, disabled: false, attrs: {},
             clientWidth: 900, clientHeight: 600,
             addEventListener(key, fn) { this.events[key] = fn; },
+            focus(options) { this.focusOptions = options; },
             setAttribute(key, value) { this.attrs[key] = value; }, getAttribute(key) { return this.attrs[key]; },
             removeAttribute(key) { delete this.attrs[key]; }, appendChild(child) { this.children.push(child); }};
         Object.defineProperty(element, 'textContent', {get() { return text; }, set(value) { text = value; this.children = []; }});
         return element;
     }
-    function harness(fetch) {
+    function harness(fetch, href = 'https://my.pianolit.com/composers') {
         const elements = {}, modal = node(), doc = node(), stage = node();
         modal.attrs = {'data-globe-map': '/map', 'data-globe-catalogue': '/catalogue'};
         modal.querySelector = selector => elements[selector] || (elements[selector] = node());
@@ -43,12 +44,15 @@ module.exports = async function () {
         doc.getElementById = () => modal; doc.createElement = node;
         let instances = 0, paused = 0, resumed = 0, destroyed = 0;
         const calls = {}, callCounts = {}, renderCanvas = node(), pov = {altitude: 2.05, lat: 23, lng: 15};
-        const controls = {};
+        const renderer = {setPixelRatio() {}, domElement: renderCanvas, info: {render: {triangles: 100}}};
+        let rendered = 0, frameId = 0;
+        const frames = new Map(), controls = {}, scene = {onAfterRender() { rendered++; }};
         const globe = new Proxy({}, {get(target, key) {
             if (key === 'pointOfView') return value => { if (value) { Object.assign(pov, value); if (calls.onZoom) calls.onZoom(pov); return globe; } return pov; };
             if (key === 'controls') return () => controls;
+            if (key === 'scene') return () => scene;
             if (key === 'getGlobeRadius') return () => 100;
-            if (key === 'renderer') return () => ({setPixelRatio() {}, domElement: renderCanvas});
+            if (key === 'renderer') return () => renderer;
             if (key === 'globeMaterial') return () => ({color: {set() {}}, emissive: {set() {}}});
             if (key === 'pauseAnimation') return () => { paused++; };
             if (key === 'resumeAnimation') return () => { resumed++; };
@@ -57,9 +61,15 @@ module.exports = async function () {
         }});
         let resize;
         const win = {fetch, Globe: function () { instances++; return globe; }, matchMedia: () => ({matches: true}),
-            setTimeout, clearTimeout, addEventListener() {}, ResizeObserver: class {constructor(callback) { resize = callback; } observe() {}}};
+            setTimeout, clearTimeout, requestAnimationFrame(callback) { frames.set(++frameId, callback); return frameId; },
+            cancelAnimationFrame(id) { frames.delete(id); },
+            addEventListener() {}, ResizeObserver: class {constructor(callback) { resize = callback; } observe() {}}};
+        win.location = {href}; win.history = {state: {pianolitCanGoBack: true},
+            replaceState(state, title, url) { assert.strictEqual(state, this.state); win.location.href = url; }};
         api.initialize(doc, win);
-        return {elements, modal, doc, canvas, calls, callCounts, pov, renderCanvas, controls, resize() { resize(); },
+        return {elements, modal, doc, win, canvas, calls, callCounts, pov, renderCanvas, renderer, controls, scene, frames,
+            paint() { const callbacks = Array.from(frames.values()); frames.clear(); callbacks.forEach(callback => callback()); },
+            get rendered() { return rendered; }, resize() { resize(); },
             get instances() { return instances; }, get paused() { return paused; }, get resumed() { return resumed; }, get destroyed() { return destroyed; }};
     }
     const requests = [];
@@ -76,6 +86,23 @@ module.exports = async function () {
     assert.strictEqual(h.instances, 0, 'Closing while data loads never starts a hidden renderer');
     h.modal.events['shown.bs.modal']();
     assert.strictEqual(h.instances, 1);
+    assert.strictEqual(get('loading').hidden, false, 'Loaded data and a constructed globe must not dismiss the loader');
+    h.scene.onAfterRender(); h.paint();
+    assert.strictEqual(get('loading').hidden, false, 'An empty frame before globe readiness keeps the loader');
+    h.calls.onGlobeReady(); h.paint();
+    assert.strictEqual(get('loading').hidden, false, 'Readiness alone does not mean the globe has rendered');
+    h.renderer.info.render.triangles = 0; h.scene.onAfterRender(); h.paint();
+    assert.strictEqual(get('loading').hidden, false, 'Skip the renderer’s empty startup frame, even after globe readiness');
+    h.renderer.info.render.triangles = 100;
+    h.scene.onAfterRender();
+    assert.strictEqual(get('loading').hidden, false, 'Keep the loader through the first completed WebGL frame');
+    assert.strictEqual(get('zoom-in').disabled, true);
+    h.paint();
+    assert.strictEqual(get('loading').hidden, true, 'Reveal the globe only after its first ready frame can be presented');
+    assert.strictEqual(get('zoom-in').disabled, false);
+    h.scene.onAfterRender();
+    assert.strictEqual(h.frames.size, 0, 'The readiness hook removes itself instead of running throughout exploration');
+    assert.strictEqual(h.rendered, 4, 'Preserve the scene’s original render callback');
     assert.strictEqual(get('composers').textContent, '5');
     assert.strictEqual(get('unmapped').hidden, false);
     const shapes = h.calls.polygonsData;
@@ -130,6 +157,29 @@ module.exports = async function () {
     h.renderCanvas.events.webglcontextlost({preventDefault() {}});
     assert.strictEqual(h.destroyed, 1); assert.strictEqual(get('error').hidden, false);
     assert.strictEqual(get('place').disabled, false, 'Place picker remains usable without WebGL');
+
+    for (const [key, title, altitude] of [['country:DE', 'Germany', 0.65], ['continent:Asia', 'Asia', 1.95],
+        ['recorded:3', '<Unmapped>', 2.05], ['__proto__', 'A world of music', 2.05], ['bad:place', 'A world of music', 2.05]]) {
+        const restored = harness(url => Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? map : catalogue)}),
+            'https://my.pianolit.com/composers?source=saved&modal=composer-globe-modal&globe-place=' + encodeURIComponent(key) + '#details');
+        assert.strictEqual(restored.instances, 0, 'A place URL alone does not initialize the globe');
+        restored.modal.events['shown.bs.modal'](); await settle();
+        assert.strictEqual(restored.elements['[data-globe-title]'].textContent, title);
+        assert.strictEqual(restored.pov.altitude, altitude);
+        let params = new URL(restored.win.location.href).searchParams;
+        assert.strictEqual(params.get('globe-place'), title === 'A world of music' ? null : key);
+        restored.modal.events['hide.bs.modal'](); restored.modal.events['hidden.bs.modal']();
+        assert.strictEqual(new URL(restored.win.location.href).searchParams.has('globe-place'), false);
+        restored.modal.events['shown.bs.modal']();
+        assert.strictEqual(new URL(restored.win.location.href).searchParams.get('globe-place'), title === 'A world of music' ? null : key);
+        restored.elements['[data-globe-home]'].events.click();
+        params = new URL(restored.win.location.href).searchParams;
+        assert.strictEqual(params.has('globe-place'), false, 'World reset clears the saved country');
+        assert.strictEqual(params.get('source'), 'saved');
+        assert.strictEqual(params.get('modal'), 'composer-globe-modal');
+        assert.strictEqual(new URL(restored.win.location.href).hash, '#details');
+        assert.strictEqual(restored.callCounts.polygonsData, 1, 'Restoring a selection keeps one persistent geometry layer');
+    }
 
     const scopeMap = JSON.parse(JSON.stringify(map));
     scopeMap.features.push({properties: {code: 'AM', name: 'Armenia', continent: 'Asia', lat: 40, lng: 45}, geometry: map.features[0].geometry});
@@ -211,6 +261,22 @@ module.exports = async function () {
     assert.strictEqual(portraitRequests.length, 3, 'Previously selected countries reuse cached portrait data');
     const marker = portraits.calls.htmlElementsData[0];
     const deck = portraits.calls.htmlElement(marker), row = deck.children[0], pager = deck.children[1];
+    const portraitGermany = portraits.calls.polygonsData.find(place => place.code === 'DE');
+    const portraitFrance = portraits.calls.polygonsData.find(place => place.code === 'FR');
+    portraits.calls.onPolygonHover(portraitFrance);
+    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#e1bd77');
+    deck.events.pointerenter();
+    assert.strictEqual(portraits.calls.enablePointerInteraction, false, 'The entire portrait group disables underlying globe tracking and tooltips');
+    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#264b60', 'Entering portraits removes the underlying hover highlight');
+    assert.strictEqual(portraits.calls.polygonCapColor(portraitGermany), '#c8a76a', 'The selected country stays highlighted');
+    portraits.calls.onPolygonClick(portraitFrance);
+    assert.strictEqual(portraitGet('place').value, 'country:DE', 'A pending map click cannot change selection beneath the overlay');
+    deck.events.pointerleave();
+    assert.strictEqual(portraits.calls.enablePointerInteraction, true, 'Leaving the group restores map interaction');
+    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#e1bd77');
+    deck.events.pointerenter(); deck.events.pointercancel();
+    assert.strictEqual(portraits.calls.enablePointerInteraction, true, 'Cancelled touch input cannot leave map tracking disabled');
+    deck.events.pointerenter();
     assert.strictEqual(row.children.length, 3, 'Desktop renders at most three portraits at a time');
     assert.strictEqual(row.children[0].children[1].textContent, '<Clara & Robert>', 'Names remain text, never HTML');
     assert.strictEqual(row.children[0].children[2].textContent, '1 piece');
@@ -223,12 +289,36 @@ module.exports = async function () {
     assert.strictEqual(row.children.length, 1);
     assert.strictEqual(row.children[0].children[1].textContent, 'Fourth composer', 'Paging makes every composer reachable');
     assert.strictEqual(pager.children[2].disabled, true);
+    assert.strictEqual(portraits.calls.enablePointerInteraction, false, 'Paging within the group keeps map interaction disabled');
     portraits.canvas.parentNode.clientWidth = 390; portraits.resize();
     assert.strictEqual(row.children.length, 2, 'Small stages render at most two portraits at a time');
     assert.strictEqual(pager.children[1].textContent, '3–4 of 4');
     portraits.calls.onZoom({altitude: 2}); assert.strictEqual(hasPortraits(), false, 'Zooming out hides polaroids');
+    assert.strictEqual(portraits.calls.enablePointerInteraction, true, 'Removing the portrait group restores tracking without relying on pointerleave');
     portraits.calls.onZoom({altitude: 1}); assert.strictEqual(hasPortraits(), true);
     assert.strictEqual(portraits.calls.htmlElementsData[0], marker, 'Rotation and zoom reuse the selected-country marker');
+    const closeSelection = deck.children[2].children[0], selectedView = Object.assign({}, portraits.pov);
+    assert.strictEqual(closeSelection.textContent, 'Close');
+    assert.strictEqual(closeSelection.attrs['aria-label'], 'Close Germany selection');
+    deck.events.pointerenter();
+    let stopped = false;
+    closeSelection.events.click({stopPropagation() { stopped = true; }});
+    assert.strictEqual(stopped, true, 'Closing portraits does not also click the globe underneath');
+    assert.strictEqual(hasPortraits(), false, 'Closing the country hides its portraits');
+    assert.strictEqual(portraits.calls.enablePointerInteraction, true, 'Closing a hovered portrait group restores map interaction');
+    assert.strictEqual(portraitGet('place').value, 'world');
+    assert.strictEqual(new URL(portraits.win.location.href).searchParams.has('globe-place'), false, 'Refresh must not reselect a dismissed country');
+    assert.deepStrictEqual(portraits.pov, selectedView, 'Deselecting a country keeps the current rotation and zoom');
+    assert.deepStrictEqual(portraits.canvas.focusOptions, {preventScroll: true}, 'Keyboard focus returns to the globe');
+    pick('country:DE');
+    assert.strictEqual(hasPortraits(), true, 'The dismissed country can be selected again');
+    assert.strictEqual(portraitRequests.length, 3, 'Reselection reuses its cached portraits');
+    const reopenedDeck = portraits.calls.htmlElement(marker);
+    reopenedDeck.events.pointerenter(); deck.events.pointerleave();
+    assert.strictEqual(portraits.calls.enablePointerInteraction, false, 'A removed group cannot release a newer group’s hover guard');
+    portraits.modal.events['hide.bs.modal']();
+    assert.strictEqual(portraits.calls.enablePointerInteraction, true, 'Closing the modal releases the hover guard');
+    portraits.modal.events['shown.bs.modal']();
     pick('country:FR'); assert.strictEqual(hasPortraits(), false, 'Empty countries hide the previous country portraits');
     assert.strictEqual(portraitGet('portrait-status').hidden, true);
     pick('continent:Asia'); assert.strictEqual(hasPortraits(), false);
@@ -242,5 +332,24 @@ module.exports = async function () {
     assert.strictEqual(failure.elements['[data-globe-loading]'].hidden, true);
     failing = false; failure.elements['[data-globe-retry]'].events.click(); await settle();
     assert.strictEqual(failure.instances, 1, 'Failed requests can be retried without reloading the page');
+    const failureGet = name => failure.elements['[data-globe-' + name + ']'];
+    assert.strictEqual(failureGet('loading').hidden, false, 'Retry restores the loader during renderer preparation');
+    failure.calls.onGlobeReady(); failure.scene.onAfterRender();
+    failure.modal.events['hide.bs.modal'](); failure.paint();
+    assert.strictEqual(failureGet('loading').hidden, false, 'Closing during preparation cannot reveal an unfinished globe');
+    failure.modal.events['shown.bs.modal']();
+    failure.doc.hidden = true; failure.scene.onAfterRender(); failure.paint();
+    assert.strictEqual(failureGet('loading').hidden, false, 'A background tab keeps its loading state until a visible frame');
+    failure.doc.hidden = false; failure.scene.onAfterRender();
+    const staleReveal = Array.from(failure.frames.values())[0];
+    failure.renderCanvas.events.webglcontextlost({preventDefault() {}});
+    assert.strictEqual(failure.frames.size, 0, 'Context loss cancels a pending reveal');
+    failureGet('retry').events.click();
+    assert.strictEqual(failureGet('loading').hidden, false, 'A rebuilt renderer starts covered');
+    staleReveal();
+    assert.strictEqual(failureGet('loading').hidden, false, 'An old renderer’s frame cannot dismiss a new renderer’s loader');
+    failure.calls.onGlobeReady(); failure.scene.onAfterRender(); failure.paint();
+    assert.strictEqual(failureGet('loading').hidden, true);
+    assert.strictEqual(failureGet('error').hidden, true);
     console.log('Passed: composer globe counts, cached geometry, scoped highlights, country-only polaroids, portrait counts/paging/fallbacks, lazy requests/cache/races/retry, keyboard controls and context loss.');
 };

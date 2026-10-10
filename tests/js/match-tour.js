@@ -60,13 +60,16 @@ module.exports = async function () {
     const frames = [];
     const node = {}; const unit = {};
     const count = new AnimatedCount(node, unit, callback => frames.push(callback), false);
-    count.set(2847); assert.strictEqual(node.textContent, '2,847');
+    count.set(2847); assert.strictEqual(node.textContent, '1k+');
     const animation = count.to(1126, 850);
     const seen = [];
     for (let time = 0; frames.length; time += 50) { frames.shift()(time); seen.push(count.value); }
     await animation;
     assert(seen.length > 10); assert.strictEqual(seen[seen.length - 1], 1126);
     assert(seen.every((value, i) => i === 0 || value <= seen[i - 1]));
+    assert.strictEqual(node.textContent, '1k+');
+    count.set(1000); assert.strictEqual(node.textContent, '1k+');
+    count.set(999); assert.strictEqual(node.textContent, '999');
     const final = count.to(1, 1350);
     for (let time = 0; frames.length; time += 50) frames.shift()(time);
     await final; assert.strictEqual(unit.textContent, 'piece');

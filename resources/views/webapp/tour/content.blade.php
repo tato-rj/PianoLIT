@@ -6,7 +6,7 @@
             <svg class="match-count-ring" aria-hidden="true" focusable="false">
                 <circle class="match-count-arc" data-count-arc cx="50%" cy="50%" r="45.5%" pathLength="100" style="r: calc(50% - 4.5px)"></circle>
             </svg>
-            <span data-count>{{ number_format($tour['total']) }}</span>
+            <span data-count>{{ $tour['total'] >= 1000 ? '1k+' : $tour['total'] }}</span>
             <span class="match-count-unit" data-count-unit>pieces</span>
         </div>
         <span class="visually-hidden" data-count-note>In the PianoLIT library</span>

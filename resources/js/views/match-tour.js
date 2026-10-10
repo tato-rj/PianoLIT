@@ -79,7 +79,7 @@
         set(value) {
             if (value === this.value) return;
             this.value = value;
-            this.element.textContent = value.toLocaleString('en-US');
+            this.element.textContent = value >= 1000 ? '1k+' : String(value);
             this.unit.textContent = value === 1 ? 'piece' : 'pieces';
             if (this.onChange) this.onChange(value);
         }
