@@ -82,14 +82,8 @@ class ExploreCatalogue
         // Generate artwork only for displayed options, sharing one unique image
         // per mood across both columns even when the contextual list exceeds eight.
         $visibleKeys = $directoryKeys->merge($contextualMoods->keys())->unique();
-        $usedMoodImages = [];
-        $moodImages = [];
         // Give moods with fewer cover candidates the first choice of artwork.
-        $allMoods->only($visibleKeys->all())->sortBy('total_count')->each(function ($mood, $key) use (&$usedMoodImages, &$moodImages) {
-            $image = $this->moodImage($key, $usedMoodImages);
-            if ($image) $usedMoodImages[] = $image;
-            $moodImages[$key] = $image;
-        });
+        $moodImages = $this->moodImages($allMoods->only($visibleKeys->all())->sortBy('total_count'));
         $visibleMoods = $allMoods->only($visibleKeys->all())->map(function ($mood, $key) use ($moodImages) {
             return array_merge($mood, ['image' => $moodImages[$key]]);
         });
@@ -173,16 +167,47 @@ class ExploreCatalogue
             'guide', 'choices', 'breadcrumbs', 'selectionLabel', 'selectedTag', 'activeSection', 'hasSelection', 'techniques', 'lengths', 'periods');
     }
 
-    private function moodImage($mood, array $excluded)
+    private function moodImages($moods)
     {
-        $pieces = $this->query(['mood' => $mood])->select(['pieces.id', 'pieces.cover_path'])
-            ->setEagerLoads([])->withCount([])->inRandomOrder()->cursor();
+        if ($moods->isEmpty()) return [];
+
+        $ids = $moods->keys()->map(function ($key) { return (int) substr($key, 4); })->all();
+        // Load only artwork metadata, once for all displayed moods. Fetching tags
+        // inside each mood's fallback loop can issue thousands of queries when
+        // several moods share pieces and their period artwork is exhausted.
+        $pieces = Piece::whereHas('tags', function ($query) use ($ids) {
+            $query->whereIn('tags.id', $ids);
+        })->select(['pieces.id', 'pieces.cover_path'])->setEagerLoads([])->withCount([])
+            ->with(['tags' => function ($query) use ($ids) {
+                $query->select(['tags.id', 'tags.name', 'tags.type'])->where(function ($query) use ($ids) {
+                    $query->where('type', 'period')->orWhereIn('tags.id', $ids);
+                });
+            }])->get();
+        $candidates = array_fill_keys($moods->keys()->all(), []);
+        foreach ($pieces as $piece) {
+            foreach ($piece->tags as $tag) {
+                $key = 'tag-'.$tag->id;
+                if (isset($candidates[$key])) $candidates[$key][] = $piece;
+            }
+        }
+
+        $images = [];
+        $used = [];
+        foreach ($candidates as $key => $matchingPieces) {
+            $image = $this->moodImage(collect($matchingPieces)->shuffle(), $used);
+            if ($image) $used[] = $image;
+            $images[$key] = $image;
+        }
+        return $images;
+    }
+
+    private function moodImage($pieces, array $excluded)
+    {
         $checkedPeriods = [];
         foreach ($pieces as $piece) {
             if ($piece->cover_path) {
                 $image = $piece->web_image_background;
             } else {
-                $piece->loadMissing('tags');
                 $period = $piece->period;
                 if ($period && in_array($period->id, $checkedPeriods, true)) continue;
                 if ($period) $checkedPeriods[] = $period->id;
