@@ -17,7 +17,7 @@ class TagsController extends Controller
     {
         $this->authorize('create', Tag::class);
 
-        $types = Tag::with(['pieces', 'creator'])->byTypes();
+        $types = Tag::with(['pieces', 'creator'])->orderBy('ordering')->byTypes();
 
         return view('admin.pages.tags.index', compact('types'));
     }
