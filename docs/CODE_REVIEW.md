@@ -2575,3 +2575,19 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** The Popular filter and its existing `data-composer-popular` metadata remain; card layout, standard page width, period pills, counts, routes and mobile contracts are unchanged.
 - **Verification:** Isolated directory suite passes (4 tests / 60 assertions). Its rendered preview includes three famous composers with no badge markup and retains the Popular filter and metadata. Diff checks pass.
 - **Remaining work / limits:** Not deployed.
+
+### 2026-10-10 — Open repertoire search from directory cards (P3, complete locally)
+
+- **Request / evidence:** Clicking a directory composer should open `/search?search=Florence%20Price` (using that composer's name), as shown in the user's screenshot.
+- **Implementation / affected files:** `resources/views/webapp/composers/list-item.blade.php` now links each card to `webapp.search.results` with its composer name. Updated the existing link assertion in `tests/Review/ComposersDirectoryTest.php`. This view-only change needs no asset rebuild.
+- **Compatibility:** Composer profile routes remain available to other entry points. Directory styling, page width, filters, guest access, mobile APIs and media delivery are unchanged. Preserved the pending badge removal.
+- **Verification:** Isolated directory suite passes (4 tests / 60 assertions); diff checks pass. A local browser click on Cécile Chaminade opens the correctly encoded search URL, displays her name in the search field and reports six results.
+- **Remaining work / limits:** Not deployed.
+
+### 2026-10-10 — Scope globe highlights to the selected continent (P3, complete locally)
+
+- **Request / evidence:** The supplied Asia screenshot highlights European repertoire as well as Japan and Armenia after choosing Explore countries. Selecting a continent should focus the highlights on that continent, then on its represented countries when zoomed in.
+- **Implementation / affected files:** `resources/js/views/composer-globe.js` derives highlight scope from the selected place's continent. Outside countries remain neutral, including on hover; continent and country labels use the same scope. Country selection retains its continent scope, selecting another continent replaces it, and World reset restores worldwide colors/labels. Selection refreshes labels immediately, and reset clears the previous hover first. Rebuilt `public/js/views/composer-globe.js` and its manifest entry with isolated Mix copy/version tasks.
+- **Compatibility:** All countries remain clickable and available in the picker. Counts, browse links, zero-count selections, zoom thresholds, camera controls and the existing persistent geometry remain unchanged. No backend, mobile API, database, CSS or dependency changes. Preserved the pending composer-card link work.
+- **Verification:** Focused globe JS passes under strict unhandled-rejection handling; the new regression reproduces Japan/Armenia in Asia alongside European repertoire and checks continent focus, country focus, outside hover, nearby outside labels, country selection, continent switching, world reset and one-time geometry setup. Full JS regressions complete with the existing unrelated mock-alert warnings. Live local browser checks confirm scoped labels and no console errors. A separate browser fixture using the built controller, real map geometry and sample Asian/European counts confirms only Asia is highlighted at distance, then Japan/Armenia at country zoom while Russia/Europe stay muted. No database fixtures were changed. Source/built controller comparison and diff checks pass.
+- **Remaining work / limits:** Not deployed. The Asia visual reproduction uses sample catalogue counts; production data was not modified or queried.

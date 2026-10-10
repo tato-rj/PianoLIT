@@ -64,7 +64,7 @@ class ComposersDirectoryTest extends ReviewTestCase
             ->assertDontSee('id="composer-sort"', false)
             ->assertSee('Search composers, countries, continents, or works')
             ->assertDontSee('No repertoire')->assertSee('Recently added')
-            ->assertSee(route('webapp.composers.show', $composers->first()), false);
+            ->assertSee(route('webapp.search.results', ['search' => $composers->first()->name]), false);
         $this->assertCount(3, $queries, 'Composer/country/work-title reads stay bounded as the directory grows.');
         $this->assertGuest('web');
         $this->assertSame(8, substr_count($response->getContent(), 'class="col-md-6 col-12 composer-card"'));

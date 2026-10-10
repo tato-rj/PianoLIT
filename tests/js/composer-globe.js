@@ -127,6 +127,46 @@ module.exports = async function () {
     assert.strictEqual(h.destroyed, 1); assert.strictEqual(get('error').hidden, false);
     assert.strictEqual(get('place').disabled, false, 'Place picker remains usable without WebGL');
 
+    const scopeMap = JSON.parse(JSON.stringify(map));
+    scopeMap.features.push({properties: {code: 'AM', name: 'Armenia', continent: 'Asia', lat: 40, lng: 45}, geometry: map.features[0].geometry});
+    const scopeCatalogue = JSON.parse(JSON.stringify(catalogue));
+    scopeCatalogue.countries.push({id: 4, code: 'AM', name: 'Armenia', continent: 'Asia', composers: 1, pieces: 4});
+    scopeCatalogue.continents[1] = {name: 'Asia', composers: 2, pieces: 8, countries: 2};
+    scopeCatalogue.totals = {composers: 6, pieces: 17};
+    const scoped = harness(url => Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? scopeMap : scopeCatalogue)}));
+    const scopedGet = name => scoped.elements['[data-globe-' + name + ']'];
+    function selectScope(key) { scopedGet('place').value = key; scopedGet('place').events.change(); }
+    scoped.modal.events['shown.bs.modal'](); await settle();
+    const scopedShapes = scoped.calls.polygonsData;
+    const shape = code => scopedShapes.find(place => place.code === code);
+    selectScope('continent:Asia');
+    assert.strictEqual(scopedGet('pieces').textContent, '8');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('JP')), '#c8a76a', 'The selected continent is highlighted at a distance');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'Other continents remain muted even when they have composers');
+    assert.deepStrictEqual(scoped.calls.htmlElementsData.map(place => place.name), ['Asia']);
+    scoped.calls.onPolygonHover(shape('DE'));
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'Hovering outside the selected continent does not add another highlight');
+    assert.strictEqual(scoped.calls.polygonAltitude(shape('DE')), 0.005);
+    scopedGet('closer').events.click();
+    assert.strictEqual(scopedGet('mode').textContent, 'Countries');
+    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('JP')), '#264b60');
+    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('AM')), '#264b60');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'Exploring Asian countries keeps European repertoire muted');
+    Object.assign(scoped.pov, {lat: 40, lng: 50}); scoped.calls.onZoom(scoped.pov);
+    assert.deepStrictEqual(scoped.calls.htmlElementsData.map(place => place.name), ['Armenia'], 'Only labels in the selected continent appear, even when European countries are in view');
+    selectScope('country:JP');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'Selecting a country retains its continent scope');
+    selectScope('continent:Europe');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('JP')), '#264b60', 'Choosing another continent replaces the scope');
+    assert.deepStrictEqual(scoped.calls.htmlElementsData.map(place => place.name), ['Europe']);
+    scopedGet('home').events.click();
+    assert.deepStrictEqual(scoped.calls.htmlElementsData.map(place => place.name), ['Europe', 'Asia'], 'World reset restores all continent labels');
+    scopedGet('zoom-in').events.click(); scopedGet('zoom-in').events.click();
+    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'World reset restores worldwide repertoire highlights');
+    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('JP')), '#264b60');
+    assert.strictEqual(scoped.calls.polygonsData, scopedShapes);
+    assert.strictEqual(scoped.callCounts.polygonsData, 1, 'Changing highlight scope reuses all prepared geometry');
+
     let failing = true;
     const failure = harness(url => failing ? Promise.reject(new Error('offline')) : Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? map : JSON.parse(JSON.stringify(catalogue)))}));
     failure.modal.events['shown.bs.modal'](); await settle();
@@ -134,5 +174,5 @@ module.exports = async function () {
     assert.strictEqual(failure.elements['[data-globe-loading]'].hidden, true);
     failing = false; failure.elements['[data-globe-retry]'].events.click(); await settle();
     assert.strictEqual(failure.instances, 1, 'Failed requests can be retried without reloading the page');
-    console.log('Passed: composer globe counts, missing geography, cached zoom geometry/borders, continent/country picking, lazy loading, close/reopen races, keyboard controls, context loss and retry.');
+    console.log('Passed: composer globe counts, missing geography, cached zoom geometry/borders, scoped continent/country highlights and labels, picking, lazy loading, close/reopen races, keyboard controls, context loss and retry.');
 };

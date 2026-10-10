@@ -16,7 +16,7 @@
     data-composer-popular="{{ $composer->is_famous ? 'true' : 'false' }}"
     data-composer-created="{{ $composer->created_at ? $composer->created_at->getTimestamp() : 0 }}"
     data-composer-pieces="{{ $composer->pieces_count }}">
-    <a href="{{ route('webapp.composers.show', $composer) }}" class="composer-card-link link-none">
+    <a href="{{ route('webapp.search.results', ['search' => $composer->name]) }}" class="composer-card-link link-none">
         <img src="{{ $composer->cover_image }}" alt="" class="composer-portrait flex-shrink-0" loading="lazy" width="104" height="116">
         <div class="composer-copy flex-grow-1">
             <div class="composer-card-heading">

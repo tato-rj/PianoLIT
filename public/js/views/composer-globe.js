@@ -130,7 +130,7 @@
             if (place.url) browse.href = place.url; else browse.removeAttribute('href');
             closer.hidden = place.kind !== 'Continent';
             renderRegions(place);
-            if (globe) refreshColors();
+            if (globe) { refreshColors(); updateLabels(); }
         }
         function renderRegions(place) {
             regionList.textContent = '';
@@ -180,7 +180,11 @@
         function selected(place, target) {
             return target && (target.key === place.key || (!countryMode && target.kind === 'Continent' && target.name === place.continent));
         }
+        function inScope(place) {
+            return !selection || !selection.continent || place.continent === selection.continent;
+        }
         function capColor(place) {
+            if (!inScope(place)) return '#264b60';
             if (selected(place, hovered)) return '#e1bd77';
             if (selected(place, selection)) return '#c8a76a';
             if (countryMode && !place.composers) return '#264b60';
@@ -196,7 +200,7 @@
         }
         function refreshColors() {
             globe.polygonCapColor(capColor).polygonStrokeColor(strokeColor).polygonAltitude(function (place) {
-                return selected(place, hovered) || selected(place, selection) ? 0.007 : 0.005;
+                return inScope(place) && (selected(place, hovered) || selected(place, selection)) ? 0.007 : 0.005;
             });
         }
         function tooltip(place) {
@@ -219,11 +223,11 @@
             hovered = place; refreshColors();
         }
         function updateLabels() {
-            var labels = model.continents;
+            var labels = model.continents.filter(inScope);
             if (countryMode) {
                 var pov = globe.pointOfView();
                 labels = model.countries.filter(function (country) {
-                    if (!country.geometry || !country.composers) return false;
+                    if (!inScope(country) || !country.geometry || !country.composers) return false;
                     var delta = Math.abs(country.lng - pov.lng) % 360;
                     delta = Math.min(delta, 360 - delta);
                     return Math.abs(country.lat - pov.lat) < 32 && delta < 45;
@@ -258,9 +262,9 @@
             globe.pointOfView({lat: place.lat, lng: place.lng, altitude: altitude}, duration);
         }
         function reset() {
+            hovered = null; hoveredCountry = null;
             if (model) updateDetails(model.world);
             if (!globe) return;
-            hovered = null; hoveredCountry = null;
             globe.pointOfView({lat: 23, lng: 15, altitude: 2.05}, duration);
         }
         function resize() {
