@@ -2509,3 +2509,19 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** View-only composer page addition. Search/filter behavior, eScore forms, routes, access checks, mobile APIs and media delivery remain unchanged. Preserved pending composer-panel and unrelated search/catalogue edits.
 - **Verification:** Composer-directory PHP suite passes (3 tests / 46 assertions); diff checks pass. Live local browser checks at 1440×900 and 390×844 confirm button placement, no horizontal page overflow, empty modal body, settled fullscreen bounds matching each viewport, close-button dismissal and Escape dismissal.
 - **Remaining work / limits:** Modal content is intentionally empty for later globe work. Not deployed; physical-device testing was not performed.
+
+### 2026-10-10 — Synchronize Popular with composer panel choices (P3, complete locally)
+
+- **Request / evidence:** Add Popular beside the panel's existing sort choices and select it when the main-screen Popular shortcut is selected, matching Recently added.
+- **Implementation / affected files:** `resources/views/webapp/composers/controls.blade.php` adds a Popular / Famous composers radio card. `resources/js/views/composers.js` maps each main shortcut to its panel choice and maps Apply back to the main shortcut; Popular uses the existing `is_famous` restriction with most-pieces ordering. Applying another panel sort clears Popular, matching the mutually exclusive main shortcuts. Updated `tests/js/composers.js` and rebuilt `public/js/views/composers.js` with its manifest hash.
+- **Compatibility:** Existing facet/search/surname combinations and Apply-only draft behavior remain. No backend, mobile API, access, media, database, CSS or dependency changes.
+- **Verification:** Focused composer JS passes with strict unhandled-rejection handling, covering both synchronization directions, Popular results/order, facet combination, Cancel, Reset and switching sorts. Composer PHP suite passes (3 tests / 46 assertions). Full JS regressions complete with existing unrelated mock-alert promise warnings. Isolated production build and app/admin CSS-variable checks pass; diff checks pass. Live local browser checks at 1440×900 and 390×844 confirm selected panel Popular after the main shortcut, selected main Popular/Recently added after panel Apply, and no horizontal page overflow. Existing local fixtures contain no famous composers, correctly producing zero matches for Popular; positive results are covered by JS fixtures.
+- **Remaining work / limits:** Not deployed; physical-device testing was not performed.
+
+### 2026-10-10 — Show only available composer continents (P3, complete locally)
+
+- **Request / evidence:** The continent facet offered all seven continents, including those without any composers in the directory.
+- **Implementation / affected files:** `resources/views/webapp/composers/controls.blade.php` derives normalized, distinct, alphabetically sorted continent choices from the directory composers' already loaded countries. Empty/null values are omitted; the continent group is omitted when none are available. `tests/Review/ComposersDirectoryTest.php` covers represented continents, duplicate options, countries without composers, composers without qualifying repertoire, scoped gender links and missing geographic metadata.
+- **Compatibility:** Options reflect the initial route-scoped directory, not transient browser search/filter results. No extra queries, assets, controller changes, database writes, mobile payloads or access/media changes. Preserved the pending Popular panel work.
+- **Verification:** Isolated composer PHP suite passes (4 tests / 60 assertions), including the existing bounded three-query check. Diff checks pass. Live local desktop browser confirms that the three European composer fixtures yield only Europe in the panel.
+- **Remaining work / limits:** Not deployed; physical-device testing was not performed.

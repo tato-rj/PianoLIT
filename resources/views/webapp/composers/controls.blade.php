@@ -13,7 +13,7 @@
                 <fieldset class="search-controls__sort">
                     <legend>Sort by</legend>
                     <div class="search-controls__sort-options">
-                        @foreach(['pieces' => ['Most pieces', 'Largest repertoire first'], 'name' => ['Last name A–Z', 'A → Z'], 'recent' => ['Recently added', 'Newest additions first'], 'period' => ['Period', 'Old to modern']] as $value => $copy)
+                        @foreach(['pieces' => ['Most pieces', 'Largest repertoire first'], 'name' => ['Last name A–Z', 'A → Z'], 'recent' => ['Recently added', 'Newest additions first'], 'period' => ['Period', 'Old to modern'], 'popular' => ['Popular', 'Famous composers']] as $value => $copy)
                         <label class="search-controls__sort-option">
                             <input class="form-check-input" type="radio" name="composer_sort" value="{{ $value }}" @if($value === 'pieces') checked @endif>
                             <span><strong>{{ $copy[0] }}</strong><small>{{ $copy[1] }}</small></span>
@@ -23,7 +23,13 @@
                 </fieldset>
                 <h3>Filters</h3>
                 <div class="search-controls__facets">
-                    @foreach(['period' => \App\Services\WebApp\SearchOptions::FACETS['period'], 'continent' => ['africa', 'antarctica', 'asia', 'europe', 'north america', 'oceania', 'south america'], 'gender' => ['female', 'male']] as $facet => $values)
+                    @php
+                        $composerContinents = $composers->map(function ($composer) {
+                            return strtolower(trim((string) ($composer->country->continent ?? '')));
+                        })->filter()->unique()->sort()->values();
+                    @endphp
+                    @foreach(['period' => \App\Services\WebApp\SearchOptions::FACETS['period'], 'continent' => $composerContinents, 'gender' => ['female', 'male']] as $facet => $values)
+                    @continue(count($values) === 0)
                     <fieldset data-composer-facet="{{ $facet }}">
                         <legend>{{ ucfirst($facet) }}</legend>
                         <div class="pill-filters">

@@ -27,7 +27,7 @@ module.exports = function () {
     const filters = ['popular', 'recent'].map(value => node({'data-composer-filter': value}));
     const [popular, recent] = filters;
     const letters = ['all', 'b', 'c', 'p'].map(value => node({'data-composer-letter': value}));
-    const sorts = ['pieces', 'name', 'recent', 'period'].map(value => Object.assign(node(), {value, checked: value === 'pieces'}));
+    const sorts = ['pieces', 'name', 'recent', 'period', 'popular'].map(value => Object.assign(node(), {value, checked: value === 'pieces'}));
     const facetOptions = {
         period: ['baroque', 'classical', 'romantic', 'impressionist', 'modern', 'contemporary'],
         continent: ['europe', 'north america', 'asia'],
@@ -84,6 +84,8 @@ module.exports = function () {
     reset.events.click();
     popular.events.click();
     assert.deepStrictEqual(cards.map(card => card.hidden), [false, false, true]);
+    assert.strictEqual(sorts[4].checked, true, 'The main Popular button selects Popular in the panel');
+    assert.strictEqual(toggle.classList.values['is-active'], true);
     search.value = 'fugue'; search.events.input();
     assert.deepStrictEqual(cards.map(card => card.hidden), [false, true, true], 'Popular combines with work search');
     erase.events.click();
@@ -117,6 +119,37 @@ module.exports = function () {
     let prevented = false;
     form.events.submit({preventDefault() { prevented = true; }});
     assert.strictEqual(prevented, true, 'Directory search never submits to mobile or global search');
+
+    panel.events['show.bs.offcanvas']();
+    chooseSort('popular');
+    assert(cards.every(card => !card.hidden), 'Popular waits for Apply');
+    apply.events.click();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [false, false, true], 'Panel Popular filters to famous composers');
+    assert.strictEqual(popular.attrs['aria-pressed'], 'true', 'Panel Popular also selects the main button');
+    assert.deepStrictEqual(order, cards, 'Popular keeps most-pieces ordering');
+    panel.events['show.bs.offcanvas']();
+    panelReset.events.click();
+    panel.events['show.bs.offcanvas']();
+    assert.strictEqual(sorts[4].checked, true, 'Cancel preserves Popular');
+    panelReset.events.click();
+    apply.events.click();
+    assert(cards.every(card => !card.hidden), 'Applying Reset removes Popular');
+    assert.strictEqual(popular.attrs['aria-pressed'], 'false');
+    panel.events['show.bs.offcanvas']();
+    chooseSort('recent');
+    apply.events.click();
+    assert.strictEqual(recent.attrs['aria-pressed'], 'true', 'Panel Recently added also selects the main button');
+    panel.events['show.bs.offcanvas']();
+    chooseSort('popular');
+    facetButton('period', 'romantic').events.click();
+    apply.events.click();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [true, false, true], 'Popular combines with panel facets');
+    assert.strictEqual(recent.attrs['aria-pressed'], 'false');
+    panel.events['show.bs.offcanvas']();
+    chooseSort('name');
+    apply.events.click();
+    assert.strictEqual(popular.attrs['aria-pressed'], 'false', 'Another panel choice clears the Popular button');
+    reset.events.click();
 
     recent.events.click();
     panel.events['show.bs.offcanvas']();

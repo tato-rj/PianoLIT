@@ -90,7 +90,33 @@ class ComposersDirectoryTest extends ReviewTestCase
 
         $this->get(route('webapp.composers.index'))->assertOk()
             ->assertSee('data-composer-search="Without country   Study"', false)
-            ->assertSee('data-composer-search="Without continent Unmapped country  Study"', false);
+            ->assertSee('data-composer-search="Without continent Unmapped country  Study"', false)
+            ->assertDontSee('data-composer-facet="continent"', false);
+    }
+
+    public function test_continent_options_only_include_available_directory_composers()
+    {
+        Model::withoutEvents(function () {
+            foreach ([['Europe', 'male', 2], ['Europe', 'male', 2], ['Asia', 'female', 2], ['Antarctica', 'male', 0]] as $index => [$continent, $gender, $pieceCount]) {
+                $country = create(Country::class, ['continent' => $continent]);
+                $composer = create(Composer::class, ['name' => 'Composer '.$index, 'country_id' => $country->id, 'gender' => $gender]);
+                if ($pieceCount) create(Piece::class, ['composer_id' => $composer->id], $pieceCount);
+            }
+            create(Country::class, ['continent' => 'Africa']);
+        });
+
+        $response = $this->get(route('webapp.composers.index'))->assertOk()
+            ->assertSee('data-composer-value="asia"', false)
+            ->assertSee('data-composer-value="europe"', false);
+        foreach (['africa', 'antarctica', 'north america', 'oceania', 'south america'] as $continent) {
+            $response->assertDontSee('data-composer-value="'.$continent.'"', false);
+        }
+        $this->assertSame(1, substr_count($response->getContent(), 'data-composer-value="europe"'));
+        $this->assertLessThan(strpos($response->getContent(), 'data-composer-value="europe"'), strpos($response->getContent(), 'data-composer-value="asia"'));
+
+        $this->get(route('webapp.composers.index', ['gender' => 'female']))->assertOk()
+            ->assertSee('data-composer-value="asia"', false)
+            ->assertDontSee('data-composer-value="europe"', false);
     }
 
     public function test_latin_america_alias_includes_the_americas_except_us_and_canada()

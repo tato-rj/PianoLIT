@@ -101,7 +101,7 @@
     filters.forEach(function (button) {
         button.addEventListener('click', function () {
             filter = button.getAttribute('data-composer-filter');
-            sort = filter === 'recent' ? 'recent' : 'pieces';
+            sort = filter;
             update();
         });
     });
@@ -129,7 +129,7 @@
                 return button.getAttribute('aria-pressed') === 'true';
             }).map(function (button) { return button.getAttribute('data-composer-value'); });
         });
-        if (filter === 'recent' && sort !== 'recent') filter = 'all';
+        filter = sort === 'popular' || sort === 'recent' ? sort : 'all';
         update();
     });
     search.addEventListener('input', update);
