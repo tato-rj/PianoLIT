@@ -130,7 +130,9 @@
                 const step = Number(el.getAttribute('data-zoom'));
                 el.disabled = !this.pdf || this.rendering || (step < 0 && this.zoom <= 0.5) || (step > 0 && this.zoom >= 2.5);
             });
-            const touchAction = this.tool === 'read' ? 'pan-x pan-y' : 'none';
+            const canPan = this.canPanScore();
+            this.scroller.style.touchAction = canPan ? 'none' : 'pan-x pan-y';
+            const touchAction = this.tool === 'read' && !canPan ? 'pan-x pan-y' : 'none';
             this.sheet.style.touchAction = touchAction;
             this.svg.style.touchAction = touchAction;
             this.svg.setAttribute('data-tool', this.tool);
@@ -141,6 +143,7 @@
             });
         }
         selectTool(tool) {
+            this.stopPan();
             const next = this.tool === tool ? 'read' : tool;
             this.finishTextDrag(); this.finishStroke(); this.finishText();
             this.tool = next; this.controls();
@@ -186,6 +189,7 @@
             if (this.store.marks.length) this.store.replace([]);
         }
         toggleFullscreen() {
+            this.stopPan();
             const active = !this.root.classList.contains('is-fullscreen');
             this.root.classList.toggle('is-fullscreen', active);
             this.find('.score-toolbar').classList.toggle('shadow', active);
@@ -207,6 +211,7 @@
             this.render(this.page).catch(() => this.renderError());
         }
         cancelPinchMarking() {
+            this.stopPan();
             const pointer = this.pointerId;
             this.stroke = null; this.textDrag = null; this.pointerId = null;
             this.svg.removeAttribute('data-dragging-text');
@@ -223,8 +228,65 @@
             this.pinchAmount -= steps * threshold;
             this.adjustZoom(steps * 0.05);
         }
+        canPanScore() {
+            return !!this.pdf && !this.printing && this.scroller.scrollWidth > this.scroller.clientWidth + 1;
+        }
+        panScore(x, y) {
+            // The existing layout scrolls horizontally here and vertically in its outer viewer.
+            const vertical = this.root.classList.contains('is-fullscreen') ? this.root : document.scrollingElement;
+            const beforeX = this.scroller.scrollLeft, beforeY = vertical.scrollTop;
+            this.scroller.scrollLeft += x; vertical.scrollTop += y;
+            return this.scroller.scrollLeft !== beforeX || vertical.scrollTop !== beforeY;
+        }
+        stopPan() {
+            if (this.panFrame) root.cancelAnimationFrame(this.panFrame);
+            this.panFrame = null; this.touchPan = null;
+        }
+        panWheel(event) {
+            if (!this.canPanScore() || event.shiftKey) return;
+            event.preventDefault(); this.stopPan();
+            const unit = event.deltaMode === 1 ? 16 : (event.deltaMode === 2 ? this.scroller.clientHeight : 1);
+            this.panScore(event.deltaX * unit, event.deltaY * unit);
+        }
+        panTouchStart(event) {
+            this.stopPan();
+            if (!this.canPanScore() || this.tool !== 'read' || this.touchPinching || event.touches.length !== 1 ||
+                event.target.closest('input, textarea, [contenteditable], [data-mark-id]')) return;
+            const touch = event.touches[0];
+            this.touchPan = {id: touch.identifier, x: touch.clientX, y: touch.clientY, time: event.timeStamp, vx: 0, vy: 0};
+            event.preventDefault();
+        }
+        panTouchMove(event) {
+            const pan = this.touchPan;
+            if (!pan || event.touches.length !== 1) return;
+            const touch = Array.from(event.touches).find(touch => touch.identifier === pan.id);
+            if (!touch) return;
+            event.preventDefault();
+            const x = pan.x - touch.clientX, y = pan.y - touch.clientY;
+            const elapsed = Math.max(1, event.timeStamp - pan.time);
+            pan.vx = Math.max(-3, Math.min(3, x / elapsed)); pan.vy = Math.max(-3, Math.min(3, y / elapsed));
+            this.panScore(x, y);
+            pan.x = touch.clientX; pan.y = touch.clientY; pan.time = event.timeStamp;
+        }
+        panTouchEnd(event) {
+            const pan = this.touchPan;
+            if (!pan) return;
+            event.preventDefault(); this.touchPan = null;
+            if (event.type === 'touchcancel' || event.timeStamp - pan.time > 80) return;
+            let previous;
+            const glide = time => {
+                const elapsed = previous === undefined ? 16 : Math.min(32, time - previous);
+                previous = time;
+                const moved = this.panScore(pan.vx * elapsed, pan.vy * elapsed);
+                const decay = Math.pow(0.92, elapsed / 16);
+                pan.vx *= decay; pan.vy *= decay;
+                if (moved && Math.hypot(pan.vx, pan.vy) > 0.02) this.panFrame = root.requestAnimationFrame(glide);
+                else this.panFrame = null;
+            };
+            if (Math.hypot(pan.vx, pan.vy) > 0.02) this.panFrame = root.requestAnimationFrame(glide);
+        }
         pinchWheel(event) {
-            if (!event.ctrlKey) return;
+            if (!event.ctrlKey) { this.panWheel(event); return; }
             event.preventDefault();
             if (this.touchPinching || this.gestureScale !== undefined) return;
             const now = Date.now();
@@ -236,12 +298,19 @@
             this.pinchZoom(-event.deltaY * unit * 0.01);
         }
         pinchTouchStart(event) {
+            if (event.touches.length === 1) { this.panTouchStart(event); return; }
             if (event.touches.length !== 2 || !Array.from(event.touches).every(touch => this.scroller.contains(touch.target))) return;
             event.preventDefault();
             this.touchPinching = true; this.gestureScale = undefined; this.pinchAmount = 0; this.pinchWheelTime = 0;
             this.touchPinch = Array.from(event.touches).map(touch => touch.identifier);
             this.touchDistance = this.pinchDistance(event.touches);
+            this.touchCenter = this.pinchCenter(event.touches);
             this.cancelPinchMarking();
+        }
+        pinchCenter(touches) {
+            const pair = this.touchPinch.map(id => Array.from(touches).find(touch => touch.identifier === id));
+            if (pair.some(touch => !touch)) return null;
+            return {x: (pair[0].clientX + pair[1].clientX) / 2, y: (pair[0].clientY + pair[1].clientY) / 2};
         }
         pinchDistance(touches) {
             const pair = this.touchPinch.map(id => Array.from(touches).find(touch => touch.identifier === id));
@@ -249,15 +318,17 @@
             return Math.hypot(pair[0].clientX - pair[1].clientX, pair[0].clientY - pair[1].clientY);
         }
         pinchTouchMove(event) {
-            if (!this.touchPinching) return;
+            if (!this.touchPinching) { this.panTouchMove(event); return; }
             event.preventDefault();
             if (!this.touchPinch || event.touches.length !== 2) return;
             const distance = this.pinchDistance(event.touches);
+            const center = this.pinchCenter(event.touches);
+            if (center && this.touchCenter && this.canPanScore()) this.panScore(this.touchCenter.x - center.x, this.touchCenter.y - center.y);
             if (distance > 0 && this.touchDistance > 0) this.pinchZoom(Math.log(distance / this.touchDistance));
-            this.touchDistance = distance;
+            this.touchDistance = distance; this.touchCenter = center;
         }
         pinchTouchEnd(event) {
-            if (!this.touchPinching) return;
+            if (!this.touchPinching) { this.panTouchEnd(event); return; }
             event.preventDefault();
             if (event.touches.length < 2) this.touchPinch = null;
             // A remaining finger must not resume drawing or scrolling midway through a pinch.
@@ -317,6 +388,7 @@
             }));
             // Inspect the original target before editing replaces an SVG mark in the DOM.
             document.addEventListener('pointerdown', event => {
+                this.stopPan();
                 if (this.tool === 'read' || this.sheet.contains(event.target)) return;
                 const button = event.target.closest('button[data-tool]');
                 if (button && this.root.contains(button)) return;
@@ -373,6 +445,7 @@
         async render(number) {
             if (!this.pdf || number < 1 || number > this.pdf.numPages) return;
             if (this.rendering) { this.queuedPage = number; return; }
+            if (number !== this.page) this.stopPan();
             this.finishTextDrag(); this.finishStroke();
             if (number !== this.page) this.finishText();
             this.rendering = true; this.controls();

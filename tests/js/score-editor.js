@@ -454,6 +454,78 @@ module.exports = async function () {
     assert.strictEqual(zoomLabels['[data-zoom-label]'].textContent, '80%');
     assert.strictEqual(queuedZoom.rendering, false);
 
+    const panning = Object.create(Editor.prototype), panFrames = new Map();
+    let nextPanFrame = 0, panFullscreen = false;
+    window.requestAnimationFrame = callback => { const id = ++nextPanFrame; panFrames.set(id, callback); return id; };
+    window.cancelAnimationFrame = id => panFrames.delete(id);
+    const panContainer = max => {
+        let top = 0, left = 0;
+        return {get scrollTop() { return top; }, set scrollTop(value) { top = Math.max(0, Math.min(max, value)); },
+            get scrollLeft() { return left; }, set scrollLeft(value) { left = Math.max(0, Math.min(max, value)); }};
+    };
+    document.scrollingElement = panContainer(2000);
+    panning.root = Object.assign(panContainer(2000), {classList: {contains: () => panFullscreen}});
+    panning.scroller = Object.assign(panContainer(2000), {scrollWidth: 1500, clientWidth: 500, clientHeight: 800,
+        contains: () => true});
+    panning.pdf = {}; panning.tool = 'read'; panning.pointerId = null;
+    panning.svg = {removeAttribute() {}, hasPointerCapture: () => false};
+    panning.finishText = panning.paint = () => {};
+    const diagonalWheel = pinchEvent({deltaX: 50, deltaY: 30});
+    panning.pinchWheel(diagonalWheel);
+    assert.strictEqual(diagonalWheel.defaultPrevented, true);
+    assert.strictEqual(panning.scroller.scrollLeft, 50);
+    assert.strictEqual(document.scrollingElement.scrollTop, 30, 'Diagonal wheel moves both axes in normal view');
+    panFullscreen = true;
+    panning.pinchWheel(pinchEvent({deltaX: -20, deltaY: 40}));
+    assert.strictEqual(panning.scroller.scrollLeft, 30);
+    assert.strictEqual(panning.root.scrollTop, 40, 'Fullscreen pans its own vertical viewer');
+    assert.strictEqual(document.scrollingElement.scrollTop, 30, 'Fullscreen cannot pan the background page');
+    panning.pinchWheel(pinchEvent({deltaX: 1, deltaY: 2, deltaMode: 1}));
+    assert.strictEqual(panning.scroller.scrollLeft, 46);
+    assert.strictEqual(panning.root.scrollTop, 72);
+    const panTouch = (x, y, time, changes) => pinchEvent(Object.assign({type: 'touchmove', timeStamp: time,
+        target: {closest: () => null}, touches: [{identifier: 1, clientX: x, clientY: y}]}, changes));
+    panning.pinchTouchStart(panTouch(200, 200, 0, {type: 'touchstart'}));
+    const diagonalTouch = panTouch(180, 170, 20);
+    panning.pinchTouchMove(diagonalTouch);
+    assert.strictEqual(diagonalTouch.defaultPrevented, true);
+    assert.strictEqual(panning.scroller.scrollLeft, 66);
+    assert.strictEqual(panning.root.scrollTop, 102, 'Single-finger swipe follows both coordinates');
+    panning.pinchTouchMove(panTouch(170, 130, 40));
+    assert.strictEqual(panning.scroller.scrollLeft, 76);
+    assert.strictEqual(panning.root.scrollTop, 142, 'A swipe can change direction without locking to an axis');
+    panning.pinchTouchEnd(panTouch(170, 130, 45, {type: 'touchend', touches: []}));
+    const [frameId, glide] = Array.from(panFrames)[0]; panFrames.delete(frameId); glide(16);
+    assert(panning.scroller.scrollLeft > 76 && panning.root.scrollTop > 142, 'A swipe glides in both directions');
+    panning.stopPan(); assert.strictEqual(panFrames.size, 0, 'A new interaction stops momentum');
+    panning.pinchTouchStart(panTouch(200, 200, 50, {type: 'touchstart'}));
+    panning.pinchTouchMove(panTouch(190, 190, 60));
+    panning.pinchTouchEnd(panTouch(190, 190, 65, {type: 'touchcancel', touches: []}));
+    assert.strictEqual(panFrames.size, 0, 'Canceled swipes have no momentum');
+    panning.pinchTouchStart(panTouch(200, 200, 70, {type: 'touchstart'}));
+    panning.pinchTouchStart(pinchEvent({touches: touches(100)}));
+    assert.strictEqual(panning.touchPan, null, 'A second finger switches from pan to pinch');
+    panning.tool = 'pen'; panning.zoom = 1.5;
+    const beforeTwoFingerX = panning.scroller.scrollLeft, beforeTwoFingerY = panning.root.scrollTop;
+    const translatedTouches = touches(100).map(touch => Object.assign({}, touch, {clientX: touch.clientX - 20, clientY: -30}));
+    panning.pinchTouchMove(pinchEvent({touches: translatedTouches}));
+    assert.strictEqual(panning.scroller.scrollLeft, beforeTwoFingerX + 20);
+    assert.strictEqual(panning.root.scrollTop, beforeTwoFingerY + 30, 'Two fingers pan diagonally even while a writing tool is active');
+    assert.strictEqual(panning.zoom, 1.5, 'Translating both fingers does not change zoom');
+    panning.pinchTouchEnd(pinchEvent({touches: []}));
+    for (const changes of [{target: {closest: () => ({})}}, {}]) {
+        panning.tool = changes.target ? 'read' : 'pen';
+        const event = panTouch(200, 200, 80, Object.assign({type: 'touchstart'}, changes));
+        panning.pinchTouchStart(event);
+        assert.strictEqual(event.defaultPrevented, false, 'Text dragging and drawing tools keep their touch behavior');
+    }
+    panning.tool = 'read'; panning.scroller.scrollWidth = 500;
+    const fittingWheel = pinchEvent({deltaX: 50, deltaY: 30}); panning.pinchWheel(fittingWheel);
+    assert.strictEqual(fittingWheel.defaultPrevented, false, 'Scores that fit retain native page scrolling');
+    const fittingTouch = panTouch(200, 200, 100, {type: 'touchstart'}); panning.pinchTouchStart(fittingTouch);
+    assert.strictEqual(fittingTouch.defaultPrevented, false);
+    delete window.requestAnimationFrame; delete window.cancelAnimationFrame; delete document.scrollingElement;
+
     const printEditor = Object.create(Editor.prototype);
     const printedPages = [], printMessages = [];
     printEditor.pdf = {numPages: 3, getPage: async number => ({
