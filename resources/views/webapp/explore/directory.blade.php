@@ -28,14 +28,6 @@
 <details class="explore-section" @if($activeSection === 'composers') open @endif>
     <summary class="rounded-sm px-2">@icon('user', ['mr' => 0, 'size' => 'lg'])<span>Composers</span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-branch">
-        <a class="explore-link rounded-sm link-none flex-column align-items-stretch {{ request('composers') === 'all' ? 'is-selected' : '' }}" href="{{ route('webapp.explore', ['composers' => 'all']) }}" @if(request('composers') === 'all') aria-current="page" @endif>
-            {{-- <span class="explore-portraits align-self-center mb-1" aria-hidden="true">@foreach($portraits as $composer)<img src="{{ $composer->cover_image }}" alt="" class="rounded-circle" loading="lazy">@endforeach</span> --}}
-            <span class="d-flex align-items-center gap-2">
-                <span class="explore-icon">@icon('users', ['mr' => 0, 'size' => 'lg'])</span>
-                <span class="explore-copy">All composers</span>
-                @icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])
-            </span>
-        </a>
         @foreach(\App\Services\WebApp\ComposerGroups::OPTIONS as $group => $option)
             @if($group !== 'all')
                 @include('webapp.explore.link', ['href' => route('webapp.explore', ['composers' => $group]), 'label' => $option['label'], 'icon' => $option['icon'], 'current' => request('composers') === $group, 'classes' => request('composers') === $group ? 'is-selected' : ''])

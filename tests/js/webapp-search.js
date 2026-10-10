@@ -49,18 +49,35 @@ module.exports = async function () {
         await settle();
         assert.strictEqual($('#pieces-list').html.includes('stale results'), false);
         assert.strictEqual(context.window.loading, false);
+        if (!guest) {
+            context.loadResults();
+            pending[pending.length - 1].resolve({data: ''});
+            await settle();
+            assert.strictEqual($('#empty').visible, false, 'End of pagination is not an empty search');
+            assert.strictEqual($('#search-feedback strong').html, 'We found a total of 3 results');
+        }
         context.reset();
         context.applyFilters([]);
         pending[pending.length - 1].reject(new Error('offline'));
         await settle();
         assert.strictEqual(context.window.loading, false);
         assert.strictEqual($('#spinner').visible, false);
+        assert.strictEqual($('#empty').visible, false, 'Network errors must not show the no-matches illustration');
+        assert.strictEqual($('#search-feedback').visible, true);
         assert.strictEqual($('#options button, .options-columns input').enabled, true);
         context.loadResults();
         pending[pending.length - 1].resolve({data: ' \n '});
         await settle();
         assert.strictEqual(context.window.done, true);
         assert.strictEqual($('#empty').visible, true);
+        assert.strictEqual($('#search-feedback').visible, false);
+        assert.strictEqual($('#empty [data-empty-message]').html, 'We couldn’t find any pieces matching “happy”.');
+        context.reset();
+        context.window.location.href = 'https://my.example.test/search?catalogue=1';
+        context.applyFilters([]);
+        pending[pending.length - 1].resolve({data: ''});
+        await settle();
+        assert.strictEqual($('#empty [data-empty-message]').html, 'We couldn’t find any pieces matching your filters.');
     }
     console.log('Passed: webapp visitor search stop, duplicate requests, filter races, retry and empty results.');
 };

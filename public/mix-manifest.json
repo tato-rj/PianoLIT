@@ -1,6 +1,6 @@
 {
-    "/js/app.js": "/js/app.js?id=498d9c09695563c8731c",
-    "/css/app.css": "/css/app.css?id=8d93e19896f11e48b42e",
+    "/js/app.js": "/js/app.js?id=2f320d99462ef4208960",
+    "/css/app.css": "/css/app.css?id=844f0f0f999b46e393a0",
     "/css/admin.css": "/css/admin.css?id=92c0d3785e78a7eb0014",
     "/css/design-system.css": "/css/design-system.css?id=08f8a03776c82f1aa7ca",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
@@ -13,6 +13,7 @@
     "/fonts/escore/LibreBodoni-Bold.ttf": "/fonts/escore/LibreBodoni-Bold.ttf?id=b076f46fa91e52656126",
     "/fonts/escore/OFL.txt": "/fonts/escore/OFL.txt?id=8f81fbcbbec8c4c4cd14",
     "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e",
+    "/js/views/explore-moods.js": "/js/views/explore-moods.js?id=969648f059ba7870a8d4",
     "/js/views/explore-transitions.js": "/js/views/explore-transitions.js?id=102926b09a7d76893f9f",
     "/js/views/explore.js": "/js/views/explore.js?id=06b616a28dffedfcdae2",
     "/js/views/highlights.js": "/js/views/highlights.js?id=1a0751279b65876cc274",
@@ -32,6 +33,5 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=d6dcbe004a3f826608f3",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da",
-    "/js/views/explore-moods.js": "/js/views/explore-moods.js?id=969648f059ba7870a8d4"
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da"
 }

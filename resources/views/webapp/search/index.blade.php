@@ -1,9 +1,6 @@
 @extends('webapp.layouts.app', ['title' => 'Search results'])
 
 @push('header')
-<style type="text/css">
-
-</style>
 <script type="text/javascript">
 window.page = 1;
 window.loading = window.done = false;
@@ -24,9 +21,28 @@ window.searchRequestId = 0;
 
 @include('webapp.components.spinner')
 
-<div id="empty" class="text-grey text-center pt-5 pb-4" style="display: none;">
-	@icon('package-open', ['mr' => 0, 'size' => 'lg'])
-	<div><strong></strong></div>
+<div id="empty" class="search-empty text-center" role="status" style="display: none;">
+	<img class="search-empty__image" src="{{ asset('images/webapp/empty-search.png') }}" alt="" width="960" height="576">
+	<h2 class="search-empty__title">No results found</h2>
+	<p class="search-empty__message" data-empty-message></p>
+	<p class="search-empty__hint text-muted">Try a different keyword, or explore our library to discover new pieces.</p>
+	<div class="search-empty__actions">
+		<a href="{{ route('webapp.search.results', ['catalogue' => 1]) }}" class="btn btn-secondary">
+			@icon('search') Clear search
+		</a>
+		<div class="search-empty__destinations">
+			<a href="{{ route('webapp.explore') }}" class="btn btn-secondary text-primary">
+				@icon('music') Explore our library
+			</a>
+			<a href="{{ route('webapp.playlists') }}" class="btn btn-secondary text-primary">
+				@icon('layers') Go to Collections
+			</a>
+		</div>
+	</div>
+</div>
+
+<div id="search-feedback" class="text-grey text-center pt-5 pb-4" role="status" style="display: none;">
+	<strong></strong>
 </div>
 @endsection
 
@@ -51,15 +67,22 @@ function loadResults() {
     if (window.done || window.loading) return;
     window.loading = true;
     const requestId = ++window.searchRequestId;
+    const query = new URL(window.location.href).searchParams.get('search') || '';
 
     axios.get(makeUrl(), {params: {filters: window.filters}})
         .then(function(response) {
             if (requestId !== window.searchRequestId) return;
             const empty = response.data.trim() === '';
             window.done = empty || {{ auth('web')->guest() ? 'true' : 'false' }};
+            $('#search-feedback').hide();
             if (empty) {
-                $('#empty strong').text(window.page == 1 ? 'Sorry, nothing to show!' : 'We found a total of '+$('.piece-result').length+' results');
-                $('#empty').show();
+                if (window.page == 1) {
+                    $('#empty [data-empty-message]').text(query ? 'We couldn’t find any pieces matching “' + query + '”.' : 'We couldn’t find any pieces matching your filters.');
+                    $('#empty').show();
+                } else {
+                    $('#search-feedback strong').text('We found a total of ' + $('.piece-result').length + ' results');
+                    $('#search-feedback').show();
+                }
             } else {
                 $('#pieces-list').append(response.data);
                 window.page++;
@@ -67,8 +90,9 @@ function loadResults() {
         })
         .catch(function(error) {
             if (requestId !== window.searchRequestId) return;
-            $('#empty strong').text('Sorry, results could not be loaded. Please try again.');
-            $('#empty').show();
+            $('#empty').hide();
+            $('#search-feedback strong').text('Sorry, results could not be loaded. Please try again.');
+            $('#search-feedback').show();
         })
         .then(function() {
             if (requestId !== window.searchRequestId) return;
@@ -80,7 +104,7 @@ function loadResults() {
 
 <script type="text/javascript">
 function makeUrl() {
-	const url = new URL(window.location.href);
+	const url = new URL(window.searchControlsUrl ? window.searchControlsUrl(window.location.href) : window.location.href);
 	url.searchParams.set('lazy-load', '');
 	url.searchParams.set('page', window.page);
 	return url.toString();
@@ -90,6 +114,7 @@ function reset() {
 	$('#spinner').show();
 	$('#pieces-list').empty();
 	$('#empty').hide();
+	$('#search-feedback').hide();
 }
 
 function applyFilters(filters) {

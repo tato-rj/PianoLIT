@@ -21,7 +21,7 @@ class SearchOptions
     public function __construct(Request $request)
     {
         $rules = ['sort' => ['nullable', Rule::in(self::SORTS)], 'facets' => 'nullable|array:level,period,length,type,ensemble',
-            'audio_only' => 'nullable|boolean', 'score_only' => 'nullable|boolean'];
+            'audio_only' => 'nullable|boolean', 'video_only' => 'nullable|boolean', 'score_only' => 'nullable|boolean'];
         foreach (self::FACETS as $facet => $names) {
             $rules['facets.'.$facet] = 'nullable|array|max:'.count($names);
             $rules['facets.'.$facet.'.*'] = ['string', Rule::in($names)];
@@ -33,7 +33,7 @@ class SearchOptions
     {
         return ($this->params['sort'] ?? 'relevance') !== 'relevance'
             || array_filter($this->params['facets'] ?? [])
-            || !empty($this->params['audio_only']) || !empty($this->params['score_only']);
+            || !empty($this->params['audio_only']) || !empty($this->params['video_only']) || !empty($this->params['score_only']);
     }
 
     public function filterQuery($query)
@@ -50,6 +50,7 @@ class SearchOptions
                 }
             });
         }
+        if (!empty($this->params['video_only'])) $query->whereHas('tutorials');
         if (!empty($this->params['audio_only'])) $query->whereNotNull('audio_path')->where('audio_path', '!=', '');
         if (!empty($this->params['score_only'])) $query->whereNotNull('score_path')->where('score_path', '!=', '')
             ->where(function ($q) { $q->whereNull('score_url')->orWhere('score_url', ''); });
