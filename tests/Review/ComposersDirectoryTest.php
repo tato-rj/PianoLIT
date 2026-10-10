@@ -26,6 +26,7 @@ class ComposersDirectoryTest extends ReviewTestCase
                 $composer = create(Composer::class, [
                     'name' => $name, 'country_id' => $country->id, 'is_famous' => $index < 3,
                     'created_at' => now()->subDays($index),
+                    'period' => 'baroque', 'gender' => 'male',
                     'cover_path' => 'composer/cover_image/pianolit-cecile-chaminade-8811.jpg',
                 ]);
                 for ($i = 0; $i < 2; $i++) {
@@ -50,6 +51,17 @@ class ComposersDirectoryTest extends ReviewTestCase
             ->assertSee('The Well-Tempered Clavier &quot;&lt;Book&gt;&quot; &amp; Studies', false)
             ->assertSee('data-composer-search="Johann Sebastian Bach Germany Europe Prelude', false)
             ->assertSee('data-composer-regions="Europe"', false)
+            ->assertSee('data-composer-period="baroque"', false)
+            ->assertSee('data-composer-continent="europe"', false)
+            ->assertSee('data-composer-gender="male"', false)
+            ->assertSee('aria-label="Sort and filter composers"', false)
+            ->assertSee('data-bs-target="#composer-controls"', false)
+            ->assertSee('Old to modern')
+            ->assertSee('data-composer-facet="period"', false)
+            ->assertSee('data-composer-facet="continent"', false)
+            ->assertSee('data-composer-facet="gender"', false)
+            ->assertDontSee('id="search-controls"', false)
+            ->assertDontSee('id="composer-sort"', false)
             ->assertSee('Search composers, countries, continents, or works')
             ->assertDontSee('No repertoire')->assertSee('Recently added')
             ->assertSee(route('webapp.composers.show', $composers->first()), false);

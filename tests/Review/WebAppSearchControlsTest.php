@@ -42,8 +42,8 @@ class WebAppSearchControlsTest extends ReviewTestCase
 
     public function test_combined_filters_run_before_guest_limit_and_support_solo()
     {
-        $response = $this->getJson(route('webapp.search.results', ['search' => 'happy', 'video_only' => 1, 'score_only' => 1,
-            'facets' => ['level' => ['advanced'], 'length' => ['long'], 'ensemble' => ['solo']], 'sort' => 'title_desc']))->assertOk();
+        $response = $this->getJson(route('webapp.search.results', ['search' => 'happy', 'include_total' => 1, 'video_only' => 1, 'score_only' => 1,
+            'facets' => ['level' => ['advanced'], 'length' => ['long'], 'ensemble' => ['solo']], 'sort' => 'title_desc']))->assertOk()->assertHeader('X-Search-Total', '4');
         $this->assertSame(3, substr_count($response->getContent(), 'data-sort-name='));
         foreach ([13, 12, 11] as $index) $response->assertSee($this->pieces[$index]->name);
         $response->assertDontSee($this->pieces[10]->name)->assertDontSee($this->pieces[0]->name);
@@ -95,8 +95,10 @@ class WebAppSearchControlsTest extends ReviewTestCase
             $builder->shouldReceive('paginateRaw')->once()->with(100, 'page', $page)->andReturn(
                 new \Illuminate\Pagination\LengthAwarePaginator(['hits' => $pieces->map(function ($piece) { return ['objectID' => (string) $piece->id]; })->values()->all(), 'nbPages' => 2], 5000, 100, $page));
         }
-        $controls = new SearchOptions(new Request(['sort' => 'title_desc', 'video_only' => 1]));
+        $request = new Request(['sort' => 'title_desc', 'video_only' => 1, 'include_total' => 1]);
+        $controls = new SearchOptions($request);
         $this->assertSame($this->pieces->reverse()->take(3)->pluck('id')->values()->all(), $controls->results($builder)->pluck('id')->all());
+        $this->assertSame(4, $request->attributes->get('webapp_search_total'));
     }
 
     public function test_video_filter_includes_performance_and_synthesia_but_excludes_audio_only()

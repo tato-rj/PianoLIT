@@ -9,7 +9,7 @@
     }
 }
 // Match Save to's constrained content width, with enough height for the filters.
-#search-controls.offcanvas-bottom {
+#search-controls.offcanvas-bottom, #composer-controls.offcanvas-bottom {
     max-height: calc(100vh - 280px) !important;
     max-height: calc(100dvh - 280px) !important;
     box-shadow: 0 -12px 40px rgba(20, 29, 44, .12);
@@ -18,7 +18,7 @@
 .search-controls {
     display: flex; flex-direction: column; width: 100%; max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px);
     .save-to-panel__header { border-bottom: 0; flex-shrink: 0; }
-    [data-search-reset] { font-size: 14px; padding: 3px 0; }
+    [data-search-reset], [data-composer-panel-reset] { font-size: 14px; padding: 3px 0; }
     &__content { padding: 0 20px 20px; overflow-y: auto; min-height: 0; }
     legend, h3 { float: none; width: auto; margin: 0 0 12px; font-family: Poppins, sans-serif; font-size: 14px; font-weight: 600; }
     h3 { font-size: 16px; }

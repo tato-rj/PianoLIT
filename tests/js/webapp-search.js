@@ -15,7 +15,7 @@ module.exports = async function () {
             html: '', visible: false, enabled: true,
             append(value) { this.html += value; return this; },
             empty() { this.html = ''; return this; },
-            text(value) { this.html = value; return this; },
+            text(value) { if (!arguments.length) return this.html; this.html = value; return this; },
             show() { this.visible = true; return this; },
             hide() { this.visible = false; return this; },
             enable() { this.enabled = true; return this; },
@@ -31,10 +31,13 @@ module.exports = async function () {
         context.loadResults();
         assert.strictEqual(pending.length, 1, 'Scroll while loading must not duplicate requests');
         assert.strictEqual(new URL(pending[0].url).searchParams.get('page'), '1');
-        pending[0].resolve({data: '<article>first results</article>'});
+        assert.strictEqual(new URL(pending[0].url).searchParams.get('include_total'), '1');
+        pending[0].resolve({data: '<article>first results</article>', headers: {'x-search-total': '24'}});
         await settle();
         assert.strictEqual(context.window.done, guest);
         assert.strictEqual(context.window.loading, false);
+        assert.strictEqual($('#search-results-count').html, '24 results');
+        assert.strictEqual($('#search-results-count').visible, true);
         if (guest) {
             context.loadResults();
             assert.strictEqual(pending.length, 1, 'Visitor scrolling must stop after the first response');
@@ -43,20 +46,24 @@ module.exports = async function () {
         context.applyFilters(['latest filter']);
         const stale = pending[pending.length - 2];
         const latest = pending[pending.length - 1];
-        latest.resolve({data: '<article>latest results</article>'});
+        latest.resolve({data: '<article>latest results</article>', headers: {'x-search-total': '1'}});
         await settle();
-        stale.resolve({data: '<article>stale results</article>'});
+        stale.resolve({data: '<article>stale results</article>', headers: {'x-search-total': '99'}});
         await settle();
         assert.strictEqual($('#pieces-list').html.includes('stale results'), false);
+        assert.strictEqual($('#search-results-count').html, '1 result', 'A stale response cannot replace the current total');
         assert.strictEqual(context.window.loading, false);
         if (!guest) {
             context.loadResults();
             pending[pending.length - 1].resolve({data: ''});
             await settle();
             assert.strictEqual($('#empty').visible, false, 'End of pagination is not an empty search');
-            assert.strictEqual($('#search-feedback strong').html, 'We found a total of 3 results');
+            assert.strictEqual($('#search-results-count').html, '1 result');
+            assert.strictEqual($('#search-feedback').visible, false, 'There is no total message at the bottom');
         }
         context.reset();
+        assert.strictEqual($('#search-results-count').visible, false, 'New searches hide the previous total');
+        assert.strictEqual($('#search-results-count').html, '');
         context.applyFilters([]);
         pending[pending.length - 1].reject(new Error('offline'));
         await settle();
@@ -66,10 +73,11 @@ module.exports = async function () {
         assert.strictEqual($('#search-feedback').visible, true);
         assert.strictEqual($('#options button, .options-columns input').enabled, true);
         context.loadResults();
-        pending[pending.length - 1].resolve({data: ' \n '});
+        pending[pending.length - 1].resolve({data: ' \n ', headers: {'x-search-total': '0'}});
         await settle();
         assert.strictEqual(context.window.done, true);
         assert.strictEqual($('#empty').visible, true);
+        assert.strictEqual($('#search-results-count').html, '0 results');
         assert.strictEqual($('#search-feedback').visible, false);
         assert.strictEqual($('#empty [data-empty-message]').html, 'We couldn’t find any pieces matching “happy”.');
         context.reset();
@@ -78,6 +86,17 @@ module.exports = async function () {
         pending[pending.length - 1].resolve({data: ''});
         await settle();
         assert.strictEqual($('#empty [data-empty-message]').html, 'We couldn’t find any pieces matching your filters.');
+        if (!guest) {
+            context.reset(); context.applyFilters([]);
+            pending[pending.length - 1].resolve({data: '<article>legacy results</article>'});
+            await settle(); context.loadResults();
+            pending[pending.length - 1].resolve({data: ''}); await settle();
+            assert.strictEqual($('#search-results-count').html, '3 results', 'Header-less responses still move the final count to the top');
+            assert.strictEqual($('#search-feedback').visible, false);
+        }
     }
+    const countMarkup = template.indexOf('id="search-results-count"');
+    assert(countMarkup > template.indexOf("@include('webapp.search.form')") && countMarkup < template.indexOf('id="pieces-list"'));
+    assert(!template.includes('We found a total of'));
     console.log('Passed: webapp visitor search stop, duplicate requests, filter races, retry and empty results.');
 };

@@ -8,11 +8,11 @@
     <div data-erase="search" class="input-erase position-absolute cursor-pointer p-1 px-2 text-dark" style="display: none;">&times;</div>
     @endif
 
-    @empty($directorySearch)
-    <button type="button" class="btn-raw search-controls-toggle" data-bs-toggle="offcanvas" data-bs-target="#search-controls" aria-controls="search-controls" aria-label="Sort and filter pieces">
+    @if(empty($directorySearch) || !empty($composerControls))
+    <button type="button" class="btn-raw search-controls-toggle" data-bs-toggle="offcanvas" data-bs-target="#{{ !empty($composerControls) ? 'composer-controls' : 'search-controls' }}" aria-controls="{{ !empty($composerControls) ? 'composer-controls' : 'search-controls' }}" aria-label="Sort and filter {{ !empty($composerControls) ? 'composers' : 'pieces' }}" @if(!empty($composerControls)) data-composer-controls hidden @endif>
       @icon('sliders-horizontal', ['mr' => 0])
     </button>
-    @endempty
+    @endif
   </div>
 </form>
 
@@ -21,10 +21,14 @@
 	<div class="d-flex flex-wrap justify-content-center"></div>
 </div>
 
-@empty($directorySearch)
+@if(!empty($composerControls))
+    @push('page-navigation')
+        @include('webapp.composers.controls')
+    @endpush
+@elseif(empty($directorySearch))
     @once
         @push('page-navigation')
             @include('webapp.search.controls')
         @endpush
     @endonce
-@endempty
+@endif

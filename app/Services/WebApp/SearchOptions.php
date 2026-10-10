@@ -16,10 +16,11 @@ class SearchOptions
         'ensemble' => ['solo', '4 hands', '6 hands', '8 hands', '2 pianos'],
     ];
     const SORTS = ['relevance', 'title_asc', 'title_desc', 'composer', 'level', 'period'];
-    private $params;
+    private $params, $request;
 
     public function __construct(Request $request)
     {
+        $this->request = $request;
         $rules = ['sort' => ['nullable', Rule::in(self::SORTS)], 'facets' => 'nullable|array:level,period,length,type,ensemble',
             'audio_only' => 'nullable|boolean', 'video_only' => 'nullable|boolean', 'score_only' => 'nullable|boolean'];
         foreach (self::FACETS as $facet => $names) {
@@ -34,6 +35,15 @@ class SearchOptions
         return ($this->params['sort'] ?? 'relevance') !== 'relevance'
             || array_filter($this->params['facets'] ?? [])
             || !empty($this->params['audio_only']) || !empty($this->params['video_only']) || !empty($this->params['score_only']);
+    }
+
+    public function recordTotal($query)
+    {
+        if ($this->request->boolean('include_total') && (int) $this->request->input('page', 1) <= 1) {
+            $total = $query instanceof \Laravel\Scout\Builder
+                ? (int) ($query->raw()['nbHits'] ?? 0) : (clone $query)->count();
+            $this->request->attributes->set('webapp_search_total', $total);
+        }
     }
 
     public function filterQuery($query)
@@ -109,6 +119,7 @@ class SearchOptions
             });
         }
         $this->sortQuery($this->filterQuery($query));
+        $this->recordTotal($query);
         $pieces = auth('web')->guest() ? $query->limit(3)->get() : $query->simplePaginate(10)->getCollection();
         return PieceCards::load($pieces);
     }

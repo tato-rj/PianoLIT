@@ -11,14 +11,18 @@ class SearchController extends Controller
     public function results(Api $api, Request $request)
     {
         if ($request->wantsJson()) {
-            $request->validate(['page' => 'nullable|integer|min:0']);
+            $request->validate(['page' => 'nullable|integer|min:0', 'include_total' => 'nullable|boolean']);
             // A visitor cannot reveal additional results by requesting another page.
             if (! auth('web')->check() && (int) $request->input('page', 1) > 1) return '';
 
             $pieces = $request->has('catalogue')
                 ? app(\App\Services\WebApp\ExploreCatalogue::class)->results($request)
                 : $api->search($request)->filtered()->forWebApp();
-            return view('webapp.search.results', compact('pieces'))->render();
+            $response = response(view('webapp.search.results', compact('pieces'))->render());
+            if ($request->attributes->has('webapp_search_total')) {
+                $response->header('X-Search-Total', $request->attributes->get('webapp_search_total'));
+            }
+            return $response;
         }
 
         return view('webapp.search.index');

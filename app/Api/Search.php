@@ -106,10 +106,24 @@ class Search
     // Browser rendering needs only card data; keep the mobile get() contract intact.
     public function forWebApp()
     {
-        if (! $this->query) return collect();
+        if (! $this->query) {
+            if ($this->request->boolean('include_total')) $this->request->attributes->set('webapp_search_total', 0);
+            return collect();
+        }
 
         $controls = new \App\Services\WebApp\SearchOptions($this->request);
-        if ($controls->active()) return $controls->results($this->query, $this->request->filters ?? []);
+        if ($controls->active() || ($this->lateFilter && $this->request->boolean('include_total'))) {
+            return $controls->results($this->query, $this->request->filters ?? []);
+        }
+        if ($this->query instanceof \Laravel\Scout\Builder && $this->request->boolean('include_total') && $this->options) {
+            // Scout already returns total hits with a paginated search response.
+            // Reuse that metadata instead of making a separate count request.
+            $page = auth('web')->guest() ? 1 : max(1, (int) $this->request->input('page', 1));
+            $batch = $this->query->paginate(auth('web')->guest() ? 3 : 10, 'page', $page);
+            if ($page === 1) $this->request->attributes->set('webapp_search_total', $batch->total());
+            return \App\Services\WebApp\PieceCards::load($batch->getCollection());
+        }
+        $controls->recordTotal($this->query);
 
         $guest = ! auth('web')->check();
         if ($guest && $this->lateFilter) {
