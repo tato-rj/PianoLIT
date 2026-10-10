@@ -1,0 +1,21 @@
+.bottom-sheet-handle {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 64px;
+    height: 44px;
+    margin: 0 auto;
+    padding: 12px 0 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+
+    span {
+        width: 36px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--color-border);
+    }
+}

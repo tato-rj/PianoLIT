@@ -2378,3 +2378,11 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Scoped to Explore disclosure summaries; other app pages, routes, APIs and media access are unchanged.
 - **Verification:** Live click-then-Shift check confirms focus-visible remains active with outline none/0px and the subtle background. Tab moves into All composers and Shift+Tab returns to the heading without an outline. Production build and app/admin CSS-variable checks pass; diff checks pass.
 - **Remaining work / limits:** Not deployed; physical-device browsers were not evaluated.
+
+### 2026-10-10 — Replace bottom-sheet close icon with a gray handle (P3, complete locally)
+
+- **Request / evidence:** Bottom offcanvas panels should use a centered Apple-style gray line instead of a close X. The template inventory has one bottom offcanvas, the shared Save to sheet; Options and admin Notifications are side panels.
+- **Implementation / affected files:** Added a reusable `components/bottom-sheet-handle.blade.php` control and `_bottom-sheet.scss`; replaced Save to's close icon and adjusted header spacing. The 36×5px gray line has a 64×44px button target and an accessible close label. Rebuilt app CSS and updated its manifest hash.
+- **Compatibility:** Existing Bootstrap click, backdrop, Escape and focus behavior remain; this is a tappable dismiss control, not a new drag gesture. Side panels, dialogs, audio controls, routes, account writes and mobile APIs are unchanged.
+- **Verification:** Isolated production build and app/admin CSS-variable checks pass. Save to regression passes (1 test / 13 assertions). The broader query/guest run had 22 passing tests and two failures in composer-entry and My pieces folder-copy expectations; both failures reproduce with the original Save to template. A mobile browser preview using rendered fixture HTML and the built CSS shows the centered gray handle without an X; handle and Escape dismissal work. Diff checks pass.
+- **Remaining work / limits:** Not deployed; preview uses isolated fixture data, and physical-device touch testing was not performed.
