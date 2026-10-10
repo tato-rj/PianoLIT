@@ -1,0 +1,114 @@
+const assert = require('assert');
+const api = require('../../resources/js/views/composer-globe');
+
+module.exports = async function () {
+    const map = {features: [
+        ['DE', 'Germany', 'Europe', 51, 10], ['FR', 'France', 'Europe', 47, 2], ['JP', 'Japan', 'Asia', 36, 138]
+    ].map(([code, name, continent, lat, lng]) => ({properties: {code, name, continent, lat, lng}, geometry: {type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]]}}))};
+    const catalogue = {
+        totals: {composers: 5, pieces: 13}, unmapped: {composers: 2, pieces: 4},
+        countries: [{id: 1, code: 'DE', name: 'Germany', continent: 'Europe', composers: 2, pieces: 5, url: '/composers?country=1'},
+            {id: 2, code: '', name: 'Japan', continent: 'Asia', composers: 1, pieces: 4, url: '/composers?country=2'},
+            {id: 3, code: '', name: '<Unmapped>', continent: null, composers: 1, pieces: 2, url: '/composers?country=3'}],
+        continents: [{name: 'Europe', composers: 2, pieces: 5, countries: 1, url: '/composers?continent=Europe'},
+            {name: 'Asia', composers: 1, pieces: 4, countries: 1, url: '/composers?continent=Asia'}]
+    };
+    const model = api.buildModel(map, JSON.parse(JSON.stringify(catalogue)));
+    assert.strictEqual(model.places['country:DE'].pieces, 5);
+    assert.strictEqual(model.places['country:JP'].composers, 1, 'Missing ISO codes match recorded country names');
+    assert.strictEqual(model.places['country:FR'].composers, 0, 'Countries without repertoire remain selectable with zero counts');
+    assert.strictEqual(model.places['recorded:3'].pieces, 2, 'Unmapped countries keep their recorded counts');
+    assert.strictEqual(model.places['continent:Europe'].geometry.coordinates.length, 2);
+    const coarseMap = Object.assign({}, map, {worldFeatures: [map.features[0]]});
+    const coarseModel = api.buildModel(coarseMap, JSON.parse(JSON.stringify(catalogue)));
+    assert.strictEqual(coarseModel.places['continent:Europe'].geometry.coordinates.length, 1, 'World view uses lighter geometry');
+    assert.strictEqual(coarseModel.countries.length, model.countries.length, 'All detailed countries remain selectable');
+    assert.strictEqual(model.world.pieces, 13, 'World totals include missing geography');
+    assert.strictEqual(api.nextMode(1.3, false), true);
+    assert.strictEqual(api.nextMode(1.4, true), true);
+    assert.strictEqual(api.nextMode(1.4, false), false, 'Hysteresis prevents flicker near the zoom boundary');
+    assert.strictEqual(api.nextMode(1.6, true), false);
+
+    function node() {
+        return {events: {}, children: [], hidden: false, disabled: false, attrs: {}, textContent: '',
+            clientWidth: 900, clientHeight: 600,
+            addEventListener(key, fn) { this.events[key] = fn; },
+            setAttribute(key, value) { this.attrs[key] = value; }, getAttribute(key) { return this.attrs[key]; },
+            removeAttribute(key) { delete this.attrs[key]; }, appendChild(child) { this.children.push(child); }};
+    }
+    function harness(fetch) {
+        const elements = {}, modal = node(), doc = node(), stage = node();
+        modal.attrs = {'data-globe-map': '/map', 'data-globe-catalogue': '/catalogue'};
+        modal.querySelector = selector => elements[selector] || (elements[selector] = node());
+        const canvas = modal.querySelector('[data-globe-canvas]'); canvas.parentNode = stage;
+        doc.getElementById = () => modal; doc.createElement = node;
+        let instances = 0, paused = 0, resumed = 0, destroyed = 0;
+        const calls = {}, renderCanvas = node(), pov = {altitude: 2.05, lat: 23, lng: 15};
+        const controls = {};
+        const globe = new Proxy({}, {get(target, key) {
+            if (key === 'pointOfView') return value => { if (value) { Object.assign(pov, value); if (calls.onZoom) calls.onZoom(pov); return globe; } return pov; };
+            if (key === 'controls') return () => controls;
+            if (key === 'getGlobeRadius') return () => 100;
+            if (key === 'renderer') return () => ({setPixelRatio() {}, domElement: renderCanvas});
+            if (key === 'globeMaterial') return () => ({color: {set() {}}, emissive: {set() {}}});
+            if (key === 'pauseAnimation') return () => { paused++; };
+            if (key === 'resumeAnimation') return () => { resumed++; };
+            if (key === '_destructor') return () => { destroyed++; };
+            return value => { calls[key] = value; return globe; };
+        }});
+        const win = {fetch, Globe: function () { instances++; return globe; }, matchMedia: () => ({matches: true}),
+            setTimeout, clearTimeout, addEventListener() {}, ResizeObserver: class {observe() {}}};
+        api.initialize(doc, win);
+        return {elements, modal, doc, canvas, calls, pov, renderCanvas, controls,
+            get instances() { return instances; }, get paused() { return paused; }, get resumed() { return resumed; }, get destroyed() { return destroyed; }};
+    }
+    const requests = [];
+    const h = harness(url => new Promise(resolve => requests.push({url, resolve})));
+    const get = name => h.elements['[data-globe-' + name + ']'];
+    assert.strictEqual(requests.length, 0, 'No WebGL or data request before opening the modal');
+    assert.strictEqual(get('zoom-in').disabled, true);
+    h.modal.events['shown.bs.modal']();
+    assert.strictEqual(requests.length, 2);
+    h.modal.events['hide.bs.modal']();
+    requests.forEach(request => request.resolve({ok: true, json: () => Promise.resolve(request.url === '/map' ? map : JSON.parse(JSON.stringify(catalogue)))}));
+    async function settle() { for (let i = 0; i < 15; i++) await Promise.resolve(); }
+    await settle();
+    assert.strictEqual(h.instances, 0, 'Closing while data loads never starts a hidden renderer');
+    h.modal.events['shown.bs.modal']();
+    assert.strictEqual(h.instances, 1);
+    assert.strictEqual(get('composers').textContent, '5');
+    assert.strictEqual(get('unmapped').hidden, false);
+    get('place').value = 'country:DE'; get('place').events.change();
+    assert.strictEqual(get('title').textContent, 'Germany');
+    assert.strictEqual(get('pieces').textContent, '5');
+    assert.strictEqual(get('browse').href, '/composers?country=1');
+    assert.strictEqual(get('mode').textContent, 'Countries');
+    get('place').value = 'country:FR'; get('place').events.change();
+    assert.strictEqual(get('composers').textContent, '0');
+    assert.strictEqual(get('browse').hidden, true, 'Zero-count selections never retain the previous browse link');
+    get('home').events.click();
+    assert.strictEqual(get('title').textContent, 'A world of music');
+    assert.strictEqual(get('mode').textContent, 'Continents');
+    get('zoom-in').events.click(); get('zoom-in').events.click();
+    assert.strictEqual(get('mode').textContent, 'Countries');
+    h.calls.onZoom({altitude: 2}); assert.strictEqual(get('mode').textContent, 'Continents');
+    let prevented = false;
+    h.canvas.events.keydown({target: h.canvas, key: 'ArrowRight', preventDefault() { prevented = true; }});
+    assert.strictEqual(prevented, true); assert.strictEqual(h.pov.lng, 30);
+    h.modal.events['hide.bs.modal'](); assert(h.paused > 0);
+    h.doc.hidden = true; h.doc.events.visibilitychange();
+    const resumed = h.resumed; h.modal.events['shown.bs.modal'](); assert.strictEqual(h.resumed, resumed);
+    h.doc.hidden = false; h.doc.events.visibilitychange(); assert(h.resumed > resumed);
+    h.renderCanvas.events.webglcontextlost({preventDefault() {}});
+    assert.strictEqual(h.destroyed, 1); assert.strictEqual(get('error').hidden, false);
+    assert.strictEqual(get('place').disabled, false, 'Place picker remains usable without WebGL');
+
+    let failing = true;
+    const failure = harness(url => failing ? Promise.reject(new Error('offline')) : Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? map : JSON.parse(JSON.stringify(catalogue)))}));
+    failure.modal.events['shown.bs.modal'](); await settle();
+    assert.strictEqual(failure.elements['[data-globe-error]'].hidden, false);
+    assert.strictEqual(failure.elements['[data-globe-loading]'].hidden, true);
+    failing = false; failure.elements['[data-globe-retry]'].events.click(); await settle();
+    assert.strictEqual(failure.instances, 1, 'Failed requests can be retried without reloading the page');
+    console.log('Passed: composer globe counts, missing geography, zoom thresholds, lazy loading, close/reopen races, keyboard controls, context loss and retry.');
+};

@@ -8,8 +8,8 @@
 @section('content')
 @include('webapp.layouts.header', ['title' => $directoryTitle ?? 'Composers', 'subtitle' => 'Explore our list of composers'])
 
-@if(request()->filled('gender') || request()->filled('country') || (request()->filled('composers') && request('composers') !== 'all'))
-<p><a href="{{ route('webapp.composers.index') }}">@icon('arrow-left') All composers</a>@if(request()->filled('country') && $composers->first())<span class="text-muted ms-3">{{ optional($composers->first()->country)->name }}</span>@endif</p>
+@if(request()->filled('gender') || request()->filled('country') || request()->filled('continent') || (request()->filled('composers') && request('composers') !== 'all'))
+<p><a href="{{ route('webapp.composers.index') }}">@icon('arrow-left') All composers</a>@if(request()->filled('country') && $composers->first())<span class="text-muted ms-3">{{ optional($composers->first()->country)->name }}</span>@elseif(request()->filled('continent'))<span class="text-muted ms-3">{{ request('continent') }}</span>@endif</p>
 @endif
 <section id="composers-directory" aria-label="Composer directory">
     <div class="d-flex align-items-center gap-3 mb-4">
@@ -54,4 +54,5 @@
 
 @push('scripts')
 <script src="{{ mix('js/views/composers.js') }}"></script>
+<script src="{{ mix('js/views/composer-globe.js') }}"></script>
 @endpush

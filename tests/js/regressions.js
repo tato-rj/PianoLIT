@@ -33,6 +33,7 @@ async function main() {
     await require('./escore-wizard')();
     require('./collections')();
     require('./composers')();
+    await require('./composer-globe')();
     await require('./highlights')();
     require('./folders')();
     await require('./playlist-player')();
