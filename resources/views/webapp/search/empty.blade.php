@@ -4,9 +4,9 @@
 	<p class="search-empty__message" data-empty-message></p>
 	<p class="search-empty__hint text-muted">Try a different keyword, or explore our library to discover new pieces.</p>
 	<div class="search-empty__actions">
-		<a href="{{ route('webapp.search.results', ['catalogue' => 1]) }}" class=" ">
+{{-- 		<a href="{{ route('webapp.search.results', ['catalogue' => 1]) }}" class=" ">
 			@icon('search') Clear search
-		</a>
+		</a> --}}
 		<div class="search-empty__destinations">
 			<a href="{{ route('webapp.explore') }}" class="btn btn-secondary">
 				@icon('music') Explore our library
