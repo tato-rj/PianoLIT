@@ -32,7 +32,7 @@
                 continent: counts && counts.continent ? counts.continent : p.continent,
                 lat: p.lat, lng: p.lng, geometry: feature.geometry,
                 composers: counts ? counts.composers : 0, pieces: counts ? counts.pieces : 0,
-                url: counts ? counts.url : null
+                url: counts ? counts.url : null, portraitsUrl: counts ? counts.portraits_url : null
             };
             if (counts) matched.push(counts);
             countries.push(country);
@@ -66,6 +66,7 @@
         var home = element('home'), closer = element('closer');
         var globe = null, model = null, selection = null, hovered = null;
         var hoveredCountry = null, tooltipCountry = null, tooltipTitle = null, tooltipDetail = null;
+        var portraitCache = {}, renderPortraitPage = null;
         var countryMode = false, open = false, pending = null, libraryPromise = null;
         var reducedMotion = win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var duration = reducedMotion ? 0 : 650;
@@ -114,6 +115,7 @@
             [zoomIn, zoomOut, home, closer].forEach(function (button) { button.disabled = !enabled; });
         }
         function updateDetails(place) {
+            if (!selection || selection.key !== place.key) renderPortraitPage = null;
             selection = place;
             picker.value = place.key;
             element('kind').textContent = place.kind === 'World' ? 'OUR LIBRARY, WORLDWIDE' : place.kind === 'Country' ? (place.continent || 'Country') : 'CONTINENT';
@@ -130,7 +132,89 @@
             if (place.url) browse.href = place.url; else browse.removeAttribute('href');
             closer.hidden = place.kind !== 'Continent';
             renderRegions(place);
+            loadPortraits(place);
+            updatePortraitStatus();
             if (globe) { refreshColors(); updateLabels(); }
+        }
+        function loadPortraits(place, retrying) {
+            if (place.kind !== 'Country' || !place.composers || !place.portraitsUrl || typeof place.lat !== 'number') return;
+            if (portraitCache[place.key] && !retrying) return;
+            var entry = portraitCache[place.key] = {status: 'loading', page: 0};
+            function refresh() {
+                // A late response can be cached, but only the current selection may
+                // change the visible cards or status (including after modal closure).
+                if (open && selection && selection.key === place.key) {
+                    updatePortraitStatus();
+                    if (globe) updateLabels();
+                }
+            }
+            fetchJson(place.portraitsUrl).then(function (data) {
+                if (!Array.isArray(data.composers)) throw new Error('Invalid portrait data.');
+                entry.status = 'ready'; entry.composers = data.composers;
+                entry.marker = {key: 'portraits:' + place.key, kind: 'Portraits', countryKey: place.key,
+                    name: place.name, lat: place.lat, lng: place.lng};
+                refresh();
+            }).catch(function () { entry.status = 'error'; refresh(); });
+        }
+        function updatePortraitStatus() {
+            var entry = selection && selection.kind === 'Country' ? portraitCache[selection.key] : null;
+            var failed = entry && entry.status === 'error';
+            element('portrait-status').hidden = !entry || entry.status === 'ready';
+            element('portrait-message').textContent = failed ? 'Composer portraits could not load.' : 'Loading composer portraits…';
+            element('portrait-retry').hidden = !failed;
+        }
+        function portraitElement(marker) {
+            var entry = portraitCache[marker.countryKey];
+            var group = doc.createElement('div'); group.className = 'composer-globe-portraits';
+            group.setAttribute('role', 'group'); group.setAttribute('aria-label', 'Composers from ' + marker.name);
+            var row = doc.createElement('div'); row.className = 'composer-globe-portrait-row';
+            var navigation = doc.createElement('div'); navigation.className = 'composer-globe-portrait-nav';
+            var previous = doc.createElement('button'), next = doc.createElement('button'), range = doc.createElement('span');
+            previous.type = next.type = 'button'; previous.textContent = '‹'; next.textContent = '›';
+            previous.setAttribute('aria-label', 'Previous composers from ' + marker.name);
+            next.setAttribute('aria-label', 'Next composers from ' + marker.name);
+            range.setAttribute('aria-live', 'polite'); range.setAttribute('aria-atomic', 'true');
+            navigation.appendChild(previous); navigation.appendChild(range); navigation.appendChild(next);
+            var pin = doc.createElement('span'); pin.className = 'composer-globe-portrait-pin'; pin.textContent = marker.name;
+            group.appendChild(row); group.appendChild(navigation); group.appendChild(pin);
+            ['pointerdown', 'mousedown', 'touchstart', 'click', 'dblclick'].forEach(function (type) {
+                group.addEventListener(type, function (event) { event.stopPropagation(); });
+            });
+            var lastSize = 0, lastPage = -1;
+            function render() {
+                var size = stage.clientWidth < 520 ? 2 : 3;
+                var pages = Math.ceil(entry.composers.length / size);
+                entry.page = Math.max(0, Math.min(entry.page, pages - 1));
+                if (lastSize === size && lastPage === entry.page) return;
+                lastSize = size; lastPage = entry.page;
+                var start = entry.page * size;
+                row.textContent = '';
+                entry.composers.slice(start, start + size).forEach(function (composer) {
+                    var card = doc.createElement('a'); card.className = 'composer-globe-polaroid';
+                    card.href = composer.url;
+                    var pieceCount = number(composer.pieces) + (composer.pieces === 1 ? ' piece' : ' pieces');
+                    card.setAttribute('aria-label', composer.name + ', ' + pieceCount + '. Browse pieces');
+                    var photo = doc.createElement('span'); photo.className = 'composer-globe-polaroid-photo';
+                    var initials = doc.createElement('span'); initials.className = 'composer-globe-polaroid-initials';
+                    initials.textContent = composer.name.trim().split(/\s+/).map(function (name) { return name.charAt(0); }).slice(0, 2).join('');
+                    initials.setAttribute('aria-hidden', 'true'); photo.appendChild(initials);
+                    if (composer.image) {
+                        var image = doc.createElement('img'); image.alt = ''; image.decoding = 'async'; image.draggable = false;
+                        image.addEventListener('error', function () { image.hidden = true; });
+                        image.src = composer.image; photo.appendChild(image);
+                    }
+                    var name = doc.createElement('span'); name.className = 'composer-globe-polaroid-name'; name.textContent = composer.name;
+                    var pieces = doc.createElement('small'); pieces.className = 'composer-globe-polaroid-count'; pieces.textContent = pieceCount;
+                    card.appendChild(photo); card.appendChild(name); card.appendChild(pieces); row.appendChild(card);
+                });
+                navigation.hidden = pages < 2;
+                range.textContent = (start + 1) + '–' + Math.min(start + size, entry.composers.length) + ' of ' + entry.composers.length;
+                previous.disabled = entry.page === 0; next.disabled = entry.page === pages - 1;
+            }
+            previous.addEventListener('click', function () { entry.page--; render(); });
+            next.addEventListener('click', function () { entry.page++; render(); });
+            renderPortraitPage = render; render();
+            return group;
         }
         function renderRegions(place) {
             regionList.textContent = '';
@@ -232,6 +316,8 @@
                     delta = Math.min(delta, 360 - delta);
                     return Math.abs(country.lat - pov.lat) < 32 && delta < 45;
                 }).sort(function (a, b) { return b.pieces - a.pieces; }).slice(0, 10);
+                var portraits = selection && selection.kind === 'Country' ? portraitCache[selection.key] : null;
+                if (portraits && portraits.status === 'ready' && portraits.composers.length) labels = [portraits.marker];
             }
             // Reuse the same objects so CSS2D labels need not be rebuilt on rotation.
             var key = labels.map(function (place) { return place.key; }).join('|');
@@ -268,7 +354,10 @@
             globe.pointOfView({lat: 23, lng: 15, altitude: 2.05}, duration);
         }
         function resize() {
-            if (globe && open) globe.width(stage.clientWidth).height(stage.clientHeight);
+            if (globe && open) {
+                globe.width(stage.clientWidth).height(stage.clientHeight);
+                if (renderPortraitPage) renderPortraitPage();
+            }
         }
         function createGlobe() {
             try {
@@ -280,6 +369,7 @@
                     .polygonAltitude(0.005).polygonCapCurvatureResolution(4).polygonsTransitionDuration(reducedMotion ? 0 : 180)
                     .polygonLabel(tooltip).onPolygonHover(hover).onPolygonClick(function (place) { choose(interactivePlace(place)); })
                     .htmlAltitude(0.023).htmlTransitionDuration(0).htmlElement(function (place) {
+                        if (place.kind === 'Portraits') return portraitElement(place);
                         var label = doc.createElement('button'); label.type = 'button';
                         label.className = 'composer-globe-label' + (place.kind === 'Country' ? ' composer-globe-label-country' : '');
                         label.textContent = place.name;
@@ -309,6 +399,7 @@
             }
             canvas.textContent = ''; controlsEnabled(false);
             hovered = null; hoveredCountry = null; tooltipCountry = null; tooltipTitle = null; tooltipDetail = null;
+            renderPortraitPage = null;
         }
         function showRenderError() {
             loading.hidden = true; error.hidden = false;
@@ -316,7 +407,7 @@
         }
         function start() {
             error.hidden = true;
-            if (globe) { resize(); if (!doc.hidden) globe.resumeAnimation(); return; }
+            if (globe) { resize(); updatePortraitStatus(); updateLabels(); if (!doc.hidden) globe.resumeAnimation(); return; }
             if (model) { createGlobe(); return; }
             if (pending) return;
             loading.hidden = false;
@@ -339,6 +430,9 @@
         if (win.ResizeObserver) new win.ResizeObserver(resize).observe(stage);
         else win.addEventListener('resize', resize);
         retry.addEventListener('click', start);
+        element('portrait-retry').addEventListener('click', function () {
+            if (selection) { loadPortraits(selection, true); updatePortraitStatus(); }
+        });
         picker.addEventListener('change', function () { if (model) choose(model.places[picker.value]); });
         zoomIn.addEventListener('click', function () { zoom(0.7); });
         zoomOut.addEventListener('click', function () { zoom(1.4); });

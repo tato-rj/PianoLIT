@@ -160,6 +160,53 @@
         &:hover { color: #f1d69e; background: rgba(7, 23, 37, .9); }
     }
     .composer-globe-label-country { font-size: 11px; font-weight: 400; letter-spacing: 0; }
+    .composer-globe-portraits {
+        display: flex; flex-direction: column; align-items: center; gap: 12px;
+        pointer-events: none; text-align: center;
+    }
+    .composer-globe-portrait-row { display: flex; align-items: center; gap: 12px; padding: 10px 8px; }
+    .composer-globe-polaroid {
+        display: block; width: 132px; padding: 8px 8px 10px; border: 1px solid #f0ece1;
+        background: #fffdf7; color: #203441 !important; text-decoration: none !important;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, .35), 0 2px 5px rgba(0, 0, 0, .18);
+        transform: rotate(-5deg); transition: transform .18s ease, box-shadow .18s ease;
+        pointer-events: auto; touch-action: manipulation;
+        &:nth-child(2n) { transform: translateY(-9px) rotate(3deg); }
+        &:nth-child(3n) { transform: rotate(6deg); }
+        &:only-child { transform: rotate(-3deg); }
+        &:hover, &:focus-visible { transform: translateY(-12px) rotate(0); box-shadow: 0 20px 36px rgba(0, 0, 0, .42); }
+    }
+    .composer-globe-polaroid-photo {
+        position: relative; display: grid; place-items: center; height: 126px; overflow: hidden;
+        background: linear-gradient(145deg, #e8e1d1, #c4d5d5); color: #49606a;
+        img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
+    }
+    .composer-globe-polaroid-initials { font-family: Georgia, serif; font-size: 32px; letter-spacing: .03em; }
+    .composer-globe-polaroid-name {
+        display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+        min-height: 30px; margin-top: 9px; font-size: 12px; font-weight: 600; line-height: 15px; overflow-wrap: anywhere;
+    }
+    .composer-globe-polaroid-count { display: block; margin-top: 4px; color: #68747a; font-size: 10px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+    .composer-globe-portrait-nav {
+        display: flex; align-items: center; gap: 12px; border-radius: 24px; padding: 4px;
+        background: rgba(7, 23, 37, .9); border: 1px solid #466173; color: #e4edf1; pointer-events: auto;
+        span { font-size: 11px; min-width: 62px; font-variant-numeric: tabular-nums; }
+        button {
+            width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: #e7c88b;
+            font-size: 25px; line-height: 1; cursor: pointer;
+            &:hover { background: #264b60; }
+            &:disabled { opacity: .35; cursor: default; }
+        }
+    }
+    .composer-globe-portrait-pin {
+        position: relative; padding: 5px 10px; border-radius: 14px; background: rgba(7, 23, 37, .8);
+        color: #f1d69e; font-size: 11px; letter-spacing: .04em;
+        &::after { content: ''; display: block; width: 5px; height: 5px; border-radius: 50%; background: #e7c88b; margin: 6px auto 0; }
+    }
+    .composer-globe-portrait-status {
+        font-size: 12px; color: #afc6d4; margin: 0 0 16px;
+        button { padding: 3px 8px; margin-left: 4px; border: 1px solid #466173; border-radius: 5px; background: #1c384b; color: #e7c88b; }
+    }
     .composer-globe-panel {
         min-height: 0; min-width: 0; padding: 28px; overflow-y: auto;
         border-left: 1px solid rgba(164, 200, 219, .13); background: #0d2334;
@@ -205,6 +252,14 @@
         .composer-globe-help { font-size: 11px; bottom: 24px; span { padding: 0 3px; } }
     }
     @media (max-width: 699.98px) {
+        .composer-globe-portraits { gap: 6px; }
+        .composer-globe-portrait-row { gap: 10px; padding: 8px; }
+        .composer-globe-polaroid { width: 106px; padding: 6px 6px 8px; }
+        .composer-globe-polaroid-photo { height: 90px; }
+        .composer-globe-polaroid-name { font-size: 10px; line-height: 13px; min-height: 26px; margin-top: 6px; }
+        .composer-globe-polaroid-count { font-size: 9px; }
+        .composer-globe-portrait-nav button { width: 32px; height: 32px; }
+        .composer-globe-portrait-pin { font-size: 10px; }
         .fullscreen-modal-header { padding: 16px 18px; h1 { font-size: 21px; } }
         .composer-globe-layout { display: block; overflow-y: auto; }
         .composer-globe-stage { height: 42vh; height: 42dvh; min-height: 290px; }
@@ -216,6 +271,7 @@
         .composer-globe-panel .form-select { margin-bottom: 24px; }
         .composer-globe-stats { margin: 20px 0; strong { font-size: 30px; } }
     }
+    @media (prefers-reduced-motion: reduce) { .composer-globe-polaroid { transition: none; } }
 }
 
 // globe.gl places its pointer tooltip inside the canvas container.

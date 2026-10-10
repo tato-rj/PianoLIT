@@ -26,7 +26,8 @@ class ComposerGlobeTest extends ReviewTestCase
             $unknown = create(Country::class, ['name' => 'Unmapped country', 'flag_code' => null, 'continent' => null]);
             $empty = create(Country::class, ['name' => 'Canada', 'flag_code' => 'ca', 'continent' => 'North America']);
             foreach ([[$germany, 3], [$germany, 2], [$japan, 4], [$unknown, 2], [null, 2], [$empty, 0]] as $index => [$country, $count]) {
-                $composer = create(Composer::class, ['country_id' => optional($country)->id, 'name' => 'Globe composer '.$index]);
+                $composer = create(Composer::class, ['country_id' => optional($country)->id, 'name' => 'Globe composer '.$index,
+                    'cover_path' => $index === 1 ? '' : 'composers/globe-'.$index.'.jpg']);
                 if ($count) create(Piece::class, ['composer_id' => $composer->id], $count);
             }
             return compact('germany', 'japan', 'unknown', 'empty');
@@ -47,6 +48,7 @@ class ComposerGlobeTest extends ReviewTestCase
         $this->assertSame(2, $germany['composers']);
         $this->assertSame(5, $germany['pieces']);
         $this->assertSame(route('webapp.composers.index', ['country' => $countries['germany']->id]), $germany['url']);
+        $this->assertSame(route('webapp.composers.globe.country', ['country' => $countries['germany']->id]), $germany['portraits_url']);
         $europe = collect($data['continents'])->firstWhere('name', 'Europe');
         $this->assertSame(2, $europe['composers']); $this->assertSame(5, $europe['pieces']);
         $this->assertSame(1, $europe['countries']);
@@ -55,6 +57,28 @@ class ComposerGlobeTest extends ReviewTestCase
         $this->assertGuest('web');
         $this->assertArrayNotHasKey('continent', $countries['germany']->toArray());
         $response->assertDontSee('cover_image')->assertDontSee('audio')->assertDontSee('user_id');
+    }
+
+    public function test_country_portraits_only_include_eligible_composers_with_their_own_counts_and_public_fields()
+    {
+        $countries = $this->catalogue();
+        DB::enableQueryLog(); DB::flushQueryLog();
+        $response = $this->getJson(route('webapp.composers.globe.country', ['country' => $countries['germany']->id,
+            'user_id' => 123, 'country_id' => $countries['japan']->id]));
+        $queries = DB::getQueryLog(); DB::disableQueryLog();
+        $response->assertOk()->assertJsonPath('country_id', $countries['germany']->id)->assertJsonCount(2, 'composers')
+            ->assertJsonPath('composers.0.name', 'Globe composer 0')->assertJsonPath('composers.0.pieces', 3)
+            ->assertJsonPath('composers.1.name', 'Globe composer 1')->assertJsonPath('composers.1.pieces', 2)
+            ->assertJsonPath('composers.0.image', storage('composers/globe-0.jpg'))->assertJsonPath('composers.1.image', null)
+            ->assertJsonPath('composers.0.url', route('webapp.search.results', ['search' => 'Globe composer 0']));
+        $this->assertSame(['id', 'name', 'image', 'pieces', 'url'], array_keys($response->json('composers.0')));
+        $this->assertCount(2, $queries, 'Country binding and a single portrait query; no per-composer queries or default eager loading.');
+        $response->assertDontSee('biography')->assertDontSee('audio')->assertDontSee('cover_path')->assertDontSee('Globe composer 2');
+        $this->assertGuest('web');
+        $this->getJson(route('webapp.composers.globe.country', ['country' => $countries['empty']->id]))
+            ->assertOk()->assertJsonCount(0, 'composers');
+        $this->withExceptionHandling();
+        $this->getJson(route('webapp.composers.globe.country', ['country' => 999999]))->assertNotFound();
     }
 
     public function test_continent_and_country_links_match_the_globe_counts_and_validate_continents()

@@ -26,11 +26,14 @@ module.exports = async function () {
     assert.strictEqual(api.nextMode(1.6, true), false);
 
     function node() {
-        return {events: {}, children: [], hidden: false, disabled: false, attrs: {}, textContent: '',
+        let text = '';
+        const element = {events: {}, children: [], hidden: false, disabled: false, attrs: {},
             clientWidth: 900, clientHeight: 600,
             addEventListener(key, fn) { this.events[key] = fn; },
             setAttribute(key, value) { this.attrs[key] = value; }, getAttribute(key) { return this.attrs[key]; },
             removeAttribute(key) { delete this.attrs[key]; }, appendChild(child) { this.children.push(child); }};
+        Object.defineProperty(element, 'textContent', {get() { return text; }, set(value) { text = value; this.children = []; }});
+        return element;
     }
     function harness(fetch) {
         const elements = {}, modal = node(), doc = node(), stage = node();
@@ -52,10 +55,11 @@ module.exports = async function () {
             if (key === '_destructor') return () => { destroyed++; };
             return value => { calls[key] = value; callCounts[key] = (callCounts[key] || 0) + 1; return globe; };
         }});
+        let resize;
         const win = {fetch, Globe: function () { instances++; return globe; }, matchMedia: () => ({matches: true}),
-            setTimeout, clearTimeout, addEventListener() {}, ResizeObserver: class {observe() {}}};
+            setTimeout, clearTimeout, addEventListener() {}, ResizeObserver: class {constructor(callback) { resize = callback; } observe() {}}};
         api.initialize(doc, win);
-        return {elements, modal, doc, canvas, calls, callCounts, pov, renderCanvas, controls,
+        return {elements, modal, doc, canvas, calls, callCounts, pov, renderCanvas, controls, resize() { resize(); },
             get instances() { return instances; }, get paused() { return paused; }, get resumed() { return resumed; }, get destroyed() { return destroyed; }};
     }
     const requests = [];
@@ -167,6 +171,70 @@ module.exports = async function () {
     assert.strictEqual(scoped.calls.polygonsData, scopedShapes);
     assert.strictEqual(scoped.callCounts.polygonsData, 1, 'Changing highlight scope reuses all prepared geometry');
 
+    const portraitCatalogue = JSON.parse(JSON.stringify(catalogue));
+    portraitCatalogue.countries[0].portraits_url = '/portraits/DE';
+    portraitCatalogue.countries[1].portraits_url = '/portraits/JP';
+    const portraitRequests = [];
+    const portraits = harness(url => {
+        if (url === '/map' || url === '/catalogue') return Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? map : portraitCatalogue)});
+        return new Promise((resolve, reject) => portraitRequests.push({url, resolve, reject}));
+    });
+    const portraitGet = name => portraits.elements['[data-globe-' + name + ']'];
+    const pick = key => { portraitGet('place').value = key; portraitGet('place').events.change(); };
+    const hasPortraits = () => portraits.calls.htmlElementsData.some(place => place.kind === 'Portraits');
+    const complete = (request, composers) => request.resolve({ok: true, json: () => Promise.resolve({composers})});
+    portraits.modal.events['shown.bs.modal'](); await settle();
+    pick('continent:Europe'); portraitGet('closer').events.click();
+    assert.strictEqual(portraitRequests.length, 0, 'Continents and zooming into countries never fetch composer portraits');
+    assert.strictEqual(hasPortraits(), false);
+    pick('country:DE');
+    assert.strictEqual(portraitRequests[0].url, '/portraits/DE');
+    assert.strictEqual(portraitGet('portrait-status').hidden, false);
+    pick('country:JP');
+    const germanComposers = ['<Clara & Robert>', 'Second composer', 'Third composer', 'Fourth composer'].map((name, i) =>
+        ({id: i + 1, name, pieces: i + 1, image: i === 1 ? null : '/portrait-' + i + '.jpg', url: '/search?search=' + encodeURIComponent(name)}));
+    complete(portraitRequests[0], germanComposers); await settle();
+    assert.strictEqual(hasPortraits(), false, 'A late response for the previous country cannot replace the current view');
+    portraitRequests[1].reject(new Error('offline')); await settle();
+    assert.strictEqual(portraitGet('portrait-retry').hidden, false);
+    portraitGet('portrait-retry').events.click();
+    assert.strictEqual(portraitRequests.length, 3);
+    assert.strictEqual(portraitGet('portrait-retry').hidden, true);
+    portraits.modal.events['hide.bs.modal']();
+    complete(portraitRequests[2], [{id: 5, name: 'Japanese composer', pieces: 4, image: null, url: '/search?search=Japanese'}]); await settle();
+    assert.strictEqual(hasPortraits(), false, 'Portrait completion does not change a closed globe');
+    portraits.modal.events['shown.bs.modal']();
+    assert.strictEqual(hasPortraits(), true, 'Reopening displays the completed current-country request');
+    const single = portraits.calls.htmlElement(portraits.calls.htmlElementsData[0]);
+    assert.strictEqual(single.children[1].hidden, true, 'A single composer needs no pager');
+    pick('country:DE');
+    assert.strictEqual(portraitRequests.length, 3, 'Previously selected countries reuse cached portrait data');
+    const marker = portraits.calls.htmlElementsData[0];
+    const deck = portraits.calls.htmlElement(marker), row = deck.children[0], pager = deck.children[1];
+    assert.strictEqual(row.children.length, 3, 'Desktop renders at most three portraits at a time');
+    assert.strictEqual(row.children[0].children[1].textContent, '<Clara & Robert>', 'Names remain text, never HTML');
+    assert.strictEqual(row.children[0].children[2].textContent, '1 piece');
+    assert.strictEqual(row.children[1].children[2].textContent, '2 pieces');
+    assert.strictEqual(row.children[0].href, germanComposers[0].url);
+    const photo = row.children[0].children[0].children[1]; photo.events.error();
+    assert.strictEqual(photo.hidden, true, 'Broken portraits leave the initials fallback visible');
+    assert.strictEqual(pager.children[0].disabled, true);
+    pager.children[2].events.click();
+    assert.strictEqual(row.children.length, 1);
+    assert.strictEqual(row.children[0].children[1].textContent, 'Fourth composer', 'Paging makes every composer reachable');
+    assert.strictEqual(pager.children[2].disabled, true);
+    portraits.canvas.parentNode.clientWidth = 390; portraits.resize();
+    assert.strictEqual(row.children.length, 2, 'Small stages render at most two portraits at a time');
+    assert.strictEqual(pager.children[1].textContent, '3–4 of 4');
+    portraits.calls.onZoom({altitude: 2}); assert.strictEqual(hasPortraits(), false, 'Zooming out hides polaroids');
+    portraits.calls.onZoom({altitude: 1}); assert.strictEqual(hasPortraits(), true);
+    assert.strictEqual(portraits.calls.htmlElementsData[0], marker, 'Rotation and zoom reuse the selected-country marker');
+    pick('country:FR'); assert.strictEqual(hasPortraits(), false, 'Empty countries hide the previous country portraits');
+    assert.strictEqual(portraitGet('portrait-status').hidden, true);
+    pick('continent:Asia'); assert.strictEqual(hasPortraits(), false);
+    portraitGet('home').events.click(); assert.strictEqual(hasPortraits(), false);
+    assert.strictEqual(portraits.callCounts.polygonsData, 1, 'Portraits do not rebuild globe geometry');
+
     let failing = true;
     const failure = harness(url => failing ? Promise.reject(new Error('offline')) : Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? map : JSON.parse(JSON.stringify(catalogue)))}));
     failure.modal.events['shown.bs.modal'](); await settle();
@@ -174,5 +242,5 @@ module.exports = async function () {
     assert.strictEqual(failure.elements['[data-globe-loading]'].hidden, true);
     failing = false; failure.elements['[data-globe-retry]'].events.click(); await settle();
     assert.strictEqual(failure.instances, 1, 'Failed requests can be retried without reloading the page');
-    console.log('Passed: composer globe counts, missing geography, cached zoom geometry/borders, scoped continent/country highlights and labels, picking, lazy loading, close/reopen races, keyboard controls, context loss and retry.');
+    console.log('Passed: composer globe counts, cached geometry, scoped highlights, country-only polaroids, portrait counts/paging/fallbacks, lazy requests/cache/races/retry, keyboard controls and context loss.');
 };

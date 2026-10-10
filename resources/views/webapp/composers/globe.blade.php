@@ -33,6 +33,10 @@
                     <div><strong data-globe-pieces>—</strong><span data-globe-piece-label>pieces</span></div>
                 </div>
             </div>
+            <div class="composer-globe-portrait-status" data-globe-portrait-status role="status" hidden>
+                <span data-globe-portrait-message></span>
+                <button type="button" data-globe-portrait-retry hidden>Try again</button>
+            </div>
             <a class="btn btn-primary composer-globe-browse" data-globe-browse hidden>Browse composers @icon('arrow-right', ['mr' => 0])</a>
             <button class="btn btn-secondary composer-globe-closer" type="button" data-globe-closer hidden>Explore countries @icon('zoom-in', ['mr' => 0])</button>
             <div class="composer-globe-regions">

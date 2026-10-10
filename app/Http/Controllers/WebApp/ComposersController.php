@@ -4,7 +4,7 @@ namespace App\Http\Controllers\WebApp;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Composer;
+use App\{Composer, Country};
 use App\Services\WebApp\ComposerGroups;
 use App\Services\WebApp\ComposerGlobe;
 use Illuminate\Validation\Rule;
@@ -38,6 +38,11 @@ class ComposersController extends Controller
     public function globe()
     {
         return response()->json(ComposerGlobe::catalogue());
+    }
+
+    public function globeCountry(Country $country)
+    {
+        return response()->json(ComposerGlobe::portraits($country));
     }
 
     public function show(Composer $composer)
