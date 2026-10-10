@@ -48,9 +48,9 @@
             @include('webapp.components.artwork-header', ['image' => $playlist->cover_image ?: asset('images/webapp/collections/featured.webp')])
         @endif
 
-        <div class="container">
+        <div class="container {{ !empty($wideComposerDirectory) ? 'composer-directory-layout' : '' }}">
             <div class="row">
-                <div class="col-lg-10 col-md-12 mx-auto">
+                <div class="{{ !empty($wideComposerDirectory) ? 'col-12' : 'col-lg-10 col-md-12' }} mx-auto">
 
                 <main>
 

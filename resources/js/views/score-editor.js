@@ -190,6 +190,7 @@
         }
         toggleFullscreen() {
             this.stopPan();
+            this.fullscreenTap = null; this.lastFullscreenTap = null;
             const active = !this.root.classList.contains('is-fullscreen');
             this.root.classList.toggle('is-fullscreen', active);
             this.find('.score-toolbar').classList.toggle('shadow', active);
@@ -354,6 +355,43 @@
             ['touchend', 'touchcancel'].forEach(type => this.scroller.addEventListener(type, event => this.pinchTouchEnd(event), options));
             ['gesturestart', 'gesturechange', 'gestureend'].forEach(type => this.scroller.addEventListener(type, event => this.pinchGesture(event), options));
         }
+        preventFullscreenPageZoom(event) {
+            if (!this.root.classList.contains('is-fullscreen')) return;
+            if (event.type === 'wheel') {
+                if (event.ctrlKey) event.preventDefault();
+                return;
+            }
+            if (event.type === 'dblclick' || event.type.indexOf('gesture') === 0) {
+                event.preventDefault(); this.fullscreenTap = null; this.lastFullscreenTap = null;
+                return;
+            }
+            if (event.type === 'touchcancel' || event.touches.length > 1) {
+                this.fullscreenTap = null; this.lastFullscreenTap = null;
+                if (event.touches.length > 1) event.preventDefault();
+                return;
+            }
+            if (event.type === 'touchstart') {
+                const touch = event.touches[0];
+                this.fullscreenTap = {x: touch.clientX, y: touch.clientY, time: event.timeStamp};
+            } else if (event.type === 'touchmove') {
+                const tap = this.fullscreenTap, touch = event.touches[0];
+                if (tap && touch && Math.hypot(touch.clientX - tap.x, touch.clientY - tap.y) > 10) this.fullscreenTap = null;
+            } else if (event.type === 'touchend') {
+                const tap = this.fullscreenTap, previous = this.lastFullscreenTap;
+                this.fullscreenTap = null;
+                // Native inputs retain their focus/picker behavior; pointer-based score actions already ran.
+                if (!tap || event.touches.length || event.timeStamp - tap.time > 350 ||
+                    event.target.closest('input, textarea, select, label')) { this.lastFullscreenTap = null; return; }
+                if (previous && event.timeStamp - previous.time < 350 && Math.hypot(tap.x - previous.x, tap.y - previous.y) < 24) {
+                    const wasPrevented = event.defaultPrevented;
+                    event.preventDefault();
+                    // Canceling touchend suppresses its native click: preserve the second button/link activation.
+                    const control = event.target.closest('button, a');
+                    if (!wasPrevented && control && !control.disabled) control.click();
+                }
+                this.lastFullscreenTap = {x: tap.x, y: tap.y, time: event.timeStamp};
+            }
+        }
         keydown(event) {
             if (event.key === 'Escape' && this.root.classList.contains('is-fullscreen')) this.toggleFullscreen();
             if (event.defaultPrevented || event.isComposing || event.altKey ||
@@ -368,6 +406,9 @@
         }
         bind() {
             this.bindPinchZoom();
+            ['wheel', 'gesturestart', 'gesturechange', 'gestureend', 'touchstart', 'touchmove', 'touchend', 'touchcancel', 'dblclick'].forEach(type => {
+                document.addEventListener(type, event => this.preventFullscreenPageZoom(event), {passive: false, capture: true});
+            });
             const color = this.find('[data-color]');
             const updateColor = () => this.updatePaletteColor();
             color.addEventListener('input', updateColor);

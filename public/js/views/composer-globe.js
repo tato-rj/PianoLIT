@@ -19,7 +19,7 @@
         return countryMode ? altitude < 1.5 : altitude < 1.35;
     }
     function buildModel(map, catalogue) {
-        var byCode = {}, byName = {}, countries = [], continents = [], matched = [], borders = [];
+        var byCode = {}, byName = {}, countries = [], continents = [], matched = [];
         catalogue.countries.forEach(function (country) {
             if (country.code) byCode[country.code.toUpperCase()] = country;
             byName[normalize(country.name)] = country;
@@ -36,10 +36,6 @@
             };
             if (counts) matched.push(counts);
             countries.push(country);
-            var polygons = feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
-            polygons.forEach(function (polygon) {
-                polygon.forEach(function (ring) { borders.push({border: true, points: ring}); });
-            });
         });
         // Keep recorded countries without geometry reachable through the place picker.
         catalogue.countries.filter(function (country) { return matched.indexOf(country) === -1; }).forEach(function (country) {
@@ -48,26 +44,16 @@
                 pieces: country.pieces, url: country.url});
         });
         countries.sort(function (a, b) { return a.name.localeCompare(b.name); });
-        // Coarser coastlines keep the initial world view light; countries retain detail.
-        var worldShapes = (map.worldFeatures || map.features).map(function (feature) {
-            var p = feature.properties, counts = byCode[p.code] || byName[normalize(p.name)];
-            return {geometry: feature.geometry, continent: counts && counts.continent ? counts.continent : p.continent};
-        });
         catalogue.continents.forEach(function (counts) {
-            var coordinates = [];
-            worldShapes.filter(function (country) { return country.continent === counts.name; }).forEach(function (country) {
-                coordinates = coordinates.concat(country.geometry.type === 'Polygon' ? [country.geometry.coordinates] : country.geometry.coordinates);
-            });
             continents.push({key: 'continent:' + counts.name, kind: 'Continent', name: counts.name,
                 continent: counts.name, lat: positions[counts.name][0], lng: positions[counts.name][1],
-                composers: counts.composers, pieces: counts.pieces, countries: counts.countries, url: counts.url,
-                geometry: {type: 'MultiPolygon', coordinates: coordinates}});
+                composers: counts.composers, pieces: counts.pieces, countries: counts.countries, url: counts.url});
         });
         var world = {key: 'world', kind: 'World', name: 'A world of music',
             composers: catalogue.totals.composers, pieces: catalogue.totals.pieces};
         var places = {world: world};
         countries.concat(continents).forEach(function (place) { places[place.key] = place; });
-        return {countries: countries, continents: continents, borders: borders, places: places, world: world, unmapped: catalogue.unmapped};
+        return {countries: countries, continents: continents, places: places, world: world, unmapped: catalogue.unmapped};
     }
 
     function initialize(doc, win) {
@@ -79,6 +65,7 @@
         var regionList = element('regions'), zoomIn = element('zoom-in'), zoomOut = element('zoom-out');
         var home = element('home'), closer = element('closer');
         var globe = null, model = null, selection = null, hovered = null;
+        var hoveredCountry = null, tooltipCountry = null, tooltipTitle = null, tooltipDetail = null;
         var countryMode = false, open = false, pending = null, libraryPromise = null;
         var reducedMotion = win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var duration = reducedMotion ? 0 : 650;
@@ -199,18 +186,35 @@
             if (countryMode && !place.composers) return '#264b60';
             return colors[place.continent] || '#457b88';
         }
+        function strokeColor() {
+            // A transparent color prebuilds the stroke too. Returning null would defer
+            // border geometry creation until the first zoom into country view.
+            return countryMode ? 'rgba(127,167,187,0.8)' : 'rgba(127,167,187,0)';
+        }
+        function interactivePlace(country) {
+            return country && !countryMode ? model.places['continent:' + country.continent] || country : country;
+        }
         function refreshColors() {
-            globe.polygonCapColor(capColor).polygonAltitude(function (place) {
+            globe.polygonCapColor(capColor).polygonStrokeColor(strokeColor).polygonAltitude(function (place) {
                 return selected(place, hovered) || selected(place, selection) ? 0.007 : 0.005;
             });
         }
         function tooltip(place) {
+            tooltipCountry = place;
             var box = doc.createElement('div'); box.className = 'composer-globe-tooltip';
-            var title = doc.createElement('strong'); title.textContent = place.name;
-            var detail = doc.createElement('span'); detail.textContent = number(place.composers) + (place.composers === 1 ? ' composer · ' : ' composers · ') + number(place.pieces) + (place.pieces === 1 ? ' piece' : ' pieces');
-            box.appendChild(title); box.appendChild(detail); return box;
+            tooltipTitle = doc.createElement('strong'); tooltipDetail = doc.createElement('span');
+            updateTooltip();
+            box.appendChild(tooltipTitle); box.appendChild(tooltipDetail); return box;
+        }
+        function updateTooltip() {
+            if (!tooltipCountry) return;
+            var place = interactivePlace(tooltipCountry);
+            tooltipTitle.textContent = place.name;
+            tooltipDetail.textContent = number(place.composers) + (place.composers === 1 ? ' composer · ' : ' composers · ') + number(place.pieces) + (place.pieces === 1 ? ' piece' : ' pieces');
         }
         function hover(place) {
+            hoveredCountry = place;
+            place = interactivePlace(place);
             if (hovered === place) return;
             hovered = place; refreshColors();
         }
@@ -231,12 +235,13 @@
         }
         function setMode(next) {
             if (countryMode === next) return;
-            countryMode = next; hovered = null;
+            countryMode = next; hovered = interactivePlace(hoveredCountry);
             element('mode').textContent = next ? 'Countries' : 'Continents';
             element('legend').hidden = !next;
-            globe.polygonsData(next ? model.countries.filter(function (country) { return country.geometry; }) : model.continents)
-                .pathsData(next ? model.borders : []);
-            updateLabels(); refreshColors();
+            // Keep the same polygon objects and coordinates for both views. Globe.gl
+            // can reuse their triangulated meshes and borders throughout the zoom.
+            // The pointer may still be over the same mesh across the threshold.
+            updateTooltip(); updateLabels(); refreshColors();
         }
         function zoom(factor) {
             if (!globe) return;
@@ -255,7 +260,7 @@
         function reset() {
             if (model) updateDetails(model.world);
             if (!globe) return;
-            hovered = null;
+            hovered = null; hoveredCountry = null;
             globe.pointOfView({lat: 23, lng: 15, altitude: 2.05}, duration);
         }
         function resize() {
@@ -266,12 +271,10 @@
                 globe = new win.Globe(canvas, {animateIn: false, rendererConfig: {antialias: true, alpha: true}})
                     .width(stage.clientWidth).height(stage.clientHeight).backgroundColor('rgba(0,0,0,0)')
                     .showAtmosphere(true).atmosphereColor('#59b3d4').atmosphereAltitude(0.14)
-                    .polygonsData(model.continents).polygonCapColor(capColor).polygonSideColor(function () { return '#173c50'; })
+                    .polygonsData(model.countries.filter(function (country) { return country.geometry; }))
+                    .polygonCapColor(capColor).polygonSideColor(function () { return '#173c50'; }).polygonStrokeColor(strokeColor)
                     .polygonAltitude(0.005).polygonCapCurvatureResolution(4).polygonsTransitionDuration(reducedMotion ? 0 : 180)
-                    .polygonLabel(tooltip).onPolygonHover(hover).onPolygonClick(function (place) { choose(place); })
-                    .pathPoints('points').pathPointLat(function (point) { return point[1]; }).pathPointLng(function (point) { return point[0]; })
-                    .pathPointAlt(0.008).pathColor(function () { return '#7fa7bb'; }).pathResolution(4).pathTransitionDuration(0)
-                    .pointerEventsFilter(function (object, data) { return !data || !data.border; })
+                    .polygonLabel(tooltip).onPolygonHover(hover).onPolygonClick(function (place) { choose(interactivePlace(place)); })
                     .htmlAltitude(0.023).htmlTransitionDuration(0).htmlElement(function (place) {
                         var label = doc.createElement('button'); label.type = 'button';
                         label.className = 'composer-globe-label' + (place.kind === 'Country' ? ' composer-globe-label-country' : '');
@@ -301,6 +304,7 @@
                 globe = null;
             }
             canvas.textContent = ''; controlsEnabled(false);
+            hovered = null; hoveredCountry = null; tooltipCountry = null; tooltipTitle = null; tooltipDetail = null;
         }
         function showRenderError() {
             loading.hidden = true; error.hidden = false;

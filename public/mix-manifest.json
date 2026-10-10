@@ -1,6 +1,6 @@
 {
     "/js/app.js": "/js/app.js?id=2f320d99462ef4208960",
-    "/css/app.css": "/css/app.css",
+    "/css/app.css": "/css/app.css?id=f81310ebc2edbd1f5850",
     "/css/admin.css": "/css/admin.css?id=92c0d3785e78a7eb0014",
     "/css/design-system.css": "/css/design-system.css?id=08f8a03776c82f1aa7ca",
     "/css/studio-policies/layout.css": "/css/studio-policies/layout.css?id=0670d07aa6f20b053fca",
@@ -29,12 +29,12 @@
     "/js/views/video-moments-admin.js": "/js/views/video-moments-admin.js?id=154f9b8040478f078d81",
     "/js/views/piece-access.js": "/js/views/piece-access.js?id=12ad9ebcc99a375f9c14",
     "/js/views/piece-description.js": "/js/views/piece-description.js?id=e60043db6f66e42c46c6",
-    "/js/views/score-editor.js": "/js/views/score-editor.js?id=42d5782d56a59a0201aa",
+    "/js/views/score-editor.js": "/js/views/score-editor.js?id=3390ba18259c6c269aca",
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=d6dcbe004a3f826608f3",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
     "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da",
-    "/js/views/composer-globe.js": "/js/views/composer-globe.js?id=870c018d3f4a552c7d77",
+    "/js/views/composer-globe.js": "/js/views/composer-globe.js?id=00919fbd65d6c2e0f516",
     "/js/vendor/globe.gl.min.js": "/js/vendor/globe.gl.min.js?id=e26b927a5a876052837d",
-    "/data/composer-globe.geojson": "/data/composer-globe.geojson?id=942df891960bf9feea5a"
+    "/data/composer-globe.geojson": "/data/composer-globe.geojson?id=21ad37d0682f56c21854"
 }

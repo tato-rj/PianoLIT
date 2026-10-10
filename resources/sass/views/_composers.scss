@@ -1,4 +1,7 @@
-// Directory geometry only; finishes come from the shared buttons/cards/utilities.
+// Composer directory cards; keep the treatment scoped to this page.
+@media (min-width: 992px) {
+    .composer-directory-layout { max-width: 1488px; padding-left: 48px; padding-right: 48px; }
+}
 #composers-directory {
     [hidden] { display: none !important; }
     .composer-search #search-form {
@@ -6,12 +9,73 @@
         .input-erase { right: 48px; }
     }
     .composer-search, .composer-copy, .composer-alphabet { min-width: 0; }
+    .composer-card-link {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 100%;
+        min-height: 148px;
+        padding: 16px;
+        border: 1px solid var(--color-dropdown-border);
+        border-radius: 22px;
+        background: var(--color-surface);
+        color: var(--color-text);
+        transition: border-color .18s ease, background-color .18s ease;
+        &:hover, &:focus-visible {
+            border-color: rgba(var(--color-primary-rgb), .35);
+            background: rgba(var(--color-primary-rgb), .04);
+            color: var(--color-text);
+        }
+        &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+    }
     .composer-portrait {
-        width: calc(var(--space-3) * 4);
-        height: calc(var(--space-3) * 4);
+        width: 104px;
+        height: 116px;
+        border-radius: 16px;
         object-fit: cover;
     }
     .composer-copy { overflow-wrap: anywhere; }
+    .composer-card-heading { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 6px; }
+    .composer-card-name {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+        font-family: var(--font-family-body);
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+    .composer-card-country, .composer-card-years, .composer-piece-count, .composer-card-chevron {
+        color: var(--color-text-muted);
+    }
+    .composer-card-country, .composer-card-years, .composer-piece-count { font-size: var(--font-size-sm); line-height: 1.4; }
+    .composer-card-country { margin-bottom: 5px; }
+    .composer-card-country .flag-icon { border-radius: 4px !important; box-shadow: none !important; margin-right: 7px !important; }
+    .composer-card-years { margin-bottom: 8px; }
+    .composer-card-details { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 16px; margin-top: 8px; }
+    .composer-period, .composer-popular { display: inline-block; padding: 4px 12px; border-radius: var(--radius-pill); font-size: .8125rem; line-height: 1.25; }
+    .composer-popular { background: rgba(var(--color-primary-rgb), .09); color: var(--color-primary); padding: 3px 11px; }
+    .composer-period {
+        background: #edf0f4; color: #46536a;
+        &[data-period="baroque"] { background: #f9edcf; color: #715735; }
+        &[data-period="classical"] { background: #ece2ff; color: #6030a0; }
+        &[data-period="romantic"] { background: #fce1e7; color: #893956; }
+        &[data-period="modern"], &[data-period="20th century"] { background: #e0edff; color: #305d94; }
+        &[data-period="impressionist"], &[data-period="impressionism"] { background: #def0e6; color: #376850; }
+        &[data-period="contemporary"], &[data-period="21st century"] { background: #ddf1f2; color: #32676c; }
+        &[data-period="renaissance"] { background: #f5e5d5; color: #7c5738; }
+    }
+    .composer-piece-count { white-space: nowrap; }
+    .composer-card-chevron { width: 16px; height: 16px; margin-left: auto; }
+    @media (min-width: 1200px) and (max-width: 1399.98px) {
+        .composer-card-link { gap: 12px; padding: 14px; }
+        .composer-portrait { width: 80px; height: 104px; }
+    }
+    @media (max-width: 575.98px) {
+        .composer-card-link { gap: 14px; padding: 14px; }
+        .composer-portrait { width: 88px; height: 104px; }
+        .composer-card-details { column-gap: 12px; }
+    }
     .composer-pill {
         --radius-button: var(--radius-pill);
         flex-shrink: 0;

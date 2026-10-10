@@ -3,17 +3,16 @@
 `composer-globe.geojson` is derived from Natural Earth v5.1.2, 1:50m admin-0 countries:
 https://github.com/nvkelso/natural-earth-vector/blob/v5.1.2/geojson/ne_50m_admin_0_countries.geojson
 
-The distant world view uses the 1:110m layer from the same release:
-https://github.com/nvkelso/natural-earth-vector/blob/v5.1.2/geojson/ne_110m_admin_0_countries.geojson
-
 Natural Earth is public domain: https://www.naturalearthdata.com/about/terms-of-use/
 Only geometry, ISO code, country name, continent and label coordinates are retained;
 coordinates are rounded to three decimals, and geometries sharing an ISO code
 are combined into one selectable country. In the detailed layer, island polygons
 below 0.05 square degrees are omitted unless they are the country's largest polygon;
 every selectable country is retained. Coastline coordinates on retained polygons
-are otherwise unchanged. The coarse layer is stored in `worldFeatures` and the
-detailed layer in `features`. Names and continent assignments use
+are otherwise unchanged. Country geometry is stored in `features`. Both zoom
+levels reuse these same country meshes, with continent interaction and transparent
+borders at a distance. Borders are prepared with the meshes when the globe opens,
+so zooming never has to triangulate a new layer. Names and continent assignments use
 `country-continents.json` where available, matching the catalogue convention.
 The geometry is a generalized exploration map, not a statement about boundaries.
 

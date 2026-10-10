@@ -232,7 +232,7 @@ class MatchTour
         return [
             'draw' => $ready ? Crypt::encryptString(json_encode(['version' => 3, 'levels' => $levelPieces->map(function ($piece) { return $piece['id']; })->all(), 'ids' => array_column($cards, 'id'), 'expires' => now()->addHours(2)->timestamp])) : null,
             'levelPieces' => $levelPieces->values()->all(), 'levels' => self::LEVELS,
-            'total' => $this->catalog()->count(), 'pieces' => $cards, 'scores' => $scores,
+            'total' => Piece::count(), 'pieces' => $cards, 'scores' => $scores,
             'intents' => self::INTENTS, 'moods' => collect(self::MOODS)->map(function ($mood) { return \Illuminate\Support\Arr::except($mood, 'tags'); })->all(), 'previewSeconds' => config('webapp.match_tour_audio_seconds', 60),
             'ready' => $ready,
         ];

@@ -59,6 +59,22 @@ class MatchTourTest extends ReviewTestCase
         foreach ($queries as $query) $this->assertStringNotContainsString('pieces_count', $query['query']);
     }
 
+    public function test_starting_count_includes_pieces_outside_the_matching_catalog()
+    {
+        Model::withoutEvents(function () {
+            $untagged = create(Piece::class, ['highlighted_at' => null, 'audio_path' => null]);
+            $withoutLevel = create(Piece::class, ['highlighted_at' => null, 'audio_path' => null]);
+            $withoutMood = create(Piece::class, ['highlighted_at' => null, 'audio_path' => null]);
+            $withoutLevel->tags()->attach(Tag::name('calm')->first());
+            $withoutMood->tags()->attach(Tag::name('beginner')->first());
+        });
+
+        $this->assertSame(12, (new MatchTour)->catalog()->count());
+        $response = $this->getJson(route('webapp.tour'))->assertOk()->assertJsonPath('tour.total', 15);
+        $this->assertStringContainsString('<span data-count>15</span>', $response->json('html'));
+        $this->assertCount(8, $response->json('tour.pieces'));
+    }
+
     public function test_web_ranking_keeps_only_the_best_mood_matches_and_batches_queries()
     {
         for ($i = 0; $i < 6; $i++) $this->copyWithMedia();

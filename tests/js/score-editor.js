@@ -526,6 +526,63 @@ module.exports = async function () {
     assert.strictEqual(fittingTouch.defaultPrevented, false);
     delete window.requestAnimationFrame; delete window.cancelAnimationFrame; delete document.scrollingElement;
 
+    const zoomProtection = Object.create(Editor.prototype);
+    let protectedFullscreen = false, protectedClicks = 0;
+    const protectedButton = {disabled: false, click: () => { protectedClicks++; }};
+    const outsideTarget = {closest: selector => selector === 'button, a' ? protectedButton : null};
+    const scoreTarget = {isScore: true, closest: () => null};
+    zoomProtection.root = {classList: {contains: () => protectedFullscreen}};
+    zoomProtection.scroller = {contains: target => !!target.isScore};
+    const protectedEvent = changes => pinchEvent(Object.assign({type: 'touchend', timeStamp: 0, touches: [], target: outsideTarget}, changes));
+    for (const type of ['wheel', 'gesturestart', 'gesturechange', 'gestureend', 'touchstart', 'touchmove', 'touchend', 'dblclick']) {
+        const event = protectedEvent({type, ctrlKey: true, touches: [{clientX: 0, clientY: 0}, {clientX: 100, clientY: 0}]});
+        zoomProtection.preventFullscreenPageZoom(event);
+        assert.strictEqual(event.defaultPrevented, false, 'Normal-view page zoom is unchanged');
+    }
+    protectedFullscreen = true;
+    for (const type of ['gesturestart', 'gesturechange', 'gestureend', 'dblclick']) {
+        const event = protectedEvent({type}); zoomProtection.preventFullscreenPageZoom(event);
+        assert.strictEqual(event.defaultPrevented, true, 'Fullscreen blocks browser gesture/double-click zoom');
+    }
+    const protectedScroll = protectedEvent({type: 'wheel'}); zoomProtection.preventFullscreenPageZoom(protectedScroll);
+    assert.strictEqual(protectedScroll.defaultPrevented, false, 'Ordinary scrolling remains available');
+    const protectedWheel = protectedEvent({type: 'wheel', ctrlKey: true, target: scoreTarget});
+    zoomProtection.preventFullscreenPageZoom(protectedWheel);
+    assert.strictEqual(protectedWheel.defaultPrevented, true);
+    pinch.pdf = {}; pinch.zoom = .75; pinch.pinchWheelTime = 0;
+    pinch.pinchWheel(protectedWheel);
+    assert.strictEqual(pinch.zoom, .8, 'Preventing browser zoom still lets the score zoom by 5%');
+    for (const type of ['touchstart', 'touchmove']) {
+        const event = protectedEvent({type, touches: touches(100)}); zoomProtection.preventFullscreenPageZoom(event);
+        assert.strictEqual(event.defaultPrevented, true, 'Multitouch outside the score cannot zoom the fullscreen page');
+    }
+    const protectTap = (time, changes) => {
+        zoomProtection.preventFullscreenPageZoom(protectedEvent(Object.assign({type: 'touchstart', timeStamp: time,
+            touches: [{clientX: 10, clientY: 20}]}, changes)));
+        const end = protectedEvent(Object.assign({timeStamp: time + 30}, changes));
+        zoomProtection.preventFullscreenPageZoom(end); return end;
+    };
+    const firstTap = protectTap(100);
+    assert.strictEqual(firstTap.defaultPrevented, false, 'A first button tap retains its native click');
+    protectedButton.click(); // Native activation after the unprevented first tap.
+    const secondTap = protectTap(200);
+    assert.strictEqual(secondTap.defaultPrevented, true, 'The second tap cannot zoom the page');
+    assert.strictEqual(protectedClicks, 2, 'Both button presses activate exactly once');
+    protectedButton.disabled = true;
+    assert.strictEqual(protectTap(300).defaultPrevented, true);
+    assert.strictEqual(protectedClicks, 2, 'Disabled buttons never activate during double-tap protection');
+    assert.strictEqual(protectTap(400, {target: scoreTarget}).defaultPrevented, true, 'Double taps on the score also cannot magnify the page');
+    const fieldTarget = {closest: () => ({})};
+    assert.strictEqual(protectTap(500, {target: fieldTarget}).defaultPrevented, false, 'Native input focus/pickers remain available');
+    protectTap(600);
+    zoomProtection.preventFullscreenPageZoom(protectedEvent({type: 'touchstart', timeStamp: 700, touches: [{clientX: 10, clientY: 20}]}));
+    zoomProtection.preventFullscreenPageZoom(protectedEvent({type: 'touchmove', timeStamp: 710, touches: [{clientX: 60, clientY: 80}]}));
+    const swipeEnd = protectedEvent({timeStamp: 750}); zoomProtection.preventFullscreenPageZoom(swipeEnd);
+    assert.strictEqual(swipeEnd.defaultPrevented, false, 'Swipes are not mistaken for repeated taps');
+    protectedFullscreen = false;
+    const exited = protectedEvent({type: 'wheel', ctrlKey: true}); zoomProtection.preventFullscreenPageZoom(exited);
+    assert.strictEqual(exited.defaultPrevented, false, 'Leaving fullscreen restores page zoom');
+
     const printEditor = Object.create(Editor.prototype);
     const printedPages = [], printMessages = [];
     printEditor.pdf = {numPages: 3, getPage: async number => ({

@@ -18,11 +18,7 @@ module.exports = async function () {
     assert.strictEqual(model.places['country:JP'].composers, 1, 'Missing ISO codes match recorded country names');
     assert.strictEqual(model.places['country:FR'].composers, 0, 'Countries without repertoire remain selectable with zero counts');
     assert.strictEqual(model.places['recorded:3'].pieces, 2, 'Unmapped countries keep their recorded counts');
-    assert.strictEqual(model.places['continent:Europe'].geometry.coordinates.length, 2);
-    const coarseMap = Object.assign({}, map, {worldFeatures: [map.features[0]]});
-    const coarseModel = api.buildModel(coarseMap, JSON.parse(JSON.stringify(catalogue)));
-    assert.strictEqual(coarseModel.places['continent:Europe'].geometry.coordinates.length, 1, 'World view uses lighter geometry');
-    assert.strictEqual(coarseModel.countries.length, model.countries.length, 'All detailed countries remain selectable');
+    assert.strictEqual(model.places['continent:Europe'].pieces, 5);
     assert.strictEqual(model.world.pieces, 13, 'World totals include missing geography');
     assert.strictEqual(api.nextMode(1.3, false), true);
     assert.strictEqual(api.nextMode(1.4, true), true);
@@ -43,7 +39,7 @@ module.exports = async function () {
         const canvas = modal.querySelector('[data-globe-canvas]'); canvas.parentNode = stage;
         doc.getElementById = () => modal; doc.createElement = node;
         let instances = 0, paused = 0, resumed = 0, destroyed = 0;
-        const calls = {}, renderCanvas = node(), pov = {altitude: 2.05, lat: 23, lng: 15};
+        const calls = {}, callCounts = {}, renderCanvas = node(), pov = {altitude: 2.05, lat: 23, lng: 15};
         const controls = {};
         const globe = new Proxy({}, {get(target, key) {
             if (key === 'pointOfView') return value => { if (value) { Object.assign(pov, value); if (calls.onZoom) calls.onZoom(pov); return globe; } return pov; };
@@ -54,12 +50,12 @@ module.exports = async function () {
             if (key === 'pauseAnimation') return () => { paused++; };
             if (key === 'resumeAnimation') return () => { resumed++; };
             if (key === '_destructor') return () => { destroyed++; };
-            return value => { calls[key] = value; return globe; };
+            return value => { calls[key] = value; callCounts[key] = (callCounts[key] || 0) + 1; return globe; };
         }});
         const win = {fetch, Globe: function () { instances++; return globe; }, matchMedia: () => ({matches: true}),
             setTimeout, clearTimeout, addEventListener() {}, ResizeObserver: class {observe() {}}};
         api.initialize(doc, win);
-        return {elements, modal, doc, canvas, calls, pov, renderCanvas, controls,
+        return {elements, modal, doc, canvas, calls, callCounts, pov, renderCanvas, controls,
             get instances() { return instances; }, get paused() { return paused; }, get resumed() { return resumed; }, get destroyed() { return destroyed; }};
     }
     const requests = [];
@@ -78,11 +74,35 @@ module.exports = async function () {
     assert.strictEqual(h.instances, 1);
     assert.strictEqual(get('composers').textContent, '5');
     assert.strictEqual(get('unmapped').hidden, false);
+    const shapes = h.calls.polygonsData;
+    const germany = shapes.find(place => place.code === 'DE');
+    const france = shapes.find(place => place.code === 'FR');
+    assert.strictEqual(shapes.length, 3, 'All mapped country geometry is prepared before zooming');
+    assert.strictEqual(h.calls.polygonStrokeColor(), 'rgba(127,167,187,0)', 'Transparent borders are prepared even in continent view');
+    const landTooltip = h.calls.polygonLabel(germany);
+    assert.strictEqual(landTooltip.children[0].textContent, 'Europe');
+    h.calls.onPolygonHover(germany);
+    assert.strictEqual(h.calls.polygonCapColor(france), '#e1bd77', 'Hovering distant land highlights its whole continent');
+    const colorUpdates = h.callCounts.polygonCapColor;
+    h.calls.onPolygonHover(france);
+    assert.strictEqual(h.callCounts.polygonCapColor, colorUpdates, 'Moving within a continent does not update every mesh again');
+    h.calls.onPolygonClick(france);
+    assert.strictEqual(get('title').textContent, 'Europe');
+    assert.strictEqual(get('pieces').textContent, '5', 'Distant geometry selects continent totals');
+    get('home').events.click();
     get('place').value = 'country:DE'; get('place').events.change();
     assert.strictEqual(get('title').textContent, 'Germany');
     assert.strictEqual(get('pieces').textContent, '5');
     assert.strictEqual(get('browse').href, '/composers?country=1');
     assert.strictEqual(get('mode').textContent, 'Countries');
+    assert.strictEqual(h.calls.polygonStrokeColor(), 'rgba(127,167,187,0.8)');
+    assert.strictEqual(landTooltip.children[0].textContent, 'Germany', 'An existing tooltip changes scope even when the pointer stays on the same mesh');
+    assert.strictEqual(h.calls.polygonLabel(germany).children[0].textContent, 'Germany');
+    h.calls.onPolygonHover(germany);
+    assert.notStrictEqual(h.calls.polygonCapColor(france), '#e1bd77', 'Close hover highlights only one country');
+    h.calls.onPolygonClick(france);
+    assert.strictEqual(get('title').textContent, 'France', 'Close geometry selects country totals');
+    assert.strictEqual(get('composers').textContent, '0');
     get('place').value = 'country:FR'; get('place').events.change();
     assert.strictEqual(get('composers').textContent, '0');
     assert.strictEqual(get('browse').hidden, true, 'Zero-count selections never retain the previous browse link');
@@ -92,6 +112,10 @@ module.exports = async function () {
     get('zoom-in').events.click(); get('zoom-in').events.click();
     assert.strictEqual(get('mode').textContent, 'Countries');
     h.calls.onZoom({altitude: 2}); assert.strictEqual(get('mode').textContent, 'Continents');
+    for (let i = 0; i < 4; i++) { h.calls.onZoom({altitude: 1}); h.calls.onZoom({altitude: 2}); }
+    assert.strictEqual(h.calls.polygonsData, shapes, 'Both zoom modes retain the original country objects and geometry');
+    assert.strictEqual(h.callCounts.polygonsData, 1, 'Crossing zoom thresholds never replaces and retriangulates the polygon layer');
+    assert.strictEqual(h.callCounts.pathsData || 0, 0, 'No separate border paths are built when switching views');
     let prevented = false;
     h.canvas.events.keydown({target: h.canvas, key: 'ArrowRight', preventDefault() { prevented = true; }});
     assert.strictEqual(prevented, true); assert.strictEqual(h.pov.lng, 30);
@@ -110,5 +134,5 @@ module.exports = async function () {
     assert.strictEqual(failure.elements['[data-globe-loading]'].hidden, true);
     failing = false; failure.elements['[data-globe-retry]'].events.click(); await settle();
     assert.strictEqual(failure.instances, 1, 'Failed requests can be retried without reloading the page');
-    console.log('Passed: composer globe counts, missing geography, zoom thresholds, lazy loading, close/reopen races, keyboard controls, context loss and retry.');
+    console.log('Passed: composer globe counts, missing geography, cached zoom geometry/borders, continent/country picking, lazy loading, close/reopen races, keyboard controls, context loss and retry.');
 };

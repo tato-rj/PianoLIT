@@ -273,6 +273,7 @@
     .score-messages { padding: 8px 2px; }
 
     &.is-fullscreen {
+        touch-action: pan-x pan-y;
         --score-toolbar-height: 84px;
         position: fixed;
         z-index: 2000;
@@ -337,7 +338,11 @@
         .score-page-label, .score-zoom-label { min-width: 42px; }
     }
 }
-body.score-editor-fullscreen-open { overflow: hidden; }
+body.score-editor-fullscreen-open {
+    overflow: hidden;
+    touch-action: pan-x pan-y;
+    button, a, input, select, textarea, label { touch-action: manipulation; }
+}
 .score-print-pages { display: none; }
 @media print {
     body.score-printing { width: 100%; margin: 0; padding: 0; }
