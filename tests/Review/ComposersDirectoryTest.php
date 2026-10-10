@@ -67,7 +67,7 @@ class ComposersDirectoryTest extends ReviewTestCase
             ->assertSee(route('webapp.composers.show', $composers->first()), false);
         $this->assertCount(3, $queries, 'Composer/country/work-title reads stay bounded as the directory grows.');
         $this->assertGuest('web');
-        $this->assertSame(8, substr_count($response->getContent(), 'class="col-xl-4 col-md-6 col-12 composer-card"'));
+        $this->assertSame(8, substr_count($response->getContent(), 'class="col-md-6 col-12 composer-card"'));
         $this->assertSame(0, $excluded->pieces()->count());
 
         if ($destination = getenv('COMPOSERS_PREVIEW_PATH')) {

@@ -1,7 +1,4 @@
 // Composer directory cards; keep the treatment scoped to this page.
-@media (min-width: 992px) {
-    .composer-directory-layout { max-width: 1488px; padding-left: 48px; padding-right: 48px; }
-}
 #composers-directory {
     [hidden] { display: none !important; }
     .composer-search #search-form {
@@ -67,10 +64,6 @@
     }
     .composer-piece-count { white-space: nowrap; }
     .composer-card-chevron { width: 16px; height: 16px; margin-left: auto; }
-    @media (min-width: 1200px) and (max-width: 1399.98px) {
-        .composer-card-link { gap: 12px; padding: 14px; }
-        .composer-portrait { width: 80px; height: 104px; }
-    }
     @media (max-width: 575.98px) {
         .composer-card-link { gap: 14px; padding: 14px; }
         .composer-portrait { width: 88px; height: 104px; }
