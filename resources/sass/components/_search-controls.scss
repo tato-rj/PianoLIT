@@ -36,12 +36,13 @@
         fieldset { min-width: 0; }
         .pill-filters { gap: 6px; button { padding: 7px 12px; } }
     }
-    &__length { margin-top: 24px;
+    &__details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 32px; margin-top: 24px; }
+    &__length { min-width: 0;
         legend { display: flex; justify-content: space-between; width: 100%; margin-bottom: 6px;
             span { font-family: inherit; font-size: 12px; font-weight: 400; color: var(--field-muted); }
         }
     }
-    &__media { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 24px;
+    &__media { display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
         label { margin: 0; font-size: 13px; color: var(--field-muted); }
     }
     &__footer { flex-shrink: 0; display: flex; justify-content: space-between; gap: 12px;
@@ -73,6 +74,7 @@
 }
 @media (max-width: 575px) {
     .search-controls__content { padding: 0 16px 16px; }
+    .search-controls__details { grid-template-columns: minmax(0, 1fr); gap: 24px; }
     .search-controls__sort-options, .search-controls__facets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .search-controls__sort-option { padding: 10px; gap: 8px; }
     .search-controls__footer { padding-left: 16px; padding-right: 16px; }

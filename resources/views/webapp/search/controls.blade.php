@@ -34,18 +34,20 @@
                     </fieldset>
                     @endforeach
                 </div>
-                <fieldset class="search-controls__length" data-search-facet="length">
-                    <legend>Length <span data-length-summary aria-live="polite">Any length</span></legend>
-                    <div class="search-length" style="--range-start: 0%; --range-end: 100%;">
-                        <div class="search-length__track"><span></span></div>
-                        <input type="range" min="0" max="2" step="1" value="0" aria-label="Minimum piece length" data-length-min>
-                        <input type="range" min="0" max="2" step="1" value="2" aria-label="Maximum piece length" data-length-max>
+                <div class="search-controls__details">
+                    <fieldset class="search-controls__length" data-search-facet="length">
+                        <legend>Length <span data-length-summary aria-live="polite">Any length</span></legend>
+                        <div class="search-length" style="--range-start: 0%; --range-end: 100%;">
+                            <div class="search-length__track"><span></span></div>
+                            <input type="range" min="0" max="2" step="1" value="0" aria-label="Minimum piece length" data-length-min>
+                            <input type="range" min="0" max="2" step="1" value="2" aria-label="Maximum piece length" data-length-max>
+                        </div>
+                        <div class="search-length__labels"><span>Short</span><span>Medium</span><span>Long</span></div>
+                    </fieldset>
+                    <div class="search-controls__media">
+                        <label class="form-check"><input type="checkbox" class="form-check-input" name="video_only" value="1"><span class="form-check-label">Show only pieces with video @icon('video', ['mr' => 0])</span></label>
+                        <label class="form-check"><input type="checkbox" class="form-check-input" name="score_only" value="1"><span class="form-check-label">Show only pieces with score @icon('file-text', ['mr' => 0])</span></label>
                     </div>
-                    <div class="search-length__labels"><span>Short</span><span>Medium</span><span>Long</span></div>
-                </fieldset>
-                <div class="search-controls__media">
-                    <label class="form-check"><input type="checkbox" class="form-check-input" name="video_only" value="1"><span class="form-check-label">Show only pieces with video @icon('video', ['mr' => 0])</span></label>
-                    <label class="form-check"><input type="checkbox" class="form-check-input" name="score_only" value="1"><span class="form-check-label">Show only pieces with score @icon('file-text', ['mr' => 0])</span></label>
                 </div>
             </div>
             <div class="search-controls__footer">

@@ -2454,3 +2454,11 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Existing name/type indexing remains enabled, including updates from other callers. No credentials, Scout configuration, route names, mobile JSON, media delivery, access rules, or assets changed. Preserved pending ordering and search-view work.
 - **Verification:** Isolated tag search-sync, tag ordering, and Explore suites pass (28 tests / 566 assertions). PHP syntax and diff checks pass. Tests assert zero index updates for ordering-only saves and verify the linked piece's updated tag data for name/type changes; no external Algolia calls or normal database commands were executed.
 - **Remaining work / limits:** Live browser and production Algolia were not tested. The credential error still requires valid Algolia configuration for operations that actually change indexed content; this fix removes the unnecessary dependency for display-only edits.
+
+### 2026-10-10 — Share the bottom filter row between length and media (P3, complete locally)
+
+- **Request / evidence:** The full-width length range is too long; place it beside the stacked video/score checkboxes.
+- **Implementation / affected files:** `webapp/search/controls.blade.php` groups length and media in a shared row. `_search-controls.scss` uses two equal columns with a 32px gap from 576px upward, and stacks them with a 24px gap on phones. Existing fonts, colors, controls, panel width/height and fixed actions remain. Rebuilt app CSS and its manifest hash.
+- **Compatibility:** Layout only; slider values, video/score filtering, Apply state and navigation behavior, access rules and mobile APIs are unchanged.
+- **Verification:** Search-controls PHP checks pass (8 tests / 47 assertions). Isolated production build, app/admin CSS-variable checks and diff checks pass. Live desktop check at 1440×900 shows 484px length/media columns, with the stacked checkboxes beside the range. At 390×844 both sections are 358px wide and stack vertically without horizontal overflow; keyboard range input still updates the summary to Medium, Long.
+- **Remaining work / limits:** Not deployed; physical-device touch testing was not performed.
