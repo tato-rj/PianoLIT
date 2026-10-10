@@ -130,7 +130,7 @@
                 const step = Number(el.getAttribute('data-zoom'));
                 el.disabled = !this.pdf || this.rendering || (step < 0 && this.zoom <= 0.5) || (step > 0 && this.zoom >= 2.5);
             });
-            const touchAction = this.tool === 'read' ? 'auto' : 'none';
+            const touchAction = this.tool === 'read' ? 'pan-x pan-y' : 'none';
             this.sheet.style.touchAction = touchAction;
             this.svg.style.touchAction = touchAction;
             this.svg.setAttribute('data-tool', this.tool);
@@ -206,19 +206,97 @@
             this.zoom = next;
             this.render(this.page).catch(() => this.renderError());
         }
+        cancelPinchMarking() {
+            const pointer = this.pointerId;
+            this.stroke = null; this.textDrag = null; this.pointerId = null;
+            this.svg.removeAttribute('data-dragging-text');
+            if (pointer !== null && this.svg.hasPointerCapture(pointer)) this.svg.releasePointerCapture(pointer);
+            this.finishText(); this.paint();
+        }
+        pinchZoom(amount) {
+            if (!this.pdf || this.printing || !Number.isFinite(amount)) return;
+            // Accumulate small movements, then use the same 25% steps as the toolbar.
+            const threshold = Math.log(1.2);
+            this.pinchAmount = (this.pinchAmount || 0) + amount;
+            const steps = Math.trunc(this.pinchAmount / threshold);
+            if (!steps) return;
+            this.pinchAmount -= steps * threshold;
+            this.adjustZoom(steps * 0.25);
+        }
+        pinchWheel(event) {
+            if (!event.ctrlKey) return;
+            event.preventDefault();
+            if (this.touchPinching || this.gestureScale !== undefined) return;
+            const now = Date.now();
+            if (!this.pinchWheelTime || now - this.pinchWheelTime > 200) {
+                this.pinchAmount = 0; this.cancelPinchMarking();
+            }
+            this.pinchWheelTime = now;
+            const unit = event.deltaMode === 1 ? 16 : (event.deltaMode === 2 ? this.scroller.clientHeight : 1);
+            this.pinchZoom(-event.deltaY * unit * 0.01);
+        }
+        pinchTouchStart(event) {
+            if (event.touches.length !== 2 || !Array.from(event.touches).every(touch => this.scroller.contains(touch.target))) return;
+            event.preventDefault();
+            this.touchPinching = true; this.gestureScale = undefined; this.pinchAmount = 0; this.pinchWheelTime = 0;
+            this.touchPinch = Array.from(event.touches).map(touch => touch.identifier);
+            this.touchDistance = this.pinchDistance(event.touches);
+            this.cancelPinchMarking();
+        }
+        pinchDistance(touches) {
+            const pair = this.touchPinch.map(id => Array.from(touches).find(touch => touch.identifier === id));
+            if (pair.some(touch => !touch)) return 0;
+            return Math.hypot(pair[0].clientX - pair[1].clientX, pair[0].clientY - pair[1].clientY);
+        }
+        pinchTouchMove(event) {
+            if (!this.touchPinching) return;
+            event.preventDefault();
+            if (!this.touchPinch || event.touches.length !== 2) return;
+            const distance = this.pinchDistance(event.touches);
+            if (distance > 0 && this.touchDistance > 0) this.pinchZoom(Math.log(distance / this.touchDistance));
+            this.touchDistance = distance;
+        }
+        pinchTouchEnd(event) {
+            if (!this.touchPinching) return;
+            event.preventDefault();
+            if (event.touches.length < 2) this.touchPinch = null;
+            // A remaining finger must not resume drawing or scrolling midway through a pinch.
+            if (!event.touches.length) { this.touchPinching = false; this.pinchAmount = 0; }
+        }
+        pinchGesture(event) {
+            event.preventDefault();
+            if (event.type === 'gestureend') { this.gestureScale = undefined; return; }
+            if (this.touchPinching) return; // iOS also emits touch events for this gesture.
+            if (event.type === 'gesturestart') {
+                this.gestureScale = event.scale || 1; this.pinchAmount = 0; this.cancelPinchMarking();
+            } else if (this.gestureScale !== undefined && event.scale > 0) {
+                this.pinchZoom(Math.log(event.scale / this.gestureScale));
+                this.gestureScale = event.scale;
+            }
+        }
+        bindPinchZoom() {
+            this.scroller.style.touchAction = 'pan-x pan-y';
+            this.scroller.addEventListener('wheel', event => this.pinchWheel(event), {passive: false});
+            const options = {passive: false, capture: true};
+            this.scroller.addEventListener('touchstart', event => this.pinchTouchStart(event), options);
+            this.scroller.addEventListener('touchmove', event => this.pinchTouchMove(event), options);
+            ['touchend', 'touchcancel'].forEach(type => this.scroller.addEventListener(type, event => this.pinchTouchEnd(event), options));
+            ['gesturestart', 'gesturechange', 'gestureend'].forEach(type => this.scroller.addEventListener(type, event => this.pinchGesture(event), options));
+        }
         keydown(event) {
             if (event.key === 'Escape' && this.root.classList.contains('is-fullscreen')) this.toggleFullscreen();
-            if (event.defaultPrevented || event.isComposing || event.altKey || event.shiftKey ||
+            if (event.defaultPrevented || event.isComposing || event.altKey ||
                 !(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'z') return;
-            // Keep native undo in text fields, and ignore inactive score tabs or unfinished gestures.
+            // Keep native text history, and ignore inactive score tabs or unfinished gestures.
             if (event.target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]') ||
                 !this.root.getClientRects().length || this.printing || this.stroke || this.textDrag) return;
-            const undo = this.find('[data-undo]');
-            if (undo.disabled) return;
+            const button = this.find(event.shiftKey ? '[data-redo]' : '[data-undo]');
+            if (button.disabled) return;
             event.preventDefault();
-            undo.click();
+            button.click();
         }
         bind() {
+            this.bindPinchZoom();
             const color = this.find('[data-color]');
             const updateColor = () => this.updatePaletteColor();
             color.addEventListener('input', updateColor);
@@ -417,7 +495,7 @@
             });
         }
         down(event) {
-            if (!this.ready || this.rendering || this.store.conflict || this.pointerId !== null || event.button > 0 || event.isPrimary === false) return;
+            if (!this.ready || this.rendering || this.store.conflict || this.touchPinching || this.gestureScale !== undefined || this.pointerId !== null || event.button > 0 || event.isPrimary === false) return;
             if (this.tool === 'read') {
                 const hit = event.target.closest('[data-mark-id]');
                 const existing = hit && this.store.marks.find(mark => mark.id === hit.getAttribute('data-mark-id') && mark.type === 'text' && mark.page === this.page);

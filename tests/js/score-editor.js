@@ -81,12 +81,13 @@ module.exports = async function () {
     assert.throws(() => reopened.load('<html>sign in</html>'));
 
     const shortcuts = Object.create(Editor.prototype);
-    let visibleScore = true, fullscreen = false, undoClicks = 0;
+    let visibleScore = true, fullscreen = false, undoClicks = 0, redoClicks = 0;
     shortcuts.root = {getClientRects: () => visibleScore ? [{}] : [], classList: {contains: () => fullscreen}};
     shortcuts.store = new Markings(() => {});
     shortcuts.store.load({revision: 0, marks: []});
     const undoButton = {disabled: false, click() { undoClicks++; shortcuts.store.undo(); }};
-    shortcuts.find = () => undoButton;
+    const redoButton = {disabled: false, click() { redoClicks++; shortcuts.store.redo(); }};
+    shortcuts.find = selector => selector === '[data-redo]' ? redoButton : undoButton;
     shortcuts.toggleFullscreen = () => { fullscreen = false; };
     const undoKey = changes => Object.assign({key: 'z', ctrlKey: false, metaKey: false, shiftKey: false,
         altKey: false, defaultPrevented: false, isComposing: false, target: {closest: () => null},
@@ -97,21 +98,29 @@ module.exports = async function () {
         shortcuts.keydown(event);
         assert.strictEqual(event.defaultPrevented, true);
         assert.strictEqual(shortcuts.store.marks.length, 0, 'Ctrl/Cmd+Z uses annotation undo');
+        const redo = undoKey(Object.assign({}, modifiers, {shiftKey: true, key: 'Z'}));
+        shortcuts.keydown(redo);
+        assert.strictEqual(redo.defaultPrevented, true);
+        assert.strictEqual(shortcuts.store.marks[0].id, 'a', 'Ctrl/Cmd+Shift+Z restores the undone annotation');
+        shortcuts.store.load({revision: 0, marks: []});
     }
-    for (const changes of [{}, {ctrlKey: true, shiftKey: true}, {ctrlKey: true, altKey: true},
+    for (const changes of [{}, {ctrlKey: true, altKey: true},
         {ctrlKey: true, key: 'y'}, {ctrlKey: true, isComposing: true}, {ctrlKey: true, defaultPrevented: true},
         {ctrlKey: true, target: {closest: () => ({tagName: 'INPUT'})}}]) {
-        shortcuts.keydown(undoKey(changes));
+        for (const shiftKey of [false, true]) shortcuts.keydown(undoKey(Object.assign({}, changes, {shiftKey})));
     }
     for (const state of ['hidden', 'disabled', 'printing', 'stroke', 'textDrag']) {
-        visibleScore = state !== 'hidden'; undoButton.disabled = state === 'disabled';
+        visibleScore = state !== 'hidden'; undoButton.disabled = redoButton.disabled = state === 'disabled';
         shortcuts.printing = state === 'printing'; shortcuts.stroke = state === 'stroke' ? {} : null;
         shortcuts.textDrag = state === 'textDrag' ? {} : null;
-        const event = undoKey({ctrlKey: true});
-        shortcuts.keydown(event);
-        assert.strictEqual(event.defaultPrevented, false, 'Inactive/blocked editing keeps native keyboard behavior');
+        for (const shiftKey of [false, true]) {
+            const event = undoKey({ctrlKey: true, shiftKey});
+            shortcuts.keydown(event);
+            assert.strictEqual(event.defaultPrevented, false, 'Inactive/blocked editing keeps native keyboard behavior');
+        }
     }
     assert.strictEqual(undoClicks, 3, 'Other shortcuts, typing fields and blocked editors do not undo annotations');
+    assert.strictEqual(redoClicks, 3, 'Redo uses the same typing and editing-state safeguards');
     fullscreen = true;
     shortcuts.keydown(undoKey({key: 'Escape'}));
     assert.strictEqual(fullscreen, false, 'Fullscreen Escape behavior is preserved');
@@ -345,6 +354,105 @@ module.exports = async function () {
     zoomEditor.zoom = .75; zoomEditor.page = 1; zoomEditor.render = () => Promise.resolve();
     zoomEditor.adjustZoom(-.25); assert.strictEqual(zoomEditor.zoom, .5);
     zoomEditor.adjustZoom(-.25); assert.strictEqual(zoomEditor.zoom, .5, 'Zoom stops at 50%');
+
+    const pinch = Object.create(Editor.prototype);
+    let pinchRenders = 0, releasedPointer = null;
+    const pinchListeners = {};
+    const scoreTouchTarget = {};
+    pinch.scroller = {style: {}, clientHeight: 600, contains: target => target === scoreTouchTarget,
+        addEventListener(type, handler, options) { pinchListeners[type] = {handler, options}; }};
+    pinch.pdf = {}; pinch.page = 1; pinch.zoom = 1; pinch.pointerId = null;
+    pinch.svg = {removeAttribute() {}, hasPointerCapture: id => id === 7, releasePointerCapture: id => { releasedPointer = id; }};
+    pinch.finishText = () => {}; pinch.paint = () => {};
+    pinch.render = () => { pinchRenders++; return Promise.resolve(); };
+    pinch.bindPinchZoom();
+    assert.strictEqual(pinch.scroller.style.touchAction, 'pan-x pan-y', 'Only the score viewport excludes native pinch zoom');
+    for (const {options} of Object.values(pinchListeners)) assert.strictEqual(options.passive, false);
+    const pinchEvent = changes => Object.assign({ctrlKey: false, deltaY: -20, deltaMode: 0,
+        defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }}, changes);
+    const scrollWheel = pinchEvent(); pinchListeners.wheel.handler(scrollWheel);
+    assert.strictEqual(scrollWheel.defaultPrevented, false, 'Ordinary trackpad scrolling is preserved');
+    pinch.stroke = {points: []}; pinch.pointerId = 7;
+    const trackpad = pinchEvent({ctrlKey: true}); pinchListeners.wheel.handler(trackpad);
+    assert.strictEqual(trackpad.defaultPrevented, true, 'Trackpad pinch blocks page zoom');
+    assert.strictEqual(pinch.zoom, 1.25, 'Trackpad pinch uses a toolbar zoom step');
+    assert.strictEqual(pinch.stroke, null, 'Starting pinch discards an unfinished marking');
+    assert.strictEqual(releasedPointer, 7);
+    pinchListeners.wheel.handler(pinchEvent({ctrlKey: true, deltaY: 40}));
+    assert.strictEqual(pinch.zoom, .75, 'Reverse pinch zooms out');
+    pinch.pinchAmount = 0; pinch.pinchWheelTime = 0;
+    pinchListeners.wheel.handler(pinchEvent({ctrlKey: true, deltaY: -1, deltaMode: 1}));
+    assert.strictEqual(pinch.zoom, .75, 'Small movements accumulate without rendering each event');
+    pinchListeners.wheel.handler(pinchEvent({ctrlKey: true, deltaY: -1, deltaMode: 1}));
+    assert.strictEqual(pinch.zoom, 1);
+
+    const touches = distance => [{identifier: 1, clientX: 0, clientY: 0, target: scoreTouchTarget},
+        {identifier: 2, clientX: distance, clientY: 0, target: scoreTouchTarget}];
+    const oneFinger = pinchEvent({touches: touches(100).slice(0, 1)});
+    pinchListeners.touchstart.handler(oneFinger);
+    assert.strictEqual(oneFinger.defaultPrevented, false, 'One finger can still scroll in read mode');
+    const outside = pinchEvent({touches: [touches(100)[0], Object.assign({}, touches(100)[1], {target: {}})]});
+    pinchListeners.touchstart.handler(outside);
+    assert.strictEqual(outside.defaultPrevented, false, 'A pinch that starts outside the score is not intercepted');
+    const startTouch = pinchEvent({touches: touches(100)}); pinchListeners.touchstart.handler(startTouch);
+    assert.strictEqual(startTouch.defaultPrevented, true);
+    pinchListeners.touchmove.handler(pinchEvent({touches: touches(130)}));
+    assert.strictEqual(pinch.zoom, 1.25, 'Two-finger spread zooms the score in');
+    pinchListeners.gesturestart.handler(pinchEvent({type: 'gesturestart', scale: 1}));
+    pinchListeners.gesturechange.handler(pinchEvent({type: 'gesturechange', scale: 2}));
+    pinchListeners.wheel.handler(pinchEvent({ctrlKey: true}));
+    assert.strictEqual(pinch.zoom, 1.25, 'Overlapping Safari/wheel events cannot double-zoom a touch pinch');
+    pinchListeners.touchmove.handler(pinchEvent({touches: touches(90)}));
+    assert.strictEqual(pinch.zoom, 1, 'Two-finger contraction zooms the score out');
+    pinchListeners.touchend.handler(pinchEvent({touches: touches(90).slice(0, 1)}));
+    assert.strictEqual(pinch.touchPinching, true, 'The remaining finger cannot begin a new marking');
+    pinch.ready = true; pinch.store = {conflict: false}; pinch.tool = 'pen';
+    pinch.down({pointerId: 1, isPrimary: true, button: 0});
+    assert.strictEqual(pinch.stroke, null);
+    pinchListeners.touchcancel.handler(pinchEvent({touches: []}));
+    assert.strictEqual(pinch.touchPinching, false, 'All fingers released or canceled ends pinch handling');
+
+    pinchListeners.gesturestart.handler(pinchEvent({type: 'gesturestart', scale: 1}));
+    pinchListeners.gesturechange.handler(pinchEvent({type: 'gesturechange', scale: 1.3}));
+    assert.strictEqual(pinch.zoom, 1.25, 'Safari trackpad gestures use score zoom');
+    pinchListeners.wheel.handler(pinchEvent({ctrlKey: true}));
+    assert.strictEqual(pinch.zoom, 1.25, 'Safari wheel duplicates are ignored while its gesture is active');
+    pinchListeners.gesturechange.handler(pinchEvent({type: 'gesturechange', scale: .9}));
+    assert.strictEqual(pinch.zoom, 1);
+    pinchListeners.gestureend.handler(pinchEvent({type: 'gestureend'}));
+    assert.strictEqual(pinch.gestureScale, undefined);
+    pinch.pinchZoom(100); assert.strictEqual(pinch.zoom, 2.5);
+    pinch.pinchZoom(-200); assert.strictEqual(pinch.zoom, .5);
+    const beforePinchRenders = pinchRenders;
+    pinch.pinchZoom(-1); pinch.pinchZoom(NaN);
+    pinch.printing = true; pinch.pinchZoom(1);
+    pinch.printing = false; pinch.pdf = null; pinch.pinchZoom(1);
+    assert.strictEqual(pinchRenders, beforePinchRenders, 'Limits, invalid data, printing and unloaded PDFs do not render');
+
+    const queuedZoom = Object.create(Editor.prototype), pdfRenders = [], zoomLabels = {};
+    queuedZoom.pdf = {numPages: 1, getPage: async () => ({
+        getViewport: ({scale}) => ({width: 612 * scale, height: 792 * scale}),
+        render: ({viewport}) => ({promise: new Promise(resolve => pdfRenders.push({viewport, resolve}))})
+    })};
+    queuedZoom.page = 1; queuedZoom.zoom = .75; queuedZoom.renderId = 0;
+    queuedZoom.scroller = {clientWidth: 680}; queuedZoom.sheet = {style: {}};
+    queuedZoom.canvas = {getContext: () => ({drawImage() {}})};
+    queuedZoom.svg = {setAttribute() {}};
+    queuedZoom.find = selector => zoomLabels[selector] || (zoomLabels[selector] = {});
+    for (const method of ['finishTextDrag', 'finishStroke', 'controls', 'paint', 'positionText']) queuedZoom[method] = () => {};
+    queuedZoom.renderError = () => { throw new Error('Pinch render failed'); };
+    const initialRender = queuedZoom.render(1);
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    queuedZoom.pinchZoom(.2);
+    assert.strictEqual(queuedZoom.zoom, 1, 'Pinch can accumulate while PDF rendering is busy');
+    pdfRenders[0].resolve(); await initialRender;
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    assert.strictEqual(pdfRenders.length, 2, 'The latest zoom receives a queued PDF render');
+    pdfRenders[1].resolve();
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    assert.strictEqual(queuedZoom.sheet.style.width, '656px');
+    assert.strictEqual(zoomLabels['[data-zoom-label]'].textContent, '100%');
+    assert.strictEqual(queuedZoom.rendering, false);
 
     const printEditor = Object.create(Editor.prototype);
     const printedPages = [], printMessages = [];
