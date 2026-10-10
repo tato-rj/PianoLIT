@@ -8,5 +8,10 @@
 	 data-delete-url="{{route('admin.tags.destroy', $tag->id)}}"
 	 data-bs-toggle="modal"
 	 data-bs-target="#tag-modal">
-  <p class="m-0">{{$tag->name}}</p>
+  <p class="m-0">
+  	{{$tag->name}}
+  	{{-- @if($tag->ordering) --}}
+  	<span class="d-block small opacity-6">{{$tag->ordering}}</span>
+  	{{-- @endif --}}
+  </p>
 </div>
