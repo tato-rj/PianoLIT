@@ -206,6 +206,18 @@
             this.zoom = next;
             this.render(this.page).catch(() => this.renderError());
         }
+        keydown(event) {
+            if (event.key === 'Escape' && this.root.classList.contains('is-fullscreen')) this.toggleFullscreen();
+            if (event.defaultPrevented || event.isComposing || event.altKey || event.shiftKey ||
+                !(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'z') return;
+            // Keep native undo in text fields, and ignore inactive score tabs or unfinished gestures.
+            if (event.target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]') ||
+                !this.root.getClientRects().length || this.printing || this.stroke || this.textDrag) return;
+            const undo = this.find('[data-undo]');
+            if (undo.disabled) return;
+            event.preventDefault();
+            undo.click();
+        }
         bind() {
             const color = this.find('[data-color]');
             const updateColor = () => this.updatePaletteColor();
@@ -241,9 +253,7 @@
             this.find('[data-clear-all]').addEventListener('click', () => this.clearAll());
             this.find('[data-fullscreen]').addEventListener('click', () => this.toggleFullscreen());
             this.find('[data-print]').addEventListener('click', () => this.printScore());
-            document.addEventListener('keydown', event => {
-                if (event.key === 'Escape' && this.root.classList.contains('is-fullscreen')) this.toggleFullscreen();
-            });
+            document.addEventListener('keydown', event => this.keydown(event));
             this.find('[data-prev]').addEventListener('click', () => this.render(this.page - 1).catch(() => this.renderError()));
             this.find('[data-next]').addEventListener('click', () => this.render(this.page + 1).catch(() => this.renderError()));
             this.all('[data-zoom]').forEach(el => el.addEventListener('click', () => {

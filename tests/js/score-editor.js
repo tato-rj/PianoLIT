@@ -80,6 +80,42 @@ module.exports = async function () {
     store.replace([]); await store.flush(); assert.strictEqual(database.marks.length, 0, 'Erasing every mark must persist');
     assert.throws(() => reopened.load('<html>sign in</html>'));
 
+    const shortcuts = Object.create(Editor.prototype);
+    let visibleScore = true, fullscreen = false, undoClicks = 0;
+    shortcuts.root = {getClientRects: () => visibleScore ? [{}] : [], classList: {contains: () => fullscreen}};
+    shortcuts.store = new Markings(() => {});
+    shortcuts.store.load({revision: 0, marks: []});
+    const undoButton = {disabled: false, click() { undoClicks++; shortcuts.store.undo(); }};
+    shortcuts.find = () => undoButton;
+    shortcuts.toggleFullscreen = () => { fullscreen = false; };
+    const undoKey = changes => Object.assign({key: 'z', ctrlKey: false, metaKey: false, shiftKey: false,
+        altKey: false, defaultPrevented: false, isComposing: false, target: {closest: () => null},
+        preventDefault() { this.defaultPrevented = true; }}, changes);
+    for (const modifiers of [{ctrlKey: true}, {metaKey: true}, {metaKey: true, key: 'Z'}]) {
+        shortcuts.store.replace([a]);
+        const event = undoKey(modifiers);
+        shortcuts.keydown(event);
+        assert.strictEqual(event.defaultPrevented, true);
+        assert.strictEqual(shortcuts.store.marks.length, 0, 'Ctrl/Cmd+Z uses annotation undo');
+    }
+    for (const changes of [{}, {ctrlKey: true, shiftKey: true}, {ctrlKey: true, altKey: true},
+        {ctrlKey: true, key: 'y'}, {ctrlKey: true, isComposing: true}, {ctrlKey: true, defaultPrevented: true},
+        {ctrlKey: true, target: {closest: () => ({tagName: 'INPUT'})}}]) {
+        shortcuts.keydown(undoKey(changes));
+    }
+    for (const state of ['hidden', 'disabled', 'printing', 'stroke', 'textDrag']) {
+        visibleScore = state !== 'hidden'; undoButton.disabled = state === 'disabled';
+        shortcuts.printing = state === 'printing'; shortcuts.stroke = state === 'stroke' ? {} : null;
+        shortcuts.textDrag = state === 'textDrag' ? {} : null;
+        const event = undoKey({ctrlKey: true});
+        shortcuts.keydown(event);
+        assert.strictEqual(event.defaultPrevented, false, 'Inactive/blocked editing keeps native keyboard behavior');
+    }
+    assert.strictEqual(undoClicks, 3, 'Other shortcuts, typing fields and blocked editors do not undo annotations');
+    fullscreen = true;
+    shortcuts.keydown(undoKey({key: 'Escape'}));
+    assert.strictEqual(fullscreen, false, 'Fullscreen Escape behavior is preserved');
+
     const textStore = new Markings(async data => ({revision: data.revision + 1}));
     textStore.load({revision: 0, marks: []});
     const editor = Object.create(Editor.prototype);
