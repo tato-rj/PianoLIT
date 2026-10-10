@@ -218,7 +218,8 @@ class ScoreAnnotationsTest extends ReviewTestCase
         $html = view('webapp.piece.components.score-editor', ['piece' => $this->piece])->render();
         foreach (['data-tool="pen"', 'data-tool="text"', 'data-tool="erase"', 'data-tool="highlight"',
             'data-undo', 'data-redo', 'data-clear-all', 'data-fullscreen', 'data-print',
-            'data-annotations-url', 'type="color"', 'icon-palette'] as $control) {
+            'data-annotations-url', 'type="color"', 'icon-palette', 'aria-label="Pen thickness"',
+            'data-width value="0.004"', 'role="menuitemradio"'] as $control) {
             $this->assertStringContainsString($control, $html);
         }
         if ($directory = getenv('SCORE_EDITOR_PREVIEW_DIR')) {
@@ -228,6 +229,21 @@ class ScoreAnnotationsTest extends ReviewTestCase
                 $preview = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"></head><body><main class="container py-4" style="max-width:900px"><h3>Score '.$id.'</h3><p><a href="/1.html">Score 1</a> &middot; <a href="/2.html">Score 2</a></p>'.$preview.'<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script><script src="/axios.js"></script><script src="/score-editor.js"></script><script>new ScoreEditor.Editor(document.getElementById("score-editor"), pdfjsLib, axios);</script></main></body></html>';
                 file_put_contents($directory.'/'.$id.'.html', $preview);
             }
+        }
+    }
+
+    public function test_every_visual_pen_thickness_can_be_saved_and_reloaded()
+    {
+        $this->actingAs($this->user, 'web');
+        $marks = [];
+        foreach ([.001, .002, .004, .006, .009, .013, .018] as $index => $width) {
+            $marks[] = ['id' => 'width'.$index, 'type' => 'stroke', 'page' => 1, 'color' => '#20252b',
+                'width' => $width, 'points' => [['x' => .2, 'y' => .3], ['x' => .25, 'y' => .35]]];
+        }
+        $this->putJson($this->url(), $this->payload($marks))->assertOk();
+        $response = $this->getJson($this->url(null, $this->payload([])))->assertOk();
+        foreach ($marks as $index => $mark) {
+            $response->assertJsonPath('marks.'.$index.'.width', $mark['width']);
         }
     }
 

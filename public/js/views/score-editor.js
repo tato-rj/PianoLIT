@@ -77,7 +77,6 @@
             this.status = this.find('[data-score-status]');
             this.tool = 'read'; this.page = 1; this.zoom = root.matchMedia('(max-width: 767px)').matches ? 1 : 0.75;
             this.find('[data-zoom-label]').textContent = Math.round(this.zoom * 100) + '%';
-            this.inkColor = '#20252b'; this.highlightColor = '#ffe066';
             this.ready = false; this.rendering = false; this.printing = false; this.renderId = 0;
             this.stroke = null; this.textDrag = null; this.pointerId = null; this.pdf = null; this.textDraft = null;
             this.store = new Markings(data => this.http.put(this.url, Object.assign({}, this.identity, data)).then(response => response.data), () => this.changed());
@@ -143,8 +142,6 @@
         selectTool(tool) {
             const next = this.tool === tool ? 'read' : tool;
             this.finishTextDrag(); this.finishStroke(); this.finishText();
-            if (next === 'highlight' && this.tool !== 'highlight') this.find('[data-color]').value = this.highlightColor;
-            if (this.tool === 'highlight' && next !== 'highlight') this.find('[data-color]').value = this.inkColor;
             this.tool = next; this.controls();
             this.updatePaletteColor();
         }
@@ -178,13 +175,9 @@
         }
         bind() {
             const color = this.find('[data-color]');
-            const saveColor = () => {
-                if (this.tool === 'highlight') this.highlightColor = color.value;
-                else this.inkColor = color.value;
-                this.updatePaletteColor();
-            };
-            color.addEventListener('input', saveColor);
-            color.addEventListener('change', saveColor);
+            const updateColor = () => this.updatePaletteColor();
+            color.addEventListener('input', updateColor);
+            color.addEventListener('change', updateColor);
             this.updatePaletteColor();
             this.all('button[data-tool]').forEach(el => el.addEventListener('click', () => this.selectTool(el.getAttribute('data-tool'))));
             // Inspect the original target before editing replaces an SVG mark in the DOM.

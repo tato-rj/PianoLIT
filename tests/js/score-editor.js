@@ -135,6 +135,72 @@ module.exports = async function () {
     assert.strictEqual(pen.store.marks.length, 2, 'Clear all can be undone');
     assert.strictEqual(pen.store.marks[1].page, 2, 'Undo restores markings on other score pages');
 
+    const sharedColor = {value: '#20252b'};
+    const palette = {style: {}};
+    pen.find = selector => selector === '[data-color]' ? sharedColor : (selector === '.score-color-button .icon-palette' ? palette : null);
+    pen.controls = () => {}; pen.finishTextDrag = () => {};
+    for (const tool of ['pen', 'highlight']) {
+        for (const timing of ['before', 'after']) {
+            pen.selectTool('read');
+            sharedColor.value = '#20252b';
+            const selectedColor = timing === 'before' ? '#e63245' : '#1959e9';
+            if (timing === 'before') sharedColor.value = selectedColor;
+            pen.selectTool(tool);
+            if (timing === 'after') sharedColor.value = selectedColor;
+            pen.updatePaletteColor();
+            assert.strictEqual(sharedColor.value, selectedColor, tool + ': choosing color ' + timing + ' selecting the tool retains that color');
+            assert.strictEqual(palette.style.color, selectedColor, 'Palette reflects the shared writing color');
+            pen.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 3, preventDefault: () => {}});
+            pen.finishStroke();
+            const mark = pen.store.marks[pen.store.marks.length - 1];
+            assert.strictEqual(mark.color, selectedColor, tool + ': new markings use the color chosen ' + timing + ' selecting the tool');
+            assert.strictEqual(mark.type, tool === 'highlight' ? 'highlight' : 'stroke');
+            const otherTool = tool === 'highlight' ? 'pen' : 'highlight';
+            pen.selectTool(otherTool);
+            assert.strictEqual(sharedColor.value, selectedColor, 'Switching writing tools does not replace the chosen color');
+            pen.selectTool(otherTool);
+            assert.strictEqual(pen.tool, 'read');
+            assert.strictEqual(sharedColor.value, selectedColor, 'Toggling a tool off retains the chosen color');
+        }
+    }
+    assert.strictEqual(pen.store.marks[0].color, '#20252b', 'Changing the picker does not recolor existing marks');
+    assert.strictEqual(pen.store.marks[1].color, '#ffe066', 'Existing highlights retain their original color');
+
+    const widthInput = {value: '0.004'};
+    const widthPreview = {setAttribute(name, value) { this[name] = value; }};
+    const widthOptions = ['0.001', '0.002', '0.004', '0.006', '0.009', '0.013', '0.018'].map((value, index) => ({
+        value, classList: {toggle() {}},
+        getAttribute: () => value,
+        setAttribute(name, checked) { this[name] = checked; },
+        querySelector: () => ({getAttribute: () => String(index + 1)})
+    }));
+    pen.find = selector => ({'[data-color]': sharedColor, '[data-width]': widthInput,
+        '[data-width-preview]': widthPreview, '.score-color-button .icon-palette': palette})[selector] || null;
+    pen.all = () => widthOptions;
+    for (const option of widthOptions) {
+        pen.selectWidth(option.value);
+        assert.strictEqual(widthInput.value, option.value);
+        assert.strictEqual(widthOptions.filter(item => item['aria-checked'] === 'true').length, 1, 'Exactly one thickness is selected');
+        assert.strictEqual(option['aria-checked'], 'true');
+        assert.strictEqual(widthPreview['stroke-width'], option.querySelector().getAttribute(), 'Toolbar sample reflects the selected thickness');
+        pen.selectTool('pen');
+        pen.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 3, preventDefault: () => {}});
+        pen.finishStroke();
+        assert.strictEqual(pen.store.marks[pen.store.marks.length - 1].width, Number(option.value), 'New pencil strokes use the selected width');
+        pen.selectWidth('0.004');
+        assert.strictEqual(pen.tool, 'pen', 'Choosing a width keeps the pen active');
+        pen.selectTool('pen');
+    }
+    pen.selectWidth('0.006');
+    pen.selectWidth('0.5');
+    assert.strictEqual(widthInput.value, '0.006', 'Unsupported widths are ignored');
+    pen.selectTool('highlight');
+    pen.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 3, preventDefault: () => {}});
+    pen.finishStroke();
+    assert.strictEqual(pen.store.marks[pen.store.marks.length - 1].width, .02, 'Pen thickness leaves highlighter width unchanged');
+    assert.strictEqual(pen.store.marks[0].width, .004, 'Changing thickness does not alter saved pencil strokes');
+    assert.strictEqual(sharedColor.value, '#1959e9', 'Thickness selection retains the chosen color');
+
     let newText;
     const textTool = Object.create(Editor.prototype);
     textTool.ready = true; textTool.rendering = false; textTool.tool = 'text'; textTool.pointerId = null; textTool.page = 1;
@@ -147,6 +213,13 @@ module.exports = async function () {
     textTool.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 1,
         target: {closest: () => null}, preventDefault: () => {}});
     assert.strictEqual(newText.size, .02, 'Text defaults to Small without a size selector');
+    textTool.find = selector => selector === '[data-color]' ? sharedColor : palette;
+    textTool.controls = () => {}; textTool.finishTextDrag = () => {}; textTool.finishStroke = () => {};
+    textTool.tool = 'highlight';
+    textTool.selectTool('text');
+    textTool.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 1,
+        target: {closest: () => null}, preventDefault: () => {}});
+    assert.strictEqual(newText.color, sharedColor.value, 'Text also uses the color selected with another writing tool');
 
     const dragEditor = Object.create(Editor.prototype);
     const savedText = Object.assign({}, a, {x: .25, y: .3, size: .02, color: '#20252b'});

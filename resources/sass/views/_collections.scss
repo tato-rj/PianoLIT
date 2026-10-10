@@ -90,12 +90,7 @@
     .collection-card__art > span { font-size: 18px; left: 14px; right: 14px; }
     .collections-meta { font-size: 12px; }
 }
-.collections-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px;
-    button { border: 1px solid #e5eaf1; border-radius: 24px; padding: 8px 19px; color: #505c70; background: #f4f6fa; font-size: 12px; cursor: pointer;
-        &[aria-pressed=true] { color: white; background: #0055fe; border-color: #0055fe; }
-        &:hover { border-color: #0055fe; }
-    }
-}
+.collections-filters { margin: 0 0 18px; }
 .collections-empty { padding: 36px 24px; text-align: center; background: #f4f7fb; border-radius: 16px;
     h3 { font-size: 20px; }
     p { color: #697386; }

@@ -80,16 +80,7 @@
 .piece-level { overflow-wrap: anywhere; }
 .discover-levels {
     &__header { flex-wrap: wrap; }
-    &__tabs {
-        flex-shrink: 0;
-        padding: 4px;
-        border: 1px solid var(--color-dropdown-border);
-        border-radius: var(--radius-button);
-        background: var(--color-primary-soft);
-        .nav-link { padding: 8px 18px; border-radius: var(--radius-button); color: var(--color-text); font-size: var(--font-size-small); }
-        .nav-link.active { color: var(--color-surface) !important; background: var(--color-primary); }
-        .nav-link:disabled { opacity: .5; }
-    }
+    &__tabs { flex-shrink: 0; }
 }
 .discover-level-card {
     flex: 0 0 calc((100% - 64px) / 5);
@@ -160,7 +151,7 @@
 }
 @media (max-width: 767px) {
     .discover-for-you .discover-compact-card { flex-basis: 94%; }
-    .discover-levels__tabs { width: 100%; .nav-link { flex: 1; padding: 8px 12px; } }
+    .discover-levels__tabs { width: 100%; }
     .discover-level-card { flex-basis: calc((100% - 32px) / 3); }
     .discover-composer-feature__layout { grid-template-columns: minmax(0, 1fr); }
     .discover-composer-feature__feature { grid-template-columns: minmax(0, 140px) minmax(0, 1fr); }

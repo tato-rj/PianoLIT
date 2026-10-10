@@ -15,6 +15,8 @@
         outline-offset: 2px;
     }
     .score-toolbar {
+        position: relative;
+        z-index: 2;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -72,6 +74,35 @@
         border: 0;
         opacity: 0;
         cursor: inherit;
+    }
+    .score-width-control { flex: 0 0 auto; }
+    .score-width-toggle {
+        gap: 2px;
+        > svg { width: 25px; height: 20px; }
+        .app-icon { font-size: 8px; }
+    }
+    .score-width-menu {
+        min-width: 180px;
+        padding: 8px;
+        border: 1px solid #e4eaf3;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(37, 54, 80, .16);
+    }
+    .score-width-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 36px;
+        padding: 2px 8px;
+        border-radius: 8px;
+        color: #596171;
+        > svg { width: 120px; height: 32px; }
+        .score-width-check { visibility: hidden; font-size: 16px; }
+        &.active {
+            color: #1555dc;
+            background: #e9f0ff;
+            .score-width-check { visibility: visible; }
+        }
     }
     .score-save-status {
         color: #74819a;
@@ -210,6 +241,7 @@
     .score-messages { padding: 8px 2px; }
 
     &.is-fullscreen {
+        --score-toolbar-height: 84px;
         position: fixed;
         z-index: 2000;
         inset: 0;
@@ -221,9 +253,19 @@
         padding: 12px 12px calc(100px + var(--piece-player-height, 0px));
         overflow-y: auto;
         background: #eef3f9;
+        .score-toolbar {
+            position: fixed;
+            z-index: 2;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        .score-status-row { display: none; }
+        .score-toolbar:not(.d-none) ~ .score-scroll { margin-top: var(--score-toolbar-height); }
         .score-scroll { min-height: calc(100dvh - 190px); }
     }
     @media (max-width: 767px) {
+        &.is-fullscreen { --score-toolbar-height: 36px; }
         // width: calc(100vw - 20px);
         // margin-left: calc(-50vw + 10px);
         padding-bottom: calc(126px + var(--piece-player-height, 0px));
@@ -233,6 +275,7 @@
         .score-status-row { padding: 0 8px 8px; }
         .score-icon-button, .score-clear-button { width: 34px; height: 34px; min-height: 34px; font-size: 14px; }
         .score-color-button { margin-left: 0; }
+        .score-width-toggle > svg { width: 20px; }
         .score-clear-button { padding: 0; border-radius: 50%; }
         .score-clear-button span { display: none; }
         .score-scroll { padding: 12px; }
@@ -255,6 +298,7 @@
         // margin-left: calc(-50vw + 16px);
     }
     @media (max-width: 360px) {
+        &.is-fullscreen { --score-toolbar-height: 34px; }
         .score-toolbar { padding-left: 6px; padding-right: 6px; }
         .score-icon-button, .score-clear-button { width: 32px; height: 32px; min-height: 32px; }
         .score-control-button { width: 34px; }

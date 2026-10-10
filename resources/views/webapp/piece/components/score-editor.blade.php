@@ -11,6 +11,29 @@
                 @icon('palette', ['mr' => 0])
                 <input data-color data-edit-control type="color" value="#20252b" class="score-color-input" aria-label="Annotation color" disabled>
             </label>
+            <div class="dropdown score-width-control">
+                <input type="hidden" data-width value="0.004">
+                <button type="button" id="score-pen-width" data-edit-control class="score-icon-button score-width-toggle" data-bs-toggle="dropdown" aria-label="Pen thickness" aria-haspopup="true" aria-expanded="false" title="Pen thickness" disabled>
+                    <svg viewBox="0 0 120 32" aria-hidden="true"><path data-width-preview d="M12 20 C40 28 78 4 108 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+                    @icon('chevron-down', ['mr' => 0])
+                </button>
+                <div class="dropdown-menu score-width-menu" role="menu" aria-labelledby="score-pen-width">
+                    @foreach([
+                        ['value' => '0.001', 'sample' => '0.8', 'label' => 'Extra fine'],
+                        ['value' => '0.002', 'sample' => '1.4', 'label' => 'Fine'],
+                        ['value' => '0.004', 'sample' => '2.2', 'label' => 'Medium'],
+                        ['value' => '0.006', 'sample' => '3.5', 'label' => 'Broad'],
+                        ['value' => '0.009', 'sample' => '5', 'label' => 'Thick'],
+                        ['value' => '0.013', 'sample' => '7', 'label' => 'Extra thick'],
+                        ['value' => '0.018', 'sample' => '10', 'label' => 'Bold'],
+                    ] as $width)
+                        <button type="button" data-width-option="{{ $width['value'] }}" data-edit-control class="dropdown-item score-width-option {{ $width['value'] === '0.004' ? 'active' : '' }}" role="menuitemradio" aria-label="{{ $width['label'] }}" aria-checked="{{ $width['value'] === '0.004' ? 'true' : 'false' }}" disabled>
+                            @icon('check', ['mr' => 0, 'classes' => 'score-width-check'])
+                            <svg viewBox="0 0 120 32" aria-hidden="true"><path d="M12 20 C40 28 78 4 108 14" fill="none" stroke="currentColor" stroke-width="{{ $width['sample'] }}" stroke-linecap="round" /></svg>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
         </div>
         <div class="score-history" role="group" aria-label="Marking history">
             <button type="button" data-undo class="score-icon-button" aria-label="Undo" title="Undo" disabled>@icon('undo-2', ['mr' => 0])</button>

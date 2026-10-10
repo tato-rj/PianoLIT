@@ -83,7 +83,7 @@
         <div class="collections-section__heading"><h2 id="browse-heading">Browse collections</h2></div>
         @if($playlists->isNotEmpty())
             @if($categories->isNotEmpty())
-            <div class="collections-filters" role="group" aria-label="Filter collections" hidden>
+            <div class="collections-filters pill-filters" role="group" aria-label="Filter collections" hidden>
                 <button type="button" data-collection-filter="all" aria-pressed="true" aria-controls="collections-grid">All</button>
                 @foreach($categories as $key => $label)
                 <button type="button" data-collection-filter="{{ $key }}" aria-pressed="false" aria-controls="collections-grid">{{ $label }}</button>

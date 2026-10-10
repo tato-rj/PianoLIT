@@ -48,7 +48,7 @@
 @if(!$selectedTag && ($techniques->count() > 1 || $lengths->count() > 1 || $periods->count() > 1))
 <h5 class="mb-3">{{ $selected ? 'Other ways into this level' : 'Other ways to explore' }}</h5>
 @if($techniques->count() > 1)
-<details class="explore-mood border rounded-sm mb-3 w-100">
+<details class="explore-mood border rounded-sm mb-3">
     <summary>@icon('hand', ['mr' => 0, 'size' => 'lg'])<span class="explore-copy"><strong>Technique</strong><small class="d-block text-muted">Hands, patterns & more</small></span>@icon('chevron-right', ['mr' => 0, 'classes' => 'explore-chevron'])</summary>
     <div class="explore-mood-options">
     @foreach($techniques as $tag)
