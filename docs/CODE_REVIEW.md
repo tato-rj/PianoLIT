@@ -2567,3 +2567,11 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Uses already loaded composer/country metadata; the existing three-query directory bound still passes. Missing dates/period/country are omitted; known approximate years remain, and living composers show their birth year. Existing search, Popular filtering, sorting, routes, guest browsing, mobile APIs and media delivery retain their behavior. Preserved unrelated work.
 - **Verification:** Isolated directory/contemporary checks pass (7 tests / 83 assertions). Full JS regressions complete with existing unrelated mock-alert promise warnings. Isolated production build and both app/admin CSS-variable checks pass; final CSS changes compared with the initial working stylesheet are scoped to composer cards. Browser checks at 1440×900, 768×1024, 390×844 and 320×740 confirm readable wrapping and no horizontal document overflow; desktop uses the original 920px main width at 1440px. Temporary isolated Blade fixtures verify `1 piece`, plural counts, Popular filtering, search, living composers and missing metadata. Diff checks pass.
 - **Remaining work / limits:** Not deployed; physical-device testing was not performed. No database migration is required.
+
+### 2026-10-10 — Remove Popular badges from composer cards (P3, complete locally)
+
+- **Request / evidence:** The user requested removal of the Popular tag shown inside the redesigned cards.
+- **Implementation / affected files:** Removed the conditional badge markup from `resources/views/webapp/composers/list-item.blade.php`. This view-only update needs no asset rebuild.
+- **Compatibility:** The Popular filter and its existing `data-composer-popular` metadata remain; card layout, standard page width, period pills, counts, routes and mobile contracts are unchanged.
+- **Verification:** Isolated directory suite passes (4 tests / 60 assertions). Its rendered preview includes three famous composers with no badge markup and retains the Popular filter and metadata. Diff checks pass.
+- **Remaining work / limits:** Not deployed.

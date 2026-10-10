@@ -21,9 +21,6 @@
         <div class="composer-copy flex-grow-1">
             <div class="composer-card-heading">
                 <h6 class="composer-card-name">{{ $composer->name }}</h6>
-                @if($composer->is_famous)
-                <span class="composer-popular">Popular</span>
-                @endif
             </div>
             @if($country)
             <div class="composer-card-country">@flag(['code' => $country->flag_code]){{ $country->name }}</div>
