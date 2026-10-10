@@ -155,7 +155,8 @@
                 const selected = option.getAttribute('data-width-option') === value;
                 option.classList.toggle('active', selected);
                 option.setAttribute('aria-checked', String(selected));
-                if (selected) this.find('[data-width-preview]').setAttribute('stroke-width', option.querySelector('path').getAttribute('stroke-width'));
+                option.querySelector('[data-width-check]').hidden = !selected;
+                if (selected) this.find('[data-width-preview]').setAttribute('stroke-width', option.querySelector('[data-width-sample]').getAttribute('stroke-width'));
             });
         }
         clearAll() {
@@ -166,6 +167,7 @@
         toggleFullscreen() {
             const active = !this.root.classList.contains('is-fullscreen');
             this.root.classList.toggle('is-fullscreen', active);
+            this.find('.score-toolbar').classList.toggle('shadow', active);
             document.body.classList.toggle('score-editor-fullscreen-open', active);
             const button = this.find('[data-fullscreen]');
             button.setAttribute('aria-label', active ? 'Exit full screen' : 'Full screen');

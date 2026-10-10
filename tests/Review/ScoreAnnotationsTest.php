@@ -222,6 +222,12 @@ class ScoreAnnotationsTest extends ReviewTestCase
             'data-width value="0.004"', 'role="menuitemradio"'] as $control) {
             $this->assertStringContainsString($control, $html);
         }
+        $document = new \DOMDocument();
+        $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new \DOMXPath($document);
+        $this->assertSame(7, $xpath->query('//*[@data-width-check]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-width-check and not(@hidden)]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="score-pen-width"]//*[@data-lucide-name="chevron-down"]')->length);
         if ($directory = getenv('SCORE_EDITOR_PREVIEW_DIR')) {
             for ($id = 1; $id <= 2; $id++) {
                 $preview = preg_replace('/data-pdf-url="[^"]*"/', 'data-pdf-url="/score.pdf"', $html);

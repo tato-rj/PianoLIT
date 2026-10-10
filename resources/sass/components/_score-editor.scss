@@ -77,9 +77,7 @@
     }
     .score-width-control { flex: 0 0 auto; }
     .score-width-toggle {
-        gap: 2px;
         > svg { width: 25px; height: 20px; }
-        .app-icon { font-size: 8px; }
     }
     .score-width-menu {
         min-width: 180px;
@@ -97,11 +95,10 @@
         border-radius: 8px;
         color: #596171;
         > svg { width: 120px; height: 32px; }
-        .score-width-check { visibility: hidden; font-size: 16px; }
+        .score-width-check { flex: 0 0 16px; width: 16px; font-size: 16px; }
         &.active {
             color: #1555dc;
             background: #e9f0ff;
-            .score-width-check { visibility: visible; }
         }
     }
     .score-save-status {
@@ -299,7 +296,7 @@
     }
     @media (max-width: 360px) {
         &.is-fullscreen { --score-toolbar-height: 34px; }
-        .score-toolbar { padding-left: 6px; padding-right: 6px; }
+        .score-toolbar { flex-wrap: wrap; padding-left: 6px; padding-right: 6px; }
         .score-icon-button, .score-clear-button { width: 32px; height: 32px; min-height: 32px; }
         .score-control-button { width: 34px; }
         .score-page-label, .score-zoom-label { min-width: 42px; }

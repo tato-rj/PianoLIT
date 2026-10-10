@@ -148,6 +148,17 @@
         updatePaletteColor() {
             this.find('.score-color-button .icon-palette').style.color = this.find('[data-color]').value;
         }
+        selectWidth(value) {
+            if (![0.001, 0.002, 0.004, 0.006, 0.009, 0.013, 0.018].includes(Number(value))) return;
+            this.find('[data-width]').value = value;
+            this.all('[data-width-option]').forEach(option => {
+                const selected = option.getAttribute('data-width-option') === value;
+                option.classList.toggle('active', selected);
+                option.setAttribute('aria-checked', String(selected));
+                option.querySelector('[data-width-check]').hidden = !selected;
+                if (selected) this.find('[data-width-preview]').setAttribute('stroke-width', option.querySelector('[data-width-sample]').getAttribute('stroke-width'));
+            });
+        }
         clearAll() {
             if (!this.ready || this.rendering || this.store.conflict) return;
             this.finishTextDrag(); this.finishStroke(); this.finishText();
@@ -156,6 +167,7 @@
         toggleFullscreen() {
             const active = !this.root.classList.contains('is-fullscreen');
             this.root.classList.toggle('is-fullscreen', active);
+            this.find('.score-toolbar').classList.toggle('shadow', active);
             document.body.classList.toggle('score-editor-fullscreen-open', active);
             const button = this.find('[data-fullscreen]');
             button.setAttribute('aria-label', active ? 'Exit full screen' : 'Full screen');
@@ -180,6 +192,14 @@
             color.addEventListener('change', updateColor);
             this.updatePaletteColor();
             this.all('button[data-tool]').forEach(el => el.addEventListener('click', () => this.selectTool(el.getAttribute('data-tool'))));
+            this.all('[data-width-option]').forEach(el => el.addEventListener('click', () => this.selectWidth(el.getAttribute('data-width-option'))));
+            this.find('.score-width-control').addEventListener('keydown', event => {
+                if (event.key !== 'Escape' || !this.find('.score-width-menu').classList.contains('show')) return;
+                event.stopPropagation();
+                const button = this.find('#score-pen-width');
+                root.bootstrap.Dropdown.getOrCreateInstance(button).hide();
+                button.focus();
+            });
             // Inspect the original target before editing replaces an SVG mark in the DOM.
             document.addEventListener('pointerdown', event => {
                 if (this.tool === 'read' || this.sheet.contains(event.target)) return;
@@ -187,6 +207,8 @@
                 if (button && this.root.contains(button)) return;
                 const palette = event.target.closest('.score-color-button');
                 if (palette && this.root.contains(palette)) return;
+                const thickness = event.target.closest('.score-width-control');
+                if (thickness && this.root.contains(thickness)) return;
                 this.selectTool('read');
             }, true);
             this.find('[data-undo]').addEventListener('click', () => { this.finishText(); this.store.undo(); });

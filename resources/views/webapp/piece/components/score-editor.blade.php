@@ -15,7 +15,6 @@
                 <input type="hidden" data-width value="0.004">
                 <button type="button" id="score-pen-width" data-edit-control class="score-icon-button score-width-toggle" data-bs-toggle="dropdown" aria-label="Pen thickness" aria-haspopup="true" aria-expanded="false" title="Pen thickness" disabled>
                     <svg viewBox="0 0 120 32" aria-hidden="true"><path data-width-preview d="M12 20 C40 28 78 4 108 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
-                    @icon('chevron-down', ['mr' => 0])
                 </button>
                 <div class="dropdown-menu score-width-menu" role="menu" aria-labelledby="score-pen-width">
                     @foreach([
@@ -28,8 +27,8 @@
                         ['value' => '0.018', 'sample' => '10', 'label' => 'Bold'],
                     ] as $width)
                         <button type="button" data-width-option="{{ $width['value'] }}" data-edit-control class="dropdown-item score-width-option {{ $width['value'] === '0.004' ? 'active' : '' }}" role="menuitemradio" aria-label="{{ $width['label'] }}" aria-checked="{{ $width['value'] === '0.004' ? 'true' : 'false' }}" disabled>
-                            @icon('check', ['mr' => 0, 'classes' => 'score-width-check'])
-                            <svg viewBox="0 0 120 32" aria-hidden="true"><path d="M12 20 C40 28 78 4 108 14" fill="none" stroke="currentColor" stroke-width="{{ $width['sample'] }}" stroke-linecap="round" /></svg>
+                            <span class="score-width-check" aria-hidden="true"><span data-width-check @if($width['value'] !== '0.004') hidden @endif>@icon('check', ['mr' => 0])</span></span>
+                            <svg viewBox="0 0 120 32" aria-hidden="true"><path data-width-sample d="M12 20 C40 28 78 4 108 14" fill="none" stroke="currentColor" stroke-width="{{ $width['sample'] }}" stroke-linecap="round" /></svg>
                         </button>
                     @endforeach
                 </div>

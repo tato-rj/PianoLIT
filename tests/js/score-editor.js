@@ -169,10 +169,13 @@ module.exports = async function () {
     const widthInput = {value: '0.004'};
     const widthPreview = {setAttribute(name, value) { this[name] = value; }};
     const widthOptions = ['0.001', '0.002', '0.004', '0.006', '0.009', '0.013', '0.018'].map((value, index) => ({
-        value, classList: {toggle() {}},
+        value, check: {hidden: true}, classList: {toggle() {}},
         getAttribute: () => value,
         setAttribute(name, checked) { this[name] = checked; },
-        querySelector: () => ({getAttribute: () => String(index + 1)})
+        querySelector(selector) {
+            if (selector === '[data-width-check]') return this.check;
+            return selector === '[data-width-sample]' ? {getAttribute: () => String(index + 1)} : {getAttribute: () => null};
+        }
     }));
     pen.find = selector => ({'[data-color]': sharedColor, '[data-width]': widthInput,
         '[data-width-preview]': widthPreview, '.score-color-button .icon-palette': palette})[selector] || null;
@@ -182,7 +185,9 @@ module.exports = async function () {
         assert.strictEqual(widthInput.value, option.value);
         assert.strictEqual(widthOptions.filter(item => item['aria-checked'] === 'true').length, 1, 'Exactly one thickness is selected');
         assert.strictEqual(option['aria-checked'], 'true');
-        assert.strictEqual(widthPreview['stroke-width'], option.querySelector().getAttribute(), 'Toolbar sample reflects the selected thickness');
+        assert.strictEqual(widthOptions.filter(item => !item.check.hidden).length, 1, 'Only the selected thickness displays a checkmark');
+        assert.strictEqual(option.check.hidden, false);
+        assert.strictEqual(widthPreview['stroke-width'], option.querySelector('[data-width-sample]').getAttribute(), 'Toolbar sample reflects the selected thickness instead of the checkmark icon');
         pen.selectTool('pen');
         pen.down({clientX: 50, clientY: 80, button: 0, isPrimary: true, pointerId: 3, preventDefault: () => {}});
         pen.finishStroke();
