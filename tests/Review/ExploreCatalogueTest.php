@@ -50,6 +50,37 @@ class ExploreCatalogueTest extends ReviewTestCase
         }
     }
 
+    public function test_periods_and_styles_use_optional_order_with_stable_alphabetical_fallback()
+    {
+        Model::withoutEvents(function () {
+            foreach ([
+                ['modern', 'period', 1], ['romantic', 'period', 2], ['classical', 'period', 2],
+                ['contemporary', 'period', null], ['jazz', 'genre', 1], ['blues', 'genre', 2],
+                ['folk', 'genre', null], ['ambient', 'genre', null],
+                ['arpeggios', 'technique', 10], ['scales', 'technique', 1],
+            ] as [$name, $type, $ordering]) {
+                $tag = create(Tag::class, compact('name', 'type', 'ordering'));
+                foreach ($this->pieces->take(10) as $piece) $piece->tags()->attach($tag);
+            }
+        });
+        $response = $this->get(route('webapp.explore', ['level' => 'elementary']))->assertOk();
+        $periods = ['modern', 'classical', 'romantic', 'baroque', 'contemporary'];
+        $this->assertSame($periods, $response->viewData('tags')->where('type', 'period')->pluck('name')->values()->all());
+        $this->assertSame($periods, $response->viewData('periods')->pluck('name')->all());
+        $this->assertSame(['jazz', 'blues', 'ambient', 'folk'], $response->viewData('tags')->where('type', 'genre')->pluck('name')->values()->all());
+        $this->assertSame(['arpeggios', 'scales'], $response->viewData('tags')->where('type', 'technique')->pluck('name')->values()->all());
+        $this->assertSame(['arpeggios', 'scales'], $response->viewData('techniques')->pluck('name')->all());
+        $directory = view('webapp.explore.directory', $response->original->getData())->render();
+        $positions = array_map(function ($name) use ($directory) { return strpos($directory, ucfirst($name).'</span>'); }, $periods);
+        $this->assertNotContains(false, $positions);
+        $sorted = $positions;
+        sort($sorted);
+        $this->assertSame($sorted, $positions);
+        Tag::where('type', 'period')->update(['ordering' => null]);
+        $unset = $this->get(route('webapp.explore'))->assertOk();
+        $this->assertSame(['baroque', 'classical', 'contemporary', 'modern', 'romantic'], $unset->viewData('periods')->pluck('name')->all());
+    }
+
     public function test_explore_disables_ipad_auto_shrinking_without_changing_other_pages()
     {
         foreach ([[], ['level' => 'elementary']] as $params) {

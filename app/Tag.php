@@ -15,6 +15,11 @@ class Tag extends PianoLit
 
     protected $appends = ['cover_image', 'source'];
 
+    // Web display metadata must not change the existing mobile JSON payload.
+    protected $hidden = ['ordering'];
+
+    protected $casts = ['ordering' => 'integer'];
+
     private $specialTags = ['dreamy', 'elegant', 'flashy', 'crazy', 'melancholic', 'happy'];
 
     protected static function boot()
@@ -22,7 +27,10 @@ class Tag extends PianoLit
         parent::boot();
 
         self::updated(function($tag) {
-            $tag->pieces()->searchable();
+            // Display ordering does not change the pieces' search documents.
+            if ($tag->wasChanged(['name', 'type'])) {
+                $tag->pieces()->searchable();
+            }
         });
 
         self::deleting(function($tag) {
@@ -88,6 +96,15 @@ class Tag extends PianoLit
     public function scopePeriods($query)
     {
         return $query->where('type', 'period');
+    }
+
+    /** Explicit web sorting: numbered periods/styles first, unset values last. */
+    public function scopeWebStyleOrder($query)
+    {
+        return $query
+            ->orderByRaw("CASE WHEN tags.type IN ('period', 'genre') AND tags.ordering IS NOT NULL THEN 0 ELSE 1 END")
+            ->orderByRaw("CASE WHEN tags.type IN ('period', 'genre') THEN tags.ordering ELSE NULL END")
+            ->orderBy('tags.name')->orderBy('tags.id');
     }
 
     public function scopeTechnique($query)

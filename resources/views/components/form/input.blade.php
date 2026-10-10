@@ -9,7 +9,7 @@
 		{{$required ?? 'required'}} 
 		type="{{$type ?? 'text'}}" 
 		@if(! empty($type) && $type == 'number')
-		min="0"
+		min="{{$min ?? 0}}"
 		step="{{$step ?? null}}"
 		@endif
 		name="{{$name}}" 

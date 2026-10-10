@@ -51,6 +51,7 @@ $('.tag').on('click', function (e) {
   $('#tag-modal').find('form#delete-tag').attr('action', delete_url);
   $('#tag-modal').find('form#edit-tag').attr('action', edit_url);
   $('#tag-modal').find('input#name').val(name);
+  $('#tag-modal').find('input#ordering').val($tag.attr('data-ordering'));
   $('#tag-modal').find('select[name="type"] option[value="'+type+'"]').prop('selected', true);
   $('#tag-modal').find('#creator').text(creator);
 })

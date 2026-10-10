@@ -3,6 +3,7 @@
 	 data-name="{{$tag->name}}"
 	 data-creator="{{$tag->creator->name}}"
 	 data-type="{{$tag->type}}"
+	 data-ordering="{{$tag->ordering}}"
 	 data-edit-url="{{route('admin.tags.update', $tag->id)}}"
 	 data-delete-url="{{route('admin.tags.destroy', $tag->id)}}"
 	 data-bs-toggle="modal"

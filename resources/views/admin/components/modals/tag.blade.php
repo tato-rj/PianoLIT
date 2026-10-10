@@ -5,6 +5,7 @@
     @method('PATCH')
     @input(['bag' => 'default', 'label' => 'Name', 'name' => 'name', 'id' => 'name', 'grid' => 'col'])
     @select(['bag' => 'default', 'label' => 'Type', 'name' => 'type', 'placeholder' => 'Type', 'optGroups' => \App\Tag::labels(), 'grid' => 'col'])
+    @input(['bag' => 'default', 'label' => 'Display order', 'name' => 'ordering', 'id' => 'ordering', 'type' => 'number', 'min' => 1, 'step' => 1, 'limit' => 65535, 'required' => '', 'placeholder' => 'Leave empty for no order', 'grid' => 'col-12'])
     @submit(['label' => 'Save changes', 'block' => true])
   </form>
 @endslot

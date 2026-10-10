@@ -144,7 +144,7 @@ class ExploreCatalogue
             $query->where('type', 'technique')->has('pieces', '>=', 8);
         })->orWhere(function ($query) {
             $query->whereIn('type', ['period', 'genre'])->has('pieces', '>=', 10);
-        })->orderBy('name')->get();
+        })->webStyleOrder()->get();
         $techniques = collect();
         $lengths = collect();
         $periods = collect();
@@ -164,7 +164,7 @@ class ExploreCatalogue
             $periods = Tag::whereIn('id', $tags->where('type', 'period')->pluck('id'))
                 ->whereHas('pieces', $matchingChoicePieces)
                 ->withCount(['pieces as matching_pieces_count' => $matchingChoicePieces])
-                ->orderBy('order')->orderBy('name')->get();
+                ->webStyleOrder()->get();
         }
         $composers = Composer::select(['id', 'name', 'cover_path', 'country_id'])->withCount([])->has('pieces')->get();
         $countries = $composers->pluck('country')->filter()->unique('id')->sortBy('name')->values();

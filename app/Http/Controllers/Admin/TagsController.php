@@ -91,12 +91,13 @@ class TagsController extends Controller
 
         $request->validate([
             'name' => 'required|max:255',
+            'ordering' => 'nullable|integer|min:1|max:65535',
         ]);
 
         $tag->update([
             'name' => $request->name,
             'type' => $request->type,
-        ]);
+        ] + $request->only('ordering'));
 
         return redirect()->back()->with('status', "The tag has been successfully updated!");
     }
