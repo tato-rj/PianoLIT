@@ -477,7 +477,7 @@ class ExploreCatalogueTest extends ReviewTestCase
         \Illuminate\Support\Facades\DB::table('piece_tag')->delete();
         \Illuminate\Support\Facades\DB::table('tags')->delete();
         $this->get(route('webapp.explore'))->assertOk()->assertSee('Levels are being prepared.')
-            ->assertSee('Find your next piece')->assertSee('Periods and styles are being prepared.');
+            ->assertSee('Find your next piece')->assertSee('Periods are being prepared.');
         $this->withExceptionHandling()->get(route('webapp.explore', ['level' => 'elementary']))->assertRedirect(route('webapp.discover'));
     }
 

@@ -61,12 +61,6 @@
                 </a>
             @endforeach
         @endif
-        @if($tags->where('type', 'genre')->isNotEmpty())
-            <p class="explore-group-label text-muted">Styles</p>
-            @foreach($tags->where('type', 'genre') as $tag)
-                @include('webapp.explore.link', ['href' => route('webapp.explore', ['tag' => $tag->id]), 'label' => ucfirst($tag->name), 'current' => $selectedTag && $selectedTag->id === $tag->id, 'classes' => 'explore-style'.($selectedTag && $selectedTag->id === $tag->id ? ' is-selected' : '')])
-            @endforeach
-        @endif
-        @if($tags->whereIn('type', ['period', 'genre'])->isEmpty())<p class="text-muted p-3">Periods and styles are being prepared.</p>@endif
+        @if($tags->where('type', 'period')->isEmpty())<p class="text-muted p-3">Periods are being prepared.</p>@endif
     </div>
 </details>

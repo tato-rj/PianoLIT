@@ -7,9 +7,12 @@
     @else
     <div data-erase="search" class="input-erase position-absolute cursor-pointer p-1 px-2 text-dark" style="display: none;">&times;</div>
     @endif
-    @unless(!empty($directorySearch))
+
+    @icon('sliders-horizontal', ['mr' => 0])
+    
+{{--     @unless(!empty($directorySearch))
     @icon('brand-algolia', ['color' => 'grey', 'size' => 'lg', 'title' => 'Powered by Algolia'])
-    @endunless
+    @endunless --}}
   </div>
 </form>
 

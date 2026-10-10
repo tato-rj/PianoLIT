@@ -18,7 +18,8 @@ html[data-explore-page]::view-transition { overflow: hidden; }
     summary::-webkit-details-marker { display: none; }
     summary::marker { content: ''; }
     summary:hover, .explore-link:hover { background: var(--color-surface-subtle); text-decoration: none; }
-    summary:focus-visible, a:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    summary:focus-visible { outline: none; background: var(--color-primary-soft); }
+    a:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
     details[open] > summary > .explore-chevron { transform: rotate(-90deg); }
     .explore-section { border-bottom: 1px solid var(--color-border); padding: var(--space-2) 0; }
     .explore-section > summary { padding-left: 0; padding-right: 0; font-weight: var(--font-weight-heading); }

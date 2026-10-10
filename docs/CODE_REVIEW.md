@@ -2362,3 +2362,19 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Compatibility:** Fullscreen movement stays within the fullscreen viewer. Drawing and dragging text preserve their single-finger behavior; two fingers can pan while a writing tool is active. Native scrolling remains available when the score fits. Zoom limits, toolbar controls, stored markings, access, public PDFs and mobile API contracts remain unchanged.
 - **Verification:** Focused score tests and the full JS suite pass (existing unrelated alert warnings remain). Tests cover mixed and changing-axis deltas, wheel units, normal/fullscreen scroll ownership, diagonal touch movement, glide/cancellation, switching to pinch, two-finger translation without zoom, drawing/text exclusions and native fallback. Browser fixture with actual listeners/rendering confirms wheel/swipe deltas move horizontal+vertical positions by 40/60px in normal and fullscreen views; fullscreen does not move the background document. At a 390px viewport, two-finger translation with Pen active moves 40/60px while zoom remains 150%. Isolated production build, app/admin CSS-variable and diff checks pass.
 - **Remaining work / limits:** Not deployed. Browser integration used synthetic gesture events and a fake PDF/save adapter; physical Mac trackpad and iPhone/iPad gesture/momentum behavior still needs device verification.
+
+### 2026-10-10 — Shorten the Periods & Styles directory menu (P3, complete locally)
+
+- **Request / evidence:** Remove the lengthy text-only style list from the Explore directory while keeping pictured periods and the Periods & Styles label.
+- **Implementation / affected files:** `explore/directory.blade.php` no longer renders the genre/style heading and links. Its empty state now depends on periods only and says Periods are being prepared. Updated the existing empty-catalogue assertion.
+- **Compatibility:** Period images, destinations, selected states and the existing ten-piece eligibility threshold remain intact. Existing style URLs, contextual guides, mobile APIs and media access are unchanged. No asset changes or build required.
+- **Verification:** Explore suite passes (19 tests / 468 assertions). A populated isolated browser preview shows the unchanged Periods & Styles heading, a loaded Baroque image/link, and zero style rows. Diff checks pass.
+- **Remaining work / limits:** Not deployed; production catalogue data was not changed or tested.
+
+### 2026-10-10 — Remove the Shift-triggered outline on Explore sections (P3, complete locally)
+
+- **Request / evidence:** Clicking Composers and then pressing Shift caused the disclosure heading to gain a thick blue outline. Reproduced live: the heading matched focus-visible with a 2px blue outline.
+- **Implementation / affected files:** `_explore.scss` replaces the disclosure heading's focus-visible outline with the existing soft-primary background. Keeps the separate link focus rule and native keyboard/disclosure behavior. Rebuilt app CSS in an isolated production build and updated its manifest hash. Preserved the pending period-only menu changes.
+- **Compatibility:** Scoped to Explore disclosure summaries; other app pages, routes, APIs and media access are unchanged.
+- **Verification:** Live click-then-Shift check confirms focus-visible remains active with outline none/0px and the subtle background. Tab moves into All composers and Shift+Tab returns to the heading without an outline. Production build and app/admin CSS-variable checks pass; diff checks pass.
+- **Remaining work / limits:** Not deployed; physical-device browsers were not evaluated.
