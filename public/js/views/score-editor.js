@@ -201,7 +201,7 @@
             if (this.tool !== 'read' || this.textDrag) event.preventDefault();
         }
         adjustZoom(step) {
-            const next = Math.max(0.5, Math.min(2.5, this.zoom + step));
+            const next = Math.max(0.5, Math.min(2.5, Math.round((this.zoom + step) * 100) / 100));
             if (next === this.zoom) return;
             this.zoom = next;
             this.render(this.page).catch(() => this.renderError());
@@ -215,13 +215,13 @@
         }
         pinchZoom(amount) {
             if (!this.pdf || this.printing || !Number.isFinite(amount)) return;
-            // Accumulate small movements, then use the same 25% steps as the toolbar.
+            // Accumulate small movements, then zoom in finer 5% steps.
             const threshold = Math.log(1.2);
             this.pinchAmount = (this.pinchAmount || 0) + amount;
             const steps = Math.trunc(this.pinchAmount / threshold);
             if (!steps) return;
             this.pinchAmount -= steps * threshold;
-            this.adjustZoom(steps * 0.25);
+            this.adjustZoom(steps * 0.05);
         }
         pinchWheel(event) {
             if (!event.ctrlKey) return;

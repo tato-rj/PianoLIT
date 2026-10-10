@@ -375,14 +375,14 @@ module.exports = async function () {
     pinch.stroke = {points: []}; pinch.pointerId = 7;
     const trackpad = pinchEvent({ctrlKey: true}); pinchListeners.wheel.handler(trackpad);
     assert.strictEqual(trackpad.defaultPrevented, true, 'Trackpad pinch blocks page zoom');
-    assert.strictEqual(pinch.zoom, 1.25, 'Trackpad pinch uses a toolbar zoom step');
+    assert.strictEqual(pinch.zoom, 1.05, 'Trackpad pinch uses a fine 5% zoom step');
     assert.strictEqual(pinch.stroke, null, 'Starting pinch discards an unfinished marking');
     assert.strictEqual(releasedPointer, 7);
     pinchListeners.wheel.handler(pinchEvent({ctrlKey: true, deltaY: 40}));
-    assert.strictEqual(pinch.zoom, .75, 'Reverse pinch zooms out');
+    assert.strictEqual(pinch.zoom, .95, 'Reverse pinch zooms out');
     pinch.pinchAmount = 0; pinch.pinchWheelTime = 0;
     pinchListeners.wheel.handler(pinchEvent({ctrlKey: true, deltaY: -1, deltaMode: 1}));
-    assert.strictEqual(pinch.zoom, .75, 'Small movements accumulate without rendering each event');
+    assert.strictEqual(pinch.zoom, .95, 'Small movements accumulate without rendering each event');
     pinchListeners.wheel.handler(pinchEvent({ctrlKey: true, deltaY: -1, deltaMode: 1}));
     assert.strictEqual(pinch.zoom, 1);
 
@@ -397,11 +397,11 @@ module.exports = async function () {
     const startTouch = pinchEvent({touches: touches(100)}); pinchListeners.touchstart.handler(startTouch);
     assert.strictEqual(startTouch.defaultPrevented, true);
     pinchListeners.touchmove.handler(pinchEvent({touches: touches(130)}));
-    assert.strictEqual(pinch.zoom, 1.25, 'Two-finger spread zooms the score in');
+    assert.strictEqual(pinch.zoom, 1.05, 'Two-finger spread zooms the score in');
     pinchListeners.gesturestart.handler(pinchEvent({type: 'gesturestart', scale: 1}));
     pinchListeners.gesturechange.handler(pinchEvent({type: 'gesturechange', scale: 2}));
     pinchListeners.wheel.handler(pinchEvent({ctrlKey: true}));
-    assert.strictEqual(pinch.zoom, 1.25, 'Overlapping Safari/wheel events cannot double-zoom a touch pinch');
+    assert.strictEqual(pinch.zoom, 1.05, 'Overlapping Safari/wheel events cannot double-zoom a touch pinch');
     pinchListeners.touchmove.handler(pinchEvent({touches: touches(90)}));
     assert.strictEqual(pinch.zoom, 1, 'Two-finger contraction zooms the score out');
     pinchListeners.touchend.handler(pinchEvent({touches: touches(90).slice(0, 1)}));
@@ -414,9 +414,9 @@ module.exports = async function () {
 
     pinchListeners.gesturestart.handler(pinchEvent({type: 'gesturestart', scale: 1}));
     pinchListeners.gesturechange.handler(pinchEvent({type: 'gesturechange', scale: 1.3}));
-    assert.strictEqual(pinch.zoom, 1.25, 'Safari trackpad gestures use score zoom');
+    assert.strictEqual(pinch.zoom, 1.05, 'Safari trackpad gestures use score zoom');
     pinchListeners.wheel.handler(pinchEvent({ctrlKey: true}));
-    assert.strictEqual(pinch.zoom, 1.25, 'Safari wheel duplicates are ignored while its gesture is active');
+    assert.strictEqual(pinch.zoom, 1.05, 'Safari wheel duplicates are ignored while its gesture is active');
     pinchListeners.gesturechange.handler(pinchEvent({type: 'gesturechange', scale: .9}));
     assert.strictEqual(pinch.zoom, 1);
     pinchListeners.gestureend.handler(pinchEvent({type: 'gestureend'}));
@@ -444,14 +444,14 @@ module.exports = async function () {
     const initialRender = queuedZoom.render(1);
     for (let i = 0; i < 5; i++) await Promise.resolve();
     queuedZoom.pinchZoom(.2);
-    assert.strictEqual(queuedZoom.zoom, 1, 'Pinch can accumulate while PDF rendering is busy');
+    assert.strictEqual(queuedZoom.zoom, .8, 'Pinch can accumulate while PDF rendering is busy');
     pdfRenders[0].resolve(); await initialRender;
     for (let i = 0; i < 5; i++) await Promise.resolve();
     assert.strictEqual(pdfRenders.length, 2, 'The latest zoom receives a queued PDF render');
     pdfRenders[1].resolve();
     for (let i = 0; i < 5; i++) await Promise.resolve();
-    assert.strictEqual(queuedZoom.sheet.style.width, '656px');
-    assert.strictEqual(zoomLabels['[data-zoom-label]'].textContent, '100%');
+    assert(Math.abs(parseFloat(queuedZoom.sheet.style.width) - 524.8) < .00001);
+    assert.strictEqual(zoomLabels['[data-zoom-label]'].textContent, '80%');
     assert.strictEqual(queuedZoom.rendering, false);
 
     const printEditor = Object.create(Editor.prototype);
