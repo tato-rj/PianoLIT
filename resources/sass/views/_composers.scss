@@ -85,7 +85,7 @@
     }
 }
 
-// Geography explorer: keep the cinematic treatment inside its fullscreen shell.
+// Preserve the original night palette; the default day palette below changes colors only.
 #composer-globe-modal {
     .modal-content { background: #091b2a; color: #eaf1f5; }
     .fullscreen-modal-header {
@@ -200,7 +200,7 @@
     }
     .composer-globe-portrait-pin {
         position: relative; padding: 5px 10px; border-radius: 14px; background: rgba(7, 23, 37, .8);
-        color: #f1d69e; font-size: 11px; letter-spacing: .04em;
+        color: #f1d69e; font-size: 16px; letter-spacing: .04em;
     }
     .composer-globe-portrait-close {
         display: block; min-width: 44px; min-height: 24px; margin: 4px auto 0; padding: 2px 8px;
@@ -285,6 +285,91 @@
     background: rgba(9, 27, 42, .96); color: #f4f2eb; box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
     strong { display: block; font-size: 14px; margin-bottom: 4px; }
     span { font-size: 12px; color: #c2d6e2; }
+}
+
+// The controller follows the nearest data-bs-theme attribute and updates the
+// WebGL palette too. With no app theme selected, the globe uses this light view.
+#composer-globe-modal:not([data-globe-theme="dark"]) {
+    color-scheme: light;
+    .modal-content { background: var(--color-surface); color: var(--color-text); }
+    .fullscreen-modal-header {
+        background: var(--color-surface); border-color: var(--color-dropdown-border);
+        h1 { color: var(--color-text); }
+        .text-muted { color: var(--color-text-muted) !important; }
+    }
+    .fullscreen-modal-close {
+        background: var(--color-surface-subtle); border-color: var(--color-dropdown-border); color: var(--color-text) !important;
+        &:hover { background: #edf2fa; }
+    }
+    .composer-globe-stage {
+        background: radial-gradient(ellipse at 50% 48%, #fff 0%, #f3f7fc 55%, #edf3f8 100%);
+    }
+    .composer-globe-mode { color: #486275; }
+    .composer-globe-dot { background: var(--color-primary); box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), .08); }
+    .composer-globe-legend { color: #526e7b; span { background: #86b7a3; } }
+    .composer-globe-loading, .composer-globe-error { background: rgba(245, 249, 253, .94); color: #486275; }
+    .composer-globe-tools {
+        background: rgba(255, 255, 255, .94); border-color: #d5e1e9; box-shadow: 0 8px 24px rgba(41, 72, 93, .08);
+        > span { border-color: #dce6ed; }
+        button { color: #35566c; &:hover { color: var(--color-primary); background: #edf3ff; } }
+    }
+    .composer-globe-help { color: #526e7b; span { color: #849aa6; } }
+    .composer-globe-credit { color: #6c8290; }
+    .composer-globe-label {
+        background: rgba(255, 255, 255, .86); color: #35566c; text-shadow: none;
+        box-shadow: 0 2px 8px rgba(41, 72, 93, .06);
+        &:hover { color: var(--color-primary); background: #fff; }
+    }
+    .composer-globe-polaroid {
+        box-shadow: 0 14px 28px rgba(41, 72, 93, .18), 0 2px 5px rgba(41, 72, 93, .1);
+        &:hover, &:focus-visible { box-shadow: 0 20px 36px rgba(41, 72, 93, .24); }
+    }
+    .composer-globe-portrait-nav {
+        background: rgba(255, 255, 255, .95); border-color: #d5e1e9; color: #486275;
+        box-shadow: 0 4px 16px rgba(41, 72, 93, .08);
+        button { color: var(--color-primary); &:hover { background: #edf3ff; } }
+    }
+    .composer-globe-portrait-pin { background: rgba(255, 255, 255, .94); color: #35566c; }
+    .composer-globe-portrait-close {
+        color: #486275; border-color: #cad9e4;
+        &:hover { color: var(--color-primary); border-color: #9bbcf2; background: #edf3ff; }
+    }
+    .composer-globe-portrait-status {
+        color: var(--color-text-muted);
+        button { background: var(--color-surface); color: var(--color-primary); border-color: #cad9e4; }
+    }
+    .composer-globe-panel {
+        background: var(--color-surface); border-color: var(--color-dropdown-border); scrollbar-color: #c5d3df var(--color-surface);
+        .form-select {
+            background-color: var(--field-background); color: var(--field-text); border-color: var(--field-border);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23526e7b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        }
+        h2 { color: var(--color-text); }
+    }
+    .composer-globe-eyebrow { color: #6c8290; }
+    .composer-globe-description { color: var(--color-text-muted); }
+    .composer-globe-stats {
+        strong { color: var(--color-primary); }
+        span { color: var(--color-text-muted); }
+        > div + div { border-color: var(--color-dropdown-border); }
+    }
+    .composer-globe-browse {
+        background: var(--color-primary); border-color: var(--color-primary); color: #fff !important;
+        &:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); color: #fff !important; }
+        &:focus, &:active { background: var(--color-primary-active) !important; border-color: var(--color-primary-active) !important; }
+    }
+    .composer-globe-closer { background: var(--color-surface); border-color: var(--color-dropdown-border); color: var(--color-text) !important; }
+    .composer-globe-region {
+        color: var(--color-text); border-color: var(--color-dropdown-border);
+        span + span { color: var(--color-text-muted); }
+        &:hover, &[aria-pressed=true] { color: var(--color-primary); }
+    }
+    .composer-globe-footnote { color: #6c8290; }
+    button:focus-visible, select:focus-visible, a:focus-visible, .composer-globe-canvas:focus-visible { outline-color: var(--color-primary); }
+    .composer-globe-tooltip {
+        background: rgba(255, 255, 255, .97); border-color: #d5e1e9; color: #29485c; box-shadow: 0 8px 24px rgba(41, 72, 93, .13);
+        span { color: #526e7b; }
+    }
 }
 
 // Profile geometry only; use shared typography, colors, corners and controls.

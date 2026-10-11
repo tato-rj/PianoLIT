@@ -3,7 +3,7 @@
     <div class="modal-body composer-globe-layout">
         <section class="composer-globe-stage" aria-label="Interactive world globe">
             <div class="composer-globe-mode"><span class="composer-globe-dot"></span><span data-globe-mode>Continents</span></div>
-            <div class="composer-globe-legend" data-globe-legend hidden><span></span>Brighter countries have music in our library</div>
+            <div class="composer-globe-legend" data-globe-legend hidden><span></span>Countries with music in our library</div>
             <div class="composer-globe-canvas" data-globe-canvas tabindex="0" role="group" aria-label="World globe. Drag to rotate, scroll or pinch to zoom. Arrow keys rotate; plus and minus zoom." aria-describedby="composer-globe-help"></div>
             <div class="composer-globe-loading" data-globe-loading role="status">
                 <span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span>Preparing your world…</span>

@@ -8,9 +8,21 @@
         'Africa': [5, 20], 'Antarctica': [-76, 0], 'Asia': [35, 95], 'Europe': [51, 15],
         'North America': [40, -105], 'Oceania': [-25, 135], 'South America': [-18, -60]
     };
-    var colors = {
-        'Africa': '#417e8b', 'Antarctica': '#698394', 'Asia': '#577f94', 'Europe': '#699b9c',
-        'North America': '#527f95', 'Oceania': '#4c9292', 'South America': '#438c88'
+    var palettes = {
+        light: {
+            continents: {'Africa': '#bdd7b3', 'Antarctica': '#f0f2ef', 'Asia': '#c2dabc', 'Europe': '#86b7a3',
+                'North America': '#a9cdc0', 'Oceania': '#badac7', 'South America': '#acd1b1'},
+            muted: '#dfe8e2', hover: '#8fbbea', selected: '#76a7e4', land: '#a8cbbf', side: '#b2cbbf',
+            border: 'rgba(255,255,255,0.85)', hiddenBorder: 'rgba(255,255,255,0)',
+            ocean: '#d5ebf4', emissive: '#182b36', atmosphere: '#90c6da', atmosphereAltitude: 0.12
+        },
+        dark: {
+            continents: {'Africa': '#417e8b', 'Antarctica': '#698394', 'Asia': '#577f94', 'Europe': '#699b9c',
+                'North America': '#527f95', 'Oceania': '#4c9292', 'South America': '#438c88'},
+            muted: '#264b60', hover: '#e1bd77', selected: '#c8a76a', land: '#457b88', side: '#173c50',
+            border: 'rgba(127,167,187,0.8)', hiddenBorder: 'rgba(127,167,187,0)',
+            ocean: '#09283f', emissive: '#061a2b', atmosphere: '#59b3d4', atmosphereAltitude: 0.14
+        }
     };
     function normalize(value) {
         return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -67,6 +79,7 @@
         var globe = null, model = null, selection = null, hovered = null;
         var hoveredCountry = null, tooltipCountry = null, tooltipTitle = null, tooltipDetail = null;
         var portraitCache = {}, renderPortraitPage = null, hoveredPortrait = null;
+        var theme = null, palette = palettes.light;
         var stopWaitingForRender = null;
         var countryMode = false, open = false, pending = null, libraryPromise = null;
         var reducedMotion = win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -84,6 +97,23 @@
                 else url.searchParams.delete('globe-place');
                 if (url.href !== win.location.href) win.history.replaceState(win.history.state, '', url.href);
             } catch (reason) { /* Exploration still works without URL updates. */ }
+        }
+
+        function syncTheme() {
+            // Follow Bootstrap's inherited app theme; stay light until a theme is chosen.
+            var owner = modal.closest('[data-bs-theme]');
+            var next = owner && owner.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+            if (theme === next) return;
+            theme = next; palette = palettes[theme];
+            modal.setAttribute('data-globe-theme', theme);
+            if (globe) applyTheme();
+        }
+        function applyTheme() {
+            globe.atmosphereColor(palette.atmosphere).atmosphereAltitude(palette.atmosphereAltitude)
+                .polygonSideColor(function () { return palette.side; });
+            var material = globe.globeMaterial();
+            material.color.set(palette.ocean); material.emissive.set(palette.emissive); material.shininess = 12;
+            refreshColors();
         }
 
         function loadLibrary() {
@@ -307,16 +337,16 @@
             return !selection || !selection.continent || place.continent === selection.continent;
         }
         function capColor(place) {
-            if (!inScope(place)) return '#264b60';
-            if (!hoveredPortrait && selected(place, hovered)) return '#e1bd77';
-            if (selected(place, selection)) return '#c8a76a';
-            if (countryMode && !place.composers) return '#264b60';
-            return colors[place.continent] || '#457b88';
+            if (!inScope(place)) return palette.muted;
+            if (!hoveredPortrait && selected(place, hovered)) return palette.hover;
+            if (selected(place, selection)) return palette.selected;
+            if (countryMode && !place.composers) return palette.muted;
+            return palette.continents[place.continent] || palette.land;
         }
         function strokeColor() {
             // A transparent color prebuilds the stroke too. Returning null would defer
             // border geometry creation until the first zoom into country view.
-            return countryMode ? 'rgba(127,167,187,0.8)' : 'rgba(127,167,187,0)';
+            return countryMode ? palette.border : palette.hiddenBorder;
         }
         function interactivePlace(country) {
             return country && !countryMode ? model.places['continent:' + country.continent] || country : country;
@@ -406,9 +436,9 @@
             try {
                 globe = new win.Globe(canvas, {animateIn: false, rendererConfig: {antialias: true, alpha: true}})
                     .width(stage.clientWidth).height(stage.clientHeight).backgroundColor('rgba(0,0,0,0)')
-                    .showAtmosphere(true).atmosphereColor('#59b3d4').atmosphereAltitude(0.14)
+                    .showAtmosphere(true)
                     .polygonsData(model.countries.filter(function (country) { return country.geometry; }))
-                    .polygonCapColor(capColor).polygonSideColor(function () { return '#173c50'; }).polygonStrokeColor(strokeColor)
+                    .polygonCapColor(capColor).polygonStrokeColor(strokeColor)
                     .polygonAltitude(0.005).polygonCapCurvatureResolution(4).polygonsTransitionDuration(reducedMotion ? 0 : 180)
                     .polygonLabel(tooltip).onPolygonHover(hover).onPolygonClick(function (place) {
                         if (!hoveredPortrait) choose(interactivePlace(place));
@@ -422,8 +452,7 @@
                         label.addEventListener('click', function (event) { event.stopPropagation(); choose(place); });
                         return label;
                     }).onZoom(function (pov) { setMode(nextMode(pov.altitude, countryMode)); updateLabels(); });
-                var material = globe.globeMaterial();
-                material.color.set('#09283f'); material.emissive.set('#061a2b'); material.shininess = 12;
+                applyTheme();
                 var controls = globe.controls();
                 controls.enablePan = false; controls.minDistance = globe.getGlobeRadius() * 1.22;
                 controls.maxDistance = globe.getGlobeRadius() * 4.3;
@@ -491,8 +520,14 @@
                     element('error-message').textContent = 'The globe could not load. Check your connection and try again.';
                 });
         }
+        syncTheme();
+        if (win.MutationObserver) {
+            new win.MutationObserver(function (changes) {
+                if (changes.some(function (change) { return change.target === modal || change.target.contains(modal); })) syncTheme();
+            }).observe(doc.documentElement, {attributes: true, subtree: true, attributeFilter: ['data-bs-theme']});
+        }
         controlsEnabled(false);
-        modal.addEventListener('shown.bs.modal', function () { open = true; start(); if (selection) rememberPlace(); });
+        modal.addEventListener('shown.bs.modal', function () { open = true; syncTheme(); start(); if (selection) rememberPlace(); });
         modal.addEventListener('hide.bs.modal', function () { open = false; setPortraitHover(null); if (globe) globe.pauseAnimation(); });
         modal.addEventListener('hidden.bs.modal', rememberPlace);
         doc.addEventListener('visibilitychange', function () {

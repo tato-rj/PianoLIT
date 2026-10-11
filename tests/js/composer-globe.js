@@ -40,6 +40,8 @@ module.exports = async function () {
         const elements = {}, modal = node(), doc = node(), stage = node();
         modal.attrs = {'data-globe-map': '/map', 'data-globe-catalogue': '/catalogue'};
         modal.querySelector = selector => elements[selector] || (elements[selector] = node());
+        doc.documentElement = node(); doc.documentElement.contains = target => target === modal;
+        modal.closest = () => modal.getAttribute('data-bs-theme') ? modal : doc.documentElement.getAttribute('data-bs-theme') ? doc.documentElement : null;
         const canvas = modal.querySelector('[data-globe-canvas]'); canvas.parentNode = stage;
         doc.getElementById = () => modal; doc.createElement = node;
         let instances = 0, paused = 0, resumed = 0, destroyed = 0;
@@ -47,27 +49,36 @@ module.exports = async function () {
         const renderer = {setPixelRatio() {}, domElement: renderCanvas, info: {render: {triangles: 100}}};
         let rendered = 0, frameId = 0;
         const frames = new Map(), controls = {}, scene = {onAfterRender() { rendered++; }};
+        const material = {color: {set(value) { this.value = value; }}, emissive: {set(value) { this.value = value; }}};
         const globe = new Proxy({}, {get(target, key) {
             if (key === 'pointOfView') return value => { if (value) { Object.assign(pov, value); if (calls.onZoom) calls.onZoom(pov); return globe; } return pov; };
             if (key === 'controls') return () => controls;
             if (key === 'scene') return () => scene;
             if (key === 'getGlobeRadius') return () => 100;
             if (key === 'renderer') return () => renderer;
-            if (key === 'globeMaterial') return () => ({color: {set() {}}, emissive: {set() {}}});
+            if (key === 'globeMaterial') return () => material;
             if (key === 'pauseAnimation') return () => { paused++; };
             if (key === 'resumeAnimation') return () => { resumed++; };
             if (key === '_destructor') return () => { destroyed++; };
             return value => { calls[key] = value; callCounts[key] = (callCounts[key] || 0) + 1; return globe; };
         }});
-        let resize;
+        let resize, themeChanged;
         const win = {fetch, Globe: function () { instances++; return globe; }, matchMedia: () => ({matches: true}),
             setTimeout, clearTimeout, requestAnimationFrame(callback) { frames.set(++frameId, callback); return frameId; },
             cancelAnimationFrame(id) { frames.delete(id); },
+            MutationObserver: class {constructor(callback) { themeChanged = callback; } observe(target, options) {
+                assert.strictEqual(target, doc.documentElement);
+                assert.deepStrictEqual(options, {attributes: true, subtree: true, attributeFilter: ['data-bs-theme']});
+            }},
             addEventListener() {}, ResizeObserver: class {constructor(callback) { resize = callback; } observe() {}}};
         win.location = {href}; win.history = {state: {pianolitCanGoBack: true},
             replaceState(state, title, url) { assert.strictEqual(state, this.state); win.location.href = url; }};
         api.initialize(doc, win);
-        return {elements, modal, doc, win, canvas, calls, callCounts, pov, renderCanvas, renderer, controls, scene, frames,
+        return {elements, modal, doc, win, canvas, calls, callCounts, pov, renderCanvas, renderer, controls, scene, frames, material,
+            setTheme(value, owner = doc.documentElement) {
+                if (value) owner.setAttribute('data-bs-theme', value); else owner.removeAttribute('data-bs-theme');
+                themeChanged([{target: owner}]);
+            },
             paint() { const callbacks = Array.from(frames.values()); frames.clear(); callbacks.forEach(callback => callback()); },
             get rendered() { return rendered; }, resize() { resize(); },
             get instances() { return instances; }, get paused() { return paused; }, get resumed() { return resumed; }, get destroyed() { return destroyed; }};
@@ -109,11 +120,11 @@ module.exports = async function () {
     const germany = shapes.find(place => place.code === 'DE');
     const france = shapes.find(place => place.code === 'FR');
     assert.strictEqual(shapes.length, 3, 'All mapped country geometry is prepared before zooming');
-    assert.strictEqual(h.calls.polygonStrokeColor(), 'rgba(127,167,187,0)', 'Transparent borders are prepared even in continent view');
+    assert.strictEqual(h.calls.polygonStrokeColor(), 'rgba(255,255,255,0)', 'Transparent borders are prepared even in continent view');
     const landTooltip = h.calls.polygonLabel(germany);
     assert.strictEqual(landTooltip.children[0].textContent, 'Europe');
     h.calls.onPolygonHover(germany);
-    assert.strictEqual(h.calls.polygonCapColor(france), '#e1bd77', 'Hovering distant land highlights its whole continent');
+    assert.strictEqual(h.calls.polygonCapColor(france), '#8fbbea', 'Hovering distant land highlights its whole continent');
     const colorUpdates = h.callCounts.polygonCapColor;
     h.calls.onPolygonHover(france);
     assert.strictEqual(h.callCounts.polygonCapColor, colorUpdates, 'Moving within a continent does not update every mesh again');
@@ -126,11 +137,11 @@ module.exports = async function () {
     assert.strictEqual(get('pieces').textContent, '5');
     assert.strictEqual(get('browse').href, '/composers?country=1');
     assert.strictEqual(get('mode').textContent, 'Countries');
-    assert.strictEqual(h.calls.polygonStrokeColor(), 'rgba(127,167,187,0.8)');
+    assert.strictEqual(h.calls.polygonStrokeColor(), 'rgba(255,255,255,0.85)');
     assert.strictEqual(landTooltip.children[0].textContent, 'Germany', 'An existing tooltip changes scope even when the pointer stays on the same mesh');
     assert.strictEqual(h.calls.polygonLabel(germany).children[0].textContent, 'Germany');
     h.calls.onPolygonHover(germany);
-    assert.notStrictEqual(h.calls.polygonCapColor(france), '#e1bd77', 'Close hover highlights only one country');
+    assert.notStrictEqual(h.calls.polygonCapColor(france), '#8fbbea', 'Close hover highlights only one country');
     h.calls.onPolygonClick(france);
     assert.strictEqual(get('title').textContent, 'France', 'Close geometry selects country totals');
     assert.strictEqual(get('composers').textContent, '0');
@@ -195,29 +206,29 @@ module.exports = async function () {
     const shape = code => scopedShapes.find(place => place.code === code);
     selectScope('continent:Asia');
     assert.strictEqual(scopedGet('pieces').textContent, '8');
-    assert.strictEqual(scoped.calls.polygonCapColor(shape('JP')), '#c8a76a', 'The selected continent is highlighted at a distance');
-    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'Other continents remain muted even when they have composers');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('JP')), '#76a7e4', 'The selected continent is highlighted at a distance');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#dfe8e2', 'Other continents remain muted even when they have composers');
     assert.deepStrictEqual(scoped.calls.htmlElementsData.map(place => place.name), ['Asia']);
     scoped.calls.onPolygonHover(shape('DE'));
-    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'Hovering outside the selected continent does not add another highlight');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#dfe8e2', 'Hovering outside the selected continent does not add another highlight');
     assert.strictEqual(scoped.calls.polygonAltitude(shape('DE')), 0.005);
     scopedGet('closer').events.click();
     assert.strictEqual(scopedGet('mode').textContent, 'Countries');
-    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('JP')), '#264b60');
-    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('AM')), '#264b60');
-    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'Exploring Asian countries keeps European repertoire muted');
+    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('JP')), '#dfe8e2');
+    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('AM')), '#dfe8e2');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#dfe8e2', 'Exploring Asian countries keeps European repertoire muted');
     Object.assign(scoped.pov, {lat: 40, lng: 50}); scoped.calls.onZoom(scoped.pov);
     assert.deepStrictEqual(scoped.calls.htmlElementsData.map(place => place.name), ['Armenia'], 'Only labels in the selected continent appear, even when European countries are in view');
     selectScope('country:JP');
-    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'Selecting a country retains its continent scope');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('DE')), '#dfe8e2', 'Selecting a country retains its continent scope');
     selectScope('continent:Europe');
-    assert.strictEqual(scoped.calls.polygonCapColor(shape('JP')), '#264b60', 'Choosing another continent replaces the scope');
+    assert.strictEqual(scoped.calls.polygonCapColor(shape('JP')), '#dfe8e2', 'Choosing another continent replaces the scope');
     assert.deepStrictEqual(scoped.calls.htmlElementsData.map(place => place.name), ['Europe']);
     scopedGet('home').events.click();
     assert.deepStrictEqual(scoped.calls.htmlElementsData.map(place => place.name), ['Europe', 'Asia'], 'World reset restores all continent labels');
     scopedGet('zoom-in').events.click(); scopedGet('zoom-in').events.click();
-    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('DE')), '#264b60', 'World reset restores worldwide repertoire highlights');
-    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('JP')), '#264b60');
+    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('DE')), '#dfe8e2', 'World reset restores worldwide repertoire highlights');
+    assert.notStrictEqual(scoped.calls.polygonCapColor(shape('JP')), '#dfe8e2');
     assert.strictEqual(scoped.calls.polygonsData, scopedShapes);
     assert.strictEqual(scoped.callCounts.polygonsData, 1, 'Changing highlight scope reuses all prepared geometry');
 
@@ -264,16 +275,16 @@ module.exports = async function () {
     const portraitGermany = portraits.calls.polygonsData.find(place => place.code === 'DE');
     const portraitFrance = portraits.calls.polygonsData.find(place => place.code === 'FR');
     portraits.calls.onPolygonHover(portraitFrance);
-    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#e1bd77');
+    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#8fbbea');
     deck.events.pointerenter();
     assert.strictEqual(portraits.calls.enablePointerInteraction, false, 'The entire portrait group disables underlying globe tracking and tooltips');
-    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#264b60', 'Entering portraits removes the underlying hover highlight');
-    assert.strictEqual(portraits.calls.polygonCapColor(portraitGermany), '#c8a76a', 'The selected country stays highlighted');
+    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#dfe8e2', 'Entering portraits removes the underlying hover highlight');
+    assert.strictEqual(portraits.calls.polygonCapColor(portraitGermany), '#76a7e4', 'The selected country stays highlighted');
     portraits.calls.onPolygonClick(portraitFrance);
     assert.strictEqual(portraitGet('place').value, 'country:DE', 'A pending map click cannot change selection beneath the overlay');
     deck.events.pointerleave();
     assert.strictEqual(portraits.calls.enablePointerInteraction, true, 'Leaving the group restores map interaction');
-    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#e1bd77');
+    assert.strictEqual(portraits.calls.polygonCapColor(portraitFrance), '#8fbbea');
     deck.events.pointerenter(); deck.events.pointercancel();
     assert.strictEqual(portraits.calls.enablePointerInteraction, true, 'Cancelled touch input cannot leave map tracking disabled');
     deck.events.pointerenter();
@@ -324,6 +335,46 @@ module.exports = async function () {
     pick('continent:Asia'); assert.strictEqual(hasPortraits(), false);
     portraitGet('home').events.click(); assert.strictEqual(hasPortraits(), false);
     assert.strictEqual(portraits.callCounts.polygonsData, 1, 'Portraits do not rebuild globe geometry');
+
+    const themed = harness(url => Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? map : catalogue)}));
+    assert.strictEqual(themed.modal.getAttribute('data-globe-theme'), 'light', 'Default is the light app appearance, independent of the OS preference');
+    themed.setTheme('dark');
+    assert.strictEqual(themed.instances, 0, 'Theme changes never initialize a closed globe');
+    themed.modal.events['shown.bs.modal'](); await settle();
+    const themedGermany = themed.calls.polygonsData.find(country => country.code === 'DE');
+    assert.strictEqual(themed.modal.getAttribute('data-globe-theme'), 'dark');
+    assert.strictEqual(themed.material.color.value, '#09283f', 'Dark mode retains the original ocean');
+    assert.strictEqual(themed.material.emissive.value, '#061a2b');
+    assert.strictEqual(themed.calls.atmosphereColor, '#59b3d4');
+    assert.strictEqual(themed.calls.atmosphereAltitude, .14);
+    assert.strictEqual(themed.calls.polygonSideColor(), '#173c50');
+    assert.strictEqual(themed.calls.polygonCapColor(themedGermany), '#699b9c', 'Original continent colors are retained');
+    themed.calls.onPolygonHover(themedGermany);
+    assert.strictEqual(themed.calls.polygonCapColor(themedGermany), '#e1bd77');
+    const themedPicker = themed.elements['[data-globe-place]'];
+    themedPicker.value = 'country:DE'; themedPicker.events.change();
+    themed.calls.onPolygonHover(null);
+    const themedView = Object.assign({}, themed.pov), themedUrl = themed.win.location.href;
+    const themedGeometry = themed.calls.polygonsData;
+    assert.strictEqual(themed.calls.polygonCapColor(themedGermany), '#c8a76a');
+    assert.strictEqual(themed.calls.polygonStrokeColor(), 'rgba(127,167,187,0.8)');
+    themed.setTheme('light');
+    assert.strictEqual(themed.material.color.value, '#d5ebf4');
+    assert.strictEqual(themed.calls.polygonCapColor(themedGermany), '#76a7e4');
+    assert.strictEqual(themedPicker.value, 'country:DE');
+    assert.deepStrictEqual(themed.pov, themedView, 'Theme changes preserve camera position and zoom');
+    assert.strictEqual(themed.win.location.href, themedUrl, 'Theme changes preserve the selection URL');
+    assert.strictEqual(themed.calls.polygonsData, themedGeometry);
+    assert.strictEqual(themed.callCounts.polygonsData, 1, 'Changing theme never rebuilds country geometry');
+    themed.setTheme('light', themed.modal); themed.setTheme('dark');
+    assert.strictEqual(themed.modal.getAttribute('data-globe-theme'), 'light', 'The nearest explicit theme overrides an ancestor theme');
+    themed.setTheme(null, themed.modal);
+    assert.strictEqual(themed.modal.getAttribute('data-globe-theme'), 'dark');
+    themed.setTheme(null);
+    assert.strictEqual(themed.modal.getAttribute('data-globe-theme'), 'light', 'Removing the app theme returns to day mode');
+    themed.modal.events['hide.bs.modal'](); themed.setTheme('dark'); themed.modal.events['shown.bs.modal']();
+    assert.strictEqual(themed.instances, 1, 'Changing the theme while closed reuses the existing renderer');
+    assert.strictEqual(themed.material.color.value, '#09283f');
 
     let failing = true;
     const failure = harness(url => failing ? Promise.reject(new Error('offline')) : Promise.resolve({ok: true, json: () => Promise.resolve(url === '/map' ? map : JSON.parse(JSON.stringify(catalogue)))}));
