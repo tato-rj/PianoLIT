@@ -1,4 +1,7 @@
 .fullscreen-modal {
+    // Include nested scroll containers: touch-action stops at the first scroller.
+    // More specific content rules (e.g. the globe canvas's none) still take precedence.
+    &, * { touch-action: pan-x pan-y; }
     .modal-dialog { width: 100%; max-width: none; margin: 0; height: 100%; }
     .modal-content { height: 100vh; height: 100dvh; border-radius: 0 !important; background: var(--color-white); }
     .fullscreen-modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; padding: 32px 4vw 22px; flex: 0 0 auto; }

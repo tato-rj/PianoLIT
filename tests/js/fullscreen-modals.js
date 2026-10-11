@@ -3,12 +3,14 @@ const initialize = require('../../resources/js/components/fullscreen-modals');
 
 module.exports = function () {
     function page(href, readyState = 'loading') {
-        const events = {}, timers = [], modals = {}, shown = [];
+        const events = {}, options = {}, timers = [], modals = {}, shown = [];
+        let active = null;
         const state = {pianolitCanGoBack: true, unrelated: 'retained'};
         const win = {location: {href}, history: {state, writes: 0,
             replaceState(value, title, url) { assert.strictEqual(value, state); this.writes++; win.location.href = url; }},
             setTimeout(callback) { timers.push(callback); },
-            document: {readyState, addEventListener(name, handler) { events[name] = handler; },
+            document: {readyState, addEventListener(name, handler, settings) { events[name] = handler; options[name] = settings; },
+                querySelector(selector) { assert.strictEqual(selector, '.fullscreen-modal.show'); return active; },
                 getElementById(id) { return modals[id]; }},
             bootstrap: {Modal: {getOrCreateInstance(modal) { return {show() {
                 shown.push(modal.id);
@@ -20,7 +22,7 @@ module.exports = function () {
             return modals[id] = {id, matches(selector) { assert.strictEqual(selector, '.fullscreen-modal'); return fullscreen; }};
         }
         initialize(win);
-        return {win, events, shown, modal, params: () => new URL(win.location.href).searchParams,
+        return {win, events, options, shown, modal, setActive(modal) { active = modal; }, params: () => new URL(win.location.href).searchParams,
             ready() { if (events.DOMContentLoaded) events.DOMContentLoaded(); },
             flush() { while (timers.length) timers.shift()(); }};
     }
@@ -75,5 +77,70 @@ module.exports = function () {
     assert.deepStrictEqual(late.shown, ['composer-globe-modal'], 'Also supports scripts initialized after DOM ready');
     late.win.history.replaceState = () => { throw new Error('Blocked'); };
     assert.doesNotThrow(() => late.events['hidden.bs.modal']({target: late.modal('composer-globe-modal')}));
-    console.log('Passed: fullscreen modal URL opening, deferred restoration, closing, future shells, ordinary/unavailable exclusions and preserved query/hash/history state.');
+
+    const gestures = page('https://my.pianolit.com/composers');
+    let clicks = 0;
+    const button = {disabled: false, click() { clicks++; }};
+    const target = {closest(selector) { return selector === 'button, a' ? button : null; }};
+    const background = {closest() { return null; }};
+    const touch = (x = 10, y = 20) => ({clientX: x, clientY: y});
+    function dispatch(type, changes) {
+        const event = Object.assign({type, target, touches: [], timeStamp: 0, cancelable: true, defaultPrevented: false,
+            preventDefault() { assert(this.cancelable, 'Do not cancel non-cancelable events'); this.defaultPrevented = true; },
+            stopPropagation() { assert.fail('Content gesture handlers must still receive the event'); }}, changes);
+        gestures.events[type](event);
+        return event;
+    }
+    function tap(time, changes) {
+        dispatch('touchstart', Object.assign({timeStamp: time, touches: [touch()]}, changes));
+        return dispatch('touchend', Object.assign({timeStamp: time + 30}, changes));
+    }
+    const protectedTypes = ['gesturestart', 'gesturechange', 'gestureend', 'dblclick', 'wheel', 'touchstart', 'touchmove'];
+    for (const type of protectedTypes) {
+        assert.deepStrictEqual(gestures.options[type], {passive: false, capture: true});
+        assert.strictEqual(dispatch(type, {ctrlKey: true, touches: [touch(), touch(100)]}).defaultPrevented, false,
+            'Normal pages and ordinary modals keep browser zoom');
+    }
+    for (const id of ['composer-globe-modal', 'playlist-escore-modal', 'match-tour-modal', 'future-modal']) {
+        const active = gestures.modal(id);
+        gestures.setActive(active); gestures.events['shown.bs.modal']({target: active});
+        for (const type of protectedTypes) {
+            assert.strictEqual(dispatch(type, {ctrlKey: true, touches: [touch(), touch(100)]}).defaultPrevented, true,
+                id + ' blocks page zoom while allowing the event to propagate');
+        }
+        assert.strictEqual(dispatch('wheel').defaultPrevented, false, 'Ordinary wheel scrolling remains available');
+        assert.strictEqual(dispatch('touchstart', {touches: [touch()]}).defaultPrevented, false);
+        assert.strictEqual(dispatch('touchmove', {touches: [touch(10, 80)]}).defaultPrevented, false, 'One-finger scrolling remains native');
+        assert.strictEqual(dispatch('touchend').defaultPrevented, false);
+        assert.strictEqual(tap(100).defaultPrevented, false, 'The first tap uses its native click');
+        button.click();
+        const beforeRepeat = clicks;
+        assert.strictEqual(tap(200).defaultPrevented, true, 'Repeated taps cannot magnify the page');
+        assert.strictEqual(clicks, beforeRepeat + 1, 'A repeated button or link tap activates exactly once');
+        assert.strictEqual(tap(250, {defaultPrevented: true}).defaultPrevented, true);
+        assert.strictEqual(clicks, beforeRepeat + 1, 'Already handled taps do not activate twice');
+        button.disabled = true;
+        tap(300); assert.strictEqual(clicks, beforeRepeat + 1, 'Disabled controls remain disabled');
+        button.disabled = false;
+        assert.strictEqual(tap(350, {target: background}).defaultPrevented, true, 'Repeated taps on plain content cannot zoom');
+        assert.strictEqual(tap(400, {cancelable: false}).defaultPrevented, false);
+        assert.strictEqual(clicks, beforeRepeat + 1, 'Non-cancelable taps do not receive a second activation');
+        const field = {closest(selector) { return selector === 'button, a' ? null : {}; }};
+        assert.strictEqual(tap(450, {target: field}).defaultPrevented, false, 'Native form focus, selection and pickers remain usable');
+        tap(600);
+        dispatch('touchstart', {timeStamp: 700, touches: [touch()]});
+        dispatch('touchmove', {timeStamp: 710, touches: [touch(90, 90)]});
+        assert.strictEqual(dispatch('touchend', {timeStamp: 730}).defaultPrevented, false, 'A swipe is not a double tap');
+        dispatch('touchstart', {timeStamp: 800, touches: [touch()]});
+        assert.strictEqual(dispatch('touchend', {timeStamp: 1300}).defaultPrevented, false, 'Long presses retain native behavior');
+        tap(1400); dispatch('touchcancel');
+        assert.strictEqual(tap(1450).defaultPrevented, false, 'Cancelled gestures clear the tap sequence');
+        gestures.events['hidden.bs.modal']({target: active}); gestures.setActive(null);
+        assert.strictEqual(dispatch('wheel', {ctrlKey: true}).defaultPrevented, false, 'Closing restores browser zoom');
+        gestures.setActive(active); gestures.events['shown.bs.modal']({target: active});
+        assert.strictEqual(tap(1500).defaultPrevented, false, 'Reopening never inherits a double tap');
+    }
+    gestures.setActive(gestures.modal('another-modal'));
+    assert.strictEqual(tap(1550).defaultPrevented, false, 'Switching modals resets the tap sequence');
+    console.log('Passed: fullscreen modal URL restoration and gesture protection, preserved scrolling/controls, native inputs, cancellation and modal lifecycle.');
 };
