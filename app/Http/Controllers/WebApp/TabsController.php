@@ -107,7 +107,7 @@ class TabsController extends Controller
         // All card metadata stays available for the existing client-side sorting.
         // Only the popularity count is used here; omit the other default counts
         // and the composer's country relationship from this web-only query.
-        $pieces = Piece::freePicks(false)->select('pieces.*')->withCount('views')
+        $pieces = Piece::freePicks($ordered = true)->select('pieces.*')->withCount('views')
             ->with(['tags', 'composer' => function ($query) {
                 $query->select('composers.*')->setEagerLoads([]);
             }])->filtered();
