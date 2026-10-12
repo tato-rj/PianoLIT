@@ -14,7 +14,7 @@
 
 	@if($timeline->isNotEmpty())
 	<section class="mt-5 pt-4 border-top" aria-labelledby="composer-timeline-title">
-		<h2 id="composer-timeline-title" class="h5 mb-4">Timeline</h2>
+		<h2 id="composer-timeline-title" class="h5 mb-4">What was the world like</h2>
 		@include('webapp.piece.components.timeline')
 	</section>
 	@endif

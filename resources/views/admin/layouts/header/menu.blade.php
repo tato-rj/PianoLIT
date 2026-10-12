@@ -1,5 +1,6 @@
-  <div class="collapse navbar-collapse" id="navbarResponsive">
-    <ul class="navbar-nav navbar-sidenav">
+  <div class="collapse admin-sidebar-body" id="navbarResponsive">
+    <ul class="admin-menu">
+      @include('admin.layouts.header.item', ['route' => route('admin.home'), 'name' => 'Overview', 'icon' => 'layout-dashboard'])
 
       @editor
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'My profile', 'icon' => 'pencil'])
@@ -121,22 +122,19 @@
 
     </ul>
 
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item hide-on-collapse">
-        <a class="nav-link position-relative notifications-link {{auth()->user()->hasNewNotifications() ? 'active' : null}}" href="#notifications-panel" role="button" aria-label="Notifications" data-bs-toggle="offcanvas" data-bs-target="#notifications-panel" aria-controls="notifications-panel">
-          @icon('bell', ['classes' => 'notification-bell', 'filled' => true])<span class="inline-on-collapse ms-1">Notifications</span>
-          <div class="notifications-count text-dark bg-white rounded-circle position-absolute fw-bold shadow-sm" style="bottom: 4px; right: 2px;">
-            <div class="d-flex flex-center w-100 h-100">{{auth()->user()->unreadNotifications->count()}}</div>
-          </div>
-        </a>
-      </li>
-      <li class="nav-item">
-        <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+    <div class="admin-sidebar-footer">
+      <span class="admin-theme-label">Light mode <small>Coming soon</small></span>
+      <div class="admin-theme-switch" role="group" aria-label="Appearance (coming soon)">
+        <button type="button" disabled aria-label="Light mode (current)">@icon('sun', ['mr' => 0])</button>
+        <button type="button" disabled aria-label="Dark mode (coming soon)">@icon('moon', ['mr' => 0])</button>
+      </div>
+      <div class="admin-sidebar-account">
+        <span class="admin-account-avatar">{{mb_substr(auth('admin')->user()->name, 0, 1)}}</span>
+        <div><strong>{{auth('admin')->user()->first_name}}</strong><small>{{ucfirst(auth('admin')->user()->role)}}</small></div>
+        <form action="{{route('admin.logout')}}" method="POST">
           @csrf
+          <button type="submit" aria-label="Log out" title="Log out">@icon('log-out', ['mr' => 0])</button>
         </form>
-        <a class="nav-link" href="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-          @icon('log-out', ['size' => 'lg'])<span class="ms-1 inline-on-collapse">Logout</span>
-        </a>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>

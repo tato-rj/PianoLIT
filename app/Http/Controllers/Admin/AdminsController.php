@@ -19,115 +19,19 @@ class AdminsController extends Controller
     /**
      * Display the home page.
      */
-    public function home()
-    {   
-        $userStats = [
-            'all' => [
-                'label' => 'Users', 
-                'total' => User::count(),
-                'counts' => [
-                    User::upUntilLastWeek()->count(), 
-                    User::count()], 
-                'url' => route('admin.users.index')],
-            'platforms' => [
-                [
-                    'icon' => ['icon' => 'apple', 'fa_type' => 'b'], 
-                    'label' => 'iOS', 
-                    'total' => User::byOrigin('ios')->count(),
-                    'counts' => [
-                        User::byOrigin('ios')->upUntilLastWeek()->count(), 
-                        User::byOrigin('ios')->count()], 
-                    'url' => route('admin.users.logs')
-                ], [
-                    'icon' => ['icon' => 'bolt'], 
-                    'label' => 'WebApp', 
-                    'total' => User::byOrigin('webapp')->count(),
-                    'counts' => [
-                        User::byOrigin('webapp')->upUntilLastWeek()->count(), 
-                        User::byOrigin('webapp')->count()], 
-                    'url' => route('admin.users.logs')
-                ], [
-                    'icon' => ['icon' => 'laptop'], 
-                    'label' => 'Web', 
-                    'total' => User::byOrigin('web')->count(),
-                    'counts' => [
-                        User::byOrigin('web')->upUntilLastWeek()->count(), 
-                        User::byOrigin('web')->count()], 
-                    'url' => route('admin.users.logs')
-                ]
-            ]
-        ];
+    public function home(Request $request, \App\Services\Admin\Dashboard $dashboard)
+    {
+        $filters = $request->validate([
+            'days' => 'sometimes|integer|in:3,7,30',
+            'platform' => 'sometimes|string|in:all,web,webapp,app',
+        ]);
+        $admin = auth('admin')->user();
+        $data = $admin->isManager()
+            ? $dashboard->data((int) ($filters['days'] ?? 7), $filters['platform'] ?? 'all')
+            : [];
+        if (!$admin->isManager()) $admin->loadCount(['pieces', 'composers']);
 
-        $counts = [
-            [
-                'label' => 'Subscribers', 
-                'total' => Subscription::count(),
-                'counts' => [
-                    Subscription::upUntilLastWeek()->count(), 
-                    Subscription::count()], 
-                'url' => route('admin.subscriptions.index')
-            ], [
-                'label' => 'Pieces', 
-                'total' => Piece::count(),
-                'counts' => [
-                    Piece::upUntilLastWeek()->count(), 
-                    Piece::count()], 
-                'url' => route('admin.pieces.index')
-            ], [
-                'label' => 'Quizzes', 
-                'total' => Quiz::published()->count(),
-                'counts' => [
-                    Quiz::published()->upUntilLastWeek()->count(), 
-                    Quiz::published()->count()], 
-                'url' => route('admin.quizzes.index')
-            ], [
-                'label' => 'Blog posts', 
-                'total' => Post::published()->count(),
-                'counts' => [
-                    Post::published()->upUntilLastWeek()->count(), 
-                    Post::published()->count()], 
-                'url' => route('admin.posts.index')
-            ], [
-                'label' => 'Infographics', 
-                'total' => Infograph::published()->count(),
-                'counts' => [
-                    Infograph::published()->upUntilLastWeek()->count(), 
-                    Infograph::published()->count()], 
-                'url' => route('admin.infographs.index')
-            ], [
-                'label' => 'eBooks', 
-                'total' => eBook::published()->count(),
-                'counts' => [
-                    eBook::published()->upUntilLastWeek()->count(), 
-                    eBook::published()->count()], 
-                'url' => route('admin.ebooks.index')
-            ], [
-                'label' => 'eScores', 
-                'total' => eScore::published()->count(),
-                'counts' => [
-                    eScore::published()->upUntilLastWeek()->count(), 
-                    eScore::published()->count()], 
-                'url' => route('admin.escores.index')
-            ], [
-                'label' => 'Crash Courses', 
-                'total' => CrashCourse::published()->count(),
-                'counts' => [
-                    CrashCourse::published()->upUntilLastWeek()->count(), 
-                    CrashCourse::published()->count()], 
-                'url' => route('admin.crashcourses.index')
-            ],
-        ];
-
-        $birthdays = Composer::bornToday()->get();
-        $deathdays = Composer::diedToday()->get();
-
-        $iosUsers = User::byOrigin('ios')->count();
-        $iosMembers = User::byOrigin('ios')->has('membership')->count();
-        $webappUsers = User::byOrigin('webapp')->count();
-        $webappMembers = User::byOrigin('webapp')->has('membership')->count();
-        $webappAveragePayment = Payment::sum('amount')/100;
-
-        return view('admin.pages.home.index', compact(['userStats', 'counts', 'birthdays', 'deathdays', 'iosUsers', 'iosMembers', 'webappUsers', 'webappMembers', 'webappAveragePayment']));
+        return view('admin.pages.home.index', ['dashboard' => $data]);
     }
 
     /**
