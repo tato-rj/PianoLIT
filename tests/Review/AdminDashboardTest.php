@@ -99,6 +99,15 @@ class AdminDashboardTest extends ReviewTestCase
         $this->assertEquals(50, $data['metrics'][0]['share']);
         $this->assertCount(12, $queries);
         $this->assertStringNotContainsString('post_topic', implode(' ', array_column($queries, 'query')));
+        $metricQueries = collect($queries)->filter(function ($query) {
+            return strpos($query['query'], ' as added') !== false;
+        });
+        $this->assertCount(4, $metricQueries);
+        foreach ($metricQueries as $query) {
+            // SQLite accepts row columns mixed with aggregates; strict MySQL rejects them.
+            $this->assertStringStartsWith('select COUNT(*) as total, SUM(CASE WHEN ', $query['query']);
+            $this->assertStringNotContainsString('_count', $query['query']);
+        }
     }
 
     public function test_empty_manager_dashboard_and_nested_menu_render_without_external_chart_requests()
@@ -128,5 +137,42 @@ class AdminDashboardTest extends ReviewTestCase
         $this->get(route('admin.pieces.create'))->assertOk()
             ->assertSee('admin-submenu collapse show" id="repertoire"', false)
             ->assertSee('aria-current="page"', false);
+    }
+
+    public function test_header_account_dropdown_has_own_profile_and_session_logout_without_sidebar_account_area()
+    {
+        $admin = auth('admin')->user();
+        foreach (['admin.home', 'admin.pieces.create'] as $route) {
+            $response = $this->get(route($route))->assertOk();
+            $response->assertSee('id="admin-account-toggle" data-bs-toggle="dropdown" aria-expanded="false"', false)
+                ->assertSee('aria-labelledby="admin-account-toggle"', false)
+                ->assertSee(route('admin.editors.edit', $admin->id), false)
+                ->assertSee('My profile')->assertSee('View website')->assertSee('Log out')
+                ->assertSee('href="'.route('home').'" target="_blank" rel="noopener"', false)
+                ->assertSee('action="'.route('admin.logout').'" method="POST"', false)
+                ->assertSee('name="_token"', false)
+                ->assertDontSee('admin-sidebar-account', false);
+            $this->assertSame(1, substr_count($response->getContent(), 'id="admin-account-toggle"'));
+            $this->assertSame(1, substr_count($response->getContent(), 'action="'.route('admin.logout').'"'));
+        }
+    }
+
+    public function test_profile_link_opens_for_the_current_admin_and_editors_cannot_read_other_profiles()
+    {
+        $manager = auth('admin')->user();
+        $piece = Model::withoutEvents(function () use ($manager) {
+            return create(Piece::class, ['creator_id' => $manager->id]);
+        });
+        $this->get(route('admin.editors.edit', $manager->id))->assertOk()
+            ->assertSee($manager->name)->assertSee('Change password')
+            ->assertSee('id="password-modal"', false)
+            ->assertSee(route('admin.pieces.edit', $piece), false);
+
+        $editor = create(Admin::class, ['role' => 'editor']);
+        $this->actingAs($editor, 'admin');
+        $this->get(route('admin.editors.edit', $editor->id))->assertOk()->assertSee($editor->name);
+        $this->withExceptionHandling()->get(route('admin.editors.edit', $manager->id))->assertForbidden();
+        $this->actingAs($manager, 'admin');
+        $this->get(route('admin.editors.edit', $editor->id))->assertOk();
     }
 }

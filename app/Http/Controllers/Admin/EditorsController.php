@@ -74,7 +74,9 @@ class EditorsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(Admin $editor)
-    {        
+    {
+        $this->authorize('update', $editor);
+
         return view('admin.pages.editors.edit', compact('editor'));
     }
 

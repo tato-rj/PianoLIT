@@ -56,7 +56,7 @@
   </div>
 </div>
 
-@include('admin.components.modals.password')
+@include('admin.components.modals.Xpassword')
 @endsection
 
 @section('scripts')

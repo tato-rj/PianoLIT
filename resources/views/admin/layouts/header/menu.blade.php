@@ -3,7 +3,7 @@
       @include('admin.layouts.header.item', ['route' => route('admin.home'), 'name' => 'Overview', 'icon' => 'layout-dashboard'])
 
       @editor
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'My profile', 'icon' => 'pencil'])
+        @include('admin.layouts.header.item', ['route' => route('admin.editors.edit', auth('admin')->id()), 'name' => 'My profile', 'icon' => 'pencil'])
       @endeditor
 
       @manager
@@ -127,14 +127,6 @@
       <div class="admin-theme-switch" role="group" aria-label="Appearance (coming soon)">
         <button type="button" disabled aria-label="Light mode (current)">@icon('sun', ['mr' => 0])</button>
         <button type="button" disabled aria-label="Dark mode (coming soon)">@icon('moon', ['mr' => 0])</button>
-      </div>
-      <div class="admin-sidebar-account">
-        <span class="admin-account-avatar">{{mb_substr(auth('admin')->user()->name, 0, 1)}}</span>
-        <div><strong>{{auth('admin')->user()->first_name}}</strong><small>{{ucfirst(auth('admin')->user()->role)}}</small></div>
-        <form action="{{route('admin.logout')}}" method="POST">
-          @csrf
-          <button type="submit" aria-label="Log out" title="Log out">@icon('log-out', ['mr' => 0])</button>
-        </form>
       </div>
     </div>
   </div>

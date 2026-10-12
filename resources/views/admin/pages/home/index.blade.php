@@ -8,7 +8,7 @@
     <div class="admin-dashboard-tools">
       <span class="admin-today">{{now()->format('l, M j')}}</span>
       @include('admin.layouts.header.notifications')
-      <span class="admin-header-avatar" title="{{auth('admin')->user()->name}}">{{mb_substr(auth('admin')->user()->name, 0, 1)}}</span>
+      @include('admin.layouts.header.account')
     </div>
   </header>
 

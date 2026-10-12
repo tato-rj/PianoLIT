@@ -13,14 +13,14 @@ body.admin-shell {
 .admin-sidebar {
     position: fixed;
     z-index: 1030;
-    top: 24px;
-    bottom: 24px;
-    left: 24px;
+    top: 0;
+    bottom: 0;
+    left: 0;
     width: 260px;
     display: flex;
     flex-direction: column;
     padding: 28px 18px 18px;
-    border-radius: 30px;
+    border-radius: 0;
     background: #181e22;
     color: #f7f8f7;
     .admin-sidebar-header { flex: 0 0 auto; padding: 2px 12px 26px; }
@@ -50,29 +50,36 @@ body.admin-shell {
     .admin-theme-switch button { display: flex; justify-content: center; align-items: center; width: 50%; height: 34px; border: 0; border-radius: 30px; background: transparent; color: #f6f7f6; opacity: 1; cursor: default; }
     .admin-theme-switch button:first-child { background: #fff; color: #181e20; box-shadow: 0 2px 4px rgba(0,0,0,.12); }
     .admin-theme-switch .app-icon { width: 20px; height: 20px; }
-    .admin-sidebar-account { display: flex; align-items: center; gap: 10px; margin-top: 17px; }
-    .admin-sidebar-account strong { display: block; max-width: 115px; overflow: hidden; text-overflow: ellipsis; font-size: 12px; font-weight: 500; }
-    .admin-sidebar-account small { display: block; margin-top: 2px; color: #a1a9aa; font-size: 10px; }
-    .admin-sidebar-account form { margin: 0 0 0 auto; }
-    .admin-sidebar-account button { border: 0; padding: 6px; background: transparent; color: #cad0d1; }
-    .admin-sidebar-account button:hover { color: #bdedb6; }
-    .admin-sidebar-account button .app-icon { width: 17px; height: 17px; }
-    .admin-account-avatar { display: flex; align-items: center; justify-content: center; flex: 0 0 31px; height: 31px; background: #d8e4cb; color: #333e34; border-radius: 50%; font-size: 13px; font-weight: 600; }
+
 }
 .admin-menu-toggle { display: none; }
-.admin-page-tools { display: flex; justify-content: flex-end; padding: 16px 24px 0; margin-left: 284px; }
+.admin-page-tools { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 16px 24px 0; margin-left: 284px; }
 .admin-notifications { position: relative; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border: 1px solid #fff; border-radius: 50%; background: rgba(255,255,255,.5); color: #242b29; &:hover { color: #242b29; background: #fff; } .app-icon { width: 19px; height: 19px; } }
 .admin-notification-dot { position: absolute; top: 8px; right: 9px; width: 7px; height: 7px; background: #65d28b; border: 1px solid #fff; border-radius: 50%; }
+.admin-account-menu {
+    .admin-header-avatar { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; padding: 0; border: 3px solid #fff; border-radius: 50%; background: #d5e0cd; color: #3d4e3e; font-size: 17px; cursor: pointer; }
+    .admin-header-avatar:hover, .admin-header-avatar[aria-expanded="true"] { background: #c3d5b8; }
+    .admin-account-dropdown { min-width: 220px; max-width: calc(100vw - 32px); padding: 8px; margin-top: 9px !important; border: 1px solid #fff; border-radius: 19px; background: #f9faf7; box-shadow: 0 10px 35px rgba(24,30,34,.13); }
+    .admin-account-details { padding: 9px 12px 12px; }
+    .admin-account-details strong { display: block; max-width: 250px; overflow-wrap: anywhere; color: #242b29; font-size: 13px; font-weight: 500; }
+    .admin-account-details small { display: block; margin-top: 3px; color: #7a8374; font-size: 10px; }
+    .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; color: #303a2d; font-size: 12px; text-decoration: none; }
+    .dropdown-item:hover, .dropdown-item:focus { color: #263823; background: #e7efdf; }
+    .dropdown-item:active { background: #d7e6cb; }
+    .dropdown-item .app-icon { width: 16px; height: 16px; color: #75886b; }
+    .dropdown-divider { margin: 6px 10px; border-color: #dde4d7; }
+    form { margin: 0; }
+}
 body.admin-dashboard-page {
-    background: radial-gradient(ellipse at 2% 10%, #dceccf 0, transparent 40%), radial-gradient(ellipse at 100% 5%, #efd9ca 0, transparent 45%), #e9e6d9;
-    .admin-sidebar { border-radius: 30px 0 0 30px; }
+    background: #181e22;
+    .admin-main { margin: 0 0 0 260px; max-width: none; }
 }
 .admin-dashboard {
     position: relative;
-    min-height: calc(100vh - 48px);
+    min-height: 100vh;
     padding: 30px 32px;
-    border: 1px solid rgba(255,255,255,.35);
-    border-radius: 32px;
+    border: 0;
+    border-radius: 32px 0 0 0;
     background: #e9e9e7;
     color: #181e20;
     h1, h2, h3, p { margin: 0; }
@@ -83,7 +90,6 @@ body.admin-dashboard-page {
     .admin-dashboard-header p { margin-top: 7px; color: #727873; font-size: 13px; }
     .admin-dashboard-tools { display: flex; align-items: center; gap: 12px; }
     .admin-today { color: #737a74; font-size: 11px; }
-    .admin-header-avatar { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border: 3px solid #fff; border-radius: 50%; background: #d5e0cd; color: #3d4e3e; font-size: 17px; }
     .admin-dashboard-filters { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin: 28px 0 28px; }
     .admin-segmented { display: flex; padding: 4px; gap: 2px; border: 1px solid rgba(255,255,255,.9); border-radius: 40px; background: rgba(255,255,255,.47); }
     .admin-segmented a, .admin-periods a { padding: 11px 16px; border: 1px solid transparent; border-radius: 30px; font-size: 12px; white-space: nowrap; }
@@ -211,8 +217,9 @@ body.admin-dashboard-page {
     .admin-dashboard .admin-chart-bars { height: 185px; }
 }
 @media (max-width: 1199px) and (min-width: 992px) {
-    .admin-sidebar { left: 16px; top: 16px; bottom: 16px; width: 225px; padding: 24px 12px 14px; }
+    .admin-sidebar { width: 225px; padding: 24px 12px 14px; }
     .admin-shell .admin-main { margin: 16px 16px 16px 241px; }
+    body.admin-dashboard-page .admin-main { margin-left: 225px; }
     .admin-page-tools { margin-left: 241px; }
     .admin-dashboard { padding: 24px; }
     .admin-dashboard .admin-activity-grid { grid-template-columns: minmax(0, 1fr) 240px; }
@@ -222,7 +229,7 @@ body.admin-dashboard-page {
     .admin-dashboard .admin-library-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 991px) {
-    .admin-sidebar, body.admin-dashboard-page .admin-sidebar { position: relative; top: auto; bottom: auto; left: auto; width: auto; margin: 12px; padding: 14px 18px; border-radius: 22px; }
+    .admin-sidebar { position: relative; top: auto; bottom: auto; left: auto; width: auto; margin: 0; padding: 14px 18px; }
     .admin-sidebar .admin-sidebar-header { display: flex; align-items: center; justify-content: space-between; padding: 0; }
     .admin-sidebar .admin-brand { font-size: 21px; }
     .admin-sidebar .admin-brand small { font-size: 7px; margin-top: 5px; }
@@ -233,9 +240,10 @@ body.admin-dashboard-page {
     .admin-sidebar .admin-sidebar-footer { margin-top: 12px; }
     .admin-sidebar .admin-theme-switch { max-width: 220px; }
     .admin-shell .admin-main { margin: 12px; }
+    body.admin-dashboard-page .admin-main { margin: 0; }
     .admin-page-tools { margin: 0; padding: 0 16px; }
     .admin-skip-link { left: 16px; }
-    .admin-dashboard { min-height: calc(100vh - 105px); padding: 25px; border-radius: 24px; }
+    .admin-dashboard { min-height: calc(100vh - 68px); padding: 25px; border-radius: 24px 0 0 0; }
     .admin-dashboard .admin-activity-grid { grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); }
     .admin-dashboard .admin-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .admin-dashboard .admin-library-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -247,7 +255,7 @@ body.admin-dashboard-page {
     .admin-dashboard .admin-dashboard-tools { gap: 7px; }
     .admin-dashboard .admin-dashboard-header { gap: 10px; }
     .admin-dashboard .admin-dashboard-header p { max-width: 185px; font-size: 11px; }
-    .admin-dashboard .admin-header-avatar, .admin-notifications { width: 35px; height: 35px; }
+    .admin-account-menu .admin-header-avatar, .admin-notifications { width: 35px; height: 35px; }
     .admin-dashboard .admin-dashboard-filters { gap: 10px; margin: 24px 0; }
     .admin-dashboard .admin-segmented { width: 100%; }
     .admin-dashboard .admin-segmented a { flex: 1; text-align: center; padding: 10px 8px; font-size: 10px; }

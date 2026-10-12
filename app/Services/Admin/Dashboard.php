@@ -56,7 +56,10 @@ class Dashboard
         $metrics = [];
         foreach ($definitions as [$query, $label, $icon, $route]) {
             $dateColumn = $label === 'Published posts' ? 'published_at' : 'created_at';
-            $row = $query->selectRaw('COUNT(*) as total, SUM(CASE WHEN '.$dateColumn.' >= ? AND '.$dateColumn.' <= ? THEN 1 ELSE 0 END) as added', [$start, $end])->toBase()->first();
+            // Model defaults such as $withCount already selected users.* / pieces.*.
+            // Apply eligibility scopes, then replace those columns with aggregates only.
+            $row = $query->toBase()->select([])
+                ->selectRaw('COUNT(*) as total, SUM(CASE WHEN '.$dateColumn.' >= ? AND '.$dateColumn.' <= ? THEN 1 ELSE 0 END) as added', [$start, $end])->first();
             $metrics[] = ['label' => $label, 'icon' => $icon, 'url' => route($route),
                 'total' => (int) $row->total, 'added' => (int) $row->added,
                 'share' => $row->total ? round($row->added / $row->total * 100) : 0];
