@@ -13,7 +13,7 @@
 	@else
 
 	<div class="text-center">
-		<img src="{{asset('images/webapp/synthesia-missing.svg')}}" class="mx-auto mb-4" style="width: 132px; opacity:  .1">
+		<img src="{{ asset('images/webapp/synthesia-empty.png') }}" alt="" width="960" height="575" class="d-block mx-auto mb-4" style="width: 360px; max-width: 100%; height: auto;">
 		<p class="text-muted">Would you like to watch a synthesia of this piece?<br>Tap below to make your request.</p>
 		@auth('web')
 		<button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#synthesia-request-modal">Send my request</button>

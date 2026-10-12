@@ -17,6 +17,7 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->pieces = Model::withoutEvents(function () {
             $level = create(Tag::class, ['type' => 'level', 'name' => 'intermediate']);
             $sublevel = create(Tag::class, ['type' => 'sublevel', 'name' => 'late intermediate']);
+            $period = create(Tag::class, ['type' => 'period', 'name' => 'romantic']);
             $pieces = collect();
             for ($i = 0; $i < 14; $i++) {
                 $piece = create(Piece::class, [
@@ -25,7 +26,7 @@ class DiscoverPieceRowsTest extends ReviewTestCase
                     'score_path' => 'fixture.pdf', 'catalogue_name' => 'Op.', 'catalogue_number' => 31,
                     'created_at' => now()->subMinutes(14 - $i),
                 ]);
-                $piece->tags()->attach([$level->id, $sublevel->id]);
+                $piece->tags()->attach([$level->id, $sublevel->id, $period->id]);
                 create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Synthesia', 'category' => 'synthesia']);
                 $pieces->push($piece);
             }
@@ -34,15 +35,41 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         });
     }
 
-    public function test_latest_view_all_is_public_paginated_and_newest_first()
+    public function test_latest_view_all_opens_regular_search_with_an_empty_input()
     {
-        $first = $this->get(route('webapp.latest'))->assertOk();
-        $this->assertSame($this->pieces->reverse()->take(12)->pluck('id')->all(), $first->viewData('pieces')->pluck('id')->all());
-        $second = $this->get(route('webapp.latest', ['page' => 2, 'user_id' => 999]))->assertOk();
-        $this->assertSame($this->pieces->take(2)->reverse()->pluck('id')->all(), $second->viewData('pieces')->pluck('id')->all());
+        $url = route('webapp.search.results', ['catalogue' => 1, 'search' => '']);
+        $row = ['title' => 'Latest pieces', 'content' => []];
+        $html = view('webapp.discover.rows.latest', compact('row'))->render();
+        $this->assertStringContainsString('href="'.e($url).'"', $html);
+        $response = $this->get($url)->assertOk()->assertViewIs('webapp.search.index');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $input = (new \DOMXPath($dom))->query('//form[@id="search-form"]//input[@name="search"]')->item(0);
+        $this->assertSame('', $input->getAttribute('value'));
+        $this->get(route('webapp.latest'))->assertStatus(301)->assertRedirect($url);
+        $this->get(route('webapp.latest', ['page' => 2, 'user_id' => 999]))->assertStatus(301)->assertRedirect($url);
         $this->assertGuest('web');
-        $this->assertSame('Latest fixture 13', $this->pieces->last()->fresh()->name);
-        $this->withExceptionHandling()->getJson(route('webapp.latest', ['page' => -1]))->assertUnprocessable();
+    }
+
+    public function test_latest_view_all_uses_the_whole_catalogue_in_newest_order_with_regular_search_limits()
+    {
+        // All pieces belong in search, including ones absent from the video-only rail.
+        $this->pieces->first()->tutorials()->delete();
+        $this->pieces[12]->update(['created_at' => $this->pieces[13]->created_at]);
+        $params = ['catalogue' => 1, 'search' => '', 'lazy-load' => '', 'include_total' => 1];
+        $expected = $this->pieces->reverse()->values();
+        $guest = $this->getJson(route('webapp.search.results', $params))->assertOk()->assertHeader('X-Search-Total', '14');
+        $guest->assertSeeInOrder($expected->take(3)->pluck('name')->all())->assertSee('Sign up to see more.');
+        $this->assertSame(3, substr_count($guest->getContent(), 'data-sort-name='));
+        $this->assertSame('', $this->getJson(route('webapp.search.results', $params + ['page' => 2]))->assertOk()->getContent());
+
+        $this->actingAs(Model::withoutEvents(function () { return create(User::class); }), 'web');
+        foreach ([1, 2] as $page) {
+            $pieces = $expected->forPage($page, 10);
+            $response = $this->getJson(route('webapp.search.results', $params + ['page' => $page]))->assertOk();
+            $response->assertSeeInOrder($pieces->pluck('name')->all())->assertDontSee('data-search-signup');
+            $this->assertSame($pieces->count(), substr_count($response->getContent(), 'data-sort-name='));
+        }
     }
 
     public function test_latest_cards_show_level_and_only_available_media_icons()
