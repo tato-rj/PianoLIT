@@ -105,6 +105,29 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->assertStringContainsString(asset('images/webapp/thumbnail.jpg'), $html);
     }
 
+    public function test_latest_cards_keep_the_new_badge_for_the_existing_five_day_window()
+    {
+        \Illuminate\Support\Carbon::setTestNow('2026-10-11 20:45:00');
+        try {
+            $piece = PieceCards::load($this->pieces->take(1), false)->first();
+            foreach ([
+                [now(), 1],
+                [now()->subDays(5), 1],
+                [now()->subDays(5)->subSecond(), 0],
+                [now()->subDays(6), 0],
+            ] as [$createdAt, $expectedBadges]) {
+                $piece->created_at = $createdAt;
+                $html = view('webapp.discover.cards.latest-piece', compact('piece'))->render();
+                $dom = new \DOMDocument;
+                @$dom->loadHTML($html);
+                $badges = (new \DOMXPath($dom))->query('//a//span[normalize-space(.)="NEW"]');
+                $this->assertSame($expectedBadges, $badges->length, 'Piece created at '.$createdAt);
+            }
+        } finally {
+            \Illuminate\Support\Carbon::setTestNow();
+        }
+    }
+
     public function test_for_you_requires_a_web_account_and_omits_unavailable_media()
     {
         $row = ['title' => 'For you', 'type' => 'piece', 'content' => PieceCards::load($this->pieces->take(1)->push($this->pieces->last()), false)];
