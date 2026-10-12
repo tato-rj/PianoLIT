@@ -1,8 +1,11 @@
-<div class="table-responsive"><table class="table"><thead><tr><th>When</th><th>Event</th><th>Page / resource</th><th>Details</th></tr></thead><tbody>
-@forelse($events as $event)
+<div class="table-responsive"><table class="table"><thead><tr><th>Time</th><th>Event</th><th>Page / resource</th><th>Details</th></tr></thead>
+@forelse($events->groupBy(function ($event) { return $event->occurred_at ? carbon($event->occurred_at)->toDateString() : 'unknown'; }) as $day => $dayEvents)
+<tbody>
+@include('admin.pages.activity.day-heading', ['columns' => 4])
+@foreach($dayEvents as $event)
     @php($details = json_decode($event->metadata ?: '{}', true))
     <tr>
-        <td class="text-nowrap">{{ $event->occurred_at ?: 'Unknown time' }}
+        <td class="text-nowrap">{{ $event->occurred_at ? carbon($event->occurred_at)->format('g:i:s A') : 'Unknown time' }}
             @if($visit && $event->occurred_at)<br><small class="text-muted">+{{ round(\Carbon\Carbon::parse($visit->started_at)->diffInMilliseconds(\Carbon\Carbon::parse($event->occurred_at)) / 1000, 1) }} s in visit</small>@endif
             @if($event->elapsed_ms !== null)<br><small class="text-muted">+{{ round($event->elapsed_ms / 1000, 1) }} s on page</small>@endif
         </td>
@@ -17,5 +20,7 @@
             </details>
         </td>
     </tr>
-@empty<tr><td colspan="4">No activity recorded.</td></tr>@endforelse
-</tbody></table></div>
+@endforeach
+</tbody>
+@empty<tbody><tr><td colspan="4">No activity recorded.</td></tr></tbody>@endforelse
+</table></div>
