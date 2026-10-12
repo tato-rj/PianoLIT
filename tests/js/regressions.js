@@ -49,6 +49,7 @@ async function main() {
     await require('./score-editor')();
     await require('./webapp-search')();
     require('./search-controls')();
+    await require('./activity')();
     await require('./piece-access')();
     await require('./video-moments')();
     require('./video-moments-admin')();

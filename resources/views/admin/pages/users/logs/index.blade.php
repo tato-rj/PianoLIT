@@ -31,13 +31,10 @@
       </div>
     </div>
 
-    @unless($logIndexReady)
-      <div class="alert alert-warning">
-        The fast log index has not been built yet. Run <code>php artisan redis:rebuild-user-log-index</code> once to enable accurate visit and last-active sorting.
-      </div>
-    @endunless
+    <p><a class="btn btn-primary" href="{{ route('admin.activity.index') }}">Visit timelines</a> <a class="btn btn-secondary" href="{{ route('admin.activity.index', ['guests' => 1]) }}">Anonymous visits</a></p>
+    <p class="text-muted">Database events include imported history. Live iOS activity remains in each user's existing App Logs.</p>
 
-    @datatable(['table' => 'users', 'columns' => ['Date', 'ID', 'Name', 'Visits', 'Favorites', 'Origin', 'Status', 'Last Active', '']])
+    @datatable(['table' => 'users', 'columns' => ['Date', 'ID', 'Name', 'Events', 'Favorites', 'Origin', 'Status', 'Last Active', '']])
 
   </div>
 </div>

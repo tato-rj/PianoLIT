@@ -3,7 +3,7 @@
 namespace App\Stats\Factories;
 
 use App\Log;
-use App\Log\Loggers\DailyLog;
+use App\Activity\DailyStats;
 
 class LogStats extends Factory
 {
@@ -16,14 +16,14 @@ class LogStats extends Factory
     {
         $this->title = 'Activity logs';
         $this->colors = [$this->color['cyan'], $this->color['orange'], $this->color['purple']];    
-        $this->data = (new DailyLog)->latest($where['logs_limit'] ?? 6);
+        $this->data = (new DailyStats)->latest($where['logs_limit'] ?? 6);
 
         return $this;
     }
 
     public function range($where = null)
     {
-        $totals = Log::orderBy('total')->get('total');
+        $totals = \DB::table('activity_events')->whereNotNull('user_id')->selectRaw('user_id, COUNT(*) as total')->groupBy('user_id')->get();
         $ranges = [[1,2], [3,5], [6,12], [13,30], [31]];
 
         $this->title = 'Logs by range';

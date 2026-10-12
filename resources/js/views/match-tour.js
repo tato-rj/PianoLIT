@@ -167,6 +167,7 @@
         }
         resetAudio() {
             if (!this.media || this.media.tagName === 'VIDEO') return;
+            if (root.PianoActivity) root.PianoActivity.stopMedia(this.media);
             try { this.media.currentTime = this.startTime || 0; }
             catch (error) { /* Metadata will position an unloaded recording before playback. */ }
         }
@@ -199,6 +200,7 @@
             if (same && this.media && !this.media.paused) { this.generation++; this.media.pause(); this.resetAudio(); return; }
             if (!same) {
                 this.stop(); this.button = button; this.media = media || this.audio; this.audioKey = piece.audio || piece.id;
+                if (root.PianoActivity) root.PianoActivity.media(this.media, {media_kind: media ? 'video' : 'audio', media_id: 'match-preview-' + piece.id, piece_id: piece.id});
                 this.attach(this.media);
                 if (!media) this.setSource(piece.audio);
                 this.media.currentTime = 0;

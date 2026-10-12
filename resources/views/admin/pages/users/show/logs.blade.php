@@ -2,34 +2,19 @@
   <div class="col-12">
   	@table([
   		'id' => 'log-app-table',
-  		'title' => 'App Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'app')) . ')',
+        'title' => 'App Logs (' . ($activityCounts['app'] ?? 0) . ')',
   		'headers' => ['Date', 'Api call', 'Data'],
       'more' => route('admin.users.load-logs', ['user' => $user->id, 'type' => 'app']),
   		'rows' => view('admin.pages.users.show.logs.app-rows', [
         'user' => $user, 
-        'logs' => collect($user->log()->app)->take(5),
+        'logs' => $appLogs,
       ])
   	])
-    @table([
-      'id' => 'log-webapp-table',
-      'title' => 'Webapp Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'webapp')) . ')',
-      'headers' => ['Date', 'Api call', 'Data'],
-      'more' => route('admin.users.load-logs', ['user' => $user->id, 'type' => 'webapp']),
-      'rows' => view('admin.pages.users.show.logs.web-rows', [
-        'user' => $user, 
-        'logs' => collect($user->log()->webapp)->take(5)
-      ])
-    ])
-  	@table([
-  		'id' => 'log-web-table',
-  		'title' => 'Web Logs (' . ((new \App\Log\LogFactory)->count($user->id, 'web')) . ')',
-  		'headers' => ['Date', 'Api call', 'Data'],
-      'more' => route('admin.users.load-logs', ['user' => $user->id, 'type' => 'web']),
-  		'rows' => view('admin.pages.users.show.logs.web-rows', [
-        'user' => $user, 
-        'logs' => collect($user->log()->web)->take(5)
-      ])
-  	])
+    <div class="card mb-4"><div class="card-body">
+      <h4>Website visit timelines</h4>
+      <p>Read pages, navigation, filters, favorites and media playback in chronological order.</p>
+      <a class="btn btn-primary" href="{{ route('admin.users.activity', $user) }}">Open visit history</a>
+    </div></div>
   </div>
 </div>
 

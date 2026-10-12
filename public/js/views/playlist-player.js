@@ -170,6 +170,7 @@
         // Keep the same media element for every selection, including manual
         // changes, so iOS retains the playback permission granted by the tap.
         audio = audio || new win.Audio();
+        if (win.PianoActivity) win.PianoActivity.media(audio, {media_kind: 'audio', media_id: row.getAttribute('data-piece-id') || row.getAttribute('data-id'), piece_id: row.getAttribute('data-piece-id') || null});
         var target = audio, request = selection;
         (target.playlistListeners || []).forEach(function (listener) { target.removeEventListener(listener.event, listener.handler); });
         target.playlistListeners = [];

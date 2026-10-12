@@ -96,6 +96,7 @@
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
+    @include('components.activity')
 
     <script type="text/javascript">
 

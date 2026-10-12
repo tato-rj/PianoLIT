@@ -359,6 +359,7 @@ function stopAudio() {
 	{
 		let media = typeof videoId === 'string' ? document.querySelector(videoId) : videoId;
         if (!media) return;
+        if (window.PianoActivity) window.PianoActivity.media(media, {media_kind: 'video', media_id: media.id || (media.closest('.tab-pane') ? media.closest('.tab-pane').id : '') || 'piece-video', piece_id: {{ $piece->id }}});
         let player = new Plyr(media, Object.assign({}, options, VideoMoments.markerOptions(media)));
         media.piecePlayer = player;
         const cleanupMoments = VideoMoments.attach(player, media);
@@ -475,7 +476,6 @@ if (typeof document.hidden !== "undefined") {
 function handleVisibilityChange() {
   if (document[hidden]) {
 	stopAudio();
-	stopVideo(reset = false);
   }
 }
 

@@ -1,18 +1,11 @@
-@foreach($logs as $date => $event)
+@foreach($logs as $event)
   <tr>
-    <td class="text-nowrap">{{carbon($date)->format('M j\\, Y \\a\\t h:i A')}}</td>
-    <td class="dataTables_main_column"><a href="{{pianolit()->appToWebapp($event->url)}}" target="_blank">{{$event->url}}</a></td>
+    <td class="text-nowrap">{{ $event->occurred_at ? carbon($event->occurred_at)->format('M j, Y \\a\\t h:i A') : 'Unknown time' }}</td>
+    <td class="dataTables_main_column text-break">{{ $event->url }}<br><small class="text-muted">{{ $event->method }} {{ $event->route_name }}</small></td>
     <td>
-      <button
-      @if(! empty($event->data))
-      data="{{json_encode($event->data)}}"
-      data-url="{{json_encode($event->url)}}"
-      data-bs-toggle="modal"
-      data-bs-target="#modal-log-data"
-      @endif
-      class="bg-transparent border-0 {{empty($event->data) ? 'text-grey' : 'text-success'}}" title="{{empty($event->data) ? 'Nothing to show' : 'More details'}}">
-      @icon('archive', ['mr' => 0])
-      </button>
+      <details><summary>Recorded details</summary><pre class="small text-wrap text-break">{{ json_encode(json_decode($event->metadata ?: '{}', true), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
+      @if($event->source === 'redis')<pre class="small text-wrap text-break">{{ $event->legacy_payload }}</pre>@endif
+      </details>
     </td>
   </tr>
 @endforeach

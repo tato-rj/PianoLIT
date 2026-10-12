@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\{Admin, User, Piece, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Log\Loggers\DailyLog;
-use Illuminate\Support\Facades\Redis;
 use App\Stats\Stats;
-use App\Log\UserLogIndex;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -36,7 +34,11 @@ class UsersController extends Controller
         if (request('format') == 'json')
             return $user->membership()->exists() ? $user->membership->source : null;
 
-        return view('admin.pages.users.show.index', ['user' => $user->load('favorites')]);
+        return view('admin.pages.users.show.index', [
+            'user' => $user->load('favorites'),
+            'activityCounts' => DB::table('activity_events')->where('user_id', $user->id)->selectRaw('platform, COUNT(*) as total')->groupBy('platform')->pluck('total', 'platform'),
+            'appLogs' => DB::table('activity_events')->where('user_id', $user->id)->where('platform', 'app')->orderByDesc('occurred_at')->orderByDesc('id')->take(5)->get(),
+        ]);
     }
 
     public function destroy(User $user)
@@ -54,26 +56,26 @@ class UsersController extends Controller
         if (request()->ajax())
             return $this->logsDatatable(request());
 
-        return view('admin.pages.users.logs.index', [
-            'logIndexReady' => (new UserLogIndex)->isReady(),
-        ]);
+        return view('admin.pages.users.logs.index');
     }
 
     protected function logsDatatable(Request $request)
     {
-        $index = new UserLogIndex;
         $start = max((int) $request->input('start', 0), 0);
         $length = min(max((int) $request->input('length', 10), 1), 100);
         $direction = $request->input('order.0.dir') === 'asc' ? 'asc' : 'desc';
         $orderColumn = (int) $request->input('order.0.column', 7);
         $sortField = $request->input("columns.{$orderColumn}.data", 'last_active');
         $search = trim($request->input('search.value', ''));
-        $query = User::query()->with(['location', 'membership.source']);
+        $activity = DB::table('activity_events')->whereNotNull('user_id')->selectRaw('user_id, COUNT(*) as activity_count, MAX(occurred_at) as activity_last')->groupBy('user_id');
+        $query = User::query()->select('users.*', 'activity.activity_count', 'activity.activity_last')
+            ->leftJoinSub($activity, 'activity', 'activity.user_id', '=', 'users.id')
+            ->with(['location', 'membership.source']);
         $recordsTotal = User::count();
 
         if ($search !== '') {
             $query->where(function ($query) use ($search) {
-                $query->where('id', $search)
+                $query->where('users.id', $search)
                     ->orWhere('first_name', 'like', "%{$search}%")
                     ->orWhere('last_name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
@@ -82,49 +84,17 @@ class UsersController extends Controller
         }
 
         $recordsFiltered = (clone $query)->count();
-        $rankedField = $sortField === 'visits' ? 'visits' : ($sortField === 'last_active' ? 'last_active' : null);
-
-        if ($index->isReady() && $rankedField && $search === '') {
-            $ids = $index->rankedIds($rankedField, $start, $length, $direction);
-            $usersById = $query->whereIn('id', $ids)->get()->keyBy('id');
-            $users = collect($ids)->map(function ($id) use ($usersById) {
-                return $usersById->get($id);
-            })->filter();
-        } elseif ($index->isReady() && $rankedField) {
-            $ids = $query->pluck('id')->all();
-            $stats = $index->statsFor($ids);
-            $stat = $rankedField === 'visits' ? 'visits' : 'last_active';
-            usort($ids, function ($left, $right) use ($stats, $stat, $direction) {
-                $comparison = $stats[$left][$stat] <=> $stats[$right][$stat];
-                return $direction === 'asc' ? $comparison : -$comparison;
-            });
-            $ids = array_slice($ids, $start, $length);
-            $usersById = User::with(['location', 'membership.source'])->whereIn('id', $ids)->get()->keyBy('id');
-            $users = collect($ids)->map(function ($id) use ($usersById) {
-                return $usersById->get($id);
-            })->filter();
-        } else {
-            $columns = [
-                'created_at' => 'created_at',
-                'id' => 'id',
-                'name' => 'first_name',
-                'favorites_count' => 'favorites_count',
-                'origin' => 'origin',
-            ];
-            $column = $columns[$sortField] ?? 'created_at';
-            $users = $query->orderBy($column, $direction)->skip($start)->take($length)->get();
-        }
-
-        $totalVisits = $index->isReady() ? $index->total() : 0;
-        $indexedStats = $index->isReady() ? $index->statsFor($users->pluck('id')->all()) : [];
-        $data = $users->map(function ($user) use ($totalVisits, $indexedStats) {
-            $visits = isset($indexedStats[$user->id]) ? $indexedStats[$user->id]['visits'] : $user->logs_count;
-            if (isset($indexedStats[$user->id])) {
-                $lastActiveTimestamp = $indexedStats[$user->id]['last_active'];
-                $lastActive = $lastActiveTimestamp ? carbon($lastActiveTimestamp) : null;
-            } else {
-                $lastActive = $user->lastActive();
-            }
+        $columns = [
+            'created_at' => 'users.created_at', 'id' => 'users.id', 'name' => 'users.first_name',
+            'favorites_count' => 'favorites_count', 'origin' => 'users.origin',
+            'visits' => 'activity.activity_count', 'last_active' => 'activity.activity_last',
+        ];
+        $column = $columns[$sortField] ?? 'activity.activity_last';
+        $users = $query->orderBy($column, $direction)->orderBy('users.id')->skip($start)->take($length)->get();
+        $totalVisits = DB::table('activity_events')->whereNotNull('user_id')->count();
+        $data = $users->map(function ($user) use ($totalVisits) {
+            $visits = (int) $user->activity_count;
+            $lastActive = $user->activity_last ? carbon($user->activity_last) : null;
             $topUser = $totalVisits && ($visits * 100 / $totalVisits) >= 20;
 
             return [
@@ -151,13 +121,14 @@ class UsersController extends Controller
 
     public function loadLogs(User $user, Request $request)
     {
+        $request->validate(['type' => 'required|in:app,web,webapp', 'start_at' => 'nullable|integer|min:0']);
         $type = $request->type;
-
-        $array = $user->log()->$type;
-
-        $logs = collect(array_slice($array, $request->start_at, count($array), true))->take(5);
-
-        return view('admin.pages.users.show.logs.' . $type . '-rows', ['logs' => $logs])->render();
+        $events = DB::table('activity_events')->where('user_id', $user->id)->where('platform', $type)
+            ->orderByDesc('occurred_at')->orderByDesc('id')->skip((int) $request->start_at)->take(5)->get();
+        if ($type === 'app') {
+            return view('admin.pages.users.show.logs.app-rows', ['logs' => $events])->render();
+        }
+        return view('admin.pages.activity.events', ['events' => $events, 'visit' => null])->render();
     }
 
     public function loadFavorites(User $user, Request $request)
@@ -185,9 +156,9 @@ class UsersController extends Controller
 
     public function purge(User $user)
     {
-        Redis::del($user->redisKey('app'));
-        Redis::del($user->redisKey('web'));
-        \Artisan::call('redis:refresh-daily-logs');
+        DB::transaction(function () use ($user) {
+            foreach (['activity_events', 'activity_pages', 'activity_visits'] as $table) DB::table($table)->where('user_id', $user->id)->delete();
+        });
 
         $user->delete();
 

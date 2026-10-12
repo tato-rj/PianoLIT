@@ -5,7 +5,6 @@ namespace App\Http\Middleware\Logs;
 use Closure;
 use App\Log\Loggers\AppLog;
 use App\Tools\Traffic;
-use App\User;
 
 class RecordAppLog
 {
@@ -18,11 +17,14 @@ class RecordAppLog
      */
     public function handle($request, Closure $next)
     {
-        if ($this->shouldContinue($request))
-            (new AppLog)->push();
-
-        if (testing())
-            return redirect('/');
+        if ($this->shouldContinue($request)) {
+            try {
+                (new AppLog)->push();
+            } catch (\Throwable $exception) {
+                // An analytics outage must not change the mobile response.
+                report($exception);
+            }
+        }
 
         return $next($request);
     }
@@ -30,7 +32,9 @@ class RecordAppLog
     public function shouldContinue($request)
     {
         $isNotAdmin = ! auth()->guard('admin')->check();
-        $isUser = $request->has('user_id') && (new Traffic)->isRealUser($request->user_id);
+        $id = $request->input('user_id');
+        $isUser = (is_int($id) || is_string($id)) && preg_match('/^[1-9]\d*$/', (string) $id)
+            && (float) $id <= 4294967295 && (new Traffic)->isRealUser($id);
         
         return $isNotAdmin && $isUser;
     }

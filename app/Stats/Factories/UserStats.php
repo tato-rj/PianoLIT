@@ -3,7 +3,6 @@
 namespace App\Stats\Factories;
 
 use App\User;
-use App\Log\Loggers\DailyLog;
 
 class UserStats extends Factory
 {

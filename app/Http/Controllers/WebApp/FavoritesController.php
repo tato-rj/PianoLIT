@@ -15,6 +15,8 @@ class FavoritesController extends Controller
         	$piece, 
         	FavoriteFolder::find($request->folder_id));
 
+        $request->attributes->set('activity.action', ['type' => 'favorite_changed', 'metadata' => ['result' => $status, 'folder_id' => $request->folder_id]]);
+
         $folders = auth()->user()->favoriteFolders()->withCount(['favorites as piece_favorites_count' => function ($query) use ($piece) {
             $query->where('piece_id', $piece->id);
         }])->lastUpdated()->get();

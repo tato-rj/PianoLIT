@@ -2,7 +2,7 @@
 
 namespace App\Services\Timeline;
 
-use App\{Piece, TimelineEvent};
+use App\{Composer, Piece, TimelineEvent};
 
 class WebTimeline
 {
@@ -11,7 +11,11 @@ class WebTimeline
     public function periodForPiece(Piece $piece): ?array
     {
         $composer = $piece->composer;
-        if (!$composer) return null;
+        return $composer ? $this->periodForComposer($composer) : null;
+    }
+
+    public function periodForComposer(Composer $composer): ?array
+    {
         $born = $this->usableYear($composer->born_in);
         $died = $this->usableYear($composer->died_in);
         if (!$born && !$died) return null;
@@ -31,7 +35,20 @@ class WebTimeline
     {
         $period = $this->periodForPiece($piece);
         if (!$period) return collect();
-        $composer = $piece->composer;
+
+        return $this->eventsForComposer($piece->composer, $period, $this->pieceMilestones($piece, $period['born'], $period['died']));
+    }
+
+    public function forComposer(Composer $composer)
+    {
+        $period = $this->periodForComposer($composer);
+        if (!$period) return collect();
+
+        return $this->eventsForComposer($composer, $period, collect());
+    }
+
+    private function eventsForComposer(Composer $composer, array $period, $milestones)
+    {
         $born = $period['born'];
         $died = $period['died'];
         $query = TimelineEvent::whereBetween('year', [$period['start_year'], min(now()->year, $period['end_year'])]);
@@ -45,7 +62,6 @@ class WebTimeline
             $query->whereNull('event_date')->orWhere('event_date', '<=', $end);
         });
 
-        $milestones = $this->pieceMilestones($piece, $born, $died);
         $slots = $this->maxEvents - ($born ? 1 : 0) - ($died ? 1 : 0) - $milestones->count();
         // Select lightweight dates across the whole composer period, then fetch curated content.
         $dates = $query->chronological()->get(['id', 'year', 'event_date']);

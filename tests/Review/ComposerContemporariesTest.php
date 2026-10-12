@@ -55,7 +55,7 @@ class ComposerContemporariesTest extends ReviewTestCase
         $response = $this->get(route('webapp.composers.show', $composer));
         $queries = DB::getQueryLog();
         DB::disableQueryLog();
-        $this->assertCount(4, $queries, 'Profile and contemporary country data use bulk reads.');
+        $this->assertCount(5, $queries, 'Profile and contemporary country data use bulk reads, plus one timeline date selection.');
         $response->assertOk()
             ->assertViewHas('contemporaries', function ($items) use ($liszt, $wagner, $brahms, $grieg) {
                 return $items->pluck('id')->all() === [$liszt->id, $wagner->id, $brahms->id, $grieg->id];

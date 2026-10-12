@@ -2,109 +2,85 @@
 
 namespace App\Log;
 
-use Carbon\Carbon;
-use App\Log\Loggers\DailyLog;
-use Illuminate\Support\Facades\Redis;
+use App\Activity\Metadata;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
+// Keep the existing account helpers and mobile logger entry point on SQL.
 class LogFactory
 {
-	protected $types = ['app', 'web', 'webapp'];
+    protected $types = ['app', 'web', 'webapp'];
 
-	public function __construct()
-	{
-		$this->prefix = config('database.redis.prefix');
-	}
+    public function push(Logger $logger)
+    {
+        if (!config('activity.enabled')) return;
+        if (!preg_match('/^user:([1-9]\d*):(app|web|webapp)$/', $logger->getKey(), $matches) || (float) $matches[1] > 4294967295) return;
 
-	public function push(Logger $logger)
-	{
-		$timestamp = now()->timestamp;
-		$key = $this->prefix . $logger->getKey();
-		$value = [$timestamp => $logger->getData()];
+        $request = request();
+        $payload = json_decode($logger->getData(), true) ?: [];
+        $metadata = ['data' => Metadata::select($payload['data'] ?? [], array_merge(Metadata::QUERY_KEYS, ['piece_id', 'playlist_id', 'tag_id']))];
+        if ($matches[2] === 'app') {
+            // The existing app supplies user_id without authenticated identity.
+            // Preserve that association for analytics, never for authorization.
+            $metadata['identity_source'] = 'legacy_user_id';
+            $metadata['identity_verified'] = false;
+            $metadata['visit_unknown'] = true;
+        }
+        $now = now()->format('Y-m-d H:i:s.v');
+        DB::table('activity_events')->insert([
+            'event_id' => (string) Str::uuid(), 'user_id' => (int) $matches[1],
+            'platform' => $matches[2], 'type' => 'request', 'source' => 'server',
+            'occurred_at' => $now, 'received_at' => $now,
+            'url' => Metadata::url($payload['url'] ?? $request->url()),
+            'route_name' => $request->route() ? $request->route()->getName() : null,
+            'method' => $request->method(), 'metadata' => json_encode($metadata, JSON_THROW_ON_ERROR),
+        ]);
+    }
 
-		Redis::hmset($key, $value);
-		(new UserLogIndex)->record($logger->getKey(), $timestamp);
+    public function get($userId, $type = null)
+    {
+        if ($type) {
+            return $this->query($userId, $type)->orderByDesc('occurred_at')->orderByDesc('id')->get()->mapWithKeys(function ($event) {
+                $metadata = json_decode($event->metadata ?: '{}', true);
+                return [$event->id => (object) [
+                    'url' => $event->url, 'data' => $metadata['data'] ?? $metadata,
+                    'occurred_at' => $event->occurred_at,
+                ]];
+            })->all();
+        }
+        $log = collect();
+        foreach ($this->types as $platform) $log->$platform = $this->get($userId, $platform);
+        return $log;
+    }
 
-		(new DailyLog)->getDate($timestamp)->increment($key);
-	}
+    public function count($userId, $type = null)
+    {
+        return $this->query($userId, $type)->count();
+    }
 
-	public function get($userId, $type = null)
-	{
-		$key = $this->prefix . 'user:' . $userId . ':';
+    public function last($userId, $type = null)
+    {
+        $date = $this->query($userId, $type)->max('occurred_at');
+        return $date ? carbon($date) : null;
+    }
 
-		if ($type)
-			return $this->redisToArray($key, $type);
+    public function total($type = 'user')
+    {
+        $query = DB::table('activity_events')->whereNotNull('user_id');
+        if ($type !== 'user') $query->where('platform', $this->platform($type));
+        return $query->count();
+    }
 
-		$log = collect();
+    private function query($userId, $type)
+    {
+        $query = DB::table('activity_events')->where('user_id', $userId);
+        if ($type) $query->where('platform', $this->platform($type));
+        return $query;
+    }
 
-		foreach ($this->types as $type) {
-			$log->$type = $this->redisToArray($key, $type);
-		}
-
-		return $log;
-	}
-
-	public function count($userId, $type = null)
-	{
-		if (! $type && (new UserLogIndex)->isReady())
-			return (new UserLogIndex)->count($userId);
-
-		$key = $this->prefix . 'user:' . $userId . ':';
-
-		if ($type)
-			return count($this->redisToArray($key, $type));
-		
-		$count = 0;
-
-		foreach ($this->types as $type) {
-			$count += count($this->redisToArray($key, $type));
-		}
-
-		return $count;
-	}
-
-	public function last($userId, $type = null)
-	{
-		if (! $type && (new UserLogIndex)->isReady()) {
-			$timestamp = (new UserLogIndex)->lastActiveTimestamp($userId);
-
-			return $timestamp ? carbon($timestamp) : null;
-		}
-
-		$key = $this->prefix . 'user:' . $userId . ':';
-
-		$recent = [];
-
-		foreach ($this->types as $type) {
-			$data = $this->redisToArray($key, $type);
-			if (! empty($data)) {
-				$time = key($data);
-				if ($time)
-					array_push($recent, $time);		
-			}
-		}
-
-		if (empty($recent))
-			return null;
-
-		rsort($recent);
-
-		return carbon($recent[0]);
-	}
-
-	public function redisToArray($key, $type)
-	{
-		$log = array_map('json_decode', Redis::hgetall($key . $type));
-
-		krsort($log);
-
-		return $log;
-	}
-
-	public function total($type = 'user')
-	{
-		if ($type === 'user' && (new UserLogIndex)->isReady())
-			return (new UserLogIndex)->total();
-
-		return count(Redis::keys($type . ':*'));
-	}
+    private function platform($type)
+    {
+        if (!in_array($type, $this->types, true)) throw new \InvalidArgumentException('Unknown activity platform.');
+        return $type;
+    }
 }

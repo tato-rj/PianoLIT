@@ -23,7 +23,7 @@ trait Loggable
 
 	public function getLastActiveAtAttribute()
 	{
-		return (new LogFactory)->last($this->id);
+		return $this->lastActive();
 	}
 
 	public function getLogsCountAttribute()

@@ -23,6 +23,7 @@
             if (!state || active !== state) return;
             active = null;
             timers.clearTimeout(state.timer);
+            if (root.PianoActivity) root.PianoActivity.stopMedia(state.audio);
             state.audio.pause();
             try { state.audio.currentTime = 0; } catch (error) { /* Metadata may not have loaded. */ }
             render(state.row, false, false, message);
@@ -30,6 +31,7 @@
         function start(row) {
             stop(active);
             const audio = createAudio();
+            if (root.PianoActivity) root.PianoActivity.media(audio, {media_kind: 'audio', media_id: row.getAttribute('data-title') || 'explore-example'});
             const state = {row: row, audio: audio, timer: null};
             active = state;
             const preview = Number(row.getAttribute('data-preview'));

@@ -9,7 +9,6 @@ use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
 use App\Billing\Membership;
 use App\{User, Piece, Tag, Composer, Country, FavoriteFolder};
-use App\Log\Loggers\DailyLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 

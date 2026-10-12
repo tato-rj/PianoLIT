@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WebApp;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\{Composer, Country};
+use App\Services\Timeline\WebTimeline;
 use App\Services\WebApp\ComposerGroups;
 use App\Services\WebApp\ComposerGlobe;
 use Illuminate\Validation\Rule;
@@ -47,6 +48,7 @@ class ComposersController extends Controller
 
     public function show(Composer $composer)
     {
+        $timeline = (new WebTimeline)->forComposer($composer);
         $contemporaries = collect();
 
         if ($composer->date_of_birth && $composer->date_of_birth->lte(today())) {
@@ -70,6 +72,6 @@ class ComposersController extends Controller
                 ->take(4)->sortBy('date_of_birth')->values();
         }
 
-        return view('webapp.composers.show', compact('composer', 'contemporaries'));
+        return view('webapp.composers.show', compact('composer', 'contemporaries', 'timeline'));
     }
 }

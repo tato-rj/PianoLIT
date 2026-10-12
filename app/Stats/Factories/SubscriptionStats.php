@@ -3,7 +3,7 @@
 namespace App\Stats\Factories;
 
 use App\User;
-use App\Log\Loggers\DailyLog;
+use App\Activity\DailyStats;
 
 class SubscriptionStats extends Factory
 {
@@ -116,7 +116,7 @@ class SubscriptionStats extends Factory
     {
         $this->title = 'Activity logs';
         $this->colors = [$this->color['cyan'], $this->color['orange']];    
-        $this->data = (new DailyLog)->latest($where['logs_limit'] ?? 6);
+        $this->data = (new DailyStats)->latest($where['logs_limit'] ?? 6);
 
         return $this;
     }

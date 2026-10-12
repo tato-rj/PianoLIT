@@ -46,6 +46,8 @@ class RouteServiceProvider extends ServiceProvider
         // Register subdomain routes before the public routes with matching paths.
         $this->mapAdminRoutes();
 
+        $this->mapActivityRoutes();
+
         $this->mapWebAppRoutes();
 
         $this->mapShopRoutes();
@@ -74,6 +76,11 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
+    protected function mapActivityRoutes()
+    {
+        Route::middleware('web')->namespace($this->namespace)->group(base_path('routes/activity.php'));
+    }
+
     protected function mapWebAppRoutes()
     {
         Route::domain('my.'.config('app.short_url'))
@@ -88,7 +95,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapShopRoutes()
     {
         Route::domain('shop.'.config('app.short_url'))
-             ->middleware('web')
+             ->middleware(['web', 'log.web'])
              ->name('shop.')
              ->namespace($this->namespace)
              ->group(base_path('routes/shop.php'));
@@ -127,7 +134,7 @@ class RouteServiceProvider extends ServiceProvider
              ->namespace($this->namespace)
              ->group(base_path('routes/admin-auth.php'));
 
-        Route::middleware('web')
+        Route::middleware(['web', 'log.web'])
              ->namespace($this->namespace)
              ->group(base_path('routes/auth.php'));
     }

@@ -18,5 +18,6 @@
         <server name="QUEUE_CONNECTION" value="sync" force="true"/>
         <server name="SCOUT_DRIVER" value="null" force="true"/>
         <server name="LOG_CHANNEL" value="stderr" force="true"/>
+        <server name="BUGSNAG_NOTIFY_RELEASE_STAGES" value="__review_disabled__" force="true"/>
     </php>
 </phpunit>
