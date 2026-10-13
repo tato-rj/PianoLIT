@@ -26,7 +26,7 @@
         @forelse($timeline as $group)
         @if($group['kind'] === 'action')
         @php($event = $group['event'])
-        <li class="ua-timeline-entry"><time>{{ \App\Activity\Time::event($event)->format('g:i:s A') }}</time><article class="ua-card ua-page"><span class="ua-timeline-marker" aria-hidden="true">@icon(\App\Activity\Presentation::icon($event->type, \App\Activity\Presentation::metadata($event)), ['mr' => 0])</span><h2>{{ \App\Activity\Presentation::action($event) }}</h2><p class="ua-meta">No page association recorded.</p>
+        <li class="ua-timeline-entry"><time>{{ \App\Activity\Time::event($event)->format('g:i:s A') }}</time><article class="ua-card ua-page"><span class="ua-timeline-marker" aria-hidden="true">@icon(\App\Activity\Presentation::icon($event->type, \App\Activity\Presentation::metadata($event)), ['mr' => 0])</span><h2>{{ \App\Activity\Presentation::action($event, $pieces) }}</h2><p class="ua-meta">No page association recorded.</p>
             @if($event->resource_type === 'piece' && isset($pieces[$event->resource_id]))<a href="{{ route('admin.pieces.edit', $event->resource_id) }}">{{ $pieces[$event->resource_id]->name }}</a>@endif
             @include('admin.pages.analytics.users.details')</article></li>
         @continue

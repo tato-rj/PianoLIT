@@ -30,6 +30,7 @@ class FreePickCardTest extends ReviewTestCase
             $dom = new \DOMDocument;
             @$dom->loadHTML($html);
             $xpath = new \DOMXPath($dom);
+            $this->assertSame($piece->medium_name_with_composer, $xpath->query('//a')->item(0)->getAttribute('data-activity-label'));
             $this->assertSame($expected, $xpath->query('//h4')->item(0)->textContent);
             $this->assertStringContainsString('Op.31 No.8', $xpath->query('//p[contains(@class, "free-pick-card__metadata")]')->item(0)->textContent);
         }

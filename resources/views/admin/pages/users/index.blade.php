@@ -10,14 +10,7 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    @component('admin.components.page.title', ['icon' => 'users', 'title' => 'Users', 'subtitle' => 'Use this page to view and manage the profile of our users.'])
-
-      <form method="GET" disable-on-submit action="{{route('admin.memberships.validate.all')}}">
-        @csrf
-        <button class="btn btn-sm btn-success">@icon('clipboard-check', ['mr' => 2])Validate all subscriptions</button>
-      </form>
-
-    @endcomponent
+    @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Users', 'subtitle' => 'Use this page to view and manage the profile of our users.'])
 
     <div id="multi-select" style="display: none;">
       <div class="alert alert-warning d-flex justify-content-between align-items-center">

@@ -27,10 +27,6 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Facebook Pixel Code -->
 <style type="text/css">
-.hidden-action {
-    display: none; 
-}
-
 #action > div {
     -webkit-box-shadow: 0 5px 30px rgba(0,0,0,.1);
     box-shadow: 0 5px 30px rgba(0,0,0,.1);
@@ -49,7 +45,7 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 @section('content')
 <div class="container-fluid bg-light">
     <div class="row h-100vh">
-        <div id="action" class="col-lg-5 col-md-12 col-12 mx-auto p-3 {{$animated ? 'hidden-action' : null}}">
+        <div id="action" class="col-lg-5 col-md-12 col-12 mx-auto p-3">
             <div class="d-flex flex-center h-100 bg-white p-4">
                 <div style="max-width: 400px" class="{{$classes ?? null}}">
                 	<a class="navbar-brand mb-2" href="{{config('app.url')}}">
@@ -70,9 +66,6 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 
                     @include('auth.webapp.carousel')
 
-                    <div class="text-center" style="display: {{$animated ? 'block' : 'none'}}">
-                        <button id="get-started" class="btn btn-default btn-wide shadow rounded-pill">GET STARTED</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -82,11 +75,6 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 
 @push('scripts')
 <script type="text/javascript">
-$('button#get-started').click(function() {
-    $('#action').slideToggle();
-    $(this).hide();
-});
-
 $('#onboarding').carousel({
   interval: 3000
 });

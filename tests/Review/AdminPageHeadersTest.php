@@ -66,11 +66,8 @@ class AdminPageHeadersTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('.//button[@type="button" and @data-bs-target="#add-modal"]', $header)->length);
         $this->assertSame(1, $xpath->query('//*[@id="add-modal"]')->length);
         [$xpath, $header] = $this->header($this->get(route('admin.users.index'))->assertOk()->getContent());
-        $forms = $xpath->query('.//form[@method="GET"]', $header);
-        $this->assertSame(1, $forms->length);
-        $this->assertSame('GET', $forms[0]->getAttribute('method'));
-        $this->assertSame(route('admin.memberships.validate.all'), $forms[0]->getAttribute('action'));
-        $this->assertSame(1, $xpath->query('.//input[@name="_token"]', $forms[0])->length);
+        $this->assertSame(0, $xpath->query('.//form[@action="'.route('admin.memberships.validate.all').'"]', $header)->length);
+        $this->assertSame(0, $xpath->query('//*[contains(text(), "Validate all subscriptions")]')->length);
 
         $piece = Model::withoutEvents(function () { return create(Piece::class, ['name' => 'A very long repertoire title with <unsafe> text']); });
         $response = $this->get(route('admin.pieces.edit', $piece))->assertOk();

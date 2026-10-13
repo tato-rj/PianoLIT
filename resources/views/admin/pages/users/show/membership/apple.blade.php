@@ -16,15 +16,7 @@
 </div>
 
 <div>
-	@if($user->membership->source->isExpired() || ! $user->membership->source->renews_at)
-		<div class="mb-3">
-			<form method="POST" action="{{route('admin.memberships.validate.user', $user->id)}}">
-				@csrf
-				<input type="hidden" name="user_id" value="{{$user->id}}">
-				<button class="btn btn-sm btn-danger">Validate membership</button>
-			</form>
-		</div>
-	@endif
+	<a class="btn btn-sm btn-secondary mb-3" href="{{route('admin.analytics.memberships', ['provider' => 'apple', 'search' => $user->id])}}">View automatic membership checks</a>
 	<button data-bs-toggle="modal" data-bs-target="#membership-history" class="btn btn-link">
 		@icon('brand-apple')Request receipts history
 	</button>

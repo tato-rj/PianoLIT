@@ -45,7 +45,7 @@
 			@endforeach
 		</div>
 		<div class="text-center mb-4">
-			<a href="{{route('webapp.pieces.show', $tutorial->piece)}}" class="btn rounded-pill btn-default">Learn more about this piece</a>
+			<a href="{{route('webapp.pieces.show', $tutorial->piece)}}" class="btn rounded-pill btn-default" data-activity-label="{{ $tutorial->piece->medium_name_with_composer }}">Learn more about this piece</a>
 		</div>
 	@endslot
 	@endcomponent

@@ -30,7 +30,7 @@
         @else
         <a class="btn-raw text-danger playlist-track__favorite" href="{{route('login')}}" aria-label="Sign in to favorite {{$piece->short_name}}">@icon('heart', ['mr' => 0])</a>
         @endauth
-        <a class="btn btn-secondary btn-sm playlist-track__go" href="{{route('webapp.pieces.show', $piece)}}">Go @icon('arrow-right', ['mr' => 0])</a>
+        <a class="btn btn-secondary btn-sm playlist-track__go" href="{{route('webapp.pieces.show', $piece)}}" data-activity-label="{{ $piece->medium_name_with_composer }}">Go @icon('arrow-right', ['mr' => 0])</a>
         @if($canReorder)
         <button class="btn-raw text-muted playlist-track__handle" type="button" data-track-handle aria-label="Reorder {{$piece->short_name}}; use up and down arrow keys" title="Drag to reorder; use arrow keys with keyboard">@icon('grip-vertical', ['mr' => 0])</button>
         @endif

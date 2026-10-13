@@ -1,5 +1,5 @@
 @if($freePick ?? false)
-<a href="{{ route('webapp.pieces.show', $piece) }}" class="link-none" @if($newTab ?? false) target="_blank" rel="noopener noreferrer" @endif>
+<a href="{{ route('webapp.pieces.show', $piece) }}" class="link-none" data-activity-label="{{ $piece->medium_name_with_composer }}" @if($newTab ?? false) target="_blank" rel="noopener noreferrer" @endif>
 	<article class="free-pick-card bg-align-center rounded overflow-hidden position-relative p-4 text-white" style="background-image: url('{{ $piece->web_image_background }}')">
 		<div class="free-pick-card__content position-relative d-flex flex-column justify-content-between h-100">
 			<div>
@@ -31,7 +31,7 @@
 	</article>
 </a>
 @else
-<div class="cursor-pointer bg-align-center rounded d-flex d-apart flex-column p-3 piece-card {{ ($lazyArtwork ?? false) ? 'highlight-lazy-card' : '' }}" role="img" aria-label="{{$piece->name}}" data-url="{{route('webapp.pieces.show', $piece)}}" style="@unless($lazyArtwork ?? false)background-image: url({{$piece->web_image_background}}); @endunless height: {{$height ?? '200px'}}; width: {{$width ?? '100%'}}">
+<div class="cursor-pointer bg-align-center rounded d-flex d-apart flex-column p-3 piece-card {{ ($lazyArtwork ?? false) ? 'highlight-lazy-card' : '' }}" role="img" aria-label="{{$piece->name}}" data-activity-label="{{ $piece->medium_name_with_composer }}" data-url="{{route('webapp.pieces.show', $piece)}}" style="@unless($lazyArtwork ?? false)background-image: url({{$piece->web_image_background}}); @endunless height: {{$height ?? '200px'}}; width: {{$width ?? '100%'}}">
 	@if($lazyArtwork ?? false)
 	<img class="highlight-lazy-card__art" src="{{ $piece->web_image_background }}" alt="" width="440" height="220" loading="{{ ($eagerArtwork ?? false) ? 'eager' : 'lazy' }}">
 	@endif

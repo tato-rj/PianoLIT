@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Analytics\Analytics;
+use App\Analytics\MembershipReport;
 use App\Blog\{Post, Topic};
 use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Quiz\Level as QuizLevel;
-use App\Billing\Membership;
 use App\{User, Piece, Tag, Composer, Country, FavoriteFolder};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -57,16 +57,9 @@ class AnalyticsController extends Controller
         return view('admin.pages.analytics.subscriptions.index');
     }
 
-    public function memberships()
+    public function memberships(Request $request, MembershipReport $report)
     {
-        if (request()->ajax())
-            return (new Analytics)->for('memberships')->query(request('type'), request()->except('type'))->get();
-
-        $trials = Membership::trial()->newest()->get();
-        $members = Membership::member()->get()->sortBy('source.renews_at');
-        $expired = Membership::expired()->get()->sortByDesc('source.renews_at');
-
-        return view('admin.pages.analytics.memberships.index', compact(['trials', 'members', 'expired']));
+        return view('admin.pages.analytics.memberships.index', $report->get($request));
     }
 
     public function composers()

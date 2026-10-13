@@ -4,9 +4,9 @@ Route::prefix('memberships')->name('memberships.')->group(function() {
 
 	Route::prefix('validate')->name('validate.')->group(function() {
 
-		Route::get('', 'MembershipsController@validateAll')->name('all');
+		Route::get('', 'Admin\MembershipsController@monitor')->name('all');
 
-		Route::post('{user}', 'MembershipsController@validateUser')->name('user');
+		Route::post('{user}', 'Admin\MembershipsController@monitor')->name('user');
 	
 	});
 

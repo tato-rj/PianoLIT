@@ -126,8 +126,15 @@
             return (url.origin + path + (query.toString() ? '?' + query : '')).slice(0, 2000);
         } catch (error) { return ''; }
     }
-    function label(element) {
-        return (element.getAttribute('data-activity-label') || element.getAttribute('aria-label') || element.getAttribute('title') || element.textContent || element.id || element.tagName).trim().replace(/\s+/g, ' ').slice(0, 160);
+    function pieceDestination(target) {
+        try {
+            var url = new win.URL(target);
+            var match = url.pathname.match(/^\/pieces\/([1-9][0-9]*)\/?$/);
+            return url.origin === win.location.origin && match && Number.isSafeInteger(Number(match[1])) ? Number(match[1]) : null;
+        } catch (error) { return null; }
+    }
+    function label(element, destinationPiece) {
+        return (element.getAttribute('data-activity-label') || (destinationPiece ? 'a piece' : (element.getAttribute('aria-label') || element.getAttribute('title') || element.textContent || element.id || element.tagName))).trim().replace(/\s+/g, ' ').slice(0, 160);
     }
     function selectedFilters() {
         var filters = {};
@@ -149,6 +156,9 @@
             win.setTimeout(function () { record('filters_apply', {filters: selectedFilters()}); }, 0);
         } else {
             var choice = element.getAttribute('data-choice');
+            var destination = element.getAttribute('href') || element.getAttribute('data-url') || '';
+            var target = destination ? safeUrl(destination) : '';
+            var destinationPiece = /^[#?]/.test(destination) ? null : pieceDestination(target);
             var piece = element.getAttribute('data-select-level') || element.getAttribute('data-select-piece') || element.getAttribute('data-play');
             var tour = element.closest && element.closest('.match-tour-modal, #match-tour');
             var section = tour || element.hasAttribute('data-match-tour-open') ? 'find-your-match' : undefined;
@@ -160,7 +170,7 @@
                 control = level ? 'match_level_confirm' : 'match_preference_confirm';
             } else if (tour && element.hasAttribute('data-select-level')) control = 'match_level_piece';
             else if (tour && choice !== null && /^\d+$/.test(choice)) piece = choice;
-            record('click', {label: label(element), navigation: win.location.pathname.slice(0, 100), control: control, section: section, target: safeUrl(element.getAttribute('href') || element.getAttribute('data-url') || ''), value: choice === null ? undefined : choice.slice(0, 300), piece_id: piece && /^\d+$/.test(piece) ? Number(piece) : (section ? undefined : config.pieceId)});
+            record('click', {label: label(element, destinationPiece), navigation: win.location.pathname.slice(0, 100), control: control, section: section, target: target, value: choice === null ? undefined : choice.slice(0, 300), piece_id: destinationPiece || (piece && /^\d+$/.test(piece) ? Number(piece) : (section ? undefined : config.pieceId))});
         }
     }, true);
     doc.addEventListener('change', function (event) {

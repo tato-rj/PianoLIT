@@ -8,18 +8,54 @@ use Illuminate\Support\Facades\DB;
 class VisitSort
 {
     const OPTIONS = [
-        'newest' => 'Newest first', 'oldest' => 'Oldest first',
-        'longest' => 'Longest visits', 'shortest' => 'Shortest visits',
-        'most_pages' => 'Most pages', 'fewest_pages' => 'Fewest pages',
-        'most_actions' => 'Most actions', 'fewest_actions' => 'Fewest actions',
+        'date' => 'Date/time', 'duration' => 'Duration', 'pages' => 'Pages', 'actions' => 'Actions',
+    ];
+    const VALUES = [
+        'date' => ['desc' => 'newest', 'asc' => 'oldest'],
+        'duration' => ['desc' => 'longest', 'asc' => 'shortest'],
+        'pages' => ['desc' => 'most_pages', 'asc' => 'fewest_pages'],
+        'actions' => ['desc' => 'most_actions', 'asc' => 'fewest_actions'],
     ];
 
     public $value;
+    public $field;
+    public $order;
 
     public function __construct(Request $request = null)
     {
-        $input = $request ? $request->validate(['visit_sort' => 'nullable|string|in:'.implode(',', array_keys(self::OPTIONS))]) : [];
-        $this->value = $input['visit_sort'] ?? 'newest';
+        // Existing bookmarked combined choices continue to resolve correctly.
+        $allowed = array_keys(self::OPTIONS);
+        foreach (self::VALUES as $orders) $allowed = array_merge($allowed, array_values($orders));
+        $input = $request ? $request->validate([
+            'visit_sort' => 'nullable|string|in:'.implode(',', $allowed),
+            'visit_order' => 'nullable|string|in:asc,desc',
+        ]) : [];
+        $requested = $input['visit_sort'] ?? 'date';
+        foreach (self::VALUES as $field => $orders) {
+            $legacyOrder = array_search($requested, $orders, true);
+            if ($requested === $field || $legacyOrder !== false) {
+                $this->field = $field;
+                $this->order = $input['visit_order'] ?? ($legacyOrder !== false ? $legacyOrder : 'desc');
+                break;
+            }
+        }
+        $this->value = self::VALUES[$this->field][$this->order];
+    }
+
+    public function reverseOrder()
+    {
+        return $this->order === 'asc' ? 'desc' : 'asc';
+    }
+
+    public function orderLabel($order = null)
+    {
+        $labels = [
+            'date' => ['desc' => 'Newest first', 'asc' => 'Oldest first'],
+            'duration' => ['desc' => 'Longest first', 'asc' => 'Shortest first'],
+            'pages' => ['desc' => 'Highest first', 'asc' => 'Lowest first'],
+            'actions' => ['desc' => 'Highest first', 'asc' => 'Lowest first'],
+        ];
+        return $labels[$this->field][$order ?: $this->order];
     }
 
     public function byDate()

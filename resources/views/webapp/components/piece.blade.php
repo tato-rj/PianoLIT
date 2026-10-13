@@ -6,7 +6,7 @@
 	data-sort-composer="{{ord($piece->composer->name)}}"
 	data-sort-period="{{optional($piece->period)->id}}"
 	data-sort-views="{{$piece->views_count}}">
-	<a href="{{route('webapp.pieces.show', $piece)}}" class="link-none">
+	<a href="{{route('webapp.pieces.show', $piece)}}" class="link-none" data-activity-label="{{ $piece->medium_name_with_composer }}">
 		<div class="d-flex mb-2 align-items-center">
 			@include('webapp.components.piece.level')
 			@icon('lock', ['color' => 'grey', 'ml' => 2, 'if' => ! $hasFullAccess])

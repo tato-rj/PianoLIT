@@ -105,6 +105,21 @@ class DiscoverPieceRowsTest extends ReviewTestCase
         $this->assertStringContainsString(asset('images/webapp/thumbnail.jpg'), $html);
     }
 
+    public function test_piece_card_analytics_labels_contain_only_the_piece_name_and_composer()
+    {
+        $piece = PieceCards::load($this->pieces->take(1), false)->first();
+        $row = ['title' => 'Recently viewed', 'content' => collect([$piece])];
+        foreach (['webapp.components.piece', 'webapp.components.piece.highlight', 'webapp.discover.cards.latest-piece',
+            'webapp.discover.cards.compact-piece', 'webapp.discover.rows.recently-viewed'] as $view) {
+            $html = view($view, ['piece' => $piece, 'row' => $row, 'hasFullAccess' => true, 'freePick' => true])->render();
+            $dom = new \DOMDocument; @$dom->loadHTML($html);
+            $element = (new \DOMXPath($dom))->query('//*[@data-activity-label]')->item(0);
+            $this->assertNotNull($element, $view);
+            $this->assertSame($piece->medium_name_with_composer, $element->getAttribute('data-activity-label'), $view);
+            $this->assertStringNotContainsString('intermediate', $element->getAttribute('data-activity-label'));
+        }
+    }
+
     public function test_latest_cards_keep_the_new_badge_for_the_existing_five_day_window()
     {
         \Illuminate\Support\Carbon::setTestNow('2026-10-11 20:45:00');

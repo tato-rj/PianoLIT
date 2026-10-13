@@ -10,7 +10,7 @@
 		@auth
 		@icon('lock', ['classes' => 'absolute-center opacity-6', 'size' => '2x', 'color' => 'white', 'if' => ! $hasFullAccess && ! $piece->is_free])
 		@endauth
-		<a href="{{route('webapp.pieces.show', $piece)}}">
+		<a href="{{route('webapp.pieces.show', $piece)}}" data-activity-label="{{ $piece->medium_name_with_composer }}">
 			@include('webapp.components.piece.highlight', ['height' => '220px', 'piece' => $piece, 'lazyArtwork' => true, 'eagerArtwork' => $loop->index < 3])
 		</a>
 	</div>

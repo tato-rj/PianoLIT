@@ -1,5 +1,5 @@
 <form method="GET" class="ua-filters" aria-label="Activity filters">
-    @if(isset($visitSort) && $visitSort->value !== 'newest')<input type="hidden" name="visit_sort" value="{{ $visitSort->value }}">@endif
+    @isset($visitSort)<input type="hidden" name="visit_sort" value="{{ $visitSort->field }}"><input type="hidden" name="visit_order" value="{{ $visitSort->order }}">@endisset
     <label>Period<select name="range">
         @foreach(['today' => 'Today', 'yesterday' => 'Yesterday', '7' => 'Last 7 days', '30' => 'Last 30 days', 'custom' => 'Custom dates'] as $value => $label)
         <option value="{{ $value }}" @if($filters->values['range'] == $value) selected @endif>{{ $label }}</option>

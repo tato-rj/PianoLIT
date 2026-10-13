@@ -23,8 +23,10 @@ class Journey
         $unplaced = DB::table('activity_events')->where('visit_id', $id)->where(function ($q) use ($id) {
             $q->whereNull('page_id')->orWhereNotIn('page_id', DB::table('activity_pages')->where('visit_id', $id)->select('id'));
         })->orderByRaw('COALESCE(occurred_at, received_at)')->orderBy('id')->paginate(50, ['*'], 'events_page')->withQueryString();
-        $pieceIds = $events->concat($unplaced->items())->filter(function ($e) { return $e->resource_type === 'piece'; })->pluck('resource_id');
-        $pieceIds = $pieceIds->merge($events->concat($unplaced->items())->map(function ($e) { return Presentation::metadata($e)['piece_id'] ?? null; }))->filter()->unique();
+        $allEvents = $events->concat($unplaced->items());
+        $pieceIds = $allEvents->filter(function ($e) { return $e->resource_type === 'piece'; })->pluck('resource_id');
+        $pieceIds = $pieceIds->merge($allEvents->map(function ($e) { return Presentation::metadata($e)['piece_id'] ?? null; }))
+            ->merge($allEvents->map(function ($e) { return Presentation::pieceSelectionId($e); }))->filter()->unique();
         $pieces = Queries::pieces($pieceIds);
         $byPage = $events->groupBy('page_id');
         $groups = $pages->getCollection()->map(function ($page) use ($byPage, $pieces) {

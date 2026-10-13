@@ -3,7 +3,7 @@
 namespace Tests\Review;
 
 use App\{Admin, User, Piece};
-use App\Activity\{Actions, Filters, Insights, Journey, People, Queries, VisitSort};
+use App\Activity\{Actions, Filters, Insights, Journey, People, Presentation, Queries, VisitSort};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Auth, Crypt, DB, Route};
 use Illuminate\Support\Str;
@@ -307,6 +307,65 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertSame('noopener noreferrer', $links[0]->getAttribute('rel'));
     }
 
+    public function test_piece_selection_titles_resolve_destinations_and_preserve_original_details()
+    {
+        [$piece, $other] = Model::withoutEvents(function () {
+            $composer = create(\App\Composer::class, ['name' => 'Yuri Levitin']);
+            $attributes = ['name' => 'A Sad Song', 'composer_id' => $composer->id, 'nickname' => null, 'key' => 'Atonal',
+                'catalogue_name' => null, 'catalogue_number' => null, 'collection_name' => null, 'collection_number' => null, 'movement_number' => null];
+            return [create(Piece::class, $attributes), create(Piece::class, array_merge($attributes, ['name' => 'Another piece']))];
+        });
+        $visit = $this->visit(); $page = $this->page($visit);
+        $original = 'A Sad Song Y. Levitin Early beginner Video Audio Score Synthesia';
+        $metadata = ['label' => $original, 'control' => 'a', 'navigation' => '/', 'target' => 'https://my.pianolit.com/pieces/'.$piece->id, 'piece_id' => null];
+        $old = $this->event($visit, $page, 'click', '2026-10-12 19:15:00', $metadata);
+        $wrongSource = $this->event($visit, $page, 'click', '2026-10-12 19:15:01', array_merge($metadata, ['piece_id' => $other->id]), $other);
+        $unplaced = $this->event($visit, null, 'click', '2026-10-12 19:15:02', $metadata);
+        DB::enableQueryLog(); DB::flushQueryLog();
+        $data = (new Journey)->get($visit);
+        $pieceReads = collect(DB::getQueryLog())->filter(function ($query) { return strpos($query['query'], '"pieces" as "p"') !== false; });
+        $this->assertCount(1, $pieceReads, 'All selected pieces use the existing grouped lookup.'); DB::disableQueryLog();
+        foreach ([$old, $wrongSource, $unplaced] as $id) {
+            $event = DB::table('activity_events')->find($id);
+            $this->assertSame('Selected A Sad Song by Y. Levitin', Presentation::action($event, $data['pieces']));
+            $this->assertSame($original, Presentation::metadata($event)['label']);
+        }
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.analytics.users.journey', $visit))->assertOk();
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $titles = $xpath->query('//div[contains(@class, "ua-action-line")]/strong | //article[contains(@class, "ua-page")]/h2');
+        $selected = [];
+        foreach ($titles as $title) if (strpos($title->textContent, 'Selected ') === 0) $selected[] = $title->textContent;
+        $this->assertSame(array_fill(0, 3, 'Selected A Sad Song by Y. Levitin'), $selected);
+        $this->assertStringContainsString($original, $xpath->query('//details[contains(@class, "ua-details")]/pre')->item(0)->textContent);
+        $this->assertSame(3, DB::table('activity_events')->where('visit_id', $visit)->count(), 'Rendering never rewrites or deletes history.');
+    }
+
+    public function test_piece_selection_resolution_leaves_other_controls_and_unavailable_pieces_safe()
+    {
+        $event = (object) ['type' => 'click', 'metadata' => '{}'];
+        $base = ['label' => 'A piece Beginner Video', 'control' => 'a', 'navigation' => '/', 'target' => '/pieces/178'];
+        foreach (['/pieces/178', 'https://my.pianolit.com/pieces/178?audio_only=1#score', route('webapp.pieces.show', 178)] as $target) {
+            $event->metadata = json_encode(array_merge($base, ['target' => $target]));
+            $this->assertSame(178, Presentation::pieceSelectionId($event));
+            $this->assertSame('Selected a piece', Presentation::action($event), 'Deleted/missing pieces never reuse noisy HTML labels.');
+        }
+        foreach ([
+            ['target' => 'https://external.example/pieces/178'], ['target' => '/pieces/178/score'],
+            ['target' => '/pieces/0'], ['target' => '/pieces/999999999999999999999'], ['target' => 'javascript:/pieces/178'],
+            ['target' => 'https://user@my.pianolit.com/pieces/178'], ['navigation' => '/pieces/178'],
+            ['control' => 'favorite'], ['label' => 'Score', 'target' => '/pieces/178', 'navigation' => '/pieces/178'],
+        ] as $changes) {
+            $metadata = array_merge($base, $changes); $event->metadata = json_encode($metadata);
+            $this->assertNull(Presentation::pieceSelectionId($event));
+            $this->assertSame('Selected '.$metadata['label'], Presentation::action($event));
+        }
+        $event->type = 'filter_change'; $event->metadata = json_encode($base + ['value' => 'Early beginner']);
+        $this->assertNull(Presentation::pieceSelectionId($event));
+        $this->assertSame('Selected Early beginner', Presentation::action($event));
+    }
+
     public function test_partial_visits_keep_timing_unknown_and_technical_details_exclude_secrets()
     {
         $visit = $this->visit(); $page = $this->page($visit);
@@ -419,23 +478,59 @@ class UserAnalyticsTest extends ReviewTestCase
         $user = $this->account();
         for ($i = 0; $i < 28; $i++) { $id = $this->visit($user, carbon('2026-10-12 10:00:00')->addMinutes($i)->toDateTimeString()); $this->page($id); }
         $this->actingAs(create(Admin::class), 'admin');
-        $response = $this->get(route('admin.analytics.users', ['visit_sort' => 'most_pages', 'visits_page' => 2, 'range' => '7', 'platform' => 'webapp', 'audience' => 'registered', 'history' => 1]))->assertOk()->assertSee('Visits with the most pages first.')
+        $response = $this->get(route('admin.analytics.users', ['visit_sort' => 'pages', 'visit_order' => 'desc', 'visits_page' => 2, 'range' => '7', 'platform' => 'webapp', 'audience' => 'registered', 'history' => 1]))->assertOk()->assertSee('Visits with the most pages first.')
             ->assertViewHas('visitSort', function ($sort) { return $sort->value === 'most_pages'; });
         $document = new \DOMDocument; @$document->loadHTML($response->getContent()); $xpath = new \DOMXPath($document);
         $form = $xpath->query('//form[@aria-label="Visit sorting"]')->item(0);
-        $this->assertSame(1, $xpath->query('.//option[@value="most_pages" and @selected]', $form)->length);
+        $this->assertSame(1, $xpath->query('.//option[@value="pages" and @selected]', $form)->length);
+        $this->assertSame(4, $xpath->query('.//option', $form)->length);
+        $this->assertSame(1, $xpath->query('.//button[@name="visit_order" and @value="desc" and not(contains(@class,"ua-order-toggle"))]', $form)->length);
+        $this->assertSame(1, $xpath->query('.//button[@name="visit_order" and @value="asc" and contains(@class,"ua-order-toggle")]', $form)->length);
         foreach (['range' => '7', 'platform' => 'webapp', 'audience' => 'registered', 'history' => '1'] as $name => $value) $this->assertSame($value, $xpath->query('.//input[@name="'.$name.'"]', $form)->item(0)->getAttribute('value'));
         $this->assertSame(0, $xpath->query('.//input[@name="visits_page"]', $form)->length);
         $this->assertStringNotContainsString('?', $form->getAttribute('action'));
-        $this->assertSame(1, $xpath->query('//form[@aria-label="Activity filters"]/input[@name="visit_sort" and @value="most_pages"]')->length);
+        $this->assertSame(1, $xpath->query('//form[@aria-label="Activity filters"]/input[@name="visit_sort" and @value="pages"]')->length);
+        $this->assertSame(1, $xpath->query('//form[@aria-label="Activity filters"]/input[@name="visit_order" and @value="desc"]')->length);
         $this->assertSame(0, $xpath->query('//h3[@class="ua-day"]')->length, 'Metric sorts are not regrouped by day.');
         $this->assertGreaterThan(0, $xpath->query('//div[@class="ua-visit-copy"]/p[contains(text(), "Oct 12, 2026")]')->length);
-        $this->assertGreaterThan(0, $xpath->query('//a[contains(@href, "visits_page=1") and contains(@href, "visit_sort=most_pages") and contains(@href, "platform=webapp")]')->length);
+        $this->assertGreaterThan(0, $xpath->query('//a[contains(@href, "visits_page=1") and contains(@href, "visit_sort=pages") and contains(@href, "visit_order=desc") and contains(@href, "platform=webapp")]')->length);
         $this->get(route('admin.analytics.users'))->assertOk()->assertSee('Newest visits first.')->assertSee('class="ua-day"', false);
         foreach (['overview', 'visits'] as $tab) $this->get(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => $tab, 'visit_sort' => 'most_actions']))->assertOk()->assertSee('Actions count the colored tags.')->assertSee('1 action');
         $this->withExceptionHandling();
         foreach (['password', 'longest desc;drop table users', ['most_pages']] as $value) $this->getJson(route('admin.analytics.users', ['visit_sort' => $value]))->assertStatus(422);
         $this->getJson(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits', 'visit_sort' => 'bad']))->assertStatus(422);
+        foreach (['up', ['asc']] as $value) $this->getJson(route('admin.analytics.users', ['visit_sort' => 'pages', 'visit_order' => $value]))->assertStatus(422);
+    }
+
+    public function test_visit_sort_field_and_order_can_be_selected_independently()
+    {
+        $user = $this->account();
+        $first = $this->visit($user, '2026-10-12 10:00:00'); $this->page($first);
+        $second = $this->visit($user, '2026-10-12 19:00:00'); for ($i = 0; $i < 3; $i++) $this->page($second);
+        $this->actingAs(create(Admin::class), 'admin');
+        foreach (['desc' => [$second, $first], 'asc' => [$first, $second]] as $order => $expected) {
+            $response = $this->get(route('admin.analytics.users', ['visit_sort' => 'pages', 'visit_order' => $order, 'platform' => 'webapp']))->assertOk()
+                ->assertViewHas('visits', function ($visits) use ($expected) { return $visits->pluck('id')->all() === $expected; });
+            $document = new \DOMDocument; @$document->loadHTML($response->getContent()); $xpath = new \DOMXPath($document);
+            $form = $xpath->query('//form[@aria-label="Visit sorting"]')->item(0);
+            $labels = []; foreach ($xpath->query('.//option', $form) as $option) $labels[] = $option->textContent;
+            $this->assertSame(['Date/time', 'Duration', 'Pages', 'Actions'], $labels);
+            $buttons = $xpath->query('.//button[@name="visit_order"]', $form);
+            $this->assertSame($order, $buttons[0]->getAttribute('value'), 'Apply retains the current direction.');
+            $this->assertSame($order === 'asc' ? 'desc' : 'asc', $buttons[1]->getAttribute('value'), 'The separate button reverses direction.');
+            $this->assertStringContainsString('Reverse order', $buttons[1]->textContent);
+            $this->assertSame(0, $xpath->query('.//input[@name="visit_order"]', $form)->length, 'Only the clicked button submits an order; there is no conflicting hidden value.');
+        }
+        foreach (['date' => ['desc' => 'newest', 'asc' => 'oldest'], 'duration' => ['desc' => 'longest', 'asc' => 'shortest'], 'pages' => ['desc' => 'most_pages', 'asc' => 'fewest_pages'], 'actions' => ['desc' => 'most_actions', 'asc' => 'fewest_actions']] as $field => $orders) {
+            foreach ($orders as $order => $legacy) {
+                $sort = new VisitSort(\Illuminate\Http\Request::create('/', 'GET', ['visit_sort' => $field, 'visit_order' => $order]));
+                $old = new VisitSort(\Illuminate\Http\Request::create('/', 'GET', ['visit_sort' => $legacy]));
+                $this->assertSame($legacy, $sort->value);
+                $this->assertSame($field, $sort->field);
+                $this->assertSame($order, $sort->order);
+                $this->assertSame($old->value, $sort->value, 'Existing combined-sort bookmarks retain their order.');
+            }
+        }
     }
 
     public function test_visit_summaries_distinguish_recorded_audio_video_and_unknown_media_with_icons()

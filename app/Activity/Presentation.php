@@ -53,7 +53,24 @@ class Presentation
             && preg_match('/^Play preview(?:\s*:|$)/i', trim($metadata['label'] ?? '')) === 1;
     }
 
-    public static function action($event)
+    public static function pieceSelectionId($event)
+    {
+        if ($event->type !== 'click') return null;
+        $metadata = self::metadata($event);
+        if (!in_array($metadata['control'] ?? '', ['a', 'div'], true)) return null;
+        $target = parse_url($metadata['target'] ?? '');
+        if (!$target || isset($target['user']) || isset($target['pass'])) return null;
+        if (isset($target['scheme']) && !in_array(strtolower($target['scheme']), ['http', 'https'], true)) return null;
+        $hosts = [parse_url(route('webapp.pieces.show', 1), PHP_URL_HOST), parse_url(config('app.stores.webapp'), PHP_URL_HOST)];
+        if (isset($target['host']) && !in_array(strtolower($target['host']), $hosts, true)) return null;
+        if (!preg_match('#^/pieces/([1-9][0-9]*)/?$#D', $target['path'] ?? '', $match)) return null;
+        // Old collectors resolved empty/fragment links to the current page.
+        // Those controls do not establish a selection of another piece.
+        if (($target['path'] ?? '') === parse_url($metadata['navigation'] ?? '', PHP_URL_PATH)) return null;
+        return filter_var($match[1], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
+    }
+
+    public static function action($event, $pieces = [])
     {
         $m = self::metadata($event);
         if (self::isPreviewPlayClick($event)) return 'Playback attempted';
@@ -63,6 +80,9 @@ class Presentation
             if ($control === 'match_level_confirm' || $label === 'This feels right') return 'Confirmed playing level';
             if ($control === 'match_level_piece') return 'Selected difficulty example';
             if ($control === 'match_piece' && !preg_match('/^(?:Play|Pause) preview(?:\s*:|$)/i', $label)) return 'Selected a piece';
+            // Resolve navigation from its destination, not the entire card's
+            // text or the piece belonging to the page the visitor is leaving.
+            if ($pieceId = self::pieceSelectionId($event)) return 'Selected '.($pieces[$pieceId]->medium_name_with_composer ?? 'a piece');
         }
         if ($event->type === 'request' && ($event->status ?? 0) >= 400) return 'A request could not be completed (HTTP '.$event->status.')';
         $media = ($m['section'] ?? '') === 'synthesia' || strpos($m['media_id'] ?? '', 'synthesia') !== false ? 'Synthesia' : (($m['media_kind'] ?? '') === 'audio' ? 'audio' : 'performance video');

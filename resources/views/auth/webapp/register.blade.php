@@ -1,7 +1,6 @@
 @component('auth.webapp.layout', [
 	'title' => 'Sign up for free', 
-	'subtitle' => 'Access your profile across multiple platforms and devices, including our WebApp',
-	'animated' => false])
+	'subtitle' => 'Access your profile across multiple platforms and devices, including our WebApp'])
 
     <form method="POST" action="{{ route('register') }}" id="register-form" disable-on-submit>
         @csrf

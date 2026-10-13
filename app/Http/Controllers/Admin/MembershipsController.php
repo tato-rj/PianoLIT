@@ -8,6 +8,11 @@ use App\Billing\Membership;
 
 class MembershipsController extends Controller
 {
+    public function monitor()
+    {
+        return redirect()->route('admin.analytics.memberships', ['provider' => 'apple']);
+    }
+
     public function loadTrials(Request $request)
     {
         $memberships = Membership::trial()->newest()->get()->slice($request->start_at)->take(5);

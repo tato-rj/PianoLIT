@@ -47,6 +47,27 @@ module.exports = async function () {
     assert.strictEqual(f.queued()[2].metadata.piece_id, 123, 'Match selections identify the actual selected piece');
     f.handlers['doc:click']({target: {closest: () => Object.assign({}, link, {getAttribute: name => name === 'href' ? '/password/reset/private-token?email=secret@example.test' : null})}});
     assert.strictEqual(f.queued()[3].metadata.target, 'https://my.pianolit.test/password/reset/[redacted]');
+    const cards = fixture();
+    const pieceLink = attributes => Object.assign({}, link, {
+        textContent: 'A Sad Song Y. Levitin Early beginner Video Audio Score Synthesia',
+        getAttribute: name => Object.prototype.hasOwnProperty.call(attributes, name) ? attributes[name] : null
+    });
+    cards.handlers['doc:click']({target: {closest: () => pieceLink({'href': '/pieces/178?token=private#score', 'data-activity-label': 'A Sad Song by Y. Levitin'})}});
+    let selection = cards.queued().filter(event => event.type === 'click').pop().metadata;
+    assert.strictEqual(selection.label, 'A Sad Song by Y. Levitin', 'Card badges are not part of the navigation label');
+    assert.strictEqual(selection.piece_id, 178, 'The destination takes precedence over the piece on the source page');
+    assert.strictEqual(selection.target, 'https://my.pianolit.test/pieces/178');
+    cards.handlers['doc:click']({target: {closest: () => pieceLink({'data-url': '/pieces/179'})}});
+    selection = cards.queued().filter(event => event.type === 'click').pop().metadata;
+    assert.strictEqual(selection.label, 'a piece', 'Unlabeled piece cards do not fall back to scraping their contents');
+    assert.strictEqual(selection.piece_id, 179);
+    cards.win.location = new URL('https://my.pianolit.test/pieces/42');
+    cards.handlers['doc:click']({target: {closest: () => Object.assign({}, link, {textContent: 'Score', getAttribute: name => name === 'href' ? '#score' : null})}});
+    assert.strictEqual(cards.queued().filter(event => event.type === 'click').pop().metadata.label, 'Score', 'Same-page tabs retain their control labels');
+    cards.handlers['doc:click']({target: {closest: () => Object.assign({}, link, {tagName: 'BUTTON', textContent: 'Favorite', getAttribute: () => null})}});
+    assert.strictEqual(cards.queued().filter(event => event.type === 'click').pop().metadata.target, '', 'Buttons without a destination do not invent a piece link');
+    cards.handlers['doc:click']({target: {closest: () => Object.assign({}, link, {textContent: 'External link', getAttribute: name => name === 'href' ? 'https://external.example/pieces/178' : null})}});
+    assert.strictEqual(cards.queued().filter(event => event.type === 'click').pop().metadata.label, 'External link', 'An external path does not identify a PianoLIT piece');
     const mediaHandlers = {};
     const media = {tagName: 'VIDEO', id: 'performance', currentTime: 0, duration: 90, playbackRate: 1, paused: false,
         addEventListener(name, callback) { mediaHandlers[name] = callback; }};
