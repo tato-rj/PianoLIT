@@ -20,7 +20,13 @@
 
     @include('layouts.html.theme')
 
-    <title>{{local() ? '(local)' : null}} {{config('app.name')}}{{isset($title) ? ' | ' . $title : null}}</title>
+    <title>
+        {{local() ? '(local)' : null}}
+        @isset($title)
+        {{$title}} | 
+        @endisset
+        {{config('app.name')}}
+    </title>
 
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 
