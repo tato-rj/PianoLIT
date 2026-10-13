@@ -106,6 +106,8 @@
     </div>
   </section>
 
+  @include('admin.pages.home.user-countries')
+
   <section class="admin-library-section" aria-labelledby="admin-library-title">
     <div class="admin-section-heading"><h2 id="admin-library-title">More to explore</h2><a href="{{route('admin.users.locations.index')}}">User locations @icon('arrow-up-right', ['mr' => 0])</a></div>
     <div class="admin-library-grid">
@@ -118,4 +120,10 @@
   <article class="admin-glass-card admin-editor-welcome"><span class="admin-editor-icon">@icon('music', ['mr' => 0])</span><h2>Welcome, {{auth('admin')->user()->first_name}}.</h2><p>Thank you for helping bring piano music to life.</p><div><strong>{{number_format(auth('admin')->user()->pieces_count)}}</strong> pieces created <span>·</span> <strong>{{number_format(auth('admin')->user()->composers_count)}}</strong> composers created</div></article>
   @endmanager
 </div>
+@endsection
+
+@section('scripts')
+@manager
+<script src="{{ mix('js/views/admin-user-map.js') }}" defer></script>
+@endmanager
 @endsection

@@ -74,6 +74,7 @@ class Dashboard
         }
 
         return compact('days', 'platform', 'start', 'end', 'total', 'previous', 'trend', 'activeUsers', 'engagedUsers', 'metrics', 'library') + [
+            'userCountries' => app(UserCountries::class)->data(),
             'platforms' => collect(['web' => 'Website', 'webapp' => 'Web app', 'app' => 'iOS app'])->map(function ($label, $key) use ($current, $total) {
                 $count = (int) $current->where('platform', $key)->sum('total');
                 return ['label' => $label, 'total' => $count, 'share' => $total ? round($count / $total * 100) : 0];
