@@ -101,4 +101,37 @@ module.exports = async function () {
     assert.strictEqual(hidden.queued().find(event => event.type === 'page_leave').metadata.visible_ms, 8000, 'Hidden time is excluded from foreground duration');
     const noConfig = {};
     install(noConfig, null); assert.strictEqual(noConfig.PianoActivity, undefined);
+    const watched = fixture(), watchedHandlers = {};
+    const clip = {tagName: 'VIDEO', currentTime: 0, duration: 100, playbackRate: 1, paused: false, seeking: false,
+        addEventListener(name, callback) { watchedHandlers[name] = callback; }};
+    watched.win.PianoActivity.media(clip, {media_kind: 'video', piece_id: 42});
+    watchedHandlers.playing({type: 'playing'});
+    watched.at(10000); clip.currentTime = 10; watchedHandlers.timeupdate({type: 'timeupdate'});
+    clip.seeking = true; clip.currentTime = 80; watchedHandlers.seeking({type: 'seeking'});
+    watched.at(11000); clip.seeking = false; watchedHandlers.seeked({type: 'seeked'});
+    watched.at(21000); clip.currentTime = 90; watchedHandlers.timeupdate({type: 'timeupdate'});
+    watchedHandlers.pause({type: 'pause'});
+    let coverage = watched.queued().filter(event => event.type === 'media_pause').pop().metadata;
+    assert.strictEqual(coverage.unique_watched_percent, 20, 'Skipping to 80% then playing ten seconds counts only the twenty seconds actually played');
+    assert.strictEqual(coverage.unique_watched_seconds, 20);
+    assert(coverage.playback_id, 'Compact summaries retain a stable playback identity');
+    watched.at(22000); clip.currentTime = 0; clip.seeking = true; watchedHandlers.seeking({type: 'seeking'});
+    clip.seeking = false; watchedHandlers.seeked({type: 'seeked'});
+    watched.at(32000); clip.currentTime = 10; watchedHandlers.timeupdate({type: 'timeupdate'});
+    watchedHandlers.pause({type: 'pause'});
+    coverage = watched.queued().filter(event => event.type === 'media_pause').pop().metadata;
+    assert.strictEqual(coverage.unique_watched_percent, 20, 'Replaying the same content does not increase unique coverage');
+    assert.strictEqual(watched.queued().filter(event => event.type === 'media_progress').length, 0, 'Sampling timeupdate adds no per-second database events');
+    const restored = fixture(), restoreMediaHandlers = {};
+    const restoreMedia = {tagName: 'VIDEO', currentTime: 0, duration: 90, playbackRate: 1, paused: false,
+        addEventListener(name, callback) { restoreMediaHandlers[name] = callback; }};
+    restored.win.PianoActivity.media(restoreMedia);
+    restoreMediaHandlers.playing({type: 'playing'});
+    restoreMedia.currentTime = 5;
+    restored.at(5000); restored.handlers.pagehide();
+    restored.at(65000); restored.handlers.pageshow({persisted: true});
+    restoreMedia.currentTime = 8;
+    restored.at(68000); restored.handlers.pagehide();
+    assert.strictEqual(restored.queued().filter(event => event.type === 'page_leave').pop().metadata.visible_ms, 8000, 'Time away in the back-forward cache does not count as visible');
+    assert.strictEqual(restored.queued().filter(event => event.type === 'media_progress').pop().metadata.played_seconds, 8, 'Frozen back-forward cache time does not count as playback');
 };

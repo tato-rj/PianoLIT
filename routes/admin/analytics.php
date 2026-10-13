@@ -2,7 +2,13 @@
 
 Route::prefix('analytics')->name('analytics.')->group(function() {
 
-	Route::get('users', 'Admin\AnalyticsController@users')->name('users');
+	Route::get('users', 'Admin\UserAnalyticsController@index')->name('users');
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('people', 'Admin\UserAnalyticsController@people')->name('people');
+        Route::get('insights', 'Admin\UserAnalyticsController@insights')->name('insights');
+        Route::get('visits/{visit}', 'Admin\UserAnalyticsController@journey')->whereUuid('visit')->name('journey');
+        Route::get('{user}/{tab?}', 'Admin\UserAnalyticsController@profile')->whereNumber('user')->where('tab', 'overview|visits|music|account')->name('profile');
+    });
 
 	Route::get('logs', 'Admin\AnalyticsController@logs')->name('logs');
 	

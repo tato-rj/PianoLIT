@@ -42,6 +42,7 @@ class StripeWebhooks
     public static function whenInvoicePaymentSucceeded($payload)
     {
         (new \App\Services\StripePaymentReceipts)->invoiceSucceeded($payload);
+        \App\Activity\Actions::paidInvoice($payload);
     }
 
     public static function handleChargeCustomer($payload)

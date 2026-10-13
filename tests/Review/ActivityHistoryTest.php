@@ -191,7 +191,7 @@ class ActivityHistoryTest extends ReviewTestCase
         $page = $this->open();
         $this->actingAs(create(\App\Admin::class), 'admin');
         $this->get(route('admin.activity.index'))->assertOk()->assertSee('Anonymous')->assertSee('Open timeline');
-        $this->get(route('admin.activity.show', $page->visit_id))->assertOk()->assertSee('page view')->assertSee('/review/activity-page', false);
+        $this->get(route('admin.activity.show', $page->visit_id))->assertOk()->assertSee('Visit journey')->assertSee('/review/activity-page', false);
     }
 
     public function test_favorite_events_record_the_confirmed_add_and_remove_result()

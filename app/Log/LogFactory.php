@@ -31,6 +31,7 @@ class LogFactory
             'event_id' => (string) Str::uuid(), 'user_id' => (int) $matches[1],
             'platform' => $matches[2], 'type' => 'request', 'source' => 'server',
             'occurred_at' => $now, 'received_at' => $now,
+            'occurred_at_utc' => now('UTC')->format('Y-m-d H:i:s.v'), 'received_at_utc' => now('UTC')->format('Y-m-d H:i:s.v'),
             'url' => Metadata::url($payload['url'] ?? $request->url()),
             'route_name' => $request->route() ? $request->route()->getName() : null,
             'method' => $request->method(), 'metadata' => json_encode($metadata, JSON_THROW_ON_ERROR),

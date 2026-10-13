@@ -123,7 +123,7 @@ class ScoreAnnotationsTest extends ReviewTestCase
         $this->putJson($this->url(), $this->payload([], 1))->assertOk()->assertJsonPath('revision', 2);
         $queries = collect(DB::getQueryLog())->filter(function ($query) { return strpos($query['query'], 'score_annotations') !== false; });
         DB::disableQueryLog();
-        $this->assertCount(1, $queries, 'An acknowledged existing score needs only one annotation UPDATE.');
+        $this->assertCount(2, $queries, 'A locked read computes annotation deltas, followed by one optimistic UPDATE.');
         $this->putJson($this->url(), $data)->assertStatus(409);
         $this->getJson($this->url(null, $data))->assertExactJson(['revision' => 2, 'marks' => []]);
         $this->assertDatabaseCount('score_annotations', 1);

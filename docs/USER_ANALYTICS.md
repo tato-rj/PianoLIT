@@ -1,0 +1,102 @@
+# User behavior analytics
+
+## Audit recorded before implementation — 2026-10-12
+
+The existing SQL recorder is the collection system for this work. It already has `activity_visits`, `activity_pages`, `activity_events`, `activity_imports` and `activity_legacy_daily`. No parallel collector or replacement history database is needed.
+
+| Area | Existing coverage | Gap to address |
+| --- | --- | --- |
+| Browser navigation | Server page views, sanitized route/URL, browser clicks, searches, filters, tabs, sections | Natural language interpretation; meaningful flow steps rather than raw rows |
+| Timing | Server opening time, browser elapsed/visible checkpoints every 15 seconds | Explicit timezone handling; score visibility; missing checkpoints must remain unknown |
+| Media | Play/pause/end/seek/progress, duration, playhead, estimated playing seconds; native and detached audio/video | Unique content coverage excluding seeks; source/playback identity; rate and score/Synthesia context |
+| Saved music | Favorites and folders in existing tables, score annotation revisions | Only favorites have a confirmed activity event; folder and annotation outcomes need events without private contents |
+| Accounts | Real signup origin/location, membership/source records, payments and campaign attribution | Confirmed authentication and subscription milestones; trustworthy anonymous-to-account association |
+| Admin | Users demographic charts, Logs daily counts, raw visit/event tables, account management | Activity/People/Insights, music profile, grouped chronological journeys, bounded queries |
+| iOS | Existing API middleware records ungrouped SQL requests; submitted identity explicitly unverified | Swift client is absent; authenticated identity, visit/page IDs and media instrumentation are unavailable |
+| Import | Resumable Redis import, unique legacy identity, operational checkpoints and daily snapshots | Preserve these records; never fabricate sessions or add daily snapshots to detailed counts |
+
+Inspection covered the recorder/middleware/ingestion validator, browser collector and player integrations, favorite/folder/annotation controllers, registration/login, membership and signed Stripe webhook paths, models/migrations, route registration/guards, reporting/import code, and isolated regressions. No existing OpenAPI/YAML contract or Swift sources were found. Existing public and mobile JSON contracts must remain unchanged. Activity logging is separate from consent-based campaign attribution; it currently records anonymous browser activity by explicit project instruction and has no automatic retention/pruning policy.
+
+The old timestamp columns use the application timezone (`America/New_York`), including existing account/API readers. New canonical UTC columns will coexist with those compatibility columns rather than silently reinterpret historical timestamps. Undated imports remain undated.
+
+## Architecture and navigation
+
+Admin\UserAnalyticsController serves /analytics/users (Activity), /analytics/users/people, /analytics/users/insights, /analytics/users/{user}/{overview|visits|music|account}, and /analytics/users/visits/{visit}. All require the existing admin guard and host. The Logs sidebar entry is removed; its old route, collection services and import remain. Older /activity/visits/{visit} links render the new journey. Dashboard activity/person links lead into the new area; account management stays separate.
+
+App\Activity\Queries owns identity scopes and bounded summaries; People reads account/saved state; Insights performs grouped SQL queries; Journey combines page groups with unassociated actions at their recorded times. Presentation centralizes language, icons and safe metadata. Time resolves UTC timestamps with historical fallbacks. There is no AI summarization, Redis dual write, external reporting service or new background worker.
+
+Activity/People paginate 25 rows. Profiles paginate saved music/media independently. Journeys paginate 20 pages and 50 unassociated actions independently, capping events for selected page groups at 2,000 with an incompleteness notice. Progress checkpoints collapse into playback/score summaries. Actions are never assigned to a page by temporal guesswork. Large visits can require several pages; summaries describe the entire visit.
+
+## Identities, boundaries and timestamps
+
+Browser account identity comes from auth:web, visitor identity from the server session, and page ownership from the encrypted page token. Submitted user/visitor/platform/visit/page IDs never establish ownership. UUID event IDs make retries idempotent; duplicate IDs cannot change page timing. Collection is CSRF-protected, bounded to 50 events/100 KB requests/8 KB metadata per event, and throttled to 120 requests/minute. Analytics failures do not change feature responses.
+
+The new activity_visit_links table associates only the **current anonymous visit** when a real web guard Login or Registered event confirms the account in the same session. It never bulk-links visitor history, uses IP/location, changes original user_id, or transfers an already linked visit to another account. Reporting uses the direct/explicitly linked account, otherwise the random session visitor. One reliably linked visitor/account is counted once. Separate sessions/shared devices remain separate without confirmed linkage. Visitor identities are session identities, not guaranteed individual humans; later confirmed linkage can change historical distinct counts.
+
+A new page after 30 minutes without a meaningful recorded interaction starts another visit. Changing platform or account also starts another visit. Passive readiness/visibility/checkpoints update last-observed activity but do not extend the inactivity clock. A tab left visible is not active engagement. Continuing on the same long-lived page retains its original visit. Multiple tabs have distinct page IDs; BFCache time away is excluded from foreground/score visibility.
+
+New writes fill canonical UTC columns alongside local-time compatibility columns needed by existing reports/mobile attributes. Server/page clocks, browser offsets, token expiry and new inactivity boundaries anchor in UTC, including daylight-saving clock repetition. Old history is not rewritten. New imports populate UTC when the Unix timestamp is valid. Time uses UTC first, then original application timezone, then receipt time when occurrence is missing. Main UI shows America/New_York; technical details include ISO time/offset. Equal event times use sequence and database ID. Historical local timestamps during daylight-saving clock repetition cannot recover an offset never stored. SQL pagination uses compatibility timestamps; loaded actions sort by canonical UTC when present.
+
+## Metric definitions
+
+Activity/Insights filters select visits **started** in the local-date period, platform and effective audience. Event metrics additionally require occurrence within the period. Visits started earlier are not counted as new visits in the period. Undated imports cannot enter dated metrics.
+
+| Metric | Definition and limits |
+| --- | --- |
+| Unique visitor | Distinct effective account, otherwise session visitor, among matching visits. Unverified legacy iOS identities excluded. |
+| Visit | One activity_visits record; never an imported counter or reconstructed legacy request group. |
+| Returning visitor | Matching identity with another visit started earlier, within or before the selected period. |
+| Page view | Successful server HTML page view. Requests/redirects/failed provisional pages are not opened pages. Refreshes are separate opens. |
+| Piece open | Server page_view whose route-bound resource is piece. Repeated opens count separately. |
+| Visible time | Cumulative observed foreground milliseconds, bounded by elapsed time; not attention. Missing checkpoints show unknown. |
+| Active engagement | No general active-time metric is measurable. Media playback and score visibility are presented separately. |
+| Media start | media_play, including resume/buffering recovery; not a distinct completed viewing. |
+| Watch coverage | Union of observed advancing media-position intervals divided by duration. Seeking gaps/repeats add no unique coverage; sampling is approximate and memory-bounded. Playing seconds and playhead position are separate. |
+| Meaningful playback | Distinct playback IDs reporting at least 50% unique content coverage. Unavailable when no coverage events exist. |
+| Playback end | End position observed, not proof the entire video was watched. |
+| Visit duration | Last observed activity minus start; approximate span, potentially including idle/hidden time. Lone timestamp shows unknown. |
+| Conversion | Distinct recorded identities with subsequent steps in the period. Preview-to-Premium uses browser observations; registration/billing outcomes must be server-confirmed. Correlation, not causation or marketing attribution. Signed payment outcomes can be ungrouped account events. |
+| Cohort activity | Signup month, distinct known accounts and visits observed in this period; not lifetime/percentage retention. |
+
+activity_imports is operational only. activity_legacy_daily is retained but **never added** to event/visit totals. Ungrouped requests/imports remain available separately; they do not establish visitors, sessions, successful mutations or duration. Daily totals and detailed history can overlap. Account-associated ungrouped history also remains available through existing account management.
+
+Zero recorded visits or empty saved state is a genuine database count. Missing historical media/score/account events show “Not recorded” or a coverage warning. New vocabulary cannot reconstruct earlier interactions.
+
+## Vocabulary and implemented coverage
+
+[activity-v1.yaml](api/activity-v1.yaml) documents the live additive browser batch contract. Server-confirmed outcomes are not accepted as browser event types.
+
+| Events | Source / metadata |
+| --- | --- |
+| page_view, request | Website/webapp server middleware; sanitized route/URL, method/status, bound resource, search/filter context, same-site referrer. Failed requests keep status without inventing an opened page. |
+| page_ready/checkpoint/hidden/visible/leave/restore | Browser elapsed offset/sequence and cumulative visible_ms. A departure event can mean navigation, not necessarily browser closure. |
+| click, filter_change, filters_apply, search_submit, form_submit, section_open/close, tab_open | Significant browser navigation/controls, Explore/search/collections and observable Match choices; bounded labels/targets/filter values and known source pathname. No keystrokes or account form values. |
+| match_completed | Webapp Match result actually mounted; result piece ID. No inferred abandonment event. |
+| media_play/pause/seek/end/progress/error/rate | Native/detached browser audio/video, including Synthesia/tutorials/playlist/Explore/Match players. playback_id, media kind/ID, piece ID where known, duration/position/rate, playing seconds, unique watched seconds/percent. timeupdate samples memory only; existing 15-second summaries/transitions drive delivery. |
+| score_opened, score_progress, score_page | Webapp Score tab, cumulative foreground score-visible time, rendered page number. No score/marking contents. A preview tab/purchase link does not prove a full PDF was read. |
+| favorite_changed | Existing successful webapp toggle: boolean result, optional folder_id and route-bound piece. Root favorites and folder additions/removals are distinguished. |
+| folder_created/renamed/updated/deleted | Successful webapp folder actions, folder resource ID. No private name/description in generic events. Folder creation with a piece also records its confirmed addition. |
+| annotation_saved | Successful optimistic transaction: piece ID, revision and created/edited/removed/remaining counts only. Retry does not duplicate events. Counts describe deltas at save, not an invented original creation date. |
+| registration_started, premium_opened, premium_restriction | Browser registration page/dialog, Premium dialog and enforced preview limit. Successful registration is separate. |
+| registration_completed, login | Verified web account lifecycle listener. Legacy API login excluded. No credentials or account form bodies. |
+| checkout_started, trial_started, subscription_activated, subscription_canceled | Webapp server checkout, confirmed Stripe response status and successful scheduled cancellation; no tokens/payment inputs. |
+| subscription_paid | Existing signed Stripe invoice webhook: positive paid subscription invoice matched to membership/customer. Invoice-derived UUID deduplicates retries; status-only metadata. No invented visit/page; excludes non-subscription invoices. |
+| request, legacy_request, legacy_unparsed | Existing iOS middleware/Redis import; unchanged contracts/exclusions, ungrouped and identity-unverified. No new Swift instrumentation claimed. |
+
+Saved favorites/folders use existing tables. Annotations select identifiers/revisions/dates instead of private marks. Music links existing piece administration and can filter saved pieces by the person's actual folder. Saved state is not emitted as past interactions. Account tabs link existing membership/history management and never call Apple/Stripe remotely during rendering.
+
+## Separate Swift integration — pending
+
+No Swift sources or existing versioned API YAML were found. The current API's submitted user_id middleware is **not trustworthy authentication** and is not used for richer ingestion or trusted journey tokens. Deployed iOS requests continue compatible SQL logging with unverified identity and no fabricated visits. Independent mobile authentication remains a prerequisite; no new endpoint accepts arbitrary mobile user/visit IDs.
+
+The YAML x-planned-ios extension defines an exact proposed batch payload **for a future authenticated v2 transport, which is not implemented**. Swift must use the agreed authenticated credential, request server-issued visit/page tokens, rotate on account/platform changes and inactivity, and instrument screen transitions, AVPlayer advancing intervals/seeks/rates/end/buffering, score visibility/pages, discovery choices and premium/register steps. Generate stable event UUIDs and monotonic offsets/sequence; batch up to 50, bound unacknowledged storage, retry unchanged IDs and flush on backgrounding. A button click/send never proves successful favorites/payment outcomes. Never put passwords/tokens/receipts/card details/annotation content in metadata.
+
+The future backend must authenticate independently of legacy user_id, mint/verify account-owned app context, validate vocabulary/limits, and anchor offsets to UTC. That transport and Swift instrumentation remain pending. The current endpoint requires browser session/CSRF and a matching web/webapp page token; do not reuse it with an invented app identity.
+
+## Deployment, privacy and verification
+
+Deploy migration 2026_10_12_150000_extend_activity_for_user_analytics.php after the existing activity-history migration, **before** these writers/views. It adds links, nullable UTC fields, inactivity timestamp and query indexes without discarding or backfilling history. Index creation on large history needs the normal reviewed deployment window. Deploy PHP/templates, admin CSS, standalone JS outputs and manifest together. No queue/pruning/re-import is needed for ongoing collection; ACTIVITY_HISTORY.md describes final legacy import. Do not automatically deploy or execute production migrations.
+
+Explicit user-history purge now includes reliably linked anonymous visits. Ordinary deletion preserves existing historical-record behavior; links cascade with the account. No new retention policy is invented: activity currently has no automatic pruning. Restrict admin access/backups and agree retention separately. Imported raw payloads remain in older guarded tools; new details use a safe allowlist and never expose them.
+
+Validation uses isolated in-memory SQLite and JS regressions: anonymous/authenticated/linking, multiple same-day visits, missing/out-of-order times, partial data, metadata/escaping, filters/admin access, bounded pagination/query counts, UTC/retries/daylight-saving boundaries, idle/BFCache visibility/playback, seeking/replaying coverage, unchanged mobile contracts, confirmed billing, favorites/folders, score saves and migration upgrade/rollback. Offline fixtures check eight page types at 320/390/768/1440/1920 px, with network blocked and no live DB/site/browser session access. These checks do not establish production MySQL throughput, native iOS behavior, live Stripe outcomes or every native browser/player lifecycle.

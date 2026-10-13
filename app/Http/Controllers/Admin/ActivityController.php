@@ -37,11 +37,6 @@ class ActivityController extends Controller
 
     public function show($visit)
     {
-        $visit = DB::table('activity_visits')->where('id', $visit)->first();
-        abort_unless($visit, 404);
-        $user = $visit->user_id ? User::find($visit->user_id) : null;
-        $pages = DB::table('activity_pages')->where('visit_id', $visit->id)->orderBy('opened_at')->get()->keyBy('id');
-        $events = DB::table('activity_events')->where('visit_id', $visit->id)->orderBy('occurred_at')->orderBy('page_id')->orderBy('sequence')->orderBy('id')->paginate(100);
-        return view('admin.pages.activity.show', compact('visit', 'user', 'pages', 'events'));
+        return view('admin.pages.analytics.users.journey', (new \App\Activity\Journey)->get($visit));
     }
 }

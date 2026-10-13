@@ -40,7 +40,7 @@
           <strong>{{number_format($dashboard['activeUsers'])}} <small>in this period</small></strong>
         </div>
         <div class="admin-trend-panel">
-          <div class="admin-trend-top"><span><i></i> Daily activity</span><a href="{{route('admin.activity.index')}}">View activity @icon('arrow-up-right', ['mr' => 0])</a></div>
+          <div class="admin-trend-top"><span><i></i> Daily activity</span><a href="{{route('admin.analytics.users')}}">View activity @icon('arrow-up-right', ['mr' => 0])</a></div>
           <div class="admin-trend-visual">
             <h3>Activity<br>over time<span>Every visit.<br>Every discovery.</span></h3>
             <div class="admin-chart" role="img" aria-label="Daily recorded events, {{$dashboard['start']->format('M j')}} to {{$dashboard['end']->format('M j')}}">
@@ -71,7 +71,7 @@
         @if($dashboard['engagedUsers']->isNotEmpty())
         <div class="admin-user-podium">
           @foreach($dashboard['engagedUsers']->take(3) as $user)
-          <a class="admin-podium-user is-rank-{{$loop->iteration}}" href="{{route('admin.users.show', $user->id)}}">
+          <a class="admin-podium-user is-rank-{{$loop->iteration}}" href="{{route('admin.analytics.users.profile', $user->id)}}">
             <span class="admin-user-avatar">{{mb_substr($user->first_name, 0, 1)}}{{mb_substr($user->last_name, 0, 1)}}<small>{{$loop->iteration}}</small></span>
             <strong>{{$user->first_name}}</strong><span>{{number_format($user->events_count)}} <small>events</small></span>
           </a>
@@ -79,7 +79,7 @@
         </div>
         <ol class="admin-engaged-list">
           @foreach($dashboard['engagedUsers'] as $user)
-          <li><a href="{{route('admin.users.show', $user->id)}}"><span class="admin-user-rank">{{str_pad($loop->iteration, 2, '0', STR_PAD_LEFT)}}</span><span class="admin-user-name"><strong>{{trim($user->first_name.' '.$user->last_name)}}</strong><small>View profile</small></span><span class="admin-user-events">{{number_format($user->events_count)}} @icon('arrow-up-right', ['mr' => 0])</span></a></li>
+          <li><a href="{{route('admin.analytics.users.profile', $user->id)}}"><span class="admin-user-rank">{{str_pad($loop->iteration, 2, '0', STR_PAD_LEFT)}}</span><span class="admin-user-name"><strong>{{trim($user->first_name.' '.$user->last_name)}}</strong><small>View profile</small></span><span class="admin-user-events">{{number_format($user->events_count)}} @icon('arrow-up-right', ['mr' => 0])</span></a></li>
           @endforeach
         </ol>
         @else

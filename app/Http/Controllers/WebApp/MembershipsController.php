@@ -38,8 +38,9 @@ class MembershipsController extends Controller
         return view('webapp.membership.edit.index', compact('plans'));
     }
 
-    public function checkout(Plan $plan)
+    public function checkout(Plan $plan, Request $request)
     {
+        \App\Activity\Actions::record($request, 'checkout_started', [], 'plan', $plan->id);
         return view('webapp.membership.checkout.index', compact('plan'));
     }
 
@@ -53,6 +54,10 @@ class MembershipsController extends Controller
         }
 
         StripeMembership::subscribe(auth()->user(), $customer);
+        $confirmed = $factory->purchasedSubscription;
+        if (in_array($confirmed->status ?? null, ['active', 'trialing'], true)) {
+            \App\Activity\Actions::record($request, $confirmed->status === 'trialing' ? 'trial_started' : 'subscription_activated', ['status' => $confirmed->status], 'plan', $plan->id);
+        }
 
         (new \App\Services\CampaignAttribution)->subscribed($request, auth('web')->user(), $customer, $factory->purchasedSubscription);
 
@@ -125,7 +130,7 @@ class MembershipsController extends Controller
         return back()->with('status', 'Your membership has been successfully ' . $status);
     }
 
-    public function cancel()
+    public function cancel(Request $request)
     {
         try {
             $payload = (new StripeFactory)->customer()->subscription()->cancel();
@@ -134,6 +139,7 @@ class MembershipsController extends Controller
         }
 
         auth()->user()->membership->source->cancelAtPeriodEnd($payload);
+        \App\Activity\Actions::record($request, 'subscription_canceled');
 
         return back()->with('status', 'Your membership has been successfully canceled');
     }

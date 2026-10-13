@@ -70,10 +70,19 @@ class ScoreAnnotationsController extends Controller
                     'revision' => 0, 'marks' => '[]', 'created_at' => now(), 'updated_at' => now(),
                 ]));
             }
+            $before = DB::table('score_annotations')->where($identity)->lockForUpdate()->first();
             $updated = DB::table('score_annotations')->where($identity)->where('revision', $revision)->update([
                 'marks' => json_encode($marks), 'revision' => $revision + 1, 'updated_at' => now(),
             ]);
-            if ($updated) return ['revision' => $revision + 1];
+            if ($updated) {
+                $old = collect(json_decode($before->marks ?? '[]', true))->keyBy('id');
+                $new = collect($marks)->keyBy('id');
+                return ['revision' => $revision + 1, '_activity' => [
+                    'annotation_count' => $new->count(), 'created_count' => $new->keys()->diff($old->keys())->count(),
+                    'removed_count' => $old->keys()->diff($new->keys())->count(),
+                    'edited_count' => $new->filter(function ($mark, $id) use ($old) { return isset($old[$id]) && $old[$id] != $mark; })->count(),
+                ]];
+            }
 
             $record = DB::table('score_annotations')->where($identity)->first();
             // Retrying a save whose response was lost must not duplicate it or report a conflict.
@@ -82,6 +91,12 @@ class ScoreAnnotationsController extends Controller
             }
             abort(409, 'Annotations changed in another tab or device. Reload saved markings before editing.');
         });
+
+        if (isset($result['_activity'])) {
+            $id = (string) \Ramsey\Uuid\Uuid::uuid5(\Ramsey\Uuid\Uuid::NAMESPACE_URL, 'pianolit:annotation:'.implode(':', $identity).':'.$result['revision']);
+            \App\Activity\Actions::record($request, 'annotation_saved', array_merge($result['_activity'], ['revision' => $result['revision']]), 'piece', $piece->id, $id);
+            unset($result['_activity']);
+        }
 
         return response()->json($result)->header('Cache-Control', 'private, no-store');
     }

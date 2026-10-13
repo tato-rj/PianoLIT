@@ -13,7 +13,7 @@
     <div class="card mb-4"><div class="card-body">
       <h4>Website visit timelines</h4>
       <p>Read pages, navigation, filters, favorites and media playback in chronological order.</p>
-      <a class="btn btn-primary" href="{{ route('admin.users.activity', $user) }}">Open visit history</a>
+      <a class="btn btn-primary" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">Open visit history</a>
     </div></div>
   </div>
 </div>

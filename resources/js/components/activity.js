@@ -25,6 +25,7 @@
     } catch (error) { /* Private browsing may disable storage. */ }
     function record(type, metadata) {
         if (clock() > 86400000) return; // The page token expires after 24 hours.
+        if (/^(score_|premium_)/.test(type) && config.pieceId) metadata = Object.assign({piece_id: config.pieceId}, metadata || {});
         var batch = outbox[outbox.length - 1];
         if (!batch || batch.page_token !== config.pageToken || batch.events.length >= 20 || batch === sending) {
             batch = {page_token: config.pageToken, events: []}; outbox.push(batch);
@@ -101,7 +102,7 @@
         } else {
             var choice = element.getAttribute('data-choice');
             var piece = element.getAttribute('data-select-level') || element.getAttribute('data-select-piece') || element.getAttribute('data-play');
-            record('click', {label: label(element), control: element.id || element.getAttribute('data-action') || element.getAttribute('data-submit') || (choice !== null ? 'match_choice' : piece ? 'match_piece' : element.tagName.toLowerCase()), target: safeUrl(element.getAttribute('href') || element.getAttribute('data-url') || ''), value: choice === null ? undefined : choice.slice(0, 300), piece_id: piece && /^\d+$/.test(piece) ? Number(piece) : config.pieceId});
+            record('click', {label: label(element), navigation: win.location.pathname.slice(0, 100), control: element.id || element.getAttribute('data-action') || element.getAttribute('data-submit') || (choice !== null ? 'match_choice' : piece ? 'match_piece' : element.tagName.toLowerCase()), target: safeUrl(element.getAttribute('href') || element.getAttribute('data-url') || ''), value: choice === null ? undefined : choice.slice(0, 300), piece_id: piece && /^\d+$/.test(piece) ? Number(piece) : config.pieceId});
         }
     }, true);
     doc.addEventListener('change', function (event) {
@@ -129,7 +130,12 @@
         record(event.target.open ? 'section_open' : 'section_close', {section: summary ? label(summary) : event.target.id});
     }, true);
     if (win.jQuery) {
-        win.jQuery(doc).on('shown.bs.tab shown.bs.modal shown.bs.offcanvas', function (event) { record('tab_open', {section: event.target.id || event.target.getAttribute('aria-label') || event.target.tagName.toLowerCase()}); });
+        win.jQuery(doc).on('shown.bs.tab shown.bs.modal shown.bs.offcanvas', function (event) {
+            var section = event.target.getAttribute('href') || event.target.id || event.target.getAttribute('aria-label') || event.target.tagName.toLowerCase();
+            record('tab_open', {section: section.replace(/^#/, '')});
+            if (section === 'piece-upgrade-modal') record('premium_opened', {piece_id: config.pieceId});
+            if (/register|signup/.test(section)) record('registration_started');
+        });
         win.jQuery.ajaxPrefilter(function (options) {
             if (new win.URL(options.url, win.location.href).origin === win.location.origin) {
                 options.headers = Object.assign({}, options.headers, {'X-Activity-Page': config.pageToken});
@@ -146,8 +152,8 @@
     function mediaState(media, context) {
         var state = mediaStates.filter(function (item) { return item.media === media; })[0];
         if (!state) {
-            state = {media: media, context: context || {}, played: 0, since: null, lastEvent: null}; mediaStates.push(state);
-            ['playing', 'pause', 'ended', 'seeking', 'seeked', 'waiting', 'error'].forEach(function (name) { media.addEventListener(name, function (event) { mediaEvent(media, event); }, true); });
+            state = {media: media, context: context || {}, played: 0, since: null, lastEvent: null, playbackId: uuid(), ranges: [], sampleAt: clock(), samplePosition: Number(media.currentTime) || 0}; mediaStates.push(state);
+            ['playing', 'pause', 'ended', 'seeking', 'seeked', 'waiting', 'error', 'timeupdate', 'ratechange'].forEach(function (name) { media.addEventListener(name, function (event) { mediaEvent(media, event); }, true); });
         }
         if (context) {
             if (JSON.stringify(state.context) !== JSON.stringify(context)) {
@@ -155,19 +161,39 @@
                 // Native pause events can be queued until after a shared Audio
                 // element has already been assigned to its next piece.
                 state.ignoreQueuedPause = true; state.played = 0; state.since = null;
+                state.playbackId = uuid(); state.ranges = []; state.sampleAt = clock(); state.samplePosition = Number(media.currentTime) || 0;
             }
             state.context = context;
         }
         return state;
     }
+    function sampleMedia(state) {
+        var now = clock(), position = Number(state.media.currentTime) || 0, delta = position - state.samplePosition;
+        var expected = (now - state.sampleAt) / 1000 * (state.sampleRate || state.media.playbackRate || 1);
+        if (state.since !== null && !state.media.seeking && delta > 0 && delta <= expected + 0.75) {
+            var range = [state.samplePosition, position], merged = [];
+            state.ranges.concat([range]).sort(function (a, b) { return a[0] - b[0]; }).forEach(function (item) {
+                var last = merged[merged.length - 1];
+                if (last && item[0] <= last[1]) last[1] = Math.max(last[1], item[1]);
+                else merged.push(item.slice());
+            });
+            // Bound memory even in a very long session with hundreds of seeks.
+            state.ranges = merged.slice(0, 500);
+        }
+        state.sampleAt = now; state.samplePosition = position; state.sampleRate = state.media.playbackRate || 1;
+    }
     function mediaData(state) {
         var media = state.media;
-        return Object.assign({media_kind: (media.tagName || 'audio').toLowerCase(), media_id: media.id || (media.closest && media.closest('[id]') ? media.closest('[id]').id : 'audio'), piece_id: config.pieceId, position_seconds: Number.isFinite(media.currentTime) ? media.currentTime : 0, duration_seconds: Number.isFinite(media.duration) ? media.duration : null, played_seconds: (state.played + (state.since === null ? 0 : clock() - state.since)) / 1000, playback_rate: media.playbackRate || 1}, state.context);
+        sampleMedia(state);
+        var unique = state.ranges.reduce(function (total, range) { return total + range[1] - range[0]; }, 0);
+        return Object.assign({media_kind: (media.tagName || 'audio').toLowerCase(), media_id: media.id || (media.closest && media.closest('[id]') ? media.closest('[id]').id : 'audio'), piece_id: config.pieceId, playback_id: state.playbackId, unique_watched_seconds: unique, unique_watched_percent: Number.isFinite(media.duration) && media.duration > 0 ? Math.min(100, unique / media.duration * 100) : null, position_seconds: Number.isFinite(media.currentTime) ? media.currentTime : 0, duration_seconds: Number.isFinite(media.duration) ? media.duration : null, played_seconds: (state.played + (state.since === null ? 0 : clock() - state.since)) / 1000, playback_rate: media.playbackRate || 1}, state.context);
     }
     function mediaEvent(media, event) {
         var state = mediaState(media);
         if (state.lastEvent === event) return;
         state.lastEvent = event;
+        sampleMedia(state);
+        if (event.type === 'timeupdate') return;
         if (event.type === 'playing') {
             state.ignoreQueuedPause = false;
             if (state.since === null) { state.since = clock(); record('media_play', mediaData(state)); }
@@ -177,7 +203,7 @@
         if (['pause', 'ended', 'seeking', 'waiting', 'error'].indexOf(event.type) !== -1 && state.since !== null) {
             state.played += clock() - state.since; state.since = null;
         }
-        var types = {pause: 'media_pause', ended: 'media_end', seeked: 'media_seek', error: 'media_error'};
+        var types = {pause: 'media_pause', ended: 'media_end', seeked: 'media_seek', error: 'media_error', ratechange: 'media_rate'};
         if (types[event.type]) record(types[event.type], mediaData(state));
         if (event.type === 'seeked' && !media.paused && !media.seeking) state.since = clock();
     }
@@ -188,25 +214,63 @@
         record('media_pause', Object.assign(mediaData(state), {reason: reason || 'stop'}));
         state.ignoreQueuedPause = true;
     }
-    ['playing', 'pause', 'ended', 'seeking', 'seeked', 'waiting', 'error'].forEach(function (name) {
+    ['playing', 'pause', 'ended', 'seeking', 'seeked', 'waiting', 'error', 'timeupdate', 'ratechange'].forEach(function (name) {
         doc.addEventListener(name, function (event) { if (/^(AUDIO|VIDEO)$/.test(event.target.tagName)) mediaEvent(event.target, event); }, true);
     });
-    win.PianoActivity = {record: record, media: mediaState, stopMedia: stopMedia, flush: flush};
+    function optional(fn) { return function () { try { return fn.apply(null, arguments); } catch (error) { /* Analytics never blocks the feature using it. */ } }; }
+    win.PianoActivity = {record: optional(record), media: optional(mediaState), stopMedia: optional(stopMedia), flush: optional(flush)};
+    var scoreSince = null, scoreTotal = 0, scoreWasOpened = false;
+    function scoreVisible() {
+        var score = doc.querySelector && doc.querySelector('#tab-score');
+        return visible && score && score.classList.contains('active');
+    }
+    function updateScore() {
+        if (scoreSince !== null) scoreTotal += clock() - scoreSince;
+        scoreSince = scoreVisible() ? clock() : null;
+        if (scoreSince !== null && !scoreWasOpened) {
+            scoreWasOpened = true; record('score_opened', {piece_id: config.pieceId});
+        }
+    }
+    if (win.jQuery) win.jQuery(doc).on('shown.bs.tab', updateScore);
+    updateScore();
+    if (/\/register\/?$/.test(win.location.pathname)) record('registration_started');
     lifecycle('page_ready');
     doc.addEventListener('visibilitychange', function () {
         if (visible) visibleTotal += clock() - visibleSince;
         visible = doc.visibilityState !== 'hidden'; visibleSince = clock();
+        updateScore();
         lifecycle(visible ? 'page_visible' : 'page_hidden'); flush(!visible);
     });
     win.addEventListener('pagehide', function () {
-        mediaStates.forEach(function (state) { if (state.since !== null) record('media_progress', Object.assign(mediaData(state), {reason: 'page_leave'})); });
+        if (visible) visibleTotal += clock() - visibleSince;
+        visible = false;
+        updateScore();
+        if (scoreWasOpened) record('score_progress', {piece_id: config.pieceId, visible_ms: scoreTotal});
+        mediaStates.forEach(function (state) {
+            state.resumeAfterRestore = state.since !== null;
+            if (state.since !== null) {
+                record('media_progress', Object.assign(mediaData(state), {reason: 'page_leave'}));
+                state.played += clock() - state.since; state.since = null;
+            }
+        });
         lifecycle('page_leave'); flush(true);
     });
-    win.addEventListener('pageshow', function (event) { if (event.persisted) { lifecycle('page_restore'); flush(); } });
+    win.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            visible = doc.visibilityState !== 'hidden'; visibleSince = clock(); updateScore();
+            mediaStates.forEach(function (state) {
+                if (state.resumeAfterRestore && !state.media.paused && !state.media.ended && !state.media.seeking) state.since = clock();
+                state.sampleAt = clock(); state.samplePosition = Number(state.media.currentTime) || 0; state.resumeAfterRestore = false;
+            });
+            lifecycle('page_restore'); flush();
+        }
+    });
     win.addEventListener('online', function () { retryAt = 0; flush(); });
     win.setInterval(function () { flush(); }, 3000);
     win.setInterval(function () {
         if (visible) lifecycle('page_checkpoint');
+        updateScore();
+        if (scoreSince !== null) record('score_progress', {piece_id: config.pieceId, visible_ms: scoreTotal});
         mediaStates.forEach(function (state) { if (state.since !== null) record('media_progress', mediaData(state)); });
     }, 15000);
     flush();

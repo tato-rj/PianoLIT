@@ -553,6 +553,7 @@
         }
         mountResult() {
             this.resultData = JSON.parse(this.stage.querySelector('[data-result-data]').textContent);
+            if (root.PianoActivity) root.PianoActivity.record('match_completed', {piece_id: this.resultData.piece.id});
             this.stage.querySelector('[data-result-card]').innerHTML = this.cards([this.resultData.piece], 'reward');
             const cards = this.stage.querySelector('[data-recommendation-cards]');
             if (cards) cards.innerHTML = this.cards(this.resultData.recommendations, 'recommendation');

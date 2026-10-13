@@ -18,12 +18,14 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         Registered::class => [
+            \App\Listeners\Users\RecordAuthentication::class,
             SendEmailVerificationNotification::class,
             SubscribeUser::class,
         ],
         Verified::class => [
             EmailVerified::class,
         ],
+        \Illuminate\Auth\Events\Login::class => [\App\Listeners\Users\RecordAuthentication::class],
         \App\Events\Tutorials\NewRequest::class => [
             \App\Listeners\Tutorials\NewRequestListener::class,
         ],

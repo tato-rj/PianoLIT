@@ -507,6 +507,10 @@
                 this.canvas.getContext('2d').drawImage(canvas, 0, 0);
                 this.sheet.style.width = width + 'px'; this.sheet.style.height = (width * ratio) + 'px';
                 this.ratio = ratio; this.page = number;
+                if (root.PianoActivity && this.analyticsPage !== number) {
+                    root.PianoActivity.record('score_page', {value: String(number)});
+                    this.analyticsPage = number;
+                }
                 this.svg.setAttribute('viewBox', '0 0 1000 ' + (1000 * ratio));
                 this.find('[data-page-label]').textContent = number + ' / ' + this.pdf.numPages;
                 this.find('[data-zoom-label]').textContent = Math.round(this.zoom * 100) + '%';

@@ -18,6 +18,7 @@
             if (media.currentTime > limit) media.currentTime = limit;
 
             if (firstStop || event.type === 'play') {
+                if (firstStop && root.PianoActivity) root.PianoActivity.record('premium_restriction', {reason: 'media_preview_limit'});
                 // The upgrade dialog must be visible outside native/Plyr fullscreen.
                 if (media.webkitDisplayingFullscreen && media.webkitExitFullscreen) media.webkitExitFullscreen();
                 if (document.fullscreenElement && document.exitFullscreen) {

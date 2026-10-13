@@ -5,7 +5,7 @@ namespace App\Activity;
 class Metadata
 {
     const QUERY_KEYS = ['search', 'catalogue', 'sort', 'filters', 'facets', 'level', 'mood', 'tag', 'period', 'technique', 'length', 'composers', 'country', 'video_only', 'score_only', 'audio_only', 'page', 'folder_id'];
-    const BROWSER_KEYS = ['label', 'target', 'control', 'value', 'selected', 'filters', 'search', 'media_kind', 'media_id', 'position_seconds', 'duration_seconds', 'played_seconds', 'playback_rate', 'visible_ms', 'reason', 'navigation', 'section', 'piece_id'];
+    const BROWSER_KEYS = ['label', 'target', 'control', 'value', 'selected', 'filters', 'search', 'media_kind', 'media_id', 'position_seconds', 'duration_seconds', 'played_seconds', 'playback_rate', 'visible_ms', 'reason', 'navigation', 'section', 'piece_id', 'playback_id', 'unique_watched_percent', 'unique_watched_seconds'];
 
     public static function select(array $data, array $keys)
     {
@@ -23,7 +23,7 @@ class Metadata
             $result = [];
             foreach (array_slice($value, 0, 40, true) as $key => $item) {
                 // Nested filter structures must not become a route for logging secrets.
-                if (preg_match('/password|token|secret|email|authorization|card|cookie/i', (string) $key)) continue;
+                if (preg_match('/password|token|secret|email|authorization|card|cookie|annotation|marks|comment|description|notes|text/i', (string) $key)) continue;
                 $result[mb_substr((string) $key, 0, 80)] = self::value($item, $depth + 1);
             }
             return $result;

@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: PianoLIT browser activity
+  version: 1.1.0
+  description: >
+    Additive browser contract. Session identity, CSRF and a server-issued
+    encrypted page token are mandatory. Existing iOS requests are unchanged.
+    x-planned-ios describes a future transport, not a live API.
+paths:
+  /activity/events:
+    post:
+      summary: Deliver an idempotent browser event batch
+      description: >
+        Website/my hosts only. Maximum 100 KB, 50 events and 8 KB metadata
+        per event; 120 requests/minute. Server derives account, visitor, platform,
+        visit and page. Offsets are bounded by page age plus 60 seconds.
+        Retrying must preserve IDs. Client events cannot assert account outcomes.
+      parameters:
+        - in: header
+          name: X-CSRF-TOKEN
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [page_token, events]
+              properties:
+                page_token: {type: string, maxLength: 4096}
+                events:
+                  type: array
+                  minItems: 1
+                  maxItems: 50
+                  items: {$ref: '#/components/schemas/Event'}
+      responses:
+        '204': {description: Accepted or already recorded}
+        '403': {description: Invalid or expired page ownership}
+        '413': {description: Payload too large}
+        '419': {description: CSRF/session expired}
+        '422': {description: Invalid event or timing}
+        '429': {description: Rate limited; back off and retry}
+        '503': {description: Retry unchanged event IDs}
+components:
+  schemas:
+    Event:
+      type: object
+      required: [id, type, elapsed_ms, sequence]
+      properties:
+        id: {type: string, format: uuid}
+        type:
+          type: string
+          enum: [page_ready, page_checkpoint, page_hidden, page_visible, page_leave, page_restore, click, filter_change, filters_apply, search_submit, form_submit, section_open, section_close, tab_open, media_play, media_pause, media_end, media_seek, media_progress, media_error, media_rate, score_opened, score_progress, score_page, premium_restriction, premium_opened, registration_started, checkout_started, match_completed]
+        elapsed_ms: {type: integer, minimum: 0, maximum: 86400000}
+        sequence: {type: integer, minimum: 1, maximum: 1000000}
+        metadata: {$ref: '#/components/schemas/Metadata'}
+    Metadata:
+      type: object
+      description: Allowlist; unknown fields discarded. No private form/annotation/payment values.
+      properties:
+        label: {type: string, nullable: true, maxLength: 300}
+        target: {type: string, nullable: true, maxLength: 2000}
+        control: {type: string, nullable: true, maxLength: 300}
+        value: {type: string, nullable: true, maxLength: 300}
+        selected: {type: boolean, nullable: true}
+        filters: {type: object, nullable: true}
+        search: {type: string, nullable: true, maxLength: 300}
+        media_kind: {type: string, nullable: true, enum: [audio, video]}
+        media_id: {type: string, nullable: true, maxLength: 300}
+        playback_id: {type: string, nullable: true, format: uuid}
+        piece_id: {type: integer, nullable: true, minimum: 1}
+        position_seconds: {type: number, nullable: true, minimum: 0, maximum: 604800}
+        duration_seconds: {type: number, nullable: true, minimum: 0, maximum: 604800}
+        played_seconds: {type: number, nullable: true, minimum: 0, maximum: 86400}
+        unique_watched_seconds: {type: number, nullable: true, minimum: 0, maximum: 604800}
+        unique_watched_percent: {type: number, nullable: true, minimum: 0, maximum: 100}
+        playback_rate: {type: number, nullable: true, minimum: 0, maximum: 16}
+        visible_ms: {type: integer, nullable: true, minimum: 0, maximum: 86400000}
+        reason: {type: string, nullable: true, maxLength: 100}
+        navigation: {type: string, nullable: true, maxLength: 100}
+        section: {type: string, nullable: true, maxLength: 300}
+x-planned-ios:
+  status: Not implemented; needs independent mobile authentication and Swift changes.
+  platform: app
+  prerequisites:
+    - Never authorize using submitted legacy user_id.
+    - Add authenticated visit/page creation and server-issued app tokens.
+    - Preserve deployed mobile routes and JSON contracts.
+  proposedBatch:
+    schema_version: 2
+    visit_token: SERVER_ISSUED_AUTHENTICATED_APP_VISIT_TOKEN
+    page_token: SERVER_ISSUED_AUTHENTICATED_APP_SCREEN_TOKEN
+    events:
+      - id: 4cf410de-44bc-4910-8a22-af64a09f598b
+        type: media_progress
+        elapsed_ms: 144000
+        sequence: 6
+        metadata:
+          piece_id: 1178
+          media_kind: video
+          media_id: performance-1178
+          playback_id: bc4ec439-9aa0-4ca0-bad7-cfd4d7ac839b
+          duration_seconds: 180
+          position_seconds: 170
+          played_seconds: 144
+          unique_watched_seconds: 144
+          unique_watched_percent: 80
+          playback_rate: 1
+  timing: >
+    Server-anchored UTC with monotonic screen offsets. Screen visibility is
+    separate from playback/attention. Union advancing AVPlayer content intervals,
+    excluding seeks/repeats/buffering; no per-second network events.
+    Flush compact summaries every 15 seconds and at transitions.

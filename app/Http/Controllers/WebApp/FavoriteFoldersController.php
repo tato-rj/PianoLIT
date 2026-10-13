@@ -77,6 +77,7 @@ class FavoriteFoldersController extends Controller
             'user_id' => auth()->user()->id,
             'name' => $form->name
         ]);
+        \App\Activity\Actions::record($request, 'folder_created', [], 'folder', $folder->id);
 
         if ($piece = Piece::find($form->piece_id)) {
             Favorite::toggle(
@@ -84,6 +85,7 @@ class FavoriteFoldersController extends Controller
                 $piece, 
                 $folder
             );
+            \App\Activity\Actions::record($request, 'favorite_changed', ['result' => true, 'folder_id' => $folder->id], 'piece', $piece->id);
         }
 
         $folders = auth()->user()->favoriteFolders()->withCount(['favorites as piece_favorites_count' => function ($query) use ($piece) {
@@ -103,10 +105,12 @@ class FavoriteFoldersController extends Controller
 
     public function update(Request $request, FavoriteFoldersForm $form, FavoriteFolder $folder)
     {
+        $renamed = $folder->name !== $request->name;
     	$folder->update([
     		'name' => $request->name,
     		'description' => $request->description
     	]);
+        \App\Activity\Actions::record($request, $renamed ? 'folder_renamed' : 'folder_updated', [], 'folder', $folder->id);
 
         return back()->with(['status' => 'The folder has been updated.']);
     }
@@ -117,6 +121,7 @@ class FavoriteFoldersController extends Controller
             throw ValidationException::withMessages(['folder' => 'You must own this folder to make changes to it.']);
 
     	$folder->delete();
+        \App\Activity\Actions::record($request, 'folder_deleted', [], 'folder', $folder->id);
 
     	return back()->with(['status' => 'The folder has been removed.']);
     }

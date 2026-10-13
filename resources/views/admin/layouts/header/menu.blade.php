@@ -13,7 +13,6 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Analytics', 'icon' => 'chart-line',
         'dropdown' => [
           ['name' => 'Users', 'route' => route('admin.analytics.users')],
-          ['name' => 'Logs', 'route' => route('admin.analytics.logs')],
           ['name' => 'Memberships', 'route' => route('admin.analytics.memberships')],
           ['name' => 'Subscriptions', 'route' => route('admin.analytics.subscriptions')],
           ['name' => 'Pieces', 'route' => route('admin.analytics.pieces')],
@@ -102,12 +101,12 @@
 
     </ul>
 
-    <div class="admin-sidebar-footer">
+{{--     <div class="admin-sidebar-footer">
       <span class="admin-theme-label">Light mode <small>Coming soon</small></span>
       <div class="admin-theme-switch" role="group" aria-label="Appearance (coming soon)">
         <button type="button" disabled aria-label="Light mode (current)">@icon('sun', ['mr' => 0])</button>
         <button type="button" disabled aria-label="Dark mode (coming soon)">@icon('moon', ['mr' => 0])</button>
       </div>
-    </div>
+    </div> --}}
   </div>
 </div>

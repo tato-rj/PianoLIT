@@ -157,7 +157,10 @@ class UsersController extends Controller
     public function purge(User $user)
     {
         DB::transaction(function () use ($user) {
-            foreach (['activity_events', 'activity_pages', 'activity_visits'] as $table) DB::table($table)->where('user_id', $user->id)->delete();
+            foreach (['activity_events', 'activity_pages', 'activity_visits'] as $table) {
+                DB::table($table)->where('user_id', $user->id)->orWhereIn($table === 'activity_visits' ? 'id' : 'visit_id',
+                    DB::table('activity_visit_links')->where('user_id', $user->id)->select('visit_id'))->delete();
+            }
         });
 
         $user->delete();

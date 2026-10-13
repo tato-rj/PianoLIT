@@ -31,7 +31,14 @@ class RecordActivity
         } catch (\Throwable $exception) {
             $status = $exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface ? $exception->getStatusCode()
                 : ($exception instanceof \Illuminate\Validation\ValidationException ? 422 : ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ? 404 : 500));
-            try { $recorder->request($request, new \Symfony\Component\HttpFoundation\Response('', $status), $page, $started); }
+            try {
+                if ($request->attributes->has('activity.page') && $page) {
+                    \DB::table('activity_pages')->where('id', $page->id)->delete();
+                    $request->attributes->remove('activity.page');
+                    $page = null;
+                }
+                $recorder->request($request, new \Symfony\Component\HttpFoundation\Response('', $status), $page, $started);
+            }
             catch (\Throwable $loggingException) { report($loggingException); }
             throw $exception;
         }

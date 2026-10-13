@@ -16,7 +16,7 @@ class ActivityController extends Controller
             'page_token' => 'required|string|max:4096',
             'events' => 'required|array|min:1|max:'.config('activity.batch_size'),
             'events.*.id' => 'required|uuid|distinct',
-            'events.*.type' => ['required', Rule::in(['page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_leave', 'page_restore', 'click', 'filter_change', 'filters_apply', 'search_submit', 'form_submit', 'section_open', 'section_close', 'tab_open', 'media_play', 'media_pause', 'media_end', 'media_seek', 'media_progress', 'media_error'])],
+            'events.*.type' => ['required', Rule::in(['page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_leave', 'page_restore', 'click', 'filter_change', 'filters_apply', 'search_submit', 'form_submit', 'section_open', 'section_close', 'tab_open', 'media_play', 'media_pause', 'media_end', 'media_seek', 'media_progress', 'media_error', 'media_rate', 'score_opened', 'score_progress', 'score_page', 'premium_restriction', 'premium_opened', 'registration_started', 'checkout_started', 'match_completed'])],
             'events.*.elapsed_ms' => 'required|integer|min:0|max:86400000',
             'events.*.sequence' => 'required|integer|min:1|max:1000000',
             'events.*.metadata' => 'sometimes|array',
@@ -38,13 +38,16 @@ class ActivityController extends Controller
             'events.*.metadata.navigation' => 'nullable|string|max:100',
             'events.*.metadata.section' => 'nullable|string|max:300',
             'events.*.metadata.piece_id' => 'nullable|integer|min:1',
+            'events.*.metadata.playback_id' => 'nullable|uuid',
+            'events.*.metadata.unique_watched_percent' => 'nullable|numeric|min:0|max:100',
+            'events.*.metadata.unique_watched_seconds' => 'nullable|numeric|min:0|max:604800',
         ]);
         $page = $recorder->pageFromToken($request, $data['page_token']);
         abort_unless($page, 403);
         foreach ($data['events'] as $event) {
             abort_if(strlen(json_encode($event['metadata'] ?? [])) > 8000, 422);
             // Browser offsets are estimates, bounded by the page's actual age.
-            abort_if($event['elapsed_ms'] > max(0, now()->diffInMilliseconds(\Carbon\Carbon::parse($page->opened_at))) + 60000, 422);
+            abort_if($event['elapsed_ms'] > max(0, now('UTC')->diffInMilliseconds(\App\Activity\Time::date($page, 'opened_at'))) + 60000, 422);
         }
         try {
             $recorder->browser($request, $page, $data['events']);

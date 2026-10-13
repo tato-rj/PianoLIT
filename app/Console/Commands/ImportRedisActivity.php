@@ -137,6 +137,7 @@ class ImportRedisActivity extends Command
             'event_id' => (string) Str::uuid(), 'user_id' => (int) $matches[1], 'platform' => $matches[2],
             'type' => $valid && $timestamp ? 'legacy_request' : 'legacy_unparsed', 'source' => 'redis',
             'occurred_at' => $timestamp, 'received_at' => now(), 'url' => $valid ? $data['url'] : null,
+            'occurred_at_utc' => $timestamp ? $timestamp->copy()->utc()->format('Y-m-d H:i:s.v') : null, 'received_at_utc' => now('UTC')->format('Y-m-d H:i:s.v'),
             'metadata' => json_encode($metadata, JSON_INVALID_UTF8_SUBSTITUTE),
             'legacy_identity' => $this->identity($key, $field),
             'legacy_key' => $key, 'legacy_field' => $fieldEncoding === 'base64' ? base64_encode($field) : $field,
@@ -146,7 +147,7 @@ class ImportRedisActivity extends Command
 
     private function writeRows(array $rows)
     {
-        DB::table('activity_events')->upsert($rows, ['legacy_identity'], ['user_id', 'platform', 'type', 'occurred_at', 'url', 'metadata', 'legacy_payload']);
+        DB::table('activity_events')->upsert($rows, ['legacy_identity'], ['user_id', 'platform', 'type', 'occurred_at', 'occurred_at_utc', 'url', 'metadata', 'legacy_payload']);
     }
 
     private function identity($key, $field)
