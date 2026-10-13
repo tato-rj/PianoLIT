@@ -254,7 +254,10 @@ class RouteServiceProvider extends ServiceProvider
     public function getFolder($path)
     {
         foreach (dirToArray($path) as $route) {
-            require base_path($path . '/' . $route);
+            $file = base_path($path . '/' . $route);
+            if (is_file($file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+                require $file;
+            }
         }
     }
 }

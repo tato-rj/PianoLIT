@@ -12,6 +12,28 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminSubdomainTest extends ReviewTestCase
 {
+    public function test_route_discovery_ignores_non_php_metadata_without_emitting_output()
+    {
+        ob_start();
+        try {
+            $provider = new RouteServiceProvider($this->app);
+            $provider->getFolder('tests/Review/fixtures/route-discovery');
+            $provider->map(); // Real folders may contain Finder metadata after file cleanup.
+            $output = ob_get_contents();
+        } finally {
+            ob_end_clean();
+        }
+
+        $this->assertSame('', $output);
+        $routes = app('router')->getRoutes();
+        $routes->refreshNameLookups();
+        $this->assertNotNull($routes->getByName('review.route-discovery'));
+
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.home'))->assertOk();
+        $this->assertStringStartsWith('<!doctype html>', $response->getContent());
+    }
+
     protected function prepareUrlForRequest($uri)
     {
         // Laravel's test helper trims trailing slashes from absolute request URLs.

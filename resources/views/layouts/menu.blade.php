@@ -60,8 +60,6 @@
 
       @include('layouts.menu.link', ['label' => 'Blog', 'url' => route('posts.index')])
 
-      {{-- @include('layouts.menu.link', ['label' => 'Metaverse', 'url' => route('metaverse.index')]) --}}
-
       @auth
 
         @include('layouts.menu.user')

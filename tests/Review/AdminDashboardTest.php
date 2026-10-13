@@ -118,10 +118,10 @@ class AdminDashboardTest extends ReviewTestCase
             ->assertSee('disabled aria-label="Dark mode (coming soon)"', false)
             ->assertSee('action="'.route('admin.logout').'"', false)
             ->assertDontSee('www.gstatic.com')->assertDontSee('PullToRefresh');
-        foreach (['api', 'statistics', 'users', 'subscriptions', 'repertoire', 'shop', 'metaverse', 'blog', 'quizzes', 'infographics', 'crash-courses', 'media'] as $id) {
+        foreach (['api', 'statistics', 'users', 'subscriptions', 'repertoire', 'shop', 'blog', 'quizzes', 'infographics', 'crash-courses'] as $id) {
             $response->assertSee('id="'.$id.'" data-bs-parent="#navbarResponsive"', false);
         }
-        foreach (['admin.pieces.index', 'admin.timeline-events.index', 'admin.stats.memberships', 'admin.users.logs', 'admin.memberships.logs', 'admin.subscriptions.lists.index', 'admin.escores.topics.index', 'admin.posts.gifts.index', 'admin.quizzes.media.images', 'admin.crashcourses.subscriptions.index', 'admin.timelines.index'] as $route) {
+        foreach (['admin.pieces.index', 'admin.timeline-events.index', 'admin.stats.memberships', 'admin.users.logs', 'admin.memberships.logs', 'admin.subscriptions.lists.index', 'admin.escores.topics.index', 'admin.posts.gifts.index', 'admin.quizzes.media.images', 'admin.crashcourses.subscriptions.index', 'admin.clips.index'] as $route) {
             $response->assertSee(route($route), false);
         }
         $this->assertDatabaseCount('activity_events', 0);

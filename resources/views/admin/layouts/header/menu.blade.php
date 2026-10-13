@@ -1,6 +1,7 @@
-  <div class="collapse admin-sidebar-body" id="navbarResponsive">
+<div class="collapse admin-sidebar-collapse" id="navbarResponsive">
+  <div class="admin-sidebar-body">
     <ul class="admin-menu">
-      @include('admin.layouts.header.item', ['route' => route('admin.home'), 'name' => 'Overview', 'icon' => 'layout-dashboard'])
+
 
       @editor
         @include('admin.layouts.header.item', ['route' => route('admin.editors.edit', auth('admin')->id()), 'name' => 'My profile', 'icon' => 'pencil'])
@@ -75,12 +76,6 @@
 
         @include('admin.layouts.header.divider', ['label' => 'FREE CONTENT'])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Metaverse', 'icon' => 'flame',
-        'dropdown' => [
-          ['route' => route('admin.metaverse.index'), 'name' => 'Events'],
-          ['route' => route('admin.metaverse.locations.index'), 'name' => 'Locations']
-        ]])
-
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Blog', 'icon' => 'newspaper',
         'dropdown' => [
           ['route' => route('admin.posts.index'), 'name' => 'Posts'],
@@ -112,12 +107,7 @@
 
         @include('admin.layouts.header.divider', ['label' => 'EXTRA'])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Media', 'icon' => 'circle-play',
-        'dropdown' => [
-          ['route' => route('admin.clips.index'), 'name' => 'Video Clips'],
-        ]])
-
-        @include('admin.layouts.header.item', ['route' => route('admin.timelines.index'), 'name' => 'Timeline', 'icon' => 'list'])
+        @include('admin.layouts.header.item', ['route' => route('admin.clips.index'), 'name' => 'Video clips', 'icon' => 'circle-play'])
       @endmanager
 
     </ul>
@@ -130,3 +120,4 @@
       </div>
     </div>
   </div>
+</div>

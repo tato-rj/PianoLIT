@@ -28,6 +28,7 @@ body.admin-shell {
     .admin-brand img { border-radius: 9px; }
     .admin-brand small { display: block; margin-top: 7px; color: #a1a9a9; font-size: 8px; letter-spacing: 2px; }
     > nav { display: flex; flex: 1; min-height: 0; }
+    .admin-sidebar-collapse { display: flex; flex: 1; min-height: 0; width: 100%; }
     .admin-sidebar-body { display: flex; flex: 1; flex-direction: column; min-height: 0; width: 100%; }
     .admin-menu { overflow-y: auto; flex: 1; min-height: 0; margin: 0 -6px 0 0; padding: 0 6px 12px 0; list-style: none; scrollbar-width: thin; scrollbar-color: #414849 transparent; }
     .admin-menu::-webkit-scrollbar { width: 3px; }
@@ -234,9 +235,12 @@ body.admin-dashboard-page {
     .admin-sidebar .admin-brand { font-size: 21px; }
     .admin-sidebar .admin-brand small { font-size: 7px; margin-top: 5px; }
     .admin-menu-toggle { display: flex; justify-content: center; align-items: center; width: 40px; height: 40px; background: #31383b; border: 1px solid #444d4f; border-radius: 50%; color: #fff; }
-    .admin-sidebar .admin-sidebar-body:not(.show):not(.collapsing) { display: none; }
-    .admin-sidebar .admin-sidebar-body { margin-top: 15px; }
-    .admin-sidebar .admin-menu { max-height: 55vh; flex: auto; margin: 0; padding-right: 0; }
+    // Animate an outer block so flex shrinking cannot change Bootstrap's measured height.
+    .admin-sidebar > nav { display: block; flex: none; }
+    .admin-sidebar .admin-sidebar-collapse { display: block; flex: none; }
+    .admin-sidebar .admin-sidebar-collapse:not(.show):not(.collapsing) { display: none; }
+    .admin-sidebar .admin-sidebar-body { display: block; padding-top: 15px; }
+    .admin-sidebar .admin-menu { max-height: 55vh; margin: 0; padding-right: 0; }
     .admin-sidebar .admin-sidebar-footer { margin-top: 12px; }
     .admin-sidebar .admin-theme-switch { max-width: 220px; }
     .admin-shell .admin-main { margin: 12px; }
