@@ -11,7 +11,7 @@
     </select></label>
     @unless(!empty($profileFilters))
     <label>Audience<select name="audience">
-        @foreach(['registered' => 'Registered', 'anonymous' => 'Anonymous', 'all' => 'Everyone', ] as $value => $label)
+        @foreach(['all' => 'Everyone', 'registered' => 'Registered', 'anonymous' => 'Anonymous'] as $value => $label)
         <option value="{{ $value }}" @if($filters->values['audience'] === $value) selected @endif>{{ $label }}</option>
         @endforeach
     </select></label>
