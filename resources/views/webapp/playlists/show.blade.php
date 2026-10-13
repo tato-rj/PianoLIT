@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app')
+@extends('webapp.layouts.app', ['title' => $playlist->name])
 
 @section('content')
 <div class="text-center mb-3">
