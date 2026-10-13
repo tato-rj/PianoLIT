@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app')
+@extends('webapp.layouts.app', ['title' => $folder->name])
 
 @section('content')
 <div class="playlist-brand">@include('webapp.layouts.header')</div>

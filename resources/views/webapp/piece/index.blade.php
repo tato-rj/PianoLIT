@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => $piece->short_name])
+@extends('webapp.layouts.app', ['title' => $piece->medium_name_with_composer])
 
 @push('header')
 <link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">

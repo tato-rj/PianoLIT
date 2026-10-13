@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => 'Search results'])
+@extends('webapp.layouts.app', ['title' => 'Search: '. request('search')])
 
 @push('header')
 <script type="text/javascript">

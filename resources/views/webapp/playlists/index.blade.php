@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => 'Collections'])
+@extends('webapp.layouts.app', ['title' => 'Piano Collections'])
 
 @section('content')
 @component('webapp.layouts.header', ['title' => 'Collections', 'subtitle' => 'Find something beautiful to play.'])

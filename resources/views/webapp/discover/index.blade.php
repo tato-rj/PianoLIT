@@ -1,4 +1,4 @@
-@extends('webapp.layouts.app', ['title' => 'Discover'])
+@extends('webapp.layouts.app', ['title' => 'Discover new and exciting pieces to play'])
 
 @push('header')
 <style>
