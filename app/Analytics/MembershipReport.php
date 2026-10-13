@@ -16,6 +16,15 @@ class MembershipReport
         'pending' => 'Not checked', 'sandbox' => 'Sandbox purchase',
     ];
 
+    public function activeTotals($start, $end)
+    {
+        $ready = Schema::hasTable('apple_membership_checks') && Schema::hasTable('apple_membership_sync_runs');
+        return DB::query()->fromSub($this->query($ready), 'members')
+            ->whereIn('membership_status', ['active', 'grace_period'])
+            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN membership_started_at >= ? AND membership_started_at <= ? THEN 1 ELSE 0 END) as added', [$start, $end])
+            ->first();
+    }
+
     public function get(Request $request)
     {
         $filters = $request->validate([
@@ -66,7 +75,7 @@ class MembershipReport
             'counts' => $counts, 'totals' => $totals, 'filters' => $filters, 'labels' => self::LABELS,
             'monitorReady' => $ready,
             'lastRun' => $ready ? DB::table('apple_membership_sync_runs')->orderByDesc('id')->first() : null,
-        ];
+        ] + app(SuperUserReport::class)->get($request);
     }
 
     private function query($ready)
@@ -104,7 +113,7 @@ class MembershipReport
             WHEN c.status = 'trial' THEN 'trial'
             WHEN c.status = 'active' THEN 'active'
             ELSE 'needs_review' END" : "'pending'";
-        $q->select(['m.id as membership_id', 'm.user_id', 'u.first_name', 'u.last_name', 'u.email', 'u.super_user'])
+        $q->select(['m.id as membership_id', 'm.created_at as membership_started_at', 'm.user_id', 'u.first_name', 'u.last_name', 'u.email', 'u.super_user'])
             ->selectRaw("CASE WHEN s.id IS NOT NULL THEN 'stripe' ELSE 'apple' END AS provider")
             ->selectRaw("CASE WHEN s.id IS NOT NULL THEN {$stripeStatus} ELSE {$appleStatus} END AS membership_status", $ready ? [$now, $now, now()->subHours(48)->toDateTimeString(), $now, $now, $now] : [$now, $now])
             ->selectRaw($ready ? 'COALESCE(s.plan, c.product_id, a.plan) as plan' : 'COALESCE(s.plan, a.plan) as plan')

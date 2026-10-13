@@ -3,7 +3,7 @@
 namespace App\Services\Admin;
 
 use App\{User, Piece, Subscription};
-use App\Blog\Post;
+use App\Analytics\MembershipReport;
 use App\Quiz\Quiz;
 use App\Infograph\Infograph;
 use App\CrashCourse\CrashCourse;
@@ -49,20 +49,21 @@ class Dashboard
 
         $definitions = [
             [User::query(), 'Total users', 'users', 'admin.users.index'],
+            [null, 'Active memberships', 'credit-card', 'admin.analytics.memberships'],
             [Piece::query(), 'Pieces in repertoire', 'music', 'admin.pieces.index'],
             [Subscription::query(), 'Email subscribers', 'mail', 'admin.subscriptions.index'],
-            [Post::published(), 'Published posts', 'newspaper', 'admin.posts.index'],
         ];
         $metrics = [];
         foreach ($definitions as [$query, $label, $icon, $route]) {
-            $dateColumn = $label === 'Published posts' ? 'published_at' : 'created_at';
             // Model defaults such as $withCount already selected users.* / pieces.*.
             // Apply eligibility scopes, then replace those columns with aggregates only.
-            $row = $query->toBase()->select([])
-                ->selectRaw('COUNT(*) as total, SUM(CASE WHEN '.$dateColumn.' >= ? AND '.$dateColumn.' <= ? THEN 1 ELSE 0 END) as added', [$start, $end])->first();
+            $row = $query ? $query->toBase()->select([])
+                ->selectRaw('COUNT(*) as total, SUM(CASE WHEN created_at >= ? AND created_at <= ? THEN 1 ELSE 0 END) as added', [$start, $end])->first()
+                : app(MembershipReport::class)->activeTotals($start, $end);
             $metrics[] = ['label' => $label, 'icon' => $icon, 'url' => route($route),
                 'total' => (int) $row->total, 'added' => (int) $row->added,
-                'share' => $row->total ? round($row->added / $row->total * 100) : 0];
+                'share' => $row->total ? round($row->added / $row->total * 100) : 0,
+                'membership' => $query === null];
         }
         $library = [];
         foreach ([[Quiz::class, 'Quizzes', 'circle-help', 'admin.quizzes.index'],

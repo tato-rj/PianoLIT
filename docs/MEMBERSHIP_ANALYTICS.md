@@ -110,3 +110,48 @@ The admin SQL report aggregates and paginates in the database. It does not load
 every user's Eloquent model or make per-row source/ownership queries. The legacy
 load-more routes remain registered for compatibility but the new directory does
 not use them. All browser requests remain on session-authenticated admin routes.
+
+Overview uses the same Active count (active plus billing grace periods), directly
+after Total users in At a glance. Its period badge counts memberships whose record
+started in the selected period and is still active now; it does not claim to count
+all historical activations or renewals. The card links to membership analytics.
+
+
+## Super-user access reporting
+
+Membership analytics also lists all accounts whose current `super_user` flag is
+true, independently of billing records and the provider/status filters. Its total
+includes accounts with no subscription and expired subscriptions. Existing paid
+billing records still appear in the membership directory, so the super-user total
+must not simply be added to paid totals to infer distinct accounts with access.
+The new section has account links, name/email/ID search, independent pagination,
+current access grant date and duration, granting admin, account creation date and
+signup platform. Account creation is never substituted for a missing grant date.
+
+Deploy `2026_10_13_190000_create_super_user_access_periods_table.php` with the new
+admin controller/report/template and rebuilt admin CSS/manifest. Running the normal
+`php artisan migrate` during deployment applies it. No additional scheduled command
+is required for super-user tracking. The migration records existing super users as
+first observed at migration time with an unknown historical grant date and admin;
+it does not change any user's flag or entitlement. The page can still show current
+super users before this migration, with unknown dates and a setup notice.
+
+The existing admin PATCH route `admin.users.super-status` now uses an admin-only
+controller. It preserves the route, session/CSRF checks, current toggle behavior,
+JSON response and existing grant email. Under a user row lock and transaction it
+records newly enabled access with the time and authenticated admin, closes revoked
+access periods and creates a fresh period on re-grant. The audit table enforces one
+current period per user. Audit-write failure rolls back the access change before
+any grant mail is sent. The `users` table, User model, shared/mobile controller and
+iOS routes/serialization remain untouched. The current flag remains the source of
+truth for access and for this directory.
+
+Grant dates capture changes made through the existing admin toggle after the
+tracking migration. Direct database edits or future alternate grant paths are not
+audited by this controller and may have unknown dates. If an external flag change
+left an old current period, a later admin re-grant replaces that association without
+inventing a historical revocation date. Historical access periods are kept in SQL;
+the directory displays the current period only. Deleted accounts cascade-delete
+their periods; deleting a granting/revoking admin preserves the timestamps while
+removing the admin reference. Existing super users require evidence before any
+historical grant date could be backfilled.

@@ -284,7 +284,7 @@ class AppleMembershipMonitorTest extends ReviewTestCase
         DB::enableQueryLog(); DB::flushQueryLog();
         $this->assertSame(31, $this->report()['memberships']->total());
         $this->assertSame($small, count(DB::getQueryLog()));
-        $this->assertLessThanOrEqual(6, $small);
+        $this->assertLessThanOrEqual(10, $small); // Includes independent super-user totals/directory.
         DB::disableQueryLog();
         $this->actingAs(create(Admin::class), 'admin')->withExceptionHandling();
         $this->getJson(route('admin.analytics.memberships', ['sort' => 'password']))->assertStatus(422);
@@ -304,5 +304,42 @@ class AppleMembershipMonitorTest extends ReviewTestCase
         $this->travel(1)->seconds();
         $source->update(['latest_receipt' => 'updated-receipt']);
         $this->assertSame(1, $this->report()['totals']['pending']);
+    }
+
+    public function test_overview_active_memberships_match_analytics_and_keep_the_existing_card_layout()
+    {
+        foreach (['active', 'grace_period', 'trial', 'expired', 'revoked', 'needs_review', 'pending', 'sandbox'] as $status) {
+            [$user, $source] = $this->apple();
+            if ($status === 'pending') continue;
+            DB::table('apple_membership_checks')->insert([
+                'apple_membership_id' => $source->id, 'status' => $status === 'sandbox' ? 'active' : $status,
+                'environment' => $status === 'sandbox' ? 'Sandbox' : 'Production',
+                'expires_at' => in_array($status, ['expired', 'grace_period']) ? now()->subDay() : now()->addMonth(),
+                'grace_expires_at' => $status === 'grace_period' ? now()->addDay() : null,
+                'checked_at' => now(), 'source_updated_at' => $source->updated_at,
+            ]);
+            if ($status === 'active') $user->membership()->update(['created_at' => now()->subMonth()]);
+        }
+        foreach (['active', 'trialing', 'canceled'] as $status) {
+            $user = Model::withoutEvents(function () { return create(User::class); });
+            $source = Stripe::create(['stripe_id' => 'overview-'.$user->id, 'plan' => 'monthly', 'status' => $status, 'renews_at' => now()->addMonth()]);
+            $user->membership()->create(['source_type' => Stripe::class, 'source_id' => $source->id]);
+        }
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.home'))->assertOk()->assertDontSee('Published posts');
+        $metric = $response->viewData('dashboard')['metrics'][1];
+        $this->assertSame('Active memberships', $metric['label']);
+        $this->assertSame(3, $metric['total']);
+        $this->assertSame(2, $metric['added']);
+        $totals = $this->report()['totals'];
+        $this->assertSame($totals['active'] + $totals['grace_period'], $metric['total']);
+        $document = new \DOMDocument; @$document->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($document);
+        $cards = $xpath->query('//div[@class="admin-metrics-grid"]/a');
+        $this->assertSame(4, $cards->length);
+        $this->assertStringContainsString('Total users', $cards[0]->textContent);
+        $this->assertStringContainsString('Active memberships', $cards[1]->textContent);
+        $this->assertSame(route('admin.analytics.memberships'), $cards[1]->getAttribute('href'));
+        $this->assertSame(1, $xpath->query('.//div[@class="admin-metric-progress"]', $cards[1])->length);
     }
 }

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua ma">
-    @include('admin.components.page.title', ['title' => 'Membership analytics', 'subtitle' => 'Stripe and Apple memberships, with automatic Apple status checks.'])
+    @include('admin.components.page.title', ['title' => 'Membership analytics', 'subtitle' => 'Stripe and Apple memberships, automatic Apple checks and super-user access.'])
     @php
         $reviewCount = $totals['needs_review'] + $totals['pending'] + $totals['payment_issue'];
         $inactiveCount = $totals['expired'] + $totals['revoked'] + $totals['paused'];
@@ -53,9 +53,12 @@
         </section>
     </div>
 
+    @include('admin.pages.analytics.memberships.super-users')
+
     <section class="ua-card ma-directory" aria-labelledby="ma-directory-title">
         <div class="ua-section-heading"><div><h2 id="ma-directory-title">Membership directory</h2><p>{{number_format($memberships->total())}} matching accounts · Dates shown in {{config('app.timezone')}}.</p></div></div>
         <form class="ua-filters" method="GET" action="{{route('admin.analytics.memberships')}}" aria-label="Membership filters">
+            @foreach($superUserFilters as $key => $value)@if($value !== null && $value !== '')<input type="hidden" name="{{$key}}" value="{{$value}}">@endif @endforeach
             <label class="ua-search">Find an account<input type="search" name="search" value="{{$filters['search'] ?? ''}}" placeholder="Name, email or user ID" maxlength="160"></label>
             <label>Provider<select name="provider"><option value="">All providers</option>@foreach(['stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS'] as $key => $label)<option value="{{$key}}" @if(($filters['provider'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
             <label>Status<select name="status"><option value="">All statuses</option>@foreach($labels as $key => $label)<option value="{{$key}}" @if(($filters['status'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>

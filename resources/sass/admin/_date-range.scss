@@ -1,0 +1,36 @@
+.admin-date-range {
+  position: relative; min-width: 0; color: #242b27; font-size: var(--font-size-base);
+  .admin-date-range-label { display: block; color: #5c665e; font-size: var(--font-size-sm); margin-bottom: 5px; }
+  > summary { display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 6px 13px; border: 1px solid #c1cddf; border-radius: 16px; background: rgba(255,255,255,.8); cursor: pointer; list-style: none; }
+  > summary::-webkit-details-marker { display: none; }
+  > summary > .app-icon:last-child { margin-left: auto; font-size: var(--font-size-sm); }
+  > summary:focus-visible { outline: 2px solid #43764c; outline-offset: 4px; }
+  .admin-date-range-calendar { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; background: #f1f3f4; }
+  .admin-date-range-panel { position: absolute; z-index: 1040; top: calc(100% + 8px); left: 0; width: 600px; max-width: calc(100vw - 32px); display: grid; grid-template-columns: 155px minmax(0,1fr); gap: 22px; padding: 18px; border: 1px solid #e2e7ed; border-radius: 14px; background: #fff; box-shadow: 0 14px 40px rgba(24,30,34,.14); overflow: auto; }
+  &:not([open]) .admin-date-range-panel { display: none; }
+  .admin-date-range-presets { display: flex; flex-direction: column; gap: 3px; padding-right: 14px; border-right: 1px solid #e8ecef; }
+  .admin-date-range-presets button { border: 0; border-radius: 9px; padding: 8px 10px; background: transparent; color: #687169; font: inherit; text-align: left; cursor: pointer; }
+  .admin-date-range-presets button:hover { background: #f4f6f8; color: #242b27; }
+  .admin-date-range-presets button[aria-pressed="true"] { background: #e8edf3; color: #242b27; }
+  .admin-date-range-editor { display: flex; flex-direction: column; min-width: 0; gap: 18px; }
+  .admin-date-range-editor h3 { font-size: var(--font-size-base); font-weight: 600; letter-spacing: 0; margin: 3px 0 0; }
+  .admin-date-range-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+  .admin-date-range-fields label { display: flex; flex-direction: column; gap: 7px; min-width: 0; margin: 0; color: #687169; font-size: var(--font-size-sm); }
+  .admin-date-range-panel input { width: 100%; min-width: 0; min-height: 42px; padding: 9px 10px; border: 1px solid #dfe4ea; border-radius: 12px; background: #fff; color: #242b27; font: inherit; font-size: var(--font-size-base); }
+  .admin-date-range-error { margin: 0; color: #a53c35; font-size: var(--font-size-sm); }
+  .admin-date-range-footer { display: flex; justify-content: flex-end; align-items: center; gap: 18px; margin-top: auto; padding-top: 18px; border-top: 1px solid #e8ecef; }
+  .admin-date-range-footer button { font: inherit; font-size: var(--font-size-base); cursor: pointer; }
+  .admin-date-range-clear { border: 0; background: transparent; color: #687169; padding: 10px 4px; }
+  .admin-date-range-apply { min-width: 90px; padding: 10px 18px; border: 1px solid #181e22; border-radius: 24px; background: #181e22; color: #fff; }
+  .admin-date-range-apply:hover { background: #354139; }
+  button:focus-visible, input:focus-visible { outline: 2px solid #43764c; outline-offset: 3px; }
+}
+@media (max-width: 700px) {
+  .ua .ua-filters > .admin-date-range { flex: 1 1 40%; }
+  .admin-date-range .admin-date-range-panel { grid-template-columns: minmax(0,1fr); gap: 16px; padding: 16px; }
+  .admin-date-range .admin-date-range-presets { flex-direction: row; flex-wrap: wrap; padding: 0 0 12px; border-right: 0; border-bottom: 1px solid #e8ecef; }
+  .admin-date-range .admin-date-range-presets button { padding: 7px 10px; font-size: var(--font-size-sm); }
+}
+@media (max-width: 380px) {
+  .admin-date-range .admin-date-range-fields { grid-template-columns: minmax(0,1fr); }
+}

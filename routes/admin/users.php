@@ -2,7 +2,7 @@
 
 Route::prefix('users')->name('users.')->group(function() {
 
-	Route::patch('{user}/super-status', 'MembershipsController@superStatus')->name('super-status');
+	Route::patch('{user}/super-status', 'Admin\SuperUserAccessController@update')->name('super-status');
 
 	Route::get('', 'Admin\UsersController@index')->name('index');
 

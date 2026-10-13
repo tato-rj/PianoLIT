@@ -88,15 +88,15 @@
   </section>
 
   <section class="admin-metrics-section" aria-labelledby="admin-metrics-title">
-    <div class="admin-section-heading"><h2 id="admin-metrics-title">At a glance</h2><span>All-time totals · additions in the last {{$dashboard['days']}} days</span></div>
+    <div class="admin-section-heading"><h2 id="admin-metrics-title">At a glance</h2><span>Current totals · additions in the last {{$dashboard['days']}} days</span></div>
     <div class="admin-metrics-grid">
       @foreach($dashboard['metrics'] as $metric)
       <a class="admin-glass-card admin-metric-card" href="{{$metric['url']}}">
         <div class="admin-metric-heading"><h3>{{$metric['label']}}</h3><span class="admin-metric-icon is-{{$loop->index}}">@icon($metric['icon'], ['mr' => 0])</span></div>
         <div class="admin-metric-value"><strong>{{number_format($metric['total'])}}</strong><span>+{{number_format($metric['added'])}}</span></div>
-        <p>{{$metric['added'] ? 'New in this period' : 'No additions this period'}}</p>
+        <p>{{$metric['membership'] ? ($metric['added'] ? 'Started in this period' : 'None started this period') : ($metric['added'] ? 'New in this period' : 'No additions this period')}}</p>
         <div class="admin-metric-progress"><span><i style="width: {{$metric['share']}}%"></i></span><strong>{{$metric['share']}}%</strong></div>
-        <small class="admin-metric-footnote">of total added this period</small>
+        <small class="admin-metric-footnote">{{$metric['membership'] ? 'of total started this period' : 'of total added this period'}}</small>
       </a>
       @endforeach
     </div>

@@ -20,10 +20,7 @@
   .ua-button-secondary:hover { color: #242b27; background: #fff; }
   .ua-filter-period { margin-left: auto; color: #687169; font-size: var(--font-size-sm); }
   .ua-filter-period small { display: block; }
-  .ua-custom-dates { font-size: var(--font-size-sm); padding: 10px 0; }
-  .ua-custom-dates[open] { display: flex; flex-wrap: wrap; gap: 8px; max-width: 300px; }
-  .ua-custom-dates summary, .ua-directory-options summary { cursor: pointer; }
-  .ua-custom-dates small { display: block; }
+  .ua-directory-options summary { cursor: pointer; }
   .ua-metrics { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 12px; }
   .ua-metrics-four { grid-template-columns: repeat(4,minmax(0,1fr)); }
   .ua-metric { padding: 20px; }

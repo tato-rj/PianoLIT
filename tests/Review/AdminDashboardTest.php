@@ -3,7 +3,6 @@
 namespace Tests\Review;
 
 use App\{Admin, User, Piece, Subscription};
-use App\Blog\Post;
 use App\Services\Admin\Dashboard;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -81,23 +80,22 @@ class AdminDashboardTest extends ReviewTestCase
         }
     }
 
-    public function test_metrics_use_real_totals_and_publication_dates_without_model_serialization_queries()
+    public function test_metrics_use_real_totals_without_model_serialization_queries()
     {
         $user = $this->user();
         $old = $this->user('Old'); $old->update(['created_at' => now()->subMonths(2)]);
         Model::withoutEvents(function () {
             create(Piece::class);
             create(Subscription::class);
-            create(Post::class, ['created_at' => now()->subMonths(2), 'published_at' => now()->subDay()]);
-            create(Post::class, ['published_at' => null]);
         });
         DB::enableQueryLog(); DB::flushQueryLog();
         $data = app(Dashboard::class)->data(7, 'all');
         $queries = DB::getQueryLog(); DB::disableQueryLog();
-        $this->assertSame([2, 1, 1, 1], array_column($data['metrics'], 'total'));
-        $this->assertSame([1, 1, 1, 1], array_column($data['metrics'], 'added'));
+        $this->assertSame(['Total users', 'Active memberships', 'Pieces in repertoire', 'Email subscribers'], array_column($data['metrics'], 'label'));
+        $this->assertSame([2, 0, 1, 1], array_column($data['metrics'], 'total'));
+        $this->assertSame([1, 0, 1, 1], array_column($data['metrics'], 'added'));
         $this->assertEquals(50, $data['metrics'][0]['share']);
-        $this->assertCount(13, $queries); // Includes one all-time country aggregate.
+        $this->assertCount(15, $queries); // Includes membership schema readiness and the country aggregate.
         $this->assertStringNotContainsString('post_topic', implode(' ', array_column($queries, 'query')));
         $metricQueries = collect($queries)->filter(function ($query) {
             return strpos($query['query'], ' as added') !== false;
