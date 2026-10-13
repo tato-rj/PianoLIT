@@ -142,11 +142,22 @@ body.admin-dashboard-page {
     .admin-trend-visual { display: flex; align-items: flex-end; gap: 18px; margin-top: 21px; }
     .admin-trend-visual h3 { flex: 0 0 150px; padding-bottom: 22px; font-size: var(--font-size-h3); font-weight: 500; line-height: 1.2; letter-spacing: -1px; }
     .admin-trend-visual h3 > span { display: block; margin-top: 12px; color: #818780; font-family: var(--font-family-body); font-size: var(--font-size-sm); line-height: 1.5; letter-spacing: 0; }
-    .admin-chart { flex: 1; min-width: 0; }
-    .admin-chart-bars { display: flex; align-items: flex-end; gap: 5px; height: 130px; border-bottom: 1px solid #e3e8df; background: repeating-linear-gradient(to top, transparent 0, transparent 42px, #e9ece6 42px, #e9ece6 43px); }
-    .admin-chart-column { display: flex; justify-content: center; align-items: flex-end; flex: 1; height: 100%; min-width: 0; }
-    .admin-chart-bar { display: block; width: 100%; max-width: 28px; height: var(--bar-height); border-radius: 3px 3px 0 0; background: repeating-linear-gradient(90deg, transparent 0, transparent 3px, rgba(255,255,255,.7) 3px, rgba(255,255,255,.7) 5px), linear-gradient(to top, hsl(var(--bar-hue), 67%, 73%), hsl(var(--bar-hue), 77%, 82%)); }
-    .admin-chart-axis { display: flex; justify-content: space-between; padding-top: 9px; color: #788075; font-size: var(--font-size-xs); }
+    .admin-chart { --admin-chart-height: 160px; flex: 1; min-width: 0; }
+    .admin-chart-unit { color: #737c73; font-size: var(--font-size-sm); }
+    .admin-chart-layout { display: flex; gap: 10px; }
+    .admin-chart-y { position: relative; flex: none; height: var(--admin-chart-height); margin-top: 32px; color: #737c73; font-size: var(--font-size-sm); }
+    .admin-chart-y > span { position: absolute; right: 0; transform: translateY(50%); line-height: 1.5; }
+    .admin-chart-scroll { flex: 1; min-width: 0; overflow-x: auto; padding-top: 32px; }
+    .admin-chart-canvas { position: relative; min-width: var(--admin-chart-width); }
+    .admin-chart-grid { position: absolute; top: 0; left: 0; right: 0; height: var(--admin-chart-height); }
+    .admin-chart-grid > span { position: absolute; left: 0; right: 0; border-top: 1px solid #e3e8df; }
+    .admin-chart-bars { position: relative; display: flex; gap: 5px; margin: 0; padding: 0; list-style: none; }
+    .admin-chart-column { flex: 1; min-width: 0; text-align: center; }
+    .admin-chart-track { display: flex; justify-content: center; align-items: flex-end; height: var(--admin-chart-height); }
+    .admin-chart-bar { position: relative; display: block; width: 100%; max-width: 28px; height: var(--bar-height); border-radius: 3px 3px 0 0; background: repeating-linear-gradient(90deg, transparent 0, transparent 3px, rgba(255,255,255,.7) 3px, rgba(255,255,255,.7) 5px), linear-gradient(to top, hsl(var(--bar-hue), 67%, 73%), hsl(var(--bar-hue), 77%, 82%)); }
+    .admin-chart-count { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); color: #384639; font-size: var(--font-size-base); line-height: 1.5; white-space: nowrap; }
+    .admin-chart-date { display: block; margin: 10px 0 6px; color: #737c73; font-size: var(--font-size-sm); line-height: 1.5; white-space: nowrap; }
+    .admin-chart-hint { margin-top: 8px; color: #737c73; font-size: var(--font-size-sm); }
     .admin-chart-empty { margin-top: 12px; color: #737b72; font-size: var(--font-size-sm); }
     .admin-chart-data { margin-top: 9px; color: #64715f; font-size: var(--font-size-xs); }
     .admin-chart-data summary { cursor: pointer; width: max-content; }
@@ -229,7 +240,13 @@ body.admin-dashboard-page {
     .admin-shell .content-wrapper { padding: 38px; }
     .admin-dashboard { padding: 38px; }
     .admin-dashboard .admin-activity-grid { grid-template-columns: minmax(0, 3fr) minmax(300px, 1fr); }
-    .admin-dashboard .admin-chart-bars { height: 185px; }
+    .admin-dashboard .admin-chart { --admin-chart-height: 185px; }
+}
+@media (max-width: 1199px) {
+    .admin-dashboard .admin-trend-visual { display: block; }
+    .admin-dashboard .admin-trend-visual h3 { padding-bottom: 20px; }
+    .admin-dashboard .admin-trend-visual h3 br { display: none; }
+    .admin-dashboard .admin-trend-visual h3 > span { margin-top: 6px; }
 }
 @media (max-width: 1199px) and (min-width: 992px) {
     .admin-sidebar { width: 225px; padding: 24px 12px 14px; }
@@ -293,7 +310,10 @@ body.admin-dashboard-page {
     .admin-dashboard .admin-trend-panel { padding: 13px 10px 10px; }
     .admin-dashboard .admin-trend-visual { gap: 12px; }
     .admin-dashboard .admin-trend-visual h3 { flex-basis: 120px; font-size: var(--font-size-h4); }
-    .admin-dashboard .admin-chart-bars { gap: 3px; height: 115px; }
+    .admin-dashboard .admin-chart { --admin-chart-height: 150px; }
+    .admin-dashboard .admin-chart-bars { gap: 3px; }
+    .admin-dashboard .admin-chart-canvas { min-width: var(--admin-chart-mobile-width); }
+    .admin-dashboard .admin-chart-date > span { display: block; }
     .admin-dashboard .admin-engaged-card { padding: 21px; }
     .admin-dashboard .admin-card-heading h3 { font-size: var(--font-size-h5); }
     .admin-dashboard .admin-engaged-empty { min-height: 200px; }

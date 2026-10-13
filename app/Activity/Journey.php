@@ -34,21 +34,31 @@ class Journey
             });
             $opening = $all->first(function ($e) { return $e->type === 'page_view' && $e->resource_type === 'piece'; });
             $piece = $opening ? ($pieces[$opening->resource_id] ?? null) : null;
-            $actions = $all->reject(function ($e) { return in_array($e->type, ['page_view', 'page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_restore', 'request'], true); });
+            $actions = $all->reject(function ($e) { return strpos($e->type, 'media_') === 0 || in_array($e->type, ['page_view', 'page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_restore', 'request'], true); });
             $lastScore = $actions->where('type', 'score_progress')->last();
             $actions = $actions->filter(function ($e) use ($lastScore) { return $e->type !== 'score_progress' || $e === $lastScore; });
-            // A single compact playback summary per playback identity; keep the
-            // transitions, but omit repetitive heartbeat progress rows.
+            // Present each playback once, including old duplicate starts and
+            // cumulative progress. Never add cumulative watch totals together.
             $media = $all->filter(function ($e) { return strpos($e->type, 'media_') === 0; })->groupBy(function ($e) {
                 $m = Presentation::metadata($e);
                 return ($m['playback_id'] ?? $m['media_id'] ?? 'unknown').':'.($m['piece_id'] ?? '');
             })->map(function ($items) {
                 $metadata = $items->map(function ($e) { return Presentation::metadata($e); });
                 $coverage = $metadata->pluck('unique_watched_percent')->filter(function ($value) { return is_numeric($value); })->max();
-                return ['label' => Presentation::action($items->first()), 'watched' => $metadata->pluck('played_seconds')->max(), 'coverage' => $coverage, 'seeked' => $items->contains('type', 'media_seek')];
+                $summary = clone $items->first(); $summary->type = 'media_progress';
+                return ['event' => $items->first(), 'label' => Presentation::action($summary), 'started' => Time::event($items->first()), 'watched' => $metadata->pluck('played_seconds')->max(), 'coverage' => $coverage,
+                    'duration' => $metadata->pluck('duration_seconds')->filter(function ($value) { return is_numeric($value); })->max(),
+                    'seeked' => $items->contains('type', 'media_seek'), 'ended' => $items->contains('type', 'media_end'),
+                    'interrupted' => $items->contains('type', 'media_error')];
             });
+            $moments = $actions->map(function ($event) { return ['event' => $event, 'playback' => null]; })
+                ->concat($media->map(function ($playback) { return ['event' => $playback['event'], 'playback' => $playback]; }))
+                ->sort(function ($a, $b) {
+                    $a = $a['event']; $b = $b['event'];
+                    return (Time::event($a)->valueOf() <=> Time::event($b)->valueOf()) ?: (($a->sequence ?? 0) <=> ($b->sequence ?? 0)) ?: ($a->id <=> $b->id);
+                })->values();
             $observed = $all->contains(function ($e) { return in_array($e->type, ['page_ready', 'page_checkpoint', 'page_hidden', 'page_leave'], true); });
-            return array_merge(compact('page', 'piece', 'actions', 'media', 'observed'), ['kind' => 'page']);
+            return array_merge(compact('page', 'piece', 'actions', 'media', 'moments', 'observed'), ['kind' => 'page']);
         });
         $timeline = $groups->concat(collect($unplaced->items())->map(function ($event) { return ['kind' => 'action', 'event' => $event]; }))
             ->sortBy(function ($item) { return $item['kind'] === 'page' ? Time::date($item['page'], 'opened_at')->valueOf() : Time::event($item['event'])->valueOf(); })->values();

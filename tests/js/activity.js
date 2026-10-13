@@ -121,7 +121,31 @@ module.exports = async function () {
     watchedHandlers.pause({type: 'pause'});
     coverage = watched.queued().filter(event => event.type === 'media_pause').pop().metadata;
     assert.strictEqual(coverage.unique_watched_percent, 20, 'Replaying the same content does not increase unique coverage');
+    assert.strictEqual(watched.queued().filter(event => event.type === 'media_play').length, 1, 'Pause/resume and seeking do not create another playback start');
     assert.strictEqual(watched.queued().filter(event => event.type === 'media_progress').length, 0, 'Sampling timeupdate adds no per-second database events');
+    const buffered = fixture(), bufferedHandlers = {};
+    const video = {tagName: 'VIDEO', id: 'piece-performance', currentTime: 0, duration: 88.468027, playbackRate: 1, paused: false,
+        addEventListener(name, callback) { bufferedHandlers[name] = callback; }};
+    buffered.win.PianoActivity.media(video);
+    bufferedHandlers.playing({type: 'playing'});
+    buffered.at(517); video.currentTime = 0.368933; bufferedHandlers.waiting({type: 'waiting'});
+    buffered.at(1517); bufferedHandlers.playing({type: 'playing'});
+    buffered.at(2517); video.currentTime = 1.368933; bufferedHandlers.pause({type: 'pause'});
+    let starts = buffered.queued().filter(event => event.type === 'media_play');
+    assert.strictEqual(starts.length, 1, 'Buffering recovery does not record the same start twice');
+    let observation = buffered.queued().filter(event => event.type === 'media_pause').pop().metadata;
+    assert.strictEqual(observation.played_seconds, 1.517, 'Buffering time is excluded while playback across recovery is retained');
+    assert.strictEqual(observation.playback_id, starts[0].metadata.playback_id);
+    bufferedHandlers.playing({type: 'playing'});
+    buffered.at(3517); video.currentTime = 2.368933;
+    assert.strictEqual(buffered.queued().filter(event => event.type === 'media_play').length, 1, 'Explicit pause/resume keeps the existing start');
+    bufferedHandlers.ended({type: 'ended'});
+    assert.strictEqual(buffered.queued().filter(event => event.type === 'media_end').pop().metadata.played_seconds, 2.517);
+    video.currentTime = 0; bufferedHandlers.playing({type: 'playing'});
+    starts = buffered.queued().filter(event => event.type === 'media_play');
+    assert.strictEqual(starts.length, 2, 'A new viewing after the video ends has its own start');
+    assert.notStrictEqual(starts[1].metadata.playback_id, starts[0].metadata.playback_id);
+    assert.strictEqual(starts[1].metadata.played_seconds, 0, 'A completed replay resets cumulative playing time');
     const restored = fixture(), restoreMediaHandlers = {};
     const restoreMedia = {tagName: 'VIDEO', currentTime: 0, duration: 90, playbackRate: 1, paused: false,
         addEventListener(name, callback) { restoreMediaHandlers[name] = callback; }};

@@ -9,7 +9,7 @@
 
 @section('content')
 <div class="admin-dashboard">
-  @include('admin.components.page.title', ['title' => 'Overview', 'subtitle' => 'A little perspective on everything PianoLIT.'])
+  @include('admin.components.page.title', ['title' => 'Overview', 'subtitle' => 'User activity and site metrics.'])
 
   @manager
   <div class="admin-dashboard-filters">
@@ -26,7 +26,7 @@
   </div>
 
   <section aria-labelledby="admin-activity-title">
-    <div class="admin-section-heading"><h2 id="admin-activity-title">The PianoLIT pulse</h2><span>{{$dashboard['start']->format('M j')}} – {{$dashboard['end']->format('M j, Y')}}</span></div>
+    <div class="admin-section-heading"><h2 id="admin-activity-title">Activity summary</h2><span>{{$dashboard['start']->format('M j')}} – {{$dashboard['end']->format('M j, Y')}}</span></div>
     <div class="admin-activity-grid">
       <article class="admin-glass-card admin-activity-card">
         <div class="admin-activity-summary">
@@ -36,7 +36,7 @@
             <span class="admin-change {{$dashboard['change'] < 0 ? 'is-down' : ''}}">@icon($dashboard['change'] < 0 ? 'arrow-down' : 'arrow-up-right', ['mr' => 0]) {{abs($dashboard['change'])}}%</span>
             <small>vs. previous {{$dashboard['days']}} days</small>
             @else
-            <span class="admin-change">@icon('activity', ['mr' => 0]) {{$dashboard['total'] ? 'A fresh start' : 'Ready when you are'}}</span>
+            <span class="admin-change">@icon('activity', ['mr' => 0]) {{$dashboard['total'] ? 'New activity' : 'No recorded activity'}}</span>
             <small>No activity in the previous period</small>
             @endif
           </div>
@@ -48,20 +48,10 @@
         <div class="admin-trend-panel">
           <div class="admin-trend-top"><span><i></i> Daily activity</span><a href="{{route('admin.analytics.users')}}">View activity @icon('arrow-up-right', ['mr' => 0])</a></div>
           <div class="admin-trend-visual">
-            <h3>Activity<br>over time<span>Every visit.<br>Every discovery.</span></h3>
-            <div class="admin-chart" role="img" aria-label="Daily recorded events, {{$dashboard['start']->format('M j')}} to {{$dashboard['end']->format('M j')}}">
-              @php($maximum = max(1, collect($dashboard['trend'])->max('total')))
-              <div class="admin-chart-bars">
-                @foreach($dashboard['trend'] as $day)
-                <div class="admin-chart-column" title="{{$day['label']}}: {{number_format($day['total'])}} events">
-                  <span class="admin-chart-bar" style="--bar-height: {{$day['total'] / $maximum * 100}}%; --bar-hue: {{round(8 + 100 * $loop->index / max(1, $loop->count - 1))}}"></span>
-                </div>
-                @endforeach
-              </div>
-              <div class="admin-chart-axis"><span>{{$dashboard['start']->format('M j')}}</span><span>{{$dashboard['end']->format('M j')}}</span></div>
-            </div>
+            <h3>Activity <br>over time<span>Recorded events <br>by day.</span></h3>
+            @include('admin.pages.home.activity-chart', ['trend' => $dashboard['trend']])
           </div>
-          @if(!$dashboard['total'])<p class="admin-chart-empty">Activity will appear here as people explore PianoLIT.</p>@endif
+          @if(!$dashboard['total'])<p class="admin-chart-empty">No recorded activity in this period.</p>@endif
           <details class="admin-chart-data"><summary>Daily counts</summary><table><caption class="visually-hidden">Recorded events per day</caption><thead><tr><th scope="col">Date</th><th scope="col">Events</th></tr></thead><tbody>@foreach($dashboard['trend'] as $day)<tr><td>{{$day['label']}}</td><td>{{number_format($day['total'])}}</td></tr>@endforeach</tbody></table></details>
         </div>
         <div class="admin-platform-breakdown">
@@ -89,9 +79,9 @@
           @endforeach
         </ol>
         @else
-        <div class="admin-engaged-empty">@icon('users', ['mr' => 0])<strong>{{$dashboard['platform'] === 'app' ? 'Web activity tells this story' : 'Meet your next regulars'}}</strong><p>{{$dashboard['platform'] === 'app' ? 'Choose All platforms, Website or Web app to see engaged accounts.' : 'Your most active accounts will appear here once they start exploring.'}}</p></div>
+        <div class="admin-engaged-empty">@icon('users', ['mr' => 0])<strong>{{$dashboard['platform'] === 'app' ? 'User rankings unavailable' : 'No active web accounts'}}</strong><p>{{$dashboard['platform'] === 'app' ? 'Choose All platforms, Website or Web app to see engaged accounts.' : 'No signed-in web activity was recorded in this period.'}}</p></div>
         @endif
-        <a class="admin-card-footer-link" href="{{route('admin.users.index')}}">Explore all users @icon('arrow-right', ['mr' => 0])</a>
+        <a class="admin-card-footer-link" href="{{route('admin.users.index')}}">View all users @icon('arrow-right', ['mr' => 0])</a>
       </article>
     </div>
     <p class="admin-activity-note">Page views, actions and app requests. Timer updates excluded. iOS identity is unverified and excluded from user rankings. Times in {{config('app.timezone')}}.</p>
@@ -115,7 +105,7 @@
   @include('admin.pages.home.user-countries')
 
   <section class="admin-library-section" aria-labelledby="admin-library-title">
-    <div class="admin-section-heading"><h2 id="admin-library-title">More to explore</h2><a href="{{route('admin.users.locations.index')}}">User locations @icon('arrow-up-right', ['mr' => 0])</a></div>
+    <div class="admin-section-heading"><h2 id="admin-library-title">Site content</h2><a href="{{route('admin.users.locations.index')}}">User locations @icon('arrow-up-right', ['mr' => 0])</a></div>
     <div class="admin-library-grid">
       @foreach($dashboard['library'] as $item)
       <a class="admin-library-card" href="{{$item['url']}}">@icon($item['icon'], ['mr' => 0])<span>{{$item['label']}}<small>Published</small></span><strong>{{number_format($item['total'])}}</strong>@icon('chevron-right', ['mr' => 0])</a>
@@ -123,7 +113,7 @@
     </div>
   </section>
   @else
-  <article class="admin-glass-card admin-editor-welcome"><span class="admin-editor-icon">@icon('music', ['mr' => 0])</span><h2>Welcome, {{auth('admin')->user()->first_name}}.</h2><p>Thank you for helping bring piano music to life.</p><div><strong>{{number_format(auth('admin')->user()->pieces_count)}}</strong> pieces created <span>·</span> <strong>{{number_format(auth('admin')->user()->composers_count)}}</strong> composers created</div></article>
+  <article class="admin-glass-card admin-editor-welcome"><span class="admin-editor-icon">@icon('music', ['mr' => 0])</span><h2>Welcome, {{auth('admin')->user()->first_name}}.</h2><p>Your contributed content.</p><div><strong>{{number_format(auth('admin')->user()->pieces_count)}}</strong> pieces created <span>·</span> <strong>{{number_format(auth('admin')->user()->composers_count)}}</strong> composers created</div></article>
   @endmanager
 </div>
 @endsection

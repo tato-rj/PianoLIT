@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua">
-    @include('admin.components.page.title', ['title' => 'User analytics', 'subtitle' => 'The people, music and moments that make PianoLIT.'])
+    @include('admin.components.page.title', ['title' => 'User analytics', 'subtitle' => 'Recorded visits, page views and user activity.'])
     @include('admin.pages.analytics.users.nav', ['active' => 'activity'])
     @include('admin.pages.analytics.users.filters')
     <div class="ua-metrics">
@@ -15,7 +15,7 @@
         <details class="ua-details"><summary>Daily counts and metric definitions</summary><p>Unique visitors count confirmed accounts once across linked visits, otherwise distinct browser-session visitors. Returning visitors have an earlier recorded visit. Media starts count play/resume events, rather than completed videos. Counts use visits started in this period and events recorded in this period. iOS requests without visits are excluded.</p><div class="ua-daily-counts">@foreach($trend as $day)<span>{{ $day['date'] }} <strong>{{ $day['total'] }}</strong></span>@endforeach</div></details>
     </section>
     <section class="ua-card">
-        <div class="ua-section-heading"><div><h2>Recent visits</h2><p>A chronological glimpse of life on PianoLIT.</p></div><span class="ua-badge">{{ number_format($visits->total()) }} visits</span></div>
+        <div class="ua-section-heading"><div><h2>Recent visits</h2><p>Visits ordered by start time.</p></div><span class="ua-badge">{{ number_format($visits->total()) }} visits</span></div>
         @include('admin.pages.analytics.users.visits')
     </section>
     <aside class="ua-note"><strong>Some history has fewer details.</strong> {{ number_format($ungroupedCount) }} ungrouped records match this period, including legacy iOS requests and imports. They do not establish visits, verified visitors or watch duration.

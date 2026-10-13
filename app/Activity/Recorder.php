@@ -221,6 +221,26 @@ class Recorder
             foreach ($events as $event) {
                 $metadata = Metadata::select($event['metadata'] ?? [], Metadata::BROWSER_KEYS);
                 if (isset($metadata['target'])) $metadata['target'] = Metadata::url($metadata['target']);
+                if ($event['type'] === 'media_play' && !empty($metadata['playback_id'])) {
+                    // The visit row is locked above, so concurrent batches for
+                    // this owned page cannot insert the same playback start.
+                    $start = DB::table('activity_events')->where('page_id', $page->id)->where('source', 'browser')
+                        ->where('type', 'media_play')->where('metadata->playback_id', $metadata['playback_id'])->orderBy('id')->first();
+                    if ($start) {
+                        if ($start->event_id !== $event['id']) {
+                            // Older clients emit another start after buffering.
+                            // Retain the greatest measured totals without adding
+                            // starts or summing cumulative observations twice.
+                            $saved = json_decode($start->metadata ?: '{}', true) ?: [];
+                            foreach (['played_seconds', 'unique_watched_seconds', 'unique_watched_percent'] as $key) {
+                                if (isset($metadata[$key]) && is_numeric($metadata[$key])) $saved[$key] = max($saved[$key] ?? 0, $metadata[$key]);
+                            }
+                            if (!isset($saved['duration_seconds']) && isset($metadata['duration_seconds'])) $saved['duration_seconds'] = $metadata['duration_seconds'];
+                            DB::table('activity_events')->where('id', $start->id)->update(['metadata' => json_encode($saved, JSON_THROW_ON_ERROR)]);
+                        }
+                        continue;
+                    }
+                }
                 $occurred = !empty($page->opened_at_utc) ? Carbon::parse($page->opened_at_utc, 'UTC') : Carbon::parse($page->opened_at, config('app.timezone'));
                 $occurred->addMilliseconds($event['elapsed_ms']);
                 $inserted = $this->insert($request, $page, [

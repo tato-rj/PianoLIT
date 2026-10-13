@@ -200,7 +200,7 @@
     function mediaState(media, context) {
         var state = mediaStates.filter(function (item) { return item.media === media; })[0];
         if (!state) {
-            state = {media: media, context: context || {}, played: 0, since: null, lastEvent: null, playbackId: uuid(), ranges: [], sampleAt: clock(), samplePosition: Number(media.currentTime) || 0}; mediaStates.push(state);
+            state = {media: media, context: context || {}, played: 0, since: null, started: false, completed: false, lastEvent: null, playbackId: uuid(), ranges: [], sampleAt: clock(), samplePosition: Number(media.currentTime) || 0}; mediaStates.push(state);
             ['playing', 'pause', 'ended', 'seeking', 'seeked', 'waiting', 'error', 'timeupdate', 'ratechange'].forEach(function (name) { media.addEventListener(name, function (event) { mediaEvent(media, event); }, true); });
         }
         if (context) {
@@ -209,7 +209,7 @@
                 // Native pause events can be queued until after a shared Audio
                 // element has already been assigned to its next piece.
                 state.ignoreQueuedPause = true; state.played = 0; state.since = null;
-                state.playbackId = uuid(); state.ranges = []; state.sampleAt = clock(); state.samplePosition = Number(media.currentTime) || 0;
+                state.playbackId = uuid(); state.started = false; state.completed = false; state.ranges = []; state.sampleAt = clock(); state.samplePosition = Number(media.currentTime) || 0;
             }
             state.context = context;
         }
@@ -244,7 +244,14 @@
         if (event.type === 'timeupdate') return;
         if (event.type === 'playing') {
             state.ignoreQueuedPause = false;
-            if (state.since === null) { state.since = clock(); record('media_play', mediaData(state)); }
+            if (state.completed) {
+                state.playbackId = uuid(); state.played = 0; state.ranges = []; state.started = false; state.completed = false;
+                state.sampleAt = clock(); state.samplePosition = Number(media.currentTime) || 0;
+            }
+            if (state.since === null) state.since = clock();
+            // Buffering recovery, seeking and pause/resume belong to the same
+            // playback. Progress/end events retain their cumulative measurements.
+            if (!state.started) { state.started = true; record('media_play', mediaData(state)); }
             return;
         }
         if (event.type === 'pause' && state.ignoreQueuedPause) { state.ignoreQueuedPause = false; return; }
@@ -253,6 +260,7 @@
         }
         var types = {pause: 'media_pause', ended: 'media_end', seeked: 'media_seek', error: 'media_error', ratechange: 'media_rate'};
         if (types[event.type]) record(types[event.type], mediaData(state));
+        if (event.type === 'ended') state.completed = true;
         if (event.type === 'seeked' && !media.paused && !media.seeking) state.since = clock();
     }
     function stopMedia(media, reason) {

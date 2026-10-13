@@ -1,9 +1,9 @@
 @php($map = $dashboard['userCountries'])
 <section class="admin-country-section" aria-labelledby="admin-country-title">
-  <div class="admin-section-heading"><h2 id="admin-country-title">Users around the world</h2><span>Registered accounts · all time</span></div>
+  <div class="admin-section-heading"><h2 id="admin-country-title">Users by country</h2><span>Registered accounts · all time</span></div>
   <div class="admin-glass-card admin-country-card" data-user-country-map data-located="{{ $map['located'] }}" data-default-country="{{ $map['top']['code'] ?? '' }}">
     <div class="admin-country-sidebar">
-      <div class="admin-country-heading"><h3>Where our pianists are</h3><span>{{ count($map['countries']) }} {{ count($map['countries']) === 1 ? 'country' : 'countries' }}</span></div>
+      <div class="admin-country-heading"><h3>Where our users are</h3><span>{{ count($map['countries']) }} {{ count($map['countries']) === 1 ? 'country' : 'countries' }}</span></div>
       <div class="admin-country-summary" aria-live="polite" aria-atomic="true">
         <div><strong data-country-total>{{ number_format($map['top']['total'] ?? 0) }}</strong><span data-country-flag class="{{ $map['top'] ? 'flag-icon flag-icon-'.strtolower($map['top']['code']) : '' }}" aria-hidden="true"></span></div>
         <p data-country-name>{{ $map['top']['name'] ?? 'No locations recorded yet' }}</p>

@@ -89,6 +89,48 @@ class ActivityHistoryTest extends ReviewTestCase
         $this->assertDatabaseCount('activity_events', 2);
     }
 
+    public function test_buffering_starts_with_different_event_ids_are_deduplicated_per_owned_page_and_playback()
+    {
+        $page = $this->open();
+        $metadata = ['media_kind' => 'video', 'media_id' => 'piece-performance', 'playback_id' => (string) Str::uuid(), 'duration_seconds' => 88.468027, 'played_seconds' => 0];
+        $first = $this->event('media_play', 0, $metadata);
+        $duplicate = $this->event('media_play', 517, array_merge($metadata, ['played_seconds' => 0.517, 'unique_watched_seconds' => 0.368933, 'unique_watched_percent' => 0.417]));
+        $duplicate['sequence'] = 2;
+        $payload = ['page_token' => Crypt::encryptString($page->id), 'events' => [$first, $duplicate]];
+        $this->travel(2)->seconds();
+        $this->postJson('/activity/events', $payload)->assertNoContent();
+        $this->postJson('/activity/events', $payload)->assertNoContent();
+        $query = DB::table('activity_events')->where('type', 'media_play');
+        $this->assertSame(1, $query->count());
+        $saved = json_decode($query->first()->metadata, true);
+        $this->assertSame(0.517, $saved['played_seconds']);
+        $this->assertSame(0.368933, $saved['unique_watched_seconds']);
+        $this->assertSame(88.468027, $saved['duration_seconds']);
+        $this->assertSame($first['id'], $query->first()->event_id);
+        // A stale duplicate cannot reduce the strongest observation.
+        $this->postJson('/activity/events', ['page_token' => $payload['page_token'], 'events' => [$this->event('media_play', 1000, $metadata)]])->assertNoContent();
+        $this->assertSame(0.517, json_decode($query->first()->metadata, true)['played_seconds']);
+        $second = $this->event('media_play', 1500, array_merge($metadata, ['playback_id' => (string) Str::uuid()]));
+        $this->postJson('/activity/events', ['page_token' => $payload['page_token'], 'events' => [$second, $this->event('media_pause', 1500, array_merge($metadata, ['played_seconds' => 1]))]])->assertNoContent();
+        $this->assertSame(2, $query->count(), 'A separate playback remains separate.');
+        $this->assertDatabaseHas('activity_events', ['type' => 'media_pause']);
+        $other = $this->open();
+        $this->postJson('/activity/events', ['page_token' => Crypt::encryptString($other->id), 'events' => [$this->event('media_play', 0, $metadata)]])->assertNoContent();
+        $this->assertSame(3, $query->count(), 'A playback ID cannot deduplicate events on another page.');
+    }
+
+    public function test_playback_summary_merge_rolls_back_with_a_failed_batch()
+    {
+        $page = $this->open();
+        $metadata = ['playback_id' => (string) Str::uuid(), 'played_seconds' => 0];
+        $token = Crypt::encryptString($page->id);
+        $this->postJson('/activity/events', ['page_token' => $token, 'events' => [$this->event('media_play', 0, $metadata)]])->assertNoContent();
+        DB::statement("CREATE TRIGGER activity_fail BEFORE INSERT ON activity_events WHEN NEW.type = 'media_pause' BEGIN SELECT RAISE(ABORT, 'simulated failure'); END");
+        $this->postJson('/activity/events', ['page_token' => $token, 'events' => [$this->event('media_play', 0, array_merge($metadata, ['played_seconds' => 12])), $this->event('media_pause', 0)]])->assertStatus(503);
+        $this->assertSame(0, json_decode(DB::table('activity_events')->where('type', 'media_play')->value('metadata'), true)['played_seconds']);
+        $this->assertDatabaseCount('activity_events', 2);
+    }
+
     public function test_page_tokens_cannot_be_used_by_another_account_or_browser_session()
     {
         $this->withExceptionHandling();

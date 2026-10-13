@@ -72,7 +72,7 @@ class UserCountriesTest extends ReviewTestCase
     {
         $this->account('US');
         $this->actingAs(create(Admin::class), 'admin');
-        $response = $this->get(route('admin.home'))->assertOk()->assertSee('Users around the world')->assertSee('Registered accounts · all time');
+        $response = $this->get(route('admin.home'))->assertOk()->assertSee('Users by country')->assertSee('Registered accounts · all time');
         $html = $response->getContent();
         $start = strpos($html, '<section class="admin-country-section"');
         $end = strpos($html, '<section class="admin-library-section"');

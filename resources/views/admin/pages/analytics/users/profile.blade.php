@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua">
-    @include('admin.components.page.title', ['title' => trim($user->full_name), 'subtitle' => 'A relationship with music, one visit at a time.'])
+    @include('admin.components.page.title', ['title' => trim($user->full_name), 'subtitle' => 'Account details, visits and music activity.'])
     <nav class="ua-breadcrumbs" aria-label="Breadcrumb"><a href="{{ route('admin.analytics.users') }}">User analytics</a><span>/</span><a href="{{ route('admin.analytics.users.people') }}">People</a><span>/</span><span aria-current="page">{{ $user->full_name }}</span></nav>
     @php($source = optional($user->membership)->source)
     @php($status = $user->super_user ? 'Super user' : (!$source ? 'No membership' : ($user->hasActiveSubscription() ? ($source->isOnGracePeriod() ? 'Grace period' : ($source->isOnTrial() ? 'Trial' : 'Active')) : 'Expired or inactive')))
@@ -13,16 +13,16 @@
     </div>
     <div class="ua-grid">
         <section class="ua-card"><h2>At a glance</h2><dl class="ua-facts"><dt>First recorded visit</dt><dd>{{ $stats->first_visit ? carbon($stats->first_visit)->format('M j, Y · g:i A') : 'No visits recorded' }}</dd><dt>Last visit activity</dt><dd>{{ $stats->last_activity ? carbon($stats->last_activity)->format('M j, Y · g:i A') : 'No visits recorded' }}</dd><dt>Folders</dt><dd>{{ $stats->folders }} in the saved account state</dd><dt>Media starts</dt><dd>{{ $engagement['media_play'] ?? 'Not recorded' }}</dd><dt>Scores opened</dt><dd>{{ $engagement['score_opened'] ?? 'Not recorded' }}</dd></dl><p class="ua-meta">Saved state and recorded actions are different measures. A missing event does not prove that a feature was never used.</p></section>
-        <section class="ua-card"><h2>Music they return to</h2>@include('admin.pages.analytics.users.pieces', ['items' => $frequent])<p class="ua-meta">Synthesia starts: {{ $engagement['synthesia'] ?: 'Not recorded' }}</p></section>
+        <section class="ua-card"><h2>Frequently opened pieces</h2>@include('admin.pages.analytics.users.pieces', ['items' => $frequent])<p class="ua-meta">Synthesia starts: {{ $engagement['synthesia'] ?: 'Not recorded' }}</p></section>
     </div>
-    <section class="ua-card"><div class="ua-section-heading"><div><h2>Recent visits</h2><p>Each visit has its own story.</p></div><a href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">All visits →</a></div>@include('admin.pages.analytics.users.visits')</section>
+    <section class="ua-card"><div class="ua-section-heading"><div><h2>Recent visits</h2><p>Visits ordered by start time.</p></div><a href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">All visits →</a></div>@include('admin.pages.analytics.users.visits')</section>
     @elseif($tab === 'visits')
     @include('admin.pages.analytics.users.filters', ['profileFilters' => true])
     <section class="ua-card"><h2>Visit history</h2>@include('admin.pages.analytics.users.visits')</section>
     @elseif($tab === 'music')
     <p class="ua-note">Exploration and media sections describe recorded history. Favorites, folders and markings below describe the account’s current saved state.</p>
     <div class="ua-grid">
-        <section class="ua-card"><h2>Recently explored</h2>@include('admin.pages.analytics.users.pieces', ['items' => $music['recent']]){{ $music['recent']->links() }}</section>
+        <section class="ua-card"><h2>Recently opened pieces</h2>@include('admin.pages.analytics.users.pieces', ['items' => $music['recent']]){{ $music['recent']->links() }}</section>
         <section class="ua-card"><h2>Frequently opened</h2>@include('admin.pages.analytics.users.pieces', ['items' => $frequent])</section>
         <section class="ua-card"><h2>{{ $selectedFolder ? $selectedFolder->name : 'Favorites' }}</h2><p class="ua-meta">Currently saved pieces{{ $selectedFolder ? ' in this folder' : ', deduplicated across folders' }}.</p>@include('admin.pages.analytics.users.pieces', ['items' => $music['favorites']]){{ $music['favorites']->links() }}</section>
         <section class="ua-card"><h2>Folders & collections</h2><ul class="ua-piece-list">@forelse($music['folders'] as $folder)<li><div><a href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'music', 'folder' => $folder->id]) }}">{{ $folder->name }}</a><small>Last updated {{ carbon($folder->updated_at)->format('M j, Y') }}</small></div><span>{{ $folder->pieces_count }} pieces</span></li>@empty<li class="ua-muted">No saved folders.</li>@endforelse</ul>{{ $music['folders']->links() }}</section>

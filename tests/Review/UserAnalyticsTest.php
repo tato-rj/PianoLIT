@@ -125,6 +125,42 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('Actions without a recorded page')->assertSee('receipt time; occurrence unknown');
     }
 
+    public function test_journey_collapses_duplicate_starts_and_transitions_into_one_measured_playback()
+    {
+        $visit = $this->visit(); $page = $this->page($visit);
+        $piece = Model::withoutEvents(function () { return create(Piece::class, ['name' => 'A sad song']); });
+        $metadata = ['media_kind' => 'video', 'media_id' => 'piece-performance', 'piece_id' => $piece->id, 'playback_id' => (string) Str::uuid(), 'duration_seconds' => 88.468027, 'played_seconds' => 0];
+        $this->event($visit, $page, 'media_play', '2026-10-12 19:15:00', $metadata);
+        $this->event($visit, $page, 'media_play', '2026-10-12 19:15:00', array_merge($metadata, ['played_seconds' => 0.517]));
+        $this->event($visit, $page, 'media_pause', '2026-10-12 19:15:01', array_merge($metadata, ['played_seconds' => 0.517, 'unique_watched_percent' => 0.417]));
+        $this->event($visit, $page, 'media_seek', '2026-10-12 19:15:02', $metadata);
+        $data = (new Journey)->get($visit);
+        $this->assertCount(1, $data['groups'][0]['media']);
+        $playback = $data['groups'][0]['media']->first();
+        $this->assertSame(0.517, $playback['watched'], 'Cumulative observations use the maximum, not the sum or media length.');
+        $this->assertSame(88.468027, $playback['duration']);
+        $this->assertTrue($playback['seeked']);
+        $this->assertCount(0, $data['groups'][0]['actions']);
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('Less than 1s playing')->assertDontSee('Full media length:')->assertSee('A sad song')->assertDontSee('Started performance video');
+        $this->assertSame(1, substr_count($response->getContent(), 'Played performance video'));
+        foreach (['media_progress', 'media_pause', 'media_end'] as $type) {
+            $this->event($visit, $page, $type, '2026-10-12 19:16:29', array_merge($metadata, ['played_seconds' => 89, 'unique_watched_percent' => 100]));
+        }
+        $response = $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('1m 29s playing')->assertSee('100% unique content played')
+            ->assertDontSee('Paused performance video')->assertDontSee('Reached the end of performance video')->assertDontSee('Seeking was recorded')
+            ->assertSeeInOrder(['class="ua-card ua-summary"', 'class="ua-card ua-identity"'], false)->assertSee('Visit summary');
+        $this->assertSame(1, substr_count($response->getContent(), 'Played performance video'));
+        $this->assertSame(1, substr_count($response->getContent(), '<meter min="0" max="100" value="100"'));
+        $this->assertSame(1, substr_count($response->getContent(), 'class="ua-card ua-summary"'));
+        $this->event($visit, $page, 'score_opened', '2026-10-12 19:14:30');
+        $this->event($visit, $page, 'favorite_changed', '2026-10-12 19:15:30', ['result' => true]);
+        $moments = (new Journey)->get($visit)['groups'][0]['moments'];
+        $this->assertSame(['score_opened', 'media_play', 'favorite_changed'], $moments->pluck('event.type')->all(), 'The consolidated playback stays at its first time among other actions.');
+        $this->event($visit, $page, 'media_play', '2026-10-12 19:16:00', array_merge($metadata, ['playback_id' => (string) Str::uuid()]));
+        $this->assertCount(2, (new Journey)->get($visit)['groups'][0]['media'], 'Separate playbacks are not hidden.');
+    }
+
     public function test_partial_visits_keep_timing_unknown_and_technical_details_exclude_secrets()
     {
         $visit = $this->visit(); $page = $this->page($visit);

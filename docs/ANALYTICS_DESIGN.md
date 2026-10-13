@@ -9,6 +9,11 @@ white-bordered cards. Use PianoLIT's shared typography tokens: 16px primary text
 controls, 14px secondary text, and the existing heading scale. Fit smaller screens
 by wrapping or scrolling content rather than shrinking readable text.
 
+Use clear, literal headings and descriptions. Name the data directly, such as
+Where our users are, Users by country, Activity summary, or Visit summary. Avoid
+clever labels, metaphors, storytelling language and calling all users pianists.
+Apply this wording preference to future admin and analytics pages as well.
+
 The reference establishes these preferred patterns:
 
 - Grouped bars with narrow, rounded ends, generous space between groups, a clear

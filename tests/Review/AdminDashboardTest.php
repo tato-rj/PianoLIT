@@ -113,7 +113,7 @@ class AdminDashboardTest extends ReviewTestCase
     public function test_empty_manager_dashboard_and_nested_menu_render_without_external_chart_requests()
     {
         $response = $this->get(route('admin.home'))->assertOk();
-        $response->assertSee('Most engaged users')->assertSee('Meet your next regulars')
+        $response->assertSee('Most engaged users')->assertSee('No active web accounts')
             ->assertSee('Activity will appear here')->assertSee('Coming soon')
             ->assertSee('Analytics')->assertDontSee('Statistics')
             ->assertSee('disabled aria-label="Dark mode (coming soon)"', false)
