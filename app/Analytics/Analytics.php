@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Stats;
+namespace App\Analytics;
 
-use App\Stats\Factories\{UserStats, PieceStats, SubscriptionStats, LogStats};
+use App\Analytics\Factories\{UserAnalytics, PieceAnalytics, SubscriptionAnalytics, LogAnalytics};
 
-class Stats {
+class Analytics {
 	protected $factory;
 	protected $factories = [
-		'users' => UserStats::class,
-		'logs' => LogStats::class,
-		'subscriptions' => SubscriptionStats::class,
-		'pieces' => PieceStats::class,
+		'users' => UserAnalytics::class,
+		'logs' => LogAnalytics::class,
+		'subscriptions' => SubscriptionAnalytics::class,
+		'pieces' => PieceAnalytics::class,
 	];
 
 	public function for($table)

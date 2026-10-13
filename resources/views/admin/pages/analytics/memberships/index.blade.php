@@ -20,7 +20,7 @@
           'hoverable' => 'no',
           'more' => route('admin.memberships.load-trials'),
           'headers' => ['ID ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'User ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Plan ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Progress ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Ends at ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . ''],
-          'rows' => view('admin.pages.stats.memberships.trials', ['memberships' => $trials->take(10)])
+          'rows' => view('admin.pages.analytics.memberships.trials', ['memberships' => $trials->take(10)])
         ])
       </div>
     </div>
@@ -34,7 +34,7 @@
           'hoverable' => 'no',
           'more' => route('admin.memberships.load-members'),
           'headers' => ['ID ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'User ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Plan ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Time until next renewal ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Renews at ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . ''],
-          'rows' => view('admin.pages.stats.memberships.members', ['memberships' => $members->take(10)])
+          'rows' => view('admin.pages.analytics.memberships.members', ['memberships' => $members->take(10)])
         ])
       </div>
     </div>
@@ -48,7 +48,7 @@
           'hoverable' => 'no',
           'more' => route('admin.memberships.load-expired'),
           'headers' => ['ID ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'User ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Plan ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Time since last renewal ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . '', 'Last renew at ' . \App\Support\Icon::render('arrow-down-up', ['mr' => 0]) . ''],
-          'rows' => view('admin.pages.stats.memberships.expired', ['memberships' => $expired->take(10)])
+          'rows' => view('admin.pages.analytics.memberships.expired', ['memberships' => $expired->take(10)])
         ])
       </div>
     </div>

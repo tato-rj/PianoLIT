@@ -28,13 +28,13 @@ class LocationsController extends Controller
 
         $region = $countryExists ? Location::byCountry($country)->first()->countryCode : null;
 
-        $locationsStats = $query->select($field, \DB::raw('count(*) as total'))
+        $locationsAnalytics = $query->select($field, \DB::raw('count(*) as total'))
                                 ->groupBy($field)
                                 ->get();
 
         $array = [['', 'Users']];
 
-        foreach($locationsStats as $location) {
+        foreach($locationsAnalytics as $location) {
             array_push($array, [$location->$field, $location->total]);
         }
 

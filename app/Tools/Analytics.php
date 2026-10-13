@@ -4,7 +4,7 @@ namespace App\Tools;
 
 use App\Piece;
 
-class Stats
+class Analytics
 {
   protected $model;
   protected $milestones = [100, 500, 1000, 2000, 5000, 10000];

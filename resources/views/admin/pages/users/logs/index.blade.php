@@ -62,7 +62,7 @@ var quickchart = new QuickChart;
 
 $(document).ready(function() {
     quickchart.setup({
-      element: '#stats-daily', 
+      element: '#analytics-daily',
       url: "{{route('admin.users.logs', ['type' => 'daily'])}}"
     }).make('line');
 });

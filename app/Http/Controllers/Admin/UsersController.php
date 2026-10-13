@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\{Admin, User, Piece, Api};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Stats\Stats;
+use App\Analytics\Analytics;
 use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
@@ -51,7 +51,7 @@ class UsersController extends Controller
     public function logs()
     {
         if (request()->ajax() && request()->has('type'))
-            return (new Stats)->for('logs')->query(request('type'), request()->except('type'))->get();
+            return (new Analytics)->for('logs')->query(request('type'), request()->except('type'))->get();
 
         if (request()->ajax())
             return $this->logsDatatable(request());

@@ -67,7 +67,7 @@ class Infograph extends Product implements Merchandise
         return [
             'title' => 'Infograph download',
             'message' => 'New download for the <strong>' . $this->name . '</strong> infographic.',
-            'url' => route('admin.stats.infographs')
+            'url' => route('admin.analytics.infographs')
         ];
     }
 

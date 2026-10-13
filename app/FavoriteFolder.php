@@ -77,8 +77,8 @@ class FavoriteFolder extends PianoLit
     public function scopeDatatable($query)
     {
         return datatable($query)->withDate()->withCount(['favorites'])->withBlade([
-            'user' => view('admin.pages.stats.favorites.table.user'),
-            'action' => view('admin.pages.stats.favorites.table.actions'),
+            'user' => view('admin.pages.analytics.favorites.table.user'),
+            'action' => view('admin.pages.analytics.favorites.table.actions'),
         ])->make();
     }
 }

@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Stats\Factories;
+namespace App\Analytics\Factories;
 
 use App\User;
-use App\Activity\DailyStats;
 
-class SubscriptionStats extends Factory
+class UserAnalytics extends Factory
 {
     public function __construct()
     {
-        $this->table = \DB::table('subscriptions');
+        $this->table = \DB::table('users');
     }
 
     public function daily($where = null)
     {
         $this->where($where);
 
-        $this->title = 'New susbcribers';
+        $this->title = 'New sign ups';
         $this->colors = [$this->color['blue']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M %D") as label, count(*) as count')
                     ->groupBy('label')
@@ -30,7 +29,7 @@ class SubscriptionStats extends Factory
     {
         $this->where($where);
 
-        $this->title = 'New susbcribers';
+        $this->title = 'New sign ups';
         $this->colors = [$this->color['green']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M") as label, count(*) as count')
                     ->groupBy('label')
@@ -44,7 +43,7 @@ class SubscriptionStats extends Factory
     {
         $this->where($where);
 
-        $this->title = 'New susbcribers';
+        $this->title = 'New sign ups';
         $this->colors = [$this->color['orange']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%Y") as label, count(*) as count')
                     ->groupBy('label')
@@ -78,14 +77,14 @@ class SubscriptionStats extends Factory
         $verified = $this->table->whereNotNull('email_verified_at')->count();
 
         $this->data = collect([
-            [
+            collect([
                 'label' => 'verified',
                 'count' => $verified
-            ],
-            [
+            ]),
+            collect([
                 'label' => 'not verified',
                 'count' => $total - $verified
-            ]
+            ])
         ]);
 
         return $this;
@@ -99,24 +98,15 @@ class SubscriptionStats extends Factory
         $hasFavs = User::where('origin', 'ios')->has('favorites')->count();
 
         $this->data = collect([
-            [
+            collect([
                 'label' => 'with favorites',
                 'count' => $hasFavs
-            ],
-            [
+            ]),
+            collect([
                 'label' => 'no favorites',
                 'count' => $total - $hasFavs
-            ]
+            ])
         ]);
-
-        return $this;
-    }
-
-    public function logs($where = null)
-    {
-        $this->title = 'Activity logs';
-        $this->colors = [$this->color['cyan'], $this->color['orange']];    
-        $this->data = (new DailyStats)->latest($where['logs_limit'] ?? 6);
 
         return $this;
     }

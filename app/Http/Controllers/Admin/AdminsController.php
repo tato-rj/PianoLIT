@@ -10,7 +10,7 @@ use App\Quiz\{Quiz, Level, QuizResult};
 use App\Quiz\Topic as QuizTopic;
 use App\Shop\{eBook, eScore};
 use App\Blog\Post;
-use App\Tools\Stats;
+use App\Tools\Analytics;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 

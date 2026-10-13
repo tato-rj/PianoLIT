@@ -4,7 +4,7 @@ namespace App\Activity;
 
 use Illuminate\Support\Facades\DB;
 
-class DailyStats
+class DailyAnalytics
 {
     public function latest(int $days = 6)
     {

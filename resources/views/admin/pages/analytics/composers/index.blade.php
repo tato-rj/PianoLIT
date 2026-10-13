@@ -11,37 +11,37 @@
 
     <div class="row">
       <div class="col-lg-6 col-md-6 col-12 p-3">
-        @include('admin.pages.stats.composers.birthdays')
+        @include('admin.pages.analytics.composers.birthdays')
       </div>    
       <div class="col-lg-6 col-md-6 col-12 p-3">
-        @include('admin.pages.stats.composers.deathdays')
+        @include('admin.pages.analytics.composers.deathdays')
       </div>    
     </div>
 
     <div class="row"> 
-      @include('admin.pages.stats.row', [
+      @include('admin.pages.analytics.row', [
         'title' => 'Composers',
         'subtitle' => 'Number of pieces each of the ' . $composersCount . ' composers have in the database.',
         'footer' => 'Composers with 3 or less pieces: ' . arrayToSentence($composersWithFewPieces),
         'id' => 'composersChart',
         'col' => '12',
-        'data' => $composersStats])
+        'data' => $composersAnalytics])
     </div>
 
     <div class="row"> 
-      @include('admin.pages.stats.row', [
+      @include('admin.pages.analytics.row', [
         'title' => 'Periods',
         'subtitle' => 'Number of composers in each period.',
         'id' => 'periodsChart',
         'col' => '4',
-        'data' => $periodsStats])
+        'data' => $periodsAnalytics])
 
-      @include('admin.pages.stats.row', [
+      @include('admin.pages.analytics.row', [
         'title' => 'Nationalities',
         'subtitle' => 'Number of composers by nationality.',
         'id' => 'countriesChart',
         'col' => '8',
-        'data' => $countriesStats])
+        'data' => $countriesAnalytics])
     </div>
 
     <div class="row">
@@ -51,7 +51,7 @@
     </div>
 
     <div class="row my-3">
-        @include('admin.pages.stats.composers.ranking')
+        @include('admin.pages.analytics.composers.ranking')
     </div>
   </div>
 </div>

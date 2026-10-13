@@ -6,39 +6,39 @@
   <div class="container-fluid">
 
     <div class="row"> 
-      @include('projects.pianolit.pieces.statistics.row', [
+      @include('projects.pianolit.pieces.analytics.row', [
         'title' => 'Tags',
         'id' => 'tagsChart',
         'col' => '12',
-        'data' => $tagStats])
+        'data' => $tagAnalytics])
     </div>
 
     <div class="row"> 
-      @include('projects.pianolit.pieces.statistics.row', [
+      @include('projects.pianolit.pieces.analytics.row', [
         'title' => 'Composers',
         'id' => 'composersChart',
         'col' => '12',
-        'data' => $composersStats])
+        'data' => $composersAnalytics])
     </div>
 
     <div class="row"> 
-      @include('projects.pianolit.pieces.statistics.row', [
+      @include('projects.pianolit.pieces.analytics.row', [
         'title' => 'Periods',
         'id' => 'periodsChart',
         'col' => '4',
-        'data' => $periodsStats])
+        'data' => $periodsAnalytics])
 
-      @include('projects.pianolit.pieces.statistics.row', [
+      @include('projects.pianolit.pieces.analytics.row', [
         'title' => 'Levels',
         'id' => 'levelsChart',
         'col' => '4',
-        'data' => $levelsStats])
+        'data' => $levelsAnalytics])
 
-      @include('projects.pianolit.pieces.statistics.row', [
+      @include('projects.pianolit.pieces.analytics.row', [
         'title' => 'Recordings count',
         'id' => 'recChart',
         'col' => '4',
-        'data' => $recStats])
+        'data' => $recAnalytics])
     </div>
 
   </div>

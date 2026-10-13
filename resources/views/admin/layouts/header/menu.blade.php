@@ -10,17 +10,17 @@
           ['route' => route('admin.api.endpoints'), 'name' => 'Endpoints'],
         ]])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Statistics', 'icon' => 'chart-line',
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Analytics', 'icon' => 'chart-line',
         'dropdown' => [
-          ['name' => 'Users', 'route' => route('admin.stats.users')],
-          ['name' => 'Logs', 'route' => route('admin.stats.logs')],
-          ['name' => 'Memberships', 'route' => route('admin.stats.memberships')],
-          ['name' => 'Subscriptions', 'route' => route('admin.stats.subscriptions')],
-          ['name' => 'Pieces', 'route' => route('admin.stats.pieces')],
-          ['name' => 'Favorites', 'route' => route('admin.stats.favorites')],
-          ['name' => 'Composers', 'route' => route('admin.stats.composers')],
-          ['name' => 'Blog', 'route' => route('admin.stats.blog')],
-          ['name' => 'Quizzes', 'route' => route('admin.stats.quizzes')],
+          ['name' => 'Users', 'route' => route('admin.analytics.users')],
+          ['name' => 'Logs', 'route' => route('admin.analytics.logs')],
+          ['name' => 'Memberships', 'route' => route('admin.analytics.memberships')],
+          ['name' => 'Subscriptions', 'route' => route('admin.analytics.subscriptions')],
+          ['name' => 'Pieces', 'route' => route('admin.analytics.pieces')],
+          ['name' => 'Favorites', 'route' => route('admin.analytics.favorites')],
+          ['name' => 'Composers', 'route' => route('admin.analytics.composers')],
+          ['name' => 'Blog', 'route' => route('admin.analytics.blog')],
+          ['name' => 'Quizzes', 'route' => route('admin.analytics.quizzes')],
         ]])
 
         @include('admin.layouts.header.divider', ['label' => 'ACQUISITION'])

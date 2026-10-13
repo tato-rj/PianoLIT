@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Stats\Factories;
+namespace App\Analytics\Factories;
 
 use App\Log;
-use App\Activity\DailyStats;
+use App\Activity\DailyAnalytics;
 
-class LogStats extends Factory
+class LogAnalytics extends Factory
 {
     public function __construct()
     {
@@ -16,7 +16,7 @@ class LogStats extends Factory
     {
         $this->title = 'Activity logs';
         $this->colors = [$this->color['cyan'], $this->color['orange'], $this->color['purple']];    
-        $this->data = (new DailyStats)->latest($where['logs_limit'] ?? 6);
+        $this->data = (new DailyAnalytics)->latest($where['logs_limit'] ?? 6);
 
         return $this;
     }

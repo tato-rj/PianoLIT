@@ -45,7 +45,7 @@ class QuizCompleted extends Notification
         return [
             'title' => 'Quiz completed',
             'message' => 'The quiz <strong>' . $this->quiz->title . '</strong> has been completed.',
-            'url' => route('admin.stats.quizzes')
+            'url' => route('admin.analytics.quizzes')
         ];
     }
 }

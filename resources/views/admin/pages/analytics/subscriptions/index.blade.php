@@ -8,7 +8,7 @@
 <div class="content-wrapper">
   <div class="container-fluid">
     @chart([
-      'url' => route('admin.stats.subscriptions'),
+      'url' => route('admin.analytics.subscriptions'),
       'chart' => 'line',
       'type' => 'subscribers',
       'title' => 'Subscriptions',
@@ -30,23 +30,23 @@ var quickchart = new QuickChart;
 
 $(document).ready(function() {
     quickchart.setup({
-      element: '#stats-subscribers', 
-      url: "{{route('admin.stats.subscriptions', ['type' => 'daily'])}}"
+      element: '#analytics-subscribers',
+      url: "{{route('admin.analytics.subscriptions', ['type' => 'daily'])}}"
     }).make('line');
 
     // quickchart.setup({
-    //   element: '#stats-gender', 
-    //   url: "{{route('admin.stats.users', ['type' => 'gender'])}}"
+    //   element: '#analytics-gender',
+    //   url: "{{route('admin.analytics.users', ['type' => 'gender'])}}"
     // }).make('pie');
 
     // quickchart.setup({
-    //   element: '#stats-confirmed', 
-    //   url: "{{route('admin.stats.users', ['type' => 'confirmed'])}}"
+    //   element: '#analytics-confirmed',
+    //   url: "{{route('admin.analytics.users', ['type' => 'confirmed'])}}"
     // }).make('pie');
 
     // quickchart.setup({
-    //   element: '#stats-favorites', 
-    //   url: "{{route('admin.stats.users', ['type' => 'favorites'])}}"
+    //   element: '#analytics-favorites',
+    //   url: "{{route('admin.analytics.users', ['type' => 'favorites'])}}"
     // }).make('pie');
 });
 </script>

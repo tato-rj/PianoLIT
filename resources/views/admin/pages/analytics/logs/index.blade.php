@@ -10,7 +10,7 @@
     <div class="row"> 
       <div class="col-12 mb-4">
         @chart([
-          'url' => route('admin.stats.logs'),
+          'url' => route('admin.analytics.logs'),
           'chart' => 'bar',
           'type' => 'range',
           'title' => 'Logs by range',
@@ -31,8 +31,8 @@ var quickchart = new QuickChart;
 
 $(document).ready(function() {
     quickchart.setup({
-      element: '#stats-range', 
-      url: "{{route('admin.stats.logs', ['type' => 'range'])}}"
+      element: '#analytics-range',
+      url: "{{route('admin.analytics.logs', ['type' => 'range'])}}"
     }).make('bar');
 });
 </script>

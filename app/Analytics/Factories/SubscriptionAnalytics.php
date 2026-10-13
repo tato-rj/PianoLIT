@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Stats\Factories;
+namespace App\Analytics\Factories;
 
 use App\User;
+use App\Activity\DailyAnalytics;
 
-class UserStats extends Factory
+class SubscriptionAnalytics extends Factory
 {
     public function __construct()
     {
-        $this->table = \DB::table('users');
+        $this->table = \DB::table('subscriptions');
     }
 
     public function daily($where = null)
     {
         $this->where($where);
 
-        $this->title = 'New sign ups';
+        $this->title = 'New susbcribers';
         $this->colors = [$this->color['blue']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M %D") as label, count(*) as count')
                     ->groupBy('label')
@@ -29,7 +30,7 @@ class UserStats extends Factory
     {
         $this->where($where);
 
-        $this->title = 'New sign ups';
+        $this->title = 'New susbcribers';
         $this->colors = [$this->color['green']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%M") as label, count(*) as count')
                     ->groupBy('label')
@@ -43,7 +44,7 @@ class UserStats extends Factory
     {
         $this->where($where);
 
-        $this->title = 'New sign ups';
+        $this->title = 'New susbcribers';
         $this->colors = [$this->color['orange']];
         $this->data = $this->table->selectRaw('DATE_FORMAT(created_at, "%Y") as label, count(*) as count')
                     ->groupBy('label')
@@ -77,14 +78,14 @@ class UserStats extends Factory
         $verified = $this->table->whereNotNull('email_verified_at')->count();
 
         $this->data = collect([
-            collect([
+            [
                 'label' => 'verified',
                 'count' => $verified
-            ]),
-            collect([
+            ],
+            [
                 'label' => 'not verified',
                 'count' => $total - $verified
-            ])
+            ]
         ]);
 
         return $this;
@@ -98,15 +99,24 @@ class UserStats extends Factory
         $hasFavs = User::where('origin', 'ios')->has('favorites')->count();
 
         $this->data = collect([
-            collect([
+            [
                 'label' => 'with favorites',
                 'count' => $hasFavs
-            ]),
-            collect([
+            ],
+            [
                 'label' => 'no favorites',
                 'count' => $total - $hasFavs
-            ])
+            ]
         ]);
+
+        return $this;
+    }
+
+    public function logs($where = null)
+    {
+        $this->title = 'Activity logs';
+        $this->colors = [$this->color['cyan'], $this->color['orange']];    
+        $this->data = (new DailyAnalytics)->latest($where['logs_limit'] ?? 6);
 
         return $this;
     }

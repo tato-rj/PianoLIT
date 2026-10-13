@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Stats\Factories;
+namespace App\Analytics\Factories;
 
 abstract class Factory
 {

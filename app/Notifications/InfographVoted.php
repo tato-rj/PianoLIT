@@ -41,7 +41,7 @@ class InfographVoted extends Notification
         return [
             'title' => 'Infograph vote',
             'message' => $this->vote . ' for <strong>' . $this->infograph->name . '</strong> infograph.',
-            'url' => route('admin.stats.infographs')
+            'url' => route('admin.analytics.infographs')
         ];
     }
 }

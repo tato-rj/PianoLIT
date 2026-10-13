@@ -10,12 +10,12 @@
   <div class="container-fluid">
 
     <div class="row">
-      @include('admin.pages.stats.row', [
+      @include('admin.pages.analytics.row', [
         'title' => 'Topics',
         'subtitle' => 'How the ' . $topicsCount . ' topics are distributed in the database.',
         'id' => 'topicsChart',
         'col' => '12',
-        'data' => $topicStats])
+        'data' => $topicAnalytics])
     </div>
     <div class="row">
       <div class="col-12">
@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="row my-3">
-        @include('admin.pages.stats.quizzes.ranking')
+        @include('admin.pages.analytics.quizzes.ranking')
     </div>
 
   </div>

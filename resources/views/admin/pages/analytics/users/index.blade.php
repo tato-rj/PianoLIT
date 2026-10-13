@@ -10,7 +10,7 @@
     <div class="row"> 
         <div class="col-12 mb-4">
           @chart([
-            'url' => route('admin.stats.users'),
+            'url' => route('admin.analytics.users'),
             'chart' => 'line',
             'type' => 'signups',
             'title' => 'Sign ups',
@@ -32,7 +32,7 @@
     <div class="row"> 
         <div class="col-lg-4 col-md-4 col-12 mb-4">
           @chart([
-            'url' => route('admin.stats.users'),
+            'url' => route('admin.analytics.users'),
             'chart' => 'pie',
             'type' => 'gender',
             'title' => 'Gender',
@@ -49,7 +49,7 @@
         </div>
         <div class="col-lg-4 col-md-4 col-12 mb-4">
           @chart([
-            'url' => route('admin.stats.users'),
+            'url' => route('admin.analytics.users'),
             'chart' => 'pie',
             'type' => 'confirmed',
             'title' => 'Email status',
@@ -66,7 +66,7 @@
         </div>
         <div class="col-lg-4 col-md-4 col-12 mb-4">
           @chart([
-            'url' => route('admin.stats.users'),
+            'url' => route('admin.analytics.users'),
             'chart' => 'pie',
             'type' => 'favorites',
             'title' => 'Favorites',
@@ -87,23 +87,23 @@ var quickchart = new QuickChart;
 
 $(document).ready(function() {
     quickchart.setup({
-      element: '#stats-signups', 
-      url: "{{route('admin.stats.users', ['type' => 'daily'])}}"
+      element: '#analytics-signups',
+      url: "{{route('admin.analytics.users', ['type' => 'daily'])}}"
     }).make('line');
 
     quickchart.setup({
-      element: '#stats-gender', 
-      url: "{{route('admin.stats.users', ['type' => 'gender'])}}"
+      element: '#analytics-gender',
+      url: "{{route('admin.analytics.users', ['type' => 'gender'])}}"
     }).make('pie');
 
     quickchart.setup({
-      element: '#stats-confirmed', 
-      url: "{{route('admin.stats.users', ['type' => 'confirmed'])}}"
+      element: '#analytics-confirmed',
+      url: "{{route('admin.analytics.users', ['type' => 'confirmed'])}}"
     }).make('pie');
 
     quickchart.setup({
-      element: '#stats-favorites', 
-      url: "{{route('admin.stats.users', ['type' => 'favorites'])}}"
+      element: '#analytics-favorites',
+      url: "{{route('admin.analytics.users', ['type' => 'favorites'])}}"
     }).make('pie');
 });
 </script>
