@@ -41,7 +41,7 @@ New writes fill canonical UTC columns alongside local-time compatibility columns
 
 ## Metric definitions
 
-Activity/Insights filters select visits **started** in the local-date period, platform and effective audience. Event metrics additionally require occurrence within the period. Visits started earlier are not counted as new visits in the period. Undated imports cannot enter dated metrics.
+Activity/Insights filters select visits **started** in the local-date period, platform and effective audience. The audience defaults to Registered when no audience is supplied; explicitly choosing Everyone or Anonymous overrides that default. Event metrics additionally require occurrence within the period. Visits started earlier are not counted as new visits in the period. Undated imports cannot enter dated metrics.
 
 | Metric | Definition and limits |
 | --- | --- |

@@ -20,7 +20,7 @@ class Filters
             'platform' => 'nullable|in:all,web,webapp,app',
             'audience' => 'nullable|in:all,registered,anonymous',
         ]);
-        $this->values = array_merge(['range' => '7', 'platform' => 'all', 'audience' => 'all'], array_filter($this->values, function ($value) { return $value !== null; }));
+        $this->values = array_merge(['range' => '7', 'platform' => 'all', 'audience' => 'registered'], array_filter($this->values, function ($value) { return $value !== null; }));
         $today = now()->startOfDay();
         switch ($this->values['range']) {
             case 'today': $this->start = $today; $this->end = $today->copy()->addDay(); break;

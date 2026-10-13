@@ -94,7 +94,7 @@ class ActivityTrafficFilterTest extends ReviewTestCase
         $page = $this->context($this->get('http://'.config('app.short_url').'/review/traffic-piece/'.$piece->id)->assertOk());
         $this->travel(5)->seconds(); $this->send($page, 5)->assertNoContent();
         $this->assertDatabaseHas('activity_events', ['type' => 'page_view', 'source' => 'server', 'resource_type' => 'piece', 'resource_id' => $piece->id]);
-        $filters = new \App\Activity\Filters(\Illuminate\Http\Request::create('/', 'GET', ['range' => 'today']));
+        $filters = new \App\Activity\Filters(\Illuminate\Http\Request::create('/', 'GET', ['range' => 'today', 'audience' => 'all']));
         $this->assertSame(1, (new \App\Activity\Queries)->metrics($filters)['Pieces opened']);
     }
 

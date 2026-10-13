@@ -61,7 +61,13 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->event($visit, $page, 'page_view', '2026-10-12 19:14:00', [], $piece);
         $this->event($visit, $page, 'media_progress', '2026-10-12 19:15:00', ['media_kind' => 'video', 'playback_id' => (string) Str::uuid(), 'unique_watched_percent' => 80, 'played_seconds' => 144, 'piece_id' => $piece->id]);
         $this->actingAs(create(Admin::class), 'admin');
-        foreach (['admin.analytics.users', 'admin.analytics.users.people', 'admin.analytics.users.insights'] as $route) $this->get(route($route))->assertOk();
+        $this->get(route('admin.analytics.users.people'))->assertOk();
+        foreach (['admin.analytics.users', 'admin.analytics.users.insights'] as $route) {
+            foreach ([null => 'registered', 'all' => 'all', 'anonymous' => 'anonymous'] as $audience => $expected) {
+                $this->get(route($route, $audience ? ['audience' => $audience] : []))->assertOk()
+                    ->assertViewHas('filters', function ($filters) use ($expected) { return $filters->values['audience'] === $expected; });
+            }
+        }
         foreach (['overview', 'visits', 'music', 'account'] as $tab) $this->get(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => $tab]))->assertOk()->assertSee('Maria Rossi');
         $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('Clair de lune')->assertSee('80% unique content played')->assertSee('America/New_York')->assertDontSee('closed the browser');
         $this->assertDatabaseCount('activity_imports', 0);
@@ -80,7 +86,7 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertDatabaseHas('activity_visits', ['id' => $anonymous->id, 'user_id' => null]);
         $q = new Queries;
         $this->assertSame(2, $q->visits(null, $user->id)->count());
-        $metrics = $q->metrics($this->filters());
+        $metrics = $q->metrics($this->filters(['audience' => 'all']));
         $this->assertSame(2, (int) $metrics['Unique visitors'], 'Linked anonymous/account visits count once; unrelated visitor remains distinct.');
         $this->assertDatabaseHas('activity_events', ['type' => 'login', 'user_id' => $user->id]);
     }
@@ -93,11 +99,16 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->visit(null, '2026-10-12 10:00:00', 'web');
         $this->visit(null, '2026-10-11 10:00:00', 'app');
         $q = new Queries;
+        $default = $q->metrics($this->filters());
+        $this->assertSame(2, (int) $default['Visits']);
+        $this->assertSame(1, (int) $default['Unique visitors']);
+        $this->assertSame(4, (int) $q->metrics($this->filters(['audience' => 'all']))['Visits']);
+        $this->assertSame(2, (int) $q->metrics($this->filters(['audience' => 'anonymous']))['Visits']);
         $metrics = $q->metrics($this->filters(['range' => 'today', 'platform' => 'webapp', 'audience' => 'registered']));
         $this->assertSame(1, (int) $metrics['Unique visitors']);
         $this->assertSame(1, (int) $metrics['Visits']);
         $this->assertSame(1, (int) $metrics['Returning visitors']);
-        $this->assertSame(1, $q->visits($this->filters(['range' => 'yesterday']))->count());
+        $this->assertSame(1, $q->visits($this->filters(['range' => 'yesterday', 'audience' => 'all']))->count());
         $this->assertSame(1, $q->visits($this->filters(['range' => 'today', 'audience' => 'anonymous']))->count());
     }
 
