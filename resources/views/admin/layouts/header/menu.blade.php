@@ -2,16 +2,7 @@
   <div class="admin-sidebar-body">
     <ul class="admin-menu">
 
-
-      @editor
-        @include('admin.layouts.header.item', ['route' => route('admin.editors.edit', auth('admin')->id()), 'name' => 'My profile', 'icon' => 'pencil'])
-      @endeditor
-
-      @manager
-
         @include('admin.layouts.header.divider', ['label' => 'TOOLS'])
-
-        @include('admin.layouts.header.item', ['route' => route('admin.settings.index'), 'name' => 'Settings', 'icon' => 'settings'])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
         'dropdown' => [
@@ -108,7 +99,6 @@
         @include('admin.layouts.header.divider', ['label' => 'EXTRA'])
 
         @include('admin.layouts.header.item', ['route' => route('admin.clips.index'), 'name' => 'Video clips', 'icon' => 'circle-play'])
-      @endmanager
 
     </ul>
 
