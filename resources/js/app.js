@@ -40,14 +40,3 @@ $.ajaxSetup({
 $('button.navbar-toggler').on('click', function () {
     $('.animated-icon2').toggleClass('open');
 });
-
-$(function(){
-    var requiredCheckboxes = $('.options-required :checkbox[required]');
-    requiredCheckboxes.change(function(){
-        if(requiredCheckboxes.is(':checked')) {
-            requiredCheckboxes.removeAttr('required');
-        } else {
-            requiredCheckboxes.attr('required', 'required');
-        }
-    });
-});

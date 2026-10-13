@@ -22,7 +22,7 @@
           ],
           [
             'title' => 'For teachers',
-            'links' => ['Studio Policy Generator' => route('tools.studio-policies'), 'Staff Generator' => route('tools.staff')]
+            'links' => ['Staff Generator' => route('tools.staff')]
           ],
         ]])
 

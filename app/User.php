@@ -122,11 +122,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Purchase::class)->latest();
     }
 
-    public function studioPolicies()
-    {
-        return $this->hasMany(StudioPolicy::class);
-    }
-
     public function tutorialRequests()
     {
         return $this->hasMany(TutorialRequest::class)->with('piece')->orderBy('created_at', 'DESC');

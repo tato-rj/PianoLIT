@@ -1,9 +1,5 @@
 <?php
 
-Route::resources([
-    'studio-policies' => 'StudioPoliciesController',
-]);
-
 Route::get('', 'UsersController@profile')->name('profile');
 
 Route::get('purchases', 'UsersController@purchases')->name('purchases');

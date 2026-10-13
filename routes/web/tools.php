@@ -30,6 +30,4 @@ Route::prefix('tools')->name('tools.')->group(function() {
 
 	});
 
-	Route::get('studio-policies', 'ToolsController@studioPolicy')->name('studio-policies');
-
 });

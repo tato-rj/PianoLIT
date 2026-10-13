@@ -22,7 +22,7 @@ Full-access web users (including super users) can annotate public-domain score P
 - Route registration and domain/middleware boundaries: `app/Providers/RouteServiceProvider.php`, `app/Http/Kernel.php`, and `routes/`.
 - Shared app feeds/search: `app/Api/`; billing: `app/Billing/`; integrations: `app/Services/` and webhook controllers.
 - Templates: `resources/views/`; JavaScript sources: `resources/js/`; SCSS: `resources/sass/`.
-- Asset entry points: `resources/js/app.js`, `admin.js`, `tone.js`, plus the six SCSS entries in `webpack.mix.js`.
+- Asset entry points: `resources/js/app.js`, `admin.js`, `tone.js`, plus the SCSS entries in `webpack.mix.js`.
 - Models live directly under `app/` as well as domain folders. This project uses legacy Laravel factories.
 - `public/js` and `public/css` contain tracked build outputs. Edit sources first, build, and include the relevant outputs and manifest changes. `resources/js/vendor/lookup.js` is project-owned autocomplete code despite its directory name.
 

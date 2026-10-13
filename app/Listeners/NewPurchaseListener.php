@@ -5,7 +5,6 @@ namespace App\Listeners;
 use App\Events\PurchaseMade;
 use App\Notifications\NewPurchaseCompleted;
 use App\Mail\Shop\ConfirmPurchase;
-use App\Mail\NewStudioPolicyEmail;
 use App\Admin;
 
 class NewPurchaseListener

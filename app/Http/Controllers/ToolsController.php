@@ -64,11 +64,6 @@ class ToolsController extends Controller
         return view('tools.technique.results.arpeggios', compact('arpeggio'))->render();
     }
 
-    public function studioPolicy()
-    {        
-        return view('tools.studio-policies.index');
-    }
-
     public function staff($type = null)
     {
         $files = ['blank', 'piano', 'treble', 'bass'];

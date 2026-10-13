@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Billing\{Membership, Payment};
 use App\Billing\Sources\Apple;
-use App\{Piece, Subscription, StudioPolicy, TutorialRequest, User, FavoriteFolder, Location, Review, Rating, Performance, Clap};
+use App\{Piece, Subscription, TutorialRequest, User, FavoriteFolder, Location, Review, Rating, Performance, Clap};
 use Tests\AppTest;
 use App\Merchandise\Purchase;
 use App\Infograph\Infograph;
@@ -84,14 +84,6 @@ class UserTest extends AppTest
 		create(Subscription::class, ['email' => $this->user->email]);
 
 		$this->assertInstanceOf(Subscription::class, $this->user->subscription); 
-	}
-
-	/** @test */
-	public function it_has_many_studio_policies()
-	{
-		create(StudioPolicy::class, ['user_id' => $this->user->id]);
-
-		$this->assertInstanceOf(StudioPolicy::class, $this->user->studioPolicies->first()); 
 	}
 
 	/** @test */

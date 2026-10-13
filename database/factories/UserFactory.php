@@ -1,7 +1,7 @@
 <?php
 
 use App\Payments\Membership;
-use App\{User, Admin, Subscription, StudioPolicy, TutorialRequest, Piece, Location, Rating};
+use App\{User, Admin, Subscription, TutorialRequest, Piece, Location, Rating};
 use App\CrashCourse\{CrashCourse, CrashCourseLesson, CrashCourseSubscription, CrashCourseTopic};
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
@@ -43,40 +43,6 @@ $factory->define(Subscription::class, function (Faker $faker) {
         'origin_url' => $faker->url,
         'newsletter_list' => true,
         'birthday_list' => true
-    ];
-});
-
-$factory->define(StudioPolicy::class, function (Faker $faker) {
-    $data = [
-        // GENERAL
-        'name' => $faker->name,
-        'start_year' => 2018,
-        'end_year' => 2019,
-        'start_month' => 9,
-        'end_month' => 6,
-
-        // LESSONS
-        'lessons_length' => [30, 45, 60],
-
-        // SCHEDULING
-        'vacation_weeks' => 2,
-        'makeup_weeks' => 2,
-        'group_classes' => 1,
-        'recitals' => 1,
-
-        // COMMUNICATION
-        'absence_notice' => 48,
-
-        'parent_agreement' => true,
-        'student_agreement' => true,
-    ];
-
-    return [
-        'user_id' => function() {
-            return create(User::class)->id;
-        },
-        'data' => json_encode($data),
-        'theme' => 'default'
     ];
 });
 
