@@ -45,9 +45,18 @@ class Presentation
         return ucfirst(str_replace(['-', '_', '/'], [' ', ' ', ' / '], trim($path, '/')));
     }
 
+    public static function isPreviewPlayClick($event)
+    {
+        if ($event->type !== 'click') return false;
+        $metadata = self::metadata($event);
+        return ($metadata['control'] ?? '') === 'match_piece'
+            && preg_match('/^Play preview(?:\s*:|$)/i', trim($metadata['label'] ?? '')) === 1;
+    }
+
     public static function action($event)
     {
         $m = self::metadata($event);
+        if (self::isPreviewPlayClick($event)) return 'Playback attempted';
         if ($event->type === 'request' && ($event->status ?? 0) >= 400) return 'A request could not be completed (HTTP '.$event->status.')';
         $media = ($m['section'] ?? '') === 'synthesia' || strpos($m['media_id'] ?? '', 'synthesia') !== false ? 'Synthesia' : (($m['media_kind'] ?? '') === 'audio' ? 'audio' : 'performance video');
         $simple = [

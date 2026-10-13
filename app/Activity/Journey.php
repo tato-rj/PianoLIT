@@ -34,7 +34,18 @@ class Journey
             });
             $opening = $all->first(function ($e) { return $e->type === 'page_view' && $e->resource_type === 'piece'; });
             $piece = $opening ? ($pieces[$opening->resource_id] ?? null) : null;
-            $actions = $all->reject(function ($e) { return strpos($e->type, 'media_') === 0 || in_array($e->type, ['page_view', 'page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_restore', 'request'], true); });
+            // Fold the Play button into its preview's recorded playback on this
+            // page. Later attempts without subsequent playback remain visible.
+            $confirmedPreviews = []; $playClicks = [];
+            foreach ($all->reverse() as $event) {
+                $previewPiece = self::previewPiece($event);
+                if ($previewPiece && self::playbackObserved($event)) $confirmedPreviews[$previewPiece] = true;
+                elseif (Presentation::isPreviewPlayClick($event)) {
+                    $metadata = Presentation::metadata($event);
+                    if (isset($confirmedPreviews[$metadata['piece_id'] ?? ''])) $playClicks[$event->id] = true;
+                }
+            }
+            $actions = $all->reject(function ($e) use ($playClicks) { return isset($playClicks[$e->id]) || strpos($e->type, 'media_') === 0 || in_array($e->type, ['page_view', 'page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_restore', 'request'], true); });
             $lastScore = $actions->where('type', 'score_progress')->last();
             $actions = $actions->filter(function ($e) use ($lastScore) { return $e->type !== 'score_progress' || $e === $lastScore; });
             // Present each playback once, including old duplicate starts and
@@ -42,6 +53,9 @@ class Journey
             $media = $all->filter(function ($e) { return strpos($e->type, 'media_') === 0; })->groupBy(function ($e) {
                 $m = Presentation::metadata($e);
                 return ($m['playback_id'] ?? $m['media_id'] ?? 'unknown').':'.($m['piece_id'] ?? '');
+            })->filter(function ($items) {
+                // A failed preview load is an attempt, not a played-media item.
+                return !self::previewPiece($items->first()) || $items->contains(function ($event) { return self::playbackObserved($event); });
             })->map(function ($items) {
                 $metadata = $items->map(function ($e) { return Presentation::metadata($e); });
                 $coverage = $metadata->pluck('unique_watched_percent')->filter(function ($value) { return is_numeric($value); })->max();
@@ -68,5 +82,20 @@ class Journey
         $previous = (clone $siblings)->where(function ($q) use ($visit) { $q->where('v.started_at', '<', $visit->started_at)->orWhere(function ($q) use ($visit) { $q->where('v.started_at', $visit->started_at)->where('v.id', '<', $visit->id); }); })->orderByDesc('v.started_at')->orderByDesc('v.id')->value('v.id');
         $next = (clone $siblings)->where(function ($q) use ($visit) { $q->where('v.started_at', '>', $visit->started_at)->orWhere(function ($q) use ($visit) { $q->where('v.started_at', $visit->started_at)->where('v.id', '>', $visit->id); }); })->orderBy('v.started_at')->orderBy('v.id')->value('v.id');
         return compact('visit', 'pages', 'groups', 'timeline', 'pieces', 'unplaced', 'previous', 'next', 'detailCount');
+    }
+
+    private static function previewPiece($event)
+    {
+        if (strpos($event->type, 'media_') !== 0) return null;
+        $metadata = Presentation::metadata($event);
+        $piece = $metadata['piece_id'] ?? null;
+        return $piece && ($metadata['media_id'] ?? '') === 'match-preview-'.$piece ? $piece : null;
+    }
+
+    private static function playbackObserved($event)
+    {
+        if ($event->type === 'media_play') return true;
+        $metadata = Presentation::metadata($event);
+        return ($metadata['played_seconds'] ?? 0) > 0 || ($metadata['unique_watched_seconds'] ?? 0) > 0 || ($metadata['unique_watched_percent'] ?? 0) > 0;
     }
 }

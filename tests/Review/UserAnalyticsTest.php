@@ -161,6 +161,59 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertCount(2, (new Journey)->get($visit)['groups'][0]['media'], 'Separate playbacks are not hidden.');
     }
 
+    public function test_preview_play_clicks_fold_only_into_subsequent_playback_for_the_same_page_and_preview()
+    {
+        $visit = $this->visit(); $page = $this->page($visit, 'webapp.find-your-match');
+        $otherPage = $this->page($visit, 'webapp.find-your-match', '2026-10-12 19:14:30');
+        [$piece, $otherPiece] = Model::withoutEvents(function () { return [create(Piece::class, ['name' => 'Humming bird']), create(Piece::class, ['name' => 'Prelude'])]; });
+        $click = ['control' => 'match_piece', 'label' => 'Play preview: Humming bird', 'piece_id' => $piece->id];
+        $successfulClick = $this->event($visit, $page, 'click', '2026-10-12 19:15:00', $click);
+        $otherPageClick = $this->event($visit, $otherPage, 'click', '2026-10-12 19:15:00', $click);
+        $otherPreviewClick = $this->event($visit, $page, 'click', '2026-10-12 19:15:01', array_merge($click, ['piece_id' => $otherPiece->id, 'label' => 'Play preview: Prelude']));
+        $choice = $this->event($visit, $page, 'click', '2026-10-12 19:15:02', array_merge($click, ['label' => 'Choose this piece']));
+        $media = ['media_kind' => 'audio', 'media_id' => 'match-preview-'.$piece->id, 'piece_id' => $piece->id, 'playback_id' => (string) Str::uuid(), 'played_seconds' => 0];
+        $this->event($visit, $page, 'media_play', '2026-10-12 19:15:03', $media);
+        $this->event($visit, $page, 'media_progress', '2026-10-12 19:15:07', array_merge($media, ['played_seconds' => 4, 'unique_watched_percent' => 7]));
+        // Playing another media source does not establish that its preview played.
+        $this->event($visit, $page, 'media_play', '2026-10-12 19:15:08', ['media_kind' => 'audio', 'media_id' => 'piece-performance', 'piece_id' => $otherPiece->id]);
+        $laterAttempt = $this->event($visit, $page, 'click', '2026-10-12 19:16:00', $click);
+        $this->event($visit, $page, 'media_error', '2026-10-12 19:16:01', array_merge($media, ['playback_id' => (string) Str::uuid()]));
+        $groups = (new Journey)->get($visit)['groups']->keyBy('page.id');
+        $this->assertSame([$otherPreviewClick, $choice, $laterAttempt], $groups[$page]['actions']->pluck('id')->all());
+        $this->assertSame([$otherPageClick], $groups[$otherPage]['actions']->pluck('id')->all());
+        $this->assertNotContains($successfulClick, $groups[$page]['moments']->pluck('event.id')->all());
+        $this->assertCount(2, $groups[$page]['media'], 'The failed preview load must not create another Played audio item.');
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('4s playing')->assertSee('7% unique content played')->assertSee('Playback attempted')->assertDontSee('Selected Play preview');
+        $this->assertSame(3, substr_count($response->getContent(), 'Playback attempted'));
+        $this->assertSame(2, substr_count($response->getContent(), 'Played audio'));
+        $this->assertDatabaseHas('activity_events', ['id' => $successfulClick]);
+    }
+
+    public function test_preview_load_errors_without_playback_remain_attempts()
+    {
+        $visit = $this->visit(); $page = $this->page($visit);
+        $click = $this->event($visit, $page, 'click', '2026-10-12 19:15:00', ['control' => 'match_piece', 'label' => 'Play preview: Prelude', 'piece_id' => 42]);
+        $this->event($visit, $page, 'media_error', '2026-10-12 19:15:01', ['media_id' => 'match-preview-42', 'media_kind' => 'audio', 'piece_id' => 42, 'played_seconds' => 0, 'unique_watched_percent' => 0]);
+        $group = (new Journey)->get($visit)['groups'][0];
+        $this->assertSame([$click], $group['actions']->pluck('id')->all());
+        $this->assertCount(0, $group['media']);
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('Playback attempted')->assertDontSee('Played audio')->assertDontSee('<meter', false);
+        $this->assertSame(1, substr_count($response->getContent(), 'Playback attempted'));
+    }
+
+    public function test_preview_progress_can_confirm_playback_when_the_start_was_not_recorded()
+    {
+        $visit = $this->visit(); $page = $this->page($visit);
+        $this->event($visit, $page, 'click', '2026-10-12 19:15:00', ['control' => 'match_piece', 'label' => 'Play preview: Prelude', 'piece_id' => 42]);
+        $this->event($visit, $page, 'media_pause', '2026-10-12 19:15:04', ['media_id' => 'match-preview-42', 'media_kind' => 'audio', 'piece_id' => 42, 'played_seconds' => 4, 'unique_watched_percent' => 7]);
+        $group = (new Journey)->get($visit)['groups'][0];
+        $this->assertCount(0, $group['actions']);
+        $this->assertCount(1, $group['media']);
+        $this->assertSame(4, $group['media']->first()['watched']);
+    }
+
     public function test_playback_links_reuse_medium_names_with_composers_without_extra_queries()
     {
         [$piece, $orphan] = Model::withoutEvents(function () {
