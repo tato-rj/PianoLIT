@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: PianoLIT browser activity
-  version: 1.1.0
+  version: 1.2.0
   description: >
     Additive browser contract. Session identity, CSRF and a server-issued
     encrypted page token are mandatory. Existing iOS requests are unchanged.
@@ -15,6 +15,10 @@ paths:
         per event; 120 requests/minute. Server derives account, visitor, platform,
         visit and page. Offsets are bounded by page age plus 60 seconds.
         Retrying must preserve IDs. Client events cannot assert account outcomes.
+        New visits require five seconds of cumulative foreground activity or
+        observed playback. Optional qualification contexts preserve earlier pages.
+        Every context must belong to the same session, account, host and visit.
+        Root events plus up to 16 proof events share the 100 KB request limit.
       parameters:
         - in: header
           name: X-CSRF-TOKEN
@@ -29,12 +33,23 @@ paths:
               required: [page_token, events]
               properties:
                 page_token: {type: string, maxLength: 4096}
+                qualification:
+                  type: array
+                  maxItems: 16
+                  description: Optional signed page contexts and actual buffered events establishing cumulative engagement; never arbitrary visit or account IDs.
+                  items:
+                    type: object
+                    required: [page_token, event]
+                    properties:
+                      page_token: {type: string, maxLength: 4096}
+                      event: {$ref: '#/components/schemas/Event'}
                 events:
                   type: array
                   minItems: 1
                   maxItems: 50
                   items: {$ref: '#/components/schemas/Event'}
       responses:
+        '202': {description: Still provisional; retain events and retry unchanged IDs}
         '204': {description: Accepted or already recorded}
         '403': {description: Invalid or expired page ownership}
         '413': {description: Payload too large}

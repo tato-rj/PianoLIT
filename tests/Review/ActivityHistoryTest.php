@@ -14,6 +14,9 @@ class ActivityHistoryTest extends ReviewTestCase
     public function setUp(): void
     {
         parent::setUp();
+        // Exercise already-persisted/legacy page tokens; default deferred
+        // qualification is covered end-to-end in ActivityTrafficFilterTest.
+        config(['activity.minimum_visit_seconds' => 0]);
         Route::middleware(['web', RecordWebLog::class])->group(function () {
             Route::get('/review/activity-page', function () { return response('<html>Activity page</html>'); })->name('review.activity-page');
             Route::post('/review/activity-action', function () { return response()->json(['ok' => true]); })->name('review.activity-action');

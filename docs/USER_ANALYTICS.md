@@ -29,6 +29,8 @@ Activity/People paginate 25 rows. Profiles paginate saved music/media independen
 
 ## Identities, boundaries and timestamps
 
+Web browsing now uses a five-second foreground/playback qualification gate and crawler filtering. Unqualified raw events remain in the browser outbox and do not enter analytics SQL. Confirmed account actions remain available independently. An hourly cleanup removes old short web visits while preserving account outcomes and mobile/imported history. See [ACTIVITY_FILTERING.md](ACTIVITY_FILTERING.md) for exact rules, limitations, release steps and preview/execute commands.
+
 Browser account identity comes from auth:web, visitor identity from the server session, and page ownership from the encrypted page token. Submitted user/visitor/platform/visit/page IDs never establish ownership. UUID event IDs make retries idempotent; duplicate IDs cannot change page timing. Collection is CSRF-protected, bounded to 50 events/100 KB requests/8 KB metadata per event, and throttled to 120 requests/minute. Analytics failures do not change feature responses.
 
 The new activity_visit_links table associates only the **current anonymous visit** when a real web guard Login or Registered event confirms the account in the same session. It never bulk-links visitor history, uses IP/location, changes original user_id, or transfers an already linked visit to another account. Reporting uses the direct/explicitly linked account, otherwise the random session visitor. One reliably linked visitor/account is counted once. Separate sessions/shared devices remain separate without confirmed linkage. Visitor identities are session identities, not guaranteed individual humans; later confirmed linkage can change historical distinct counts.
@@ -44,9 +46,9 @@ Activity/Insights filters select visits **started** in the local-date period, pl
 | Metric | Definition and limits |
 | --- | --- |
 | Unique visitor | Distinct effective account, otherwise session visitor, among matching visits. Unverified legacy iOS identities excluded. |
-| Visit | One activity_visits record; never an imported counter or reconstructed legacy request group. |
+| Visit | One activity_visits record; new browser visits require the five-second engagement gate. Historical short records remain until cleanup. Never an imported counter or reconstructed legacy request group. |
 | Returning visitor | Matching identity with another visit started earlier, within or before the selected period. |
-| Page view | Successful server HTML page view. Requests/redirects/failed provisional pages are not opened pages. Refreshes are separate opens. |
+| Page view | Successful server HTML page view within an eligible visit. Provisional openings are saved only when the visit qualifies. Requests/redirects/failed pages are not opened pages. Refreshes are separate opens. |
 | Piece open | Server page_view whose route-bound resource is piece. Repeated opens count separately. |
 | Visible time | Cumulative observed foreground milliseconds, bounded by elapsed time; not attention. Missing checkpoints show unknown. |
 | Active engagement | No general active-time metric is measurable. Media playback and score visibility are presented separately. |
@@ -95,8 +97,8 @@ The future backend must authenticate independently of legacy user_id, mint/verif
 
 ## Deployment, privacy and verification
 
-Deploy migration 2026_10_12_150000_extend_activity_for_user_analytics.php after the existing activity-history migration, **before** these writers/views. It adds links, nullable UTC fields, inactivity timestamp and query indexes without discarding or backfilling history. Index creation on large history needs the normal reviewed deployment window. Deploy PHP/templates, admin CSS, standalone JS outputs and manifest together. No queue/pruning/re-import is needed for ongoing collection; ACTIVITY_HISTORY.md describes final legacy import. Do not automatically deploy or execute production migrations.
+Deploy migration 2026_10_12_150000_extend_activity_for_user_analytics.php after the existing activity-history migration, **before** these writers/views. It adds links, nullable UTC fields, inactivity timestamp and query indexes without discarding or backfilling history. Index creation on large history needs the normal reviewed deployment window. Deploy PHP/templates, admin CSS, standalone JS outputs and manifest together. Ongoing collection requires no queue or re-import; ACTIVITY_HISTORY.md describes final legacy import. The short-visit maintenance command uses the existing hourly Laravel scheduler, as documented in ACTIVITY_FILTERING.md. Do not automatically deploy or execute production migrations.
 
-Explicit user-history purge now includes reliably linked anonymous visits. Ordinary deletion preserves existing historical-record behavior; links cascade with the account. No new retention policy is invented: activity currently has no automatic pruning. Restrict admin access/backups and agree retention separately. Imported raw payloads remain in older guarded tools; new details use a safe allowlist and never expose them.
+Explicit user-history purge now includes reliably linked anonymous visits. Ordinary deletion preserves existing historical-record behavior; links cascade with the account. The user-requested short-visit cleanup is documented in ACTIVITY_FILTERING.md; no broader age-based retention policy is introduced. Restrict admin access/backups and agree broader retention separately. Imported raw payloads remain in older guarded tools; new details use a safe allowlist and never expose them.
 
 Validation uses isolated in-memory SQLite and JS regressions: anonymous/authenticated/linking, multiple same-day visits, missing/out-of-order times, partial data, metadata/escaping, filters/admin access, bounded pagination/query counts, UTC/retries/daylight-saving boundaries, idle/BFCache visibility/playback, seeking/replaying coverage, unchanged mobile contracts, confirmed billing, favorites/folders, score saves and migration upgrade/rollback. Offline fixtures check eight page types at 320/390/768/1440/1920 px, with network blocked and no live DB/site/browser session access. These checks do not establish production MySQL throughput, native iOS behavior, live Stripe outcomes or every native browser/player lifecycle.

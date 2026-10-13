@@ -14,7 +14,8 @@ class Recorder
         return config('activity.enabled') && $request->hasSession()
             && !auth('admin')->check()
             && $request->getHost() !== 'admin.'.config('app.short_url')
-            && !$request->routeIs('activity.*', 'admin.*', 'api.*');
+            && !$request->routeIs('activity.*', 'admin.*', 'api.*')
+            && !TrafficFilter::ignores($request);
     }
 
     public function visitor(Request $request)
@@ -39,7 +40,10 @@ class Recorder
         if (!is_string($token) || strlen($token) > 4096) return null;
         try {
             $id = Crypt::decryptString($token);
-            return DB::table('activity_pages')->where('id', $id)
+            $pending = (new PendingVisits)->find($request, $id);
+            if ($pending) $id = $pending->id;
+            elseif (strpos($id, PendingVisits::PREFIX) === 0) return null;
+            $page = DB::table('activity_pages')->where('id', $id)
                 ->where('visitor_id', $request->session()->get('activity.visitor', ''))
                 ->where('user_id', auth('web')->id())
                 ->where('platform', $this->platform($request))
@@ -47,6 +51,7 @@ class Recorder
                     $query->where('opened_at_utc', '>=', now('UTC')->subHours(config('activity.page_token_hours')))
                         ->orWhere(function ($legacy) { $legacy->whereNull('opened_at_utc')->where('opened_at', '>=', now()->subHours(config('activity.page_token_hours'))); });
                 })->first();
+            return $page ?: $pending;
         } catch (\Illuminate\Contracts\Encryption\DecryptException $exception) {
             return null;
         }
@@ -69,24 +74,35 @@ class Recorder
                         $legacy->whereNull('last_interaction_at_utc')->whereRaw('COALESCE(last_interaction_at, last_activity_at) >= ?', [$now->copy()->subMinutes(config('activity.visit_idle_minutes'))]);
                     });
             })->first();
-        $visitId = $visit ? $visit->id : (string) Str::uuid();
+        if ($visit && TrafficFilter::minimumMilliseconds() > 0 && !PendingVisits::qualified($visit->id)) {
+            // An old server-only visit is not evidence of browser engagement.
+            // Requalify subsequent navigation rather than grandfathering bots.
+            $visit = null;
+            $request->session()->forget(['activity.visit', PendingVisits::KEY]);
+        }
+        $pending = $visit ? null : (new PendingVisits)->visit($request, $request->session()->get('activity.visit', ''), $visitor, $user, $platform);
+        $visitId = $visit ? $visit->id : ($pending['id'] ?? (string) Str::uuid());
+        $visitRow = $pending ?: [
+            'id' => $visitId, 'user_id' => $user, 'visitor_id' => $visitor, 'platform' => $platform,
+            'started_at' => $now->format('Y-m-d H:i:s.v'), 'last_activity_at' => $now->format('Y-m-d H:i:s.v'),
+            'started_at_utc' => $now->copy()->utc()->format('Y-m-d H:i:s.v'), 'last_activity_at_utc' => $now->copy()->utc()->format('Y-m-d H:i:s.v'),
+            'last_interaction_at' => $now->format('Y-m-d H:i:s.v'), 'last_interaction_at_utc' => $now->copy()->utc()->format('Y-m-d H:i:s.v'),
+        ];
         $page = [
             'id' => (string) Str::uuid(), 'visit_id' => $visitId, 'user_id' => $user, 'visitor_id' => $visitor,
             'platform' => $platform, 'url' => Metadata::url($request->fullUrl()),
             'route_name' => $request->route()->getName(), 'opened_at' => $now->format('Y-m-d H:i:s.v'),
             'opened_at_utc' => $now->copy()->utc()->format('Y-m-d H:i:s.v'),
         ];
-        DB::transaction(function () use ($visit, $visitId, $user, $visitor, $platform, $now, $page) {
-            if (!$visit) DB::table('activity_visits')->insert([
-                'id' => $visitId, 'user_id' => $user, 'visitor_id' => $visitor, 'platform' => $platform,
-                'started_at' => $now->format('Y-m-d H:i:s.v'), 'last_activity_at' => $now->format('Y-m-d H:i:s.v'),
-                'started_at_utc' => $now->copy()->utc()->format('Y-m-d H:i:s.v'), 'last_activity_at_utc' => $now->copy()->utc()->format('Y-m-d H:i:s.v'),
-                'last_interaction_at' => $now->format('Y-m-d H:i:s.v'),
-                'last_interaction_at_utc' => $now->copy()->utc()->format('Y-m-d H:i:s.v'),
-            ]);
+        $request->session()->put('activity.visit', $visitId);
+        if (!$visit && TrafficFilter::minimumMilliseconds() > 0) {
+            if (!$pending) $request->attributes->set('activity.pending_new_visit', true);
+            return (new PendingVisits)->stage($request, $page, $visitRow);
+        }
+        DB::transaction(function () use ($visit, $visitRow, $page) {
+            if (!$visit) DB::table('activity_visits')->insert($visitRow);
             DB::table('activity_pages')->insert($page);
         });
-        $request->session()->put('activity.visit', $visitId);
         return (object) $page;
     }
 
@@ -114,22 +130,41 @@ class Recorder
             $type = $action['type'];
             $metadata = array_merge($metadata, $action['metadata'] ?? []);
         }
-        $this->insert($request, $page, [
+        $event = [
             'type' => $type, 'source' => 'server', 'occurred_at' => now()->format('Y-m-d H:i:s.v'), 'occurred_at_utc' => now('UTC')->format('Y-m-d H:i:s.v'),
             'url' => Metadata::url($request->fullUrl()), 'route_name' => $request->route()->getName(),
             'method' => $request->method(), 'status' => $response->getStatusCode(),
             'resource_type' => $resourceType, 'resource_id' => $resourceId,
             'metadata' => $metadata,
-        ]);
+        ];
+        if (!empty($page->_pending) && $type === 'page_view') {
+            (new PendingVisits)->opening($request, $page, $event, $response);
+            return;
+        }
+        // Failed probes, redirects and bare requests do not establish a visit.
+        // Keep them only within an already qualified visit (legacy opt-out retained).
+        if ($type === 'request' && TrafficFilter::minimumMilliseconds() > 0
+            && (!empty($page->_pending) || !PendingVisits::qualified($page->visit_id ?? $request->session()->get('activity.visit', '')))) return;
+        $this->insert($request, $page, $event);
     }
 
-    public function insert(Request $request, $page, array $event)
+    public function insert(Request $request, $page, array $event, $visitLocked = false)
     {
+        if ($visitLocked) return $this->insertRow($request, $page, $event, true);
+        return DB::transaction(function () use ($request, $page, $event) { return $this->insertRow($request, $page, $event, false); });
+    }
+
+    private function insertRow(Request $request, $page, array $event, $visitLocked)
+    {
+        // Preserve successful account actions, but do not fabricate a short visit
+        // just to attach them. They remain ungrouped account milestones.
+        if (!empty($page->_pending)) $page = null;
         $metadata = $event['metadata'] ?? [];
         $visitor = $request->attributes->get('activity.visitor') ?: $this->visitor($request);
         $actor = $request->attributes->get('activity.actor', auth('web')->id());
         $visit = $page ? $page->visit_id : DB::table('activity_visits')->where('id', $request->session()->get('activity.visit', ''))
             ->where('visitor_id', $visitor)->where('user_id', $actor)->value('id');
+        if ($visit && !$visitLocked && !DB::table('activity_visits')->where('id', $visit)->lockForUpdate()->first()) { $visit = null; $page = null; }
         $row = array_merge([
             'event_id' => (string) Str::uuid(), 'visit_id' => $visit,
             'page_id' => $page ? $page->id : null, 'user_id' => $actor,
@@ -157,9 +192,32 @@ class Recorder
         return true;
     }
 
-    public function browser(Request $request, $page, array $events)
+    public function browser(Request $request, $page, array $events, array $qualification = [])
     {
+        if (!empty($page->_pending)) {
+            $pending = new PendingVisits;
+            $pages = $pending->observe($request, $page, $events, $qualification);
+            if (!$pages) return false;
+            try { DB::transaction(function () use ($request, $page, $pages) {
+                DB::table('activity_visits')->insertOrIgnore($page->_visit);
+                foreach ($pages as $entry) {
+                    $row = $entry['page']; unset($row['_pending'], $row['_visit']);
+                    DB::table('activity_pages')->insertOrIgnore($row);
+                    $stored = (object) $row;
+                    $entry['opening']['metadata']['engagement_qualified'] = true;
+                    $this->insert($request, $stored, $entry['opening'], true);
+                    $this->browser($request, $stored, array_values($entry['events']));
+                }
+                $visit = DB::table('activity_visits')->where('id', $page->visit_id)->first();
+                if (Time::date($visit, 'started_at')->diffInMilliseconds(Time::date($visit, 'last_activity_at')) < TrafficFilter::minimumMilliseconds()) throw new UnqualifiedVisit;
+            }); } catch (UnqualifiedVisit $exception) { return false; }
+            $pending->forgetVisit($request, $page->visit_id);
+            return true;
+        }
         DB::transaction(function () use ($request, $page, $events) {
+            if (!DB::table('activity_visits')->where('id', $page->visit_id)->lockForUpdate()->first()) return;
+            $remaining = max(0, (int) config('activity.max_browser_events_per_page', 2000) - DB::table('activity_events')->where('page_id', $page->id)->where('source', 'browser')->count());
+            $events = array_slice($events, 0, $remaining);
             foreach ($events as $event) {
                 $metadata = Metadata::select($event['metadata'] ?? [], Metadata::BROWSER_KEYS);
                 if (isset($metadata['target'])) $metadata['target'] = Metadata::url($metadata['target']);
@@ -172,7 +230,7 @@ class Recorder
                     'elapsed_ms' => $event['elapsed_ms'], 'sequence' => $event['sequence'],
                     'url' => $page->url, 'route_name' => $page->route_name, 'metadata' => $metadata,
                     'resource_type' => isset($metadata['piece_id']) ? 'piece' : null, 'resource_id' => $metadata['piece_id'] ?? null,
-                ]);
+                ], true);
                 if (!$inserted) continue;
                 $updates = ['elapsed_ms' => DB::raw('CASE WHEN elapsed_ms < '.(int) $event['elapsed_ms'].' THEN '.(int) $event['elapsed_ms'].' ELSE elapsed_ms END')];
                 if (isset($metadata['visible_ms']) && is_numeric($metadata['visible_ms'])) {
@@ -182,5 +240,6 @@ class Recorder
                 DB::table('activity_pages')->where('id', $page->id)->update($updates);
             }
         });
+        return true;
     }
 }

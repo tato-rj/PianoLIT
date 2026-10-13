@@ -28,23 +28,66 @@
         if (/^(score_|premium_)/.test(type) && config.pieceId) metadata = Object.assign({piece_id: config.pieceId}, metadata || {});
         var batch = outbox[outbox.length - 1];
         if (!batch || batch.page_token !== config.pageToken || batch.events.length >= 20 || batch === sending) {
-            batch = {page_token: config.pageToken, events: []}; outbox.push(batch);
+            batch = {page_token: config.pageToken, visit_id: config.visitId, deferred: !!config.deferred, events: []}; outbox.push(batch);
         }
         batch.events.push({id: uuid(), type: type, elapsed_ms: clock(), sequence: ++sequence, metadata: metadata || {}});
         // Bound prolonged offline storage, retaining recent interaction history.
         if (outbox.length > 100) outbox.shift();
         persist();
     }
+    function qualification(batch) {
+        if (!batch.deferred) return [];
+        var pages = {}, minimum = Number(config.minimumVisitMs) || 5000;
+        outbox.forEach(function (pending) {
+            if (pending.visit_id !== batch.visit_id) return;
+            pending.events.forEach(function (event) {
+                var m = event.metadata || {}, visible = Math.min(event.elapsed_ms, Number(m.visible_ms) || 0);
+                var played = event.type.indexOf('media_') === 0 ? Math.min(event.elapsed_ms, (Number(m.played_seconds) || 0) * 1000) : 0;
+                var old = pages[pending.page_token] || {page_token: pending.page_token, fallback: event, visible: 0, played: 0};
+                if (visible > old.visible) { old.visible = visible; old.visibility = event; }
+                if (played > old.played) { old.played = played; old.playback = event; }
+                pages[pending.page_token] = old;
+            });
+        });
+        var proofs = Object.keys(pages).map(function (key) {
+            var page = pages[key], event = page.played >= minimum ? page.playback : (page.visibility || page.playback || page.fallback), m = event.metadata || {};
+            return {page_token: page.page_token, event: event, visible: Number(m.visible_ms) || 0, played: event.type.indexOf('media_') === 0 ? (Number(m.played_seconds) || 0) * 1000 : 0};
+        }).sort(function (a, b) { return Math.max(b.visible, b.played) - Math.max(a.visible, a.played); }).slice(0, 16);
+        var visible = proofs.reduce(function (sum, proof) { return sum + proof.visible; }, 0);
+        var played = proofs.reduce(function (max, proof) { return Math.max(max, proof.played); }, 0);
+        if (Math.max(visible, played) < minimum) return null;
+        return proofs.map(function (proof) { return {page_token: proof.page_token, event: proof.event}; });
+    }
+    function payloadFor(batch, proofs) {
+        var payload = {page_token: batch.page_token, events: batch.events, _token: config.csrfToken};
+        if (proofs && proofs.length) payload.qualification = proofs;
+        return JSON.stringify(payload);
+    }
+    function visitVisibleMs() {
+        var pages = {};
+        outbox.forEach(function (batch) {
+            if (batch.visit_id !== config.visitId || batch.page_token === config.pageToken) return;
+            batch.events.forEach(function (event) { pages[batch.page_token] = Math.max(pages[batch.page_token] || 0, Math.min(event.elapsed_ms, Number((event.metadata || {}).visible_ms) || 0)); });
+        });
+        return Object.keys(pages).reduce(function (sum, key) { return sum + pages[key]; }, visibleMs());
+    }
     function flush(beacon) {
         if (!outbox.length) return;
         var batch = outbox[0];
-        var payload = JSON.stringify({page_token: batch.page_token, events: batch.events, _token: config.csrfToken});
+        var proofs = qualification(batch);
+        while (batch && proofs === null && batch.visit_id !== config.visitId && !sending) {
+            outbox = outbox.filter(function (pending) { return pending.visit_id !== batch.visit_id; }); persist();
+            batch = outbox[0]; proofs = batch ? qualification(batch) : null;
+        }
+        if (!batch || proofs === null) return;
+        var payload = payloadFor(batch, proofs);
         if (beacon && win.navigator.sendBeacon) {
             // Keep queued data until acknowledged by fetch on this or the next page.
             // Re-delivery is safe because event IDs are unique in the database.
             var budget = 48000;
             outbox.slice().reverse().some(function (pending) {
-                var body = JSON.stringify({page_token: pending.page_token, events: pending.events, _token: config.csrfToken});
+                var proof = qualification(pending); if (proof === null) return false;
+                var body = payloadFor(pending, proof);
                 if (body.length * 3 > budget) return true;
                 budget -= body.length * 3;
                 try { win.navigator.sendBeacon(config.endpoint, new win.Blob([body], {type: 'application/json'})); } catch (error) {}
@@ -56,9 +99,14 @@
         sending = batch;
         win.fetch(config.endpoint, {method: 'POST', credentials: 'same-origin', headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': config.csrfToken}, body: payload, keepalive: true})
             .then(function (response) {
+                if (response.status === 202) { retryAt = Date.now() + 1000; return; }
                 if (response.ok || [403, 419, 422].indexOf(response.status) !== -1) {
                     // Invalid/expired tokens cannot be transferred to a different account.
                     var index = outbox.indexOf(batch); if (index !== -1) outbox.splice(index, 1);
+                    if (response.ok) {
+                        outbox.forEach(function (pending) { if (pending.visit_id === batch.visit_id) pending.deferred = false; });
+                        if (config.visitId === batch.visit_id) config.deferred = false;
+                    }
                     failures = 0; retryAt = 0; persist();
                 } else throw new Error('Activity delivery failed');
             }).catch(function () { failures++; retryAt = Date.now() + Math.min(30000, 1000 * Math.pow(2, failures)); })
@@ -266,6 +314,13 @@
         }
     });
     win.addEventListener('online', function () { retryAt = 0; flush(); });
+    // Qualify short genuine visits without waiting for the 15-second heartbeat.
+    // Hidden time never contributes to this initial foreground checkpoint.
+    var qualificationSent = false, minimumVisitMs = Number(config.minimumVisitMs) || 5000;
+    win.setInterval(function () {
+        if (qualificationSent || !visible || visitVisibleMs() < minimumVisitMs) return;
+        qualificationSent = true; lifecycle('page_checkpoint'); flush();
+    }, 1000);
     win.setInterval(function () { flush(); }, 3000);
     win.setInterval(function () {
         if (visible) lifecycle('page_checkpoint');

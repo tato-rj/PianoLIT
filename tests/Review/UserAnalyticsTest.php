@@ -13,6 +13,8 @@ class UserAnalyticsTest extends ReviewTestCase
     public function setUp(): void
     {
         parent::setUp();
+        // Keep legacy persisted-history coverage alongside the default-gate suite.
+        config(['activity.minimum_visit_seconds' => 0]);
         $this->travelTo(carbon('2026-10-12 19:30:00'));
         Route::middleware(['web', \App\Http\Middleware\Logs\RecordWebLog::class])->group(function () {
             Route::get('/review/journey', function () { return response('<html>Home</html>'); })->name('review.journey');

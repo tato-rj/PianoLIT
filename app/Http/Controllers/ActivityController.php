@@ -11,8 +11,9 @@ class ActivityController extends Controller
     public function store(Request $request, Recorder $recorder)
     {
         abort_if(!config('activity.enabled') || auth('admin')->check() || $request->getHost() === 'admin.'.config('app.short_url'), 403);
+        if (\App\Activity\TrafficFilter::ignores($request)) return response()->noContent();
         abort_if(strlen($request->getContent()) > 100000, 413);
-        $data = $request->validate([
+        $rules = [
             'page_token' => 'required|string|max:4096',
             'events' => 'required|array|min:1|max:'.config('activity.batch_size'),
             'events.*.id' => 'required|uuid|distinct',
@@ -41,20 +42,35 @@ class ActivityController extends Controller
             'events.*.metadata.playback_id' => 'nullable|uuid',
             'events.*.metadata.unique_watched_percent' => 'nullable|numeric|min:0|max:100',
             'events.*.metadata.unique_watched_seconds' => 'nullable|numeric|min:0|max:604800',
-        ]);
+        ];
+        $rules['qualification'] = 'sometimes|array|max:16';
+        $rules['qualification.*.page_token'] = 'required|string|max:4096';
+        $rules['qualification.*.event'] = 'required|array';
+        foreach ($rules as $key => $rule) if (strpos($key, 'events.*.') === 0) $rules[str_replace('events.*.', 'qualification.*.event.', $key)] = $rule;
+        $data = $request->validate($rules);
         $page = $recorder->pageFromToken($request, $data['page_token']);
         abort_unless($page, 403);
-        foreach ($data['events'] as $event) {
+        $parts = [['page' => $page, 'events' => $data['events']]];
+        $qualification = [];
+        foreach ($data['qualification'] ?? [] as $proof) {
+            $context = $recorder->pageFromToken($request, $proof['page_token']);
+            abort_unless($context && $context->visit_id === $page->visit_id, 403);
+            $qualification[] = ['page' => $context, 'events' => [$proof['event']]];
+        }
+        $identities = [];
+        foreach (array_merge($parts, $qualification) as $part) foreach ($part['events'] as $event) {
+            if (isset($identities[$event['id']])) abort_unless($identities[$event['id']]['page'] === $part['page']->id && $identities[$event['id']]['event'] == $event, 422);
+            $identities[$event['id']] = ['page' => $part['page']->id, 'event' => $event];
             abort_if(strlen(json_encode($event['metadata'] ?? [])) > 8000, 422);
             // Browser offsets are estimates, bounded by the page's actual age.
-            abort_if($event['elapsed_ms'] > max(0, now('UTC')->diffInMilliseconds(\App\Activity\Time::date($page, 'opened_at'))) + 60000, 422);
+            abort_if($event['elapsed_ms'] > max(0, now('UTC')->diffInMilliseconds(\App\Activity\Time::date($part['page'], 'opened_at'))) + 60000, 422);
         }
         try {
-            $recorder->browser($request, $page, $data['events']);
+            $stored = $recorder->browser($request, $page, $data['events'], $qualification);
         } catch (\Throwable $exception) {
             report($exception);
             return response()->json(['retry' => true], 503);
         }
-        return response()->noContent();
+        return $stored ? response()->noContent() : response()->json(['pending' => true], 202);
     }
 }

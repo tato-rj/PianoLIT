@@ -3,9 +3,12 @@
 $activityPiece = request()->route('piece');
 $activityConfig = [
     'endpoint' => url('/activity/events'),
-    'pageToken' => \Illuminate\Support\Facades\Crypt::encryptString($activityPage->id),
+    'pageToken' => !empty($activityPage->_pending) ? \App\Activity\PendingVisits::placeholder($activityPage) : \Illuminate\Support\Facades\Crypt::encryptString($activityPage->id),
     'csrfToken' => csrf_token(),
     'pageId' => $activityPage->id,
+    'minimumVisitMs' => \App\Activity\TrafficFilter::minimumMilliseconds(),
+    'visitId' => $activityPage->visit_id,
+    'deferred' => !empty($activityPage->_pending),
     'pieceId' => is_object($activityPiece) && method_exists($activityPiece, 'getKey') ? $activityPiece->getKey() : null,
 ];
 @endphp

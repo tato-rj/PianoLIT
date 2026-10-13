@@ -2,7 +2,7 @@ const assert = require('assert');
 const install = require('../../resources/js/components/activity');
 
 module.exports = async function () {
-    function fixture(storage = new Map()) {
+    function fixture(storage = new Map(), options = {}) {
         let time = 0, axiosInterceptor;
         const handlers = {}, requests = [], beacons = [], intervals = [];
         const doc = {
@@ -21,7 +21,7 @@ module.exports = async function () {
             setInterval(callback, delay) { intervals.push({callback, delay}); },
             setTimeout(callback) { callback(); }
         };
-        install(win, {endpoint: '/activity/events', pageToken: 'signed-page', csrfToken: 'csrf', pieceId: 42});
+        install(win, Object.assign({endpoint: '/activity/events', pageToken: 'signed-page', csrfToken: 'csrf', pieceId: 42}, options));
         return {win, handlers, requests, beacons, intervals, storage, axios: request => axiosInterceptor(request), at: value => { time = value; }, queued: () => JSON.parse(storage.get('pianolit.activity.outbox.v1')).flatMap(batch => batch.events)};
     }
     async function settle() { for (let i = 0; i < 5; i++) await Promise.resolve(); }
@@ -134,4 +134,39 @@ module.exports = async function () {
     restored.at(68000); restored.handlers.pagehide();
     assert.strictEqual(restored.queued().filter(event => event.type === 'page_leave').pop().metadata.visible_ms, 8000, 'Time away in the back-forward cache does not count as visible');
     assert.strictEqual(restored.queued().filter(event => event.type === 'media_progress').pop().metadata.played_seconds, 8, 'Frozen back-forward cache time does not count as playback');
+    const gated = fixture(new Map(), {visitId: 'first-visit', deferred: true, minimumVisitMs: 5000});
+    assert.strictEqual(gated.requests.length, 0, 'Page readiness stays in the browser before qualification');
+    gated.at(2000); gated.handlers.pagehide();
+    assert.strictEqual(gated.beacons.length, 0, 'A two-second visit does not send an analytics batch');
+    const continued = fixture(gated.storage, {visitId: 'first-visit', pageToken: 'second-page', deferred: true, minimumVisitMs: 5000});
+    assert.strictEqual(continued.requests.length, 0);
+    continued.at(3000); continued.win.PianoActivity.record('media_pause', {media_kind: 'audio', played_seconds: 3});
+    continued.intervals.find(timer => timer.delay === 1000).callback();
+    assert.strictEqual(continued.requests.length, 1, 'Two seconds on the first page plus three on the next qualifies the visit');
+    const qualifying = continued.requests[0].data;
+    assert.strictEqual(qualifying.page_token, 'signed-page', 'The first page is retained in the chronological story');
+    assert.strictEqual(qualifying.qualification.length, 2);
+    assert.strictEqual(qualifying.qualification.reduce((sum, proof) => sum + proof.event.metadata.visible_ms, 0), 5000);
+    const originalId = qualifying.events[0].id;
+    continued.requests[0].resolve({ok: true, status: 202}); await settle();
+    assert(continued.queued().some(event => event.id === originalId), 'A pending response does not acknowledge or erase the browser buffer');
+    continued.handlers.online();
+    assert.strictEqual(continued.requests[1].data.events[0].id, originalId);
+    continued.requests[1].resolve({ok: true, status: 204}); await settle();
+    continued.win.PianoActivity.flush();
+    assert.strictEqual(continued.requests[2].data.page_token, 'second-page');
+    assert.strictEqual(continued.requests[2].data.qualification, undefined, 'Subsequent batches reuse the qualified visit without extra proofs');
+    const background = fixture(new Map(), {visitId: 'hidden-visit', deferred: true, minimumVisitMs: 5000});
+    background.at(2000); background.win.document.visibilityState = 'hidden'; background.handlers['doc:visibilitychange']();
+    background.at(62000); background.intervals.find(timer => timer.delay === 1000).callback();
+    assert.strictEqual(background.requests.length, 0, 'A minute in a hidden tab does not qualify a two-second viewing');
+    background.win.document.visibilityState = 'visible'; background.handlers['doc:visibilitychange']();
+    background.at(65000); background.intervals.find(timer => timer.delay === 1000).callback();
+    assert.strictEqual(background.requests.length, 1);
+    const abandoned = fixture(new Map(), {visitId: 'abandoned', deferred: true, minimumVisitMs: 5000});
+    abandoned.at(1000); abandoned.handlers.pagehide();
+    const fresh = fixture(abandoned.storage, {visitId: 'new-visit', pageToken: 'fresh-page', deferred: true, minimumVisitMs: 5000});
+    fresh.at(5000); fresh.intervals.find(timer => timer.delay === 1000).callback();
+    assert.strictEqual(fresh.requests[0].data.page_token, 'fresh-page', 'Unqualified old visits cannot block later valid activity');
+    assert(!fresh.queued().some(event => event.type === 'page_leave'), 'Old one-second browsing is discarded when the visit changes');
 };

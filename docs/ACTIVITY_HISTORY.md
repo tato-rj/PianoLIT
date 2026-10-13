@@ -36,7 +36,7 @@ Browser timing is an estimate anchored to the server page-opening time. Foregrou
 
 The ingestion endpoint is a CSRF-protected web-session route for signed-in users and guests. Encrypted page tokens are checked against the current browser session, account identity and host platform. Submitted account, visit and page IDs never establish ownership. Account writes still require their existing authentication/authorization.
 
-New request metadata uses an allowlist of search/filter context. Original imported payloads preserve whatever the old logger recorded and are visible only through administration; access/backups should be restricted accordingly. New activity has no automatic deletion policy yet. Agree retention and capacity based on observed volume before enabling pruning; the importer never deletes Redis data.
+New request metadata uses an allowlist of search/filter context. Original imported payloads preserve whatever the old logger recorded and are visible only through administration; access/backups should be restricted accordingly. [ACTIVITY_FILTERING.md](ACTIVITY_FILTERING.md) documents the five-second web qualification gate, crawler exclusions and hourly removal of old short web visits. Broader age-based retention still needs agreement; the importer never deletes Redis data.
 
 ## Importing Redis history
 

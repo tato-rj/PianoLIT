@@ -33,7 +33,7 @@ class RecordActivity
                 : ($exception instanceof \Illuminate\Validation\ValidationException ? 422 : ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ? 404 : 500));
             try {
                 if ($request->attributes->has('activity.page') && $page) {
-                    \DB::table('activity_pages')->where('id', $page->id)->delete();
+                    $this->discardPage($request, $page);
                     $request->attributes->remove('activity.page');
                     $page = null;
                 }
@@ -43,7 +43,7 @@ class RecordActivity
             throw $exception;
         }
         if ($request->attributes->has('activity.page') && (! $response->isSuccessful() || stripos($response->headers->get('Content-Type', ''), 'text/html') === false)) {
-            try { \DB::table('activity_pages')->where('id', $page->id)->delete(); }
+            try { $this->discardPage($request, $page); }
             catch (\Throwable $exception) { report($exception); }
             $request->attributes->remove('activity.page'); $page = null;
         }
@@ -54,5 +54,14 @@ class RecordActivity
             report($exception);
         }
         return $response;
+    }
+
+    private function discardPage($request, $page)
+    {
+        if (empty($page->_pending)) \DB::table('activity_pages')->where('id', $page->id)->delete();
+        elseif ($request->attributes->get('activity.pending_new_visit')) {
+            (new \App\Activity\PendingVisits)->forgetVisit($request, $page->visit_id);
+            if ($request->session()->get('activity.visit') === $page->visit_id) $request->session()->forget('activity.visit');
+        }
     }
 }
