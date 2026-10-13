@@ -1,4 +1,6 @@
 // Shared administration navigation; page-specific styling stays under .admin-dashboard.
+html {background: #181e22}
+
 body.admin-shell {
     margin: 0;
     padding: 0;
@@ -23,7 +25,7 @@ body.admin-shell {
     border-radius: 0;
     background: #181e22;
     color: #f7f8f7;
-    .admin-sidebar-header { flex: 0 0 auto; padding: 2px 12px 26px; }
+    .admin-sidebar-header { flex: 0 0 auto; padding: 2px 12px 12px; }
     .admin-brand { display: flex; align-items: center; gap: 11px; color: #fff; font-size: 23px; line-height: 1.1; letter-spacing: -.7px; text-decoration: none; }
     .admin-brand img { border-radius: 9px; }
     .admin-brand small { display: block; margin-top: 7px; color: #a1a9a9; font-size: 8px; letter-spacing: 2px; }
