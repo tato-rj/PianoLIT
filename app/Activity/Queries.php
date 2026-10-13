@@ -56,19 +56,27 @@ class Queries
 
     public function decorateVisits($visits)
     {
+        $mediaKind = DB::connection()->getQueryGrammar()->wrap('metadata->media_kind');
         $counts = DB::table('activity_events')->whereIn('visit_id', $visits->pluck('id'))->whereIn('type', ['page_view', 'media_play', 'score_opened', 'annotation_saved', 'favorite_changed', 'folder_created', 'trial_started', 'subscription_paid', 'premium_opened'])
-            ->select('visit_id', 'type')->selectRaw('COUNT(*) as total')->groupBy('visit_id', 'type')->get()->groupBy('visit_id');
+            ->select('visit_id', 'type')->selectRaw("COUNT(*) as total, MAX(CASE WHEN $mediaKind = 'audio' THEN 1 ELSE 0 END) as has_audio, MAX(CASE WHEN $mediaKind = 'video' THEN 1 ELSE 0 END) as has_video, MAX(CASE WHEN $mediaKind IN ('audio', 'video') THEN 0 ELSE 1 END) as has_unknown_media")
+            ->groupBy('visit_id', 'type')->get()->groupBy('visit_id');
         $pieces = DB::table('activity_events as e')->whereIn('visit_id', $visits->pluck('id'));
         $pieces = $this->pieceOpens($pieces)->select('visit_id')->selectRaw('COUNT(*) as total')->groupBy('visit_id')->get()->keyBy('visit_id');
         $saved = DB::table('activity_events')->whereIn('visit_id', $visits->pluck('id'))->where('type', 'favorite_changed')->where('source', 'server')
             ->select('visit_id', 'metadata->result as result', 'metadata->folder_id as folder')->selectRaw('COUNT(*) as total')->groupBy('visit_id', 'metadata->result', 'metadata->folder_id')->get()->groupBy('visit_id');
         foreach ($visits as $visit) {
             $visit->counts = ($counts[$visit->id] ?? collect())->pluck('total', 'type')->all();
+            $playback = ($counts[$visit->id] ?? collect())->firstWhere('type', 'media_play');
+            $visit->media_kinds = array_values(array_filter(['audio', 'video', 'unknown'], function ($kind) use ($playback) {
+                $column = $kind === 'unknown' ? 'has_unknown_media' : 'has_'.$kind;
+                return $playback && $playback->$column;
+            }));
             $visit->pieces_count = (int) ($pieces[$visit->id]->total ?? 0);
             $visit->saved_actions = ($saved[$visit->id] ?? collect())->map(function ($row) {
                 if ($row->folder !== null && $row->folder !== 'null') return 'Changed pieces in a folder';
                 return in_array($row->result, [true, 1, 'true', '1'], true) ? 'Added a favorite' : ($row->result !== null ? 'Removed a favorite' : 'Changed saved pieces');
             })->unique()->values()->all();
+            $visit->summary_parts = $this->summaryParts($visit);
             $visit->summary = $this->summary($visit);
         }
         return $visits;
@@ -76,13 +84,24 @@ class Queries
 
     public function summary($visit)
     {
+        $parts = $visit->summary_parts ?? $this->summaryParts($visit);
+        return $parts ? implode(' · ', array_column($parts, 'label')) : 'Limited activity details were recorded for this visit.';
+    }
+
+    public function summaryParts($visit)
+    {
         $parts = [];
-        if ($visit->pieces_count) $parts[] = 'Opened '.$visit->pieces_count.' '.($visit->pieces_count === 1 ? 'piece' : 'pieces');
-        elseif (!empty($visit->pages_count)) $parts[] = 'Viewed '.$visit->pages_count.' '.($visit->pages_count === 1 ? 'page' : 'pages');
-        $labels = ['media_play' => 'Played media', 'score_opened' => 'Opened a score', 'annotation_saved' => 'Saved annotations', 'folder_created' => 'Created a folder', 'trial_started' => 'Started a trial', 'subscription_paid' => 'Subscription payment confirmed', 'premium_opened' => 'Viewed Premium options'];
-        foreach ($labels as $key => $label) if (!empty($visit->counts[$key])) $parts[] = $label;
-        foreach ($visit->saved_actions ?? [] as $label) $parts[] = $label;
-        return $parts ? implode(' · ', $parts) : 'Limited activity details were recorded for this visit.';
+        if ($visit->pieces_count) $parts[] = ['icon' => 'music', 'label' => 'Opened '.$visit->pieces_count.' '.($visit->pieces_count === 1 ? 'piece' : 'pieces')];
+        elseif (!empty($visit->pages_count)) $parts[] = ['icon' => 'file-text', 'label' => 'Viewed '.$visit->pages_count.' '.($visit->pages_count === 1 ? 'page' : 'pages')];
+        if (!empty($visit->counts['media_play'])) {
+            foreach ($visit->media_kinds ?? ['unknown'] as $kind) {
+                $parts[] = ['icon' => Presentation::icon('media_play', ['media_kind' => $kind]), 'label' => 'Played '.(['audio' => 'audio', 'video' => 'video'][$kind] ?? 'media')];
+            }
+        }
+        $labels = ['score_opened' => ['book-open', 'Opened a score'], 'annotation_saved' => ['pencil', 'Saved annotations'], 'folder_created' => ['folder-plus', 'Created a folder'], 'trial_started' => ['gift', 'Started a trial'], 'subscription_paid' => ['credit-card', 'Subscription payment confirmed'], 'premium_opened' => ['crown', 'Viewed Premium options']];
+        foreach ($labels as $key => [$icon, $label]) if (!empty($visit->counts[$key])) $parts[] = compact('icon', 'label');
+        foreach ($visit->saved_actions ?? [] as $label) $parts[] = ['icon' => $label === 'Changed pieces in a folder' ? 'folder-open' : 'heart', 'label' => $label];
+        return $parts;
     }
 
     public function metrics(Filters $filters)

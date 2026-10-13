@@ -89,9 +89,9 @@ class Presentation
         return $simple[$event->type] ?? 'Recorded activity';
     }
 
-    public static function icon($type)
+    public static function icon($type, array $metadata = [])
     {
-        if (strpos($type, 'media_') === 0) return 'circle-play';
+        if (strpos($type, 'media_') === 0) return ['audio' => 'volume-2', 'video' => 'video'][$metadata['media_kind'] ?? ''] ?? 'circle-play';
         if (strpos($type, 'score') === 0 || $type === 'annotation_saved') return 'book-open';
         if ($type === 'favorite_changed') return 'heart';
         if (strpos($type, 'folder_') === 0) return 'folder-open';

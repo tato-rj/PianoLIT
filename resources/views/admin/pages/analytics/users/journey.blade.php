@@ -6,7 +6,7 @@
         @if($visit->account_id && $visit->first_name)<a href="{{ route('admin.analytics.users.profile', $visit->account_id) }}">{{ \App\Activity\Presentation::name($visit) }}</a><span>/</span>@endif
         <span aria-current="page">Visit journey</span>
     </nav>
-    <section class="ua-card ua-summary"><span class="ua-eyebrow">Visit summary</span><h2>{{ $visit->summary }}</h2><p>Last recorded activity: {{ \App\Activity\Time::date($visit, 'last_activity_at')->format('M j, g:i:s A') }}. No further activity recorded.</p></section>
+    <section class="ua-card ua-summary"><h2 class="ua-eyebrow">Visit summary</h2>@include('admin.pages.analytics.users.summary', ['summaryVisit' => $visit])<p>Last recorded activity: {{ \App\Activity\Time::date($visit, 'last_activity_at')->format('M j, g:i:s A') }}. No further activity recorded.</p></section>
     <section class="ua-card ua-identity">
         <span class="ua-avatar ua-avatar-lg" aria-hidden="true">{{ mb_substr(\App\Activity\Presentation::name($visit), 0, 1) }}</span>
         <div><h2>{{ \App\Activity\Presentation::name($visit) }}</h2><p>{{ \App\Activity\Time::date($visit, 'started_at')->format('l, F j, Y') }} · {{ \App\Activity\Presentation::platform($visit->platform) }}</p>
@@ -26,7 +26,7 @@
         @forelse($timeline as $group)
         @if($group['kind'] === 'action')
         @php($event = $group['event'])
-        <li class="ua-timeline-entry"><time>{{ \App\Activity\Time::event($event)->format('g:i:s A') }}</time><article class="ua-card ua-page"><span class="ua-timeline-marker" aria-hidden="true">@icon(\App\Activity\Presentation::icon($event->type), ['mr' => 0])</span><h2>{{ \App\Activity\Presentation::action($event) }}</h2><p class="ua-meta">No page association recorded.</p>
+        <li class="ua-timeline-entry"><time>{{ \App\Activity\Time::event($event)->format('g:i:s A') }}</time><article class="ua-card ua-page"><span class="ua-timeline-marker" aria-hidden="true">@icon(\App\Activity\Presentation::icon($event->type, \App\Activity\Presentation::metadata($event)), ['mr' => 0])</span><h2>{{ \App\Activity\Presentation::action($event) }}</h2><p class="ua-meta">No page association recorded.</p>
             @if($event->resource_type === 'piece' && isset($pieces[$event->resource_id]))<a href="{{ route('admin.pieces.edit', $event->resource_id) }}">{{ $pieces[$event->resource_id]->name }}</a>@endif
             @include('admin.pages.analytics.users.details')</article></li>
         @continue

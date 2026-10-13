@@ -186,7 +186,8 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
         $response = $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('4s playing')->assertSee('7% unique content played')->assertSee('Playback attempted')->assertDontSee('Selected Play preview');
         $this->assertSame(3, substr_count($response->getContent(), 'Playback attempted'));
-        $this->assertSame(2, substr_count($response->getContent(), 'Played audio'));
+        $document = new \DOMDocument; @$document->loadHTML($response->getContent());
+        $this->assertSame(2, (new \DOMXPath($document))->query('//strong[@class="ua-media-label"]/span[text()="Played audio"]')->length);
         $this->assertDatabaseHas('activity_events', ['id' => $successfulClick]);
     }
 
@@ -294,7 +295,7 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertSame('Prelude Op.28 No.4', $pieces[$orphan->id]->medium_name_with_composer);
         $this->assertSame('Frederic Chopin', $pieces[$piece->id]->composer, 'Existing plain composer labels remain intact.');
         $this->assertFalse(property_exists($pieces[$piece->id], 'audio'), 'Unrelated appended model fields are not serialized.');
-        $playback = ['event' => (object) ['resource_type' => 'piece', 'resource_id' => $piece->id],
+        $playback = ['event' => (object) ['type' => 'media_play', 'metadata' => '{"media_kind":"audio"}', 'resource_type' => 'piece', 'resource_id' => $piece->id],
             'label' => 'Played audio', 'started' => now(), 'watched' => 14, 'coverage' => 11];
         $html = view('admin.pages.analytics.users.playback', ['playback' => $playback, 'pieces' => $pieces, 'group' => ['piece' => null]])->render();
         $dom = new \DOMDocument(); @$dom->loadHTML($html);
@@ -325,6 +326,46 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertSame(33, $visits->total());
         $this->assertLessThanOrEqual(5, $count);
         $this->assertCount(25, $visits->pluck('id')->unique());
+    }
+
+    public function test_visit_summaries_distinguish_recorded_audio_video_and_unknown_media_with_icons()
+    {
+        $user = $this->account();
+        $audioVisit = $this->visit($user); $audioPage = $this->page($audioVisit);
+        $this->event($audioVisit, $audioPage, 'media_play', '2026-10-12 19:15:00', ['media_kind' => 'audio']);
+        $videoVisit = $this->visit($user); $videoPage = $this->page($videoVisit);
+        $this->event($videoVisit, $videoPage, 'media_play', '2026-10-12 19:15:00', ['media_kind' => 'video']);
+        $mixedVisit = $this->visit($user); $mixedPage = $this->page($mixedVisit);
+        foreach (['audio', 'audio', 'video', null, '<script>video</script>'] as $kind) {
+            $this->event($mixedVisit, $mixedPage, 'media_play', '2026-10-12 19:15:00', ['media_kind' => $kind]);
+        }
+        $piece = Model::withoutEvents(function () { return create(Piece::class); });
+        $this->event($mixedVisit, $mixedPage, 'page_view', '2026-10-12 19:14:00', [], $piece);
+        foreach (['score_opened', 'annotation_saved', 'folder_created', 'trial_started', 'subscription_paid', 'premium_opened'] as $type) $this->event($mixedVisit, $mixedPage, $type);
+        $this->event($mixedVisit, $mixedPage, 'favorite_changed', '2026-10-12 19:16:00', ['result' => true]);
+        $emptyVisit = $this->visit($user);
+        DB::enableQueryLog(); DB::flushQueryLog();
+        $visits = (new Queries)->visitList($this->filters())->getCollection()->keyBy('id');
+        $queryCount = count(DB::getQueryLog()); DB::disableQueryLog();
+        $this->assertLessThanOrEqual(5, $queryCount, 'Media kinds are aggregated in the existing bounded summary query.');
+        $this->assertSame(['audio'], $visits[$audioVisit]->media_kinds);
+        $this->assertSame(['video'], $visits[$videoVisit]->media_kinds);
+        $this->assertSame(['audio', 'video', 'unknown'], $visits[$mixedVisit]->media_kinds);
+        $this->assertSame(5, (int) $visits[$mixedVisit]->counts['media_play']);
+        $this->assertSame(['music', 'volume-2', 'video', 'circle-play', 'book-open', 'pencil', 'folder-plus', 'gift', 'credit-card', 'crown', 'heart'], array_column($visits[$mixedVisit]->summary_parts, 'icon'));
+        $this->assertSame('Viewed 1 page · Played audio', $visits[$audioVisit]->summary);
+        $this->assertSame('Viewed 1 page · Played video', $visits[$videoVisit]->summary);
+        $this->assertSame([], $visits[$emptyVisit]->summary_parts);
+        $this->assertSame('Limited activity details were recorded for this visit.', $visits[$emptyVisit]->summary);
+        $this->actingAs(create(Admin::class), 'admin');
+        foreach (['admin.analytics.users' => [], 'admin.analytics.users.profile' => ['user' => $user->id, 'tab' => 'visits'], 'admin.analytics.users.journey' => ['visit' => $mixedVisit]] as $route => $parameters) {
+            $response = $this->get(route($route, $parameters))->assertOk()->assertSee('Opened 1 piece')->assertSee('Played audio')->assertSee('Played video')->assertSee('Played media')->assertSee('Viewed Premium options')->assertDontSee('&lt;script&gt;video');
+            $document = new \DOMDocument; @$document->loadHTML($response->getContent()); $xpath = new \DOMXPath($document);
+            foreach (['music', 'volume-2', 'video', 'circle-play', 'crown', 'heart'] as $icon) {
+                $this->assertGreaterThan(0, $xpath->query('//ul[@class="ua-summary-items"]//svg[@data-lucide-name="'.$icon.'" and @aria-hidden="true"]')->length);
+            }
+        }
+        $this->assertDatabaseCount('activity_events', 15);
     }
 
     public function test_journey_page_and_action_payloads_are_paginated_and_bounded()

@@ -15,7 +15,7 @@
             <p class="ua-meta">{{ $date->format('g:i A') }} · {{ \App\Activity\Presentation::platform($item->platform) }} · {{ \App\Activity\Time::visitDuration($item) }} · {{ $item->pages_count }} pages
                 @if($item->association_reason)<span class="ua-badge">Linked after sign-in</span>@endif
             </p>
-            <p>{{ $item->summary }}</p>
+            @include('admin.pages.analytics.users.summary', ['summaryVisit' => $item])
         </div>
         <a class="ua-journey-link" href="{{ route('admin.analytics.users.journey', $item->id) }}">View journey @icon('arrow-up-right', ['mr' => 0])</a>
     </article>
