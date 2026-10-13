@@ -214,6 +214,68 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertSame(4, $group['media']->first()['watched']);
     }
 
+    public function test_journey_nests_known_match_actions_and_keeps_other_activity_and_reopenings_separate()
+    {
+        $visit = $this->visit(); $page = $this->page($visit);
+        $before = $this->event($visit, $page, 'click', '2026-10-12 19:14:00', ['label' => 'Explore repertoire']);
+        $open = $this->event($visit, $page, 'click', '2026-10-12 19:15:00', ['label' => 'Find your match', 'control' => 'tour-button', 'target' => 'https://my.pianolit.test/tour']);
+        $this->event($visit, $page, 'tab_open', '2026-10-12 19:15:01', ['section' => 'match-tour-modal']);
+        $play = $this->event($visit, $page, 'media_play', '2026-10-12 19:15:02', ['media_kind' => 'audio', 'media_id' => 'match-preview-42', 'piece_id' => 42, 'playback_id' => (string) Str::uuid(), 'played_seconds' => 4, 'unique_watched_percent' => 7]);
+        $choice = $this->event($visit, $page, 'click', '2026-10-12 19:15:06', ['label' => 'PreludeJ.S. BachSelect', 'control' => 'match_piece', 'piece_id' => 42]);
+        $confirm = $this->event($visit, $page, 'click', '2026-10-12 19:15:07', ['label' => 'I like this one', 'control' => 'button']);
+        $this->event($visit, $page, 'click', '2026-10-12 19:15:08', ['label' => 'Close Find your match', 'control' => 'button']);
+        $outside = $this->event($visit, $page, 'favorite_changed', '2026-10-12 19:15:09', ['result' => true]);
+        $reopen = $this->event($visit, $page, 'click', '2026-10-12 19:16:00', ['label' => 'Find your match', 'control' => 'tour-button']);
+        $attempt = $this->event($visit, $page, 'click', '2026-10-12 19:16:01', ['label' => 'Play preview: Prelude', 'control' => 'match_piece', 'piece_id' => 42]);
+        $group = (new Journey)->get($visit)['groups'][0];
+        $display = $group['displayMoments'];
+        $this->assertCount(4, $display);
+        $this->assertSame([$before, $open, $outside, $reopen], $display->pluck('event.id')->all());
+        $this->assertSame([$play, $choice, $confirm], $display[1]['children']->pluck('event.id')->all());
+        $this->assertSame([$attempt], $display[3]['children']->pluck('event.id')->all());
+        $this->assertNotNull($display[1]['section']['closed']);
+        $this->assertNull($display[3]['section']['closed']);
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('Confirmed preferred piece')->assertSee('Selected a piece')->assertDontSee('Selected Find your match')->assertDontSee('Selected PreludeJ.S. BachSelect');
+        $dom = new \DOMDocument(); @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $contexts = $xpath->query('//*[contains(concat(" ",normalize-space(@class)," ")," ua-context-card ")]');
+        $this->assertCount(2, $contexts);
+        $this->assertStringContainsString('Played audio', $contexts[0]->textContent);
+        $this->assertStringContainsString('Confirmed preferred piece', $contexts[0]->textContent);
+        $this->assertStringNotContainsString('Added piece to Favorites', $contexts[0]->textContent);
+        $this->assertStringContainsString('Playback attempted', $contexts[1]->textContent);
+    }
+
+    public function test_implicit_match_contexts_use_recorded_identifiers_and_do_not_take_unrelated_buttons()
+    {
+        $visit = $this->visit(); $page = $this->page($visit);
+        $first = $this->event($visit, $page, 'click', '2026-10-12 19:15:00', ['section' => 'find-your-match', 'label' => 'Back', 'control' => 'button']);
+        $confirm = $this->event($visit, $page, 'click', '2026-10-12 19:15:01', ['section' => 'find-your-match', 'label' => 'I like this one', 'control' => 'match_preference_confirm', 'piece_id' => 42]);
+        $unrelated = $this->event($visit, $page, 'click', '2026-10-12 19:15:02', ['label' => 'Account settings', 'control' => 'button']);
+        $legacy = $this->event($visit, $page, 'click', '2026-10-12 19:15:03', ['label' => 'I like this one', 'control' => 'button']);
+        $display = (new Journey)->get($visit)['groups'][0]['displayMoments'];
+        $this->assertCount(3, $display);
+        $this->assertSame([$first, $confirm], $display[0]['children']->pluck('event.id')->all());
+        $this->assertSame($unrelated, $display[1]['event']->id);
+        $this->assertArrayNotHasKey('section', $display[1]);
+        $this->assertSame([$legacy], $display[2]['children']->pluck('event.id')->all());
+        $this->assertNull($display[0]['section']['opener'], 'Missing opening history must not be invented.');
+    }
+
+    public function test_failed_attempts_are_not_folded_into_a_later_match_opening()
+    {
+        $visit = $this->visit(); $page = $this->page($visit);
+        $this->event($visit, $page, 'section_open', '2026-10-12 19:15:00', ['section' => 'find-your-match']);
+        $attempt = $this->event($visit, $page, 'click', '2026-10-12 19:15:01', ['control' => 'match_piece', 'label' => 'Play preview: Prelude', 'piece_id' => 42]);
+        $this->event($visit, $page, 'section_close', '2026-10-12 19:15:02', ['section' => 'find-your-match']);
+        $this->event($visit, $page, 'section_open', '2026-10-12 19:16:00', ['section' => 'find-your-match']);
+        $this->event($visit, $page, 'media_play', '2026-10-12 19:16:01', ['media_kind' => 'audio', 'media_id' => 'match-preview-42', 'piece_id' => 42, 'playback_id' => (string) Str::uuid()]);
+        $group = (new Journey)->get($visit)['groups'][0];
+        $this->assertCount(2, $group['displayMoments']);
+        $this->assertSame([$attempt], $group['displayMoments'][0]['children']->pluck('event.id')->all());
+        $this->assertNotNull($group['displayMoments'][1]['children']->first()['playback']);
+    }
+
     public function test_playback_links_reuse_medium_names_with_composers_without_extra_queries()
     {
         [$piece, $orphan] = Model::withoutEvents(function () {

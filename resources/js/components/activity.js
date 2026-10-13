@@ -150,7 +150,17 @@
         } else {
             var choice = element.getAttribute('data-choice');
             var piece = element.getAttribute('data-select-level') || element.getAttribute('data-select-piece') || element.getAttribute('data-play');
-            record('click', {label: label(element), navigation: win.location.pathname.slice(0, 100), control: element.id || element.getAttribute('data-action') || element.getAttribute('data-submit') || (choice !== null ? 'match_choice' : piece ? 'match_piece' : element.tagName.toLowerCase()), target: safeUrl(element.getAttribute('href') || element.getAttribute('data-url') || ''), value: choice === null ? undefined : choice.slice(0, 300), piece_id: piece && /^\d+$/.test(piece) ? Number(piece) : config.pieceId});
+            var tour = element.closest && element.closest('.match-tour-modal, #match-tour');
+            var section = tour || element.hasAttribute('data-match-tour-open') ? 'find-your-match' : undefined;
+            var control = element.id || element.getAttribute('data-action') || element.getAttribute('data-submit') || (choice !== null ? 'match_choice' : piece ? 'match_piece' : element.tagName.toLowerCase());
+            if (tour && (element.hasAttribute('data-listen-confirm') || element.hasAttribute('data-level-confirm'))) {
+                var level = element.hasAttribute('data-level-confirm');
+                var selected = tour.querySelector((level ? '[data-select-level]' : '[data-select-piece]') + '[aria-pressed="true"]');
+                piece = selected ? selected.getAttribute(level ? 'data-select-level' : 'data-select-piece') : null;
+                control = level ? 'match_level_confirm' : 'match_preference_confirm';
+            } else if (tour && element.hasAttribute('data-select-level')) control = 'match_level_piece';
+            else if (tour && choice !== null && /^\d+$/.test(choice)) piece = choice;
+            record('click', {label: label(element), navigation: win.location.pathname.slice(0, 100), control: control, section: section, target: safeUrl(element.getAttribute('href') || element.getAttribute('data-url') || ''), value: choice === null ? undefined : choice.slice(0, 300), piece_id: piece && /^\d+$/.test(piece) ? Number(piece) : (section ? undefined : config.pieceId)});
         }
     }, true);
     doc.addEventListener('change', function (event) {
@@ -177,9 +187,15 @@
         var summary = event.target.querySelector('summary');
         record(event.target.open ? 'section_open' : 'section_close', {section: summary ? label(summary) : event.target.id});
     }, true);
+    ['shown.bs.modal', 'hidden.bs.modal'].forEach(function (name) {
+        doc.addEventListener(name, function (event) {
+            if (event.target.id === 'match-tour-modal') record(name === 'shown.bs.modal' ? 'section_open' : 'section_close', {section: 'find-your-match'});
+        });
+    });
     if (win.jQuery) {
         win.jQuery(doc).on('shown.bs.tab shown.bs.modal shown.bs.offcanvas', function (event) {
             var section = event.target.getAttribute('href') || event.target.id || event.target.getAttribute('aria-label') || event.target.tagName.toLowerCase();
+            if (section === 'match-tour-modal') return; // Native handlers record its boundaries once.
             record('tab_open', {section: section.replace(/^#/, '')});
             if (section === 'piece-upgrade-modal') record('premium_opened', {piece_id: config.pieceId});
             if (/register|signup/.test(section)) record('registration_started');

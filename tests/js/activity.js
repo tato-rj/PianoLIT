@@ -101,6 +101,26 @@ module.exports = async function () {
     assert.strictEqual(hidden.queued().find(event => event.type === 'page_leave').metadata.visible_ms, 8000, 'Hidden time is excluded from foreground duration');
     const noConfig = {};
     install(noConfig, null); assert.strictEqual(noConfig.PianoActivity, undefined);
+    const tour = fixture(), modal = {id: 'match-tour-modal', querySelector: () => ({getAttribute: () => '321'})};
+    const tourButton = attributes => ({id: '', tagName: 'BUTTON', textContent: 'I like this one', classList: {contains: () => false},
+        hasAttribute: name => Object.prototype.hasOwnProperty.call(attributes, name), getAttribute: name => Object.prototype.hasOwnProperty.call(attributes, name) ? attributes[name] : null,
+        closest: selector => selector === '.match-tour-modal, #match-tour' ? modal : null});
+    tour.handlers['doc:shown.bs.modal']({target: modal});
+    tour.handlers['doc:click']({target: {closest: () => tourButton({'data-listen-confirm': ''})}});
+    let confirmed = tour.queued().find(event => event.metadata.control === 'match_preference_confirm');
+    assert.strictEqual(confirmed.metadata.section, 'find-your-match');
+    assert.strictEqual(confirmed.metadata.piece_id, 321, 'The confirmation records the selected piece rather than the underlying page piece');
+    tour.handlers['doc:click']({target: {closest: () => tourButton({'data-choice': '321'})}});
+    assert.strictEqual(tour.queued().filter(event => event.type === 'click').pop().metadata.piece_id, 321);
+    modal.querySelector = () => null;
+    tour.handlers['doc:click']({target: {closest: () => tourButton({'data-listen-confirm': ''})}});
+    confirmed = tour.queued().filter(event => event.metadata.control === 'match_preference_confirm').pop();
+    assert.strictEqual(confirmed.metadata.piece_id, undefined, 'Missing selection cannot borrow the underlying piece page identity');
+    tour.handlers['doc:hidden.bs.modal']({target: modal});
+    assert.strictEqual(tour.queued().filter(event => event.type === 'section_open' && event.metadata.section === 'find-your-match').length, 1);
+    assert.strictEqual(tour.queued().filter(event => event.type === 'section_close' && event.metadata.section === 'find-your-match').length, 1);
+    tour.handlers['doc:shown.bs.modal']({target: {id: 'another-modal'}});
+    assert.strictEqual(tour.queued().filter(event => event.type === 'section_open').length, 1, 'Other modals do not establish a Find your match context');
     const watched = fixture(), watchedHandlers = {};
     const clip = {tagName: 'VIDEO', currentTime: 0, duration: 100, playbackRate: 1, paused: false, seeking: false,
         addEventListener(name, callback) { watchedHandlers[name] = callback; }};

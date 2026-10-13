@@ -57,6 +57,13 @@ class Presentation
     {
         $m = self::metadata($event);
         if (self::isPreviewPlayClick($event)) return 'Playback attempted';
+        if ($event->type === 'click') {
+            $control = $m['control'] ?? ''; $label = trim($m['label'] ?? '');
+            if ($control === 'match_preference_confirm' || $label === 'I like this one') return 'Confirmed preferred piece';
+            if ($control === 'match_level_confirm' || $label === 'This feels right') return 'Confirmed playing level';
+            if ($control === 'match_level_piece') return 'Selected difficulty example';
+            if ($control === 'match_piece' && !preg_match('/^(?:Play|Pause) preview(?:\s*:|$)/i', $label)) return 'Selected a piece';
+        }
         if ($event->type === 'request' && ($event->status ?? 0) >= 400) return 'A request could not be completed (HTTP '.$event->status.')';
         $media = ($m['section'] ?? '') === 'synthesia' || strpos($m['media_id'] ?? '', 'synthesia') !== false ? 'Synthesia' : (($m['media_kind'] ?? '') === 'audio' ? 'audio' : 'performance video');
         $simple = [

@@ -71,7 +71,7 @@ class ActivityHistoryTest extends ReviewTestCase
     public function test_media_offsets_context_and_retries_are_stored_without_duplicate_events()
     {
         $page = $this->open();
-        $event = $this->event('media_pause', 12000, ['media_kind' => 'video', 'position_seconds' => 12, 'played_seconds' => 12, 'piece_id' => 42]);
+        $event = $this->event('media_pause', 12000, ['media_kind' => 'video', 'position_seconds' => 12, 'played_seconds' => 12, 'piece_id' => 42, 'section' => 'find-your-match']);
         $payload = ['page_token' => Crypt::encryptString($page->id), 'events' => [$event], 'user_id' => 999, 'visit_id' => 'forged'];
         $this->travel(12)->seconds();
         $this->postJson('/activity/events', $payload)->assertNoContent();
@@ -85,6 +85,7 @@ class ActivityHistoryTest extends ReviewTestCase
         $this->assertNull($stored->user_id);
         $this->assertSame(12000, (int) $stored->elapsed_ms);
         $this->assertSame(12, json_decode($stored->metadata, true)['position_seconds']);
+        $this->assertSame('find-your-match', json_decode($stored->metadata, true)['section']);
         $this->assertSame(12000, (int) DB::table('activity_pages')->where('id', $page->id)->value('elapsed_ms'));
         $this->assertDatabaseCount('activity_events', 2);
     }

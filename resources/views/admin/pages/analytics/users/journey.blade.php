@@ -40,21 +40,7 @@
                 @if($group['piece'])<p class="ua-meta">{{ $group['piece']->composer }}</p>@endif
                 <p class="ua-page-time">{{ $group['observed'] ? 'Page visible for '.\App\Activity\Time::duration($page->visible_ms) : 'Page visibility was not recorded' }}</p>
                 <ul class="ua-actions">
-                    @foreach($group['moments'] as $moment)
-                    @php($event = $moment['event'])
-                    @if($moment['playback'])
-                    <li>@include('admin.pages.analytics.users.playback', ['playback' => $moment['playback']])</li>
-                    @continue
-                    @endif
-                    <li><span class="ua-action-icon" aria-hidden="true">@icon(\App\Activity\Presentation::icon($event->type), ['mr' => 0])</span><div>
-                        <div class="ua-action-line"><strong>{{ \App\Activity\Presentation::action($event) }}</strong><time>{{ \App\Activity\Time::event($event)->format('g:i:s A') }}</time></div>
-                        @if($event->resource_type === 'piece' && isset($pieces[$event->resource_id]) && (!$group['piece'] || $group['piece']->id != $event->resource_id))<a href="{{ route('admin.pieces.edit', $event->resource_id) }}">{{ $pieces[$event->resource_id]->name }}</a>@endif
-                        @php($m = \App\Activity\Presentation::metadata($event))
-                        @if($event->type === 'score_progress')<p class="ua-meta">Score visible for {{ \App\Activity\Time::duration($m['visible_ms'] ?? null) }} so far</p>@endif
-                        @if($event->type === 'annotation_saved')<p class="ua-meta">{{ $m['created_count'] ?? 0 }} created · {{ $m['edited_count'] ?? 0 }} edited · {{ $m['removed_count'] ?? 0 }} removed. Marking contents are private.</p>@endif
-                        @include('admin.pages.analytics.users.details')
-                    </div></li>
-                    @endforeach
+                    @include('admin.pages.analytics.users.moments', ['items' => $group['displayMoments']])
                 </ul>
                 @if($group['actions']->isEmpty() && $group['media']->isEmpty())<p class="ua-meta">Limited activity details were recorded for this page.</p>@endif
                 <details class="ua-details"><summary>Page details</summary><p>{{ $page->url }}</p><p>Observed elapsed time: {{ $group['observed'] ? \App\Activity\Time::duration($page->elapsed_ms) : 'Not recorded' }}</p></details>

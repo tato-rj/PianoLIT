@@ -101,6 +101,13 @@
   .ua-action-line strong { font-size: var(--font-size-base); font-weight: 500; overflow-wrap: anywhere; }
   .ua-action-line time { color: #687169; font-size: var(--font-size-sm); white-space: nowrap; }
   .ua-actions .ua-details { margin-top: 4px; }
+  .ua-context-card { flex: 1; min-width: 0; padding: 16px; border: 1px solid #dce5d5; border-left: 3px solid #a7c593; border-radius: 18px; background: #f3f5ef; }
+  .ua-context-heading { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 12px; }
+  .ua-context-heading h3 { margin: 0; font-size: var(--font-size-h5); font-weight: 500; }
+  .ua-context-heading time, .ua-context-closed { color: #687169; font-size: var(--font-size-sm); }
+  .ua-context-card .ua-context-actions { margin-top: 14px; padding-left: 12px; border-left: 1px solid #c5d5b9; }
+  .ua-context-actions > li:first-child { border-top: 0; padding-top: 0; }
+  .ua-context-closed { margin: 10px 0 4px; }
   .ua-playback { padding: 15px; border-radius: 16px; background: #ecf1e8; margin-top: 12px; }
   .ua-playback p { font-size: var(--font-size-sm); margin-top: 4px; }
   .ua-playback meter { width: 100%; height: 10px; display: block; margin-bottom: 6px; }
@@ -153,6 +160,8 @@
   .ua .ua-filter-period { flex-basis: 100%; margin-left: 0; }
 }
 @media (max-width: 700px) {
+  .ua .ua-context-card { padding: 12px; }
+  .ua .ua-context-card .ua-context-actions { padding-left: 8px; }
   .ua {
     .ua-card { padding: 20px; border-radius: 22px; }
     .ua-metrics, .ua-metrics-four { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
