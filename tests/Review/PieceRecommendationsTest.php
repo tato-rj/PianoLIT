@@ -83,7 +83,7 @@ class PieceRecommendationsTest extends ReviewTestCase
         $this->assertLessThanOrEqual(16, $counts[1]);
     }
 
-    public function test_guest_and_signed_in_pages_render_ordered_gradients_and_working_tag_search_links()
+    public function test_guest_and_signed_in_pages_render_recommendations_and_working_tag_search_links()
     {
         foreach (['Minuet in G', 'Little prelude', 'Morning song', 'Evening dance'] as $name) {
             $this->makePiece($name, ['happy', 'dreamy']);
@@ -94,12 +94,22 @@ class PieceRecommendationsTest extends ReviewTestCase
             $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk();
             $rows = $response->viewData('recommendationRows');
             $html = $response->getContent();
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($html);
+            $xpath = new \DOMXPath($dom);
             $previous = -1;
-            foreach ($rows as $row) {
-                $position = strpos($html, '<h5 class="m-0">'.$row['title'].'</h5>');
+            foreach ($rows as $index => $row) {
+                $position = strpos($html, 'id="piece-recommendations-'.$index.'"');
                 $this->assertGreaterThan($previous, $position);
                 $previous = $position;
-                $this->assertStringContainsString('linear-gradient(to right, '.implode(', ', gradient($row['color'])).')', $html);
+                $links = $xpath->query('//section[@aria-labelledby="piece-recommendations-'.$index.'"]//a[contains(concat(" ",normalize-space(@class)," ")," discover-piece-link ")]');
+                $this->assertCount($row['pieces']->count(), $links);
+                foreach ($row['pieces'] as $cardIndex => $card) {
+                    $this->assertSame(route('webapp.pieces.show', $card), $links[$cardIndex]->getAttribute('href'));
+                    $this->assertStringContainsString($card->name, $links[$cardIndex]->textContent);
+                    $this->assertStringContainsString($card->composer->short_name, $links[$cardIndex]->textContent);
+                    $this->assertStringContainsString(ucfirst($card->extended_level_name), $links[$cardIndex]->textContent);
+                }
                 $response->assertSee('href="'.e($row['url']).'"', false);
                 if (! isset($row['term'])) continue;
                 $this->get($row['url'])->assertOk()->assertSee('name="search" value="'.$row['term'].'"', false);

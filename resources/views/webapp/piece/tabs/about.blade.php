@@ -80,21 +80,21 @@
 
 
 		@foreach($recommendationRows as $recommendationRow)
-		<div class="mb-4">
-			<div class="d-flex d-apart mb-3">
-				<h5 class="m-0">{{$recommendationRow['title']}}</h5>
+		@php($featuredRecommendations = $loop->first)
+		<section class="{{$featuredRecommendations ? 'discover-latest' : 'discover-for-you discover-panel rounded'}} mb-4" aria-labelledby="piece-recommendations-{{$loop->index}}">
+			<div class="d-flex d-apart gap-3 mb-3">
+				<h5 id="piece-recommendations-{{$loop->index}}" class="m-0">{{$recommendationRow['title']}}</h5>
 				<a href="{{$recommendationRow['url']}}" class="btn-raw link-primary" aria-label="View all: {{$recommendationRow['title']}}">View all</a>
 			</div>
-			<div class="custom-scroll dragscroll dragscroll-horizontal card-scroll-row">
-				<div class="d-flex pb-2" style="height: 144px;">
-					@foreach($recommendationRow['pieces'] as $card)
-						@php($card->color = $recommendationRow['color'])
-						@php($card->subtitle = $card->composer->short_name)
-						@include('webapp.discover.cards.piece', ['hasFullAccess' => $hasFullAccess])
+			<div class="{{$featuredRecommendations ? 'discover-latest__rail' : 'discover-for-you__rail'}} custom-scroll dragscroll dragscroll-horizontal card-scroll-row" role="region" aria-labelledby="piece-recommendations-{{$loop->index}}" tabindex="0">
+				<div class="d-flex gap-3 pb-2">
+					@foreach($recommendationRow['pieces'] as $recommendationPiece)
+						@include($featuredRecommendations ? 'webapp.discover.cards.latest-piece' : 'webapp.discover.cards.compact-piece', ['piece' => $recommendationPiece, 'showMedia' => true])
 					@endforeach
 				</div>
 			</div>
-		</div>
+		</section>
 		@endforeach
+		@include('webapp.discover.rows.link-rail-script')
 	</div>
 </div>

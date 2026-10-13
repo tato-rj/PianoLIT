@@ -1,0 +1,57 @@
+// Administration drawer follows the overview and analytics surfaces.
+.admin-shell #notifications-panel {
+    top: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: 440px;
+    max-width: calc(100vw - 32px);
+    border: 1px solid #fff;
+    border-radius: 28px;
+    background: #e9e9e7;
+    box-shadow: 0 16px 60px rgba(24, 30, 34, .18);
+    color: #181e22;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-body);
+
+    a { text-decoration: none; }
+    .admin-notification-header { display: block; flex-shrink: 0; padding: 26px 26px 20px; }
+    .admin-notification-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .offcanvas-title { margin: 0; font-size: var(--font-size-h3); font-weight: 600; line-height: 1.2; letter-spacing: -.8px; }
+    .admin-notification-summary { margin: 8px 0 0; color: #626b64; font-size: var(--font-size-sm); }
+    .admin-notification-close { display: flex; flex: 0 0 38px; align-items: center; justify-content: center; width: 38px; height: 38px; padding: 0; border: 1px solid #fff; border-radius: 50%; background: rgba(255, 255, 255, .6); color: #354139; cursor: pointer; }
+    .admin-notification-close:hover { background: #fff; }
+    .admin-notification-close .app-icon { width: 18px; height: 18px; }
+    .admin-notification-read { display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; padding: 9px 14px; border: 1px solid #fff; border-radius: 24px; background: rgba(255, 255, 255, .6); color: #354139; font-size: var(--font-size-sm); }
+    .admin-notification-read:hover { background: #fff; color: #253e30; }
+    .admin-notification-read .app-icon { width: 15px; height: 15px; }
+    .admin-notification-body { min-height: 0; padding: 4px 26px 24px; overscroll-behavior: contain; scrollbar-width: thin; }
+    .admin-notification-list { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+    .admin-notification-item { display: block; padding: 19px; border: 1px solid #fff; border-radius: 22px; background: rgba(255, 255, 255, .63); color: #242b27; transition: background .15s; }
+    .admin-notification-item:hover { background: #fff; color: #242b27; }
+    .admin-notification-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+    .admin-notification-type, .admin-notification-count { display: inline-block; padding: 4px 10px; border-radius: 20px; background: #e4ecdf; color: #41563e; font-size: var(--font-size-xs); font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+    .admin-notification-type { text-transform: capitalize; }
+    .admin-notification-count { background: #181e22; color: #fff; font-variant-numeric: tabular-nums; }
+    .admin-notification-message { overflow-wrap: anywhere; }
+    .admin-notification-message strong { font-weight: 600; }
+    .admin-notification-time { display: block; margin-top: 10px; color: #626b64; font-size: var(--font-size-sm); }
+    .admin-notification-empty { padding: 48px 16px; border: 1px solid #fff; border-radius: 22px; background: rgba(255, 255, 255, .5); text-align: center; }
+    .admin-notification-empty-icon { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin-bottom: 18px; border-radius: 50%; background: #dce7d4; color: #536e47; }
+    .admin-notification-empty-icon .app-icon { width: 24px; height: 24px; }
+    .admin-notification-empty h3 { margin: 0 0 8px; font-size: var(--font-size-h5); font-weight: 500; }
+    .admin-notification-empty p { margin: 0; color: #626b64; font-size: var(--font-size-sm); }
+    .admin-notification-footer { flex-shrink: 0; padding: 20px 26px 26px; border-top: 1px solid #d9ded5; }
+    .admin-notification-footer a { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 19px; border: 1px solid #181e22; border-radius: 26px; background: #181e22; color: #fff; }
+    .admin-notification-footer a:hover { background: #354139; border-color: #354139; }
+    .admin-notification-footer .app-icon { width: 17px; height: 17px; }
+}
+
+@media (max-width: 575px) {
+    .admin-shell #notifications-panel {
+        top: 12px; right: 12px; bottom: 12px; max-width: calc(100vw - 24px); border-radius: 24px;
+        .admin-notification-header { padding: 22px 20px 18px; }
+        .admin-notification-body { padding: 4px 20px 20px; }
+        .admin-notification-item { padding: 17px; }
+        .admin-notification-footer { padding: 18px 20px 22px; }
+    }
+}

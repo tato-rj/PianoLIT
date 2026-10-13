@@ -1,13 +1,15 @@
 <a href="{{route('admin.notifications.read', [
 	'ids' => $notifications->pluck('id')->toArray(),
 	'url' => $notifications[0]->data['url']])}}"
-	class="list-group-item list-group-item-action border-0 rounded-0 cursor-pointer notification-item">
-	<div class="mb-1"><span class="badge bg-light border">{{strtolower($notifications[0]->data['title'])}}</span></div>
-	<div class="clamp-2">
+	class="notification-item admin-notification-item">
+	<div class="admin-notification-meta">
+		<span class="admin-notification-type">{{strtolower($notifications[0]->data['title'])}}</span>
 		@if(count($notifications) > 1)
-		<span class="badge bg-blue text-white me-1">{{count($notifications)}}</span>
+		<span class="admin-notification-count" aria-label="{{count($notifications)}} notifications">{{count($notifications)}}</span>
 		@endif
+	</div>
+	<div class="admin-notification-message">
 		{!! $notifications[0]->data['message'] !!}
 	</div>
-	<div><small>{{$notifications[0]->created_at->diffForHumans()}}</small></div>
+	<time class="admin-notification-time" datetime="{{$notifications[0]->created_at->toIso8601String()}}">{{$notifications[0]->created_at->diffForHumans()}}</time>
 </a>
