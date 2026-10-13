@@ -14,14 +14,14 @@
         <li><button type="button" data-select-country="{{ $country['code'] }}" aria-pressed="{{ $loop->first ? 'true' : 'false' }}"><i class="admin-country-dot is-color-{{ $country['color'] }}" aria-hidden="true"></i><span>{{ $country['name'] }}</span><strong>{{ number_format($country['total']) }}</strong><small>{{ $country['share'] }}%</small></button></li>
         @endforeach
       </ol>
+      <p class="admin-country-coverage">{{ number_format($map['located']) }} of {{ number_format($map['total']) }} accounts have a recorded country.</p>
+    </div>
+    <div class="admin-country-map-area">
       <label class="admin-country-picker" hidden>Explore a country
         <select data-country-picker>
           @foreach($map['countries'] as $country)<option value="{{ $country['code'] }}" data-name="{{ $country['name'] }}" data-count="{{ $country['total'] }}">{{ $country['name'] }} · {{ number_format($country['total']) }}</option>@endforeach
         </select>
       </label>
-      <p class="admin-country-coverage">{{ number_format($map['located']) }} of {{ number_format($map['total']) }} accounts have a recorded country.</p>
-    </div>
-    <div class="admin-country-map-area">
       <div class="admin-country-stage">
         <div class="admin-country-controls" hidden>
           <button type="button" data-map-zoom="in" aria-label="Zoom in">@icon('plus', ['mr' => 0])</button>

@@ -97,7 +97,7 @@ class AdminDashboardTest extends ReviewTestCase
         $this->assertSame([2, 1, 1, 1], array_column($data['metrics'], 'total'));
         $this->assertSame([1, 1, 1, 1], array_column($data['metrics'], 'added'));
         $this->assertEquals(50, $data['metrics'][0]['share']);
-        $this->assertCount(12, $queries);
+        $this->assertCount(13, $queries); // Includes one all-time country aggregate.
         $this->assertStringNotContainsString('post_topic', implode(' ', array_column($queries, 'query')));
         $metricQueries = collect($queries)->filter(function ($query) {
             return strpos($query['query'], ' as added') !== false;

@@ -17,7 +17,7 @@ class RecentlyViewedPiecesTest extends ReviewTestCase
         parent::setUp();
         $this->withoutMiddleware([\App\Http\Middleware\Logs\RecordWebAppLog::class, \App\Http\Middleware\UpdateLocation::class]);
         Redis::shouldReceive('get')->andReturn(null);
-        Cache::put('app.discover', collect([
+        Cache::put('app.discover'.Api::WEB_DISCOVER_CACHE_SUFFIX, collect([
             ['title' => 'Free weekly pick', 'row' => 'gallery', 'type' => 'piece', 'content' => []],
             ['title' => 'Composers', 'row' => 'gallery', 'type' => 'piece', 'content' => []],
             ['title' => 'Latest pieces', 'row' => 'gallery', 'type' => 'piece', 'content' => []],
@@ -51,7 +51,7 @@ class RecentlyViewedPiecesTest extends ReviewTestCase
         $row = collect($response->viewData('rows'))->firstWhere('title', 'Recently viewed');
         $this->assertSame([$this->first->id, $this->second->id], $row['content']->pluck('id')->all());
         $this->assertDatabaseCount('recently_viewed_pieces', 2);
-        $this->assertFalse(Cache::get('app.discover')->contains('title', 'Recently viewed'));
+        $this->assertFalse(Cache::get('app.discover'.Api::WEB_DISCOVER_CACHE_SUFFIX)->contains('title', 'Recently viewed'));
         $this->assertFalse((new Api)->discover()->contains('title', 'Recently viewed'));
     }
 

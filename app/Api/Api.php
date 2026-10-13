@@ -9,11 +9,16 @@ use App\Blog\Post;
 
 class Api extends Factory
 {
+    const WEB_DISCOVER_CACHE_SUFFIX = '.webapp-similarity-v1';
+
     protected $results, $request, $query, $options, $for;
 
 	public function discover()
 	{
         $key = Redis::get('app.discover') ?: 'app.discover';
+        // Web ranking must never replace the cached mobile recommendation pool.
+        // Retain the existing refresh prefix and daily expiry for both feeds.
+        if ($this->for === 'webapp') $key .= self::WEB_DISCOVER_CACHE_SUFFIX;
 
         $collection = \Cache::remember($key, days(1), function() {
             return collect([

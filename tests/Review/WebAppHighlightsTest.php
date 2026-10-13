@@ -107,8 +107,8 @@ class WebAppHighlightsTest extends ReviewTestCase
         $this->assertSame(route('webapp.highlights'), $xpath->query('//section/div/a')->item(0)->getAttribute('href'));
         $this->assertSame(route('webapp.pieces.show', $pieces[1]), $xpath->query('//article/parent::a')->item(0)->getAttribute('href'));
         $this->assertSame(6, $xpath->query('//div[@aria-label="Earlier highlights"]/a')->length);
-        $this->assertNotNull(\Cache::get('app.discover')->firstWhere('title', 'From black composers'));
-        $this->assertNull(\Cache::get('app.discover')->firstWhere('title', 'Past highlights'));
+        $this->assertNotNull(\Cache::get('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX)->firstWhere('title', 'From black composers'));
+        $this->assertNull(\Cache::get('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX)->firstWhere('title', 'Past highlights'));
         $this->assertFalse($pieces[1]->hasWebMediaAccess());
 
         Piece::where('id', '!=', $pieces[1]->id)->update(['highlighted_at' => null]);

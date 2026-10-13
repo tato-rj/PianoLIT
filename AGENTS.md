@@ -18,6 +18,8 @@ Full-access web users (including super users) can annotate public-domain score P
 
 ## Project map
 
+Admin analytics visual preferences are recorded in docs/ANALYTICS_DESIGN.md, including the user's saved chart/map reference. Future analytics pages should follow its rounded grouped bars, subtle gridlines, soft sparklines, colored country maps with rankings, and gauge patterns while using the shared PianoLIT typography tokens.
+
 - PHP application: `app/`; shared helpers: `support/helpers.php`.
 - Route registration and domain/middleware boundaries: `app/Providers/RouteServiceProvider.php`, `app/Http/Kernel.php`, and `routes/`.
 - Shared app feeds/search: `app/Api/`; billing: `app/Billing/`; integrations: `app/Services/` and webhook controllers.

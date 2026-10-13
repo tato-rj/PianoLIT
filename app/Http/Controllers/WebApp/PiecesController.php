@@ -10,6 +10,7 @@ use App\Events\PieceShared;
 use App\Services\RecentlyViewedPieces;
 use App\Services\WebApp\PieceCards;
 use App\Services\WebApp\PieceRecommendations;
+use App\Services\WebApp\SimilarPieces;
 
 class PiecesController extends Controller
 {
@@ -57,9 +58,9 @@ class PiecesController extends Controller
         return view('webapp.piece.options.apple-music', compact('piece'));
     }
 
-    public function similar(Piece $piece)
+    public function similar(Piece $piece, SimilarPieces $recommendations)
     {
-        $similar = PieceCards::load($piece->similar());
+        $similar = PieceCards::load($recommendations->forPiece($piece));
 
     	return view('webapp.piece.options.similar', compact(['piece', 'similar']));
     }

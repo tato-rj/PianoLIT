@@ -13,7 +13,7 @@ class PieceRecommendations
             'title' => 'More like this',
             'color' => GalleryGradients::at(0),
             'url' => route('webapp.pieces.similar', $piece),
-            'pieces' => $piece->similar()->where('id', '!=', $piece->id)->take(16),
+            'pieces' => (new SimilarPieces)->forPiece($piece, 16),
         ]]);
 
         $moods = $piece->mood();

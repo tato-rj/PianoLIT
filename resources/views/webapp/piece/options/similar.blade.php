@@ -17,8 +17,8 @@
 @include('webapp.components.sorting', ['disabled' => false, 'env' => 'local'])
 
 <section id="pieces-list">
-@foreach($similar as $piece)
-@include('webapp.components.piece', compact('hasFullAccess'))
+@foreach($similar as $similarPiece)
+@include('webapp.components.piece', ['piece' => $similarPiece, 'hasFullAccess' => $hasFullAccess])
 @endforeach
 </section>
 

@@ -1,6 +1,12 @@
 @extends('admin.layouts.app')
 @section('body-class', 'admin-dashboard-page')
 
+@section('head')
+@manager
+<link rel="stylesheet" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}">
+@endmanager
+@endsection
+
 @section('content')
 <div class="admin-dashboard">
   @include('admin.components.page.title', ['title' => 'Overview', 'subtitle' => 'A little perspective on everything PianoLIT.'])

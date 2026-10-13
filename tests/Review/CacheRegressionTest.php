@@ -36,4 +36,21 @@ class CacheRegressionTest extends ReviewTestCase
         $this->assertSame([], $api->free('Free weekly pick')['content']);
         $this->assertSame([], $api->similar('Similar', null)['content']);
     }
+
+    public function test_web_discover_has_a_separate_cache_and_respects_the_existing_refresh_prefix()
+    {
+        Redis::shouldReceive('get')->with('app.discover')->times(3)->andReturn('app.discover-refreshed');
+        $webKey = 'app.discover-refreshed'.Api::WEB_DISCOVER_CACHE_SUFFIX;
+        Cache::put('app.discover-refreshed', collect([['title' => 'Mobile ranked row']]), 60);
+        Cache::put($webKey, collect([['title' => 'Web ranked row']]), 60);
+        $api = new class extends Api {
+            public function suggestions($title) { return ['title' => $title]; }
+        };
+
+        $this->assertSame('Web ranked row', $api->for('webapp')->discover()->first()['title']);
+        $this->assertSame('Mobile ranked row', $api->for('app')->discover()->first()['title']);
+        $this->assertSame('Web ranked row', $api->for('webapp')->discover()->first()['title']);
+        $this->assertCount(1, Cache::get($webKey));
+        $this->assertCount(1, Cache::get('app.discover-refreshed'));
+    }
 }

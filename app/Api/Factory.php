@@ -3,6 +3,7 @@
 namespace App\Api;
 
 use App\{Piece, User, Tag, Composer};
+use App\Services\WebApp\SimilarPieces;
 
 abstract class Factory
 {
@@ -134,7 +135,9 @@ abstract class Factory
         if (! $piece) {
             return $this->createPlaylist([], ['row' => 'gallery', 'type' => 'piece', 'title' => $title, 'tag' => null, 'url' => null]);
         }
-        $collection = $piece->similar()->take($this->limit);
+        $collection = ($this->for ?? null) === 'webapp'
+            ? (new SimilarPieces)->forPiece($piece, $this->limit)
+            : $piece->similar()->take($this->limit);
         $name = $piece->nickname ?? $piece->simple_name;
 
         $this->withAttributes($collection, ['type' => 'piece', 'source' => route('api.pieces.find')]);
@@ -144,7 +147,9 @@ abstract class Factory
             'type' => 'piece', 
             'title' => $title,
             'tag' => $piece->composer->last_name . '\'s ' . $name,
-            'url' => route('search.index', ['global', 'search' => $name])
+            'url' => ($this->for ?? null) === 'webapp'
+                ? route('webapp.pieces.similar', $piece)
+                : route('search.index', ['global', 'search' => $name])
         ]);
     }
 

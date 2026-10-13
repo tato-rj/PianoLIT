@@ -193,7 +193,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         $this->get(route('webapp.discover'))->assertOk();
         $this->get(route('webapp.discover'))->assertOk();
-        foreach (Cache::get('app.discover') as $row) {
+        foreach (Cache::get('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX) as $row) {
             if ($row['type'] !== 'piece') continue;
             foreach ($row['content'] as $piece) {
                 $this->assertArrayNotHasKey('webapp_is_favorited', $piece->getAttributes());
