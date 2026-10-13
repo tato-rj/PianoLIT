@@ -25,7 +25,7 @@ class EventServiceProvider extends ServiceProvider
         Verified::class => [
             EmailVerified::class,
         ],
-        \Illuminate\Auth\Events\Login::class => [\App\Listeners\Users\RecordAuthentication::class],
+        \Illuminate\Auth\Events\Login::class => [\App\Listeners\Users\RecordAuthentication::class, \App\Listeners\Users\RecordRecentPasswordLogin::class],
         \App\Events\Tutorials\NewRequest::class => [
             \App\Listeners\Tutorials\NewRequestListener::class,
         ],

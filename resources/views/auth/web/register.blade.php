@@ -21,6 +21,7 @@
                     <h6><a class="link-none" href="{{ route('login') }}">Already have an account?</a></h6>
                 </div>
             </form>
+            @include('auth.google.button')
         </div>
     </div>
 </div>

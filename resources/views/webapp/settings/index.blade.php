@@ -17,6 +17,7 @@
 		@endif
 		@auth('web')
 		@include('webapp.settings.item', ['url' => route('webapp.users.profile'), 'label' => 'My profile'])
+		@include('webapp.settings.item', ['url' => route('google.accounts'), 'label' => 'Connected Accounts'])
 		@else
 		@include('webapp.settings.item', ['url' => route('login'), 'label' => 'Sign in'])
 		@include('webapp.settings.item', ['url' => route('register'), 'label' => 'Create an account'])

@@ -16,7 +16,7 @@ window.searchRequestId = 0;
 	@include('webapp.search.form')
 </section>
 
-<p id="search-results-count" class="text-muted small mb-2" role="status" style="display: none;"></p>
+<p id="search-results-count" class="text-muted small text-center" role="status" style="display: none;"></p>
 
 <section id="pieces-list">
 </section>
@@ -97,7 +97,8 @@ function makeUrl() {
 }
 
 function showResultCount(total) {
-	$('#search-results-count').text(total.toLocaleString() + (total === 1 ? ' result' : ' results')).show();
+    let message = 'We found ' + total.toLocaleString() + (total === 1 ? ' result' : ' results');
+	$('#search-results-count').text(message).show();
 }
 
 function reset() {

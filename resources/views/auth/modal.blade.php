@@ -18,6 +18,7 @@
                   <p><a href="{{ route('password.request') }}">Forgot Your Password?</a></p>
               </div>
           </form>
+          @include('auth.google.button')
         </div>
 
         <div class="modal-footer rounded-bottom border-0 bg-light cursor-pointer" data-toggle="panel" href="#panel-register" href-parent="#panel-login">
@@ -37,6 +38,7 @@
                     @include('auth.fields.register-button')
                 </div>
             </form>
+            @include('auth.google.button')
         </div>
 
         <div class="modal-footer rounded-bottom border-0 bg-light cursor-pointer" data-toggle="panel" href="#panel-login" href-parent="#panel-register">

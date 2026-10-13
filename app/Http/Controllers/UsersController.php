@@ -67,6 +67,18 @@ class UsersController extends Controller
     {
         $this->authorize('update', $user);
 
+        if ($request->filled('password') && !app(\App\Auth\Google\Accounts::class)->hasPassword($user)) {
+            return redirect('/auth/google/password');
+        }
+
+        // The older profile form must not bypass Google linking's recent-proof
+        // requirement by changing the account email/password first.
+        if (($request->filled('password') || ($request->has('email') && $request->email !== $user->email))
+            && app(\App\Auth\Google\Configuration::class)->ready()
+            && !app(\App\Auth\Google\Accounts::class)->recent($request, $user)) {
+            return app(\App\Http\Controllers\Auth\GoogleController::class)->confirm($request, 'profile');
+        }
+
         $request->validate([
             'email' => 'email',
             'password' => 'confirmed|min:8|nullable'
@@ -82,6 +94,9 @@ class UsersController extends Controller
 
         if ($request->password)
             $this->resetPassword($user, $request->password);
+
+        if ($request->password)
+            app(\App\Auth\Google\Accounts::class)->verified($request, $user);
 
         if ($subscription)
             $subscription->update(['email' => $request->email]);

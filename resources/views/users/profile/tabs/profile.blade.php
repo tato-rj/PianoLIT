@@ -16,8 +16,12 @@
 
 			@input(['label' => 'Email', 'bag' => 'default', 'name' => 'email', 'limit' => 200, 'value' => auth()->user()->email, 'type' => 'email'])
 
-			@input(['label' => 'Change your password', 'placeholder' => 'New password', 'bag' => 'default', 'name' => 'password', 'type' => 'password', 'required' => 'no'])
-			@input(['placeholder' => 'Confirm your password', 'bag' => 'default', 'name' => 'password_confirmation', 'type' => 'password', 'required' => 'no'])
+			@if(app(\App\Auth\Google\Accounts::class)->hasPassword(auth('web')->user()))
+				@input(['label' => 'Change your password', 'placeholder' => 'New password', 'bag' => 'default', 'name' => 'password', 'type' => 'password', 'required' => 'no'])
+				@input(['placeholder' => 'Confirm your password', 'bag' => 'default', 'name' => 'password_confirmation', 'type' => 'password', 'required' => 'no'])
+			@else
+				<p><a href="{{ route('google.password') }}">Set a Password</a> to use email/password login, including in the iOS app.</p>
+			@endif
 
 			<div class="form-group">
 				<button type="submit" class="btn btn-primary shadow btn-wide">@icon('save')Save my changes</button>

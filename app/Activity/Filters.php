@@ -16,7 +16,7 @@ class Filters
     public function __construct(Request $request)
     {
         $this->values = $request->validate([
-            'range' => 'nullable|in:'.implode(',', array_keys(AdminDateRanges::LABELS)),
+            'range' => 'nullable|string|in:'.implode(',', array_keys(AdminDateRanges::LABELS)),
             'from' => 'nullable|date_format:Y-m-d', 'to' => 'nullable|date_format:Y-m-d|after_or_equal:from',
             'platform' => 'nullable|in:all,web,webapp,app',
             'audience' => 'nullable|in:all,registered,anonymous',

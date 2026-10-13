@@ -1,4 +1,5 @@
 require('./timeline-events-admin');
+require('./google-auth');
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
@@ -30,6 +31,7 @@ async function main() {
     await require('./campaign-attribution')();
     require('./composer-biography-admin')();
     require('./admin-text-improver')();
+    require('./admin-date-range')();
     await require('./escore-wizard')();
     require('./collections')();
     require('./composers')();

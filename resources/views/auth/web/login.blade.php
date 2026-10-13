@@ -17,6 +17,7 @@
                     <h6><a class="link-none" href="{{ route('password.request') }}">Forgot Your Password?</a></h6>
                 </div>
             </form>
+            @include('auth.google.button')
         </div>
     </div>
 </div>

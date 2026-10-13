@@ -49,3 +49,11 @@ reference. The new map uses local pre-generated SVG geometry, produced with D3
 geography utilities at build time; it adds no browser chart-library dependency.
 Choose another rendering tool only when a requested chart needs it, keeping existing
 pages and mobile contracts compatible.
+
+On 2026-10-13 the user also supplied a dark overlapping-bar reference and a light
+grouped-bar reference for the daily Users analytics chart. Daily activity uses
+grouped bars for Visits, Pieces opened and Media starts: the measures count different
+things and do not form parts of a meaningful combined total. Shared baselines make
+comparisons clearer. Use consistent mint, lavender and peach series colors, rounded
+tops, exact counts above bars and the page's light surfaces. Retain readable dates,
+a single count scale and a full-date details table for long ranges.

@@ -2,6 +2,16 @@
 
 return [
 
+    'google_login' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect_uri' => env('GOOGLE_REDIRECT_URI'),
+        'webapp_redirect_uri' => env('GOOGLE_WEBAPP_REDIRECT_URI'),
+        'challenge_minutes' => 15,
+        'recent_auth_minutes' => 10,
+        'handoff_seconds' => 60,
+    ],
+
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),

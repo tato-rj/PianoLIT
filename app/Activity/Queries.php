@@ -143,8 +143,14 @@ class Queries
     public function trend(Filters $filters)
     {
         $rows = $this->visits($filters)->selectRaw('DATE(v.started_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
+        $pieces = $this->pieceOpens($this->events($filters))->selectRaw('DATE(e.occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
+        $media = $this->events($filters)->where('e.type', 'media_play')->selectRaw('DATE(e.occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
         $days = [];
-        for ($day = $filters->start->copy(); $day->lt($filters->end); $day->addDay()) $days[] = ['date' => $day->format('M j'), 'total' => (int) ($rows[$day->toDateString()]->total ?? 0)];
+        for ($day = $filters->start->copy(); $day->lt($filters->end); $day->addDay()) {
+            $key = $day->toDateString();
+            $days[] = ['day' => $key, 'date' => $day->format('M j'), 'total' => (int) ($rows[$key]->total ?? 0),
+                'pieces' => (int) ($pieces[$key]->total ?? 0), 'media_starts' => (int) ($media[$key]->total ?? 0)];
+        }
         return $days;
     }
 

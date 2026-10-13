@@ -35,8 +35,9 @@
             function highlight() { presets.forEach(function (button) { button.setAttribute('aria-pressed', button.dataset.datePreset === draft ? 'true' : 'false'); }); }
             function clearError() { error.hidden = true; error.textContent = ''; draftFrom.removeAttribute('aria-invalid'); draftTo.removeAttribute('aria-invalid'); }
             function restore() {
-                draft = period ? period.value : committed;
-                var selected = preset(draft);
+                var selected = preset(period ? period.value : committed);
+                if (!selected || !selected.dataset.from) selected = preset(root.dataset.defaultPreset);
+                draft = 'custom';
                 draftFrom.value = from.value || (selected && selected.dataset.from) || '';
                 draftTo.value = to.value || (selected && selected.dataset.to) || '';
                 highlight(); clearError();
@@ -51,17 +52,16 @@
             function fit() {
                 if (!root.open) return;
                 var view = doc.defaultView, rect = root.getBoundingClientRect();
-                panel.style.maxHeight = Math.max(160, view.innerHeight - 32) + 'px';
+                if (rect.bottom < 16 || rect.top > view.innerHeight - 16) { close(false); return; }
+                panel.style.maxHeight = Math.max(1, view.innerHeight - 32) + 'px';
                 var width = panel.getBoundingClientRect().width;
                 panel.style.left = Math.max(16, Math.min(rect.left, view.innerWidth - width - 16)) - rect.left + 'px';
                 panel.style.top = 'calc(100% + 8px)';
                 var height = panel.getBoundingClientRect().height;
-                if (rect.bottom + height + 8 > view.innerHeight - 16 && rect.top > view.innerHeight - rect.bottom) {
-                    panel.style.top = -height - 8 + 'px';
-                    panel.style.maxHeight = Math.max(160, rect.top - 24) + 'px';
-                } else {
-                    panel.style.maxHeight = Math.max(160, view.innerHeight - rect.bottom - 24) + 'px';
-                }
+                var below = view.innerHeight - rect.bottom - 24, above = rect.top - 24;
+                var upwards = height > below && above > below;
+                panel.style.maxHeight = Math.max(1, upwards ? above : below) + 'px';
+                panel.style.top = upwards ? -panel.getBoundingClientRect().height - 8 + 'px' : 'calc(100% + 8px)';
             }
             function close(focus) {
                 root.open = false; summary.setAttribute('aria-expanded', 'false'); restore();
@@ -79,14 +79,16 @@
                     draftFrom.setAttribute('aria-invalid', 'true'); draftTo.setAttribute('aria-invalid', 'true');
                     draftFrom.focus(); fit(); return false;
                 }
-                from.value = draftFrom.value; to.value = draftTo.value; committed = draft || 'custom';
+                from.value = draftFrom.value; to.value = draftTo.value;
+                committed = !from.value && !to.value && !period ? '' : (draft || 'custom');
                 if (period) period.value = committed;
                 update(); close(focus); return true;
             }
+            summary.addEventListener('click', function () { if (!root.open) restore(); });
             root.addEventListener('toggle', function (event) {
                 if (event.target !== root) return;
                 summary.setAttribute('aria-expanded', root.open ? 'true' : 'false');
-                if (root.open) { states.forEach(function (state) { if (state.root !== root && state.root.open) state.close(false); }); restore(); fit(); }
+                if (root.open) { states.forEach(function (state) { if (state.root !== root && state.root.open) state.close(false); }); fit(); }
             });
             presets.forEach(function (button) {
                 button.addEventListener('click', function () {
@@ -117,7 +119,10 @@
                 if (root.open && !commit(false)) { event.preventDefault(); return; }
                 if (period && period.value === 'custom') {
                     var message = validate(from.value, to.value, true, Number(root.dataset.maxDays));
-                    if (message) { event.preventDefault(); open(true); error.textContent = message; error.hidden = false; }
+                    if (message) {
+                        event.preventDefault(); open(true); error.textContent = message; error.hidden = false;
+                        draftFrom.setAttribute('aria-invalid', 'true'); draftTo.setAttribute('aria-invalid', 'true');
+                    }
                 }
             });
             states.push({root: root, close: close, fit: fit});
@@ -133,7 +138,11 @@
             if (event.key === 'Escape') states.forEach(function (state) { if (state.root.open) { event.preventDefault(); state.close(true); } });
         });
         doc.defaultView.addEventListener('resize', function () { states.forEach(function (state) { state.fit(); }); });
-        doc.defaultView.addEventListener('scroll', function () { states.forEach(function (state) { state.fit(); }); }, true);
+        doc.defaultView.addEventListener('scroll', function (event) {
+            states.forEach(function (state) {
+                if (!event.target || !event.target.nodeType || !state.root.contains(event.target)) state.fit();
+            });
+        }, true);
     }
 
     if (typeof module !== 'undefined') module.exports = {validate: validate, install: install};

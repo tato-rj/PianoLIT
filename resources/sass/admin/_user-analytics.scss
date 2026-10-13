@@ -31,33 +31,36 @@
   .ua-section-heading h2 { margin-bottom: 4px; }
   .ua-section-heading p, .ua-meta, .ua-muted { color: #687169; font-size: var(--font-size-sm); }
   .ua-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; background: #e4ecdf; color: #41563e; font-size: var(--font-size-xs); font-weight: 500; }
-  .ua-chart { font-variant-numeric: tabular-nums; }
+  .ua-chart { --ua-chart-height: 220px; font-variant-numeric: tabular-nums; }
+  .ua-chart-legend { display: flex; flex-wrap: wrap; gap: 12px 20px; padding: 0; margin: 4px 0 0; list-style: none; color: #626b64; font-size: var(--font-size-sm); }
+  .ua-chart-legend li { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .ua-chart-series--visits { --ua-series-color: #375849; --ua-series-fill: #94c6b0; --ua-series-light: #c4e1d1; }
+  .ua-chart-series--pieces { --ua-series-color: #684c93; --ua-series-fill: #a692ce; --ua-series-light: #d6cbed; }
+  .ua-chart-series--media { --ua-series-color: #8d5031; --ua-series-fill: #efb07c; --ua-series-light: #f7d8bd; }
+  .ua-chart-swatch { width: 12px; height: 12px; border-radius: 4px; background: var(--ua-series-fill); flex-shrink: 0; }
   .ua-chart-unit, .ua-chart-x { color: #626b64; font-size: var(--font-size-sm); }
   .ua-chart-layout { display: flex; gap: 12px; min-width: 0; }
-  .ua-chart-y { position: relative; flex-shrink: 0; min-width: 36px; height: 180px; margin-top: 32px; font-size: var(--font-size-sm); color: #626b64; }
+  .ua-chart-y { position: relative; flex-shrink: 0; min-width: 36px; height: var(--ua-chart-height); margin-top: 32px; font-size: var(--font-size-sm); color: #626b64; }
   .ua-chart-y span { position: absolute; right: 0; transform: translateY(50%); white-space: nowrap; }
   .ua-chart-scroll { flex: 1; min-width: 0; overflow-x: auto; padding-top: 32px; scrollbar-width: thin; }
   .ua-chart-scroll:focus-visible { outline: 2px solid #43764c; outline-offset: 4px; border-radius: 4px; }
   .ua-chart-canvas { position: relative; min-width: var(--ua-chart-width); }
-  .ua-chart-grid { position: absolute; top: 0; left: 0; right: 0; height: 180px; }
-  .ua-chart-grid span { position: absolute; left: 0; right: 0; border-top: 1px solid #e0e4dd; }
-  .ua-chart-grid span:first-child { border-color: #cbd3c7; }
-  .ua-chart-bars { display: flex; gap: 8px; margin: 0; padding: 0; list-style: none; position: relative; }
+  .ua-chart-grid { position: absolute; top: 0; left: 0; right: 0; height: var(--ua-chart-height); }
+  .ua-chart-grid span { position: absolute; left: 0; right: 0; border-top: 1px dashed #e0e4dd; }
+  .ua-chart-grid span:first-child { border-top-style: solid; border-color: #cbd3c7; }
+  .ua-chart-bars { display: flex; gap: 16px; margin: 0; padding: 0; list-style: none; position: relative; }
   .ua-chart-column { flex: 1; min-width: 0; }
-  .ua-chart-track { display: flex; align-items: flex-end; height: 180px; }
-  .ua-chart-bar { position: relative; width: 100%; border-radius: 5px 5px 0 0; background: linear-gradient(0deg,#a8d88a,#dbeac9); }
-  .ua-chart-column:nth-child(4n+1) .ua-chart-bar { background: linear-gradient(0deg,#efa59b,#ffd6bd); }
-  .ua-chart-column:nth-child(4n+2) .ua-chart-bar { background: linear-gradient(0deg,#ebcd7d,#f7e6bc); }
-  .ua-chart-count { position: absolute; top: -28px; left: 0; right: 0; text-align: center; color: #354139; font-size: var(--font-size-base); font-weight: 600; white-space: nowrap; }
+  .ua-chart-group { display: flex; justify-content: center; gap: 8px; }
+  .ua-chart-track { display: flex; align-items: flex-end; justify-content: center; height: var(--ua-chart-height); flex: 0 0 var(--ua-chart-series-width); }
+  .ua-chart-bar { position: relative; width: 22px; border-radius: 12px 12px 0 0; background: linear-gradient(0deg,var(--ua-series-fill),var(--ua-series-light)); }
+  .ua-chart-count { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); text-align: center; color: var(--ua-series-color); font-size: var(--font-size-base); font-weight: 600; white-space: nowrap; }
   .ua-chart-date { display: block; margin: 10px 0 6px; text-align: center; font-size: var(--font-size-sm); line-height: 1.5; color: #626b64; white-space: nowrap; }
   .ua-chart-x { text-align: center; margin: 3px 0 0 42px; }
   .ua-chart-hint { font-size: var(--font-size-sm); color: #687169; text-align: center; margin: 6px 0 0; }
-  .ua-chart-hint-mobile { display: none; }
   .ua-details { margin-top: 12px; font-size: var(--font-size-sm); color: #626b64; overflow-wrap: anywhere; }
   .ua-details summary { cursor: pointer; width: fit-content; padding: 3px 0; }
   .ua-details pre { white-space: pre-wrap; font-size: var(--font-size-xs); padding: 12px; background: #edf0e9; border-radius: 10px; color: #3b493d; max-height: 300px; overflow: auto; }
-  .ua-daily-counts { display: flex; flex-wrap: wrap; gap: 7px; }
-  .ua-daily-counts span { background: #edf0e9; padding: 5px 10px; border-radius: 10px; }
+  .ua-chart-table th[scope="row"] { padding: 16px 12px; border-top: 1px solid #e0e4dd; vertical-align: top; }
   .ua-visit { display: flex; align-items: center; gap: 14px; padding: 18px 0; border-top: 1px solid #e0e4dd; }
   .ua-avatar { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: #d8e4ce; color: #42573e; font-size: var(--font-size-base); }
   .ua-avatar-lg { width: 56px; height: 56px; font-size: var(--font-size-h4); }
@@ -192,10 +195,6 @@
     .ua-visit-sort > label { flex: 1 1 200px; }
     .ua-visit { flex-wrap: wrap; align-items: start; gap: 10px; } .ua-visit .ua-journey-link { flex-basis: calc(100% - 48px); margin-left: 48px; }
     .ua-section-heading { flex-wrap: wrap; }
-    .ua-chart-canvas { min-width: var(--ua-chart-mobile-width); }
-    .ua-chart-bars { gap: 4px; }
-    .ua-chart-date > span { display: block; }
-    .ua-chart-hint-mobile { display: block; }
     .ua-timeline-entry { grid-template-columns: minmax(0,1fr); padding-left: 17px; }
     .ua-timeline-entry:before { left: 0; } .ua-timeline-entry > time { padding: 0 0 8px 5px; }
     .ua-page { margin-left: 5px; } .ua-timeline-marker { left: -36px; top: 21px; }

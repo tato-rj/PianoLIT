@@ -14,15 +14,15 @@
     </div>
     <div class="carousel-item">
       <div class="text-center px-2">
-          <h3>Discover</h3>
-          <p class="text-muted mb-1" style="font-size: 110%">Find new repertoire based on mood, categories, techniques and more.</p>
+          <h3>Find music that inspires you</h3>
+          <p class="text-muted mb-1" style="font-size: 110%">Explore pieces by mood, style, and technique, and discover something new to play.</p>
       </div>
       @include('auth.webapp.mockup', ['slide' => 2, 'description' => 'PianoLIT Collections and the Melancholic mood collection on laptop and phone'])
     </div>
     <div class="carousel-item">
       <div class="text-center px-2">
-          <h3>Learn</h3>
-          <p class="text-muted mb-1" style="font-size: 110%">Expand your musical knowledge and become a better pianist!</p>
+          <h3>Go beyond the notes</h3>
+          <p class="text-muted mb-1" style="font-size: 110%">Discover the stories, details, and performances that bring each piece to life.</p>
       </div>
       @include('auth.webapp.mockup', ['slide' => 3, 'description' => 'PianoLIT performance player and score viewer for A Sad Song by Yuri Levitin'])
     </div>
