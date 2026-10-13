@@ -10,7 +10,7 @@
         @endforeach
     </div>
     <section class="ua-card ua-trend">
-        <div class="ua-section-heading"><div><h2>A little rhythm, over time</h2><p>Visits started each day</p></div><span class="ua-badge">Peak {{ max(array_column($trend, 'total')) }} visits / day</span></div>
+        <div class="ua-section-heading"><div><h2>Daily visits</h2><p>Visits started each day</p></div><span class="ua-badge">Peak {{ max(array_column($trend, 'total')) }} visits / day</span></div>
         @php($highest = max(1, max(array_column($trend, 'total'))))
         <div class="ua-chart" role="group" aria-label="Daily visit counts. Exact counts are available below.">
             @foreach($trend as $day)<div class="ua-chart-column"><span style="height:{{ max(2, $day['total'] / $highest * 100) }}%" tabindex="0" aria-label="{{ $day['date'] }}: {{ $day['total'] }} visits" title="{{ $day['date'] }} · {{ $day['total'] }} visits"></span></div>@endforeach
