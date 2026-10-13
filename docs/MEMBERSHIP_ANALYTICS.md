@@ -110,6 +110,9 @@ The admin SQL report aggregates and paginates in the database. It does not load
 every user's Eloquent model or make per-row source/ownership queries. The legacy
 load-more routes remain registered for compatibility but the new directory does
 not use them. All browser requests remain on session-authenticated admin routes.
+The membership and super-user directories both use the shared admin default of
+12 rows per page (`App\Support\AdminPagination::PER_PAGE`), retaining their independent
+`page`/`super_page` parameters, filters and ordering.
 
 Overview uses the same Active count (active plus billing grace periods), directly
 after Total users in At a glance. Its period badge counts memberships whose record

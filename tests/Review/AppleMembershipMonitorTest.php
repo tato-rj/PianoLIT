@@ -231,8 +231,14 @@ class AppleMembershipMonitorTest extends ReviewTestCase
         $response->assertSee('Lena &lt;script&gt;', false)->assertSee('21010')->assertSee('Current membership status is unknown.')->assertDontSee('test-receipt')->assertDontSee('test-secret');
         $this->assertSame(1, $response->viewData('memberships')->total());
         for ($i = 0; $i < 26; $i++) $this->apple();
-        $this->assertCount(25, $this->report()['memberships']);
+        $this->assertCount(12, $this->report()['memberships']);
         $this->assertSame(27, $this->report()['memberships']->total());
+        $secondPage = $this->get(route('admin.analytics.memberships', ['provider' => 'apple', 'page' => 2]))->assertOk()->viewData('memberships');
+        $this->assertSame(12, $secondPage->perPage());
+        $this->assertCount(12, $secondPage);
+        $thirdPage = $this->get(route('admin.analytics.memberships', ['provider' => 'apple', 'page' => 3]))->assertOk()->viewData('memberships');
+        $this->assertCount(3, $thirdPage);
+        $this->assertCount(0, $secondPage->pluck('membership_id')->intersect($thirdPage->pluck('membership_id')));
         $this->assertSame(1, $this->report(['search' => 'lena@'])['memberships']->total());
         $this->assertSame(0, $this->report(['search' => '%'])['memberships']->total());
         $this->assertSame(1, $this->report(['search' => 'Lena <script>'])['memberships']->total());

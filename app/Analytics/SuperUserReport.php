@@ -2,6 +2,7 @@
 
 namespace App\Analytics;
 
+use App\Support\AdminPagination;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{DB, Schema};
 
@@ -44,7 +45,7 @@ class SuperUserReport
         $query->orderBy('u.first_name')->orderBy('u.last_name')->orderBy('u.id');
 
         return [
-            'superUsers' => $query->paginate(15, ['*'], 'super_page')->withQueryString(),
+            'superUsers' => $query->paginate(AdminPagination::PER_PAGE, ['*'], 'super_page')->withQueryString(),
             'superUserTotal' => (int) $summary->total, 'superUserDated' => (int) $summary->dated,
             'superUserFilters' => $filters, 'superUserTrackingReady' => $ready,
         ];

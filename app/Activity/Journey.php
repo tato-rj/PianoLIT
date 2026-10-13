@@ -2,6 +2,7 @@
 
 namespace App\Activity;
 
+use App\Support\AdminPagination;
 use Illuminate\Support\Facades\DB;
 
 class Journey
@@ -14,7 +15,7 @@ class Journey
         abort_unless($visit, 404);
         $visit->pages_count = DB::table('activity_pages')->where('visit_id', $id)->count();
         $queries->decorateVisits(collect([$visit]));
-        $pages = DB::table('activity_pages')->where('visit_id', $id)->orderBy('opened_at')->orderBy('id')->paginate(20, ['*'], 'pages_page')->withQueryString();
+        $pages = DB::table('activity_pages')->where('visit_id', $id)->orderBy('opened_at')->orderBy('id')->paginate(AdminPagination::PER_PAGE, ['*'], 'pages_page')->withQueryString();
         // Bound detail payload independently of the size of the visit. Do not let a
         // noisy first page conceal later page groups without a visible notice.
         $eventQuery = DB::table('activity_events')->where('visit_id', $id)->whereIn('page_id', $pages->pluck('id'));
@@ -22,7 +23,7 @@ class Journey
         $events = $eventQuery->orderByRaw('COALESCE(occurred_at, received_at)')->orderBy('sequence')->orderBy('id')->limit(2000)->get();
         $unplaced = DB::table('activity_events')->where('visit_id', $id)->where(function ($q) use ($id) {
             $q->whereNull('page_id')->orWhereNotIn('page_id', DB::table('activity_pages')->where('visit_id', $id)->select('id'));
-        })->orderByRaw('COALESCE(occurred_at, received_at)')->orderBy('id')->paginate(50, ['*'], 'events_page')->withQueryString();
+        })->orderByRaw('COALESCE(occurred_at, received_at)')->orderBy('id')->paginate(AdminPagination::PER_PAGE, ['*'], 'events_page')->withQueryString();
         $allEvents = $events->concat($unplaced->items());
         $pieceIds = $allEvents->filter(function ($e) { return $e->resource_type === 'piece'; })->pluck('resource_id');
         $pieceIds = $pieceIds->merge($allEvents->map(function ($e) { return Presentation::metadata($e)['piece_id'] ?? null; }))

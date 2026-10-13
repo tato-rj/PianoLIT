@@ -95,6 +95,8 @@ git diff --check
 
 Google tests use temporary RSA keys, mocked HTTPS responses, fake notifications, in-memory SQLite and the isolated review bootstrap; no Google credentials are required. They cover valid/invalid signatures and claims, PKCE/state replay, linking proof and data preservation, both host callbacks/return destinations, handoff/session/Origin/replay checks, first password setup, existing password recovery, direct legacy iOS login/registration payloads/statuses, cancellation, rate limits, CSRF, uniqueness/rollback and migration safety. Browser QA uses rendered Blade/shipped CSS with synthetic accounts on a temporary localhost server.
 
+Final local results on 2026-10-13: the Google-focused suite passes **41 tests / 435 assertions**; the combined regression command passes **121 tests / 5,061 assertions**. The Google JavaScript loading/back-navigation checks and scoped PHP syntax/whitespace checks pass. Twenty-seven rendered layouts at 1440, 390 and 320 pixels have no horizontal overflow; the confirmation/password screens also initialize the shipped application JavaScript without console errors. The full JavaScript runner currently fails an unrelated search-label assertion (`We found 24 results` versus `24 results`), reproducing with the Google test removed. That concurrent search issue is outside this change and remains a release-check limitation. These results do not establish real Google consent/mail delivery or production MySQL concurrency.
+
 Files added:
 
 - `app/Auth/Google/{Accounts,Challenges,Configuration,IdTokenVerifier,Provider}.php`

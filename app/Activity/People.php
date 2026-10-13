@@ -3,6 +3,7 @@
 namespace App\Activity;
 
 use App\User;
+use App\Support\AdminPagination;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -53,7 +54,7 @@ class People
         if (($input['activity'] ?? '') === 'one') $query->where('a.visits_count', 1);
         if (($input['activity'] ?? '') === 'repeat') $query->where('a.visits_count', '>', 1);
         $sort = ['registered' => 'users.created_at', 'last_active' => 'a.last_activity', 'engagement' => 'pieces_count'][$input['sort'] ?? 'last_active'];
-        return $query->orderByDesc($sort)->orderByDesc('users.id')->paginate(25)->withQueryString();
+        return $query->orderByDesc($sort)->orderByDesc('users.id')->paginate(AdminPagination::PER_PAGE)->withQueryString();
     }
 
     public function profile(User $user, $tab, Filters $filters)
@@ -71,7 +72,7 @@ class People
         $stats->ungrouped = DB::table('activity_events')->whereNull('visit_id')->where('user_id', $user->id)->count();
         $engagement = $queries->events(null, $user->id)->whereIn('e.type', ['media_play', 'score_opened', 'annotation_saved', 'favorite_changed'])->select('e.type')->selectRaw('COUNT(*) as total')->groupBy('e.type')->get()->pluck('total', 'type');
         $engagement['synthesia'] = $queries->events(null, $user->id)->where('e.type', 'media_play')->where('e.metadata->media_id', 'like', '%synthesia%')->count();
-        $visits = $queries->visitList($tab === 'visits' ? $filters : null, $user->id, $tab === 'visits' ? 25 : 5, $visitSort);
+        $visits = $queries->visitList($tab === 'visits' ? $filters : null, $user->id, AdminPagination::PER_PAGE, $visitSort);
         $frequent = $queries->pieceOpens($queries->events(null, $user->id))->select('e.resource_id')->selectRaw('COUNT(*) as total, MAX(e.occurred_at) as last_opened')->groupBy('e.resource_id')->orderByDesc('total')->limit(8)->get();
         $music = [];
         $selectedFolder = null;
@@ -80,19 +81,19 @@ class People
                 $selectedFolder = DB::table('favorite_folders')->where('user_id', $user->id)->where('id', request('folder'))->first();
                 abort_unless($selectedFolder, 404);
             }
-            $music['recent'] = $queries->pieceOpens($queries->events(null, $user->id))->select('e.resource_id')->selectRaw('COUNT(*) as total, MAX(e.occurred_at) as last_opened')->groupBy('e.resource_id')->orderByDesc('last_opened')->paginate(12, ['*'], 'music_page')->withQueryString();
+            $music['recent'] = $queries->pieceOpens($queries->events(null, $user->id))->select('e.resource_id')->selectRaw('COUNT(*) as total, MAX(e.occurred_at) as last_opened')->groupBy('e.resource_id')->orderByDesc('last_opened')->paginate(AdminPagination::PER_PAGE, ['*'], 'music_page')->withQueryString();
             $saved = DB::table('favorites')->where('user_id', $user->id);
             if ($selectedFolder) $saved->where('favorite_folder_id', $selectedFolder->id);
-            $music['favorites'] = $saved->select('piece_id')->selectRaw('MAX(created_at) as saved_at')->groupBy('piece_id')->orderByDesc('saved_at')->paginate(12, ['*'], 'favorites_page')->withQueryString();
-            $music['folders'] = DB::table('favorite_folders as f')->where('f.user_id', $user->id)->select('f.id', 'f.name', 'f.updated_at')->selectSub(DB::table('favorites')->whereColumn('favorite_folder_id', 'f.id')->selectRaw('COUNT(*)'), 'pieces_count')->orderByDesc('f.updated_at')->paginate(12, ['*'], 'folders_page')->withQueryString();
-            $music['annotations'] = DB::table('score_annotations')->where('user_id', $user->id)->where('marks', '!=', '[]')->select('piece_id', 'revision', 'updated_at')->orderByDesc('updated_at')->paginate(12, ['*'], 'scores_page')->withQueryString();
-            $music['media'] = $queries->events(null, $user->id)->whereIn('e.type', ['media_progress', 'media_end', 'media_pause'])->orderByDesc('e.occurred_at')->orderByDesc('e.id')->paginate(12, ['e.id', 'e.type', 'e.metadata', 'e.occurred_at', 'e.occurred_at_utc', 'e.received_at', 'e.received_at_utc'], 'media_page')->withQueryString();
+            $music['favorites'] = $saved->select('piece_id')->selectRaw('MAX(created_at) as saved_at')->groupBy('piece_id')->orderByDesc('saved_at')->paginate(AdminPagination::PER_PAGE, ['*'], 'favorites_page')->withQueryString();
+            $music['folders'] = DB::table('favorite_folders as f')->where('f.user_id', $user->id)->select('f.id', 'f.name', 'f.updated_at')->selectSub(DB::table('favorites')->whereColumn('favorite_folder_id', 'f.id')->selectRaw('COUNT(*)'), 'pieces_count')->orderByDesc('f.updated_at')->paginate(AdminPagination::PER_PAGE, ['*'], 'folders_page')->withQueryString();
+            $music['annotations'] = DB::table('score_annotations')->where('user_id', $user->id)->where('marks', '!=', '[]')->select('piece_id', 'revision', 'updated_at')->orderByDesc('updated_at')->paginate(AdminPagination::PER_PAGE, ['*'], 'scores_page')->withQueryString();
+            $music['media'] = $queries->events(null, $user->id)->whereIn('e.type', ['media_progress', 'media_end', 'media_pause'])->orderByDesc('e.occurred_at')->orderByDesc('e.id')->paginate(AdminPagination::PER_PAGE, ['e.id', 'e.type', 'e.metadata', 'e.occurred_at', 'e.occurred_at_utc', 'e.received_at', 'e.received_at_utc'], 'media_page')->withQueryString();
         }
         $ids = $frequent->pluck('resource_id');
         foreach (['recent' => 'resource_id', 'favorites' => 'piece_id', 'annotations' => 'piece_id'] as $key => $column) if (isset($music[$key])) $ids = $ids->merge($music[$key]->pluck($column));
         if (isset($music['media'])) $ids = $ids->merge(collect($music['media']->items())->map(function ($e) { return Presentation::metadata($e)['piece_id'] ?? null; }));
         $pieces = Queries::pieces($ids->filter()->unique());
-        $accountEvents = $tab === 'account' ? DB::table('activity_events as e')->where('e.user_id', $user->id)->where('e.source', 'server')->whereIn('e.type', ['registration_completed', 'login', 'trial_started', 'subscription_activated', 'subscription_paid', 'subscription_canceled'])->orderByDesc('e.occurred_at')->paginate(20, ['e.*'], 'account_page')->withQueryString() : null;
+        $accountEvents = $tab === 'account' ? DB::table('activity_events as e')->where('e.user_id', $user->id)->where('e.source', 'server')->whereIn('e.type', ['registration_completed', 'login', 'trial_started', 'subscription_activated', 'subscription_paid', 'subscription_canceled'])->orderByDesc('e.occurred_at')->paginate(AdminPagination::PER_PAGE, ['e.*'], 'account_page')->withQueryString() : null;
         return compact('user', 'tab', 'filters', 'visitSort', 'stats', 'engagement', 'visits', 'frequent', 'music', 'pieces', 'accountEvents', 'selectedFolder');
     }
 }

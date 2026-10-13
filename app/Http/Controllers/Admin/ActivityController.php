@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Support\AdminPagination;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,11 +28,11 @@ class ActivityController extends Controller
             ->selectSub(DB::table('activity_events')->selectRaw('COUNT(*)')->whereColumn('visit_id', 'visits.id'), 'events_count');
         if ($user) $visits->where('visits.user_id', $user->id);
         if ($request->boolean('guests')) $visits->whereNull('visits.user_id');
-        $visits = $visits->orderByDesc('visits.started_at')->orderBy('visits.id')->paginate(10, ['*'], 'visits_page');
+        $visits = $visits->orderByDesc('visits.started_at')->orderBy('visits.id')->paginate(AdminPagination::PER_PAGE, ['*'], 'visits_page');
         $legacy = DB::table('activity_events')->whereNull('visit_id');
         if ($user) $legacy->where('user_id', $user->id);
         if ($request->boolean('guests')) $legacy->whereNull('user_id');
-        $legacy = $legacy->orderByDesc('occurred_at')->orderByDesc('id')->paginate(10, ['*'], 'history_page');
+        $legacy = $legacy->orderByDesc('occurred_at')->orderByDesc('id')->paginate(AdminPagination::PER_PAGE, ['*'], 'history_page');
         return view('admin.pages.activity.index', compact('visits', 'legacy', 'user'));
     }
 

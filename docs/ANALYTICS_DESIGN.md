@@ -9,6 +9,11 @@ white-bordered cards. Use PianoLIT's shared typography tokens: 16px primary text
 controls, 14px secondary text, and the existing heading scale. Fit smaller screens
 by wrapping or scrolling content rather than shrinking readable text.
 
+Redesigned admin tables and paginated lists default to 12 results per page. Use
+`App\Support\AdminPagination::PER_PAGE` for server pagination and retain independent
+page parameters, filters and ordering. This default is separate from compact,
+non-paginated dashboard rankings and bounded journey detail queries.
+
 Use clear, literal headings and descriptions. Name the data directly, such as
 Where our users are, Users by country, Activity summary, or Visit summary. Avoid
 clever labels, metaphors, storytelling language and calling all users pianists.

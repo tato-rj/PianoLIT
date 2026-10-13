@@ -2,6 +2,7 @@
 
 namespace App\Analytics;
 
+use App\Support\AdminPagination;
 use App\Billing\Sources\{Apple, Stripe};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{DB, Schema};
@@ -71,7 +72,7 @@ class MembershipReport
             default: $rows->orderByRaw('CASE WHEN access_until IS NULL THEN 1 ELSE 0 END')->orderBy('access_until');
         }
         return [
-            'memberships' => $rows->orderBy('membership_id')->paginate(10)->withQueryString(),
+            'memberships' => $rows->orderBy('membership_id')->paginate(AdminPagination::PER_PAGE)->withQueryString(),
             'counts' => $counts, 'totals' => $totals, 'filters' => $filters, 'labels' => self::LABELS,
             'monitorReady' => $ready,
             'lastRun' => $ready ? DB::table('apple_membership_sync_runs')->orderByDesc('id')->first() : null,

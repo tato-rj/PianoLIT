@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Activity\{Filters, Insights, Journey, People, Queries, VisitSort};
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Support\AdminPagination;
 use Illuminate\Http\Request;
 
 class UserAnalyticsController extends Controller
@@ -20,9 +21,9 @@ class UserAnalyticsController extends Controller
         $visitSort = new VisitSort($request);
         $metrics = $queries->metrics($filters);
         $trend = $queries->trend($filters);
-        $visits = $queries->visitList($filters, null, 25, $visitSort);
+        $visits = $queries->visitList($filters, null, AdminPagination::PER_PAGE, $visitSort);
         $ungroupedCount = $queries->ungrouped($filters)->count();
-        $history = $request->boolean('history') ? $queries->ungrouped($filters)->orderByDesc('occurred_at')->orderByDesc('id')->paginate(25, ['id', 'user_id', 'platform', 'type', 'source', 'occurred_at', 'occurred_at_utc', 'received_at', 'received_at_utc', 'route_name', 'url'], 'history_page')->withQueryString() : null;
+        $history = $request->boolean('history') ? $queries->ungrouped($filters)->orderByDesc('occurred_at')->orderByDesc('id')->paginate(AdminPagination::PER_PAGE, ['id', 'user_id', 'platform', 'type', 'source', 'occurred_at', 'occurred_at_utc', 'received_at', 'received_at_utc', 'route_name', 'url'], 'history_page')->withQueryString() : null;
         return view('admin.pages.analytics.users.activity', compact('filters', 'visitSort', 'metrics', 'trend', 'visits', 'ungroupedCount', 'history'));
     }
 

@@ -115,8 +115,12 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $this->assertSame(17, $response->viewData('superUserTotal'));
         $this->assertSame(1, $response->viewData('superUsers')->total());
         $this->assertSame($user->id, $response->viewData('superUsers')->first()->id);
+        $firstPage = $this->get(route('admin.analytics.memberships'))->assertOk()->viewData('superUsers');
+        $this->assertSame(12, $firstPage->perPage());
+        $this->assertCount(12, $firstPage);
         $response = $this->get(route('admin.analytics.memberships', ['super_page' => 2]))->assertOk();
-        $this->assertCount(2, $response->viewData('superUsers'));
+        $this->assertCount(5, $response->viewData('superUsers'));
+        $this->assertCount(0, $firstPage->pluck('id')->intersect($response->viewData('superUsers')->pluck('id')));
         $this->assertSame(0, (new SuperUserReport)->get(Request::create('/', 'GET', ['super_search' => '%']))['superUsers']->total());
         $this->withExceptionHandling()->getJson(route('admin.analytics.memberships', ['super_sort' => 'password']))->assertStatus(422);
         $this->getJson(route('admin.analytics.memberships', ['super_search' => ['bad']]))->assertStatus(422);

@@ -381,10 +381,10 @@ class UserAnalyticsTest extends ReviewTestCase
         DB::enableQueryLog(); DB::flushQueryLog();
         $visits = (new Queries)->visitList($this->filters());
         $count = count(DB::getQueryLog()); DB::disableQueryLog();
-        $this->assertCount(25, $visits);
+        $this->assertCount(12, $visits);
         $this->assertSame(33, $visits->total());
         $this->assertLessThanOrEqual(5, $count);
-        $this->assertCount(25, $visits->pluck('id')->unique());
+        $this->assertCount(12, $visits->pluck('id')->unique());
     }
 
     public function test_visit_sorts_apply_before_pagination_with_stable_ties_and_bounded_queries()
@@ -586,7 +586,7 @@ class UserAnalyticsTest extends ReviewTestCase
         $visit = $this->visit();
         for ($i = 0; $i < 24; $i++) $this->page($visit, 'webapp.discover', carbon('2026-10-12 10:00:00')->addMinutes($i)->toDateTimeString());
         $data = (new Journey)->get($visit);
-        $this->assertCount(20, $data['pages']);
+        $this->assertCount(12, $data['pages']);
         $this->assertSame(24, $data['pages']->total());
         $this->assertSame(24, $data['visit']->pages_count);
     }

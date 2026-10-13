@@ -2,6 +2,7 @@
 
 namespace App\Activity;
 
+use App\Support\AdminPagination;
 use Illuminate\Support\Facades\DB;
 
 class Queries
@@ -44,7 +45,7 @@ class Queries
         return $query->where('e.type', 'page_view')->where('e.source', 'server')->where('e.resource_type', 'piece')->whereNotNull('e.resource_id');
     }
 
-    public function visitList(Filters $filters = null, $userId = null, $perPage = 25, VisitSort $sort = null)
+    public function visitList(Filters $filters = null, $userId = null, $perPage = AdminPagination::PER_PAGE, VisitSort $sort = null)
     {
         $base = $this->visits($filters, $userId);
         $query = (clone $base)->leftJoin('users as u', DB::raw(self::account()), '=', 'u.id')
