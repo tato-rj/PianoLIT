@@ -161,6 +161,36 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertCount(2, (new Journey)->get($visit)['groups'][0]['media'], 'Separate playbacks are not hidden.');
     }
 
+    public function test_playback_links_reuse_medium_names_with_composers_without_extra_queries()
+    {
+        [$piece, $orphan] = Model::withoutEvents(function () {
+            $composer = create(\App\Composer::class, ['name' => 'Frederic Chopin']);
+            $attributes = ['name' => 'Prelude', 'nickname' => null, 'movement_number' => null, 'key' => 'E minor',
+                'catalogue_name' => 'Op.', 'catalogue_number' => '28', 'collection_name' => '24 Preludes', 'collection_number' => '4'];
+            return [create(Piece::class, array_merge($attributes, ['composer_id' => $composer->id])),
+                create(Piece::class, array_merge($attributes, ['composer_id' => 987654]))];
+        });
+        $expected = $piece->medium_name_with_composer;
+        DB::enableQueryLog(); DB::flushQueryLog();
+        $pieces = Queries::pieces(collect([$piece->id, $orphan->id]));
+        $this->assertCount(1, DB::getQueryLog()); DB::disableQueryLog();
+        $this->assertSame($expected, $pieces[$piece->id]->medium_name_with_composer);
+        $this->assertSame('Prelude Op.28 No.4 by F. Chopin', $expected);
+        $this->assertSame('Prelude Op.28 No.4', $pieces[$orphan->id]->medium_name_with_composer);
+        $this->assertSame('Frederic Chopin', $pieces[$piece->id]->composer, 'Existing plain composer labels remain intact.');
+        $this->assertFalse(property_exists($pieces[$piece->id], 'audio'), 'Unrelated appended model fields are not serialized.');
+        $playback = ['event' => (object) ['resource_type' => 'piece', 'resource_id' => $piece->id],
+            'label' => 'Played audio', 'started' => now(), 'watched' => 14, 'coverage' => 11];
+        $html = view('admin.pages.analytics.users.playback', ['playback' => $playback, 'pieces' => $pieces, 'group' => ['piece' => null]])->render();
+        $dom = new \DOMDocument(); @$dom->loadHTML($html);
+        $links = $dom->getElementsByTagName('a');
+        $this->assertCount(1, $links);
+        $this->assertSame($expected, $links[0]->textContent);
+        $this->assertSame(route('webapp.pieces.show', $piece->id), $links[0]->getAttribute('href'));
+        $this->assertSame('_blank', $links[0]->getAttribute('target'));
+        $this->assertSame('noopener noreferrer', $links[0]->getAttribute('rel'));
+    }
+
     public function test_partial_visits_keep_timing_unknown_and_technical_details_exclude_secrets()
     {
         $visit = $this->visit(); $page = $this->page($visit);

@@ -123,6 +123,16 @@ class Queries
     public static function pieces($ids)
     {
         return DB::table('pieces as p')->leftJoin('composers as c', 'c.id', '=', 'p.composer_id')
-            ->whereIn('p.id', $ids)->select('p.id', 'p.name', 'c.name as composer')->get()->keyBy('id');
+            ->whereIn('p.id', $ids)->select('p.id', 'p.name', 'p.nickname', 'p.key', 'p.collection_name', 'p.collection_number',
+                'p.movement_number', 'p.catalogue_name', 'p.catalogue_number', 'c.name as composer')->get()->map(function ($row) {
+                // Reuse the established name accessors without loading default
+                // relations/counts or serializing the models' appended fields.
+                $attributes = (array) $row; unset($attributes['composer']);
+                $piece = (new \App\Piece)->setRawAttributes($attributes);
+                $composer = (new \App\Composer)->setRawAttributes(['name' => $row->composer]);
+                $piece->setRelation('composer', $composer);
+                $row->medium_name_with_composer = $row->composer ? $piece->medium_name_with_composer : $piece->medium_name;
+                return $row;
+            })->keyBy('id');
     }
 }
