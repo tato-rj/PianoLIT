@@ -32,12 +32,32 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
     box-shadow: 0 5px 30px rgba(0,0,0,.1);
 }
 
-.carousel-indicators li {
+#onboarding .carousel-indicators [data-bs-target] {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    margin: 0;
+    border: 8px solid transparent;
+    border-radius: 999px;
     background-color: #b8c2cc;
+    opacity: 1;
+    transition: width .2s ease, background-color .2s ease;
 }
 
-.carousel-indicators li.active {
-    background-color: #0055fe;
+#onboarding .carousel-indicators .active {
+    width: 30px;
+    background-color: var(--color-primary, #0055fe);
+}
+
+#onboarding .carousel-indicators [data-bs-target]:focus-visible {
+    outline: 2px solid var(--color-primary, #0055fe);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #onboarding .carousel-indicators [data-bs-target] {
+        transition: none;
+    }
 }
 </style>
 @endpush

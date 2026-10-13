@@ -1,9 +1,9 @@
 <div id="onboarding" class="carousel slide py-4" data-bs-ride="carousel">
-  <ol class="carousel-indicators list-style-none">
-    <li data-bs-target="#onboarding" data-bs-slide-to="0" class="active"></li>
-    <li data-bs-target="#onboarding" data-bs-slide-to="1"></li>
-    <li data-bs-target="#onboarding" data-bs-slide-to="2"></li>
-  </ol>
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#onboarding" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Show welcome slide"></button>
+    <button type="button" data-bs-target="#onboarding" data-bs-slide-to="1" aria-label="Show music discovery slide"></button>
+    <button type="button" data-bs-target="#onboarding" data-bs-slide-to="2" aria-label="Show piece details slide"></button>
+  </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
       <div class="text-center px-2">
