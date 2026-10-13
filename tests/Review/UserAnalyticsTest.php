@@ -353,14 +353,22 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertSame(['audio', 'video', 'unknown'], $visits[$mixedVisit]->media_kinds);
         $this->assertSame(5, (int) $visits[$mixedVisit]->counts['media_play']);
         $this->assertSame(['music', 'volume-2', 'video', 'circle-play', 'book-open', 'pencil', 'folder-plus', 'gift', 'credit-card', 'crown', 'heart'], array_column($visits[$mixedVisit]->summary_parts, 'icon'));
-        $this->assertSame('Viewed 1 page · Played audio', $visits[$audioVisit]->summary);
-        $this->assertSame('Viewed 1 page · Played video', $visits[$videoVisit]->summary);
+        $this->assertSame('1 page · Audio', $visits[$audioVisit]->summary);
+        $this->assertSame('1 page · Video', $visits[$videoVisit]->summary);
         $this->assertSame([], $visits[$emptyVisit]->summary_parts);
         $this->assertSame('Limited activity details were recorded for this visit.', $visits[$emptyVisit]->summary);
         $this->actingAs(create(Admin::class), 'admin');
         foreach (['admin.analytics.users' => [], 'admin.analytics.users.profile' => ['user' => $user->id, 'tab' => 'visits'], 'admin.analytics.users.journey' => ['visit' => $mixedVisit]] as $route => $parameters) {
-            $response = $this->get(route($route, $parameters))->assertOk()->assertSee('Opened 1 piece')->assertSee('Played audio')->assertSee('Played video')->assertSee('Played media')->assertSee('Viewed Premium options')->assertDontSee('&lt;script&gt;video');
+            $response = $this->get(route($route, $parameters))->assertOk()->assertDontSee('&lt;script&gt;video');
             $document = new \DOMDocument; @$document->loadHTML($response->getContent()); $xpath = new \DOMXPath($document);
+            $summary = $xpath->query('//ul[@class="ua-summary-items"][.//svg[@data-lucide-name="music"]]')->item(0);
+            $this->assertStringContainsString('1 piece', $summary->textContent);
+            $this->assertStringContainsString('Audio', $summary->textContent);
+            $this->assertStringContainsString('Video', $summary->textContent);
+            $this->assertStringContainsString('Premium', $summary->textContent);
+            $this->assertStringNotContainsString('Opened', $summary->textContent);
+            $this->assertStringNotContainsString('Played', $summary->textContent);
+            $this->assertStringNotContainsString('Viewed', $summary->textContent);
             foreach (['music', 'volume-2', 'video', 'circle-play', 'crown', 'heart'] as $icon) {
                 $this->assertGreaterThan(0, $xpath->query('//ul[@class="ua-summary-items"]//svg[@data-lucide-name="'.$icon.'" and @aria-hidden="true"]')->length);
             }

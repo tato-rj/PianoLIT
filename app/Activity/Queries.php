@@ -91,16 +91,33 @@ class Queries
     public function summaryParts($visit)
     {
         $parts = [];
-        if ($visit->pieces_count) $parts[] = ['icon' => 'music', 'label' => 'Opened '.$visit->pieces_count.' '.($visit->pieces_count === 1 ? 'piece' : 'pieces')];
-        elseif (!empty($visit->pages_count)) $parts[] = ['icon' => 'file-text', 'label' => 'Viewed '.$visit->pages_count.' '.($visit->pages_count === 1 ? 'page' : 'pages')];
+        if ($visit->pieces_count) {
+            $label = $visit->pieces_count.' '.($visit->pieces_count === 1 ? 'piece' : 'pieces');
+            $parts[] = ['icon' => 'music', 'tone' => 'pieces', 'label' => $label, 'description' => 'Opened '.$label];
+        } elseif (!empty($visit->pages_count)) {
+            $label = $visit->pages_count.' '.($visit->pages_count === 1 ? 'page' : 'pages');
+            $parts[] = ['icon' => 'file-text', 'tone' => 'pages', 'label' => $label, 'description' => 'Viewed '.$label];
+        }
         if (!empty($visit->counts['media_play'])) {
             foreach ($visit->media_kinds ?? ['unknown'] as $kind) {
-                $parts[] = ['icon' => Presentation::icon('media_play', ['media_kind' => $kind]), 'label' => 'Played '.(['audio' => 'audio', 'video' => 'video'][$kind] ?? 'media')];
+                $label = ['audio' => 'Audio', 'video' => 'Video'][$kind] ?? 'Media';
+                $parts[] = ['icon' => Presentation::icon('media_play', ['media_kind' => $kind]), 'tone' => in_array($kind, ['audio', 'video'], true) ? $kind : 'media', 'label' => $label, 'description' => 'Played '.strtolower($label)];
             }
         }
-        $labels = ['score_opened' => ['book-open', 'Opened a score'], 'annotation_saved' => ['pencil', 'Saved annotations'], 'folder_created' => ['folder-plus', 'Created a folder'], 'trial_started' => ['gift', 'Started a trial'], 'subscription_paid' => ['credit-card', 'Subscription payment confirmed'], 'premium_opened' => ['crown', 'Viewed Premium options']];
-        foreach ($labels as $key => [$icon, $label]) if (!empty($visit->counts[$key])) $parts[] = compact('icon', 'label');
-        foreach ($visit->saved_actions ?? [] as $label) $parts[] = ['icon' => $label === 'Changed pieces in a folder' ? 'folder-open' : 'heart', 'label' => $label];
+        $labels = [
+            'score_opened' => ['book-open', 'score', 'Score', 'Opened a score'],
+            'annotation_saved' => ['pencil', 'annotations', 'Annotations', 'Saved annotations'],
+            'folder_created' => ['folder-plus', 'folders', 'New folder', 'Created a folder'],
+            'trial_started' => ['gift', 'membership', 'Trial started', 'Started a trial'],
+            'subscription_paid' => ['credit-card', 'membership', 'Payment confirmed', 'Subscription payment confirmed'],
+            'premium_opened' => ['crown', 'premium', 'Premium', 'Viewed Premium options'],
+        ];
+        foreach ($labels as $key => [$icon, $tone, $label, $description]) if (!empty($visit->counts[$key])) $parts[] = compact('icon', 'tone', 'label', 'description');
+        $savedLabels = ['Changed pieces in a folder' => 'Folder updated', 'Added a favorite' => 'Favorite added', 'Removed a favorite' => 'Favorite removed', 'Changed saved pieces' => 'Saved pieces updated'];
+        foreach ($visit->saved_actions ?? [] as $description) {
+            $folder = $description === 'Changed pieces in a folder';
+            $parts[] = ['icon' => $folder ? 'folder-open' : 'heart', 'tone' => $folder ? 'folders' : 'favorites', 'label' => $savedLabels[$description] ?? $description, 'description' => $description];
+        }
         return $parts;
     }
 

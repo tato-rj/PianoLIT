@@ -67,10 +67,20 @@
   .ua-person-name { font-weight: 600; color: #242b27; }
   .ua-visit-copy { min-width: 0; flex: 1; overflow-wrap: anywhere; }
   .ua-visit-copy p { margin: 4px 0 0; }
-  .ua-summary-items { display: flex; flex-wrap: wrap; gap: 8px 22px; padding: 0; margin: 0; list-style: none; }
+  .ua-summary-items { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
   .ua-summary-item, .ua-media-label { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0; }
+  .ua-summary-item { padding: 4px 9px; border-radius: 10px; color: var(--ua-activity-color); background: var(--ua-activity-bg); }
+  .ua-summary-item--pieces { --ua-activity-color: #6b4b9a; --ua-activity-bg: #eee7f5; }
+  .ua-summary-item--pages, .ua-summary-item--media, .ua-media-label[data-media-kind="media"] { --ua-activity-color: #5e6770; --ua-activity-bg: #edf0f2; }
+  .ua-summary-item--audio, .ua-media-label[data-media-kind="audio"] { --ua-activity-color: #236a89; --ua-activity-bg: #e0eff5; }
+  .ua-summary-item--video, .ua-media-label[data-media-kind="video"] { --ua-activity-color: #a54e34; --ua-activity-bg: #f9e8df; }
+  .ua-summary-item--score { --ua-activity-color: #306f62; --ua-activity-bg: #e2eee8; }
+  .ua-summary-item--annotations, .ua-summary-item--premium { --ua-activity-color: #89631e; --ua-activity-bg: #f5eacd; }
+  .ua-summary-item--folders { --ua-activity-color: #426393; --ua-activity-bg: #e7edf7; }
+  .ua-summary-item--favorites { --ua-activity-color: #9a486c; --ua-activity-bg: #f4e4ec; }
+  .ua-summary-item--membership { --ua-activity-color: #3e7250; --ua-activity-bg: #e5efde; }
   .ua-summary-item > span, .ua-media-label > span { min-width: 0; overflow-wrap: anywhere; }
-  .ua-summary-item > .app-icon, .ua-media-label > .app-icon { color: #66805a; align-self: flex-start; margin-top: .2em; }
+  .ua-summary-item > .app-icon, .ua-media-label > .app-icon { color: var(--ua-activity-color, #66805a); align-self: flex-start; margin-top: .2em; }
   .ua-visit-copy .ua-summary-items, .ua-visit-copy .ua-summary-empty { margin-top: 6px; }
   .ua-summary-empty { display: block; }
   .ua-journey-link { font-size: var(--font-size-sm); white-space: nowrap; }
