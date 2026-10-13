@@ -4,18 +4,11 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-12 d-flex justify-content-between align-items-center">
-        <div>
-          <button type="button" class="btn btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#add-modal">
-            @icon('plus', ['mr' => 2])Add a new editor
-          </button>
-        </div>
-        <div>
-          {{-- @include('admin.components.filters', ['filters' => []]) --}}
-        </div>
-      </div>
-    </div>
+    @include('admin.components.page.title', [
+      'title' => 'Editors',
+      'subtitle' => 'Manage the people who help build the PianoLIT library.',
+      'action' => ['label' => 'Add a new editor', 'modal' => 'add-modal']
+    ])
 
     <div class="row my-3">
       <div class="col-12 text-center">
@@ -47,7 +40,8 @@
 
 @include('admin.components.modals.delete', ['model' => 'editor'])
 
-@component('admin.components.modals.add', ['model' => 'editor'])
+@component('components.modal', ['id' => 'add-modal', 'header' => 'New editor'])
+@slot('body')
 <form method="POST" action="{{route('admin.editors.store')}}">
   {{csrf_field()}}
   {{-- Name --}}
@@ -68,7 +62,9 @@
   <div class="form-group">
     <input id="password-confirm" type="password" placeholder="Confirm your password" class="form-control" name="password_confirmation" required>
   </div>
-
+  @submit(['label' => 'Add editor', 'block' => true])
+</form>
+@endslot
 @endcomponent
 
 @endsection

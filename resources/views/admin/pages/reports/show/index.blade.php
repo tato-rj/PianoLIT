@@ -22,6 +22,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'Email report', 'subtitle' => 'Delivery, opens and clicks for this mailing.'])
+
 
 	<div class="d-flex justify-content-between mb-4">
 		<div class="d-flex">

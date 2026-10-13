@@ -8,10 +8,4 @@
   </div>
   <nav aria-label="Admin menu">@include('admin.layouts.header.menu')</nav>
 </aside>
-@if(!request()->routeIs('admin.home'))
-<div class="admin-page-tools">
-  @include('admin.layouts.header.notifications')
-  @include('admin.layouts.header.account')
-</div>
-@endif
 @include('components.panel.notifications')

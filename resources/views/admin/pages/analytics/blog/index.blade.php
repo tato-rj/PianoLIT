@@ -8,6 +8,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'Blog analytics', 'subtitle' => 'Topics, posts and readership across the PianoLIT blog.'])
+
 
     <div class="row"> 
       @include('admin.pages.analytics.row', [

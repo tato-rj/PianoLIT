@@ -7,6 +7,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'Repertoire analytics', 'subtitle' => 'Explore the library and the pieces people return to.'])
+
 
     <div class="row"> 
         <div class="col-12 mb-4">

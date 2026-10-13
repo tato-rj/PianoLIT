@@ -7,7 +7,9 @@
 @section('content')
 
 <div class="content-wrapper">
-  <div class="container">
+  <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'Favorite folders', 'subtitle' => 'See how users organize and save their repertoire.'])
+
 
     @datatable(['table' => 'favorites', 'columns' => ['Date', 'Name', 'User', '# Pieces', '']])
   </div>

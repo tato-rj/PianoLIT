@@ -8,6 +8,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'Quiz analytics', 'subtitle' => 'Topics, completed quizzes and results over time.'])
+
 
     <div class="row">
       @include('admin.pages.analytics.row', [

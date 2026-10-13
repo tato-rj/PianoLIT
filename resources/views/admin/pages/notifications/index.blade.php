@@ -8,6 +8,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'Notifications', 'subtitle' => 'The latest updates from across PianoLIT.'])
+
 
     @datatable(['table' => 'notifications', 'columns' => ['Date', 'Notification', '']])
 

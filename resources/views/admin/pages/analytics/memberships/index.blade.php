@@ -7,6 +7,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'Membership analytics', 'subtitle' => 'Trials, active memberships and expired subscriptions.'])
+
     <div class="row">
       <div class="col-12 mb-4">
         <div>Stripe memberships: {{\App\Billing\Sources\Stripe::where('status', 'active')->count()}}</div>

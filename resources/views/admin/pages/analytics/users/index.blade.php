@@ -7,6 +7,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'User analytics', 'subtitle' => 'Signups, account details and engagement across PianoLIT.'])
+
     <div class="row"> 
         <div class="col-12 mb-4">
           @chart([

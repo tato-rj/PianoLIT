@@ -3,14 +3,7 @@
 
 @section('content')
 <div class="admin-dashboard">
-  <header class="admin-dashboard-header">
-    <div><h1>Overview<span class="admin-heading-dot">.</span></h1><p>A little perspective on everything PianoLIT.</p></div>
-    <div class="admin-dashboard-tools">
-      <span class="admin-today">{{now()->format('l, M j')}}</span>
-      @include('admin.layouts.header.notifications')
-      @include('admin.layouts.header.account')
-    </div>
-  </header>
+  @include('admin.components.page.title', ['title' => 'Overview', 'subtitle' => 'A little perspective on everything PianoLIT.'])
 
   @manager
   <div class="admin-dashboard-filters">

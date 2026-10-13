@@ -7,6 +7,8 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
+    @include('admin.components.page.title', ['title' => 'Subscriber analytics', 'subtitle' => 'Follow the growth of the PianoLIT email community.'])
+
     @chart([
       'url' => route('admin.analytics.subscriptions'),
       'chart' => 'line',

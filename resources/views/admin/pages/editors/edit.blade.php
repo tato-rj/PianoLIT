@@ -4,7 +4,11 @@
 
 <div class="content-wrapper">
   <div class="container-fluid">
-    <div class="row my-5 mx-2">
+    @include('admin.components.page.title', [
+      'title' => $editor->id === auth('admin')->id() ? 'My profile' : 'Edit profile',
+      'subtitle' => 'Profile details and contributions for '.$editor->name.'.'
+    ])
+    <div class="row mx-2">
       <form id="edit-form" method="POST" action="{{route('admin.editors.update', $editor->id)}}" class="col-lg-6 col-sm-10 col-12 mx-auto">
         @csrf
         @method('PATCH')
