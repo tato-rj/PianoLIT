@@ -7,7 +7,6 @@
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
         'dropdown' => [
           ['route' => route('admin.api.discover'), 'name' => 'Discover Tab'],
-          ['route' => route('admin.api.endpoints'), 'name' => 'Endpoints'],
         ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Analytics', 'icon' => 'chart-line',

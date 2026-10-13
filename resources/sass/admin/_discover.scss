@@ -1,0 +1,56 @@
+.admin-discover {
+    width: 100%;
+    max-width: 720px;
+    margin: 32px auto 0;
+}
+
+.admin-discover-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 18px 20px;
+    margin-bottom: 28px;
+    border: 1px solid #fff;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .45);
+    h2 { margin: 0 0 4px; font-size: var(--font-size-base); font-weight: 600; }
+    form { margin: 0; }
+    .btn { display: inline-flex; align-items: center; white-space: normal; }
+}
+
+.admin-discover-refresh-time { margin: 0; color: #687169; font-size: var(--font-size-sm); }
+
+.admin-discover-preview {
+    // Use the live cards' styles, then reduce only the preview's scale.
+    @import "../components/free-pick";
+    @import "../components/composer-tiles";
+    font-size: 15px;
+    > .mb-4 { margin-bottom: 28px !important; }
+    .free-pick-card { height: 208px; padding: 20px !important; }
+    .free-pick-card__content { max-width: 462px; }
+    .free-pick-card__title { font-size: clamp(22px, 2vw, 24px); }
+    .discover-composers { margin-bottom: 0 !important; }
+    .discover-composers > .d-flex { gap: 12px; }
+    .discover-composers .btn-raw { font-size: var(--font-size-sm); white-space: nowrap; }
+    .card-scroll-row { overflow-x: auto; padding-top: 3px; margin-top: -3px; }
+    .composer-tile { transition: transform .18s ease; &:hover { transform: translateY(-3px); } }
+    @media (prefers-reduced-motion: reduce) { .composer-tile { transition: none; &:hover { transform: none; } } }
+}
+
+.admin-discover-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    font-size: var(--font-size-sm);
+    color: #526b50;
+}
+
+@media (max-width: 575px) {
+    .admin-discover { margin-top: 24px; }
+    .admin-discover-controls { padding: 16px; }
+    .admin-discover-preview .free-pick-card { height: auto; min-height: 208px; }
+    .admin-discover-preview .free-pick-card__content { min-height: 168px; gap: 16px; }
+}

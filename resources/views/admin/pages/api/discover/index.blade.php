@@ -1,83 +1,42 @@
 @extends('admin.layouts.app')
 
-@section('head')
-<style type="text/css">
-.btn-nav {
-  color: #5e7083;
-  border: none;
-  border-bottom: 2px solid transparent;
-}
-.btn-nav[selected] {
-  color: #212529 !important;
-  font-weight: bold;
-  border-bottom: 2px solid #0055fe;
-}
-</style>
-@endsection
-
 @section('content')
 <div class="content-wrapper">
   <div class="container-fluid">
-    @include('admin.components.page.title', ['icon' => 'code', 'title' => 'Discover', 'subtitle' => 'See and refresh the collection for the discover tab.'])
+    @include('admin.components.page.title', ['icon' => 'code', 'title' => 'Discover', 'subtitle' => 'Preview and refresh the web app’s free pick and featured composers.'])
 
-    <div class="text-center">
-      <form method="POST" action="{{route('redis.update')}}" class="mb-2">
-        @csrf
-        <button class="btn btn-outline-success btn-sm">@icon('refresh-cw', ['mr' => 1])Refresh discover page</button>
-      </form>
-      <div class="badge rounded-pill alert-grey">Will auto refresh in {{carbon(intval(str_replace('app.discover-', '', $key)))->addDay()->diffForHumans()}}</div>
-    </div>
-
-    <div class="row">
-     <div class="col-lg-6 col-md-8 col-10 mx-auto mb-5">
-
-        @foreach($collection as $playlist)
-        @if($loop->first)
-        <section class="container-fluid">
-            <div class="row">
-                <div class="col-12 mt-4">
-                    <h6><strong>{{$playlist['title']}}</strong></h6>
-                </div>
-            </div>
-            <div class="pb-2 w-100">
-              <form class="w-100" name="piece_{{snake_case($playlist['content'][0]->id)}}_form" method="POST" action="{{$playlist['content'][0]->source}}" target="_blank">
-                <input type="hidden" name="search" value="{{$playlist['content'][0]->id}}">
-                <input type="hidden" name="global">
-                <input type="hidden" name="api">
-                <input type="hidden" name="discover">
-                @include('admin.pages.api.discover.card', ['model' => $playlist['content'][0], 'width' => '100%', 'height' => '151px'])
-              </form>
-            </div>
-        </section>
-        @else
-          @if(! empty($playlist))
-          @component('admin.components.swiper', ['title' => $playlist['title']])
-            @foreach($playlist['content'] as $model)
-              <form name="{{$model->type == 'piece' ? 'piece_'.snake_case($model->id) : snake_case($model->name)}}_form" method="{{$model->type == 'piece' ? 'POST' : 'GET'}}" action="{{$model->source}}" target="_blank">
-                <input type="hidden" name="search" value="{{$model->type == 'piece' ? $model->id : $model->name}}">
-                <input type="hidden" name="global">
-                <input type="hidden" name="api">
-                <input type="hidden" name="discover">
-                @if($playlist['type'] == 'composer')
-                @include('admin.pages.api.discover.composer')
-                @else
-                @include('admin.pages.api.discover.card')
-                @endif
-              </form>
-            @endforeach
-          @endcomponent
-          @endif
-        @endif
-        @endforeach
-
+    <div class="admin-discover">
+      <div class="admin-discover-controls">
+        <div>
+          <h2>Web app preview</h2>
+          @php
+            $refreshAt = preg_match('/^app\.discover-(\d+)$/', $key ?? '', $matches)
+                ? carbon((int) $matches[1])->addDay() : null;
+          @endphp
+          <p class="admin-discover-refresh-time">{{ $refreshAt && $refreshAt->isFuture() ? 'Auto refresh ' . $refreshAt->diffForHumans() : 'Refreshes automatically each day' }}</p>
+        </div>
+        <form method="POST" action="{{route('redis.update')}}">
+          @csrf
+          <button type="submit" class="btn btn-outline-success btn-sm">@icon('refresh-cw', ['mr' => 1])Refresh discover page</button>
+        </form>
       </div>
+
+      <section class="admin-discover-preview" aria-label="Discover preview">
+        @foreach(['freepick', 'composers'] as $rowName)
+          @php($row = $collection->firstWhere('row', $rowName))
+          @if($row && count($row['content']))
+            @include('webapp.discover.rows.' . $rowName, ['newTab' => true])
+          @else
+            <div class="mb-4">
+              <h5 class="mb-3">{{ $rowName === 'freepick' ? 'Free weekly pick' : 'Composers' }}</h5>
+              <p class="text-muted">{{ $rowName === 'freepick' ? 'No free pick is selected.' : 'No featured composers are available.' }}</p>
+            </div>
+          @endif
+        @endforeach
+      </section>
+
+      <a href="{{route('webapp.discover')}}" target="_blank" rel="noopener noreferrer" class="admin-discover-open">Open Discover in the web app @icon('arrow-up-right', ['mr' => 0])</a>
     </div>
   </div>
 </div>
-
-@endsection
-
-@section('scripts')
-<script type="text/javascript">
-</script>
 @endsection

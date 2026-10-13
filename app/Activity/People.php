@@ -59,6 +59,7 @@ class People
     public function profile(User $user, $tab, Filters $filters)
     {
         request()->validate(['folder' => 'nullable|integer|min:1']);
+        $visitSort = new VisitSort(request());
         $user->loadMissing(['membership.source', 'location']);
         $queries = new Queries;
         $base = $queries->visits(null, $user->id);
@@ -70,7 +71,7 @@ class People
         $stats->ungrouped = DB::table('activity_events')->whereNull('visit_id')->where('user_id', $user->id)->count();
         $engagement = $queries->events(null, $user->id)->whereIn('e.type', ['media_play', 'score_opened', 'annotation_saved', 'favorite_changed'])->select('e.type')->selectRaw('COUNT(*) as total')->groupBy('e.type')->get()->pluck('total', 'type');
         $engagement['synthesia'] = $queries->events(null, $user->id)->where('e.type', 'media_play')->where('e.metadata->media_id', 'like', '%synthesia%')->count();
-        $visits = $queries->visitList($tab === 'visits' ? $filters : null, $user->id, $tab === 'visits' ? 25 : 5);
+        $visits = $queries->visitList($tab === 'visits' ? $filters : null, $user->id, $tab === 'visits' ? 25 : 5, $visitSort);
         $frequent = $queries->pieceOpens($queries->events(null, $user->id))->select('e.resource_id')->selectRaw('COUNT(*) as total, MAX(e.occurred_at) as last_opened')->groupBy('e.resource_id')->orderByDesc('total')->limit(8)->get();
         $music = [];
         $selectedFolder = null;
@@ -92,6 +93,6 @@ class People
         if (isset($music['media'])) $ids = $ids->merge(collect($music['media']->items())->map(function ($e) { return Presentation::metadata($e)['piece_id'] ?? null; }));
         $pieces = Queries::pieces($ids->filter()->unique());
         $accountEvents = $tab === 'account' ? DB::table('activity_events as e')->where('e.user_id', $user->id)->where('e.source', 'server')->whereIn('e.type', ['registration_completed', 'login', 'trial_started', 'subscription_activated', 'subscription_paid', 'subscription_canceled'])->orderByDesc('e.occurred_at')->paginate(20, ['e.*'], 'account_page')->withQueryString() : null;
-        return compact('user', 'tab', 'filters', 'stats', 'engagement', 'visits', 'frequent', 'music', 'pieces', 'accountEvents', 'selectedFolder');
+        return compact('user', 'tab', 'filters', 'visitSort', 'stats', 'engagement', 'visits', 'frequent', 'music', 'pieces', 'accountEvents', 'selectedFolder');
     }
 }

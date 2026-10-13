@@ -3,7 +3,7 @@
 namespace Tests\Review;
 
 use App\{Admin, User, Piece};
-use App\Activity\{Actions, Filters, Insights, Journey, People, Queries};
+use App\Activity\{Actions, Filters, Insights, Journey, People, Queries, VisitSort};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Auth, Crypt, DB, Route};
 use Illuminate\Support\Str;
@@ -326,6 +326,116 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertSame(33, $visits->total());
         $this->assertLessThanOrEqual(5, $count);
         $this->assertCount(25, $visits->pluck('id')->unique());
+    }
+
+    public function test_visit_sorts_apply_before_pagination_with_stable_ties_and_bounded_queries()
+    {
+        $user = $this->account(); $records = [];
+        for ($i = 0; $i < 30; $i++) {
+            $start = carbon('2026-10-12 10:00:00')->addMinutes($i);
+            $id = $this->visit($user, $start->toDateTimeString());
+            $duration = $i === 29 ? null : ($i === 0 ? 100000 : (($i * 7) % 17 + 1) * 1000 + ($i % 3) * 100);
+            $pages = $i === 0 ? 7 : $i % 4;
+            DB::table('activity_visits')->where('id', $id)->update(['last_activity_at' => $start->copy()->addMilliseconds($duration ?: 0)->format('Y-m-d H:i:s.v')]);
+            for ($p = 0; $p < $pages; $p++) $this->page($id);
+            $records[] = ['id' => $id, 'start' => $start->toDateTimeString(), 'duration' => $duration, 'pages' => $pages];
+        }
+        foreach (['newest', 'oldest', 'longest', 'shortest', 'most_pages', 'fewest_pages'] as $value) {
+            $sort = new VisitSort(\Illuminate\Http\Request::create('/', 'GET', ['visit_sort' => $value]));
+            $expected = collect($records)->sort(function ($a, $b) use ($value) {
+                if ($value === 'newest' || $value === 'oldest') return ($value === 'oldest' ? 1 : -1) * (strcmp($a['start'], $b['start']) ?: strcmp($a['id'], $b['id']));
+                $key = in_array($value, ['longest', 'shortest'], true) ? 'duration' : 'pages';
+                if (($a[$key] === null) !== ($b[$key] === null)) return $a[$key] === null ? 1 : -1;
+                $direction = in_array($value, ['shortest', 'fewest_pages'], true) ? 1 : -1;
+                return $direction * ($a[$key] <=> $b[$key]) ?: (strcmp($b['start'], $a['start']) ?: strcmp($b['id'], $a['id']));
+            })->values();
+            DB::enableQueryLog(); DB::flushQueryLog();
+            $visits = (new Queries)->visitList(null, $user->id, 5, $sort);
+            $queryCount = count(DB::getQueryLog()); DB::disableQueryLog();
+            $this->assertSame($expected->take(5)->pluck('id')->all(), $visits->pluck('id')->all(), $value);
+            $this->assertSame(30, $visits->total());
+            $this->assertLessThanOrEqual(5, $queryCount);
+            if (in_array($value, ['longest', 'shortest'], true)) {
+                $all = (new Queries)->visitList(null, $user->id, 40, $sort);
+                $this->assertSame($records[29]['id'], $all->last()->id, 'Unknown durations stay last in both directions.');
+                $this->assertNull($all->last()->visit_duration_ms);
+                $this->assertSame((float) $expected->first()['duration'], (float) $all->first()->visit_duration_ms);
+            }
+        }
+        $this->assertSame(array_reverse(array_column(array_slice($records, -5), 'id')), (new Queries)->visitList(null, $user->id, 5)->pluck('id')->all(), 'Omitting the sort retains newest first.');
+    }
+
+    public function test_duration_sort_prefers_canonical_elapsed_time_across_daylight_saving()
+    {
+        $user = $this->account();
+        $fold = $this->visit($user, '2026-11-01 01:30:00');
+        DB::table('activity_visits')->where('id', $fold)->update(['last_activity_at' => '2026-11-01 01:15:00', 'started_at_utc' => '2026-11-01 05:30:00.000', 'last_activity_at_utc' => '2026-11-01 06:15:00.000']);
+        $normal = $this->visit($user, '2026-11-01 03:00:00');
+        $invalid = $this->visit($user, '2026-11-01 04:00:00');
+        DB::table('activity_visits')->where('id', $invalid)->update(['last_activity_at' => '2026-11-01 03:59:00']);
+        foreach (['longest' => [$fold, $normal, $invalid], 'shortest' => [$normal, $fold, $invalid]] as $value => $expected) {
+            $visits = (new Queries)->visitList(null, $user->id, 25, new VisitSort(\Illuminate\Http\Request::create('/', 'GET', ['visit_sort' => $value])));
+            $this->assertSame($expected, $visits->pluck('id')->all());
+            $this->assertSame('45m 0s', \App\Activity\Time::visitDuration($visits->firstWhere('id', $fold)));
+            $this->assertNull($visits->last()->visit_duration_ms);
+        }
+    }
+
+    public function test_action_sort_counts_visible_tags_instead_of_raw_events_or_piece_totals()
+    {
+        $user = $this->account(); $piece = Model::withoutEvents(function () { return create(Piece::class); });
+        $rich = $this->visit($user, '2026-10-12 10:00:00'); $page = $this->page($rich);
+        for ($i = 0; $i < 4; $i++) $this->event($rich, $page, 'page_view', '2026-10-12 10:00:00', [], $piece);
+        for ($i = 0; $i < 8; $i++) $this->event($rich, $page, 'media_play', '2026-10-12 10:01:00', ['media_kind' => 'audio']);
+        foreach (['video', null] as $kind) $this->event($rich, $page, 'media_play', '2026-10-12 10:01:00', ['media_kind' => $kind]);
+        foreach (['score_opened', 'annotation_saved', 'folder_created', 'trial_started', 'subscription_paid', 'premium_opened'] as $type) $this->event($rich, $page, $type);
+        foreach ([['result' => true], ['result' => '1'], ['result' => false], [], ['folder_id' => 42, 'result' => true], ['folder_id' => 'null', 'result' => false]] as $metadata) $this->event($rich, $page, 'favorite_changed', '2026-10-12 10:02:00', $metadata);
+        $noisy = $this->visit($user, '2026-10-12 19:00:00'); $noisyPage = $this->page($noisy);
+        for ($i = 0; $i < 45; $i++) $this->event($noisy, $noisyPage, 'click', '2026-10-12 19:01:00', ['label' => 'Click']);
+        $unconfirmed = $this->event($noisy, $noisyPage, 'favorite_changed', '2026-10-12 19:01:00', ['result' => true]);
+        DB::table('activity_events')->where('id', $unconfirmed)->update(['source' => 'browser']);
+        $withoutPage = $this->visit($user, '2026-10-12 18:00:00');
+        $this->event($withoutPage, null, 'page_view', '2026-10-12 18:00:00', [], $piece);
+        $this->event($withoutPage, null, 'media_progress', '2026-10-12 18:00:10', ['media_kind' => 'video']);
+        $empty = $this->visit($user, '2026-10-12 20:00:00');
+        $otherUser = $this->account(); $otherVisit = $this->visit($otherUser); $this->page($otherVisit);
+        foreach (['most_actions' => [$rich, $noisy, $withoutPage, $empty], 'fewest_actions' => [$empty, $noisy, $withoutPage, $rich]] as $value => $expected) {
+            $sort = new VisitSort(\Illuminate\Http\Request::create('/', 'GET', ['visit_sort' => $value]));
+            DB::enableQueryLog(); DB::flushQueryLog();
+            $visits = (new Queries)->visitList(null, $user->id, 25, $sort);
+            $queryCount = count(DB::getQueryLog()); DB::disableQueryLog();
+            $this->assertSame($expected, $visits->pluck('id')->all());
+            $this->assertSame(4, $visits->total());
+            $this->assertLessThanOrEqual(5, $queryCount);
+            foreach ($visits as $visit) $this->assertSame(count($visit->summary_parts), (int) $visit->actions_count, 'The SQL ranking exactly matches the displayed tags.');
+            $this->assertSame(14, (int) $visits->firstWhere('id', $rich)->actions_count);
+            $this->assertSame('4 pieces', $visits->firstWhere('id', $rich)->summary_parts[0]['label']);
+            $this->assertSame(array_slice($expected, 0, 2), (new Queries)->visitList(null, $user->id, 2, $sort)->pluck('id')->all());
+        }
+    }
+
+    public function test_visit_sort_controls_preserve_filters_reset_pagination_and_validate_choices()
+    {
+        $user = $this->account();
+        for ($i = 0; $i < 28; $i++) { $id = $this->visit($user, carbon('2026-10-12 10:00:00')->addMinutes($i)->toDateTimeString()); $this->page($id); }
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.analytics.users', ['visit_sort' => 'most_pages', 'visits_page' => 2, 'range' => '7', 'platform' => 'webapp', 'audience' => 'registered', 'history' => 1]))->assertOk()->assertSee('Visits with the most pages first.')
+            ->assertViewHas('visitSort', function ($sort) { return $sort->value === 'most_pages'; });
+        $document = new \DOMDocument; @$document->loadHTML($response->getContent()); $xpath = new \DOMXPath($document);
+        $form = $xpath->query('//form[@aria-label="Visit sorting"]')->item(0);
+        $this->assertSame(1, $xpath->query('.//option[@value="most_pages" and @selected]', $form)->length);
+        foreach (['range' => '7', 'platform' => 'webapp', 'audience' => 'registered', 'history' => '1'] as $name => $value) $this->assertSame($value, $xpath->query('.//input[@name="'.$name.'"]', $form)->item(0)->getAttribute('value'));
+        $this->assertSame(0, $xpath->query('.//input[@name="visits_page"]', $form)->length);
+        $this->assertStringNotContainsString('?', $form->getAttribute('action'));
+        $this->assertSame(1, $xpath->query('//form[@aria-label="Activity filters"]/input[@name="visit_sort" and @value="most_pages"]')->length);
+        $this->assertSame(0, $xpath->query('//h3[@class="ua-day"]')->length, 'Metric sorts are not regrouped by day.');
+        $this->assertGreaterThan(0, $xpath->query('//div[@class="ua-visit-copy"]/p[contains(text(), "Oct 12, 2026")]')->length);
+        $this->assertGreaterThan(0, $xpath->query('//a[contains(@href, "visits_page=1") and contains(@href, "visit_sort=most_pages") and contains(@href, "platform=webapp")]')->length);
+        $this->get(route('admin.analytics.users'))->assertOk()->assertSee('Newest visits first.')->assertSee('class="ua-day"', false);
+        foreach (['overview', 'visits'] as $tab) $this->get(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => $tab, 'visit_sort' => 'most_actions']))->assertOk()->assertSee('Actions count the colored tags.')->assertSee('1 action');
+        $this->withExceptionHandling();
+        foreach (['password', 'longest desc;drop table users', ['most_pages']] as $value) $this->getJson(route('admin.analytics.users', ['visit_sort' => $value]))->assertStatus(422);
+        $this->getJson(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits', 'visit_sort' => 'bad']))->assertStatus(422);
     }
 
     public function test_visit_summaries_distinguish_recorded_audio_video_and_unknown_media_with_icons()

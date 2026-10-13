@@ -1,5 +1,5 @@
 @if($freePick ?? false)
-<a href="{{ route('webapp.pieces.show', $piece) }}" class="link-none">
+<a href="{{ route('webapp.pieces.show', $piece) }}" class="link-none" @if($newTab ?? false) target="_blank" rel="noopener noreferrer" @endif>
 	<article class="free-pick-card bg-align-center rounded overflow-hidden position-relative p-4 text-white" style="background-image: url('{{ $piece->web_image_background }}')">
 		<div class="free-pick-card__content position-relative d-flex flex-column justify-content-between h-100">
 			<div>

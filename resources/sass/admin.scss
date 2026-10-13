@@ -72,6 +72,7 @@ footer.sticky-footer, #mainNav.fixed-top.navbar-light .sidenav-toggler, .breadcr
 .page-item.active .page-link {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
+    color: white;
 }
 
 .page-link {
@@ -82,3 +83,4 @@ footer.sticky-footer, #mainNav.fixed-top.navbar-light .sidenav-toggler, .breadcr
 @import "admin/country-map";
 @import "admin/user-analytics";
 @import "admin/notifications";
+@import "admin/discover";

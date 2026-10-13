@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Activity\{Filters, Insights, Journey, People, Queries};
+use App\Activity\{Filters, Insights, Journey, People, Queries, VisitSort};
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
@@ -17,12 +17,13 @@ class UserAnalyticsController extends Controller
     public function index(Request $request, Queries $queries)
     {
         $filters = new Filters($request);
+        $visitSort = new VisitSort($request);
         $metrics = $queries->metrics($filters);
         $trend = $queries->trend($filters);
-        $visits = $queries->visitList($filters);
+        $visits = $queries->visitList($filters, null, 25, $visitSort);
         $ungroupedCount = $queries->ungrouped($filters)->count();
         $history = $request->boolean('history') ? $queries->ungrouped($filters)->orderByDesc('occurred_at')->orderByDesc('id')->paginate(25, ['id', 'user_id', 'platform', 'type', 'source', 'occurred_at', 'occurred_at_utc', 'received_at', 'received_at_utc', 'route_name', 'url'], 'history_page')->withQueryString() : null;
-        return view('admin.pages.analytics.users.activity', compact('filters', 'metrics', 'trend', 'visits', 'ungroupedCount', 'history'));
+        return view('admin.pages.analytics.users.activity', compact('filters', 'visitSort', 'metrics', 'trend', 'visits', 'ungroupedCount', 'history'));
     }
 
     public function people(Request $request, People $people)

@@ -8,26 +8,7 @@
 	right: 0;
 }
 
-// Discover's weekly feature reuses the artwork, badge, button and media icons.
-.free-pick-card {
-    height: 234px;
-    background-color: var(--color-surface-dark);
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0));
-        pointer-events: none;
-    }
-    &__content { max-width: 520px; }
-    &__title {
-        font-size: clamp(24px, 2.2vw, 26px);
-        line-height: 1.2;
-        overflow-wrap: anywhere;
-    }
-    &__metadata { overflow-wrap: anywhere; }
-    &__media .app-icon { width: 1.4em; height: 1.4em; }
-}
+@import "free-pick";
 
 // Shared webapp piece/collection cards and circular composer/period tiles.
 .highlight-result {
@@ -166,22 +147,7 @@
     .discover-latest__grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-.discover-composers {
-    .composer-tile {
-        flex: 0 0 100px;
-        width: 100px;
-        color: var(--color-text);
-        &:last-child { margin-right: 0 !important; }
-        &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; border-radius: var(--radius-sm); }
-        &__portrait { width: 100%; height: 100px; background-size: cover; background-position: center; }
-        &__name { line-height: 1; overflow-wrap: anywhere; }
-    }
-    @media (max-width: 767px) {
-        .composer-tile { flex-basis: 114px; width: 114px;
-            &__portrait { height: 114px; }
-        }
-    }
-}
+@import "composer-tiles";
 
 // Keep the lift inside horizontal scrollports without moving the resting cards.
 .card-scroll-row {

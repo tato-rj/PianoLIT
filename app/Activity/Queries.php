@@ -44,12 +44,13 @@ class Queries
         return $query->where('e.type', 'page_view')->where('e.source', 'server')->where('e.resource_type', 'piece')->whereNotNull('e.resource_id');
     }
 
-    public function visitList(Filters $filters = null, $userId = null, $perPage = 25)
+    public function visitList(Filters $filters = null, $userId = null, $perPage = 25, VisitSort $sort = null)
     {
-        $visits = $this->visits($filters, $userId)->leftJoin('users as u', DB::raw(self::account()), '=', 'u.id')
+        $base = $this->visits($filters, $userId);
+        $query = (clone $base)->leftJoin('users as u', DB::raw(self::account()), '=', 'u.id')
             ->select('v.*', 'u.first_name', 'u.last_name')->selectRaw(self::account().' as account_id, l.reason as association_reason')
-            ->selectSub(DB::table('activity_pages as p')->selectRaw('COUNT(*)')->whereColumn('p.visit_id', 'v.id'), 'pages_count')
-            ->orderByDesc('v.started_at')->orderByDesc('v.id')->paginate($perPage, ['*'], 'visits_page')->withQueryString();
+            ->selectSub(DB::table('activity_pages as p')->selectRaw('COUNT(*)')->whereColumn('p.visit_id', 'v.id'), 'pages_count');
+        $visits = ($sort ?: new VisitSort)->apply($query, $base->select('v.id'))->paginate($perPage, ['*'], 'visits_page')->withQueryString();
         $this->decorateVisits($visits->getCollection());
         return $visits;
     }
@@ -77,6 +78,7 @@ class Queries
                 return in_array($row->result, [true, 1, 'true', '1'], true) ? 'Added a favorite' : ($row->result !== null ? 'Removed a favorite' : 'Changed saved pieces');
             })->unique()->values()->all();
             $visit->summary_parts = $this->summaryParts($visit);
+            if (!isset($visit->actions_count)) $visit->actions_count = count($visit->summary_parts);
             $visit->summary = $this->summary($visit);
         }
         return $visits;

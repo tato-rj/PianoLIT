@@ -1,0 +1,20 @@
+// Discover's weekly feature reuses the artwork, badge, button and media icons.
+.free-pick-card {
+    height: 234px;
+    background-color: var(--color-surface-dark);
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0));
+        pointer-events: none;
+    }
+    &__content { max-width: 520px; }
+    &__title {
+        font-size: clamp(24px, 2.2vw, 26px);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+    &__metadata { overflow-wrap: anywhere; }
+    &__media .app-icon { width: 1.4em; height: 1.4em; }
+}
