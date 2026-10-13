@@ -44,7 +44,7 @@ class Challenges
     public function send(Request $request)
     {
         $result = DB::transaction(function () use ($request) {
-            $row = $this->current($request, null, true);
+            $row = $this->current($request, $request->input('challenge_id'), true);
             if ($row->email_sent_at && carbon($row->email_sent_at)->gt(now()->subMinute())) return null;
             $token = bin2hex(random_bytes(32));
             DB::table('auth_link_challenges')->where('id', $row->id)->update(['email_token_hash' => hash('sha256', $token), 'email_sent_at' => now(), 'updated_at' => now()]);

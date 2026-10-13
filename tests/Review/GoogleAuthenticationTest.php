@@ -86,6 +86,16 @@ class GoogleAuthenticationTest extends ReviewTestCase
         });
     }
 
+    private function proofPost($url, array $data = [])
+    {
+        return $this->post($url, $data + ['challenge_id' => session('google_auth.challenge.id')]);
+    }
+
+    private function proofJson($url, array $data = [])
+    {
+        return $this->postJson($url, $data + ['challenge_id' => session('google_auth.challenge.id')]);
+    }
+
     private function googleOnly()
     {
         $user = $this->user(['password' => Hash::make(bin2hex(random_bytes(32)))]);
@@ -119,9 +129,9 @@ class GoogleAuthenticationTest extends ReviewTestCase
         $this->assertDatabaseCount('users', 1);
         $this->assertDatabaseCount('user_auth_providers', 0);
         $this->get('http://localhost/auth/google/link')->assertOk()->assertSee('Your PianoLIT account already exists')->assertSee('Send me a confirmation email');
-        $this->postJson('http://localhost/auth/google/link/password', ['password' => 'wrong', 'user_id' => 999])->assertStatus(422);
+        $this->proofJson('http://localhost/auth/google/link/password', ['password' => 'wrong', 'user_id' => 999])->assertStatus(422);
         $this->assertDatabaseCount('user_auth_providers', 0);
-        $this->post('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect('http://localhost/');
+        $this->proofPost('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect('http://localhost/');
         $this->assertAuthenticatedAs($user, 'web');
         $after = (array) DB::table('users')->where('id', $user->id)->first();
         unset($after['remember_token'], $after['updated_at']);
@@ -139,7 +149,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
         $q = $this->start();
         $this->googleCallback($q)->assertRedirect('/auth/google/link');
         $this->assertGuest('web');
-        $this->postJson('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertStatus(422);
+        $this->proofJson('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertStatus(422);
         $this->assertGuest('web');
         $this->assertDatabaseCount('user_auth_providers', 1);
     }
@@ -199,7 +209,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
     {
         $user = $this->user();
         $this->googleCallback($this->start())->assertRedirect('/auth/google/link');
-        $this->post('http://localhost/auth/google/link/email')->assertRedirect();
+        $this->proofPost('http://localhost/auth/google/link/email')->assertRedirect();
         $url = null;
         Notification::assertSentTo($user, ConfirmGoogleAccount::class, function ($notification) use (&$url) { $url = $notification->url; return true; });
         $this->get($url)->assertOk();
@@ -216,7 +226,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
     {
         $user = $this->user();
         $this->googleCallback($this->start())->assertRedirect('/auth/google/link');
-        $this->post('http://localhost/auth/google/link/email');
+        $this->proofPost('http://localhost/auth/google/link/email');
         $url = null;
         Notification::assertSentTo($user, ConfirmGoogleAccount::class, function ($n) use (&$url) { $url = $n->url; return true; });
         $original = session('google_auth.challenge');
@@ -239,7 +249,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
         $this->actingAs($user, 'web');
         $this->post('http://my.localhost/auth/google/connect')->assertRedirect('/auth/google/confirm');
         $this->get('http://my.localhost/auth/google/confirm')->assertOk();
-        $response = $this->post('http://my.localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect();
+        $response = $this->proofPost('http://my.localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect();
         parse_str(parse_url($response->headers->get('Location'), PHP_URL_QUERY), $q);
         $this->googleCallback($q, 'my.localhost')->assertRedirect('/auth/google/accounts');
         $this->assertSame('pianolit@example.test', $user->fresh()->email);
@@ -403,11 +413,11 @@ class GoogleAuthenticationTest extends ReviewTestCase
     {
         $user = $this->user();
         $this->googleCallback($this->start());
-        for ($i = 0; $i < 3; $i++) $this->post('http://localhost/auth/google/link/email')->assertRedirect();
+        for ($i = 0; $i < 3; $i++) $this->proofPost('http://localhost/auth/google/link/email')->assertRedirect();
         $this->withExceptionHandling()->post('http://localhost/auth/google/link/email')->assertStatus(429);
         Notification::assertSentToTimes($user, ConfirmGoogleAccount::class, 1);
-        for ($i = 0; $i < 6; $i++) $this->postJson('http://localhost/auth/google/link/password', ['password' => 'wrong'])->assertStatus(422);
-        $this->postJson('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertStatus(429);
+        for ($i = 0; $i < 6; $i++) $this->proofJson('http://localhost/auth/google/link/password', ['password' => 'wrong'])->assertStatus(422);
+        $this->proofJson('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertStatus(429);
         $this->assertDatabaseCount('user_auth_providers', 0);
         $this->assertGuest('web');
     }
@@ -448,7 +458,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
         $before = [];
         foreach (['memberships', 'stripe_memberships', 'favorites', 'favorite_folders'] as $table) $before[$table] = DB::table($table)->get()->toJson();
         $this->googleCallback($this->start());
-        $this->post('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect();
+        $this->proofPost('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect();
         $this->assertTrue($user->fresh()->hasActiveSubscription());
         foreach ($before as $table => $rows) $this->assertSame($rows, DB::table($table)->get()->toJson());
         auth('web')->logout();
@@ -506,7 +516,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
         $this->withExceptionHandling()->post('http://localhost/auth/google/connect')->assertStatus(419);
         $this->delete('http://localhost/auth/google/disconnect')->assertStatus(419);
         $this->post('http://localhost/auth/google/password', ['password' => 'new-password'])->assertStatus(419);
-        $this->post('http://localhost/auth/google/link/email')->assertStatus(419);
+        $this->proofPost('http://localhost/auth/google/link/email')->assertStatus(419);
         $this->post('http://localhost/auth/google/handoff/unknown', ['handoff_token' => 'fake'])->assertForbidden();
         $this->assertDatabaseCount('user_auth_providers', 0);
     }
@@ -574,7 +584,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
     {
         $user = $this->user();
         $this->googleCallback($this->start());
-        $this->post('http://localhost/auth/google/link/email');
+        $this->proofPost('http://localhost/auth/google/link/email');
         $row = DB::table('auth_link_challenges')->first();
         $url = \Illuminate\Support\Facades\URL::temporarySignedRoute('google.verify', now()->subMinute(), ['challenge' => $row->id, 'token' => str_repeat('a', 64)]);
         $this->get($url)->assertForbidden()->assertSee('confirmation link is invalid or expired')->assertHeader('Referrer-Policy', 'no-referrer');
@@ -610,7 +620,7 @@ class GoogleAuthenticationTest extends ReviewTestCase
         $this->assertSame($this->googleEmail, $user->fresh()->email);
         $this->assertSame($before, $user->fresh()->password);
         $this->get('http://localhost/auth/google/confirm')->assertOk();
-        $this->post('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect('/my-profile');
+        $this->proofPost('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect('/my-profile');
         $this->patch('http://localhost/my-profile/'.$user->id, ['first_name' => 'Updated', 'last_name' => 'Pianist', 'email' => $user->email, 'password' => 'replacement-password', 'password_confirmation' => 'replacement-password'])->assertRedirect();
         $this->assertTrue(Hash::check('replacement-password', $user->fresh()->password));
         $this->assertTrue((new Accounts)->recent(request(), $user->fresh()));
@@ -625,5 +635,30 @@ class GoogleAuthenticationTest extends ReviewTestCase
         $this->patch('http://my.localhost/my-profile/'.$user->id, ['first_name' => 'Updated', 'last_name' => 'Pianist', 'email' => $user->email, 'password' => 'replacement-password', 'password_confirmation' => 'replacement-password'])->assertRedirect('/auth/google/password');
         $this->assertFalse((new Accounts)->hasPassword($user->fresh()));
         $this->get('http://my.localhost/auth/google/password')->assertRedirect('/auth/google/confirm');
+    }
+
+    public function test_an_older_linking_tab_cannot_verify_or_email_a_newer_google_attempt()
+    {
+        $first = $this->user();
+        $second = $this->user(['email' => 'second@example.test']);
+        $this->googleCallback($this->start())->assertRedirect('/auth/google/link');
+        $oldId = session('google_auth.challenge.id');
+        $this->get('http://localhost/auth/google/link')->assertSee('name="challenge_id"', false)->assertSee($oldId);
+        $this->googleEmail = $second->email;
+        $this->subject = 'second-google-subject';
+        $this->googleCallback($this->start())->assertRedirect('/auth/google/link');
+        $this->assertNotSame($oldId, session('google_auth.challenge.id'));
+        // Both accounts deliberately share a password; the stale form still
+        // must not authorize the newer account/identity in the same session.
+        $this->postJson('http://localhost/auth/google/link/password', ['challenge_id' => $oldId, 'password' => 'existing-password'])->assertStatus(422);
+        $this->postJson('http://localhost/auth/google/link/email', ['challenge_id' => $oldId])->assertStatus(422);
+        $this->postJson('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertStatus(422);
+        $this->assertGuest('web');
+        $this->assertDatabaseCount('user_auth_providers', 0);
+        Notification::assertNothingSent();
+        $this->proofPost('http://localhost/auth/google/link/password', ['password' => 'existing-password'])->assertRedirect('http://localhost/');
+        $this->assertAuthenticatedAs($second, 'web');
+        $this->assertDatabaseHas('user_auth_providers', ['user_id' => $second->id, 'provider_user_id' => 'second-google-subject']);
+        $this->assertDatabaseMissing('user_auth_providers', ['user_id' => $first->id]);
     }
 }

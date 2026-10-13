@@ -71,7 +71,7 @@ class MembershipReport
             default: $rows->orderByRaw('CASE WHEN access_until IS NULL THEN 1 ELSE 0 END')->orderBy('access_until');
         }
         return [
-            'memberships' => $rows->orderBy('membership_id')->paginate(25)->withQueryString(),
+            'memberships' => $rows->orderBy('membership_id')->paginate(10)->withQueryString(),
             'counts' => $counts, 'totals' => $totals, 'filters' => $filters, 'labels' => self::LABELS,
             'monitorReady' => $ready,
             'lastRun' => $ready ? DB::table('apple_membership_sync_runs')->orderByDesc('id')->first() : null,

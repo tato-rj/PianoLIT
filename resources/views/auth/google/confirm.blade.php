@@ -6,6 +6,7 @@
 @if($hasPassword)
 <form method="POST" action="{{ route('google.link.password') }}" disable-on-submit>
   @csrf
+  <input type="hidden" name="challenge_id" value="{{ $challenge->id }}">
   <label class="form-label" for="existing-password">PianoLIT password</label>
   <input id="existing-password" class="form-control input-light mb-3" type="password" name="password" autocomplete="current-password" required>
   <button class="btn btn-primary w-100" type="submit">{{ $linking ? 'Connect Google' : 'Confirm my account' }}</button>
@@ -14,6 +15,7 @@
 @endif
 <form method="POST" action="{{ route('google.link.email') }}" disable-on-submit>
   @csrf
+  <input type="hidden" name="challenge_id" value="{{ $challenge->id }}">
   <button class="btn btn-secondary w-100" type="submit">Send me a confirmation email</button>
 </form>
 @if(!$linking && !empty($google))

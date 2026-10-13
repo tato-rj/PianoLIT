@@ -50,7 +50,7 @@
   .ua-chart-grid span:first-child { border-top-style: solid; border-color: #cbd3c7; }
   .ua-chart-bars { display: flex; gap: 16px; margin: 0; padding: 0; list-style: none; position: relative; }
   .ua-chart-column { flex: 1; min-width: 0; }
-  .ua-chart-group { display: flex; justify-content: center; gap: 8px; }
+  .ua-chart-group { display: flex; justify-content: center; gap: 0px; }
   .ua-chart-track { display: flex; align-items: flex-end; justify-content: center; height: var(--ua-chart-height); flex: 0 0 var(--ua-chart-series-width); }
   .ua-chart-bar { position: relative; width: 22px; border-radius: 12px 12px 0 0; background: linear-gradient(0deg,var(--ua-series-fill),var(--ua-series-light)); }
   .ua-chart-count { position: absolute; top: -28px; left: 50%; transform: translateX(-50%); text-align: center; color: var(--ua-series-color); font-size: var(--font-size-base); font-weight: 600; white-space: nowrap; }

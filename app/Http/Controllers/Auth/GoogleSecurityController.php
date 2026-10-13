@@ -34,15 +34,22 @@ class GoogleSecurityController extends Controller
 
     public function passwordProof(Request $request, Challenges $challenges, Accounts $accounts)
     {
-        $request->validate(['password' => 'required|string|max:1024']);
-        $row = $challenges->current($request);
+        $request->validate(['password' => 'required|string|max:1024', 'challenge_id' => 'required|uuid'], [
+            'challenge_id.required' => 'Please start account confirmation again.',
+            'challenge_id.uuid' => 'Please start account confirmation again.',
+        ]);
+        $row = $challenges->current($request, $request->input('challenge_id'));
         $this->limit($row->user_id, 'password-proof', 6);
         return $this->complete($request, $challenges, $accounts, false);
     }
 
     public function sendEmail(Request $request, Challenges $challenges)
     {
-        $row = $challenges->current($request);
+        $request->validate(['challenge_id' => 'required|uuid'], [
+            'challenge_id.required' => 'Please start account confirmation again.',
+            'challenge_id.uuid' => 'Please start account confirmation again.',
+        ]);
+        $row = $challenges->current($request, $request->input('challenge_id'));
         $this->limit($row->user_id, 'email-proof', 6, 3600);
         $challenges->send($request);
         return back()->with('status', 'Check your inbox. Open the confirmation link in this same browser.');
@@ -63,7 +70,7 @@ class GoogleSecurityController extends Controller
     private function complete(Request $request, Challenges $challenges, Accounts $accounts, $email)
     {
         $row = DB::transaction(function () use ($request, $challenges, $accounts, $email) {
-            $row = $email ? $challenges->emailProof($request, $request->route('challenge'), true) : $challenges->current($request, null, true);
+            $row = $email ? $challenges->emailProof($request, $request->route('challenge'), true) : $challenges->current($request, $request->input('challenge_id'), true);
             $user = User::whereKey($row->user_id)->lockForUpdate()->firstOrFail();
             if ($user->email !== $row->account_email) $challenges->expired();
             if (!$email && (!$accounts->hasPassword($user) || !Hash::check($request->password, $user->password))) {
