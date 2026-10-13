@@ -32,6 +32,28 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
     box-shadow: 0 5px 30px rgba(0,0,0,.1);
 }
 
+#action .auth-secondary {
+    font-size: var(--font-size-sm);
+}
+
+#action .auth-secondary-link {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+#action .auth-secondary-link:hover,
+#action .auth-secondary-link:focus {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+}
+
+#action .auth-secondary-link:focus-visible {
+    outline: 2px solid var(--color-primary) !important;
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
 #onboarding .carousel-indicators [data-bs-target] {
     flex-shrink: 0;
     width: 10px;

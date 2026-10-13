@@ -5,13 +5,14 @@
     <form method="POST" action="{{ route('login') }}" disable-on-submit>
         @csrf
 
-        @include('auth.fields.login')
+        @include('auth.fields.login', ['passwordRecovery' => true])
 
-        <div class="form-group text-center">
-            <button type="submit" class="btn btn-primary shadow d-block w-100 mb-4">Login</button>
-            <p class="mb-2"><a class="link-none" href="{{ route('register') }}">Don't have an account yet?</a></p>
-            <p class="mb-0"><a class="link-none" href="{{ route('password.request') }}">Forgot Your Password?</a></p>
+        <div class="form-group mb-0">
+            <button type="submit" class="btn btn-primary shadow d-block w-100">Login</button>
         </div>
     </form>
     @include('auth.google.button')
+    <p class="auth-secondary text-muted text-center mt-4 mb-0">
+        Don't have an account? <a class="auth-secondary-link text-nowrap" href="{{ route('register') }}">Sign up</a>
+    </p>
 @endcomponent
