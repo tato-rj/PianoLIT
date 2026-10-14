@@ -136,7 +136,7 @@ $social-slack: #3F0F3F;
 $social-whatsapp: #25D366;
 
 // Ordered soft accents for folder cards and other light feature panels.
-// Each tone exposes a surface, accent, border and readable secondary ink below.
+// Each tone exposes panel, text and soft-action colors below.
 $pastel-palette: (
     sky: #cfe3ff,
     cream: #f3e8cc,
@@ -199,10 +199,14 @@ $pastel-palette: (
         --color-black: #000;
 
         @each $name, $tone in $pastel-palette {
+            $action: scale-color($tone, $saturation: -55%, $lightness: -60%);
             --pastel-#{$name}-surface: #{mix(white, $tone, 55%)};
             --pastel-#{$name}-accent: #{$tone};
+            --pastel-#{$name}-accent-hover: #{mix($action, $tone, 8%)};
             --pastel-#{$name}-border: #{mix(white, $tone, 18%)};
             --pastel-#{$name}-ink: #{mix(#273244, $tone, 72%)};
+            --pastel-#{$name}-action: #{$action};
+            --pastel-#{$name}-action-hover: #{darken($action, 5%)};
         }
 
         // Bootstrap status colors and Primer palette colors have distinct uses.

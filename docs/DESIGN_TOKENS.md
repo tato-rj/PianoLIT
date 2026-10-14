@@ -63,6 +63,9 @@ peach, rose, aqua, butter, sage, lilac, periwinkle and terracotta. Each exposes
 when a feature needs a pastel background; Discover's For you panel uses
 `--pastel-lavender-surface`. My Pieces cycles through the palette in folder order,
 repeating after 12 folders. Filtering keeps each folder's assigned tone.
+Soft actions use `-action` for a darker text/icon shade of the same hue,
+`-action-hover` for its darker hover/focus shade, and `-accent-hover` for a subtly
+deeper tinted background. Icons inherit the action's text color.
 
 ## Typography, spacing and shadows
 
