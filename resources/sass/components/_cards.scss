@@ -94,8 +94,7 @@
     &__media .app-icon { width: 1.25em; height: 1.25em; }
 }
 .discover-for-you {
-    // Existing Match tour reward background.
-    background: #f7efff;
+    background: var(--pastel-lavender-surface);
     // Two full cards, two 16px gaps and a tenth of the next card.
     .discover-compact-card { flex: 0 0 calc((100% - 32px) / 2.1); min-width: 0; }
 }

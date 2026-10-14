@@ -1,6 +1,5 @@
 <article class="my-pieces-folder" data-folder-search="{{ $folder->name }} {{ $folderSearch->get($folder->id, '') }}">
     <div class="my-pieces-folder__heading">
-        <span class="my-pieces-folder__icon" aria-hidden="true">@icon('folder-open', ['mr' => 0])</span>
         <div class="my-pieces-folder__identity">
             <h3><a href="{{ route('webapp.users.favorites.folders.show', $folder) }}">{{ $folder->name }}</a></h3>
             <span>{{ $folder->favorites_count }} {{ str_plural('piece', $folder->favorites_count) }}</span>
@@ -17,7 +16,7 @@
     </div>
 
     <div class="my-pieces-folder__preview">
-        <span class="my-pieces-folder__label">In this folder</span>
+        <span class="visually-hidden">In this folder</span>
         @forelse($previews as $preview)
             <div class="my-pieces-folder__piece">
                 <span class="my-pieces-folder__piece-icon" aria-hidden="true">@icon('music', ['mr' => 0])</span>
@@ -31,7 +30,7 @@
         @endforelse
     </div>
 
-    <a class="my-pieces-folder__open btn-primary" href="{{ route('webapp.users.favorites.folders.show', $folder) }}">
+    <a class="my-pieces-folder__open" href="{{ route('webapp.users.favorites.folders.show', $folder) }}">
         <span>Open folder</span>
         @icon('arrow-right', ['mr' => 0])
     </a>

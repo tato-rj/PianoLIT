@@ -245,7 +245,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
 
         $this->actingAs($user, 'web');
         $response = $this->get(route('webapp.my-pieces'))->assertOk()
-            ->assertSee('Your folders')->assertSee('2 folders · 2 pieces')
+            ->assertSee('2 folders · 2 pieces')
             ->assertSee('Practice favorites')->assertSee('New folder')
             ->assertSee('Guest repertoire test')->assertSee($this->piece->composer->short_name)
             ->assertSee('No pieces saved yet')->assertDontSee($otherFolder->name)

@@ -56,6 +56,14 @@ rendered `#3490dc`; PianoLIT's brand blue is `#0055fe`.
 Use `--color-text`, `--color-text-muted`, `--color-surface`,
 `--color-surface-subtle` and `--color-border` for new shared styles.
 
+The ordered `$pastel-palette` provides 12 soft tones: sky, cream, mint, lavender,
+peach, rose, aqua, butter, sage, lilac, periwinkle and terracotta. Each exposes
+`--pastel-{name}-surface` for light panels, `-accent` for tabs or soft actions,
+`-border` for outlines, and `-ink` for readable secondary text. Reuse these tokens
+when a feature needs a pastel background; Discover's For you panel uses
+`--pastel-lavender-surface`. My Pieces cycles through the palette in folder order,
+repeating after 12 folders. Filtering keeps each folder's assigned tone.
+
 ## Typography, spacing and shadows
 
 Body text, headings, small text, common buttons/inputs and blog text consume the

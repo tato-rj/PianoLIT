@@ -135,6 +135,23 @@ $social-github: #333;
 $social-slack: #3F0F3F;
 $social-whatsapp: #25D366;
 
+// Ordered soft accents for folder cards and other light feature panels.
+// Each tone exposes a surface, accent, border and readable secondary ink below.
+$pastel-palette: (
+    sky: #cfe3ff,
+    cream: #f3e8cc,
+    mint: #cfe9e1,
+    lavender: #dcd8fc,
+    peach: #f8ddca,
+    rose: #f2d5e1,
+    aqua: #cde8ef,
+    butter: #f3edc4,
+    sage: #dce7cb,
+    lilac: #e9d8f0,
+    periwinkle: #d5dff5,
+    terracotta: #eedbd2
+);
+
 
 // Shared browser tokens. The token mixin is emitted last in app.css and admin.css.
 // Edit these defaults, then run npm run production. See docs/DESIGN_TOKENS.md.
@@ -180,6 +197,13 @@ $social-whatsapp: #25D366;
         --color-dropdown-border: #e6eaf0;
         --color-white: #fff;
         --color-black: #000;
+
+        @each $name, $tone in $pastel-palette {
+            --pastel-#{$name}-surface: #{mix(white, $tone, 55%)};
+            --pastel-#{$name}-accent: #{$tone};
+            --pastel-#{$name}-border: #{mix(white, $tone, 18%)};
+            --pastel-#{$name}-ink: #{mix(#273244, $tone, 72%)};
+        }
 
         // Bootstrap status colors and Primer palette colors have distinct uses.
         --color-success: #28a745;
