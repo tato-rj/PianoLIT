@@ -87,6 +87,34 @@ Do not deploy automatically. Before enabling Apple:
 
 Real Apple consent, Developer eligibility/configuration, provider endpoints, private-relay mail, production browser cookie behavior and MySQL concurrency remain manual deployment checks. No real credentials, normal database migrations, live account writes or mail were used here. Apple access/refresh/identity tokens are not retained after validation. Provider revocation notifications, token refresh/revocation and account-transfer lifecycle processing are separate from this local web sign-in/linking feature.
 
+## Button remains hidden after configuring Apple
+
+The shared login/register template displays Apple only when `App\Auth\Apple\Configuration::available()` passes. It checks the canonical host, Services ID format, ten-character uppercase alphanumeric Team/Key IDs, exact callback URL, a readable protected key and the shared authentication tables plus `auth_link_challenges.provider`. Updating `.env` alone does not complete deployment.
+
+Install dependencies from the deployed lock file before applying the additive migration. From the server project directory, use the usual backup/deployment process and run these in order, stopping if any command fails:
+
+```sh
+composer install --no-dev --prefer-dist --optimize-autoloader
+php artisan migrate --path=database/migrations/2026_10_13_220000_support_apple_authentication_providers.php --force
+php artisan config:cache
+php artisan view:clear
+```
+
+Refresh route caching if used, and reload the serving PHP-FPM service. Do not loosen key permissions to diagnose the button: a root-owned key with directory `0750`/file `0640` and the PHP-FPM group can be correctly readable by PHP while unreadable by the SSH account. For the confirmed `www-data` worker on this server, the following read-only check uses the configured path without displaying credentials or key material (run from the project directory):
+
+```sh
+sudo -u www-data php <<'PHP'
+<?php
+require 'vendor/autoload.php';
+$app = require 'bootstrap/app.php';
+$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+echo app(App\Auth\Apple\Configuration::class)->privateKeyPath()
+    ? "Apple key readable and protected\n" : "Apple key unavailable\n";
+PHP
+```
+
+SSH diagnosis on 2026-10-13 confirmed the deployed templates/configuration/lock file and all four shared tables, but DBAL was not installed and the provider column was absent. Credential formats and both callbacks passed. Checking key access as `www-data` required an interactive sudo password, so that check remained unverified; no deployment commands or production writes were executed during diagnosis.
+
 ## Verification and file inventory
 
 Focused and combined test commands:

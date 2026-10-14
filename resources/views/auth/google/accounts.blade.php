@@ -48,7 +48,6 @@
     @if(!$hasPassword && ($canDisconnectApple || $canDisconnectGoogle))
     <p>You can also <a href="{{ route('google.password') }}">set a PianoLIT password</a> to sign in using the existing iOS app.</p>
     @endif
-    <p class="mb-4"><a href="{{ request()->getHost() === 'my.'.config('app.short_url') ? route('webapp.settings') : route('users.profile') }}">Back to settings</a></p>
   </div></div>
 </div>
 @endsection
