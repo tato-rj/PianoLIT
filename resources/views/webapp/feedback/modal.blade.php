@@ -13,7 +13,7 @@
         <div class="feedback-picker">
             <div class="feedback-slider">
                 <div class="feedback-slider-line" aria-hidden="true"><span></span><span></span><span></span></div>
-                <span class="feedback-slider-thumb" data-feedback-thumb aria-hidden="true">@include('webapp.feedback.face')</span>
+                <span class="feedback-slider-thumb" data-feedback-thumb aria-hidden="true"><svg class="feedback-handle-mouth" viewBox="0 0 24 24" fill="none"><path data-feedback-handle-mouth d="M 8 11 Q 12 17 16 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg></span>
                 <input type="range" min="0" max="2" step="0.001" value="2" aria-label="Your rating" aria-valuetext="Good" data-feedback-range>
             </div>
             <div class="feedback-picker-labels">

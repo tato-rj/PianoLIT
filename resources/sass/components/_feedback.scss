@@ -22,7 +22,7 @@
     .feedback-slider-line { position: absolute; left: 0; right: 0; top: 21px; height: 3px; background: currentColor; opacity: .18; display: flex; justify-content: space-between; align-items: center; border-radius: 3px; }
     .feedback-slider-line span { width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
     .feedback-slider-thumb { position: absolute; top: 5px; left: 100%; width: 34px; height: 34px; margin-left: -17px; background: var(--feedback-ink); color: var(--feedback-background); border-radius: 50%; display: grid; place-items: center; box-shadow: 0 2px 4px rgba(0,0,0,.08); }
-    .feedback-slider-thumb .feedback-face { width: 21px; }
+    .feedback-slider-thumb .feedback-handle-mouth { width: 34px; height: 34px; }
     .feedback-slider input { position: absolute; inset: 0 -17px; width: calc(100% + 34px); height: 44px; margin: 0; opacity: 0; cursor: grab; touch-action: none; }
     .feedback-slider input:active { cursor: grabbing; }
     .feedback-slider:focus-within .feedback-slider-thumb { outline: 2px solid currentColor; outline-offset: 4px; }

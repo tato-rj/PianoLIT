@@ -39,6 +39,7 @@
             this.faces = Array.from(modal.querySelectorAll('.feedback-face'));
             this.labelTrack = modal.querySelector('[data-feedback-labels]');
             this.thumb = modal.querySelector('[data-feedback-thumb]');
+            this.handleMouth = modal.querySelector('[data-feedback-handle-mouth]');
             this.note = modal.querySelector('[data-feedback-note]');
             this.error = modal.querySelector('[data-feedback-error]');
             this.thanks = modal.querySelector('[data-feedback-thanks]');
@@ -54,6 +55,8 @@
             this.modal.style.setProperty('--feedback-background', color(face.background));
             this.modal.style.setProperty('--feedback-ink', color(face.ink));
             this.thumb.style.left = (this.value * 50) + '%';
+            const mouthBaseline = 13 - this.value;
+            this.handleMouth.setAttribute('d', 'M 8 ' + mouthBaseline + ' Q 12 ' + (7 + this.value * 5) + ' 16 ' + mouthBaseline);
             this.labelTrack.style.transform = 'translateX(' + (-this.value * 100 / 3) + '%)';
             this.faces.forEach(svg => {
                 ['left', 'right'].forEach((side, i) => {

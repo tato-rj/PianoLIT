@@ -22,11 +22,11 @@ function fixture() {
     const map = {}, frames = new Map(), pending = [];
     let nextFrame = 0;
     const selectors = ['[data-feedback-form]', '[data-feedback-range]', '[name="message"]', '[name="rating"]', '[name="_token"]',
-        '[data-feedback-labels]', '[data-feedback-thumb]', '[data-feedback-note]', '[data-feedback-error]', '[data-feedback-thanks]',
+        '[data-feedback-labels]', '[data-feedback-thumb]', '[data-feedback-handle-mouth]', '[data-feedback-note]', '[data-feedback-error]', '[data-feedback-thanks]',
         '.feedback-submit', '[data-feedback-submit-label]', '[data-feedback-add-note]', '[data-feedback-note-back]', '.feedback-done', '.modal-content', '[data-feedback-swipe]'];
     selectors.forEach(selector => { map[selector] = new Element(); });
     const buttons = [0, 1, 2].map(value => Object.assign(new Element(), {dataset: {feedbackRating: String(value)}}));
-    const faces = [0, 1, 2].map(() => {
+    const faces = [0, 1].map(() => {
         const elements = {'[data-face-eye="left"]': new Element(), '[data-face-eye="right"]': new Element(), '[data-face-mouth]': new Element()};
         return {querySelector: selector => elements[selector]};
     });

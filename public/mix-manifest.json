@@ -1,6 +1,6 @@
 {
     "/js/app.js": "/js/app.js?id=eefd01c40957b848e58c",
-    "/css/app.css": "/css/app.css?id=91d252281eacd72bd947",
+    "/css/app.css": "/css/app.css?id=8a3da271937a608bb6e1",
     "/css/admin.css": "/css/admin.css?id=67b34d97dd1b63364d82",
     "/css/design-system.css": "/css/design-system.css?id=badbd540d238fd1bfe02",
     "/js/admin.js": "/js/admin.js?id=e01d4e4d340d6c35548b",
@@ -36,5 +36,5 @@
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
     "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da",
-    "/js/views/feedback.js": "/js/views/feedback.js?id=588d74c9fab1abad783d"
+    "/js/views/feedback.js": "/js/views/feedback.js?id=47b74015b3f9a7d756c0"
 }
