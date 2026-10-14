@@ -29,6 +29,8 @@ Redesigned admin lists share `App\Support\AdminPagination::PER_PAGE`, defaulting
 
 ## Identities, boundaries and timestamps
 
+Arthur and Elena are excluded from collection, all analytics account/visit/event scopes and older log readers. Their accounts and saved work remain manageable. Recognized browsers retain the exclusion after logout; fresh anonymous devices cannot be attributed before login. See [ANALYTICS_EXCLUSIONS.md](ANALYTICS_EXCLUSIONS.md) for exact email matching, cleanup commands, deployment and limits.
+
 Web browsing now uses a five-second foreground/playback qualification gate and crawler filtering. Unqualified raw events remain in the browser outbox and do not enter analytics SQL. Confirmed account actions remain available independently. An hourly cleanup removes old short web visits while preserving account outcomes and mobile/imported history. See [ACTIVITY_FILTERING.md](ACTIVITY_FILTERING.md) for exact rules, limitations, release steps and preview/execute commands.
 
 Browser account identity comes from auth:web, visitor identity from the server session, and page ownership from the encrypted page token. Submitted user/visitor/platform/visit/page IDs never establish ownership. UUID event IDs make retries idempotent; duplicate IDs cannot change page timing. Browser media starts also deduplicate by owned page and playback_id under the existing visit transaction lock. Older clients' repeated starts retain the greatest cumulative watch/coverage measurements in the original start row rather than creating another event or adding cumulative values. Collection is CSRF-protected, bounded to 50 events/100 KB requests/8 KB metadata per event, and throttled to 120 requests/minute. Analytics failures do not change feature responses.

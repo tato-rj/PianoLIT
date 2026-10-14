@@ -38,6 +38,7 @@ class Insights
                 $later->from('activity_events as next')->selectRaw('1')->where(function ($actor) { $actor->whereColumn('next.visit_id', 'e.visit_id')->orWhereRaw('next.user_id = '.Queries::account()); })
                     ->where('next.type', $pair[1])->whereColumn('next.occurred_at', '>=', 'e.occurred_at')->where('next.occurred_at', '<', $filters->end)
                     ->where('next.source', $pair[1] === 'premium_opened' ? 'browser' : 'server');
+                ExcludedAccounts::events($later, 'next');
             })->selectRaw('COUNT(DISTINCT '.Queries::identity().') as total')->value('total');
             $conversions[] = ['from' => $pair[0], 'to' => $pair[1], 'started' => $started, 'completed' => $completed];
         }

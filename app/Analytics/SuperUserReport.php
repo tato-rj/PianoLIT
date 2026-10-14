@@ -15,7 +15,7 @@ class SuperUserReport
             'super_sort' => 'nullable|in:name,granted,registered',
         ]);
         $ready = Schema::hasTable('super_user_access_periods');
-        $query = DB::table('users as u')->where('u.super_user', true);
+        $query = \App\Activity\ExcludedAccounts::users(DB::table('users as u'), 'u.email')->where('u.super_user', true);
         if ($ready) {
             $query->leftJoin('super_user_access_periods as p', 'p.current_user_id', '=', 'u.id')
                 ->leftJoin('admins as a', 'a.id', '=', 'p.granted_by');

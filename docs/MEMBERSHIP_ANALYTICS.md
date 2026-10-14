@@ -1,5 +1,7 @@
 # Membership analytics and Apple monitoring
 
+Arthur and Elena are excluded from membership/super-user reports and new Apple reporting checks under the [analytics exclusion policy](ANALYTICS_EXCLUSIONS.md). Their actual memberships, access overrides, billing sources and receipts are preserved. The dedicated cleanup removes old reporting evidence only.
+
 Implemented locally on 2026-10-13. The admin Membership analytics page combines
 Stripe billing records and independently verified Apple receipt evidence. It has
 provider totals, current status cards, a searchable/paginated directory and the

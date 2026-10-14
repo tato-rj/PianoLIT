@@ -2,6 +2,8 @@
 
 Implemented on the public website and `my.*` using the existing `users` table and `web` guard. The feature is disabled until Google credentials and the additive migration are present. Email/password authentication continues to work while it is disabled.
 
+Apple now extends these shared account/challenge/settings/handoff services; see [APPLE_LOGIN.md](APPLE_LOGIN.md). The original Google OAuth configuration, callbacks, provider/token verifier, session namespaces and deployed migration remain unchanged. New Google linking challenges explicitly record `provider=google` after the Apple migration; pending legacy NULL-provider challenges retain their Google-only interpretation. The Apple column migration requires the three locked Doctrine schema-helper packages documented there, without updating any pre-existing package. Google login does not require Apple credentials.
+
 ## Configuration in Google Cloud
 
 Use **one OAuth client of type Web application** for both websites. In Google Cloud Console, choose/create the PianoLIT project and open **Google Auth Platform**:

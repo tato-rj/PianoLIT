@@ -1,5 +1,7 @@
 # Web activity filtering and short-visit cleanup
 
+The separate [account exclusion policy](ANALYTICS_EXCLUSIONS.md) suppresses Arthur and Elena's collection even when bot filtering is disabled or a visit exceeds the minimum. Reports also exclude their old account/linked records, and a targeted command removes that history without deleting their accounts.
+
 ## Collection rule
 
 The default minimum is **five seconds of observed foreground browser time**, accumulated across pages of the same visit. Observed media playback of at least five seconds also qualifies a visit, including background audio. The server additionally requires five seconds of real elapsed time. This is an engagement cutoff, **not proof of a human**: some real short visits are deliberately omitted and sophisticated automation can imitate browser activity.

@@ -11,6 +11,7 @@ class ActivityController extends Controller
     public function store(Request $request, Recorder $recorder)
     {
         abort_if(!config('activity.enabled') || auth('admin')->check() || $request->getHost() === 'admin.'.config('app.short_url'), 403);
+        if (\App\Activity\ExcludedAccounts::request($request)) return response()->noContent();
         if (\App\Activity\TrafficFilter::ignores($request)) return response()->noContent();
         abort_if(strlen($request->getContent()) > 100000, 413);
         $rules = [

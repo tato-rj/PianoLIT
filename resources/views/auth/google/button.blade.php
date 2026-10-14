@@ -1,11 +1,19 @@
-@if(app(\App\Auth\Google\Configuration::class)->available())
+@php($googleAvailable = app(\App\Auth\Google\Configuration::class)->available())
+@php($appleAvailable = app(\App\Auth\Apple\Configuration::class)->available())
+@if($googleAvailable || $appleAvailable)
 <div class="d-flex align-items-center gap-3 my-3 text-muted" aria-hidden="true"><span class="border-top flex-grow-1"></span><span>or</span><span class="border-top flex-grow-1"></span></div>
+<div class="d-grid gap-2">
+@if($googleAvailable)
 <a href="{{ route('google.redirect') }}" data-google-login class="btn btn-secondary d-flex align-items-center justify-content-center gap-2 w-100">
   @include('auth.google.logo')
   <span data-google-label>Continue with Google</span>
   <span data-google-spinner class="spinner-border spinner-border-sm d-none" aria-hidden="true"></span>
 </a>
+@endif
+@if($appleAvailable)@include('auth.apple.button')@endif
+</div>
 <p class="text-muted text-center mt-2 mb-3"><small>By continuing, you agree to our <a href="{{ route('terms') }}" target="_blank" rel="noopener noreferrer">Terms</a> and <a href="{{ route('privacy') }}" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</small></p>
+@if($googleAvailable)
 @once
 @push('scripts')
 <script>
@@ -29,4 +37,5 @@
 </script>
 @endpush
 @endonce
+@endif
 @endif

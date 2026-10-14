@@ -1,5 +1,7 @@
 # Database activity history
 
+Arthur and Elena are excluded through the shared `ExcludedAccounts` policy. SQL activity recording/reading and the legacy Redis importer/verification skip their account identities. Use the targeted cleanup in [ANALYTICS_EXCLUSIONS.md](ANALYTICS_EXCLUSIONS.md); never flush Redis or remove their actual accounts/saved work/billing records.
+
 Website, `my.*` and existing iOS API activity now write directly to SQL. Anonymous website visitors are included by explicit request. The iOS app keeps making the same requests and receives the same response shapes; no app update is needed for this storage change. Activity counts, last-active dates and admin App Logs also read SQL. Redis caches, sessions and other non-activity features are unchanged.
 
 ## Deployment order

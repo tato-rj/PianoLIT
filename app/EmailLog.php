@@ -10,6 +10,10 @@ class EmailLog extends PianoLit
     {
         parent::boot();
 
+        static::creating(function ($log) {
+            return ! \App\Activity\ExcludedAccounts::email($log->recipient);
+        });
+
         static::created(function ($log) {
             if (! $log->list_id) {
                 return;
@@ -91,6 +95,7 @@ class EmailLog extends PianoLit
 
     public function scopeGenerate($query, $list = null)
     {
+        \App\Activity\ExcludedAccounts::users($query, 'recipient');
     	$report = $list ? $query->where('list_id', $list) : $query->whereNotNull('list_id');
 
         return $report->selectRaw('list_id, 
@@ -104,7 +109,7 @@ class EmailLog extends PianoLit
 
     public function scopeByList($query, $listId)
     {
-        return $query->where('list_id', $listId);
+        return \App\Activity\ExcludedAccounts::users($query, 'recipient')->where('list_id', $listId);
     }
 
     public function scopeByLists($query, array $ids)

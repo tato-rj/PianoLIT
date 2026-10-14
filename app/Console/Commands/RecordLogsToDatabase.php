@@ -46,6 +46,7 @@ class RecordLogsToDatabase extends Command
 
     public function updateRecords($user)
     {
+        if (\App\Activity\ExcludedAccounts::user($user)) return;
         $record = Log::firstOrCreate(['user_id' => $user->id]);
 
         $record->update([

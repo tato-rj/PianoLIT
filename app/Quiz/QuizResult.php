@@ -8,7 +8,7 @@ class QuizResult extends PianoLit
 {
     public function scopeAnalytics($query, $count)
     {
-    	return \DB::table('quiz_results')->selectRaw('month(created_at) month, day(created_at) day, year(created_at) year, count(*) count')
+        return \App\Activity\ExcludedAccounts::owned(\DB::table('quiz_results'))->selectRaw('month(created_at) month, day(created_at) day, year(created_at) year, count(*) count')
                      ->groupBy('month', 'day', 'year')
                      ->orderByRaw('min(created_at)')
                      ->get()

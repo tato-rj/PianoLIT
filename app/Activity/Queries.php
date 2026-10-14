@@ -22,7 +22,7 @@ class Queries
 
     public function visits(Filters $filters = null, $userId = null)
     {
-        $query = DB::table('activity_visits as v')->leftJoin('activity_visit_links as l', 'l.visit_id', '=', 'v.id');
+        $query = ExcludedAccounts::visits(DB::table('activity_visits as v')->leftJoin('activity_visit_links as l', 'l.visit_id', '=', 'v.id'));
         if ($userId !== null) $query->whereRaw(self::account().' = ?', [$userId]);
         if ($filters) {
             $filters->apply($query, 'v.started_at', 'v.platform');
@@ -34,7 +34,7 @@ class Queries
 
     public function events(Filters $filters = null, $userId = null)
     {
-        $query = DB::table('activity_events as e')->whereNotNull('e.visit_id');
+        $query = ExcludedAccounts::events(DB::table('activity_events as e'), 'e')->whereNotNull('e.visit_id');
         if ($filters || $userId !== null) $query->whereIn('e.visit_id', $this->visits($filters, $userId)->select('v.id'));
         if ($filters) $filters->apply($query, 'e.occurred_at', 'e.platform');
         return $query;
@@ -59,12 +59,12 @@ class Queries
     public function decorateVisits($visits)
     {
         $mediaKind = DB::connection()->getQueryGrammar()->wrap('metadata->media_kind');
-        $counts = DB::table('activity_events')->whereIn('visit_id', $visits->pluck('id'))->whereIn('type', ['page_view', 'media_play', 'score_opened', 'annotation_saved', 'favorite_changed', 'folder_created', 'trial_started', 'subscription_paid', 'premium_opened'])
+        $counts = ExcludedAccounts::events(DB::table('activity_events'))->whereIn('visit_id', $visits->pluck('id'))->whereIn('type', ['page_view', 'media_play', 'score_opened', 'annotation_saved', 'favorite_changed', 'folder_created', 'trial_started', 'subscription_paid', 'premium_opened'])
             ->select('visit_id', 'type')->selectRaw("COUNT(*) as total, MAX(CASE WHEN $mediaKind = 'audio' THEN 1 ELSE 0 END) as has_audio, MAX(CASE WHEN $mediaKind = 'video' THEN 1 ELSE 0 END) as has_video, MAX(CASE WHEN $mediaKind IN ('audio', 'video') THEN 0 ELSE 1 END) as has_unknown_media")
             ->groupBy('visit_id', 'type')->get()->groupBy('visit_id');
-        $pieces = DB::table('activity_events as e')->whereIn('visit_id', $visits->pluck('id'));
+        $pieces = ExcludedAccounts::events(DB::table('activity_events as e'), 'e')->whereIn('visit_id', $visits->pluck('id'));
         $pieces = $this->pieceOpens($pieces)->select('visit_id')->selectRaw('COUNT(*) as total')->groupBy('visit_id')->get()->keyBy('visit_id');
-        $saved = DB::table('activity_events')->whereIn('visit_id', $visits->pluck('id'))->where('type', 'favorite_changed')->where('source', 'server')
+        $saved = ExcludedAccounts::events(DB::table('activity_events'))->whereIn('visit_id', $visits->pluck('id'))->where('type', 'favorite_changed')->where('source', 'server')
             ->select('visit_id', 'metadata->result as result', 'metadata->folder_id as folder')->selectRaw('COUNT(*) as total')->groupBy('visit_id', 'metadata->result', 'metadata->folder_id')->get()->groupBy('visit_id');
         foreach ($visits as $visit) {
             $visit->counts = ($counts[$visit->id] ?? collect())->pluck('total', 'type')->all();
@@ -157,7 +157,7 @@ class Queries
 
     public function ungrouped(Filters $filters, $userId = null)
     {
-        $query = DB::table('activity_events')->whereNull('visit_id');
+        $query = ExcludedAccounts::events(DB::table('activity_events'))->whereNull('visit_id');
         $filters->apply($query, 'occurred_at');
         if ($userId !== null) $query->where('user_id', $userId);
         if ($filters->values['audience'] === 'registered') $query->whereNotNull('user_id');

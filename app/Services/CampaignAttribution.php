@@ -16,6 +16,7 @@ class CampaignAttribution
     public function available(Request $request)
     {
         return config('attribution.enabled')
+            && ! \App\Activity\ExcludedAccounts::request($request)
             && $request->getHost() === 'my.'.config('app.short_url')
             && ! auth('admin')->check() && ! $request->session()->get('impersonator');
     }

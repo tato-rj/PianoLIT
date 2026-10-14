@@ -38,7 +38,9 @@ class PiecesTable
         ]);
 
         // Override the model's default counts: the table needs only these two.
-        $query = Piece::select('pieces.*')->withCount(['tags', 'favorites'])
+        $query = Piece::select('pieces.*')->withCount(['tags', 'favorites' => function ($query) {
+            \App\Activity\ExcludedAccounts::owned($query, 'favorites.user_id');
+        }])
             ->with(['tags', 'composer' => function ($query) { $query->select('id', 'name'); }])
             ->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free']);
 

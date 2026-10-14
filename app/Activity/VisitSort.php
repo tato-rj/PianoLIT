@@ -129,7 +129,7 @@ class VisitSort
         ];
         foreach (['score_opened', 'annotation_saved', 'folder_created', 'trial_started', 'subscription_paid', 'premium_opened'] as $type) $conditions[] = "ae.type = '$type'";
         $tags = implode(' + ', array_map(function ($condition) { return "MAX(CASE WHEN $condition THEN 1 ELSE 0 END)"; }, $conditions));
-        return DB::table('activity_events as ae')->whereIn('ae.visit_id', $candidates)
+        return ExcludedAccounts::events(DB::table('activity_events as ae'), 'ae')->whereIn('ae.visit_id', $candidates)
             ->whereIn('ae.type', ['page_view', 'media_play', 'score_opened', 'annotation_saved', 'favorite_changed', 'folder_created', 'trial_started', 'subscription_paid', 'premium_opened'])
             ->select('ae.visit_id')->selectRaw("$tags as tags, MAX(CASE WHEN ae.type = 'page_view' AND ae.source = 'server' AND ae.resource_type = 'piece' AND ae.resource_id IS NOT NULL THEN 1 ELSE 0 END) as has_piece")
             ->groupBy('ae.visit_id');

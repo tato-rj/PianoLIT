@@ -8,7 +8,7 @@ class UserAnalytics extends Factory
 {
     public function __construct()
     {
-        $this->table = \DB::table('users');
+        $this->table = \App\Activity\ExcludedAccounts::users(\DB::table('users'));
     }
 
     public function daily($where = null)
@@ -94,8 +94,8 @@ class UserAnalytics extends Factory
     {
         $this->title = 'Favorites';
         $this->colors = [$this->color['red'], $this->color['grey']];
-        $total = User::where('origin', 'ios')->count();
-        $hasFavs = User::where('origin', 'ios')->has('favorites')->count();
+        $total = \App\Activity\ExcludedAccounts::users(User::query())->where('origin', 'ios')->count();
+        $hasFavs = \App\Activity\ExcludedAccounts::users(User::query())->where('origin', 'ios')->has('favorites')->count();
 
         $this->data = collect([
             collect([

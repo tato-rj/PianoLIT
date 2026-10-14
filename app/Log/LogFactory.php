@@ -15,6 +15,7 @@ class LogFactory
     {
         if (!config('activity.enabled')) return;
         if (!preg_match('/^user:([1-9]\d*):(app|web|webapp)$/', $logger->getKey(), $matches) || (float) $matches[1] > 4294967295) return;
+        if (\App\Activity\ExcludedAccounts::id($matches[1])) return;
 
         $request = request();
         $payload = json_decode($logger->getData(), true) ?: [];
@@ -67,14 +68,14 @@ class LogFactory
 
     public function total($type = 'user')
     {
-        $query = DB::table('activity_events')->whereNotNull('user_id');
+        $query = \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->whereNotNull('user_id');
         if ($type !== 'user') $query->where('platform', $this->platform($type));
         return $query->count();
     }
 
     private function query($userId, $type)
     {
-        $query = DB::table('activity_events')->where('user_id', $userId);
+        $query = \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->where('user_id', $userId);
         if ($type) $query->where('platform', $this->platform($type));
         return $query;
     }

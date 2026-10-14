@@ -21,6 +21,7 @@ class MembershipMonitor
                     $q->selectRaw('1')->from('memberships as m')->join('users as u', 'u.id', '=', 'm.user_id')
                         ->whereColumn('m.source_id', 'apple_memberships.id')->where('m.source_type', Apple::class)
                         ->whereNotIn('u.id', config('apple-membership-monitor.excluded_user_ids'));
+                    \App\Activity\ExcludedAccounts::users($q, 'u.email');
                 })
                 ->where(function ($q) {
                     $q->whereNull('checks.next_check_at')->orWhere('checks.next_check_at', '<=', now())

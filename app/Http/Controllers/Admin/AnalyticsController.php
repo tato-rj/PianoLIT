@@ -35,8 +35,8 @@ class AnalyticsController extends Controller
         if (request()->ajax())
             return (new Analytics)->for('pieces')->query(request('type'), request()->except('type'))->get();
 
-        $favorites = Piece::orderBy('favorites_count', 'DESC')->take(10)->get();
-        $views = Piece::orderBy('views_count', 'DESC')->take(10)->get();
+        $favorites = Piece::select('pieces.*')->withCount(['favorites' => function ($q) { \App\Activity\ExcludedAccounts::owned($q, 'favorites.user_id'); }])->orderBy('favorites_count', 'DESC')->take(10)->get();
+        $views = Piece::select('pieces.*')->withCount(['views' => function ($q) { \App\Activity\ExcludedAccounts::owned($q, 'piece_views.user_id'); }])->orderBy('views_count', 'DESC')->take(10)->get();
 
         return view('admin.pages.analytics.pieces.index', compact(['favorites', 'views']));
     }
@@ -44,7 +44,7 @@ class AnalyticsController extends Controller
     public function favorites()
     {
         if (request()->ajax())
-            return FavoriteFolder::userCreated()->datatable();
+            return FavoriteFolder::userCreated()->whereNotIn('user_id', \App\Activity\ExcludedAccounts::ids())->datatable();
         
         return view('admin.pages.analytics.favorites.index');
     }

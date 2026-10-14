@@ -15,21 +15,21 @@ class MembershipsController extends Controller
 
     public function loadTrials(Request $request)
     {
-        $memberships = Membership::trial()->newest()->get()->slice($request->start_at)->take(5);
+        $memberships = \App\Activity\ExcludedAccounts::owned(Membership::query())->trial()->newest()->get()->slice($request->start_at)->take(5);
 
         return view('admin.pages.analytics.memberships.trials', compact('memberships'))->render();
     }
 
     public function loadMembers(Request $request)
     {
-        $memberships = Membership::member()->get()->sortBy('source.renews_at')->slice($request->start_at)->take(5);
+        $memberships = \App\Activity\ExcludedAccounts::owned(Membership::query())->member()->get()->sortBy('source.renews_at')->slice($request->start_at)->take(5);
 
         return view('admin.pages.analytics.memberships.members', compact('memberships'))->render();
     }
 
     public function loadExpired(Request $request)
     {
-        $memberships = Membership::expired()->get()->sortByDesc('source.renews_at')->slice($request->start_at)->take(5);
+        $memberships = \App\Activity\ExcludedAccounts::owned(Membership::query())->expired()->get()->sortByDesc('source.renews_at')->slice($request->start_at)->take(5);
 
         return view('admin.pages.analytics.memberships.expired', compact('memberships'))->render();
     }

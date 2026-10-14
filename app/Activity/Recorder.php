@@ -15,7 +15,7 @@ class Recorder
             && !auth('admin')->check()
             && $request->getHost() !== 'admin.'.config('app.short_url')
             && !$request->routeIs('activity.*', 'admin.*', 'api.*')
-            && !TrafficFilter::ignores($request);
+            && !TrafficFilter::ignores($request) && !ExcludedAccounts::request($request);
     }
 
     public function visitor(Request $request)
@@ -37,6 +37,7 @@ class Recorder
 
     public function pageFromToken(Request $request, $token)
     {
+        if (ExcludedAccounts::request($request)) return null;
         if (!is_string($token) || strlen($token) > 4096) return null;
         try {
             $id = Crypt::decryptString($token);
@@ -59,6 +60,7 @@ class Recorder
 
     public function openPage(Request $request)
     {
+        if (ExcludedAccounts::request($request)) return null;
         $visitor = $request->attributes->get('activity.visitor') ?: $this->visitor($request);
         $user = auth('web')->id();
         $platform = $this->platform($request);
@@ -108,6 +110,7 @@ class Recorder
 
     public function request(Request $request, $response, $page, $started)
     {
+        if (ExcludedAccounts::request($request)) return;
         $html = stripos($response->headers->get('Content-Type', ''), 'text/html') !== false;
         $type = $request->isMethod('GET') && !$request->ajax() && $html && $response->isSuccessful() ? 'page_view' : 'request';
         $resourceType = null; $resourceId = null;
@@ -156,6 +159,7 @@ class Recorder
 
     private function insertRow(Request $request, $page, array $event, $visitLocked)
     {
+        if (ExcludedAccounts::request($request) || ExcludedAccounts::id($event['user_id'] ?? $request->attributes->get('activity.actor', auth('web')->id()))) return false;
         // Preserve successful account actions, but do not fabricate a short visit
         // just to attach them. They remain ungrouped account milestones.
         if (!empty($page->_pending)) $page = null;
@@ -194,6 +198,7 @@ class Recorder
 
     public function browser(Request $request, $page, array $events, array $qualification = [])
     {
+        if (ExcludedAccounts::request($request) || ExcludedAccounts::id($page->user_id ?? null)) return true;
         if (!empty($page->_pending)) {
             $pending = new PendingVisits;
             $pages = $pending->observe($request, $page, $events, $qualification);

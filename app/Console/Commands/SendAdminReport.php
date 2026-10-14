@@ -41,11 +41,17 @@ class SendAdminReport extends Command
         $results = [];
 
         foreach ($this->models as $model) {
+            $current = $model::report($this->duration, now());
+            $previous = $model::report($this->duration, now()->subDays($this->duration));
+            foreach ([$current, $previous] as $query) {
+                if ($model === Subscription::class) \App\Activity\ExcludedAccounts::users($query, 'subscriptions.email');
+                if ($model === QuizResult::class) \App\Activity\ExcludedAccounts::owned($query, 'quiz_results.user_id');
+            }
             array_push($results, [
                 'name' => class_str($model),
                 'title' => class_str($model, $plural = true),
-                'data' => $model::report($this->duration, now())->get(),
-                'pastData' => $model::report($this->duration, now()->subDays($this->duration))->get()
+                'data' => $current->get(),
+                'pastData' => $previous->get()
             ]);
         }
 

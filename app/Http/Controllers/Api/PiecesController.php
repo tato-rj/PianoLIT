@@ -55,7 +55,7 @@ class PiecesController extends Controller
     {
     	$personalAccounts = [196, 244];
 
-    	if (! in_array($request->user_id, $personalAccounts))
+        if (! in_array($request->user_id, $personalAccounts) && ! \App\Activity\ExcludedAccounts::id($request->user_id))
 	        Piece::findOrFail($request->piece_id)->views()->create(['user_id' => $request->user_id]);
      
         return response()->json('The piece\'s views have been incremented', 200);

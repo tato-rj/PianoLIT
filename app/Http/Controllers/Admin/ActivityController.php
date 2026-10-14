@@ -23,13 +23,13 @@ class ActivityController extends Controller
 
     private function history(Request $request, User $user = null)
     {
-        $visits = DB::table('activity_visits as visits')->leftJoin('users', 'users.id', '=', 'visits.user_id')
+        $visits = \App\Activity\ExcludedAccounts::visits(DB::table('activity_visits as visits'), 'visits')->leftJoin('users', 'users.id', '=', 'visits.user_id')
             ->select('visits.*', 'users.first_name', 'users.last_name')
-            ->selectSub(DB::table('activity_events')->selectRaw('COUNT(*)')->whereColumn('visit_id', 'visits.id'), 'events_count');
+            ->selectSub(\App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->selectRaw('COUNT(*)')->whereColumn('visit_id', 'visits.id'), 'events_count');
         if ($user) $visits->where('visits.user_id', $user->id);
         if ($request->boolean('guests')) $visits->whereNull('visits.user_id');
         $visits = $visits->orderByDesc('visits.started_at')->orderBy('visits.id')->paginate(AdminPagination::PER_PAGE, ['*'], 'visits_page');
-        $legacy = DB::table('activity_events')->whereNull('visit_id');
+        $legacy = \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->whereNull('visit_id');
         if ($user) $legacy->where('user_id', $user->id);
         if ($request->boolean('guests')) $legacy->whereNull('user_id');
         $legacy = $legacy->orderByDesc('occurred_at')->orderByDesc('id')->paginate(AdminPagination::PER_PAGE, ['*'], 'history_page');

@@ -5,6 +5,7 @@
 /vendor
 /brand
 .env
+*.p8
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml

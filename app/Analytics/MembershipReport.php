@@ -82,7 +82,7 @@ class MembershipReport
     private function query($ready)
     {
         $now = now()->toDateTimeString();
-        $q = DB::table('memberships as m')->join('users as u', 'u.id', '=', 'm.user_id')
+        $q = \App\Activity\ExcludedAccounts::users(DB::table('memberships as m')->join('users as u', 'u.id', '=', 'm.user_id'), 'u.email')
             // Match the existing hasOne relation: one membership record per account.
             ->joinSub(DB::table('memberships')->selectRaw('MIN(id) as id')->groupBy('user_id'), 'owned', function ($join) { $join->on('owned.id', '=', 'm.id'); })
             ->whereIn('m.source_type', [Stripe::class, Apple::class])

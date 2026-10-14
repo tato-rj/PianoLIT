@@ -9,6 +9,7 @@ class RecentlyViewedPieces
 {
     public function record(User $user, Piece $piece)
     {
+        if (\App\Activity\ExcludedAccounts::user($user)) return;
         // A single row per account/piece also deduplicates concurrent visits.
         DB::table('recently_viewed_pieces')->upsert([
             'user_id' => $user->id,
@@ -19,6 +20,7 @@ class RecentlyViewedPieces
 
     public function forUser(User $user)
     {
+        if (\App\Activity\ExcludedAccounts::user($user)) return collect();
         return Piece::select('pieces.*')
             ->join('recently_viewed_pieces as recent', 'recent.piece_id', '=', 'pieces.id')
             ->where('recent.user_id', $user->id)

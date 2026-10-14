@@ -21,6 +21,7 @@ class MailgunWebhookController extends Controller
         $message_id = $data['message']['headers']['message-id'];
 
         if ($email = EmailLog::where('message_id', $message_id)->first()) {
+            if (\App\Activity\ExcludedAccounts::email($email->recipient)) return response(200);
             if ($data['event'] === 'opened') {
                 $email->increment($data['event']);
                 $email->update(['unique_opened' => 1]);

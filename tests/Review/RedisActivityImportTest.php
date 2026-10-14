@@ -6,6 +6,22 @@ use Illuminate\Support\Facades\{DB, Redis};
 
 class RedisActivityImportTest extends ReviewTestCase
 {
+    public function test_excluded_accounts_are_not_imported_or_counted_as_missing_during_verification()
+    {
+        $excluded = \Illuminate\Database\Eloquent\Model::withoutEvents(function () { return create(\App\User::class, ['email' => 'arthurvilar@gmail.com']); });
+        $normal = \Illuminate\Database\Eloquent\Model::withoutEvents(function () { return create(\App\User::class); });
+        $redis = $this->redis(); $prefix = config('database.redis.prefix');
+        $privateKey = $prefix.'user:'.$excluded->id.':web'; $normalKey = $prefix.'user:'.$normal->id.':web';
+        $redis->shouldReceive('scan')->with('0', 'MATCH', $prefix.'*', 'COUNT', 500)->once()->andReturn(['0', [$privateKey, $normalKey]]);
+        $redis->shouldReceive('scan')->with('0', 'MATCH', $prefix.'user:*', 'COUNT', 500)->once()->andReturn(['0', [$privateKey, $normalKey]]);
+        $redis->shouldReceive('type')->with($normalKey)->once()->andReturn('hash');
+        $redis->shouldReceive('hscan')->with($normalKey, '0', 'COUNT', 500)->twice()->andReturn(['0', ['1577836800' => '{"url":"/normal"}']]);
+        $this->artisan('activity:import-redis', ['--before' => (string) (time() - 60), '--sleep-ms' => 0, '--verify' => true])->assertExitCode(0);
+        $this->assertDatabaseCount('activity_events', 1);
+        $this->assertDatabaseHas('activity_events', ['user_id' => $normal->id]);
+        $this->assertDatabaseMissing('activity_events', ['user_id' => $excluded->id]);
+    }
+
     private function redis()
     {
         $redis = \Mockery::mock();

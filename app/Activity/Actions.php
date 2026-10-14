@@ -23,7 +23,7 @@ class Actions
 
     public static function linkAnonymous(Request $request, $userId, $reason)
     {
-        if (!config('activity.enabled') || !$request->hasSession()) return;
+        if (!config('activity.enabled') || !$request->hasSession() || ExcludedAccounts::id($userId)) return;
         try {
             $visit = DB::table('activity_visits')->where('id', $request->session()->get('activity.visit', ''))
                 ->where('visitor_id', $request->session()->get('activity.visitor', ''))->whereNull('user_id')
@@ -48,7 +48,7 @@ class Actions
         try {
             $user = DB::table('memberships as m')->join('stripe_memberships as s', 's.id', '=', 'm.source_id')
                 ->where('m.source_type', \App\Billing\Sources\Stripe::class)->where('s.stripe_id', $invoice['customer'])->value('m.user_id');
-            if (!$user) return;
+            if (!$user || ExcludedAccounts::id($user)) return;
             $at = \Carbon\Carbon::createFromTimestamp($invoice['status_transitions']['paid_at'] ?? $payload['created'], config('app.timezone'));
             $id = (string) \Ramsey\Uuid\Uuid::uuid5(\Ramsey\Uuid\Uuid::NAMESPACE_URL, 'pianolit:paid-invoice:'.$invoice['id']);
             DB::table('activity_events')->insertOrIgnore([

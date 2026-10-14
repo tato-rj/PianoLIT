@@ -11,11 +11,11 @@ use Illuminate\Support\Str;
 
 class GoogleHandoffController extends Controller
 {
-    public function login(Request $request, User $user, $destination)
+    public function login(Request $request, User $user, $destination, $provider = 'google')
     {
         auth('web')->login($user, true);
         $request->session()->regenerate();
-        app(Accounts::class)->verified($request, $user);
+        app(Accounts::class)->verified($request, $user, $provider);
         $config = app(Configuration::class);
         $destination = $config->destination($destination, $request);
         $host = parse_url($destination, PHP_URL_HOST);

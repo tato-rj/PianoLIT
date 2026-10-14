@@ -11,7 +11,7 @@ class LocationsController extends Controller
     public function index()
     {
         if (request()->ajax())
-            return Location::datatable();
+            return \App\Activity\ExcludedAccounts::owned(Location::query())->datatable();
 
         return view('admin.pages.users.locations.index');
     }
@@ -22,11 +22,12 @@ class LocationsController extends Controller
         
         $field = $country ? 'regionName' : 'countryName';
 
-        $countryExists = Location::byCountry($country)->exists();
+        $base = \App\Activity\ExcludedAccounts::owned(Location::query());
+        $countryExists = (clone $base)->byCountry($country)->exists();
 
-        $query = $countryExists ? Location::byCountry($country) : new Location;
+        $query = $countryExists ? (clone $base)->byCountry($country) : $base;
 
-        $region = $countryExists ? Location::byCountry($country)->first()->countryCode : null;
+        $region = $countryExists ? (clone $base)->byCountry($country)->first()->countryCode : null;
 
         $locationsAnalytics = $query->select($field, \DB::raw('count(*) as total'))
                                 ->groupBy($field)

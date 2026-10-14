@@ -21,10 +21,13 @@ class ImportRedisActivity extends Command
         {--verify : After completion, compare each source record with its preserved SQL payload}
         {--restart : Rescan from the beginning, retaining previously imported records}';
 
+    private $excludedIds = [];
+
     protected $description = 'Copy legacy activity and daily counter snapshots to SQL without changing Redis. Safe to resume or rerun.';
 
     public function handle()
     {
+        $this->excludedIds = array_map('intval', \App\Activity\ExcludedAccounts::ids()->pluck('id')->all());
         $connection = $this->option('connection');
         $prefix = (string) ($this->option('prefix') ?? config('database.redis.prefix', ''));
         $platforms = array_unique(explode(',', $this->option('platforms'))); sort($platforms);
@@ -66,6 +69,7 @@ class ImportRedisActivity extends Command
                     preg_match('/^'.preg_quote($prefix, '/').'user:(\d+):(app|web|webapp)$/', $state->current_key, $matches);
                     foreach ($fields as $field => $payload) {
                         if (ctype_digit((string) $field) && (float) $field >= $before) continue;
+                        if (in_array((int) $matches[1], $this->excludedIds, true)) continue;
                         $rows[] = $this->legacyRow($connection, $state->current_key, (string) $field, (string) $payload, $matches);
                         if (count($rows) === 100) { $this->writeRows($rows); $rows = []; }
                     }
@@ -75,9 +79,13 @@ class ImportRedisActivity extends Command
                 } elseif ($pending) {
                     $key = array_shift($pending);
                     if (preg_match('/^'.preg_quote($prefix, '/').'user:(\d+):(app|web|webapp)$/', $key, $matches) && in_array($matches[2], $platforms, true)) {
-                        $type = (string) $redis->type($key);
-                        if (in_array($type, ['hash', '5'], true)) $state->current_key = $key;
-                        else $this->warn('A legacy activity key was missing or not a hash; use a stable snapshot and rescan to verify completeness.');
+                        if (in_array((int) $matches[1], $this->excludedIds, true)) {
+                            $state->current_key = null;
+                        } else {
+                            $type = (string) $redis->type($key);
+                            if (in_array($type, ['hash', '5'], true)) $state->current_key = $key;
+                            else $this->warn('A legacy activity key was missing or not a hash; use a stable snapshot and rescan to verify completeness.');
+                        }
                     } elseif (preg_match('/^'.preg_quote($prefix, '/').'logs:daily:(\d{4}-\d{2}-\d{2}):(app|web|webapp)$/', $key, $matches) && in_array($matches[2], $platforms, true)) {
                         $total = $redis->get($key);
                         [$year, $month, $day] = array_map('intval', explode('-', $matches[1]));
@@ -162,6 +170,7 @@ class ImportRedisActivity extends Command
             [$cursor, $keys] = $this->scan($redis, 'scan', $cursor, $prefix.'user:*', $batch);
             foreach ($keys as $key) {
                 if (!preg_match('/^'.preg_quote($prefix, '/').'user:(\d+):(app|web|webapp)$/', $key, $matches) || !in_array($matches[2], $platforms, true)) continue;
+                if (in_array((int) $matches[1], $this->excludedIds, true)) continue;
                 $hashCursor = '0';
                 do {
                     [$hashCursor, $fields] = $this->scan($redis, 'hscan', $hashCursor, $key, $batch);

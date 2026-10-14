@@ -14,7 +14,7 @@ class UserCountries
 
         // locations.user_id is unique. Start from users to exclude orphan locations
         // and retain accounts whose country has not been recorded.
-        $rows = DB::table('users')->leftJoin('locations', 'locations.user_id', '=', 'users.id')
+        $rows = \App\Activity\ExcludedAccounts::users(DB::table('users'))->leftJoin('locations', 'locations.user_id', '=', 'users.id')
             ->selectRaw('UPPER(TRIM(locations.countryCode)) as country, COUNT(*) as total')
             ->groupByRaw('UPPER(TRIM(locations.countryCode))')->get();
         $countries = [];

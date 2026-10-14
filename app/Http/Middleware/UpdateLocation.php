@@ -20,7 +20,7 @@ class UpdateLocation
     {
         $user = $this->getUser($request);
 
-        if (! $user)
+        if (! $user || \App\Activity\ExcludedAccounts::user($user))
             return $next($request);
 
         if ($request->routeIs('webapp.*')) {
@@ -66,7 +66,7 @@ class UpdateLocation
             // Laravel runs this after sending the response. Another request may
             // already have filled the location in or deleted the account.
             $user = User::find($pending['user_id']);
-            if (!$user || $user->location()->exists()) return;
+            if (!$user || \App\Activity\ExcludedAccounts::user($user) || $user->location()->exists()) return;
             $location = LocationApi::get($pending['ip']);
             if ($location) {
                 $user->location()->firstOrCreate([], $this->locationData($location));
@@ -93,6 +93,7 @@ class UpdateLocation
 
     public function updateLocation(User $user, $location)
     {
+        if (\App\Activity\ExcludedAccounts::user($user)) return;
         try {
             Location::createIfNotExists($user->id, [
                 'user_id' => $user->id,

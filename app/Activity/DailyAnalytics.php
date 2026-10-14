@@ -9,7 +9,7 @@ class DailyAnalytics
     public function latest(int $days = 6)
     {
         $days = min(365, max(0, $days));
-        $counts = DB::table('activity_events')->where('occurred_at', '>=', now()->subDays($days)->startOfDay())
+        $counts = ExcludedAccounts::events(DB::table('activity_events'))->where('occurred_at', '>=', now()->subDays($days)->startOfDay())
             ->selectRaw('DATE(occurred_at) as date, platform, COUNT(*) as total')->groupBy('date', 'platform')->get()->groupBy('date');
         $result = [];
         for ($i = $days; $i >= 0; $i--) {

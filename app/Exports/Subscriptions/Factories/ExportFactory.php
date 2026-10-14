@@ -9,7 +9,7 @@ abstract class ExportFactory
 
 	protected function setQuery($query)
 	{
-		$this->query = $query->whereNotIn('email', $this->exceptions)->get();
+		$this->query = \App\Activity\ExcludedAccounts::users($query, 'email')->whereNotIn('email', $this->exceptions)->get();
 	}
 
 	public function filter()

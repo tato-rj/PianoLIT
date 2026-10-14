@@ -14,11 +14,11 @@ class Traffic
 
 	public function isRealVisitor()
 	{
-		return ! in_array(request()->ip(), $this->ignoreIP);
+		return ! in_array(request()->ip(), $this->ignoreIP) && ! \App\Activity\ExcludedAccounts::request(request());
 	}
 
 	public function isRealUser($id)
 	{
-		return ! in_array($id, $this->ignoreID);
+		return ! in_array($id, $this->ignoreID) && ! \App\Activity\ExcludedAccounts::id($id);
 	}
 }

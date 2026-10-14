@@ -18,10 +18,10 @@ class Journey
         $pages = DB::table('activity_pages')->where('visit_id', $id)->orderBy('opened_at')->orderBy('id')->paginate(AdminPagination::PER_PAGE, ['*'], 'pages_page')->withQueryString();
         // Bound detail payload independently of the size of the visit. Do not let a
         // noisy first page conceal later page groups without a visible notice.
-        $eventQuery = DB::table('activity_events')->where('visit_id', $id)->whereIn('page_id', $pages->pluck('id'));
+        $eventQuery = ExcludedAccounts::events(DB::table('activity_events'))->where('visit_id', $id)->whereIn('page_id', $pages->pluck('id'));
         $detailCount = (clone $eventQuery)->count();
         $events = $eventQuery->orderByRaw('COALESCE(occurred_at, received_at)')->orderBy('sequence')->orderBy('id')->limit(2000)->get();
-        $unplaced = DB::table('activity_events')->where('visit_id', $id)->where(function ($q) use ($id) {
+        $unplaced = ExcludedAccounts::events(DB::table('activity_events'))->where('visit_id', $id)->where(function ($q) use ($id) {
             $q->whereNull('page_id')->orWhereNotIn('page_id', DB::table('activity_pages')->where('visit_id', $id)->select('id'));
         })->orderByRaw('COALESCE(occurred_at, received_at)')->orderBy('id')->paginate(AdminPagination::PER_PAGE, ['*'], 'events_page')->withQueryString();
         $allEvents = $events->concat($unplaced->items());

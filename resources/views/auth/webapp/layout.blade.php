@@ -9,6 +9,7 @@
     ]])
 
 @push('header')
+@unless(\App\Activity\ExcludedAccounts::request(request()))
 <!-- Facebook Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -26,6 +27,7 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Facebook Pixel Code -->
+@endunless
 <style type="text/css">
 #action > div {
     -webkit-box-shadow: 0 5px 30px rgba(0,0,0,.1);

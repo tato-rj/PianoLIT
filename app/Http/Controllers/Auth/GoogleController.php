@@ -56,7 +56,8 @@ class GoogleController extends Controller
                 $user = $request->user('web');
                 $link = $accounts->linkFor($user);
                 if (!$link || !hash_equals($link->provider_user_id, $identity['sub'])) throw new \UnexpectedValueException;
-                $accounts->verified($request, $user);
+                $accounts->verified($request, $user, 'google');
+                $accounts->audit($user->id, 'verified', 'google');
                 return app(GoogleSecurityController::class)->next($request);
             }
             if ($context['kind'] === 'connect') {
@@ -82,7 +83,7 @@ class GoogleController extends Controller
         } catch (\Throwable $e) {
             // Provider exception bodies may contain codes/tokens. Never log them.
             if (is_array($context)) {
-                try { $accounts->audit($context['user_id'], 'authentication_failed'); } catch (\Throwable $ignored) {}
+                try { $accounts->audit($context['user_id'], 'authentication_failed', 'google'); } catch (\Throwable $ignored) {}
             }
             return $this->failure($context, $e instanceof ValidationException ? collect($e->errors())->flatten()->first() : 'We could not complete Google sign-in. Please try again.');
         } finally {

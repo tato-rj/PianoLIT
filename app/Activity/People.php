@@ -31,9 +31,9 @@ class People
         ]);
         $queries = new Queries;
         $visits = $queries->visits()->whereRaw(Queries::account().' IS NOT NULL')->selectRaw(Queries::account().' as account_id, COUNT(*) as visits_count, MAX(v.last_activity_at) as last_activity')->groupByRaw(Queries::account());
-        $opens = $queries->pieceOpens(DB::table('activity_events as e')->join('activity_visits as v', 'v.id', '=', 'e.visit_id')->leftJoin('activity_visit_links as l', 'l.visit_id', '=', 'v.id'))
+        $opens = $queries->pieceOpens(ExcludedAccounts::events(DB::table('activity_events as e')->join('activity_visits as v', 'v.id', '=', 'e.visit_id')->leftJoin('activity_visit_links as l', 'l.visit_id', '=', 'v.id'), 'e'))
             ->whereRaw(Queries::account().' IS NOT NULL')->selectRaw(Queries::account().' as account_id, COUNT(*) as pieces_count')->groupByRaw(Queries::account());
-        $query = DB::table('users')->leftJoinSub($visits, 'a', 'a.account_id', '=', 'users.id')->leftJoinSub($opens, 'o', 'o.account_id', '=', 'users.id')
+        $query = ExcludedAccounts::users(DB::table('users'))->leftJoinSub($visits, 'a', 'a.account_id', '=', 'users.id')->leftJoinSub($opens, 'o', 'o.account_id', '=', 'users.id')
             ->leftJoin('locations as location', 'location.user_id', '=', 'users.id')
             ->leftJoinSub(DB::table('memberships')->select('user_id')->selectRaw('MIN(id) as membership_id')->groupBy('user_id'), 'member', 'member.user_id', '=', 'users.id')
             ->leftJoin('memberships as m', 'm.id', '=', 'member.membership_id')
@@ -59,6 +59,7 @@ class People
 
     public function profile(User $user, $tab, Filters $filters)
     {
+        abort_if(ExcludedAccounts::user($user), 404);
         request()->validate(['folder' => 'nullable|integer|min:1']);
         $visitSort = new VisitSort(request());
         $user->loadMissing(['membership.source', 'location']);

@@ -12,6 +12,16 @@ return [
         'handoff_seconds' => 60,
     ],
 
+    'apple_login' => [
+        'client_id' => env('APPLE_CLIENT_ID'),
+        'team_id' => env('APPLE_TEAM_ID'),
+        'key_id' => env('APPLE_KEY_ID'),
+        'private_key_path' => env('APPLE_PRIVATE_KEY_PATH'),
+        'redirect_uri' => env('APPLE_REDIRECT_URI'),
+        'webapp_redirect_uri' => env('APPLE_WEBAPP_REDIRECT_URI'),
+        'transaction_seconds' => 600,
+    ],
+
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),

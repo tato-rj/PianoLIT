@@ -10,7 +10,7 @@ class CampaignAttributionReport
     {
         $rows = [];
         foreach (config('attribution.campaigns', []) as $key => $campaign) {
-            $visits = DB::table('campaign_visits')->where('campaign', $key)->where('created_at', '>=', $since);
+            $visits = \App\Activity\ExcludedAccounts::owned(DB::table('campaign_visits'))->where('campaign', $key)->where('created_at', '>=', $since);
             $subscriptions = DB::table('campaign_subscriptions as s')->join('campaign_visits as v', 'v.id', '=', 's.visit_id')
                 ->where('v.campaign', $key)->where('v.created_at', '>=', $since);
             $firstPayments = DB::table('stripe_payment_receipts as p')->join('campaign_subscriptions as s', function ($join) {
@@ -31,6 +31,8 @@ class CampaignAttributionReport
                                 });
                         });
                 });
+            \App\Activity\ExcludedAccounts::owned($subscriptions, 'v.user_id');
+            \App\Activity\ExcludedAccounts::owned($firstPayments, 'v.user_id');
             $revenue = (clone $firstPayments)->select('p.currency', DB::raw('SUM(p.amount) as amount'))->groupBy('p.currency')->get();
             $rows[] = [
                 'campaign' => $key, 'source' => $campaign['utm_source'], 'content' => $campaign['utm_content'],

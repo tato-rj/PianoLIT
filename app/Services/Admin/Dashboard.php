@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\{User, Piece, Subscription};
 use App\Analytics\MembershipReport;
+use App\Activity\ExcludedAccounts;
 use App\Quiz\Quiz;
 use App\Infograph\Infograph;
 use App\CrashCourse\CrashCourse;
@@ -18,7 +19,7 @@ class Dashboard
         $start = $end->copy()->subDays($days - 1)->startOfDay();
         $previousStart = $start->copy()->subDays($days);
         // Keep timer/visibility bookkeeping out of the activity totals.
-        $events = DB::table('activity_events')->whereIn('platform', ['web', 'webapp', 'app'])
+        $events = ExcludedAccounts::events(DB::table('activity_events'))->whereIn('platform', ['web', 'webapp', 'app'])
             ->whereNotIn('type', ['heartbeat', 'page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_leave', 'page_restore', 'media_progress'])
             ->where('occurred_at', '>=', $previousStart)->where('occurred_at', '<=', $end);
         if ($platform !== 'all') $events->where('platform', $platform);
@@ -48,10 +49,10 @@ class Dashboard
             ->orderByDesc('events_count')->orderBy('users.id')->limit(6)->get();
 
         $definitions = [
-            [User::query(), 'Total users', 'users', 'admin.users.index'],
+            [ExcludedAccounts::users(User::query()), 'Total users', 'users', 'admin.users.index'],
             [null, 'Active memberships', 'credit-card', 'admin.analytics.memberships'],
             [Piece::query(), 'Pieces in repertoire', 'music', 'admin.pieces.index'],
-            [Subscription::query(), 'Email subscribers', 'mail', 'admin.subscriptions.index'],
+            [ExcludedAccounts::users(Subscription::query(), 'subscriptions.email'), 'Email subscribers', 'mail', 'admin.subscriptions.index'],
         ];
         $metrics = [];
         foreach ($definitions as [$query, $label, $icon, $route]) {

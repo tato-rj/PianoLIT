@@ -36,8 +36,8 @@ class UsersController extends Controller
 
         return view('admin.pages.users.show.index', [
             'user' => $user->load('favorites'),
-            'activityCounts' => DB::table('activity_events')->where('user_id', $user->id)->selectRaw('platform, COUNT(*) as total')->groupBy('platform')->pluck('total', 'platform'),
-            'appLogs' => DB::table('activity_events')->where('user_id', $user->id)->where('platform', 'app')->orderByDesc('occurred_at')->orderByDesc('id')->take(5)->get(),
+            'activityCounts' => \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->where('user_id', $user->id)->selectRaw('platform, COUNT(*) as total')->groupBy('platform')->pluck('total', 'platform'),
+            'appLogs' => \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->where('user_id', $user->id)->where('platform', 'app')->orderByDesc('occurred_at')->orderByDesc('id')->take(5)->get(),
         ]);
     }
 
@@ -67,11 +67,11 @@ class UsersController extends Controller
         $orderColumn = (int) $request->input('order.0.column', 7);
         $sortField = $request->input("columns.{$orderColumn}.data", 'last_active');
         $search = trim($request->input('search.value', ''));
-        $activity = DB::table('activity_events')->whereNotNull('user_id')->selectRaw('user_id, COUNT(*) as activity_count, MAX(occurred_at) as activity_last')->groupBy('user_id');
-        $query = User::query()->select('users.*', 'activity.activity_count', 'activity.activity_last')
+        $activity = \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->whereNotNull('user_id')->selectRaw('user_id, COUNT(*) as activity_count, MAX(occurred_at) as activity_last')->groupBy('user_id');
+        $query = \App\Activity\ExcludedAccounts::users(User::query())->select('users.*', 'activity.activity_count', 'activity.activity_last')
             ->leftJoinSub($activity, 'activity', 'activity.user_id', '=', 'users.id')
             ->with(['location', 'membership.source']);
-        $recordsTotal = User::count();
+        $recordsTotal = \App\Activity\ExcludedAccounts::users(User::query())->count();
 
         if ($search !== '') {
             $query->where(function ($query) use ($search) {
@@ -91,7 +91,7 @@ class UsersController extends Controller
         ];
         $column = $columns[$sortField] ?? 'activity.activity_last';
         $users = $query->orderBy($column, $direction)->orderBy('users.id')->skip($start)->take($length)->get();
-        $totalVisits = DB::table('activity_events')->whereNotNull('user_id')->count();
+        $totalVisits = \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->whereNotNull('user_id')->count();
         $data = $users->map(function ($user) use ($totalVisits) {
             $visits = (int) $user->activity_count;
             $lastActive = $user->activity_last ? carbon($user->activity_last) : null;
@@ -123,7 +123,7 @@ class UsersController extends Controller
     {
         $request->validate(['type' => 'required|in:app,web,webapp', 'start_at' => 'nullable|integer|min:0']);
         $type = $request->type;
-        $events = DB::table('activity_events')->where('user_id', $user->id)->where('platform', $type)
+        $events = \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->where('user_id', $user->id)->where('platform', $type)
             ->orderByDesc('occurred_at')->orderByDesc('id')->skip((int) $request->start_at)->take(5)->get();
         if ($type === 'app') {
             return view('admin.pages.users.show.logs.app-rows', ['logs' => $events])->render();

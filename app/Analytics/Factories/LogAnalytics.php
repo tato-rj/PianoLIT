@@ -9,7 +9,7 @@ class LogAnalytics extends Factory
 {
     public function __construct()
     {
-        $this->table = \DB::table('users');
+        $this->table = \App\Activity\ExcludedAccounts::users(\DB::table('users'));
     }
 
     public function daily($where = null)
@@ -23,7 +23,7 @@ class LogAnalytics extends Factory
 
     public function range($where = null)
     {
-        $totals = \DB::table('activity_events')->whereNotNull('user_id')->selectRaw('user_id, COUNT(*) as total')->groupBy('user_id')->get();
+        $totals = \App\Activity\ExcludedAccounts::events(\DB::table('activity_events'))->whereNotNull('user_id')->selectRaw('user_id, COUNT(*) as total')->groupBy('user_id')->get();
         $ranges = [[1,2], [3,5], [6,12], [13,30], [31]];
 
         $this->title = 'Logs by range';

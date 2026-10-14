@@ -55,6 +55,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapApiRoutes();
 
         Route::middleware('web')->group(base_path('routes/google-auth.php'));
+        Route::middleware('web')->group(base_path('routes/apple-auth.php'));
 
         $this->mapAuthRoutes();
 
