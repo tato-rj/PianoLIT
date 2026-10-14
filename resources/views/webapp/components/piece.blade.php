@@ -7,12 +7,19 @@
 	data-sort-period="{{optional($piece->period)->id}}"
 	data-sort-views="{{$piece->views_count}}">
 	<a href="{{route('webapp.pieces.show', $piece)}}" class="link-none" data-activity-label="{{ $piece->medium_name_with_composer }}">
-		<div class="d-flex mb-2 align-items-center">
-			@include('webapp.components.piece.level')
-			@icon('lock', ['color' => 'grey', 'ml' => 2, 'if' => ! $hasFullAccess])
+						<div class="d-flex mb-2 align-items-center">
+					@include('webapp.components.piece.level')
+					@icon('lock', ['color' => 'grey', 'ml' => 2, 'if' => ! $hasFullAccess])
+				</div>
+		<div class="d-flex align-items-center">
+			{{-- <div> --}}
+				<img src="{{$piece->composer->cover_image}}" style="width: 46px;" class="rounded-circle shadow border border-white border-1x piece__composer-image mr-2">
+			{{-- </div> --}}
+			<div>
+				@include('webapp.components.piece.name')
+				@include('webapp.components.piece.composer')
+			</div>
 		</div>
-		@include('webapp.components.piece.name')
-		@include('webapp.components.piece.composer')
 	</a>
 	<div class="d-flex d-apart">
 		<div class="d-flex text-grey">

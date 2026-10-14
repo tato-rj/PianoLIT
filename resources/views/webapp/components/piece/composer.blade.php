@@ -1,1 +1,1 @@
-<p>{{$piece->attribution}}{{$piece->composer->name}}</p>
+<p class="small text-muted m-0">{{$piece->attribution}}{{$piece->composer->name}}</p>
