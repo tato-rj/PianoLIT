@@ -106,7 +106,7 @@ class DailyActivityChartTest extends ReviewTestCase
         $this->assertStringNotContainsString('NAN', $zero);
         $this->actingAs(create(Admin::class), 'admin');
         $response = $this->get(route('admin.analytics.users'))->assertOk()->assertSee('Daily activity')->assertSee('Chart series')->assertSee('Daily counts and metric definitions');
-        $this->assertSame(3, substr_count($response->getContent(), 'class="ua-chart-swatch '));
+        $this->assertSame(4, substr_count($response->getContent(), 'class="ua-chart-swatch '));
     }
 
     public function test_daily_queries_remain_constant_for_week_and_full_year_ranges()

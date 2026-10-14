@@ -70,7 +70,17 @@ class People
         $stats->favorites = DB::table('favorites')->where('user_id', $user->id)->distinct()->count('piece_id');
         $stats->folders = DB::table('favorite_folders')->where('user_id', $user->id)->count();
         $stats->scores = DB::table('score_annotations')->where('user_id', $user->id)->where('marks', '!=', '[]')->distinct()->count('piece_id');
-        $stats->ungrouped = DB::table('activity_events')->whereNull('visit_id')->where('user_id', $user->id)->count();
+        $ungrouped = $queries->ungrouped(null, $user->id)->selectRaw('COUNT(*) as total, MAX(occurred_at) as last_activity')->first();
+        $stats->ungrouped = (int) $ungrouped->total;
+        $stats->last_ungrouped_activity = $ungrouped->last_activity;
+        $history = $tab === 'visits' ? $queries->ungrouped($filters, $user->id)->orderByDesc('occurred_at')->orderByDesc('id')
+            ->paginate(AdminPagination::PER_PAGE, ['id', 'platform', 'type', 'source', 'occurred_at', 'occurred_at_utc', 'route_name', 'url'], 'history_page')->withQueryString() : null;
+        $historyParameters = ['user' => $user->id, 'tab' => 'visits'];
+        if ($stats->last_ungrouped_activity) {
+            $historyDay = carbon($stats->last_ungrouped_activity)->toDateString();
+            $historyParameters += ['range' => 'custom', 'from' => $historyDay, 'to' => $historyDay, 'platform' => 'all'];
+        }
+        $ungroupedHistoryUrl = route('admin.analytics.users.profile', $historyParameters).'#ungrouped-history';
         $engagement = $queries->events(null, $user->id)->whereIn('e.type', ['media_play', 'score_opened', 'annotation_saved', 'favorite_changed'])->select('e.type')->selectRaw('COUNT(*) as total')->groupBy('e.type')->get()->pluck('total', 'type');
         $engagement['synthesia'] = $queries->events(null, $user->id)->where('e.type', 'media_play')->where('e.metadata->media_id', 'like', '%synthesia%')->count();
         $visits = $queries->visitList($tab === 'visits' ? $filters : null, $user->id, AdminPagination::PER_PAGE, $visitSort);
@@ -95,6 +105,6 @@ class People
         if (isset($music['media'])) $ids = $ids->merge(collect($music['media']->items())->map(function ($e) { return Presentation::metadata($e)['piece_id'] ?? null; }));
         $pieces = Queries::pieces($ids->filter()->unique());
         $accountEvents = $tab === 'account' ? DB::table('activity_events as e')->where('e.user_id', $user->id)->where('e.source', 'server')->whereIn('e.type', ['registration_completed', 'login', 'trial_started', 'subscription_activated', 'subscription_paid', 'subscription_canceled'])->orderByDesc('e.occurred_at')->paginate(AdminPagination::PER_PAGE, ['e.*'], 'account_page')->withQueryString() : null;
-        return compact('user', 'tab', 'filters', 'visitSort', 'stats', 'engagement', 'visits', 'frequent', 'music', 'pieces', 'accountEvents', 'selectedFolder');
+        return compact('user', 'tab', 'filters', 'visitSort', 'stats', 'engagement', 'visits', 'history', 'ungroupedHistoryUrl', 'frequent', 'music', 'pieces', 'accountEvents', 'selectedFolder');
     }
 }

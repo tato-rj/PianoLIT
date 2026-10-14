@@ -9,6 +9,9 @@
         const tooltip = root.querySelector('.admin-map-tooltip');
         const picker = root.querySelector('[data-country-picker]');
         const located = Number(root.dataset.located) || 0;
+        const unit = root.dataset.mapUnit || 'user';
+        const units = root.dataset.mapUnits || 'users';
+        const shareLabel = root.dataset.mapShareLabel || 'of accounts with a country';
         const width = Number(svg.dataset.mapWidth), height = Number(svg.dataset.mapHeight);
         const shapes = new Map(), countries = new Map();
         const number = new Intl.NumberFormat('en-US');
@@ -33,7 +36,7 @@
             const country = countries.get(shape.dataset.country);
             if (!country) return;
             tooltip.querySelector('strong').textContent = country.name;
-            tooltip.querySelector('span').textContent = number.format(country.count) + (country.count === 1 ? ' user' : ' users');
+            tooltip.querySelector('span').textContent = number.format(country.count) + ' ' + (country.count === 1 ? unit : units);
             tooltip.hidden = false;
             const bounds = stage.getBoundingClientRect();
             const countryBounds = shape.getBoundingClientRect();
@@ -57,7 +60,7 @@
             root.querySelectorAll('[data-select-country]').forEach(button => button.setAttribute('aria-pressed', button.dataset.selectCountry === code ? 'true' : 'false'));
             root.querySelector('[data-country-total]').textContent = number.format(country.count);
             root.querySelector('[data-country-name]').textContent = country.name;
-            root.querySelector('[data-country-share]').textContent = (located ? Math.round(country.count / located * 1000) / 10 : 0) + '% of accounts with a country';
+            root.querySelector('[data-country-share]').textContent = (located ? Math.round(country.count / located * 1000) / 10 : 0) + '% ' + shareLabel;
             const flag = root.querySelector('[data-country-flag]');
             flag.className = /^[A-Z]{2}$/.test(code) ? 'flag-icon flag-icon-' + code.toLowerCase() : '';
             picker.value = code;
@@ -147,7 +150,7 @@
         renderView();
     }
 
-    function ready() { document.querySelectorAll('[data-user-country-map]').forEach(install); }
+    function ready() { document.querySelectorAll('[data-user-country-map], [data-country-map]').forEach(install); }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready);
     else ready();
 }());

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Analytics\Analytics;
 use App\Analytics\MembershipReport;
+use App\Analytics\PieceReport;
 use App\Blog\{Post, Topic};
 use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
@@ -30,15 +31,12 @@ class AnalyticsController extends Controller
         return view('admin.pages.analytics.logs.index');
     }
 
-    public function pieces()
+    public function pieces(Request $request, PieceReport $report)
     {
         if (request()->ajax())
             return (new Analytics)->for('pieces')->query(request('type'), request()->except('type'))->get();
 
-        $favorites = Piece::select('pieces.*')->withCount(['favorites' => function ($q) { \App\Activity\ExcludedAccounts::owned($q, 'favorites.user_id'); }])->orderBy('favorites_count', 'DESC')->take(10)->get();
-        $views = Piece::select('pieces.*')->withCount(['views' => function ($q) { \App\Activity\ExcludedAccounts::owned($q, 'piece_views.user_id'); }])->orderBy('views_count', 'DESC')->take(10)->get();
-
-        return view('admin.pages.analytics.pieces.index', compact(['favorites', 'views']));
+        return view('admin.pages.analytics.pieces.index', ['report' => $report->get($request)]);
     }
 
     public function favorites()

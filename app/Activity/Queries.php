@@ -146,22 +146,41 @@ class Queries
         $rows = $this->visits($filters)->selectRaw('DATE(v.started_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
         $pieces = $this->pieceOpens($this->events($filters))->selectRaw('DATE(e.occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
         $media = $this->events($filters)->where('e.type', 'media_play')->selectRaw('DATE(e.occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
+        $app = in_array($filters->values['platform'], ['all', 'app'], true)
+            ? $this->appRequests($filters)->selectRaw('DATE(occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day') : collect();
         $days = [];
         for ($day = $filters->start->copy(); $day->lt($filters->end); $day->addDay()) {
             $key = $day->toDateString();
             $days[] = ['day' => $key, 'date' => $day->format('M j'), 'total' => (int) ($rows[$key]->total ?? 0),
-                'pieces' => (int) ($pieces[$key]->total ?? 0), 'media_starts' => (int) ($media[$key]->total ?? 0)];
+                'pieces' => (int) ($pieces[$key]->total ?? 0), 'media_starts' => (int) ($media[$key]->total ?? 0), 'ios_requests' => (int) ($app[$key]->total ?? 0)];
         }
         return $days;
     }
 
-    public function ungrouped(Filters $filters, $userId = null)
+    public function appRequests(Filters $filters)
+    {
+        // Existing mobile requests and imported requests have no visit context.
+        // Count the recorded attempts without asserting visits or action success.
+        return $this->ungrouped($filters)->where('platform', 'app')->whereIn('type', ['request', 'legacy_request']);
+    }
+
+    public function appRequestSummary(Filters $filters)
+    {
+        return $this->appRequests($filters)->selectRaw("COUNT(*) as requests, COUNT(DISTINCT user_id) as reported_accounts, COUNT(DISTINCT DATE(occurred_at)) as active_days,
+            COALESCE(SUM(CASE WHEN source = 'server' THEN 1 ELSE 0 END), 0) as current_requests,
+            COALESCE(SUM(CASE WHEN source = 'redis' THEN 1 ELSE 0 END), 0) as imported_requests,
+            MAX(CASE WHEN source = 'server' THEN occurred_at ELSE NULL END) as latest_current_request")->first();
+    }
+
+    public function ungrouped(Filters $filters = null, $userId = null)
     {
         $query = ExcludedAccounts::events(DB::table('activity_events'))->whereNull('visit_id');
-        $filters->apply($query, 'occurred_at');
         if ($userId !== null) $query->where('user_id', $userId);
-        if ($filters->values['audience'] === 'registered') $query->whereNotNull('user_id');
-        if ($filters->values['audience'] === 'anonymous') $query->whereNull('user_id');
+        if ($filters) {
+            $filters->apply($query, 'occurred_at');
+            if ($filters->values['audience'] === 'registered') $query->whereNotNull('user_id');
+            if ($filters->values['audience'] === 'anonymous') $query->whereNull('user_id');
+        }
         return $query;
     }
 

@@ -23,7 +23,10 @@
         <a class="ua-journey-link" href="{{ route('admin.analytics.users.journey', $item->id) }}">View journey @icon('arrow-up-right', ['mr' => 0])</a>
     </article>
 @empty
-    <div class="ua-empty">@icon('users', ['mr' => 0])<h3>No visits recorded</h3><p>Try a different period or platform. Older ungrouped activity is kept separately.</p></div>
+    <div class="ua-empty">@icon('users', ['mr' => 0])<h3>No visits recorded</h3>
+        @if(isset($stats) && $stats->ungrouped)<p>Activity without visit details is available separately. <a href="{{ $tab === 'visits' ? '#ungrouped-history' : $ungroupedHistoryUrl }}">Browse recorded activity →</a></p>
+        @else<p>Try a different period or platform. Older ungrouped activity is kept separately.</p>@endif
+    </div>
 @endforelse
 </div>
 {{ $visits->links() }}

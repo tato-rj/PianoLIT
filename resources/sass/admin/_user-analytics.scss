@@ -23,6 +23,8 @@
   .ua-directory-options summary { cursor: pointer; }
   .ua-metrics { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 12px; }
   .ua-metrics-four { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .ua-metrics-three { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .ua-metrics-six { grid-template-columns: repeat(6,minmax(0,1fr)); }
   .ua-metric { padding: 20px; }
   .ua-metric span { display: block; color: #626b64; font-size: var(--font-size-sm); }
   .ua-metric strong { display: block; font-size: var(--font-size-h1-utility); font-weight: 500; letter-spacing: -1.5px; margin-top: 12px; line-height: 1.2; }
@@ -37,6 +39,7 @@
   .ua-chart-series--visits { --ua-series-color: #375849; --ua-series-fill: #94c6b0; --ua-series-light: #c4e1d1; }
   .ua-chart-series--pieces { --ua-series-color: #684c93; --ua-series-fill: #a692ce; --ua-series-light: #d6cbed; }
   .ua-chart-series--media { --ua-series-color: #8d5031; --ua-series-fill: #efb07c; --ua-series-light: #f7d8bd; }
+  .ua-chart-series--app { --ua-series-color: #315e83; --ua-series-fill: #8eb6d7; --ua-series-light: #c5ddef; }
   .ua-chart-swatch { width: 12px; height: 12px; border-radius: 4px; background: var(--ua-series-fill); flex-shrink: 0; }
   .ua-chart-unit, .ua-chart-x { color: #626b64; font-size: var(--font-size-sm); }
   .ua-chart-layout { display: flex; gap: 12px; min-width: 0; }
@@ -187,7 +190,7 @@
   .ua .ua-context-card .ua-context-actions { padding-left: 8px; }
   .ua {
     .ua-card { padding: 20px; border-radius: 22px; }
-    .ua-metrics, .ua-metrics-four { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .ua-metrics, .ua-metrics-three, .ua-metrics-four, .ua-metrics-six { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
     .ua-metric { padding: 16px; } .ua-metric strong { font-size: var(--font-size-h2); }
     .ua-grid, .ua-conversions { grid-template-columns: minmax(0,1fr); }
     .ua-tabs { width: 100%; } .ua-tabs a { flex: 1; text-align: center; padding: 10px 12px; }

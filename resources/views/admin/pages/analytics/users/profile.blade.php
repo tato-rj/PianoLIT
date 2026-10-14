@@ -19,6 +19,16 @@
     @elseif($tab === 'visits')
     @include('admin.pages.analytics.users.filters', ['profileFilters' => true])
     <section class="ua-card"><h2>Visit history</h2>@include('admin.pages.analytics.users.visits')</section>
+    @if($stats->ungrouped)
+    <section class="ua-card" id="ungrouped-history">
+        <div class="ua-section-heading"><div><h2>Ungrouped activity</h2><p>Older app requests and imported activity do not contain visit boundaries or duration. Legacy account associations may be unverified.</p></div><span class="ua-badge">{{ number_format($history->total()) }} {{ $history->total() == 1 ? 'record' : 'records' }} in this period</span></div>
+        <p class="ua-meta">{{ number_format($stats->ungrouped) }} {{ $stats->ungrouped == 1 ? 'record' : 'records' }} stored for this account.@if($stats->last_ungrouped_activity) Latest dated activity: {{ carbon($stats->last_ungrouped_activity)->format('M j, Y') }}. <a href="{{ $ungroupedHistoryUrl }}">View latest activity →</a>@endif</p>
+        @forelse($history as $event)
+        <div class="ua-history-row"><time>{{ \App\Activity\Time::date($event, 'occurred_at')->format('M j, Y · g:i:s A') }}</time><strong>{{ \App\Activity\Presentation::platform($event->platform) }} · {{ \App\Activity\Presentation::page($event) }}</strong><span class="ua-meta">{{ $event->url ?: $event->route_name }}</span></div>
+        @empty<p class="ua-muted">No dated ungrouped activity in the selected period and platform.</p>@endforelse
+        {{ $history->fragment('ungrouped-history')->links() }}
+    </section>
+    @endif
     @elseif($tab === 'music')
     <p class="ua-note">Exploration and media sections describe recorded history. Favorites, folders and markings below describe the account’s current saved state.</p>
     <div class="ua-grid">
@@ -35,6 +45,6 @@
         </dl><a class="ua-button ua-button-secondary" href="{{ route('admin.users.show', $user->id) }}">Manage account & subscription →</a></section>
         <section class="ua-card"><h2>Recorded account milestones</h2><p class="ua-meta">Confirmed events only. Older trial or payment history may exist in subscription management without a corresponding analytics event.</p>@forelse($accountEvents as $event)<div class="ua-history-row"><strong>{{ \App\Activity\Presentation::action($event) }}</strong><time>{{ \App\Activity\Time::event($event)->format('M j, Y · g:i A') }}</time></div>@empty<p class="ua-muted">No account milestones have been recorded.</p>@endforelse{{ $accountEvents->links() }}</section></div>
     @endif
-    @if($stats->ungrouped)<p class="ua-note">{{ number_format($stats->ungrouped) }} additional account-associated records have no visit boundaries. Legacy mobile/imported associations may be unverified. They are not included in visit counts or reconstructed as sessions.</p>@endif
+    @if($stats->ungrouped && $tab !== 'visits')<p class="ua-note">{{ number_format($stats->ungrouped) }} additional account-associated records have no visit boundaries. Legacy mobile/imported associations may be unverified. They are not included in visit counts or reconstructed as sessions. <a href="{{ $ungroupedHistoryUrl }}">Browse recorded activity →</a></p>@endif
 </div></div>
 @endsection

@@ -11,8 +11,7 @@
     @include('admin.components.page.title', [
       'icon' => 'users', 
       'title' => $user->full_name, 
-      'subtitle' => 'Use this page to view and manage this user.', 
-      'back' => ['back to logs' => route('admin.users.logs'), 'view all' => route('admin.users.index')]
+      'subtitle' => 'Use this page to view and manage this user.'
     ])
 
     @include('admin.pages.users.show.profile')

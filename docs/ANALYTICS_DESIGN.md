@@ -62,3 +62,12 @@ things and do not form parts of a meaningful combined total. Shared baselines ma
 comparisons clearer. Use consistent mint, lavender and peach series colors, rounded
 tops, exact counts above bars and the page's light surfaces. Retain readable dates,
 a single count scale and a full-date details table for long ranges.
+
+On 2026-10-13 the user supplied an additional [dashboard and gauge reference](design/analytics-gauges-reference.webp)
+for the Pieces analytics redesign. Use a variety of relevant graph styles: fine
+area/line trends, rounded grouped bars, pastel doughnuts with exact legends,
+semicircular coverage gauges, horizontal rankings, a colored country map and a
+classification heatmap. The chart should fit the data: categories share a common
+denominator, subset bars are not added to their parent counts, and missing or
+conflicting classifications remain visible. The repertoire page follows this
+pattern; see PIECE_ANALYTICS.md for its metric definitions.
