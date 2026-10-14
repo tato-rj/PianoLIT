@@ -222,6 +222,59 @@ class AppleMembershipMonitorTest extends ReviewTestCase
         foreach (['active', 'trial', 'ending', 'expired'] as $status) $this->assertSame(1, $report['totals'][$status]);
     }
 
+    public function test_directory_defaults_to_active_and_keeps_all_statuses_through_pagination()
+    {
+        $activeIds = [];
+        foreach (range(1, 13) as $index) {
+            $user = Model::withoutEvents(function () { return create(User::class, ['super_user' => false]); });
+            $source = Stripe::create(['stripe_id' => 'active-'.$user->id, 'plan' => 'monthly', 'status' => 'active', 'renews_at' => now()->addMonth()]);
+            $user->membership()->create(['source_type' => Stripe::class, 'source_id' => $source->id]);
+            $activeIds[] = $user->id;
+        }
+        $super = Model::withoutEvents(function () { return create(User::class, ['super_user' => true]); });
+        $activeIds[] = $super->id;
+        foreach (['trialing', 'canceled'] as $status) {
+            $user = Model::withoutEvents(function () { return create(User::class, ['super_user' => false]); });
+            $source = Stripe::create(['stripe_id' => $status.'-'.$user->id, 'plan' => 'monthly', 'status' => $status, 'renews_at' => now()->addMonth()]);
+            $user->membership()->create(['source_type' => Stripe::class, 'source_id' => $source->id]);
+        }
+        $this->apple(); // No receipt check yet: pending, not active.
+        $this->actingAs(create(Admin::class), 'admin');
+        $selectedStatus = function ($response) {
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($response->getContent());
+            return (new \DOMXPath($dom))->evaluate('string(//select[@name="status"]/option[@selected]/@value)');
+        };
+
+        $default = $this->get(route('admin.analytics.memberships'))->assertOk();
+        $this->assertSame('active', $selectedStatus($default));
+        $this->assertSame(14, $default->viewData('memberships')->total());
+        $this->assertSame(['active'], $default->viewData('memberships')->pluck('membership_status')->unique()->all());
+        $default->assertDontSee('class="ma-reset"', false);
+        $activeNext = $this->get($default->viewData('memberships')->nextPageUrl())->assertOk();
+        $this->assertSame('active', $selectedStatus($activeNext));
+        $this->assertCount(2, $activeNext->viewData('memberships'));
+        $this->assertEqualsCanonicalizing($activeIds, $default->viewData('memberships')->pluck('user_id')->merge($activeNext->viewData('memberships')->pluck('user_id'))->all());
+
+        foreach (['all', ''] as $status) {
+            $all = $this->get(route('admin.analytics.memberships').'?status='.$status.'&provider=billing&sort=name')->assertOk();
+            $this->assertSame('all', $selectedStatus($all));
+            $this->assertSame(16, $all->viewData('memberships')->total());
+            $this->assertSame($default->viewData('counts'), $all->viewData('counts'));
+            $nextUrl = $all->viewData('memberships')->nextPageUrl();
+            $this->assertStringContainsString('status=all', $nextUrl);
+            $this->assertStringContainsString('provider=billing', $nextUrl);
+            $this->assertStringContainsString('sort=name', $nextUrl);
+            $next = $this->get($nextUrl)->assertOk();
+            $this->assertSame('all', $selectedStatus($next));
+            $this->assertCount(4, $next->viewData('memberships'));
+        }
+        $expired = $this->get(route('admin.analytics.memberships', ['status' => 'expired']))->assertOk();
+        $this->assertSame('expired', $selectedStatus($expired));
+        $this->assertSame(1, $expired->viewData('memberships')->total());
+        Http::assertNothingSent();
+    }
+
     public function test_directory_paginates_filters_and_renders_failure_details_safely()
     {
         [$user, $source] = $this->apple([], ['first_name' => 'Lena <script>', 'email' => 'lena@example.test']);
@@ -231,17 +284,17 @@ class AppleMembershipMonitorTest extends ReviewTestCase
         $response->assertSee('Lena &lt;script&gt;', false)->assertSee('21010')->assertSee('Current membership status is unknown.')->assertDontSee('test-receipt')->assertDontSee('test-secret');
         $this->assertSame(1, $response->viewData('memberships')->total());
         for ($i = 0; $i < 26; $i++) $this->apple();
-        $this->assertCount(12, $this->report()['memberships']);
-        $this->assertSame(27, $this->report()['memberships']->total());
-        $secondPage = $this->get(route('admin.analytics.memberships', ['provider' => 'apple', 'page' => 2]))->assertOk()->viewData('memberships');
+        $this->assertCount(12, $this->report(['status' => 'all'])['memberships']);
+        $this->assertSame(27, $this->report(['status' => 'all'])['memberships']->total());
+        $secondPage = $this->get(route('admin.analytics.memberships', ['provider' => 'apple', 'status' => 'all', 'page' => 2]))->assertOk()->viewData('memberships');
         $this->assertSame(12, $secondPage->perPage());
         $this->assertCount(12, $secondPage);
-        $thirdPage = $this->get(route('admin.analytics.memberships', ['provider' => 'apple', 'page' => 3]))->assertOk()->viewData('memberships');
+        $thirdPage = $this->get(route('admin.analytics.memberships', ['provider' => 'apple', 'status' => 'all', 'page' => 3]))->assertOk()->viewData('memberships');
         $this->assertCount(3, $thirdPage);
         $this->assertCount(0, $secondPage->pluck('membership_id')->intersect($thirdPage->pluck('membership_id')));
-        $this->assertSame(1, $this->report(['search' => 'lena@'])['memberships']->total());
-        $this->assertSame(0, $this->report(['search' => '%'])['memberships']->total());
-        $this->assertSame(1, $this->report(['search' => 'Lena <script>'])['memberships']->total());
+        $this->assertSame(1, $this->report(['status' => 'all', 'search' => 'lena@'])['memberships']->total());
+        $this->assertSame(0, $this->report(['status' => 'all', 'search' => '%'])['memberships']->total());
+        $this->assertSame(1, $this->report(['status' => 'all', 'search' => 'Lena <script>'])['memberships']->total());
     }
 
     public function test_old_admin_buttons_redirect_to_analytics_without_network_or_billing_writes()
@@ -283,12 +336,12 @@ class AppleMembershipMonitorTest extends ReviewTestCase
         // Duplicate billing records must not count a second membership for this account.
         $user->membership()->create(['source_type' => Apple::class, 'source_id' => $source->id]);
         DB::enableQueryLog(); DB::flushQueryLog();
-        $this->assertSame(1, $this->report()['memberships']->total());
+        $this->assertSame(1, $this->report(['status' => 'all'])['memberships']->total());
         $small = count(DB::getQueryLog());
         DB::disableQueryLog();
         for ($i = 0; $i < 30; $i++) $this->apple();
         DB::enableQueryLog(); DB::flushQueryLog();
-        $this->assertSame(31, $this->report()['memberships']->total());
+        $this->assertSame(31, $this->report(['status' => 'all'])['memberships']->total());
         $this->assertSame($small, count(DB::getQueryLog()));
         $this->assertLessThanOrEqual(10, $small); // Includes independent super-user totals/directory.
         DB::disableQueryLog();
@@ -305,7 +358,7 @@ class AppleMembershipMonitorTest extends ReviewTestCase
         ]))]);
         (new MembershipMonitor)->run();
         $this->assertSame(1, $this->report()['totals']['ending']);
-        $this->assertTrue(carbon($this->report()['memberships']->first()->access_until)->equalTo(now()->addMonth()));
+        $this->assertTrue(carbon($this->report(['status' => 'ending'])['memberships']->first()->access_until)->equalTo(now()->addMonth()));
         $this->assertNull(DB::table('apple_membership_checks')->first()->grace_expires_at);
         $this->travel(1)->seconds();
         $source->update(['latest_receipt' => 'updated-receipt']);

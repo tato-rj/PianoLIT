@@ -173,7 +173,7 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $apple = $this->account();
         $source = Apple::create(['plan' => 'monthly', 'latest_receipt' => 'test-receipt', 'password' => 'test-secret']);
         $apple->membership()->create(['source_type' => Apple::class, 'source_id' => $source->id]);
-        $report = $this->report();
+        $report = $this->report(['status' => 'all']);
         $this->assertSame(3, $report['memberships']->total());
         $this->assertSame(3, $report['memberships']->pluck('user_id')->unique()->count());
         $this->assertSame('super_user', $report['memberships']->firstWhere('user_id', $super->id)->provider);
@@ -181,11 +181,11 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $this->assertSame(2, $report['counts']['stripe']['active']);
         $this->assertSame(1, $report['counts']['super_user']['active']);
         $this->assertSame(2, (int) (new MembershipReport)->activeTotals(now()->subDay(), now())->total);
-        $this->assertSame([$stripe->id], $this->report(['provider' => 'stripe'])['memberships']->pluck('user_id')->all());
-        $this->assertSame([$apple->id], $this->report(['provider' => 'apple'])['memberships']->pluck('user_id')->all());
-        $this->assertEqualsCanonicalizing([$stripe->id, $apple->id], $this->report(['provider' => 'billing'])['memberships']->pluck('user_id')->all());
-        $this->assertSame([$super->id], $this->report(['provider' => 'super_user'])['memberships']->pluck('user_id')->all());
-        $filtered = $this->report(['provider' => 'billing', 'search' => 'missing']);
+        $this->assertSame([$stripe->id], $this->report(['status' => 'all', 'provider' => 'stripe'])['memberships']->pluck('user_id')->all());
+        $this->assertSame([$apple->id], $this->report(['status' => 'all', 'provider' => 'apple'])['memberships']->pluck('user_id')->all());
+        $this->assertEqualsCanonicalizing([$stripe->id, $apple->id], $this->report(['status' => 'all', 'provider' => 'billing'])['memberships']->pluck('user_id')->all());
+        $this->assertSame([$super->id], $this->report(['status' => 'all', 'provider' => 'super_user'])['memberships']->pluck('user_id')->all());
+        $filtered = $this->report(['status' => 'all', 'provider' => 'billing', 'search' => 'missing']);
         $this->assertSame(0, $filtered['memberships']->total());
         $this->assertSame($report['counts'], $filtered['counts']);
         Http::assertNothingSent(); Mail::assertNothingSent();

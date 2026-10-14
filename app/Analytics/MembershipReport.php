@@ -30,10 +30,12 @@ class MembershipReport
     {
         $filters = $request->validate([
             'provider' => 'nullable|in:stripe,apple,super_user,billing',
-            'status' => 'nullable|in:active,trial,ending,grace_period,expired,revoked,paused,payment_issue,needs_review,pending,sandbox',
+            'status' => 'nullable|in:all,active,trial,ending,grace_period,expired,revoked,paused,payment_issue,needs_review,pending,sandbox',
             'search' => 'nullable|string|max:160',
             'sort' => 'nullable|in:date_asc,date_desc,name,checked',
         ]);
+        // Missing status opens Active; an explicit empty status keeps older All links working.
+        $filters['status'] = array_key_exists('status', $filters) ? ($filters['status'] ?: 'all') : 'active';
         $ready = Schema::hasTable('apple_membership_checks') && Schema::hasTable('apple_membership_sync_runs');
         $base = $this->query($ready);
         $superUsers = app(SuperUserReport::class)->query();
@@ -52,7 +54,7 @@ class MembershipReport
         $rows = DB::query()->fromSub($directory, 'members');
         if (($filters['provider'] ?? '') === 'billing') $rows->whereIn('provider', ['stripe', 'apple']);
         elseif (! empty($filters['provider'])) $rows->where('provider', $filters['provider']);
-        if (! empty($filters['status'])) {
+        if ($filters['status'] !== 'all') {
             $filters['status'] === 'needs_review'
                 ? $rows->whereIn('membership_status', ['needs_review', 'pending', 'payment_issue'])
                 : $rows->where('membership_status', $filters['status']);
@@ -78,7 +80,7 @@ class MembershipReport
             default: $rows->orderByRaw('CASE WHEN access_until IS NULL THEN 1 ELSE 0 END')->orderBy('access_until');
         }
         return [
-            'memberships' => $rows->orderBy('membership_id')->orderBy('user_id')->paginate(AdminPagination::PER_PAGE)->withQueryString(),
+            'memberships' => $rows->orderBy('membership_id')->orderBy('user_id')->paginate(AdminPagination::PER_PAGE)->withQueryString()->appends(['status' => $filters['status']]),
             'counts' => $counts, 'totals' => $totals, 'filters' => $filters, 'labels' => self::LABELS,
             'monitorReady' => $ready,
             'lastRun' => $ready ? DB::table('apple_membership_sync_runs')->orderByDesc('id')->first() : null,

@@ -102,7 +102,10 @@ Trials and Ending are separate categories. Turning off renewal preserves Ending
 through the known end date, including canceled trials. Inactive combines expired,
 paused and revoked/refunded records. Review combines verification failures, not-yet
 checked receipts and Stripe payment issues. The directory offers finer status
-filters. Summary cards always show all providers; directory filters affect rows
+filters. Opening the page or resetting filters defaults the directory to Active.
+Select All statuses to include every status; that explicit selection persists
+through filtering and pagination. Existing empty-status URLs also show all.
+Summary cards always show all providers; directory filters affect rows
 only. They do not count ordinary free accounts or super-user access as paid members.
 Stripe uses saved webhook/billing updates, not live queries to Stripe. Its
 scheduled end date takes precedence over renewal dates; an actually ended record

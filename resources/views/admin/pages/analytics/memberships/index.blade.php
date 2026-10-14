@@ -58,10 +58,10 @@
         <form class="ua-filters" method="GET" action="{{route('admin.analytics.memberships')}}" aria-label="Membership filters">
             <label class="ua-search">Find an account<input type="search" name="search" value="{{$filters['search'] ?? ''}}" placeholder="Name, email or user ID" maxlength="160"></label>
             <label>Provider<select name="provider"><option value="">All providers</option>@foreach(['billing' => 'Stripe + Apple', 'stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS', 'super_user' => 'Super User'] as $key => $label)<option value="{{$key}}" @if(($filters['provider'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
-            <label>Status<select name="status"><option value="">All statuses</option>@foreach($labels as $key => $label)<option value="{{$key}}" @if(($filters['status'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
+            <label>Status<select name="status"><option value="all" @if($filters['status'] === 'all') selected @endif>All statuses</option>@foreach($labels as $key => $label)<option value="{{$key}}" @if(($filters['status'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
             <label>Sort by<select name="sort">@foreach(['date_asc' => 'Access date · earliest', 'date_desc' => 'Access date · latest', 'name' => 'Account name', 'checked' => 'Latest check / grant'] as $key => $label)<option value="{{$key}}" @if(($filters['sort'] ?? 'date_asc') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
             <button class="ua-button" type="submit">Apply filters</button>
-            @if(array_filter($filters))<a class="ma-reset" href="{{route('admin.analytics.memberships')}}">Reset</a>@endif
+            @if(array_filter(array_diff_assoc($filters, ['status' => 'active'])))<a class="ma-reset" href="{{route('admin.analytics.memberships')}}">Reset</a>@endif
         </form>
         <p class="ma-scroll-hint">Scroll sideways to see status, dates and checks.</p>
         <div class="ua-table-scroll" tabindex="0" role="region" aria-label="Membership results"><table class="ua-table ma-table">
