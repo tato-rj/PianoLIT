@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Analytics\Analytics;
 use App\Analytics\MembershipReport;
 use App\Analytics\PieceReport;
+use App\Analytics\FolderReport;
 use App\Blog\{Post, Topic};
 use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
@@ -39,12 +40,12 @@ class AnalyticsController extends Controller
         return view('admin.pages.analytics.pieces.index', ['report' => $report->get($request)]);
     }
 
-    public function favorites()
+    public function favorites(Request $request, FolderReport $report)
     {
         if (request()->ajax())
             return FavoriteFolder::userCreated()->whereNotIn('user_id', \App\Activity\ExcludedAccounts::ids())->datatable();
         
-        return view('admin.pages.analytics.favorites.index');
+        return view('admin.pages.analytics.favorites.index', $report->get($request));
     }
 
     public function memberships(Request $request, MembershipReport $report)

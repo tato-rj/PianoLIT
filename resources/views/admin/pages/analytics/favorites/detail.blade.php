@@ -1,0 +1,9 @@
+<article class="fa-card fa-detail" id="folder-detail" aria-labelledby="fa-detail-title">
+    <div class="fa-heading"><div><span class="fa-eyebrow">Folder contents</span><h3 id="fa-detail-title">{{ $selected->name }}</h3><p>By <a href="{{ route('admin.users.show', $selected->user_id) }}">{{ trim($selected->first_name.' '.$selected->last_name) ?: 'Unnamed account' }}</a> · {{ number_format($selected->pieces_count) }} {{ $selected->pieces_count == 1 ? 'piece' : 'pieces' }} · {{ number_format($selected->composers_count) }} {{ $selected->composers_count == 1 ? 'composer' : 'composers' }}</p></div><a class="fa-button" href="{{ route('admin.analytics.favorites', array_diff_key($filters, array_flip(['folder', 'pieces_page']))) }}#folder-directory">Close @icon('x', ['mr' => 0])</a></div>
+    @if($selected->description)<p class="fa-detail-description">{{ $selected->description }}</p>@endif
+    @if(!$pieces->total())<p class="fa-empty">This folder has no saved pieces.</p>@else
+        @if($pieces->isEmpty())<p class="fa-empty">No pieces on this page. <a href="{{ route('admin.analytics.favorites', array_diff_key($filters, ['pieces_page' => true])) }}#folder-detail">Return to the first page.</a></p>@endif
+        <ol class="fa-piece-list" start="{{ $pieces->firstItem() }}">@foreach($pieces as $piece)<li><span>{{ $pieces->firstItem() + $loop->index }}</span><div><a href="{{ route('admin.pieces.edit', $piece->id) }}">{{ $piece->name }}</a><small>{{ $piece->composer ?: 'Composer unavailable' }}</small></div><time>{{ $piece->saved_at ? carbon($piece->saved_at)->format('M j, Y') : 'Date unknown' }}<small>Saved</small></time></li>@endforeach</ol>
+        <div class="fa-pagination"><p>Showing {{ $pieces->firstItem() ?? 0 }}–{{ $pieces->lastItem() ?? 0 }} of {{ number_format($pieces->total()) }} pieces · folder order</p>{{ $pieces->links() }}</div>
+    @endif
+</article>

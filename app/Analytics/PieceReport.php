@@ -24,7 +24,6 @@ class PieceReport
         $now = now();
         $summary = (array) DB::table('pieces as p')->leftJoin('composers as c', 'c.id', '=', 'p.composer_id')
             ->selectRaw('COUNT(*) as total, COUNT(DISTINCT c.id) as composers,
-                SUM(CASE WHEN p.is_free = 1 THEN 1 ELSE 0 END) as free,
                 SUM(CASE WHEN c.id IS NULL THEN 1 ELSE 0 END) as missing_composer,
                 SUM(CASE WHEN '.$this->audio().' THEN 1 ELSE 0 END) as audio,
                 SUM(CASE WHEN '.$this->score().' THEN 1 ELSE 0 END) as score,

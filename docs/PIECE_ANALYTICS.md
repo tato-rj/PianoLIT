@@ -13,8 +13,9 @@ and country charts also expose full data tables.
 ## Definitions
 
 - **Catalogue totals:** all current piece rows. Represented composers count only
-  existing composer records linked to a piece. Free picks count the current
-  `is_free` flag, not the history of `highlighted_at`.
+  existing composer records linked to a piece. Missing media counts each piece
+  without all three of score, full audio and video once, even if it lacks several.
+  The fixed weekly free-pick count is not shown as a catalogue metric.
 - **Growth:** retained pieces grouped by their creation month, with a baseline
   before the selected 12/24/36-month window and zero-filled months. The current
   month ends at the request time. Future and missing creation timestamps are

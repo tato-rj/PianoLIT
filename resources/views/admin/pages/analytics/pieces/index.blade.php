@@ -20,7 +20,7 @@
 @foreach($report['growth'] as $month)<i style="height:{{ $month['added'] ? max(4, $month['added'] / max(1, max(array_column($report['growth'], 'added'))) * 100) : 0 }}%"></i>
 @endforeach</div></article>
         <article class="pa-metric pa-metric--gold"><span>
-@icon('gift', ['mr' => 0]) Current free picks</span><strong>{{ number_format($report['summary']['free']) }}</strong><p>Pieces currently marked as free.</p></article>
+@icon('video', ['mr' => 0]) Missing media</span><strong>{{ number_format($report['summary']['total'] - $report['summary']['complete']) }}</strong><p>Missing a score, full audio or video.</p></article>
     </div>
 
     <section class="pa-section" aria-labelledby="pa-coverage-title">
