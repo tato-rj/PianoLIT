@@ -24,7 +24,7 @@
           @icon('close', ['mr' => 0])
         </button>
       </div>
-      <div class="{{array_find($options ?? null, ['body', 'raw']) == true ? 'w-100' : 'modal-body'}} p-{{array_find($options ?? null, ['body', 'padding'])}}">
+      <div class="{{array_find($options ?? null, ['body', 'raw']) == true ? 'w-100' : 'modal-body'}} p-{{array_find($options ?? ' pt-0', ['body', 'padding'])}}">
       {!! $body !!}
       </div>
       @isset($footer)
