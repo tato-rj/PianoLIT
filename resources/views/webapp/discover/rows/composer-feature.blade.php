@@ -1,7 +1,7 @@
 @php($featuredComposer = optional(collect($row['content'])->first())->composer)
 @if($featuredComposer)
 <section class="discover-composer-feature discover-{{ $featureKey }} discover-panel pastel-card rounded mb-4" data-pastel-color="{{ $featureKey === 'black' ? 'mint' : 'cream' }}" aria-labelledby="{{ $featureKey }}-composers-heading">
-	<h5 id="{{ $featureKey }}-composers-heading" class="mb-3">{{ $featureKey === 'black' ? 'From Black composers' : $row['title'] }}</h5>
+	<h5 id="{{ $featureKey }}-composers-heading">{{ $featureKey === 'black' ? 'From Black composers' : $row['title'] }}</h5>
 	<div class="discover-composer-feature__layout">
 		<div class="discover-composer-feature__feature">
 			<a class="discover-composer-feature__portrait-link" href="{{ route('webapp.composers.show', $featuredComposer) }}" aria-label="About {{ $featuredComposer->name }}">

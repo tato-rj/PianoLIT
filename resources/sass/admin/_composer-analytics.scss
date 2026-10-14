@@ -121,6 +121,8 @@
   th { font-weight: 500; }
   thead th { color: #626d65; }
   .ca-directory-table { min-width: 1040px; }
+  .ca-directory-table.is-empty { min-width: 0; }
+  .ca-directory-table.is-empty thead { display: none; }
   .ca-directory-table th:first-child { min-width: 220px; max-width: 280px; overflow-wrap: anywhere; }
   .ca-directory-table td { font-variant-numeric: tabular-nums; }
   .ca-directory-table small { display: block; color: #626d65; font-size: var(--font-size-sm); font-weight: 400; margin-top: 5px; }
