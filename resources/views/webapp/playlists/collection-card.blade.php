@@ -1,4 +1,4 @@
-<a class="collection-card {{ $expanded ? 'collection-card--expanded' : '' }}" href="{{ route('webapp.playlists.show', $card['playlist']) }}" @unless($expanded) data-collection-category="{{ $card['category'] }}" @endunless>
+<a class="collection-card {{ $expanded ? 'collection-card--expanded pastel-card' : '' }}" href="{{ route('webapp.playlists.show', $card['playlist']) }}" @if($expanded) data-pastel-color="{{ $pastelColor ?? 'mint' }}" @else data-collection-category="{{ $card['category'] }}" @endif>
     <div class="collection-card__art {{ $card['illustrated'] ? 'collection-card__art--illustrated' : '' }}">
         <img src="{{ $card['image'] }}" alt="" width="900" height="600" loading="lazy" data-collection-image data-fallback="{{ asset('images/webapp/collections/featured.webp') }}">
         @if($card['illustrated'])
@@ -12,7 +12,7 @@
         @endif
         <span class="collections-meta">{{ $card['playlist']->pieces_count }} pieces</span>
         @if($expanded)
-        <span class="collection-card__action">Explore collection @icon('arrow-right', ['mr' => 0])</span>
+        <span class="collection-card__action pastel-card__action">Explore collection @icon('arrow-right', ['mr' => 0])</span>
         @endif
     </div>
 </a>

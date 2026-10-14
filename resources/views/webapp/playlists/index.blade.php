@@ -6,28 +6,28 @@
 
 <div class="collections-page" id="collections-page">
     @if(count($books))
-    <a class="collections-intro" href="#pianolit-path">
+    <a class="collections-intro pastel-card" data-pastel-color="sky" href="#pianolit-path">
         <span class="collections-intro__art" aria-hidden="true">
             <img src="{{ asset('images/webapp/collections/book-1.webp') }}" alt="" width="120" height="120">
             <span>1</span>
         </span>
         <span class="collections-intro__copy">
-            <span class="collections-eyebrow">THE PIANOLIT PATH</span>
+            <span class="collections-eyebrow pastel-card__tag">THE PIANOLIT PATH</span>
             <strong>A little direction. A world of music.</strong>
             <span>Meet our upcoming Piano Solos series.</span>
         </span>
-        <span class="collections-intro__action">Discover the series @icon('arrow-right', ['mr' => 0])</span>
+        <span class="collections-intro__action pastel-card__action">Discover the series @icon('arrow-right', ['mr' => 0])</span>
     </a>
     @endif
 
     @if($featured)
-    <section class="collections-feature" aria-labelledby="featured-heading">
+    <section class="collections-feature pastel-card" data-pastel-color="cream" aria-labelledby="featured-heading">
         <div class="collections-feature__copy">
-            <span class="collections-eyebrow">FEATURED COLLECTION</span>
+            <span class="collections-eyebrow pastel-card__tag">FEATURED COLLECTION</span>
             <h1 id="featured-heading">{{ $featured['playlist']->name }}</h1>
             <p>{{ $featured['playlist']->subtitle ?: 'Discover something beautiful in the piano repertoire.' }}</p>
             <span class="collections-meta">{{ $featured['playlist']->pieces_count }} pieces</span>
-            <a class="btn btn-primary" href="{{ route('webapp.playlists.show', $featured['playlist']) }}">Explore collection @icon('arrow-right', ['mr' => 0])</a>
+            <a class="btn pastel-card__action" href="{{ route('webapp.playlists.show', $featured['playlist']) }}">Explore collection @icon('arrow-right', ['mr' => 0])</a>
         </div>
         <img class="collections-feature__art" src="{{ $featured['image'] }}" alt="" width="1200" height="800" fetchpriority="high" data-collection-image data-fallback="{{ asset('images/webapp/collections/featured.webp') }}">
     </section>
@@ -47,7 +47,7 @@
         </div>
         <div class="collections-books" id="piano-solos-books" tabindex="0" role="region" aria-label="Piano Solos books, scroll to explore all eight">
             @foreach($books as $book)
-            <article class="collections-book">
+            <article class="collections-book pastel-card" data-pastel-color="sky">
                 <div class="collections-book__art">
                     <img src="{{ asset('images/webapp/collections/'.$book['image'].'.webp') }}" alt="" width="900" height="600" loading="lazy">
                     <span class="collections-book__series">PIANO SOLOS</span>
@@ -56,7 +56,7 @@
                 <div class="collections-book__copy">
                     <h3>Piano Solos · Book {{ $book['number'] }}</h3>
                     <p>{{ $book['level'] }}</p>
-                    <span class="collections-coming-soon">Coming soon</span>
+                    <span class="collections-coming-soon pastel-card__tag pastel-card__tag--quiet">Coming soon</span>
                 </div>
             </article>
             @endforeach
@@ -73,7 +73,7 @@
         </div>
         <div class="collections-inspiration">
             @foreach($inspiration as $card)
-                @include('webapp.playlists.collection-card', ['expanded' => true])
+                @include('webapp.playlists.collection-card', ['expanded' => true, 'pastelColor' => ['mint', 'lavender', 'peach'][$loop->index % 3]])
             @endforeach
         </div>
     </section>

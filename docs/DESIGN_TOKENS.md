@@ -75,6 +75,16 @@ Soft actions use `-action` for a darker text/icon shade of the same hue,
 `-action-hover` for its darker hover/focus shade, and `-accent-hover` for a subtly
 deeper tinted background. Icons inherit the action's text color.
 
+For web app promotional panels, add `pastel-card` and
+`data-pastel-color="sky"` (or another palette name). The component uses the same
+light surface, subtle white shading and border as folder faces. Put labels in
+`pastel-card__tag` pills and links/buttons in `pastel-card__action` pills; their
+backgrounds, text, arrows and hover/focus states follow the panel's selected tone.
+Use `pastel-card__tag--quiet` for short status labels. Collections uses sky for
+the PianoLIT Path and books, cream for Featured Collection, and mint/lavender/peach
+for inspiration cards. Discover uses lavender for For you and cream/mint for
+composer features. Artwork, routes and layout remain owned by each component.
+
 ## Typography, spacing and shadows
 
 Body text, headings, small text, common buttons/inputs and blog text consume the

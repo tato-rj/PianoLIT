@@ -20,10 +20,10 @@ class WebAppCollectionsTest extends ReviewTestCase
         ]);
     }
 
-    private function playlist($name, $count = 6, $withTutorials = 6, $group = null)
+    private function playlist($name, $count = 6, $withTutorials = 6, $group = null, $featured = null)
     {
-        return Model::withoutEvents(function () use ($name, $count, $withTutorials, $group) {
-            $playlist = create(Playlist::class, ['name' => $name, 'group' => $group, 'order' => 7, 'published_at' => now()]);
+        return Model::withoutEvents(function () use ($name, $count, $withTutorials, $group, $featured) {
+            $playlist = create(Playlist::class, ['name' => $name, 'group' => $group, 'featured' => $featured, 'order' => 7, 'published_at' => now()]);
             for ($i = 0; $i < $count; $i++) {
                 $piece = create(Piece::class);
                 foreach (['level' => 'beginner', 'period' => 'romantic', 'length' => 'short'] as $type => $tagName) {
@@ -79,7 +79,7 @@ class WebAppCollectionsTest extends ReviewTestCase
 
     public function test_web_read_does_not_write_order_or_mutate_mobile_payloads()
     {
-        $playlist = $this->playlist('Lullabies');
+        $playlist = $this->playlist('Lullabies', 6, 6, null, 'Theme');
         $journey = $this->playlist('Basic 1', 6, 6, 'journey');
         Cache::put('app.playlists.order', [$playlist->id], 60);
         $url = route('api.playlists.index');
@@ -108,7 +108,7 @@ class WebAppCollectionsTest extends ReviewTestCase
 
     public function test_admin_cover_controls_featured_inspiration_and_browse_images()
     {
-        $playlist = $this->playlist('Lullabies');
+        $playlist = $this->playlist('Lullabies', 6, 6, null, 'Theme');
         Model::withoutEvents(function () use ($playlist) {
             $playlist->update(['cover_path' => 'app/playlists/admin-selected.jpg']);
         });
@@ -116,7 +116,8 @@ class WebAppCollectionsTest extends ReviewTestCase
         $this->assertSame($playlist->cover_image, $data['featured']['image']);
         $this->assertSame($playlist->cover_image, $data['inspiration'][0]['image']);
         $this->assertFalse($data['featured']['illustrated']);
-        $this->assertSame('mood', $data['featured']['category']);
+        $this->assertSame('Theme', $data['featured']['category_label']);
+        $this->assertSame('featured-'.hash('sha256', 'Theme'), $data['featured']['category']);
         $response = $this->get(route('webapp.playlists'))->assertOk();
         $this->assertSame(3, substr_count($response->getContent(), 'src="'.$playlist->cover_image.'"'));
         $response->assertDontSee('/collections/night.webp');
@@ -127,6 +128,94 @@ class WebAppCollectionsTest extends ReviewTestCase
         });
         $this->get(route('webapp.playlists'))->assertOk()
             ->assertSee($playlist->cover_image, false)->assertDontSee('admin-selected.jpg');
+    }
+
+    public function test_browse_filters_use_unique_featured_tags_from_eligible_playlists()
+    {
+        $theme = $this->playlist('Lullabies', 6, 6, null, ' Theme ');
+        $otherTheme = $this->playlist('A newly named collection', 6, 6, null, 'Theme');
+        $composer = $this->playlist('Bach, thread by thread', 6, 6, null, 'Composer');
+        $this->playlist('First steps', 6, 6, null, 'Level');
+        $untagged = $this->playlist("Burgmüller's studies");
+        $blank = $this->playlist('No featured tag', 6, 6, null, '   ');
+        $withdrawn = $this->playlist('Withdrawn collection', 6, 6, null, 'Draft only');
+        Model::withoutEvents(function () use ($withdrawn) { $withdrawn->update(['published_at' => null]); });
+        $this->playlist('Journey collection', 6, 6, 'journey', 'Journey only');
+        $this->playlist('Too few pieces', 5, 5, null, 'Too short');
+        $this->playlist('Too few tutorials', 6, 4, null, 'No tutorials');
+
+        $response = $this->get(route('webapp.playlists'))->assertOk();
+        $data = $response->original->getData();
+        $this->assertSame(['Composer', 'Level', 'Theme'], $data['categories']->values()->all());
+        $cards = $data['playlists']->keyBy('playlist.id');
+        $this->assertSame($cards[$theme->id]['category'], $cards[$otherTheme->id]['category']);
+        $this->assertSame('Theme', $cards[$theme->id]['category_label']);
+        $this->assertNotSame($cards[$theme->id]['category'], $cards[$composer->id]['category']);
+        $this->assertNull($cards[$untagged->id]['category']);
+        $this->assertNull($cards[$blank->id]['category']);
+
+        $dom = new \DOMDocument;
+        @$dom->loadHTML('<?xml encoding="utf-8" ?>'.$response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $labels = [];
+        foreach ($xpath->query('//*[@data-collection-filter]') as $button) {
+            $labels[] = $button->textContent;
+        }
+        $this->assertSame(['All', 'Composer', 'Level', 'Theme'], $labels);
+        $this->assertSame(2, $xpath->query('//*[@id="collections-grid"]/*[@data-collection-category="'.$cards[$theme->id]['category'].'"]')->length);
+
+        if ($destination = getenv('COLLECTIONS_TAGS_PREVIEW_PATH')) {
+            file_put_contents($destination, $response->getContent());
+        }
+    }
+
+    public function test_featured_tag_edits_and_removal_take_effect_without_expiring_weekly_selection()
+    {
+        $playlist = $this->playlist('Lullabies', 6, 6, null, 'Mood');
+        $original = app(Collections::class)->data();
+        $selection = Cache::get('webapp.collections.weekly-selection');
+        $oldKey = $original['playlists'][0]['category'];
+        Model::withoutEvents(function () use ($playlist) {
+            $playlist->update(['name' => 'A new name', 'featured' => 'Theme']);
+        });
+
+        $updated = app(Collections::class)->data();
+        $this->assertSame(['Theme'], $updated['categories']->values()->all());
+        $this->assertNotSame($oldKey, $updated['playlists'][0]['category']);
+        $this->assertSame($selection, Cache::get('webapp.collections.weekly-selection'));
+        $this->get(route('webapp.playlists'))->assertOk()->assertSee('>Theme</button>', false)
+            ->assertDontSee('>Mood</button>', false);
+
+        Model::withoutEvents(function () use ($playlist) { $playlist->update(['featured' => null]); });
+        $cleared = app(Collections::class)->data();
+        $this->assertTrue($cleared['categories']->isEmpty());
+        $this->assertNull($cleared['playlists'][0]['category']);
+        $this->assertSame($selection, Cache::get('webapp.collections.weekly-selection'));
+        $this->get(route('webapp.playlists'))->assertOk()->assertDontSee('data-collection-filter');
+    }
+
+    public function test_featured_tags_keep_distinct_labels_and_escape_html()
+    {
+        $labels = ['Etude', 'Étude', 'all', 'A & B "live"', '<b>Theme</b>'];
+        foreach ($labels as $index => $label) {
+            $this->playlist('Collection '.$index, 6, 6, null, $label);
+        }
+        $response = $this->get(route('webapp.playlists'))->assertOk();
+        $data = $response->original->getData();
+        $this->assertCount(count($labels), $data['categories']);
+        $this->assertCount(count($labels), $data['playlists']->pluck('category')->unique());
+        $this->assertNotContains('all', $data['categories']->keys()->all());
+        $response->assertSee('A &amp; B &quot;live&quot;', false)
+            ->assertSee('&lt;b&gt;Theme&lt;/b&gt;', false)->assertDontSee('<b>Theme</b>', false);
+
+        $dom = new \DOMDocument;
+        @$dom->loadHTML('<?xml encoding="utf-8" ?>'.$response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $rendered = [];
+        foreach ($xpath->query('//*[@data-collection-filter and @data-collection-filter!="all"]') as $button) {
+            $rendered[$button->getAttribute('data-collection-filter')] = $button->textContent;
+        }
+        $this->assertSame($data['categories']->all(), $rendered);
     }
 
     public function test_random_selections_are_shared_and_cached_for_seven_days()
@@ -248,6 +337,8 @@ class WebAppCollectionsTest extends ReviewTestCase
 
     public function test_publication_controls_web_visibility_without_changing_mobile_playlists()
     {
+        // Keep updated_at stable while comparing mobile payloads across admin edits.
+        $this->travelTo(now()->startOfSecond());
         $playlist = $this->playlist('Editorial release');
         $playlist->update(['published_at' => null]);
         Cache::put('app.playlists.order', [$playlist->id], 60);

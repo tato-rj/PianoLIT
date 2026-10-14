@@ -9,6 +9,7 @@
 }
 
 @import "free-pick";
+@import "pastel-cards";
 
 // Shared webapp piece/collection cards and circular composer/period tiles.
 .highlight-result {
@@ -94,13 +95,10 @@
     &__media .app-icon { width: 1.25em; height: 1.25em; }
 }
 .discover-for-you {
-    background: var(--pastel-lavender-surface);
     // Two full cards, two 16px gaps and a tenth of the next card.
     .discover-compact-card { flex: 0 0 calc((100% - 32px) / 2.1); min-width: 0; }
 }
 .discover-composer-feature {
-    // Existing Collections feature background.
-    background: #faf8f4;
     &__layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; align-items: center; }
     &__feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: center; }
     &__portrait-link { display: block; min-width: 0; border-radius: var(--radius-button); }
@@ -116,8 +114,6 @@
     .discover-compact-card { min-height: 90px; padding: 10px 16px; }
     .discover-compact-card__art { width: 68px; height: 68px; }
 }
-// Existing Match tour reading background.
-.discover-black { background: #f0fbf2; }
 .discover-past-highlights {
     background: transparent;
     .free-pick-card { height: 292px; }

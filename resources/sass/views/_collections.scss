@@ -6,13 +6,12 @@
     a:focus-visible, button:focus-visible { outline: 3px solid #0055fe; outline-offset: 5px; }
     h1, h2, h3 { font-family: Poppins, sans-serif; font-weight: 600; color: #212529; }
     .icon { vertical-align: middle; }
-    .collections-eyebrow { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1.4px; color: #0055fe; }
     .collections-meta { display: block; font-size: 13px; color: #697386; }
 }
 .collections-intro {
     display: flex; align-items: center; gap: 18px; padding: 18px; margin: 28px 0 18px;
-    background: #edf4ff; border-radius: 12px; color: #212529;
-    &:hover { color: #212529; background: #e5efff; }
+    border-radius: 12px; color: #212529;
+    &:hover { color: #212529; }
     &__art { position: relative; flex: 0 0 64px; height: 64px; overflow: hidden; border-radius: 7px;
         img { width: 100%; height: 100%; object-fit: cover; }
         span { position: absolute; right: 7px; bottom: -9px; font: 64px/1 Georgia, serif; color: #e1f4ff; }
@@ -21,11 +20,11 @@
         strong { font-family: Poppins, sans-serif; font-size: 16px; font-weight: 600; }
         > span:last-child { font-size: 14px; color: #5b6574; }
     }
-    &__action { margin-left: auto; color: #0055fe; font-size: 13px; font-weight: 600; white-space: nowrap; }
+    &__action { margin-left: auto; font-size: 13px; white-space: nowrap; }
 }
 .collections-feature {
     display: grid; grid-template-columns: 46% 54%; overflow: hidden; border-radius: 20px;
-    border: 1px solid #efede8; background: #faf8f4; min-height: 290px;
+    min-height: 290px;
     &__copy { padding: 34px 18px 34px 28px; align-self: center; position: relative; z-index: 1;
         h1 { font-size: clamp(27px, 3vw, 38px); line-height: 1.18; margin: 16px 0 12px; overflow-wrap: anywhere; }
         p { font-size: 16px; line-height: 1.5; margin-bottom: 12px; color: #4d5663; }
@@ -54,7 +53,7 @@
         &:disabled { color: #aab2bf; background: #f7f8fa; cursor: default; }
     }
 }
-.collections-book { border: 1px solid #e6eaf0; border-radius: 10px; overflow: hidden;
+.collections-book { border-radius: 10px; overflow: hidden;
     &__art { position: relative; aspect-ratio: 1.65; overflow: hidden; background: #0055fe;
         img { width: 100%; height: 100%; object-fit: cover; }
     }
@@ -65,7 +64,6 @@
         p { font-size: 12px; color: #697386; margin-bottom: 10px; }
     }
 }
-.collections-coming-soon { display: inline-block; background: #f1f4f8; color: #596579; border-radius: 20px; padding: 4px 9px; font-size: 11px; font-weight: 600; }
 .collections-path-note { margin: 14px 0 0; text-align: center; color: #697386; font-size: 12px; }
 .collection-card {
     display: block; min-width: 0; color: #212529; transition: transform .18s ease;
@@ -79,8 +77,8 @@
         h3 { font-size: 13px; line-height: 1.45; margin-bottom: 4px; }
         p { color: #697386; font-size: 13px; line-height: 1.45; margin: 5px 0 8px; }
     }
-    &__action { color: #0055fe; font-size: 13px; display: block; margin-top: 10px; }
-    &--expanded { border: 1px solid #e6eaf0; border-radius: 10px; overflow: hidden;
+    &__action { font-size: 13px; margin-top: 10px; }
+    &--expanded { border-radius: 10px; overflow: hidden;
         .collection-card__art { border-radius: 0; }
         .collection-card__copy { padding: 14px; }
         .collection-card__copy h3 { font-size: 14px; }

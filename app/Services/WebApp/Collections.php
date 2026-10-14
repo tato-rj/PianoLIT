@@ -20,20 +20,24 @@ class Collections
             ->filter(function ($playlist) { return $playlist->pieces_count >= 5; })
             ->map(function ($playlist) {
                 $key = Str::slug(str_replace(["'", '’'], '', $playlist->name));
+                $featuredTag = trim((string) $playlist->featured);
 
                 return [
                     'playlist' => $playlist,
                     'key' => $key,
                     'image' => $playlist->cover_path ? $playlist->cover_image : asset('images/webapp/collections/featured.webp'),
                     'illustrated' => ! $playlist->cover_path,
-                    'category' => config('collections.categories.'.$key, 'other'),
+                    // Keep labels editable in admin and matching exact, including
+                    // distinct tags that would otherwise share a slug or "all".
+                    'category' => $featuredTag === '' ? null : 'featured-'.hash('sha256', $featuredTag),
+                    'category_label' => $featuredTag,
                 ];
             })->values();
 
         [$featured, $inspiration] = $this->weeklySelection($playlists);
 
-        $categories = collect(['mood' => 'Mood', 'composer' => 'Composer', 'level' => 'Level'])
-            ->filter(function ($label, $key) use ($playlists) { return $playlists->contains('category', $key); });
+        $categories = $playlists->filter(function ($card) { return $card['category_label'] !== ''; })
+            ->pluck('category_label', 'category')->sort(SORT_NATURAL | SORT_FLAG_CASE);
 
         return compact('playlists', 'featured', 'inspiration', 'categories') + ['books' => config('collections.books', [])];
     }

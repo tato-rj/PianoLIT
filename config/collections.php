@@ -1,25 +1,7 @@
 <?php
 
-// Web-only presentation. Playlist contents continue to be maintained in admin.
-// Match by normalized name so local/production database IDs need not agree.
+// Web-only presentation. Playlist contents, covers and Featured tags live in admin.
 return [
-    // Covers always come from the existing admin upload. Only browse categories live here.
-    'categories' => [
-        'lullabies' => 'mood',
-        'at-night' => 'mood',
-        'sunday-morning' => 'mood',
-        'hidden-gems' => 'other',
-        'great-for-beginners' => 'level',
-        'burgmullers-studies' => 'composer',
-        'its-raining-outside' => 'mood',
-        'dark-vibes' => 'mood',
-        'peaceful-dreamin' => 'mood',
-        'melancholic-mood' => 'mood',
-        'wild-flowers' => 'mood',
-        'on-a-winter-day' => 'mood',
-        'fantastic-places' => 'mood',
-        'true-romance' => 'mood',
-    ],
     // These are announcements, not empty playlists or fabricated progress.
     'books' => [
         ['number' => 1, 'level' => 'Elementary', 'image' => 'book-1'],

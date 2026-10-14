@@ -1,4 +1,5 @@
 const assert = require('assert');
+const crypto = require('crypto');
 const initialize = require('../../resources/js/views/collections');
 
 module.exports = function () {
@@ -10,8 +11,9 @@ module.exports = function () {
             addEventListener(name, handler) { this.events[name] = handler; }
         };
     }
-    const cards = ['mood', 'mood', 'composer', 'level', 'other'].map(category => node({'data-collection-category': category}));
-    const buttons = ['all', 'mood', 'composer', 'level'].map(category => node({'data-collection-filter': category}));
+    const tagKey = label => label ? 'featured-' + crypto.createHash('sha256').update(label).digest('hex') : '';
+    const cards = ['Theme', 'Theme', 'Composer', 'all', ''].map(label => node({'data-collection-category': tagKey(label)}));
+    const buttons = ['all', tagKey('Theme'), tagKey('Composer'), tagKey('all')].map(category => node({'data-collection-filter': category}));
     const filters = {hidden: true, querySelectorAll() { return buttons; }};
     const status = {textContent: ''};
     const image = node({src: 'broken.jpg', 'data-fallback': 'fallback.webp'});
@@ -30,8 +32,11 @@ module.exports = function () {
     assert.strictEqual(status.textContent, '1 collection shown');
     assert.strictEqual(buttons[1].attributes['aria-pressed'], 'false');
     assert.strictEqual(buttons[2].attributes['aria-pressed'], 'true');
+    buttons[3].events.click();
+    assert.deepStrictEqual(cards.map(card => card.hidden), [true, true, true, false, true], 'A saved tag named all must match only that tag');
+    assert.strictEqual(status.textContent, '1 collection shown');
     buttons[0].events.click();
-    assert(cards.every(card => !card.hidden));
+    assert(cards.every(card => !card.hidden), 'All restores every collection, including untagged ones');
     assert.strictEqual(image.attributes.src, 'fallback.webp');
     image.events.error();
     assert.strictEqual(image.attributes.src, 'fallback.webp');
