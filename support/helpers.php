@@ -20,10 +20,10 @@ function istrue($condition = null, $show = null)
 	return $show ?? true;
 }
 
-function array_find($array = null, $keys = [])
+function array_find($array = null, $keys = [], $callback = null)
 {
 	if (! $array)
-		return null;
+		return $callback;
 
 	$nest = $array;
 
