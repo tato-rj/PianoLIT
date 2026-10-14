@@ -13,7 +13,7 @@
 				@icon('lock', ['color' => 'grey', 'ml' => 2, 'if' => ! $hasFullAccess])
 			</div>
 			<div class="d-flex align-items-center">
-				<img src="{{$piece->composer->cover_image}}" style="width: 46px;" class="rounded-circle shadow border border-white border-1x piece__composer-image mr-2">
+				<img src="{{$piece->composer->cover_image}}" style="width: 46px;" class="rounded-circle shadow border border-white border-1x mr-2">
 				<div>
 					@include('webapp.components.piece.name')
 					@include('webapp.components.piece.composer')
