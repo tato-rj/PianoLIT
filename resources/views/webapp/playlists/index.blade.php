@@ -8,11 +8,11 @@
     @if(count($books))
     <a class="collections-intro pastel-card" data-pastel-color="sky" href="#pianolit-path">
         <span class="collections-intro__art" aria-hidden="true">
-            <img src="{{ asset('images/webapp/collections/book-1.webp') }}" alt="" width="120" height="120">
+            <img src="{{ asset('images/webapp/collections/book-1.webp') }}" alt="" width="130" height="130">
             <span>1</span>
         </span>
         <span class="collections-intro__copy">
-            <span class="collections-eyebrow pastel-card__tag">THE PIANOLIT PATH</span>
+            <span class="collections-eyebrow pastel-card__tag mb-1">THE PIANOLIT PATH</span>
             <strong>A little direction. A world of music.</strong>
             <span>Meet our upcoming Piano Solos series.</span>
         </span>

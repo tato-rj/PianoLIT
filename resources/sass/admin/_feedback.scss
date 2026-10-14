@@ -1,0 +1,11 @@
+.admin-feedback {
+    .card { border-radius: 24px; }
+    .card-body { padding: 24px; }
+    .admin-feedback-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .form-select { width: auto; min-width: 160px; }
+    .admin-feedback-rating { display: inline-block; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .admin-feedback-rating--bad { color: #a62213; background: #ffe5de; }
+    .admin-feedback-rating--not_bad { color: #79510b; background: #fff1c8; }
+    .admin-feedback-rating--good { color: #39590d; background: #e9f5cd; }
+    .admin-feedback-message { min-width: 240px; max-width: 640px; white-space: pre-wrap; overflow-wrap: anywhere; }
+}

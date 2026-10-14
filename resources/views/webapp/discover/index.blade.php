@@ -27,13 +27,14 @@
 
 <div class="py-5 text-center">
 	<p class="lead mb-2">Help us get even better</p>
-	<a href="mailto:{{config('app.emails.general')}}?subject=My feedback for the PianoLIT team" target="_blank" class="btn btn-secondary">
+	<button type="button" data-bs-toggle="modal" data-bs-target="#feedback-modal" class="btn btn-secondary">
 		@icon('message-circle-more')GIVE YOUR FEEDBACK
-	</a>
+	</button>
 </div>
 
 @include('webapp.tour.modal')
 @include('webapp.discover.composers.modal')
+@include('webapp.feedback.modal')
 @endsection
 
 @push('scripts')

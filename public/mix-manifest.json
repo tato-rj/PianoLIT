@@ -1,7 +1,7 @@
 {
     "/js/app.js": "/js/app.js?id=eefd01c40957b848e58c",
-    "/css/app.css": "/css/app.css?id=414f2006355d89fe55e9a9790caf6179",
-    "/css/admin.css": "/css/admin.css?id=230b598f906eed19ef79",
+    "/css/app.css": "/css/app.css?id=91d252281eacd72bd947",
+    "/css/admin.css": "/css/admin.css?id=67b34d97dd1b63364d82",
     "/css/design-system.css": "/css/design-system.css?id=badbd540d238fd1bfe02",
     "/js/admin.js": "/js/admin.js?id=e01d4e4d340d6c35548b",
     "/js/tone.js": "/js/tone.js?id=fa32150deb46b19561c6",
@@ -35,5 +35,6 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=af343ede273eae5d99bf",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da"
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da",
+    "/js/views/feedback.js": "/js/views/feedback.js?id=588d74c9fab1abad783d"
 }
