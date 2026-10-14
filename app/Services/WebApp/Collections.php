@@ -15,6 +15,7 @@ class Collections
         $playlists = Playlist::whereNull('group')->published()->has('pieces', '>', 5)
             ->select('playlists.*')
             ->withCount(['pieces' => function ($query) { $query->has('tutorials'); }])
+            ->inRandomOrder()
             ->sorted()->orderBy('id')->get()
             ->filter(function ($playlist) { return $playlist->pieces_count >= 5; })
             ->map(function ($playlist) {

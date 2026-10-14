@@ -3254,3 +3254,10 @@ Add a date, issue reference, affected paths, evidence, implemented change, verif
 - **Implementation / affected files:** Exported the six current covers, including revised Chaminade, from the preserved PNG masters to optimized progressive JPEGs at a consistent 990 × 601. Adjusted JPEG quality per image to retain detail within a conservative 120,000-byte limit. Replaced the current upload files and Chaminade v2 alias, refreshed `composer-playlist-covers.zip`, and recorded export settings/sizes in `prompts.json` under `output/imagegen/composer-playlists-2026-10-14/`.
 - **Compatibility / verification:** Asset-only export; artwork composition and palettes remain intact. All six files identify as JPEG, decode successfully and measure 115,695–119,297 bytes. The ZIP contains exactly those six JPGs, each below 120,000 bytes, and passes integrity checks. Visually inspected the lowest-quality export and revised Chaminade; scoped diff whitespace checks pass. Preserved unrelated application changes.
 - **Remaining work:** Upload these JPGs to the playlists; no live playlist record was modified.
+
+### 2026-10-14 — Keep generated output out of Git (P3, complete locally)
+
+- **Request / evidence:** The user requested excluding the local `output/` folder to avoid deploying generated artwork and source images. Git currently tracked 25 files in that directory.
+- **Implementation / affected files:** Added the root `/output/` rule to `.gitignore` and removed the directory from the Git index with `git rm --cached`, retaining the files locally.
+- **Compatibility / verification:** No application or media-delivery changes. Verified that no `output/` files remain in the index, Git ignores the directory, all local output files retain their original hashes, and diff whitespace checks pass.
+- **Remaining work / limits:** Commit and deploy the removal normally. Existing Git history retains the previously committed files; this task does not rewrite history.
