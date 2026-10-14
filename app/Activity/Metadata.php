@@ -5,7 +5,7 @@ namespace App\Activity;
 class Metadata
 {
     const QUERY_KEYS = ['search', 'catalogue', 'sort', 'filters', 'facets', 'level', 'mood', 'tag', 'period', 'technique', 'length', 'composers', 'country', 'video_only', 'score_only', 'audio_only', 'page', 'folder_id'];
-    const BROWSER_KEYS = ['label', 'target', 'control', 'value', 'selected', 'filters', 'search', 'media_kind', 'media_id', 'position_seconds', 'duration_seconds', 'played_seconds', 'playback_rate', 'visible_ms', 'reason', 'navigation', 'section', 'piece_id', 'playback_id', 'unique_watched_percent', 'unique_watched_seconds'];
+    const BROWSER_KEYS = ['label', 'target', 'control', 'value', 'selected', 'filters', 'search', 'media_kind', 'media_id', 'position_seconds', 'duration_seconds', 'played_seconds', 'playback_rate', 'visible_ms', 'reason', 'navigation', 'section', 'piece_id', 'playback_id', 'unique_watched_percent', 'unique_watched_seconds', 'attempt_id'];
 
     public static function select(array $data, array $keys)
     {

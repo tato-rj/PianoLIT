@@ -161,6 +161,69 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->assertCount(2, (new Journey)->get($visit)['groups'][0]['media'], 'Separate playbacks are not hidden.');
     }
 
+    public function test_journey_compacts_legacy_form_and_panel_gestures_but_keeps_retries_and_the_cancel_bug_evidence()
+    {
+        $visit = $this->visit(); $page = $this->page($visit);
+        $this->event($visit, $page, 'click', '2026-10-12 19:14:01', ['label' => 'Synthesia', 'control' => 'a']);
+        $tab = $this->event($visit, $page, 'tab_open', '2026-10-12 19:14:01', ['section' => 'tab-synthesia']);
+        $this->event($visit, $page, 'click', '2026-10-12 19:14:09', ['label' => 'Send my request']);
+        $modal = $this->event($visit, $page, 'tab_open', '2026-10-12 19:14:10', ['section' => 'synthesia-request-modal']);
+        $this->event($visit, $page, 'click', '2026-10-12 19:14:15', ['label' => 'Submit my request']);
+        $first = $this->event($visit, $page, 'form_submit', '2026-10-12 19:14:15', ['control' => 'synthesia-request-form']);
+        $this->event($visit, $page, 'page_leave', '2026-10-12 19:14:15', ['visible_ms' => 15000]);
+        $this->event($visit, $page, 'click', '2026-10-12 19:14:30', ['label' => 'Submit my request']);
+        $retry = $this->event($visit, $page, 'form_submit', '2026-10-12 19:14:30', ['control' => 'synthesia-request-form']);
+        $cancel = $this->event($visit, $page, 'click', '2026-10-12 19:14:35', ['label' => 'Cancel']);
+        $accidental = $this->event($visit, $page, 'form_submit', '2026-10-12 19:14:35', ['control' => 'synthesia-request-form']);
+        $group = (new Journey)->get($visit)['groups'][0];
+        $this->assertSame([$tab, $modal, $first, $retry, $cancel, $accidental], $group['actions']->pluck('id')->all());
+        $this->assertTrue($group['observed']);
+        $this->assertDatabaseCount('activity_events', 11);
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.analytics.users.journey', $visit))->assertOk()
+            ->assertSee('Attempted to submit Synthesia request')->assertDontSee('Submitted a form')->assertDontSee('Page navigation or departure recorded');
+        $this->assertSame(3, substr_count($response->getContent(), 'Attempted to submit Synthesia request'));
+    }
+
+    public function test_journey_only_folds_an_attempt_into_a_confirmed_outcome_for_the_same_page_form_and_piece()
+    {
+        $visit = $this->visit(); $page = $this->page($visit); $otherPage = $this->page($visit, 'webapp.pieces.show', '2026-10-12 19:15:00');
+        $piece = Model::withoutEvents(function () { return create(Piece::class); });
+        $attempt = (string) Str::uuid();
+        $m = ['control' => 'synthesia-request-form', 'attempt_id' => $attempt, 'piece_id' => $piece->id];
+        $this->event($visit, $page, 'form_submit', '2026-10-12 19:14:01', $m);
+        $outcome = $this->event($visit, $page, 'tutorial_request_created', '2026-10-12 19:14:02', $m + ['request_id' => 123], $piece);
+        DB::table('activity_events')->where('id', $outcome)->update(['source' => 'server']);
+        $unmatched = $this->event($visit, $page, 'form_submit', '2026-10-12 19:14:16', array_merge($m, ['attempt_id' => (string) Str::uuid()]));
+        $wrongPiece = $this->event($visit, $page, 'form_submit', '2026-10-12 19:14:17', array_merge($m, ['piece_id' => $piece->id + 1]));
+        $wrongForm = $this->event($visit, $page, 'form_submit', '2026-10-12 19:14:18', array_merge($m, ['control' => 'tutorial-request-form']));
+        $other = $this->event($visit, $otherPage, 'form_submit', '2026-10-12 19:15:01', $m);
+        $groups = (new Journey)->get($visit)['groups']->keyBy('page.id');
+        $this->assertSame([$outcome, $unmatched, $wrongPiece, $wrongForm], $groups[$page]['actions']->pluck('id')->all());
+        $this->assertSame([$other], $groups[$otherPage]['actions']->pluck('id')->all());
+        $this->assertDatabaseCount('activity_events', 6);
+    }
+
+    public function test_journey_retains_http_failures_and_later_actions_while_collapsing_duplicate_callbacks()
+    {
+        $visit = $this->visit(); $page = $this->page($visit);
+        $m = ['section' => 'tab-synthesia'];
+        $this->event($visit, $page, 'tab_open', '2026-10-12 19:14:01.000', $m);
+        $duplicate = $this->event($visit, $page, 'tab_open', '2026-10-12 19:14:01.100', $m);
+        $later = $this->event($visit, $page, 'tab_open', '2026-10-12 19:14:03', $m);
+        $this->event($visit, $page, 'request', '2026-10-12 19:14:04');
+        $failure = $this->event($visit, $page, 'request', '2026-10-12 19:14:05');
+        DB::table('activity_events')->where('id', $failure)->update(['source' => 'server', 'status' => 500]);
+        $this->assertSame([$duplicate, $later, $failure], (new Journey)->get($visit)['groups'][0]['actions']->pluck('id')->all());
+        $this->event($visit, null, 'page_leave', '2026-10-12 19:14:06');
+        $this->event($visit, null, 'request', '2026-10-12 19:14:07');
+        $unplacedFailure = $this->event($visit, null, 'request', '2026-10-12 19:14:08');
+        DB::table('activity_events')->where('id', $unplacedFailure)->update(['source' => 'server', 'status' => 422]);
+        $this->assertSame([$unplacedFailure], collect((new Journey)->get($visit)['unplaced']->items())->pluck('id')->all());
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('A request could not be completed (HTTP 500)');
+    }
+
     public function test_preview_play_clicks_fold_only_into_subsequent_playback_for_the_same_page_and_preview()
     {
         $visit = $this->visit(); $page = $this->page($visit, 'webapp.find-your-match');

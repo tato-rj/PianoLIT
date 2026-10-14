@@ -5,7 +5,7 @@
     'use strict';
     if (!config || win.PianoActivity) return;
     var doc = win.document, sequence = 0, sending = false, retryAt = 0, failures = 0;
-    var storageKey = 'pianolit.activity.outbox.v1', outbox = [], mediaStates = [];
+    var storageKey = 'pianolit.activity.outbox.v1', outbox = [], mediaStates = [], lastClick = null, lastObservation = null;
     var visible = doc.visibilityState !== 'hidden', visibleSince = clock(), visibleTotal = 0;
     function clock() { return Math.max(0, Math.round(win.performance.now())); }
     function uuid() {
@@ -26,14 +26,21 @@
     function record(type, metadata) {
         if (clock() > 86400000) return; // The page token expires after 24 hours.
         if (/^(score_|premium_)/.test(type) && config.pieceId) metadata = Object.assign({piece_id: config.pieceId}, metadata || {});
+        var signature = JSON.stringify([type, metadata || {}]), elapsed = clock();
+        // Duplicate UI callbacks are noise; distinct actions and submission retries remain separate.
+        if (/^(click|tab_open|section_open|section_close)$/.test(type) && lastObservation
+            && lastObservation.signature === signature && elapsed - lastObservation.elapsed <= 500) return;
+        lastObservation = {signature: signature, elapsed: elapsed};
         var batch = outbox[outbox.length - 1];
         if (!batch || batch.page_token !== config.pageToken || batch.events.length >= 20 || batch === sending) {
             batch = {page_token: config.pageToken, visit_id: config.visitId, deferred: !!config.deferred, events: []}; outbox.push(batch);
         }
-        batch.events.push({id: uuid(), type: type, elapsed_ms: clock(), sequence: ++sequence, metadata: metadata || {}});
+        var event = {id: uuid(), type: type, elapsed_ms: elapsed, sequence: ++sequence, metadata: metadata || {}};
+        batch.events.push(event);
         // Bound prolonged offline storage, retaining recent interaction history.
         if (outbox.length > 100) outbox.shift();
         persist();
+        return event;
     }
     function qualification(batch) {
         if (!batch.deferred) return [];
@@ -149,6 +156,10 @@
     doc.addEventListener('click', function (event) {
         var element = event.target.closest && event.target.closest('a,button,summary,[role="button"],[data-url],[data-search-value],[data-search-apply],[data-erase],.tag,.recent-query');
         if (!element || element.closest('[data-activity-ignore]')) return;
+        // The actual panel/toggle event describes these gestures once.
+        var toggle = element.getAttribute('data-bs-toggle');
+        if (element.tagName === 'SUMMARY' || (win.jQuery && ['tab', 'pill', 'modal', 'offcanvas'].indexOf(toggle) !== -1
+            && element.getAttribute('data-bs-target') !== '#match-tour-modal')) return;
         if (element.hasAttribute('data-search-value') || element.classList.contains('tag')) {
             record('filter_change', {control: element.closest('[data-search-facet]') ? element.closest('[data-search-facet]').getAttribute('data-search-facet') : 'tag', value: element.getAttribute('data-search-value') || element.getAttribute('data-name'), selected: element.getAttribute('aria-pressed') !== 'true'});
         } else if (element.hasAttribute('data-search-apply')) {
@@ -170,7 +181,8 @@
                 control = level ? 'match_level_confirm' : 'match_preference_confirm';
             } else if (tour && element.hasAttribute('data-select-level')) control = 'match_level_piece';
             else if (tour && choice !== null && /^\d+$/.test(choice)) piece = choice;
-            record('click', {label: label(element, destinationPiece), navigation: win.location.pathname.slice(0, 100), control: control, section: section, target: target, value: choice === null ? undefined : choice.slice(0, 300), piece_id: destinationPiece || (piece && /^\d+$/.test(piece) ? Number(piece) : (section ? undefined : config.pieceId))});
+            var click = record('click', {label: label(element, destinationPiece), navigation: win.location.pathname.slice(0, 100), control: control, section: section, target: target, value: choice === null ? undefined : choice.slice(0, 300), piece_id: destinationPiece || (piece && /^\d+$/.test(piece) ? Number(piece) : (section ? undefined : config.pieceId))});
+            lastClick = click && element.form && element.type === 'submit' ? {form: element.form, element: element, event: click} : null;
         }
     }, true);
     doc.addEventListener('change', function (event) {
@@ -188,8 +200,27 @@
     doc.querySelectorAll('form').forEach(formToken);
     doc.addEventListener('submit', function (event) {
         var form = event.target; formToken(form);
+        if (form.closest && form.closest('[data-activity-ignore]')) return;
+        var submitter = event.submitter;
+        if (lastClick && lastClick.form === form && clock() - lastClick.event.elapsed_ms <= 1000) {
+            submitter = submitter || lastClick.element;
+            // Replace only the unsent click belonging to this submission. A
+            // validation-blocked click remains an attempt in its own right.
+            outbox.forEach(function (batch) {
+                if (batch !== sending) batch.events = batch.events.filter(function (queued) { return queued.id !== lastClick.event.id; });
+            });
+        }
+        lastClick = null;
         var search = form.querySelector('[name="search"]');
-        record(search ? 'search_submit' : 'form_submit', {control: form.id || 'form', target: safeUrl(form.action || win.location.href), search: search ? search.value.slice(0, 300) : undefined});
+        var tutorial = /^(synthesia|tutorial)-request-form$/.test(form.id || ''), attempt = tutorial ? uuid() : undefined;
+        if (tutorial) {
+            var input = form.querySelector('[name="_activity_attempt"]');
+            if (!input) { input = doc.createElement('input'); input.type = 'hidden'; input.name = '_activity_attempt'; form.appendChild(input); }
+            input.value = attempt;
+        }
+        record(search ? 'search_submit' : 'form_submit', {control: form.id || 'form', target: safeUrl(form.action || win.location.href),
+            label: submitter ? label(submitter) : undefined, search: search ? search.value.slice(0, 300) : undefined,
+            attempt_id: attempt, piece_id: tutorial ? config.pieceId : undefined});
         flush(true);
     }, true);
     doc.addEventListener('toggle', function (event) {

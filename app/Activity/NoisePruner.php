@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class NoisePruner
 {
-    const CONFIRMED_ACTIONS = ['favorite_changed', 'folder_created', 'folder_renamed', 'folder_updated', 'folder_deleted', 'annotation_saved', 'registration_completed', 'login', 'checkout_started', 'trial_started', 'subscription_activated', 'subscription_paid', 'subscription_canceled'];
+    const CONFIRMED_ACTIONS = ['favorite_changed', 'folder_created', 'folder_renamed', 'folder_updated', 'folder_deleted', 'annotation_saved', 'registration_completed', 'login', 'checkout_started', 'trial_started', 'subscription_activated', 'subscription_paid', 'subscription_canceled', 'tutorial_request_created'];
 
     public function candidates($cutoff, $minimumMilliseconds)
     {

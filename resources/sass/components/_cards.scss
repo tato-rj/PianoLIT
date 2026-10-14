@@ -100,7 +100,7 @@
 }
 .discover-composer-feature {
     &__layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px; align-items: center; }
-    &__feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px; align-items: center; }
+    &__feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 16px;}
     &__portrait-link { display: block; min-width: 0; border-radius: var(--radius-button); }
     &__portrait { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-button); }
     &__biography { min-width: 0; overflow-wrap: anywhere; }

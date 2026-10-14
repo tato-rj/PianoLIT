@@ -41,6 +41,7 @@ class ActivityController extends Controller
             'events.*.metadata.section' => 'nullable|string|max:300',
             'events.*.metadata.piece_id' => 'nullable|integer|min:1',
             'events.*.metadata.playback_id' => 'nullable|uuid',
+            'events.*.metadata.attempt_id' => 'nullable|uuid',
             'events.*.metadata.unique_watched_percent' => 'nullable|numeric|min:0|max:100',
             'events.*.metadata.unique_watched_seconds' => 'nullable|numeric|min:0|max:604800',
         ];

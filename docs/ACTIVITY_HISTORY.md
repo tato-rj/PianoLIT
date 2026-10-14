@@ -42,6 +42,16 @@ The ingestion endpoint is a CSRF-protected web-session route for signed-in users
 
 New request metadata uses an allowlist of search/filter context. Original imported payloads preserve whatever the old logger recorded and are visible only through administration; access/backups should be restricted accordingly. [ACTIVITY_FILTERING.md](ACTIVITY_FILTERING.md) documents the five-second web qualification gate, crawler exclusions and hourly removal of old short web visits. Broader age-based retention still needs agreement; the importer never deletes Redis data.
 
+## Journey clarity and request outcomes (2026-10-14)
+
+Browser collection omits generic clicks on Bootstrap tab/modal/offcanvas launchers and details summaries when their actual opening/toggle is recorded. A form submission replaces its immediately preceding unsent submit-button click; clicks blocked before submission remain visible. Identical consecutive click/open/toggle callbacks within 500 ms are ignored. Genuine later actions and form retries remain separate.
+
+Journey presentation also compacts recognized historical click/open and click/submit pairs. Page lifecycle observations continue to support duration/visibility measurements but do not appear as action rows. Successful technical requests remain hidden; HTTP failures appear explicitly. These presentation rules do not delete historical events or change recorded timings.
+
+The web Synthesia and tutorial request forms now have non-submitting Cancel buttons. Their server handler records `tutorial_request_created` only after a database row exists, or `tutorial_request_rejected` with `pending_request`, `already_requested` or `membership_required`. Existing eligibility rules, redirects, notifications and mobile endpoints remain in place. Browser `form_submit` labels describe attempts, never confirmed receipt.
+
+A fresh `_activity_attempt` UUID links each web request-form submission to its server result. It is diagnostic correlation only; the authenticated web session, bound piece and encrypted page token still establish ownership. When the same page/form/piece/attempt has a server outcome, the journey shows that outcome once instead of also showing its browser attempt. Unmatched attempts remain visible, including older history where no result was recorded. Existing Cancel-triggered submissions are retained as evidence; closing a form does not establish that a saved request was undone. The short-visit pruner preserves confirmed request creation as an account milestone. No data migration or historical deletion is required for this change.
+
 ## Importing Redis history
 
 For a large dataset, restore a Redis backup taken **after the complete server cutover** to an isolated Redis instance and configure a named connection in `config/database.php` through the normal deployment process. Use its original application key prefix. Importing a stable source permits meaningful verification and avoids competing with production traffic. Do not flush the production Redis instance: caches and other application features still use it.

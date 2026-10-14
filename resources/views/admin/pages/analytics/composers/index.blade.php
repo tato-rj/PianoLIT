@@ -1,271 +1,88 @@
 @extends('admin.layouts.app')
 
 @section('head')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
+<link rel="stylesheet" href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}">
 @endsection
 
 @section('content')
+<div class="content-wrapper"><div class="container-fluid composer-analytics">
+    @include('admin.components.page.title', ['title' => 'Composer analytics', 'subtitle' => 'Repertoire coverage, audience interest and opportunities to grow the library.'])
+    <div class="ca-context"><span>Current composer catalogue · all-time recorded interest</span><a href="#composer-directory">Explore composers @icon('arrow-down', ['mr' => 0])</a></div>
 
-<div class="content-wrapper">
-  <div class="container-fluid">
-    @include('admin.components.page.title', ['title' => 'Composer analytics', 'subtitle' => 'Explore the composers, periods and nationalities in the library.'])
-
-
-    <div class="row">
-      <div class="col-lg-6 col-md-6 col-12 p-3">
-        @include('admin.pages.analytics.composers.birthdays')
-      </div>    
-      <div class="col-lg-6 col-md-6 col-12 p-3">
-        @include('admin.pages.analytics.composers.deathdays')
-      </div>    
+    <div class="ca-metrics">
+        <article class="ca-metric ca-metric--lavender"><span>@icon('users', ['mr' => 0]) Composers</span><strong>{{ number_format($summary['total']) }}</strong><p>{{ number_format($summary['represented']) }} with pieces · {{ number_format($summary['empty']) }} without pieces</p></article>
+        <article class="ca-metric ca-metric--mint"><span>@icon('music', ['mr' => 0]) Linked pieces</span><strong>{{ number_format($summary['pieces']) }}</strong><p>{{ $summary['top_share'] }}% belong to the five largest composer catalogues.</p></article>
+        <article class="ca-metric ca-metric--peach"><span>@icon('layers', ['mr' => 0]) Small catalogues</span><strong>{{ number_format($summary['small']) }}</strong><p>Composers with 1–3 pieces. <a href="{{ route('admin.analytics.composers', ['depth' => 'small']) }}#composer-directory">Review composers @icon('arrow-up-right', ['mr' => 0])</a></p></article>
+        <article class="ca-metric ca-metric--gold"><span>@icon('globe', ['mr' => 0]) Countries represented</span><strong>{{ number_format(count($countries['countries'])) }}</strong><p>{{ number_format($countries['unlocated']) }} composers have no usable country recorded.</p></article>
     </div>
 
-    <div class="row"> 
-      @include('admin.pages.analytics.row', [
-        'title' => 'Composers',
-        'subtitle' => 'Number of pieces each of the ' . $composersCount . ' composers have in the database.',
-        'footer' => 'Composers with 3 or less pieces: ' . arrayToSentence($composersWithFewPieces),
-        'id' => 'composersChart',
-        'col' => '12',
-        'data' => $composersAnalytics])
+    <div class="ca-grid ca-grid--wide ca-section">
+        @include('admin.pages.analytics.composers.growth')
+        <article class="ca-card"><div class="ca-heading"><div><h2>Repertoire & profile coverage</h2><p>Share of all {{ number_format($summary['total']) }} composer records. Click a gap to review it.</p></div></div>
+            <div class="ca-gauges">
+                @foreach(['represented' => ['With pieces', 'depth', 'empty', '#94c6b0'], 'biography' => ['Biography saved', 'profile', 'biography', '#a692ce'], 'portrait' => ['Portrait saved', 'profile', 'portrait', '#efb07c']] as $key => $definition)
+                @php($share = $summary['total'] ? round($summary[$key] / $summary['total'] * 100, 1) : 0)
+                <a href="{{ route('admin.analytics.composers', [$definition[1] => $definition[2]]) }}#composer-directory" class="ca-gauge" style="--ca-color:{{ $definition[3] }}">
+                    <svg viewBox="0 0 120 72" role="img" aria-label="{{ $definition[0] }}: {{ $summary[$key] }} of {{ $summary['total'] }} composers"><path class="ca-gauge-track" d="M 12 60 A 48 48 0 0 1 108 60" pathLength="100"/><path class="ca-gauge-fill" d="M 12 60 A 48 48 0 0 1 108 60" pathLength="100" opacity="{{ $summary[$key] ? 1 : 0 }}" stroke-dasharray="{{ $share }} 100"/><text x="60" y="56" text-anchor="middle">{{ $share }}%</text></svg>
+                    <strong>{{ $definition[0] }}</strong><span>{{ number_format($summary[$key]) }} / {{ number_format($summary['total']) }}</span><small>{{ number_format($summary['total'] - $summary[$key]) }} to review @icon('arrow-up-right', ['mr' => 0])</small>
+                </a>
+                @endforeach
+            </div>
+            <p class="ca-note">Biography and portrait coverage checks saved text and paths. It does not check editorial quality or whether an image loads.</p>
+        </article>
     </div>
 
-    <div class="row"> 
-      @include('admin.pages.analytics.row', [
-        'title' => 'Periods',
-        'subtitle' => 'Number of composers in each period.',
-        'id' => 'periodsChart',
-        'col' => '4',
-        'data' => $periodsAnalytics])
-
-      @include('admin.pages.analytics.row', [
-        'title' => 'Nationalities',
-        'subtitle' => 'Number of composers by nationality.',
-        'id' => 'countriesChart',
-        'col' => '8',
-        'data' => $countriesAnalytics])
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div id="regions_div" data-countries="{{json_encode($countriesArray)}}" style="width: 100%; height: 500px;"></div>
+    <section class="ca-section" aria-labelledby="ca-interest-title">
+        <div class="ca-section-heading"><h2 id="ca-interest-title">Which composers attract interest?</h2><p>Compare recorded views and current saves alongside the size of each catalogue.</p></div>
+        <div class="ca-grid">
+            @include('admin.pages.analytics.composers.ranking', ['title' => 'Most viewed composers', 'rows' => $rankings['views'], 'metric' => 'views', 'unit' => 'views', 'color' => '#efb07c', 'empty' => 'No piece views have been recorded.'])
+            @include('admin.pages.analytics.composers.ranking', ['title' => 'Most saved composers', 'rows' => $rankings['saves'], 'metric' => 'saves', 'unit' => 'saves', 'color' => '#94c6b0', 'empty' => 'No current saves have been recorded.'])
         </div>
-    </div>
+        <p class="ca-note ca-scope">Views count retained piece-view records, not unique visitors, media plays or all activity events. Saves count each account–piece pair once across folders; removed saves are absent. Analytics opt-outs are excluded. These are different measures, so they are shown separately.</p>
+    </section>
 
-    <div class="row my-3">
-        @include('admin.pages.analytics.composers.ranking')
-    </div>
-  </div>
-</div>
+    <section class="ca-section" aria-labelledby="ca-balance-title">
+        <div class="ca-section-heading"><h2 id="ca-balance-title">How balanced is the catalogue?</h2><p>Composer records count equally here, whether they have one piece or a hundred.</p></div>
+        <div class="ca-grid ca-grid--wide">
+            @include('admin.pages.analytics.composers.periods')
+            <article class="ca-card"><div class="ca-heading"><div><h3>Pieces per composer</h3><p>Each composer belongs to one catalogue-size group.</p></div></div>
+                @include('admin.pages.analytics.composers.donut', ['categories' => $depths, 'label' => 'Pieces per composer', 'links' => true])
+                <div class="ca-subsection"><h3>Composer gender</h3><p class="ca-note">Saved profile values · missing values remain visible.</p>
+                    @include('admin.pages.analytics.composers.donut', ['categories' => $genders, 'label' => 'Composer gender', 'links' => false, 'compact' => true])
+                </div>
+            </article>
+        </div>
+    </section>
 
+    @include('admin.pages.analytics.composers.countries', ['map' => $countries])
+
+    <section class="ca-section" aria-labelledby="ca-planning-title">
+        <div class="ca-section-heading"><h2 id="ca-planning-title">Plan repertoire & features</h2><p>Use current saves and upcoming dates to choose what to review next.</p></div>
+        <div class="ca-grid">
+            <article class="ca-card"><div class="ca-heading"><div><h3>Small catalogues with saves</h3><p>Up to five composers with 1–3 pieces, ranked by saves per piece.</p></div></div>
+                <ol class="ca-opportunities">
+                    @forelse($opportunities as $composer)
+                    <li><span class="ca-rank">{{ $loop->iteration }}</span><div><a href="{{ route('admin.composers.edit', $composer['id']) }}">{{ $composer['name'] }}</a><small>{{ $composer['pieces'] }} {{ $composer['pieces'] === 1 ? 'piece' : 'pieces' }} · {{ number_format($composer['saves']) }} saves · {{ number_format($composer['savers']) }} {{ $composer['savers'] === 1 ? 'account' : 'accounts' }}</small></div><strong>{{ $composer['saves_per_piece'] }}<small>saves / piece</small></strong></li>
+                    @empty<li class="ca-empty">No saves are recorded for composers with 1–3 pieces yet.</li>@endforelse
+                </ol>
+                <p class="ca-note">A starting point for repertoire review. Small samples can rank highly; this does not measure unmet demand or a save conversion rate.</p>
+            </article>
+            <article class="ca-card"><div class="ca-heading"><div><h3>Upcoming composer dates</h3><p>{{ count($anniversaries) }} birthdays and death anniversaries · {{ now()->format('M j') }}–{{ now()->addDays(29)->format('M j, Y') }}.</p></div></div>
+                <ol class="ca-calendar">
+                    @forelse(array_slice($anniversaries, 0, 6) as $event)
+                    <li><time datetime="{{ $event['date']->format('Y-m-d') }}"><strong>{{ $event['date']->format('d') }}</strong><span>{{ $event['date']->format('M') }}</span></time><div><a href="{{ route('admin.composers.edit', $event['id']) }}">{{ $event['name'] }}</a><small>{{ $event['type'] }} · {{ $event['years'] }} years</small><small>{{ $event['pieces'] }} {{ $event['pieces'] === 1 ? 'piece available' : 'pieces available' }}</small></div></li>
+                    @empty<li class="ca-empty">No exact composer dates fall within the next 30 days.</li>@endforelse
+                </ol>
+                @if(count($anniversaries) > 6)<details class="ca-details"><summary>All {{ count($anniversaries) }} upcoming dates</summary><ul class="ca-date-list">@foreach($anniversaries as $event)<li><time>{{ $event['date']->format('M j') }}</time><a href="{{ route('admin.composers.edit', $event['id']) }}">{{ $event['name'] }}</a><span>{{ $event['type'] }} · {{ $event['years'] }} years</span></li>@endforeach</ul></details>@endif
+                <p class="ca-note">Includes today. Approximate, invalid and future source dates are omitted. February 29 anniversaries appear only in leap years.</p>
+            </article>
+        </div>
+    </section>
+
+    @include('admin.pages.analytics.composers.directory')
+</div></div>
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
-
-<script type="text/javascript">
-    // SETUP
-    google.charts.load('current', {
-        'packages':['geochart'],
-        // Note: you will need to get a mapsApiKey for your project.
-        // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
-        'mapsApiKey': "{{env('GOOGLE_API_KEY')}}"
-    });
-
-    function loadMap(array, region = null) {
-        google.charts.setOnLoadCallback(function() {
-            return drawRegionsMap(array, region);
-        });
-    }
-
-    function drawRegionsMap(array, region = null) {
-
-        var data = google.visualization.arrayToDataTable(array);
-
-        var options = {
-            region: region,
-            colorAxis: {colors: ['#D7E9E9', '#0055fe']}
-        };
-
-        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
-
-        chart.draw(data, options);
-
-        google.visualization.events.addListener(chart, 'select', function() {
-            var selection = chart.getSelection().length ? chart.getSelection()[0]['row'] + 1 : null;
-
-            if (selection) {
-                loadMap(array, 'US');
-            }
-        });
-    }
-</script>
-<script type="text/javascript">
-    var countriesArray = $('#regions_div').data('countries');
-
-    loadMap(countriesArray);
-</script>
-<script type="text/javascript">
-$(document).ready( function () {
-    $('#composers-table').DataTable({
-    'order': [[1, 'desc']],
-    });
-} );
-</script>
-<script type="text/javascript">
-var colors = ['#5eb58a', '#f5c86d', '#f3686f', '#9a40d5', '#e3342f', '#f6993f', '#38c172', '#4dc0b5', '#3490dc', '#6574cd', '#9561e2', '#f66d9b'];
-function getRandom(arr, n = 1) {
-    var requests = n;
-    var result = new Array(n),
-        len = arr.length,
-        taken = new Array(len);
-    if (n > len)
-        throw new RangeError("getRandom: more elements taken than available");
-    while (n--) {
-        var x = Math.floor(Math.random() * len);
-        result[n] = arr[x in taken ? taken[x] : x];
-        taken[x] = --len in taken ? taken[len] : len;
-    }
-
-    return requests == 1 ? result[0] : result;
-}
-
-function getElements(arr, n) {
-    return arr.slice(0, n);
-}
-
-</script>
-
-<script type="text/javascript">
-let composersRecords = JSON.parse($('#composersChart').attr('data-records'));
-let composers = [];
-let composers_pieces_count = [];
-let composers_count = composersRecords.length;
-
-for (var i=0; i < composers_count; i++) {
-  composers.push(composersRecords[i].short_name);
-  composers_pieces_count.push(composersRecords[i].pieces_count);
-}
-
-var composersChartElement = document.getElementById("composersChart").getContext('2d');
-var composersChart = new Chart(composersChartElement, {
-    type: 'bar',
-    data: {
-        labels: composers,
-        datasets: [{
-            data: composers_pieces_count,
-            backgroundColor: getRandom(colors)
-        }]
-    },
-    options: {
-        legend: {
-          display: false
-        },
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    stepSize: getStepSize(composers_pieces_count)
-                }
-            }],
-            xAxes: [{
-                ticks: {
-                  autoSkip: false
-                }
-            }]
-        },
-        layout: {
-            padding: {
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0
-            }
-        }
-    }
-});
-</script>
-
-<script type="text/javascript">
-let periodsRecords = JSON.parse($('#periodsChart').attr('data-records'));
-let periods = [];
-let periods_composers_count = [];
-
-for (var i=0; i < periodsRecords.length; i++) {
-  periods.push(periodsRecords[i].period);
-  periods_composers_count.push(periodsRecords[i].count);
-}
-
-var periodsChartElement = document.getElementById("periodsChart").getContext('2d');
-var periodsChart = new Chart(periodsChartElement,{
-    type: 'pie',
-    data: {
-        labels: periods,
-        datasets: [{
-            data: periods_composers_count,
-            backgroundColor: getRandom(colors, periodsRecords.length)
-        }]
-    },
-    options: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            padding: 20
-          }
-        }
-    }
-});
-</script>
-
-<script type="text/javascript">
-let countriesRecords = JSON.parse($('#countriesChart').attr('data-records'));
-let countries = [];
-let countries_composers_count = [];
-let countries_count = countriesRecords.length;
-
-for (var i=0; i < countries_count; i++) {
-  countries.push(countriesRecords[i].nationality);
-  countries_composers_count.push(countriesRecords[i].composers_count);
-}
-
-var countriesChartElement = document.getElementById("countriesChart").getContext('2d');
-var countriesChart = new Chart(countriesChartElement, {
-    type: 'bar',
-    data: {
-        labels: countries,
-        datasets: [{
-            data: countries_composers_count,
-            backgroundColor: getRandom(colors)
-        }]
-    },
-    options: {
-        legend: {
-          display: false
-        },
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    stepSize: getStepSize(composers_pieces_count)
-                }
-            }],
-            xAxes: [{
-                ticks: {
-                  autoSkip: false
-                }
-            }]
-        },
-        layout: {
-            padding: {
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0
-            }
-        }
-    }
-});
-</script>
+<script src="{{ mix('js/views/admin-user-map.js') }}" defer></script>
 @endsection

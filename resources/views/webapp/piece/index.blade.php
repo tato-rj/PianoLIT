@@ -432,19 +432,16 @@ function stopVideo(reset = true) {
 </script>
 
 <script type="text/javascript">
-$('form#tutorial-request-form button[type="submit"]').on('click', function(e) {
-	e.preventDefault();
-
-	let $form = $('form#tutorial-request-form');
-
-	checked = $form.find("input[type=checkbox]:checked").length;
+$('form#tutorial-request-form').on('submit', function(e) {
+	let $form = $(this);
+	let checked = $form.find("input[type=checkbox]:checked").length;
 
 	if(!checked) {
+		e.preventDefault();
 		$('#tutorial-alert').show();
 	} else {
 		$('#tutorial-alert').hide();
-		$(this).disable();
-		$form.submit();
+		$form.find('button[type="submit"]').disable();
 	}
 });
 </script>

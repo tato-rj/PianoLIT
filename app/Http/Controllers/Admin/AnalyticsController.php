@@ -6,6 +6,7 @@ use App\Analytics\Analytics;
 use App\Analytics\MembershipReport;
 use App\Analytics\PieceReport;
 use App\Analytics\FolderReport;
+use App\Analytics\ComposerReport;
 use App\Blog\{Post, Topic};
 use App\Quiz\{Quiz, QuizResult};
 use App\Quiz\Topic as QuizTopic;
@@ -53,24 +54,9 @@ class AnalyticsController extends Controller
         return view('admin.pages.analytics.memberships.index', $report->get($request));
     }
 
-    public function composers()
+    public function composers(Request $request, ComposerReport $report)
     {
-        $composersAnalytics = Composer::has('pieces', '>', 3)->select('name')->withCount('pieces')->orderBy('pieces_count', 'DESC')->get();
-        $composersWithFewPieces = Composer::has('pieces', '<=', 3)->pluck('name')->toArray();
-        $composersCount = Composer::count();
-        $upcomingBirthdays = Composer::upcomingBirthdays(30)->get();
-        $upcomingDeathdays = Composer::upcomingDeathdays(30)->get();
-        $periodsAnalytics = Composer::byPeriod();
-        $countriesAnalytics = Country::has('composers')->withCount('composers')->orderBy('composers_count', 'DESC')->get();
-        $countriesArray = [['Country', 'Composers']];
-
-        foreach($countriesAnalytics as $country) {
-            array_push($countriesArray, [$country->name, $country->composers_count]);
-        }
-
-        $composers = Composer::all();
-
-        return view('admin.pages.analytics.composers.index', compact(['composersAnalytics', 'composersCount', 'composersWithFewPieces', 'upcomingBirthdays', 'upcomingDeathdays', 'periodsAnalytics', 'countriesAnalytics', 'composers', 'countriesArray']));
+        return view('admin.pages.analytics.composers.index', $report->get($request));
     }
 
     public function blog()

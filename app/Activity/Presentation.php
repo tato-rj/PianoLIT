@@ -19,7 +19,7 @@ class Presentation
     {
         $data = json_decode($event->metadata ?: '{}', true);
         if (!is_array($data)) return [];
-        $safe = Metadata::select($data, array_merge(Metadata::BROWSER_KEYS, ['result', 'folder_id', 'annotation_count', 'created_count', 'edited_count', 'removed_count', 'revision', 'status', 'plan', 'identity_verified']));
+        $safe = Metadata::select($data, array_merge(Metadata::BROWSER_KEYS, ['result', 'folder_id', 'annotation_count', 'created_count', 'edited_count', 'removed_count', 'revision', 'status', 'plan', 'identity_verified', 'request_id']));
         foreach ($safe as $key => $value) {
             if (is_array($value) && $key !== 'filters') unset($safe[$key]);
             if (in_array($key, ['visible_ms', 'played_seconds', 'unique_watched_percent', 'unique_watched_seconds'], true) && !is_numeric($value)) unset($safe[$key]);
@@ -73,6 +73,17 @@ class Presentation
     public static function action($event, $pieces = [])
     {
         $m = self::metadata($event);
+        $requestKind = ($m['control'] ?? '') === 'synthesia-request-form' ? 'Synthesia' : 'tutorial';
+        if (($event->source ?? '') === 'server' && $event->type === 'tutorial_request_created') return 'Received '.$requestKind.' request';
+        if (($event->source ?? '') === 'server' && $event->type === 'tutorial_request_rejected') {
+            $reasons = ['pending_request' => 'another request is pending', 'already_requested' => 'this piece was already requested', 'membership_required' => 'membership required'];
+            return ucfirst($requestKind).' request not accepted: '.($reasons[$m['reason'] ?? ''] ?? 'request requirements were not met');
+        }
+        if ($event->type === 'form_submit') {
+            return in_array($m['control'] ?? '', ['synthesia-request-form', 'tutorial-request-form'], true)
+                ? 'Attempted to submit '.$requestKind.' request' : 'Attempted to submit a form';
+        }
+        if ($event->type === 'click' && strpos($m['label'] ?? '', 'Canceled ') === 0) return $m['label'];
         if (self::isPreviewPlayClick($event)) return 'Playback attempted';
         if ($event->type === 'click') {
             $control = $m['control'] ?? ''; $label = trim($m['label'] ?? '');

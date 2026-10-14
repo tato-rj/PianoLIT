@@ -1,4 +1,4 @@
-.admin-dashboard, .piece-analytics {
+.admin-dashboard, .piece-analytics, .composer-analytics {
   .admin-country-section { margin-top: 27px; }
   .admin-country-card {
     --map-color-0: #efb07c;
@@ -66,7 +66,7 @@
   .admin-country-controls[hidden], .admin-country-picker[hidden], .admin-map-tooltip[hidden] { display: none; }
 }
 @media (max-width: 900px) {
-  .admin-dashboard, .piece-analytics {
+  .admin-dashboard, .piece-analytics, .composer-analytics {
     .admin-country-card { grid-template-columns: minmax(0,1fr); }
     .admin-country-map-area { grid-row: 1; border-left: 0; border-bottom: 1px solid #e1e5df; }
     .admin-country-sidebar { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 25px; }
@@ -75,7 +75,7 @@
   }
 }
 @media (max-width: 700px) {
-  .admin-dashboard, .piece-analytics {
+  .admin-dashboard, .piece-analytics, .composer-analytics {
     .admin-country-sidebar { display: block; padding: 20px; }
     .admin-country-summary { margin: 20px 0; }
     .admin-country-map-area { padding: 20px; }

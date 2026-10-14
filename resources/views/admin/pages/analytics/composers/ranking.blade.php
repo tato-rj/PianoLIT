@@ -1,32 +1,7 @@
-<div class="col-12 p-3">
-  <div class="border py-4 px-3">
-    <div class="ms-2 mb-4">
-      <h4 class="mb-1"><strong>Age</strong></h4>
-      <p class="text-muted">Ranking of the composers by their dates of birth and death.</p>
-    </div>
-    <div class="px-2">
-      <table class="table table-hover" id="composers-table">
-        <thead>
-          <tr>
-            <th class="border-0" scope="col">Name</th>
-            <th class="border-0" scope="col">Born in</th>
-            <th class="border-0" scope="col">Died in</th>
-            <th class="border-0" scope="col">Age</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach($composers as $composer)
-            @if($composer->date_of_birth)
-            <tr>
-              <td>{{$composer->name}}</td>
-              <td>{{$composer->date_of_birth ? $composer->date_of_birth->toFormattedDateString() : null}}</td>
-              <td>{{$composer->date_of_death ? $composer->date_of_death->toFormattedDateString() : null}}</td>
-              <td>{{$composer->age}}</td>
-            </tr>
-            @endif
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+<article class="ca-card"><div class="ca-heading"><div><h3>{{ $title }}</h3><p>{{ $metric === 'saves' ? 'Current saves on existing pieces' : 'All-time recorded piece views' }} · top six.</p></div></div>
+    <ol class="ca-ranking" style="--ca-color:{{ $color }}">
+        @forelse($rows as $composer)
+        <li><div class="ca-ranking-label"><a href="{{ route('admin.composers.edit', $composer['id']) }}">{{ $composer['name'] }}</a><strong>{{ number_format($composer[$metric]) }} <small>{{ $unit }}</small></strong></div><div class="ca-track" aria-hidden="true"><i style="width:{{ $composer[$metric] / max(1, max(array_column($rows, $metric))) * 100 }}%"></i></div><p>{{ number_format($composer['pieces']) }} {{ $composer['pieces'] === 1 ? 'piece' : 'pieces' }} @if($metric === 'views')· {{ round($composer['views'] / max(1, $composer['pieces']), 1) }} views / piece @else· {{ number_format($composer['savers']) }} {{ $composer['savers'] === 1 ? 'account' : 'accounts' }} · {{ $composer['saves_per_piece'] }} saves / piece @endif</p></li>
+        @empty<li class="ca-empty">{{ $empty }}</li>@endforelse
+    </ol>
+</article>

@@ -23,6 +23,8 @@ class Journey
         $events = $eventQuery->orderByRaw('COALESCE(occurred_at, received_at)')->orderBy('sequence')->orderBy('id')->limit(2000)->get();
         $unplaced = ExcludedAccounts::events(DB::table('activity_events'))->where('visit_id', $id)->where(function ($q) use ($id) {
             $q->whereNull('page_id')->orWhereNotIn('page_id', DB::table('activity_pages')->where('visit_id', $id)->select('id'));
+        })->whereNotIn('type', JourneyActions::LIFECYCLE)->where(function ($q) {
+            $q->where('type', '!=', 'request')->orWhere('status', '>=', 400);
         })->orderByRaw('COALESCE(occurred_at, received_at)')->orderBy('id')->paginate(AdminPagination::PER_PAGE, ['*'], 'events_page')->withQueryString();
         $allEvents = $events->concat($unplaced->items());
         $pieceIds = $allEvents->filter(function ($e) { return $e->resource_type === 'piece'; })->pluck('resource_id');
@@ -50,7 +52,7 @@ class Journey
                     if (isset($confirmedPreviews[$context.':'.($metadata['piece_id'] ?? '')])) $playClicks[$event->id] = true;
                 }
             }
-            $actions = $all->reject(function ($e) use ($playClicks) { return isset($playClicks[$e->id]) || strpos($e->type, 'media_') === 0 || in_array($e->type, ['page_view', 'page_ready', 'page_checkpoint', 'page_hidden', 'page_visible', 'page_restore', 'request'], true); });
+            $actions = JourneyActions::compact($all->reject(function ($e) use ($playClicks) { return isset($playClicks[$e->id]); }));
             $lastScore = $actions->where('type', 'score_progress')->last();
             $actions = $actions->filter(function ($e) use ($lastScore) { return $e->type !== 'score_progress' || $e === $lastScore; });
             // Present each playback once, including old duplicate starts and

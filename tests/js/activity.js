@@ -6,7 +6,7 @@ module.exports = async function () {
         let time = 0, axiosInterceptor;
         const handlers = {}, requests = [], beacons = [], intervals = [];
         const doc = {
-            visibilityState: 'visible', querySelectorAll: () => [],
+            visibilityState: 'visible', querySelectorAll: () => [], createElement: () => ({}),
             addEventListener(name, callback) { handlers['doc:' + name] = callback; }
         };
         const win = {
@@ -21,6 +21,10 @@ module.exports = async function () {
             setInterval(callback, delay) { intervals.push({callback, delay}); },
             setTimeout(callback) { callback(); }
         };
+        if (options.jquery) {
+            win.jQuery = () => ({on(name, callback) { if (name.includes('shown.bs.modal')) handlers['jquery:panels'] = callback; }});
+            win.jQuery.ajaxPrefilter = () => {};
+        }
         install(win, Object.assign({endpoint: '/activity/events', pageToken: 'signed-page', csrfToken: 'csrf', pieceId: 42}, options));
         return {win, handlers, requests, beacons, intervals, storage, axios: request => axiosInterceptor(request), at: value => { time = value; }, queued: () => JSON.parse(storage.get('pianolit.activity.outbox.v1')).flatMap(batch => batch.events)};
     }
@@ -68,6 +72,44 @@ module.exports = async function () {
     assert.strictEqual(cards.queued().filter(event => event.type === 'click').pop().metadata.target, '', 'Buttons without a destination do not invent a piece link');
     cards.handlers['doc:click']({target: {closest: () => Object.assign({}, link, {textContent: 'External link', getAttribute: name => name === 'href' ? 'https://external.example/pieces/178' : null})}});
     assert.strictEqual(cards.queued().filter(event => event.type === 'click').pop().metadata.label, 'External link', 'An external path does not identify a PianoLIT piece');
+    const forms = fixture(), fields = {};
+    const form = {id: 'synthesia-request-form', action: '/users/tutorial-requests/42', method: 'POST', closest: () => null,
+        querySelector(selector) { const match = selector.match(/name="([^"]+)"/); return match ? fields[match[1]] || null : null; },
+        appendChild(input) { fields[input.name] = input; }};
+    const submit = Object.assign({}, link, {tagName: 'BUTTON', type: 'submit', textContent: 'Submit my request', form, getAttribute: () => null});
+    forms.at(5000); forms.handlers['doc:click']({target: {closest: () => submit}});
+    forms.handlers['doc:submit']({target: form, submitter: submit});
+    let attempts = forms.queued().filter(event => event.type === 'form_submit');
+    assert.strictEqual(forms.queued().filter(event => event.type === 'click').length, 0, 'One real submission replaces its generic button click');
+    assert.strictEqual(attempts.length, 1);
+    assert.strictEqual(attempts[0].metadata.attempt_id, fields._activity_attempt.value, 'The server and browser share an attempt identity');
+    assert.strictEqual(attempts[0].metadata.piece_id, 42);
+    assert.strictEqual(fields._activity_page.value, 'signed-page');
+    forms.at(20000); forms.handlers['doc:submit']({target: form});
+    attempts = forms.queued().filter(event => event.type === 'form_submit');
+    assert.strictEqual(attempts.length, 2, 'A genuine submission retry stays separate');
+    assert.notStrictEqual(attempts[0].metadata.attempt_id, attempts[1].metadata.attempt_id);
+    forms.at(21000); forms.handlers['doc:click']({target: {closest: () => submit}});
+    assert.strictEqual(forms.queued().filter(event => event.type === 'click').length, 1, 'A validation-blocked button click is not silently removed');
+    const panels = fixture(new Map(), {jquery: true});
+    const trigger = Object.assign({}, link, {tagName: 'BUTTON', getAttribute: name => ({'data-bs-toggle': 'modal', 'data-bs-target': '#synthesia-request-modal'})[name] || null});
+    panels.handlers['doc:click']({target: {closest: () => trigger}});
+    const modalTarget = {id: 'synthesia-request-modal', getAttribute: () => null};
+    panels.handlers['jquery:panels']({target: modalTarget});
+    panels.handlers['jquery:panels']({target: modalTarget});
+    assert.strictEqual(panels.queued().filter(event => event.type === 'click').length, 0);
+    assert.strictEqual(panels.queued().filter(event => event.type === 'tab_open').length, 1, 'Duplicate opening callbacks become one observation');
+    const summary = Object.assign({}, link, {tagName: 'SUMMARY', textContent: 'About this piece'});
+    panels.handlers['doc:click']({target: {closest: () => summary}});
+    panels.handlers['doc:toggle']({target: {tagName: 'DETAILS', open: true, querySelector: () => summary}});
+    assert.strictEqual(panels.queued().filter(event => event.type === 'section_open').length, 1);
+    assert.strictEqual(panels.queued().filter(event => event.type === 'click').length, 0, 'Details record their actual toggle once');
+    const repeated = fixture();
+    repeated.handlers['doc:click']({target: {closest: () => link}});
+    repeated.at(100); repeated.handlers['doc:click']({target: {closest: () => link}});
+    assert.strictEqual(repeated.queued().filter(event => event.type === 'click').length, 1);
+    repeated.at(1000); repeated.handlers['doc:click']({target: {closest: () => link}});
+    assert.strictEqual(repeated.queued().filter(event => event.type === 'click').length, 2, 'Later intentional actions are retained');
     const mediaHandlers = {};
     const media = {tagName: 'VIDEO', id: 'performance', currentTime: 0, duration: 90, playbackRate: 1, paused: false,
         addEventListener(name, callback) { mediaHandlers[name] = callback; }};
