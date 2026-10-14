@@ -27,7 +27,8 @@
         @if($group['kind'] === 'action')
         @php($event = $group['event'])
         <li class="ua-timeline-entry"><time>{{ \App\Activity\Time::event($event)->format('g:i:s A') }}</time><article class="ua-card ua-page"><span class="ua-timeline-marker" aria-hidden="true">@icon(\App\Activity\Presentation::icon($event->type, \App\Activity\Presentation::metadata($event)), ['mr' => 0])</span><h2>{{ \App\Activity\Presentation::action($event, $pieces) }}</h2><p class="ua-meta">No page association recorded.</p>
-            @if($event->resource_type === 'piece' && isset($pieces[$event->resource_id]))<a href="{{ route('admin.pieces.edit', $event->resource_id) }}">{{ $pieces[$event->resource_id]->name }}</a>@endif
+            @php($actionPieceId = \App\Activity\Presentation::pieceSelectionId($event) ?: ($event->resource_type === 'piece' ? $event->resource_id : (\App\Activity\Presentation::metadata($event)['piece_id'] ?? null)))
+            @if($actionPieceId && isset($pieces[$actionPieceId]))<a href="{{ route('webapp.pieces.show', $actionPieceId) }}" target="_blank" rel="noopener noreferrer">{{ $pieces[$actionPieceId]->name }}</a>@endif
             @include('admin.pages.analytics.users.details')</article></li>
         @continue
         @endif
@@ -36,7 +37,7 @@
             <time>{{ \App\Activity\Time::date($page, 'opened_at')->format('g:i:s A') }}</time>
             <article class="ua-card ua-page">
                 <span class="ua-timeline-marker" aria-hidden="true">@icon('arrow-up-right', ['mr' => 0])</span>
-                <h2>Opened @if($group['piece'])<a href="{{ route('admin.pieces.edit', $group['piece']->id) }}">{{ $group['piece']->name }}</a>@else{{ \App\Activity\Presentation::page($page) }}@endif</h2>
+                <h2>Opened @if($group['piece'])<a href="{{ route('webapp.pieces.show', $group['piece']->id) }}" target="_blank" rel="noopener noreferrer">{{ $group['piece']->name }}</a>@else{{ \App\Activity\Presentation::page($page) }}@endif</h2>
                 @if($group['piece'])<p class="ua-meta">{{ $group['piece']->composer }}</p>@endif
                 <p class="ua-page-time">{{ $group['observed'] ? 'Page visible for '.\App\Activity\Time::duration($page->visible_ms) : 'Page visibility was not recorded' }}</p>
                 <ul class="ua-actions">

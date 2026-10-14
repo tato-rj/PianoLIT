@@ -272,6 +272,37 @@
     }
     .score-messages { padding: 8px 2px; }
 
+    &--preview {
+        .score-scroll { overflow: hidden; }
+        // Match the editor's default 75% zoom: (scroll width - 24px) * .75.
+        .score-sheet { width: calc(75% + 9px); overflow: hidden; }
+        .score-preview-pages {
+            filter: blur(8px);
+            -webkit-filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            &:empty { min-height: 260px; }
+            canvas { height: auto; }
+        }
+        .score-preview-upgrade {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12% 20px 20px;
+            background: rgba(255, 255, 255, .35);
+            p { max-width: 320px; margin-bottom: 18px; color: #596171; }
+            .btn { flex: 0 0 auto; }
+        }
+        @media (max-width: 767px) {
+            .score-sheet { width: 100%; }
+            .score-preview-upgrade { padding: 12% 12px 12px; }
+            .score-preview-upgrade p { font-size: 14px; }
+        }
+    }
+
     &.is-fullscreen {
         touch-action: pan-x pan-y;
         --score-toolbar-height: 84px;

@@ -1,14 +1,19 @@
-<div id="score-editor" class="score-editor mb-4" data-pdf-url="{{ storage($piece->score_path) }}"
+@php
+    $scorePreview = isset($hasMediaAccess) && ! $hasMediaAccess;
+    $scoreButtonAttributes = $scorePreview ? 'data-bs-toggle="modal" data-bs-target="#piece-upgrade-modal"' : 'disabled';
+    $scoreDropdownAttributes = $scorePreview ? $scoreButtonAttributes : 'data-bs-toggle="dropdown" disabled';
+@endphp
+<div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }} mb-4" data-pdf-url="{{ storage($piece->score_path) }}"
     data-score-version="{{ hash('sha256', $piece->score_path) }}"
-    data-annotations-url="{{ auth('web')->check() ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
-    <div class="score-toolbar @guest('web') d-none @endguest" role="toolbar" aria-label="Score annotation tools">
+    data-annotations-url="{{ ! $scorePreview && auth('web')->check() ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
+    <div class="score-toolbar @if(! $scorePreview && auth('web')->guest()) d-none @endif" role="toolbar" aria-label="Score annotation tools">
         <div class="score-tools" role="group" aria-label="Drawing tools">
-            <button type="button" data-tool="pen" data-edit-control class="score-icon-button" aria-label="Pen" title="Pen" aria-pressed="false" disabled>@icon('pencil', ['mr' => 0])</button>
-            <button type="button" data-tool="text" data-edit-control class="score-icon-button" aria-label="Text" title="Text" aria-pressed="false" disabled>@icon('text-cursor', ['mr' => 0])</button>
-            <button type="button" data-tool="erase" data-edit-control class="score-icon-button" aria-label="Eraser" title="Eraser" aria-pressed="false" disabled>@icon('eraser', ['mr' => 0])</button>
-            <button type="button" data-tool="highlight" data-edit-control class="score-icon-button" aria-label="Highlighter" title="Highlighter" aria-pressed="false" disabled>@icon('highlighter', ['mr' => 0])</button>
+            <button type="button" data-tool="pen" data-edit-control class="score-icon-button" aria-label="Pen" title="Pen" aria-pressed="false" {!! $scoreButtonAttributes !!}>@icon('pencil', ['mr' => 0])</button>
+            <button type="button" data-tool="text" data-edit-control class="score-icon-button" aria-label="Text" title="Text" aria-pressed="false" {!! $scoreButtonAttributes !!}>@icon('text-cursor', ['mr' => 0])</button>
+            <button type="button" data-tool="erase" data-edit-control class="score-icon-button" aria-label="Eraser" title="Eraser" aria-pressed="false" {!! $scoreButtonAttributes !!}>@icon('eraser', ['mr' => 0])</button>
+            <button type="button" data-tool="highlight" data-edit-control class="score-icon-button" aria-label="Highlighter" title="Highlighter" aria-pressed="false" {!! $scoreButtonAttributes !!}>@icon('highlighter', ['mr' => 0])</button>
             <div class="dropdown score-color-control">
-                <button type="button" id="score-color-picker" data-edit-control class="score-color-button score-icon-button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-label="Annotation color" aria-haspopup="true" aria-expanded="false" title="Annotation color" disabled>@icon('palette', ['mr' => 0])</button>
+                <button type="button" id="score-color-picker" data-edit-control class="score-color-button score-icon-button" data-bs-auto-close="outside" aria-label="Annotation color" aria-haspopup="true" aria-expanded="false" title="Annotation color" {!! $scoreDropdownAttributes !!}>@icon('palette', ['mr' => 0])</button>
                 <div class="dropdown-menu score-color-menu" aria-labelledby="score-color-picker">
                     <div class="score-color-swatches" role="group" aria-label="Writing colors">
                         @foreach(['#20252b' => 'Black', '#e53935' => 'Red', '#f57c00' => 'Orange', '#fbc02d' => 'Yellow', '#2eaf4a' => 'Green', '#1565d8' => 'Blue', '#8e44ad' => 'Purple', '#e14d9b' => 'Pink'] as $color => $label)
@@ -20,7 +25,7 @@
             </div>
             <div class="dropdown score-width-control">
                 <input type="hidden" data-width value="0.004">
-                <button type="button" id="score-pen-width" data-edit-control class="score-icon-button score-width-toggle" data-bs-toggle="dropdown" aria-label="Pen thickness" aria-haspopup="true" aria-expanded="false" title="Pen thickness" disabled>
+                <button type="button" id="score-pen-width" data-edit-control class="score-icon-button score-width-toggle" aria-label="Pen thickness" aria-haspopup="true" aria-expanded="false" title="Pen thickness" {!! $scoreDropdownAttributes !!}>
                     <svg viewBox="0 0 120 32" aria-hidden="true"><path data-width-preview d="M12 20 C40 28 78 4 108 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
                 </button>
                 <div class="dropdown-menu score-width-menu" role="menu" aria-labelledby="score-pen-width">
@@ -42,43 +47,55 @@
             </div>
         </div>
         <div class="score-history" role="group" aria-label="Marking history">
-            <button type="button" data-undo class="score-icon-button" aria-label="Undo" title="Undo" disabled>@icon('undo-2', ['mr' => 0])</button>
-            <button type="button" data-redo class="score-icon-button" aria-label="Redo" title="Redo" disabled>@icon('rotate-cw', ['mr' => 0])</button>
-            <button type="button" data-clear-all data-edit-control class="score-clear-button" aria-label="Clear all markings" title="Clear all markings" disabled>@icon('trash-2', ['mr' => 0])<span>Clear all</span></button>
+            <button type="button" data-undo class="score-icon-button" aria-label="Undo" title="Undo" {!! $scoreButtonAttributes !!}>@icon('undo-2', ['mr' => 0])</button>
+            <button type="button" data-redo class="score-icon-button" aria-label="Redo" title="Redo" {!! $scoreButtonAttributes !!}>@icon('rotate-cw', ['mr' => 0])</button>
+            <button type="button" data-clear-all data-edit-control class="score-clear-button" aria-label="Clear all markings" title="Clear all markings" {!! $scoreButtonAttributes !!}>@icon('trash-2', ['mr' => 0])<span>Clear all</span></button>
         </div>
     </div>
-    <div class="score-status-row"><span data-score-status class="score-save-status" role="status" aria-live="polite">Loading score…</span></div>
+    <div class="score-status-row"><span data-score-status class="score-save-status {{ $scorePreview ? 'score-preview-status' : '' }}" role="status" aria-live="polite">Loading score…</span></div>
 
     <div class="score-scroll">
         <div class="score-sheet">
+            @if($scorePreview)
+                <div class="score-preview-pages" aria-hidden="true"></div>
+                <div class="score-preview-upgrade text-center">
+                    <p>Subscribe to read, mark and download the full score.</p>
+                    <button type="button" {!! $scoreButtonAttributes !!} class="btn btn-primary">@icon('crown')GO PREMIUM</button>
+                </div>
+            @else
             <canvas id="score-pdf" aria-label="Score PDF page"></canvas>
             <svg class="score-markings" aria-label="Draw or place markings on this score" role="img"></svg>
+            @endif
         </div>
     </div>
 
     <div class="score-footer" role="toolbar" aria-label="Score view controls">
         <div class="score-view-controls">
             <div class="score-control-group" role="group" aria-label="Score page">
-                <button type="button" data-prev class="score-control-button" aria-label="Previous score page" disabled>@icon('chevron-left', ['mr' => 0])</button>
+                <button type="button" data-prev class="score-control-button" aria-label="Previous score page" {!! $scoreButtonAttributes !!}>@icon('chevron-left', ['mr' => 0])</button>
                 <span data-page-label class="score-page-label" aria-live="polite">Page &mdash;</span>
-                <button type="button" data-next class="score-control-button" aria-label="Next score page" disabled>@icon('chevron-right', ['mr' => 0])</button>
+                <button type="button" data-next class="score-control-button" aria-label="Next score page" {!! $scoreButtonAttributes !!}>@icon('chevron-right', ['mr' => 0])</button>
             </div>
             <div class="d-flex" style="gap: 8px">
                 <div class="score-control-group" role="group" aria-label="Score zoom">
-                    <button type="button" data-zoom="-0.25" class="score-control-button" aria-label="Zoom out" disabled>&minus;</button>
+                    <button type="button" data-zoom="-0.25" class="score-control-button" aria-label="Zoom out" {!! $scoreButtonAttributes !!}>&minus;</button>
                     <span data-zoom-label class="score-zoom-label">75%</span>
-                    <button type="button" data-zoom="0.25" class="score-control-button" aria-label="Zoom in" disabled>+</button>
+                    <button type="button" data-zoom="0.25" class="score-control-button" aria-label="Zoom in" {!! $scoreButtonAttributes !!}>+</button>
                 </div>
 
-            <button type="button" data-fullscreen class="score-control-button score-fullscreen-button" aria-label="Full screen" title="Full screen">@icon('maximize', ['mr' => 0])</button>
+            <button type="button" data-fullscreen class="score-control-button score-fullscreen-button" aria-label="Full screen" title="Full screen" @if($scorePreview) {!! $scoreButtonAttributes !!} @endif>@icon('maximize', ['mr' => 0])</button>
             </div>
         </div>
         <div class="score-footer-actions">
             @if($piece->hasAudio())
-                <button type="button" id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" class="score-listen-button">@icon('play', ['mr' => 0])<span>Listen</span></button>
+                <button type="button" @if($scorePreview) {!! $scoreButtonAttributes !!} @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif class="score-listen-button">@icon('play', ['mr' => 0])<span>Listen</span></button>
             @endif
+            @if($scorePreview)
+                <button type="button" {!! $scoreButtonAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></button>
+            @else
             <a href="{{ storage($piece->score_path) }}" target="_blank" rel="noopener" class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></a>
-            <button type="button" data-print class="score-action-button" title="Print all score pages with markings">@icon('printer', ['mr' => 0])<span>Print</span></button>
+            @endif
+            <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if($scorePreview) {!! $scoreButtonAttributes !!} @endif>@icon('printer', ['mr' => 0])<span>Print</span></button>
         </div>
     </div>
     <div class="score-messages">

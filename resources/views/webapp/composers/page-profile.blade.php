@@ -24,9 +24,9 @@
 @php($hasSidebar = $composer->curiosity || $contemporaries->isNotEmpty())
 <div class="composer-profile-details {{ $hasSidebar ? 'has-sidebar' : '' }} {{ $composer->curiosity ? 'has-curiosity' : '' }} pt-lg-2">
     @if($composer->curiosity)
-        <aside class="composer-profile-curiosity bg-light border rounded p-4" aria-labelledby="composer-curiosity-title">
-            <div class="d-flex align-items-center gap-3 mb-3">
-                <span class="bg-orange-lightest text-orange rounded-circle p-3 d-inline-flex">@icon('lightbulb', ['size' => 'xl', 'mr' => 0])</span>
+        <aside class="composer-profile-curiosity bg-light border rounded-sm py-3 px-4" aria-labelledby="composer-curiosity-title">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <span class="bg-orange-lightest text-orange rounded-circle p-2 d-inline-flex">@icon('lightbulb', ['size' => 'lg', 'mr' => 0])</span>
                 <h2 id="composer-curiosity-title" class="h6 text-uppercase mb-0">Did you know?</h2>
             </div>
             <p class="mb-0">{{ $composer->curiosity }}</p>

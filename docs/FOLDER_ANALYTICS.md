@@ -47,7 +47,9 @@ The directory uses `page`; selected folder contents use independent `pieces_page
 Both use `AdminPagination::PER_PAGE` (12). Opening/closing a folder retains directory
 filters and page. Switching folders resets the contents page. Excluded/default/
 missing folders return 404; out-of-range pages offer recovery links. Empty folders
-remain inspectable. Owner and piece links point to existing admin account/edit pages.
+remain inspectable. Owner links point to existing admin account pages. Piece viewing links open
+`webapp.pieces.show` in a new tab with `target="_blank"` and
+`rel="noopener noreferrer"`, following the shared admin viewing-link convention.
 
 ## Verification and delivery
 

@@ -158,6 +158,14 @@ class FolderAnalyticsTest extends ReviewTestCase
             ->assertSee('&lt;b&gt;Description&lt;/b&gt;', false)->assertDontSee('Foreign contents');
         $this->assertCount(12, $response->viewData('pieces'));
         $this->assertEquals(array_slice(array_reverse($ordered), 0, 12), $response->viewData('pieces')->pluck('id')->all());
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $links = $xpath->query('//ol[contains(@class,"fa-piece-list")]/li/div/a');
+        $this->assertSame(12, $links->length);
+        foreach ($links as $index => $link) {
+            $this->assertSame(route('webapp.pieces.show', $response->viewData('pieces')[$index]->id), $link->getAttribute('href'));
+            $this->assertSame('_blank', $link->getAttribute('target'));
+            $this->assertSame('noopener noreferrer', $link->getAttribute('rel'));
+        }
         $next = $response->viewData('pieces')->nextPageUrl();
         $this->assertStringContainsString('page=2', $next);
         $this->assertStringContainsString('pieces_page=2', $next);

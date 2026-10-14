@@ -20,7 +20,7 @@
 		<div class="d-none d-md-block">
 		@include('webapp.components.favorite')
 	</div>
-	<button class="btn-raw ms-2" type="button" aria-label="More options"
+	<button class="btn-raw text-body ms-2" type="button" aria-label="More options"
 	data-bs-toggle="offcanvas" data-bs-target="#options-panel" aria-controls="options-panel" style=" font-size: 1.44em">
 		@icon('ellipsis-vertical', ['mr' => 0])</button>
 	</div>

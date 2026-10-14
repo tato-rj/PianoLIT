@@ -50,8 +50,24 @@ class PieceContentAccessTest extends ReviewTestCase
             ->assertSee('id="score-preview"', false)->assertSee('score-preview-pages', false)
             ->assertSee('id="piece-upgrade-modal"', false)
             ->assertSee('/js/views/piece-access.js?id=', false)
-            ->assertDontSee('Download score')->assertDontSee('<embed', false)
+            ->assertSee('Download score')->assertDontSee('<embed', false)
             ->assertDontSee('id="score-editor"', false);
+        $document = new \DOMDocument();
+        $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new \DOMXPath($document);
+        $this->assertSame(1, $xpath->query('//*[@id="score-preview" and contains(@class, "score-editor")]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-toolbar") and contains(@class, "d-none")]')->length);
+        $controls = $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-toolbar") or contains(@class, "score-footer")]//button[not(ancestor::*[contains(@class, "dropdown-menu")])]');
+        $this->assertSame(17, $controls->length);
+        foreach ($controls as $control) {
+            $this->assertFalse($control->hasAttribute('disabled'));
+            $this->assertSame('modal', $control->getAttribute('data-bs-toggle'));
+            $this->assertSame('#piece-upgrade-modal', $control->getAttribute('data-bs-target'));
+        }
+        $this->assertSame(1, $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-sheet")]//*[contains(@class, "score-preview-upgrade")]//button')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="score-preview"]//a | //*[@id="score-preview"]//*[@id="launch-audio"]')->length);
+        $this->assertSame('', $xpath->query('//*[@id="score-preview"]')->item(0)->getAttribute('data-annotations-url'));
+        $response->assertDontSee('/js/views/score-editor.js?id=', false);
         $this->assertSame(2, substr_count($response->getContent(), 'data-media-preview="10"'));
         $this->assertSame(1, substr_count($response->getContent(), 'data-preview="10"'));
         $response->assertSee('data-piece-player-page', false)->assertSee('data-player-close', false);
@@ -81,6 +97,7 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertArrayNotHasKey('comment', $moments[0][0]);
         $this->assertSame(1, substr_count($response->getContent(), 'data-playlist-player hidden'));
         $this->assertSame(1, substr_count($response->getContent(), 'data-preview="0"'));
+        $response->assertDontSee('score-preview-upgrade', false)->assertDontSee('score-editor--preview', false);
         if ($destination = getenv('PIECE_PLAYER_PREVIEW_DIR')) {
             $html = $response->getContent();
             $html = preg_replace('~(?:https?://[^/]+)?(/(?:css|js|images|fonts)/)~', '$1', $html);

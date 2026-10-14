@@ -1,6 +1,6 @@
 <div class="d-flex align-items-center">
 	<div class="me-2">
-		<a href="{{route('admin.pieces.edit', $item->piece)}}" class="btn btn-sm btn-outline-secondary">View</a>
+		<a href="{{route('webapp.pieces.show', $item->piece)}}" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer">View</a>
 	</div>
 	<div class="me-2">
 		<button class="btn btn-sm btn-outline-secondary view-request-types" {{! $item->types ? 'disabled' : null}} data-types="{{json_encode(unserialize($item->types))}}">Details</button>

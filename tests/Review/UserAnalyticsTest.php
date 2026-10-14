@@ -338,6 +338,14 @@ class UserAnalyticsTest extends ReviewTestCase
         $selected = [];
         foreach ($titles as $title) if (strpos($title->textContent, 'Selected ') === 0) $selected[] = $title->textContent;
         $this->assertSame(array_fill(0, 3, 'Selected A Sad Song by Y. Levitin'), $selected);
+        $links = $xpath->query('//a[@href="'.route('webapp.pieces.show', $piece->id).'"]');
+        $this->assertSame(3, $links->length, 'Grouped, legacy and unplaced selections link to their destination, including a conflicting source-piece record.');
+        foreach ($links as $link) {
+            $this->assertSame('_blank', $link->getAttribute('target'));
+            $this->assertSame('noopener noreferrer', $link->getAttribute('rel'));
+        }
+        $this->assertSame(0, $xpath->query('//a[@href="'.route('webapp.pieces.show', $other->id).'"]')->length);
+        $this->assertSame(0, $xpath->query('//a[contains(@href, "/pieces/") and contains(@href, "/edit")]')->length);
         $this->assertStringContainsString($original, $xpath->query('//details[contains(@class, "ua-details")]/pre')->item(0)->textContent);
         $this->assertSame(3, DB::table('activity_events')->where('visit_id', $visit)->count(), 'Rendering never rewrites or deletes history.');
     }

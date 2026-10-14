@@ -17,7 +17,7 @@
       @endif
     </div>
     <div class="ms-2">
-      <a href="{{route('admin.pieces.edit', $item->id)}}" target="_blank" class="text-warning">@icon('eye', ['mr' => 0])</a>
+      <a href="{{route('webapp.pieces.show', $item->id)}}" target="_blank" class="text-warning" rel="noopener noreferrer">@icon('eye', ['mr' => 0])</a>
     </div>
     <div>
       <div class="text-primary cursor-pointer add-piece ms-2" data-id="{{$item->id}}">@icon('circle-plus', ['mr' => 0])

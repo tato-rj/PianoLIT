@@ -62,6 +62,10 @@
 	border-color: #e4eaf3;
 	box-shadow: 0 5px 12px rgba(0,0,0, 0.05);
 
+	i.app-icon {
+		@extend .text-primary;
+	}
+
 	&:hover, &:focus, &.focus {
 		color: #172033 !important;
 		background-color: #f6f8fc;

@@ -50,17 +50,6 @@ video::-webkit-media-controls-enclosure {
     font-weight: bold !important;
 }
 
-.score-preview-pages {
-    filter: blur(8px);
-    -webkit-filter: blur(8px);
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-#score-preview {
-    overflow: hidden;
-}
 </style>
 @endpush
 

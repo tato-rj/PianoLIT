@@ -44,13 +44,15 @@
             const page = await pdf.getPage(1);
             const viewport = page.getViewport({scale: 1});
             const canvas = container.ownerDocument.createElement('canvas');
-            canvas.className = 'w-100 d-block mb-3 border';
+            canvas.className = 'w-100 d-block';
             canvas.width = viewport.width;
             canvas.height = viewport.height;
             pages.appendChild(canvas);
             await page.render({canvasContext: canvas.getContext('2d'), viewport: viewport}).promise;
             page.cleanup();
-            status.hidden = true;
+            status.textContent = 'Preview of the first score page.';
+            container.querySelector('[data-page-label]').textContent = '1 / ' + pdf.numPages;
+            container.querySelector('[data-zoom-label]').textContent = root.matchMedia('(max-width: 767px)').matches ? '100%' : '75%';
         } catch (error) {
             status.textContent = 'The score preview could not be loaded. Please try again later.';
         }

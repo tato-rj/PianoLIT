@@ -140,7 +140,7 @@
         <ul class="list-style-none ps-2">
           @foreach($composer->pieces as $piece)
           <li class="mb-2">
-            <a href="{{route('admin.pieces.edit', $piece)}}">
+            <a href="{{route('webapp.pieces.show', $piece)}}" target="_blank" rel="noopener noreferrer">
               @icon('chevron-right', ['mr' => 2]){{$piece->long_name}}
             </a>
           </li>
