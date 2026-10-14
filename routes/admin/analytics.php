@@ -14,8 +14,6 @@ Route::prefix('analytics')->name('analytics.')->group(function() {
 	
 	Route::get('memberships', 'Admin\AnalyticsController@memberships')->name('memberships');
 
-	Route::get('subscriptions', 'Admin\AnalyticsController@subscriptions')->name('subscriptions');
-
 	Route::get('pieces', 'Admin\AnalyticsController@pieces')->name('pieces');
 
 	Route::get('favorites', 'Admin\AnalyticsController@favorites')->name('favorites');

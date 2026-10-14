@@ -112,9 +112,9 @@ The admin SQL report aggregates and paginates in the database. It does not load
 every user's Eloquent model or make per-row source/ownership queries. The legacy
 load-more routes remain registered for compatibility but the new directory does
 not use them. All browser requests remain on session-authenticated admin routes.
-The membership and super-user directories both use the shared admin default of
-12 rows per page (`App\Support\AdminPagination::PER_PAGE`), retaining their independent
-`page`/`super_page` parameters, filters and ordering.
+The combined membership directory uses the shared admin default of 12 rows per
+page (`App\Support\AdminPagination::PER_PAGE`) with the `page` parameter. Search,
+provider, status and sorting apply to billing and super-user rows together.
 
 Overview uses the same Active count (active plus billing grace periods), directly
 after Total users in At a glance. Its period badge counts memberships whose record
@@ -124,14 +124,21 @@ all historical activations or renewals. The card links to membership analytics.
 
 ## Super-user access reporting
 
-Membership analytics also lists all accounts whose current `super_user` flag is
-true, independently of billing records and the provider/status filters. Its total
-includes accounts with no subscription and expired subscriptions. Existing paid
-billing records still appear in the membership directory, so the super-user total
-must not simply be added to paid totals to infer distinct accounts with access.
-The new section has account links, name/email/ID search, independent pagination,
-current access grant date and duration, granting admin, account creation date and
-signup platform. Account creation is never substituted for a missing grant date.
+Membership analytics lists accounts whose current `super_user` flag is true in
+the same directory as Stripe and Apple memberships. Each account appears once:
+super users have Provider / plan **Super User**, Status **Active**, a blank Access
+until, and their current grant date in Latest check. Unknown grant dates stay
+blank; account creation and first-observed dates are never substituted. The
+separate Full access without payment table and its independent filters are removed.
+
+All providers includes super users; Super User selects only those accounts;
+Stripe + Apple excludes super-user rows while retaining both billing providers.
+Individual Stripe and Apple filters remain available. A super user with a billing
+record still appears once as Super User in the directory. Provider billing totals,
+paid status cards and the dashboard's active-membership count continue to include
+their actual billing record independently. The compact provider comparison shows
+the super-user total separately; adding it to billing totals does not establish
+distinct accounts with access. Ordinary accounts without memberships are omitted.
 
 Deploy `2026_10_13_190000_create_super_user_access_periods_table.php` with the new
 admin controller/report/template and rebuilt admin CSS/manifest. Running the normal
@@ -139,7 +146,7 @@ admin controller/report/template and rebuilt admin CSS/manifest. Running the nor
 is required for super-user tracking. The migration records existing super users as
 first observed at migration time with an unknown historical grant date and admin;
 it does not change any user's flag or entitlement. The page can still show current
-super users before this migration, with unknown dates and a setup notice.
+super users before this migration, with blank grant dates.
 
 The existing admin PATCH route `admin.users.super-status` now uses an admin-only
 controller. It preserves the route, session/CSRF checks, current toggle behavior,

@@ -13,7 +13,6 @@
         'dropdown' => [
           ['name' => 'Users', 'route' => route('admin.analytics.users')],
           ['name' => 'Memberships', 'route' => route('admin.analytics.memberships')],
-          ['name' => 'Subscriptions', 'route' => route('admin.analytics.subscriptions')],
           ['name' => 'Pieces', 'route' => route('admin.analytics.pieces')],
           ['name' => 'Favorites', 'route' => route('admin.analytics.favorites')],
           ['name' => 'Composers', 'route' => route('admin.analytics.composers')],

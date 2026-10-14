@@ -49,14 +49,6 @@ class AnalyticsController extends Controller
         return view('admin.pages.analytics.favorites.index');
     }
 
-    public function subscriptions()
-    {
-        if (request()->ajax())
-            return (new Analytics)->for('subscriptions')->query(request('type'), request()->except('type'))->get();
-
-        return view('admin.pages.analytics.subscriptions.index');
-    }
-
     public function memberships(Request $request, MembershipReport $report)
     {
         return view('admin.pages.analytics.memberships.index', $report->get($request));

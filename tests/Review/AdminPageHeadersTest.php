@@ -52,7 +52,6 @@ class AdminPageHeadersTest extends ReviewTestCase
             ['admin.analytics.favorites', 'Favorite folders'],
             ['admin.analytics.memberships', 'Membership analytics'],
             ['admin.analytics.pieces', 'Repertoire analytics'],
-            ['admin.analytics.subscriptions', 'Subscriber analytics'],
             ['admin.analytics.blog', 'Blog analytics'],
         ];
     }
