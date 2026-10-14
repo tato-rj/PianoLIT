@@ -12,12 +12,16 @@ class ExcludedAccounts
 {
     const COOKIE = 'pianolit_analytics_optout';
     const SESSION = 'analytics.excluded';
+    const REQUIRED_EMAILS = ['arthurvillar@gmail.com', 'elena.dare@gmail.com', 'arthurvilar@gmail.com'];
 
     public static function emails()
     {
+        // Explicit account opt-outs survive an older cached config list. Config
+        // may add exclusions, but must not re-enable these accounts' tracking.
+        $emails = array_merge(self::REQUIRED_EMAILS, (array) config('activity.excluded_emails', []));
         return array_values(array_unique(array_filter(array_map(function ($email) {
             return strtolower(trim((string) $email));
-        }, config('activity.excluded_emails', ['arthurvillar@gmail.com', 'elena.dare@gmail.com', 'arthurvilar@gmail.com'])))));
+        }, $emails))));
     }
 
     public static function user($user)

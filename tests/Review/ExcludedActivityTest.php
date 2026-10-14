@@ -123,7 +123,8 @@ class ExcludedActivityTest extends ReviewTestCase
         $this->assertSame(1, $dashboard['metrics'][0]['total']);
         $members = (new MembershipReport)->get(Request::create('/'));
         $this->assertSame(1, $members['memberships']->total());
-        $this->assertSame(1, $members['superUsers']->total());
+        $superUsers = (new MembershipReport)->get(Request::create('/', 'GET', ['provider' => 'super_user']));
+        $this->assertSame(1, $superUsers['memberships']->total());
         $this->get(route('admin.analytics.users.people'))->assertOk()->assertDontSee('Arthur')->assertDontSee('Elena');
         $this->getJson(route('admin.users.logs'), ['X-Requested-With' => 'XMLHttpRequest'])->assertOk()->assertJsonPath('recordsTotal', 1);
         $this->withExceptionHandling()->get(route('admin.analytics.users.journey', $linked))->assertNotFound();
@@ -138,6 +139,60 @@ class ExcludedActivityTest extends ReviewTestCase
             'Elena' => ['elena.dare@gmail.com'],
             'previous Arthur spelling' => ['arthurvilar@gmail.com'],
         ];
+    }
+
+    public static function staleEmailLists()
+    {
+        return [
+            'old cached spelling' => [['arthurvilar@gmail.com', 'elena.dare@gmail.com']],
+            'empty cached list' => [[]],
+            'additional configured exclusion' => [[' Privacy@Example.Test ']],
+        ];
+    }
+
+    /** @dataProvider staleEmailLists */
+    public function test_required_exclusions_survive_stale_config_for_collection_dashboard_and_cleanup($emails)
+    {
+        config(['activity.excluded_emails' => $emails]);
+        $arthur = $this->user('arthurvillar@gmail.com', 'Arthur');
+        $elena = $this->user('elena.dare@gmail.com', 'Elena');
+        $regular = $this->user();
+        foreach ([$arthur, $elena, $regular] as $user) {
+            $visit = $this->visit($user);
+            $this->event($user, $visit);
+            $this->event($user);
+        }
+        foreach ([$arthur, $elena] as $excluded) {
+            $this->actingAs($excluded, 'web');
+            $this->get('/review/private-page')->assertOk()->assertDontSee('pianoActivityConfig');
+        }
+        $this->assertDatabaseCount('activity_events', 6);
+        if ($emails === [' Privacy@Example.Test ']) $this->assertTrue(ExcludedAccounts::email('privacy@example.test'));
+
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get(route('admin.home'))->assertOk()->assertDontSee('Arthur')->assertDontSee('Elena');
+        $dashboard = $response->viewData('dashboard');
+        $this->assertSame([$regular->id], $dashboard['engagedUsers']->pluck('id')->all());
+        $this->assertSame(2, $dashboard['total']);
+
+        $this->artisan('activity:purge-excluded')
+            ->expectsTable(['Matched user ID', 'Email'], [[$arthur->id, $arthur->email], [$elena->id, $elena->email]])->assertExitCode(0);
+        $this->assertDatabaseCount('activity_events', 6);
+        $this->artisan('activity:purge-excluded', ['--execute' => true])
+            ->expectsOutput('Remaining matching SQL tracking rows: 0')->assertExitCode(0);
+        $this->assertDatabaseCount('activity_events', 2);
+        $this->assertDatabaseCount('activity_visits', 1);
+        $this->assertDatabaseHas('activity_visits', ['user_id' => $regular->id]);
+        $this->assertDatabaseMissing('activity_events', ['user_id' => $arthur->id]);
+        $this->assertDatabaseMissing('activity_events', ['user_id' => $elena->id]);
+        $this->assertDatabaseCount('users', 3);
+    }
+
+    public function test_cleanup_warns_when_the_database_has_no_matching_accounts()
+    {
+        $this->user();
+        $this->artisan('activity:purge-excluded')->expectsOutput('No matching user accounts in this database.')->assertExitCode(0);
+        $this->assertDatabaseCount('users', 1);
     }
 
     /** @dataProvider excludedEmails */

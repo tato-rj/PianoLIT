@@ -32,6 +32,9 @@ class PurgeExcludedActivity extends Command
         $this->line('Excluded emails: '.implode(', ', ExcludedAccounts::emails()));
         $counts = $history->counts();
         $this->info($this->option('execute') ? 'Removing configured excluded accounts\' tracking records.' : 'PREVIEW ONLY — no writes.');
+        $accounts = ExcludedAccounts::ids()->addSelect('email')->orderBy('id')->get();
+        if ($accounts->isEmpty()) $this->warn('No matching user accounts in this database.');
+        else $this->table(['Matched user ID', 'Email'], $accounts->map(function ($account) { return [$account->id, $account->email]; })->all());
         $this->table(array_keys($counts), [array_values($counts)]);
         $keys = [];
         if ($this->option('legacy-redis')) {
@@ -51,6 +54,7 @@ class PurgeExcludedActivity extends Command
             $history->purge();
             foreach ($keys as $key) $redis->del($key);
             $remaining = $history->counts(); unset($remaining['accounts']);
+            $this->line('Remaining matching SQL tracking rows: '.array_sum($remaining));
             if (array_sum($remaining)) { $this->error('Matching tracking rows remain; retry this bounded cleanup.'); return 1; }
             $this->info('Excluded tracking history removed. Accounts, favorites, markings and billing records are preserved.');
         }

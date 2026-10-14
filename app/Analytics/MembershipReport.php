@@ -29,13 +29,14 @@ class MembershipReport
     public function get(Request $request)
     {
         $filters = $request->validate([
-            'provider' => 'nullable|in:stripe,apple',
+            'provider' => 'nullable|in:stripe,apple,super_user,billing',
             'status' => 'nullable|in:active,trial,ending,grace_period,expired,revoked,paused,payment_issue,needs_review,pending,sandbox',
             'search' => 'nullable|string|max:160',
             'sort' => 'nullable|in:date_asc,date_desc,name,checked',
         ]);
         $ready = Schema::hasTable('apple_membership_checks') && Schema::hasTable('apple_membership_sync_runs');
         $base = $this->query($ready);
+        $superUsers = app(SuperUserReport::class)->query();
         $summary = DB::query()->fromSub(clone $base, 'members')->select('provider', 'membership_status')->selectRaw('COUNT(*) as total')->groupBy('provider', 'membership_status')->get();
         $counts = [];
         foreach (['stripe', 'apple'] as $provider) {
@@ -44,8 +45,13 @@ class MembershipReport
         }
         $totals = [];
         foreach (self::LABELS as $key => $label) $totals[$key] = $counts['stripe'][$key] + $counts['apple'][$key];
-        $rows = DB::query()->fromSub($base, 'members');
-        if (! empty($filters['provider'])) $rows->where('provider', $filters['provider']);
+        $counts['super_user'] = array_fill_keys(array_keys(self::LABELS), 0);
+        $counts['super_user']['active'] = DB::query()->fromSub(clone $superUsers, 'super_users')->count();
+        // Show each account once in the directory, while preserving its billing totals above.
+        $directory = (clone $base)->where('u.super_user', false)->unionAll($superUsers);
+        $rows = DB::query()->fromSub($directory, 'members');
+        if (($filters['provider'] ?? '') === 'billing') $rows->whereIn('provider', ['stripe', 'apple']);
+        elseif (! empty($filters['provider'])) $rows->where('provider', $filters['provider']);
         if (! empty($filters['status'])) {
             $filters['status'] === 'needs_review'
                 ? $rows->whereIn('membership_status', ['needs_review', 'pending', 'payment_issue'])
@@ -72,11 +78,11 @@ class MembershipReport
             default: $rows->orderByRaw('CASE WHEN access_until IS NULL THEN 1 ELSE 0 END')->orderBy('access_until');
         }
         return [
-            'memberships' => $rows->orderBy('membership_id')->paginate(AdminPagination::PER_PAGE)->withQueryString(),
+            'memberships' => $rows->orderBy('membership_id')->orderBy('user_id')->paginate(AdminPagination::PER_PAGE)->withQueryString(),
             'counts' => $counts, 'totals' => $totals, 'filters' => $filters, 'labels' => self::LABELS,
             'monitorReady' => $ready,
             'lastRun' => $ready ? DB::table('apple_membership_sync_runs')->orderByDesc('id')->first() : null,
-        ] + app(SuperUserReport::class)->get($request);
+        ];
     }
 
     private function query($ready)

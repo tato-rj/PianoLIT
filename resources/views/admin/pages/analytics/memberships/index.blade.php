@@ -24,15 +24,15 @@
 
     <div class="ma-summary-grid">
         <section class="ua-card ma-providers" aria-labelledby="ma-providers-title">
-            <div class="ua-section-heading"><div><h2 id="ma-providers-title">Memberships by provider</h2><p>One membership per account. Super-user access is separate from billing status.</p></div></div>
+            <div class="ua-section-heading"><div><h2 id="ma-providers-title">Memberships by provider</h2><p>Super-user access is separate from Stripe and Apple billing totals.</p></div></div>
             <p class="ma-scroll-hint">Scroll sideways to see all columns.</p>
             <div class="ua-table-scroll" tabindex="0" role="region" aria-label="Provider comparison"><table class="ua-table ma-provider-table">
                 <thead><tr><th scope="col">Provider</th><th scope="col">Active</th><th scope="col">Trial</th><th scope="col">Ending</th><th scope="col">Inactive</th><th scope="col">Review</th></tr></thead>
-                <tbody>@foreach(['stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS'] as $key => $label)
+                <tbody>@foreach(['stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS', 'super_user' => 'Super User'] as $key => $label)
                     <tr><th scope="row"><a href="{{route('admin.analytics.memberships', ['provider' => $key])}}">{{$label}}</a></th><td>{{$counts[$key]['active'] + $counts[$key]['grace_period']}}</td><td>{{$counts[$key]['trial']}}</td><td>{{$counts[$key]['ending']}}</td><td>{{$counts[$key]['expired'] + $counts[$key]['revoked'] + $counts[$key]['paused']}}</td><td>{{$counts[$key]['needs_review'] + $counts[$key]['pending'] + $counts[$key]['payment_issue']}}</td></tr>
                 @endforeach</tbody>
             </table></div>
-            <p class="ma-source-note">Stripe uses saved billing updates. Apple uses the latest automatic receipt check. Sandbox purchases and excluded test accounts are outside these totals.</p>
+            <p class="ma-source-note">Stripe uses saved billing updates. Apple uses the latest automatic receipt check. Super users have full access regardless of billing status and may also appear in billing totals. Sandbox purchases and excluded test accounts are outside billing totals.</p>
         </section>
 
         <section class="ua-card ma-monitor" aria-labelledby="ma-monitor-title">
@@ -53,16 +53,13 @@
         </section>
     </div>
 
-    @include('admin.pages.analytics.memberships.super-users')
-
     <section class="ua-card ma-directory" aria-labelledby="ma-directory-title">
-        <div class="ua-section-heading"><div><h2 id="ma-directory-title">Membership directory</h2><p>{{number_format($memberships->total())}} matching accounts · Dates shown in {{config('app.timezone')}}.</p></div></div>
+        <div class="ua-section-heading"><div><h2 id="ma-directory-title">Membership directory</h2><p>{{number_format($memberships->total())}} matching accounts · One row per account · Dates shown in {{config('app.timezone')}}.</p></div></div>
         <form class="ua-filters" method="GET" action="{{route('admin.analytics.memberships')}}" aria-label="Membership filters">
-            @foreach($superUserFilters as $key => $value)@if($value !== null && $value !== '')<input type="hidden" name="{{$key}}" value="{{$value}}">@endif @endforeach
             <label class="ua-search">Find an account<input type="search" name="search" value="{{$filters['search'] ?? ''}}" placeholder="Name, email or user ID" maxlength="160"></label>
-            <label>Provider<select name="provider"><option value="">All providers</option>@foreach(['stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS'] as $key => $label)<option value="{{$key}}" @if(($filters['provider'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
+            <label>Provider<select name="provider"><option value="">All providers</option>@foreach(['billing' => 'Stripe + Apple', 'stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS', 'super_user' => 'Super User'] as $key => $label)<option value="{{$key}}" @if(($filters['provider'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
             <label>Status<select name="status"><option value="">All statuses</option>@foreach($labels as $key => $label)<option value="{{$key}}" @if(($filters['status'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
-            <label>Sort by<select name="sort">@foreach(['date_asc' => 'Access date · earliest', 'date_desc' => 'Access date · latest', 'name' => 'Account name', 'checked' => 'Latest Apple check'] as $key => $label)<option value="{{$key}}" @if(($filters['sort'] ?? 'date_asc') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
+            <label>Sort by<select name="sort">@foreach(['date_asc' => 'Access date · earliest', 'date_desc' => 'Access date · latest', 'name' => 'Account name', 'checked' => 'Latest check / grant'] as $key => $label)<option value="{{$key}}" @if(($filters['sort'] ?? 'date_asc') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
             <button class="ua-button" type="submit">Apply filters</button>
             @if(array_filter($filters))<a class="ma-reset" href="{{route('admin.analytics.memberships')}}">Reset</a>@endif
         </form>
@@ -71,12 +68,14 @@
             <thead><tr><th scope="col">Account</th><th scope="col">Provider / plan</th><th scope="col">Status</th><th scope="col">Access until</th><th scope="col">Latest check</th></tr></thead>
             <tbody>@forelse($memberships as $membership)
                 <tr>
-                    <td><a class="ua-person-name" href="{{route('admin.users.show', $membership->user_id)}}">{{trim($membership->first_name.' '.$membership->last_name)}}</a><small>{{$membership->email}}</small><small>#{{$membership->user_id}}@if($membership->super_user) · Super user @endif</small></td>
-                    <td><span class="ma-provider">@icon($membership->provider === 'apple' ? 'brand-apple' : 'credit-card', ['mr' => 1]){{$membership->provider === 'apple' ? 'Apple' : 'Stripe'}}</span><small>{{\App\Analytics\MembershipReport::planName($membership->plan)}}</small>@if($membership->environment === 'Sandbox')<small>Test environment</small>@endif</td>
+                    <td><a class="ua-person-name" href="{{route('admin.users.show', $membership->user_id)}}">{{trim($membership->first_name.' '.$membership->last_name)}}</a><small>{{$membership->email}}</small><small>#{{$membership->user_id}}</small></td>
+                    <td><span class="ma-provider">@icon($membership->provider === 'super_user' ? 'user-shield' : ($membership->provider === 'apple' ? 'brand-apple' : 'credit-card'), ['mr' => 1]){{['super_user' => 'Super User', 'apple' => 'Apple', 'stripe' => 'Stripe'][$membership->provider]}}</span>@if($membership->provider !== 'super_user')<small>{{\App\Analytics\MembershipReport::planName($membership->plan)}}</small>@endif @if($membership->environment === 'Sandbox')<small>Test environment</small>@endif</td>
                     <td><span class="ma-status ma-status--{{$membership->membership_status}}">{{$labels[$membership->membership_status]}}</span>@if($membership->membership_status === 'ending')<small>Will not renew</small>@elseif($membership->membership_status === 'pending')<small>Waiting for a current receipt check</small>@endif</td>
-                    <td class="ma-date">{{$membership->access_until ? carbon($membership->access_until)->format('M j, Y') : ($membership->membership_status === 'revoked' ? 'Access revoked' : 'Not confirmed')}}@if($membership->access_until)<small>{{carbon($membership->access_until)->format('g:i A')}}</small>@if(in_array($membership->membership_status, ['needs_review', 'pending']))<small>Last verified date</small>@endif @endif</td>
+                    <td class="ma-date">@if($membership->provider !== 'super_user'){{$membership->access_until ? carbon($membership->access_until)->format('M j, Y') : ($membership->membership_status === 'revoked' ? 'Access revoked' : 'Not confirmed')}}@if($membership->access_until)<small>{{carbon($membership->access_until)->format('g:i A')}}</small>@if(in_array($membership->membership_status, ['needs_review', 'pending']))<small>Last verified date</small>@endif @endif @endif</td>
                     <td class="ma-check">
-                        @if($membership->provider === 'stripe')<span>Saved Stripe update</span><small>{{carbon($membership->source_updated_at)->format('M j, g:i A')}}</small>
+                        @if($membership->provider === 'super_user')
+                            @if($membership->checked_at)<span>{{carbon($membership->checked_at)->format('M j, Y')}}</span><small>{{carbon($membership->checked_at)->format('g:i A')}}</small>@endif
+                        @elseif($membership->provider === 'stripe')<span>Saved Stripe update</span><small>{{carbon($membership->source_updated_at)->format('M j, g:i A')}}</small>
                         @elseif($membership->checked_at)<span>{{carbon($membership->checked_at)->format('M j, g:i A')}}</span>
                             @if($membership->error_code)<details class="ma-error"><summary>Check failed @if(ctype_digit($membership->error_code)) · {{$membership->error_code}}@endif</summary><p>{{\App\Analytics\MembershipReport::errorText($membership->error_code)}}</p>@if($membership->verified_at)<p>Last successful check: {{carbon($membership->verified_at)->format('M j, Y, g:i A')}}.</p>@endif</details>@endif
                             @if($membership->next_check_at)<small>Next check {{carbon($membership->next_check_at)->diffForHumans()}}</small>@endif
