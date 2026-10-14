@@ -1,4 +1,5 @@
 .rounded-video .plyr {
+	@extend .shadow;
 	border-radius: 8px !important;
 }
 

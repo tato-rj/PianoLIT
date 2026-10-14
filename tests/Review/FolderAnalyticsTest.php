@@ -109,8 +109,8 @@ class FolderAnalyticsTest extends ReviewTestCase
         $user = $this->account(['first_name' => 'Liv', 'last_name' => 'Benson', 'email' => 'liv@example.test']);
         $named = $this->folder($user, ['name' => '100%_Practice!']);
         $this->folder($user, ['name' => 'Other']);
-        foreach (['Liv Benson' => 2, 'liv@example.test' => 2, '100%_' => 1, 'Practice!' => 1, '%' => 1, 'Missing' => 0] as $term => $count) {
-            $this->assertSame($count, $this->report(['search' => $term])['folders']->total());
+        foreach (['Liv Benson' => 2, 'liv@example.test' => 2, '100%_' => 1, 'Practice!' => 1, '%' => 1, '0' => 1, 'Missing' => 0] as $term => $count) {
+            $this->assertSame($count, $this->report(['search' => (string) $term])['folders']->total());
         }
         $this->assertEquals($named->id, $this->report(['search' => '100%_'])['folders']->first()->id);
     }
@@ -201,5 +201,35 @@ class FolderAnalyticsTest extends ReviewTestCase
         foreach ([['sort' => 'email desc'], ['size' => 'unknown'], ['search' => ['x']], ['folder' => -1], ['page' => ['x']], ['pieces_page' => 0]] as $filters) {
             $this->getJson(route('admin.analytics.favorites', $filters))->assertStatus(422);
         }
+    }
+
+    public function test_out_of_range_pages_offer_recovery_without_claiming_the_folder_is_empty()
+    {
+        $user = $this->account(); $folder = $this->folder($user); $this->save($user, $folder, $this->piece());
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get(route('admin.analytics.favorites', ['page' => 999, 'search' => 'Practice']))->assertOk()
+            ->assertSee('No folders on this page')->assertSee('First page')->assertDontSee('No folders match these filters');
+        $this->get(route('admin.analytics.favorites', ['folder' => $folder->id, 'pieces_page' => 999]))->assertOk()
+            ->assertSee('No pieces on this page')->assertDontSee('This folder has no saved pieces');
+    }
+
+    public function test_size_links_keep_search_and_sort_and_restart_the_list()
+    {
+        $user = $this->account(); $this->folder($user);
+        $this->actingAs(create(Admin::class), 'admin');
+        $html = $this->get(route('admin.analytics.favorites', ['search' => 'Practice', 'sort' => 'owner', 'page' => 2]))->assertOk()->getContent();
+        $dom = new \DOMDocument; @$dom->loadHTML($html); $xpath = new \DOMXPath($dom);
+        foreach ($xpath->query('//*[contains(@class,"fa-sizes")]/a') as $link) {
+            parse_str(parse_url($link->getAttribute('href'), PHP_URL_QUERY), $query);
+            $this->assertSame('Practice', $query['search']); $this->assertSame('owner', $query['sort']);
+            $this->assertArrayNotHasKey('page', $query);
+        }
+    }
+
+    public function test_legacy_ajax_response_remains_available()
+    {
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get(route('admin.analytics.favorites', ['draw' => 1, 'start' => 0, 'length' => 10]), ['X-Requested-With' => 'XMLHttpRequest'])
+            ->assertOk()->assertJsonStructure(['draw', 'recordsTotal', 'recordsFiltered', 'data'])->assertJson(['recordsTotal' => 0, 'data' => []]);
     }
 }
