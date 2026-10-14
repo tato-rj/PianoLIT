@@ -10978,7 +10978,8 @@ fieldset:disabled .btn {
 
 /* rtl:end:remove */
 
-.text-primary {
+.text-primary,
+.btn-secondary i.app-icon {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important;
 }
@@ -21721,7 +21722,8 @@ button:active {
   border-color: white !important;
 }
 
-.text-primary {
+.text-primary,
+.btn-secondary i.app-icon {
   color: var(--color-primary) !important;
 }
 
