@@ -5,6 +5,8 @@
         const initialize = () => {
             const modal = root.document.getElementById('feedback-modal');
             if (modal) new Feedback.Controller(modal, root.axios, root);
+            const utility = root.document.querySelector('[data-feedback-utility]');
+            if (utility) new Feedback.Floating(utility, root);
         };
         if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', initialize, {once: true});
         else initialize();
@@ -42,7 +44,6 @@
             this.handleMouth = modal.querySelector('[data-feedback-handle-mouth]');
             this.note = modal.querySelector('[data-feedback-note]');
             this.error = modal.querySelector('[data-feedback-error]');
-            this.thanks = modal.querySelector('[data-feedback-thanks]');
             this.submitButton = modal.querySelector('.feedback-submit');
             this.submitLabel = modal.querySelector('[data-feedback-submit-label]');
             this.value = 2; this.frame = null; this.request = 0; this.busy = false; this.sent = false; this.drag = null;
@@ -136,22 +137,21 @@
             try {
                 const response = await this.http.post(this.form.action, {
                     rating: this.rating.value, message: this.message.value.trim() || null,
-                    _token: this.form.querySelector('[name="_token"]').value
+                    _token: this.form.querySelector('[name="_token"]').value,
+                    page_context: this.form.querySelector('[name="page_context"]').value || null,
+                    device_type: this.win.innerWidth < 700 ? 'mobile' : this.win.innerWidth < 1100 ? 'tablet' : 'desktop'
                 }, {timeout: 15000});
                 if (request !== this.request) return;
                 if (!response.data || response.data.saved !== true) throw new Error('Feedback was not confirmed');
                 this.sent = true; this.setBusy(false); this.message.blur();
-                this.modal.classList.remove('is-noting');
-                this.form.hidden = true; this.thanks.hidden = false;
-                this.modal.querySelector('.feedback-done').focus({preventScroll: true});
-                this.fitViewport();
+                this.win.bootstrap.Modal.getOrCreateInstance(this.modal).hide();
             } catch (error) {
                 if (request !== this.request) return;
                 this.setBusy(false);
                 const response = error.response || {}, errors = response.data && response.data.errors;
                 this.error.textContent = response.status === 419 ? 'Your session has expired. Refresh the page to send your feedback.' :
                     response.status === 429 ? 'Please wait a minute before sending more feedback.' :
-                    errors && (errors.message || errors.rating) ? (errors.message || errors.rating)[0] :
+                    errors && (errors.message || errors.rating || errors.page_context) ? (errors.message || errors.rating || errors.page_context)[0] :
                     'Your feedback could not be sent. Please try again.';
                 this.error.hidden = false;
             }
@@ -160,7 +160,7 @@
             // A response from a dismissed form must never change a reopened one.
             ++this.request; this.cancelAnimation(); this.drag = null;
             this.sent = false; this.setBusy(false); this.form.reset();
-            this.form.hidden = false; this.thanks.hidden = true; this.note.hidden = true; this.error.hidden = true;
+            this.form.hidden = false; this.note.hidden = true; this.error.hidden = true;
             this.modal.classList.remove('is-noting'); this.modal.classList.remove('is-compact');
             this.modal.querySelector('[data-feedback-add-note]').textContent = 'Add note';
             this.paint(2); this.commit(2);
@@ -202,13 +202,120 @@
                 this.drag = null; this.select(this.value);
             };
             stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
-            this.modal.addEventListener('shown.bs.modal', () => this.fitViewport());
-            this.modal.addEventListener('hidden.bs.modal', () => this.reset());
+            this.modal.addEventListener('shown.bs.modal', () => {
+                this.fitViewport();
+                if (this.sent) this.win.bootstrap.Modal.getOrCreateInstance(this.modal).hide();
+            });
+            this.modal.addEventListener('hidden.bs.modal', () => {
+                const submitted = this.sent;
+                this.reset();
+                if (submitted) this.modal.dispatchEvent(new this.win.CustomEvent('feedback:submitted', {bubbles: true}));
+            });
             if (this.win.visualViewport) {
                 this.win.visualViewport.addEventListener('resize', () => this.fitViewport());
                 this.win.visualViewport.addEventListener('scroll', () => this.fitViewport());
             }
         }
     }
-    return {Controller, expression};
+    class Floating {
+        constructor(element, win) {
+            this.element = element; this.win = win; this.doc = win.document;
+            this.button = element.querySelector('[data-feedback-launcher]');
+            this.confirmation = element.querySelector('[data-feedback-confirmation]');
+            this.mobile = win.matchMedia('(max-width: 1099px)');
+            this.overlays = new Set(); this.observed = new Set();
+            this.lastY = this.scrollY(); this.distance = 0; this.direction = 0; this.away = false;
+            this.frame = null; this.toastTimer = null; this.mediaFullscreen = false; this.keyboardFocus = false;
+            this.bind(); this.update();
+        }
+        scrollY() {
+            return Math.max(0, Math.min(this.win.scrollY || 0, Math.max(0, this.doc.documentElement.scrollHeight - this.win.innerHeight)));
+        }
+        scroll() {
+            const y = this.scrollY(), delta = y - this.lastY;
+            this.lastY = y;
+            if (!this.mobile.matches || this.blocked()) return;
+            if (y <= 12) { this.away = false; this.distance = 0; }
+            else if (delta) {
+                const direction = delta > 0 ? 1 : -1;
+                if (direction !== this.direction) this.distance = 0;
+                this.direction = direction; this.distance += Math.abs(delta);
+                if (this.distance >= 24) { this.away = delta > 0; this.distance = 0; }
+            }
+            this.schedule();
+        }
+        visible(element) {
+            const rect = element.getBoundingClientRect(), style = this.win.getComputedStyle(element);
+            return !element.hidden && rect.width > 0 && rect.height > 0 && rect.top < this.win.innerHeight && rect.bottom > 0 &&
+                style.display !== 'none' && style.visibility !== 'hidden';
+        }
+        blocked() {
+            if (this.overlays.size || this.mediaFullscreen || this.doc.fullscreenElement || this.doc.webkitFullscreenElement ||
+                this.doc.body.classList.contains('score-editor-fullscreen-open')) return true;
+            const field = this.doc.activeElement;
+            if (this.mobile.matches && field && field.matches('textarea, select, input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]), [contenteditable]:not([contenteditable="false"])')) return true;
+            const viewport = this.win.visualViewport;
+            if (viewport && viewport.scale === 1 && this.win.innerHeight - viewport.height > 120) return true;
+            return Array.from(this.doc.querySelectorAll('.modal.show, .modal.showing, .modal-backdrop, .offcanvas.show, .offcanvas.showing, .offcanvas-backdrop, .plyr--fullscreen-fallback, .plyr--fullscreen-active, .screen-lock-overlay, #subscribe-overlay, #bottom-popup, [data-feedback-blocking-overlay]'))
+                .some(element => this.visible(element));
+        }
+        schedule() {
+            if (this.frame !== null) return;
+            this.frame = this.win.requestAnimationFrame(() => { this.frame = null; this.update(); });
+        }
+        update() {
+            let blocked = this.blocked(), bottom = 0;
+            if (!blocked) {
+                Array.from(this.doc.querySelectorAll('#menu, [data-playlist-player], .score-footer')).forEach(element => {
+                    if (this.resize && !this.observed.has(element)) { this.observed.add(element); this.resize.observe(element); }
+                    if (!this.visible(element)) return;
+                    const position = this.win.getComputedStyle(element).position;
+                    if (position === 'fixed' || position === 'sticky') bottom = Math.max(bottom, this.win.innerHeight - element.getBoundingClientRect().top);
+                });
+                if (bottom > this.win.innerHeight * .6) blocked = true;
+            }
+            if (this.bottom !== bottom) { this.bottom = bottom; this.element.style.setProperty('--feedback-bottom', Math.ceil(bottom) + 'px'); }
+            this.button.hidden = blocked;
+            this.button.classList.toggle('is-scrolled-away', !blocked && this.mobile.matches && this.away && !(this.keyboardFocus && this.doc.activeElement === this.button));
+            if (blocked) this.confirmation.hidden = true;
+        }
+        submitted() {
+            this.away = false; this.distance = 0; this.lastY = this.scrollY();
+            this.update();
+            this.confirmation.textContent = 'Thank you for your feedback!';
+            this.confirmation.hidden = false;
+            if (this.toastTimer !== null) this.win.clearTimeout(this.toastTimer);
+            this.toastTimer = this.win.setTimeout(() => { this.confirmation.hidden = true; this.toastTimer = null; }, 5000);
+        }
+        bind() {
+            this.win.addEventListener('scroll', () => this.scroll(), {passive: true});
+            this.win.addEventListener('resize', () => this.schedule(), {passive: true});
+            this.win.addEventListener('pageshow', () => { this.away = false; this.distance = 0; this.lastY = this.scrollY(); this.schedule(); });
+            ['focusin', 'focusout', 'fullscreenchange', 'webkitfullscreenchange', 'shown.bs.tab'].forEach(name => this.doc.addEventListener(name, () => this.schedule()));
+            this.doc.addEventListener('keydown', event => { if (event.key === 'Tab') { this.keyboardFocus = true; this.schedule(); } });
+            ['pointerdown', 'touchstart'].forEach(name => this.doc.addEventListener(name, () => { this.keyboardFocus = false; }, {passive: true, capture: true}));
+            ['show.bs.modal', 'show.bs.offcanvas'].forEach(name => this.doc.addEventListener(name, event => {
+                this.overlays.add(event.target); this.update();
+                // A canceled Bootstrap show has no matching hidden event.
+                this.win.setTimeout(() => { if (event.defaultPrevented) { this.overlays.delete(event.target); this.schedule(); } }, 0);
+            }));
+            ['hidden.bs.modal', 'hidden.bs.offcanvas'].forEach(name => this.doc.addEventListener(name, event => { this.overlays.delete(event.target); this.update(); }, true));
+            this.doc.addEventListener('webkitbeginfullscreen', () => { this.mediaFullscreen = true; this.update(); }, true);
+            this.doc.addEventListener('webkitendfullscreen', () => { this.mediaFullscreen = false; this.schedule(); }, true);
+            this.doc.addEventListener('feedback:submitted', () => this.submitted());
+            if (this.win.visualViewport) {
+                this.win.visualViewport.addEventListener('resize', () => this.schedule());
+                this.win.visualViewport.addEventListener('scroll', () => this.schedule());
+            }
+            if (this.win.ResizeObserver) this.resize = new this.win.ResizeObserver(() => this.schedule());
+            if (this.win.MutationObserver) {
+                this.observer = new this.win.MutationObserver(records => {
+                    const relevant = records.some(record => record.type === 'childList' || record.target.matches('body, #menu, [data-playlist-player], .score-footer, .modal, .offcanvas, .modal-backdrop, .offcanvas-backdrop, .tab-pane, .plyr, .screen-lock-overlay, #subscribe-overlay, #bottom-popup, [data-feedback-blocking-overlay]'));
+                    if (relevant) this.schedule();
+                });
+                this.observer.observe(this.doc.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'style', 'hidden']});
+            }
+        }
+    }
+    return {Controller, Floating, expression};
 }));

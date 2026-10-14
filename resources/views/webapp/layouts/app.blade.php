@@ -1,3 +1,4 @@
+@php($feedbackEnabled = request()->routeIs('webapp.*') && !request()->routeIs('webapp.tour', 'webapp.membership.checkout', 'webapp.membership.success'))
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -40,7 +41,7 @@
     @stack('header')
 
 </head>
-<body>
+<body @if($feedbackEnabled) class="has-feedback-utility" @endif>
     @qrcode
 
     @auth('web')
@@ -99,6 +100,10 @@
     @include('components.popups.whatsnew', ['tabscount' => 1])
 
     @include('webapp.components.campaign-attribution')
+
+    @if($feedbackEnabled)
+        @include('webapp.feedback.utility')
+    @endif
 
     <script src="{{ mix('js/app.js') }}"></script>
     @include('components.activity')

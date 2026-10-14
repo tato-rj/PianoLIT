@@ -24,4 +24,25 @@ class FeedbackController extends Controller
 
         return view('admin.pages.feedback.index', compact('submissions', 'rating'));
     }
+
+    public function destroy(Request $request, FeedbackSubmission $feedback)
+    {
+        $data = $request->validate([
+            'rating' => ['nullable', 'string', Rule::in(array_keys(FeedbackSubmission::RATINGS))],
+            'page' => ['nullable', 'integer', 'min:1'],
+        ]);
+        $rating = $data['rating'] ?? null;
+        $feedback->delete();
+
+        $remaining = FeedbackSubmission::when($rating, function ($query) use ($rating) {
+            $query->where('rating', $rating);
+        })->count();
+        $lastPage = max(1, (int) ceil($remaining / AdminPagination::PER_PAGE));
+        $page = min((int) ($data['page'] ?? 1), $lastPage);
+
+        return redirect()->route('admin.feedback.index', [
+            'rating' => $rating,
+            'page' => $page > 1 ? $page : null,
+        ])->with('status', 'Feedback deleted.');
+    }
 }

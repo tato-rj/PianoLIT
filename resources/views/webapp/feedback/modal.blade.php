@@ -5,6 +5,7 @@
     <form class="feedback-form" action="{{ route('webapp.feedback.store') }}" method="POST" data-feedback-form>
         @csrf
         <input type="hidden" name="rating" value="good">
+        <input type="hidden" name="page_context" value="{{ app(\App\Services\FeedbackContext::class)->forPage(request()) }}">
         <div class="feedback-stage" data-feedback-swipe>
             <h1 id="feedback-heading" class="feedback-question">How was your PianoLIT<br>experience?</h1>
             <div class="feedback-expression">@include('webapp.feedback.face')</div>
@@ -35,12 +36,6 @@
             <p class="feedback-error" data-feedback-error role="alert" hidden></p>
         </div>
     </form>
-    <section class="feedback-thanks" data-feedback-thanks hidden aria-labelledby="feedback-thanks-heading">
-        <div class="feedback-thanks-face">@include('webapp.feedback.face')</div>
-        <h2 id="feedback-thanks-heading">Thank you for your<br>feedback!</h2>
-        <p>Your feedback helps us make<br>PianoLIT even better.</p>
-        <button type="button" class="feedback-done" data-bs-dismiss="modal">Continue exploring @icon('arrow-right', ['mr' => 0])</button>
-    </section>
 @endcomponent
 
 @push('scripts')

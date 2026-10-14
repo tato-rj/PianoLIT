@@ -87,7 +87,7 @@ class FeedbackTest extends ReviewTestCase
         }
         FeedbackSubmission::create(['rating' => 'bad', 'message' => '0']);
         $this->get(route('admin.feedback.index', ['rating' => 'bad']))->assertOk()
-            ->assertSee('<td class="admin-feedback-message">0</td>', false);
+            ->assertSee('<div class="admin-feedback-message-text">0</div>', false);
         $first = $this->get(route('admin.feedback.index', ['rating' => 'good']))->assertOk()
             ->assertSee('Feedback Member')->assertSee('Guest')->assertSee('&lt;script&gt;', false)->assertDontSee('<script>alert("example")</script>', false);
         $page = $first->viewData('submissions');
@@ -113,5 +113,58 @@ class FeedbackTest extends ReviewTestCase
         $this->assertSame('my.'.config('app.short_url'), $route->getDomain());
         $admin = app('router')->getRoutes()->getByName('admin.feedback.index');
         $this->assertContains('auth:admin', $admin->gatherMiddleware());
+    }
+
+    public function test_admin_deletes_only_the_selected_feedback_and_returns_to_a_valid_filtered_page()
+    {
+        $user = Model::withoutEvents(function () { return create(User::class); });
+        $this->actingAs(create(Admin::class), 'admin');
+        for ($i = 0; $i < 13; $i++) FeedbackSubmission::create(['rating' => 'good', 'user_id' => $user->id]);
+        $other = FeedbackSubmission::create(['rating' => 'bad', 'message' => 'Keep this feedback']);
+        $page = $this->get(route('admin.feedback.index', ['rating' => 'good', 'page' => 2]))->assertOk();
+        $target = $page->viewData('submissions')->first();
+        $page->assertSee(route('admin.feedback.destroy', ['feedback' => $target, 'rating' => 'good', 'page' => 2]))
+            ->assertSee('aria-label="Delete feedback"', false)->assertSee('icon-trash-2', false);
+
+        $this->delete(route('admin.feedback.destroy', ['feedback' => $target, 'rating' => 'good', 'page' => 2]), ['feedback' => $other->id])
+            ->assertRedirect(route('admin.feedback.index', ['rating' => 'good']))->assertSessionHas('status', 'Feedback deleted.');
+        $this->assertDatabaseMissing('feedback_submissions', ['id' => $target->id]);
+        $this->assertDatabaseHas('feedback_submissions', ['id' => $other->id, 'message' => 'Keep this feedback']);
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
+        $this->assertDatabaseCount('feedback_submissions', 13);
+
+        for ($i = 0; $i < 13; $i++) FeedbackSubmission::create(['rating' => 'good']);
+        $target = FeedbackSubmission::where('rating', 'good')->first();
+        $this->delete(route('admin.feedback.destroy', ['feedback' => $target, 'rating' => 'good', 'page' => 2]))
+            ->assertRedirect(route('admin.feedback.index', ['rating' => 'good', 'page' => 2]));
+    }
+
+    public function test_feedback_deletion_requires_an_admin_session_and_the_form_csrf_token()
+    {
+        $feedback = FeedbackSubmission::create(['rating' => 'good']);
+        $url = route('admin.feedback.destroy', $feedback);
+        $this->withExceptionHandling()->deleteJson($url)->assertUnauthorized();
+        $user = Model::withoutEvents(function () { return create(User::class); });
+        $this->actingAs($user, 'web')->deleteJson($url)->assertUnauthorized();
+        $this->assertDatabaseHas('feedback_submissions', ['id' => $feedback->id]);
+
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->app['env'] = 'review-csrf';
+        $this->withSession(['_token' => 'feedback-delete-csrf'])->deleteJson($url)->assertStatus(419);
+        $this->assertDatabaseHas('feedback_submissions', ['id' => $feedback->id]);
+        $this->post($url, ['_method' => 'DELETE', '_token' => 'feedback-delete-csrf'])
+            ->assertRedirect(route('admin.feedback.index'));
+        $this->assertDatabaseMissing('feedback_submissions', ['id' => $feedback->id]);
+    }
+
+    public function test_missing_feedback_and_invalid_return_filters_do_not_delete_other_submissions()
+    {
+        $feedback = FeedbackSubmission::create(['rating' => 'not_bad']);
+        $this->actingAs(create(Admin::class), 'admin')->withExceptionHandling();
+        $this->deleteJson(route('admin.feedback.destroy', 999999))->assertNotFound();
+        foreach ([['rating' => ['good']], ['rating' => 'unknown'], ['page' => -1], ['page' => ['2']]] as $filters) {
+            $this->deleteJson(route('admin.feedback.destroy', ['feedback' => $feedback]), $filters)->assertUnprocessable();
+        }
+        $this->assertDatabaseCount('feedback_submissions', 1);
     }
 }

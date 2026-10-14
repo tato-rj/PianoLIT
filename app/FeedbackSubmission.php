@@ -8,7 +8,8 @@ class FeedbackSubmission extends Model
 {
     const RATINGS = ['bad' => 'Bad', 'not_bad' => 'Not bad', 'good' => 'Good'];
 
-    protected $fillable = ['user_id', 'rating', 'message'];
+    protected $fillable = ['user_id', 'rating', 'message', 'context'];
+    protected $casts = ['context' => 'array'];
 
     public function user()
     {

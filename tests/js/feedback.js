@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {Controller, expression} = require('../../resources/js/views/feedback');
+const {Controller, Floating, expression} = require('../../resources/js/views/feedback');
 
 class Element {
     constructor() {
@@ -10,6 +10,7 @@ class Element {
             toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); }};
     }
     setAttribute(name, value) { this.attributes[name] = String(value); }
+    matches() { return false; }
     addEventListener(name, handler) { this.events[name] = handler; }
     focus() { this.focused = true; }
     blur() { this.focused = false; }
@@ -19,31 +20,35 @@ class Element {
 }
 
 function fixture() {
-    const map = {}, frames = new Map(), pending = [];
+    const map = {}, frames = new Map(), pending = [], notifications = [], hidden = [];
     let nextFrame = 0;
-    const selectors = ['[data-feedback-form]', '[data-feedback-range]', '[name="message"]', '[name="rating"]', '[name="_token"]',
-        '[data-feedback-labels]', '[data-feedback-thumb]', '[data-feedback-handle-mouth]', '[data-feedback-note]', '[data-feedback-error]', '[data-feedback-thanks]',
-        '.feedback-submit', '[data-feedback-submit-label]', '[data-feedback-add-note]', '[data-feedback-note-back]', '.feedback-done', '.modal-content', '[data-feedback-swipe]'];
+    const selectors = ['[data-feedback-form]', '[data-feedback-range]', '[name="message"]', '[name="rating"]', '[name="_token"]', '[name="page_context"]',
+        '[data-feedback-labels]', '[data-feedback-thumb]', '[data-feedback-handle-mouth]', '[data-feedback-note]', '[data-feedback-error]',
+        '.feedback-submit', '[data-feedback-submit-label]', '[data-feedback-add-note]', '[data-feedback-note-back]', '.modal-content', '[data-feedback-swipe]'];
     selectors.forEach(selector => { map[selector] = new Element(); });
     const buttons = [0, 1, 2].map(value => Object.assign(new Element(), {dataset: {feedbackRating: String(value)}}));
-    const faces = [0, 1].map(() => {
+    const faces = [0].map(() => {
         const elements = {'[data-face-eye="left"]': new Element(), '[data-face-eye="right"]': new Element(), '[data-face-mouth]': new Element()};
         return {querySelector: selector => elements[selector]};
     });
     const modal = new Element();
     modal.querySelector = selector => map[selector];
     modal.querySelectorAll = selector => selector === '.feedback-face' ? faces : buttons;
+    modal.dispatchEvent = event => notifications.push(event.type);
     const form = map['[data-feedback-form]'];
     form.querySelector = modal.querySelector;
     form.querySelectorAll = () => [...buttons, map['[data-feedback-range]'], map['[name="message"]'], map['.feedback-submit'], map['[data-feedback-add-note]'], map['[data-feedback-note-back]']];
     form.reset = () => { map['[name="message"]'].value = ''; };
     form.action = '/feedback'; map['[name="_token"]'].value = 'session-csrf';
-    const win = {matchMedia: () => ({matches: false}), visualViewport: Object.assign(new Element(), {height: 500, offsetTop: 12}),
+    map['[name="page_context"]'].value = 'page-token';
+    const win = {innerWidth: 390, matchMedia: () => ({matches: false}), visualViewport: Object.assign(new Element(), {height: 500, offsetTop: 12}),
+        CustomEvent: class { constructor(type) { this.type = type; } },
+        bootstrap: {Modal: {getOrCreateInstance: () => ({hide() { hidden.push(true); }})}},
         requestAnimationFrame(callback) { frames.set(++nextFrame, callback); return nextFrame; }, cancelAnimationFrame(id) { frames.delete(id); }};
     const http = {post(url, payload, options) { return new Promise((resolve, reject) => pending.push({url, payload, options, resolve, reject})); }};
     const controller = new Controller(modal, http, win);
     function animate() { for (const time of [0, 440]) { const callbacks = [...frames.values()]; frames.clear(); callbacks.forEach(callback => callback(time)); } }
-    return {controller, modal, map, pending, buttons, win, animate};
+    return {controller, modal, map, pending, buttons, win, animate, notifications, hidden};
 }
 
 module.exports = async function () {
@@ -60,7 +65,7 @@ module.exports = async function () {
     const first = c.submit({preventDefault() {}});
     c.submit({preventDefault() {}});
     assert.strictEqual(f.pending.length, 1, 'Repeated submit while busy sends exactly one request');
-    assert.deepStrictEqual(f.pending[0].payload, {rating: 'bad', message: null, _token: 'session-csrf'});
+    assert.deepStrictEqual(f.pending[0].payload, {rating: 'bad', message: null, _token: 'session-csrf', page_context: 'page-token', device_type: 'mobile'});
     assert.strictEqual(f.pending[0].options.timeout, 15000, 'An unreachable server cannot leave controls locked forever');
     assert(c.busy); assert(map['[name="message"]'].disabled);
     f.pending[0].reject({response: {status: 500}}); await first;
@@ -98,16 +103,88 @@ module.exports = async function () {
     assert.strictEqual(c.message.value, '  Please add more music  ', 'Failures preserve the optional note and choice');
     const success = c.submit({preventDefault() {}});
     f.pending[2].resolve({data: {saved: true}}); await success;
-    assert(c.sent); assert(c.form.hidden); assert(!c.thanks.hidden); assert(map['.feedback-done'].focused);
+    assert(c.sent); assert.strictEqual(f.hidden.length, 1, 'Success closes the existing Bootstrap modal');
+    assert.strictEqual(f.notifications.length, 0, 'Wait until the modal finishes closing to announce success');
     await c.submit({preventDefault() {}}); assert.strictEqual(f.pending.length, 3, 'The confirmation cannot submit again');
-    c.reset(); assert.strictEqual(c.message.value, ''); assert.strictEqual(c.rating.value, 'good'); assert(c.thanks.hidden); assert(!c.form.hidden);
+    c.modal.fire('hidden.bs.modal');
+    assert.deepStrictEqual(f.notifications, ['feedback:submitted']);
+    assert.strictEqual(c.message.value, ''); assert.strictEqual(c.rating.value, 'good'); assert(!c.form.hidden);
 
     const stale = c.submit({preventDefault() {}});
     c.reset(); c.message.value = 'New draft'; c.select(0);
     f.pending[3].resolve({data: {saved: true}}); await stale;
-    assert(!c.form.hidden); assert(c.thanks.hidden); assert.strictEqual(c.message.value, 'New draft'); assert.strictEqual(c.rating.value, 'bad');
+    assert(!c.form.hidden); assert.strictEqual(f.notifications.length, 1); assert.strictEqual(c.message.value, 'New draft'); assert.strictEqual(c.rating.value, 'bad');
     const rejected = c.submit({preventDefault() {}});
     f.pending[4].reject({response: {status: 429}}); await rejected;
     assert.strictEqual(c.error.textContent, 'Please wait a minute before sending more feedback.');
-    console.log('Passed: feedback morphing, swipe/keyboard ratings, note/viewport behavior, submission identity, duplicate clicks, failure recovery and stale responses.');
+    floatingChecks();
+    console.log('Passed: feedback ratings/notes/context, close-and-confirm success, retry/race handling, floating scroll hysteresis, overlays, keyboard/fullscreen suppression and navigation/player spacing.');
 };
+
+function floatingChecks() {
+    const frames = new Map(), timers = new Map(), events = {}, docEvents = {};
+    let frameId = 0, timerId = 0;
+    const mobile = {matches: true}, button = new Element(), confirmation = new Element(), root = new Element();
+    confirmation.hidden = true;
+    root.querySelector = selector => selector === '[data-feedback-launcher]' ? button : confirmation;
+    const body = new Element();
+    const obstacles = [], overlays = [];
+    const doc = {body, documentElement: {scrollHeight: 3000}, activeElement: null,
+        addEventListener(name, handler) { docEvents[name] = handler; },
+        querySelectorAll(selector) { return selector.startsWith('#menu,') ? obstacles : overlays; }};
+    const win = {document: doc, innerWidth: 390, innerHeight: 844, scrollY: 0,
+        visualViewport: Object.assign(new Element(), {height: 844, scale: 1}),
+        matchMedia: () => mobile, addEventListener(name, handler) { events[name] = handler; },
+        getComputedStyle: element => element.computed || {display: 'block', visibility: 'visible', position: 'fixed'},
+        requestAnimationFrame(callback) { frames.set(++frameId, callback); return frameId; },
+        setTimeout(callback, delay) { timers.set(++timerId, {callback, delay}); return timerId; }, clearTimeout(id) { timers.delete(id); },
+        ResizeObserver: class { constructor(callback) { this.callback = callback; } observe() {} },
+        MutationObserver: class { constructor(callback) { this.callback = callback; } observe() {} }};
+    const menu = new Element();
+    menu.getBoundingClientRect = () => ({width: 390, height: 82, top: win.innerHeight - 82, bottom: win.innerHeight});
+    obstacles.push(menu);
+    const floating = new Floating(root, win);
+    function flush() { const callbacks = [...frames.values()]; frames.clear(); callbacks.forEach(callback => callback()); }
+    function scroll(y) { win.scrollY = y; events.scroll(); flush(); }
+    assert(!button.hidden); assert(!button.classList.contains('is-scrolled-away'));
+    assert.strictEqual(root.style['--feedback-bottom'], '82px');
+    scroll(100); assert(button.classList.contains('is-scrolled-away'));
+    scroll(95); assert(button.classList.contains('is-scrolled-away'), 'Small upward movement cannot flicker the button');
+    scroll(75); assert(!button.classList.contains('is-scrolled-away'));
+    scroll(80); assert(!button.classList.contains('is-scrolled-away'), 'Small downward movement does not hide the button');
+    scroll(110); assert(button.classList.contains('is-scrolled-away'));
+    scroll(0); assert(!button.classList.contains('is-scrolled-away'), 'Returning to the top always shows it');
+
+    mobile.matches = false; events.resize(); flush(); scroll(400);
+    assert(!button.hidden); assert(!button.classList.contains('is-scrolled-away'), 'Desktop never hides while scrolling');
+    const overlay = new Element();
+    docEvents['show.bs.modal']({target: overlay}); assert(button.hidden, 'Hide before an opening modal can cover it');
+    docEvents['hidden.bs.modal']({target: overlay}); assert(!button.hidden, 'Restore synchronously so Bootstrap can return keyboard focus');
+    docEvents['show.bs.offcanvas']({target: overlay}); assert(button.hidden);
+    docEvents['hidden.bs.offcanvas']({target: overlay}); assert(!button.hidden);
+    overlays.push(menu); floating.update(); assert(button.hidden, 'Fallback fullscreen overlays are also detected');
+    overlays.pop();
+    doc.fullscreenElement = {}; floating.update(); assert(button.hidden); doc.fullscreenElement = null;
+    body.classList.add('score-editor-fullscreen-open'); floating.update(); assert(button.hidden); body.classList.remove('score-editor-fullscreen-open');
+    docEvents.webkitbeginfullscreen(); assert(button.hidden); docEvents.webkitendfullscreen(); flush(); assert(!button.hidden);
+
+    mobile.matches = true; doc.activeElement = {matches: () => true}; docEvents.focusin(); flush(); assert(button.hidden);
+    doc.activeElement = null; docEvents.focusout(); flush(); assert(!button.hidden);
+    win.visualViewport.height = 500; win.visualViewport.fire('resize'); flush(); assert(button.hidden, 'A keyboard can shrink the visual viewport without a focus event');
+    win.visualViewport.height = 844; win.visualViewport.fire('resize'); flush(); assert(!button.hidden);
+    const player = new Element(); player.getBoundingClientRect = () => ({width: 390, height: 100, top: 620, bottom: 720});
+    obstacles.push(player); floating.update(); assert.strictEqual(root.style['--feedback-bottom'], '224px', 'Stay above the whole player band');
+    player.hidden = true; floating.update(); assert.strictEqual(root.style['--feedback-bottom'], '82px');
+    scroll(500); assert(button.classList.contains('is-scrolled-away'));
+    docEvents['feedback:submitted'](); assert(!button.hidden); assert(!button.classList.contains('is-scrolled-away'));
+    assert.strictEqual(confirmation.textContent, 'Thank you for your feedback!'); assert(!confirmation.hidden);
+    doc.activeElement = button; scroll(600);
+    assert(button.classList.contains('is-scrolled-away'), 'Restored pointer focus after submission must not prevent later scroll hiding');
+    docEvents.keydown({key: 'Tab'}); flush();
+    assert(!button.classList.contains('is-scrolled-away'), 'Keyboard focus stays available until the user tabs away');
+    docEvents.pointerdown(); doc.activeElement = null;
+    [...timers.values()].filter(timer => timer.delay === 5000).forEach(timer => timer.callback()); assert(confirmation.hidden);
+    floating.observer.callback([{type: 'childList'}]); floating.observer.callback([{type: 'childList'}]);
+    assert.strictEqual(frames.size, 1, 'DOM changes coalesce into one scheduled update'); flush();
+    scroll(700); events.pageshow(); flush(); assert(!button.classList.contains('is-scrolled-away'), 'Reload/back restoration starts with the complete button');
+}

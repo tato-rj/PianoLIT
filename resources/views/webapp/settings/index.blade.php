@@ -23,6 +23,7 @@
 		@include('webapp.settings.item', ['url' => route('register'), 'label' => 'Create an account'])
 		@endauth
 		@include('webapp.settings.item', ['url' => 'mailto:'.config('app.emails.general'), 'label' => 'Contact us'])
+		<button type="button" class="list-group-item py-4 rounded-0 list-group-item-action text-start" data-bs-toggle="modal" data-bs-target="#feedback-modal" aria-controls="feedback-modal">Send feedback</button>
 		@include('webapp.settings.item', ['url' => route('webapp.terms'), 'label' => 'Terms of service'])
 		@include('webapp.settings.item', ['url' => route('webapp.privacy'), 'label' => 'Privacy policy'])
 		@include('webapp.settings.item', ['url' => config('app.url'), 'external' => true, 'label' => 'Visit the website'])
