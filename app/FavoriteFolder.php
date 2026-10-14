@@ -6,6 +6,8 @@ class FavoriteFolder extends PianoLit
 {
     protected $withCount = ['favorites'];
     protected $casts = ['is_default' => 'boolean'];
+    // Browser customization must not add fields to existing mobile JSON.
+    protected $hidden = ['web_color'];
 
     public static function boot()
     {

@@ -1,4 +1,4 @@
-<article class="my-pieces-folder" data-folder-search="{{ $folder->name }} {{ $folderSearch->get($folder->id, '') }}">
+<article class="my-pieces-folder" data-folder-color="{{ $folderColor }}" data-folder-search="{{ $folder->name }} {{ $folderSearch->get($folder->id, '') }}">
     <div class="my-pieces-folder__heading">
         <div class="my-pieces-folder__identity">
             <h3><a href="{{ route('webapp.users.favorites.folders.show', $folder) }}">{{ $folder->name }}</a></h3>

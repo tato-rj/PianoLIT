@@ -1,3 +1,4 @@
+@php($folderColors = \App\Support\FolderPalette::colorsFor($folders))
 <section class="my-pieces-favorites" id="folders-list" aria-labelledby="favorites-heading">
     <div class="my-pieces-favorites__heading">
         <div>
@@ -11,7 +12,7 @@
                 <input type="search" id="folder-search" placeholder="Search folders or pieces…" aria-controls="folder-grid" autocomplete="off">
             </label>
             <button type="button" data-bs-toggle="modal" data-bs-target="#new-folder-modal" class="btn btn-secondary">
-                @icon('plus') New folder
+                @icon('plus')New folder
             </button>
         </div>
     </div>
@@ -21,6 +22,7 @@
             <form method="POST" action="{{ route('webapp.users.favorites.folders.store') }}">
                 @csrf
                 @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Folder name'])
+                @include('webapp.user.my-pieces.favorites.color', ['pickerId' => 'new-folder-color', 'selectedColor' => \App\Support\FolderPalette::suggest($folderColors)])
                 @submit(['label' => 'Create folder', 'block' => true])
             </form>
         @endslot
@@ -30,6 +32,7 @@
     <p class="my-pieces-favorites__no-results" data-folder-no-results hidden>No folders match your search. Try another folder, piece or composer.</p>
     <div class="my-pieces-folders" id="folder-grid">
         @foreach($folders as $folder)
+            @php($folderColor = $folderColors->get($folder->id))
             @include('webapp.user.my-pieces.favorites.folders.folder', ['previews' => $folderPreviews->get($folder->id, collect())])
             @include('webapp.user.my-pieces.favorites.delete')
             @include('webapp.user.my-pieces.favorites.edit')

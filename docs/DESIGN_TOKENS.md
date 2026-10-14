@@ -61,8 +61,16 @@ peach, rose, aqua, butter, sage, lilac, periwinkle and terracotta. Each exposes
 `--pastel-{name}-surface` for light panels, `-accent` for tabs or soft actions,
 `-border` for outlines, and `-ink` for readable secondary text. Reuse these tokens
 when a feature needs a pastel background; Discover's For you panel uses
-`--pastel-lavender-surface`. My Pieces cycles through the palette in folder order,
-repeating after 12 folders. Filtering keeps each folder's assigned tone.
+`--pastel-lavender-surface`. My Pieces stores each folder's selected palette name
+in `favorite_folders.web_color` and uses `data-folder-color` to select these tokens.
+The create/edit dialogs offer only these 12 tones. A new folder starts with a
+random unused tone; once every tone is used, defaults repeat among the least-used
+tones. Saved choices can repeat. Filtering, renaming and sorting preserve saved
+colors. The color migration freezes the old alphabetical palette assignments
+without changing folder timestamps. Folders subsequently created by mobile retain
+the alphabetical fallback until a browser create/update preserves their colors;
+`web_color` is hidden from existing mobile JSON. Deploy the migration before the
+updated browser templates/controllers and app CSS.
 Soft actions use `-action` for a darker text/icon shade of the same hue,
 `-action-hover` for its darker hover/focus shade, and `-accent-hover` for a subtly
 deeper tinted background. Icons inherit the action's text color.

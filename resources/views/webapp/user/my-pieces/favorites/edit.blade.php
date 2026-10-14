@@ -6,8 +6,9 @@
       @method('PATCH')
       @input(['bag' => 'default', 'label' => 'Folder name', 'value' => $folder->name, 'name' => 'name', 'placeholder' => 'Write the name here', 'limit' => 80])
       @textarea(['bag' => 'default', 'label' => 'Folder description (optional)', 'value' => $folder->description, 'name' => 'description', 'placeholder' => 'Write the description here', 'limit' => 120, 'required' => true])
+      @include('webapp.user.my-pieces.favorites.color', ['pickerId' => 'edit-folder-color-' . $folder->id, 'selectedColor' => $folderColor])
 
-      <button type="submit" class="btn d-block w-100 btn-primary">Save my changes</button>
+      @submit(['label' => 'Save my changes', 'icon' => 'save', 'block' => true])
     </form>
   </div>
 @endslot

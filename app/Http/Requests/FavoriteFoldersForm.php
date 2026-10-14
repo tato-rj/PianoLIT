@@ -46,7 +46,7 @@ class FavoriteFoldersForm extends FormRequest
     {
         $folder = $this->route('folder') ?? $this->folder_id;
 
-        return [
+        $rules = [
             'user_id' => 'sometimes|exists:users,id',
             'folder_id' => 'sometimes|exists:favorite_folders,id',
             'piece_id' => 'sometimes|exists:pieces,id',
@@ -60,6 +60,12 @@ class FavoriteFoldersForm extends FormRequest
                 })->ignore($folder instanceof FavoriteFolder ? $folder->id : $folder),
             ]
         ];
+
+        if ($this->routeIs('webapp.*')) {
+            $rules['color'] = ['sometimes', 'required', 'string', Rule::in(\App\Support\FolderPalette::COLORS)];
+        }
+
+        return $rules;
     }
 
     public function messages()

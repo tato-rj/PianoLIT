@@ -24,6 +24,9 @@ class UsersController extends Controller
             $query->where('type', 'Performance')->orderBy('id')->with('moments');
         }]);
 
-    	return view('webapp.user.my-pieces.favorites.folders.show', compact('folder'));
+        $folderColor = in_array($folder->web_color, \App\Support\FolderPalette::COLORS, true)
+            ? $folder->web_color : \App\Support\FolderPalette::forUser(auth()->id())->get($folder->id);
+
+        return view('webapp.user.my-pieces.favorites.folders.show', compact('folder', 'folderColor'));
     }
 }

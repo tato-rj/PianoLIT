@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-14",
+  "generator": "Built-in imagegen",
+  "requested_dimensions": "1584 × 960",
+  "actual_dimensions": "See dimensions recorded for each cover.",
+  "reference_style": "User-supplied PianoLIT playlist screenshot",
+  "portrait_references": {
+    "Florence Price": "https://www.pricefest.org/blog/2018/1/17/florence-price-and-the-politics-of-her-existence",
+    "Johann Sebastian Bach": "Elias Gottlob Haussmann's familiar historical portrait",
+    "Cécile Chaminade": "https://commons.wikimedia.org/wiki/File:C%C3%A9cile_Chaminade_1890.jpg",
+    "Mélanie Bonis": "https://www.mel-bonis.com/img/MelBonis-Corbineau-detail.jpg",
+    "Alec Rowley": "https://my.pianolit.com/composers/111",
+    "Frédéric Chopin": "Eugène Delacroix's familiar 1838 historical portrait"
+  },
+  "covers": [
+    {
+      "filename": "florence-price.jpg",
+      "prompt": "Use case: stylized-concept.\nAsset type: PianoLIT composer playlist cover, one standalone landscape image, 1584 by 960 pixels, aspect ratio 1.65:1.\nPrimary request: create a beautiful illustrated cover featuring the recognizable face of Florence Price. Match a cohesive collection of soft painterly piano playlist illustrations: matte gouache, watercolor washes, cut-paper-like layered silhouettes, subtle fibrous paper grain, gentle tonal shading, warm ivory accents and organic curves. The existing collection includes textured botanical leaves, imaginary arches, soft hills, calm lakes and stylized piano keys. Make this feel like another cover from that family.\nSubject: a dignified illustrated bust portrait of Florence Price based on her familiar G. Nelidoff archival studio portrait: African American woman in midlife, warm medium-brown complexion, short dark waved hair parted at the side, gently rounded face, deep-set expressive eyes, composed direct gaze, small earrings, dark formal 1930s dress with a small ornamental brooch. Preserve her recognizable historical facial proportions, do not invent a generic woman. Paint her face in the SAME gouache technique as the surroundings, no photographic cutout.\nScene and design: an elegant rhythmic arrangement of magnolia-like leaves and pale blossoms, a flowing simplified keyboard along the lower edge, overlapping organic curves and one muted golden sun-disc behind the portrait; graceful spacious composition, the face is the strong focal point and occupies roughly 42 percent of the image height, head fully visible and comfortably inside edges.\nColor palette: rich peacock teal, deep petrol blue, muted jade, warm gold, soft cream, natural skin tones. The visual mood is luminous, calm and confident.\nConstraints: full bleed artwork; no border, no rounded corners baked into the file, no text, no lettering, no name, no logos, no watermark, no UI, no extra people, no photorealism, no caricature, no glossy 3D. This is ONE cover, not a grid.",
+      "dimensions": {
+        "pixelWidth": 990,
+        "pixelHeight": 601
+      },
+      "export_bytes": 115695,
+      "jpeg_quality": 76
+    },
+    {
+      "filename": "js-bach.jpg",
+      "prompt": "Use case: stylized-concept.\nAsset type: PianoLIT composer playlist cover, one standalone landscape image, 1584 by 960 pixels, aspect ratio 1.65:1.\nPrimary request: create a beautiful illustrated cover featuring the recognizable face of Johann Sebastian Bach, coordinated with soft painterly piano playlist illustrations.\nStyle: matte gouache and watercolor, cut-paper-like layered forms, delicate fibrous paper grain, gentle tonal shading, softly painted nature and architecture. Like refined illustrated storybook landscapes, not a flat vector cartoon. Natural expressive facial detail rendered in the same gouache texture as the scenery.\nSubject: Johann Sebastian Bach based on the famous authentic Elias Gottlob Haussmann portrait: broad mature face, strong full cheeks and slightly heavy jowls, firm closed lips, serious thoughtful dark eyes, prominent nose, white powdered curled shoulder-length wig, dark eighteenth-century coat and white neckcloth. His face must be recognizably Bach, not Handel or a generic aristocrat. Bust portrait with entire wig and head comfortably visible, face as focal point roughly 42 percent of canvas height.\nScene and design: a luminous ochre architectural fantasy of restrained baroque arches and a few vertical organ pipes receding rhythmically, a small curl of olive foliage, curved piano-key geometry and layered warm hills across the foreground. Harmonious architectural rhythm, spacious rather than cluttered.\nColor palette: amber ochre, honey gold, warm sandstone, burnt sienna, dark chocolate, pale parchment, natural skin tones. Distinctly golden and warm.\nConstraints: ONE cover, full bleed, no grid, no border, no baked rounded corners, no text, no lettering, no names, no logos, no watermark, no UI, no other people, no photorealistic cutout, no caricature, no glossy 3D. Match the softly textured aesthetic of the existing PianoLIT botanical, piano staircase, moonlit lake and dreamy landscape covers.",
+      "dimensions": {
+        "pixelWidth": 990,
+        "pixelHeight": 601
+      },
+      "export_bytes": 118582,
+      "jpeg_quality": 76
+    },
+    {
+      "filename": "cecile-chaminade.jpg",
+      "prompt": "Use case: style-transfer.\nAsset type: replacement PianoLIT composer playlist cover for Cécile Chaminade, landscape, preserve the reference image's 1610 by 977 canvas and framing.\nInput image 1: edit target, the current illustrated Chaminade cover. Preserve her recognizable face, short curled brown hair, calm expression, head-and-bust scale, position, historical charcoal dress and ivory collar. Preserve the refined matte gouache/watercolor technique and fibrous paper texture used throughout this playlist collection.\nPrimary request: completely redesign the setting and palette around this same artist. Remove EVERY rose, flower, floral garland, garden, pink surface and pink decorative detail. The new artistic direction is rust, burnt orange, charcoal and warm ivory, chosen independently of gender. Treat her with the same visual dignity as any composer.\nNew scene and design: a spacious, imaginative architectural composition with broad warm terracotta planes, a tall rounded opening, layered sunlit stone shapes, quiet charcoal shadows, and elegant piano-key geometry that curves through the lower part of the cover. A distant pale parchment sky and very restrained amber glow. Use a few large balanced forms with painterly shading, like PianoLIT's existing orange architectural piano-staircase artwork. Evoke musical rhythm through repeated shapes and piano geometry. Replace the romantic salon and garden completely. Avoid ornate gilded frames and floral wallpaper. Do not add theatrical props.\nColor palette: deep rust, burnt sienna, copper orange, charcoal black, parchment, warm ivory; retain natural facial colors. No pink, blush, rose, lavender or blue decorative palette.\nConstraints: keep the SAME portrait identity and overall textured illustration aesthetic; the output must remain ONE full-bleed landscape cover, not a grid. Her head stays fully visible with comfortable margins. No flowers, no roses, no botanical ornament, no text, no name, no lettering, no logos, no watermark, no border, no baked rounded corners, no UI, no extra people, no photo cutout, no glossy 3D.",
+      "previous_prompts": [
+        {
+          "version": 1,
+          "prompt": "Use case: stylized-concept.\nAsset type: PianoLIT composer playlist cover, ONE standalone landscape image, 1584 by 960 pixels, aspect ratio 1.65:1.\nPrimary request: create a beautiful illustrated cover featuring the recognizable face of Cécile Chaminade. Part of a coherent set with illustrated Florence Price and J. S. Bach covers. Match the existing PianoLIT collection's soft textured botanical scenes and imaginative piano landscapes.\nStyle and medium: matte gouache with watercolor washes, layered cut-paper-like curves, fine fibrous paper grain, gentle painterly shadows, elegantly simplified scenery. Render the portrait with the SAME textured painterly technique. Facial features should be historically recognizable but softly illustrated.\nSubject: Cécile Chaminade based on her 1890 H. S. Mendelssohn photograph at the piano: fair-skinned French woman in her thirties, gently rounded oval face, short softly curled and frizzed light-brown hair with small curls over her forehead and ears, fine curved eyebrows, calm slightly heavy-lidded eyes, straight delicate nose, small closed lips, thoughtful poised expression, black late-Victorian dress with a broad ivory lace collar and modest puffed shoulders. Do not confuse with Mel Bonis: Chaminade has distinctly fluffy short curled hair. Bust portrait, face focal point roughly 42 percent of canvas height, full head visible within safe margins.\nScene and design: a sunlit French salon opening into a rose garden, a softly outlined tall arched window with translucent cream curtains, elegant pink roses and a few rose leaves growing around the edges; a gently angled ivory-and-dark-rose piano keyboard emerges from the lower garden forms. Portrait centered toward the right and a luminous airy garden on the left; beautifully balanced and spacious, no frame.\nColor palette: dusty rose, muted coral, peach, terracotta pink, warm blush cream, subtle sage-green leaves, natural skin tones. Soft rosy morning light, graceful and inviting.\nConstraints: full bleed artwork, one cover not a grid; no borders or baked rounded corners; no text, no name, no lettering, no logos, no watermark, no UI, no extra people, no photographic collage, no caricature, no glossy 3D."
+        }
+      ],
+      "version": 2,
+      "dimensions": {
+        "pixelWidth": 990,
+        "pixelHeight": 601
+      },
+      "export_bytes": 117906,
+      "jpeg_quality": 78
+    },
+    {
+      "filename": "melanie-bonis.jpg",
+      "prompt": "Use case: stylized-concept.\nAsset type: PianoLIT composer playlist cover, ONE standalone landscape image, 1584 by 960 pixels, aspect ratio 1.65:1.\nPrimary request: create a beautiful illustrated cover featuring the recognizable face of Mélanie Bonis, also known as Mel Bonis, coordinated with the Florence Price, J. S. Bach and Cécile Chaminade covers.\nStyle and medium: matte gouache and soft watercolor washes, gently layered cut-paper-like organic curves, delicate fibrous paper grain, softly shaded illustrated landscape. Refined dreamy storybook artwork matching PianoLIT's existing botanical, moonlit lake and piano-wave illustrations. Paint the portrait in the same gouache medium, integrated with the scenery.\nSubject and likeness: Mel Bonis as a young woman based closely on Charles Corbineau's 1877 portrait, the familiar image on the official Mel Bonis association website. Fair-skinned French woman with dark brown hair swept into a high updo with a clear center part and two small curling tendrils on the forehead; large deep dark almond eyes with distinct gently arched dark eyebrows; a full oval face, rounded cheeks, a defined straight nose, small rosebud lips with a serious closed-mouth expression and softly rounded chin. Three-quarter view looking slightly to the viewer's right; small gold stud earrings and an ivory late nineteenth-century dress with a soft gauzy collar. Preserve those specific historical proportions, do not substitute a generic romantic woman or Chaminade's short fluffy curls. Head and bust, head entirely visible, face strong focal point about 42 percent of canvas height.\nScene and design: tranquil lavender twilight, a crescent moon reflected in a quiet violet lake, softly layered mauve hills and mist; a few elegant white iris flowers and slender ivy at the edges, a restrained curved ribbon of ivory and plum piano keys in the lower foreground. Open spacious background, delicate contemplative atmosphere; portrait sits toward the left with the moonlit lake beside it.\nColor palette: muted lavender, smoky lilac, aubergine plum, dusty violet, silver sage, ivory, small pale moon-gold highlights and natural skin tones. This cover should be distinctly purple rather than teal, rose or ochre.\nConstraints: one cover, full bleed, no grid, no border, no baked rounded corners, no names, no text, no letters, no watermark, no logos, no UI, no extra people, no photo cutout, no caricature, no glossy 3D.",
+      "dimensions": {
+        "pixelWidth": 990,
+        "pixelHeight": 601
+      },
+      "export_bytes": 116642,
+      "jpeg_quality": 82
+    },
+    {
+      "filename": "alec-rowley.jpg",
+      "prompt": "Use case: stylized-concept.\nAsset type: PianoLIT composer playlist cover, ONE standalone landscape image, 1584 by 960 pixels, aspect ratio 1.65:1.\nPrimary request: create a beautiful illustrated cover featuring the recognizable face of Alec Rowley, the English composer. Coordinate with the same softly painted PianoLIT composer series.\nStyle and medium: matte gouache and watercolor washes, cut-paper-like layered organic shapes, refined fibrous paper grain, softly shaded scenery, quiet illustrated storybook atmosphere. Match PianoLIT's existing stylized piano staircase, botanical foliage and gentle landscape covers. The face must be painted in the same medium, not a photographic cutout.\nSubject and historical likeness: young-to-middle-aged Alec Rowley based on the sepia portrait used by PianoLIT on his composer page. Fair-skinned English man with a slim elongated oval face, very high broad forehead, thick straight brown hair neatly side-parted and swept smoothly backward, small round/oval thin metal spectacles worn high on the nose with delicate side arms, defined straight nose with a prominent bridge, slim closed lips, clean-shaven chin. Three-quarter view with his face turned toward the viewer's left and gaze slightly lowered, thoughtful calm expression, light tan tweed early-twentieth-century jacket over a cream shirt and restrained dark tie. Preserve his specific face; do not invent an older bearded man, do not depict Anthony Rowley. Bust portrait, entire head comfortably visible, face focal point about 42 percent of canvas height.\nScene and design: softly rolling English meadows and small distant country cottages, a few oak leaves and fern silhouettes near the outer edges; a playful ivory piano-key staircase winds through the foreground hills toward a simple warm-cream architectural arch, evoking accessible piano miniatures. Portrait centered toward the right, pastoral scenery and gentle ascending steps to the left. A calm pale sky, no sun-disc halo.\nColor palette: sage green, olive, moss, pale butter yellow, warm ivory, a little muted brown, natural skin tones. Distinctly fresh green and cream, brighter than Florence Price's dark teal cover.\nConstraints: one cover, full bleed, no grid, no border, no baked rounded corners, no name, no text, no lettering, no logos, no watermark, no UI, no extra people, no photo collage, no caricature, no glossy 3D.",
+      "dimensions": {
+        "pixelWidth": 990,
+        "pixelHeight": 601
+      },
+      "export_bytes": 117330,
+      "jpeg_quality": 72
+    },
+    {
+      "filename": "frederic-chopin.jpg",
+      "prompt": "Use case: stylized-concept.\nAsset type: PianoLIT composer playlist cover, ONE standalone landscape image, 1584 by 960 pixels, aspect ratio 1.65:1.\nPrimary request: create a beautiful illustrated cover featuring the recognizable face of Frédéric Chopin, completing a coordinated six-composer PianoLIT cover series.\nStyle and medium: matte gouache, soft watercolor washes, gently layered cut-paper-like curves, fine fibrous paper texture and softly shaded painted landscape. Match the existing PianoLIT moonlit lakes, dreamy water scenes and flowing piano-key illustrations. Keep the portrait painterly with the same matte texture as the surroundings.\nSubject and likeness: Frédéric Chopin based on his familiar 1838 Eugène Delacroix portrait. Fair-skinned Polish man in his late twenties to thirties, long slender pale face, high forehead, swept voluminous wavy chestnut-brown hair parted loosely and brushed away from the forehead, expressive dark eyes, finely arched asymmetrical eyebrows, long prominent slightly aquiline nose, slim cheeks, small closed lips, gently pointed chin, clean-shaven, introspective serious expression. Dark nineteenth-century coat and a soft ivory shirt with dark cravat. Preserve the authentic recognizable facial proportions of Chopin, no generic handsome romantic hero. Bust portrait, full head inside generous margins, face strong focal point about 42 percent of canvas height.\nScene and design: a quiet deep-blue river at dusk, silver-blue reflections, softly layered distant hills and hazy clouds, long graceful weeping-willow fronds descending near one edge and a few drifting pale-gold leaves. A simplified dark grand-piano silhouette and flowing ivory keyboard merge with the lower river curves. Portrait near the left-center, calm open water beside it. No large sun-disc, no crescent moon, no garden flowers, no architectural arches; give this cover its own nocturne-inspired visual identity.\nColor palette: deep midnight indigo, denim blue, slate, cornflower blue, soft silver cream, restrained muted gold accents and natural skin tones. Clearly blue rather than the purple of Bonis or teal of Price. Poetic quiet dusk, gentle glow and calm.\nConstraints: ONE cover, full bleed artwork, no grid, no borders, no baked rounded corners, no name, no text, no letters, no logos, no watermark, no UI, no extra people, no photographic collage, no caricature, no glossy 3D.",
+      "dimensions": {
+        "pixelWidth": 990,
+        "pixelHeight": 601
+      },
+      "export_bytes": 119297,
+      "jpeg_quality": 78
+    }
+  ],
+  "art_direction_constraint": "Choose palettes and motifs independently of gender; treat every composer as an artist with equal visual dignity.",
+  "export": {
+    "format": "JPEG",
+    "dimensions": "990 × 601",
+    "maximum_bytes": 120000,
+    "encoding": "Optimized progressive JPEG; 4:2:0 chroma sampling",
+    "source": "Preserved PNG originals"
+  }
+}

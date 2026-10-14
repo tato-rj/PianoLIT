@@ -10,6 +10,8 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use App\PDF\PDFGenerator;
 use App\Events\eScoreGenerated;
+use App\Support\FolderPalette;
+use Illuminate\Support\Facades\DB;
 
 class FavoriteFoldersController extends Controller
 {
@@ -73,10 +75,15 @@ class FavoriteFoldersController extends Controller
 
     public function store(Request $request, FavoriteFoldersForm $form)
     {
-        $folder = FavoriteFolder::create([
-            'user_id' => auth()->user()->id,
-            'name' => $form->name
-        ]);
+        $folder = DB::transaction(function () use ($form) {
+            $colors = FolderPalette::preserveExisting(auth()->id());
+
+            return FavoriteFolder::create([
+                'user_id' => auth()->id(),
+                'name' => $form->name,
+                'web_color' => $form->color ?? FolderPalette::suggest($colors),
+            ]);
+        });
         \App\Activity\Actions::record($request, 'folder_created', [], 'folder', $folder->id);
 
         if ($piece = Piece::find($form->piece_id)) {
@@ -106,10 +113,15 @@ class FavoriteFoldersController extends Controller
     public function update(Request $request, FavoriteFoldersForm $form, FavoriteFolder $folder)
     {
         $renamed = $folder->name !== $request->name;
-    	$folder->update([
+        $attributes = [
     		'name' => $request->name,
     		'description' => $request->description
-    	]);
+        ];
+        if ($form->has('color')) $attributes['web_color'] = $form->color;
+        DB::transaction(function () use ($folder, $attributes) {
+            FolderPalette::preserveExisting(auth()->id());
+            $folder->update($attributes);
+        });
         \App\Activity\Actions::record($request, $renamed ? 'folder_renamed' : 'folder_updated', [], 'folder', $folder->id);
 
         return back()->with(['status' => 'The folder has been updated.']);
