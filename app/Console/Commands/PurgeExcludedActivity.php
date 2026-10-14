@@ -29,6 +29,7 @@ class PurgeExcludedActivity extends Command
         $history = new ExcludedHistory;
         $connection = DB::connection();
         $this->line('Database: '.$connection->getDriverName().' / '.$connection->getConfig('host').' / '.$connection->getDatabaseName());
+        $this->line('Excluded emails: '.implode(', ', ExcludedAccounts::emails()));
         $counts = $history->counts();
         $this->info($this->option('execute') ? 'Removing configured excluded accounts\' tracking records.' : 'PREVIEW ONLY — no writes.');
         $this->table(array_keys($counts), [array_values($counts)]);

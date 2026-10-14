@@ -1,6 +1,6 @@
 # Analytics account exclusions
 
-Implemented locally on 2026-10-13 at the user's request. Arthur (`arthurvilar@gmail.com`) and Elena (`elena.dare@gmail.com`) are excluded through `config/activity.php` and `App\Activity\ExcludedAccounts`. Email comparison trims whitespace and ignores case. The same defaults apply if an older config cache lacks the new key. Refresh the deployment config cache normally; no new migration is needed.
+Implemented locally on 2026-10-13 at the user's request. Arthur (`arthurvillar@gmail.com`) and Elena (`elena.dare@gmail.com`) are excluded through `config/activity.php` and `App\Activity\ExcludedAccounts`. The previous list misspelled Arthur's address as `arthurvilar@gmail.com`; that spelling remains excluded as well. Email comparison trims whitespace and ignores case. The same defaults apply if an older config cache lacks the new key. An existing cached email list must be refreshed to include the corrected address; no new migration is needed.
 
 ## Collection and reporting
 
@@ -22,13 +22,13 @@ php artisan activity:purge-excluded --execute --legacy-redis
 php artisan activity:purge-excluded --legacy-redis
 ```
 
-The first and last commands are read-only previews. The command prints the configured database target and counts before deletion. Confirm the matching account count against the two requested emails. With `--execute`, it removes only directly owned/effectively linked visits, their pages/events/links, ungrouped owned events, recent-piece history, piece views, legacy SQL log summaries, locations, quiz results, campaign visits/subscriptions, local recipient email logs and Apple membership reporting evidence. Visit batches are bounded to 200 and transactional; failures roll back the current batch and can be retried. A final check requires matching SQL tracking counts to reach zero.
+The first and last commands are read-only previews. The command prints the configured database target, excluded emails and counts before deletion. Review the displayed email list and matching account count. With `--execute`, it removes only directly owned/effectively linked visits, their pages/events/links, ungrouped owned events, recent-piece history, piece views, legacy SQL log summaries, locations, quiz results, campaign visits/subscriptions, local recipient email logs and Apple membership reporting evidence. Visit batches are bounded to 200 and transactional; failures roll back the current batch and can be retried. A final check requires matching SQL tracking counts to reach zero.
 
 Only affected shared email campaign counters are recalculated from the remaining recipients' rows; unrelated campaign reports are preserved. Their cached counts require this cleanup to remove historical contributions. Account rows, billing memberships/sources/payment receipts, favorites, score annotations and authentication/security/access-grant audit records are preserved.
 
 `--legacy-redis` inspects/deletes only the matching accounts' exact `user:<id>:web`, `user:<id>:webapp` and `user:<id>:app` hashes, considering the configured legacy application prefix. A non-hash at an expected key aborts before SQL cleanup. Redis failures are surfaced and can be retried; SQL-only cleanup can be run without this option if legacy Redis is unavailable. It never flushes Redis, scans/deletes unrelated application data or subtracts guessed contributions from shared daily counters. `activity:import-redis`, including resume and verification, intentionally skips excluded accounts so deleted history is not reintroduced.
 
-The local `mysql / 127.0.0.1 / pianolit` preview on 2026-10-13 found zero matching accounts, tracking rows and legacy hashes. Nothing was deleted locally. Production deployment and cleanup were not performed.
+The earlier local `mysql / 127.0.0.1 / pianolit` preview on 2026-10-13 used Arthur's previous spelling and found zero matching accounts, tracking rows and legacy hashes. It does not establish the corrected account's stored history. No normal database was accessed for the spelling correction; production deployment and cleanup were not performed.
 
 ## Limits and verification
 

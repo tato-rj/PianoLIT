@@ -8,7 +8,7 @@ class RedisActivityImportTest extends ReviewTestCase
 {
     public function test_excluded_accounts_are_not_imported_or_counted_as_missing_during_verification()
     {
-        $excluded = \Illuminate\Database\Eloquent\Model::withoutEvents(function () { return create(\App\User::class, ['email' => 'arthurvilar@gmail.com']); });
+        $excluded = \Illuminate\Database\Eloquent\Model::withoutEvents(function () { return create(\App\User::class, ['email' => 'arthurvillar@gmail.com']); });
         $normal = \Illuminate\Database\Eloquent\Model::withoutEvents(function () { return create(\App\User::class); });
         $redis = $this->redis(); $prefix = config('database.redis.prefix');
         $privateKey = $prefix.'user:'.$excluded->id.':web'; $normalKey = $prefix.'user:'.$normal->id.':web';

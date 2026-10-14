@@ -17,7 +17,7 @@ class ExcludedAccounts
     {
         return array_values(array_unique(array_filter(array_map(function ($email) {
             return strtolower(trim((string) $email));
-        }, config('activity.excluded_emails', ['arthurvilar@gmail.com', 'elena.dare@gmail.com'])))));
+        }, config('activity.excluded_emails', ['arthurvillar@gmail.com', 'elena.dare@gmail.com', 'arthurvilar@gmail.com'])))));
     }
 
     public static function user($user)

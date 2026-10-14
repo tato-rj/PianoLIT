@@ -49,7 +49,7 @@ class ExcludedActivityTest extends ReviewTestCase
 
     public function test_both_accounts_are_not_tracked_even_with_bot_filtering_disabled_and_mobile_json_is_preserved()
     {
-        foreach (['arthurvilar@gmail.com', ' Elena.Dare@Gmail.Com '] as $email) {
+        foreach ([' ArthurVillar@Gmail.Com ', ' Elena.Dare@Gmail.Com ', 'arthurvilar@gmail.com'] as $email) {
             $user = $this->user($email);
             $this->actingAs($user, 'web');
             $this->get('/review/private-page')->assertOk()->assertDontSee('pianoActivityConfig');
@@ -70,7 +70,7 @@ class ExcludedActivityTest extends ReviewTestCase
 
     public function test_known_browser_stays_excluded_after_logout_but_another_account_resumes_tracking()
     {
-        $excluded = $this->user('arthurvilar@gmail.com'); $regular = $this->user();
+        $excluded = $this->user('arthurvillar@gmail.com'); $regular = $this->user();
         $this->actingAs($excluded, 'web');
         $this->get('/review/private-page')->assertOk()->assertCookie(ExcludedAccounts::COOKIE);
         $this->post('/review/private-logout')->assertNoContent();
@@ -101,7 +101,7 @@ class ExcludedActivityTest extends ReviewTestCase
 
     public function test_existing_direct_linked_and_ungrouped_history_is_hidden_in_reports_before_cleanup()
     {
-        $arthur = $this->user('arthurvilar@gmail.com', 'Arthur'); $elena = $this->user('elena.dare@gmail.com', 'Elena'); $regular = $this->user();
+        $arthur = $this->user('arthurvillar@gmail.com', 'Arthur'); $elena = $this->user('elena.dare@gmail.com', 'Elena'); $regular = $this->user();
         foreach ([$arthur, $elena, $regular] as $user) {
             $visit = $this->visit($user); $this->event($user, $visit); $this->event($user);
             DB::table('locations')->insert(['user_id' => $user->id, 'countryCode' => 'US']);
@@ -131,9 +131,32 @@ class ExcludedActivityTest extends ReviewTestCase
         $this->get(route('admin.users.load-logs', ['user' => $arthur->id, 'type' => 'webapp']))->assertOk()->assertDontSee('Open timeline');
     }
 
-    public function test_purge_removes_only_owned_tracking_and_rebuilds_affected_email_summaries()
+    public static function excludedEmails()
     {
-        $excluded = $this->user('arthurvilar@gmail.com'); $regular = $this->user();
+        return [
+            'Arthur' => ['arthurvillar@gmail.com'],
+            'Elena' => ['elena.dare@gmail.com'],
+            'previous Arthur spelling' => ['arthurvilar@gmail.com'],
+        ];
+    }
+
+    /** @dataProvider excludedEmails */
+    public function test_exclusions_work_when_an_older_config_cache_lacks_the_email_key($email)
+    {
+        $activity = config('activity');
+        unset($activity['excluded_emails']);
+        config(['activity' => $activity]);
+        $excluded = $this->user($email);
+        $this->actingAs($excluded, 'web');
+        $this->get('/review/private-page')->assertOk()->assertDontSee('pianoActivityConfig');
+        $this->assertDatabaseCount('activity_events', 0);
+        $this->assertDatabaseCount('activity_visits', 0);
+    }
+
+    /** @dataProvider excludedEmails */
+    public function test_purge_removes_only_owned_tracking_and_rebuilds_affected_email_summaries($email)
+    {
+        $excluded = $this->user($email); $regular = $this->user();
         $piece = Model::withoutEvents(function () { return create(Piece::class); });
         $private = $this->visit($excluded); $other = $this->visit($regular);
         foreach ([$private => $excluded, $other => $regular] as $visit => $user) {
@@ -154,13 +177,19 @@ class ExcludedActivityTest extends ReviewTestCase
         DB::table('email_campaign_reports')->insert(['list_id' => 'list-privacy', 'name' => 'Shared newsletter', 'sent_at' => now(), 'emails_count' => 100, 'opens_count' => 100]);
         DB::table('favorites')->insert(['user_id' => $excluded->id, 'piece_id' => $piece->id]);
         DB::table('score_annotations')->insert(['user_id' => $excluded->id, 'piece_id' => $piece->id, 'score_key' => str_repeat('a', 64), 'marks' => '[]']);
+        $linked = $this->visit();
+        DB::table('activity_visit_links')->insert(['visit_id' => $linked, 'user_id' => $excluded->id, 'linked_at_utc' => now(), 'reason' => 'login']);
+        $this->event(null, $linked);
         $history = new ExcludedHistory; $before = $history->counts();
-        $this->artisan('activity:purge-excluded')->assertExitCode(0);
+        $this->artisan('activity:purge-excluded')
+            ->expectsOutput('Excluded emails: arthurvillar@gmail.com, elena.dare@gmail.com, arthurvilar@gmail.com')->assertExitCode(0);
         $this->assertSame($before, $history->counts());
         $this->artisan('activity:purge-excluded', ['--execute' => true])->assertExitCode(0);
         $remaining = $history->counts(); unset($remaining['accounts']); $this->assertSame(0, array_sum($remaining));
         $this->assertDatabaseCount('activity_events', 2);
         $this->assertDatabaseHas('activity_visits', ['id' => $other]);
+        $this->assertDatabaseMissing('activity_visits', ['id' => $linked]);
+        $this->assertDatabaseMissing('activity_visit_links', ['user_id' => $excluded->id]);
         $this->assertDatabaseHas('locations', ['user_id' => $regular->id]);
         $this->assertDatabaseHas('email_logs', ['recipient' => $regular->email]);
         $this->assertDatabaseHas('email_campaign_reports', ['list_id' => 'list-privacy', 'emails_count' => 1, 'opens_count' => 1]);
@@ -208,7 +237,7 @@ class ExcludedActivityTest extends ReviewTestCase
 
     public function test_optional_redis_cleanup_deletes_only_exact_owned_activity_hashes()
     {
-        $excluded = $this->user('arthurvilar@gmail.com'); $this->user();
+        $excluded = $this->user('arthurvillar@gmail.com'); $this->user();
         $key = 'user:'.$excluded->id.':app'; $redis = \Mockery::mock();
         Redis::shouldReceive('connection')->with('default')->once()->andReturn($redis);
         $redis->shouldReceive('exists')->andReturnUsing(function ($candidate) use ($key) { return $candidate === $key; });
@@ -232,7 +261,7 @@ class ExcludedActivityTest extends ReviewTestCase
             $this->actingAs($this->user(), 'web');
             $this->assertStringContainsString('googletagmanager.com', view('layouts.html.google.manager-head')->render());
             auth('web')->logout();
-            $this->actingAs(create(Admin::class, ['email' => 'arthurvilar@gmail.com']), 'admin');
+            $this->actingAs(create(Admin::class, ['email' => 'arthurvillar@gmail.com']), 'admin');
             $request = Request::create('https://admin.pianolit.com/');
             ExcludedAccounts::synchronize($request);
             $this->assertSame('1', $request->cookie(ExcludedAccounts::COOKIE));
