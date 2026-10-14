@@ -12,9 +12,9 @@
 				@include('webapp.components.piece.level')
 				@icon('lock', ['color' => 'grey', 'ml' => 2, 'if' => ! $hasFullAccess])
 			</div>
-			<div class="d-flex align-items-center">
-				<img src="{{$piece->composer->cover_image}}" style="width: 46px;" class="rounded-circle shadow border border-white border-1x mr-2">
-				<div>
+			<div class="d-flex">
+				<img src="{{$piece->composer->cover_image}}" style="width: 46px; height: 46px;" class="rounded-circle shadow border border-white border-1x mr-2">
+				<div style="margin-top: .15rem;">
 					@include('webapp.components.piece.name')
 					@include('webapp.components.piece.composer')
 				</div>
