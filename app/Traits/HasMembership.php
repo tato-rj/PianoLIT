@@ -110,10 +110,10 @@ trait HasMembership
             return ['icon' => 'user-shield', 'color' => 'blue', 'label' => 'Super user'];
 
         if (! $this->membership)
-            return ['icon' => 'ghost', 'color' => 'muted', 'label' => 'Guest'];
+            return ['icon' => 'ghost', 'color' => 'grey', 'label' => 'Guest'];
 
         if ($this->membership->source->isExpired())
-            return ['icon' => 'credit-card', 'color' => 'warning', 'label' => 'Expired'];
+            return ['icon' => 'credit-card', 'color' => 'red', 'label' => 'Expired'];
 
         if ($this->membership->source->isPaused())
             return ['icon' => 'pause', 'color' => 'red', 'label' => 'Paused'];
