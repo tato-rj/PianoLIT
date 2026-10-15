@@ -1,15 +1,16 @@
 {
-    "/js/app.js": "/js/app.js?id=0bf6a1e7fa6da9355731",
-    "/css/app.css": "/css/app.css?id=643948fd29dd7f4f3431",
-    "/css/admin.css": "/css/admin.css?id=7c47e011b2eec2c36519",
-    "/css/design-system.css": "/css/design-system.css?id=1fc53360aba0e69bb833",
-    "/js/admin.js": "/js/admin.js?id=7078dd04b3d7a863b52f",
-    "/js/tone.js": "/js/tone.js?id=4a64023a6c3319687a16",
+    "/js/app.js": "/js/app.js?id=b0bebeaeda1cafa75513",
+    "/css/app.css": "/css/app.css?id=dc6ace88c26f221dc881",
+    "/css/admin.css": "/css/admin.css?id=b95e9c615cdca10f0a0a",
+    "/css/design-system.css": "/css/design-system.css?id=bd0d3708d099a26f47a4",
+    "/js/admin.js": "/js/admin.js?id=08d0fe898a512ade685f",
+    "/js/tone.js": "/js/tone.js?id=fa32150deb46b19561c6",
     "/data/composer-globe.geojson": "/data/composer-globe.geojson?id=21ad37d0682f56c21854",
     "/fonts/escore/LibreBodoni-Regular.ttf": "/fonts/escore/LibreBodoni-Regular.ttf?id=3785670950bc34fb90c6",
     "/fonts/escore/LibreBodoni-Bold.ttf": "/fonts/escore/LibreBodoni-Bold.ttf?id=b076f46fa91e52656126",
     "/fonts/escore/OFL.txt": "/fonts/escore/OFL.txt?id=8f81fbcbbec8c4c4cd14",
     "/css/vendor/flag-icon/flag-icon.min.css": "/css/vendor/flag-icon/flag-icon.min.css?id=1c7783936db99706c52e",
+    "/js/components/admin-table-loading.js": "/js/components/admin-table-loading.js?id=46da94d9f1909fd4342b",
     "/js/components/activity.js": "/js/components/activity.js?id=8cdec7db1f96577f1f55",
     "/js/components/audio.js": "/js/components/audio.js?id=396015d2d9b04bbecda1",
     "/js/vendor/globe.gl.min.js": "/js/vendor/globe.gl.min.js?id=e26b927a5a876052837d",
@@ -36,6 +37,5 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=af343ede273eae5d99bf",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da",
-    "/js/components/admin-table-loading.js": "/js/components/admin-table-loading.js?id=46da94d9f1909fd4342b"
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da"
 }

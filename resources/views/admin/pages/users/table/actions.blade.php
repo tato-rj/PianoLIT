@@ -3,6 +3,6 @@
         @icon('square-pen', ['mr' => 2])Edit
     </a>
     <a href="{{ route('impersonate', $item) }}" class="btn btn-dark btn-sm" title="Impersonate user" aria-label="Impersonate user" target="_blank" rel="noopener noreferrer">
-        @icon('contact-round', ['mr' => 0])
+        @icon('hat-glasses', ['mr' => 0])
     </a>
 </div>
