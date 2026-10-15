@@ -310,11 +310,11 @@ class User extends Authenticatable implements MustVerifyEmail
                 break;
 
             case 'webapp':
-                return 'fas fa-bolt';
+                return 'credit-card';
                 break;
 
             case 'ios':
-                return 'fab fa-apple';
+                return 'apple';
                 break;
 
             case 'android':
