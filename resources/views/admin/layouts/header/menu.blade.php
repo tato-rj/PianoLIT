@@ -4,9 +4,11 @@
 
         @include('admin.layouts.header.divider', ['label' => 'TOOLS'])
 
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Api', 'icon' => 'code',
+        @include('admin.layouts.header.item', ['route' => route('admin.api.discover'), 'name' => 'Discover Tab', 'icon' => 'code'])
+        
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Settings', 'icon' => 'gear',
         'dropdown' => [
-          ['route' => route('admin.api.discover'), 'name' => 'Discover Tab'],
+          ['route' => route('admin.design-system.index'), 'name' => 'Design System'],
         ]])
 
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Analytics', 'icon' => 'chart-line',

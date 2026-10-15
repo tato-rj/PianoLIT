@@ -132,7 +132,10 @@ class WebhookProcessor
         if ($customer) {
             $sources = Stripe::where('stripe_id', $customer)->get()->filter(function ($source) use ($account) { return app(Accounts::class)->forSource($source) === $account; });
             $source = $sources->count() === 1 ? $sources->first() : null;
-            if ($source) $user = Membership::where('source_type', Stripe::class)->where('source_id', $source->id)->value('user_id');
+            if ($source) {
+                $user = Membership::where('source_type', Stripe::class)->where('source_id', $source->id)->value('user_id');
+                if (!$user) $user = Membership::archivedOwnerForSource(Stripe::class, $source->id);
+            }
             if (!$user) $user = DB::table('stripe_billing_profiles')->where('customer_id', $customer)->where('billing_account', $account)->value('user_id');
             if (!$user) {
                 $shop = Customer::where('stripe_id', $customer)->first();
