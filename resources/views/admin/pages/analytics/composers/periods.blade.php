@@ -10,5 +10,5 @@
             <ol class="ca-columns">@foreach($periods as $period)<li><div class="ca-bar-pair"><span style="height:{{ $period['total'] / $ceiling * 100 }}%;background:#a692ce"><strong>{{ number_format($period['total']) }}</strong></span><span style="height:{{ $period['represented'] / $ceiling * 100 }}%;background:#94c6b0"><strong>{{ number_format($period['represented']) }}</strong></span></div><a href="{{ route('admin.analytics.composers', ['period' => $period['key'] ?: '__missing']) }}#composer-directory">{{ $period['label'] }}</a><span class="visually-hidden">{{ $period['total'] }} composers, {{ $period['represented'] }} with pieces.</span></li>@endforeach</ol>
         </div></div>
     </div>
-    <p class="ca-note">With pieces is a subset of All composers; the two counts are not added together. Periods come from composer profiles, independently of piece tags.</p>
+    <p class="ca-note">Scroll horizontally to see all periods. With pieces is a subset of All composers; the two counts are not added together. Periods come from composer profiles, independently of piece tags.</p>
 </article>

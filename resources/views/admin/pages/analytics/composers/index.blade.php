@@ -13,7 +13,7 @@
         <article class="ca-metric ca-metric--lavender"><span>@icon('users', ['mr' => 0]) Composers</span><strong>{{ number_format($summary['total']) }}</strong><p>{{ number_format($summary['represented']) }} with pieces · {{ number_format($summary['empty']) }} without pieces</p></article>
         <article class="ca-metric ca-metric--mint"><span>@icon('music', ['mr' => 0]) Linked pieces</span><strong>{{ number_format($summary['pieces']) }}</strong><p>{{ $summary['top_share'] }}% belong to the five largest composer catalogues.</p></article>
         <article class="ca-metric ca-metric--peach"><span>@icon('layers', ['mr' => 0]) Small catalogues</span><strong>{{ number_format($summary['small']) }}</strong><p>Composers with 1–3 pieces. <a href="{{ route('admin.analytics.composers', ['depth' => 'small']) }}#composer-directory">Review composers @icon('arrow-up-right', ['mr' => 0])</a></p></article>
-        <article class="ca-metric ca-metric--gold"><span>@icon('globe', ['mr' => 0]) Countries represented</span><strong>{{ number_format(count($countries['countries'])) }}</strong><p>{{ number_format($countries['unlocated']) }} composers have no usable country recorded.</p></article>
+        <article class="ca-metric ca-metric--gold"><span>@icon('globe', ['mr' => 0]) Countries represented</span><strong>{{ number_format(count($countries['countries'])) }}</strong><p>{{ number_format($countries['unlocated']) }} {{ $countries['unlocated'] === 1 ? 'composer has' : 'composers have' }} no usable country recorded.</p></article>
     </div>
 
     <div class="ca-grid ca-grid--wide ca-section">
@@ -33,7 +33,7 @@
     </div>
 
     <section class="ca-section" aria-labelledby="ca-interest-title">
-        <div class="ca-section-heading"><h2 id="ca-interest-title">Which composers attract interest?</h2><p>Compare recorded views and current saves alongside the size of each catalogue.</p></div>
+        <div class="ca-section-heading"><h2 id="ca-interest-title">Composer interest</h2><p>Compare recorded views and current saves alongside the size of each catalogue.</p></div>
         <div class="ca-grid">
             @include('admin.pages.analytics.composers.ranking', ['title' => 'Most viewed composers', 'rows' => $rankings['views'], 'metric' => 'views', 'unit' => 'views', 'color' => '#efb07c', 'empty' => 'No piece views have been recorded.'])
             @include('admin.pages.analytics.composers.ranking', ['title' => 'Most saved composers', 'rows' => $rankings['saves'], 'metric' => 'saves', 'unit' => 'saves', 'color' => '#94c6b0', 'empty' => 'No current saves have been recorded.'])
@@ -42,7 +42,7 @@
     </section>
 
     <section class="ca-section" aria-labelledby="ca-balance-title">
-        <div class="ca-section-heading"><h2 id="ca-balance-title">How balanced is the catalogue?</h2><p>Composer records count equally here, whether they have one piece or a hundred.</p></div>
+        <div class="ca-section-heading"><h2 id="ca-balance-title">Catalogue balance</h2><p>Composer records count equally here, whether they have one piece or a hundred.</p></div>
         <div class="ca-grid ca-grid--wide">
             @include('admin.pages.analytics.composers.periods')
             <article class="ca-card"><div class="ca-heading"><div><h3>Pieces per composer</h3><p>Each composer belongs to one catalogue-size group.</p></div></div>

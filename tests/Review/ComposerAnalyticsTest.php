@@ -180,10 +180,13 @@ class ComposerAnalyticsTest extends ReviewTestCase
         $bad = $this->composer(['name' => '<script>unsafe</script>', 'period' => '<img src=x onerror=alert(1)>']);
         $this->piece($bad);
         DB::enableQueryLog(); DB::flushQueryLog(); $this->report(); $small = DB::getQueryLog(); DB::disableQueryLog();
-        for ($i = 0; $i < 15; $i++) $this->piece($this->composer());
+        for ($i = 0; $i < 15; $i++) {
+            $piece = $this->piece($this->composer());
+            DB::table('piece_views')->insert(['piece_id' => $piece->id, 'user_id' => 999999]);
+        }
         DB::enableQueryLog(); DB::flushQueryLog(); $report = $this->report(); $large = DB::getQueryLog(); DB::disableQueryLog();
         $this->assertCount(3, $small); $this->assertCount(3, $large);
-        $this->assertCount(6, $report['rankings']['pieces']);
+        $this->assertCount(6, $report['rankings']['views']);
         $this->get(route('admin.analytics.composers'))->assertOk()->assertSee('&lt;script&gt;unsafe&lt;/script&gt;', false)->assertDontSee('<script>unsafe', false);
         $this->get(route('admin.analytics.composers', ['page' => 999]))->assertOk()->assertSee('No composers on this page')->assertSee('First page');
         $this->get(route('admin.analytics.composers', ['search' => 'NoSuchComposer']))->assertOk()->assertSee('No composers match these filters');

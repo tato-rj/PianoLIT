@@ -52,6 +52,7 @@ class AdminPageHeadersTest extends ReviewTestCase
             ['admin.analytics.favorites', 'Favorite folders'],
             ['admin.analytics.memberships', 'Membership analytics'],
             ['admin.analytics.pieces', 'Repertoire analytics'],
+            ['admin.analytics.composers', 'Composer analytics'],
             ['admin.analytics.blog', 'Blog analytics'],
         ];
     }
@@ -89,9 +90,6 @@ class AdminPageHeadersTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
         $this->get(route('admin.home'))->assertOk(); // Share the normal session/error view context.
         $cases = [
-            'composers' => ['composersAnalytics' => collect(), 'composersCount' => 0, 'composersWithFewPieces' => [],
-                'upcomingBirthdays' => collect(), 'upcomingDeathdays' => collect(), 'periodsAnalytics' => collect(),
-                'countriesAnalytics' => collect(), 'composers' => collect(), 'countriesArray' => [['Country', 'Composers']]],
             'quizzes' => ['levelAnalytics' => collect(), 'topicAnalytics' => collect(), 'topicsCount' => 0,
                 'quizzes' => collect(), 'results_graph' => collect()],
         ];

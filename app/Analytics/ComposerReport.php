@@ -82,7 +82,7 @@ class ComposerReport
         $growth = $this->growth($composers, $now);
         $countries = $this->countries($composers, $world);
         $rankings = [];
-        foreach (['pieces', 'views', 'saves'] as $metric) $rankings[$metric] = $this->rank($composers->where($metric, '>', 0), $metric)->take(6)->values()->all();
+        foreach (['views', 'saves'] as $metric) $rankings[$metric] = $this->rank($composers->where($metric, '>', 0), $metric)->take(6)->values()->all();
         $opportunities = $this->rank($composers->where('depth', 'small')->where('saves', '>', 0), 'saves_per_piece')->take(5)->values()->all();
         $anniversaries = [];
         foreach ($composers as $composer) {

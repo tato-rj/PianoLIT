@@ -32,9 +32,14 @@
   .ca-heading p { margin-top: 6px; }
   .ca-chart-total { text-align: right; font-size: var(--font-size-h3); font-weight: 500; flex-shrink: 0; line-height: 1.2; }
   .ca-chart-total small { display: block; color: #626d65; font-size: var(--font-size-sm); font-weight: 400; margin-top: 6px; }
-  .ca-line-scroll { min-width: 0; overflow-x: auto; }
-  .ca-line-chart { display: block; width: 100%; min-width: 660px; }
-  .ca-line-label { font: var(--font-size-sm) var(--font-family-body); fill: #626d65; }
+  .ca-trend-layout { display: flex; gap: 10px; }
+  .ca-trend-axis { flex: 0 0 28px; height: 160px; margin-top: 20px; position: relative; color: #626d65; font-size: var(--font-size-sm); }
+  .ca-trend-axis span { position: absolute; right: 0; transform: translateY(50%); }
+  .ca-line-scroll { min-width: 0; overflow-x: auto; flex: 1; }
+  .ca-trend-plot { min-width: 500px; }
+  .ca-line-chart { display: block; width: 100%; height: 180px; overflow: visible; }
+  .ca-trend-labels { display: grid; grid-template-columns: repeat(12,minmax(0,1fr)); margin-top: 12px; text-align: center; font-size: var(--font-size-sm); color: #626d65; }
+  .ca-trend-labels small { display: block; font-size: inherit; margin-top: 3px; }
   .ca-line-grid { stroke: #dce0db; stroke-dasharray: 4 5; }
   .ca-note { margin-top: 20px; }
   .ca-details { margin-top: 16px; font-size: var(--font-size-sm); }
@@ -42,8 +47,8 @@
   .ca-gauges { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-top: 36px; }
   .ca-gauge { display: block; text-align: center; border-radius: 14px; padding: 8px 0; }
   .ca-gauge:hover { background: #edf0e9; text-decoration: none; }
-  .ca-gauge svg { width: 100%; max-width: 150px; display: block; margin: 0 auto 12px; overflow: visible; }
-  .ca-gauge path { fill: none; stroke-width: 11; stroke-linecap: round; }
+  .ca-gauge > svg { width: 100%; max-width: 150px; display: block; margin: 0 auto 12px; overflow: visible; }
+  .ca-gauge > svg path { fill: none; stroke-width: 11; stroke-linecap: round; }
   .ca-gauge-track { stroke: #e5e9e0; }
   .ca-gauge-fill { stroke: var(--ca-color); }
   .ca-gauge text { font: 500 22px var(--font-family-body); fill: #202923; }
