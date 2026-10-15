@@ -1,8 +1,8 @@
-@include('components.datatable.actions', ['actions' => [
-    'other' => [
-      ['route' => "mailto:$item->email", 'title' => "Send an email to $item->first_name", 'icon' => 'mail'],
-      ['route' => route('impersonate', $item), 'title' => 'Impersonate user', 'icon' => 'contact-round'],
-      ['route' => route('admin.users.show', $item), 'title' => 'More details', 'icon' => 'eye', 'target' => null]
-    ],
-    'delete' => route('admin.users.destroy', $item)
-]])
+<div class="d-flex justify-content-end align-items-center gap-2">
+    <a href="{{ route('admin.users.show', $item) }}" class="btn btn-secondary btn-sm text-nowrap">
+        @icon('square-pen', ['mr' => 2])Edit
+    </a>
+    <a href="{{ route('impersonate', $item) }}" class="btn btn-secondary btn-sm" title="Impersonate user" aria-label="Impersonate user" target="_blank" rel="noopener noreferrer">
+        @icon('contact-round', ['mr' => 0])
+    </a>
+</div>

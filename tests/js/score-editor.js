@@ -593,6 +593,7 @@ module.exports = async function () {
     assert.strictEqual(exited.defaultPrevented, false, 'Leaving fullscreen restores page zoom');
 
     const printEditor = Object.create(Editor.prototype);
+    printEditor.canExport = true;
     const printedPages = [], printMessages = [];
     printEditor.pdf = {numPages: 3, getPage: async number => ({
         getViewport: ({scale}) => ({width: 612 * scale, height: 792 * scale}),

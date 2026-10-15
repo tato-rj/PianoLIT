@@ -234,7 +234,7 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertRestricted();
     }
 
-    public function test_current_free_pick_is_fully_open_and_restricted_again_after_rotation()
+    public function test_free_pick_keeps_full_viewing_without_exports_and_restricts_again_after_rotation()
     {
         $this->piece->updateQuietly(['is_free' => true]);
         $this->assertFullContent(false)->assertDontSee('data-manage="save-to"', false)
@@ -266,6 +266,15 @@ class PieceContentAccessTest extends ReviewTestCase
         $url = route('webapp.pieces.score', [$this->piece, 'user_id' => $subscriber->id]);
         $this->withExceptionHandling()->get($url)->assertForbidden();
         $this->actingAs($this->userWithSubscription(), 'web')->get($url)->assertForbidden();
+    }
+
+    public function test_free_pick_does_not_unlock_exports_for_expired_memberships()
+    {
+        $this->piece->updateQuietly(['is_free' => true]);
+        foreach ([Stripe::class, Apple::class] as $source) {
+            $this->actingAs($this->userWithSubscription($source, ['renews_at' => now()->subDay()]), 'web');
+            $this->assertFullContent(false);
+        }
     }
 
     public function test_supplied_user_ids_do_not_bypass_normal_piece_content_rules()
