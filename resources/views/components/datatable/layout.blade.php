@@ -1,6 +1,6 @@
 @php($isStandardTable = $standard ?? false)
 <table class="table {{ $isStandardTable ? 'align-middle' : 'table-hover' }} w-100" id="{{$table}}-table">
-  <thead class="invisible">
+  <thead @unless($ready ?? false) class="invisible" @endunless>
     <tr>
       @foreach($columns as $column)
       @if($column == 'checkbox')
@@ -17,5 +17,6 @@
     </tr>
   </thead>
   <tbody>
+    {!! $initialBody ?? '' !!}
   </tbody>
 </table>

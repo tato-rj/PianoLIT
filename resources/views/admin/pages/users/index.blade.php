@@ -32,7 +32,7 @@
       <button type="button" class="btn btn-sm btn-secondary ms-2" data-users-table-retry>Retry</button>
     </div>
     <div class="table-responsive">
-      @datatable(['table' => 'users', 'standard' => true, 'columns' => ['checkbox', 'Date', 'ID', 'Name', 'Origin', 'Status', 'Super User', '']])
+      @datatable(['table' => 'users', 'standard' => true, 'ready' => true, 'initialBody' => view('admin.pages.users.table.rows', ['rows' => $initialUsers['data']]), 'columns' => ['checkbox', 'Date', 'ID', 'Name', 'Origin', 'Status', 'Super User', '']])
     </div>
     @endcomponent
   </div>
@@ -61,6 +61,7 @@ $usersTable.on('xhr.dt', function(event, settings, json, xhr) {
 var usersTable = $usersTable.DataTable({
   processing: true,
   serverSide: true,
+  deferLoading: {{ $initialUsers['recordsTotal'] }},
   autoWidth: false,
   pageLength: {{ \App\Support\AdminPagination::PER_PAGE }},
   lengthMenu: [{{ \App\Support\AdminPagination::PER_PAGE }}, 24, 48, 96],
@@ -83,7 +84,6 @@ var usersTable = $usersTable.DataTable({
   ],
   initComplete: showUsersTable
 });
-$(usersTable.table().container()).addClass('table-loading');
 $('[data-users-table-retry]').on('click', function() { usersTable.ajax.reload(null, false); });
 </script>
 <script type="text/javascript">

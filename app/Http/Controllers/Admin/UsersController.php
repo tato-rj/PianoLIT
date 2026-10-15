@@ -13,20 +13,12 @@ class UsersController extends Controller
     public function index()
     {
         if (request()->ajax()) {
-            return datatable(User::query()->with(['location', 'membership.source']))
-                ->withDate()
-                ->checkable()
-                ->withBlade([
-                    'name' => view('admin.pages.users.table.name'),
-                    'origin_display' => view('admin.pages.users.table.origin'),
-                    'status' => view('admin.pages.users.table.status'),
-                    'super_user_display' => view('admin.pages.users.table.super-user'),
-                    'actions' => view('admin.pages.users.table.actions'),
-                ])
-                ->make();
+            return app(\App\Services\Admin\UsersTable::class)->response(request());
         }
 
-        return view('admin.pages.users.index');
+        return view('admin.pages.users.index', [
+            'initialUsers' => app(\App\Services\Admin\UsersTable::class)->firstPage(),
+        ]);
     }
 
     public function show(User $user)

@@ -44,3 +44,33 @@ page-specific cells and badges in their own stylesheets. Rebuild tracked admin
 CSS and update its Mix manifest hash when shared styles change. Visually verify
 desktop and phone layouts, the empty state, search/pagination, and any row/bulk
 controls. This standard does not change public/mobile pagination or contracts.
+
+## Users table loading and query budget
+
+`App\Services\Admin\UsersTable` renders the first 12 rows with the initial Users
+page. The shared header accepts `ready => true` and `initialBody` containing the
+trusted rendered row view. Account text is escaped inside those cell templates;
+never pass request text directly as the body markup. DataTables uses
+`deferLoading` with the initial total, so it makes no initial data request and
+fetches fresh data only for subsequent table interactions. Do not add the empty
+loading placeholder back to this populated table.
+
+The service returns only the eight displayed fields and never serializes User
+models. Its explicit account selection omits the default favorites count and
+unused activity appends. Location flags and membership status fields are loaded
+in batches; super-user rows skip billing entirely. Existing user status methods
+retain their meaning. No shared response cache is involved.
+
+In isolated fixtures containing both Apple and Stripe memberships, unfiltered
+12/24-row requests use six queries at either page size; a nonempty search adds one
+filtered count. The old path used 30/54 queries respectively. The same comparison
+reduced JSON from 63,148 to 40,680 bytes for 12 rows (about 36%); these figures are
+fixture measurements, not production timing guarantees. The first HTML response
+also includes the ordinary admin layout's own queries.
+
+Apply `2026_10_15_010000_add_admin_user_directory_indexes.php` during deployment.
+Its non-unique indexes support the default `created_at, id` ordering and the
+membership lookup by `user_id`. Locations already have a unique `user_id` index.
+SQLite plan checks cover both added indexes and rollback; production MySQL plans
+and timings have not been measured. The code remains functional before the
+indexes are applied. No asset build is required for this PHP/Blade change.
