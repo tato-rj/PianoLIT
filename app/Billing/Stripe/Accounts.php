@@ -10,6 +10,8 @@ class Accounts
     public function forSource(Stripe $source): string
     {
         if (in_array($source->billing_account, ['us', 'swiss'], true)) return $source->billing_account;
+        $reviewed = config('memberships.stripe_accounts.'.$source->stripe_id);
+        if (in_array($reviewed, ['us', 'swiss'], true)) return $reviewed;
         return in_array($source->stripe_id, (new StripeSwissCustomers)->get(), true) ? 'swiss' : 'us';
     }
 
