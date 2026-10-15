@@ -72,6 +72,16 @@ class ActivityTrafficFilterTest extends ReviewTestCase
         $this->assertNull(session(PendingVisits::KEY));
     }
 
+    public function test_deferred_browser_pages_cannot_be_promoted_after_the_account_is_purged()
+    {
+        $user = Model::withoutEvents(function () { return create(User::class); });
+        $this->actingAs($user, 'web'); $page = $this->open();
+        (new \App\Services\Admin\RemoveUser)->remove($user->id, $user->email, true);
+        $this->travel(6)->seconds();
+        $this->send($page, 6)->assertNoContent();
+        foreach (['activity_visits', 'activity_pages', 'activity_events'] as $table) $this->assertDatabaseCount($table, 0);
+    }
+
     public function test_foreground_time_accumulates_across_pages_without_losing_the_opening_story()
     {
         $first = $this->open(1);

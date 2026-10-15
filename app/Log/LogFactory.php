@@ -28,7 +28,7 @@ class LogFactory
             $metadata['visit_unknown'] = true;
         }
         $now = now()->format('Y-m-d H:i:s.v');
-        DB::table('activity_events')->insert([
+        $row = [
             'event_id' => (string) Str::uuid(), 'user_id' => (int) $matches[1],
             'platform' => $matches[2], 'type' => 'request', 'source' => 'server',
             'occurred_at' => $now, 'received_at' => $now,
@@ -36,7 +36,10 @@ class LogFactory
             'url' => Metadata::url($payload['url'] ?? $request->url()),
             'route_name' => $request->route() ? $request->route()->getName() : null,
             'method' => $request->method(), 'metadata' => json_encode($metadata, JSON_THROW_ON_ERROR),
-        ]);
+        ];
+        DB::transaction(function () use ($row) {
+            if (\App\Activity\PurgedUsers::lock($row['user_id'])) DB::table('activity_events')->insert($row);
+        }, 3);
     }
 
     public function get($userId, $type = null)

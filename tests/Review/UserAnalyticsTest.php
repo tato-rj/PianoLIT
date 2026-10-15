@@ -815,7 +815,7 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->event($visit, $page, 'click');
         DB::table('activity_visit_links')->insert(['visit_id' => $visit, 'user_id' => $user->id, 'linked_at_utc' => now('UTC'), 'reason' => 'login']);
         $other = $this->visit();
-        $this->actingAs(create(Admin::class), 'admin')->delete(route('admin.users.purge', $user->id))->assertRedirect();
+        $this->actingAs(create(Admin::class), 'admin')->delete(route('admin.users.purge', $user->id), ['confirmation_email' => $user->email])->assertRedirect();
         $this->assertDatabaseMissing('activity_visits', ['id' => $visit]);
         $this->assertDatabaseMissing('activity_pages', ['id' => $page]);
         $this->assertDatabaseMissing('activity_events', ['visit_id' => $visit]);

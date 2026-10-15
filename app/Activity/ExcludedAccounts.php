@@ -42,6 +42,7 @@ class ExcludedAccounts
     public static function id($id)
     {
         if ((!is_int($id) && !is_string($id)) || !preg_match('/^[1-9]\d*$/D', (string) $id) || (float) $id > 4294967295) return false;
+        if (PurgedUsers::contains($id)) return true;
         $user = auth('web')->user();
         if ($user instanceof User && (string) $user->id === (string) $id) return self::user($user);
         return self::ids()->where('id', $id)->exists();
@@ -51,6 +52,7 @@ class ExcludedAccounts
     {
         $user = auth('web')->user();
         if (self::user($user) || self::user(auth('admin')->user())) return true;
+        if ($user instanceof User && PurgedUsers::contains($user->id)) return true;
         if ($user instanceof User) return false;
         return $request->cookie(self::COOKIE) === '1'
             || ($request->hasSession() && $request->session()->get(self::SESSION) === true);

@@ -34,6 +34,7 @@ async function main() {
     require('./admin-text-improver')();
     require('./admin-date-range')();
     await require('./admin-table-loading')();
+    require('./admin-user-profile')();
     await require('./escore-wizard')();
     await require('./feedback')();
     require('./collections')();

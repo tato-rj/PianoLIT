@@ -101,11 +101,13 @@ class Recorder
             if (!$pending) $request->attributes->set('activity.pending_new_visit', true);
             return (new PendingVisits)->stage($request, $page, $visitRow);
         }
-        DB::transaction(function () use ($visit, $visitRow, $page) {
+        $stored = DB::transaction(function () use ($visit, $visitRow, $page) {
+            if (!PurgedUsers::lock($page['user_id'])) return false;
             if (!$visit) DB::table('activity_visits')->insert($visitRow);
             DB::table('activity_pages')->insert($page);
-        });
-        return (object) $page;
+            return true;
+        }, 3);
+        return $stored ? (object) $page : null;
     }
 
     public function request(Request $request, $response, $page, $started)
@@ -154,12 +156,13 @@ class Recorder
     public function insert(Request $request, $page, array $event, $visitLocked = false)
     {
         if ($visitLocked) return $this->insertRow($request, $page, $event, true);
-        return DB::transaction(function () use ($request, $page, $event) { return $this->insertRow($request, $page, $event, false); });
+        return DB::transaction(function () use ($request, $page, $event) { return $this->insertRow($request, $page, $event, false); }, 3);
     }
 
     private function insertRow(Request $request, $page, array $event, $visitLocked)
     {
         if (ExcludedAccounts::request($request) || ExcludedAccounts::id($event['user_id'] ?? $request->attributes->get('activity.actor', auth('web')->id()))) return false;
+        if (!PurgedUsers::lock($event['user_id'] ?? $request->attributes->get('activity.actor', auth('web')->id()))) return false;
         // Preserve successful account actions, but do not fabricate a short visit
         // just to attach them. They remain ungrouped account milestones.
         if (!empty($page->_pending)) $page = null;
@@ -204,6 +207,7 @@ class Recorder
             $pages = $pending->observe($request, $page, $events, $qualification);
             if (!$pages) return false;
             try { DB::transaction(function () use ($request, $page, $pages) {
+                if (!PurgedUsers::lock($page->user_id)) return;
                 DB::table('activity_visits')->insertOrIgnore($page->_visit);
                 foreach ($pages as $entry) {
                     $row = $entry['page']; unset($row['_pending'], $row['_visit']);
@@ -215,11 +219,12 @@ class Recorder
                 }
                 $visit = DB::table('activity_visits')->where('id', $page->visit_id)->first();
                 if (Time::date($visit, 'started_at')->diffInMilliseconds(Time::date($visit, 'last_activity_at')) < TrafficFilter::minimumMilliseconds()) throw new UnqualifiedVisit;
-            }); } catch (UnqualifiedVisit $exception) { return false; }
+            }, 3); } catch (UnqualifiedVisit $exception) { return false; }
             $pending->forgetVisit($request, $page->visit_id);
             return true;
         }
         DB::transaction(function () use ($request, $page, $events) {
+            if (!PurgedUsers::lock($page->user_id)) return;
             if (!DB::table('activity_visits')->where('id', $page->visit_id)->lockForUpdate()->first()) return;
             $remaining = max(0, (int) config('activity.max_browser_events_per_page', 2000) - DB::table('activity_events')->where('page_id', $page->id)->where('source', 'browser')->count());
             $events = array_slice($events, 0, $remaining);
@@ -264,7 +269,7 @@ class Recorder
                 }
                 DB::table('activity_pages')->where('id', $page->id)->update($updates);
             }
-        });
+        }, 3);
         return true;
     }
 }

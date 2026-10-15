@@ -51,12 +51,15 @@ class Actions
             if (!$user || ExcludedAccounts::id($user)) return;
             $at = \Carbon\Carbon::createFromTimestamp($invoice['status_transitions']['paid_at'] ?? $payload['created'], config('app.timezone'));
             $id = (string) \Ramsey\Uuid\Uuid::uuid5(\Ramsey\Uuid\Uuid::NAMESPACE_URL, 'pianolit:paid-invoice:'.$invoice['id']);
-            DB::table('activity_events')->insertOrIgnore([
+            $row = [
                 'event_id' => $id, 'user_id' => $user, 'platform' => 'webapp', 'type' => 'subscription_paid', 'source' => 'server',
                 'occurred_at' => $at->format('Y-m-d H:i:s.v'), 'occurred_at_utc' => $at->copy()->utc()->format('Y-m-d H:i:s.v'),
                 'received_at' => now()->format('Y-m-d H:i:s.v'), 'received_at_utc' => now('UTC')->format('Y-m-d H:i:s.v'),
                 'metadata' => json_encode(['status' => 'paid']),
-            ]);
+            ];
+            DB::transaction(function () use ($row) {
+                if (PurgedUsers::lock($row['user_id'])) DB::table('activity_events')->insertOrIgnore($row);
+            }, 3);
         } catch (\Throwable $exception) { report($exception); }
     }
 }

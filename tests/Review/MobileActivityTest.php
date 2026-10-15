@@ -88,7 +88,8 @@ class MobileActivityTest extends ReviewTestCase
         $copy['legacy_payload'] = '<script>legacy</script>';
         DB::table('activity_events')->insert($copy);
         $this->actingAs(create(\App\Admin::class), 'admin');
-        $this->get(route('admin.users.show', $user))->assertOk()->assertSee('App Logs (2)')->assertSee('legacy_user_id');
+        $this->get(route('admin.users.show', $user))->assertOk()->assertSee('Open logs & analytics', false)
+            ->assertDontSee('App Logs (')->assertDontSee('legacy_user_id');
         $this->get(route('admin.users.load-logs', ['user' => $user->id, 'type' => 'app', 'start_at' => 1]))
             ->assertOk()->assertSee('Unknown time')->assertSee('&lt;script&gt;legacy&lt;/script&gt;', false)->assertDontSee('<script>legacy</script>', false);
         $this->assertSame(2, (new LogFactory)->total());

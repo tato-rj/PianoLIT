@@ -29,6 +29,21 @@ class RedisActivityImportTest extends ReviewTestCase
         return $redis;
     }
 
+    public function test_purged_account_history_is_not_restored_or_reported_missing_by_verification()
+    {
+        DB::table('activity_purged_users')->insert(['user_id' => 42, 'purged_at' => now()]);
+        $redis = $this->redis(); $prefix = config('database.redis.prefix');
+        $purged = $prefix.'user:42:app'; $deleted = $prefix.'user:43:app';
+        $redis->shouldReceive('scan')->with('0', 'MATCH', $prefix.'*', 'COUNT', 500)->once()->andReturn(['0', [$purged, $deleted]]);
+        $redis->shouldReceive('scan')->with('0', 'MATCH', $prefix.'user:*', 'COUNT', 500)->once()->andReturn(['0', [$purged, $deleted]]);
+        $redis->shouldReceive('type')->with($deleted)->once()->andReturn('hash');
+        $redis->shouldReceive('hscan')->with($deleted, '0', 'COUNT', 500)->twice()->andReturn(['0', ['1577836800' => '{"url":"/kept"}']]);
+        $this->artisan('activity:import-redis', ['--before' => (string) (time() - 60), '--sleep-ms' => 0, '--verify' => true])->assertExitCode(0);
+        $this->assertDatabaseCount('activity_events', 1);
+        $this->assertDatabaseHas('activity_events', ['user_id' => 43]);
+        $this->assertDatabaseMissing('activity_events', ['user_id' => 42]);
+    }
+
     public function test_import_resumes_empty_scan_pages_and_preserves_orphans_malformed_records_and_totals()
     {
         $redis = $this->redis(); $prefix = config('database.redis.prefix');

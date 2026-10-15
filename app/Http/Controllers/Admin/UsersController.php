@@ -26,16 +26,13 @@ class UsersController extends Controller
         if (request('format') == 'json')
             return $user->membership()->exists() ? $user->membership->source : null;
 
-        return view('admin.pages.users.show.index', [
-            'user' => $user->load('favorites'),
-            'activityCounts' => \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->where('user_id', $user->id)->selectRaw('platform, COUNT(*) as total')->groupBy('platform')->pluck('total', 'platform'),
-            'appLogs' => \App\Activity\ExcludedAccounts::events(DB::table('activity_events'))->where('user_id', $user->id)->where('platform', 'app')->orderByDesc('occurred_at')->orderByDesc('id')->take(5)->get(),
-        ]);
+        return view('admin.pages.users.show.index', app(\App\Services\Admin\UserProfile::class)->get($user, request()));
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user, Request $request)
     {
-        $user->delete();
+        $request->validateWithBag('deleteAccount', ['confirmation_email' => 'required|string|max:255']);
+        app(\App\Services\Admin\RemoveUser::class)->remove($user->id, $request->input('confirmation_email'));
 
         return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted.');
     }
@@ -138,24 +135,14 @@ class UsersController extends Controller
     }
 
     public function destroyMany(Request $request)
-    {        
-        foreach (json_decode($request->ids) as $id) {
-            User::findOrFail($id)->delete();
-        }
-
-        return redirect(route('admin.users.index'))->with('status', 'The users have been successfully deleted.');
+    {
+        abort(410, 'Bulk account deletion is no longer available. Use the individual user page.');
     }
 
-    public function purge(User $user)
+    public function purge(User $user, Request $request)
     {
-        DB::transaction(function () use ($user) {
-            foreach (['activity_events', 'activity_pages', 'activity_visits'] as $table) {
-                DB::table($table)->where('user_id', $user->id)->orWhereIn($table === 'activity_visits' ? 'id' : 'visit_id',
-                    DB::table('activity_visit_links')->where('user_id', $user->id)->select('visit_id'))->delete();
-            }
-        });
-
-        $user->delete();
+        $request->validateWithBag('purgeAccount', ['confirmation_email' => 'required|string|max:255']);
+        app(\App\Services\Admin\RemoveUser::class)->remove($user->id, $request->input('confirmation_email'), true);
 
         return redirect(route('admin.users.index'))->with('status', 'The user has been successfully deleted and its logs removed.');
     }

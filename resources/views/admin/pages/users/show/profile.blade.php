@@ -1,42 +1,15 @@
-<div class="row">
-  <div class="col-lg-6 col-md-6 col-12 mb-4">
-    @php($location = $user->location()->exists() ? [
-          'I\'m from' => $user->location->fullLocation,
-          'Coordinates' => $user->location->coordinates
-        ] : [])
-    @list([
-      'content' => array_merge([
-        'Name' => $user->full_name . $user->countryFlag,
-        'Email' => $user->email_confirmed ?
-          $user->email . '<span class="text-green ms-1" title="Email confirmed on ' . $user->email_verified_at->toFormattedDateString() . '">' . \App\Support\Icon::render('circle-check', ['mr' => 0]) . '</span>' :
-          $user->email . '<span class="text-muted ms-1" title="Email not yet confirmed">' . \App\Support\Icon::render('hourglass', ['mr' => 0]) . '</span>',
-        'Origin' => $user->formattedOrigin,
-        'Favorites' => $user->favorites_count . ' ' . str_plural('piece', $user->favorites_count),
-        'Tutorial Requests' => $user->tutorialRequests()->count() . ' ' . str_plural('request', $user->tutorialRequests()->count()),
-        'Logs' => 'App ' . ($activityCounts['app'] ?? 0) . ' | Web ' . ($activityCounts['web'] ?? 0) . ' | Webapp ' . ($activityCounts['webapp'] ?? 0),
-        'Signed up on' => $user->created_at->toFormattedDateString()
-      ], $location)
-    ])
-  </div>
-  <div class="col-lg-3 col-md-4 col-sm-8 col-9 mx-auto mb-4">
-    <div class="shadow-sm rounded d-inline-block border w-100 mb-1">
-      <div class="px-4 py-2 mb-4 bg-light text-center"><strong class="text-blue">{{$user->membership()->exists() ? class_basename($user->membership->source) : 'Status'}}</strong></div>
-      <div class="text-center p-4">
-        @include('admin.components.users.status.lg', ['elements' => $user->statusElements()])
-      </div>
-      <div class="px-4 pb-3 text-center text-nowrap">
-        <span class="text-muted me-2 text-truncate">Super status</span>
-        <label class="switch cursor-pointer">
-          <input type="checkbox" data-user-super-status data-url="{{ route('admin.users.super-status', $user->id) }}" aria-label="Super user" @if($user->super_user) checked @endif>
-          <span class="slider round"></span>
-        </label>
-      </div>
+<section class="up-hero up-card" aria-labelledby="up-name">
+    <span class="up-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr($user->first_name, 0, 1).mb_substr($user->last_name, 0, 1)) }}</span>
+    <div class="up-identity">
+        <span class="up-eyebrow">ACCOUNT #{{ $user->id }}</span>
+        <h2 id="up-name">{{ trim($user->full_name) }}</h2>
+        <a class="up-email" href="mailto:{{ $user->email }}">{{ $user->email }}</a>
+        <div class="up-pills"><span class="up-pill">@icon($user->email_verified_at ? 'circle-check' : 'mail', ['mr' => 1]){{ $user->email_verified_at ? 'Email confirmed' : 'Email not confirmed' }}</span>@if($user->location && $user->location->countryName)<span class="up-pill">{{ $user->location->countryName }}</span>@endif</div>
     </div>
-    <div class="text-center">
-      <form method="POST" action="{{route('api.memberships.status')}}" target="_blank">
-        <input type="hidden" name="user_id" value="{{$user->id}}">
-        <button class="btn-raw text-blue">See Json response</button>
-      </form>
-    </div>
-  </div>
+    <div class="up-hero-access"><span class="up-access-badge" data-profile-status data-base-label="{{ $billingStatus }}">{{ $status }}</span><strong data-profile-access data-billing-access="{{ $billingAccess ? '1' : '0' }}">{{ $hasAccess ? 'Full media access' : 'Preview access' }}</strong><small>Joined {{ optional($user->created_at)->format('M j, Y') ?: 'date not recorded' }}</small></div>
+</section>
+<div class="up-metrics">
+    @foreach([['favorites', 'Saved pieces', 'heart', '#up-favorites'], ['folders', 'Collections', 'folder', '#up-favorites'], ['scores', 'Scores with markings', 'square-pen', '#up-favorites'], ['requests', 'Tutorial requests', 'video', '#up-requests']] as [$key, $label, $icon, $anchor])
+    <a class="up-card up-metric" href="{{ $anchor }}"><span class="up-icon">@icon($icon, ['mr' => 0])</span><span>{{ $label }}<strong>{{ number_format($counts[$key]) }}</strong></span></a>
+    @endforeach
 </div>

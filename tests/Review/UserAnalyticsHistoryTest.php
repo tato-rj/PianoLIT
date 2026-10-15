@@ -44,11 +44,11 @@ class UserAnalyticsHistoryTest extends ReviewTestCase
         $this->artisan('activity:import-redis', ['--before' => (string) (time() - 60), '--sleep-ms' => 0, '--verify' => true])->assertExitCode(0);
 
         $this->actingAs(create(Admin::class), 'admin');
-        $old = $this->get(route('admin.users.show', $user->id))->assertOk()->assertSee('Feb 10, 2022');
+        $this->get(route('admin.users.show', $user->id))->assertOk()->assertDontSee('Feb 10, 2022')->assertSee('Open logs & analytics', false);
         $new = $this->get($this->url($user, ['range' => 'custom', 'from' => '2022-02-01', 'to' => '2022-02-28']))->assertOk()
             ->assertSee('Ungrouped activity')->assertSee('Feb 10, 2022 · 11:32:00 AM')->assertSee('https://pianolit.com/api/pieces/find')
             ->assertSee('1 record in this period')->assertSee('Legacy account associations may be unverified.');
-        $this->assertSame($old->viewData('appLogs')->pluck('id')->all(), $new->viewData('history')->pluck('id')->all());
+        $this->assertSame(DB::table('activity_events')->where('user_id', $user->id)->orderByDesc('id')->pluck('id')->all(), $new->viewData('history')->pluck('id')->all());
         $this->assertSame(0, $new->viewData('visits')->total());
         $this->assertSame(0, (int) $new->viewData('stats')->visits);
         $this->assertDatabaseCount('activity_visits', 0);

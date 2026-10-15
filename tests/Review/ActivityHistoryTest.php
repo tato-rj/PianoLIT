@@ -58,6 +58,18 @@ class ActivityHistoryTest extends ReviewTestCase
         $this->assertDatabaseCount('activity_visits', 2);
     }
 
+    public function test_a_resolved_browser_page_and_its_retries_cannot_restore_purged_history()
+    {
+        $user = $this->user(); $this->actingAs($user, 'web');
+        $page = $this->open();
+        $request = $this->app['request']; $request->setLaravelSession(session()->driver());
+        (new \App\Services\Admin\RemoveUser)->remove($user->id, $user->email, true);
+        (new Recorder)->browser($request, $page, [$this->event()]);
+        $this->postJson('/activity/events', ['page_token' => Crypt::encryptString($page->id), 'events' => [$this->event()]])->assertNoContent();
+        $this->get('/review/activity-page')->assertOk();
+        foreach (['activity_visits', 'activity_pages', 'activity_events'] as $table) $this->assertDatabaseCount($table, 0);
+    }
+
     public function test_repeat_visits_in_one_second_are_not_overwritten_and_idle_visits_rotate()
     {
         $this->open(); $this->open();

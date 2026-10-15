@@ -67,9 +67,10 @@ class ImportRedisActivity extends Command
                     [$cursor, $fields] = $this->scan($redis, 'hscan', $state->hash_cursor, $state->current_key, $batch);
                     $rows = [];
                     preg_match('/^'.preg_quote($prefix, '/').'user:(\d+):(app|web|webapp)$/', $state->current_key, $matches);
+                    $excluded = $this->excluded($matches[1]);
                     foreach ($fields as $field => $payload) {
                         if (ctype_digit((string) $field) && (float) $field >= $before) continue;
-                        if (in_array((int) $matches[1], $this->excludedIds, true)) continue;
+                        if ($excluded) continue;
                         $rows[] = $this->legacyRow($connection, $state->current_key, (string) $field, (string) $payload, $matches);
                         if (count($rows) === 100) { $this->writeRows($rows); $rows = []; }
                     }
@@ -79,7 +80,7 @@ class ImportRedisActivity extends Command
                 } elseif ($pending) {
                     $key = array_shift($pending);
                     if (preg_match('/^'.preg_quote($prefix, '/').'user:(\d+):(app|web|webapp)$/', $key, $matches) && in_array($matches[2], $platforms, true)) {
-                        if (in_array((int) $matches[1], $this->excludedIds, true)) {
+                        if ($this->excluded($matches[1])) {
                             $state->current_key = null;
                         } else {
                             $type = (string) $redis->type($key);
@@ -111,7 +112,7 @@ class ImportRedisActivity extends Command
                     'complete' => $state->complete, 'updated_at' => now(),
                 ]);
                 return (bool) $state->complete;
-            });
+            }, 3);
             $steps++;
             if ($steps % 100 === 0) $this->line('Committed '.$steps.' batches in this run.');
             if (!$complete && $sleep) usleep($sleep * 1000);
@@ -155,7 +156,15 @@ class ImportRedisActivity extends Command
 
     private function writeRows(array $rows)
     {
+        // Recheck each batch: a long import may overlap an administrator's purge.
+        $rows = \App\Activity\PurgedUsers::without($rows);
+        if (!$rows) return;
         DB::table('activity_events')->upsert($rows, ['legacy_identity'], ['user_id', 'platform', 'type', 'occurred_at', 'occurred_at_utc', 'url', 'metadata', 'legacy_payload']);
+    }
+
+    private function excluded($id)
+    {
+        return in_array((int) $id, $this->excludedIds, true) || \App\Activity\PurgedUsers::contains($id);
     }
 
     private function identity($key, $field)
@@ -170,7 +179,7 @@ class ImportRedisActivity extends Command
             [$cursor, $keys] = $this->scan($redis, 'scan', $cursor, $prefix.'user:*', $batch);
             foreach ($keys as $key) {
                 if (!preg_match('/^'.preg_quote($prefix, '/').'user:(\d+):(app|web|webapp)$/', $key, $matches) || !in_array($matches[2], $platforms, true)) continue;
-                if (in_array((int) $matches[1], $this->excludedIds, true)) continue;
+                if ($this->excluded($matches[1])) continue;
                 $hashCursor = '0';
                 do {
                     [$hashCursor, $fields] = $this->scan($redis, 'hscan', $hashCursor, $key, $batch);
