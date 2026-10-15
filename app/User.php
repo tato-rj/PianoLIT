@@ -306,7 +306,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         switch ($this->origin) {
             case 'web':
-                return 'fas fa-laptop';
+                return 'globe';
                 break;
 
             case 'webapp':
@@ -314,15 +314,15 @@ class User extends Authenticatable implements MustVerifyEmail
                 break;
 
             case 'ios':
-                return 'apple';
+                return 'fab fa-apple';
                 break;
 
-            case 'android':
-                return 'fas fa-mobile';
-                break;
+            // case 'android':
+            //     return 'fas fa-mobile';
+            //     break;
 
             default:
-                return $this->origin ?? 'question';
+                return $this->origin ?? 'circle-question-mark';
                 break;
         }
     }
