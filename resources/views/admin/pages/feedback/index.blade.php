@@ -25,8 +25,9 @@
                 <button type="button" class="btn btn-sm btn-secondary ms-2" data-feedback-retry>Retry</button>
             </div>
             <div class="table-responsive">
+                @component('admin.components.datatable-frame', ['tableId' => 'feedback-table'])
                 <table id="feedback-table" class="table align-middle w-100" data-page="{{ $submissions->currentPage() }}">
-                    <thead><tr><th scope="col">Submitted</th><th scope="col">Rating</th><th scope="col">Message</th><th scope="col">From</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+                    <thead><tr><th scope="col">Submitted</th><th scope="col">Rating</th><th scope="col" class="admin-feedback-message">Message</th><th scope="col">From</th><th scope="col" data-orderable="false"><span class="visually-hidden">Actions</span></th></tr></thead>
                     <tbody>
                         @forelse($submissions as $submission)
                         <tr>
@@ -41,8 +42,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div data-feedback-pagination data-admin-table-fallback-pagination>{{ $submissions->links() }}</div>
+                @endcomponent
             </div>
-            <div data-feedback-pagination>{{ $submissions->links() }}</div>
     @endcomponent
 </div></div>
 @endsection
@@ -72,6 +74,7 @@ $(function () {
     var table = $table.DataTable({
         processing: true,
         serverSide: true,
+        deferLoading: {{ $submissions->total() }},
         autoWidth: false,
         pageLength: {{ \App\Support\AdminPagination::PER_PAGE }},
         lengthMenu: [{{ \App\Support\AdminPagination::PER_PAGE }}, 24, 48, 96],

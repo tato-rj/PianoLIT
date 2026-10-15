@@ -15,3 +15,128 @@
 
     .form-select { width: auto; min-width: 160px; }
 }
+
+// Opt-in DataTables frame: real cells keep their dimensions beneath the skeleton.
+// Without JavaScript the ordinary server-rendered table remains visible.
+.admin-datatable {
+    position: relative;
+
+    .admin-datatable__placeholder { display: none; }
+    &.is-initializing th:not([data-orderable="false"]) { padding-right: 30px; }
+    > .dataTables_wrapper > .row { margin: 0; }
+    > .dataTables_wrapper > .row > div:first-child { padding-left: 0; }
+    > .dataTables_wrapper > .row > div:last-child { padding-right: 0; }
+
+    &.is-starting {
+        [data-admin-table-fallback-pagination] { display: none; }
+        table {
+            margin: 6px 0 !important;
+            border-collapse: separate !important;
+            border-spacing: 0;
+            td, th { box-sizing: content-box; }
+        }
+
+        .admin-datatable__placeholder {
+            display: block;
+            width: 100%;
+            margin-bottom: 0;
+            pointer-events: none;
+        }
+
+        .admin-datatable__placeholder--bottom { margin-bottom: 16px; }
+
+        &:not(.is-initializing) {
+            .admin-datatable__placeholder { position: absolute; left: 0; z-index: 2; }
+            .admin-datatable__placeholder--top { top: 0; }
+            .admin-datatable__placeholder--bottom { bottom: 16px; margin-bottom: 0; }
+            > .dataTables_wrapper:not(.admin-datatable__placeholder) > .row:first-child,
+            > .dataTables_wrapper:not(.admin-datatable__placeholder) > .row:last-child { visibility: hidden; }
+        }
+    }
+
+    .admin-datatable__placeholder {
+        label, .dataTables_info, .page-link { color: transparent !important; position: relative; }
+        label::before, .dataTables_info::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 34px;
+            height: 12px;
+            margin-top: -6px;
+            border-radius: 6px;
+            background: #e9ecef;
+        }
+        .dataTables_length label::after {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            width: 48px;
+            height: 12px;
+            right: 0;
+            top: 50%;
+            margin-top: -6px;
+            border-radius: 6px;
+            background: #e9ecef;
+        }
+        .dataTables_filter label::before { width: 54px; }
+        select { color: transparent; background-image: none; }
+        input, select { background-color: #f1f3f5; border-color: #f1f3f5; opacity: 1; }
+        .dataTables_info::before { top: calc(50% + .425em); width: 220px; max-width: 85%; }
+        .page-link { background: #f1f3f5; border-color: #fff; }
+    }
+
+    &.is-loading {
+        // Busy rows cannot be clicked or tabbed into; search remains usable.
+        tbody { pointer-events: none; }
+        tbody td {
+            position: relative;
+            color: transparent !important;
+            text-shadow: none;
+            > * { opacity: 0; visibility: hidden; }
+
+            &::after {
+                content: '';
+                position: absolute;
+                left: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: calc(100% - 40px);
+                max-width: 150px;
+                height: 12px;
+                border-radius: 6px;
+                background: #e9ecef;
+                animation: admin-table-skeleton 1.6s ease-in-out infinite;
+            }
+            &[data-table-placeholder="id"]::after { width: 20px; }
+            &[data-table-placeholder="toggle"]::after { width: 38px; height: 24px; border-radius: 99px; }
+            &[data-table-placeholder="checkbox"]::after { width: 18px; height: 18px; border-radius: 4px; }
+            &[data-table-placeholder="button"]::after { width: 32px; height: 31px; border-radius: 12px; }
+            &[data-table-placeholder="actions"] {
+                &::before, &::after { height: 31px; border-radius: 12px; }
+                &::after { left: auto; right: 12px; width: 40px; }
+                &::before {
+                    content: '';
+                    position: absolute;
+                    right: 60px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 72px;
+                    background: #e9ecef;
+                    animation: admin-table-skeleton 1.6s ease-in-out infinite;
+                }
+            }
+        }
+        tbody tr:nth-child(3n + 2) td[data-table-placeholder="text"]::after { max-width: 120px; }
+        .dataTables_processing { display: none !important; }
+    }
+}
+
+@keyframes admin-table-skeleton {
+    50% { opacity: .45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-datatable.is-loading tbody td::before,
+    .admin-datatable.is-loading tbody td::after { animation: none; }
+}

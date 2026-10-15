@@ -24,9 +24,9 @@ class UsersTable
             'search' => 'sometimes|array',
             'search.value' => 'nullable|string|max:255',
             'order' => 'sometimes|array|max:5',
-            'order.*.column' => 'required|integer|in:1,2,3,4,6',
+            'order.*.column' => 'required|integer|in:0,1,2,3,5',
             'order.*.dir' => 'required|in:asc,desc',
-            'columns' => 'sometimes|array|max:8',
+            'columns' => 'sometimes|array|max:7',
             'columns.*' => 'required|array',
             'columns.*.data' => 'nullable|string|max:100',
             'columns.*.name' => 'nullable|string|max:100',
@@ -62,8 +62,8 @@ class UsersTable
             });
         }
         $filtered = $search === '' ? $total : (clone $query)->count();
-        $sorts = [1 => 'created_at', 2 => 'id', 3 => 'first_name', 4 => 'origin', 6 => 'super_user'];
-        foreach ($orders ?: [['column' => 1, 'dir' => 'desc']] as $order) {
+        $sorts = [0 => 'created_at', 1 => 'id', 2 => 'first_name', 3 => 'origin', 5 => 'super_user'];
+        foreach ($orders ?: [['column' => 0, 'dir' => 'desc']] as $order) {
             $query->orderBy($sorts[(int) $order['column']], $order['dir']);
         }
         $users = $query->orderByDesc('id')->skip($start)->take($length)
@@ -92,7 +92,7 @@ class UsersTable
                     ? '<span class="invisible position-absolute">'.$item->created_at->timestamp.'</span>'.e($item->created_at->toFormattedDateString())
                     : '',
             ];
-            foreach (['checkbox' => 'checkbox', 'name' => 'name', 'origin_display' => 'origin', 'status' => 'status', 'super_user_display' => 'super-user', 'actions' => 'actions'] as $field => $view) {
+            foreach (['name' => 'name', 'origin_display' => 'origin', 'status' => 'status', 'super_user_display' => 'super-user', 'actions' => 'actions'] as $field => $view) {
                 $row[$field] = view('admin.pages.users.table.'.$view, compact('item'))->render();
             }
 

@@ -20,6 +20,24 @@ class AdminFeedbackTableTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
     }
 
+    public function test_initial_filtered_pages_keep_their_rows_and_shared_loading_frame()
+    {
+        $this->admin();
+        for ($i = 0; $i < 14; $i++) FeedbackSubmission::create(['rating' => 'good', 'message' => 'Good note '.$i]);
+        FeedbackSubmission::create(['rating' => 'bad', 'message' => 'Other rating']);
+        $response = $this->get(route('admin.feedback.index', ['rating' => 'good', 'page' => 2]))->assertOk();
+        $response->assertSee('deferLoading: 14', false)->assertDontSee('Other rating');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(2, $xpath->query('//table[@id="feedback-table"]/tbody/tr'));
+        $this->assertCount(1, $xpath->query('//table[@id="feedback-table" and @data-page="2"]/ancestor::*[@data-admin-datatable]'));
+        $this->assertCount(1, $xpath->query('//*[@data-admin-table-fallback-pagination]/ancestor::*[@data-admin-datatable]'));
+        $this->assertCount(1, $xpath->query('//script[contains(@src,"/js/components/admin-table-loading.js")]'));
+        $empty = $this->get(route('admin.feedback.index', ['rating' => 'not_bad']))->assertOk();
+        $empty->assertSee('deferLoading: 0', false)->assertSee('No feedback with this rating yet.');
+    }
+
     public function test_datatable_paginates_and_searches_the_full_filtered_list()
     {
         $this->admin();

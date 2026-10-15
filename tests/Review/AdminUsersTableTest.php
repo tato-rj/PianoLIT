@@ -50,9 +50,14 @@ class AdminUsersTableTest extends ReviewTestCase
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
         $rows = $xpath->query('//table[@id="users-table"]/tbody/tr');
+        $this->assertCount(1, $xpath->query('//table[@id="users-table"]/ancestor::*[@data-admin-datatable]'));
+        $this->assertCount(1, $xpath->query('//script[contains(@src,"/js/components/admin-table-loading.js")]'));
         $this->assertCount(12, $rows);
-        $this->assertSame((string) $users[0]->id, trim($xpath->query('./td[3]', $rows[0])[0]->textContent));
-        $this->assertSame((string) $users[11]->id, trim($xpath->query('./td[3]', $rows[11])[0]->textContent));
+        $this->assertSame((string) $users[0]->id, trim($xpath->query('./td[2]', $rows[0])[0]->textContent));
+        $this->assertSame((string) $users[11]->id, trim($xpath->query('./td[2]', $rows[11])[0]->textContent));
+        $this->assertCount(7, $xpath->query('./td', $rows[0]));
+        $this->assertCount(0, $xpath->query('//*[@id="check-all-datatable" or @id="multi-select"]'));
+        $response->assertDontSee('Delete selected')->assertDontSee('selectedUserIds')->assertDontSee('check-datatable-');
         $this->assertCount(0, $xpath->query('//table[@id="users-table"]/thead[contains(@class,"invisible")]'));
         $this->assertSame(30, $response->viewData('initialUsers')['recordsTotal']);
         $this->assertSame($response->viewData('initialUsers')['data'], $this->table()->assertOk()->json('data'));
@@ -86,8 +91,8 @@ class AdminUsersTableTest extends ReviewTestCase
         $users[2]->update(['first_name' => 'Bravo']);
         $users[3]->update(['first_name' => 'Charlie']);
         $this->actingAs(create(Admin::class), 'admin');
-        $ascending = [1 => [3, 2, 1, 0], 2 => [0, 1, 2, 3], 3 => [1, 2, 3, 0], 4 => [2, 0, 3, 1], 6 => [3, 2, 1, 0]];
-        $descending = [1 => [0, 1, 2, 3], 2 => [3, 2, 1, 0], 3 => [0, 3, 2, 1], 4 => [3, 1, 2, 0], 6 => [0, 3, 2, 1]];
+        $ascending = [0 => [3, 2, 1, 0], 1 => [0, 1, 2, 3], 2 => [1, 2, 3, 0], 3 => [2, 0, 3, 1], 5 => [3, 2, 1, 0]];
+        $descending = [0 => [0, 1, 2, 3], 1 => [3, 2, 1, 0], 2 => [0, 3, 2, 1], 3 => [3, 1, 2, 0], 5 => [0, 3, 2, 1]];
         foreach (['asc' => $ascending, 'desc' => $descending] as $direction => $sorts) {
             foreach ($sorts as $column => $indices) {
                 $data = $this->table(['order' => [['column' => $column, 'dir' => $direction]]])->assertOk()->json('data');
@@ -107,7 +112,7 @@ class AdminUsersTableTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
         $response = $this->table()->assertOk();
         $row = $response->json('data.0');
-        $this->assertEqualsCanonicalizing(['id', 'created_at', 'checkbox', 'name', 'origin_display', 'status', 'super_user_display', 'actions'], array_keys($row));
+        $this->assertEqualsCanonicalizing(['id', 'created_at', 'name', 'origin_display', 'status', 'super_user_display', 'actions'], array_keys($row));
         $this->assertStringContainsString('&lt;script&gt;', $row['name']);
         $this->assertStringNotContainsString('<script>', $row['name']);
         $this->assertStringContainsString('flag-icon-us', $row['name']);
@@ -161,7 +166,7 @@ class AdminUsersTableTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
         $this->table(['columns' => [['data' => 'password', 'name' => 'users.password', 'searchable' => true, 'search' => ['value' => 'arbitrary']]]])->assertOk()->assertJsonPath('data.0.id', $user->id);
         foreach ([['length' => -1], ['length' => 1000], ['start' => -1], ['draw' => '<script>'], ['search' => ['value' => ['bad']]],
-            ['order' => [['column' => 7, 'dir' => 'asc']]], ['order' => [['column' => 1, 'dir' => 'desc; DELETE FROM users']]],
+            ['order' => [['column' => 6, 'dir' => 'asc']]], ['order' => [['column' => 0, 'dir' => 'desc; DELETE FROM users']]],
             ['columns' => [['name' => ['bad']]]]] as $bad) $this->table($bad)->assertUnprocessable();
         $this->assertDatabaseCount('users', 1);
     }

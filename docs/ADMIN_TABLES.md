@@ -29,6 +29,30 @@ legacy presentation on other pages:
 @endcomponent
 ```
 
+The standard DataTable layout includes `admin.components.datatable-frame` by
+default. For a manually rendered table, wrap it in the same component and pass
+its `tableId` (as Feedback does). Render the first page into `initialBody`, mark
+the header `ready`, and set DataTables `deferLoading` to the filtered initial
+total. This avoids a redundant first request and gives the placeholder the real
+row heights and column widths from the first paint. Declare additional
+non-sortable column indexes with `nonSortable`; an empty Actions header is
+already non-sortable. Keep matching `orderable` settings in the initializer.
+Place any server-pagination fallback inside the frame and mark it with
+`data-admin-table-fallback-pagination` so it does not add a second footer during
+initialization; hide it when DataTables initializes successfully.
+
+Nonempty tables mask their real cell contents with skeleton text, toggle and
+button shapes, reserve the page-size/search and summary/pagination areas, and
+reveal after DataTables and the current font/layout work finish. Later requests
+retain the current table height and mask rows while search stays usable. Empty
+tables and empty search results bypass the skeleton; never invent 12 fake rows
+for a known empty dataset. There is no minimum loading delay. The shared loader
+ignores stale request/layout callbacks, restores rows after errors, respects
+reduced motion and falls back to the server table if initialization fails.
+Without JavaScript the normal server-rendered table remains visible. The frame
+loads its small head script once per page; unrelated legacy table layouts do
+not opt in automatically.
+
 Reuse the project's existing Bootstrap DataTables integration. Keep page size
 and search above the table; show the result summary and arrow/number pagination
 below. Default to `App\Support\AdminPagination::PER_PAGE` (12), with 24, 48 and 96
@@ -52,10 +76,11 @@ page. The shared header accepts `ready => true` and `initialBody` containing the
 trusted rendered row view. Account text is escaped inside those cell templates;
 never pass request text directly as the body markup. DataTables uses
 `deferLoading` with the initial total, so it makes no initial data request and
-fetches fresh data only for subsequent table interactions. Do not add the empty
-loading placeholder back to this populated table.
+fetches fresh data only for subsequent table interactions. Its shared skeleton
+masks these existing rows during initialization; do not restore the old generic
+400px `table-loading` image or an empty first data request.
 
-The service returns only the eight displayed fields and never serializes User
+The service returns only the seven displayed fields and never serializes User
 models. Its explicit account selection omits the default favorites count and
 unused activity appends. Location flags and membership status fields are loaded
 in batches; super-user rows skip billing entirely. Existing user status methods
@@ -64,7 +89,8 @@ retain their meaning. No shared response cache is involved.
 In isolated fixtures containing both Apple and Stripe memberships, unfiltered
 12/24-row requests use six queries at either page size; a nonempty search adds one
 filtered count. The old path used 30/54 queries respectively. The same comparison
-reduced JSON from 63,148 to 40,680 bytes for 12 rows (about 36%); these figures are
+reduced JSON from 63,148 to 37,452 bytes for 12 rows (about 41%, after removing
+the selection column); these figures are
 fixture measurements, not production timing guarantees. The first HTML response
 also includes the ordinary admin layout's own queries.
 
@@ -73,4 +99,10 @@ Its non-unique indexes support the default `created_at, id` ordering and the
 membership lookup by `user_id`. Locations already have a unique `user_id` index.
 SQLite plan checks cover both added indexes and rollback; production MySQL plans
 and timings have not been measured. The code remains functional before the
-indexes are applied. No asset build is required for this PHP/Blade change.
+indexes are applied. The shared skeleton's CSS/JavaScript and manifest must ship
+with its Blade components. Feedback also reuses its rendered page with
+`deferLoading`, retaining its current rating filter and page.
+
+The Users directory has no bulk-selection checkboxes or Delete selected prompt,
+by the user's explicit preference. Keep its per-user Edit, impersonation and
+super-user controls. Other pages may retain their own bulk actions.

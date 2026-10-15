@@ -10,6 +10,7 @@
 
 
     <link rel="stylesheet" type="text/css" href="{{mix('css/admin.css')}}">
+    @stack('admin-table-assets')
 
     @include('admin.layouts.html.js-app')
 

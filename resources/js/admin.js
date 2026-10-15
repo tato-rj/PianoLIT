@@ -1,5 +1,6 @@
 require('./components/icons');
 require('./bootstrap/admin');
+if (window.AdminTableLoading) window.AdminTableLoading.bind(window.jQuery);
 require('./components/offcanvas');
 require('inputmask/dist/jquery.inputmask.bundle.js');
 require('./helpers/cookie');

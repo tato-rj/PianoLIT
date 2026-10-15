@@ -1,6 +1,4 @@
 <tr>
-  @include('components.datatable.checkbox', ['type' => 'user'])
-
   @include('components.datatable.date', ['date' => $item->created_at])
 
   <td>{{$item->id}}</td>

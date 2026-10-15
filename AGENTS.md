@@ -28,6 +28,8 @@ Redesigned admin tables and paginated lists default to 12 results per page. Reus
 
 Feedback is the visual standard for admin tables. New or redesigned admin tables use the shared `admin.components.table-card` wrapper (white card, 24px corners and padding), readable vertically aligned rows, contained horizontal scrolling, and DataTables controls where applicable. Keep filters and bulk actions inside the card. See `docs/ADMIN_TABLES.md`; adopt the pattern on pages within the requested scope rather than redesigning unrelated pages.
 
+Standard DataTables preload their first page and use the shared `admin.components.datatable-frame` skeleton to reserve controls and preserve nonempty row shapes during initialization and requests. Empty tables/results bypass the skeleton. The standard `@datatable` layout includes this frame automatically; keep `ready`, trusted `initialBody`, initial totals/`deferLoading`, and non-sortable columns consistent. See `docs/ADMIN_TABLES.md` for fallback, accessibility and asset requirements.
+
 - PHP application: `app/`; shared helpers: `support/helpers.php`.
 - Route registration and domain/middleware boundaries: `app/Providers/RouteServiceProvider.php`, `app/Http/Kernel.php`, and `routes/`.
 - Shared app feeds/search: `app/Api/`; billing: `app/Billing/`; integrations: `app/Services/` and webhook controllers.

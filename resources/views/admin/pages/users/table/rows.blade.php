@@ -1,6 +1,5 @@
 @foreach($rows as $row)
 <tr>
-    <td>{!! $row['checkbox'] !!}</td>
     <td class="text-nowrap">{!! $row['created_at'] !!}</td>
     <td>{{ $row['id'] }}</td>
     <td class="dataTables_main_column">{!! $row['name'] !!}</td>
