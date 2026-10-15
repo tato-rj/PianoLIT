@@ -22,4 +22,7 @@ return [
             348 => ['type' => 'apple', 'source' => 260, 'chain' => '280003008369182', 'status' => 'expired'],
         ]],
     ],
+    // Confirmed absent from users on 2026-10-15. Preserve both retained
+    // associations and their sources; this is not permission to recreate it.
+    'preserve_missing_users' => [2778],
 ];

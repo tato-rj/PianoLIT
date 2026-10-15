@@ -14,15 +14,23 @@ class MembershipLinkRepair
     public function run(array $plan, bool $apply = false): array
     {
         $this->validate($plan);
-        $hash = hash('sha256', json_encode($plan, JSON_THROW_ON_ERROR));
+        // The correction identities are unchanged by a read-only skip policy.
+        // Preserve hashes written before that policy was added to the plan.
+        $hash = hash('sha256', json_encode(['version' => $plan['version'], 'cases' => $plan['cases']], JSON_THROW_ON_ERROR));
         if ($apply && !Schema::hasTable('membership_link_archives')) {
             throw new \DomainException('Deploy the membership link archive migration before applying this repair.');
         }
         $started = now();
         $snapshots = [];
         $rows = [];
+        $skipped = [];
         foreach ($plan['cases'] as $case) {
             if (!DB::table('users')->where('id', $case['user'])->exists()) {
+                if (in_array($case['user'], $plan['preserve_missing_users'] ?? [], true)) {
+                    $skipped[] = $case['user'];
+                    $rows[] = [$case['user'], '-', '-', 'Skipped; account missing, records preserved'];
+                    continue;
+                }
                 throw new \DomainException('Reviewed user '.$case['user'].' does not exist.');
             }
             $links = $this->links($case['user']);
@@ -100,7 +108,7 @@ class MembershipLinkRepair
                 }
             });
         }
-        return ['rows' => $rows, 'changed' => $apply ? count($snapshots) : 0];
+        return ['rows' => $rows, 'changed' => $apply ? count($snapshots) : 0, 'skipped' => $skipped];
     }
 
     private function verify(int $id, array $spec, array $raw): array
@@ -217,6 +225,14 @@ class MembershipLinkRepair
                 } elseif (!is_string($spec['chain'] ?? null) || !preg_match('/^[0-9]+$/D', $spec['chain'])
                     || !in_array($spec['status'], ['expired', 'revoked'], true)) throw new \DomainException('Invalid reviewed Apple identity.');
             }
+        }
+        if (!is_array($plan['preserve_missing_users'] ?? [])) throw new \DomainException('Invalid missing-account preservation policy.');
+        $preserved = [];
+        foreach ($plan['preserve_missing_users'] ?? [] as $id) {
+            if (!is_int($id) || !isset($users[$id]) || isset($preserved[$id])) {
+                throw new \DomainException('Invalid missing-account preservation policy.');
+            }
+            $preserved[$id] = true;
         }
     }
 }

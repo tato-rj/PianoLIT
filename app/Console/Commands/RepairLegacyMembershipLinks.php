@@ -25,6 +25,9 @@ class RepairLegacyMembershipLinks extends Command
             return 1;
         }
         $this->table(['User ID', 'Keep membership', 'Archive membership', 'Result'], $result['rows']);
+        if ($result['skipped']) {
+            $this->warn('Skipped missing account(s): '.implode(', ', $result['skipped']).'. Membership links and billing sources were left unchanged.');
+        }
         $this->info($apply ? 'Applied '.$result['changed'].' account repair(s). Provider subscriptions and billing dates were not changed.' : 'Preview complete. Use --apply only after reviewing the listed selections.');
         return 0;
     }

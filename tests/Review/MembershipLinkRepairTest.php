@@ -88,6 +88,116 @@ class MembershipLinkRepairTest extends ReviewTestCase
         Mail::assertNothingSent(); Mail::assertNothingQueued(); Notification::assertNothingSent();
     }
 
+    public function test_preview_reports_the_confirmed_missing_account_without_touching_its_records_or_providers()
+    {
+        DB::table('users')->where('id', 2778)->delete();
+        $links = $this->links(); $stripes = $this->stripeRows();
+        $apples = DB::table('apple_memberships')->orderBy('id')->get()->toJson();
+        unset($this->appleResults[177], $this->gateway->subscriptions['sub_1MvTHFGQzApYr7LGEndh0edL']);
+        $result = $this->runRepair();
+        $this->assertSame(0, $result['changed']);
+        $this->assertSame([2778], $result['skipped']);
+        $this->assertSame([2778, '-', '-', 'Skipped; account missing, records preserved'], $result['rows'][1]);
+        $this->assertSame($links, $this->links());
+        $this->assertSame($stripes, $this->stripeRows());
+        $this->assertSame($apples, DB::table('apple_memberships')->orderBy('id')->get()->toJson());
+        $this->assertDatabaseCount('membership_link_archives', 0);
+        $this->assertDatabaseMissing('users', ['id' => 2778]);
+        $this->assertSame([86, 224, 259, 260], $this->appleCalls);
+        $this->assertSame(['cus_LD44Py3hHe7slG', 'cus_R5h4enZlR6jpat'], array_column(array_column($this->gateway->calls, 'parameters'), 'customer'));
+    }
+
+    public function test_apply_repairs_three_live_accounts_and_preserves_all_missing_account_history()
+    {
+        DB::table('users')->where('id', 2778)->delete();
+        $orphanLinks = DB::table('memberships')->where('user_id', 2778)->orderBy('id')->get()->toJson();
+        $orphanStripe = DB::table('stripe_memberships')->where('id', 59)->first();
+        $apples = DB::table('apple_memberships')->orderBy('id')->get()->toJson();
+        $users = DB::table('users')->orderBy('id')->get()->toJson();
+        $result = $this->runRepair(true);
+        $this->assertSame(3, $result['changed']);
+        $this->assertSame([2778], $result['skipped']);
+        $this->assertSame([149, 189, 215, 295, 347], DB::table('memberships')->orderBy('id')->pluck('id')->all());
+        $this->assertSame([53, 285, 348], DB::table('membership_link_archives')->orderBy('membership_id')->pluck('membership_id')->all());
+        $this->assertSame($orphanLinks, DB::table('memberships')->where('user_id', 2778)->orderBy('id')->get()->toJson());
+        $this->assertEquals($orphanStripe, DB::table('stripe_memberships')->where('id', 59)->first());
+        $this->assertSame($apples, DB::table('apple_memberships')->orderBy('id')->get()->toJson());
+        $this->assertSame($users, DB::table('users')->orderBy('id')->get()->toJson());
+        $this->assertDatabaseMissing('users', ['id' => 2778]);
+        $this->assertDatabaseMissing('membership_link_archives', ['user_id' => 2778]);
+        $this->assertDatabaseHas('stripe_memberships', ['id' => 26, 'subscription_id' => 'sub_1KWdwSGQzApYr7LG9x77MV7a', 'billing_account' => 'swiss']);
+        $this->assertDatabaseHas('stripe_memberships', ['id' => 102, 'subscription_id' => 'sub_1QDVgKA3roHoLcB1IqI98cwr', 'billing_account' => 'us']);
+        $this->assertTrue(User::findOrFail(3830)->hasActiveSubscription());
+        $this->assertSame(0, DB::table('memberships as m')->join('users as u', 'u.id', '=', 'm.user_id')
+            ->groupBy('m.user_id')->havingRaw('COUNT(*) > 1')->get(['m.user_id'])->count());
+        $this->assertSame(1, DB::table('memberships')->groupBy('user_id')->havingRaw('COUNT(*) > 1')->get(['user_id'])->count());
+        $this->assertSame(1, DB::table('stripe_memberships')->whereNull('subscription_id')->count());
+        $this->gateway->calls = []; $this->appleCalls = [];
+        $repeat = $this->runRepair(true);
+        $this->assertSame(0, $repeat['changed']); $this->assertSame([2778], $repeat['skipped']);
+        $this->assertSame([], $this->gateway->calls); $this->assertSame([], $this->appleCalls);
+        Mail::assertNothingSent(); Mail::assertNothingQueued(); Notification::assertNothingSent();
+    }
+
+    public function test_another_missing_account_still_stops_all_repairs()
+    {
+        DB::table('users')->whereIn('id', [2778, 3830])->delete();
+        $links = $this->links(); $stripes = $this->stripeRows();
+        try { $this->runRepair(true); $this->fail('An unreviewed missing account was skipped'); }
+        catch (\DomainException $e) { $this->assertSame('Reviewed user 3830 does not exist.', $e->getMessage()); }
+        $this->assertSame($links, $this->links()); $this->assertSame($stripes, $this->stripeRows());
+        $this->assertDatabaseCount('membership_link_archives', 0);
+    }
+
+    public function test_a_previously_present_account_disappearing_during_verification_still_aborts()
+    {
+        $this->gateway->intercept = function ($call) {
+            if ($call['parameters']['customer'] === 'cus_R5h4enZlR6jpat') DB::table('users')->where('id', 2778)->delete();
+        };
+        $links = $this->links(); $stripes = $this->stripeRows();
+        try { $this->runRepair(true); $this->fail('A disappearing account was skipped after verification'); }
+        catch (\DomainException $e) { $this->assertStringContainsString('An account changed during verification', $e->getMessage()); }
+        $this->assertSame($links, $this->links()); $this->assertSame($stripes, $this->stripeRows());
+        $this->assertDatabaseCount('membership_link_archives', 0);
+    }
+
+    public function test_a_late_failure_with_a_missing_account_rolls_back_all_three_live_repairs()
+    {
+        DB::table('users')->where('id', 2778)->delete();
+        DB::table('membership_link_archives')->insert(['membership_id' => 348, 'user_id' => 4636, 'kept_membership_id' => 347,
+            'source_type' => Apple::class, 'source_id' => 260, 'repair_version' => 'other', 'plan_hash' => str_repeat('0', 64),
+            'evidence' => '{}', 'archived_at' => now()]);
+        $links = $this->links(); $stripes = $this->stripeRows();
+        try { $this->runRepair(true); $this->fail('Archive conflict accepted'); }
+        catch (\Illuminate\Database\QueryException $e) { $this->assertSame($links, $this->links()); }
+        $this->assertSame($stripes, $this->stripeRows()); $this->assertDatabaseCount('membership_link_archives', 1);
+    }
+
+    public function test_missing_account_policy_preserves_hashes_from_the_original_plan()
+    {
+        $legacy = $this->plan; unset($legacy['preserve_missing_users']);
+        app(MembershipLinkRepair::class)->run($legacy, true);
+        $this->assertSame([hash('sha256', json_encode($legacy, JSON_THROW_ON_ERROR))],
+            DB::table('membership_link_archives')->distinct()->pluck('plan_hash')->all());
+        $this->gateway->calls = []; $this->appleCalls = [];
+        $this->assertSame(0, $this->runRepair(true)['changed']);
+        $this->assertSame([], $this->gateway->calls); $this->assertSame([], $this->appleCalls);
+    }
+
+    /** @dataProvider invalidMissingAccountPolicy */
+    public function test_missing_account_policy_is_validated_before_provider_requests($policy)
+    {
+        $this->plan['preserve_missing_users'] = $policy;
+        $this->expectExceptionMessage('Invalid missing-account preservation policy.');
+        try { $this->runRepair(true); }
+        finally { $this->assertSame([], $this->gateway->calls); $this->assertSame([], $this->appleCalls); }
+    }
+
+    public static function invalidMissingAccountPolicy(): array
+    {
+        return [['all'], [[9999]], [['2778']], [[2778, 2778]], [[[2778]]]];
+    }
+
     public function test_apply_preserves_history_and_source_payloads_and_restores_the_paid_membership()
     {
         $links = collect($this->links())->keyBy('id');
@@ -328,6 +438,17 @@ class MembershipLinkRepairTest extends ReviewTestCase
         $this->assertDatabaseCount('memberships', 8);
         $this->artisan('memberships:repair-legacy-links', ['--apply' => true])->assertExitCode(0);
         $this->assertDatabaseCount('memberships', 4);
+    }
+
+    public function test_command_reports_the_skipped_account_and_only_counts_applied_repairs()
+    {
+        DB::table('users')->where('id', 2778)->delete();
+        $warning = 'Skipped missing account(s): 2778. Membership links and billing sources were left unchanged.';
+        $this->artisan('memberships:repair-legacy-links')->expectsOutput($warning)->assertExitCode(0);
+        $this->assertDatabaseCount('memberships', 8);
+        $this->artisan('memberships:repair-legacy-links', ['--apply' => true])->expectsOutput($warning)
+            ->expectsOutput('Applied 3 account repair(s). Provider subscriptions and billing dates were not changed.')->assertExitCode(0);
+        $this->assertDatabaseCount('memberships', 5);
     }
 
     public function test_command_redacts_provider_failure_messages()
