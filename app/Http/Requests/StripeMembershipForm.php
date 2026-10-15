@@ -24,7 +24,8 @@ class StripeMembershipForm extends FormRequest
     public function rules()
     {
         return [
-            'stripeToken' => 'required',
+            'operation_id' => 'required|uuid',
+            'setup_intent' => ['required', 'string', 'max:255', 'regex:/^seti_[A-Za-z0-9]+$/D'],
         ];
     }
 }

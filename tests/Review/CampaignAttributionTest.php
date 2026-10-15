@@ -79,15 +79,20 @@ class CampaignAttributionTest extends ReviewTestCase
 
     private function checkout($subscription, $fails = false)
     {
+        $this->withCredentials();
         $plan = Plan::forceCreate(['name' => 'monthly', 'price' => 999, 'interval' => 'month', 'trial_period_days' => 7, 'description' => 'Review plan', 'statement_descriptor' => 'PIANOLIT']);
-        $factory = \Mockery::mock(StripeFactory::class);
-        $factory->purchasedSubscription = $subscription;
-        $factory->shouldReceive('customer')->once()->andReturnSelf();
-        $factory->shouldReceive('withCoupon')->once()->with('')->andReturnSelf();
-        if ($fails) $factory->shouldReceive('subscribe')->once()->andThrow(new \RuntimeException('Review payment failure'));
-        else $factory->shouldReceive('subscribe')->once()->andReturn($this->customer($subscription));
-        $this->app->instance(StripeFactory::class, $factory);
-        return $this->post(route('webapp.membership.purchase', $plan), ['stripeToken' => 'review-token']);
+        $gateway = new \Tests\Support\FakeStripeGateway;
+        $gateway->prices['monthly'] = ['id' => 'monthly', 'active' => true, 'currency' => 'usd', 'unit_amount' => 999, 'product' => 'prod_review', 'recurring' => ['interval' => 'month']];
+        $gateway->nextSubscription = json_decode(json_encode($subscription), true);
+        if ($fails) $gateway->failure = ['subscriptions.create', new \App\Billing\Stripe\BillingException('Review payment failure')];
+        $this->app->instance(\App\Billing\Stripe\Gateway::class, $gateway);
+        $id = (string) \Illuminate\Support\Str::uuid();
+        $prepared = $this->postJson(route('webapp.membership.prepare', $plan), ['operation_id' => $id])->assertOk();
+        $setup = explode('_secret_', $prepared->json('setup_secret'))[0];
+        $gateway->confirm($setup);
+        $purchase = $this->postJson(route('webapp.membership.purchase', $plan), ['operation_id' => $id, 'setup_intent' => $setup]);
+        if ($purchase->status() !== 200) return $purchase;
+        return $this->postJson(route('webapp.membership.complete'), ['operation_id' => $id]);
     }
 
     private function report()
@@ -171,7 +176,7 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         $this->get(route('webapp.membership.pricing'))->assertOk();
         $this->assertSame(0, $this->report()['trials']);
-        $this->checkout($this->subscription())->assertRedirect(route('webapp.membership.success'));
+        $this->checkout($this->subscription())->assertOk()->assertJson(['redirect' => route('webapp.membership.success')]);
         $this->assertDatabaseHas('campaign_subscriptions', ['stripe_subscription_id' => 'sub_first', 'stripe_customer_id' => 'cus_first', 'billing_account' => 'us']);
         $this->assertSame(1, $this->report()['trials']);
         $this->assertSame(0, $this->report()['first_paid_subscriptions']);
@@ -184,7 +189,7 @@ class CampaignAttributionTest extends ReviewTestCase
     {
         $this->grant();
         $this->actingAs($this->user, 'web');
-        $this->checkout($this->subscription(), true)->assertRedirect();
+        $this->checkout($this->subscription(), true)->assertStatus(422);
         $this->assertDatabaseCount('campaign_subscriptions', 0);
         $this->assertDatabaseCount('memberships', 0);
     }
@@ -202,7 +207,7 @@ class CampaignAttributionTest extends ReviewTestCase
         $first['id'] = 'evt_secondDelivery';
         $receipts->invoiceSucceeded($first);
         $this->assertSame(0, $this->report()['first_paid_subscriptions']);
-        $this->checkout($this->subscription())->assertRedirect();
+        $this->checkout($this->subscription())->assertOk();
         $this->assertDatabaseCount('stripe_payment_receipts', 2);
         $this->assertSame(1, $this->report()['first_paid_subscriptions']);
         $this->assertSame('USD 9.99', $this->report()['first_payment_revenue']);
@@ -231,7 +236,7 @@ class CampaignAttributionTest extends ReviewTestCase
     {
         $this->grant();
         $this->actingAs($this->user, 'web');
-        $this->checkout($this->subscription('sub_first', 'active'))->assertRedirect();
+        $this->checkout($this->subscription('sub_first', 'active'))->assertOk();
         (new StripePaymentReceipts)->invoiceSucceeded($this->invoice());
         $this->assertSame(0, $this->report()['trials']);
         $this->assertSame(1, $this->report()['first_paid_subscriptions']);
@@ -259,7 +264,7 @@ class CampaignAttributionTest extends ReviewTestCase
     {
         [$visit] = $this->grant();
         $this->actingAs($this->user, 'web');
-        $this->checkout($this->subscription())->assertRedirect();
+        $this->checkout($this->subscription())->assertOk();
         (new StripePaymentReceipts)->invoiceSucceeded($this->invoice());
         $this->post(route('webapp.attribution.consent'), ['choice' => 'denied'])->assertOk();
         $this->assertDatabaseCount('campaign_visits', 0);
@@ -274,7 +279,7 @@ class CampaignAttributionTest extends ReviewTestCase
         [$visit] = $this->grant();
         DB::table('campaign_visits')->where('id', $visit->id)->update(['expires_at' => now()->subMinute()]);
         $this->actingAs($this->user, 'web');
-        $this->checkout($this->subscription())->assertRedirect();
+        $this->checkout($this->subscription())->assertOk();
         $this->assertDatabaseCount('campaign_subscriptions', 0);
         config(['attribution.enabled' => false]);
         $this->landing()->assertDontSee('data-campaign-measurement', false);
@@ -308,7 +313,7 @@ class CampaignAttributionTest extends ReviewTestCase
     {
         [$visit] = $this->grant();
         $this->actingAs($this->user, 'web');
-        $this->checkout($this->subscription())->assertRedirect();
+        $this->checkout($this->subscription())->assertOk();
         (new StripePaymentReceipts)->invoiceSucceeded($this->invoice());
         $record = (array) DB::table('campaign_subscriptions')->first();
         unset($record['id']);

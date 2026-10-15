@@ -10,9 +10,9 @@
 
       <div id="collapse1" class="collapse" data-bs-parent="#faq-accordion">
         <div class="pb-3">
-          <p>The 7-day free trial starts when you sign up for any PianoLIT membership plan.</p>
-          <p>You will <u>not be charged until the 7-day free trial is over</u>.</p>
-          <p class="m-0">Just subscribe, try out the app, and you can cancel any time before your 7 free days have passed. Please note that you may only start a trial once. If you have previously purchased a PianoLIT subscription, you will not be able to start a new trial and your membership will start right away.</p>
+          <p>Eligible new members receive the free trial shown at checkout. It starts when your subscription is confirmed.</p>
+          <p>You will <u>not be charged until your trial ends</u>.</p>
+          <p class="m-0">Cancel before your trial ends to avoid the first payment. You may only start an introductory trial once. Returning members start with a payment instead of another trial.</p>
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@
 
       <div id="collapse2" class="collapse" data-bs-parent="#faq-accordion">
         <div class="pb-3">
-          Whether you choose a monthly or yearly plan, you will only be charged after the 7-day free trial is over.
+          Your first payment is due after the trial shown at checkout, if you are eligible. Returning members pay when their new subscription starts. Later payments follow your monthly or yearly billing calendar.
         </div>
       </div>
     </div>
@@ -51,7 +51,7 @@
 
       <div id="collapse4" class="collapse" data-bs-parent="#faq-accordion">
         <div class="pb-3">
-          You can cancel your trial or subscription in your account settings <i class="text-muted">Billing -> Billing Status -> Cancel membership</i>. If you cancel during the trial period you will not be charged. Alternatively, you can also simply <strong>pause</strong> your billing status. Doing this will stop any future bills and your membership will be suspended until you chose to resume.
+          Open My Membership, then <i class="text-muted">Billing → Cancel membership</i>. Cancel during your trial to avoid the first payment. You can also pause future payment collection under Billing status after resolving open invoices. Premium media is unavailable while paused; the billing calendar keeps running and unused paid time is not carried forward.
         </div>
       </div>
     </div>

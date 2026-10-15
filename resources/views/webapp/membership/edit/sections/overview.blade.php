@@ -19,7 +19,7 @@
 			<div class="row">
 				<div class="col-lg-6 col-md-6 col-12 mb-3">
 					<p class="lead" style="margin-bottom: .18rem">Next invoice</p>
-					@if(auth()->user()->membership->source->willRenew())
+						@if($source->willRenew() && !$source->isEnded() && !in_array($source->status, ['canceled', 'incomplete_expired'], true))
 					<div>{{auth()->user()->membership->source->renews_at->toFormattedDateString()}}</div>
 					@else
 					<div class="text-muted"><i>No upcoming payments</i></div>

@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('attribution:prune')->daily();
         $schedule->command('memberships:sync-apple')->hourly()->withoutOverlapping(120);
+        $schedule->command('stripe:reconcile')->hourly()->withoutOverlapping(120);
         $schedule->command('activity:prune-noise --execute')->hourly()->withoutOverlapping();
 
         $schedule->command('subscriptions:remove-spam')->weeklyOn(7, '10:30');

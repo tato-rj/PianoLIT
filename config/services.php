@@ -75,8 +75,13 @@ return [
         'swiss_secret' => env('STRIPE_SWISS_SECRET'),
 
         'version' => env('STRIPE_VERSION'),
+        // Membership requests use current payment APIs; legacy shop requests keep
+        // their own version. Dashboard webhook versions are upgraded separately.
+        'membership_version' => '2025-03-31.basil',
         'webhook' => [
             'secret' => env('STRIPE_WEBHOOK_SECRET'),
+            'us_secret' => env('STRIPE_US_WEBHOOK_SECRET'),
+            'swiss_secret' => env('STRIPE_SWISS_WEBHOOK_SECRET'),
             'tolerance' => env('STRIPE_WEBHOOK_TOLERANCE', 300),
         ],
     ],

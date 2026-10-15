@@ -38,5 +38,7 @@
     "/js/views/match-tour.js": "/js/views/match-tour.js?id=af343ede273eae5d99bf",
     "/js/views/collections.js": "/js/views/collections.js?id=04c8e78b60ec11da2115",
     "/js/views/folders.js": "/js/views/folders.js?id=1f629cdebf955caa5d4d",
-    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da"
+    "/js/tinyeditor/tiny.js": "/js/tinyeditor/tiny.js?id=d8726c3a07cfaf6395da",
+    "/js/views/membership-billing.js": "/js/views/membership-billing.js?id=4a3a46eb4155e5c6c2a7",
+    "/js/views/checkout.js": "/js/views/checkout.js?id=d25beb16d91114f989f3"
 }

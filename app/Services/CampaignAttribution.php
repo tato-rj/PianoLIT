@@ -137,8 +137,9 @@ class CampaignAttribution
             if (! $owned) return;
             DB::table('campaign_subscriptions')->insertOrIgnore([
                 'visit_id' => $visit->id, 'stripe_subscription_id' => $subscription->id,
-                'stripe_customer_id' => $customer->id, 'billing_account' => $user->isSwissCustomer() ? 'swiss' : 'us',
-                'plan' => (string) ($subscription->plan->id ?? 'unknown'),
+                'stripe_customer_id' => $customer->id, 'billing_account' => $user->membership && $user->membership->source instanceof \App\Billing\Sources\Stripe
+                    ? app(\App\Billing\Stripe\Accounts::class)->forSource($user->membership->source) : ($user->isSwissCustomer() ? 'swiss' : 'us'),
+                'plan' => (string) ($user->membership ? $user->membership->source->plan : ($subscription->plan->id ?? 'unknown')),
                 'trial_started_at' => $subscription->status === 'trialing' ? \Carbon\Carbon::createFromTimestamp($subscription->trial_start ?? now()->timestamp) : null,
                 'subscribed_at' => \Carbon\Carbon::createFromTimestamp($subscription->created ?? now()->timestamp),
             ]);

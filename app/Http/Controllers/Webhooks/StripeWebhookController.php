@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Webhooks;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Billing\Webhooks\StripeWebhooks;
+use App\Billing\Stripe\WebhookProcessor;
 
 class StripeWebhookController extends Controller
 {
@@ -14,30 +14,29 @@ class StripeWebhookController extends Controller
 
         abort_unless(isset($payload['type']) && is_string($payload['type']), 400);
 
-    	$method = $this->eventToMethod($payload['type']);
-
-    	if (method_exists(StripeWebhooks::class, $method)) {
-    		StripeWebhooks::$method($payload);
-    	}
+        app(WebhookProcessor::class)->receive($payload, $request->attributes->get('stripe.billing_account'));
 
         return response('Webhook received', 200);
     }
 
     public function verify(Request $request)
     {
-        $secret = config('services.stripe.webhook.secret');
-        abort_unless(is_string($secret) && $secret !== '', 503, 'Webhook signing is not configured.');
-
-		try {
-		    return \Stripe\Webhook::constructEvent(
-                $request->getContent(),
-                $request->header('Stripe-Signature', ''),
-                $secret,
-                (int) config('services.stripe.webhook.tolerance', 300)
-            )->toArray();
-		} catch (\Exception $e) {
-		    abort(400, 'Invalid webhook signature or payload.');
-		}
+        $secrets = array_filter([
+            'us' => config('services.stripe.webhook.us_secret') ?: config('services.stripe.webhook.secret'),
+            'swiss' => config('services.stripe.webhook.swiss_secret'),
+        ], function ($secret) { return is_string($secret) && $secret !== ''; });
+        abort_unless(count($secrets), 503, 'Webhook signing is not configured.');
+        foreach ($secrets as $account => $secret) {
+            try {
+                $payload = \Stripe\Webhook::constructEvent($request->getContent(), $request->header('Stripe-Signature', ''), $secret,
+                    (int) config('services.stripe.webhook.tolerance', 300))->toArray();
+                $request->attributes->set('stripe.billing_account', $account);
+                return $payload;
+            } catch (\UnexpectedValueException | \Stripe\Exception\SignatureVerificationException $exception) {
+                // Try only the other explicitly configured account's secret.
+            }
+        }
+        abort(400, 'Invalid webhook signature or payload.');
     }
 
     public function eventToMethod($event)

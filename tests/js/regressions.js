@@ -30,6 +30,7 @@ async function main() {
     await require('./explore-transitions')();
     require('./explore-moods')();
     await require('./campaign-attribution')();
+    await require('./membership-billing')();
     require('./composer-biography-admin')();
     require('./admin-text-improver')();
     require('./admin-date-range')();

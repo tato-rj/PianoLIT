@@ -13,7 +13,7 @@
 @endpush
 
 @section('content')
-@include('webapp.layouts.header', ['title' => 'Go Premium', 'subtitle' => 'Get the best of PianoLIT and start your FREE trial now!'])
+@include('webapp.layouts.header', ['title' => 'Go Premium', 'subtitle' => 'Choose the membership that works for you. Eligible new members start with a free trial.'])
 
 @include('webapp.membership.pricing.plans')
 

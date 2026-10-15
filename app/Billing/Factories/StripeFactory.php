@@ -3,7 +3,6 @@
 namespace App\Billing\Factories;
 
 use Stripe\{Stripe, Customer, Subscription, Invoice, Coupon, Charge};
-use Stripe\Plan as StripePlan;
 use App\Billing\Plan;
 use App\Billing\Sources\Concerns\StripeJurisdiction;
 
@@ -18,7 +17,8 @@ class StripeFactory
     (new StripeJurisdiction)->set();
 
     Stripe::setApiKey(config('services.stripe.secret'));
-    Stripe::setApiVersion(config('services.stripe.version'));
+    // Keep the shop's existing API contract independent of the membership client.
+    Stripe::setApiVersion(config('services.stripe.version') ?: '2020-03-02');
 	}
 
   public function transaction($token)
@@ -112,6 +112,7 @@ class StripeFactory
       $this->coupon = $coupon;
   }
 
+    /** @deprecated Browser memberships use \App\Billing\Stripe\MembershipBilling and verified SetupIntents. */
 	public function subscribe(Plan $plan, $stripeToken)
 	{
     if ($this->newMember) {
@@ -201,19 +202,25 @@ class StripeFactory
 
     public function updateCard($stripeToken)
     {
-      $this->deleteCard();
-
       $card = $this->createCard($stripeToken);
+      Customer::update($this->customer->id, ['default_source' => $card->id]);
 
-      return auth()->user()->customer()->update([
+      // A shop customer and a membership customer can be different Stripe objects.
+      auth()->user()->customer()->where('stripe_id', $this->customer->id)->update([
         'card_brand' => $card->brand,
         'card_last_four' => $card->last4]);
+
+      return $card;
     }
 
     public function upcomingInvoice()
     {
       try {
-        return Invoice::upcoming(["customer" => $this->customer->id]);     
+        // SDK 22 removed upcoming(), but retained callers still use the shop's
+        // legacy response shape. Modern membership invoices use createPreview.
+        $client = new \Stripe\StripeClient(['api_key' => config('services.stripe.secret'), 'stripe_version' => config('services.stripe.version') ?: '2020-03-02']);
+        $response = $client->rawRequest('get', '/v1/invoices/upcoming?customer='.rawurlencode($this->customer->id));
+        return Invoice::constructFrom($response->json);
       } catch (\Exception $e) {
         return null;
       }

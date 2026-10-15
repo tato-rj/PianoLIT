@@ -32,7 +32,6 @@ class StripePaymentReceipts
 
     public function oncePerCharge(array $payload, callable $record)
     {
-        if (! config('attribution.enabled')) return $record();
         $id = $payload['data']['object']['id'] ?? null;
         abort_unless($this->id($id, 'ch_'), 400);
         // Uniqueness serializes concurrent retries; rollback includes the marker

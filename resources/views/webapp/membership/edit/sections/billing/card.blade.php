@@ -9,15 +9,16 @@
 	</div>
 
 	<p>Use the form below to update your card</p>
-	<form action="{{route('webapp.membership.update.card')}}" method="POST" id="update-card-form" class="mb-3">
+	<form action="{{route('webapp.membership.update.card')}}" method="POST" id="update-card-form" class="mb-3" data-membership-payment data-purpose="card"
+        data-key="{{ $stripeKey }}" data-operation="{{ $cardOperation }}" data-prepare="{{ route('webapp.membership.prepare.card') }}">
 		@csrf
 		<div class="mb-4">
 			<div class="form-group">
 				<div id="card-element" class="form-control"></div>
-				<div id="card-errors" role="alert" class="invalid-feedback d-block"></div>
+				<div id="card-errors" role="alert" aria-live="polite" class="invalid-feedback d-block"></div>
 			</div>
 		</div>
-		<button id="card-button" class="btn d-block w-100 btn-default mb-2">@icon('lock')Update my card</button>
+		<button type="submit" id="card-button" class="btn d-block w-100 btn-default mb-2">@icon('lock')Update my card</button>
 		<p class="m-0"><small>Don't worry, your card information will never directly touch our servers.</small></p>
 	</form>
 </div>

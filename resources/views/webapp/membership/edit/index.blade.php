@@ -12,6 +12,16 @@
 
 @section('content')
 @include('webapp.layouts.header', ['title' => 'My Membership', 'subtitle' => 'Manage your account details here'])
+@if($source->isEnded() || in_array($source->status, ['canceled', 'incomplete_expired'], true))
+    <div class="alert alert-warning">Your membership has ended. <a href="{{ route('webapp.membership.pricing') }}">Choose a plan to subscribe again</a>. Your invoices remain available below.</div>
+@elseif(in_array($source->status, ['past_due', 'unpaid', 'incomplete'], true))
+    <div class="alert alert-warning" role="status">Your membership needs a payment. Update your card in Billing, then complete the open invoice in Invoices.
+        @if($source->payment_url)<a href="{{ $source->payment_url }}" target="_blank" rel="noopener noreferrer">Complete payment</a>@endif
+    </div>
+@endif
+@if($source->pending_plan && $source->plan_changes_at)
+    <div class="alert alert-info">Your {{ ucfirst($source->pending_plan) }} plan starts on {{ $source->plan_changes_at->toFormattedDateString() }}. Your current plan remains in effect until then.</div>
+@endif
 
 <section class=" mb-5">
 	<ul class="nav nav-tabs nav-responsive mb-4" id="membership-tabs" role="tablist">
@@ -40,90 +50,5 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
-$('button[name="plan"]').on('click', function() {
-	let $plan = $(this);
-	let $check = $('#plan-check').detach();
-	$plan.addClass('selected-plan').siblings('button').removeClass('selected-plan');
-	$plan.append($check);
-	$('#update-plan-action input[name="plan"]').val($plan.data('name'));
-
-	$('#update-plan-action > p').hide();
-	$('#update-plan-action > form').show();
-});
-</script>
-<script type="text/javascript">
-$('#faq-accordion').on('show.bs.collapse', function (event) {
-  $(event.target).siblings('div').find('i').removeClass('icon-plus').addClass(' icon-minus');
-});
-
-$('#faq-accordion').on('hide.bs.collapse', function (event) {
-  $(event.target).siblings('div').find('i').removeClass('icon-minus').addClass(' icon-plus');
-});
-</script>
-<script type="text/javascript">
-const stripe = Stripe("{{config('services.stripe.key')}}");
-
-$(document).ready(function() {
-  // Create an instance of Elements.
-  const elements = stripe.elements();
-  const card = elements.create('card', {hidePostalCode: true});
-  const cardErrors = document.getElementById('card-errors');
-
-  const formButton = document.getElementById('card-button');
-  const buttonIcon = formButton.querySelector('i');
-
-  card.mount('#card-element');
-
-  /////////////////////
-  // VALIDATE INPUTS //
-  /////////////////////
-  card.addEventListener('change', function(event) {
-    cardErrors.textContent = event.error ? event.error.message : '';
-  });
-
-  /////////////////
-  // SUBMIT FORM //
-  /////////////////
-  var form = document.getElementById('update-card-form');
-  form.addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    disableSubmitButton();
-
-    stripe.createToken(card).then(function(result) {
-      if (result.error) {
-        cardErrors.textContent = result.error.message;
-        enableSubmitButton();
-      } else {
-        stripeTokenHandler(result.token);
-      }
-    });
-  });
-
-  function stripeTokenHandler(token) {
-    var form = document.getElementById('update-card-form');
-    var hiddenInput = document.createElement('input');
-
-    hiddenInput.setAttribute('type', 'hidden');
-    hiddenInput.setAttribute('name', 'stripeToken');
-    hiddenInput.setAttribute('value', token.id);
-    form.appendChild(hiddenInput);
-
-    form.submit();
-  }
-
-  function disableSubmitButton() {
-    formButton.disabled = true;
-    buttonIcon.classList.toggle('icon-lock');
-    buttonIcon.classList.toggle('spinner-border');
-  }
-
-  function enableSubmitButton() {
-    formButton.disabled = false;
-    buttonIcon.classList.toggle('icon-lock');
-    buttonIcon.classList.toggle('spinner-border');
-  }
-});
-</script>
+<script src="{{ mix('js/views/membership-billing.js') }}" defer></script>
 @endpush

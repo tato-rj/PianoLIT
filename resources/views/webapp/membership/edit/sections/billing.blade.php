@@ -1,6 +1,8 @@
 <div class="tab-pane fade" id="update-card-tab">
 	<div class="row">
-		@if(auth()->user()->membership->source->isCanceled())
+		@if($source->isEnded() || in_array($source->status, ['canceled', 'incomplete_expired'], true))
+            <div class="col-12"><p>Your subscription has ended. Your past invoices are available in the Invoices tab.</p></div>
+            @elseif(auth()->user()->membership->source->isCanceled())
 			<div class="col-12">
 				<div class="alert alert-warning mb-4">
 					@icon('triangle-alert')Your membership was canceled on {{auth()->user()->membership->source->canceled_at->toFormattedDateString()}}
@@ -10,6 +12,7 @@
 					<h6>Changed your mind?</h6>
 					<form method="POST" action="{{route('webapp.membership.resume')}}" disable-on-submit>
 						@csrf
+                        <input type="hidden" name="operation_id" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
 						<button type="submit" class="btn btn btn-sm btn-warning">Yes, don't cancel anymore</button>
 					</form>
 				</div>
@@ -39,29 +42,4 @@
 		@endif
 	</div>
 
-{{-- 	<div class="row">
-		@if(auth()->user()->membership->source->isCanceled())
-		<div class="col-12 text-center">
-			<div class="alert alert-warning">
-				@icon('triangle-alert')Your membership was canceled on {{auth()->user()->membership->source->canceled_at->toFormattedDateString()}}
-			</div>
-			<p class="text-muted">Your current billing period ends on <strong>{{auth()->user()->membership->source->membership_ends_at->toFormattedDateString()}}</strong>. Until then, you will still have access to PianoLIT. If you have any questions, please email us at <a href="mailto:contact@pianolit.com" class="link-blue">contact@pianolit.com</a>.</p>
-		</div>
-		@else
-		<div class="col-lg-6 col-md-6 col-12">
-			@if(auth()->user()->membership->source->willRenew())
-			<p>Your next billing is schedule for {{auth()->user()->membership->source->renews_at->toFormattedDateString()}}</p>
-			@endif
-			<h6>What would you like to do?</h6>
-			@if(auth()->user()->membership->source->willRenew())
-				@include('webapp.membership.edit.forms.status')
-			@endif
-			@include('webapp.membership.edit.forms.cancel')
-		</div>
-
-		<div class="col-lg-6 col-md-6 col-12">
-
-		</div>
-		@endif
-	</div> --}}
 </div>

@@ -19,7 +19,7 @@
 		</div>
 		<div>
 			<p>{{$plan->description}}</p>
-			<a href="{{route('webapp.membership.checkout', $plan->name)}}" class="btn btn-default d-block w-100">Start 7-day FREE trial</a>
+			<a href="{{route('webapp.membership.checkout', $plan->name)}}" class="btn btn-default d-block w-100">{{ !$plan->trial_period_days || (auth('web')->check() && auth('web')->user()->membership()->exists()) ? 'Choose this plan' : 'Start '.$plan->trial_period_days.'-day FREE trial' }}</a>
 		</div>
 	</div>
 </div>

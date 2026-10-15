@@ -1,9 +1,10 @@
+@php($canChangePlan = in_array($source->status, ['active', 'trialing'], true) && !$source->isEnded() && !$source->isCanceled() && !$source->isPaused())
 <div class="tab-pane fade" id="update-plan-tab">
 	<div class="d-flex justify-content-center mb-4">
 		@foreach($plans as $plan)
 		<button class="btn-raw border rounded p-4 text-center m-2 position-relative
 			{{auth()->user()->membership->source->plan == $plan->name ? 'selected-plan' : null}}"
-			{{auth()->user()->membership->source->isCanceled() ? 'disabled' : null}}
+				{{ !$canChangePlan ? 'disabled' : null }}
 			data-name="{{$plan->name}}" name="plan" style="width: 50%; max-width: 160px">
 			@if(auth()->user()->membership->source->plan == $plan->name)
 			<div id="plan-check" class="absolute-top-right">@icon('circle-check', ['color' => 'green', 'size' => 'lg', 'mr' => 0])</div>
@@ -15,12 +16,13 @@
 		@endforeach
 	</div>
 	<div class="text-center" id="update-plan-action">
-		@if(auth()->user()->membership->source->isCanceled())
-		<p class="text-muted">Your membership is <u>canceled</u> and you can not change your membership plan anymore.</p>
+		@if(!$canChangePlan)
+		<p class="text-muted">Your membership must be active and renewing before you can change plans. Resume billing or resolve any payment issues first.</p>
 		@else
 		<p class="text-muted">You are currently subscribed to the <strong>{{auth()->user()->membership->source->plan_name}} Plan</strong>. If you want to switch plans, just select your preferred option above.</p>
 		<form method="POST" action="{{route('webapp.membership.update.plan')}}" style="display: none;" disable-on-submit>
 			@csrf
+                <input type="hidden" name="operation_id" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
 			<p class="text-muted">The new plan will take effect at the end of the current billing period.</p>
 			<input type="hidden" name="plan">
 			<button type="submit" id="update-plan-button" class="btn btn-default btn-wide">Update my plan</button>

@@ -80,8 +80,8 @@ $('input[name="coupon"]').on('blur', function() {
 
           $feedback.text(response.data.message).show();
         })
-        .catch(function(response) {
-          $feedback.addClass('invalid-feedback').removeClass('valid-feedback').text(response.data.message).show();
+        .catch(function(error) {
+          $feedback.addClass('invalid-feedback').removeClass('valid-feedback').text('We could not check this coupon. Please try again.').show();
         })
         .then(function() {
           $validation.fadeOut('fast');
