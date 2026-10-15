@@ -5,13 +5,13 @@
     $dateTo = $to ?? '';
     $dateLabel = $label ?? 'Custom range';
     $datePlaceholder = $placeholder ?? 'Custom range';
-    $dateSelected = isset($selectedPreset) ? (string) $selectedPreset : ($dateFrom || $dateTo ? 'custom' : '');
+    $dateSelected = isset($selectedPreset) ? (string) $selectedPreset : ($dateFrom || $dateTo ? 'custom' : 'all');
     if (empty($periodName) && $dateFrom && $dateTo) {
         foreach ($datePresets as $key => $preset) if ($preset['from'] === $dateFrom && $preset['to'] === $dateTo) { $dateSelected = (string) $key; break; }
     }
-    $dateSummary = empty($periodName) && $dateSelected && $dateSelected !== 'custom' ? $datePresets[$dateSelected]['label'] : ($dateSelected === 'custom' ? 'Custom range' : $datePlaceholder);
+    $dateSummary = (empty($periodName) || $dateSelected === 'all') && $dateSelected && $dateSelected !== 'custom' ? $datePresets[$dateSelected]['label'] : ($dateSelected === 'custom' ? 'Custom range' : $datePlaceholder);
 @endphp
-<details class="admin-date-range" data-admin-date-range data-period-name="{{ $periodName ?? '' }}" data-current-preset="{{ $dateSelected }}" data-default-preset="{{ $defaultPreset ?? '' }}" data-required="{{ !empty($requireBoth) ? 'true' : 'false' }}" data-max-days="{{ $maxDays ?? '' }}" data-placeholder="{{ $datePlaceholder }}" data-label="{{ $dateLabel }}">
+<details class="admin-date-range" data-admin-date-range data-period-name="{{ $periodName ?? '' }}" data-current-preset="{{ $dateSelected }}" data-default-preset="{{ $defaultPreset ?? (empty($periodName) ? 'all' : '') }}" data-required="{{ !empty($requireBoth) ? 'true' : 'false' }}" data-placeholder="{{ $datePlaceholder }}" data-label="{{ $dateLabel }}">
     @if(!empty($showLabel))<span class="admin-date-range-label">{{ $dateLabel }}</span>@endif
     <summary aria-haspopup="dialog" aria-controls="{{ $dateId }}" aria-expanded="false" aria-label="{{ $dateLabel }}: {{ $dateSummary }}">
         <span class="admin-date-range-calendar" aria-hidden="true">@icon('calendar', ['mr' => 0])</span><span data-date-range-summary>{{ $dateSummary }}</span>@icon('chevron-down', ['mr' => 0])

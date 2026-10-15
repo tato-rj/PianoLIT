@@ -158,10 +158,10 @@ class IosActivityAnalyticsTest extends ReviewTestCase
         foreach ($filters as $name => $value) $this->assertSame($value, $parameters[$name]);
     }
 
-    public function test_daily_ios_queries_are_bounded_for_short_and_year_ranges()
+    public function test_daily_ios_queries_are_bounded_for_short_year_and_multi_year_ranges()
     {
         $this->travelTo(carbon('2026-10-13 22:58:00'));
-        foreach (['app', 'all', 'webapp'] as $platform) foreach ([['2026-10-07', '2026-10-13', 7], ['2026-01-01', '2027-01-01', 366]] as [$from, $to, $count]) {
+        foreach (['app', 'all', 'webapp'] as $platform) foreach ([['2026-10-07', '2026-10-13', 7], ['2026-01-01', '2027-01-01', 366], ['2024-01-01', '2026-01-01', 732]] as [$from, $to, $count]) {
             $filters = $this->filters(['range' => 'custom'] + compact('platform', 'from', 'to'));
             DB::flushQueryLog(); DB::enableQueryLog();
             $trend = (new Queries)->trend($filters);

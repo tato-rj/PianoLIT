@@ -109,10 +109,10 @@ class DailyActivityChartTest extends ReviewTestCase
         $this->assertSame(4, substr_count($response->getContent(), 'class="ua-chart-swatch '));
     }
 
-    public function test_daily_queries_remain_constant_for_week_and_full_year_ranges()
+    public function test_daily_queries_remain_constant_for_week_year_and_multi_year_ranges()
     {
         $queries = new Queries;
-        foreach ([['2026-10-07', '2026-10-13', 7], ['2026-01-01', '2027-01-01', 366]] as [$from, $to, $count]) {
+        foreach ([['2026-10-07', '2026-10-13', 7], ['2026-01-01', '2027-01-01', 366], ['2024-01-01', '2026-01-01', 732]] as [$from, $to, $count]) {
             $filters = $this->filters(compact('from', 'to'));
             DB::flushQueryLog(); DB::enableQueryLog();
             $trend = $queries->trend($filters);

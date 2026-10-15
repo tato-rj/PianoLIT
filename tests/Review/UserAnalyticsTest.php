@@ -681,7 +681,7 @@ class UserAnalyticsTest extends ReviewTestCase
         $this->withExceptionHandling()->actingAs($user, 'web');
         foreach ([route('admin.analytics.users'), route('admin.analytics.users.people'), route('admin.analytics.users.insights'), route('admin.analytics.users.profile', $user->id), route('admin.analytics.users.journey', $visit)] as $url) $this->get($url)->assertRedirect();
         $this->actingAs(create(Admin::class), 'admin');
-        $this->getJson(route('admin.analytics.users', ['range' => 'custom', 'from' => '2020-01-01', 'to' => '2026-10-12']))->assertStatus(422);
+        $this->getJson(route('admin.analytics.users', ['range' => 'custom', 'from' => '2026-10-12', 'to' => '2020-01-01']))->assertStatus(422);
         $this->getJson(route('admin.analytics.users.people', ['sort' => 'password']))->assertStatus(422);
         $this->getJson(route('admin.analytics.users', ['platform' => 'forged']))->assertStatus(422);
     }

@@ -148,8 +148,15 @@ class Queries
         $media = $this->events($filters)->where('e.type', 'media_play')->selectRaw('DATE(e.occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
         $app = in_array($filters->values['platform'], ['all', 'app'], true)
             ? $this->appRequests($filters)->selectRaw('DATE(occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day') : collect();
+        $start = $filters->start;
+        if (!$start) {
+            // Reuse the scoped daily results so All history needs no extra query
+            // and starts at real data rather than an arbitrary historical date.
+            $first = $rows->keys()->merge($pieces->keys())->merge($media->keys())->merge($app->keys())->filter()->min();
+            $start = ($first ? carbon($first) : now())->startOfDay();
+        }
         $days = [];
-        for ($day = $filters->start->copy(); $day->lt($filters->end); $day->addDay()) {
+        for ($day = $start->copy(); $day->lt($filters->end); $day->addDay()) {
             $key = $day->toDateString();
             $days[] = ['day' => $key, 'date' => $day->format('M j'), 'total' => (int) ($rows[$key]->total ?? 0),
                 'pieces' => (int) ($pieces[$key]->total ?? 0), 'media_starts' => (int) ($media[$key]->total ?? 0), 'ios_requests' => (int) ($app[$key]->total ?? 0)];

@@ -17,7 +17,7 @@
         @endforeach
     </select></label>
     @endunless
-    @include('admin.components.filters.date-range', ['label' => 'Custom range', 'periodName' => 'range', 'selectedPreset' => $filters->values['range'], 'from' => $filters->values['from'] ?? '', 'to' => $filters->values['to'] ?? '', 'defaultPreset' => '7', 'requireBoth' => true, 'maxDays' => 366])
+    @include('admin.components.filters.date-range', ['label' => 'Custom range', 'periodName' => 'range', 'selectedPreset' => $filters->values['range'], 'from' => $filters->values['from'] ?? '', 'to' => $filters->values['to'] ?? '', 'defaultPreset' => '7', 'requireBoth' => true])
     <button class="ua-button" type="submit">Apply filters</button>
-    <span class="ua-filter-period">{{ $filters->start->format('M j') }} – {{ $filters->end->copy()->subDay()->format('M j, Y') }}<small>{{ config('app.timezone') }}</small></span>
+    <span class="ua-filter-period">@if($filters->start){{ $filters->start->format('M j, Y') }} – {{ $filters->end->copy()->subDay()->format('M j, Y') }}@else All history @endif<small>{{ config('app.timezone') }}</small></span>
 </form>

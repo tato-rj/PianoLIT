@@ -100728,14 +100728,13 @@ try {
         return isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value ? date.getTime() : null;
     }
 
-    function validate(from, to, required, maxDays) {
+    function validate(from, to, required) {
         if (required && (!from || !to)) return 'Choose both dates for a custom range.';
         var first = from ? day(from) : null,
             last = to ? day(to) : null;
         if (from && first === null || to && last === null) return 'Enter valid dates.';
         if (first !== null && last !== null) {
             if (last < first) return 'The To date must be on or after the From date.';
-            if (maxDays && (last - first) / 86400000 + 1 > maxDays) return 'Choose a period of at most ' + maxDays + ' days.';
         }
         return '';
     }
@@ -100774,15 +100773,15 @@ try {
             }
             function restore() {
                 var selected = preset(period ? period.value : committed);
-                if (!selected || !selected.dataset.from) selected = preset(root.dataset.defaultPreset);
-                draft = 'custom';
-                draftFrom.value = from.value || selected && selected.dataset.from || '';
-                draftTo.value = to.value || selected && selected.dataset.to || '';
+                if (!selected) selected = preset(root.dataset.defaultPreset);
+                draft = selected && selected.dataset.datePreset === 'all' ? 'all' : 'custom';
+                draftFrom.value = draft === 'all' ? '' : from.value || selected && selected.dataset.from || '';
+                draftTo.value = draft === 'all' ? '' : to.value || selected && selected.dataset.to || '';
                 highlight();clearError();
             }
             function update() {
                 var selected = preset(committed);
-                var label = !period && selected ? selected.textContent.trim() : root.dataset.placeholder;
+                var label = (!period || committed === 'all') && selected ? selected.textContent.trim() : root.dataset.placeholder;
                 text.textContent = label;
                 summary.setAttribute('aria-label', root.dataset.label + ': ' + label);
                 root.dataset.currentPreset = committed;
@@ -100817,14 +100816,14 @@ try {
                 if (focus) draftFrom.focus();
             }
             function commit(focus) {
-                var message = validate(draftFrom.value, draftTo.value, root.dataset.required === 'true', Number(root.dataset.maxDays));
+                var message = validate(draftFrom.value, draftTo.value, root.dataset.required === 'true' && draft !== 'all');
                 if (message) {
                     error.textContent = message;error.hidden = false;
                     draftFrom.setAttribute('aria-invalid', 'true');draftTo.setAttribute('aria-invalid', 'true');
                     draftFrom.focus();fit();return false;
                 }
                 from.value = draftFrom.value;to.value = draftTo.value;
-                committed = !from.value && !to.value && !period ? '' : draft || 'custom';
+                committed = draft === 'all' ? 'all' : !from.value && !to.value && !period ? '' : draft || 'custom';
                 if (period) period.value = committed;
                 update();close(focus);return true;
             }
@@ -100880,7 +100879,7 @@ try {
                     event.preventDefault();return;
                 }
                 if (period && period.value === 'custom') {
-                    var message = validate(from.value, to.value, true, Number(root.dataset.maxDays));
+                    var message = validate(from.value, to.value, true);
                     if (message) {
                         event.preventDefault();open(true);error.textContent = message;error.hidden = false;
                         draftFrom.setAttribute('aria-invalid', 'true');draftTo.setAttribute('aria-invalid', 'true');
