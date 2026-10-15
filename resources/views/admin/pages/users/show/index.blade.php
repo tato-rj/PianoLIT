@@ -3,7 +3,7 @@
 @section('content')
 <div class="content-wrapper"><div class="container-fluid user-profile" data-user-profile>
     @component('admin.components.page.title', ['title' => 'User details', 'subtitle' => 'Profile, membership and saved music.'])
-    <div class="d-apart">
+    <div class="d-apart w-100">
         <div>
             <a class="btn btn-secondary" href="{{ route('admin.users.index') }}">@icon('arrow-left')All users</a>
         </div>
