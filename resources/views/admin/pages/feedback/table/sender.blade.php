@@ -1,0 +1,1 @@
+@if($submission->user)<a href="{{ route('admin.users.show', $submission->user_id) }}">{{ trim($submission->user->first_name.' '.$submission->user->last_name) }}</a><br><small class="text-muted">{{ $submission->user->email }}</small>@else<span class="text-muted">Guest</span>@endif

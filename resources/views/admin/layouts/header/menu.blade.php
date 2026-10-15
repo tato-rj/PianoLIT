@@ -16,8 +16,6 @@
           ['name' => 'Pieces', 'route' => route('admin.analytics.pieces')],
           ['name' => 'Favorites', 'route' => route('admin.analytics.favorites')],
           ['name' => 'Composers', 'route' => route('admin.analytics.composers')],
-          ['name' => 'Blog', 'route' => route('admin.analytics.blog')],
-          ['name' => 'Quizzes', 'route' => route('admin.analytics.quizzes')],
         ]])
 
         @include('admin.layouts.header.divider', ['label' => 'ACQUISITION'])

@@ -1,5 +1,9 @@
 @extends('admin.layouts.app')
 
+@section('head')
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
+@endsection
+
 @section('content')
 <div class="content-wrapper"><div class="container-fluid admin-feedback">
     @include('admin.components.page.title', ['icon' => 'message-circle-more', 'title' => 'Feedback', 'subtitle' => 'What visitors and members think of their PianoLIT experience.'])
@@ -14,40 +18,24 @@
                     @endforeach
                 </select>
                 <button class="btn btn-secondary" type="submit">Filter</button>
-                <span class="text-muted small">{{ number_format($submissions->total()) }} {{ $submissions->total() === 1 ? 'submission' : 'submissions' }}</span>
+                <span class="text-muted small" data-feedback-total>{{ number_format($submissions->total()) }} {{ $submissions->total() === 1 ? 'submission' : 'submissions' }}</span>
             </form>
             <p class="small text-muted">Times shown in {{ config('app.timezone') }}.</p>
+            <div class="alert alert-danger" role="alert" data-feedback-error hidden>
+                <span data-feedback-error-message>Feedback could not be loaded. Please try again.</span>
+                <button type="button" class="btn btn-sm btn-secondary ms-2" data-feedback-retry>Retry</button>
+            </div>
             <div class="table-responsive">
-                <table class="table align-middle">
+                <table id="feedback-table" class="table align-middle w-100" data-page="{{ $submissions->currentPage() }}">
                     <thead><tr><th scope="col">Submitted</th><th scope="col">Rating</th><th scope="col">Message</th><th scope="col">From</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
                     <tbody>
                         @forelse($submissions as $submission)
                         <tr>
-                            <td class="text-nowrap"><time datetime="{{ $submission->created_at->toIso8601String() }}">{{ $submission->created_at->format('M j, Y') }}<br><small class="text-muted">{{ $submission->created_at->format('g:i A') }}</small></time></td>
-                            <td><span class="admin-feedback-rating admin-feedback-rating--{{ $submission->rating }}">{{ \App\FeedbackSubmission::RATINGS[$submission->rating] }}</span></td>
-                            <td class="admin-feedback-message"><div class="admin-feedback-message-text">@if($submission->message !== null && $submission->message !== ''){{ $submission->message }}@else<span class="text-muted">No message</span>@endif</div>
-                                @if($submission->context)
-                                <details class="small mt-2 text-muted">
-                                    <summary>Context</summary>
-                                    <dl class="mt-2 mb-0">
-                                        @if(!empty($submission->context['url']))<dt>Page</dt><dd class="text-break"><a href="{{ $submission->context['url'] }}" target="_blank" rel="noopener noreferrer">{{ $submission->context['url'] }}</a></dd>@endif
-                                        @if(!empty($submission->context['route']))<dt>Route</dt><dd>{{ $submission->context['route'] }}</dd>@endif
-                                        @if(!empty($submission->context['piece_id']))<dt>Piece</dt><dd><a href="{{ route('webapp.pieces.show', $submission->context['piece_id']) }}" target="_blank" rel="noopener noreferrer">#{{ $submission->context['piece_id'] }}</a></dd>@endif
-                                        @if(!empty($submission->context['composer_id']))<dt>Composer</dt><dd><a href="{{ route('webapp.composers.show', $submission->context['composer_id']) }}" target="_blank" rel="noopener noreferrer">#{{ $submission->context['composer_id'] }}</a></dd>@endif
-                                        <dt>Device</dt><dd>{{ ucfirst($submission->context['device_type'] ?? 'Unknown') }} · {{ $submission->context['browser'] ?? 'Unknown' }} · {{ $submission->context['os'] ?? 'Unknown' }}</dd>
-                                        @if($submission->user_id)<dt>Account</dt><dd>#{{ $submission->user_id }}</dd>@endif
-                                    </dl>
-                                </details>
-                                @endif
-                            </td>
-                            <td>@if($submission->user)<a href="{{ route('admin.users.show', $submission->user_id) }}">{{ trim($submission->user->first_name.' '.$submission->user->last_name) }}</a><br><small class="text-muted">{{ $submission->user->email }}</small>@else<span class="text-muted">Guest</span>@endif</td>
-                            <td class="text-end">
-                                <form method="POST" action="{{ route('admin.feedback.destroy', ['feedback' => $submission, 'rating' => $rating, 'page' => $submissions->currentPage()]) }}" class="m-0">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-raw text-muted p-2" aria-label="Delete feedback" title="Delete feedback">@icon('trash-2', ['mr' => 0])</button>
-                                </form>
-                            </td>
+                            <td class="text-nowrap">@include('admin.pages.feedback.table.submitted', ['page' => $submissions->currentPage()])</td>
+                            <td>@include('admin.pages.feedback.table.rating', ['page' => $submissions->currentPage()])</td>
+                            <td class="admin-feedback-message">@include('admin.pages.feedback.table.message', ['page' => $submissions->currentPage()])</td>
+                            <td>@include('admin.pages.feedback.table.sender', ['page' => $submissions->currentPage()])</td>
+                            <td class="text-end">@include('admin.pages.feedback.table.actions', ['page' => $submissions->currentPage()])</td>
                         </tr>
                         @empty
                         <tr><td colspan="5" class="text-center text-muted py-5">No feedback{{ $rating ? ' with this rating' : '' }} yet.</td></tr>
@@ -55,8 +43,76 @@
                     </tbody>
                 </table>
             </div>
-            {{ $submissions->links() }}
+            <div data-feedback-pagination>{{ $submissions->links() }}</div>
         </div>
     </section>
 </div></div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
+<script>
+$(function () {
+    var $table = $('#feedback-table');
+    if (!$.fn.DataTable) return;
+    var $error = $('[data-feedback-error]');
+    function showError(message) {
+        $error.find('[data-feedback-error-message]').text(message);
+        $error.prop('hidden', false);
+    }
+    $table.find('tbody tr:has(td[colspan])').remove();
+    $table.on('xhr.dt', function (event, settings, json, xhr) {
+        if (xhr !== settings.jqXHR) return true;
+        if (!json || json.error) {
+            showError('Feedback could not be loaded. Please try again.');
+            return true;
+        }
+        if (Number(json.draw) < settings.iDraw) return true;
+        $error.prop('hidden', true);
+        $('[data-feedback-total]').text(Number(json.recordsTotal).toLocaleString() + (json.recordsTotal === 1 ? ' submission' : ' submissions'));
+    });
+    var table = $table.DataTable({
+        processing: true,
+        serverSide: true,
+        autoWidth: false,
+        pageLength: {{ \App\Support\AdminPagination::PER_PAGE }},
+        lengthMenu: [{{ \App\Support\AdminPagination::PER_PAGE }}, 24, 48, 96],
+        displayStart: (Number($table.attr('data-page')) - 1) * {{ \App\Support\AdminPagination::PER_PAGE }},
+        order: [[0, 'desc']],
+        searchDelay: 350,
+        ajax: {url: @json(route('admin.feedback.index', ['rating' => $rating])), timeout: 15000},
+        columns: [
+            {data: 'submitted', className: 'text-nowrap'},
+            {data: 'rating'},
+            {data: 'message', className: 'admin-feedback-message'},
+            {data: 'sender'},
+            {data: 'actions', className: 'text-end', orderable: false, searchable: false}
+        ],
+        language: {
+            processing: '<div class="overlay-pulse"></div>',
+            emptyTable: @json('No feedback'.($rating ? ' with this rating' : '').' yet.'),
+            searchPlaceholder: 'Message, rating or sender',
+            paginate: {next: '&#8594;', previous: '&#8592;'}
+        },
+        initComplete: function () { $('[data-feedback-pagination]').prop('hidden', true); }
+    });
+    $('[data-feedback-retry]').on('click', function () { table.ajax.reload(null, false); });
+    $table.on('submit', 'form', function (event) {
+        event.preventDefault();
+        var $form = $(this);
+        var $button = $form.find('button[type="submit"]');
+        if ($button.prop('disabled')) return;
+        $button.prop('disabled', true);
+        $.ajax({url: $form.attr('action'), type: 'POST', data: $form.serialize(), dataType: 'json', timeout: 15000})
+            .done(function () {
+                table.ajax.reload(function () {
+                    var info = table.page.info();
+                    if (info.page > 0 && info.page >= info.pages) table.page(Math.max(0, info.pages - 1)).draw('page');
+                }, false);
+            })
+            .fail(function () { showError('Feedback could not be deleted. Please try again or refresh the page.'); })
+            .always(function () { $button.prop('disabled', false); });
+    });
+});
+</script>
 @endsection

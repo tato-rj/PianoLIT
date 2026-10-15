@@ -13,22 +13,22 @@
         <article class="ca-metric ca-metric--lavender"><span>@icon('users', ['mr' => 0]) Composers</span><strong>{{ number_format($summary['total']) }}</strong><p>{{ number_format($summary['represented']) }} with pieces · {{ number_format($summary['empty']) }} without pieces</p></article>
         <article class="ca-metric ca-metric--mint"><span>@icon('music', ['mr' => 0]) Linked pieces</span><strong>{{ number_format($summary['pieces']) }}</strong><p>{{ $summary['top_share'] }}% belong to the five largest composer catalogues.</p></article>
         <article class="ca-metric ca-metric--peach"><span>@icon('layers', ['mr' => 0]) Small catalogues</span><strong>{{ number_format($summary['small']) }}</strong><p>Composers with 1–3 pieces. <a href="{{ route('admin.analytics.composers', ['depth' => 'small']) }}#composer-directory">Review composers @icon('arrow-up-right', ['mr' => 0])</a></p></article>
-        <article class="ca-metric ca-metric--gold"><span>@icon('globe', ['mr' => 0]) Countries represented</span><strong>{{ number_format(count($countries['countries'])) }}</strong><p>{{ number_format($countries['unlocated']) }} {{ $countries['unlocated'] === 1 ? 'composer has' : 'composers have' }} no usable country recorded.</p></article>
+        <article class="ca-metric ca-metric--gold"><span>@icon('globe', ['mr' => 0]) Countries represented</span><strong>{{ number_format(count($countries['countries'])) }}</strong><p>{{ number_format($countries['located']) }} of {{ number_format($countries['total']) }} composers have a country recorded.</p></article>
     </div>
 
     <div class="ca-grid ca-grid--wide ca-section">
         @include('admin.pages.analytics.composers.growth')
-        <article class="ca-card"><div class="ca-heading"><div><h2>Repertoire & profile coverage</h2><p>Share of all {{ number_format($summary['total']) }} composer records. Click a gap to review it.</p></div></div>
+        <article class="ca-card"><div class="ca-heading"><div><h2>Video & collection coverage</h2><p>Share of all {{ number_format($summary['total']) }} composers with at least one qualifying piece.</p></div></div>
             <div class="ca-gauges">
-                @foreach(['represented' => ['With pieces', 'depth', 'empty', '#94c6b0'], 'biography' => ['Biography saved', 'profile', 'biography', '#a692ce'], 'portrait' => ['Portrait saved', 'profile', 'portrait', '#efb07c']] as $key => $definition)
+                @foreach(['videos' => ['With videos', 'without videos', '#94c6b0'], 'folders' => ['In users’ folders', 'not in folders', '#a692ce'], 'playlists' => ['In playlists', 'not in playlists', '#efb07c']] as $key => $definition)
                 @php($share = $summary['total'] ? round($summary[$key] / $summary['total'] * 100, 1) : 0)
-                <a href="{{ route('admin.analytics.composers', [$definition[1] => $definition[2]]) }}#composer-directory" class="ca-gauge" style="--ca-color:{{ $definition[3] }}">
+                <a href="{{ route('admin.analytics.composers', ['coverage' => $key]) }}#composer-directory" class="ca-gauge" style="--ca-color:{{ $definition[2] }}">
                     <svg viewBox="0 0 120 72" role="img" aria-label="{{ $definition[0] }}: {{ $summary[$key] }} of {{ $summary['total'] }} composers"><path class="ca-gauge-track" d="M 12 60 A 48 48 0 0 1 108 60" pathLength="100"/><path class="ca-gauge-fill" d="M 12 60 A 48 48 0 0 1 108 60" pathLength="100" opacity="{{ $summary[$key] ? 1 : 0 }}" stroke-dasharray="{{ $share }} 100"/><text x="60" y="56" text-anchor="middle">{{ $share }}%</text></svg>
-                    <strong>{{ $definition[0] }}</strong><span>{{ number_format($summary[$key]) }} / {{ number_format($summary['total']) }}</span><small>{{ number_format($summary['total'] - $summary[$key]) }} to review @icon('arrow-up-right', ['mr' => 0])</small>
+                    <strong>{{ $definition[0] }}</strong><span>{{ number_format($summary[$key]) }} / {{ number_format($summary['total']) }}</span><small>{{ number_format($summary['total'] - $summary[$key]) }} {{ $definition[1] }} @icon('arrow-up-right', ['mr' => 0])</small>
                 </a>
                 @endforeach
             </div>
-            <p class="ca-note">Biography and portrait coverage checks saved text and paths. It does not check editorial quality or whether an image loads.</p>
+            <p class="ca-note">Videos use saved video links. Folders are user-created custom folders, excluding team accounts and analytics opt-outs. Playlists are those visible on Collections. Each composer counts once per gauge; click a gap to review it.</p>
         </article>
     </div>
 

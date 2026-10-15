@@ -37,13 +37,29 @@ class ComposerAnalyticsTest extends ReviewTestCase
         return app(ComposerReport::class)->get(Request::create('/', 'GET', $filters));
     }
 
+    protected function video($piece, $url = 'https://example.test/video.mp4')
+    {
+        DB::table('tutorials')->insert(['piece_id' => $piece->id, 'type' => 'Performance', 'category' => 'performance', 'filename' => 'video', 'video_url' => $url]);
+    }
+
+    protected function collection(array $composers, $tutorials = 6, array $attributes = [])
+    {
+        $id = DB::table('playlists')->insertGetId(array_merge(['creator_id' => 1, 'name' => 'Collection', 'subtitle' => 'Subtitle', 'description' => 'Description', 'published_at' => now()], $attributes));
+        foreach ($composers as $index => $composer) {
+            $piece = $this->piece($composer);
+            DB::table('piece_playlist')->insert(['piece_id' => $piece->id, 'playlist_id' => $id]);
+            if ($index < $tutorials) $this->video($piece);
+        }
+        return $id;
+    }
+
     public function test_admin_guard_and_empty_charts()
     {
         $this->withExceptionHandling();
         $this->get(route('admin.analytics.composers'))->assertRedirect(route('admin.login.show'));
         $this->actingAs(create(Admin::class), 'admin');
         $response = $this->get(route('admin.analytics.composers'))->assertOk()
-            ->assertSee('No composers yet')->assertSee('Repertoire & profile coverage', false)
+            ->assertSee('No composers yet')->assertSee('Video & collection coverage', false)
             ->assertSee('Composers added by month')->assertSee('Composers by period')->assertSee('Composers by country')
             ->assertSee('No piece views have been recorded')->assertSee('No current saves have been recorded')
             ->assertDontSee('www.gstatic.com')->assertDontSee('datatables.min')->assertDontSee('mapsApiKey');
@@ -51,6 +67,89 @@ class ComposerAnalyticsTest extends ReviewTestCase
         $this->assertSame(0.0, $response->viewData('summary')['coverage']);
         $this->assertSame(array_fill(0, 12, 0), array_column($response->viewData('growth'), 'total'));
         $this->assertNull($response->viewData('countries')['top']);
+        foreach (['videos', 'folders', 'playlists'] as $key) $this->assertSame(0, $response->viewData('summary')[$key]);
+        $response->assertDontSee('Biography saved')->assertDontSee('Portrait saved');
+    }
+
+    public function test_video_gauge_counts_distinct_composers_with_a_nonblank_video_link()
+    {
+        $withVideo = $this->composer(['period' => ' Romantic ']); $blank = $this->composer(['period' => 'classical']); $withoutPieces = $this->composer(['period' => '']);
+        $piece = $this->piece($withVideo); $this->video($piece); $this->video($piece);
+        $this->video($this->piece($withVideo));
+        $blankPiece = $this->piece($blank); $this->video($blankPiece, '  '); $this->video($blankPiece, null);
+        $this->video($this->piece(999999));
+        $report = $this->report();
+        $this->assertSame(3, $report['summary']['total']);
+        $this->assertSame(1, $report['summary']['videos']);
+        $periods = array_column($report['periods'], null, 'key');
+        $this->assertSame(1, $periods['romantic']['videos']);
+        $this->assertSame(0, $periods['classical']['videos']);
+        $this->assertSame(0, $periods['']['videos']);
+        $this->assertSame($report['summary']['videos'], array_sum(array_column($report['periods'], 'videos')));
+        $this->assertSame([$blank, $withoutPieces], $this->report(['coverage' => 'videos'])['directory']->pluck('id')->all());
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get(route('admin.analytics.composers'))->assertOk()->assertSee('33.3%')->assertSee('With videos')
+            ->assertSee('In users’ folders')->assertSee('In playlists')->assertDontSee('With pieces');
+        $filtered = $this->get(route('admin.analytics.composers', ['coverage' => 'videos']))->assertOk();
+        $this->assertSame($report['summary'], $filtered->viewData('summary'));
+        $this->assertSame(2, $filtered->viewData('directory')->total());
+    }
+
+    public function test_folder_gauge_matches_custom_folder_ownership_and_exclusions()
+    {
+        $included = $this->composer(); $excludedOnly = $this->composer(); $unused = $this->composer();
+        $piece = $this->piece($included); $other = $this->piece($excludedOnly);
+        $normal = $this->account(); $foreign = $this->account();
+        $optouts = [];
+        foreach ([' ARTHURVILLAR@gmail.com ', 'ELENA.DARE@gmail.com', 'arthurvilar@gmail.com'] as $email) $optouts[] = $this->account(compact('email'));
+        $team = $this->account(['id' => 944]);
+        foreach ([$normal, $foreign] as $user) {
+            for ($i = 0; $i < 2; $i++) {
+                $folder = DB::table('favorite_folders')->insertGetId(['name' => 'Practice '.$i, 'user_id' => $user->id, 'is_default' => false]);
+                DB::table('favorites')->insert(['piece_id' => $piece->id, 'user_id' => $user->id, 'favorite_folder_id' => $folder]);
+            }
+        }
+        foreach (array_merge($optouts, [$team]) as $user) {
+            $folder = DB::table('favorite_folders')->insertGetId(['name' => 'Excluded', 'user_id' => $user->id, 'is_default' => false]);
+            DB::table('favorites')->insert(['piece_id' => $other->id, 'user_id' => $user->id, 'favorite_folder_id' => $folder]);
+        }
+        $default = DB::table('favorite_folders')->insertGetId(['name' => 'Default', 'user_id' => $normal->id, 'is_default' => true]);
+        $owned = DB::table('favorite_folders')->insertGetId(['name' => 'Owned', 'user_id' => $normal->id, 'is_default' => false]);
+        foreach ([[$default, $normal->id], [$owned, $foreign->id], [999999, $normal->id], [null, $normal->id]] as [$folder, $owner]) {
+            DB::table('favorites')->insert(['piece_id' => $other->id, 'user_id' => $owner, 'favorite_folder_id' => $folder]);
+        }
+        $orphan = DB::table('favorite_folders')->insertGetId(['name' => 'Missing owner', 'user_id' => 999999, 'is_default' => false]);
+        DB::table('favorites')->insert(['piece_id' => $other->id, 'user_id' => 999999, 'favorite_folder_id' => $orphan]);
+        DB::table('favorites')->insert(['piece_id' => 999999, 'user_id' => $normal->id, 'favorite_folder_id' => $owned]);
+        $report = $this->report();
+        $this->assertSame(1, $report['summary']['folders']);
+        $this->assertEqualsCanonicalizing([$excludedOnly, $unused], $this->report(['coverage' => 'folders'])['directory']->pluck('id')->all());
+        $this->assertSame($report['summary'], $this->report(['coverage' => 'folders'])['summary']);
+    }
+
+    public function test_playlist_gauge_counts_only_composers_in_pieces_shown_on_collections()
+    {
+        $visible = $this->composer(); $noTutorial = $this->composer();
+        $listed = $this->collection(array_merge(array_fill(0, 5, $visible), [$noTutorial]), 5);
+        $alsoListed = $this->collection(array_fill(0, 6, $visible));
+        $hiddenComposers = [];
+        foreach ([['published_at' => null], ['published_at' => now()->addSecond()], ['group' => 'journey']] as $attributes) {
+            $hiddenComposers[] = $id = $this->composer();
+            $this->collection(array_fill(0, 6, $id), 6, $attributes);
+        }
+        $hiddenComposers[] = $tooShort = $this->composer(); $this->collection(array_fill(0, 5, $tooShort), 5);
+        $hiddenComposers[] = $tooFewVideos = $this->composer(); $this->collection(array_fill(0, 6, $tooFewVideos), 4);
+        $report = $this->report();
+        $this->assertSame(1, $report['summary']['playlists']);
+        $this->assertEqualsCanonicalizing(array_merge([$noTutorial], $hiddenComposers), $this->report(['coverage' => 'playlists'])['directory']->pluck('id')->all());
+        $cards = app(\App\Services\WebApp\Collections::class)->data()['playlists'];
+        $this->assertEqualsCanonicalizing([$listed, $alsoListed], $cards->pluck('playlist.id')->all());
+        $this->assertTrue($report['directory']->firstWhere('id', $visible)['playlists']);
+        $this->assertFalse($report['directory']->firstWhere('id', $noTutorial)['playlists']);
+        // Analytics reads must not invoke the collection service's weekly-selection cache.
+        \Illuminate\Support\Facades\Cache::forget('webapp.collections.weekly-selection');
+        $this->report();
+        $this->assertFalse(\Illuminate\Support\Facades\Cache::has('webapp.collections.weekly-selection'));
     }
 
     public function test_depth_period_gender_and_profile_counts_share_the_same_denominator()
@@ -71,10 +170,10 @@ class ComposerAnalyticsTest extends ReviewTestCase
         $this->assertSame(83.3, $report['summary']['coverage']);
         $this->assertSame([1, 2, 2, 1], array_column($report['depths'], 'total'));
         $this->assertSame(6, array_sum(array_column($report['periods'], 'total')));
-        $this->assertSame(5, array_sum(array_column($report['periods'], 'represented')));
+        $this->assertSame(0, array_sum(array_column($report['periods'], 'videos')));
         $this->assertSame(6, array_sum(array_column($report['genders'], 'total')));
         $periods = array_column($report['periods'], null, 'key');
-        $this->assertSame(5, $periods['romantic']['represented']);
+        $this->assertSame(0, $periods['romantic']['videos']);
         $this->assertSame(1, $periods['']['total']);
         foreach (['biography', 'portrait'] as $profile) $this->assertSame(5, $this->report(compact('profile'))['directory']->total());
     }
@@ -114,11 +213,36 @@ class ComposerAnalyticsTest extends ReviewTestCase
         $this->composer(['country_id' => $invalid]); $this->composer(['country_id' => 999999]);
         for ($i = 0; $i < 3; $i++) $this->piece($first);
         $map = $this->report()['countries'];
-        $this->assertSame(5, $map['total']); $this->assertSame(3, $map['located']); $this->assertSame(2, $map['unlocated']);
+        $this->assertSame(5, $map['total']); $this->assertSame(4, $map['located']); $this->assertSame(1, $map['unlocated']);
         $this->assertSame(2, $map['byCode']['US']['total']);
-        $this->assertSame(66.7, $map['byCode']['US']['share']);
+        $this->assertSame(50.0, $map['byCode']['US']['share']);
         $this->assertSame(1, $map['byCode']['GF']['total']);
-        $this->assertSame(2, $this->report(['profile' => 'country'])['directory']->total());
+        $this->assertSame('USA', $map['byCode']['US']['name']);
+        $this->assertSame('Bad country', $map['byCode']['country-'.$invalid]['name']);
+        $this->assertFalse($map['byCode']['country-'.$invalid]['has_shape']);
+        $this->assertGreaterThanOrEqual(1, $map['not_on_map']);
+        $this->assertSame(4, $map['mapped'] + $map['not_on_map']);
+        $this->assertCount(3, $map['countries']);
+        $this->assertSame(1, $this->report(['profile' => 'country'])['directory']->total());
+    }
+
+    public function test_saved_country_with_missing_or_unrecognized_map_code_is_still_a_recorded_country()
+    {
+        foreach (['UK', '', 'gb-eng', 'US'] as $index => $code) {
+            $country = DB::table('countries')->insertGetId(['name' => 'Saved country '.$index, 'nationality' => 'Nationality', 'flag_code' => $code]);
+            $this->composer(['country_id' => $country]);
+        }
+        $report = $this->report();
+        $this->assertSame(4, $report['summary']['located']);
+        $this->assertSame(0, $report['countries']['unlocated']);
+        $this->assertSame(3, $report['countries']['not_on_map']);
+        $this->assertCount(4, $report['countries']['countries']);
+        $this->assertSame(4, array_sum(array_column($report['countries']['countries'], 'total')));
+        $this->assertSame(0, $this->report(['profile' => 'country'])['directory']->total());
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get(route('admin.analytics.composers'))->assertOk()->assertSee('4 of 4 composers have a country recorded.')
+            ->assertSee('3 composers have countries without a matching map shape')->assertSee('Saved country 0')
+            ->assertDontSee('no usable country')->assertDontSee('no linked country record.');
     }
 
     public function test_monthly_additions_include_zero_months_and_current_time_boundary()
@@ -195,6 +319,6 @@ class ComposerAnalyticsTest extends ReviewTestCase
     public function test_invalid_filters_are_rejected()
     {
         $this->actingAs(create(Admin::class), 'admin'); $this->withExceptionHandling();
-        foreach ([['search' => ['x']], ['depth' => ['small']], ['depth' => 'other'], ['period' => ['romantic']], ['profile' => 'email'], ['sort' => ['pieces']], ['sort' => 'id desc'], ['page' => 0], ['page' => 100001], ['search' => str_repeat('x', 161)]] as $filter) $this->getJson(route('admin.analytics.composers', $filter))->assertStatus(422);
+        foreach ([['search' => ['x']], ['depth' => ['small']], ['depth' => 'other'], ['period' => ['romantic']], ['profile' => 'email'], ['coverage' => ['videos']], ['coverage' => 'biography'], ['sort' => ['pieces']], ['sort' => 'id desc'], ['page' => 0], ['page' => 100001], ['search' => str_repeat('x', 161)]] as $filter) $this->getJson(route('admin.analytics.composers', $filter))->assertStatus(422);
     }
 }

@@ -39,9 +39,6 @@ class PostsController extends Controller
             abort(404);
         }
 
-        if (traffic()->isRealVisitor())
-            $post->increment('views');
-
         return view('blog.show', compact(['post', 'suggestions']));
     }
 
@@ -58,9 +55,6 @@ class PostsController extends Controller
      */
     public function app(Post $post)
     {
-        if (traffic()->isRealVisitor())
-            $post->increment('views');
-
         return view('blog.app', compact('post'));
     }
 }

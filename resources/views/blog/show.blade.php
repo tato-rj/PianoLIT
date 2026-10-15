@@ -37,7 +37,6 @@
 				<p class="text-muted blog-font">{{$post->description}}</p>
 				<div class="d-apart text-muted">
 					<p><small>{{$post->created_at->toFormattedDateString()}} &bull; {{$post->reading_time}} min read</small></p>
-					<p><small>@icon('eye', ['mr' => 2]){{$post->views}}</small></p>
 				</div>
 				<figure class="figure w-100">
 					<img src="{{$post->cover_image()}}" class="figure-img img-fluid rounded w-100">

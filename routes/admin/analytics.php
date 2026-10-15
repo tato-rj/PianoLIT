@@ -20,9 +20,5 @@ Route::prefix('analytics')->name('analytics.')->group(function() {
 
 	Route::get('composers', 'Admin\AnalyticsController@composers')->name('composers');
 
-	Route::get('blog', 'Admin\AnalyticsController@blog')->name('blog');
-
-	Route::get('quizzes', 'Admin\AnalyticsController@quizzes')->name('quizzes');
-
 	Route::get('infographs', 'Admin\AnalyticsController@infographs')->name('infographs');
 });

@@ -89,7 +89,7 @@ class QuizTest extends AppTest
     }
 
     /** @test */
-    public function a_quiz_automatically_increments_its_view_each_time_it_is_viewed()
+    public function viewing_a_quiz_does_not_increment_its_view_counter()
     {
         create(CrashCourse::class, ['published_at' => now()]);
         $quiz = create(Quiz::class, ['published_at' => now()]);
@@ -98,6 +98,6 @@ class QuizTest extends AppTest
 
         $this->get(route('quizzes.show', $quiz->slug));
 
-        $this->assertNotEquals($views, $quiz->fresh()->views);
+        $this->assertSame($views, $quiz->fresh()->views);
     }
 }

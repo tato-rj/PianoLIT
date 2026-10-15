@@ -53,7 +53,6 @@ class AdminPageHeadersTest extends ReviewTestCase
             ['admin.analytics.memberships', 'Membership analytics'],
             ['admin.analytics.pieces', 'Repertoire analytics'],
             ['admin.analytics.composers', 'Composer analytics'],
-            ['admin.analytics.blog', 'Blog analytics'],
         ];
     }
 
@@ -85,17 +84,10 @@ class AdminPageHeadersTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('.//button[@type="submit"]', $forms[0])->length);
     }
 
-    public function test_mysql_backed_report_views_use_the_same_header_with_fixture_data()
+    public function test_email_report_view_uses_the_same_header_with_fixture_data()
     {
         $this->actingAs(create(Admin::class), 'admin');
         $this->get(route('admin.home'))->assertOk(); // Share the normal session/error view context.
-        $cases = [
-            'quizzes' => ['levelAnalytics' => collect(), 'topicAnalytics' => collect(), 'topicsCount' => 0,
-                'quizzes' => collect(), 'results_graph' => collect()],
-        ];
-        foreach ($cases as $name => $data) {
-            $this->header(view('admin.pages.analytics.'.$name.'.index', $data)->render());
-        }
         $event = (object) ['emails_count' => 1, 'delivered_count' => 1, 'opens_count' => 0, 'clicks_count' => 0, 'list_id' => 7];
         $this->header(view('admin.pages.reports.show.index', ['event' => $event])->render());
     }

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Quiz\{Quiz, Topic, Level};
-use App\Admin;
-use App\Notifications\QuizCompleted;
 use App\Filters\QuizFilters;
 use Illuminate\Http\Request;
 
@@ -41,9 +39,6 @@ class QuizzesController extends Controller
             abort(404);
         }
 
-        if (traffic()->isRealVisitor())
-            $quiz->increment('views');
-
         return view('games.quizzes.show', compact(['quiz', 'suggestions']));
     }
 
@@ -59,8 +54,6 @@ class QuizzesController extends Controller
                 'score' => $feedback['score'],
                 'user_id' => auth()->guard('web')->check() ? auth()->user()->id : null
             ]);
-
-            // Admin::notifyAll(new QuizCompleted($quiz));
         }
 
         return view('games.components.feedback', compact('feedback'))->render();

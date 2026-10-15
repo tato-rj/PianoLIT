@@ -4,7 +4,7 @@
     <div class="admin-country-sidebar">
       <div class="admin-country-heading"><h3>Composer countries</h3><span>{{ count($map['countries']) }} {{ count($map['countries']) === 1 ? 'country' : 'countries' }}</span></div>
       <div class="admin-country-summary" aria-live="polite" aria-atomic="true">
-        <div><strong data-country-total>{{ number_format($map['top']['total'] ?? 0) }}</strong><span data-country-flag class="{{ $map['top'] ? 'flag-icon flag-icon-'.strtolower($map['top']['code']) : '' }}" aria-hidden="true"></span></div>
+        <div><strong data-country-total>{{ number_format($map['top']['total'] ?? 0) }}</strong><span data-country-flag class="{{ $map['top'] && preg_match('/^[A-Z]{2}$/', $map['top']['code']) ? 'flag-icon flag-icon-'.strtolower($map['top']['code']) : '' }}" aria-hidden="true"></span></div>
         <p data-country-name>{{ $map['top']['name'] ?? 'No composer countries recorded' }}</p>
         <span data-country-share>{{ $map['top'] ? $map['top']['share'].'% of composers with a recorded country' : 'Country counts appear when a country is saved.' }}</span>
       </div>
@@ -15,7 +15,7 @@
 
 @endforeach
       </ol>
-      <p class="admin-country-coverage">{{ number_format($map['located']) }} of {{ number_format($map['total']) }} composers have a usable country.</p>
+      <p class="admin-country-coverage">{{ number_format($map['located']) }} of {{ number_format($map['total']) }} composers have a country recorded.</p>
     </div>
     <div class="admin-country-map-area">
       <label class="admin-country-picker" hidden>Explore a country
@@ -48,10 +48,10 @@
       <div class="admin-country-legend"><span><i class="admin-country-dot is-color-other" aria-hidden="true"></i>Other recorded countries</span><span><i class="admin-country-dot" aria-hidden="true"></i>No composers recorded</span><small>Hover or select a country for its count.</small></div>
     </div>
     <div class="admin-country-footer">
-      <p>Based on the saved country on each composer record. {{ number_format($map['unlocated']) }} {{ $map['unlocated'] === 1 ? 'composer has' : 'composers have' }} no usable country recorded.</p>
+      <p>Based on saved country records. @if($map['unlocated']){{ number_format($map['unlocated']) }} {{ $map['unlocated'] === 1 ? 'composer has' : 'composers have' }} no linked country record.@endif @if($map['not_on_map']){{ number_format($map['not_on_map']) }} {{ $map['not_on_map'] === 1 ? 'composer has a country' : 'composers have countries' }} without a matching map shape; their counts are included in the list and totals.@endif</p>
       <details><summary>All country counts</summary><div class="admin-country-table-scroll"><table><caption class="visually-hidden">Current catalogue composers by saved country</caption><thead><tr><th scope="col">Country</th><th scope="col">Composers</th><th scope="col">Share with recorded country</th></tr></thead><tbody>
 @forelse($map['countries'] as $country)<tr><th scope="row">{{ $country['name'] }}</th><td>{{ number_format($country['total']) }}</td><td>{{ $country['share'] }}%</td></tr>
-@empty<tr><td colspan="3">No usable composer countries have been recorded yet.</td></tr>
+@empty<tr><td colspan="3">No composer countries have been recorded yet.</td></tr>
 @endforelse</tbody></table></div></details>
     </div>
   </div>

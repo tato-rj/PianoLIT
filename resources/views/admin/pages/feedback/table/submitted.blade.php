@@ -1,0 +1,1 @@
+<time datetime="{{ $submission->created_at->toIso8601String() }}">{{ $submission->created_at->format('M j, Y') }}<br><small class="text-muted">{{ $submission->created_at->format('g:i A') }}</small></time>

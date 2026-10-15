@@ -31,7 +31,6 @@
 				<p class="text-muted blog-font">{{$quiz->description}}</p>
 				<div class="d-apart text-muted">
 					<p><small>{{$quiz->created_at->toFormattedDateString()}} &bull; {{count($quiz->questions)}} questions</small></p>
-					<p><small>@icon('eye', ['mr' => 2]){{$quiz->views}}</small></p>
 				</div>
 				<figure class="figure w-100">
 					<img src="{{$quiz->cover_image()}}" class="figure-img img-fluid rounded w-100">
