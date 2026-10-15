@@ -5,7 +5,6 @@
     <td class="dataTables_main_column">{!! $row['name'] !!}</td>
     <td class="text-nowrap">{!! $row['origin_display'] !!}</td>
     <td class="text-nowrap">{!! $row['status'] !!}</td>
-    <td class="text-nowrap">{!! $row['super_user_display'] !!}</td>
     <td class="text-nowrap">{!! $row['actions'] !!}</td>
 </tr>
 @endforeach

@@ -37,14 +37,25 @@
 {{-- <script src="https://www.w3schools.com/lib/w3.js"></script> --}}
 
 <script type="text/javascript">
-$('input.status-toggle').on('change', function() {
+$('[data-user-super-status]').on('change', function() {
   let $input = $(this);
+  let checked = $input.prop('checked');
+  $input.prop('disabled', true);
 
   $.ajax({
     url: $input.attr('data-url'),
     type: 'PATCH',
+    dataType: 'json',
+    timeout: 15000,
     success: function(response) {
       alert(response.status);
+    },
+    error: function() {
+      $input.prop('checked', !checked);
+      alert('Super status could not be updated. Please try again.');
+    },
+    complete: function() {
+      $input.prop('disabled', false);
     }
   });
 });

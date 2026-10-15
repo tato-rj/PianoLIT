@@ -15,10 +15,6 @@
   </td>
 
   <td>
-    @toggle(['toggle' => $item->super_user, 'route' => route('admin.users.super-status', $item->id), 'autoToggle' => true])
-  </td>
-
-  <td>
     @include('admin.pages.users.table.actions')
   </td>
 </tr>

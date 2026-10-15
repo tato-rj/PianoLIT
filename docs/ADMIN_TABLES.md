@@ -80,7 +80,7 @@ fetches fresh data only for subsequent table interactions. Its shared skeleton
 masks these existing rows during initialization; do not restore the old generic
 400px `table-loading` image or an empty first data request.
 
-The service returns only the seven displayed fields and never serializes User
+The service returns only the six displayed fields and never serializes User
 models. Its explicit account selection omits the default favorites count and
 unused activity appends. Location flags and membership status fields are loaded
 in batches; super-user rows skip billing entirely. Existing user status methods
@@ -88,9 +88,7 @@ retain their meaning. No shared response cache is involved.
 
 In isolated fixtures containing both Apple and Stripe memberships, unfiltered
 12/24-row requests use six queries at either page size; a nonempty search adds one
-filtered count. The old path used 30/54 queries respectively. The same comparison
-reduced JSON from 63,148 to 37,452 bytes for 12 rows (about 41%, after removing
-the selection column); these figures are
+filtered count. The old path used 30/54 queries respectively. These are
 fixture measurements, not production timing guarantees. The first HTML response
 also includes the ordinary admin layout's own queries.
 
@@ -104,5 +102,7 @@ with its Blade components. Feedback also reuses its rendered page with
 `deferLoading`, retaining its current rating filter and page.
 
 The Users directory has no bulk-selection checkboxes or Delete selected prompt,
-by the user's explicit preference. Keep its per-user Edit, impersonation and
-super-user controls. Other pages may retain their own bulk actions.
+by the user's explicit preference. Its six columns are Date, ID, Name, Origin,
+Status and Actions (Edit and impersonation). Super status is managed inside the
+individual Edit user page; keep its toggle out of the directory. Other pages may
+retain their own bulk actions.

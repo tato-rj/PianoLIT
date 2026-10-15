@@ -55,7 +55,8 @@ class AdminUsersTableTest extends ReviewTestCase
         $this->assertCount(12, $rows);
         $this->assertSame((string) $users[0]->id, trim($xpath->query('./td[2]', $rows[0])[0]->textContent));
         $this->assertSame((string) $users[11]->id, trim($xpath->query('./td[2]', $rows[11])[0]->textContent));
-        $this->assertCount(7, $xpath->query('./td', $rows[0]));
+        $this->assertCount(6, $xpath->query('./td', $rows[0]));
+        $this->assertCount(0, $xpath->query('//table[@id="users-table"]//input[contains(@class,"status-toggle")]'));
         $this->assertCount(0, $xpath->query('//*[@id="check-all-datatable" or @id="multi-select"]'));
         $response->assertDontSee('Delete selected')->assertDontSee('selectedUserIds')->assertDontSee('check-datatable-');
         $this->assertCount(0, $xpath->query('//table[@id="users-table"]/thead[contains(@class,"invisible")]'));
@@ -83,6 +84,24 @@ class AdminUsersTableTest extends ReviewTestCase
         $this->getJson(route('admin.users.index'), ['X-Requested-With' => 'XMLHttpRequest'])->assertOk()->assertJsonCount(12, 'data');
     }
 
+    public function test_super_status_can_be_managed_from_the_edit_user_page_only()
+    {
+        $user = $this->accounts(1)->first();
+        $this->actingAs(create(Admin::class), 'admin');
+        foreach ([false, true] as $enabled) {
+            $user->update(['super_user' => $enabled]);
+            $response = $this->get(route('admin.users.show', $user))->assertOk();
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($response->getContent());
+            $xpath = new \DOMXPath($dom);
+            $controls = $xpath->query('//input[@data-user-super-status]');
+            $this->assertCount(1, $controls);
+            $this->assertSame($enabled, $controls[0]->hasAttribute('checked'));
+            $this->assertSame(route('admin.users.super-status', $user), $controls[0]->getAttribute('data-url'));
+            $this->assertStringNotContainsString('status-toggle', $controls[0]->getAttribute('class'));
+        }
+    }
+
     public function test_all_enabled_sort_columns_keep_their_meaning_with_stable_ties()
     {
         $users = $this->accounts(4);
@@ -91,8 +110,8 @@ class AdminUsersTableTest extends ReviewTestCase
         $users[2]->update(['first_name' => 'Bravo']);
         $users[3]->update(['first_name' => 'Charlie']);
         $this->actingAs(create(Admin::class), 'admin');
-        $ascending = [0 => [3, 2, 1, 0], 1 => [0, 1, 2, 3], 2 => [1, 2, 3, 0], 3 => [2, 0, 3, 1], 5 => [3, 2, 1, 0]];
-        $descending = [0 => [0, 1, 2, 3], 1 => [3, 2, 1, 0], 2 => [0, 3, 2, 1], 3 => [3, 1, 2, 0], 5 => [0, 3, 2, 1]];
+        $ascending = [0 => [3, 2, 1, 0], 1 => [0, 1, 2, 3], 2 => [1, 2, 3, 0], 3 => [2, 0, 3, 1]];
+        $descending = [0 => [0, 1, 2, 3], 1 => [3, 2, 1, 0], 2 => [0, 3, 2, 1], 3 => [3, 1, 2, 0]];
         foreach (['asc' => $ascending, 'desc' => $descending] as $direction => $sorts) {
             foreach ($sorts as $column => $indices) {
                 $data = $this->table(['order' => [['column' => $column, 'dir' => $direction]]])->assertOk()->json('data');
@@ -112,7 +131,7 @@ class AdminUsersTableTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
         $response = $this->table()->assertOk();
         $row = $response->json('data.0');
-        $this->assertEqualsCanonicalizing(['id', 'created_at', 'name', 'origin_display', 'status', 'super_user_display', 'actions'], array_keys($row));
+        $this->assertEqualsCanonicalizing(['id', 'created_at', 'name', 'origin_display', 'status', 'actions'], array_keys($row));
         $this->assertStringContainsString('&lt;script&gt;', $row['name']);
         $this->assertStringNotContainsString('<script>', $row['name']);
         $this->assertStringContainsString('flag-icon-us', $row['name']);
@@ -120,8 +139,8 @@ class AdminUsersTableTest extends ReviewTestCase
         $this->assertStringContainsString('On trial', $response->json('data.1.status'));
         $this->assertStringContainsString('Expired', $response->json('data.2.status'));
         $this->assertStringContainsString('Member (Monthly)', $response->json('data.3.status'));
-        foreach (['name', 'origin_display', 'status', 'super_user_display', 'actions'] as $field) {
-            $view = ['origin_display' => 'origin', 'super_user_display' => 'super-user'][$field] ?? $field;
+        foreach (['name', 'origin_display', 'status', 'actions'] as $field) {
+            $view = ['origin_display' => 'origin'][$field] ?? $field;
             $item = $users[0]->fresh(['location', 'membership.source']);
             $this->assertSame(view('admin.pages.users.table.'.$view, compact('item'))->render(), $row[$field]);
         }
@@ -166,7 +185,8 @@ class AdminUsersTableTest extends ReviewTestCase
         $this->actingAs(create(Admin::class), 'admin');
         $this->table(['columns' => [['data' => 'password', 'name' => 'users.password', 'searchable' => true, 'search' => ['value' => 'arbitrary']]]])->assertOk()->assertJsonPath('data.0.id', $user->id);
         foreach ([['length' => -1], ['length' => 1000], ['start' => -1], ['draw' => '<script>'], ['search' => ['value' => ['bad']]],
-            ['order' => [['column' => 6, 'dir' => 'asc']]], ['order' => [['column' => 0, 'dir' => 'desc; DELETE FROM users']]],
+            ['order' => [['column' => 5, 'dir' => 'asc']]], ['order' => [['column' => 6, 'dir' => 'asc']]],
+            ['columns' => array_fill(0, 7, ['data' => 'id'])], ['order' => [['column' => 0, 'dir' => 'desc; DELETE FROM users']]],
             ['columns' => [['name' => ['bad']]]]] as $bad) $this->table($bad)->assertUnprocessable();
         $this->assertDatabaseCount('users', 1);
     }

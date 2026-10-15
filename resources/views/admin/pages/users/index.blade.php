@@ -18,7 +18,7 @@
       <button type="button" class="btn btn-sm btn-secondary ms-2" data-users-table-retry>Retry</button>
     </div>
     <div class="table-responsive">
-      @datatable(['table' => 'users', 'standard' => true, 'ready' => true, 'nonSortable' => [4, 6], 'initialBody' => view('admin.pages.users.table.rows', ['rows' => $initialUsers['data']]), 'columns' => ['Date', 'ID', 'Name', 'Origin', 'Status', 'Super User', '']])
+      @datatable(['table' => 'users', 'standard' => true, 'ready' => true, 'nonSortable' => [4, 5], 'initialBody' => view('admin.pages.users.table.rows', ['rows' => $initialUsers['data']]), 'columns' => ['Date', 'ID', 'Name', 'Origin', 'Status', '']])
     </div>
     @endcomponent
   </div>
@@ -59,7 +59,6 @@ var usersTable = $usersTable.DataTable({
   {data: 'name', name: 'users.first_name', class: 'dataTables_main_column'},
   {data: 'origin_display', name: 'users.origin', class: 'text-nowrap'},
   {data: 'status', class: 'text-nowrap', orderable: false, searchable: false},
-  {data: 'super_user_display', name: 'users.super_user', class: 'text-nowrap', searchable: false},
   {data: 'actions', class: 'text-nowrap', orderable: false, searchable: false},
   ]
 });

@@ -24,9 +24,13 @@
       <div class="text-center p-4">
         @include('admin.components.users.status.lg', ['elements' => $user->statusElements()])
       </div>
-{{--       <div class="px-4 pb-3 text-center text-nowrap">
-        <span class="text-muted me-2 text-truncate">Super status</span>@toggle(['toggle' => $user->super_user, 'route' => route('admin.users.super-status', $user->id), 'autoToggle' => true])
-      </div> --}}
+      <div class="px-4 pb-3 text-center text-nowrap">
+        <span class="text-muted me-2 text-truncate">Super status</span>
+        <label class="switch cursor-pointer">
+          <input type="checkbox" data-user-super-status data-url="{{ route('admin.users.super-status', $user->id) }}" aria-label="Super user" @if($user->super_user) checked @endif>
+          <span class="slider round"></span>
+        </label>
+      </div>
     </div>
     <div class="text-center">
       <form method="POST" action="{{route('api.memberships.status')}}" target="_blank">
