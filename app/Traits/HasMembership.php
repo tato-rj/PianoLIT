@@ -110,19 +110,19 @@ trait HasMembership
             return ['icon' => 'user-shield', 'color' => 'blue', 'label' => 'Super user'];
 
         if (! $this->membership)
-            return ['icon' => 'ghost', 'color' => 'grey', 'label' => 'Guest'];
+            return ['icon' => 'ghost', 'color' => 'muted', 'label' => 'Guest'];
 
         if ($this->membership->source->isExpired())
-            return ['icon' => 'credit-card', 'color' => 'grey', 'label' => 'Expired'];
+            return ['icon' => 'credit-card', 'color' => 'warning', 'label' => 'Expired'];
 
         if ($this->membership->source->isPaused())
-            return ['icon' => 'pause', 'color' => 'grey', 'label' => 'Paused'];
+            return ['icon' => 'pause', 'color' => 'red', 'label' => 'Paused'];
 
         if ($this->membership->source->isOnGracePeriod())
-            return ['icon' => 'hourglass-half', 'color' => 'yellow', 'label' => 'Grace period'];
+            return ['icon' => 'hourglass-half', 'color' => 'warning', 'label' => 'Grace period'];
 
         if ($this->membership->source->isOnTrial())
-            return ['icon' => 'credit-card', 'color' => 'yellow', 'label' => 'On trial'];
+            return ['icon' => 'credit-card', 'color' => 'green', 'label' => 'On trial'];
 
         return ['icon' => 'credit-card', 'color' => 'green', 'label' => 'Member (' . $this->membership->source->plan_name . ')'];
     }
