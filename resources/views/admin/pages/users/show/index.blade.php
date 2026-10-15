@@ -56,11 +56,6 @@
             @else<div class="up-empty">@icon('map-pin', ['mr' => 0])<p>No location saved.</p></div>@endif
         </section>
     </div>
-    <section class="up-activity-link up-card">
-        <span class="up-icon">@icon('chart-line', ['mr' => 0])</span>
-        <div><h2>Logs & analytics</h2><p>{{ $analyticsExcluded ? 'This account is excluded from activity tracking and analytics.' : 'Visit timelines, app requests, media activity and account milestones are available in the user’s analytics profile.' }}</p></div>
-        @unless($analyticsExcluded)<a class="btn btn-dark" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">Open logs & analytics @icon('arrow-up-right', ['mr' => 0, 'classes' => 'ms-2'])</a>@endunless
-    </section>
     @include('admin.pages.users.show.library')
     @include('admin.pages.users.show.manage')
 </div></div>
