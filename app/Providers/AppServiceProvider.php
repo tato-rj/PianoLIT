@@ -45,9 +45,11 @@ class AppServiceProvider extends ServiceProvider
             'webapp.piece.index',
             'webapp.piece.components.audio',
             'webapp.piece.components.video.element',
+            'webapp.piece.components.score-editor',
         ], function ($view) {
             $piece = $view->getData()['piece'];
             $view->with('hasMediaAccess', $piece->hasWebMediaAccess(auth('web')->user()));
+            $view->with('hasScoreExportAccess', auth('web')->check() && auth('web')->user()->hasActiveSubscription());
             $view->with('previewSeconds', config('webapp.media_preview_seconds'));
         });
 

@@ -81,6 +81,7 @@
             this.stroke = null; this.textDrag = null; this.pointerId = null; this.pdf = null; this.textDraft = null;
             this.store = new Markings(data => this.http.put(this.url, Object.assign({}, this.identity, data)).then(response => response.data), () => this.changed());
             this.url = container.getAttribute('data-annotations-url');
+            this.canExport = container.getAttribute('data-score-export-access') === '1';
             this.restoreWidth();
             this.bind(); this.start();
         }
@@ -125,7 +126,7 @@
             this.find('[data-clear-all]').disabled = !editing || !this.store.marks.length;
             this.find('[data-prev]').disabled = !this.pdf || this.rendering || this.page <= 1;
             this.find('[data-next]').disabled = !this.pdf || this.rendering || this.page >= this.pdf.numPages;
-            this.find('[data-print]').disabled = !this.ready || this.rendering || this.printing;
+            this.find('[data-print]').disabled = this.canExport !== false && (!this.ready || this.rendering || this.printing);
             this.all('[data-zoom]').forEach(el => {
                 const step = Number(el.getAttribute('data-zoom'));
                 el.disabled = !this.pdf || this.rendering || (step < 0 && this.zoom <= 0.5) || (step > 0 && this.zoom >= 2.5);
@@ -444,6 +445,10 @@
             this.find('[data-clear-all]').addEventListener('click', () => this.clearAll());
             this.find('[data-fullscreen]').addEventListener('click', () => this.toggleFullscreen());
             this.find('[data-print]').addEventListener('click', () => this.printScore());
+            this.all('[data-bs-target="#piece-upgrade-modal"]').forEach(button => button.addEventListener('click', () => {
+                // The full-screen score sits above Bootstrap dialogs.
+                if (this.root.classList.contains('is-fullscreen')) this.toggleFullscreen();
+            }));
             document.addEventListener('keydown', event => this.keydown(event));
             this.find('[data-prev]').addEventListener('click', () => this.render(this.page - 1).catch(() => this.renderError()));
             this.find('[data-next]').addEventListener('click', () => this.render(this.page + 1).catch(() => this.renderError()));
@@ -524,7 +529,7 @@
             }
         }
         async printScore() {
-            if (!this.ready || this.rendering || this.printing) return;
+            if (this.canExport === false || !this.ready || this.rendering || this.printing) return;
             this.finishTextDrag(); this.finishStroke(); this.finishText();
             this.printing = true; this.controls();
             if (this.printPages) this.printPages.remove();

@@ -1,0 +1,17 @@
+// Feedback is the visual reference for new and redesigned admin tables.
+// Opt in per page so existing table layouts are preserved until migrated.
+.admin-table-card {
+    border-radius: 24px;
+
+    > .card-body { padding: 24px; }
+}
+
+.admin-table-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .form-select { width: auto; min-width: 160px; }
+}

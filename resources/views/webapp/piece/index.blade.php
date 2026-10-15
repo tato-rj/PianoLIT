@@ -73,9 +73,9 @@ video::-webkit-media-controls-enclosure {
 @if($piece->hasAudio())
 @include('webapp.piece.components.audio-band')
 @endif
-@unless($hasMediaAccess)
+@if(! $hasMediaAccess || (! $hasScoreExportAccess && $piece->score_path && $piece->isPublicDomain))
     @include('webapp.piece.components.upgrade')
-@endunless
+@endif
 {{-- @include('webapp.piece.performances.overlay') --}}
 @endsection
 

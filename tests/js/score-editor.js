@@ -44,6 +44,15 @@ module.exports = async function () {
     initialized.paint();
     assert.strictEqual(markingsSvg.children.length, 0, 'Painting clears only the annotation layer');
     assert.strictEqual(pencilSvg.firstChild, pencilPath, 'Painting preserves the pencil icon geometry');
+    assert.strictEqual(initialized.canExport, false, 'Score export requires an explicit subscription grant');
+    initialized.ready = true;
+    initialized.finishTextDrag = () => { throw new Error('Restricted print must stop before preparing pages or markings'); };
+    await initialized.printScore();
+    const subscriber = new ConstructedEditor({
+        querySelector: () => ({}),
+        getAttribute: name => name === 'data-score-export-access' ? '1' : '/annotations'
+    }, {}, {});
+    assert.strictEqual(subscriber.canExport, true, 'Subscribers retain score export');
 
     const guest = Object.create(Editor.prototype);
     guest.url = ''; guest.page = 1; guest.pdf = null;

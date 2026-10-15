@@ -98,7 +98,7 @@ class PiecesController extends Controller
 
     public function score(Piece $piece)
     {
-        abort_unless($piece->hasWebMediaAccess(auth('web')->user()), 403);
+        abort_unless(auth('web')->check() && auth('web')->user()->hasActiveSubscription(), 403);
 
         $storage = \Storage::disk('public');
 

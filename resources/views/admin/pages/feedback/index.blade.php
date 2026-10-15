@@ -7,9 +7,8 @@
 @section('content')
 <div class="content-wrapper"><div class="container-fluid admin-feedback">
     @include('admin.components.page.title', ['icon' => 'message-circle-more', 'title' => 'Feedback', 'subtitle' => 'What visitors and members think of their PianoLIT experience.'])
-    <section class="card">
-        <div class="card-body">
-            <form method="GET" class="admin-feedback-filters">
+    @component('admin.components.table-card')
+            <form method="GET" class="admin-feedback-filters admin-table-filters">
                 <label for="feedback-rating">Rating</label>
                 <select id="feedback-rating" name="rating" class="form-select">
                     <option value="">All ratings</option>
@@ -44,8 +43,7 @@
                 </table>
             </div>
             <div data-feedback-pagination>{{ $submissions->links() }}</div>
-        </div>
-    </section>
+    @endcomponent
 </div></div>
 @endsection
 

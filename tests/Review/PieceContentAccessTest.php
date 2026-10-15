@@ -68,6 +68,7 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertSame(0, $xpath->query('//*[@id="score-preview"]//a | //*[@id="score-preview"]//*[@id="launch-audio"]')->length);
         $this->assertSame('', $xpath->query('//*[@id="score-preview"]')->item(0)->getAttribute('data-annotations-url'));
         $response->assertDontSee('/js/views/score-editor.js?id=', false);
+        $this->assertScoreExportControls($response, false);
         $this->assertSame(2, substr_count($response->getContent(), 'data-media-preview="10"'));
         $this->assertSame(1, substr_count($response->getContent(), 'data-preview="10"'));
         $response->assertSee('data-piece-player-page', false)->assertSee('data-player-close', false);
@@ -89,7 +90,7 @@ class PieceContentAccessTest extends ReviewTestCase
             ->assertSee('data-player-close', false)->assertSee('data-speed="0.75"', false)
             ->assertSee('/js/views/playlist-player.js?id=', false)->assertSee('/js/views/playlist-moments.js?id=', false)
             ->assertSee('Audio theme')
-            ->assertDontSee('piece-audio-popup', false)->assertDontSee('id="piece-upgrade-modal"', false);
+            ->assertDontSee('piece-audio-popup', false)->assertSee('id="piece-upgrade-modal"', false);
         preg_match_all('/data-audio-moments="([^"]*)"/', $response->getContent(), $matches);
         $moments = array_map(function ($json) { return json_decode(html_entity_decode($json, ENT_QUOTES), true); }, $matches[1]);
         $this->assertCount(1, $moments);
@@ -136,18 +137,39 @@ class PieceContentAccessTest extends ReviewTestCase
         }
     }
 
-    protected function assertFullContent()
+    protected function assertScoreExportControls($response, $allowed)
+    {
+        $document = new \DOMDocument();
+        $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new \DOMXPath($document);
+        $download = $xpath->query('//*[@aria-label="Download score"]');
+        $print = $xpath->query('//*[@data-print]');
+        $this->assertSame(1, $download->length);
+        $this->assertSame(1, $print->length);
+        $this->assertSame($allowed ? 'a' : 'button', $download->item(0)->tagName);
+        $this->assertSame($allowed ? storage($this->piece->score_path) : '', $download->item(0)->getAttribute('href'));
+        foreach ([$download->item(0), $print->item(0)] as $control) {
+            $this->assertFalse($control->hasAttribute('disabled'));
+            $this->assertSame($allowed ? '' : 'modal', $control->getAttribute('data-bs-toggle'));
+            $this->assertSame($allowed ? '' : '#piece-upgrade-modal', $control->getAttribute('data-bs-target'));
+        }
+        $this->assertSame($allowed ? '1' : '0', $xpath->query('//*[@data-score-export-access]')->item(0)->getAttribute('data-score-export-access'));
+        $this->assertSame($allowed ? 0 : 1, $xpath->query('//*[@id="piece-upgrade-modal"]')->length);
+    }
+
+    protected function assertFullContent($canExport = true)
     {
         $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
             ->assertDontSee('data-media-preview=', false)->assertDontSee('id="score-preview"', false)
-            ->assertDontSee('id="piece-upgrade-modal"', false)->assertSee('Download score')->assertSee('id="score-pdf"', false)
+            ->assertSee('Download score')->assertSee('id="score-pdf"', false)
             ->assertSee('id="score-editor"', false)->assertSee('data-tool="pen"', false)
             ->assertSee('id="launch-audio"', false)->assertSee('data-piece-player-page', false)
             ->assertSee('playlist-player--piece', false)->assertDontSee('piece-audio-popup', false);
         $this->assertSame(1, substr_count($response->getContent(), 'data-preview="0"'));
         $this->get(route('webapp.pieces.audio', $this->piece))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk()->assertDontSee('data-media-preview=', false);
-        $this->get(route('webapp.pieces.score', $this->piece))->assertOk();
+        $this->assertScoreExportControls($response, $canExport);
+        $this->withExceptionHandling()->get(route('webapp.pieces.score', $this->piece))->assertStatus($canExport ? 200 : 403);
         return $response;
     }
 
@@ -215,7 +237,7 @@ class PieceContentAccessTest extends ReviewTestCase
     public function test_current_free_pick_is_fully_open_and_restricted_again_after_rotation()
     {
         $this->piece->updateQuietly(['is_free' => true]);
-        $this->assertFullContent()->assertDontSee('data-manage="save-to"', false)
+        $this->assertFullContent(false)->assertDontSee('data-manage="save-to"', false)
             ->assertSee('data-annotations-url=""', false);
         $this->assertDatabaseCount('recently_viewed_pieces', 0);
         $this->withExceptionHandling()->postJson(route('webapp.users.favorites.update', $this->piece))->assertUnauthorized();
@@ -228,13 +250,22 @@ class PieceContentAccessTest extends ReviewTestCase
 
         $this->actingAs($this->userWithSubscription(), 'web');
         $this->piece->updateQuietly(['is_free' => true]);
-        $this->assertFullContent()->assertSee('data-manage="save-to"', false)
+        $this->assertFullContent(false)->assertSee('data-manage="save-to"', false)
             ->assertSee('data-bs-toggle="offcanvas"', false)
             ->assertSee('id="save-to-offcanvas"', false)
             ->assertDontSee('data-annotations-url=""', false);
         $this->postJson(route('webapp.users.favorites.update', $this->piece))->assertOk();
         $this->piece->updateQuietly(['is_free' => false]);
         $this->assertRestricted();
+    }
+
+    public function test_supplied_subscriber_identity_cannot_unlock_free_pick_downloads()
+    {
+        $subscriber = $this->userWithSubscription(Stripe::class);
+        $this->piece->updateQuietly(['is_free' => true]);
+        $url = route('webapp.pieces.score', [$this->piece, 'user_id' => $subscriber->id]);
+        $this->withExceptionHandling()->get($url)->assertForbidden();
+        $this->actingAs($this->userWithSubscription(), 'web')->get($url)->assertForbidden();
     }
 
     public function test_supplied_user_ids_do_not_bypass_normal_piece_content_rules()

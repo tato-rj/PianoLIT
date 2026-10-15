@@ -215,6 +215,7 @@ class ScoreAnnotationsTest extends ReviewTestCase
 
     public function test_editor_has_annotation_tools_and_can_export_an_isolated_browser_fixture()
     {
+        $this->actingAs($this->user, 'web');
         $html = view('webapp.piece.components.score-editor', ['piece' => $this->piece])->render();
         foreach (['data-tool="pen"', 'data-tool="text"', 'data-tool="erase"', 'data-tool="highlight"',
             'data-undo', 'data-redo', 'data-clear-all', 'data-fullscreen', 'data-print',

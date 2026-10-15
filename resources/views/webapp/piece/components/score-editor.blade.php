@@ -1,9 +1,11 @@
 @php
     $scorePreview = isset($hasMediaAccess) && ! $hasMediaAccess;
-    $scoreButtonAttributes = $scorePreview ? 'data-bs-toggle="modal" data-bs-target="#piece-upgrade-modal"' : 'disabled';
+    $scoreUpgradeAttributes = 'data-bs-toggle="modal" data-bs-target="#piece-upgrade-modal"';
+    $scoreButtonAttributes = $scorePreview ? $scoreUpgradeAttributes : 'disabled';
     $scoreDropdownAttributes = $scorePreview ? $scoreButtonAttributes : 'data-bs-toggle="dropdown" disabled';
 @endphp
 <div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }} mb-4" data-pdf-url="{{ storage($piece->score_path) }}"
+    data-score-export-access="{{ $hasScoreExportAccess ? '1' : '0' }}"
     data-score-version="{{ hash('sha256', $piece->score_path) }}"
     data-annotations-url="{{ ! $scorePreview && auth('web')->check() ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
     <div class="score-toolbar @if(! $scorePreview && auth('web')->guest()) d-none @endif" role="toolbar" aria-label="Score annotation tools">
@@ -90,12 +92,12 @@
             @if($piece->hasAudio())
                 <button type="button" @if($scorePreview) {!! $scoreButtonAttributes !!} @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif class="score-listen-button">@icon('play', ['mr' => 0])<span>Listen</span></button>
             @endif
-            @if($scorePreview)
-                <button type="button" {!! $scoreButtonAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></button>
+            @if(! $hasScoreExportAccess)
+                <button type="button" {!! $scoreUpgradeAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></button>
             @else
             <a href="{{ storage($piece->score_path) }}" target="_blank" rel="noopener" class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></a>
             @endif
-            <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if($scorePreview) {!! $scoreButtonAttributes !!} @endif>@icon('printer', ['mr' => 0])<span>Print</span></button>
+            <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if(! $hasScoreExportAccess) {!! $scoreUpgradeAttributes !!} @endif>@icon('printer', ['mr' => 0])<span>Print</span></button>
         </div>
     </div>
     <div class="score-messages">

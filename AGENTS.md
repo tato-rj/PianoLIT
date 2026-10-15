@@ -26,6 +26,8 @@ Admin analytics visual preferences are recorded in docs/ANALYTICS_DESIGN.md, inc
 
 Redesigned admin tables and paginated lists default to 12 results per page. Reuse `App\Support\AdminPagination::PER_PAGE` for new admin pagination instead of separate numeric defaults. Keep each list's page parameter, filters and sorting intact; this admin default must not change public/mobile pagination or non-paginated dashboard rankings and detail limits.
 
+Feedback is the visual standard for admin tables. New or redesigned admin tables use the shared `admin.components.table-card` wrapper (white card, 24px corners and padding), readable vertically aligned rows, contained horizontal scrolling, and DataTables controls where applicable. Keep filters and bulk actions inside the card. See `docs/ADMIN_TABLES.md`; adopt the pattern on pages within the requested scope rather than redesigning unrelated pages.
+
 - PHP application: `app/`; shared helpers: `support/helpers.php`.
 - Route registration and domain/middleware boundaries: `app/Providers/RouteServiceProvider.php`, `app/Http/Kernel.php`, and `routes/`.
 - Shared app feeds/search: `app/Api/`; billing: `app/Billing/`; integrations: `app/Services/` and webhook controllers.
