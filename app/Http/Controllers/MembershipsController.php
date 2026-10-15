@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use App\Services\Apple\AppleValidator;
 use App\Billing\Sources\{Apple, Stripe};
 use App\Notifications\Memberships\AppleMembershipsValidated;
-use App\Mail\SuperUserEmail;
 
 class MembershipsController extends Controller
 {
@@ -115,9 +114,6 @@ class MembershipsController extends Controller
     public function superStatus(Request $request, User $user)
     {
         $user->update(['super_user' => ! $user->super_user]);
-
-        if ($user->super_user)
-            \Mail::to($user->email)->send(new SuperUserEmail($user));
 
         return response()->json(['status' => $user->fullName . '\'s super status has been updated.']);
     }

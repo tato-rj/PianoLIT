@@ -5,7 +5,6 @@ namespace Tests\Review;
 use App\{Admin, User};
 use App\Analytics\MembershipReport;
 use App\Billing\Sources\{Apple, Stripe};
-use App\Mail\SuperUserEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{DB, Http, Mail, Schema};
@@ -83,7 +82,7 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $this->assertSame('', $this->rowCells($response, $user->id)[4]);
     }
 
-    public function test_admin_toggle_records_each_current_grant_and_revocation_without_changing_its_response()
+    public function test_admin_toggle_records_each_grant_and_revocation_without_sending_email_or_changing_its_response()
     {
         $user = $this->account(['super_user' => false]);
         $other = $this->account(['super_user' => false]);
@@ -96,12 +95,13 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $this->assertSame(now()->toDateTimeString(), $first->granted_at);
         $this->assertSame($admin->id, $first->granted_by);
         $this->assertNull($first->revoked_at);
-        Mail::assertSent(SuperUserEmail::class, 1);
+        Mail::assertNothingOutgoing();
         $response = $this->get(route('admin.analytics.memberships'))->assertOk();
         $this->assertSame(['Super User', 'Active', '', 'Oct 13, 2026 3:00 PM'], array_slice($this->rowCells($response, $user->id), 1));
         $this->travel(2)->days();
         $this->patchJson(route('admin.users.super-status', $user))->assertOk();
         $this->assertFalse($user->fresh()->hasActiveSubscription());
+        Mail::assertNothingOutgoing();
         $first = DB::table('super_user_access_periods')->where('id', $first->id)->first();
         $this->assertSame(now()->toDateTimeString(), $first->revoked_at);
         $this->assertSame($admin->id, $first->revoked_by);
@@ -114,7 +114,7 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $report = $this->report();
         $this->assertSame(1, $report['counts']['super_user']['active']);
         $this->assertSame(now()->toDateTimeString(), $report['memberships']->first()->checked_at);
-        Mail::assertSent(SuperUserEmail::class, 2);
+        Mail::assertNothingOutgoing();
         Http::assertNothingSent();
         $this->assertArrayNotHasKey('granted_at', $user->fresh()->getAttributes());
     }
@@ -132,7 +132,7 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         }
         $this->assertFalse($user->fresh()->super_user);
         $this->assertDatabaseCount('super_user_access_periods', 0);
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_super_users_share_directory_filters_search_and_pagination()
@@ -212,7 +212,24 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $this->assertSame(['Super User', 'Active', '', ''], array_slice($this->rowCells($response, $user->id), 1));
         $this->patchJson(route('admin.users.super-status', $user))->assertOk();
         $this->assertFalse($user->fresh()->super_user);
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
+        $this->patchJson(route('admin.users.super-status', $user))->assertOk();
+        $this->assertTrue($user->fresh()->super_user);
+        Mail::assertNothingOutgoing();
+    }
+
+    public function test_legacy_super_status_handler_never_sends_or_queues_email()
+    {
+        $user = $this->account(['super_user' => false]);
+        $controller = new \App\Http\Controllers\MembershipsController;
+        foreach ([true, false, true] as $enabled) {
+            $response = $controller->superStatus(Request::create('/', 'PATCH'), $user);
+            $this->assertSame(200, $response->getStatusCode());
+            $this->assertSame(['status' => $user->fullName."'s super status has been updated."], $response->getData(true));
+            $this->assertSame($enabled, $user->fresh()->super_user);
+            $this->assertSame($enabled, $user->fresh()->hasActiveSubscription());
+            Mail::assertNothingOutgoing();
+        }
     }
 
     public function test_admin_session_is_required_and_mobile_billing_actions_keep_their_original_handlers()

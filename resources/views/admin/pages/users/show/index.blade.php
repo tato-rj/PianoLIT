@@ -3,13 +3,11 @@
 @section('content')
 <div class="content-wrapper"><div class="container-fluid user-profile" data-user-profile>
     @component('admin.components.page.title', ['title' => 'User details', 'subtitle' => 'Profile, membership and saved music.'])
-    <div class="d-apart w-100">
-        <div>
-            <a class="btn btn-secondary" href="{{ route('admin.users.index') }}">@icon('arrow-left')All users</a>
-        </div>
-        <div>
-            @unless($analyticsExcluded)<a class="btn btn-secondary" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">@icon('chart-line')Logs & analytics</a>@endunless
-            <a class="btn btn-secondary" href="{{ route('impersonate', $user) }}" target="_blank" rel="noopener noreferrer">@icon('contact-round')Impersonate</a>
+    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-stretch align-items-sm-center gap-2 w-100">
+        <a class="btn btn-secondary flex-shrink-0 text-nowrap" href="{{ route('admin.users.index') }}">@icon('arrow-left')All users</a>
+        <div class="d-flex flex-column flex-sm-row gap-2">
+            @unless($analyticsExcluded)<a class="btn btn-secondary text-nowrap" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">@icon('chart-line')Logs & analytics</a>@endunless
+            <a class="btn btn-secondary text-nowrap" href="{{ route('impersonate', $user) }}" target="_blank" rel="noopener noreferrer">@icon('contact-round')Impersonate</a>
         </div>
     </div>
     @endcomponent

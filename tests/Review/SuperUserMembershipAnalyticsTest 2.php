@@ -5,7 +5,6 @@ namespace Tests\Review;
 use App\{Admin, User};
 use App\Analytics\MembershipReport;
 use App\Billing\Sources\{Apple, Stripe};
-use App\Mail\SuperUserEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{DB, Http, Mail, Schema};
@@ -96,12 +95,13 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $this->assertSame(now()->toDateTimeString(), $first->granted_at);
         $this->assertSame($admin->id, $first->granted_by);
         $this->assertNull($first->revoked_at);
-        Mail::assertSent(SuperUserEmail::class, 1);
+        Mail::assertNothingOutgoing();
         $response = $this->get(route('admin.analytics.memberships'))->assertOk();
         $this->assertSame(['Super User', 'Active', '', 'Oct 13, 2026 3:00 PM'], array_slice($this->rowCells($response, $user->id), 1));
         $this->travel(2)->days();
         $this->patchJson(route('admin.users.super-status', $user))->assertOk();
         $this->assertFalse($user->fresh()->hasActiveSubscription());
+        Mail::assertNothingOutgoing();
         $first = DB::table('super_user_access_periods')->where('id', $first->id)->first();
         $this->assertSame(now()->toDateTimeString(), $first->revoked_at);
         $this->assertSame($admin->id, $first->revoked_by);
@@ -114,7 +114,7 @@ class SuperUserMembershipAnalyticsTest extends ReviewTestCase
         $report = $this->report();
         $this->assertSame(1, $report['counts']['super_user']['active']);
         $this->assertSame(now()->toDateTimeString(), $report['memberships']->first()->checked_at);
-        Mail::assertSent(SuperUserEmail::class, 2);
+        Mail::assertNothingOutgoing();
         Http::assertNothingSent();
         $this->assertArrayNotHasKey('granted_at', $user->fresh()->getAttributes());
     }

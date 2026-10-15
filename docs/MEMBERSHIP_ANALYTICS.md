@@ -153,12 +153,14 @@ super users before this migration, with blank grant dates.
 
 The existing admin PATCH route `admin.users.super-status` now uses an admin-only
 controller. It preserves the route, session/CSRF checks, current toggle behavior,
-JSON response and existing grant email. Under a user row lock and transaction it
-records newly enabled access with the time and authenticated admin, closes revoked
+and JSON response. Granting, revoking or re-granting super-user access never sends
+or queues email to the user, including through the legacy shared handler.
+Under a user row lock and transaction it records newly enabled access with the
+time and authenticated admin, closes revoked
 access periods and creates a fresh period on re-grant. The audit table enforces one
-current period per user. Audit-write failure rolls back the access change before
-any grant mail is sent. The `users` table, User model, shared/mobile controller and
-iOS routes/serialization remain untouched. The current flag remains the source of
+current period per user. Audit-write failure rolls back the access change.
+The `users` table, User model, mobile billing handlers and iOS routes/serialization
+remain untouched. The current flag remains the source of
 truth for access and for this directory.
 
 Grant dates capture changes made through the existing admin toggle after the

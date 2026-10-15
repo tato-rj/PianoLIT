@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\User;
-use App\Mail\SuperUserEmail;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\{DB, Mail, Schema};
+use Illuminate\Support\Facades\{DB, Schema};
 
 class SuperUserAccessController extends Controller
 {
@@ -45,8 +44,6 @@ class SuperUserAccessController extends Controller
             return $account;
         });
 
-        // Keep the existing grant notification and admin JSON response.
-        if ($user->super_user) Mail::to($user->email)->send(new SuperUserEmail($user));
         return response()->json(['status' => $user->fullName . '\'s super status has been updated.']);
     }
 }
