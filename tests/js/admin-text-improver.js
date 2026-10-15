@@ -10,6 +10,7 @@ module.exports = function () {
             addEventListener(type, fn) { (this.events[type] || (this.events[type] = [])).push(fn); },
             dispatchEvent(event) { (this.events[event.type] || []).forEach(fn => fn(event)); },
             setAttribute(key, value) { this.attrs[key] = value; }, removeAttribute(key) { delete this.attrs[key]; },
+            getAttribute(key) { return this.attrs[key] || null; },
             matches() { return this.disabled; }, focus() { this.focused = true; },
             insertAdjacentElement(where, node) { this.nextElementSibling = node; }};
     }
@@ -48,7 +49,9 @@ module.exports = function () {
         }}
     });
     let bar = bars[0];
+    const specimen = element(); specimen.setAttribute('data-text-improver', 'off'); fields.push(specimen);
     scan(); assert.strictEqual(bars.length, 1, 'Repeated scans do not attach duplicate controls');
+    assert.strictEqual(specimen.nextElementSibling, undefined, 'Sample textareas do not get provider controls');
     assert(bar.html.includes('value="same" selected'));
     bar.toggle.dispatchEvent({type: 'click'});
     assert.strictEqual(bar.options.hidden, false);

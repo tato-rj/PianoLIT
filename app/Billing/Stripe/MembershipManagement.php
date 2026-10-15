@@ -110,6 +110,18 @@ class MembershipManagement
             if (isset($settings[$key])) $settings[$key] = SubscriptionState::id($settings[$key]);
         }
         if (isset($settings['default_tax_rates'])) $settings['default_tax_rates'] = array_map([SubscriptionState::class, 'id'], $settings['default_tax_rates']);
+        if (isset($settings['automatic_tax'])) {
+            // Stripe includes response-only fields such as disabled_reason.
+            // A schedule update accepts only enabled and the tax liability.
+            $tax = \Illuminate\Support\Arr::only($settings['automatic_tax'], ['enabled', 'liability']);
+            if (isset($tax['liability'])) {
+                $tax['liability'] = \Illuminate\Support\Arr::only($tax['liability'], ['type', 'account']);
+                if (isset($tax['liability']['account'])) $tax['liability']['account'] = SubscriptionState::id($tax['liability']['account']);
+            } else {
+                unset($tax['liability']);
+            }
+            $settings['automatic_tax'] = $tax;
+        }
         $discounts = [];
         foreach ($phase['discounts'] ?? [] as $discount) {
             $existing = SubscriptionState::id($discount['discount'] ?? null);

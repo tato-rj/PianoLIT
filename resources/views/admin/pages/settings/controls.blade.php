@@ -42,7 +42,7 @@
       <label for="ds-select">Level</label><select id="ds-select" class="form-select" data-ds-preview><option>All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Textarea', 'usage' => 'textarea.form-control'])
-      <label for="ds-textarea">Notes</label><textarea id="ds-textarea" class="form-control" rows="3" placeholder="Add a practice note" data-ds-preview></textarea>
+      <label for="ds-textarea">Notes</label><textarea id="ds-textarea" class="form-control" rows="3" placeholder="Add a practice note" data-text-improver="off" data-ds-preview></textarea>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Input group', 'usage' => '.input-group + .input-group-text'])
       <label for="ds-group">Website</label><div class="input-group"><span class="input-group-text">https://</span><input id="ds-group" type="text" class="form-control" placeholder="pianolit.com" data-ds-preview></div>

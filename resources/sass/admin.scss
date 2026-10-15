@@ -1,95 +1,50 @@
-@import "bootstrap5-theme";
-@import "~bootstrap/scss/bootstrap";
+// Framework and vendor foundations.
+@import 'bootstrap5-theme';
+@import '~bootstrap/scss/bootstrap';
 @import 'components/fontawesome-brands';
-@import "variables";
+@import 'variables';
 
-@import "components/datatables";
-@import "components/toggle";
-@import "components/tinymce";
-@import "components/dropzone";
-@import "components/animations";
-@import "components/sort";
-@import "components/notifications";
-@import "components/tabs";
-@import "components/video-moments";
-@import "components/video-moments-admin";
-@import "components/timeline-events-admin";
-@import "components/admin-text-improver";
+// Shared admin components.
+@import 'components/datatables';
+@import 'components/toggle';
+@import 'components/tinymce';
+@import 'components/dropzone';
+@import 'components/animations';
+@import 'components/sort';
+@import 'components/notifications';
+@import 'components/tabs';
+@import 'components/video-moments';
+@import 'components/video-moments-admin';
+@import 'components/timeline-events-admin';
+@import 'components/admin-text-improver';
 
-// Custom Variables
+// Legacy theme compatibility; keep before the brand overrides.
 $body-bg: #e9ecef;
 
-@import "brand/corners";
-@import "bootstrap-custom";
-@import "components/bootstrap5-compat";
-@import "responsive";
-@import "global";
-@import "brand/buttons";
-@import "brand/colors";
-@import "brand/fonts";
+@import 'brand/corners';
+@import 'bootstrap-custom';
+@import 'components/bootstrap5-compat';
+@import 'responsive';
+@import 'global';
+@import 'brand/buttons';
+@import 'brand/colors';
+@import 'brand/fonts';
 
-html, body {
-	background-color: white;
-}
-
-#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse.collapsed:after, #mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse:after {
-	content: none;
-}
-
-.nav-link-collapse {
-	@extend .d-flex, .justify-content-between;
-}
-
-footer.sticky-footer, #mainNav.fixed-top.navbar-light .sidenav-toggler, .breadcrumb, .navbar {
-    background-color: #F8F9FF;
-}
-
-.bg-pastel {
-	background: #fffbf1 !important;
-	color: #997723;
-}
-
-.random-pill-1 {
-	background: #fdf1f1 !important;
-	color: darken(#fdf1f1, 40);
-}
-
-.random-pill-2 {
-	background: #E6F4F1 !important;
-	color: darken(#E6F4F1, 40);
-}
-
-.random-pill-3 {
-	background: #fdf7e8 !important;
-	color: darken(#fdf7e8, 40);
-}
-
-.random-pill-4 {
-	background: #eaeaff !important;
-	color: darken(#eaeaff, 40);
-}
-
-.page-item.active .page-link {
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
-    color: white;
-}
-
-.page-link {
-	color: var(--color-primary);
-}
-
-@import "admin/dashboard";
-@import "admin/country-map";
-@import "admin/user-analytics";
-@import "admin/membership-analytics";
-@import "admin/piece-analytics";
-@import "admin/folder-analytics";
-@import "admin/composer-analytics";
-@import "admin/notifications";
-@import "admin/discover";
-@import "admin/tables";
-@import "admin/user-profile";
-@import "admin/feedback";
-@import "admin/date-range";
-@import "admin/design-system";
+// Older templates, followed by the shared shell and individual admin pages.
+@import 'admin/legacy';
+@import 'admin/shell';
+@import 'admin/back-to-top';
+@import 'admin/dashboard';
+@import 'admin/country-map';
+@import 'admin/user-analytics';
+@import 'admin/membership-analytics';
+@import 'admin/piece-analytics';
+@import 'admin/folder-analytics';
+@import 'admin/composer-analytics';
+@import 'admin/notifications';
+@import 'admin/discover';
+@import 'admin/tables';
+@import 'admin/user-profile';
+@import 'admin/feedback';
+@import 'admin/date-range';
+@import 'admin/design-system';

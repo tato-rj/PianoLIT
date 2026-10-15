@@ -5,10 +5,17 @@
         border: 1px solid var(--color-border, #e4eaf3);
         border-radius: 14px;
         background: var(--color-surface, #fff);
-        box-shadow: 0 2px 6px rgba(23, 32, 51, .025);
-        &:focus-within { border-color: #b5c8ee; }
+        box-shadow: 0 2px 6px rgba(23, 32, 51, 0.025);
+        &:focus-within {
+            border-color: #b5c8ee;
+        }
     }
-    &__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
     &__number {
         padding: 4px 9px;
         border-radius: 6px;
@@ -18,12 +25,31 @@
         font-weight: 600;
         line-height: 20px;
     }
-    &__label, &__row label { color: var(--color-text, #172033); font-size: 13px; font-weight: 500; line-height: 1.4; }
-    &__label { display: block; margin-bottom: 6px; }
-    &__row label .form-control { margin-top: 6px; }
-    &__row textarea { min-height: 70px; resize: vertical; }
-    &__time { position: relative; }
-    &__time input { padding-right: 43px; font-variant-numeric: tabular-nums; }
+    &__label,
+    &__row label {
+        color: var(--color-text, #172033);
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+    &__label {
+        display: block;
+        margin-bottom: 6px;
+    }
+    &__row label .form-control {
+        margin-top: 6px;
+    }
+    &__row textarea {
+        min-height: 70px;
+        resize: vertical;
+    }
+    &__time {
+        position: relative;
+    }
+    &__time input {
+        padding-right: 43px;
+        font-variant-numeric: tabular-nums;
+    }
     &__steps {
         position: absolute;
         top: 1px;
@@ -34,7 +60,8 @@
         flex-direction: column;
         border-left: 1px solid var(--field-border);
     }
-    &__step, &__delete {
+    &__step,
+    &__delete {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -49,21 +76,44 @@
         flex: 1;
         border-radius: 0;
         color: var(--color-text-muted, #687386);
-        svg { width: 14px; height: 14px; }
-        &:first-child { border-bottom: 1px solid var(--color-border, #e4eaf3); border-radius: 0 7px 0 0; }
-        &:last-child { border-radius: 0 0 7px 0; }
-        &:hover { background: #eef3fc; color: var(--color-primary); }
-        &:active { background: #e0e9fa; }
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+        &:first-child {
+            border-bottom: 1px solid var(--color-border, #e4eaf3);
+            border-radius: 0 7px 0 0;
+        }
+        &:last-child {
+            border-radius: 0 0 7px 0;
+        }
+        &:hover {
+            background: #eef3fc;
+            color: var(--color-primary);
+        }
+        &:active {
+            background: #e0e9fa;
+        }
     }
     &__delete {
         width: 32px;
         height: 32px;
         border-radius: 8px;
         color: var(--color-text-muted, #687386);
-        svg { width: 16px; height: 16px; }
-        &:hover { background: #fff0f0; color: #c83243; }
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+        &:hover {
+            background: #fff0f0;
+            color: #c83243;
+        }
     }
-    &__step:focus-visible, &__delete:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+    &__step:focus-visible,
+    &__delete:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: -2px;
+    }
     &__actions {
         display: flex;
         align-items: center;
@@ -71,11 +121,23 @@
         flex-wrap: wrap;
         gap: 12px;
         margin: 18px 0 24px;
-        .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 9px 16px !important; font-size: 14px !important; line-height: 20px !important; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 9px 16px !important;
+            font-size: 14px !important;
+            line-height: 20px !important;
+        }
     }
     @media (max-width: 575px) {
-        &__row { padding: 14px; }
+        &__row {
+            padding: 14px;
+        }
         // Keep iPhone time entry from zooming the page on focus.
-        &__row .form-control { font-size: 16px; }
+        &__row .form-control {
+            font-size: 16px;
+        }
     }
 }

@@ -6,7 +6,7 @@
 
         @include('admin.layouts.header.item', ['route' => route('admin.api.discover'), 'name' => 'Discover Tab', 'icon' => 'code'])
         
-        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Settings', 'icon' => 'gear',
+        @include('admin.layouts.header.item', ['route' => null, 'name' => 'Settings', 'icon' => 'settings',
         'dropdown' => [
           ['route' => route('admin.design-system.index'), 'name' => 'Design System'],
         ]])

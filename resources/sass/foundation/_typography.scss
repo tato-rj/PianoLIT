@@ -1,0 +1,78 @@
+// Shared typography and component size adapters. Defaults live in _design-tokens.scss.
+body {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
+    color: var(--color-text);
+    background-color: var(--color-surface);
+}
+
+// Heading elements, heading utilities and editorial alternatives.
+@for $level from 1 through 6 {
+    h#{$level},
+    .h#{$level} {
+        font-family: var(--font-family-heading);
+        font-weight: var(--font-weight-heading);
+        line-height: var(--line-height-heading);
+        font-size: var(--font-size-h#{$level});
+    }
+}
+.h1 {
+    font-size: var(--font-size-h1-utility);
+}
+.font-serif {
+    font-family: var(--font-family-serif);
+}
+.blog-post {
+    font-size: var(--font-size-blog);
+}
+small,
+.small {
+    font-size: var(--font-size-small);
+}
+// Admin theme's .smaller has a deliberately smaller size than .small.
+.smaller {
+    font-size: var(--font-size-tiny);
+}
+.lead {
+    font-size: var(--font-size-lg);
+}
+// Shared control size adapters. Form-field finish rules are emitted later.
+.btn,
+.form-control,
+.form-select,
+.dropdown-menu,
+.input-group-text {
+    font-size: var(--font-size-base);
+}
+.btn-xs {
+    font-size: var(--font-size-xs);
+}
+.btn-sm,
+.btn-group-sm > .btn,
+.form-control-sm,
+.form-select-sm,
+.input-group-sm > .form-control,
+.input-group-sm > .form-select,
+.input-group-sm > .input-group-prepend > .input-group-text,
+.input-group-sm > .input-group-append > .input-group-text,
+.input-group-sm > .input-group-prepend > .btn,
+.input-group-sm > .input-group-append > .btn {
+    font-size: var(--font-size-sm);
+}
+.btn-lg,
+.btn-group-lg > .btn,
+.form-control-lg,
+.form-select-lg,
+.input-group-lg > .form-control,
+.input-group-lg > .form-select,
+.input-group-lg > .input-group-prepend > .input-group-text,
+.input-group-lg > .input-group-append > .input-group-text,
+.input-group-lg > .input-group-prepend > .btn,
+.input-group-lg > .input-group-append > .btn {
+    font-size: var(--font-size-lg);
+}
+.btn-xl {
+    font-size: var(--font-size-xl);
+}

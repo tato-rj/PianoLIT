@@ -8,7 +8,7 @@ class AdminDesignSystemTest extends ReviewTestCase
 {
     public function test_design_system_requires_the_admin_session()
     {
-        $this->get(route('admin.design-system.index'))->assertRedirect(route('admin.login.show'));
+        $this->withExceptionHandling()->get(route('admin.design-system.index'))->assertRedirect(route('admin.login.show'));
     }
 
     public function test_sidebar_destination_renders_the_gallery_with_safe_sample_controls()
@@ -21,8 +21,8 @@ class AdminDesignSystemTest extends ReviewTestCase
         $xpath = new \DOMXPath($dom);
         $this->assertSame(1, $xpath->query('//a[@href="'.route('admin.design-system.index').'" and @aria-current="page"]')->length);
         $this->assertSame(1, $xpath->query('//ul[@id="settings" and contains(@class, "show")]')->length);
-        $this->assertSame(0, $xpath->query('//*[@data-design-system]//form')->length);
-        $this->assertSame(0, $xpath->query('//*[@data-design-system]//button[not(@type="button")]')->length);
+        $this->assertSame(0, $xpath->query('//*[@data-ds-sample]//form')->length);
+        $this->assertSame(0, $xpath->query('//*[@data-ds-sample]//button[not(@type="button")]')->length);
 
         foreach ($xpath->query('//nav[@aria-label="Design system sections"]/a') as $link) {
             $this->assertSame(1, $xpath->query('//*[@id="'.substr($link->getAttribute('href'), 1).'"]')->length);

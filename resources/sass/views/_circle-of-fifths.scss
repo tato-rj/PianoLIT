@@ -1,10 +1,10 @@
 .roman-numeral {
-	font-family: 'Roboto Slab', serif;
+    font-family: 'Roboto Slab', serif;
 }
 
 svg#circle {
-	transition-duration: .5s;
-	z-index: 1;
+    transition-duration: 0.5s;
+    z-index: 1;
 }
 div#highlight {
     left: 50%;
@@ -12,21 +12,22 @@ div#highlight {
     transform: translateX(-50%);
     z-index: -1;
     width: 112%;
-    opacity: .2;
+    opacity: 0.2;
 }
 g#letters > g {
-	opacity: 0.5;
-	transition: .2s;
-	-webkit-filter: grayscale(100%);
-	filter: grayscale(100%);
+    opacity: 0.5;
+    transition: 0.2s;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
 }
 
 g.key {
-	opacity: 1!important;
+    opacity: 1 !important;
 }
 
-.key-neighbors span:not(:last-of-type)::after, .key-enharmonic-neighbors span:not(:last-of-type)::after {
-	content: '|';
-	margin-left: .4rem;
-	margin-right: .4rem;
+.key-neighbors span:not(:last-of-type)::after,
+.key-enharmonic-neighbors span:not(:last-of-type)::after {
+    content: '|';
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
 }

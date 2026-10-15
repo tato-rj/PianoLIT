@@ -3,6 +3,7 @@
 
     var gallery = document.querySelector('[data-design-system]');
     if (!gallery) return;
+    var measurements = new WeakMap();
 
     function previewFor(sample) {
         var preview = sample.querySelector('[data-ds-preview]');
@@ -17,12 +18,18 @@
         if (!preview || !output) return;
         var style = window.getComputedStyle(preview);
         var properties = sample.getAttribute('data-ds-properties').split(',');
+        var values = properties.map(function (property) {
+            return style.getPropertyValue(property).trim() || '—';
+        });
+        var signature = values.join('\n');
+        if (measurements.get(output) === signature) return;
+        measurements.set(output, signature);
         var fragment = document.createDocumentFragment();
-        properties.forEach(function (property) {
+        properties.forEach(function (property, index) {
             var label = document.createElement('dt');
             var value = document.createElement('dd');
             label.textContent = property;
-            value.textContent = style.getPropertyValue(property).trim() || '—';
+            value.textContent = values[index];
             fragment.appendChild(label);
             fragment.appendChild(value);
         });
@@ -53,17 +60,28 @@
     }
 
     var frame;
-    function scheduleRefresh() {
+    var pendingSamples = new Set();
+    var refreshAll = false;
+    function scheduleRefresh(event) {
+        var sample = event && event.target instanceof Element ? event.target.closest('[data-ds-sample]') : null;
+        if (sample) pendingSamples.add(sample);
+        else if (!event || event.type === 'resize') refreshAll = true;
+        else return;
         window.cancelAnimationFrame(frame);
-        frame = window.requestAnimationFrame(refresh);
+        frame = window.requestAnimationFrame(function () {
+            if (refreshAll) refresh();
+            else pendingSamples.forEach(measureSample);
+            pendingSamples.clear();
+            refreshAll = false;
+        });
     }
 
     // Read states after the browser applies hover, focus, active and choice changes.
-    ['pointerover', 'pointerout', 'pointerdown', 'pointerup', 'focusin', 'focusout', 'change', 'keyup'].forEach(function (event) {
+    ['pointerover', 'pointerout', 'pointerdown', 'pointerup', 'focusin', 'focusout', 'change', 'keydown', 'keyup'].forEach(function (event) {
         gallery.addEventListener(event, scheduleRefresh);
     });
     gallery.addEventListener('transitionend', scheduleRefresh);
     window.addEventListener('resize', scheduleRefresh);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleRefresh);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { scheduleRefresh(); });
     refresh();
 }());

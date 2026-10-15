@@ -1,0 +1,50 @@
+// Compatibility styles for older admin templates. New page styles belong in their own partial.
+html,
+body {
+    background-color: white;
+}
+
+#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse.collapsed:after,
+#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse:after {
+    content: none;
+}
+
+.nav-link-collapse {
+    @extend .d-flex, .justify-content-between;
+}
+
+footer.sticky-footer,
+#mainNav.fixed-top.navbar-light .sidenav-toggler,
+.breadcrumb,
+.navbar {
+    background-color: #f8f9ff;
+}
+
+.bg-pastel {
+    background: #fffbf1 !important;
+    color: #997723;
+}
+
+.random-pill-1 {
+    background: #fdf1f1 !important;
+    color: darken(#fdf1f1, 40);
+}
+
+.random-pill-2 {
+    background: #e6f4f1 !important;
+    color: darken(#e6f4f1, 40);
+}
+
+.random-pill-3 {
+    background: #fdf7e8 !important;
+    color: darken(#fdf7e8, 40);
+}
+
+.random-pill-4 {
+    background: #eaeaff !important;
+    color: darken(#eaeaff, 40);
+}
+
+.page-item.active .page-link {
+    color: white;
+}

@@ -202,6 +202,23 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->assertCount(0, $this->gateway->callsTo('subscriptions', 'update'));
     }
 
+    public function test_plan_change_preserves_writable_tax_settings_without_response_only_fields()
+    {
+        $this->purchase();
+        $source = $this->source();
+        $schedule = $this->gateway->call('us', 'subscriptionSchedules', 'create', ['from_subscription' => $source->subscription_id]);
+        $this->gateway->schedules[$schedule['id']]['metadata'] = ['pianolit_membership' => (string) $source->id];
+        $this->gateway->schedules[$schedule['id']]['phases'][0]['automatic_tax'] = [
+            'enabled' => true, 'disabled_reason' => null,
+            'liability' => ['type' => 'account', 'account' => ['id' => 'acct_tax', 'object' => 'account']],
+        ];
+        app(MembershipManagement::class)->change($this->user, (string) Str::uuid(), 'plan', Plan::byName('yearly'));
+        $phases = $this->gateway->callsTo('subscriptionSchedules', 'update')[0]['parameters']['phases'];
+        foreach ($phases as $phase) {
+            $this->assertSame(['enabled' => true, 'liability' => ['type' => 'account', 'account' => 'acct_tax']], $phase['automatic_tax']);
+        }
+    }
+
     public function test_cancel_updates_full_state_preserves_access_and_releases_our_schedule()
     {
         $this->purchase();

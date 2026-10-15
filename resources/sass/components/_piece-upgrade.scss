@@ -70,11 +70,13 @@
             inset: 0;
             border-radius: inherit;
             background: currentColor;
-            opacity: .12;
+            opacity: 0.12;
         }
 
         @each $color in orange, green, blue, pink, purple, indigo {
-            &--#{$color} { color: var(--color-#{$color}); }
+            &--#{$color} {
+                color: var(--color-#{$color});
+            }
         }
     }
 

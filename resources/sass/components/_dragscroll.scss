@@ -1,9 +1,9 @@
 .dragscroll {
-	cursor: grab;
+    cursor: grab;
 }
 
 .dragscroll-horizontal {
-	overflow-x: auto;
+    overflow-x: auto;
 }
 
 .custom-scroll::-webkit-scrollbar {
@@ -24,5 +24,5 @@
 }
 
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-    background: #e0dfdf; 
+    background: #e0dfdf;
 }

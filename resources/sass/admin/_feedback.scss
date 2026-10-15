@@ -1,8 +1,30 @@
 .admin-feedback {
-    .admin-feedback-rating { display: inline-block; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
-    .admin-feedback-rating--bad { color: #a62213; background: #ffe5de; }
-    .admin-feedback-rating--not_bad { color: #79510b; background: #fff1c8; }
-    .admin-feedback-rating--good { color: #39590d; background: #e9f5cd; }
-    .admin-feedback-message { min-width: 240px; max-width: 640px; overflow-wrap: anywhere; }
-    .admin-feedback-message-text { white-space: pre-wrap; }
+    .admin-feedback-rating {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .admin-feedback-rating--bad {
+        color: #a62213;
+        background: #ffe5de;
+    }
+    .admin-feedback-rating--not_bad {
+        color: #79510b;
+        background: #fff1c8;
+    }
+    .admin-feedback-rating--good {
+        color: #39590d;
+        background: #e9f5cd;
+    }
+    .admin-feedback-message {
+        min-width: 240px;
+        max-width: 640px;
+        overflow-wrap: anywhere;
+    }
+    .admin-feedback-message-text {
+        white-space: pre-wrap;
+    }
 }

@@ -9,7 +9,7 @@
 <div class="content-wrapper design-system" data-design-system>
   <div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'gear',
+      'icon' => 'settings',
       'title' => 'Design System',
       'subtitle' => 'A living reference for the PianoLIT interface.',
     ])

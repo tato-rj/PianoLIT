@@ -21,9 +21,13 @@
     <a href="#admin-main" class="admin-skip-link">Skip to content</a>
     @include('admin.layouts.header.bar')
 
-    <main class="admin-main" id="admin-main">
+    <main class="admin-main" id="admin-main" tabindex="-1">
       @yield('content')
     </main>
+
+    <button class="admin-back-to-top" type="button" data-admin-back-to-top aria-label="Back to top" title="Back to top" hidden>
+      @icon('arrow-up', ['mr' => 0])
+    </button>
 
     {{-- @include('admin.layouts.footer') --}}
 

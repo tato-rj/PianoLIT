@@ -1,0 +1,95 @@
+// Gallery-only token bindings. Values come from the shared design tokens,
+// so samples change with the rest of PianoLIT instead of copying literal values.
+.design-system__font-preview {
+    font-size: var(--font-size-xl);
+
+    @each $family in body, heading, serif {
+        &[data-ds-font='#{$family}'] {
+            font-family: var(--font-family-#{$family});
+        }
+    }
+}
+
+// Heading and body scales keep their own family, weight and line-height rules.
+.design-system__type-preview {
+    @for $level from 1 through 6 {
+        &[data-ds-type='h#{$level}'] {
+            font-size: var(--font-size-h#{$level});
+            font-family: var(--font-family-heading);
+            font-weight: var(--font-weight-heading);
+            line-height: var(--line-height-heading);
+        }
+    }
+
+    @each $size in base, sm, xs, tiny {
+        &[data-ds-type='#{$size}'] {
+            font-size: var(--font-size-#{$size});
+            font-family: var(--font-family-body);
+        }
+    }
+}
+
+.design-system__font-weight {
+    font-family: var(--font-family-heading);
+
+    @each $weight in 400, 600, 800 {
+        &[data-ds-font-weight='#{$weight}'] {
+            font-weight: $weight;
+        }
+    }
+}
+
+// Brand, semantic, neutral and form swatches use the same browser variables
+// as the real components. Their labels are measured by the page script.
+.design-system__color {
+    @each $color in primary, primary-hover, primary-active, primary-disabled, primary-soft, text,
+        text-muted, text-dark, surface, surface-subtle, surface-dark, border, dropdown-border,
+        success, danger, warning, info, secondary, grey, red, orange, yellow, green, teal, blue,
+        indigo, purple, pink
+    {
+        &[data-ds-color-token='#{$color}'] {
+            background-color: var(--color-#{$color});
+        }
+    }
+
+    @each $color in background, border, text, muted, disabled-background {
+        &[data-ds-field-color='#{$color}'] {
+            background-color: var(--field-#{$color});
+        }
+    }
+
+    @each $tone, $color in $pastel-palette {
+        &[data-ds-pastel='#{$tone}'] {
+            background-color: var(--pastel-#{$tone}-accent);
+        }
+    }
+}
+
+// Spacing, radius and elevation specimens show the shared dimensions directly.
+.design-system__space-bar {
+    @for $step from 1 through 5 {
+        &[data-ds-space='#{$step}'] {
+            width: var(--space-#{$step});
+        }
+    }
+}
+
+.design-system__shape {
+    @each $radius in radius, radius-sm, radius-button, radius-input, radius-dropdown, radius-pill,
+        radius-circle
+    {
+        &[data-ds-radius='#{$radius}'] {
+            border-radius: var(--#{$radius});
+        }
+    }
+
+    &[data-ds-radius='radius-circle'] {
+        width: 90px;
+    }
+
+    @each $shadow in shadow, shadow-light, shadow-dark, shadow-dropdown {
+        &[data-ds-shadow='#{$shadow}'] {
+            box-shadow: var(--#{$shadow});
+        }
+    }
+}

@@ -7,17 +7,20 @@
 
 .admin-text-improver {
     width: 100%;
-    margin-bottom: .75rem;
+    margin-bottom: 0.75rem;
     border: 1px solid #dce3ed;
     border-top: 0;
-    border-radius: 0 0 .75rem .75rem;
+    border-radius: 0 0 0.75rem 0.75rem;
     overflow: hidden;
     background: #fff;
     color: #263247;
 
-    &[hidden] { display: none; }
+    &[hidden] {
+        display: none;
+    }
 
-    button:focus-visible, select:focus-visible {
+    button:focus-visible,
+    select:focus-visible {
         outline: 2px solid var(--color-primary, #1876f6);
         outline-offset: -3px;
     }
@@ -27,18 +30,24 @@
     @extend .btn-sm;
     display: block;
     width: 100%;
-    padding: .5rem .75rem;
+    padding: 0.5rem 0.75rem;
     border: 0;
-    border-radius: 0 0 .75rem .75rem;
+    border-radius: 0 0 0.75rem 0.75rem;
     background: transparent;
     color: inherit;
     font: inherit;
     cursor: pointer;
 
-    &:hover:not(:disabled) { background: #f6f8fb; }
-    &:disabled { opacity: .55; cursor: default; }
+    &:hover:not(:disabled) {
+        background: #f6f8fb;
+    }
+    &:disabled {
+        opacity: 0.55;
+        cursor: default;
+    }
 
-    &[aria-expanded="true"], &[aria-expanded="true"]:hover {
+    &[aria-expanded='true'],
+    &[aria-expanded='true']:hover {
         border-radius: 0;
         background: transparent;
     }
@@ -48,27 +57,35 @@
     display: flex;
     align-items: flex-end;
     flex-wrap: wrap;
-    gap: .75rem;
-    padding: .75rem;
+    gap: 0.75rem;
+    padding: 0.75rem;
     border-top: 1px solid #e2e7ef;
 
-    &[hidden] { display: none; }
-    label { flex: 1 1 110px; margin: 0; font-size: .85rem; }
+    &[hidden] {
+        display: none;
+    }
+    label {
+        flex: 1 1 110px;
+        margin: 0;
+        font-size: 0.85rem;
+    }
     select {
         display: block;
         width: 100%;
-        padding: .35rem .5rem;
+        padding: 0.35rem 0.5rem;
         border: 1px solid #dce3ed;
-        border-radius: .3rem;
+        border-radius: 0.3rem;
         background: white;
         // color: inherit;
     }
 }
 
 .admin-text-improve-status {
-    padding: .5rem .75rem;
-    font-size: .85rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
     color: #606b7d;
 
-    &[hidden] { display: none; }
+    &[hidden] {
+        display: none;
+    }
 }

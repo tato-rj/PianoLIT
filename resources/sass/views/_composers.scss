@@ -1,11 +1,21 @@
 // Composer directory cards; keep the treatment scoped to this page.
 #composers-directory {
-    [hidden] { display: none !important; }
-    .composer-search #search-form {
-        input { padding-right: 88px !important; }
-        .input-erase { right: 48px; }
+    [hidden] {
+        display: none !important;
     }
-    .composer-search, .composer-copy, .composer-alphabet { min-width: 0; }
+    .composer-search #search-form {
+        input {
+            padding-right: 88px !important;
+        }
+        .input-erase {
+            right: 48px;
+        }
+    }
+    .composer-search,
+    .composer-copy,
+    .composer-alphabet {
+        min-width: 0;
+    }
     .composer-card-link {
         display: flex;
         align-items: center;
@@ -17,13 +27,17 @@
         border-radius: 22px;
         background: var(--color-surface);
         color: var(--color-text);
-        transition: border-color .18s ease, background-color .18s ease;
-        &:hover, &:focus-visible {
-            border-color: rgba(var(--color-primary-rgb), .35);
-            background: rgba(var(--color-primary-rgb), .04);
+        transition: border-color 0.18s ease, background-color 0.18s ease;
+        &:hover,
+        &:focus-visible {
+            border-color: rgba(var(--color-primary-rgb), 0.35);
+            background: rgba(var(--color-primary-rgb), 0.04);
             color: var(--color-text);
         }
-        &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+        &:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 3px;
+        }
     }
     .composer-portrait {
         width: 104px;
@@ -31,8 +45,16 @@
         border-radius: 16px;
         object-fit: cover;
     }
-    .composer-copy { overflow-wrap: anywhere; }
-    .composer-card-heading { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 6px; }
+    .composer-copy {
+        overflow-wrap: anywhere;
+    }
+    .composer-card-heading {
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 6px 10px;
+        margin-bottom: 6px;
+    }
     .composer-card-name {
         flex: 1 1 auto;
         min-width: 0;
@@ -42,333 +64,944 @@
         font-weight: 600;
         line-height: 1.3;
     }
-    .composer-card-country, .composer-card-years, .composer-piece-count, .composer-card-chevron {
+    .composer-card-country,
+    .composer-card-years,
+    .composer-piece-count,
+    .composer-card-chevron {
         color: var(--color-text-muted);
     }
-    .composer-card-country, .composer-card-years, .composer-piece-count { font-size: var(--font-size-sm); line-height: 1.4; }
-    .composer-card-country { margin-bottom: 5px; }
-    .composer-card-country .flag-icon { border-radius: 4px !important; box-shadow: none !important; margin-right: 7px !important; }
-    .composer-card-years { margin-bottom: 8px; }
-    .composer-card-details { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 16px; margin-top: 8px; }
-    .composer-period, .composer-popular { display: inline-block; padding: 4px 12px; border-radius: var(--radius-pill); font-size: .8125rem; line-height: 1.25; }
-    .composer-popular { background: rgba(var(--color-primary-rgb), .09); color: var(--color-primary); padding: 3px 11px; }
-    .composer-period {
-        background: #edf0f4; color: #46536a;
-        &[data-period="baroque"] { background: #f9edcf; color: #715735; }
-        &[data-period="classical"] { background: #ece2ff; color: #6030a0; }
-        &[data-period="romantic"] { background: #fce1e7; color: #893956; }
-        &[data-period="modern"], &[data-period="20th century"] { background: #e0edff; color: #305d94; }
-        &[data-period="impressionist"], &[data-period="impressionism"] { background: #def0e6; color: #376850; }
-        &[data-period="contemporary"], &[data-period="21st century"] { background: #ddf1f2; color: #32676c; }
-        &[data-period="renaissance"] { background: #f5e5d5; color: #7c5738; }
+    .composer-card-country,
+    .composer-card-years,
+    .composer-piece-count {
+        font-size: var(--font-size-sm);
+        line-height: 1.4;
     }
-    .composer-piece-count { white-space: nowrap; }
-    .composer-card-chevron { width: 16px; height: 16px; margin-left: auto; }
+    .composer-card-country {
+        margin-bottom: 5px;
+    }
+    .composer-card-country .flag-icon {
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        margin-right: 7px !important;
+    }
+    .composer-card-years {
+        margin-bottom: 8px;
+    }
+    .composer-card-details {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 7px 16px;
+        margin-top: 8px;
+    }
+    .composer-period,
+    .composer-popular {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: var(--radius-pill);
+        font-size: 0.8125rem;
+        line-height: 1.25;
+    }
+    .composer-popular {
+        background: rgba(var(--color-primary-rgb), 0.09);
+        color: var(--color-primary);
+        padding: 3px 11px;
+    }
+    .composer-period {
+        background: #edf0f4;
+        color: #46536a;
+        &[data-period='baroque'] {
+            background: #f9edcf;
+            color: #715735;
+        }
+        &[data-period='classical'] {
+            background: #ece2ff;
+            color: #6030a0;
+        }
+        &[data-period='romantic'] {
+            background: #fce1e7;
+            color: #893956;
+        }
+        &[data-period='modern'],
+        &[data-period='20th century'] {
+            background: #e0edff;
+            color: #305d94;
+        }
+        &[data-period='impressionist'],
+        &[data-period='impressionism'] {
+            background: #def0e6;
+            color: #376850;
+        }
+        &[data-period='contemporary'],
+        &[data-period='21st century'] {
+            background: #ddf1f2;
+            color: #32676c;
+        }
+        &[data-period='renaissance'] {
+            background: #f5e5d5;
+            color: #7c5738;
+        }
+    }
+    .composer-piece-count {
+        white-space: nowrap;
+    }
+    .composer-card-chevron {
+        width: 16px;
+        height: 16px;
+        margin-left: auto;
+    }
     @media (max-width: 575.98px) {
-        .composer-card-link { gap: 14px; padding: 14px; }
-        .composer-portrait { width: 88px; height: 104px; }
-        .composer-card-details { column-gap: 12px; }
+        .composer-card-link {
+            gap: 14px;
+            padding: 14px;
+        }
+        .composer-portrait {
+            width: 88px;
+            height: 104px;
+        }
+        .composer-card-details {
+            column-gap: 12px;
+        }
     }
     .composer-pill {
         --radius-button: var(--radius-pill);
         flex-shrink: 0;
         min-width: calc(var(--space-3) * 2);
     }
-    .composer-alphabet { flex: 1; }
+    .composer-alphabet {
+        flex: 1;
+    }
 }
 
 #composer-controls .search-controls__facets {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     @media (max-width: 767.98px) {
         grid-template-columns: minmax(0, 1fr);
-        fieldset + fieldset { padding-left: 0; border-left: 0; }
+        fieldset + fieldset {
+            padding-left: 0;
+            border-left: 0;
+        }
     }
 }
 
 // Preserve the original night palette; the default day palette below changes colors only.
 #composer-globe-modal {
-    .modal-content { background: #091b2a; color: #eaf1f5; }
+    .modal-content {
+        background: #091b2a;
+        color: #eaf1f5;
+    }
     .fullscreen-modal-header {
         padding: 24px 32px;
-        border-bottom: 1px solid rgba(164, 200, 219, .13);
+        border-bottom: 1px solid rgba(164, 200, 219, 0.13);
         background: #0b2031;
-        h1 { color: #f4f6f7; font-size: 26px; }
-        .text-muted { color: #a9c0cf !important; }
+        h1 {
+            color: #f4f6f7;
+            font-size: 26px;
+        }
+        .text-muted {
+            color: #a9c0cf !important;
+        }
     }
     .fullscreen-modal-close {
-        background: rgba(181, 209, 225, .09); color: #eaf1f5 !important;
-        border: 1px solid rgba(181, 209, 225, .18);
+        background: rgba(181, 209, 225, 0.09);
+        color: #eaf1f5 !important;
+        border: 1px solid rgba(181, 209, 225, 0.18);
     }
     .composer-globe-layout {
-        display: grid; grid-template-columns: minmax(0, 1fr) 350px;
-        padding: 0; min-height: 0; overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 350px;
+        padding: 0;
+        min-height: 0;
+        overflow: hidden;
     }
     .composer-globe-stage {
-        position: relative; min-width: 0; min-height: 0; overflow: hidden;
-        background:
-            radial-gradient(ellipse at 50% 50%, rgba(43, 107, 142, .22), transparent 66%),
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+        background: radial-gradient(ellipse at 50% 50%, rgba(43, 107, 142, 0.22), transparent 66%),
             radial-gradient(1px 1px at 13% 18%, #96b5c9 99%, transparent),
             radial-gradient(1px 1px at 75% 24%, #96b5c9 99%, transparent),
             radial-gradient(1px 1px at 20% 72%, #64889e 99%, transparent),
             radial-gradient(1px 1px at 85% 68%, #64889e 99%, transparent),
             radial-gradient(1px 1px at 48% 89%, #96b5c9 99%, transparent), #071725;
     }
-    .composer-globe-canvas { position: absolute; inset: 0; outline-offset: -4px; }
-    .composer-globe-canvas canvas { display: block; }
+    .composer-globe-canvas {
+        position: absolute;
+        inset: 0;
+        outline-offset: -4px;
+    }
+    .composer-globe-canvas canvas {
+        display: block;
+    }
     .composer-globe-mode {
-        position: absolute; z-index: 2; top: 24px; left: 28px;
-        display: flex; align-items: center; gap: 9px;
-        font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
-        color: #c2d6e2; pointer-events: none;
+        position: absolute;
+        z-index: 2;
+        top: 24px;
+        left: 28px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #c2d6e2;
+        pointer-events: none;
     }
-    .composer-globe-dot { width: 6px; height: 6px; border-radius: 50%; background: #dabe80; box-shadow: 0 0 10px rgba(218, 190, 128, .4); }
+    .composer-globe-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #dabe80;
+        box-shadow: 0 0 10px rgba(218, 190, 128, 0.4);
+    }
     .composer-globe-legend {
-        position: absolute; z-index: 2; top: 50px; left: 28px; color: #afc6d4;
-        font-size: 10px; pointer-events: none;
-        span { display: inline-block; width: 7px; height: 7px; background: #699b9c; border-radius: 2px; margin-right: 7px; }
+        position: absolute;
+        z-index: 2;
+        top: 50px;
+        left: 28px;
+        color: #afc6d4;
+        font-size: 10px;
+        pointer-events: none;
+        span {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: #699b9c;
+            border-radius: 2px;
+            margin-right: 7px;
+        }
     }
-    .composer-globe-loading, .composer-globe-error {
-        position: absolute; z-index: 4; inset: 0;
-        display: flex; align-items: center; justify-content: center; gap: 12px;
-        background: rgba(7, 23, 37, .85); color: #c2d6e2; text-align: center; padding: 28px;
+    .composer-globe-loading,
+    .composer-globe-error {
+        position: absolute;
+        z-index: 4;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: rgba(7, 23, 37, 0.85);
+        color: #c2d6e2;
+        text-align: center;
+        padding: 28px;
     }
-    .composer-globe-error { flex-direction: column; }
-    .composer-globe-error p { max-width: 360px; }
+    .composer-globe-error {
+        flex-direction: column;
+    }
+    .composer-globe-error p {
+        max-width: 360px;
+    }
     .composer-globe-tools {
-        position: absolute; z-index: 3; right: 24px; bottom: 76px;
-        display: flex; flex-direction: column; gap: 4px; padding: 5px;
-        border: 1px solid rgba(164, 200, 219, .2); border-radius: 28px;
-        background: rgba(11, 32, 49, .92);
-        > span { border-top: 1px solid rgba(164, 200, 219, .15); margin: 2px 8px; }
+        position: absolute;
+        z-index: 3;
+        right: 24px;
+        bottom: 76px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 5px;
+        border: 1px solid rgba(164, 200, 219, 0.2);
+        border-radius: 28px;
+        background: rgba(11, 32, 49, 0.92);
+        > span {
+            border-top: 1px solid rgba(164, 200, 219, 0.15);
+            margin: 2px 8px;
+        }
         button {
-            width: 42px; height: 42px; display: grid; place-items: center;
-            border: 0; border-radius: 50%; background: transparent; color: #eaf1f5; cursor: pointer;
-            &:hover { background: rgba(181, 209, 225, .13); }
-            &:disabled { opacity: .4; cursor: default; }
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: #eaf1f5;
+            cursor: pointer;
+            &:hover {
+                background: rgba(181, 209, 225, 0.13);
+            }
+            &:disabled {
+                opacity: 0.4;
+                cursor: default;
+            }
         }
     }
     .composer-globe-help {
-        position: absolute; z-index: 2; bottom: 25px; left: 24px; right: 24px;
-        margin: 0; text-align: center; font-size: 12px; color: #a9c0cf; pointer-events: none;
-        span { padding: 0 8px; color: #647f91; }
+        position: absolute;
+        z-index: 2;
+        bottom: 25px;
+        left: 24px;
+        right: 24px;
+        margin: 0;
+        text-align: center;
+        font-size: 12px;
+        color: #a9c0cf;
+        pointer-events: none;
+        span {
+            padding: 0 8px;
+            color: #647f91;
+        }
     }
-    .composer-globe-credit { position: absolute; bottom: 7px; left: 14px; font-size: 9px; color: #648395; pointer-events: none; }
+    .composer-globe-credit {
+        position: absolute;
+        bottom: 7px;
+        left: 14px;
+        font-size: 9px;
+        color: #648395;
+        pointer-events: none;
+    }
     .composer-globe-label {
-        border: 0; padding: 5px 8px; border-radius: 6px; background: rgba(7, 23, 37, .5);
-        color: #f0eee5; font-size: 12px; letter-spacing: .06em; font-weight: 600;
-        text-shadow: 0 1px 5px #071725; cursor: pointer; white-space: nowrap;
-        &:hover { color: #f1d69e; background: rgba(7, 23, 37, .9); }
+        border: 0;
+        padding: 5px 8px;
+        border-radius: 6px;
+        background: rgba(7, 23, 37, 0.5);
+        color: #f0eee5;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        font-weight: 600;
+        text-shadow: 0 1px 5px #071725;
+        cursor: pointer;
+        white-space: nowrap;
+        &:hover {
+            color: #f1d69e;
+            background: rgba(7, 23, 37, 0.9);
+        }
     }
-    .composer-globe-label-country { font-size: 11px; font-weight: 400; letter-spacing: 0; }
+    .composer-globe-label-country {
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0;
+    }
     .composer-globe-portraits {
-        display: flex; flex-direction: column; align-items: center; gap: 12px;
-        pointer-events: auto; text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        pointer-events: auto;
+        text-align: center;
     }
-    .composer-globe-portrait-row { display: flex; align-items: center; gap: 12px; padding: 0px 8px; }
+    .composer-globe-portrait-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0px 8px;
+    }
     .composer-globe-polaroid {
-        display: block; width: 100px; padding: 4px 4px 6px; border: 1px solid #f0ece1;
-        background: #fffdf7; color: #203441 !important; text-decoration: none !important;
-        box-shadow: 0 14px 28px rgba(0, 0, 0, .35), 0 2px 5px rgba(0, 0, 0, .18);
-        transform: rotate(-5deg); transition: transform .18s ease, box-shadow .18s ease;
-        pointer-events: auto; touch-action: manipulation;
-        &:nth-child(2n) { transform: translateY(-9px) rotate(3deg); }
-        &:nth-child(3n) { transform: rotate(6deg); }
-        &:only-child { transform: rotate(-3deg); }
-        &:hover, &:focus-visible { transform: translateY(-12px) rotate(0); box-shadow: 0 20px 36px rgba(0, 0, 0, .42); }
+        display: block;
+        width: 100px;
+        padding: 4px 4px 6px;
+        border: 1px solid #f0ece1;
+        background: #fffdf7;
+        color: #203441 !important;
+        text-decoration: none !important;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35), 0 2px 5px rgba(0, 0, 0, 0.18);
+        transform: rotate(-5deg);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+        pointer-events: auto;
+        touch-action: manipulation;
+        &:nth-child(2n) {
+            transform: translateY(-9px) rotate(3deg);
+        }
+        &:nth-child(3n) {
+            transform: rotate(6deg);
+        }
+        &:only-child {
+            transform: rotate(-3deg);
+        }
+        &:hover,
+        &:focus-visible {
+            transform: translateY(-12px) rotate(0);
+            box-shadow: 0 20px 36px rgba(0, 0, 0, 0.42);
+        }
     }
     .composer-globe-polaroid-photo {
-        position: relative; display: grid; place-items: center; height: 100px; overflow: hidden;
-        background: linear-gradient(145deg, #e8e1d1, #c4d5d5); color: #49606a;
-        img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
+        position: relative;
+        display: grid;
+        place-items: center;
+        height: 100px;
+        overflow: hidden;
+        background: linear-gradient(145deg, #e8e1d1, #c4d5d5);
+        color: #49606a;
+        img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 25%;
+        }
     }
-    .composer-globe-polaroid-initials { font-family: Georgia, serif; font-size: 32px; letter-spacing: .03em; }
+    .composer-globe-polaroid-initials {
+        font-family: Georgia, serif;
+        font-size: 32px;
+        letter-spacing: 0.03em;
+    }
     .composer-globe-polaroid-name {
-        display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
-        min-height: 30px; margin-top: 6px; font-size: 12px; font-weight: 600; line-height: 15px; overflow-wrap: anywhere;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        min-height: 30px;
+        margin-top: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 15px;
+        overflow-wrap: anywhere;
     }
-    .composer-globe-polaroid-count { display: block; margin-top: 4px; color: #68747a; font-size: 10px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+    .composer-globe-polaroid-count {
+        display: block;
+        margin-top: 4px;
+        color: #68747a;
+        font-size: 10px;
+        line-height: 1.2;
+        font-variant-numeric: tabular-nums;
+    }
     .composer-globe-portrait-nav {
-        display: flex; align-items: center; gap: 12px; border-radius: 24px; padding: 4px;
-        background: rgba(7, 23, 37, .9); border: 1px solid #466173; color: #e4edf1; pointer-events: auto;
-        span { font-size: 11px; min-width: 62px; font-variant-numeric: tabular-nums; }
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-radius: 24px;
+        padding: 4px;
+        background: rgba(7, 23, 37, 0.9);
+        border: 1px solid #466173;
+        color: #e4edf1;
+        pointer-events: auto;
+        span {
+            font-size: 11px;
+            min-width: 62px;
+            font-variant-numeric: tabular-nums;
+        }
         button {
-            width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: #e7c88b;
-            font-size: 25px; line-height: 1; cursor: pointer;
-            &:hover { background: #264b60; }
-            &:disabled { opacity: .35; cursor: default; }
+            width: 36px;
+            height: 36px;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: #e7c88b;
+            font-size: 25px;
+            line-height: 1;
+            cursor: pointer;
+            &:hover {
+                background: #264b60;
+            }
+            &:disabled {
+                opacity: 0.35;
+                cursor: default;
+            }
         }
     }
     .composer-globe-portrait-pin {
-        position: relative; padding: 5px 10px; border-radius: 14px; background: rgba(7, 23, 37, .8);
-        color: #f1d69e; font-size: 16px; letter-spacing: .04em;
+        position: relative;
+        padding: 5px 10px;
+        border-radius: 14px;
+        background: rgba(7, 23, 37, 0.8);
+        color: #f1d69e;
+        font-size: 16px;
+        letter-spacing: 0.04em;
     }
     .composer-globe-portrait-close {
-        display: block; min-width: 44px; min-height: 24px; margin: 4px auto 0; padding: 2px 8px;
-        border: 1px solid rgba(231, 200, 139, .35); border-radius: 6px; background: transparent;
-        color: #f1d69e; font-size: 10px; line-height: 1.2; cursor: pointer; pointer-events: auto;
-        &:hover { background: #264b60; border-color: #e7c88b; }
+        display: block;
+        min-width: 44px;
+        min-height: 24px;
+        margin: 4px auto 0;
+        padding: 2px 8px;
+        border: 1px solid rgba(231, 200, 139, 0.35);
+        border-radius: 6px;
+        background: transparent;
+        color: #f1d69e;
+        font-size: 10px;
+        line-height: 1.2;
+        cursor: pointer;
+        pointer-events: auto;
+        &:hover {
+            background: #264b60;
+            border-color: #e7c88b;
+        }
     }
     .composer-globe-portrait-status {
-        font-size: 12px; color: #afc6d4; margin: 0 0 16px;
-        button { padding: 3px 8px; margin-left: 4px; border: 1px solid #466173; border-radius: 5px; background: #1c384b; color: #e7c88b; }
+        font-size: 12px;
+        color: #afc6d4;
+        margin: 0 0 16px;
+        button {
+            padding: 3px 8px;
+            margin-left: 4px;
+            border: 1px solid #466173;
+            border-radius: 5px;
+            background: #1c384b;
+            color: #e7c88b;
+        }
     }
     .composer-globe-panel {
-        min-height: 0; min-width: 0; padding: 28px; overflow-y: auto;
-        border-left: 1px solid rgba(164, 200, 219, .13); background: #0d2334;
+        min-height: 0;
+        min-width: 0;
+        padding: 28px;
+        overflow-y: auto;
+        border-left: 1px solid rgba(164, 200, 219, 0.13);
+        background: #0d2334;
         scrollbar-color: #355064 #0d2334;
         .form-select {
-            margin-bottom: 30px; background-color: #163044; color: #eaf1f5;
-            border-color: #375266; font-size: 14px;
+            margin-bottom: 30px;
+            background-color: #163044;
+            color: #eaf1f5;
+            border-color: #375266;
+            font-size: 14px;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23afc6d4' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
         }
-        h2 { color: #f4f2eb; font-size: 30px; line-height: 1.15; margin: 0 0 12px; }
+        h2 {
+            color: #f4f2eb;
+            font-size: 30px;
+            line-height: 1.15;
+            margin: 0 0 12px;
+        }
     }
-    .composer-globe-eyebrow { color: #9eb8c9; text-transform: uppercase; letter-spacing: .12em; font-size: 10px; font-weight: 600; margin-bottom: 10px; }
-    label.composer-globe-eyebrow { display: block; }
-    .composer-globe-description { color: #afc6d4; font-size: 14px; line-height: 1.6; margin: 0 0 22px; }
+    .composer-globe-eyebrow {
+        color: #9eb8c9;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 10px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    label.composer-globe-eyebrow {
+        display: block;
+    }
+    .composer-globe-description {
+        color: #afc6d4;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0 0 22px;
+    }
     .composer-globe-stats {
-        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 24px 0;
-        strong { display: block; font-size: 34px; font-weight: 500; color: #e7c88b; line-height: 1.2; font-variant-numeric: tabular-nums; }
-        span { display: block; font-size: 12px; margin-top: 5px; color: #afc6d4; }
-        > div + div { border-left: 1px solid #2a4255; padding-left: 22px; }
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin: 24px 0;
+        strong {
+            display: block;
+            font-size: 34px;
+            font-weight: 500;
+            color: #e7c88b;
+            line-height: 1.2;
+            font-variant-numeric: tabular-nums;
+        }
+        span {
+            display: block;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #afc6d4;
+        }
+        > div + div {
+            border-left: 1px solid #2a4255;
+            padding-left: 22px;
+        }
     }
-    .composer-globe-browse, .composer-globe-closer { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 10px; }
+    .composer-globe-browse,
+    .composer-globe-closer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 10px;
+    }
     .composer-globe-browse {
-        background: #dec084; border-color: #dec084; color: #172a38 !important;
-        &:hover { background: #ecd39f; border-color: #ecd39f; color: #172a38 !important; }
-        &:focus, &:active { background: #ecd39f !important; border-color: #ecd39f !important; }
+        background: #dec084;
+        border-color: #dec084;
+        color: #172a38 !important;
+        &:hover {
+            background: #ecd39f;
+            border-color: #ecd39f;
+            color: #172a38 !important;
+        }
+        &:focus,
+        &:active {
+            background: #ecd39f !important;
+            border-color: #ecd39f !important;
+        }
     }
-    .composer-globe-closer { background: #1c384b; color: #eaf1f5 !important; border-color: #375266; }
-    .composer-globe-regions { margin-top: 30px; }
+    .composer-globe-closer {
+        background: #1c384b;
+        color: #eaf1f5 !important;
+        border-color: #375266;
+    }
+    .composer-globe-regions {
+        margin-top: 30px;
+    }
     .composer-globe-region {
-        display: flex; align-items: center; justify-content: space-between; gap: 12px;
-        width: 100%; min-height: 48px; padding: 10px 0; border: 0; border-bottom: 1px solid #263f52;
-        background: transparent; color: #e2ebf0; font-size: 14px; text-align: left; cursor: pointer;
-        span + span { color: #9eb8c9; font-size: 11px; white-space: nowrap; }
-        &:hover, &[aria-pressed=true] { color: #e7c88b; }
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        min-height: 48px;
+        padding: 10px 0;
+        border: 0;
+        border-bottom: 1px solid #263f52;
+        background: transparent;
+        color: #e2ebf0;
+        font-size: 14px;
+        text-align: left;
+        cursor: pointer;
+        span + span {
+            color: #9eb8c9;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        &:hover,
+        &[aria-pressed='true'] {
+            color: #e7c88b;
+        }
     }
-    .composer-globe-footnote { margin: 24px 0 0; font-size: 10px; line-height: 1.6; color: #9eb8c9; }
-    button:focus-visible, select:focus-visible, a:focus-visible, .composer-globe-canvas:focus-visible { outline: 2px solid #e7c88b; outline-offset: 3px; }
+    .composer-globe-footnote {
+        margin: 24px 0 0;
+        font-size: 10px;
+        line-height: 1.6;
+        color: #9eb8c9;
+    }
+    button:focus-visible,
+    select:focus-visible,
+    a:focus-visible,
+    .composer-globe-canvas:focus-visible {
+        outline: 2px solid #e7c88b;
+        outline-offset: 3px;
+    }
 
     @media (max-width: 899.98px) {
-        .fullscreen-modal-header { padding: 18px 22px; h1 { font-size: 23px; } }
-        .composer-globe-layout { grid-template-columns: minmax(0, 1fr) 300px; }
-        .composer-globe-panel { padding: 22px; h2 { font-size: 26px; } }
-        .composer-globe-help { font-size: 11px; bottom: 24px; span { padding: 0 3px; } }
+        .fullscreen-modal-header {
+            padding: 18px 22px;
+            h1 {
+                font-size: 23px;
+            }
+        }
+        .composer-globe-layout {
+            grid-template-columns: minmax(0, 1fr) 300px;
+        }
+        .composer-globe-panel {
+            padding: 22px;
+            h2 {
+                font-size: 26px;
+            }
+        }
+        .composer-globe-help {
+            font-size: 11px;
+            bottom: 24px;
+            span {
+                padding: 0 3px;
+            }
+        }
     }
     @media (max-width: 699.98px) {
-        .composer-globe-portraits { gap: 6px; }
-        .composer-globe-portrait-row { gap: 10px; padding: 8px; }
-        .composer-globe-polaroid { width: 106px; padding: 6px 6px 8px; }
-        .composer-globe-polaroid-photo { height: 90px; }
-        .composer-globe-polaroid-name { font-size: 10px; line-height: 13px; min-height: 26px; margin-top: 6px; }
-        .composer-globe-polaroid-count { font-size: 9px; }
-        .composer-globe-portrait-nav button { width: 32px; height: 32px; }
-        .composer-globe-portrait-pin { font-size: 10px; }
-        .fullscreen-modal-header { padding: 16px 18px; h1 { font-size: 21px; } }
-        .composer-globe-layout { display: block; overflow-y: auto; }
-        .composer-globe-stage { height: 42vh; height: 42dvh; min-height: 290px; }
-        .composer-globe-mode { top: 16px; left: 18px; font-size: 10px; }
-        .composer-globe-legend { top: 39px; left: 18px; font-size: 9px; }
-        .composer-globe-help { z-index: 0; left: 18px; right: 72px; bottom: 26px; font-size: 10px; }
-        .composer-globe-tools { right: 12px; bottom: 28px; button { width: 38px; height: 38px; } }
-        .composer-globe-panel { padding: 22px; overflow: visible; border-left: 0; border-top: 1px solid #263f52; }
-        .composer-globe-panel .form-select { margin-bottom: 24px; }
-        .composer-globe-stats { margin: 20px 0; strong { font-size: 30px; } }
+        .composer-globe-portraits {
+            gap: 6px;
+        }
+        .composer-globe-portrait-row {
+            gap: 10px;
+            padding: 8px;
+        }
+        .composer-globe-polaroid {
+            width: 106px;
+            padding: 6px 6px 8px;
+        }
+        .composer-globe-polaroid-photo {
+            height: 90px;
+        }
+        .composer-globe-polaroid-name {
+            font-size: 10px;
+            line-height: 13px;
+            min-height: 26px;
+            margin-top: 6px;
+        }
+        .composer-globe-polaroid-count {
+            font-size: 9px;
+        }
+        .composer-globe-portrait-nav button {
+            width: 32px;
+            height: 32px;
+        }
+        .composer-globe-portrait-pin {
+            font-size: 10px;
+        }
+        .fullscreen-modal-header {
+            padding: 16px 18px;
+            h1 {
+                font-size: 21px;
+            }
+        }
+        .composer-globe-layout {
+            display: block;
+            overflow-y: auto;
+        }
+        .composer-globe-stage {
+            height: 42vh;
+            height: 42dvh;
+            min-height: 290px;
+        }
+        .composer-globe-mode {
+            top: 16px;
+            left: 18px;
+            font-size: 10px;
+        }
+        .composer-globe-legend {
+            top: 39px;
+            left: 18px;
+            font-size: 9px;
+        }
+        .composer-globe-help {
+            z-index: 0;
+            left: 18px;
+            right: 72px;
+            bottom: 26px;
+            font-size: 10px;
+        }
+        .composer-globe-tools {
+            right: 12px;
+            bottom: 28px;
+            button {
+                width: 38px;
+                height: 38px;
+            }
+        }
+        .composer-globe-panel {
+            padding: 22px;
+            overflow: visible;
+            border-left: 0;
+            border-top: 1px solid #263f52;
+        }
+        .composer-globe-panel .form-select {
+            margin-bottom: 24px;
+        }
+        .composer-globe-stats {
+            margin: 20px 0;
+            strong {
+                font-size: 30px;
+            }
+        }
     }
-    @media (prefers-reduced-motion: reduce) { .composer-globe-polaroid { transition: none; } }
+    @media (prefers-reduced-motion: reduce) {
+        .composer-globe-polaroid {
+            transition: none;
+        }
+    }
 }
 
 // globe.gl places its pointer tooltip inside the canvas container.
 .composer-globe-tooltip {
-    padding: 12px 16px; border: 1px solid rgba(164, 200, 219, .3); border-radius: 10px;
-    background: rgba(9, 27, 42, .96); color: #f4f2eb; box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
-    strong { display: block; font-size: 14px; margin-bottom: 4px; }
-    span { font-size: 12px; color: #c2d6e2; }
+    padding: 12px 16px;
+    border: 1px solid rgba(164, 200, 219, 0.3);
+    border-radius: 10px;
+    background: rgba(9, 27, 42, 0.96);
+    color: #f4f2eb;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+    span {
+        font-size: 12px;
+        color: #c2d6e2;
+    }
 }
 
 // The controller follows the nearest data-bs-theme attribute and updates the
 // WebGL palette too. With no app theme selected, the globe uses this light view.
-#composer-globe-modal:not([data-globe-theme="dark"]) {
+#composer-globe-modal:not([data-globe-theme='dark']) {
     color-scheme: light;
-    .modal-content { background: var(--color-surface); color: var(--color-text); }
+    .modal-content {
+        background: var(--color-surface);
+        color: var(--color-text);
+    }
     .fullscreen-modal-header {
-        background: var(--color-surface); border-color: var(--color-dropdown-border);
-        h1 { color: var(--color-text); }
-        .text-muted { color: var(--color-text-muted) !important; }
+        background: var(--color-surface);
+        border-color: var(--color-dropdown-border);
+        h1 {
+            color: var(--color-text);
+        }
+        .text-muted {
+            color: var(--color-text-muted) !important;
+        }
     }
     .fullscreen-modal-close {
-        background: var(--color-surface-subtle); border-color: var(--color-dropdown-border); color: var(--color-text) !important;
-        &:hover { background: #edf2fa; }
+        background: var(--color-surface-subtle);
+        border-color: var(--color-dropdown-border);
+        color: var(--color-text) !important;
+        &:hover {
+            background: #edf2fa;
+        }
     }
     .composer-globe-stage {
         background: radial-gradient(ellipse at 50% 48%, #fff 0%, #f3f7fc 55%, #edf3f8 100%);
     }
-    .composer-globe-mode { color: #486275; }
-    .composer-globe-dot { background: var(--color-primary); box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), .08); }
-    .composer-globe-legend { color: #526e7b; span { background: #86b7a3; } }
-    .composer-globe-loading, .composer-globe-error { background: rgba(245, 249, 253, .94); color: #486275; }
-    .composer-globe-tools {
-        background: rgba(255, 255, 255, .94); border-color: #d5e1e9; box-shadow: 0 8px 24px rgba(41, 72, 93, .08);
-        > span { border-color: #dce6ed; }
-        button { color: #35566c; &:hover { color: var(--color-primary); background: #edf3ff; } }
+    .composer-globe-mode {
+        color: #486275;
     }
-    .composer-globe-help { color: #526e7b; span { color: #849aa6; } }
-    .composer-globe-credit { color: #6c8290; }
+    .composer-globe-dot {
+        background: var(--color-primary);
+        box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.08);
+    }
+    .composer-globe-legend {
+        color: #526e7b;
+        span {
+            background: #86b7a3;
+        }
+    }
+    .composer-globe-loading,
+    .composer-globe-error {
+        background: rgba(245, 249, 253, 0.94);
+        color: #486275;
+    }
+    .composer-globe-tools {
+        background: rgba(255, 255, 255, 0.94);
+        border-color: #d5e1e9;
+        box-shadow: 0 8px 24px rgba(41, 72, 93, 0.08);
+        > span {
+            border-color: #dce6ed;
+        }
+        button {
+            color: #35566c;
+            &:hover {
+                color: var(--color-primary);
+                background: #edf3ff;
+            }
+        }
+    }
+    .composer-globe-help {
+        color: #526e7b;
+        span {
+            color: #849aa6;
+        }
+    }
+    .composer-globe-credit {
+        color: #6c8290;
+    }
     .composer-globe-label {
-        background: rgba(255, 255, 255, .86); color: #35566c; text-shadow: none;
-        box-shadow: 0 2px 8px rgba(41, 72, 93, .06);
-        &:hover { color: var(--color-primary); background: #fff; }
+        background: rgba(255, 255, 255, 0.86);
+        color: #35566c;
+        text-shadow: none;
+        box-shadow: 0 2px 8px rgba(41, 72, 93, 0.06);
+        &:hover {
+            color: var(--color-primary);
+            background: #fff;
+        }
     }
     .composer-globe-polaroid {
-        box-shadow: 0 14px 28px rgba(41, 72, 93, .18), 0 2px 5px rgba(41, 72, 93, .1);
-        &:hover, &:focus-visible { box-shadow: 0 20px 36px rgba(41, 72, 93, .24); }
+        box-shadow: 0 14px 28px rgba(41, 72, 93, 0.18), 0 2px 5px rgba(41, 72, 93, 0.1);
+        &:hover,
+        &:focus-visible {
+            box-shadow: 0 20px 36px rgba(41, 72, 93, 0.24);
+        }
     }
     .composer-globe-portrait-nav {
-        background: rgba(255, 255, 255, .95); border-color: #d5e1e9; color: #486275;
-        box-shadow: 0 4px 16px rgba(41, 72, 93, .08);
-        button { color: var(--color-primary); &:hover { background: #edf3ff; } }
+        background: rgba(255, 255, 255, 0.95);
+        border-color: #d5e1e9;
+        color: #486275;
+        box-shadow: 0 4px 16px rgba(41, 72, 93, 0.08);
+        button {
+            color: var(--color-primary);
+            &:hover {
+                background: #edf3ff;
+            }
+        }
     }
-    .composer-globe-portrait-pin { background: rgba(255, 255, 255, .94); color: #35566c; }
+    .composer-globe-portrait-pin {
+        background: rgba(255, 255, 255, 0.94);
+        color: #35566c;
+    }
     .composer-globe-portrait-close {
-        color: #486275; border-color: #cad9e4;
-        &:hover { color: var(--color-primary); border-color: #9bbcf2; background: #edf3ff; }
+        color: #486275;
+        border-color: #cad9e4;
+        &:hover {
+            color: var(--color-primary);
+            border-color: #9bbcf2;
+            background: #edf3ff;
+        }
     }
     .composer-globe-portrait-status {
         color: var(--color-text-muted);
-        button { background: var(--color-surface); color: var(--color-primary); border-color: #cad9e4; }
+        button {
+            background: var(--color-surface);
+            color: var(--color-primary);
+            border-color: #cad9e4;
+        }
     }
     .composer-globe-panel {
-        background: var(--color-surface); border-color: var(--color-dropdown-border); scrollbar-color: #c5d3df var(--color-surface);
+        background: var(--color-surface);
+        border-color: var(--color-dropdown-border);
+        scrollbar-color: #c5d3df var(--color-surface);
         .form-select {
-            background-color: var(--field-background); color: var(--field-text); border-color: var(--field-border);
+            background-color: var(--field-background);
+            color: var(--field-text);
+            border-color: var(--field-border);
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23526e7b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
         }
-        h2 { color: var(--color-text); }
+        h2 {
+            color: var(--color-text);
+        }
     }
-    .composer-globe-eyebrow { color: #6c8290; }
-    .composer-globe-description { color: var(--color-text-muted); }
+    .composer-globe-eyebrow {
+        color: #6c8290;
+    }
+    .composer-globe-description {
+        color: var(--color-text-muted);
+    }
     .composer-globe-stats {
-        strong { color: var(--color-primary); }
-        span { color: var(--color-text-muted); }
-        > div + div { border-color: var(--color-dropdown-border); }
+        strong {
+            color: var(--color-primary);
+        }
+        span {
+            color: var(--color-text-muted);
+        }
+        > div + div {
+            border-color: var(--color-dropdown-border);
+        }
     }
     .composer-globe-browse {
-        background: var(--color-primary); border-color: var(--color-primary); color: #fff !important;
-        &:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); color: #fff !important; }
-        &:focus, &:active { background: var(--color-primary-active) !important; border-color: var(--color-primary-active) !important; }
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        color: #fff !important;
+        &:hover {
+            background: var(--color-primary-hover);
+            border-color: var(--color-primary-hover);
+            color: #fff !important;
+        }
+        &:focus,
+        &:active {
+            background: var(--color-primary-active) !important;
+            border-color: var(--color-primary-active) !important;
+        }
     }
-    .composer-globe-closer { background: var(--color-surface); border-color: var(--color-dropdown-border); color: var(--color-text) !important; }
+    .composer-globe-closer {
+        background: var(--color-surface);
+        border-color: var(--color-dropdown-border);
+        color: var(--color-text) !important;
+    }
     .composer-globe-region {
-        color: var(--color-text); border-color: var(--color-dropdown-border);
-        span + span { color: var(--color-text-muted); }
-        &:hover, &[aria-pressed=true] { color: var(--color-primary); }
+        color: var(--color-text);
+        border-color: var(--color-dropdown-border);
+        span + span {
+            color: var(--color-text-muted);
+        }
+        &:hover,
+        &[aria-pressed='true'] {
+            color: var(--color-primary);
+        }
     }
-    .composer-globe-footnote { color: #6c8290; }
-    button:focus-visible, select:focus-visible, a:focus-visible, .composer-globe-canvas:focus-visible { outline-color: var(--color-primary); }
+    .composer-globe-footnote {
+        color: #6c8290;
+    }
+    button:focus-visible,
+    select:focus-visible,
+    a:focus-visible,
+    .composer-globe-canvas:focus-visible {
+        outline-color: var(--color-primary);
+    }
     .composer-globe-tooltip {
-        background: rgba(255, 255, 255, .97); border-color: #d5e1e9; color: #29485c; box-shadow: 0 8px 24px rgba(41, 72, 93, .13);
-        span { color: #526e7b; }
+        background: rgba(255, 255, 255, 0.97);
+        border-color: #d5e1e9;
+        color: #29485c;
+        box-shadow: 0 8px 24px rgba(41, 72, 93, 0.13);
+        span {
+            color: #526e7b;
+        }
     }
 }
 
@@ -379,13 +1012,17 @@
         object-fit: cover;
         object-position: center;
     }
-    .composer-biography { white-space: pre-wrap; }
+    .composer-biography {
+        white-space: pre-wrap;
+    }
     .composer-profile-details {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
         gap: var(--space-4);
         align-items: start;
-        > * { min-width: 0; }
+        > * {
+            min-width: 0;
+        }
     }
     @media (max-width: 991.98px) {
         .composer-contemporaries {
@@ -397,12 +1034,20 @@
     @media (min-width: 992px) {
         .composer-profile-details.has-sidebar {
             grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-            .composer-profile-biography { grid-column: 1; grid-row: 1; }
+            .composer-profile-biography {
+                grid-column: 1;
+                grid-row: 1;
+            }
             &.has-curiosity {
                 grid-template-rows: auto 1fr;
-                .composer-profile-biography { grid-row: 1 / span 2; }
+                .composer-profile-biography {
+                    grid-row: 1 / span 2;
+                }
             }
-            .composer-profile-curiosity, .composer-contemporaries { grid-column: 2; }
+            .composer-profile-curiosity,
+            .composer-contemporaries {
+                grid-column: 2;
+            }
         }
     }
     .composer-contemporary-portrait {
@@ -410,8 +1055,12 @@
         height: 56px;
         object-fit: cover;
     }
-    .composer-contemporary-copy { min-width: 0; }
-    .composer-contemporary-copy h3 { overflow-wrap: anywhere; }
+    .composer-contemporary-copy {
+        min-width: 0;
+    }
+    .composer-contemporary-copy h3 {
+        overflow-wrap: anywhere;
+    }
     .composer-contemporaries li + li .composer-contemporary-copy {
         position: relative;
         &::before {
@@ -423,11 +1072,20 @@
             border-top: 1px solid var(--color-border);
         }
     }
-    h1, p { overflow-wrap: anywhere; }
-    h1 { font-size: var(--font-size-h2); }
+    h1,
+    p {
+        overflow-wrap: anywhere;
+    }
+    h1 {
+        font-size: var(--font-size-h2);
+    }
 
     @media (min-width: 768px) {
-        .composer-profile-portrait { aspect-ratio: 1; }
-        h1 { font-size: var(--font-size-h1); }
+        .composer-profile-portrait {
+            aspect-ratio: 1;
+        }
+        h1 {
+            font-size: var(--font-size-h1);
+        }
     }
 }

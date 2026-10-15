@@ -10,7 +10,7 @@
     <div class="design-system__swatches">
       @foreach($colors as $color)
         <div class="design-system__swatch">
-          <div class="design-system__color" style="background-color: var(--color-{{ $color }})" data-ds-color></div>
+          <div class="design-system__color" data-ds-color-token="{{ $color }}" data-ds-color></div>
           <strong>{{ ucwords(str_replace('-', ' ', $color)) }}</strong><code>--color-{{ $color }}</code><span data-ds-color-value></span>
         </div>
       @endforeach
@@ -19,7 +19,7 @@
   <h3 class="design-system__group-title">Form palette</h3>
   <div class="design-system__swatches">
     @foreach(['background', 'border', 'text', 'muted', 'disabled-background'] as $color)
-      <div class="design-system__swatch"><div class="design-system__color" style="background-color: var(--field-{{ $color }})" data-ds-color></div><strong>{{ ucwords(str_replace('-', ' ', $color)) }}</strong><code>--field-{{ $color }}</code><span data-ds-color-value></span></div>
+      <div class="design-system__swatch"><div class="design-system__color" data-ds-field-color="{{ $color }}" data-ds-color></div><strong>{{ ucwords(str_replace('-', ' ', $color)) }}</strong><code>--field-{{ $color }}</code><span data-ds-color-value></span></div>
     @endforeach
   </div>
   <h3 class="design-system__group-title">Repertoire levels</h3>
@@ -31,7 +31,7 @@
   <h3 class="design-system__group-title">Pastel palette</h3>
   <div class="design-system__swatches">
     @foreach(['sky', 'cream', 'mint', 'lavender', 'peach', 'rose', 'aqua', 'butter', 'sage', 'lilac', 'periwinkle', 'terracotta'] as $tone)
-      <div class="design-system__swatch"><div class="design-system__color" style="background-color: var(--pastel-{{ $tone }}-accent)" data-ds-color></div><strong>{{ ucfirst($tone) }}</strong><code>--pastel-{{ $tone }}-accent</code><span data-ds-color-value></span></div>
+      <div class="design-system__swatch"><div class="design-system__color" data-ds-pastel="{{ $tone }}" data-ds-color></div><strong>{{ ucfirst($tone) }}</strong><code>--pastel-{{ $tone }}-accent</code><span data-ds-color-value></span></div>
     @endforeach
   </div>
   <p class="design-system__note">Each pastel also defines surface, border, ink, action and hover tokens. Brand primary and utility blue are separate colors.</p>

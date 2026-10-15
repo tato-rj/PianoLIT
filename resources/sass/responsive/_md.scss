@@ -2,21 +2,21 @@
 // FIRST BREAKPOINT: between 992px and 1200px //
 ////////////////////////////////////////////////
 @include media-breakpoint-between(md, xl) {
-	.cc-hero {
-		h1 {
-		    font-size: 96px !important;
-		}
+    .cc-hero {
+        h1 {
+            font-size: 96px !important;
+        }
 
-		h2 {
-		    margin-top: 0 !important;
-		}
-	}
+        h2 {
+            margin-top: 0 !important;
+        }
+    }
 
-	.infograph-card {
-		> div {
-			max-height: 313px !important;
-		}
-	}
+    .infograph-card {
+        > div {
+            max-height: 313px !important;
+        }
+    }
 }
 
 /////////////////////////////////////////
@@ -25,25 +25,25 @@
 // REPEAT FIRST BREAKPOINT IF IT IS TO PERSIST
 
 @include media-breakpoint-down(lg) {
-	.inline-on-collapse {
-		display: inline-block !important;
-	}
+    .inline-on-collapse {
+        display: inline-block !important;
+    }
 
-	.hide-on-collapse {
-		display: none !important;
-	}
+    .hide-on-collapse {
+        display: none !important;
+    }
 
-	.notifications-count {
-		transform: translate(-50%, -50%);
-	}
+    .notifications-count {
+        transform: translate(-50%, -50%);
+    }
 
-	.cc-card {
-		max-width: 100% !important;
-	}
+    .cc-card {
+        max-width: 100% !important;
+    }
 
-	.cc-hero {
-		h2 {
-		    margin-top: 0 !important;
-		}
-	}
+    .cc-hero {
+        h2 {
+            margin-top: 0 !important;
+        }
+    }
 }

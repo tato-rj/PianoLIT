@@ -2,7 +2,7 @@
   <header class="design-system__section-heading"><span class="design-system__eyebrow">03 / RHYTHM</span><h2 id="ds-spacing-title">Spacing</h2><p>The shared five-step scale for padding, margins and gaps.</p></header>
   <div class="design-system__spacing">
     @foreach(range(1, 5) as $step)
-      <div><code>--space-{{ $step }}</code><span class="design-system__space-bar" style="width: var(--space-{{ $step }})" data-ds-space></span><span data-ds-token="--space-{{ $step }}"></span><span data-ds-space-value></span><code>.p-{{ $step }} / .m-{{ $step }} / .gap-{{ $step }}</code></div>
+      <div><code>--space-{{ $step }}</code><span class="design-system__space-bar" data-ds-space="{{ $step }}"></span><span data-ds-token="--space-{{ $step }}"></span><span data-ds-space-value></span><code>.p-{{ $step }} / .m-{{ $step }} / .gap-{{ $step }}</code></div>
     @endforeach
   </div>
 </section>
@@ -12,12 +12,12 @@
   <div class="design-system__grid">
     @foreach(['radius' => 'Container', 'radius-sm' => 'Small container', 'radius-button' => 'Button', 'radius-input' => 'Input', 'radius-dropdown' => 'Dropdown', 'radius-pill' => 'Pill', 'radius-circle' => 'Circle'] as $token => $label)
       @component('admin.pages.settings.sample', ['label' => $label, 'usage' => '--'.$token, 'properties' => 'border,border-radius'])
-        <div class="design-system__shape" data-ds-preview style="border-radius: var(--{{ $token }})">{{ $label }}</div>
+        <div class="design-system__shape" data-ds-preview data-ds-radius="{{ $token }}">{{ $label }}</div>
       @endcomponent
     @endforeach
     @foreach(['shadow' => 'Standard', 'shadow-light' => 'Light', 'shadow-dark' => 'Dark', 'shadow-dropdown' => 'Dropdown'] as $token => $label)
       @component('admin.pages.settings.sample', ['label' => $label.' shadow', 'usage' => '--'.$token, 'properties' => 'box-shadow'])
-        <div class="design-system__shape rounded-sm" data-ds-preview style="box-shadow: var(--{{ $token }})">{{ $label }}</div>
+        <div class="design-system__shape rounded-sm" data-ds-preview data-ds-shadow="{{ $token }}">{{ $label }}</div>
       @endcomponent
     @endforeach
     @foreach(['border' => 'Default border', 'border border-primary' => 'Brand border', 'border border-danger' => 'Error border'] as $class => $label)

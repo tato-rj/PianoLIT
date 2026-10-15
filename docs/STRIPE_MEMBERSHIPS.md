@@ -70,6 +70,22 @@ Charge recording is idempotent regardless of campaign-attribution settings. Mini
 
 Local verification uses `phpunit-review.xml` with in-memory SQLite, fake mail/HTTP and a fake Stripe gateway. SDK transport tests additionally intercept the SDK HTTP client to inspect actual account/version/idempotency headers and the retained legacy card path. JavaScript checks simulate authentication, network failure, card-decline recovery, duplicate clicks and stale coupon responses. Synthetic Blade/browser previews verify desktop and phone layouts without loading Stripe or submitting a payment. These checks do not replace live sandbox and production configuration verification.
 
+## Opt-in Stripe test-mode integration
+
+`phpunit-stripe-sandbox.xml` runs `tests/Sandbox/StripeMembershipSandboxTest.php` against the real Stripe API. It is deliberately excluded from the ordinary review suite. The harness bootstraps the isolated review application with an in-memory SQLite database, fake mail/notifications/events and fake Laravel HTTP/Redis. It parses the local `.env` as data only to obtain the selected account's test secret; normal database, queue, mail and webhook credentials are never imported. It refuses non-test API keys and verifies `balance.livemode === false` before creating fixtures. The SDK uses the membership integration's pinned Basil version.
+
+Run explicitly only with test credentials and network access:
+
+```sh
+php -d error_reporting=8191 vendor/bin/phpunit -c phpunit-stripe-sandbox.xml
+```
+
+Each case creates its own test clock, customer, subscription, product and monthly/yearly Prices. Only customers created by the test gateway receive that clock. Cleanup deletes that clock's customer/subscription graph and archives its own Prices/product, including after failures; a cleanup failure reports fixture IDs for review. Stripe may retain archived catalog objects and event history. Provider errors are reduced to class/code/parameter/status/request ID, without keys, client secrets or raw payment/contact payloads. The suite performs actual test-mode provider writes, including a test refund, and never uses existing customer IDs.
+
+Coverage includes trial setup (including Stripe's second subscription SetupIntent), paid confirmation and replacement-card retry, duplicate completion, card replacement, scheduled plan changes, cancel/resume, pause/unpause, invoice history/preview, a test-clock trial conversion at the annual-plan boundary, actual charge/refund event replay and unfinished-authentication/decline refusal in both configured accounts. API authentication gating does not exercise the interactive Stripe.js bank challenge; browser challenge completion and MySQL concurrent-request/locking checks remain separate.
+
+The first real provider run exposed a schedule-update failure: Stripe returns `automatic_tax.disabled_reason`, but rejects that response-only field in an update. `MembershipManagement` now copies only writable tax settings (`enabled` and normalized liability identity) into both phases. Existing tax configuration, discounts and the renewal boundary are preserved. A focused isolated regression covers this response/request distinction. This PHP-only fix needs no migration or asset build.
+
 ## Reviewed legacy membership links
 
 The production audit supplied on 2026-10-15 found four owner IDs with multiple membership associations. Subsequent user-run Stripe listings and Apple receipt verification established the repair identities in `config/membership-link-repair.php`. A raw left join then confirmed that user 2778 no longer exists, while its two billing associations remain. The current production selections are:
@@ -114,6 +130,12 @@ php artisan stripe:reconcile --audit
 ```
 
 Expect the targeted command to report Swiss and the verified subscription ID above. This retrieves current provider state and stores its existing identity/dates locally; it does not change the Stripe plan, subscription, payment collection or billing calendar. With no other changes, the unlinked count falls from 14 to 13. The remaining rows need separate review and should not be deleted to reduce the count. No new migration or asset build is needed for this account-selection/CLI fix. The agent has not run it against production.
+
+The user subsequently supplied production output confirming source 119 reconciled to **Swiss / `sub_1SVtzjGQzApYr7LGeYQJe8vo`**, with **zero** items needing retry/review. The following audit reported one intentionally preserved duplicate owner ID, zero duplicate charge identities, **13** remaining unlinked sources, zero pending webhooks and zero stale unfinished checkouts. This completes the source-119 mapping repair. The remaining 13 rows need read-only local status/ownership classification before any further repair; their provider state has not been established by that count.
+
+The subsequent local join classified those 13 as **11 canceled and two incomplete_expired**: six retained associations reference missing accounts, and seven still have existing owners. No locally active source remains in this unlinked set. Preserve the six missing-account histories. Fresh provider subscription/status checks for existing-owner sources 5, 23, 34, 43, 64, 66 and 115 remain separate read-only review; do not assign an arbitrary historical subscription merely to reduce the audit count.
+
+The user then supplied fresh provider reads for all seven existing-owner customers: six have Swiss history and one has US history, totaling **18 subscriptions (14 canceled, four incomplete_expired)**. Each customer has multiple ended subscriptions and none has an active subscription in those results. Automatic linking is intentionally ambiguous in this situation. Keep those seven legacy links unassigned and preserve the six missing-account histories; a total of 13 remaining unlinked sources is not itself an active payment failure. This does not replace an account-wide review before Swiss closure.
 
 The active subscription means the Swiss account is still needed. A replacement Swiss endpoint is now verified: the user's 2026-10-15 Dashboard screenshot shows the destination active, a manually replayed `customer.subscription.updated` delivery at 18:26:22 America/New_York, **2025-03-31.basil**, **Delivered / Recovered**, and **HTTP 200** with `Webhook received`. This completes the signed Swiss delivery check for that event. Keep that replacement active; no further endpoint creation is needed. Disable any older Swiss destination only after its outstanding delivery failures have been addressed.
 

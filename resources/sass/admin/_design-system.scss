@@ -1,65 +1,317 @@
 // Gallery layout only. Specimens retain their existing component styles.
 .design-system {
-    .design-system__intro { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 28px; border: 1px solid #fff; border-radius: 25px; background: #f4f7ef; }
-    .design-system__intro h2 { margin: 8px 0 10px; font-size: var(--font-size-h3); letter-spacing: -.7px; }
-    .design-system__intro p { max-width: 760px; margin: 0; color: #59645b; }
-    .design-system__eyebrow { color: #596e56; font-size: var(--font-size-xs); font-weight: 600; letter-spacing: 1.3px; }
-    .design-system__live { display: flex; align-items: center; gap: 7px; white-space: nowrap; font-size: var(--font-size-sm); color: #3b6947; }
-    .design-system__nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 32px; }
-    .design-system__nav a { padding: 9px 15px; border: 1px solid #fff; border-radius: var(--radius-pill); background: rgba(255,255,255,.5); color: #354738; font-size: var(--font-size-sm); text-decoration: none; }
-    .design-system__nav a:hover { background: #fff; }
-    .design-system__section { margin: 0 0 28px; padding: 28px; border: 1px solid #fff; border-radius: 25px; background: rgba(255,255,255,.63); scroll-margin-top: 24px; min-width: 0; }
-    .design-system__section-heading { margin-bottom: 24px; }
-    .design-system__section-heading h2 { margin: 7px 0 8px; font-size: var(--font-size-h3); letter-spacing: -.6px; }
-    .design-system__section-heading p { margin: 0; max-width: 850px; color: #626b64; }
-    .design-system__group-title { margin: 28px 0 16px; font-size: var(--font-size-h6); }
-    .design-system__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(#{'min(100%, 240px)'}, 1fr)); gap: 16px; }
-    .design-system__grid--wide { grid-template-columns: repeat(auto-fit, minmax(#{'min(100%, 340px)'}, 1fr)); }
-    .design-system__sample { min-width: 0; padding: 20px; border: 1px solid #e1e6df; border-radius: 18px; background: #fff; }
-    .design-system__sample-label { color: #3c4d3e; font-size: var(--font-size-sm); font-weight: 600; }
-    .design-system__usage { display: block; margin-top: 4px; font-size: 12px; color: #697568; }
-    .design-system__preview { margin: 22px 0; min-width: 0; }
-    .design-system__preview > p:last-child { margin-bottom: 0; }
-    .design-system__preview > label { margin-bottom: 7px; font-size: var(--font-size-sm); }
-    .design-system__specs { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 5px 12px; padding-top: 14px; margin: 0; border-top: 1px solid #e7ebe4; font-size: 11px; line-height: 1.6; font-family: var(--bs-font-monospace, monospace); }
-    .design-system__specs:empty { display: none; }
-    .design-system__specs dt { color: #6a746b; font-weight: 400; }
-    .design-system__specs dd { margin: 0; color: #354438; overflow-wrap: anywhere; }
-    .design-system__type-scale { margin-top: 20px; }
-    .design-system__type-scale .design-system__sample { display: grid; grid-template-columns: 140px minmax(0, 1fr) 210px; gap: 5px 20px; align-items: center; border-radius: 0; border-width: 0 0 1px; background: transparent; padding: 20px 0; }
-    .design-system__type-scale .design-system__usage { grid-column: 1; }
-    .design-system__type-scale .design-system__preview { grid-column: 2; grid-row: 1 / span 2; margin: 0; overflow-wrap: anywhere; }
-    .design-system__type-scale .design-system__specs { grid-column: 3; grid-row: 1 / span 2; border: 0; padding: 0; }
-    .design-system__swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(#{'min(100%, 145px)'}, 1fr)); gap: 16px; }
-    .design-system__swatch { min-width: 0; }
-    .design-system__color { height: 76px; margin-bottom: 10px; border-radius: 14px; border: 1px solid rgba(0,0,0,.08); }
-    .design-system__swatch strong { display: block; margin-bottom: 3px; font-size: var(--font-size-sm); font-weight: 600; }
-    .design-system__swatch code, .design-system__swatch > span { display: block; font-size: 11px; color: #646e65; }
-    .design-system__swatch > span { margin-top: 3px; color: #364939; }
-    .design-system__row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
-    .design-system__note { margin: 20px 0; color: #626b64; font-size: var(--font-size-sm); }
-    .design-system__spacing > div { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 14px 0; border-bottom: 1px solid #e0e4dd; font-size: var(--font-size-sm); }
-    .design-system__spacing code:first-child { width: 100px; }
-    .design-system__space-bar { display: block; height: 24px; border-radius: 4px; background: #91b98b; }
-    .design-system__shape { display: flex; align-items: center; justify-content: center; width: 120px; height: 90px; margin: 8px auto 28px; background: var(--color-surface-subtle); border: 1px solid var(--color-border); font-size: var(--font-size-sm); }
-    .design-system__static-menu { position: static; float: none; width: 100%; min-width: 0; }
-    .design-system__static-menu .dropdown-item { white-space: normal; }
-    .design-system__icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
-    .design-system__icon-grid > div { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 20px 8px; border: 1px solid #e1e6df; border-radius: 16px; background: #fff; color: #3d5842; }
-    .design-system__icon-grid code { font-size: 11px; color: #626b64; text-align: center; }
-    code { overflow-wrap: anywhere; }
+    // Introduction and section navigation.
+    .design-system__intro {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 28px;
+        border: 1px solid #fff;
+        border-radius: 25px;
+        background: #f4f7ef;
+    }
+    .design-system__intro h2 {
+        margin: 8px 0 10px;
+        font-size: var(--font-size-h3);
+        letter-spacing: -0.7px;
+    }
+    .design-system__intro p {
+        max-width: 760px;
+        margin: 0;
+        color: #59645b;
+    }
+    .design-system__eyebrow {
+        color: #596e56;
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+        letter-spacing: 1.3px;
+    }
+    .design-system__live {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+        font-size: var(--font-size-sm);
+        color: #3b6947;
+    }
+    .design-system__nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 24px 0 32px;
+    }
+    .design-system__nav a {
+        padding: 9px 15px;
+        border: 1px solid #fff;
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.5);
+        color: #354738;
+        font-size: var(--font-size-sm);
+        text-decoration: none;
+    }
+    .design-system__nav a:hover {
+        background: #fff;
+    }
+    // Section cards and their headings.
+    .design-system__section {
+        margin: 0 0 28px;
+        padding: 28px;
+        border: 1px solid #fff;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.63);
+        scroll-margin-top: 24px;
+        min-width: 0;
+    }
+    .design-system__section-heading {
+        margin-bottom: 24px;
+    }
+    .design-system__section-heading h2 {
+        margin: 7px 0 8px;
+        font-size: var(--font-size-h3);
+        letter-spacing: -0.6px;
+    }
+    .design-system__section-heading p {
+        margin: 0;
+        max-width: 850px;
+        color: #626b64;
+    }
+    .design-system__group-title {
+        margin: 28px 0 16px;
+        font-size: var(--font-size-h6);
+    }
+    // Responsive sample cards and live measurement labels.
+    .design-system__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(#{'min(100%, 240px)'}, 1fr));
+        gap: 16px;
+    }
+    .design-system__grid--wide {
+        grid-template-columns: repeat(auto-fit, minmax(#{'min(100%, 340px)'}, 1fr));
+    }
+    .design-system__sample {
+        min-width: 0;
+        padding: 20px;
+        border: 1px solid #e1e6df;
+        border-radius: 18px;
+        background: #fff;
+    }
+    .design-system__sample-label {
+        color: #3c4d3e;
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+    }
+    .design-system__usage {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        color: #697568;
+    }
+    .design-system__preview {
+        margin: 22px 0;
+        min-width: 0;
+    }
+    .design-system__preview > p:last-child {
+        margin-bottom: 0;
+    }
+    .design-system__preview > label {
+        margin-bottom: 7px;
+        font-size: var(--font-size-sm);
+    }
+    .design-system__specs {
+        display: grid;
+        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+        gap: 5px 12px;
+        padding-top: 14px;
+        margin: 0;
+        border-top: 1px solid #e7ebe4;
+        font-size: 11px;
+        line-height: 1.6;
+        font-family: var(--bs-font-monospace, monospace);
+    }
+    .design-system__specs:empty {
+        display: none;
+    }
+    .design-system__specs dt {
+        color: #6a746b;
+        font-weight: 400;
+    }
+    .design-system__specs dd {
+        margin: 0;
+        color: #354438;
+        overflow-wrap: anywhere;
+    }
+    // Typography comparison rows.
+    .design-system__type-scale {
+        margin-top: 20px;
+    }
+    .design-system__type-scale .design-system__sample {
+        display: grid;
+        grid-template-columns: 140px minmax(0, 1fr) 210px;
+        gap: 5px 20px;
+        align-items: center;
+        border-radius: 0;
+        border-width: 0 0 1px;
+        background: transparent;
+        padding: 20px 0;
+    }
+    .design-system__type-scale .design-system__usage {
+        grid-column: 1;
+    }
+    .design-system__type-scale .design-system__preview {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+    .design-system__type-scale .design-system__specs {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        border: 0;
+        padding: 0;
+    }
+    // Color swatches and their token names.
+    .design-system__swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(#{'min(100%, 145px)'}, 1fr));
+        gap: 16px;
+    }
+    .design-system__swatch {
+        min-width: 0;
+    }
+    .design-system__color {
+        height: 76px;
+        margin-bottom: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    .design-system__swatch strong {
+        display: block;
+        margin-bottom: 3px;
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+    }
+    .design-system__swatch code,
+    .design-system__swatch > span {
+        display: block;
+        font-size: 11px;
+        color: #646e65;
+    }
+    .design-system__swatch > span {
+        margin-top: 3px;
+        color: #364939;
+    }
+    // Shared sample arrangements, spacing bars and surface previews.
+    .design-system__row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+    }
+    .design-system__note {
+        margin: 20px 0;
+        color: #626b64;
+        font-size: var(--font-size-sm);
+    }
+    .design-system__spacing > div {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid #e0e4dd;
+        font-size: var(--font-size-sm);
+    }
+    .design-system__spacing code:first-child {
+        width: 100px;
+    }
+    .design-system__space-bar {
+        display: block;
+        height: 24px;
+        border-radius: 4px;
+        background: #91b98b;
+    }
+    .design-system__shape {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 120px;
+        height: 90px;
+        margin: 8px auto 28px;
+        background: var(--color-surface-subtle);
+        border: 1px solid var(--color-border);
+        font-size: var(--font-size-sm);
+    }
+    .design-system__static-menu {
+        position: static;
+        float: none;
+        width: 100%;
+        min-width: 0;
+    }
+    .design-system__static-menu .dropdown-item {
+        white-space: normal;
+    }
+    .design-system__modal-preview {
+        position: static;
+        display: block;
+        z-index: auto;
+    }
+    // Icon catalog.
+    .design-system__icon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+    }
+    .design-system__icon-grid > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        padding: 20px 8px;
+        border: 1px solid #e1e6df;
+        border-radius: 16px;
+        background: #fff;
+        color: #3d5842;
+    }
+    .design-system__icon-grid code {
+        font-size: 11px;
+        color: #626b64;
+        text-align: center;
+    }
+    code {
+        overflow-wrap: anywhere;
+    }
     // Render the public feature-card component from its actual source, only here.
     @import '../components/pastel-cards';
+    @import 'design-system-specimens';
 
+    // Tablet and phone layouts keep samples readable without shrinking controls.
     @media (max-width: 1199px) {
-        .design-system__type-scale .design-system__sample { grid-template-columns: 110px minmax(0, 1fr); }
-        .design-system__type-scale .design-system__specs { grid-column: 2; grid-row: 3; margin-top: 12px; }
+        .design-system__type-scale .design-system__sample {
+            grid-template-columns: 110px minmax(0, 1fr);
+        }
+        .design-system__type-scale .design-system__specs {
+            grid-column: 2;
+            grid-row: 3;
+            margin-top: 12px;
+        }
     }
     @media (max-width: 767px) {
-        .design-system__intro { flex-direction: column; padding: 20px; }
-        .design-system__section { padding: 20px; }
-        .design-system__type-scale .design-system__sample { display: block; }
-        .design-system__type-scale .design-system__preview { margin: 15px 0; }
-        .design-system__sample { padding: 16px; }
+        .design-system__intro {
+            flex-direction: column;
+            padding: 20px;
+        }
+        .design-system__section {
+            padding: 20px;
+        }
+        .design-system__type-scale .design-system__sample {
+            display: block;
+        }
+        .design-system__type-scale .design-system__preview {
+            margin: 15px 0;
+        }
+        .design-system__sample {
+            padding: 16px;
+        }
     }
 }

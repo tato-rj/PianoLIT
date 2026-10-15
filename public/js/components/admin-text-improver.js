@@ -25,6 +25,8 @@
     }
 
     function attach(field) {
+        // UI specimens and other explicitly local fields must not offer provider actions.
+        if (field.getAttribute('data-text-improver') === 'off') return;
         if (states.has(field)) {
             sync(field, states.get(field));
             return;

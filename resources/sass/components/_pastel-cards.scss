@@ -8,10 +8,10 @@
     --card-action: var(--pastel-sky-action);
     --card-action-hover: var(--pastel-sky-action-hover);
     border: 1px solid var(--card-border);
-    background: linear-gradient(145deg, rgba(255, 255, 255, .2), transparent), var(--card-surface);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), transparent), var(--card-surface);
 
     @each $name, $tone in $pastel-palette {
-        &[data-pastel-color="#{$name}"] {
+        &[data-pastel-color='#{$name}'] {
             --card-surface: var(--pastel-#{$name}-surface);
             --card-accent: var(--pastel-#{$name}-accent);
             --card-accent-hover: var(--pastel-#{$name}-accent-hover);
@@ -54,16 +54,27 @@
         line-height: 1.5;
         box-shadow: none;
         text-decoration: none;
-        transition: background-color .18s ease, color .18s ease;
+        transition: background-color 0.18s ease, color 0.18s ease;
 
-        .app-icon { color: inherit; flex-shrink: 0; }
-        &:hover, &:focus-visible, &:active {
+        .app-icon {
+            color: inherit;
+            flex-shrink: 0;
+        }
+        &:hover,
+        &:focus-visible,
+        &:active {
             background: var(--card-accent-hover);
             color: var(--card-action-hover);
         }
     }
-    .pastel-card__tag--quiet { font-weight: 600; letter-spacing: 0; padding: 4px 9px; }
-    a:focus-visible, button:focus-visible, &:focus-visible {
+    .pastel-card__tag--quiet {
+        font-weight: 600;
+        letter-spacing: 0;
+        padding: 4px 9px;
+    }
+    a:focus-visible,
+    button:focus-visible,
+    &:focus-visible {
         outline: 3px solid var(--card-action) !important;
         outline-offset: 4px;
     }
@@ -76,5 +87,7 @@ a.pastel-card:active .pastel-card__action {
     color: var(--card-action-hover);
 }
 @media (prefers-reduced-motion: reduce) {
-    .pastel-card .pastel-card__action { transition: none; }
+    .pastel-card .pastel-card__action {
+        transition: none;
+    }
 }

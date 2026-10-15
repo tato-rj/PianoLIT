@@ -24,7 +24,7 @@
       <div class="dropdown-menu show design-system__static-menu" data-ds-preview aria-label="Sample menu"><span class="dropdown-header">Collection actions</span><button type="button" class="dropdown-item">@icon('pencil')Rename collection</button><button type="button" class="dropdown-item">@icon('copy')Duplicate collection</button><div class="dropdown-divider"></div><button type="button" class="dropdown-item text-danger">@icon('trash')Remove collection</button></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Dialog', 'usage' => '.modal + .modal-content', 'properties' => 'padding,border,border-radius,box-shadow'])
-      <div class="modal-content" data-ds-preview><div class="modal-body"><h3 class="h5">A moment of focus</h3><p>Dialogs keep a single task in view.</p><button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#ds-example-modal">Open sample dialog</button></div></div>
+      <div class="modal design-system__modal-preview"><div class="modal-dialog m-0"><div class="modal-content" data-ds-preview><div class="modal-body"><h3 class="h5">A moment of focus</h3><p>Dialogs keep a single task in view.</p><button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#ds-example-modal">Open sample dialog</button></div></div></div></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Links', 'usage' => 'a + .text-muted', 'properties' => 'font-size,color,text-decoration'])
       <p><a href="#ds-typography" data-ds-preview>Explore typography @icon('arrow-right', ['mr' => 0])</a></p><p class="text-muted mb-0">Supporting text gives the primary action room to breathe.</p>
@@ -58,7 +58,7 @@
 <section class="design-system__section" id="ds-icons" aria-labelledby="ds-icons-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">09 / ICONOGRAPHY</span><h2 id="ds-icons-title">Icons</h2><p>Lucide SVG icons inherit text color and size. The shared stroke width is <span data-ds-token="--icon-stroke-width"></span>.</p></header>
   <div class="design-system__icon-grid">
-    @foreach(['music', 'search', 'heart', 'bookmark', 'play', 'pause', 'download', 'upload', 'pencil', 'trash', 'plus', 'x', 'check', 'chevron-right', 'users', 'gear', 'bell', 'circle-help'] as $icon)
+    @foreach(['music', 'search', 'heart', 'bookmark', 'play', 'pause', 'download', 'upload', 'pencil', 'trash', 'plus', 'x', 'check', 'chevron-right', 'users', 'settings', 'bell', 'circle-help'] as $icon)
       <div>@icon($icon, ['mr' => 0, 'classes' => 'icon-size-xl'])<code>{{ $icon }}</code></div>
     @endforeach
   </div>

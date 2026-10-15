@@ -2,13 +2,13 @@
 // ALL SCREENS //
 /////////////////
 @include media-breakpoint-up(xs) {
-	.card-columns {
-	    column-count: 4;
-	}
+    .card-columns {
+        column-count: 4;
+    }
 
-	.infograph-card {
-		> div {
-			max-height: 380px;
-		}
-	}
+    .infograph-card {
+        > div {
+            max-height: 380px;
+        }
+    }
 }

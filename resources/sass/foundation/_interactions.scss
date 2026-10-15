@@ -1,0 +1,40 @@
+// Shared link, outline-button and pagination states. Keep after utility adapters.
+.border-primary {
+    border-color: var(--color-primary) !important;
+}
+a.text-primary:hover,
+a.text-primary:focus {
+    color: var(--color-primary-hover) !important;
+}
+a.bg-primary:hover,
+a.bg-primary:focus,
+button.bg-primary:hover,
+button.bg-primary:focus {
+    background-color: var(--color-primary-hover) !important;
+}
+.btn-outline-primary {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.show > .btn-outline-primary.dropdown-toggle {
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+.btn-outline-primary:disabled,
+.btn-outline-primary.disabled {
+    color: var(--color-primary);
+}
+.page-item.active .page-link {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+.page-link {
+    color: var(--color-primary);
+}
+.page-link:hover {
+    color: var(--color-link-hover);
+}

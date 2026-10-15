@@ -1,63 +1,65 @@
 .input-icon {
-	position: relative;
+    position: relative;
 }
 
 .input-icon i:first-of-type {
-	position: absolute;
-	left: 10.8px;
-	bottom: 16px;
+    position: absolute;
+    left: 10.8px;
+    bottom: 16px;
 }
 
 .input-icon i:last-of-type {
-	position: absolute;
-	right: 4px;
-	bottom: 16px;
+    position: absolute;
+    right: 4px;
+    bottom: 16px;
 }
 
 .input-icon input {
-	padding-left: 44px !important;
-	padding-right: 44px !important;
+    padding-left: 44px !important;
+    padding-right: 44px !important;
 }
 
 input.input-light {
-	transition: .2s;
-	background: $grey-lighter;
-	border: 0;
+    transition: 0.2s;
+    background: $grey-lighter;
+    border: 0;
 
-	&:hover {
-		background-color: $grey-light;
-	}
+    &:hover {
+        background-color: $grey-light;
+    }
 
-	&:active {
-		background-color: $grey-light;
-	}
+    &:active {
+        background-color: $grey-light;
+    }
 
-	&:focus {
-		background-color: $grey-light;
-	}
+    &:focus {
+        background-color: $grey-light;
+    }
 }
 
 input.input-center {
-	text-align: center;
+    text-align: center;
 }
 
 input.input-center::-webkit-input-placeholder {
-	text-align: center;
+    text-align: center;
 }
 
-input.input-center:-moz-placeholder { /* Firefox 18- */
-	text-align: center;  
+input.input-center:-moz-placeholder {
+    /* Firefox 18- */
+    text-align: center;
 }
 
-input.input-center::-moz-placeholder {  /* Firefox 19+ */
-	text-align: center;  
+input.input-center::-moz-placeholder {
+    /* Firefox 19+ */
+    text-align: center;
 }
 
-input.input-center:-ms-input-placeholder {  
-	text-align: center; 
+input.input-center:-ms-input-placeholder {
+    text-align: center;
 }
 
 .input-invisible {
-	background-color: transparent !important;
-	border: 0;
+    background-color: transparent !important;
+    border: 0;
 }

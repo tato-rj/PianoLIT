@@ -1,0 +1,88 @@
+// Token-backed colors, borders, elevations and spacing utilities.
+// Final utility adapters keep Primer's literal colors from overriding tokens.
+@each $name in grey, red, orange, yellow, green, teal, blue, indigo, purple, pink {
+    .bg-#{$name} {
+        background-color: var(--color-#{$name});
+    }
+    .text-#{$name} {
+        color: var(--color-#{$name});
+    }
+    .border-#{$name} {
+        border-color: var(--color-#{$name}) !important;
+    }
+}
+// Neutral text and surfaces.
+.text-grey {
+    color: var(--color-grey) !important;
+}
+.text-muted {
+    color: var(--color-text-muted) !important;
+}
+.text-dark {
+    color: var(--color-text-dark) !important;
+}
+.text-white {
+    color: var(--color-white) !important;
+}
+.bg-dark {
+    background-color: var(--color-surface-dark) !important;
+}
+.bg-white {
+    background-color: var(--color-white) !important;
+}
+.bg-light {
+    background-color: var(--color-surface-subtle) !important;
+}
+// Border utilities, including directional and explicit white borders.
+.border {
+    border-color: var(--color-border) !important;
+}
+@each $side in top, right, bottom, left {
+    .border-#{$side} {
+        border-#{$side}-color: var(--color-border) !important;
+    }
+}
+.border-start {
+    border-left-color: var(--color-border) !important;
+}
+.border-end {
+    border-right-color: var(--color-border) !important;
+}
+// Explicit white borders must win over the default border and side colors.
+.border-white {
+    border-color: var(--color-white) !important;
+}
+
+// Elevation utilities.
+.shadow {
+    box-shadow: var(--shadow) !important;
+}
+.shadow-light,
+.shadow-center,
+.hover-shadow:hover {
+    box-shadow: var(--shadow-light) !important;
+}
+.shadow-dark,
+.hover-shadow-dark:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+// Opt-in gap utilities for new layouts; existing responsive spacing is preserved.
+@for $size from 1 through 5 {
+    .gap-#{$size} {
+        gap: var(--space-#{$size});
+    }
+}
+
+// Semantic status colors are distinct from the utility palette above.
+@each $name in success, danger, warning, info, secondary {
+    .text-#{$name} {
+        color: var(--color-#{$name}) !important;
+    }
+    .bg-#{$name} {
+        background-color: var(--color-#{$name}) !important;
+    }
+    .border-#{$name} {
+        border-color: var(--color-#{$name}) !important;
+    }
+}

@@ -10,13 +10,22 @@
         background: #f4f6fa;
         font-size: 12px;
         cursor: pointer;
-        &[aria-pressed=true], &[aria-selected=true] {
+        &[aria-pressed='true'],
+        &[aria-selected='true'] {
             color: white !important;
             background: #0055fe;
             border-color: #0055fe;
         }
-        &:hover:not(:disabled) { border-color: #0055fe; }
-        &:focus-visible { outline: 3px solid #0055fe; outline-offset: 5px; }
-        &:disabled { opacity: .5; cursor: default; }
+        &:hover:not(:disabled) {
+            border-color: #0055fe;
+        }
+        &:focus-visible {
+            outline: 3px solid #0055fe;
+            outline-offset: 5px;
+        }
+        &:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
     }
 }

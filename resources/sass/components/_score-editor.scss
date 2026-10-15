@@ -8,9 +8,16 @@
     padding-bottom: calc(94px + var(--piece-player-height, 0px));
     color: #172033;
 
-    [hidden] { display: none !important; }
-    button, select { min-height: 40px; }
-    button:focus-visible, a:focus-visible, .score-color-button:focus-within {
+    [hidden] {
+        display: none !important;
+    }
+    button,
+    select {
+        min-height: 40px;
+    }
+    button:focus-visible,
+    a:focus-visible,
+    .score-color-button:focus-within {
         outline: 2px solid #1b59e9;
         outline-offset: 2px;
     }
@@ -28,14 +35,23 @@
         border-bottom: 0;
         // border-radius: 18px 18px 0 0;
     }
-    .score-tools, .score-history, .score-view-controls, .score-footer-actions {
+    .score-tools,
+    .score-history,
+    .score-view-controls,
+    .score-footer-actions {
         display: flex;
         align-items: center;
         gap: 8px;
     }
-    .score-history { margin-left: auto; }
-    .score-status-row { padding: 0 20px 12px; background: #fff; }
-    .score-icon-button, .score-control-button {
+    .score-history {
+        margin-left: auto;
+    }
+    .score-status-row {
+        padding: 0 20px 12px;
+        background: #fff;
+    }
+    .score-icon-button,
+    .score-control-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -50,9 +66,14 @@
         font-size: 17px;
         line-height: 1;
         cursor: pointer;
-        transition: background-color .15s ease, border-color .15s ease;
-        &:hover:not(:disabled) { background: #eaf0ff; }
-        &:disabled { opacity: .45; cursor: default; }
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+        &:hover:not(:disabled) {
+            background: #eaf0ff;
+        }
+        &:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
     }
     .score-tools .score-icon-button.active {
         background: #e9f0ff;
@@ -63,17 +84,26 @@
         position: relative;
         margin-left: 2px;
         cursor: pointer;
-        &.disabled { opacity: .45; cursor: default; }
+        &.disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
     }
-    .score-color-control { flex: 0 0 auto; }
+    .score-color-control {
+        flex: 0 0 auto;
+    }
     .score-color-menu {
         min-width: 202px;
         padding: 14px;
         border: 1px solid #e4eaf3;
         border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(37, 54, 80, .16);
+        box-shadow: 0 8px 24px rgba(37, 54, 80, 0.16);
     }
-    .score-color-swatches { display: grid; grid-template-columns: repeat(4, 34px); gap: 12px; }
+    .score-color-swatches {
+        display: grid;
+        grid-template-columns: repeat(4, 34px);
+        gap: 12px;
+    }
     .score-color-swatch {
         display: inline-flex;
         align-items: center;
@@ -85,8 +115,14 @@
         border: 0;
         border-radius: 50%;
         cursor: pointer;
-        &[aria-pressed="true"] { outline: 2px solid #1555dc; outline-offset: 3px; }
-        &:disabled { opacity: .45; cursor: default; }
+        &[aria-pressed='true'] {
+            outline: 2px solid #1555dc;
+            outline-offset: 3px;
+        }
+        &:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
     }
     .score-custom-color {
         position: relative;
@@ -98,7 +134,10 @@
         text-align: center;
         font-size: 13px;
         cursor: pointer;
-        &:focus-within { outline: 2px solid #1b59e9; outline-offset: 2px; }
+        &:focus-within {
+            outline: 2px solid #1b59e9;
+            outline-offset: 2px;
+        }
     }
     .score-color-input {
         position: absolute;
@@ -110,16 +149,21 @@
         opacity: 0;
         cursor: inherit;
     }
-    .score-width-control { flex: 0 0 auto; }
+    .score-width-control {
+        flex: 0 0 auto;
+    }
     .score-width-toggle {
-        > svg { width: 25px; height: 20px; }
+        > svg {
+            width: 25px;
+            height: 20px;
+        }
     }
     .score-width-menu {
         min-width: 180px;
         padding: 8px;
         border: 1px solid #e4eaf3;
         border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(37, 54, 80, .16);
+        box-shadow: 0 8px 24px rgba(37, 54, 80, 0.16);
     }
     .score-width-option {
         display: flex;
@@ -129,8 +173,15 @@
         padding: 2px 8px;
         border-radius: 8px;
         color: #596171;
-        > svg { width: 120px; height: 32px; }
-        .score-width-check { flex: 0 0 16px; width: 16px; font-size: 16px; }
+        > svg {
+            width: 120px;
+            height: 32px;
+        }
+        .score-width-check {
+            flex: 0 0 16px;
+            width: 16px;
+            font-size: 16px;
+        }
         &.active {
             color: #1555dc;
             background: #e9f0ff;
@@ -153,8 +204,13 @@
         color: #e62236;
         font-size: 14px;
         cursor: pointer;
-        &:hover:not(:disabled) { background: #fff3f4; }
-        &:disabled { opacity: .45; cursor: default; }
+        &:hover:not(:disabled) {
+            background: #fff3f4;
+        }
+        &:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
     }
     .score-scroll {
         padding: 18px;
@@ -169,9 +225,13 @@
         min-height: 180px;
         margin: 0 auto;
         background: #fff;
-        box-shadow: 0 2px 14px rgba(37, 54, 80, .13);
+        box-shadow: 0 2px 14px rgba(37, 54, 80, 0.13);
     }
-    canvas { display: block; width: 100%; height: 100%; }
+    canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
     .score-markings {
         position: absolute;
         inset: 0;
@@ -179,13 +239,28 @@
         height: 100%;
         user-select: none;
         -webkit-user-select: none;
-        path, text { pointer-events: none; }
-        &[data-tool="read"] text { pointer-events: all; touch-action: none; cursor: grab; }
-        &[data-dragging-text] text { cursor: grabbing; }
-        &[data-tool="text"] text { pointer-events: all; }
-        &[data-tool="erase"] {
-            path { pointer-events: stroke; }
-            text { pointer-events: all; }
+        path,
+        text {
+            pointer-events: none;
+        }
+        &[data-tool='read'] text {
+            pointer-events: all;
+            touch-action: none;
+            cursor: grab;
+        }
+        &[data-dragging-text] text {
+            cursor: grabbing;
+        }
+        &[data-tool='text'] text {
+            pointer-events: all;
+        }
+        &[data-tool='erase'] {
+            path {
+                pointer-events: stroke;
+            }
+            text {
+                pointer-events: all;
+            }
         }
     }
     .score-text-input {
@@ -223,8 +298,8 @@
         padding: 12px 16px;
         border: 1px solid #e4eaf3;
         border-radius: 20px;
-        background: rgba(255, 255, 255, .97);
-        box-shadow: 0 12px 32px rgba(43, 66, 107, .16);
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 12px 32px rgba(43, 66, 107, 0.16);
     }
     .score-control-group {
         display: flex;
@@ -240,14 +315,18 @@
         background: #fff;
         font-size: 16px;
     }
-    .score-page-label, .score-zoom-label {
+    .score-page-label,
+    .score-zoom-label {
         min-width: 62px;
         text-align: center;
         white-space: nowrap;
         font-size: 14px;
     }
-    .score-fullscreen-button { margin-left: 4px; }
-    .score-listen-button, .score-action-button {
+    .score-fullscreen-button {
+        margin-left: 4px;
+    }
+    .score-listen-button,
+    .score-action-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -262,28 +341,46 @@
         white-space: nowrap;
         font-size: 14px;
         cursor: pointer;
-        &:hover { background: #f6f8fc; color: #172033; text-decoration: none; }
+        &:hover {
+            background: #f6f8fc;
+            color: #172033;
+            text-decoration: none;
+        }
     }
     .score-listen-button {
         border-color: #1555e9;
         background: #1555e9;
         color: #fff;
-        &:hover { background: #1047c6; color: #fff; }
+        &:hover {
+            background: #1047c6;
+            color: #fff;
+        }
     }
-    .score-messages { padding: 8px 2px; }
+    .score-messages {
+        padding: 8px 2px;
+    }
 
     &--preview {
-        .score-scroll { overflow: hidden; }
+        .score-scroll {
+            overflow: hidden;
+        }
         // Match the editor's default 75% zoom: (scroll width - 24px) * .75.
-        .score-sheet { width: calc(75% + 9px); overflow: hidden; }
+        .score-sheet {
+            width: calc(75% + 9px);
+            overflow: hidden;
+        }
         .score-preview-pages {
             filter: blur(8px);
             -webkit-filter: blur(8px);
             pointer-events: none;
             user-select: none;
             -webkit-user-select: none;
-            &:empty { min-height: 260px; }
-            canvas { height: auto; }
+            &:empty {
+                min-height: 260px;
+            }
+            canvas {
+                height: auto;
+            }
         }
         .score-preview-upgrade {
             position: absolute;
@@ -292,14 +389,26 @@
             flex-direction: column;
             align-items: center;
             padding: 12% 20px 20px;
-            background: rgba(255, 255, 255, .35);
-            p { max-width: 320px; margin-bottom: 18px; color: #596171; }
-            .btn { flex: 0 0 auto; }
+            background: rgba(255, 255, 255, 0.35);
+            p {
+                max-width: 320px;
+                margin-bottom: 18px;
+                color: #596171;
+            }
+            .btn {
+                flex: 0 0 auto;
+            }
         }
         @media (max-width: 767px) {
-            .score-sheet { width: 100%; }
-            .score-preview-upgrade { padding: 12% 12px 12px; }
-            .score-preview-upgrade p { font-size: 14px; }
+            .score-sheet {
+                width: 100%;
+            }
+            .score-preview-upgrade {
+                padding: 12% 12px 12px;
+            }
+            .score-preview-upgrade p {
+                font-size: 14px;
+            }
         }
     }
 
@@ -324,25 +433,62 @@
             left: 0;
             width: 100%;
         }
-        .score-status-row { display: none; }
-        .score-toolbar:not(.d-none) ~ .score-scroll { margin-top: var(--score-toolbar-height); }
-        .score-scroll { min-height: calc(100dvh - 190px); }
+        .score-status-row {
+            display: none;
+        }
+        .score-toolbar:not(.d-none) ~ .score-scroll {
+            margin-top: var(--score-toolbar-height);
+        }
+        .score-scroll {
+            min-height: calc(100dvh - 190px);
+        }
     }
     @media (max-width: 767px) {
-        &.is-fullscreen { --score-toolbar-height: 36px; }
+        &.is-fullscreen {
+            --score-toolbar-height: 36px;
+        }
         // width: calc(100vw - 20px);
         // margin-left: calc(-50vw + 10px);
         padding-bottom: calc(126px + var(--piece-player-height, 0px));
-        .score-toolbar { gap: 3px; padding: 0 8px 2px; }
-        .score-tools, .score-history { flex: 0 0 auto; width: auto; gap: 2px; }
-        .score-history { margin-left: auto; }
-        .score-status-row { padding: 0 8px 8px; }
-        .score-icon-button, .score-clear-button { width: 34px; height: 34px; min-height: 34px; font-size: 14px; }
-        .score-color-button { margin-left: 0; }
-        .score-width-toggle > svg { width: 20px; }
-        .score-clear-button { padding: 0; border-radius: 50%; }
-        .score-clear-button span { display: none; }
-        .score-scroll { padding: 12px; }
+        .score-toolbar {
+            gap: 3px;
+            padding: 0 8px 2px;
+        }
+        .score-tools,
+        .score-history {
+            flex: 0 0 auto;
+            width: auto;
+            gap: 2px;
+        }
+        .score-history {
+            margin-left: auto;
+        }
+        .score-status-row {
+            padding: 0 8px 8px;
+        }
+        .score-icon-button,
+        .score-clear-button {
+            width: 34px;
+            height: 34px;
+            min-height: 34px;
+            font-size: 14px;
+        }
+        .score-color-button {
+            margin-left: 0;
+        }
+        .score-width-toggle > svg {
+            width: 20px;
+        }
+        .score-clear-button {
+            padding: 0;
+            border-radius: 50%;
+        }
+        .score-clear-button span {
+            display: none;
+        }
+        .score-scroll {
+            padding: 12px;
+        }
         .score-footer {
             flex-wrap: wrap;
             justify-content: center;
@@ -351,35 +497,92 @@
             padding: 10px;
             border-radius: 16px;
         }
-        .score-view-controls, .score-footer-actions { justify-content: space-between; width: 100%; }
-        .score-footer-actions { gap: 7px; }
-        .score-footer-actions > * { flex: 1 1 0; padding: 0 6px; }
-        .score-page-label, .score-zoom-label { min-width: 46px; font-size: 13px; }
-        .score-control-button { width: 38px; height: 40px; }
-        .score-action-button, .score-listen-button { font-size: 12px; gap: 6px; min-height: 36px}
+        .score-view-controls,
+        .score-footer-actions {
+            justify-content: space-between;
+            width: 100%;
+        }
+        .score-footer-actions {
+            gap: 7px;
+        }
+        .score-footer-actions > * {
+            flex: 1 1 0;
+            padding: 0 6px;
+        }
+        .score-page-label,
+        .score-zoom-label {
+            min-width: 46px;
+            font-size: 13px;
+        }
+        .score-control-button {
+            width: 38px;
+            height: 40px;
+        }
+        .score-action-button,
+        .score-listen-button {
+            font-size: 12px;
+            gap: 6px;
+            min-height: 36px;
+        }
     }
     @media (min-width: 768px) and (max-width: 1132px) {
         // margin-left: calc(-50vw + 16px);
     }
     @media (max-width: 360px) {
-        &.is-fullscreen { --score-toolbar-height: 34px; }
-        .score-toolbar { flex-wrap: wrap; padding-left: 6px; padding-right: 6px; }
-        .score-icon-button, .score-clear-button { width: 32px; height: 32px; min-height: 32px; }
-        .score-control-button { width: 34px; }
-        .score-page-label, .score-zoom-label { min-width: 42px; }
+        &.is-fullscreen {
+            --score-toolbar-height: 34px;
+        }
+        .score-toolbar {
+            flex-wrap: wrap;
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+        .score-icon-button,
+        .score-clear-button {
+            width: 32px;
+            height: 32px;
+            min-height: 32px;
+        }
+        .score-control-button {
+            width: 34px;
+        }
+        .score-page-label,
+        .score-zoom-label {
+            min-width: 42px;
+        }
     }
 }
 body.score-editor-fullscreen-open {
     overflow: hidden;
     touch-action: pan-x pan-y;
-    button, a, input, select, textarea, label { touch-action: manipulation; }
+    button,
+    a,
+    input,
+    select,
+    textarea,
+    label {
+        touch-action: manipulation;
+    }
 }
-.score-print-pages { display: none; }
+.score-print-pages {
+    display: none;
+}
 @media print {
-    body.score-printing { width: 100%; margin: 0; padding: 0; }
-    body.score-editor-fullscreen-open { overflow: visible; }
-    body.score-printing > :not(.score-print-pages) { display: none !important; }
-    body.score-printing > .score-print-pages { display: block !important; width: 100%; }
+    body.score-printing {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    body.score-editor-fullscreen-open {
+        overflow: visible;
+    }
+    body.score-printing > :not(.score-print-pages) {
+        display: none !important;
+    }
+    body.score-printing > .score-print-pages {
+        display: block !important;
+        width: 100%;
+    }
     .score-print-page {
         position: relative;
         margin: 0 auto;
@@ -390,7 +593,19 @@ body.score-editor-fullscreen-open {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-    .score-print-page:last-child { break-after: auto; page-break-after: auto; }
-    .score-print-page canvas { display: block; width: 100%; height: 100%; }
-    .score-print-page svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .score-print-page:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+    .score-print-page canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    .score-print-page svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
 }

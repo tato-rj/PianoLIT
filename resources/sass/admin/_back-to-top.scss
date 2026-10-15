@@ -1,0 +1,38 @@
+// Shared long-page navigation. Stay below modal and offcanvas backdrops.
+.admin-back-to-top {
+    position: fixed;
+    right: calc(24px + env(safe-area-inset-right, 0px));
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 1020;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    background: #181e22;
+    color: #fff;
+    box-shadow: var(--shadow-dark);
+    cursor: pointer;
+
+    // Keep the hidden state effective despite the explicit flex display above.
+    &[hidden] {
+        display: none;
+    }
+
+    &:hover {
+        background: #354139;
+    }
+
+    .app-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    @media (max-width: 700px) {
+        right: calc(16px + env(safe-area-inset-right, 0px));
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+}

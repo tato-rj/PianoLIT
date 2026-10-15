@@ -1,5 +1,9 @@
 # Shared design settings
 
+The admin **Settings → Design System** page previews the shared UI and displays
+its computed dimensions and colors. See [SCSS_GUIDE.md](SCSS_GUIDE.md) for the
+source map, readable formatting conventions and final stylesheet order.
+
 Edit `resources/sass/_design-tokens.scss`, then run `npm run production`.
 It contains the existing Sass palette and the CSS custom properties used by the
 public website, web app and admin. Commit the rebuilt CSS and Mix manifest together.
@@ -7,7 +11,7 @@ public website, web app and admin. Commit the rebuilt CSS and Mix manifest toget
 ## Change standard rounded corners
 
 ```scss
---radius: .5rem; // Current default: 1rem.
+--radius: .5rem; // Current default: 2rem.
 ```
 
 This updates `.rounded`, directional `.rounded-top/bottom/left/right`, the media

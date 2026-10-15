@@ -1,159 +1,66 @@
-@import "bootstrap5-theme";
-@import "~bootstrap/scss/bootstrap";
+// Framework and third-party foundations.
+@import 'bootstrap5-theme';
+@import '~bootstrap/scss/bootstrap';
 @import '~swiper/dist/css/swiper.min';
-// @import '~plyr/dist/plyr';
 @import '~hover.css/css/hover-min';
 @import 'components/fontawesome-brands';
 @import 'vendor/animate';
 
-@import "bootstrap-custom";
-@import "components/bootstrap5-compat";
-@import "responsive";
-@import "variables";
-@import "global";
+// Shared compatibility helpers and global styles.
+@import 'bootstrap-custom';
+@import 'components/bootstrap5-compat';
+@import 'responsive';
+@import 'variables';
+@import 'global';
 
-@import "components/swiper";
-@import "components/cards";
-@import "components/tinymce";
-@import "components/animations";
-@import "components/toggle";
-@import "components/music";
-@import "components/form";
-@import "components/search";
-@import "components/sorting";
-@import "components/masonry";
-@import "components/sort";
-@import "components/pieces";
-@import "components/dragscroll";
-@import "components/tabs";
-@import "components/menu";
-@import "components/stripe";
-@import "components/carousel";
-@import "components/tooltip";
-@import "components/scroll";
-@import "components/save-to";
-@import "components/bottom-sheet";
-@import "components/plyr";
-@import "components/video-moments";
+// Reusable interface components.
+@import 'components/swiper';
+@import 'components/cards';
+@import 'components/tinymce';
+@import 'components/animations';
+@import 'components/toggle';
+@import 'components/music';
+@import 'components/form';
+@import 'components/search';
+@import 'components/sorting';
+@import 'components/masonry';
+@import 'components/sort';
+@import 'components/pieces';
+@import 'components/dragscroll';
+@import 'components/tabs';
+@import 'components/menu';
+@import 'components/stripe';
+@import 'components/carousel';
+@import 'components/tooltip';
+@import 'components/scroll';
+@import 'components/save-to';
+@import 'components/bottom-sheet';
+@import 'components/plyr';
+@import 'components/video-moments';
 
-@import "views/blog";
-@import "views/composers";
-@import "views/explore";
-@import "views/collections";
-@import "components/pill-filters";
-@import "views/my-pieces";
-@import "views/piece-about";
-@import "views/quizzes";
-@import "views/crashcourse";
-@import "views/products";
-@import "views/circle-of-fifths";
+// Public website and web app pages.
+@import 'views/blog';
+@import 'views/composers';
+@import 'views/explore';
+@import 'views/collections';
+@import 'components/pill-filters';
+@import 'views/my-pieces';
+@import 'views/piece-about';
+@import 'views/quizzes';
+@import 'views/crashcourse';
+@import 'views/products';
+@import 'views/circle-of-fifths';
 
-@import "brand/buttons";
-@import "brand/colors";
-@import "brand/fonts";
-@import "brand/corners";
+// Brand overrides; shared token adapters are appended by Mix afterwards.
+@import 'brand/buttons';
+@import 'brand/colors';
+@import 'brand/fonts';
+@import 'brand/corners';
 
-.tooltip {
-    z-index: 1040;
-}
+// Public-only framework and utility overrides.
+@import 'app/overrides';
 
-.hvr-underline-from-center:before {
-  background: var(--color-primary);
-  border-radius: 6px;
-  height: 3px;
-}
-
-.offcanvas-end {
-    max-width: max-content;
-}
-
-.offcanvas-bottom {
-    height: auto !important;
-    max-height: 45vh !important;
-}
-
-.dropdown-toggle::after {
-    display: none;
-}
-        .ad-banner:nth-child(odd) {
-            background-color: var(--color-surface-subtle);
-        }
-
-@-webkit-keyframes fadeInUp {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 12%, 0);
-    transform: translate3d(0, 12%, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 12%, 0);
-    transform: translate3d(0, 12%, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-        .form-transparent {
-            background-color: transparent !important;
-        }
-
-        /* Change Autocomplete styles in Chrome*/
-        input.form-transparent:-webkit-autofill,
-        input.form-transparent:-webkit-autofill:hover, 
-        input.form-transparent:-webkit-autofill:focus,
-        textarea.form-transparent:-webkit-autofill,
-        textarea.form-transparent:-webkit-autofill:hover,
-        textarea.form-transparent:-webkit-autofill:focus,
-        select.form-transparent:-webkit-autofill,
-        select.form-transparent:-webkit-autofill:hover,
-        select.form-transparent:-webkit-autofill:focus {
-          border: 1px solid transparent;
-          -webkit-box-shadow: 0 0 0px 1000px transparent inset;
-          transition: background-color 5000s ease-in-out 0s;
-        }
-
-        .fadeInLeft {
-            animation-duration: .2s;
-        }
-        .search-fixed {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-
-        .grid {
-            opacity: 0; 
-            transform: translateY(20px);
-            transition: .2s;
-        }
-
-    /*PAGINATION*/
-    .page-item:last-child .page-link {border-radius: 0}
-
-    .page-link {
-        /*border: none;*/
-        border-radius: 8px !important;
-        transition: .2s;
-        margin: 2px;
-    }
-
-    .page-item:not(:last-child):not(:first-child) .page-link {border: none;}
-
+// Later feature components retain their existing cascade position.
 @import 'components/score-editor';
 @import 'components/fullscreen-modal';
 @import 'components/feedback';
