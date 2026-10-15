@@ -10,15 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax()) {
-            return app(\App\Services\Admin\UsersTable::class)->response(request());
-        }
-
-        return view('admin.pages.users.index', [
-            'initialUsers' => app(\App\Services\Admin\UsersTable::class)->firstPage(),
-        ]);
+        return view('admin.pages.users.index', app(\App\Services\Admin\UsersTable::class)->get($request));
     }
 
     public function show(User $user)

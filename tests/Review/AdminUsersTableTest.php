@@ -6,6 +6,7 @@ use App\{Admin, Location, User};
 use App\Billing\Sources\{Apple, Stripe};
 use App\Services\Admin\UsersTable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminUsersTableTest extends ReviewTestCase
@@ -37,51 +38,67 @@ class AdminUsersTableTest extends ReviewTestCase
 
     protected function table(array $parameters = [])
     {
-        return $this->getJson(route('admin.users.index', $parameters + ['draw' => 1, 'start' => 0, 'length' => 12]),
-            ['X-Requested-With' => 'XMLHttpRequest']);
+        return $this->get(route('admin.users.index', $parameters));
     }
 
-    public function test_the_initial_page_contains_twelve_ready_rows_in_default_order()
+    protected function xpath($response)
+    {
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        return new \DOMXPath($dom);
+    }
+
+    public function test_the_initial_page_contains_twelve_complete_rows_without_datatables()
     {
         $users = $this->accounts();
         $this->actingAs(create(Admin::class), 'admin');
-        $response = $this->get(route('admin.users.index'))->assertOk();
-        $dom = new \DOMDocument;
-        @$dom->loadHTML($response->getContent());
-        $xpath = new \DOMXPath($dom);
+        $response = $this->table()->assertOk();
+        $xpath = $this->xpath($response);
         $rows = $xpath->query('//table[@id="users-table"]/tbody/tr');
-        $this->assertCount(1, $xpath->query('//table[@id="users-table"]/ancestor::*[@data-admin-datatable]'));
-        $this->assertCount(1, $xpath->query('//script[contains(@src,"/js/components/admin-table-loading.js")]'));
         $this->assertCount(12, $rows);
+        $this->assertCount(0, $xpath->query('//section[contains(@class,"admin-table")]//h2'));
         $this->assertSame((string) $users[0]->id, trim($xpath->query('./td[2]', $rows[0])[0]->textContent));
         $this->assertSame((string) $users[11]->id, trim($xpath->query('./td[2]', $rows[11])[0]->textContent));
         $this->assertCount(6, $xpath->query('./td', $rows[0]));
-        $this->assertCount(0, $xpath->query('//table[@id="users-table"]//input[contains(@class,"status-toggle")]'));
-        $this->assertCount(0, $xpath->query('//*[@id="check-all-datatable" or @id="multi-select"]'));
-        $response->assertDontSee('Delete selected')->assertDontSee('selectedUserIds')->assertDontSee('check-datatable-');
-        $this->assertCount(0, $xpath->query('//table[@id="users-table"]/thead[contains(@class,"invisible")]'));
-        $this->assertSame(30, $response->viewData('initialUsers')['recordsTotal']);
-        $this->assertSame($response->viewData('initialUsers')['data'], $this->table()->assertOk()->json('data'));
-        $response->assertSee('deferLoading: 30', false)->assertDontSee("addClass('table-loading')", false);
+        $this->assertCount(0, $xpath->query('//table[@id="users-table"]//input'));
+        $this->assertCount(1, $xpath->query('//table[@id="users-table"]/ancestor::section[contains(@class,"admin-table")]'));
+        $this->assertSame(30, $response->viewData('users')->total());
+        $response->assertDontSee('Delete selected')->assertDontSee('selectedUserIds')->assertDontSee('check-datatable-')
+            ->assertDontSee('cdn.datatables.net')->assertDontSee('data-admin-datatable')->assertDontSee('admin-table-loading.js')
+            ->assertDontSee('deferLoading')->assertSee('Showing 1–12 of 30 results');
+        $this->assertSame('descending', $xpath->query('//table/thead/tr/th[1]')[0]->getAttribute('aria-sort'));
+        $this->assertCount(1, $xpath->query('//nav[@aria-label="Users pagination"]//a[@aria-label="Next page"]'));
+        $this->assertCount(0, $xpath->query('//form[contains(@class,"admin-table__filters")]//input[@name="page"]'));
     }
 
-    public function test_pagination_and_existing_search_fields_cover_the_full_directory()
+    public function test_pagination_and_search_cover_the_full_directory_and_keep_url_state()
     {
         $users = $this->accounts();
-        $users[29]->update(['first_name' => 'Distant account']);
+        $users[29]->update(['first_name' => 'Distant', 'last_name' => 'Rivera', 'email' => 'unique@example.test']);
         $this->actingAs(create(Admin::class), 'admin');
-        $first = $this->table()->assertOk()->assertJsonCount(12, 'data')->assertJsonPath('recordsTotal', 30);
-        $second = $this->table(['start' => 12])->assertOk()->assertJsonCount(12, 'data');
-        $this->assertSame([], array_intersect(array_column($first->json('data'), 'id'), array_column($second->json('data'), 'id')));
-        $this->table(['start' => 24])->assertOk()->assertJsonCount(6, 'data');
-        $this->table(['length' => 24])->assertOk()->assertJsonCount(24, 'data');
-        $this->table(['search' => ['value' => 'Distant']])->assertOk()->assertJsonPath('recordsFiltered', 1)->assertJsonPath('data.0.id', $users[29]->id);
-        $this->table(['search' => ['value' => 'IOS']])->assertOk()->assertJsonPath('recordsFiltered', 15);
-        $this->table(['search' => ['value' => 'no-match']])->assertOk()->assertJsonPath('recordsFiltered', 0)->assertJsonCount(0, 'data');
-        foreach (['%', '_', "' OR 1=1 --"] as $literal) {
-            $this->table(['search' => ['value' => $literal]])->assertOk()->assertJsonPath('recordsFiltered', 0);
+        $first = $this->table()->assertOk()->viewData('users');
+        $second = $this->table(['page' => 2])->assertOk()->viewData('users');
+        $this->assertCount(12, $first); $this->assertCount(12, $second);
+        $this->assertCount(0, $first->pluck('id')->intersect($second->pluck('id')));
+        $this->assertCount(6, $this->table(['page' => 3])->assertOk()->viewData('users'));
+        $this->assertCount(24, $this->table(['per_page' => 24])->assertOk()->viewData('users'));
+        foreach (['Distant Rivera', 'unique@example.test', 'Rivera'] as $search) {
+            $page = $this->table(compact('search'))->assertOk()->viewData('users');
+            $this->assertSame(1, $page->total()); $this->assertSame($users[29]->id, $page->first()->id);
         }
-        $this->getJson(route('admin.users.index'), ['X-Requested-With' => 'XMLHttpRequest'])->assertOk()->assertJsonCount(12, 'data');
+        $this->assertSame(15, $this->table(['search' => 'IOS'])->assertOk()->viewData('users')->total());
+        foreach (['no-match', '%', '_', "' OR 1=1 --"] as $search) {
+            $this->assertSame(0, $this->table(compact('search'))->assertOk()->viewData('users')->total());
+        }
+        $response = $this->table(['search' => 'Account', 'sort' => 'name_asc', 'page' => 2, 'per_page' => 24])->assertOk();
+        $url = $response->viewData('users')->url(1);
+        parse_str(parse_url($url, PHP_URL_QUERY), $query);
+        $this->assertSame(['search' => 'Account', 'sort' => 'name_asc', 'per_page' => '24', 'page' => '1'], $query);
+        $sortUrl = $this->xpath($response)->query('//table/thead/tr/th[3]/a')[0]->getAttribute('href');
+        parse_str(parse_url($sortUrl, PHP_URL_QUERY), $query);
+        $this->assertArrayNotHasKey('page', $query);
+        $this->assertSame('name_desc', $query['sort']); $this->assertSame('24', $query['per_page']);
+        $this->get($sortUrl)->assertOk();
     }
 
     public function test_super_status_can_be_managed_from_the_edit_user_page_only()
@@ -102,27 +119,24 @@ class AdminUsersTableTest extends ReviewTestCase
         }
     }
 
-    public function test_all_enabled_sort_columns_keep_their_meaning_with_stable_ties()
+    public function test_all_enabled_sorts_keep_their_meaning_with_stable_ties()
     {
         $users = $this->accounts(4);
-        $users[0]->update(['first_name' => 'Zulu', 'super_user' => true]);
-        $users[1]->update(['first_name' => 'Alpha']);
-        $users[2]->update(['first_name' => 'Bravo']);
-        $users[3]->update(['first_name' => 'Charlie']);
+        foreach (['Zulu', 'Alpha', 'Bravo', 'Charlie'] as $i => $name) $users[$i]->update(['first_name' => $name]);
         $this->actingAs(create(Admin::class), 'admin');
-        $ascending = [0 => [3, 2, 1, 0], 1 => [0, 1, 2, 3], 2 => [1, 2, 3, 0], 3 => [2, 0, 3, 1]];
-        $descending = [0 => [0, 1, 2, 3], 1 => [3, 2, 1, 0], 2 => [0, 3, 2, 1], 3 => [3, 1, 2, 0]];
+        $ascending = ['date' => [3, 2, 1, 0], 'id' => [0, 1, 2, 3], 'name' => [1, 2, 3, 0], 'origin' => [2, 0, 3, 1]];
+        $descending = ['date' => [0, 1, 2, 3], 'id' => [3, 2, 1, 0], 'name' => [0, 3, 2, 1], 'origin' => [3, 1, 2, 0]];
         foreach (['asc' => $ascending, 'desc' => $descending] as $direction => $sorts) {
             foreach ($sorts as $column => $indices) {
-                $data = $this->table(['order' => [['column' => $column, 'dir' => $direction]]])->assertOk()->json('data');
-                $this->assertSame(array_map(function ($i) use ($users) { return $users[$i]->id; }, $indices), array_column($data, 'id'));
+                $page = $this->table(['sort' => $column.'_'.$direction])->assertOk()->viewData('users');
+                $this->assertSame(array_map(function ($i) use ($users) { return $users[$i]->id; }, $indices), $page->pluck('id')->all());
             }
         }
         User::whereIn('id', $users->pluck('id'))->update(['created_at' => now()]);
-        $this->assertSame($users->pluck('id')->reverse()->values()->all(), array_column($this->table()->assertOk()->json('data'), 'id'));
+        $this->assertSame($users->pluck('id')->reverse()->values()->all(), $this->table()->assertOk()->viewData('users')->pluck('id')->all());
     }
 
-    public function test_response_contains_only_used_cells_and_preserves_status_flags_and_two_actions()
+    public function test_account_cells_escape_content_and_preserve_status_flags_and_actions()
     {
         $users = $this->accounts(4);
         $users[0]->update(['first_name' => '<script>unsafe</script>', 'super_user' => true]);
@@ -130,102 +144,77 @@ class AdminUsersTableTest extends ReviewTestCase
         $users[2]->membership->source->update(['renews_at' => now()->subDay()]);
         $this->actingAs(create(Admin::class), 'admin');
         $response = $this->table()->assertOk();
-        $row = $response->json('data.0');
-        $this->assertEqualsCanonicalizing(['id', 'created_at', 'name', 'origin_display', 'status', 'actions'], array_keys($row));
-        $this->assertStringContainsString('&lt;script&gt;', $row['name']);
-        $this->assertStringNotContainsString('<script>', $row['name']);
-        $this->assertStringContainsString('flag-icon-us', $row['name']);
-        $this->assertStringContainsString('Super user', $row['status']);
-        $this->assertStringContainsString('On trial', $response->json('data.1.status'));
-        $this->assertStringContainsString('Expired', $response->json('data.2.status'));
-        $this->assertStringContainsString('Member (Monthly)', $response->json('data.3.status'));
-        foreach (['name', 'origin_display', 'status', 'actions'] as $field) {
-            $view = ['origin_display' => 'origin'][$field] ?? $field;
-            $item = $users[0]->fresh(['location', 'membership.source']);
-            $this->assertSame(view('admin.pages.users.table.'.$view, compact('item'))->render(), $row[$field]);
-        }
-        $this->assertSame(2, substr_count($row['actions'], '<a '));
-        $this->assertStringContainsString(route('admin.users.show', $users[0]), $row['actions']);
-        $this->assertStringContainsString(route('impersonate', $users[0]), $row['actions']);
-        foreach (['unused-account-secret', 'unused-receipt-secret', 'unused-apple-secret', 'unused-customer-secret', 'latest_receipt', 'logs_count', 'favorites_count'] as $unused) {
-            $this->assertStringNotContainsString($unused, $response->getContent());
-        }
-        $this->get(route('admin.users.index'))->assertOk()->assertSee('&lt;script&gt;', false)->assertDontSee('<script>unsafe</script>', false);
+        $response->assertSee('&lt;script&gt;', false)->assertDontSee('<script>unsafe</script>', false)
+            ->assertSee('flag-icon-us')->assertSee('Super user')->assertSee('On trial')->assertSee('Expired')->assertSee('Member (Monthly)');
+        $xpath = $this->xpath($response);
+        $actions = $xpath->query('//table[@id="users-table"]/tbody/tr[1]/td[6]/div/a');
+        $this->assertCount(2, $actions);
+        $this->assertSame(route('admin.users.show', $users[0]), $actions[0]->getAttribute('href'));
+        $this->assertSame(route('impersonate', $users[0]), $actions[1]->getAttribute('href'));
+        $this->assertSame('noopener noreferrer', $actions[1]->getAttribute('rel'));
+        foreach (['unused-account-secret', 'unused-receipt-secret', 'unused-apple-secret', 'unused-customer-secret', 'latest_receipt', 'logs_count', 'favorites_count'] as $unused) $response->assertDontSee($unused);
     }
 
-    public function test_table_work_is_bounded_and_does_not_fetch_unused_records_or_run_activity_counts()
+    public function test_queries_and_rendering_are_bounded_without_unused_records_or_activity_counts()
     {
         $this->accounts();
         $counts = [];
         foreach ([12, 24] as $length) {
             DB::enableQueryLog(); DB::flushQueryLog();
-            $request = \Illuminate\Http\Request::create('/users', 'GET', compact('length'));
-            $data = (new UsersTable)->response($request)->getData(true);
+            $data = (new UsersTable)->get(Request::create('/users', 'GET', ['per_page' => $length]));
+            view('admin.pages.users.table.rows', $data)->render();
             $queries = DB::getQueryLog(); DB::disableQueryLog();
-            $this->assertCount($length, $data['data']);
-            $counts[] = count($queries);
+            $this->assertCount($length, $data['users']); $counts[] = count($queries);
             $sql = implode("\n", array_column($queries, 'query'));
             foreach (['activity_events', 'favorites', 'latest_receipt', 'password', 'stripe_id', 'card_last_four'] as $unused) $this->assertStringNotContainsString($unused, $sql);
             $this->assertStringContainsString('limit '.$length, $sql);
         }
         $this->assertSame([6, 6], $counts);
-        DB::enableQueryLog(); DB::flushQueryLog();
-        (new UsersTable)->firstPage();
-        $this->assertCount(6, DB::getQueryLog());
-        DB::disableQueryLog();
     }
 
-    public function test_authorization_validation_and_client_columns_cannot_change_the_query()
+    public function test_admin_authorization_and_allowlisted_query_parameters()
     {
         $this->withExceptionHandling();
-        $this->table()->assertUnauthorized();
-        $user = Model::withoutEvents(function () { return User::create(['first_name' => 'Directory', 'last_name' => 'Account', 'email' => 'arthurvillar@gmail.com', 'password' => 'unused']); });
-        $this->actingAs($user, 'web');
-        $this->table()->assertUnauthorized();
+        $this->getJson(route('admin.users.index'))->assertUnauthorized();
+        $user = Model::withoutEvents(function () { return create(User::class, ['email' => 'arthurvillar@gmail.com']); });
+        $this->actingAs($user, 'web')->getJson(route('admin.users.index'))->assertUnauthorized();
         $this->actingAs(create(Admin::class), 'admin');
-        $this->table(['columns' => [['data' => 'password', 'name' => 'users.password', 'searchable' => true, 'search' => ['value' => 'arbitrary']]]])->assertOk()->assertJsonPath('data.0.id', $user->id);
-        foreach ([['length' => -1], ['length' => 1000], ['start' => -1], ['draw' => '<script>'], ['search' => ['value' => ['bad']]],
-            ['order' => [['column' => 5, 'dir' => 'asc']]], ['order' => [['column' => 6, 'dir' => 'asc']]],
-            ['columns' => array_fill(0, 7, ['data' => 'id'])], ['order' => [['column' => 0, 'dir' => 'desc; DELETE FROM users']]],
-            ['columns' => [['name' => ['bad']]]]] as $bad) $this->table($bad)->assertUnprocessable();
+        $this->table(['columns' => [['name' => 'users.password']]])->assertOk()->assertDontSee($user->password);
+        foreach ([['per_page' => -1], ['per_page' => 1000], ['per_page' => 13], ['page' => -1], ['page' => ['2']],
+            ['search' => ['bad']], ['search' => str_repeat('a', 256)], ['sort' => ['name_asc']], ['sort' => 'password_asc'], ['sort' => 'date_desc; DELETE FROM users']] as $bad) {
+            $this->getJson(route('admin.users.index', $bad))->assertUnprocessable();
+        }
         $this->assertDatabaseCount('users', 1);
     }
 
-    public function test_super_users_keep_their_override_without_fetching_billing_and_empty_pages_are_supported()
+    public function test_super_user_overrides_do_not_fetch_billing_and_empty_results_have_no_fake_rows()
     {
         $users = $this->accounts(4);
         User::whereIn('id', $users->pluck('id'))->update(['super_user' => true]);
         Stripe::query()->update(['renews_at' => now()->subYear(), 'ended_at' => now()->subYear()]);
         Apple::query()->update(['renews_at' => now()->subYear()]);
         DB::enableQueryLog(); DB::flushQueryLog();
-        $page = (new UsersTable)->firstPage();
+        $data = (new UsersTable)->get(Request::create('/users'));
+        $html = view('admin.pages.users.table.rows', $data)->render();
         $queries = DB::getQueryLog(); DB::disableQueryLog();
         $this->assertCount(3, $queries);
         $this->assertStringNotContainsString('memberships', implode("\n", array_column($queries, 'query')));
-        foreach ($page['data'] as $row) $this->assertStringContainsString('Super user', $row['status']);
-        // Removing fixture rows directly avoids invoking account deletion hooks.
+        $this->assertSame(4, substr_count($html, 'Super user'));
         DB::table('users')->delete();
         $this->actingAs(create(Admin::class), 'admin');
-        $response = $this->get(route('admin.users.index'))->assertOk();
-        $this->assertSame(0, $response->viewData('initialUsers')['recordsTotal']);
-        $this->assertSame([], $response->viewData('initialUsers')['data']);
-        $response->assertSee('deferLoading: 0', false);
-        $this->table()->assertOk()->assertJsonCount(0, 'data');
+        $response = $this->table()->assertOk()->assertSee('No users yet.')->assertDontSee('name="per_page"', false);
+        $this->assertSame(0, $response->viewData('users')->total());
+        $this->assertCount(1, $this->xpath($response)->query('//table[@id="users-table"]/tbody/tr/td[@colspan="6"]'));
+        $this->assertCount(0, $this->xpath($response)->query('//ul[contains(@class,"pagination")]'));
     }
 
-    public function test_paused_and_grace_period_labels_use_the_existing_status_rules()
+    public function test_paused_and_grace_period_labels_keep_the_existing_status_rules()
     {
         $users = $this->accounts(4);
         $users[1]->membership->source->update(['paused_at' => now()]);
         $users[3]->membership->source->update(['membership_ends_at' => now()->addDays(3)]);
         $this->actingAs(create(Admin::class), 'admin');
-        $response = $this->table()->assertOk();
-        $this->assertStringContainsString('Paused', $response->json('data.1.status'));
-        $this->assertStringContainsString('Grace period', $response->json('data.3.status'));
-        foreach ($users as $index => $user) {
-            $item = $user->fresh(['location', 'membership.source']);
-            $this->assertSame(view('admin.pages.users.table.status', compact('item'))->render(), $response->json('data.'.$index.'.status'));
-        }
+        $this->table()->assertOk()->assertSee('Paused')->assertSee('Grace period');
     }
 
     public function test_directory_indexes_remove_the_default_sort_and_membership_scan_and_can_roll_back()

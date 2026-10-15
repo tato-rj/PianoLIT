@@ -53,22 +53,24 @@
         </section>
     </div>
 
-    <section class="ua-card ma-directory" aria-labelledby="ma-directory-title">
-        <div class="ua-section-heading"><div><h2 id="ma-directory-title">Membership directory</h2><p>{{number_format($memberships->total())}} matching accounts · One row per account · Dates shown in {{config('app.timezone')}}.</p></div></div>
-        <form class="ua-filters" method="GET" action="{{route('admin.analytics.memberships')}}" aria-label="Membership filters">
-            <label class="ua-search">Find an account<input type="search" name="search" value="{{$filters['search'] ?? ''}}" placeholder="Name, email or user ID" maxlength="160"></label>
-            <label>Provider<select name="provider"><option value="">All providers</option>@foreach(['billing' => 'Stripe + Apple', 'stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS', 'super_user' => 'Super User'] as $key => $label)<option value="{{$key}}" @if(($filters['provider'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
-            <label>Status<select name="status"><option value="all" @if($filters['status'] === 'all') selected @endif>All statuses</option>@foreach($labels as $key => $label)<option value="{{$key}}" @if(($filters['status'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
-            <label>Sort by<select name="sort">@foreach(['date_asc' => 'Access date · earliest', 'date_desc' => 'Access date · latest', 'name' => 'Account name', 'checked' => 'Latest check / grant'] as $key => $label)<option value="{{$key}}" @if(($filters['sort'] ?? 'date_asc') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>
-            <button class="ua-button" type="submit">Apply filters</button>
-            @if(array_filter(array_diff_assoc($filters, ['status' => 'active'])))<a class="ma-reset" href="{{route('admin.analytics.memberships')}}">Reset</a>@endif
-        </form>
-        <p class="ma-scroll-hint">Scroll sideways to see status, dates and checks.</p>
-        <div class="ua-table-scroll" tabindex="0" role="region" aria-label="Membership results"><table class="ua-table ma-table">
-            <thead><tr><th scope="col">Account</th><th scope="col">Provider / plan</th><th scope="col">Status</th><th scope="col">Access until</th><th scope="col">Latest check</th></tr></thead>
-            <tbody>@forelse($memberships as $membership)
+    @component('admin.components.table', [
+        'id' => 'ma-directory', 'title' => 'Membership directory', 'class' => 'ma-directory',
+        'items' => $memberships, 'pageSizes' => [], 'tableClass' => 'ma-table',
+        'description' => number_format($memberships->total()).' matching accounts · One row per account · Dates shown in '.config('app.timezone').'.',
+        'action' => route('admin.analytics.memberships'), 'state' => array_merge(['sort' => 'date_asc'], $filters),
+        'search' => ['label' => 'Find an account', 'placeholder' => 'Name, email or user ID', 'maxlength' => 160],
+        'filters' => [
+            ['name' => 'provider', 'label' => 'Provider', 'options' => ['' => 'All providers', 'billing' => 'Stripe + Apple', 'stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS', 'super_user' => 'Super User']],
+            ['name' => 'status', 'label' => 'Status', 'options' => ['all' => 'All statuses'] + $labels],
+        ],
+        'sorts' => ['date_asc' => 'Access date · earliest', 'date_desc' => 'Access date · latest', 'name' => 'Account name', 'checked' => 'Latest check / grant'],
+        'showReset' => (bool) array_filter(array_diff_assoc($filters, ['status' => 'active'])),
+        'columns' => ['Account', 'Provider / plan', 'Status', 'Access until', 'Latest check'],
+        'emptyTitle' => 'No matching memberships', 'emptyDescription' => 'Try another account, provider or status.',
+    ])
+            @foreach($memberships as $membership)
                 <tr>
-                    <td><a class="ua-person-name" href="{{route('admin.users.show', $membership->user_id)}}">{{trim($membership->first_name.' '.$membership->last_name)}}</a><small>{{$membership->email}}</small><small>#{{$membership->user_id}}</small></td>
+                    <td><a class="admin-table__primary" href="{{route('admin.users.show', $membership->user_id)}}">{{trim($membership->first_name.' '.$membership->last_name)}}</a><small>{{$membership->email}}</small><small>#{{$membership->user_id}}</small></td>
                     <td><span class="ma-provider">@icon($membership->provider === 'super_user' ? 'user-shield' : ($membership->provider === 'apple' ? 'brand-apple' : 'credit-card'), ['mr' => 1]){{['super_user' => 'Super User', 'apple' => 'Apple', 'stripe' => 'Stripe'][$membership->provider]}}</span>@if($membership->provider !== 'super_user')<small>{{\App\Analytics\MembershipReport::planName($membership->plan)}}</small>@endif @if($membership->environment === 'Sandbox')<small>Test environment</small>@endif</td>
                     <td><span class="ma-status ma-status--{{$membership->membership_status}}">{{$labels[$membership->membership_status]}}</span>@if($membership->membership_status === 'ending')<small>Will not renew</small>@elseif($membership->membership_status === 'pending')<small>Waiting for a current receipt check</small>@endif</td>
                     <td class="ma-date">@if($membership->provider !== 'super_user'){{$membership->access_until ? carbon($membership->access_until)->format('M j, Y') : ($membership->membership_status === 'revoked' ? 'Access revoked' : 'Not confirmed')}}@if($membership->access_until)<small>{{carbon($membership->access_until)->format('g:i A')}}</small>@if(in_array($membership->membership_status, ['needs_review', 'pending']))<small>Last verified date</small>@endif @endif @endif</td>
@@ -82,10 +84,8 @@
                         @else<span>No automatic check yet</span>@endif
                     </td>
                 </tr>
-            @empty<tr><td colspan="5"><div class="ua-empty"><h3>No matching memberships</h3><p>Try another account, provider or status.</p></div></td></tr>@endforelse</tbody>
-        </table></div>
-        {{$memberships->links()}}
-    </section>
+            @endforeach
+    @endcomponent
     <p class="ua-note">A failed or outdated Apple check means the current status is unknown. It is never counted as an active or expired membership. These checks update administrative reporting; account access continues to use the existing billing system.</p>
 </div></div>
 @endsection

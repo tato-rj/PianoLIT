@@ -4,74 +4,47 @@ namespace App\Services\Admin;
 
 use App\User;
 use App\Billing\Sources\{Apple, Stripe};
-use App\Support\AdminPagination;
+use App\Support\AdminTableFilters;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 
 class UsersTable
 {
-    public function firstPage()
-    {
-        return $this->page(0, AdminPagination::PER_PAGE, '', [], 0);
-    }
+    const SORTS = [
+        'date_desc' => 'Date joined · newest', 'date_asc' => 'Date joined · oldest',
+        'id_desc' => 'User ID · highest', 'id_asc' => 'User ID · lowest',
+        'name_asc' => 'Name · A–Z', 'name_desc' => 'Name · Z–A',
+        'origin_asc' => 'Origin · A–Z', 'origin_desc' => 'Origin · Z–A',
+    ];
 
-    public function response(Request $request)
+    public function get(Request $request)
     {
-        $data = $request->validate([
-            'draw' => 'sometimes|integer|min:0|max:2147483647',
-            'start' => 'sometimes|integer|min:0|max:10000000',
-            'length' => 'sometimes|integer|min:1|max:96',
-            'search' => 'sometimes|array',
-            'search.value' => 'nullable|string|max:255',
-            'order' => 'sometimes|array|max:4',
-            'order.*.column' => 'required|integer|in:0,1,2,3',
-            'order.*.dir' => 'required|in:asc,desc',
-            'columns' => 'sometimes|array|max:6',
-            'columns.*' => 'required|array',
-            'columns.*.data' => 'nullable|string|max:100',
-            'columns.*.name' => 'nullable|string|max:100',
-            'columns.*.search' => 'sometimes|array',
-            'columns.*.search.value' => 'nullable|string|max:255',
-        ]);
-
-        return response()->json($this->page(
-            (int) ($data['start'] ?? 0),
-            (int) ($data['length'] ?? AdminPagination::PER_PAGE),
-            trim($data['search']['value'] ?? ''),
-            $data['order'] ?? [],
-            (int) ($data['draw'] ?? 0)
-        ));
-    }
-
-    protected function page($start, $length, $search, array $orders, $draw)
-    {
+        $filters = AdminTableFilters::fromRequest($request, self::SORTS);
+        $search = $filters['search'];
         // Explicit selection also removes User's default favorites count. Never
         // serialize these models: User appends query activity for every account.
-        $query = User::select(['id', 'first_name', 'last_name', 'created_at', 'origin', 'email_verified_at', 'super_user']);
-        $total = (clone $query)->count();
+        $query = User::select(['id', 'first_name', 'last_name', 'created_at', 'origin', 'email', 'email_verified_at', 'super_user']);
 
         foreach (preg_split('/\s+/u', $search) as $term) {
             if ($term === '') continue;
             $like = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], mb_strtolower($term)).'%';
             $query->where(function ($query) use ($like) {
-                // Retain the existing directory's searchable fields. Client
-                // column names, search flags and regexes are never SQL inputs.
-                foreach (['created_at', 'id', 'first_name', 'origin'] as $column) {
+                // SQL fields are fixed; submitted names never become query instructions.
+                foreach (['created_at', 'id', 'first_name', 'last_name', 'email', 'origin'] as $column) {
                     $query->orWhereRaw("LOWER(users.{$column}) LIKE ? ESCAPE '!'", [$like]);
                 }
             });
         }
-        $filtered = $search === '' ? $total : (clone $query)->count();
-        $sorts = [0 => 'created_at', 1 => 'id', 2 => 'first_name', 3 => 'origin'];
-        foreach ($orders ?: [['column' => 0, 'dir' => 'desc']] as $order) {
-            $query->orderBy($sorts[(int) $order['column']], $order['dir']);
-        }
-        $users = $query->orderByDesc('id')->skip($start)->take($length)
-            ->with('location:id,user_id,countryCode')->get();
+        [$sort, $direction] = explode('_', $filters['sort']);
+        $sorts = ['date' => 'created_at', 'id' => 'id', 'name' => 'first_name', 'origin' => 'origin'];
+        $users = $query->orderBy($sorts[$sort], $direction)->orderByDesc('id')
+            ->with('location:id,user_id,countryCode')
+            ->paginate($filters['per_page'], ['*'], 'page', $filters['page'] ?? 1)
+            ->appends(AdminTableFilters::query(array_diff_key($filters, ['page' => true])));
 
         // Super users' status is unconditional; their billing records are unused.
         // Other rows batch-load status fields only, omitting receipts and secrets.
-        $users->where('super_user', false)->load([
+        $users->getCollection()->where('super_user', false)->load([
             'membership:id,user_id,source_type,source_id',
             'membership.source' => function (MorphTo $source) {
                 $source->constrain([
@@ -85,20 +58,6 @@ class UsersTable
             },
         ]);
 
-        $rows = $users->map(function (User $item) {
-            $row = [
-                'id' => $item->id,
-                'created_at' => $item->created_at
-                    ? '<span class="invisible position-absolute">'.$item->created_at->timestamp.'</span>'.e($item->created_at->toFormattedDateString())
-                    : '',
-            ];
-            foreach (['name' => 'name', 'origin_display' => 'origin', 'status' => 'status', 'actions' => 'actions'] as $field => $view) {
-                $row[$field] = view('admin.pages.users.table.'.$view, compact('item'))->render();
-            }
-
-            return $row;
-        })->all();
-
-        return ['draw' => $draw, 'recordsTotal' => $total, 'recordsFiltered' => $filtered, 'data' => $rows];
+        return compact('users', 'filters');
     }
 }

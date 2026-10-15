@@ -1,108 +1,129 @@
 # Admin table standard
 
-The user approved Feedback as the standard for admin tables on 2026-10-14.
-Users and Feedback share this pattern. Adopt it when creating or redesigning a
-table; retain each page's columns, filters, routes, permissions and actions.
+On 2026-10-15 the user chose the membership directory design and a reusable
+Laravel Blade component as the standard. Users, Feedback and the membership
+directory now use `admin.components.table`. Use this component for new tables
+and migrate existing tables when their pages are updated within the requested
+scope. Preserve each page’s columns, filters, route names, session permissions,
+row actions and bulk behavior.
 
-Use the existing white Bootstrap card with 24px corners and 24px padding via
-`admin.components.table-card`. Keep the page heading outside the card. Place
-filters, totals, bulk actions and load-error feedback inside it, above the table.
-Use `admin-table-filters` for wrapping filters with 12px gaps and a 16px bottom
-margin. Table text retains the shared PianoLIT typography tokens.
+Omit `title` when the table is the page’s sole purpose, as on Users and Feedback;
+the page heading already identifies it. Pass `label` for its accessible name.
+Use a visible table title only to distinguish a section on a multi-section page,
+such as Membership directory inside Membership analytics.
 
-Use `table align-middle w-100`, ordinary header/row separators, and a
-`table-responsive` wrapper so wide tables scroll within the card on phones.
-Preserve readable cell text rather than reducing font size to fit more columns.
-Avoid zebra stripes, hover fills and separate outer table borders. Status badges,
-checkboxes, toggles and action buttons retain their existing meaning and behavior.
-Headers for icon-only action columns must remain accessible.
+## Component usage
 
-For the existing shared DataTable header component, opt in without changing its
-legacy presentation on other pages:
+The component owns the rounded card, heading, filter form, table headers,
+scrolling region, empty state, result summary and pagination. The default slot
+contains only trusted Blade-rendered `<tr>` rows. Cell values use escaped Blade
+expressions; do not pass submitted HTML as the slot.
 
 ```blade
-@component('admin.components.table-card')
-    {{-- Optional filters, bulk actions, totals and errors go here. --}}
-    <div class="table-responsive">
-        @datatable(['table' => 'example', 'standard' => true, 'columns' => ['Date', 'Name', '']])
-    </div>
+@component('admin.components.table', [
+    'id' => 'accounts-table', 'title' => 'Accounts', 'items' => $accounts,
+    'description' => number_format($accounts->total()).' matching accounts',
+    'action' => route('admin.users.index'), 'state' => $filters,
+    'search' => ['label' => 'Find an account', 'placeholder' => 'Name or email'],
+    'sorts' => ['name_asc' => 'Name · A–Z', 'name_desc' => 'Name · Z–A'],
+    'columns' => [
+        ['label' => 'Account', 'sort' => ['asc' => 'name_asc', 'desc' => 'name_desc']],
+        'Status', ['label' => 'Actions', 'hidden' => true],
+    ],
+    'emptyTitle' => 'No matching accounts',
+    'emptyDescription' => 'Try another search.',
+])
+    @foreach($accounts as $account)
+    <tr>
+        <td><span class="admin-table__primary">{{ $account->full_name }}</span><small>{{ $account->email }}</small></td>
+        <td>{{ $account->status_label }}</td>
+        <td>@include('admin.pages.example.actions', ['item' => $account])</td>
+    </tr>
+    @endforeach
 @endcomponent
 ```
 
-The standard DataTable layout includes `admin.components.datatable-frame` by
-default. For a manually rendered table, wrap it in the same component and pass
-its `tableId` (as Feedback does). Render the first page into `initialBody`, mark
-the header `ready`, and set DataTables `deferLoading` to the filtered initial
-total. This avoids a redundant first request and gives the placeholder the real
-row heights and column widths from the first paint. Declare additional
-non-sortable column indexes with `nonSortable`; an empty Actions header is
-already non-sortable. Keep matching `orderable` settings in the initializer.
-Place any server-pagination fallback inside the frame and mark it with
-`data-admin-table-fallback-pagination` so it does not add a second footer during
-initialization; hide it when DataTables initializes successfully.
+`items` accepts a Laravel length-aware paginator or a collection. A small fixed
+collection needs only `id`, `title`, `items`, `columns` and its row slot; it gets
+no form or pager unless controls are explicitly supplied. Empty tables render
+one full-width empty state and never invent placeholder rows.
 
-Nonempty tables mask their real cell contents with skeleton text, toggle and
-button shapes, reserve the page-size/search and summary/pagination areas, and
-reveal after DataTables and the current font/layout work finish. Later requests
-retain the current table height and mask rows while search stays usable. Empty
-tables and empty search results bypass the skeleton; never invent 12 fake rows
-for a known empty dataset. There is no minimum loading delay. The shared loader
-ignores stale request/layout callbacks, restores rows after errors, respects
-reduced motion and falls back to the server table if initialization fails.
-Without JavaScript the normal server-rendered table remains visible. The frame
-loads its small head script once per page; unrelated legacy table layouts do
-not opt in automatically.
+Optional parameters:
 
-Reuse the project's existing Bootstrap DataTables integration. Keep page size
-and search above the table; show the result summary and arrow/number pagination
-below. Default to `App\Support\AdminPagination::PER_PAGE` (12), with 24, 48 and 96
-as the larger page sizes for migrated tables. Keep existing default sorting and
-search/filter behavior. Sorting and searching must cover the full dataset, not
-only the currently rendered page. Handle failed requests with a visible retry
-control and clear processing indicators; keep stale requests from replacing the
-current request's status. Preserve checkbox selections across redraws on pages
-that support bulk selection.
+- `filters`: select definitions with `name`, `label` and an `options` map. The
+  selected value comes from `state[name]`. See Feedback’s rating selector.
+- `sorts`: allowed sort values and display labels for the Sort by selector.
+  A column’s optional `sort` map supplies ascending/descending header links;
+  the active header exposes `aria-sort`. Both controls use the same sort keys.
+- `search`: label, placeholder and optional `maxlength` (255 by default).
+- `pageSizes`: defaults to `AdminPagination::PAGE_SIZES` (12, 24, 48, 96).
+  Set it to `[]` for reports that retain a fixed page size. It is omitted when
+  the whole result fits the default page. Only enable it if the query validates
+  and applies `per_page`.
+- `hidden`: known extra form query values, useful for independent page filters.
+  Changing filters or sorting resets this list’s page parameter; paginator
+  links retain applied filters. Sort links preserve other query parameters.
+- `showReset` and `resetUrl`: override automatic reset visibility/destination.
+- `tableClass` and `class`: page-specific table/card hooks. Keep special cell
+  sizing in scoped Sass rather than duplicating the shared structure.
+- `label`: accessible table/filter/scroll-region name, defaulting to the title.
+- Named `toolbar` slot: optional bulk actions or supporting content inside the
+  card and outside the GET filter form. Keep POST forms out of the GET form.
 
-Shared card/filter styling lives in `resources/sass/admin/_tables.scss`; keep
-page-specific cells and badges in their own stylesheets. Rebuild tracked admin
-CSS and update its Mix manifest hash when shared styles change. Visually verify
-desktop and phone layouts, the empty state, search/pagination, and any row/bulk
-controls. This standard does not change public/mobile pagination or contracts.
+## Queries and navigation
 
-## Users table loading and query budget
+Use `App\Support\AdminTableFilters::fromRequest` to validate `search`, `sort`,
+`per_page` and `page`, with a fixed server-owned sort map and any extra filter
+rules. It returns defaults and trimmed search text. `AdminTableFilters::query`
+omits default values and the first page when generating canonical return URLs.
+Never treat submitted column names, directions or model names as SQL fields.
+Escape LIKE wildcards when search is intended to match literal text.
 
-`App\Services\Admin\UsersTable` renders the first 12 rows with the initial Users
-page. The shared header accepts `ready => true` and `initialBody` containing the
-trusted rendered row view. Account text is escaped inside those cell templates;
-never pass request text directly as the body markup. DataTables uses
-`deferLoading` with the initial total, so it makes no initial data request and
-fetches fresh data only for subsequent table interactions. Its shared skeleton
-masks these existing rows during initialization; do not restore the old generic
-400px `table-loading` image or an empty first data request.
+Search, filters and ordering must apply to the entire database query **before**
+`paginate`, with a deterministic tie-breaker. Use `AdminPagination::PER_PAGE`
+(12) by default. Load only the displayed page and necessary relationships;
+render model fields directly without serializing full User models or triggering
+activity appends. Keep browser routes on the admin session guard.
 
-The service returns only the six displayed fields and never serializes User
-models. Its explicit account selection omits the default favorites count and
-unused activity appends. Location flags and membership status fields are loaded
-in batches; super-user rows skip billing entirely. Existing user status methods
-retain their meaning. No shared response cache is involved.
+Filters submit GET forms and pagination/header sorting use ordinary links. Each
+response contains the complete table, so no DataTables initialization, Ajax
+endpoint, loader, CDN stylesheet or JavaScript dependency is needed. URLs are
+bookmarkable, Back/Forward work normally, and the table works without JavaScript.
+Do not add a skeleton to this synchronous flow. If a future task explicitly
+adds asynchronous updates, handle loading, stale requests, errors, retries and
+keyboard focus once in a shared enhancement.
 
-In isolated fixtures containing both Apple and Stripe memberships, unfiltered
-12/24-row requests use six queries at either page size; a nonempty search adds one
-filtered count. The old path used 30/54 queries respectively. These are
-fixture measurements, not production timing guarantees. The first HTML response
-also includes the ordinary admin layout's own queries.
+Feedback deletion keeps its rating, search, sort and page size, counts the same
+filtered query after deletion, and returns to the last valid matching page.
+Delete forms retain CSRF and route-bound ownership. Users retains Edit and
+impersonation; Super status is managed inside Edit user. Its directory has no
+bulk-selection checkbox or super-user toggle.
 
-Apply `2026_10_15_010000_add_admin_user_directory_indexes.php` during deployment.
-Its non-unique indexes support the default `created_at, id` ordering and the
-membership lookup by `user_id`. Locations already have a unique `user_id` index.
-SQLite plan checks cover both added indexes and rollback; production MySQL plans
-and timings have not been measured. The code remains functional before the
-indexes are applied. The shared skeleton's CSS/JavaScript and manifest must ship
-with its Blade components. Feedback also reuses its rendered page with
-`deferLoading`, retaining its current rating filter and page.
+The Users query selects only required account fields and batches location and
+billing status, preserving super-user overrides without loading their billing.
+Keep `2026_10_15_010000_add_admin_user_directory_indexes.php` in deployment: it
+supports the default date/ID ordering and membership lookup. Existing index
+requirements are unchanged by this table migration.
 
-The Users directory has no bulk-selection checkboxes or Delete selected prompt,
-by the user's explicit preference. Its six columns are Date, ID, Name, Origin,
-Status and Actions (Edit and impersonation). Super status is managed inside the
-individual Edit user page; keep its toggle out of the directory. Other pages may
-retain their own bulk actions.
+## Appearance and verification
+
+Shared styling lives in `resources/sass/admin/_tables.scss` and uses PianoLIT
+font tokens and the membership directory’s colors, rounded filters, subtle row
+separators and spacing. Page-specific badges and cells retain their meaning.
+Wide tables scroll within the card; do not shrink text to fit a phone.
+
+Rebuild the tracked admin CSS and its Mix manifest hash when shared styles
+change. Visually verify desktop/phone layouts, empty results, search, every
+supported sort, pagination, retained filter state and row/bulk actions. Use
+isolated SQLite fixtures and fake services as described in `AGENTS.md`; never
+perform destructive verification against real accounts.
+
+## DataTables awaiting migration
+
+Other pages retain the legacy `admin.components.table-card`, standard
+`@datatable` layout and `admin.components.datatable-frame`. Keep preloaded first
+rows, trusted `initialBody`, `ready`, non-sortable metadata, `deferLoading`, empty
+bypass and the existing skeleton/error/retry behavior consistent until each page
+is migrated. Do not globally remove the shared DataTables assets while these
+pages still depend on them. Do not migrate unrelated pages as part of a narrow
+request.
