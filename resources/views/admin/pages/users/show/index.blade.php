@@ -3,9 +3,15 @@
 @section('content')
 <div class="content-wrapper"><div class="container-fluid user-profile" data-user-profile>
     @component('admin.components.page.title', ['title' => 'User details', 'subtitle' => 'Profile, membership and saved music.'])
-        <a class="btn btn-secondary" href="{{ route('admin.users.index') }}">@icon('arrow-left')All users</a>
-        @unless($analyticsExcluded)<a class="btn btn-dark" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">@icon('chart-line')Logs & analytics</a>@endunless
-        <a class="btn btn-secondary" href="{{ route('impersonate', $user) }}" target="_blank" rel="noopener noreferrer">@icon('contact-round')Impersonate</a>
+    <div class="d-apart">
+        <div>
+            <a class="btn btn-secondary" href="{{ route('admin.users.index') }}">@icon('arrow-left')All users</a>
+        </div>
+        <div>
+            @unless($analyticsExcluded)<a class="btn btn-secondary" href="{{ route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits']) }}">@icon('chart-line')Logs & analytics</a>@endunless
+            <a class="btn btn-secondary" href="{{ route('impersonate', $user) }}" target="_blank" rel="noopener noreferrer">@icon('contact-round')Impersonate</a>
+        </div>
+    </div>
     @endcomponent
 
     @include('admin.pages.users.show.profile')
