@@ -87,6 +87,7 @@ mix.js('resources/js/app.js', 'public/js')
     .copy('resources/fonts/escore/LibreBodoni-Regular.ttf', 'public/fonts/escore/LibreBodoni-Regular.ttf')
     .copy('resources/fonts/escore/LibreBodoni-Bold.ttf', 'public/fonts/escore/LibreBodoni-Bold.ttf')
     .copy('resources/fonts/escore/OFL.txt', 'public/fonts/escore/OFL.txt')
+    .version(['public/js/views/admin-design-system.js'])
     //SVG FLAGS
     .copy('node_modules/flag-icon-css/css/flag-icon.min.css', 'public/css/vendor/flag-icon')
     .copy('node_modules/flag-icon-css/flags', 'public/css/vendor/flags')

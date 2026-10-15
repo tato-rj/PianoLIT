@@ -37,6 +37,7 @@ class AdminPageHeadersTest extends ReviewTestCase
     {
         return [
             ['admin.home', 'Overview'],
+            ['admin.design-system.index', 'Design System'],
             ['admin.ebooks.index', 'eBooks'],
             ['admin.ebooks.create', 'New eBook'],
             ['admin.ebooks.topics.index', 'eBook Topics'],
