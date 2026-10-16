@@ -1,4 +1,4 @@
-// Shared typography and component size adapters. Defaults live in _design-tokens.scss.
+// Shared typography and component size adapters. Defaults live in shared/_tokens.scss.
 body {
     font-family: var(--font-family-body);
     font-size: var(--font-size-base);
@@ -48,6 +48,8 @@ small,
 }
 .btn-xs {
     font-size: var(--font-size-xs);
+    padding: 0.1rem 0.4rem;
+    line-height: 1.5;
 }
 .btn-sm,
 .btn-group-sm > .btn,
@@ -75,4 +77,6 @@ small,
 }
 .btn-xl {
     font-size: var(--font-size-xl);
+    padding: 0.5rem 1.5rem;
+    line-height: 1.5;
 }

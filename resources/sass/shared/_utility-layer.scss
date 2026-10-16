@@ -1,0 +1,19 @@
+// Extra utilities used by existing templates, emitted before the final tokens
+// and component adapters. Keep this layer separate from Sass @extend consumers.
+@import 'large-spacing';
+@import 'palette';
+@import 'layout-utilities';
+@import 'effects';
+@import '../components/palette-alerts';
+
+// Preserve the existing focus reset; accessible outlines are component-owned.
+select:focus,
+textarea:focus,
+input:focus,
+a:focus,
+.btn:focus {
+    outline: none;
+    box-shadow: none !important;
+}
+
+@import 'palette-buttons';

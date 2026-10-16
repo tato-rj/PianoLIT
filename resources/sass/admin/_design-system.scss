@@ -80,7 +80,7 @@
         margin: 28px 0 16px;
         font-size: var(--font-size-h6);
     }
-    // Responsive sample cards and live measurement labels.
+    // Responsive sample cards and their real component previews.
     .design-system__grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(#{'min(100%, 240px)'}, 1fr));
@@ -118,29 +118,7 @@
         margin-bottom: 7px;
         font-size: var(--font-size-sm);
     }
-    .design-system__specs {
-        display: grid;
-        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-        gap: 5px 12px;
-        padding-top: 14px;
-        margin: 0;
-        border-top: 1px solid #e7ebe4;
-        font-size: 11px;
-        line-height: 1.6;
-        font-family: var(--bs-font-monospace, monospace);
-    }
-    .design-system__specs:empty {
-        display: none;
-    }
-    .design-system__specs dt {
-        color: #6a746b;
-        font-weight: 400;
-    }
-    .design-system__specs dd {
-        margin: 0;
-        color: #354438;
-        overflow-wrap: anywhere;
-    }
+    @import 'design-system-editor';
     // Typography comparison rows.
     .design-system__type-scale {
         margin-top: 20px;
@@ -191,15 +169,10 @@
         font-size: var(--font-size-sm);
         font-weight: 600;
     }
-    .design-system__swatch code,
-    .design-system__swatch > span {
+    .design-system__swatch code {
         display: block;
         font-size: 11px;
         color: #646e65;
-    }
-    .design-system__swatch > span {
-        margin-top: 3px;
-        color: #364939;
     }
     // Shared sample arrangements, spacing bars and surface previews.
     .design-system__row {

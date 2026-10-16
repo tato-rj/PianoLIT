@@ -391,6 +391,35 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->get(route('webapp.membership.checkout', $this->plan))->assertOk()->assertSee('Returning members do not receive another introductory trial.');
     }
 
+    public function test_pricing_shows_real_billing_totals_and_only_offers_trials_to_new_members()
+    {
+        auth('web')->logout();
+        $this->get(route('webapp.membership.pricing'))->assertOk()
+            ->assertSee('$89.99')->assertSee('$7.50')->assertSee('Save 6%')
+            ->assertSee('Start 7-day free trial')->assertSee('billed yearly, after your free trial.');
+        $this->actingAs($this->user, 'web');
+        $this->purchase(); $this->source()->update(['status' => 'canceled', 'ended_at' => now()]);
+        $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.pricing'))->assertOk()
+            ->assertSee('Choose Yearly')->assertDontSee('Start 7-day free trial');
+    }
+
+    public function test_welcome_requires_completed_checkout_and_uses_saved_membership_state()
+    {
+        $this->get(route('webapp.membership.success'))->assertRedirect(route('webapp.discover'));
+        $this->purchase(); $this->user->unsetRelation('membership');
+        $response = $this->withSession(['valid-success' => true])->get(route('webapp.membership.success'))->assertOk()
+            ->assertSee('Your free trial is active')->assertSee('No payment today.')
+            ->assertSee(route('webapp.tour'), false)->assertSee(route('webapp.playlists'), false)
+            ->assertSee(route('webapp.my-pieces'), false)->assertSee(route('webapp.membership.edit'), false)
+            ->assertDontSee('tour-modal');
+        $this->assertTrue($response->viewData('welcomeTrial'));
+        $this->assertSame('monthly', $response->viewData('welcomePlan'));
+        $this->source()->update(['status' => 'active']); $this->user->unsetRelation('membership');
+        $this->withSession(['valid-success' => true])->get(route('webapp.membership.success'))->assertOk()
+            ->assertSee('Your membership is active')->assertDontSee('No payment today.');
+    }
+
     public function test_browser_billing_mutations_require_csrf_even_for_authenticated_accounts()
     {
         $this->withExceptionHandling(); $this->app['env'] = 'review-csrf';

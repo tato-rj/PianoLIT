@@ -1,6 +1,7 @@
-////////////////////////////////////////
-// SECOND BREAKPOINT: less than 768px //
-////////////////////////////////////////
+// Responsive compatibility rules for existing public and admin templates.
+// Feature-specific changes should stay with the owning page or component.
+
+// Phone layouts below 768px.
 @include media-breakpoint-down(md) {
     .product-buttons {
         width: 100% !important;
@@ -248,9 +249,7 @@
     }
 }
 
-/////////////////////////////
-// Between 768px and 992px //
-/////////////////////////////
+// Small tablet layouts from 576px through 991px.
 @include media-breakpoint-between(sm, lg) {
     #flipbook-container,
     #ebook-loading {
@@ -284,6 +283,73 @@
             position: relative !important;
             padding: 3rem !important;
             text-align: center;
+        }
+    }
+}
+
+// Medium layouts from 768px through 1199px.
+@include media-breakpoint-between(md, xl) {
+    .cc-hero {
+        h1 {
+            font-size: 96px !important;
+        }
+
+        h2 {
+            margin-top: 0 !important;
+        }
+    }
+
+    .infograph-card {
+        > div {
+            max-height: 313px !important;
+        }
+    }
+}
+
+// Tablet and phone layouts below 992px.
+
+@include media-breakpoint-down(lg) {
+    .inline-on-collapse {
+        display: inline-block !important;
+    }
+
+    .hide-on-collapse {
+        display: none !important;
+    }
+
+    .notifications-count {
+        transform: translate(-50%, -50%);
+    }
+
+    .cc-card {
+        max-width: 100% !important;
+    }
+
+    .cc-hero {
+        h2 {
+            margin-top: 0 !important;
+        }
+    }
+}
+
+// Layouts below 1200px.
+@include media-breakpoint-down(xl) {
+    .infograph-card {
+        > div {
+            max-height: 317px;
+        }
+    }
+}
+
+// Defaults shared by all viewport widths.
+@include media-breakpoint-up(xs) {
+    .card-columns {
+        column-count: 4;
+    }
+
+    .infograph-card {
+        > div {
+            max-height: 380px;
         }
     }
 }

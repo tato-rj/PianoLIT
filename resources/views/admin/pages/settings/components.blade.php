@@ -34,7 +34,7 @@
 
 <section class="design-system__section" id="ds-tables" aria-labelledby="ds-tables-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / ADMINISTRATION</span><h2 id="ds-tables-title">Tables</h2><p>The reusable admin table, shown with fictional data. Directory pages use 12 results per page by default.</p><code>admin.components.table · resources/sass/admin/_tables.scss</code></header>
-  <div data-ds-sample data-ds-properties="padding,background-color,border,border-radius">
+  <div data-ds-sample data-ds-label="Table" data-ds-properties="padding,background-color,border,border-radius">
     <div data-ds-preview>
       @component('admin.components.table', ['id' => 'ds-example-table', 'label' => 'Design system sample accounts', 'title' => 'Membership directory', 'description' => 'Sample content', 'items' => collect(['member', 'trial', 'ended']), 'columns' => ['Account', 'Plan', 'Status']])
         <tr><td><span class="admin-table__primary">Sample member</span><small>member@example.com</small></td><td>Annual</td><td><span class="admin-table__badge admin-table__badge--green">Active</span></td></tr>

@@ -1,67 +1,89 @@
 # Editing PianoLIT styles
 
-The admin **Settings → Design System** page (`admin.design-system.index`) shows
-the shared typography, colors, spacing, corners, shadows, buttons, fields,
-cards, feedback, tables and icons. Its labels read computed browser styles,
-including responsive field sizes and interaction states. It uses fictional
-content and has no sample submission or account writes.
+Start in `resources/sass/`. It contains three build entry points and five folders:
+
+```text
+resources/sass/
+├── app.scss       Website and my.* web app
+├── admin.scss     Administration
+├── shared.scss    Shared utility and component layer, appended to both bundles
+├── shared/        Tokens, base styles, typography, buttons, colors and utilities
+├── components/    Reusable controls and content components
+├── pages/         Website and web app page layouts
+├── admin/         Admin shell, tables and admin page layouts
+└── vendor/        External styles kept separate from editable project styles
+```
+
+The admin **Settings → Design System** page (`admin.design-system.index`) previews
+the real typography, palettes, dimensions, corners, shadows, controls and tables.
+Measurements follow the browser's actual styles. Its sample content is fictional.
 
 ## Where to change a style
 
-| Concern | Source |
+| Concern | Source under `resources/sass/` |
 | --- | --- |
-| Shared values: fonts, colors, spacing, corners, field dimensions and shadows | `resources/sass/_design-tokens.scss` |
-| Final typography and control size adapters | `resources/sass/foundation/_typography.scss` |
-| Final color, border, shadow and spacing utilities | `resources/sass/foundation/_utilities.scss` |
-| Shared link, outline button and pagination states | `resources/sass/foundation/_interactions.scss` |
-| Button variants and editorial exceptions | `resources/sass/brand/` |
-| Form finish and states | `resources/sass/components/_form-fields.scss` |
-| Reusable component layouts | `resources/sass/components/` |
-| Shared admin sidebar, headings and account menu, including phone layouts | `resources/sass/admin/_shell.scss` |
-| Floating admin back-to-top button | `resources/sass/admin/_back-to-top.scss` |
-| Overview-specific charts, metrics and rankings | `resources/sass/admin/_dashboard.scss` |
-| Shared admin table | `resources/sass/admin/_tables.scss` |
-| Older admin template compatibility rules | `resources/sass/admin/_legacy.scss` |
-| Public-only framework overrides | `resources/sass/app/_overrides.scss` |
-| Page layouts | `resources/sass/views/` and the named files in `resources/sass/admin/` |
-| Design System gallery layout and token sample bindings | `resources/sass/admin/_design-system.scss` and `_design-system-specimens.scss` |
+| Shared fonts, colors, spacing, corners, field dimensions and shadows | `shared/_tokens.scss` |
+| Typography and component size adapters | `shared/_typography.scss` |
+| Primary, secondary and outline button states | `shared/_buttons.scss` |
+| Existing configurable palette button themes | `shared/_palette-buttons.scss` |
+| Brand and repertoire level colors | `shared/_colors.scss` |
+| Palette shades and light borders | `shared/_palette.scss` |
+| Text/background/border/shadow utilities | `shared/_utilities.scss` |
+| Additional spacing steps 6–8 | `shared/_large-spacing.scss` |
+| Existing cross-page breakpoint compatibility | `shared/_responsive.scss` |
+| Positioning, flex alignment, lists and heavier borders | `shared/_layout-utilities.scss` |
+| Hover visibility, opacity, overlays and gallery scrollbars | `shared/_effects.scss` |
+| Form fields, focus and validation states | `components/_form-fields.scss` |
+| Palette alerts and status labels | `components/_palette-alerts.scss` |
+| Input icons and special field arrangements | `components/_input-decorations.scss` |
+| Drag handles and filter-column layouts | `components/_drag-handles.scss`, `components/_filter-columns.scss` |
+| Public page-specific rules | The named file in `pages/` |
+| Public-only framework overrides | `pages/_public-overrides.scss` |
+| Shared admin sidebar, headings and account menu | `admin/_shell.scss` |
+| Floating admin back-to-top button | `admin/_back-to-top.scss` |
+| Admin Overview charts, metrics and rankings | `admin/_dashboard.scss` |
+| Shared admin table | `admin/_tables.scss` |
+| Admin editor tools, uploads and event/video editors | `admin/_text-improver.scss`, `_uploads.scss`, `_timeline-events.scss`, `_video-moments.scss` |
+| Older admin template compatibility | `admin/_template-compat.scss` |
+| Design System gallery and sample bindings | `admin/_design-system.scss`, `admin/_design-system-specimens.scss` |
 
-`_variables.scss` remains a compatibility import for the shared tokens.
-Keep public-only and admin-only component differences in their respective
-sources. Gallery measurements represent the admin bundle; the public feature
-card is explicitly imported from its existing component source inside the
-gallery scope.
+## Source and generated files
+
+Edit SCSS sources. `public/css/app.css` and `public/css/admin.css` are generated
+browser bundles; `public/css/shared.css` is their generated shared build layer.
+There is no extra shared stylesheet request in page templates.
+
+`public/css/vendor/` contains externally maintained flag styles and their relative
+SVG assets. Their internal layout stays together so the library's URLs continue
+to work. Web fonts emitted by Webpack live under `public/fonts/vendor/`.
 
 ## Cascade order
 
-`app.scss` and `admin.scss` load their framework, compatibility, component,
-brand and page rules. Some later feature components intentionally retain their
-existing cascade positions. `webpack.mix.js` then appends Primer followed by
-`design-system.scss`, the final shared foundation entry point. That entry point
-emits tokens, typography, utilities, interactions and the shared icon/form/menu
-adapters in a deliberate order.
+Each main entry point imports framework, compatibility, component and page rules.
+`webpack.mix.js` appends the separately compiled `shared.scss` layer afterwards.
+It contains the required utility aliases, shared tokens, typography and final
+control adapters. The admin bundle also includes its vendor theme/table/upload
+styles before its own Sass output.
 
-Do not alphabetize imports or move final adapters earlier: equal-specificity
-rules and legacy Sass `@extend` consumers depend on this order. In particular,
-the older shadow definitions in `_bootstrap-custom.scss` also supply the media
-player's extended styles; they are not interchangeable with the final shadow
-utility overrides.
+Keep this order. Some later feature components intentionally retain their existing
+cascade positions. Shared compilation remains separate because Sass `@extend`
+consumers, including the media player, must not inherit additional final utility
+rules. Changing folder names does not require changing public CSS class names.
 
 ## Readable source
 
-- Write one declaration per line, with four-space indentation and a blank line
-  between logical groups. Add comments that explain a group's purpose or an
-  ordering constraint.
-- Keep component presentation in SCSS rather than adding inline styles to Blade.
-  Token sample bindings in the gallery use data attributes and Sass loops.
-- Change a shared value in the token file before adding another literal override.
-- Keep vendor and generated Primer files separate from project-owned SCSS.
-  The source formatting settings are in `resources/sass/.prettierrc.json`.
-- Existing Prettier can format a changed source with
+- Use one declaration per line, four-space indentation, blank lines between groups
+  and comments explaining purpose or ordering constraints.
+- Put reusable UI in `components/`, public page layouts in `pages/`, admin-only
+  rules in `admin/`, and defaults/utilities in `shared/`.
+- Change shared values in `shared/_tokens.scss` before adding another literal.
+- Keep presentation in SCSS rather than adding inline styles to Blade.
+- Keep external vendor files separate. Source formatting settings are in
+  `.prettierrc.json` beside the entry points.
+- Format a changed source with
   `node node_modules/prettier/bin-prettier.js --write resources/sass/path.scss`.
 
-Build with `npm run production`, inspect the affected pages at desktop and phone
-widths, run the CSS/JavaScript regression checks, and include relevant tracked
-outputs and `public/mix-manifest.json`. Generated public CSS is minified for
-delivery; the editable SCSS remains expanded. Follow `AGENTS.md` for isolated
-builds and application checks.
+Run `npm run production`, check affected desktop/phone views and the CSS/JavaScript
+regressions, and ship the relevant tracked bundles with `public/mix-manifest.json`.
+Generated delivery CSS is minified; editable SCSS remains expanded. See `AGENTS.md`
+for isolated builds and application checks.

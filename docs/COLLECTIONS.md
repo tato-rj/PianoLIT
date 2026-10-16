@@ -25,7 +25,7 @@ The existing eligibility rule is retained: more than five linked pieces, of whic
 
 Fourteen illustrations generated with the **built-in image-generation tool** live in `public/images/webapp/collections/`. The original nine used the approved full-page mockup as the visual reference; Books 4–8 used Book 3's illustration as the style reference and the supplied cover colors. Text and book numerals are rendered in Blade/CSS, not baked into artwork. The hero is 1200 × 800; the other thirteen are 900 × 600 WebP. The combined artwork is approximately 619 KB. No runtime generation service, API key, recurring charge, or migration is required for this static version.
 
-Edit `resources/sass/views/_collections.scss` and `resources/js/views/collections.js`, run the existing production build, and ship the relevant `public/css/app.css`, `public/js/views/collections.js`, and manifest entries together. The page uses the existing logo, Poppins headings, system body font, guest sign-in action, and fixed bottom menu. The web menu label changes to Collections throughout the web app.
+Edit `resources/sass/pages/_collections.scss` and `resources/js/views/collections.js`, run the existing production build, and ship the relevant `public/css/app.css`, `public/js/views/collections.js`, and manifest entries together. The page uses the existing logo, Poppins headings, system body font, guest sign-in action, and fixed bottom menu. The web menu label changes to Collections throughout the web app.
 
 ## Generation prompts
 

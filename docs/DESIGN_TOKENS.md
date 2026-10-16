@@ -4,7 +4,7 @@ The admin **Settings → Design System** page previews the shared UI and display
 its computed dimensions and colors. See [SCSS_GUIDE.md](SCSS_GUIDE.md) for the
 source map, readable formatting conventions and final stylesheet order.
 
-Edit `resources/sass/_design-tokens.scss`, then run `npm run production`.
+Edit `resources/sass/shared/_tokens.scss`, then run `npm run production`.
 It contains the existing Sass palette and the CSS custom properties used by the
 public website, web app and admin. Commit the rebuilt CSS and Mix manifest together.
 
@@ -49,7 +49,7 @@ hover, active, disabled and soft variants together. Links, primary buttons,
 primary text/background/border utilities, accents and pagination use these tokens.
 Bootstrap primary outlines and borders now use the same PianoLIT blue.
 
-The existing Primer palette (grey, red, orange, yellow, green, teal, blue, indigo,
+The utility palette (grey, red, orange, yellow, green, teal, blue, indigo,
 purple and pink) remains distinct from Bootstrap status colors (success, danger,
 warning, info and secondary). Their base text/background/border utilities use
 `--color-*` tokens. Shade utilities, palette buttons, alerts and feature-specific
@@ -122,8 +122,8 @@ state tokens; edit the Sass brand setting and rebuild for a complete palette cha
 
 ## Build order
 
-`design-system.scss` compiles a shared foundation that Mix appends after Bootstrap
-and Primer in both `app.css` and `admin.css`. This order prevents literal utility
-styles from overriding the shared variables. `_variables.scss` remains a compatible
-Sass import; Bootstrap's original import order is preserved. There is no additional
-stylesheet request in page templates.
+`shared.scss` compiles the utility aliases, tokens and shared component adapters
+that Mix appends after the framework/page styles in both `app.css` and `admin.css`.
+The shared defaults live in `shared/_tokens.scss`; the main entry points import
+them directly. This separate compilation preserves existing Sass extensions and
+stylesheet precedence. Page templates request only their main bundle.

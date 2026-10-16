@@ -19,7 +19,7 @@ class FolderColorsTest extends ReviewTestCase
 
     public function test_palette_names_match_the_existing_sass_scheme()
     {
-        $sass = file_get_contents(resource_path('sass/_design-tokens.scss'));
+        $sass = file_get_contents(resource_path('sass/shared/_tokens.scss'));
         preg_match('/\$pastel-palette:\s*\((.*?)\);/s', $sass, $map);
         preg_match_all('/([a-z]+):\s*#[a-f0-9]+/', $map[1], $names);
         $this->assertSame($names[1], FolderPalette::COLORS);

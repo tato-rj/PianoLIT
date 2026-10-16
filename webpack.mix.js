@@ -52,19 +52,17 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/tone.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .sass('resources/sass/admin.scss', 'public/css')
-    .sass('resources/sass/design-system.scss', 'public/css')
+    .sass('resources/sass/shared.scss', 'public/css')
     .styles([
       'public/css/app.css',
-      'resources/sass/primer/primer.css',
-      'public/css/design-system.css'
+      'public/css/shared.css'
       ], 'public/css/app.css')
     .styles([
-      'resources/sass/vendor/theme.min.css',
-      'resources/sass/vendor/tables.css',
+      'resources/sass/vendor/admin-theme.min.css',
+      'resources/sass/vendor/datatables.css',
       'resources/sass/vendor/dropzone.css',
       'public/css/admin.css',
-      'resources/sass/primer/primer.css',
-      'public/css/design-system.css'
+      'public/css/shared.css'
       ], 'public/css/admin.css')
     .scripts([
       'public/js/app.js',

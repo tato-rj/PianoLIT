@@ -1,0 +1,129 @@
+// Filled background, hover, active and outline-active colors for existing
+// configurable buttons. Primary/secondary actions live in _buttons.scss.
+$palette-buttons: (
+    grey: (
+        $grey-dark,
+        darken($grey-dark, 6%),
+        darken($grey-dark, 10%),
+        darken($grey-dark, 8%)
+    ),
+    red: (
+        $red,
+        $red-dark,
+        darken($red-dark, 4%),
+        $red-dark
+    ),
+    orange: (
+        $orange,
+        $orange-dark,
+        darken($orange-dark, 4%),
+        $orange-dark
+    ),
+    yellow: (
+        $yellow-dark,
+        darken($yellow-dark, 6%),
+        darken($yellow-dark, 10%),
+        darken($yellow-dark, 8%)
+    ),
+    green: (
+        $green,
+        $green-dark,
+        darken($green-dark, 4%),
+        $green-dark
+    ),
+    teal: (
+        $teal,
+        $teal-dark,
+        darken($teal-dark, 4%),
+        $teal-dark
+    ),
+    blue: (
+        $blue,
+        $blue-dark,
+        darken($blue-dark, 4%),
+        $blue-dark
+    ),
+    indigo: (
+        $indigo,
+        $indigo-dark,
+        darken($indigo-dark, 4%),
+        $indigo-dark
+    ),
+    purple: (
+        $purple,
+        $purple-dark,
+        darken($purple-dark, 4%),
+        $purple-dark
+    ),
+    pink: (
+        $pink-dark,
+        darken($pink-dark, 6%),
+        darken($pink-dark, 12%),
+        darken($pink-dark, 8%)
+    )
+);
+
+@each $name, $colors in $palette-buttons {
+    .btn-#{$name} {
+        @if $name == yellow {
+            color: $yellow-darkest;
+        } @else {
+            color: #fff !important;
+        }
+        background-color: nth($colors, 1);
+        border-color: nth($colors, 1);
+    }
+
+    .btn-#{$name}:hover {
+        color: #fff !important;
+        background-color: nth($colors, 2);
+        border-color: nth($colors, 2);
+    }
+
+    .btn-#{$name}:active {
+        background-color: nth($colors, 3);
+        border-color: nth($colors, 3);
+    }
+}
+
+// Outlined palette actions preserve the existing theme suffix used by views/JS.
+@each $name, $colors in $palette-buttons {
+    $ink: if($name == pink, $pink, nth($colors, 1));
+
+    .btn-#{$name}-outline {
+        color: $ink;
+        background-color: transparent;
+        border-color: nth($colors, 1);
+    }
+
+    .btn-#{$name}-outline:hover {
+        @if $name == yellow {
+            color: $yellow-darkest;
+        } @else {
+            color: #fff !important;
+        }
+        background-color: nth($colors, 1);
+        border-color: nth($colors, 1);
+    }
+
+    .btn-#{$name}-outline:active {
+        @if $name == yellow {
+            color: $yellow-darkest;
+        } @else {
+            color: #fff !important;
+        }
+        background-color: nth($colors, 4);
+        border-color: nth($colors, 4);
+    }
+}
+
+// The yellow outline uses a slightly darker ink than the filled surface.
+.btn-yellow-outline {
+    color: darken($yellow-dark, 4%);
+    border-color: darken($yellow-dark, 4%);
+}
+
+// Existing nonstandard button widths keep their public class names.
+.btn-wide {
+    padding: 0.375rem 1.5rem !important;
+}

@@ -1,0 +1,24 @@
+// Existing pages use three larger steps beyond Bootstrap's standard 0–5 scale.
+// Keep physical aliases for server-rendered HTML and logical aliases for BS5 views.
+@each $prefix, $property in (m: margin, p: padding) {
+    @each $side, $directions in (t: top, b: bottom, l: left, r: right) {
+        @each $step, $length in (6: 4rem, 7: 5rem, 8: 6rem) {
+            $axis: if($side == t or $side == b, y, x);
+            .#{$prefix}#{$side}-#{$step},
+            .#{$prefix}#{$axis}-#{$step},
+            .#{$prefix}-#{$step} {
+                #{$property}-#{$directions}: $length !important;
+            }
+        }
+    }
+
+    @each $step, $length in (6: 4rem, 7: 5rem, 8: 6rem) {
+        .#{$prefix}s-#{$step} {
+            #{$property}-left: $length !important;
+        }
+
+        .#{$prefix}e-#{$step} {
+            #{$property}-right: $length !important;
+        }
+    }
+}

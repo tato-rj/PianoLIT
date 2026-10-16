@@ -255,20 +255,3 @@ hr {
 .badge-pill {
     border-radius: 50rem;
 }
-
-// Primer supplied 6–8 in physical directions; templates now use BS5's
-// logical direction names for those same large spacing values.
-@each $size, $length in (6: 4rem, 7: 5rem, 8: 6rem) {
-    .ms-#{$size} {
-        margin-left: $length !important;
-    }
-    .me-#{$size} {
-        margin-right: $length !important;
-    }
-    .ps-#{$size} {
-        padding-left: $length !important;
-    }
-    .pe-#{$size} {
-        padding-right: $length !important;
-    }
-}

@@ -1,37 +1,37 @@
 // Framework and vendor foundations.
-@import 'bootstrap5-theme';
+@import 'shared/bootstrap-theme';
 @import '~bootstrap/scss/bootstrap';
 @import 'components/fontawesome-brands';
-@import 'variables';
+@import 'shared/tokens';
 
-// Shared admin components.
-@import 'components/datatables';
+// Admin editors and reusable controls. Keep their existing cascade positions.
+@import 'admin/datatables';
 @import 'components/toggle';
 @import 'components/tinymce';
-@import 'components/dropzone';
+@import 'admin/uploads';
 @import 'components/animations';
-@import 'components/sort';
-@import 'components/notifications';
+@import 'components/drag-handles';
+@import 'admin/notification-badge';
 @import 'components/tabs';
 @import 'components/video-moments';
-@import 'components/video-moments-admin';
-@import 'components/timeline-events-admin';
-@import 'components/admin-text-improver';
+@import 'admin/video-moments';
+@import 'admin/timeline-events';
+@import 'admin/text-improver';
 
 // Legacy theme compatibility; keep before the brand overrides.
 $body-bg: #e9ecef;
 
-@import 'brand/corners';
-@import 'bootstrap-custom';
-@import 'components/bootstrap5-compat';
-@import 'responsive';
-@import 'global';
-@import 'brand/buttons';
-@import 'brand/colors';
-@import 'brand/fonts';
+@import 'shared/corners';
+@import 'shared/framework-helpers';
+@import 'shared/bootstrap-compat';
+@import 'shared/responsive';
+@import 'shared/base';
+@import 'shared/buttons';
+@import 'shared/colors';
+@import 'shared/editorial';
 
 // Older templates, followed by the shared shell and individual admin pages.
-@import 'admin/legacy';
+@import 'admin/template-compat';
 @import 'admin/shell';
 @import 'admin/back-to-top';
 @import 'admin/dashboard';

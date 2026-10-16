@@ -1,5 +1,5 @@
 // Framework and third-party foundations.
-@import 'bootstrap5-theme';
+@import 'shared/bootstrap-theme';
 @import '~bootstrap/scss/bootstrap';
 @import '~swiper/dist/css/swiper.min';
 @import '~hover.css/css/hover-min';
@@ -7,11 +7,11 @@
 @import 'vendor/animate';
 
 // Shared compatibility helpers and global styles.
-@import 'bootstrap-custom';
-@import 'components/bootstrap5-compat';
-@import 'responsive';
-@import 'variables';
-@import 'global';
+@import 'shared/framework-helpers';
+@import 'shared/bootstrap-compat';
+@import 'shared/responsive';
+@import 'shared/tokens';
+@import 'shared/base';
 
 // Reusable interface components.
 @import 'components/swiper';
@@ -20,11 +20,10 @@
 @import 'components/animations';
 @import 'components/toggle';
 @import 'components/music';
-@import 'components/form';
+@import 'components/input-decorations';
 @import 'components/search';
-@import 'components/sorting';
-@import 'components/masonry';
-@import 'components/sort';
+@import 'components/filter-columns';
+@import 'components/drag-handles';
 @import 'components/pieces';
 @import 'components/dragscroll';
 @import 'components/tabs';
@@ -32,33 +31,32 @@
 @import 'components/stripe';
 @import 'components/carousel';
 @import 'components/tooltip';
-@import 'components/scroll';
 @import 'components/save-to';
 @import 'components/bottom-sheet';
 @import 'components/plyr';
 @import 'components/video-moments';
 
 // Public website and web app pages.
-@import 'views/blog';
-@import 'views/composers';
-@import 'views/explore';
-@import 'views/collections';
+@import 'pages/blog';
+@import 'pages/composers';
+@import 'pages/explore';
+@import 'pages/collections';
 @import 'components/pill-filters';
-@import 'views/my-pieces';
-@import 'views/piece-about';
-@import 'views/quizzes';
-@import 'views/crashcourse';
-@import 'views/products';
-@import 'views/circle-of-fifths';
+@import 'pages/my-pieces';
+@import 'pages/piece-about';
+@import 'pages/quizzes';
+@import 'pages/crashcourse';
+@import 'pages/products';
+@import 'pages/circle-of-fifths';
 
 // Brand overrides; shared token adapters are appended by Mix afterwards.
-@import 'brand/buttons';
-@import 'brand/colors';
-@import 'brand/fonts';
-@import 'brand/corners';
+@import 'shared/buttons';
+@import 'shared/colors';
+@import 'shared/editorial';
+@import 'shared/corners';
 
 // Public-only framework and utility overrides.
-@import 'app/overrides';
+@import 'pages/public-overrides';
 
 // Later feature components retain their existing cascade position.
 @import 'components/score-editor';
@@ -75,3 +73,5 @@
 
 @import 'components/search-controls';
 @import 'components/search-empty';
+
+@import 'pages/membership';

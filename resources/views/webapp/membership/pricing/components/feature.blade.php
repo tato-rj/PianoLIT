@@ -1,5 +1,5 @@
-<div class="col-lg-4 col-md-6 col-12 mb-3">
-	<h2>@icon($icon, ['color' => 'brand'])</h2>
-	<h6>{{$title}}</h6>
-	<p>{{$description}}</p>
-</div>
+<article class="membership-feature">
+    <span class="membership-icon membership-icon--{{ $tone }}" aria-hidden="true">@icon($icon, ['mr' => 0])</span>
+    <h3>{{ $title }}</h3>
+    <p>{{ $description }}</p>
+</article>

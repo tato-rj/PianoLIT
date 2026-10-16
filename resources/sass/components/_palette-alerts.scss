@@ -1,0 +1,62 @@
+// Tone, light surface and border for status labels, alerts and timeline badges.
+// The yellow border intentionally retains the stronger existing shade.
+$palette-alerts: (
+    grey: (
+        $grey-darker,
+        $grey-lightest,
+        $grey-light
+    ),
+    red: (
+        $red-dark,
+        $red-lightest,
+        $red-lighter
+    ),
+    orange: (
+        $orange-dark,
+        $orange-lightest,
+        $orange-lighter
+    ),
+    yellow: (
+        $yellow-darker,
+        $yellow-lightest,
+        $yellow-dark
+    ),
+    green: (
+        $green-dark,
+        $green-lightest,
+        $green-lighter
+    ),
+    teal: (
+        $teal-dark,
+        $teal-lightest,
+        $teal-lighter
+    ),
+    blue: (
+        $blue-dark,
+        $blue-lightest,
+        $blue-lighter
+    ),
+    indigo: (
+        $indigo-dark,
+        $indigo-lightest,
+        $indigo-lighter
+    ),
+    purple: (
+        $purple-dark,
+        $purple-lightest,
+        $purple-lighter
+    ),
+    pink: (
+        $pink-dark,
+        $pink-lightest,
+        $pink-lighter
+    )
+);
+
+@each $name, $colors in $palette-alerts {
+    .alert-#{$name} {
+        color: nth($colors, 1);
+        background-color: nth($colors, 2);
+        border-color: nth($colors, 3);
+    }
+}

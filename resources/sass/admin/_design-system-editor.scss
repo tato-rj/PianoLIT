@@ -1,0 +1,195 @@
+// Scoped inside .design-system by the gallery stylesheet.
+// Property names stay beside editable values, including long font/shadow values.
+.design-system__specs {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 5px 10px;
+    padding-top: 14px;
+    margin: 0;
+    border-top: 1px solid #e7ebe4;
+    font-family: var(--bs-font-monospace, monospace);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.design-system__specs:empty {
+    display: none;
+}
+
+.design-system__specs dt {
+    min-width: 0;
+    color: #6a746b;
+    font-weight: 400;
+}
+
+.design-system__specs label {
+    display: block;
+    padding: 6px 0;
+    margin: 0;
+    font: inherit;
+    overflow-wrap: anywhere;
+}
+
+.design-system__specs dd {
+    min-width: 0;
+    margin: 0;
+}
+
+.design-system__value {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 31px;
+    padding: 5px 7px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: #f5f7f2;
+    color: #354438;
+    font: inherit;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    resize: vertical;
+}
+
+.design-system__value:hover {
+    border-color: #c9d4c3;
+}
+
+.design-system__value:focus-visible {
+    border-color: #6c8a5e;
+    outline: 2px solid #c7dac0;
+    outline-offset: 1px;
+}
+
+.design-system__value--edited {
+    background: #edf5e7;
+}
+
+.design-system__value[aria-invalid='true'] {
+    border-color: #bf4343;
+    background: #fff4f3;
+}
+
+.design-system__value-error {
+    display: block;
+    margin-top: 3px;
+    color: #a73434;
+    font-size: 10px;
+}
+
+.design-system__value-error[hidden] {
+    display: none;
+}
+
+// Local resets and the page-wide reset never submit a form or save source CSS.
+.design-system__tools {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.design-system__editor-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-top: 12px;
+}
+
+.design-system__editor-status {
+    color: #6a746b;
+    font-size: 11px;
+}
+
+.design-system__sample--edited > .design-system__editor-actions .design-system__editor-status {
+    color: #487132;
+}
+
+.design-system__reset {
+    min-height: 32px;
+    padding: 5px 10px;
+    border: 1px solid #d6dfd0;
+    border-radius: 8px;
+    background: #fff;
+    color: #466039;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.design-system__reset:hover:not(:disabled) {
+    border-color: #8fa581;
+    background: #f4f8f0;
+}
+
+.design-system__reset:focus-visible {
+    outline: 2px solid #6c8a5e;
+    outline-offset: 2px;
+}
+
+.design-system__reset:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+// Compact color and spacing editors retain their original gallery arrangements.
+.design-system__specs--compact {
+    display: block;
+    padding-top: 6px;
+    border: 0;
+}
+
+.design-system__specs--compact dt {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+[data-ds-compact] > .design-system__editor-actions .design-system__editor-status,
+[data-ds-compact]:not(.design-system__sample--edited) > .design-system__editor-actions {
+    display: none;
+}
+
+.design-system__spacing .design-system__specs {
+    width: 100px;
+    padding: 0;
+}
+
+.design-system__type-scale .design-system__editor-actions {
+    grid-column: 3;
+    grid-row: 3;
+}
+
+@media (max-width: 1199px) {
+    .design-system__type-scale .design-system__editor-actions {
+        grid-column: 2;
+        grid-row: 4;
+    }
+}
+
+// Keep text entry comfortable on phones and prevent automatic input zoom.
+@media (max-width: 767px) {
+    .design-system__tools {
+        align-items: flex-start;
+    }
+
+    .design-system__specs {
+        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    }
+
+    .design-system__value {
+        font-size: 16px;
+    }
+
+    .design-system__reset {
+        min-height: 40px;
+    }
+}

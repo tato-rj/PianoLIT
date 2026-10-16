@@ -1,0 +1,110 @@
+// Palette tuples: base, dark, darker, darkest, light, lighter, lightest.
+// These aliases also support colors selected dynamically by Blade components.
+$utility-palette: (
+    grey: (
+        $grey,
+        $grey-dark,
+        $grey-darker,
+        $grey-darkest,
+        $grey-light,
+        $grey-lighter,
+        $grey-lightest
+    ),
+    red: (
+        $red,
+        $red-dark,
+        $red-darker,
+        $red-darkest,
+        $red-light,
+        $red-lighter,
+        $red-lightest
+    ),
+    orange: (
+        $orange,
+        $orange-dark,
+        $orange-darker,
+        $orange-darkest,
+        $orange-light,
+        $orange-lighter,
+        $orange-lightest
+    ),
+    yellow: (
+        $yellow,
+        $yellow-dark,
+        $yellow-darker,
+        $yellow-darkest,
+        $yellow-light,
+        $yellow-lighter,
+        $yellow-lightest
+    ),
+    green: (
+        $green,
+        $green-dark,
+        $green-darker,
+        $green-darkest,
+        $green-light,
+        $green-lighter,
+        $green-lightest
+    ),
+    teal: (
+        $teal,
+        $teal-dark,
+        $teal-darker,
+        $teal-darkest,
+        $teal-light,
+        $teal-lighter,
+        $teal-lightest
+    ),
+    blue: (
+        $blue,
+        $blue-dark,
+        $blue-darker,
+        $blue-darkest,
+        $blue-light,
+        $blue-lighter,
+        $blue-lightest
+    ),
+    indigo: (
+        $indigo,
+        $indigo-dark,
+        $indigo-darker,
+        $indigo-darkest,
+        $indigo-light,
+        $indigo-lighter,
+        $indigo-lightest
+    ),
+    purple: (
+        $purple,
+        $purple-dark,
+        $purple-darker,
+        $purple-darkest,
+        $purple-light,
+        $purple-lighter,
+        $purple-lightest
+    ),
+    pink: (
+        $pink,
+        $pink-dark,
+        $pink-darker,
+        $pink-darkest,
+        $pink-light,
+        $pink-lighter,
+        $pink-lightest
+    )
+);
+
+// Base palette backgrounds/text/borders are emitted once by _utilities.scss.
+// Preserve the shade order for existing elements that combine utility classes.
+@each $shade, $index in (darkest: 4, darker: 3, dark: 2, light: 5, lighter: 6, lightest: 7) {
+    @each $name, $colors in $utility-palette {
+        .bg-#{$name}-#{$shade} {
+            background-color: nth($colors, $index);
+        }
+    }
+}
+
+@each $name in purple, blue, yellow, red, grey, orange, indigo, green, teal, pink {
+    .border-#{$name}-light {
+        border-color: nth(map-get($utility-palette, $name), 5) !important;
+    }
+}

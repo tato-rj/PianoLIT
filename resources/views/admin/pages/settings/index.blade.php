@@ -17,9 +17,12 @@
     <div class="design-system__intro">
       <div><span class="design-system__eyebrow">PIANOLIT / UI LIBRARY</span>
         <h2>One place for the details.</h2>
-        <p>Explore the shared styles used on the website, web app and administration. Samples use the real components; measurements reflect this browser and update as you resize, hover or focus.</p>
+        <p>Explore the shared styles used on the website, web app and administration. Edit any CSS value to preview a variation on that sample. Changes stay on this page and disappear when you reload.</p>
       </div>
-      <span class="design-system__live">@icon('circle-check')Live CSS values</span>
+      <div class="design-system__tools">
+        <span class="design-system__live">@icon('pencil')Live CSS playground</span>
+        <button class="design-system__reset" type="button" data-ds-reset-all disabled>Reset all previews</button>
+      </div>
     </div>
 
     <nav class="design-system__nav" aria-label="Design system sections">
@@ -27,7 +30,7 @@
         <a href="#ds-{{ $anchor }}">{{ $label }}</a>
       @endforeach
     </nav>
-    <noscript><p class="design-system__note">Enable JavaScript to see computed measurements. All visual samples remain available below.</p></noscript>
+    <noscript><p class="design-system__note">Enable JavaScript to see and edit computed CSS values. All visual samples remain available below.</p></noscript>
 
     @include('admin.pages.settings.typography')
     @include('admin.pages.settings.colors')
@@ -35,7 +38,7 @@
     @include('admin.pages.settings.controls')
     @include('admin.pages.settings.components')
 
-    <p class="design-system__note">Shared foundations: <code>resources/sass/_design-tokens.scss</code> and <code>resources/sass/design-system.scss</code>. Component-specific rules can override these defaults. This gallery uses the admin stylesheet; public-only examples are identified in their section.</p>
+    <p class="design-system__note">Shared defaults: <code>resources/sass/shared/_tokens.scss</code>. Shared styles: <code>resources/sass/shared/</code>. Reusable components: <code>resources/sass/components/</code>. This gallery uses the admin stylesheet; public-only examples are identified in their section.</p>
   </div>
 </div>
 

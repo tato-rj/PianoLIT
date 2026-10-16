@@ -2,7 +2,13 @@
   <header class="design-system__section-heading"><span class="design-system__eyebrow">03 / RHYTHM</span><h2 id="ds-spacing-title">Spacing</h2><p>The shared five-step scale for padding, margins and gaps.</p></header>
   <div class="design-system__spacing">
     @foreach(range(1, 5) as $step)
-      <div><code>--space-{{ $step }}</code><span class="design-system__space-bar" data-ds-space="{{ $step }}"></span><span data-ds-token="--space-{{ $step }}"></span><span data-ds-space-value></span><code>.p-{{ $step }} / .m-{{ $step }} / .gap-{{ $step }}</code></div>
+      <div data-ds-sample data-ds-compact data-ds-label="Spacing {{ $step }}" data-ds-properties="width">
+        <code>--space-{{ $step }}</code>
+        <span class="design-system__space-bar" data-ds-space="{{ $step }}" data-ds-preview></span>
+        <span data-ds-token="--space-{{ $step }}"></span>
+        <dl class="design-system__specs design-system__specs--compact" data-ds-specs></dl>
+        <code>.p-{{ $step }} / .m-{{ $step }} / .gap-{{ $step }}</code>
+      </div>
     @endforeach
   </div>
 </section>

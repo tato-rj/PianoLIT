@@ -19,7 +19,6 @@
     <title>{{local() ? '(local)' : null}} {{$title ?? config('app.name')}}</title>
 
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/primer.css') }}" rel="stylesheet">
 
     @include('layouts.html.js-app')
 

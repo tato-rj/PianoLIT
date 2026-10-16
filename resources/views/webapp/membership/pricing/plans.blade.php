@@ -1,15 +1,16 @@
-<section class="mb-3">
-	<div class="row">
-		@each('webapp.membership.pricing.components.plan', $plans, 'plan')
-	</div>
-	<div class="text-end text-muted"><small>All prices are listed in US Dollars</small></div>
-</section>
-
-<section class="">
-	<div class="row p-2">
-		<div class="col-lg-12 col-md-12 col-11 mx-auto p-5 rounded border mb-5 text-center">
-			<h3 class="mb-4">@icon('graduation-cap')Institutional pricing</h3>
-			<p class="m-0">Looking to get PianoLIT for your entire studio, department, or school? Send an email to <a target="_blank" href="mailto:contact@pianolit.com?subject=Institutional pricing inquiry" class="link-primary">contact@pianolit.com</a> and we'll create a plan perfectly suited for your needs.</p>
-		</div>
-	</div>
+@php
+    $hasPreviousMembership = auth('web')->check() && auth('web')->user()->membership()->exists();
+    $monthlyPlan = $plans->firstWhere('name', 'monthly');
+@endphp
+<section aria-label="Premium membership plans">
+    <div class="membership-plans">
+        @foreach($plans as $plan)
+            @include('webapp.membership.pricing.components.plan')
+        @endforeach
+    </div>
+    <div class="membership-reassurance">
+        <span>@icon('check', ['mr' => 0]) Full Premium access on both plans</span>
+        <span>@icon('lock', ['mr' => 0]) Secure payments with Stripe</span>
+        <span>Prices in USD · Cancel anytime</span>
+    </div>
 </section>

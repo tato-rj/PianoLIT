@@ -1,72 +1,25 @@
-<section class="mb-5">
-  <h4 class="text-center mb-5">Plans & Pricing FAQs</h4>
-
-  <div class="accordion" id="faq-accordion">
-    <div class="border-bottom">
-      <div class="py-3 cursor-pointer d-apart" data-bs-toggle="collapse" data-bs-target="#collapse1">
-        <h6 class="mb-0">How does the trial work?</h6>
-        <div>@icon('plus')</div>
-      </div>
-
-      <div id="collapse1" class="collapse" data-bs-parent="#faq-accordion">
-        <div class="pb-3">
-          <p>Eligible new members receive the free trial shown at checkout. It starts when your subscription is confirmed.</p>
-          <p>You will <u>not be charged until your trial ends</u>.</p>
-          <p class="m-0">Cancel before your trial ends to avoid the first payment. You may only start an introductory trial once. Returning members start with a payment instead of another trial.</p>
-        </div>
-      </div>
+<section class="membership-faq" aria-labelledby="membership-faq-heading">
+    <div class="membership-section-heading">
+        <h2 id="membership-faq-heading">A few things you might be wondering</h2>
     </div>
-
-    <div class="border-bottom">
-      <div class="py-3 cursor-pointer d-apart" data-bs-toggle="collapse" data-bs-target="#collapse2">
-        <h6 class="mb-0">When will I be charged?</h6>
-        <div>@icon('plus')</div>
-      </div>
-
-      <div id="collapse2" class="collapse" data-bs-parent="#faq-accordion">
-        <div class="pb-3">
-          Your first payment is due after the trial shown at checkout, if you are eligible. Returning members pay when their new subscription starts. Later payments follow your monthly or yearly billing calendar.
-        </div>
-      </div>
-    </div>
-
-    <div class="border-bottom">
-      <div class="py-3 cursor-pointer d-apart" data-bs-toggle="collapse" data-bs-target="#collapse3">
-        <h6 class="mb-0">Do subscriptions auto-renew?</h6>
-        <div>@icon('plus')</div>
-      </div>
-
-      <div id="collapse3" class="collapse" data-bs-parent="#faq-accordion">
-        <div class="pb-3">
-          Yes, your subscription will automatically renew on a monthly or yearly basis, depending on the plan you have chosen. If you cancel your plan, it will not renew at the end of your billing cycle and it will end once the period you have paid for is over.
-        </div>
-      </div>
-    </div>
-
-    <div class="border-bottom">
-      <div class="py-3 cursor-pointer d-apart" data-bs-toggle="collapse" data-bs-target="#collapse4">
-        <h6 class="mb-0">How can I cancel my trial or subscription?</h6>
-        <div>@icon('plus')</div>
-      </div>
-
-      <div id="collapse4" class="collapse" data-bs-parent="#faq-accordion">
-        <div class="pb-3">
-          Open My Membership, then <i class="text-muted">Billing → Cancel membership</i>. Cancel during your trial to avoid the first payment. You can also pause future payment collection under Billing status after resolving open invoices. Premium media is unavailable while paused; the billing calendar keeps running and unused paid time is not carried forward.
-        </div>
-      </div>
-    </div>
-
-    <div class="">
-      <div class="py-3 cursor-pointer d-apart" data-bs-toggle="collapse" data-bs-target="#collapse5">
-        <h6 class="mb-0">Can I switch between a yearly and a monthly subscription?</h6>
-        <div>@icon('plus')</div>
-      </div>
-
-      <div id="collapse5" class="collapse" data-bs-parent="#faq-accordion">
-        <div class="pb-3">
-          Yes, you can switch between plans at any time. The new plan will take effect on your next billing cycle.
-        </div>
-      </div>
-    </div>
-  </div>
+    <details>
+        <summary>How does the free trial work? @icon('plus', ['mr' => 0])</summary>
+        <p>Eligible new members get the trial shown with their plan and at checkout. Full Premium access starts when checkout is confirmed. You won’t be charged until the trial ends. Cancel before then to avoid the first payment. Returning members start with a payment instead of another introductory trial.</p>
+    </details>
+    <details>
+        <summary>What will I pay, and when? @icon('plus', ['mr' => 0])</summary>
+        <p>Checkout shows the amount due today and your recurring price in US dollars. The yearly plan is billed once a year; the monthly plan is billed each month. Subscriptions renew automatically until canceled. Any valid coupon applies according to its terms.</p>
+    </details>
+    <details>
+        <summary>Can I cancel anytime? @icon('plus', ['mr' => 0])</summary>
+        <p>Yes. Open My Membership, then Billing → Cancel membership. Cancel before your trial ends to avoid the first payment. After cancellation, your access continues through the end date shown in My Membership, and your plan won’t renew.</p>
+    </details>
+    <details>
+        <summary>Can I change my plan later? @icon('plus', ['mr' => 0])</summary>
+        <p>Yes. You can switch between monthly and yearly in My Membership. Your new plan takes effect at your next renewal.</p>
+    </details>
+    <details>
+        <summary>What if I already subscribe through the iOS app? @icon('plus', ['mr' => 0])</summary>
+        <p>Sign in with the same PianoLIT account to use your existing membership. Manage App Store billing through Apple. If you need help linking your account, <a href="mailto:contact@pianolit.com">contact us</a> before starting a second subscription.</p>
+    </details>
 </section>

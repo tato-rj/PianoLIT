@@ -1,4 +1,4 @@
-// Canonical design settings; _variables.scss imports these for legacy consumers.
+// Shared Sass defaults and browser tokens. Imported by all three entry points.
 $body-bg: #161d25;
 $brand-primary: #0055fe;
 $brand-primary-rgb: 0, 85, 254;
@@ -95,7 +95,7 @@ $teal-light: lighten($teal, 14%);
 $teal-lighter: lighten($teal, 28%);
 $teal-lightest: lighten($teal, 39%);
 
-$blue: #3490dc; // Existing Primer blue; brand-primary remains PianoLIT blue.
+$blue: #3490dc; // Utility palette blue; brand-primary remains PianoLIT blue.
 $blue-dark: darken($blue, 12%);
 $blue-darker: darken($blue, 25%);
 $blue-darkest: darken($blue, 41%);
@@ -210,7 +210,7 @@ $pastel-palette: (
             --pastel-#{$name}-action-hover: #{darken($action, 5%)};
         }
 
-        // Bootstrap status colors and Primer palette colors have distinct uses.
+        // Bootstrap status colors and utility palette colors have distinct uses.
         --color-success: #28a745;
         --color-danger: #dc3545;
         --color-warning: #ffc107;

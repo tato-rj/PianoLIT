@@ -1,0 +1,15 @@
+// Shared browser styles, appended after each bundle's framework and page styles.
+// Keep this compilation separate so page-level Sass extensions stay isolated.
+@import 'shared/tokens';
+@import 'shared/utility-layer';
+@include design-tokens;
+
+// Token adapters must retain this order so existing component overrides still win.
+@import 'shared/typography';
+@import 'shared/utilities';
+@import 'shared/interactions';
+
+// Shared controls are emitted last to override framework and legacy field styles.
+@import 'components/icons';
+@import 'components/form-fields';
+@import 'components/dropdown';

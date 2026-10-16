@@ -29,18 +29,85 @@
         const coupon = form.querySelector('input[name="coupon"]');
         const feedback = form.querySelector('[data-coupon-feedback]');
         const total = document.querySelector('[data-membership-total]');
+        const due = document.querySelector('[data-membership-due]');
+        const renewal = document.querySelector('[data-membership-renewal]');
+        const consent = form.querySelector('[data-membership-consent]');
+        const charge = form.querySelector('[data-membership-charge]');
+        const label = form.querySelector('[data-submit-label]');
+        const status = form.querySelector('[data-card-status]');
+        const apply = form.querySelector('[data-apply-coupon]');
+        const name = form.querySelector('[name="cardholder"]');
+        const postal = form.querySelector('[name="postal_code"]');
+        const splitCard = form.hasAttribute ? form.hasAttribute('data-split-card') : false;
+        const fields = [], completeFields = {}, fieldErrors = {};
+        let cardReady = !splitCard;
+        let couponValid = !coupon || !coupon.value.trim();
+        const idleLabel = label ? label.textContent : '';
         let couponRequest = 0, couponPending = false;
         function message(text) { if (errors) errors.textContent = text; }
         function controls() {
-            button.disabled = busy || couponPending || !stripe;
+            button.disabled = busy || couponPending || !stripe || !cardReady;
             button.setAttribute('aria-busy', busy ? 'true' : 'false');
+            form.setAttribute('aria-busy', busy ? 'true' : 'false');
             if (coupon) coupon.disabled = busy;
+            if (apply) apply.disabled = busy || couponPending;
+            if (name) name.disabled = busy;
+            if (postal) postal.disabled = busy;
+            fields.forEach(function (field) { if (field.update) field.update({disabled: busy}); });
+            if (label) label.textContent = busy ? 'Confirming your membership…' : label.getAttribute('data-idle-label') || idleLabel;
+            if (status) status.textContent = busy ? 'Please keep this page open. Your bank may ask you to confirm your card.' : (cardReady || !stripe ? '' : 'Loading secure card fields…');
+        }
+        function paymentMethod() {
+            const details = {};
+            if (name && name.value.trim()) details.name = name.value.trim();
+            if (postal && postal.value.trim()) details.address = {postal_code: postal.value.trim()};
+            return {card: card, billing_details: details};
+        }
+        function price(amount, discounted) {
+            const formatted = '$' + (amount / 100).toFixed(2);
+            if (total) total.textContent = formatted;
+            if (due) due.textContent = formatted;
+            const trial = consent ? Number(consent.getAttribute('data-trial-days')) : 0;
+            const interval = consent ? consent.getAttribute('data-interval') : '';
+            if (renewal) renewal.textContent = discounted
+                ? (trial ? 'After your trial: ' : 'Due today: ') + formatted + ' for the discounted billing period. Later renewals follow the coupon terms.'
+                : (trial ? 'Then ' + formatted + ' every ' + interval + '. Cancel before your ' + trial + '-day trial ends to avoid the first payment.' : formatted + ' every ' + interval + ', starting today. Cancel anytime to stop future renewals.');
+            if (charge) charge.textContent = discounted
+                ? (trial ? 'Your ' + trial + '-day free trial starts when checkout is complete. Then you’ll pay ' : 'You authorize a payment of ') + formatted + ' for the discounted billing period. Your subscription renews automatically until canceled; later payments follow the coupon terms. '
+                : (trial ? 'Your ' + trial + '-day free trial starts when checkout is complete. Then ' + formatted + ' is charged every ' + interval + ' until you cancel. ' : 'You authorize a payment of ' + formatted + ' today, then every ' + interval + ' until you cancel. Returning members do not receive another introductory trial. ');
+            if (label && !trial) label.setAttribute('data-idle-label', 'Subscribe for ' + formatted);
         }
         try {
             stripe = Stripe(form.getAttribute('data-key'));
-            card = stripe.elements().create('card');
-            card.mount(form.querySelector('#card-element'));
-            card.on('change', function (event) { cardComplete = !!event.complete; message(event.error ? event.error.message : ''); });
+            const elements = stripe.elements();
+            if (splitCard) {
+                // Hosted fields use the same resolved values as PianoLIT's native inputs.
+                const inputStyle = window.getComputedStyle(name);
+                const tokens = window.getComputedStyle(form);
+                const style = {base: {color: inputStyle.color, fontFamily: inputStyle.fontFamily,
+                    fontSize: inputStyle.fontSize, lineHeight: inputStyle.lineHeight, fontSmoothing: 'antialiased',
+                    '::placeholder': {color: tokens.getPropertyValue('--field-muted').trim()}},
+                    invalid: {color: tokens.getPropertyValue('--color-danger').trim()}};
+                let readyCount = 0;
+                form.querySelectorAll('[data-stripe-field]').forEach(function (mount) {
+                    const type = mount.getAttribute('data-stripe-field');
+                    const field = elements.create(type, {style: style, ...(type === 'cardNumber' ? {showIcon: true} : {})});
+                    fields.push(field);
+                    if (type === 'cardNumber') card = field;
+                    field.on('ready', function () { readyCount += 1; cardReady = readyCount === fields.length; controls(); });
+                    field.on('change', function (event) {
+                        completeFields[type] = !!event.complete;
+                        fieldErrors[type] = event.error ? event.error.message : '';
+                        cardComplete = fields.length === 3 && Object.keys(completeFields).filter(key => completeFields[key]).length === 3;
+                        message(Object.keys(fieldErrors).map(key => fieldErrors[key]).find(Boolean) || '');
+                    });
+                    field.mount(mount);
+                });
+            } else {
+                card = elements.create('card');
+                card.mount(form.querySelector('#card-element'));
+                card.on('change', function (event) { cardComplete = !!event.complete; message(event.error ? event.error.message : ''); });
+            }
         } catch (error) { message('The secure card form could not load. Please reload the page.'); stripe = null; }
         controls();
 
@@ -52,7 +119,7 @@
             }
             if (!result.complete) {
                 if (!result.payment_secret) throw new Error('Your payment is still pending. Open My Membership to finish it.');
-                const confirmation = await stripe.confirmCardPayment(result.payment_secret, replacement && cardComplete ? {payment_method: {card: card}} : {});
+                const confirmation = await stripe.confirmCardPayment(result.payment_secret, replacement && cardComplete ? {payment_method: paymentMethod()} : {});
                 if (confirmation.error) throw new Error(confirmation.error.message || 'Please check your card and try again.');
             }
             const completed = await request(form.getAttribute('data-complete'), {operation_id: operation});
@@ -61,9 +128,13 @@
 
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
-            if (busy || couponPending || !stripe) return;
+            if (busy || couponPending || !stripe || !cardReady) return;
             busy = true; message(''); controls();
             try {
+                if (coupon && coupon.value.trim() && !couponValid) {
+                    await checkCoupon();
+                    if (!couponValid) throw new Error('Please apply a valid coupon or remove the code before continuing.');
+                }
                 const prepared = await request(form.getAttribute('data-prepare'), {operation_id: operation, coupon: coupon ? coupon.value.trim() : null});
                 operation = prepared.operation_id;
                 if (purpose === 'purchase' && !prepared.setup_secret) {
@@ -72,36 +143,43 @@
                 }
                 if (prepared.complete && purpose === 'card') { window.location.reload(); return; }
                 const confirmation = prepared.setup_complete ? {setupIntent: {id: prepared.setup_intent}}
-                    : await stripe.confirmCardSetup(prepared.setup_secret, {payment_method: {card: card}});
+                    : await stripe.confirmCardSetup(prepared.setup_secret, {payment_method: paymentMethod()});
                 if (confirmation.error) throw new Error(confirmation.error.message || 'Please check your card and try again.');
                 const result = await request(form.action, {operation_id: operation, setup_intent: confirmation.setupIntent.id});
                 if (purpose === 'purchase') await confirmPayment(result, false);
                 else window.location.assign(result.redirect);
-            } catch (error) { message(error.message || 'Please check your connection and try again.'); }
+            } catch (error) {
+                message(error.message || 'Please check your connection and try again.');
+                if (errors && errors.focus) errors.focus();
+            }
             finally { busy = false; controls(); }
         });
 
         if (coupon) {
             coupon.addEventListener('input', function () {
-                couponRequest += 1; couponPending = false; feedback.textContent = '';
-                if (total) total.textContent = '$' + (Number(total.getAttribute('data-base-price')) / 100).toFixed(2);
+                couponRequest += 1; couponPending = false; couponValid = !coupon.value.trim(); feedback.textContent = '';
+                if (total) price(Number(total.getAttribute('data-base-price')), false);
                 controls();
             });
-            coupon.addEventListener('blur', async function () {
-                const code = coupon.value.trim(), current = ++couponRequest;
-                if (!code || busy) return;
-                couponPending = true; feedback.textContent = 'Checking coupon…'; controls();
-                try {
-                    const result = await request(coupon.getAttribute('data-coupon-url'), {coupon: code});
-                    if (current !== couponRequest || coupon.value.trim() !== code) return;
-                    feedback.textContent = result.message;
-                    if (total) total.textContent = '$' + (result.amount / 100).toFixed(2);
-                } catch (error) {
-                    if (current === couponRequest) feedback.textContent = error.message || 'We could not check this coupon. Please try again.';
-                } finally {
-                    if (current === couponRequest) { couponPending = false; controls(); }
-                }
-            });
+            coupon.addEventListener('blur', function () { if (!busy && !couponPending) return checkCoupon(); });
+            if (apply) apply.addEventListener('click', function () { if (!busy && !couponPending) return checkCoupon(); });
+            if (coupon.value.trim()) checkCoupon();
+        }
+        async function checkCoupon() {
+            const code = coupon.value.trim(), current = ++couponRequest;
+            if (!code) return;
+            couponPending = true; couponValid = false; feedback.textContent = 'Checking coupon…'; controls();
+            try {
+                const result = await request(coupon.getAttribute('data-coupon-url'), {coupon: code});
+                if (current !== couponRequest || coupon.value.trim() !== code) return;
+                couponValid = true;
+                feedback.textContent = result.message;
+                price(result.amount, true);
+            } catch (error) {
+                if (current === couponRequest) feedback.textContent = error.message || 'We could not check this coupon. Please try again.';
+            } finally {
+                if (current === couponRequest) { couponPending = false; controls(); }
+            }
         }
     }
 

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class FolderPalette
 {
-    // Names mirror $pastel-palette in resources/sass/_design-tokens.scss.
+    // Names mirror $pastel-palette in resources/sass/shared/_tokens.scss.
     const COLORS = ['sky', 'cream', 'mint', 'lavender', 'peach', 'rose', 'aqua', 'butter', 'sage', 'lilac', 'periwinkle', 'terracotta'];
 
     public static function colorsFor($folders)

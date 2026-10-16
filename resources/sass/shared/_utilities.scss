@@ -1,5 +1,5 @@
 // Token-backed colors, borders, elevations and spacing utilities.
-// Final utility adapters keep Primer's literal colors from overriding tokens.
+// Final adapters keep palette defaults synchronized with browser tokens.
 @each $name in grey, red, orange, yellow, green, teal, blue, indigo, purple, pink {
     .bg-#{$name} {
         background-color: var(--color-#{$name});

@@ -1,0 +1,93 @@
+// Positioned labels used by cards and the configurable pill component.
+@each $side in top, bottom {
+    @each $edge in right, left {
+        .absolute-#{$side}-#{$edge} {
+            position: absolute;
+            #{$side}: 0.65em;
+            #{$edge}: 1em;
+        }
+    }
+}
+
+.absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+// Flex alignment helpers retain their established class names.
+.flex-center {
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.d-apart {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.h-100vh {
+    height: 100vh;
+}
+
+.z-0 {
+    z-index: 0;
+}
+
+.z-10 {
+    z-index: 10;
+}
+
+// Existing card/media borders use these intentionally heavier widths.
+@each $name, $width in (1x: 3.5px, 2x: 5px, 3x: 7px) {
+    .border-#{$name} {
+        border-width: $width !important;
+    }
+}
+
+.border-pill {
+    border-radius: 200px;
+}
+
+.border-y {
+    border-top: 1px solid var(--color-border) !important;
+    border-bottom: 1px solid var(--color-border) !important;
+}
+
+// Flat footer/product lists and small nested labels.
+.list-style-none li,
+.list-flat li {
+    list-style-type: none;
+}
+
+.list-flat {
+    padding: 0;
+    margin: 0;
+}
+
+small .tiny {
+    font-size: 0.75em;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+// Image-backed cards share the same cover treatment.
+@each $position in center, top, right, left {
+    .bg-align-#{$position} {
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: $position;
+    }
+}

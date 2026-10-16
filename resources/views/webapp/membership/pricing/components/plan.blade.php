@@ -1,25 +1,22 @@
-@php($isYearly = $plan->name == 'yearly')
-<div class="col-lg-6 col-md-6 col-11 mx-auto p-2">
-	<div class="p-5 position-relative rounded border h-100 d-flex flex-column justify-content-between">
-		@if($isYearly)
-		<span class="px-3 py-1 bg-intermediate-raw position-absolute best-value"><strong>BEST VALUE</strong></span>
-		@endif
-
-		<div>
-			<h5 class="text-nowrap">Premium {{ucfirst($plan->name)}}</h5>
-			<div class="d-flex align-items-baseline mb-3">
-				<h1 class="mb-0 me-2">
-					${{$isYearly ? $plan->formattedMonthlyPrice() : $plan->formattedPrice()}}
-				</h1>
-				<div class="text-muted" style="font-size: 95%">monthly</div>
-			</div>
-			@if($isYearly)
-			<p class="text-muted">${{$plan->formattedPrice()}} billed annually</p>
-			@endif
-		</div>
-		<div>
-			<p>{{$plan->description}}</p>
-			<a href="{{route('webapp.membership.checkout', $plan->name)}}" class="btn btn-default d-block w-100">{{ !$plan->trial_period_days || (auth('web')->check() && auth('web')->user()->membership()->exists()) ? 'Choose this plan' : 'Start '.$plan->trial_period_days.'-day FREE trial' }}</a>
-		</div>
-	</div>
-</div>
+@php
+    $isYearly = $plan->name === 'yearly';
+    $trial = !$hasPreviousMembership ? max(0, (int) $plan->trial_period_days) : 0;
+    $savings = $isYearly && $monthlyPlan && $monthlyPlan->price > 0 ? max(0, (int) round(100 - $plan->price / ($monthlyPlan->price * 12) * 100)) : 0;
+@endphp
+<article class="membership-plan {{ $isYearly ? 'membership-plan--featured' : '' }}" aria-labelledby="plan-{{ $plan->name }}">
+    <div class="membership-plan-top">
+        <h2 id="plan-{{ $plan->name }}">{{ ucfirst($plan->name) }}</h2>
+        @if($savings)
+        <span class="membership-badge">Save {{ $savings }}%</span>
+        @endif
+    </div>
+    <p class="membership-plan-intro">{{ $isYearly ? 'A year of inspiration. Our best value.' : 'A little more flexibility, month to month.' }}</p>
+    <div class="membership-price">
+        <strong>${{ number_format($plan->price / ($isYearly ? 1200 : 100), 2) }}</strong><span>/ month</span>
+    </div>
+    <p class="membership-billing-line">${{ number_format($plan->price / 100, 2) }} billed {{ $isYearly ? 'yearly' : 'monthly' }}{{ $trial ? ', after your free trial' : '' }}.</p>
+    <a href="{{ route('webapp.membership.checkout', $plan->name) }}" class="btn {{ $isYearly ? 'btn-primary' : 'btn-secondary' }} w-100">
+        {{ $trial ? 'Start '.$trial.'-day free trial' : 'Choose '.ucfirst($plan->name) }} @icon('arrow-right', ['mr' => 0])
+    </a>
+    <p class="membership-plan-footnote">{{ $trial ? 'For new members. Cancel before your trial ends.' : 'Full access as soon as your payment is confirmed.' }}</p>
+</article>

@@ -93,8 +93,12 @@ class MembershipsController extends Controller
 
     public function success()
     {
-        if (session()->has('valid-success')) return view('webapp.membership.checkout.success');
-        return redirect()->route('webapp.discover');
+        if (!session()->has('valid-success')) return redirect()->route('webapp.discover');
+        $source = optional(auth('web')->user()->membership)->source;
+        $welcomeTrial = $source && $source->status === 'trialing';
+        $welcomePlan = $source ? $source->plan : null;
+        $welcomeRenewsAt = $source ? $source->renews_at : null;
+        return view('webapp.membership.checkout.success', compact('welcomeTrial', 'welcomePlan', 'welcomeRenewsAt'));
     }
 
     public function updatePlan(Request $request, MembershipManagement $management)
