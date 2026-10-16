@@ -8,7 +8,9 @@ use App\Billing\Plan;
 use App\Billing\Sources\Apple;
 use App\Billing\Stripe\{BillingException, MembershipBilling, MembershipManagement, SubscriptionState};
 use App\Events\Memberships\NewTrial;
+use App\Mail\Memberships\MembershipConfirmed;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class MembershipsController extends Controller
@@ -21,7 +23,10 @@ class MembershipsController extends Controller
     public function pricing()
     {
         $plans = Plan::all()->reverse();
-        return view('webapp.membership.pricing.index', compact('plans'));
+        $selected = request()->query('checkout');
+        $checkoutPlan = is_string($selected) ? $plans->firstWhere('name', $selected) : null;
+        $checkoutUrl = $checkoutPlan ? route('webapp.membership.checkout', $checkoutPlan) : null;
+        return view('webapp.membership.pricing.index', compact('plans', 'checkoutUrl'));
     }
 
     public function edit(MembershipBilling $billing)
@@ -51,7 +56,12 @@ class MembershipsController extends Controller
         $activeCoupon = $active ? $active->coupon : null;
         $trialDays = $billing->trialDays($request->user('web'), $plan);
         \App\Activity\Actions::record($request, 'checkout_started', [], 'plan', $plan->id);
-        return view('webapp.membership.checkout.index', compact('plan', 'stripeKey', 'operationId', 'trialDays', 'activeCoupon'));
+        $data = compact('plan', 'stripeKey', 'operationId', 'trialDays', 'activeCoupon');
+        if ($request->expectsJson()) {
+            return response()->json(['html' => view('webapp.membership.checkout.modal', $data)->render()])
+                ->header('Cache-Control', 'private, no-store');
+        }
+        return view('webapp.membership.checkout.index', $data);
     }
 
     public function prepare(Request $request, Plan $plan, MembershipBilling $billing)
@@ -80,25 +90,39 @@ class MembershipsController extends Controller
         try { $result = $billing->finish($request->user('web'), $data['operation_id']); }
         catch (\Throwable $exception) { return $this->failure($request, $exception); }
         $subscription = json_decode(json_encode($result['subscription']));
+        $user = $request->user('web');
+        $previous = $request->session()->get('membership-confirmation', []);
+        $emailQueued = ($previous['operation_id'] ?? null) === $data['operation_id'] && !empty($previous['email_queued']);
         if ($result['first_completion']) {
+            // The durable completion flag prevents duplicate confirmations on checkout retries.
+            // Email failures must never turn an already successful payment into a checkout error.
+            try {
+                if (app(\App\Mail\AutomaticEmailSettings::class)->enabled('membership-confirmation')) {
+                    $source = $billing->source($user);
+                    Mail::to($user->email)->queue(new MembershipConfirmed(
+                        $user->first_name ?: 'there', $source->plan, $source->status === 'trialing',
+                        $source->renews_at ? $source->renews_at->toFormattedDateString() : null
+                    ));
+                    $emailQueued = true;
+                }
+            } catch (\Throwable $exception) { report($exception); }
             try {
                 \App\Activity\Actions::record($request, $subscription->status === 'trialing' ? 'trial_started' : 'subscription_activated', ['status' => $subscription->status]);
                 (new \App\Services\CampaignAttribution)->subscribed($request, $request->user('web'), (object) $result['customer'], $subscription);
                 if ($subscription->status === 'trialing') event(new NewTrial($request->user('web')));
             } catch (\Throwable $exception) { report($exception); }
         }
-        $request->session()->flash('valid-success', true);
-        return response()->json(['redirect' => route('webapp.membership.success')]);
+        $request->session()->flash('membership-confirmation', [
+            'user_id' => $user->id, 'operation_id' => $data['operation_id'], 'email_queued' => $emailQueued,
+        ]);
+        return response()->json(['redirect' => route('webapp.discover')]);
     }
 
     public function success()
     {
-        if (!session()->has('valid-success')) return redirect()->route('webapp.discover');
-        $source = optional(auth('web')->user()->membership)->source;
-        $welcomeTrial = $source && $source->status === 'trialing';
-        $welcomePlan = $source ? $source->plan : null;
-        $welcomeRenewsAt = $source ? $source->renews_at : null;
-        return view('webapp.membership.checkout.success', compact('welcomeTrial', 'welcomePlan', 'welcomeRenewsAt'));
+        // Preserve old return links without keeping a separate welcome screen.
+        session()->keep('membership-confirmation');
+        return redirect()->route('webapp.discover');
     }
 
     public function updatePlan(Request $request, MembershipManagement $management)

@@ -444,12 +444,12 @@
         }
     }
     @media (max-width: 767px) {
+        padding-bottom: calc(126px + var(--piece-player-height, 0px));
         &.is-fullscreen {
             --score-toolbar-height: 36px;
         }
         // width: calc(100vw - 20px);
         // margin-left: calc(-50vw + 10px);
-        padding-bottom: calc(126px + var(--piece-player-height, 0px));
         .score-toolbar {
             gap: 3px;
             padding: 0 8px 2px;

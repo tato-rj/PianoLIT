@@ -6,9 +6,10 @@ use App\Billing\{Customer, Membership, Payment, Plan};
 use App\Billing\Sources\{Apple, Stripe};
 use App\Billing\Stripe\{Accounts, BillingException, Gateway, MembershipBilling, MembershipManagement, Operations, WebhookProcessor};
 use App\User;
+use App\Mail\Memberships\MembershipConfirmed;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{DB, Event, Notification};
+use Illuminate\Support\Facades\{Cache, DB, Event, Mail, Notification, Redis};
 use Illuminate\Support\Str;
 use Tests\Support\FakeStripeGateway;
 
@@ -404,20 +405,157 @@ class StripeMembershipBillingTest extends ReviewTestCase
             ->assertSee('Choose Yearly')->assertDontSee('Start 7-day free trial');
     }
 
-    public function test_welcome_requires_completed_checkout_and_uses_saved_membership_state()
+    private function cacheDiscovery(): void
     {
+        Redis::shouldReceive('get')->andReturn(null);
+        Cache::put('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX, collect([
+            ['title' => 'Free weekly pick', 'row' => 'gallery', 'type' => 'piece', 'content' => []],
+            ['title' => 'Composers', 'row' => 'gallery', 'type' => 'piece', 'content' => []],
+            ['title' => 'Latest pieces', 'row' => 'gallery', 'type' => 'piece', 'content' => []],
+        ]), 60);
+    }
+
+    private function renderConfirmation(MembershipConfirmed $mail): string
+    {
+        $mail->build();
+        return (string) app(\Illuminate\Mail\Markdown::class)->render($mail->markdown, $mail->buildViewData());
+    }
+
+    public function test_completed_checkout_redirects_home_with_a_one_time_confirmation_and_one_email()
+    {
+        $this->cacheDiscovery();
+        [$id] = $this->purchase([], false);
+        foreach ([1, 2] as $attempt) {
+            $this->postJson(route('webapp.membership.complete'), ['operation_id' => $id, 'email' => 'someone-else@example.com'])
+                ->assertOk()->assertExactJson(['redirect' => route('webapp.discover')])
+                ->assertSessionHas('membership-confirmation.user_id', $this->user->id)
+                ->assertSessionHas('membership-confirmation.email_queued', true);
+        }
+        Mail::assertQueued(MembershipConfirmed::class, function ($mail) {
+            return $mail->hasTo($this->user->email) && count($mail->to) === 1 && !$mail->cc && !$mail->bcc
+                && $mail->plan === 'Monthly Premium' && $mail->trial && $mail->renewalDate;
+        });
+        Mail::assertQueued(MembershipConfirmed::class, 1);
+
+        $response = $this->get(route('webapp.discover'))->assertOk()
+            ->assertSee('id="membership-confirmation-modal"', false)->assertSee('You’re all set!')
+            ->assertSee('Monthly Premium')->assertSee('Active')->assertSee('Confirmation sent to your email');
+        $this->assertSame('Monthly Premium', $response->viewData('membershipConfirmation')['plan']);
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertCount(1, $xpath->query('//*[@id="membership-confirmation-modal"]//button[@data-bs-dismiss="modal" and contains(., "Start exploring")]'));
+        $this->assertCount(1, $xpath->query('//*[@id="membership-confirmation-modal"]//button'));
+        $this->get(route('webapp.discover'))->assertOk()->assertDontSee('id="membership-confirmation-modal"', false);
+        Mail::assertQueued(MembershipConfirmed::class, 1);
+    }
+
+    public function test_paid_yearly_confirmation_uses_saved_plan_and_email_has_real_billing_details()
+    {
+        $this->cacheDiscovery();
+        $this->plan = Plan::byName('yearly');
+        [$id] = $this->purchase(['status' => 'active'], false);
+        $this->postJson(route('webapp.membership.complete'), ['operation_id' => $id, 'plan' => 'monthly'])->assertOk();
+        $this->get(route('webapp.discover'))->assertOk()->assertSee('Yearly Premium');
+        Mail::assertQueued(MembershipConfirmed::class, function ($mail) {
+            $html = $this->renderConfirmation($mail);
+            $this->assertStringContainsString('Your next renewal is', $html);
+            $this->assertStringContainsString($this->source()->renews_at->toFormattedDateString(), $html);
+            $this->assertStringContainsString(route('webapp.discover'), $html);
+            $this->assertStringContainsString(route('webapp.membership.edit'), $html);
+            $this->assertStringNotContainsString('free trial', $html);
+            $this->assertStringNotContainsString('sub_review', $html);
+            $this->assertStringNotContainsString('4444', $html);
+            return !$mail->trial && $mail->plan === 'Yearly Premium';
+        });
+        $trial = $this->renderConfirmation(new MembershipConfirmed('Jamie', 'monthly', true, 'Oct 22, 2026'));
+        $this->assertStringContainsString('No payment was due today.', $trial);
+        $this->assertStringContainsString('Oct 22, 2026', $trial);
+        $this->assertStringContainsString('Cancel before then', $trial);
+    }
+
+    public function test_disabled_membership_email_does_not_queue_or_claim_delivery_after_checkout()
+    {
+        app(\App\Mail\AutomaticEmailSettings::class)->setEnabled('membership-confirmation', false, null);
+        $this->cacheDiscovery();
+        [$id] = $this->purchase([], false);
+        $this->postJson(route('webapp.membership.complete'), ['operation_id' => $id])
+            ->assertOk()->assertExactJson(['redirect' => route('webapp.discover')])
+            ->assertSessionHas('membership-confirmation.email_queued', false);
+        Mail::assertNothingQueued();
+        $this->assertTrue($this->user->fresh()->hasActiveSubscription());
+        $this->get(route('webapp.discover'))->assertOk()->assertSee('Your membership details are in')->assertDontSee('Confirmation sent to your email');
+    }
+
+    public function test_incomplete_or_foreign_checkout_never_confirms_membership_or_queues_email()
+    {
+        [$id] = $this->purchase(['status' => 'incomplete'], false);
+        $this->postJson(route('webapp.membership.complete'), ['operation_id' => $id])->assertUnprocessable()
+            ->assertSessionMissing('membership-confirmation');
+        $other = Model::withoutEvents(function () { return create(User::class)->setAppends(['full_name']); });
+        $this->actingAs($other, 'web');
+        $this->postJson(route('webapp.membership.complete'), ['operation_id' => $id])->assertUnprocessable()
+            ->assertSessionMissing('membership-confirmation');
+        Mail::assertNothingQueued();
+    }
+
+    public function test_legacy_welcome_redirects_and_confirmation_cannot_be_requested_by_url_or_another_account()
+    {
+        $this->cacheDiscovery();
         $this->get(route('webapp.membership.success'))->assertRedirect(route('webapp.discover'));
         $this->purchase(); $this->user->unsetRelation('membership');
-        $response = $this->withSession(['valid-success' => true])->get(route('webapp.membership.success'))->assertOk()
-            ->assertSee('Your free trial is active')->assertSee('No payment today.')
-            ->assertSee(route('webapp.tour'), false)->assertSee(route('webapp.playlists'), false)
-            ->assertSee(route('webapp.my-pieces'), false)->assertSee(route('webapp.membership.edit'), false)
-            ->assertDontSee('tour-modal');
-        $this->assertTrue($response->viewData('welcomeTrial'));
-        $this->assertSame('monthly', $response->viewData('welcomePlan'));
-        $this->source()->update(['status' => 'active']); $this->user->unsetRelation('membership');
-        $this->withSession(['valid-success' => true])->get(route('webapp.membership.success'))->assertOk()
-            ->assertSee('Your membership is active')->assertDontSee('No payment today.');
+        $this->get(route('webapp.discover', ['welcome' => 1]))->assertOk()->assertViewHas('membershipConfirmation', null);
+        $this->withSession(['membership-confirmation' => ['user_id' => $this->user->id + 1, 'email_queued' => true]])
+            ->get(route('webapp.discover'))->assertOk()->assertViewHas('membershipConfirmation', null);
+        $this->withSession(['membership-confirmation' => ['user_id' => $this->user->id, 'email_queued' => true]])
+            ->get(route('webapp.membership.success'))->assertRedirect(route('webapp.discover'));
+        $this->get(route('webapp.discover'))->assertOk()->assertSee('Monthly Premium');
+        $this->source()->update(['status' => 'canceled', 'ended_at' => now()]); $this->user->unsetRelation('membership');
+        $this->withSession(['membership-confirmation' => ['user_id' => $this->user->id]])
+            ->get(route('webapp.discover'))->assertOk()->assertViewHas('membershipConfirmation', null);
+        auth('web')->logout();
+        $this->withSession(['membership-confirmation' => ['user_id' => $this->user->id]])
+            ->get(route('webapp.discover'))->assertOk()->assertViewHas('membershipConfirmation', null);
+        Mail::assertNothingQueued();
+    }
+
+    public function test_email_enqueue_failure_does_not_fail_a_completed_checkout_or_claim_email_was_sent()
+    {
+        $this->cacheDiscovery();
+        [$id] = $this->purchase([], false);
+        Mail::shouldReceive('to')->once()->with($this->user->email)->andThrow(new \RuntimeException('Queue unavailable'));
+        $this->postJson(route('webapp.membership.complete'), ['operation_id' => $id])->assertOk()
+            ->assertExactJson(['redirect' => route('webapp.discover')])->assertSessionHas('membership-confirmation.email_queued', false);
+        $this->assertTrue($this->user->fresh()->hasActiveSubscription());
+        $this->get(route('webapp.discover'))->assertOk()->assertSee('Your membership details are in')
+            ->assertDontSee('Confirmation sent to your email');
+    }
+
+    public function test_ajax_checkout_returns_private_account_owned_modal_without_provider_mutations()
+    {
+        $response = $this->getJson(route('webapp.membership.checkout', $this->plan))->assertOk()->assertJsonStructure(['html']);
+        $html = $response->json('html');
+        $this->assertStringContainsString('id="payment-checkout-modal"', $html);
+        $this->assertStringContainsString('fullscreen-modal', $html);
+        $this->assertStringContainsString('data-checkout-key="monthly"', $html);
+        $this->assertStringContainsString('Order summary', $html);
+        $this->assertStringContainsString(e($this->user->email), $html);
+        $this->assertStringContainsString('data-card-preview', $html);
+        $this->assertStringNotContainsString('<html', $html);
+        $this->assertStringNotContainsString('<script', $html);
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        $this->assertCount(0, $this->gateway->calls);
+        $this->assertDatabaseCount('stripe_billing_operations', 0);
+        auth('web')->logout();
+        $this->withExceptionHandling()->getJson(route('webapp.membership.checkout', $this->plan))->assertUnauthorized();
+    }
+
+    public function test_checkout_restore_url_is_built_only_from_a_known_plan()
+    {
+        $this->get(route('webapp.membership.pricing', ['checkout' => 'monthly']))->assertOk()
+            ->assertViewHas('checkoutUrl', route('webapp.membership.checkout', $this->plan));
+        $this->get(route('webapp.membership.pricing', ['checkout' => 'https://example.test/untrusted']))->assertOk()->assertViewHas('checkoutUrl', null);
+        $this->get(route('webapp.membership.pricing', ['checkout' => ['monthly']]))->assertOk()->assertViewHas('checkoutUrl', null);
     }
 
     public function test_browser_billing_mutations_require_csrf_even_for_authenticated_accounts()

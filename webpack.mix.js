@@ -1,39 +1,23 @@
 const mix = require('laravel-mix');
+mix.extend('versionAssets', require('./scripts/version-assets'));
 
-// css-loader 0.28 uses cssnano 3, whose longhand merger mistakes custom
-// properties such as --bs-border-width/style for ordinary border properties.
-// Keep those variables intact in production; components resolve them at runtime.
-mix.extend('preserveCssVariables', config => {
-    config.module.rules.forEach(rule => {
-        ['use', 'loaders'].forEach(key => {
-            if (!Array.isArray(rule[key])) return;
-            rule[key] = rule[key].map(loader => {
-                if (loader === 'css-loader') loader = {loader};
-                if (loader.loader === 'css-loader') {
-                    loader.options = Object.assign({}, loader.options, {
-                        minimize: mix.inProduction() ? {mergeLonghand: false} : false
-                    });
-                }
-                return loader;
-            });
-        });
-    });
+// Use Dart Sass's modern API. The legacy Sass/Babel workarounds for Mix 2
+// are superseded by Mix 6's PostCSS 8 and Webpack 5 pipeline.
+const sassOptions = {
+    implementation: require('sass'),
+    api: 'modern',
+    sassOptions: {style: 'expanded'}
+};
+
+mix.options({
+    // Keep Bootstrap's border custom properties intact when minifying CSS.
+    cssNano: {mergeLonghand: false}
 });
-mix.preserveCssVariables();
 
-// Mix 2 excludes node_modules from Babel. Bootstrap 5 needs transpilation
-// for this project's Webpack 3/Uglify production build.
 mix.webpackConfig({
-    module: {
-        rules: [{
-            test: /bootstrap[\\/]dist[\\/]js[\\/]bootstrap\.bundle\.js$|bootstrap[\\/]js[\\/]dist[\\/].*\.js$/,
-            loader: 'babel-loader',
-            options: {
-                presets: [['env', {modules: false}]],
-                plugins: ['transform-object-rest-spread']
-            }
-        }]
-    }
+    output: {hashFunction: 'xxhash64'},
+    // Concatenation reads the compiled intermediates from disk in hot mode too.
+    devServer: {devMiddleware: {writeToDisk: true}}
 });
 
 /*
@@ -47,29 +31,31 @@ mix.webpackConfig({
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .js('resources/js/admin.js', 'public/js')
+// Compile intermediate bundles separately: Mix 6 excludes a concatenation's
+// destination from its inputs, so in-place styles()/scripts() would lose code.
+mix.js('resources/js/app.js', 'public/.mix/js')
+    .js('resources/js/admin.js', 'public/.mix/js')
     .js('resources/js/tone.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css')
-    .sass('resources/sass/admin.scss', 'public/css')
-    .sass('resources/sass/shared.scss', 'public/css')
+    .sass('resources/sass/app.scss', 'public/.mix/css', sassOptions)
+    .sass('resources/sass/admin.scss', 'public/.mix/css', sassOptions)
+    .sass('resources/sass/shared.scss', 'public/css', sassOptions)
     .styles([
-      'public/css/app.css',
+      'public/.mix/css/app.css',
       'public/css/shared.css'
       ], 'public/css/app.css')
     .styles([
       'resources/sass/vendor/admin-theme.min.css',
       'resources/sass/vendor/datatables.css',
       'resources/sass/vendor/dropzone.css',
-      'public/css/admin.css',
+      'public/.mix/css/admin.css',
       'public/css/shared.css'
       ], 'public/css/admin.css')
     .scripts([
-      'public/js/app.js',
+      'public/.mix/js/app.js',
       'node_modules/swiper/dist/js/swiper.min.js',
       ], 'public/js/app.js')
     .scripts([
-      'public/js/admin.js',
+      'public/.mix/js/admin.js',
       'resources/js/vendor/Chart.min.js',
       'resources/js/vendor/jquery.dataTables.js',
       'resources/js/vendor/jquery.easing.min.js',
@@ -85,8 +71,9 @@ mix.js('resources/js/app.js', 'public/js')
     .copy('resources/fonts/escore/LibreBodoni-Regular.ttf', 'public/fonts/escore/LibreBodoni-Regular.ttf')
     .copy('resources/fonts/escore/LibreBodoni-Bold.ttf', 'public/fonts/escore/LibreBodoni-Bold.ttf')
     .copy('resources/fonts/escore/OFL.txt', 'public/fonts/escore/OFL.txt')
-    .version(['public/js/views/admin-design-system.js'])
     //SVG FLAGS
     .copy('node_modules/flag-icon-css/css/flag-icon.min.css', 'public/css/vendor/flag-icon')
     .copy('node_modules/flag-icon-css/flags', 'public/css/vendor/flags')
-    .version(['public/js/views/membership-billing.js', 'public/js/views/checkout.js', 'public/js/views/admin-user-profile.js', 'public/js/components/admin-table-loading.js', 'public/js/components/activity.js', 'public/js/components/audio.js', 'public/js/vendor/globe.gl.min.js', 'public/data/composer-globe.geojson', 'public/js/views/composer-globe.js', 'public/js/views/explore-moods.js', 'public/js/views/explore-transitions.js', 'public/js/views/explore.js', 'public/js/views/highlights.js', 'public/js/views/campaign-attribution.js', 'public/js/views/composer-biography-admin.js', 'public/js/views/composers.js', 'public/js/views/escore.js', 'public/js/views/feedback.js', 'public/js/views/playlist-moments.js', 'public/js/views/playlist-player.js', 'public/js/views/admin-pieces.js', 'public/js/views/admin-user-map.js', 'public/js/views/timeline-events-admin.js', 'public/js/views/video-moments.js', 'public/js/views/video-moments-admin.js', 'public/js/views/piece-access.js', 'public/js/views/piece-description.js', 'public/js/views/score-editor.js', 'public/js/views/match-tour.js', 'public/js/views/collections.js', 'public/js/views/folders.js', 'public/js/tinyeditor/tiny.js']);
+    // Mix 6 otherwise versions every copied file, including large source PSDs.
+    // Hash the existing entry points and explicit version list after minification.
+    .versionAssets(['public/js/app.js', 'public/js/admin.js', 'public/js/tone.js', 'public/css/app.css', 'public/css/admin.css', 'public/css/shared.css', 'public/js/views/admin-design-system.js', 'public/js/views/membership-billing.js', 'public/js/views/checkout.js', 'public/js/views/admin-user-profile.js', 'public/js/components/admin-table-loading.js', 'public/js/components/activity.js', 'public/js/components/audio.js', 'public/js/vendor/globe.gl.min.js', 'public/data/composer-globe.geojson', 'public/js/views/composer-globe.js', 'public/js/views/explore-moods.js', 'public/js/views/explore-transitions.js', 'public/js/views/explore.js', 'public/js/views/highlights.js', 'public/js/views/campaign-attribution.js', 'public/js/views/composer-biography-admin.js', 'public/js/views/composers.js', 'public/js/views/escore.js', 'public/js/views/feedback.js', 'public/js/views/playlist-moments.js', 'public/js/views/playlist-player.js', 'public/js/views/admin-pieces.js', 'public/js/views/admin-user-map.js', 'public/js/views/timeline-events-admin.js', 'public/js/views/video-moments.js', 'public/js/views/video-moments-admin.js', 'public/js/views/piece-access.js', 'public/js/views/piece-description.js', 'public/js/views/score-editor.js', 'public/js/views/match-tour.js', 'public/js/views/collections.js', 'public/js/views/folders.js', 'public/js/tinyeditor/tiny.js']);

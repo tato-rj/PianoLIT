@@ -18,7 +18,9 @@ class PerformanceSubmittedListener
      */
     public function handle($event)
     {
-        \Mail::to(auth()->user()->email)->send(new PerformanceSubmittedEmail($event->performance->piece));
+        if (app(\App\Mail\AutomaticEmailSettings::class)->enabled('performance-submitted')) {
+            \Mail::to(auth()->user()->email)->send(new PerformanceSubmittedEmail($event->performance->piece));
+        }
 
         Admin::notifyAll(new PerformanceSubmittedNotification($event->performance));
     }

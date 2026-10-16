@@ -14,6 +14,7 @@ require('./helpers/cookie');
 require('./helpers/numbers');
 require('./components/modals');
 require('./components/fullscreen-modals')(window);
+require('./components/payment-checkout')(window);
 require('./components/tables');
 require('./components/forms');
 require('./components/triggers');

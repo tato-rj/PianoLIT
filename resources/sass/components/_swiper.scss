@@ -57,7 +57,7 @@
 }
 
 .swiper-slide::before {
-    background-image: url('../images/icons/quote-left.svg');
+    background-image: url('../../images/icons/quote-left.svg');
     top: 16px;
     left: 16px;
     content: '';
@@ -67,7 +67,7 @@
 }
 
 .swiper-slide::after {
-    background-image: url('../images/icons/quote-right.svg');
+    background-image: url('../../images/icons/quote-right.svg');
     top: 16px;
     right: 16px;
 }
@@ -88,11 +88,11 @@
 }
 
 .swiper-button-next {
-    background-image: url('../images/icons/dart-right.svg');
+    background-image: url('../../images/icons/dart-right.svg');
 }
 
 .swiper-button-prev {
-    background-image: url('../images/icons/dart-left.svg');
+    background-image: url('../../images/icons/dart-left.svg');
 }
 
 .swiper-navigation-arrow {

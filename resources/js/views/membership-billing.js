@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    if (window.PianoLITMembershipBilling) return;
+
     const csrf = document.querySelector('meta[name="csrf-token"]');
     async function request(url, data, method) {
         const options = {method: method || 'POST', credentials: 'same-origin', headers: {'Accept': 'application/json', 'X-CSRF-TOKEN': csrf ? csrf.content : ''}};
@@ -19,8 +21,11 @@
         return result;
     }
 
-    const form = document.querySelector('[data-membership-payment]');
-    if (form) {
+    const mounted = new WeakMap();
+    function mount(form) {
+        if (!form || mounted.has(form)) return;
+        let disposed = false;
+        const root = form.closest ? form.closest('[data-checkout-surface]') || document : document;
         const button = form.querySelector('button[type="submit"]');
         const errors = form.querySelector('#card-errors');
         let busy = false, stripe, card, cardComplete = false;
@@ -28,9 +33,9 @@
         const purpose = form.getAttribute('data-purpose');
         const coupon = form.querySelector('input[name="coupon"]');
         const feedback = form.querySelector('[data-coupon-feedback]');
-        const total = document.querySelector('[data-membership-total]');
-        const due = document.querySelector('[data-membership-due]');
-        const renewal = document.querySelector('[data-membership-renewal]');
+        const total = root.querySelector('[data-membership-total]');
+        const due = root.querySelector('[data-membership-due]');
+        const renewal = root.querySelector('[data-membership-renewal]');
         const consent = form.querySelector('[data-membership-consent]');
         const charge = form.querySelector('[data-membership-charge]');
         const label = form.querySelector('[data-submit-label]');
@@ -40,15 +45,33 @@
         const postal = form.querySelector('[name="postal_code"]');
         const splitCard = form.hasAttribute ? form.hasAttribute('data-split-card') : false;
         const fields = [], completeFields = {}, fieldErrors = {};
-        let cardReady = !splitCard;
+        let cardReady = !splitCard, announcedReady = false;
         let couponValid = !coupon || !coupon.value.trim();
+        const preview = form.querySelector('[data-card-preview]');
+        const cardName = form.querySelector('[data-card-name]');
+        const brandLabel = form.querySelector('[data-card-brand-label]');
+        const brands = {visa: 'Visa', mastercard: 'Mastercard', amex: 'Amex', discover: 'Discover', diners: 'Diners Club', jcb: 'JCB', unionpay: 'UnionPay'};
+        function brand(value) {
+            if (!preview) return;
+            const supported = Object.prototype.hasOwnProperty.call(brands, value);
+            preview.setAttribute('data-card-brand', supported ? value : 'unknown');
+            if (brandLabel) brandLabel.textContent = supported ? brands[value] : 'Card';
+        }
+        function holder() { if (cardName) cardName.textContent = name && name.value.trim() ? name.value.trim().slice(0, 36) : 'Your name'; }
+        if (name) name.addEventListener('input', holder);
+        holder();
         const idleLabel = label ? label.textContent : '';
         let couponRequest = 0, couponPending = false;
         function message(text) { if (errors) errors.textContent = text; }
+        function signal(type) {
+            if (form.dispatchEvent && window.CustomEvent) form.dispatchEvent(new window.CustomEvent(type, {bubbles: true}));
+        }
         function controls() {
+            if (disposed) return;
             button.disabled = busy || couponPending || !stripe || !cardReady;
             button.setAttribute('aria-busy', busy ? 'true' : 'false');
             form.setAttribute('aria-busy', busy ? 'true' : 'false');
+            signal('checkout:busy');
             if (coupon) coupon.disabled = busy;
             if (apply) apply.disabled = busy || couponPending;
             if (name) name.disabled = busy;
@@ -56,6 +79,7 @@
             fields.forEach(function (field) { if (field.update) field.update({disabled: busy}); });
             if (label) label.textContent = busy ? 'Confirming your membership…' : label.getAttribute('data-idle-label') || idleLabel;
             if (status) status.textContent = busy ? 'Please keep this page open. Your bank may ask you to confirm your card.' : (cardReady || !stripe ? '' : 'Loading secure card fields…');
+            if (stripe && cardReady && !announcedReady) { announcedReady = true; signal('checkout:loaded'); }
         }
         function paymentMethod() {
             const details = {};
@@ -88,14 +112,15 @@
                     fontSize: inputStyle.fontSize, lineHeight: inputStyle.lineHeight, fontSmoothing: 'antialiased',
                     '::placeholder': {color: tokens.getPropertyValue('--field-muted').trim()}},
                     invalid: {color: tokens.getPropertyValue('--color-danger').trim()}};
-                let readyCount = 0;
+                const readyFields = new Set();
                 form.querySelectorAll('[data-stripe-field]').forEach(function (mount) {
                     const type = mount.getAttribute('data-stripe-field');
                     const field = elements.create(type, {style: style, ...(type === 'cardNumber' ? {showIcon: true} : {})});
                     fields.push(field);
                     if (type === 'cardNumber') card = field;
-                    field.on('ready', function () { readyCount += 1; cardReady = readyCount === fields.length; controls(); });
+                    field.on('ready', function () { readyFields.add(type); cardReady = fields.length === 3 && readyFields.size === 3; controls(); });
                     field.on('change', function (event) {
+                        if (type === 'cardNumber') brand(event.brand);
                         completeFields[type] = !!event.complete;
                         fieldErrors[type] = event.error ? event.error.message : '';
                         cardComplete = fields.length === 3 && Object.keys(completeFields).filter(key => completeFields[key]).length === 3;
@@ -110,6 +135,7 @@
             }
         } catch (error) { message('The secure card form could not load. Please reload the page.'); stripe = null; }
         controls();
+        if (!stripe) signal('checkout:loaderror');
 
         async function confirmPayment(result, replacement) {
             if (result.subscription_setup_secret) {
@@ -150,9 +176,12 @@
                 else window.location.assign(result.redirect);
             } catch (error) {
                 message(error.message || 'Please check your connection and try again.');
-                if (errors && errors.focus) errors.focus();
             }
-            finally { busy = false; controls(); }
+            finally {
+                busy = false; controls();
+                // Restoring Bootstrap's focus trap first keeps the error focused.
+                if (errors && errors.textContent && errors.focus) errors.focus();
+            }
         });
 
         if (coupon) {
@@ -171,7 +200,7 @@
             couponPending = true; couponValid = false; feedback.textContent = 'Checking coupon…'; controls();
             try {
                 const result = await request(coupon.getAttribute('data-coupon-url'), {coupon: code});
-                if (current !== couponRequest || coupon.value.trim() !== code) return;
+                if (disposed || current !== couponRequest || coupon.value.trim() !== code) return;
                 couponValid = true;
                 feedback.textContent = result.message;
                 price(result.amount, true);
@@ -181,6 +210,30 @@
                 if (current === couponRequest) { couponPending = false; controls(); }
             }
         }
+        mounted.set(form, {destroy() {
+            disposed = true; couponRequest += 1;
+            fields.forEach(function (field) { if (field.destroy) field.destroy(); });
+            if (!splitCard && card && card.destroy) card.destroy();
+            mounted.delete(form);
+        }});
+    }
+
+    window.PianoLITMembershipBilling = {mount};
+    function mountCurrent(event) {
+        const root = event && event.type === 'checkout:ready' ? event.target : document;
+        const form = root.querySelector('[data-membership-payment]');
+        // The checkout launcher owns mounting after both secure scripts are ready.
+        // Ordinary My Membership forms keep their existing automatic setup.
+        if (root === document && form && form.closest && form.closest('[data-checkout-modal]')) return;
+        mount(form);
+    }
+    mountCurrent();
+    if (document.addEventListener) {
+        document.addEventListener('checkout:ready', mountCurrent);
+        document.addEventListener('checkout:dispose', function (event) {
+            const form = event.target.querySelector('[data-membership-payment]');
+            if (form && mounted.has(form)) mounted.get(form).destroy();
+        });
     }
 
     document.querySelectorAll('button[name="plan"]').forEach(function (button) {

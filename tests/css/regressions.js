@@ -1,7 +1,8 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const sass = require('node-sass');
+const sass = require('sass');
+const {pathToFileURL} = require('url');
 const postcss = require('postcss');
 
 const root = path.resolve(__dirname, '../..');
@@ -24,15 +25,33 @@ function ruleValue(stylesheet, selector, property) {
     return found;
 }
 
+// Compile every entry, including the separately appended shared utility layer.
+// New Sass warnings must fail this check rather than disappear in child stats.
+const sources = {};
+for (const entry of ['app', 'admin', 'shared']) {
+    const warnings = [];
+    sources[entry] = sass.compile(path.join(root, 'resources/sass', entry + '.scss'), {
+        verbose: true,
+        logger: {
+            warn(message, details) {
+                const location = details.span ? details.span.url + ':' + (details.span.start.line + 1) : entry;
+                warnings.push(location + ': ' + message);
+            }
+        },
+        importers: [{
+            findFileUrl(url) {
+                return url.startsWith('~') ? pathToFileURL(path.join(root, 'node_modules', url.slice(1))) : null;
+            }
+        }]
+    }).css;
+    assert.deepStrictEqual(warnings, [], entry + ': Sass must compile without warnings');
+}
+console.log('Passed: app, admin and shared Sass compile without warnings.');
+
 // Test the shipped output, since production's old cssnano longhand optimizer
 // previously stripped border variables even though the Sass compiled correctly.
 for (const entry of ['app', 'admin']) {
-    const source = sass.renderSync({
-        file: path.join(root, 'resources/sass', entry + '.scss'),
-        importer(url) {
-            return url.startsWith('~') ? {file: path.join(root, 'node_modules', url.slice(1))} : null;
-        }
-    }).css.toString();
+    const source = sources[entry];
     const built = fs.readFileSync(path.join(root, 'public/css', entry + '.css'), 'utf8');
     const builtStylesheet = postcss.parse(built);
     const shippedVariables = variables(built);

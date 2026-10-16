@@ -140,18 +140,18 @@ $social-whatsapp: #25d366;
 // Ordered soft accents for folder cards and other light feature panels.
 // Each tone exposes panel, text and soft-action colors below.
 $pastel-palette: (
-    sky: #cfe3ff,
-    cream: #f3e8cc,
-    mint: #cfe9e1,
-    lavender: #dcd8fc,
-    peach: #f8ddca,
-    rose: #f2d5e1,
-    aqua: #cde8ef,
-    butter: #f3edc4,
-    sage: #dce7cb,
-    lilac: #e9d8f0,
-    periwinkle: #d5dff5,
-    terracotta: #eedbd2
+    'sky': #cfe3ff,
+    'cream': #f3e8cc,
+    'mint': #cfe9e1,
+    'lavender': #dcd8fc,
+    'peach': #f8ddca,
+    'rose': #f2d5e1,
+    'aqua': #cde8ef,
+    'butter': #f3edc4,
+    'sage': #dce7cb,
+    'lilac': #e9d8f0,
+    'periwinkle': #d5dff5,
+    'terracotta': #eedbd2
 );
 
 // Shared browser tokens. The token mixin is emitted last in app.css and admin.css.

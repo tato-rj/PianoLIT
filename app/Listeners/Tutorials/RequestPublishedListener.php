@@ -19,7 +19,9 @@ class RequestPublishedListener
      */
     public function handle(RequestPublished $event)
     {
-        \Mail::to($event->request->user->email)->send(new RequestPublishedEmail($event->request));
+        if (app(\App\Mail\AutomaticEmailSettings::class)->enabled('tutorial-published')) {
+            \Mail::to($event->request->user->email)->send(new RequestPublishedEmail($event->request));
+        }
 
         Admin::notifyAll(new RequestPublishedNotification($event->request));
     }

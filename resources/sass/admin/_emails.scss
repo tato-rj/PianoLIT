@@ -1,0 +1,76 @@
+.admin-emails {
+    .admin-emails__send {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        gap: 12px;
+        padding: 18px;
+        margin: 0 0 24px;
+        border-radius: 18px;
+        background: #e8ece5;
+    }
+    .admin-emails__send label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1 1 260px;
+        max-width: 440px;
+        color: #5c665e;
+        font-size: var(--font-size-sm);
+    }
+    .admin-emails__send input[type='email'] {
+        min-width: 0;
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #fff;
+        border-radius: 14px;
+        background: #fff;
+        color: #242b27;
+        font: inherit;
+        font-size: var(--font-size-base);
+    }
+    .admin-emails__send p {
+        flex-basis: 100%;
+        margin: 0;
+        font-size: var(--font-size-sm);
+        color: #626b64;
+    }
+    .admin-emails__trigger { min-width: 230px; max-width: 450px; }
+    .admin-emails__actions { display: flex; flex-wrap: wrap; gap: 8px; min-width: 255px; }
+    .admin-emails__actions .btn { white-space: nowrap; }
+    .admin-emails__switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        border: 0;
+        background: transparent;
+        color: #626b64;
+        font: inherit;
+        cursor: pointer;
+    }
+    .admin-emails__switch-track {
+        display: inline-block;
+        position: relative;
+        width: 40px;
+        height: 24px;
+        border-radius: 999px;
+        background: #bdc5bd;
+        flex-shrink: 0;
+    }
+    .admin-emails__switch-track::after {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        top: 3px;
+        left: 3px;
+        border-radius: 50%;
+        background: #fff;
+    }
+    .admin-emails__switch[aria-checked='true'] { color: #36593b; }
+    .admin-emails__switch[aria-checked='true'] .admin-emails__switch-track { background: #43764c; }
+    .admin-emails__switch[aria-checked='true'] .admin-emails__switch-track::after { left: 19px; }
+    .admin-emails__frame { display: block; width: 100%; height: 850px; border: 1px solid #e0e4dd; border-radius: 16px; background: #fff; }
+    .admin-emails__note { color: #626b64; font-size: var(--font-size-sm); max-width: 900px; }
+}

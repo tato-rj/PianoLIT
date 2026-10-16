@@ -8,7 +8,7 @@ use App\Billing\Factories\StripeFactory;
 use App\Billing\Webhooks\StripeWebhooks;
 use App\Services\{CampaignAttribution, CampaignAttributionReport, StripePaymentReceipts};
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\{Cookie, DB, Event, Notification, Redis};
+use Illuminate\Support\Facades\{Cache, Cookie, DB, Event, Notification, Redis};
 
 class CampaignAttributionTest extends ReviewTestCase
 {
@@ -176,12 +176,15 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         $this->get(route('webapp.membership.pricing'))->assertOk();
         $this->assertSame(0, $this->report()['trials']);
-        $this->checkout($this->subscription())->assertOk()->assertJson(['redirect' => route('webapp.membership.success')]);
+        $this->checkout($this->subscription())->assertOk()->assertJson(['redirect' => route('webapp.discover')]);
         $this->assertDatabaseHas('campaign_subscriptions', ['stripe_subscription_id' => 'sub_first', 'stripe_customer_id' => 'cus_first', 'billing_account' => 'us']);
         $this->assertSame(1, $this->report()['trials']);
         $this->assertSame(0, $this->report()['first_paid_subscriptions']);
-        $this->get(route('webapp.membership.success'))->assertOk();
-        $this->get(route('webapp.membership.success'))->assertRedirect();
+        Cache::put('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX, collect([
+            ['title' => 'Latest pieces', 'row' => 'gallery', 'type' => 'piece', 'content' => []],
+        ]), 60);
+        $this->get(route('webapp.discover'))->assertOk()->assertSee('id="membership-confirmation-modal"', false);
+        $this->get(route('webapp.discover'))->assertOk()->assertDontSee('id="membership-confirmation-modal"', false);
         $this->assertSame(1, $this->report()['trials']);
     }
 

@@ -73,7 +73,7 @@
             opacity: 0.12;
         }
 
-        @each $color in orange, green, blue, pink, purple, indigo {
+        @each $color in 'orange', 'green', 'blue', 'pink', 'purple', 'indigo' {
             &--#{$color} {
                 color: var(--color-#{$color});
             }

@@ -1,6 +1,7 @@
 /node_modules
 /output/
 /public/hot
+/public/.mix/
 /public/storage
 /storage/*.key
 /vendor

@@ -1,61 +1,61 @@
 // Filled background, hover, active and outline-active colors for existing
 // configurable buttons. Primary/secondary actions live in _buttons.scss.
 $palette-buttons: (
-    grey: (
+    'grey': (
         $grey-dark,
         darken($grey-dark, 6%),
         darken($grey-dark, 10%),
         darken($grey-dark, 8%)
     ),
-    red: (
+    'red': (
         $red,
         $red-dark,
         darken($red-dark, 4%),
         $red-dark
     ),
-    orange: (
+    'orange': (
         $orange,
         $orange-dark,
         darken($orange-dark, 4%),
         $orange-dark
     ),
-    yellow: (
+    'yellow': (
         $yellow-dark,
         darken($yellow-dark, 6%),
         darken($yellow-dark, 10%),
         darken($yellow-dark, 8%)
     ),
-    green: (
+    'green': (
         $green,
         $green-dark,
         darken($green-dark, 4%),
         $green-dark
     ),
-    teal: (
+    'teal': (
         $teal,
         $teal-dark,
         darken($teal-dark, 4%),
         $teal-dark
     ),
-    blue: (
+    'blue': (
         $blue,
         $blue-dark,
         darken($blue-dark, 4%),
         $blue-dark
     ),
-    indigo: (
+    'indigo': (
         $indigo,
         $indigo-dark,
         darken($indigo-dark, 4%),
         $indigo-dark
     ),
-    purple: (
+    'purple': (
         $purple,
         $purple-dark,
         darken($purple-dark, 4%),
         $purple-dark
     ),
-    pink: (
+    'pink': (
         $pink-dark,
         darken($pink-dark, 6%),
         darken($pink-dark, 12%),
@@ -65,7 +65,7 @@ $palette-buttons: (
 
 @each $name, $colors in $palette-buttons {
     .btn-#{$name} {
-        @if $name == yellow {
+        @if $name == 'yellow' {
             color: $yellow-darkest;
         } @else {
             color: #fff !important;
@@ -88,7 +88,7 @@ $palette-buttons: (
 
 // Outlined palette actions preserve the existing theme suffix used by views/JS.
 @each $name, $colors in $palette-buttons {
-    $ink: if($name == pink, $pink, nth($colors, 1));
+    $ink: if($name == 'pink', $pink, nth($colors, 1));
 
     .btn-#{$name}-outline {
         color: $ink;
@@ -97,7 +97,7 @@ $palette-buttons: (
     }
 
     .btn-#{$name}-outline:hover {
-        @if $name == yellow {
+        @if $name == 'yellow' {
             color: $yellow-darkest;
         } @else {
             color: #fff !important;
@@ -107,7 +107,7 @@ $palette-buttons: (
     }
 
     .btn-#{$name}-outline:active {
-        @if $name == yellow {
+        @if $name == 'yellow' {
             color: $yellow-darkest;
         } @else {
             color: #fff !important;

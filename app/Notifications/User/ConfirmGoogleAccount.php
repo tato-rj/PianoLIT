@@ -20,6 +20,11 @@ class ConfirmGoogleAccount extends Notification
 
     public function via($notifiable) { return ['mail']; }
 
+    public function automaticEmailKey()
+    {
+        return $this->provider.'-'.$this->purpose;
+    }
+
     public function toMail($notifiable)
     {
         return (new MailMessage)->subject('Confirm your PianoLIT account')

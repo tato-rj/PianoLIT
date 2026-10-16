@@ -31,6 +31,7 @@ async function main() {
     require('./explore-moods')();
     await require('./campaign-attribution')();
     await require('./membership-billing')();
+    await require('./payment-checkout')();
     require('./composer-biography-admin')();
     require('./admin-text-improver')();
     require('./admin-date-range')();

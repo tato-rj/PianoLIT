@@ -37,10 +37,10 @@
 }
 
 .admin-discover-preview {
+    font-size: 15px;
     // Use the live cards' styles, then reduce only the preview's scale.
     @import '../components/free-pick';
     @import '../components/composer-tiles';
-    font-size: 15px;
     > .mb-4 {
         margin-bottom: 28px !important;
     }

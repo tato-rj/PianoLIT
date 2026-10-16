@@ -10,16 +10,20 @@ function element(attributes = {}) {
         getAttribute(name) {return this.attributes[name];}, setAttribute(name, value) {this.attributes[name] = value;},
         addEventListener(name, callback) {this.events[name] = callback;}};
 }
-function fixture(purpose = 'purchase', invoiceMode = false, split = false) {
+function fixture(purpose = 'purchase', invoiceMode = false, split = false, managed = false) {
     const requests = [], redirects = [], confirmations = [], replies = [];
     const button = element(), errors = element(), coupon = element({'data-coupon-url': '/coupon'}), feedback = element(); coupon.value = '';
     const total = element({'data-base-price': '799'}), mount = element();
     const due = element(), renewal = element(), consent = element({'data-trial-days': '0', 'data-interval': 'month'}), charge = element();
     const label = element(), status = element(), apply = element(), name = element(), postal = element();
+    const preview = element(), cardName = element(), brandLabel = element();
+    const documentEvents = {}, signals = [];
     label.textContent = 'Subscribe for $7.99'; name.value = 'Review Pianist'; postal.value = '10001';
     const mounts = ['cardNumber', 'cardExpiry', 'cardCvc'].map(type => element({'data-stripe-field': type}));
     const form = element({'data-operation': 'operation-review', 'data-purpose': purpose, 'data-key': 'pk_review', 'data-prepare': '/prepare', 'data-complete': '/complete'});
     form.action = '/submit';
+    form.closest = selector => managed && selector === '[data-checkout-modal]' ? {} : null;
+    form.dispatchEvent = event => signals.push(event.type);
     form.hasAttribute = attribute => split && attribute === 'data-split-card';
     form.querySelectorAll = () => mounts;
     form.querySelector = selector => ({'button[type="submit"]': button, '#card-errors': errors, '#card-element': mount,
@@ -27,12 +31,13 @@ function fixture(purpose = 'purchase', invoiceMode = false, split = false) {
         '[data-membership-consent]': split ? consent : null, '[data-membership-charge]': split ? charge : null,
         '[data-submit-label]': split ? label : null, '[data-card-status]': split ? status : null,
         '[data-apply-coupon]': split ? apply : null, '[name="cardholder"]': split ? name : null,
-        '[name="postal_code"]': split ? postal : null}[selector]);
+        '[name="postal_code"]': split ? postal : null, '[data-card-preview]': split ? preview : null,
+        '[data-card-name]': split ? cardName : null, '[data-card-brand-label]': split ? brandLabel : null}[selector]);
     const card = {mount() {}, on(name, callback) { this.change = callback; }};
     const hosted = {};
     const stripe = {elements() {return {create(type, options) {
         if (!split) return card;
-        const field = {events: {}, options, mount() {}, update(options) {this.disabled = options.disabled;}, on(event, callback) {this.events[event] = callback;}};
+        const field = {events: {}, options, destroyed: false, destroy() {this.destroyed = true;}, mount() {}, update(options) {this.disabled = options.disabled;}, on(event, callback) {this.events[event] = callback;}};
         hosted[type] = field; return field;
     }};},
         async confirmCardSetup(secret, details) { confirmations.push(['setup', secret, details]); return stripe.setupResult || {setupIntent: {id: 'seti_review'}}; },
@@ -53,14 +58,25 @@ function fixture(purpose = 'purchase', invoiceMode = false, split = false) {
     let shown;
     const jquery = selector => ({on(events, callback) {if (selector.includes('a[')) shown = callback; return this;}});
     const DOMParser = class {parseFromString(html) {return {querySelector() {return {innerHTML: html};}};}};
-    const document = {querySelector(selector) {return {'meta[name="csrf-token"]': {content: 'csrf-review'}, '[data-membership-payment]': purpose === 'none' ? null : form, '[data-membership-total]': total, '[data-membership-due]': split ? due : null, '[data-membership-renewal]': split ? renewal : null, '[data-membership-invoices]': invoiceMode ? invoiceRoot : null}[selector] || null;}, querySelectorAll() {return [];}};
-    vm.runInNewContext(source, {document, DOMParser, Stripe: () => stripe, fetch, window: {getComputedStyle() {return {color: '#273244', fontFamily: 'system-ui', fontSize: '16px', lineHeight: '24px', getPropertyValue() {return '#697386';}};}, jQuery: invoiceMode ? jquery : null, location: {hash: '', assign(url) { redirects.push(url); }, reload() { redirects.push('reload'); }}}});
+    const document = {addEventListener(name, handler) {documentEvents[name] = handler;}, querySelector(selector) {return {'meta[name="csrf-token"]': {content: 'csrf-review'}, '[data-membership-payment]': purpose === 'none' ? null : form, '[data-membership-total]': total, '[data-membership-due]': split ? due : null, '[data-membership-renewal]': split ? renewal : null, '[data-membership-invoices]': invoiceMode ? invoiceRoot : null}[selector] || null;}, querySelectorAll() {return [];}};
+    vm.runInNewContext(source, {document, DOMParser, Stripe: () => stripe, fetch, window: {CustomEvent: class {constructor(type) {this.type = type;}}, getComputedStyle() {return {color: '#273244', fontFamily: 'system-ui', fontSize: '16px', lineHeight: '24px', getPropertyValue() {return '#697386';}};}, jQuery: invoiceMode ? jquery : null, location: {hash: '', assign(url) { redirects.push(url); }, reload() { redirects.push('reload'); }}}});
     return {form, button, errors, coupon, invoiceStatus, invoiceMore, invoiceRetry, invoiceBody, openInvoices() {shown({target:{getAttribute() {return '#invoices-tab';}}});}, feedback, total, stripe, card, requests, redirects, confirmations, replies,
-        due, renewal, consent, charge, label, status, name, postal, hosted,
+        due, renewal, consent, charge, label, status, name, postal, hosted, preview, cardName, brandLabel, documentEvents, signals,
         ready() {Object.values(hosted).forEach(field => field.events.ready());},
         submit() {return form.events.submit({preventDefault() {}});}};
 }
 module.exports = async function () {
+    let managed = fixture('purchase', false, true, true);
+    assert.deepStrictEqual(Object.keys(managed.hosted), [], 'A managed checkout waits for the launcher, so parallel script downloads cannot mount Stripe too early.');
+    managed.documentEvents['checkout:ready']({type: 'checkout:ready', target: {querySelector() {return managed.form;}}});
+    assert.strictEqual(Object.keys(managed.hosted).length, 3);
+    managed.hosted.cardNumber.events.ready(); managed.hosted.cardNumber.events.ready(); managed.hosted.cardNumber.events.ready();
+    assert.strictEqual(managed.button.disabled, true, 'Repeated readiness from one iframe cannot stand in for the other secure fields.');
+    assert(!managed.signals.includes('checkout:loaded'));
+    managed.hosted.cardExpiry.events.ready(); assert.strictEqual(managed.button.disabled, true);
+    managed.hosted.cardCvc.events.ready(); assert.strictEqual(managed.button.disabled, false);
+    managed.ready();
+    assert.strictEqual(managed.signals.filter(type => type === 'checkout:loaded').length, 1, 'Reveal only once, when all hosted fields are ready.');
     let f = fixture('none');
     assert.strictEqual(f.requests.length, 0, 'Canceled/ended pages with no card form do not initialize Stripe.');
     f = fixture();
@@ -129,6 +145,14 @@ module.exports = async function () {
     f.ready(); assert.strictEqual(f.button.disabled, false);
     assert.strictEqual(f.hosted.cardNumber.options.style.base.fontSize, '16px');
     assert.strictEqual(f.hosted.cardNumber.options.showIcon, true);
+    f.hosted.cardNumber.events.change({brand: 'visa', complete: false});
+    assert.strictEqual(f.preview.attributes['data-card-brand'], 'visa'); assert.strictEqual(f.brandLabel.textContent, 'Visa');
+    f.hosted.cardNumber.events.change({brand: 'mastercard', complete: false});
+    assert.strictEqual(f.preview.attributes['data-card-brand'], 'mastercard');
+    f.hosted.cardNumber.events.change({brand: '__proto__', complete: false});
+    assert.strictEqual(f.preview.attributes['data-card-brand'], 'unknown');
+    f.name.value = 'Another Pianist'; f.name.events.input(); assert.strictEqual(f.cardName.textContent, 'Another Pianist');
+    f.name.value = 'Review Pianist';
     f.hosted.cardNumber.events.change({complete: false, error: {message: 'Card number is incomplete'}});
     f.hosted.cardExpiry.events.change({complete: true});
     assert.strictEqual(f.errors.textContent, 'Card number is incomplete', 'A valid expiry cannot hide a card-number error.');
@@ -142,6 +166,13 @@ module.exports = async function () {
     assert.strictEqual(f.confirmations[0][2].payment_method.billing_details.address.postal_code, '10001');
     assert.strictEqual(f.name.disabled, false); assert.strictEqual(f.hosted.cardNumber.disabled, false);
     assert.deepStrictEqual(f.redirects, ['/welcome']);
+    const oldHosted = Object.values(f.hosted);
+    f.documentEvents['checkout:ready']();
+    assert.strictEqual(f.hosted.cardNumber, oldHosted[0], 'Repeated ready events do not create duplicate Stripe fields.');
+    f.documentEvents['checkout:dispose']({target: {querySelector() {return f.form;}}});
+    assert(oldHosted.every(field => field.destroyed), 'Closing checkout destroys its Stripe fields.');
+    f.documentEvents['checkout:ready']();
+    assert.notStrictEqual(f.hosted.cardNumber, oldHosted[0], 'Reopening checkout mounts fresh hosted fields.');
 
     f = fixture('purchase', false, true); f.ready();
     f.coupon.value = 'SAVE'; f.coupon.events.input();

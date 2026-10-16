@@ -1,0 +1,556 @@
+// A reusable fullscreen payment surface; order contents come from its Blade slots.
+.checkout-modal {
+    .modal-content {
+        background: #f3f5f7;
+    }
+
+    // A fullscreen surface fades in place; Bootstrap's default dialog slide
+    // moves an entire viewport and makes the first layout swap feel abrupt.
+    &.fade .modal-dialog {
+        transform: none;
+        transition: opacity 150ms linear;
+    }
+
+    .checkout-stage {
+        height: 100%;
+        min-height: 0;
+        opacity: 0;
+        transition: opacity 180ms ease;
+    }
+
+    &[data-checkout-state='ready'] {
+        .checkout-stage { opacity: 1; }
+        .checkout-loading { opacity: 0; visibility: hidden; pointer-events: none; }
+    }
+
+    &[data-checkout-state='error'] .checkout-loading-spinner { display: none; }
+
+    .checkout-scroll {
+        height: 100%;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 24px;
+    }
+
+    .checkout-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
+        max-width: 1480px;
+        min-height: calc(100dvh - 48px);
+        margin: 0 auto;
+    }
+
+    .checkout-payment {
+        min-width: 0;
+        background: var(--color-surface);
+        border-radius: var(--radius);
+        padding: clamp(28px, 3.5vw, 56px);
+    }
+
+    .checkout-brand {
+        margin-bottom: 42px;
+
+        a {
+            display: inline-block;
+            border-radius: var(--radius-sm);
+        }
+    }
+
+    .checkout-payment-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 36px;
+
+        h1 {
+            font-size: clamp(1.5rem, 2.3vw, 2rem);
+            letter-spacing: -0.035em;
+            margin: 0;
+        }
+
+        .membership-account {
+            margin: 10px 0 0;
+        }
+    }
+
+    .checkout-security {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding-top: 4px;
+        font-size: var(--font-size-xs);
+        flex-shrink: 0;
+
+        .app-icon {
+            margin-top: 3px;
+        }
+
+        strong,
+        small {
+            display: block;
+        }
+
+        small {
+            color: var(--color-text-muted);
+            margin-top: 4px;
+        }
+    }
+
+    .checkout-card-and-fields {
+        display: grid;
+        grid-template-columns: minmax(160px, 0.8fr) minmax(0, 1.35fr);
+        gap: 28px;
+        align-items: start;
+    }
+
+    .membership-card-fields legend {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+
+    .membership-field:last-child {
+        margin-bottom: 0;
+    }
+
+    .membership-coupon {
+        margin: 24px 0 18px;
+    }
+
+    .membership-card-status,
+    .membership-card-errors {
+        margin-top: 16px;
+        margin-bottom: 0;
+    }
+
+    .membership-card-status { display: block; min-height: 1.5em; }
+
+    .checkout-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+
+        .btn-primary {
+            min-width: 190px;
+        }
+    }
+
+    .membership-stripe-credit {
+        text-align: left;
+    }
+
+    .checkout-summary {
+        padding: 64px 44px;
+        min-width: 0;
+
+        > h2 {
+            font-size: clamp(1.5rem, 2.3vw, 2rem);
+            letter-spacing: -0.035em;
+            margin-bottom: 48px;
+        }
+    }
+
+    .checkout-order-item {
+        padding: 24px;
+        background: var(--color-surface);
+        border-radius: var(--radius-sm);
+        margin-bottom: 32px;
+
+        h3 {
+            font-size: var(--font-size-h5);
+            margin: 12px 0;
+        }
+
+        p {
+            color: var(--color-text-muted);
+            font-size: var(--font-size-sm);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        a {
+            font-size: var(--font-size-xs);
+        }
+    }
+
+    .membership-order-lines {
+        border-top: 0;
+        margin-top: 0;
+        padding-top: 0;
+
+        > div {
+            margin-bottom: 20px;
+        }
+
+        .membership-due {
+            margin-top: 28px;
+            padding-top: 24px;
+        }
+    }
+
+    .membership-summary-note,
+    .checkout-summary-help {
+        font-size: var(--font-size-xs);
+        color: var(--color-text-muted);
+        line-height: 1.8;
+    }
+
+    .checkout-summary-help {
+        margin-top: 36px;
+    }
+
+    a:not(.btn) {
+        color: var(--color-primary);
+    }
+
+    .checkout-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 12px;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        color: var(--color-text-muted) !important;
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+
+        &:hover {
+            color: var(--color-text) !important;
+            text-decoration: none;
+        }
+    }
+
+    .checkout-top-cancel {
+        position: absolute;
+        top: 26px;
+        right: 30px;
+        width: 44px;
+        padding: 0;
+        border-radius: var(--radius-circle);
+        z-index: 2;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 3px;
+    }
+
+    [aria-busy='true'] .checkout-cancel {
+        opacity: 0.55;
+        cursor: wait;
+    }
+
+    .checkout-loading {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        background: #f3f5f7;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 180ms ease, visibility 0s linear 180ms;
+
+        .checkout-card-preview { box-shadow: none; background: #e8ecf8; }
+        .checkout-actions .btn { min-width: 190px; }
+    }
+
+    .checkout-loading-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 24px;
+    }
+
+    .checkout-loading-spinner {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        border: 2px solid var(--color-border);
+        border-top-color: var(--color-primary);
+        border-radius: var(--radius-circle);
+        animation: checkout-loading-spin 800ms linear infinite;
+    }
+
+    .checkout-placeholder {
+        background: #edf0f4;
+        border-color: transparent;
+        box-shadow: none;
+        pointer-events: none;
+    }
+
+    .checkout-placeholder-label {
+        display: block;
+        margin-bottom: .45rem;
+        color: var(--color-text-muted);
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+    }
+
+    .checkout-placeholder-text {
+        color: transparent !important;
+        background: #edf0f4;
+        border-radius: 4px;
+        user-select: none;
+    }
+
+    .checkout-placeholder-link { font-size: var(--font-size-xs); }
+
+    .checkout-placeholder-copy {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        min-height: 5.4em;
+
+        > span { display: block; height: 10px; border-radius: var(--radius-sm); }
+        > span:last-child { width: 76%; }
+        &--short { min-height: 3.6em; }
+    }
+
+    .checkout-placeholder-notes {
+        display: grid;
+        gap: 14px;
+        margin-top: 36px;
+
+        > span { display: block; height: 12px; border-radius: var(--radius-sm); }
+        > span:nth-child(2) { width: 82%; }
+        > span:nth-child(3) { width: 65%; }
+    }
+}
+
+@keyframes checkout-loading-spin { to { transform: rotate(360deg); } }
+
+.checkout-card-preview {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    aspect-ratio: 1.58;
+    width: 100%;
+    max-width: 260px;
+    border-radius: var(--radius-sm);
+    padding: 18px;
+    color: #263155;
+    background: #dce2fb;
+    box-shadow: 0 12px 26px rgba(39, 50, 68, 0.12);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: background-color 0.25s ease;
+
+    &[data-card-brand='visa'] {
+        background: #f9d0aa;
+        color: #563c2b;
+    }
+
+    &[data-card-brand='mastercard'] {
+        background: #d5dcfc;
+    }
+
+    &[data-card-brand='amex'] {
+        background: #cbe2b6;
+        color: #2e4932;
+    }
+
+    &[data-card-brand='discover'] {
+        background: #f7dec0;
+        color: #563c2b;
+    }
+}
+
+.checkout-card-art {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.18;
+    overflow: hidden;
+
+    span {
+        position: absolute;
+        width: 130px;
+        height: 130px;
+        border: 18px solid currentColor;
+        border-radius: 50%;
+        left: -40px;
+        top: -50px;
+    }
+
+    span:nth-child(2) {
+        width: 80px;
+        height: 80px;
+        border-width: 10px;
+        left: -15px;
+        top: -25px;
+    }
+
+    span:nth-child(3) {
+        left: auto;
+        right: -65px;
+        top: auto;
+        bottom: -75px;
+        width: 190px;
+        height: 190px;
+        border-width: 28px;
+    }
+}
+
+.checkout-card-top,
+.checkout-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.checkout-card-top [data-card-brand-label] {
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.checkout-card-chip {
+    width: 28px;
+    height: 21px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.15));
+}
+
+.checkout-card-mask {
+    font-size: clamp(0.7rem, 1.2vw, 1rem);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.checkout-card-bottom [data-card-name] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.checkout-card-network {
+    display: none;
+    flex-shrink: 0;
+    width: 28px;
+    height: 18px;
+    position: relative;
+
+    [data-card-brand='mastercard'] & {
+        display: block;
+    }
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #e44a39;
+    }
+
+    &::after {
+        right: 0;
+        background: #f5ae36;
+        opacity: 0.9;
+    }
+}
+
+@media (max-width: 1099px) {
+    .checkout-modal {
+        .checkout-layout {
+            grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+        }
+
+        .checkout-summary {
+            padding: 44px 24px;
+        }
+
+        .checkout-card-and-fields {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 28px;
+        }
+
+        .checkout-security {
+            display: none;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .checkout-modal {
+        .checkout-scroll {
+            padding: 12px;
+        }
+
+        .checkout-layout {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .checkout-payment {
+            padding: 24px 20px;
+        }
+
+        .checkout-brand {
+            margin-bottom: 28px;
+        }
+
+        .checkout-payment-heading {
+            margin-bottom: 24px;
+        }
+
+        .checkout-card-preview {
+            max-width: 240px;
+            margin: 0 auto;
+            min-height: 150px;
+        }
+
+        .checkout-card-mask {
+            font-size: 1rem;
+        }
+
+        .checkout-summary {
+            grid-row: 1;
+            padding: 20px 12px 28px;
+
+            > h2 {
+                font-size: var(--font-size-h5);
+                margin-bottom: 20px;
+            }
+        }
+
+        .checkout-order-item {
+            margin-bottom: 24px;
+        }
+
+        .checkout-summary-help {
+            display: none;
+        }
+
+        .checkout-actions {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .checkout-card-preview,
+    .checkout-modal.fade .modal-dialog,
+    .checkout-modal .checkout-stage,
+    .checkout-modal .checkout-loading {
+        transition: none;
+    }
+
+    .checkout-modal .checkout-loading-spinner { animation: none; }
+}

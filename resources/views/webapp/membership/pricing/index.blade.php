@@ -4,15 +4,14 @@
 @include('webapp.layouts.header')
 
 <div class="membership membership-pricing">
-    @include('webapp.membership.steps', ['step' => 1])
+    {{-- @include('webapp.membership.steps', ['step' => 1]) --}}
     <header class="membership-heading">
         <span class="membership-eyebrow">PianoLIT Premium</span>
-        <h1>More music.<br>More possibilities.</h1>
-        <p>Find music you love. Make it your own.<br>Enjoy the recordings, videos and scores that bring your practice to life.</p>
+        <h1>Find your next piece.</h1>
+        <p>Explore piano music with scores, videos, and recordings, all in one place.</p>
     </header>
 
     @include('webapp.membership.pricing.plans')
-    @include('webapp.membership.pricing.features')
     @include('webapp.membership.pricing.faq')
 
     <aside class="membership-institution">

@@ -8,6 +8,7 @@
         
         @include('admin.layouts.header.item', ['route' => null, 'name' => 'Settings', 'icon' => 'settings',
         'dropdown' => [
+          ['route' => route('admin.emails.index'), 'name' => 'Emails'],
           ['route' => route('admin.design-system.index'), 'name' => 'Design System'],
         ]])
 

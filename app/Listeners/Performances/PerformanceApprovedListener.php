@@ -16,6 +16,8 @@ class PerformanceApprovedListener
      */
     public function handle($event)
     {
-        \Mail::to(auth()->user()->email)->send(new PerformanceApprovedEmail($event->performance->piece));
+        if (app(\App\Mail\AutomaticEmailSettings::class)->enabled('performance-approved')) {
+            \Mail::to(auth()->user()->email)->send(new PerformanceApprovedEmail($event->performance->piece));
+        }
     }
 }

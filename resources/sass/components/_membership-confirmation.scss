@@ -1,0 +1,78 @@
+.membership-confirmation {
+    .modal-dialog { max-width: 600px; }
+
+    .modal-content {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-modal);
+        background: var(--color-surface);
+        box-shadow: 0 20px 70px rgba(27, 40, 60, .14);
+    }
+
+    .modal-body {
+        padding: 36px 32px 24px;
+        text-align: center;
+    }
+
+    h2 { margin: 24px 0 20px; }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+}
+
+.membership-confirmation-icon {
+    display: inline-flex;
+    width: 72px;
+    height: 72px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-circle);
+    background: var(--pastel-mint-surface);
+    color: var(--color-success);
+
+    .app-icon { font-size: 32px; }
+}
+
+.membership-confirmation-intro {
+    margin: 0 auto;
+    max-width: 470px;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+.membership-confirmation-details {
+    display: grid;
+    gap: 18px;
+    margin: 38px 16px;
+
+    > div {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    dt { color: var(--color-text-muted); font-weight: 400; text-align: left; }
+    dd { margin: 0; text-align: right; }
+}
+
+.membership-confirmation-status { color: var(--color-success); }
+
+.membership-confirmation-footer {
+    margin: 18px 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+@media (max-width: 575.98px) {
+    .membership-confirmation {
+        .modal-dialog { margin: 16px; min-height: calc(100% - 32px); }
+        .modal-body { padding: 28px 24px 22px; }
+        h2 { margin-top: 20px; }
+    }
+
+    .membership-confirmation-details { margin: 30px 0; }
+}

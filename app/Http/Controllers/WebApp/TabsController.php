@@ -14,7 +14,7 @@ use App\Services\WebApp\GalleryGradients;
 
 class TabsController extends Controller
 {
-    public function discover(Api $api, RecentlyViewedPieces $recentlyViewed)
+    public function discover(Request $request, Api $api, RecentlyViewedPieces $recentlyViewed)
     {
         $composers = Composer::atLeast(1)->get()->sortBy('last_name')->values();
         $rows = $api->for('webapp')->discover();
@@ -64,7 +64,22 @@ class TabsController extends Controller
         });
         PieceCards::load($cards, false);
 
-        return view('webapp.discover.index', compact(['rows', 'composers']));
+        // This one-time, account-owned notice stays outside the shared discovery cache.
+        $membershipConfirmation = null;
+        $confirmation = $request->session()->pull('membership-confirmation');
+        $user = $request->user('web');
+        if (is_array($confirmation) && $user && (int) ($confirmation['user_id'] ?? 0) === (int) $user->id) {
+            $source = optional($user->membership)->source;
+            if ($source instanceof \App\Billing\Sources\Stripe && in_array($source->status, ['active', 'trialing'], true)
+                && in_array($source->plan, ['monthly', 'yearly'], true) && $user->hasActiveSubscription()) {
+                $membershipConfirmation = [
+                    'plan' => ucfirst($source->plan).' Premium',
+                    'email_queued' => !empty($confirmation['email_queued']),
+                ];
+            }
+        }
+
+        return view('webapp.discover.index', compact('rows', 'composers', 'membershipConfirmation'));
     }
 
     public function latest()

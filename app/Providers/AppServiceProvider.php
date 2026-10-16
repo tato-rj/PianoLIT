@@ -85,6 +85,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Laravel 8's send event has view data but no mailable instance. Attach
+        // only our fixed delivery key; preview and marketing mail remain independent.
+        \Illuminate\Mail\Mailable::buildViewDataUsing(function ($mail) {
+            $key = app(\App\Mail\AutomaticEmailSettings::class)->mailableKey($mail);
+            return $key ? ['pianolit_automatic_email' => $key] : [];
+        });
+
         Paginator::useBootstrap();
 
         \Blade::if('manager', function () {

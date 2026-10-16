@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 // Existing linked labels inherit surrounding text unless given a palette tone.
 a.link-inherit,
 a.link-none,
@@ -13,7 +15,7 @@ a.link-teal:hover {
     color: inherit;
 }
 
-@each $name, $color in (teal: $teal, blue: $blue) {
+@each $name, $color in ('teal': $teal, 'blue': $blue) {
     a.link-#{$name} {
         color: $color;
     }
@@ -26,7 +28,7 @@ a.link-teal:hover {
 // Hover visibility and opacity helpers used by cards, quizzes and image editors.
 @each $step in 2, 4, 6, 8 {
     .opacity-#{$step} {
-        opacity: $step / 10;
+        opacity: math.div($step, 10);
     }
 }
 
@@ -68,7 +70,7 @@ a.link-teal,
         width: 100%;
         height: 100%;
         background: nth($colors, 1);
-        opacity: if($name == red, 0.86, 0.9);
+        opacity: if($name == 'red', 0.86, 0.9);
     }
 }
 

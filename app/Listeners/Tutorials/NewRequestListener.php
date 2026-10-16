@@ -19,7 +19,9 @@ class NewRequestListener
      */
     public function handle(NewRequest $event)
     {
-        \Mail::to($event->request->user->email)->send(new NewRequestEmail($event->request));
+        if (app(\App\Mail\AutomaticEmailSettings::class)->enabled('tutorial-request')) {
+            \Mail::to($event->request->user->email)->send(new NewRequestEmail($event->request));
+        }
 
         Admin::notifyAll(new NewRequestNotification($event->request));
     }

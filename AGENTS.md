@@ -44,7 +44,7 @@ Existing DataTables on pages not yet migrated retain `admin.components.table-car
 
 ## Development and verification
 
-The installed stack reviewed on 2026-09-22 was Laravel 8, PHP 8.3.12, PHPUnit 9.6.11, Laravel Mix 2.1.14/Webpack 3, Node 14.17.5, npm 6.14.14, and node-sass 4.14.1. These are observed working tools, not a recommendation to retain old versions indefinitely. Upgrade the toolchain separately with compatibility testing; do not run blanket dependency updates during a bug fix.
+The PHP stack reviewed on 2026-09-22 was Laravel 8, PHP 8.3.12 and PHPUnit 9.6.11. As of 2026-10-15, frontend builds use native Node 24 (`.nvmrc`), Laravel Mix 6.0.49, pinned Webpack 5.105.4, Dart Sass 1.77.8 and sass-loader 16. Use `nvm use` and `npm ci`; do not use Node Sass or an OpenSSL legacy-provider workaround. Preserve the Webpack/Sass pins until the compatibility constraints in `docs/FRONTEND_BUILD.md` are addressed. Do not run blanket dependency updates during a bug fix.
 
 Commands:
 
@@ -52,6 +52,7 @@ Commands:
 php -d error_reporting=8191 vendor/bin/phpunit -c phpunit-review.xml
 npm run test:js
 npm run production
+npm run test:build
 git diff --check
 ```
 
@@ -59,7 +60,7 @@ The PHP command suppresses legacy dependency deprecations on PHP 8.3; it does no
 
 The original `phpunit.xml` suite is **not fully isolated**: `Tests/AppTest.php` creates broad fixtures and shells out to Redis cleanup, and billing helpers call Stripe. Inspect a test and its setup before running it. Run broader integration tests only with dedicated disposable databases, Redis, sandbox billing credentials, and fake mail/storage. SQLite passing does not prove MySQL behavior.
 
-For an isolated asset build, copy `artisan`, `package.json`, `webpack.mix.js`, and `resources/` into a temporary directory. Mix 2 detects Laravel using `artisan` and resolves paths from its installed module; if sharing `node_modules` via a symlink, set `Mix.paths.setRootPath(process.cwd())` in a Node preload before invoking Webpack. Copy resources rather than symlinking them so Sass loader rules match their resolved paths. Keep temporary build logs outside the repository.
+For an isolated asset build, copy `artisan`, `package.json`, `package-lock.json`, `webpack.mix.js`, `resources/`, `scripts/`, `tests/js/`, `tests/css/` and `tests/build/` into a temporary directory. Install with `npm ci` or symlink the verified `node_modules`. Mix 6 uses the working directory without a root-path preload. Copy resources rather than symlinking them so Sass loader rules match their resolved paths. Keep temporary build logs outside the repository. See `docs/FRONTEND_BUILD.md` for intermediate bundles, explicit versioning and compatibility pins.
 
 ## Working rules
 

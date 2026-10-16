@@ -207,9 +207,6 @@
         padding: 20px 0 28px;
     }
     .match-count-number {
-        [data-count] {
-            margin-top: 10px;
-        }
         position: relative;
         display: inline-flex;
         flex-direction: column;
@@ -227,6 +224,9 @@
         line-height: 1;
         font-variant-numeric: tabular-nums;
         border: 9px solid var(--match-count-border);
+        [data-count] {
+            margin-top: 10px;
+        }
     }
     // Reuse the themed border as the track; SVG gives the progress arc round ends.
     .match-count-ring {
@@ -1411,6 +1411,8 @@
 .match-tour .match-card--level {
     --match-level-color: #357d70;
     --match-level-tint: #e4f3e9;
+    border-color: var(--match-level-tint);
+    --match-accent: var(--match-level-color);
     &[data-level='beginner'] {
         --match-level-color: #ad5030;
         --match-level-tint: #ffebe1;
@@ -1423,8 +1425,6 @@
         --match-level-color: #7351c9;
         --match-level-tint: #f0e6ff;
     }
-    border-color: var(--match-level-tint);
-    --match-accent: var(--match-level-color);
     &:hover,
     &.selected {
         border-color: var(--match-level-color);

@@ -27,7 +27,9 @@ class PieceSharedListener
      */
     public function handle(PieceShared $event)
     {
-        \Mail::to($event->recipient)->queue(new SharePieceEmail($event->piece, auth()->user()));
+        if (app(\App\Mail\AutomaticEmailSettings::class)->enabled('piece-shared')) {
+            \Mail::to($event->recipient)->queue(new SharePieceEmail($event->piece, auth()->user()));
+        }
 
         Admin::notifyAll(new PieceSharedNotification($event->piece));
     }

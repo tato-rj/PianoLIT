@@ -1,7 +1,7 @@
 // Palette tuples: base, dark, darker, darkest, light, lighter, lightest.
 // These aliases also support colors selected dynamically by Blade components.
 $utility-palette: (
-    grey: (
+    'grey': (
         $grey,
         $grey-dark,
         $grey-darker,
@@ -10,7 +10,7 @@ $utility-palette: (
         $grey-lighter,
         $grey-lightest
     ),
-    red: (
+    'red': (
         $red,
         $red-dark,
         $red-darker,
@@ -19,7 +19,7 @@ $utility-palette: (
         $red-lighter,
         $red-lightest
     ),
-    orange: (
+    'orange': (
         $orange,
         $orange-dark,
         $orange-darker,
@@ -28,7 +28,7 @@ $utility-palette: (
         $orange-lighter,
         $orange-lightest
     ),
-    yellow: (
+    'yellow': (
         $yellow,
         $yellow-dark,
         $yellow-darker,
@@ -37,7 +37,7 @@ $utility-palette: (
         $yellow-lighter,
         $yellow-lightest
     ),
-    green: (
+    'green': (
         $green,
         $green-dark,
         $green-darker,
@@ -46,7 +46,7 @@ $utility-palette: (
         $green-lighter,
         $green-lightest
     ),
-    teal: (
+    'teal': (
         $teal,
         $teal-dark,
         $teal-darker,
@@ -55,7 +55,7 @@ $utility-palette: (
         $teal-lighter,
         $teal-lightest
     ),
-    blue: (
+    'blue': (
         $blue,
         $blue-dark,
         $blue-darker,
@@ -64,7 +64,7 @@ $utility-palette: (
         $blue-lighter,
         $blue-lightest
     ),
-    indigo: (
+    'indigo': (
         $indigo,
         $indigo-dark,
         $indigo-darker,
@@ -73,7 +73,7 @@ $utility-palette: (
         $indigo-lighter,
         $indigo-lightest
     ),
-    purple: (
+    'purple': (
         $purple,
         $purple-dark,
         $purple-darker,
@@ -82,7 +82,7 @@ $utility-palette: (
         $purple-lighter,
         $purple-lightest
     ),
-    pink: (
+    'pink': (
         $pink,
         $pink-dark,
         $pink-darker,
@@ -103,7 +103,7 @@ $utility-palette: (
     }
 }
 
-@each $name in purple, blue, yellow, red, grey, orange, indigo, green, teal, pink {
+@each $name in 'purple', 'blue', 'yellow', 'red', 'grey', 'orange', 'indigo', 'green', 'teal', 'pink' {
     .border-#{$name}-light {
         border-color: nth(map-get($utility-palette, $name), 5) !important;
     }

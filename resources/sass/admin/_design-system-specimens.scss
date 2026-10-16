@@ -42,10 +42,11 @@
 // Brand, semantic, neutral and form swatches use the same browser variables
 // as the real components. Their labels are measured by the page script.
 .design-system__color {
-    @each $color in primary, primary-hover, primary-active, primary-disabled, primary-soft, text,
-        text-muted, text-dark, surface, surface-subtle, surface-dark, border, dropdown-border,
-        success, danger, warning, info, secondary, grey, red, orange, yellow, green, teal, blue,
-        indigo, purple, pink
+    @each $color in 'primary', 'primary-hover', 'primary-active', 'primary-disabled',
+        'primary-soft', 'text', 'text-muted', 'text-dark', 'surface', 'surface-subtle',
+        'surface-dark', 'border', 'dropdown-border', 'success', 'danger', 'warning', 'info',
+        'secondary', 'grey', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'indigo',
+        'purple', 'pink'
     {
         &[data-ds-color-token='#{$color}'] {
             background-color: var(--color-#{$color});

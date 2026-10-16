@@ -99,6 +99,10 @@
 
     @include('components.popups.whatsnew', ['tabscount' => 1])
 
+    @unless(request()->routeIs('webapp.membership.checkout'))
+        @include('components.checkout-host', ['checkoutUrl' => $checkoutUrl ?? null])
+    @endunless
+
     @include('webapp.components.campaign-attribution')
 
     @if($feedbackEnabled)
