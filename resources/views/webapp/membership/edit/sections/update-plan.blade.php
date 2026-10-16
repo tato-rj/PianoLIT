@@ -5,25 +5,31 @@
 <div class="tab-pane fade" id="update-plan-tab" role="tabpanel" aria-labelledby="membership-tabs-update-plan-tab" tabindex="0">
     <div class="membership-plans mb-5">
         @foreach($plans->sortBy(function ($plan) { return $plan->name === 'yearly' ? 1 : 0; }) as $plan)
-            @php($current = $source->plan === $plan->name)
+            @php($current = !$overview['ended'] && $source->plan === $plan->name)
             @component('components.membership-plan-card', ['plan' => $plan, 'monthlyPlan' => $monthlyPlan, 'headingId' => 'change-plan-'.$plan->name, 'current' => $current, 'selected' => false, 'accessNote' => 'Full Premium access on both plans'])
 {{--                 @slot('context')
                 <p class="text-center text-muted small mb-3">{{ $current ? 'Your current plan' : ($source->pending_plan === $plan->name ? 'Scheduled for your next renewal' : 'Prices in USD') }}</p>
                 @endslot --}}
                 @slot('action')
+                @if($overview['ended'])
+                <a href="{{ route('webapp.membership.checkout', $plan) }}" class="btn btn-{{ $plan->name === 'yearly' ? 'primary' : 'secondary' }}" data-checkout-open>Choose {{ ucfirst($plan->name) }}</a>
+                @else
                 <button type="button" class="btn btn-{{ $plan->name === 'yearly' ? 'primary' : 'secondary' }}" name="plan" data-name="{{ $plan->name }}" data-confirmation="{{ $current ? 'Your current plan will stay in place. Any scheduled plan change will be removed.' : ucfirst($plan->name).' billing will start at your next renewal'.($source->renews_at ? ' on '.$source->renews_at->toFormattedDateString() : '').'.' }}" aria-pressed="false" @if(!$canChangePlan || ($current && !$source->pending_plan)) disabled @endif>
                     @if($current)
-                    @icon('badge-check'){{($source->pending_plan ? 'Keep this plan' : 'Current plan')}}
+                    @icon('crown'){{($source->pending_plan ? 'Keep this plan' : 'Current plan')}}
                     @else
                     Choose {{ ucfirst($plan->name) }}
                     @endif
                 </button>
+                @endif
                 @endslot
             @endcomponent
         @endforeach
     </div>
     <div class="text-center" id="update-plan-action">
-        @if(!$canChangePlan)
+        @if($overview['ended'])
+        <p class="text-muted">Choose a plan to start a new membership. Your past invoices and saved card remain in your account.</p>
+        @elseif(!$canChangePlan)
         <p class="text-muted">Your membership must be active and renewing before you can change plans. Resume billing or resolve any payment issues first.</p>
         <a class="btn btn-secondary" href="{{ $overview['ended'] ? route('webapp.membership.pricing') : '#update-card-tab' }}" @if(!$overview['ended']) data-membership-tab @endif>{{ $overview['ended'] ? 'Explore plans' : 'Manage billing' }}</a>
         @else

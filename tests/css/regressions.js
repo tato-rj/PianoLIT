@@ -92,4 +92,27 @@ for (const entry of ['app', 'admin']) {
         assert.strictEqual(ruleValue(builtStylesheet, selector, property), expected, entry + ': missing required ' + selector + ' ' + property);
     }
     console.log('Passed: ' + entry + ' keeps required layout, palette and interaction helpers.');
+
+    // A focused URL tab panel must never acquire the browser's default outline.
+    // Reject custom outlines too, so component-specific !important rules cannot revive it.
+    builtStylesheet.walkDecls('outline', declaration => {
+        assert(/^(?:none|0)(?:$|[a-z%])/.test(declaration.value), entry + ': visible outline returned in ' + declaration.parent.selector);
+        if (declaration.prop === 'outline' && postcss.list.comma(declaration.parent.selector).includes('*')) {
+            assert(declaration.important, entry + ': the native outline reset must override vendor states');
+        }
+    });
+    assert(/^(?:none|0)$/.test(ruleValue(builtStylesheet, '*', 'outline')), entry + ': missing native outline reset');
+    assert.strictEqual(rootValues['--bs-focus-ring-width'], '0', entry + ': Bootstrap focus halos are disabled');
+    assert.strictEqual(rootValues['--bs-focus-ring-opacity'], '0', entry + ': Bootstrap focus halo opacity is disabled');
+    for (const [selector, property] of [
+        ['.btn', '--bs-btn-focus-box-shadow'],
+        ['.btn-close', '--bs-btn-close-focus-shadow'],
+        ['.accordion', '--bs-accordion-btn-focus-box-shadow'],
+        ['.pagination', '--bs-pagination-focus-box-shadow'],
+        ['.nav-link:focus-visible', 'box-shadow'],
+        ['.form-range:focus::-webkit-slider-thumb', 'box-shadow'],
+        ['.form-range:focus::-moz-range-thumb', 'box-shadow'],
+        ['.focus-ring:focus', 'box-shadow'],
+    ]) assert.strictEqual(ruleValue(builtStylesheet, selector, property), 'none', entry + ': focus halo returned on ' + selector);
+    console.log('Passed: ' + entry + ' removes native/custom outlines and Bootstrap focus halos.');
 }

@@ -53,6 +53,343 @@ class StripeMembershipBillingTest extends ReviewTestCase
 
     private function source(): Stripe { return $this->user->fresh()->membership->source; }
 
+    private function endedCustomer(): void
+    {
+        $this->purchase();
+        $this->gateway->subscriptions['sub_review']['status'] = 'canceled';
+        $this->gateway->subscriptions['sub_review']['ended_at'] = now()->subDay()->timestamp;
+        $this->source()->update(['status' => 'canceled', 'ended_at' => now()->subDay()]);
+        $this->user->unsetRelation('membership');
+        $this->gateway->calls = [];
+    }
+
+    public function test_ended_membership_settings_keeps_history_and_offers_new_checkout_with_saved_card()
+    {
+        $this->endedCustomer();
+        $this->get(route('webapp.settings'))->assertOk()->assertSee(route('webapp.membership.edit'), false)->assertSee('My membership');
+        $details = $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('data-saved-card', false)->assertSee('data-checkout-open', false);
+        $dom = new \DOMDocument; @$dom->loadHTML($details->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertSame(2, $xpath->query('//*[@id="update-plan-tab"]//a[@data-checkout-open]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="update-plan-tab"]//button[@disabled]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="payment-checkout-modal"]')->length);
+        $checkout = $this->getJson(route('webapp.membership.checkout', $this->plan))->assertOk()->json('html');
+        $dom = new \DOMDocument; @$dom->loadHTML($checkout); $xpath = new \DOMXPath($dom);
+        $this->assertSame(1, $xpath->query('//button[@data-checkout-saved-card and @aria-pressed="true"]')->length);
+        $this->assertSame(1, $xpath->query('//button[@data-payment-card-add]')->length);
+        $this->assertSame(1, $xpath->query('//fieldset[@data-checkout-new-fields and @hidden and @disabled]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-checkout-card-check]')->length);
+        $this->assertStringContainsString('4444', $checkout);
+        $this->assertStringNotContainsString('pm_review', $checkout);
+        $this->assertCount(0, $this->gateway->calls, 'Settings, history and checkout rendering do not contact Stripe.');
+    }
+
+    public function test_saved_card_purchase_verifies_ownership_and_reuses_customer_without_a_new_setup_intent()
+    {
+        $this->endedCustomer();
+        $card = $this->billing->savedCard($this->user);
+        $id = (string) Str::uuid();
+        $prepared = $this->postJson(route('webapp.membership.prepare', $this->plan), [
+            'operation_id' => $id, 'use_saved_card' => true, 'saved_card_reference' => $card['reference'],
+        ])->assertOk()->assertJson(['saved_card' => true])->json();
+        $this->gateway->nextSubscription = ['id' => 'sub_returning', 'status' => 'active'];
+        $this->postJson(route('webapp.membership.purchase', $this->plan), [
+            'operation_id' => $prepared['operation_id'], 'use_saved_card' => true, 'saved_card_reference' => $card['reference'],
+        ])->assertOk()->assertJson(['complete' => true]);
+        // Retrying an already created checkout returns that subscription instead of creating another.
+        $this->billing->purchase($this->user, $this->plan, $id, null, true, $card['reference']);
+        $this->assertCount(0, $this->gateway->callsTo('setupIntents', 'create'));
+        $this->assertCount(0, $this->gateway->callsTo('customers', 'create'));
+        $calls = $this->gateway->callsTo('subscriptions', 'create');
+        $this->assertCount(1, $calls);
+        $this->assertSame('pm_review', $calls[0]['parameters']['default_payment_method']);
+        $this->assertSame('cus_review', $calls[0]['parameters']['customer']);
+        $this->assertArrayNotHasKey('trial_period_days', $calls[0]['parameters']);
+        $this->assertSame('sub_returning', $this->source()->subscription_id);
+        $this->billing->finish($this->user, $id);
+        $this->assertTrue($this->user->fresh()->hasActiveSubscription());
+    }
+
+    public function test_ended_member_can_confirm_card_removal_without_losing_history_and_retries_keep_a_new_card()
+    {
+        $this->endedCustomer();
+        $reference = $this->billing->savedCard($this->user)['reference'];
+        $details = $this->get(route('webapp.membership.edit'))->assertOk();
+        $dom = new \DOMDocument; @$dom->loadHTML($details->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertSame(1, $xpath->query('//*[@id="update-card-tab"]//button[@data-bs-target="#membership-remove-card-confirmation"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-remove-card-confirmation"]//form[@method="POST"]//input[@name="_token"]')->length);
+        $this->assertSame('body', $xpath->query('//*[@id="membership-remove-card-confirmation"]')->item(0)->parentNode->nodeName);
+        $this->assertCount(0, $this->gateway->calls);
+        $before = $this->source()->only(['stripe_id', 'subscription_id', 'plan', 'status', 'renews_at', 'ended_at', 'membership_ends_at']);
+        $membership = DB::table('memberships')->get()->toJson();
+        $payments = DB::table('payments')->get()->toJson();
+        $id = (string) Str::uuid();
+        $this->post(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference,
+            'payment_source_id' => 'pm_untrusted', 'user_id' => 999999])->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+        $this->assertFalse((bool) $this->source()->hasCard());
+        $this->assertNull($this->source()->payment_method_id);
+        $this->assertEquals($before, $this->source()->only(array_keys($before)));
+        $this->assertSame($membership, DB::table('memberships')->get()->toJson());
+        $this->assertSame($payments, DB::table('payments')->get()->toJson());
+        $this->assertSame('pm_review', $this->gateway->callsTo('paymentMethods', 'detach')[0]['id']);
+        $this->assertDatabaseHas('stripe_billing_operations', ['id' => $id, 'state' => 'complete', 'payment_source_id' => 'pm_review']);
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('No card on file.')->assertDontSee('membership-remove-card-confirmation');
+        $checkout = $this->getJson(route('webapp.membership.checkout', $this->plan))->assertOk()->json('html');
+        $this->assertStringNotContainsString('data-checkout-saved-card', $checkout);
+        $this->billing->refreshCard($this->source(), $this->gateway->subscriptions['sub_review']);
+        $this->assertFalse((bool) $this->source()->hasCard(), 'A later provider refresh cannot resurrect the detached card.');
+        $this->assertNull($this->source()->payment_method_id);
+        $this->source()->update(['payment_method_id' => 'pm_new', 'card_brand' => 'mastercard', 'card_last_four' => '9999']);
+        $this->post(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+        $this->assertSame('pm_new', $this->source()->payment_method_id);
+        $this->assertCount(1, $this->gateway->callsTo('paymentMethods', 'detach'));
+        Mail::assertNothingQueued();
+    }
+
+    /** @dataProvider removableMembershipStates */
+    public function test_card_removal_is_available_without_canceling_or_changing_the_membership(array $changes)
+    {
+        $this->purchase();
+        $this->source()->update($changes);
+        $this->user->unsetRelation('membership');
+        $this->gateway->calls = [];
+        $details = $this->get(route('webapp.membership.edit'))->assertOk()
+            ->assertSee('Removing this card does not cancel your membership.')
+            ->assertSee('Add another card before your next payment');
+        $dom = new \DOMDocument; @$dom->loadHTML($details->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertSame(1, $xpath->query('//*[@id="update-card-tab"]//button[@data-bs-target="#membership-remove-card-confirmation"]')->length);
+        $this->assertSame('body', $xpath->query('//*[@id="membership-remove-card-confirmation"]')->item(0)->parentNode->nodeName);
+        $this->assertCount(0, $this->gateway->calls, 'Displaying the option never changes or fetches provider data.');
+        $before = $this->source()->only(['stripe_id', 'subscription_id', 'plan', 'status', 'renews_at', 'ended_at', 'membership_ends_at', 'canceled_at', 'paused_at']);
+        $access = $this->user->fresh()->hasActiveSubscription();
+        $memberships = DB::table('memberships')->get()->toJson();
+        $payments = DB::table('payments')->get()->toJson();
+        $subscriptions = $this->gateway->subscriptions;
+        $this->post(route('webapp.membership.remove.card'), ['operation_id' => (string) Str::uuid(),
+            'saved_card_reference' => $this->billing->savedCard($this->user)['reference']])->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+        $this->assertFalse((bool) $this->source()->hasCard());
+        $this->assertNull($this->source()->payment_method_id);
+        $this->assertEquals($before, $this->source()->only(array_keys($before)));
+        $this->assertSame($access, $this->user->fresh()->hasActiveSubscription());
+        $this->assertSame($memberships, DB::table('memberships')->get()->toJson());
+        $this->assertSame($payments, DB::table('payments')->get()->toJson());
+        $this->assertSame($subscriptions, $this->gateway->subscriptions);
+        $mutations = array_values(array_filter($this->gateway->calls, function ($call) { return in_array($call['method'], ['create', 'update', 'cancel', 'delete', 'detach'], true); }));
+        $this->assertCount(1, $mutations);
+        $this->assertSame('paymentMethods', $mutations[0]['resource']);
+        $this->assertSame('detach', $mutations[0]['method']);
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('No card on file.')
+            ->assertSee('data-bs-target="#membership-card-editor"', false)->assertDontSee('membership-remove-card-confirmation');
+        $this->billing->refreshCard($this->source(), $this->gateway->subscriptions['sub_review']);
+        $this->assertFalse((bool) $this->source()->hasCard());
+        Mail::assertNothingQueued();
+    }
+
+    public static function removableMembershipStates(): array
+    {
+        return [
+            'active' => [['status' => 'active']],
+            'trial' => [['status' => 'trialing']],
+            'grace period' => [['canceled_at' => '2020-01-01', 'membership_ends_at' => '2099-01-01']],
+            'paused' => [['paused_at' => '2020-01-01']],
+            'past due' => [['status' => 'past_due']],
+            'legacy subscription identity' => [['subscription_id' => null]],
+        ];
+    }
+
+    public function test_card_removal_still_refuses_another_live_or_ambiguous_subscription()
+    {
+        $this->purchase();
+        $this->gateway->subscriptions['sub_other'] = array_replace($this->gateway->subscriptions['sub_review'], ['id' => 'sub_other', 'status' => 'active']);
+        foreach (['sub_review', null] as $subscriptionId) {
+            $this->source()->update(['subscription_id' => $subscriptionId]);
+            $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => (string) Str::uuid(),
+                'saved_card_reference' => $this->billing->savedCard($this->user)['reference']])->assertStatus(422)
+                ->assertJsonFragment(['message' => 'Another subscription uses this billing customer. Please contact contact@pianolit.com to remove this card.']);
+        }
+        unset($this->gateway->subscriptions['sub_review']);
+        $this->source()->update(['subscription_id' => 'sub_review']);
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => (string) Str::uuid(),
+            'saved_card_reference' => $this->billing->savedCard($this->user)['reference']])->assertStatus(422);
+        $this->assertCount(0, $this->gateway->callsTo('paymentMethods', 'detach'));
+        $this->assertTrue((bool) $this->source()->hasCard());
+    }
+
+    public function test_removal_rejects_stale_foreign_and_shared_cards_without_mutation()
+    {
+        $this->endedCustomer();
+        $reference = $this->billing->savedCard($this->user)['reference'];
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => (string) Str::uuid(), 'saved_card_reference' => str_repeat('a', 64)])->assertStatus(422);
+        $this->assertCount(0, $this->gateway->calls);
+        $this->gateway->paymentMethods['pm_review'] = ['id' => 'pm_review', 'customer' => 'cus_foreign', 'type' => 'card', 'card' => ['brand' => 'visa', 'last4' => '4444']];
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => (string) Str::uuid(), 'saved_card_reference' => $reference])->assertStatus(422);
+        unset($this->gateway->paymentMethods['pm_review']);
+        Customer::create(['user_id' => $this->user->id, 'stripe_id' => 'cus_review']);
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => (string) Str::uuid(), 'saved_card_reference' => $reference])->assertStatus(422);
+        $this->assertCount(0, $this->gateway->callsTo('paymentMethods', 'detach'));
+        $this->assertTrue((bool) $this->source()->hasCard());
+    }
+
+    public function test_removal_recovers_provider_success_after_a_local_failure_without_detaching_twice()
+    {
+        $this->endedCustomer();
+        $id = (string) Str::uuid(); $reference = $this->billing->savedCard($this->user)['reference'];
+        DB::unprepared("CREATE TRIGGER reject_review_card_removal BEFORE UPDATE OF card_brand ON stripe_memberships WHEN NEW.card_brand IS NULL BEGIN SELECT RAISE(FAIL, 'review card removal rollback'); END");
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertStatus(422);
+        $this->assertTrue((bool) $this->source()->hasCard());
+        $this->assertDatabaseHas('stripe_billing_operations', ['id' => $id, 'state' => 'pending', 'payment_source_id' => 'pm_review']);
+        $this->assertNull($this->gateway->paymentMethods['pm_review']['customer']);
+        DB::unprepared('DROP TRIGGER reject_review_card_removal');
+        $this->post(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+        $this->assertFalse((bool) $this->source()->hasCard());
+        $this->assertCount(1, $this->gateway->callsTo('paymentMethods', 'detach'));
+    }
+
+    public function test_legacy_swiss_removal_retries_only_its_original_source_when_customer_default_changes()
+    {
+        $this->endedCustomer();
+        $this->source()->update(['billing_account' => 'swiss', 'payment_method_id' => null]);
+        DB::table('stripe_billing_profiles')->where('user_id', $this->user->id)->update(['billing_account' => 'swiss']);
+        $this->gateway->sources['card_old'] = ['id' => 'card_old', 'object' => 'card', 'customer' => 'cus_review', 'brand' => 'visa', 'last4' => '4444'];
+        $this->gateway->customers['cus_review']['default_source'] = $this->gateway->sources['card_old'];
+        $id = (string) Str::uuid(); $reference = $this->billing->savedCard($this->user)['reference'];
+        $this->gateway->failure = ['customerSources.delete', new \RuntimeException('review provider interruption')];
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertStatus(422);
+        $this->assertDatabaseHas('stripe_billing_operations', ['id' => $id, 'state' => 'pending', 'payment_source_id' => 'card_old']);
+        $this->gateway->sources['card_other'] = ['id' => 'card_other', 'object' => 'card', 'customer' => 'cus_review', 'brand' => 'mastercard', 'last4' => '9999'];
+        $this->gateway->customers['cus_review']['default_source'] = $this->gateway->sources['card_other'];
+        $this->post(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+        $this->assertArrayNotHasKey('card_old', $this->gateway->sources);
+        $this->assertArrayHasKey('card_other', $this->gateway->sources);
+        foreach ($this->gateway->callsTo('customerSources', 'delete') as $call) {
+            $this->assertSame('card_old', $call['id']); $this->assertSame('swiss', $call['account']); $this->assertSame('cus_review', $call['parameters']['customer']);
+        }
+        $this->assertFalse((bool) $this->source()->hasCard());
+    }
+
+    public function test_interrupted_removal_cannot_remove_a_replacement_card_and_authentication_is_required()
+    {
+        $this->endedCustomer();
+        $id = (string) Str::uuid(); $reference = $this->billing->savedCard($this->user)['reference'];
+        $this->gateway->failure = ['paymentMethods.detach', new \RuntimeException('review provider interruption')];
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertStatus(422);
+        $this->source()->update(['payment_method_id' => 'pm_new', 'card_last_four' => '9999']);
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertStatus(422);
+        $this->assertSame('pm_new', $this->source()->payment_method_id);
+        $this->assertCount(1, $this->gateway->callsTo('paymentMethods', 'detach'));
+        auth('web')->logout();
+        $this->withExceptionHandling()->postJson(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertUnauthorized();
+    }
+
+    public function test_removing_an_already_detached_stored_card_only_clears_its_local_display()
+    {
+        $this->endedCustomer();
+        $this->gateway->paymentMethods['pm_review'] = ['id' => 'pm_review', 'customer' => null, 'type' => 'card', 'card' => ['brand' => 'visa', 'last4' => '4444']];
+        $this->post(route('webapp.membership.remove.card'), ['operation_id' => (string) Str::uuid(),
+            'saved_card_reference' => $this->billing->savedCard($this->user)['reference']])->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+        $this->assertFalse((bool) $this->source()->hasCard());
+        $this->assertCount(0, $this->gateway->callsTo('paymentMethods', 'detach'));
+    }
+
+    public function test_legacy_card_source_consumed_response_and_retry_preserve_the_verified_removal_target()
+    {
+        $this->endedCustomer();
+        $this->source()->update(['payment_method_id' => null]);
+        $source = ['id' => 'src_review', 'object' => 'source', 'type' => 'card', 'customer' => 'cus_review',
+            'status' => 'chargeable', 'card' => ['brand' => 'visa', 'last4' => '4444']];
+        $this->gateway->sources['src_review'] = $source;
+        $this->gateway->customers['cus_review']['default_source'] = $source;
+        $id = (string) Str::uuid(); $reference = $this->billing->savedCard($this->user)['reference'];
+        DB::unprepared("CREATE TRIGGER reject_review_card_removal BEFORE UPDATE OF card_brand ON stripe_memberships WHEN NEW.card_brand IS NULL BEGIN SELECT RAISE(FAIL, 'review source removal rollback'); END");
+        $this->postJson(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertStatus(422);
+        $this->assertSame('consumed', $this->gateway->sources['src_review']['status']);
+        $this->assertDatabaseHas('stripe_billing_operations', ['id' => $id, 'state' => 'pending', 'payment_source_id' => 'src_review']);
+        DB::unprepared('DROP TRIGGER reject_review_card_removal');
+        $this->post(route('webapp.membership.remove.card'), ['operation_id' => $id, 'saved_card_reference' => $reference])->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+        $this->assertFalse((bool) $this->source()->hasCard());
+        $this->assertCount(1, $this->gateway->callsTo('customerSources', 'delete'));
+    }
+
+    public function test_saved_card_rejects_foreign_detached_stale_and_missing_methods_before_subscription_creation()
+    {
+        $this->endedCustomer();
+        $reference = $this->billing->savedCard($this->user)['reference'];
+        foreach ([['customer' => 'cus_foreign', 'type' => 'card'], ['customer' => null, 'type' => 'card'], ['customer' => 'cus_review', 'type' => 'sepa_debit']] as $method) {
+            $this->gateway->paymentMethods['pm_review'] = $method + ['id' => 'pm_review', 'card' => ['last4' => '4444']];
+            $response = $this->postJson(route('webapp.membership.prepare', $this->plan), [
+                'operation_id' => (string) Str::uuid(), 'use_saved_card' => true, 'saved_card_reference' => $reference,
+            ])->assertStatus(422);
+            $this->assertStringContainsString('no longer available', $response->json('message'));
+        }
+        unset($this->gateway->paymentMethods['pm_review']);
+        $this->source()->update(['payment_method_id' => 'pm_changed']);
+        $this->postJson(route('webapp.membership.prepare', $this->plan), [
+            'operation_id' => (string) Str::uuid(), 'use_saved_card' => true, 'saved_card_reference' => $reference,
+        ])->assertStatus(422)->assertJson(['message' => 'Your saved card has changed. Reload checkout or add a new card.']);
+        $this->assertCount(0, $this->gateway->callsTo('subscriptions', 'create'));
+        $this->assertCount(0, $this->gateway->callsTo('setupIntents', 'create'));
+    }
+
+    public function test_saved_card_is_rechecked_at_purchase_and_cannot_bypass_card_update_verification()
+    {
+        $this->endedCustomer();
+        $reference = $this->billing->savedCard($this->user)['reference'];
+        $prepared = $this->billing->prepare($this->user, (string) Str::uuid(), 'purchase', $this->plan, null, true, $reference);
+        $this->gateway->paymentMethods['pm_review'] = ['id' => 'pm_review', 'customer' => 'cus_foreign', 'type' => 'card', 'card' => ['last4' => '4444']];
+        $this->postJson(route('webapp.membership.purchase', $this->plan), [
+            'operation_id' => $prepared['operation_id'], 'use_saved_card' => true, 'saved_card_reference' => $reference,
+        ])->assertStatus(422);
+        $this->withExceptionHandling()->postJson(route('webapp.membership.update.card'), [
+            'operation_id' => $prepared['operation_id'], 'use_saved_card' => true,
+        ])->assertStatus(422)->assertJsonValidationErrors('setup_intent');
+        $this->assertCount(0, $this->gateway->callsTo('subscriptions', 'create'));
+    }
+
+    public function test_saved_card_legacy_reference_uses_only_its_own_customers_default_in_the_saved_account()
+    {
+        $this->endedCustomer();
+        $this->source()->update(['payment_method_id' => null, 'billing_account' => 'swiss']);
+        DB::table('stripe_billing_profiles')->where('user_id', $this->user->id)->update(['billing_account' => 'swiss']);
+        $this->gateway->customers['cus_review']['invoice_settings']['default_payment_method'] = 'pm_review';
+        $reference = $this->billing->savedCard($this->user)['reference'];
+        $result = $this->billing->prepare($this->user, (string) Str::uuid(), 'purchase', $this->plan, null, true, $reference);
+        $this->assertTrue($result['saved_card']);
+        $this->assertSame('swiss', $this->gateway->callsTo('paymentMethods', 'retrieve')[0]['account']);
+        $this->assertSame('cus_review', $this->gateway->callsTo('customers', 'retrieve')[0]['id']);
+        $this->assertCount(0, $this->gateway->callsTo('customers', 'create'));
+        $this->source()->update(['payment_method_id' => null]);
+        $this->gateway->customers['cus_review']['invoice_settings']['default_payment_method'] = null;
+        $this->postJson(route('webapp.membership.prepare', $this->plan), [
+            'operation_id' => $result['operation_id'], 'use_saved_card' => true, 'saved_card_reference' => $reference,
+        ])->assertStatus(422)->assertJson(['message' => 'This saved card needs to be entered again. Please add a new card.']);
+    }
+
+    public function test_resubscribing_keeps_earlier_membership_customer_invoices()
+    {
+        $this->endedCustomer();
+        $reference = $this->billing->savedCard($this->user)['reference'];
+        $prepared = $this->billing->prepare($this->user, (string) Str::uuid(), 'purchase', $this->plan, null, true, $reference);
+        $this->gateway->nextSubscription = ['id' => 'sub_next', 'status' => 'active'];
+        $this->billing->purchase($this->user, $this->plan, $prepared['operation_id'], null, true, $reference);
+        $this->gateway->invoices = [
+            ['id' => 'in_previous', 'customer' => 'cus_review', 'subscription' => 'sub_review'],
+            ['id' => 'in_current', 'customer' => 'cus_review', 'subscription' => 'sub_next'],
+            ['id' => 'in_foreign', 'customer' => 'cus_foreign', 'subscription' => 'sub_other'],
+        ];
+        $result = app(MembershipManagement::class)->invoices($this->user);
+        $this->assertSame(['in_previous', 'in_current'], array_column($result['invoices'], 'id'));
+        $this->assertSame('sub_next', $this->gateway->callsTo('invoices', 'createPreview')[0]['parameters']['subscription']);
+    }
+
+    public function test_saved_card_request_without_membership_never_provisions_a_customer_or_operation()
+    {
+        $this->postJson(route('webapp.membership.prepare', $this->plan), [
+            'operation_id' => (string) Str::uuid(), 'use_saved_card' => true, 'saved_card_reference' => str_repeat('a', 64),
+        ])->assertStatus(422);
+        $this->assertCount(0, $this->gateway->calls);
+        $this->assertDatabaseCount('stripe_billing_operations', 0);
+        $this->assertDatabaseCount('stripe_billing_profiles', 0);
+    }
+
     public function test_trial_requires_verified_setup_and_uses_modern_subscription_identity()
     {
         [$id, $setup, $result] = $this->purchase();
@@ -407,8 +744,11 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $response = $this->get(route('webapp.membership.edit'))->assertOk();
         $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
         $this->assertSame(1, $xpath->query('//*[@id="update-card-tab"]//*[@data-saved-card]')->length);
-        $this->assertSame(1, $xpath->query('//*[@id="update-card-tab"]//button[@data-payment-card-add and @aria-controls="membership-card-editor"]')->length);
-        $this->assertSame(1, $xpath->query('//*[@id="membership-card-editor" and @hidden]//form[@data-deferred-card and @data-split-card]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="update-card-tab"]//button[@data-payment-card-add and @aria-controls="membership-card-editor" and @data-bs-toggle="modal" and @data-bs-target="#membership-card-editor" and @aria-haspopup="dialog"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-card-editor" and contains(@class,"modal") and @data-payment-card-editor and @aria-hidden="true" and @aria-labelledby="membership-card-editor-title" and @aria-describedby="membership-card-description"]//form[@data-deferred-card and @data-split-card]')->length);
+        $this->assertSame('body', $xpath->query('//*[@id="membership-card-editor"]')->item(0)->parentNode->nodeName);
+        $this->assertSame(0, $xpath->query('//*[@id="update-card-tab"]//*[@id="update-card-form"]')->length, 'The card editor is outside the tab/page container.');
+        $this->assertSame(1, $xpath->query('//*[@id="membership-card-editor"]//button[@data-bs-dismiss="modal" and @data-payment-card-cancel]')->length);
         $this->assertSame(3, $xpath->query('//*[@id="update-card-form"]//*[@data-stripe-field]')->length);
         $this->assertSame(1, $xpath->query('//*[@id="update-card-form"]//*[@data-card-preview]')->length);
         $this->assertSame(1, $xpath->query('//*[@id="update-card-form"]//input[@name="cardholder" and @autocomplete="cc-name" and contains(@class,"pianolit-input")]')->length);
@@ -530,6 +870,7 @@ class StripeMembershipBillingTest extends ReviewTestCase
 
     public function test_completed_checkout_redirects_home_with_a_one_time_confirmation_and_one_email()
     {
+        $this->travelTo(\Carbon\Carbon::parse('2026-10-16 12:00:00'));
         $this->cacheDiscovery();
         [$id] = $this->purchase([], false);
         foreach ([1, 2] as $attempt) {
@@ -546,13 +887,20 @@ class StripeMembershipBillingTest extends ReviewTestCase
 
         $response = $this->get(route('webapp.discover'))->assertOk()
             ->assertSee('id="membership-confirmation-modal"', false)->assertSee('You’re all set!')
-            ->assertSee('Monthly Premium')->assertSee('Active')->assertSee('Confirmation sent to your email');
-        $this->assertSame('Monthly Premium', $response->viewData('membershipConfirmation')['plan']);
+            ->assertSee('Monthly Premium')->assertSee('Free trial')->assertSee('Trial ends')->assertSee('Confirmation sent to your email');
+        $details = $response->viewData('membershipConfirmation');
+        $this->assertSame('Monthly Premium', $details['plan']);
+        $this->assertSame('Free trial', $details['status']);
+        $this->assertSame('2026-10-16', $details['purchased_at']->toDateString());
+        $this->assertSame('2026-10-23', $details['trial_ends_at']->toDateString());
+        $this->assertSame('2026-10-23', $details['next_charge_at']->toDateString(), 'Trial billing starts on the verified trial end, even if a saved period end differs.');
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertCount(1, $xpath->query('//*[@id="membership-confirmation-modal"]//button[@data-bs-dismiss="modal" and contains(., "Start exploring")]'));
         $this->assertCount(1, $xpath->query('//*[@id="membership-confirmation-modal"]//button'));
+        $this->assertCount(5, $xpath->query('//*[@id="membership-confirmation-modal"]//dl/div/dt//*[contains(@class,"app-icon")]'));
+        $this->assertCount(3, $xpath->query('//*[@id="membership-confirmation-modal"]//dl//time'));
         $this->get(route('webapp.discover'))->assertOk()->assertDontSee('id="membership-confirmation-modal"', false);
         Mail::assertQueued(MembershipConfirmed::class, 1);
     }
@@ -579,6 +927,48 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->assertStringContainsString('No payment was due today.', $trial);
         $this->assertStringContainsString('Oct 22, 2026', $trial);
         $this->assertStringContainsString('Cancel before then', $trial);
+    }
+
+    public function test_returning_confirmation_uses_the_new_purchase_date_and_paid_renewal_without_trial_rows()
+    {
+        $this->cacheDiscovery();
+        $this->travelTo(\Carbon\Carbon::parse('2026-09-16 12:00:00'));
+        $this->endedCustomer();
+        $this->assertSame('2026-09-16', $this->source()->created_at->toDateString());
+        $this->travelTo(\Carbon\Carbon::parse('2026-10-16 12:00:00'));
+        $this->plan = Plan::byName('yearly');
+        $reference = $this->billing->savedCard($this->user)['reference'];
+        $prepared = $this->billing->prepare($this->user, (string) Str::uuid(), 'purchase', $this->plan, null, true, $reference);
+        $this->gateway->nextSubscription = ['id' => 'sub_returning', 'status' => 'active', 'current_period_end' => now()->addYear()->timestamp];
+        $this->billing->purchase($this->user, $this->plan, $prepared['operation_id'], null, true, $reference);
+        $this->postJson(route('webapp.membership.complete'), ['operation_id' => $prepared['operation_id'],
+            'purchased_at' => now()->subYears(10)->timestamp, 'trial_ends_at' => now()->addYears(10)->timestamp])->assertOk();
+        $calls = count($this->gateway->calls);
+        $response = $this->get(route('webapp.discover'))->assertOk()->assertSee('Yearly Premium')->assertSee('Purchase date')->assertSee('Next charge')->assertDontSee('Trial ends');
+        $details = $response->viewData('membershipConfirmation');
+        $this->assertSame('Active', $details['status']);
+        $this->assertSame('2026-10-16', $details['purchased_at']->toDateString());
+        $this->assertSame('2027-10-16', $details['next_charge_at']->toDateString());
+        $this->assertFalse($details['trial']);
+        $this->assertNull($details['trial_ends_at']);
+        $this->assertCount($calls, $this->gateway->calls, 'The success modal only reads saved and verified checkout data.');
+    }
+
+    public function test_confirmation_does_not_apply_dates_from_a_different_subscription_or_promise_a_canceled_charge()
+    {
+        $this->cacheDiscovery();
+        $this->travelTo(\Carbon\Carbon::parse('2026-10-16 12:00:00'));
+        $this->purchase();
+        $this->source()->update(['canceled_at' => now(), 'membership_ends_at' => now()->addWeek()]);
+        $this->user->unsetRelation('membership');
+        $response = $this->withSession(['membership-confirmation' => ['user_id' => $this->user->id,
+            'subscription_id' => 'sub_previous', 'purchased_at' => now()->subYears(10)->timestamp,
+            'trial_ends_at' => now()->addYears(10)->timestamp]])->get(route('webapp.discover'))->assertOk()->assertSee('Not scheduled');
+        $details = $response->viewData('membershipConfirmation');
+        $this->assertSame('Ending soon', $details['status']);
+        $this->assertNull($details['purchased_at']);
+        $this->assertNull($details['next_charge_at']);
+        $this->assertTrue($details['trial_ends_at']->equalTo($this->source()->membership_ends_at), 'A scheduled trial end takes precedence over a stale renewal date.');
     }
 
     public function test_disabled_membership_email_does_not_queue_or_claim_delivery_after_checkout()
@@ -663,6 +1053,14 @@ class StripeMembershipBillingTest extends ReviewTestCase
             ->assertViewHas('checkoutUrl', route('webapp.membership.checkout', $this->plan));
         $this->get(route('webapp.membership.pricing', ['checkout' => 'https://example.test/untrusted']))->assertOk()->assertViewHas('checkoutUrl', null);
         $this->get(route('webapp.membership.pricing', ['checkout' => ['monthly']]))->assertOk()->assertViewHas('checkoutUrl', null);
+        $this->endedCustomer();
+        $this->get(route('webapp.membership.edit', ['checkout' => 'monthly']))->assertOk()
+            ->assertViewHas('checkoutUrl', route('webapp.membership.checkout', $this->plan));
+        $this->get(route('webapp.membership.edit', ['checkout' => 'https://example.test/untrusted']))->assertOk()->assertViewHas('checkoutUrl', null);
+        $this->get(route('webapp.membership.edit', ['checkout' => ['monthly']]))->assertOk()->assertViewHas('checkoutUrl', null);
+        $this->source()->update(['status' => 'active', 'ended_at' => null]);
+        $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.edit', ['checkout' => 'monthly']))->assertOk()->assertViewHas('checkoutUrl', null);
     }
 
     public function test_checkout_keeps_one_shared_fullscreen_close_outside_the_loading_and_payment_content()
@@ -692,7 +1090,7 @@ class StripeMembershipBillingTest extends ReviewTestCase
     {
         $this->withExceptionHandling(); $this->app['env'] = 'review-csrf';
         try {
-            foreach (['webapp.membership.prepare.card', 'webapp.membership.cancel', 'webapp.membership.resume', 'webapp.membership.update.card', 'webapp.membership.update.plan', 'webapp.membership.complete'] as $route) {
+            foreach (['webapp.membership.prepare.card', 'webapp.membership.cancel', 'webapp.membership.resume', 'webapp.membership.update.card', 'webapp.membership.remove.card', 'webapp.membership.update.plan', 'webapp.membership.complete'] as $route) {
                 $this->withSession(['_token' => 'review-billing-csrf'])->postJson(route($route), ['operation_id' => (string) Str::uuid()])->assertStatus(419);
             }
         } finally { $this->app['env'] = 'testing'; }
@@ -724,7 +1122,7 @@ class StripeMembershipBillingTest extends ReviewTestCase
         foreach ($this->gateway->calls as $call) $this->assertSame('swiss', $call['account']);
     }
 
-    public function test_invoices_use_route_accounts_customer_and_subscription_and_escape_hosted_links()
+    public function test_invoices_use_authenticated_membership_customer_across_subscriptions_and_escape_hosted_links()
     {
         $this->purchase();
         $this->gateway->invoices = [['id' => 'in_safe', 'created' => now()->timestamp, 'currency' => 'usd', 'status' => 'open', 'amount_due' => 799, 'amount_paid' => 0,
@@ -733,7 +1131,7 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->assertStringNotContainsString('javascript:', $response->json('html'));
         $call = $this->gateway->callsTo('invoices', 'all')[0];
         $this->assertSame('cus_review', $call['parameters']['customer']);
-        $this->assertSame('sub_review', $call['parameters']['subscription']);
+        $this->assertArrayNotHasKey('subscription', $call['parameters'], 'Renewing membership must retain invoices from older subscriptions on this membership customer.');
         $this->assertSame(12, $call['parameters']['limit']);
     }
 

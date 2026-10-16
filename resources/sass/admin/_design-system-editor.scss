@@ -58,8 +58,6 @@
 
 .design-system__value:focus-visible {
     border-color: #6c8a5e;
-    outline: 2px solid #c7dac0;
-    outline-offset: 1px;
 }
 
 .design-system__value--edited {
@@ -124,11 +122,6 @@
 .design-system__reset:hover:not(:disabled) {
     border-color: #8fa581;
     background: #f4f8f0;
-}
-
-.design-system__reset:focus-visible {
-    outline: 2px solid #6c8a5e;
-    outline-offset: 2px;
 }
 
 .design-system__reset:disabled {

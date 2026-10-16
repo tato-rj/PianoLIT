@@ -1,0 +1,22 @@
+/* PianoLIT uses existing border/background states, without an extra outline or halo.
+   Keep this partial plain CSS: standalone error views embed this same reset. */
+*,
+*::before,
+*::after {
+    outline: none !important;
+    outline-offset: 0 !important;
+}
+
+:root {
+    --bs-focus-ring-width: 0;
+    --bs-focus-ring-opacity: 0;
+    --bs-focus-ring-color: transparent;
+}
+
+.btn {
+    --bs-btn-focus-box-shadow: none;
+}
+
+.focus-ring:focus {
+    box-shadow: none !important;
+}

@@ -10,23 +10,41 @@ function element(attributes = {}) {
         getAttribute(name) {return this.attributes[name];}, setAttribute(name, value) {this.attributes[name] = value;},
         addEventListener(name, callback) {this.events[name] = callback;}, focus() {this.focused = true;}, classList: {contains() {return false;}}};
 }
-function fixture(purpose = 'purchase', invoiceMode = false, split = false, managed = false, invoiceActive = false, deferred = false) {
+function fixture(purpose = 'purchase', invoiceMode = false, split = false, managed = false, invoiceActive = false, deferred = false, saved = false) {
     const requests = [], redirects = [], confirmations = [], replies = [];
     const button = element(), errors = element(), coupon = element({'data-coupon-url': '/coupon'}), feedback = element(); coupon.value = '';
     const total = element({'data-base-price': '799'}), mount = element();
     const due = element(), renewal = element(), consent = element({'data-trial-days': '0', 'data-interval': 'month'}), charge = element();
     const label = element(), status = element(), apply = element(), name = element(), postal = element();
     const preview = element(), cardName = element(), brandLabel = element();
-    const opener = element(), cancel = element(), editor = {hidden: true, querySelector() {return form;}};
-    const section = {querySelector(selector) {return selector === '[data-payment-card-add]' ? opener : editor;}};
+    preview.querySelector = selector => selector === '[data-card-name]' ? cardName : brandLabel;
+    const savedCard = element(), addCard = element(), newFields = element(), newPreview = element(), savedDetails = element(), savedCheck = element();
+    savedCard.attributes['aria-pressed'] = 'true'; savedDetails.hidden = false; savedCheck.hidden = false;
+    const opener = element(), cancel = element(), close = element(), editor = element();
+    editor.querySelector = () => form;
+    editor.querySelectorAll = () => [cancel, close];
+    editor.classList.contains = name => name === 'show' && !editor.hidden;
+    const trap = {active: false, activate() {this.active = true;}, deactivate() {this.active = false;}};
+    const dialog = {_focustrap: trap, show() {
+        editor.hidden = false; trap.activate(); editor.events['shown.bs.modal']();
+    }, hide() {
+        let prevented = false;
+        editor.events['hide.bs.modal']({preventDefault() {prevented = true;}});
+        if (prevented) return;
+        editor.hidden = true; trap.deactivate(); editor.events['hidden.bs.modal'](); opener.focus();
+    }};
+    // Bootstrap's data API owns these controls; the page controller owns modal lifecycle events.
+    opener.events.click = () => dialog.show();
+    cancel.events.click = close.events.click = () => dialog.hide();
     const documentEvents = {}, signals = [];
     label.textContent = purpose === 'card' ? 'Save card' : 'Subscribe for $7.99'; name.value = 'Review Pianist'; postal.value = '10001';
     const mounts = ['cardNumber', 'cardExpiry', 'cardCvc'].map(type => element({'data-stripe-field': type}));
     mounts[0].focus = () => {document.activeElement = mounts[0];};
     const form = element({'data-operation': 'operation-review', 'data-purpose': purpose, 'data-key': 'pk_review', 'data-prepare': '/prepare', 'data-complete': '/complete'});
     form.action = '/submit';
+    if (saved) form.attributes['data-saved-card-reference'] = 'reference-review';
     form.closest = selector => managed && selector === '[data-checkout-modal]' ? {} : null;
-    form.dispatchEvent = event => signals.push(event.type);
+    form.dispatchEvent = event => {signals.push(event.type); if (deferred && editor.events[event.type]) editor.events[event.type](event);};
     form.hasAttribute = attribute => (split && attribute === 'data-split-card') || (deferred && attribute === 'data-deferred-card');
     form.reset = () => {name.value = 'Review Pianist'; postal.value = '';};
     form.querySelectorAll = () => mounts;
@@ -38,7 +56,10 @@ function fixture(purpose = 'purchase', invoiceMode = false, split = false, manag
         '[name="postal_code"]': split ? postal : null, '[data-card-preview]': split ? preview : null,
         '[data-card-name]': split ? cardName : null, '[data-card-brand-label]': split ? brandLabel : null,
         '[data-stripe-field="cardNumber"]': split ? mounts[0] : null,
-        '[data-payment-card-cancel]': deferred ? cancel : null}[selector]);
+        '[data-payment-card-cancel]': deferred ? cancel : null,
+        '[data-checkout-saved-card]': saved ? savedCard : null, '[data-payment-card-add]': saved ? addCard : null,
+        '[data-checkout-new-fields]': saved ? newFields : null, '[data-checkout-new-preview]': saved ? newPreview : null,
+        '[data-checkout-saved-details]': saved ? savedDetails : null, '[data-checkout-card-check]': saved ? savedCheck : null}[selector]);
     const card = {mount() {}, on(name, callback) { this.change = callback; }};
     const hosted = {};
     const stripe = {elements() {return {create(type, options) {
@@ -65,11 +86,11 @@ function fixture(purpose = 'purchase', invoiceMode = false, split = false, manag
     let shown;
     const jquery = selector => ({on(events, callback) {if (selector.includes('a[')) shown = callback; return this;}});
     const DOMParser = class {parseFromString(html) {return {querySelector() {return {innerHTML: html};}};}};
-    const document = {addEventListener(name, handler) {documentEvents[name] = handler;}, querySelector(selector) {return {'meta[name="csrf-token"]': {content: 'csrf-review'}, '[data-membership-payment]': purpose === 'none' ? null : form, '[data-membership-total]': total, '[data-membership-due]': split ? due : null, '[data-membership-renewal]': split ? renewal : null, '[data-membership-invoices]': invoiceMode ? invoiceRoot : null}[selector] || null;}, querySelectorAll(selector) {return deferred && selector === '[data-payment-methods]' ? [section] : [];}};
+    const document = {addEventListener(name, handler) {documentEvents[name] = handler;}, querySelector(selector) {return {'meta[name="csrf-token"]': {content: 'csrf-review'}, '[data-membership-payment]': purpose === 'none' ? null : form, '[data-membership-total]': total, '[data-membership-due]': split ? due : null, '[data-membership-renewal]': split ? renewal : null, '[data-membership-invoices]': invoiceMode ? invoiceRoot : null}[selector] || null;}, querySelectorAll(selector) {return deferred && selector === '[data-payment-card-editor]' ? [editor] : [];}};
     if (invoiceActive) replies.push({html: 'restored invoice rows', after: null});
-    vm.runInNewContext(source, {document, DOMParser, Stripe: () => stripe, fetch, window: {CustomEvent: class {constructor(type) {this.type = type;}}, getComputedStyle() {return {color: '#273244', fontFamily: 'system-ui', fontSize: '16px', lineHeight: '24px', getPropertyValue() {return '#697386';}};}, jQuery: invoiceMode ? jquery : null, location: {hash: '', assign(url) { redirects.push(url); }, reload() { redirects.push('reload'); }}}});
+    vm.runInNewContext(source, {document, DOMParser, Stripe: () => stripe, fetch, window: {bootstrap: {Modal: {getOrCreateInstance() {return dialog;}}}, CustomEvent: class {constructor(type) {this.type = type;}}, getComputedStyle() {return {color: '#273244', fontFamily: 'system-ui', fontSize: '16px', lineHeight: '24px', getPropertyValue() {return '#697386';}};}, jQuery: invoiceMode ? jquery : null, location: {hash: '', assign(url) { redirects.push(url); }, reload() { redirects.push('reload'); }}}});
     return {form, button, errors, coupon, invoiceStatus, invoiceMore, invoiceRetry, invoiceBody, openInvoices() {shown({target:{getAttribute() {return '#invoices-tab';}}});}, feedback, total, stripe, card, requests, redirects, confirmations, replies,
-        due, renewal, consent, charge, label, status, name, postal, hosted, preview, cardName, brandLabel, documentEvents, signals, opener, editor, cancel,
+        due, renewal, consent, charge, label, status, name, postal, hosted, preview, cardName, brandLabel, documentEvents, signals, opener, editor, cancel, close, dialog, trap, savedCard, addCard, newFields, newPreview, savedDetails, savedCheck,
         ready() {Object.values(hosted).forEach(field => field.events.ready());},
         submit() {return form.events.submit({preventDefault() {}});}};
 }
@@ -90,6 +111,72 @@ function managementFixture() {
     return {monthly, yearly, cards, input, confirmation, form, description, link, trigger, shown};
 }
 module.exports = async function () {
+    const saved = fixture('purchase', false, true, false, false, false, true);
+    assert.strictEqual(saved.button.disabled, false, 'A saved card can be selected without waiting for new-card fields.');
+    assert.deepStrictEqual(Object.keys(saved.hosted), [], 'Do not mount hidden secure inputs until Add new card is requested.');
+    saved.replies.push({operation_id: 'saved-operation', saved_card: true}, {payment_secret: 'pi_saved', complete: false}, {redirect: '/welcome'});
+    await saved.submit();
+    assert.strictEqual(JSON.parse(saved.requests[0].options.body).use_saved_card, true);
+    assert.deepStrictEqual(JSON.parse(saved.requests[1].options.body), {operation_id: 'saved-operation', use_saved_card: true, saved_card_reference: 'reference-review'});
+    assert.deepStrictEqual(saved.confirmations.map(call => call[0]), ['payment'], 'Saved cards retain bank confirmation without a new-card SetupIntent.');
+    assert.strictEqual(Object.keys(saved.confirmations[0][2]).length, 0, 'Hidden card fields never override the selected saved method.');
+    assert.deepStrictEqual(saved.redirects, ['/welcome']);
+
+    const choices = fixture('purchase', false, true, false, false, false, true);
+    choices.addCard.events.click();
+    assert.strictEqual(choices.newFields.hidden, false);
+    assert.strictEqual(choices.newFields.disabled, false);
+    assert.strictEqual(choices.savedCheck.hidden, true);
+    assert.strictEqual(choices.newPreview.hidden, false);
+    assert.strictEqual(choices.button.disabled, true, 'A new card waits for its secure fields.');
+    choices.ready();
+    Object.values(choices.hosted).forEach(field => field.events.change({complete: true, brand: 'mastercard'}));
+    choices.savedCard.events.click();
+    assert.strictEqual(choices.newFields.hidden, true);
+    assert.strictEqual(choices.newFields.disabled, true);
+    assert.strictEqual(choices.savedCheck.hidden, false);
+    assert.strictEqual(choices.savedCard.attributes['aria-pressed'], 'true');
+    choices.replies.push({operation_id: 'existing-payment', payment_secret: 'pi_retry', complete: false}, {redirect: '/welcome'});
+    await choices.submit();
+    assert.strictEqual(Object.keys(choices.confirmations[0][2]).length, 0, 'Returning to the saved card ignores a completed hidden draft even on a resumed payment.');
+
+    const replacement = fixture('purchase', false, true, false, false, false, true);
+    replacement.addCard.events.click(); replacement.ready();
+    replacement.replies.push({operation_id: 'new-operation', setup_secret: 'seti_new_secret'}, {complete: true}, {redirect: '/welcome'});
+    await replacement.submit();
+    assert.strictEqual(JSON.parse(replacement.requests[0].options.body).use_saved_card, false);
+    assert.strictEqual(replacement.confirmations[0][0], 'setup', 'Add new card retains the verified SetupIntent flow.');
+    assert.strictEqual(JSON.parse(replacement.requests[1].options.body).setup_intent, 'seti_review');
+
+    const failedSaved = fixture('purchase', false, true, false, false, false, true);
+    failedSaved.replies.push(new Error('Saved card is no longer available'));
+    await failedSaved.submit();
+    assert.strictEqual(failedSaved.button.disabled, false);
+    assert.strictEqual(failedSaved.savedCard.disabled, false);
+    assert.strictEqual(failedSaved.addCard.disabled, false);
+    assert.strictEqual(failedSaved.errors.textContent, 'Saved card is no longer available');
+
+    const failedNew = fixture('purchase', false, true, false, false, false, true);
+    failedNew.stripe.elements = () => { throw new Error('Secure fields unavailable'); };
+    failedNew.addCard.events.click();
+    assert(failedNew.errors.textContent.includes('reload'));
+    assert.strictEqual(failedNew.button.disabled, true);
+    failedNew.savedCard.events.click();
+    assert.strictEqual(failedNew.button.disabled, false, 'The saved method remains usable if new-card fields cannot load.');
+    failedNew.addCard.events.click();
+    assert(failedNew.errors.textContent.includes('reload'), 'Reopening an unavailable new-card editor keeps a useful recovery message.');
+
+    const lockedSaved = fixture('purchase', false, true, false, false, false, true);
+    let releaseSaved;
+    lockedSaved.replies.push(() => new Promise(resolve => { releaseSaved = resolve; }));
+    const pendingSaved = lockedSaved.submit();
+    assert.strictEqual(lockedSaved.addCard.disabled, true);
+    lockedSaved.addCard.events.click();
+    assert.strictEqual(lockedSaved.newFields.hidden, true, 'Payment selection cannot change while confirmation is in progress.');
+    releaseSaved({ok: true, json: async () => { throw new Error('Connection interrupted'); }});
+    await pendingSaved;
+    assert.strictEqual(lockedSaved.addCard.disabled, false);
+
     const failedEditor = fixture('card', false, true, false, false, true);
     failedEditor.stripe.elements = () => {throw new Error('Secure fields unavailable');};
     failedEditor.opener.events.click();
@@ -103,7 +190,6 @@ module.exports = async function () {
     assert.deepStrictEqual(Object.keys(editor.hosted), [], 'Billing does not load secure fields before Add new card is requested.');
     editor.opener.events.click();
     assert.strictEqual(editor.editor.hidden, false);
-    assert.strictEqual(editor.opener.attributes['aria-expanded'], 'true');
     editor.ready();
     assert.strictEqual(editor.hosted.cardNumber.focused, true, 'The secure card number field receives focus once ready.');
     const originalFields = Object.values(editor.hosted);
@@ -122,14 +208,29 @@ module.exports = async function () {
     const saving = editor.submit();
     assert.strictEqual(editor.label.textContent, 'Saving your card…');
     assert.strictEqual(editor.cancel.disabled, true);
+    assert.strictEqual(editor.close.disabled, true);
+    assert.strictEqual(editor.trap.active, false, 'Stripe bank authentication can take focus outside the dialog.');
     editor.cancel.events.click();
+    editor.dialog.hide();
     assert.strictEqual(editor.editor.hidden, false, 'A card verification in progress cannot be dismissed.');
     releaseSetup({ok: true, json: async () => ({operation_id: 'card-op', setup_secret: 'card-secret'})});
     await saving;
     assert.strictEqual(editor.requests.length, 2, 'One prepare and one update run after close/reopen.');
     assert.strictEqual(editor.cancel.disabled, false);
+    assert.strictEqual(editor.close.disabled, false);
+    assert.strictEqual(editor.trap.active, true, 'The dialog focus trap is restored after verification.');
     assert.strictEqual(editor.label.textContent, 'Save card');
     assert.deepStrictEqual(editor.redirects, ['/membership/edit#update-card-tab']);
+
+    const dismissed = fixture('card', false, true, false, false, true);
+    dismissed.opener.events.click(); dismissed.ready();
+    dismissed.name.value = 'Draft name';
+    dismissed.close.events.click();
+    assert.strictEqual(dismissed.name.value, 'Review Pianist', 'Close clears the draft just like Cancel.');
+    dismissed.opener.events.click();
+    dismissed.name.value = 'Another draft'; dismissed.dialog.hide();
+    assert.strictEqual(dismissed.name.value, 'Review Pianist', 'Escape/backdrop dismissals use the same cleanup.');
+    assert.strictEqual(dismissed.requests.length, 0, 'Dismissing never saves a card.');
 
     const restoredInvoices = fixture('none', true, false, false, true);
     await flush();

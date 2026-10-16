@@ -173,7 +173,8 @@ class MembershipManagement
             $subscription = $this->billing->subscription($user);
             $source = $this->billing->source($user);
             $account = $this->accounts->forSource($source);
-            $parameters = ['customer' => $source->stripe_id, 'subscription' => $subscription['id'], 'limit' => 12];
+            // A returning member keeps invoices from earlier subscriptions on this same customer.
+            $parameters = ['customer' => $source->stripe_id, 'limit' => 12];
             if ($after) $parameters['starting_after'] = $after;
             $past = $this->gateway->call($account, 'invoices', 'all', $parameters);
             $upcoming = null;

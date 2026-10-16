@@ -8,10 +8,10 @@
 
 <div class="row">
 	<div class="col-lg-8 col-12 mx-auto p-0 list-group">
-		@if(auth()->check() && auth()->user()->isSuperUser())
+		@if(auth()->check() && auth()->user()->membership)
+		@include('webapp.settings.item', ['url' => route('webapp.membership.edit'), 'label' => 'My membership ' . (auth()->user()->membership->source->isEnded() ? '' : auth()->user()->membership->source->badge())])
+		@elseif(auth()->check() && auth()->user()->isSuperUser())
 		@include('webapp.settings.item', ['label' => 'You have full access!'])
-		@elseif(auth()->check() && auth()->user()->membership && ! auth()->user()->membership->source->isEnded())
-		@include('webapp.settings.item', ['url' => route('webapp.membership.edit'), 'label' => 'My membership ' . auth()->user()->membership->source->badge()])
 		@else
 		@include('webapp.settings.item', ['url' => route('webapp.membership.pricing'), 'label' => 'Subscribe ' . \App\Support\Icon::render('star', ['mr' => 0, 'classes' => 'text-yellow', 'filled' => true]) . ''])
 		@endif

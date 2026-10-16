@@ -217,10 +217,6 @@ body.timeline-events-editor {
     .timeline-decade-summary:hover {
         background: #f8f9fa;
     }
-    .timeline-decade-summary:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
-    }
     .timeline-decade-count {
         float: right;
         margin-left: 8px;
@@ -241,10 +237,6 @@ body.timeline-events-editor {
     }
     .timeline-event-summary:hover {
         background: #f8f9fa;
-    }
-    .timeline-event-summary:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
     }
     .timeline-event-year {
         width: 76px;

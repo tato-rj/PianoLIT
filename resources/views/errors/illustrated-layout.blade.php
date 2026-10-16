@@ -91,13 +91,6 @@
                 padding: 0;
             }
 
-            button:-moz-focusring,
-            [type="button"]:-moz-focusring,
-            [type="reset"]:-moz-focusring,
-            [type="submit"]:-moz-focusring {
-                outline: 1px dotted ButtonText;
-            }
-
             legend {
                 -webkit-box-sizing: border-box;
                         box-sizing: border-box;
@@ -122,7 +115,6 @@
 
             [type="search"] {
                 -webkit-appearance: textfield;
-                outline-offset: -2px;
             }
 
             [type="search"]::-webkit-search-cancel-button,
@@ -171,11 +163,6 @@
             button {
                 background: transparent;
                 padding: 0;
-            }
-
-            button:focus {
-                outline: 1px dotted;
-                outline: 5px auto -webkit-focus-ring-color;
             }
 
             *,
@@ -454,6 +441,7 @@
                     background-position: center;
                 }
             }
+            {!! file_get_contents(resource_path('sass/shared/_focus.scss')) !!}
         </style>
     </head>
     <body class="antialiased font-sans">

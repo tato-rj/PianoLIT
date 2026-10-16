@@ -72,12 +72,6 @@
         letter-spacing: 0;
         padding: 4px 9px;
     }
-    a:focus-visible,
-    button:focus-visible,
-    &:focus-visible {
-        outline: 3px solid var(--card-action) !important;
-        outline-offset: 4px;
-    }
 }
 // A banner/card is itself a link; its visual action follows that link's state.
 a.pastel-card:hover .pastel-card__action,

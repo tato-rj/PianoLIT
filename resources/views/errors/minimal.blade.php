@@ -46,6 +46,7 @@
                 font-size: 18px;
                 text-align: center;
             }
+            {!! file_get_contents(resource_path('sass/shared/_focus.scss')) !!}
         </style>
     </head>
     <body>

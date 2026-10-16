@@ -10,11 +10,10 @@
       @endcomponent
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Saved payment card', 'usage' => 'components.payment-card-preview · saved', 'properties' => 'padding,color,background-color,border-radius,box-shadow'])
-      @include('components.payment-card-preview', ['saved' => ['brand' => 'visa', 'last4' => '4242'], 'preview' => true])
+      @include('components.payment-card-preview', ['saved' => ['brand' => 'visa', 'last4' => '4242'], 'selectable' => true, 'preview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Add payment card', 'usage' => 'components.payment-card-preview · add', 'properties' => 'padding,color,background-color,border,border-radius'])
-      @include('components.payment-card-preview', ['add' => true, 'controlsId' => 'ds-card-editor-example', 'preview' => true])
-      <p id="ds-card-editor-example" class="small text-muted mt-3 mb-0">Sample only. Opens the secure card editor in Billing.</p>
+      @include('components.payment-card-preview', ['add' => true, 'modalId' => 'ds-card-editor-example', 'preview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Segmented tabs', 'usage' => 'components.tab-navigation · variant: segmented', 'properties' => 'font-size,padding,color,border,border-radius'])
       @component('components.tab-navigation', ['id' => 'ds-account-tabs', 'label' => 'Sample account sections', 'variant' => 'segmented', 'preview' => true, 'items' => [
@@ -93,6 +92,15 @@
 @component('components.modal', ['id' => 'ds-example-modal', 'header' => 'Sample dialog', 'centered' => true, 'options' => ['body' => ['padding' => 3]]])
     @slot('body')
         This is a preview of PianoLIT’s shared modal. Try closing it with the button, the backdrop or Escape.
+    @endslot
+    @slot('footer')
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close preview</button>
+    @endslot
+@endcomponent
+
+@component('components.modal', ['id' => 'ds-card-editor-example', 'header' => 'Add a new card', 'centered' => true, 'options' => ['body' => ['padding' => 3]]])
+    @slot('body')
+        <p class="text-muted mb-0">This tile opens the shared modal. In Billing, the same dialog loads the secure card fields and a live card preview.</p>
     @endslot
     @slot('footer')
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close preview</button>

@@ -4,11 +4,6 @@
   <span data-apple-spinner class="spinner-border spinner-border-sm d-none" aria-hidden="true"></span>
 </a>
 @once
-@push('header')
-<style>
-[data-apple-login]:focus-visible { outline: 2px solid var(--color-primary) !important; outline-offset: 3px; }
-</style>
-@endpush
 @push('scripts')
 <script>
 (function () {

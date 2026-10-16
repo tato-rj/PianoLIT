@@ -41,6 +41,8 @@ class AdminDesignSystemTest extends ReviewTestCase
         }
         $this->assertSame(1, $xpath->query('//*[@id="ds-example-modal" and @aria-labelledby="ds-example-modal-title"]')->length);
         $this->assertSame(1, $xpath->query('//*[@id="ds-example-modal"]//button[@aria-label="Close" and @data-bs-dismiss="modal"]')->length);
+        $this->assertSame(1, $xpath->query('//button[@data-payment-card-add and @data-bs-toggle="modal" and @data-bs-target="#ds-card-editor-example"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="ds-card-editor-example" and @aria-labelledby="ds-card-editor-example-title"]')->length);
         $ids = [];
         foreach ($xpath->query('//*[@id]') as $element) $ids[] = $element->getAttribute('id');
         $this->assertCount(count(array_unique($ids)), $ids, 'Gallery IDs must be unique for tabs, modals and labels.');

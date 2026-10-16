@@ -15,12 +15,6 @@
     select {
         min-height: 40px;
     }
-    button:focus-visible,
-    a:focus-visible,
-    .score-color-button:focus-within {
-        outline: 2px solid #1b59e9;
-        outline-offset: 2px;
-    }
     .score-toolbar {
         position: relative;
         z-index: 2;
@@ -115,10 +109,6 @@
         border: 0;
         border-radius: 50%;
         cursor: pointer;
-        &[aria-pressed='true'] {
-            outline: 2px solid #1555dc;
-            outline-offset: 3px;
-        }
         &:disabled {
             opacity: 0.45;
             cursor: default;
@@ -134,10 +124,6 @@
         text-align: center;
         font-size: 13px;
         cursor: pointer;
-        &:focus-within {
-            outline: 2px solid #1b59e9;
-            outline-offset: 2px;
-        }
     }
     .score-color-input {
         position: absolute;

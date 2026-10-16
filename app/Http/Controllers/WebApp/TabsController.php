@@ -72,8 +72,20 @@ class TabsController extends Controller
             $source = optional($user->membership)->source;
             if ($source instanceof \App\Billing\Sources\Stripe && in_array($source->status, ['active', 'trialing'], true)
                 && in_array($source->plan, ['monthly', 'yearly'], true) && $user->hasActiveSubscription()) {
+                $overview = \App\Support\MembershipOverview::forSource($source);
+                $confirmed = $source->subscription_id && ($confirmation['subscription_id'] ?? null) === $source->subscription_id;
+                $purchasedAt = $confirmed && !empty($confirmation['purchased_at']) ? carbon($confirmation['purchased_at']) : null;
+                $trial = $source->isOnTrial();
+                $trialEndsAt = $trial ? ($source->membership_ends_at ?: ($confirmed && !empty($confirmation['trial_ends_at'])
+                    ? carbon($confirmation['trial_ends_at']) : $source->renews_at)) : null;
+                $nextChargeAt = $trial ? $trialEndsAt : $source->renews_at;
+                if ($overview['ended'] || $source->isPaused() || $source->isCanceled() || $source->membership_ends_at || !$nextChargeAt || !$nextChargeAt->isFuture()) {
+                    $nextChargeAt = null;
+                }
                 $membershipConfirmation = [
                     'plan' => ucfirst($source->plan).' Premium',
+                    'status' => $overview['status'], 'tone' => $overview['tone'], 'trial' => $trial,
+                    'purchased_at' => $purchasedAt, 'next_charge_at' => $nextChargeAt, 'trial_ends_at' => $trialEndsAt,
                     'email_queued' => !empty($confirmation['email_queued']),
                 ];
             }

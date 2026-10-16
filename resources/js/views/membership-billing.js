@@ -46,13 +46,20 @@
         const postal = form.querySelector('[name="postal_code"]');
         const splitCard = form.hasAttribute ? form.hasAttribute('data-split-card') : false;
         const numberMount = form.querySelector('[data-stripe-field="cardNumber"]');
+        const savedCard = form.querySelector('[data-checkout-saved-card]');
+        const addCard = form.querySelector('[data-payment-card-add]');
+        const newFields = form.querySelector('[data-checkout-new-fields]');
+        const newPreview = form.querySelector('[data-checkout-new-preview]');
+        const savedDetails = form.querySelector('[data-checkout-saved-details]');
+        const savedCheck = form.querySelector('[data-checkout-card-check]');
+        let usingSavedCard = !!savedCard, fieldsInitialized = false, fieldsFailed = false;
         let focusRequested = false;
         const fields = [], completeFields = {}, fieldErrors = {};
         let cardReady = !splitCard, announcedReady = false;
         let couponValid = !coupon || !coupon.value.trim();
         const preview = form.querySelector('[data-card-preview]');
-        const cardName = form.querySelector('[data-card-name]');
-        const brandLabel = form.querySelector('[data-card-brand-label]');
+        const cardName = (preview || form).querySelector('[data-card-name]');
+        const brandLabel = (preview || form).querySelector('[data-card-brand-label]');
         const brands = {visa: 'Visa', mastercard: 'Mastercard', amex: 'Amex', discover: 'Discover', diners: 'Diners Club', jcb: 'JCB', unionpay: 'UnionPay'};
         function brand(value) {
             if (!preview) return;
@@ -71,23 +78,27 @@
         }
         function controls() {
             if (disposed) return;
-            button.disabled = busy || couponPending || !stripe || !cardReady;
+            button.disabled = busy || couponPending || !stripe || (!usingSavedCard && !cardReady);
             button.setAttribute('aria-busy', busy ? 'true' : 'false');
             form.setAttribute('aria-busy', busy ? 'true' : 'false');
             signal('checkout:busy');
             if (coupon) coupon.disabled = busy;
             if (apply) apply.disabled = busy || couponPending;
-            if (name) name.disabled = busy;
-            if (postal) postal.disabled = busy;
+            if (name) name.disabled = busy || usingSavedCard;
+            if (postal) postal.disabled = busy || usingSavedCard;
             if (cancel) cancel.disabled = busy;
+            if (savedCard) savedCard.disabled = busy;
+            if (addCard) addCard.disabled = busy;
+            if (newFields) newFields.disabled = busy || usingSavedCard;
             fields.forEach(function (field) { if (field.update) field.update({disabled: busy}); });
             if (label) label.textContent = busy ? (purpose === 'card' ? 'Saving your card…' : 'Confirming your membership…') : label.getAttribute('data-idle-label') || idleLabel;
-            if (status) status.textContent = busy ? 'Please keep this page open. Your bank may ask you to confirm your card.' : (cardReady || !stripe ? '' : 'Loading secure card fields…');
-            if (stripe && cardReady && !announcedReady) { announcedReady = true; signal('checkout:loaded'); }
+            if (status) status.textContent = busy ? 'Please keep this page open. Your bank may ask you to confirm your card.' : (usingSavedCard || cardReady || !stripe || fieldsFailed ? '' : 'Loading secure card fields…');
+            if (stripe && (usingSavedCard || cardReady) && !announcedReady) { announcedReady = true; signal('checkout:loaded'); }
+            if (!usingSavedCard && fieldsFailed) message('The secure card form could not load. Please reload the page.');
             focusCardWhenReady();
         }
         function focusCardWhenReady() {
-            if (!focusRequested || !cardReady) return;
+            if (!focusRequested || usingSavedCard || !cardReady) return;
             focusRequested = false;
             // Do not move focus if the user chose another field while Stripe loaded.
             if (document.activeElement === numberMount && card && card.focus) card.focus();
@@ -112,41 +123,70 @@
                 : (trial ? 'Your ' + trial + '-day free trial starts when checkout is complete. Then ' + formatted + ' is charged every ' + interval + ' until you cancel. ' : 'You authorize a payment of ' + formatted + ' today, then every ' + interval + ' until you cancel. Returning members do not receive another introductory trial. ');
             if (label && !trial) label.setAttribute('data-idle-label', 'Subscribe for ' + formatted);
         }
-        try {
-            stripe = Stripe(form.getAttribute('data-key'));
-            const elements = stripe.elements();
-            if (splitCard) {
-                // Hosted fields use the same resolved values as PianoLIT's native inputs.
-                const inputStyle = window.getComputedStyle(name);
-                const tokens = window.getComputedStyle(form);
-                const style = {base: {color: inputStyle.color, fontFamily: inputStyle.fontFamily,
-                    fontSize: inputStyle.fontSize, lineHeight: inputStyle.lineHeight, fontSmoothing: 'antialiased',
-                    '::placeholder': {color: tokens.getPropertyValue('--field-muted').trim()}},
-                    invalid: {color: tokens.getPropertyValue('--color-danger').trim()}};
-                const readyFields = new Set();
-                form.querySelectorAll('[data-stripe-field]').forEach(function (mount) {
-                    const type = mount.getAttribute('data-stripe-field');
-                    const field = elements.create(type, {style: style, ...(type === 'cardNumber' ? {showIcon: true} : {})});
-                    fields.push(field);
-                    if (type === 'cardNumber') card = field;
-                    field.on('ready', function () { readyFields.add(type); cardReady = fields.length === 3 && readyFields.size === 3; controls(); });
-                    field.on('change', function (event) {
-                        if (type === 'cardNumber') brand(event.brand);
-                        completeFields[type] = !!event.complete;
-                        fieldErrors[type] = event.error ? event.error.message : '';
-                        cardComplete = fields.length === 3 && Object.keys(completeFields).filter(key => completeFields[key]).length === 3;
-                        message(Object.keys(fieldErrors).map(key => fieldErrors[key]).find(Boolean) || '');
+        function initializeFields() {
+            if (fieldsInitialized || !stripe) return;
+            fieldsInitialized = true;
+            try {
+                const elements = stripe.elements();
+                if (splitCard) {
+                    // Hosted fields use the same resolved values as PianoLIT's native inputs.
+                    const inputStyle = window.getComputedStyle(name);
+                    const tokens = window.getComputedStyle(form);
+                    const style = {base: {color: inputStyle.color, fontFamily: inputStyle.fontFamily,
+                        fontSize: inputStyle.fontSize, lineHeight: inputStyle.lineHeight, fontSmoothing: 'antialiased',
+                        '::placeholder': {color: tokens.getPropertyValue('--field-muted').trim()}},
+                        invalid: {color: tokens.getPropertyValue('--color-danger').trim()}};
+                    const readyFields = new Set();
+                    form.querySelectorAll('[data-stripe-field]').forEach(function (mount) {
+                        const type = mount.getAttribute('data-stripe-field');
+                        const field = elements.create(type, {style: style, ...(type === 'cardNumber' ? {showIcon: true} : {})});
+                        fields.push(field);
+                        if (type === 'cardNumber') card = field;
+                        field.on('ready', function () { readyFields.add(type); cardReady = fields.length === 3 && readyFields.size === 3; controls(); });
+                        field.on('change', function (event) {
+                            if (type === 'cardNumber') brand(event.brand);
+                            completeFields[type] = !!event.complete;
+                            fieldErrors[type] = event.error ? event.error.message : '';
+                            cardComplete = fields.length === 3 && Object.keys(completeFields).filter(key => completeFields[key]).length === 3;
+                            message(Object.keys(fieldErrors).map(key => fieldErrors[key]).find(Boolean) || '');
+                        });
+                        field.mount(mount);
                     });
-                    field.mount(mount);
-                });
-            } else {
-                card = elements.create('card');
-                card.mount(form.querySelector('#card-element'));
-                card.on('change', function (event) { cardComplete = !!event.complete; message(event.error ? event.error.message : ''); });
-            }
-        } catch (error) { message('The secure card form could not load. Please reload the page.'); stripe = null; }
+                } else {
+                    card = elements.create('card');
+                    card.mount(form.querySelector('#card-element'));
+                    card.on('change', function (event) { cardComplete = !!event.complete; message(event.error ? event.error.message : ''); });
+                }
+            } catch (error) { fieldsFailed = true; message('The secure card form could not load. Please reload the page.'); if (!savedCard) stripe = null; }
+        }
+        try { stripe = Stripe(form.getAttribute('data-key')); }
+        catch (error) { message('The secure card form could not load. Please reload the page.'); }
+        if (!usingSavedCard) initializeFields();
         controls();
         if (!stripe) signal('checkout:loaderror');
+
+        function chooseCard(saved) {
+            if (busy || disposed) return;
+            usingSavedCard = saved;
+            savedCard.setAttribute('aria-pressed', saved ? 'true' : 'false');
+            savedCheck.hidden = !saved;
+            savedDetails.hidden = !saved;
+            addCard.hidden = !saved;
+            addCard.setAttribute('aria-expanded', saved ? 'false' : 'true');
+            newFields.hidden = saved;
+            newPreview.hidden = saved;
+            message('');
+            controls();
+            if (!saved) {
+                initializeFields();
+                numberMount.focus(); focusRequested = true;
+            }
+            controls();
+        }
+        if (savedCard) {
+            savedCard.addEventListener('click', function () { chooseCard(true); });
+            addCard.addEventListener('click', function () { chooseCard(false); });
+        }
 
         async function confirmPayment(result, replacement) {
             if (result.subscription_setup_secret) {
@@ -165,17 +205,23 @@
 
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
-            if (busy || couponPending || !stripe || !cardReady) return;
+            if (busy || couponPending || !stripe || (!usingSavedCard && !cardReady)) return;
             busy = true; message(''); controls();
             try {
                 if (coupon && coupon.value.trim() && !couponValid) {
                     await checkCoupon();
                     if (!couponValid) throw new Error('Please apply a valid coupon or remove the code before continuing.');
                 }
-                const prepared = await request(form.getAttribute('data-prepare'), {operation_id: operation, coupon: coupon ? coupon.value.trim() : null});
+                const prepared = await request(form.getAttribute('data-prepare'), {operation_id: operation, coupon: coupon ? coupon.value.trim() : null,
+                    ...(savedCard ? {use_saved_card: usingSavedCard, saved_card_reference: usingSavedCard ? form.getAttribute('data-saved-card-reference') : null} : {})});
                 operation = prepared.operation_id;
+                if (prepared.saved_card) {
+                    const result = await request(form.action, {operation_id: operation, use_saved_card: true, saved_card_reference: form.getAttribute('data-saved-card-reference')});
+                    await confirmPayment(result, false);
+                    return;
+                }
                 if (purpose === 'purchase' && !prepared.setup_secret) {
-                    await confirmPayment(prepared, true);
+                    await confirmPayment(prepared, !usingSavedCard);
                     return;
                 }
                 if (prepared.complete && purpose === 'card') { window.location.reload(); return; }
@@ -253,26 +299,28 @@
     }
     mountCurrent();
 
-    document.querySelectorAll('[data-payment-methods]').forEach(function (section) {
-        const opener = section.querySelector('[data-payment-card-add]');
-        const editor = section.querySelector('[data-payment-card-editor]');
-        if (!opener || !editor) return;
+    document.querySelectorAll('[data-payment-card-editor]').forEach(function (editor) {
         const form = editor.querySelector('[data-membership-payment]');
-        const cancel = form.querySelector('[data-payment-card-cancel]');
-        opener.addEventListener('click', function () {
-            if (form.getAttribute('aria-busy') === 'true') return;
-            editor.hidden = false;
-            opener.setAttribute('aria-expanded', 'true');
+        const dialog = window.bootstrap.Modal.getOrCreateInstance(editor);
+        function busy() { return form.getAttribute('aria-busy') === 'true'; }
+        editor.addEventListener('shown.bs.modal', function () {
+            // Stripe mounts at the dialog's final visible dimensions.
             form.querySelector('[data-stripe-field="cardNumber"]').focus();
             mount(form);
             mounted.get(form).focus();
         });
-        cancel.addEventListener('click', function () {
-            if (form.getAttribute('aria-busy') === 'true') return;
+        editor.addEventListener('hide.bs.modal', function (event) {
+            if (busy()) event.preventDefault();
+        });
+        editor.addEventListener('hidden.bs.modal', function () {
             if (mounted.has(form)) mounted.get(form).reset();
-            editor.hidden = true;
-            opener.setAttribute('aria-expanded', 'false');
-            opener.focus();
+        });
+        editor.addEventListener('checkout:busy', function () {
+            const pending = busy();
+            editor.querySelectorAll('[data-bs-dismiss="modal"]').forEach(function (button) { button.disabled = pending; });
+            // Bank authentication opens outside this dialog; restore its trap before focusing an error.
+            const trap = dialog._focustrap;
+            if (trap) { if (pending) trap.deactivate(); else if (editor.classList.contains('show')) trap.activate(); }
         });
     });
     if (document.addEventListener) {

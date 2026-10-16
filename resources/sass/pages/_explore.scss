@@ -49,10 +49,6 @@ html[data-explore-page]::view-transition {
         outline: none;
         background: var(--color-primary-soft);
     }
-    a:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
-    }
     details[open] > summary > .explore-chevron {
         transform: rotate(-90deg);
     }

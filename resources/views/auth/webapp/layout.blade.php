@@ -51,8 +51,6 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 }
 
 #action .auth-secondary-link:focus-visible {
-    outline: 2px solid var(--color-primary) !important;
-    outline-offset: 3px;
     border-radius: 2px;
 }
 
@@ -71,11 +69,6 @@ src="https://www.facebook.com/tr?id=208256284230812&ev=PageView&noscript=1"
 #onboarding .carousel-indicators .active {
     width: 30px;
     background-color: var(--color-primary, #0055fe);
-}
-
-#onboarding .carousel-indicators [data-bs-target]:focus-visible {
-    outline: 2px solid var(--color-primary, #0055fe);
-    outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

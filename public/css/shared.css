@@ -2246,10 +2246,6 @@ input[type=range] {
   border-color: var(--field-muted);
   box-shadow: none;
 }
-.form-check-input:focus-visible {
-  outline: 2px solid var(--field-muted);
-  outline-offset: 2px;
-}
 
 .form-switch .form-check-input {
   border-radius: var(--radius-pill);
@@ -2264,10 +2260,6 @@ input[type=range] {
 }
 .switch input:focus + .slider {
   box-shadow: none;
-}
-.switch input:focus-visible + .slider {
-  outline: 2px solid var(--field-muted);
-  outline-offset: 2px;
 }
 .switch input:disabled + .slider {
   opacity: 0.5;
@@ -2380,4 +2372,27 @@ input[type=range] {
   border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
   border-radius: var(--bs-dropdown-border-radius);
   box-shadow: var(--bs-dropdown-box-shadow);
+}
+
+/* PianoLIT uses existing border/background states, without an extra outline or halo.
+   Keep this partial plain CSS: standalone error views embed this same reset. */
+*,
+*::before,
+*::after {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
+:root {
+  --bs-focus-ring-width: 0;
+  --bs-focus-ring-opacity: 0;
+  --bs-focus-ring-color: transparent;
+}
+
+.btn {
+  --bs-btn-focus-box-shadow: none;
+}
+
+.focus-ring:focus {
+  box-shadow: none !important;
 }

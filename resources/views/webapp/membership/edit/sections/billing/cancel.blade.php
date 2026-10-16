@@ -3,10 +3,9 @@
     $renewalScheduled = !$overview['ended'] && !$ending && !$source->isPaused()
         && in_array($source->status, ['active', 'trialing'], true) && $source->renews_at && $source->renews_at->isFuture();
 @endphp
-<section class="bg-light rounded-sm p-4 mt-5" aria-labelledby="membership-renewal-heading">
+<section class="border rounded-sm p-4 mt-5" aria-labelledby="membership-renewal-heading">
     <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
         <div class="d-flex align-items-center gap-3">
-            <span class="badge alert-blue rounded p-3" aria-hidden="true">@icon('calendar', ['size' => 'lg', 'mr' => 0])</span>
             <div>
                 <h2 class="h5 mb-1" id="membership-renewal-heading">{{ $overview['ended'] ? 'Membership ended' : ($ending ? 'Your membership is ending' : 'Membership renewal') }}</h2>
                 <p class="text-muted small mb-0">Your plan and automatic renewal settings.</p>
@@ -15,7 +14,7 @@
         <span class="badge rounded-pill alert-{{ $overview['tone'] }}">{{ $ending ? 'Renewal off' : ($renewalScheduled ? 'Auto-renew on' : $overview['status']) }}</span>
     </div>
 
-    <dl class="membership-overview-details bg-white rounded-sm p-3 mb-0">
+    <dl class="membership-overview-details bg-light rounded-sm p-3 mb-0">
         <div>
             <dt>{{ $overview['ended'] ? 'Previous plan' : 'Your plan' }}</dt>
             <dd class="font-weight-bold">{{ $source->plan_name }} Premium</dd>
@@ -61,7 +60,7 @@
                         <button type="submit" class="btn btn-secondary">Resume billing</button>
                     </form>
                     @endif
-                    <button type="button" class="btn btn-outline-danger flex-grow-1" data-bs-toggle="modal" data-bs-target="#membership-cancel-confirmation">Cancel membership</button>
+                    <button type="button" class="btn-raw text-red flex-grow-1" data-bs-toggle="modal" data-bs-target="#membership-cancel-confirmation">Cancel membership</button>
                 </div>
             @endif
         </div>

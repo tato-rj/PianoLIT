@@ -20,15 +20,6 @@
     a:hover {
         text-decoration: underline;
     }
-    a:focus-visible,
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
-    summary:focus-visible,
-    [tabindex]:focus-visible {
-        outline: 3px solid #668c77;
-        outline-offset: 4px;
-    }
     .ca-context {
         display: flex;
         justify-content: space-between;

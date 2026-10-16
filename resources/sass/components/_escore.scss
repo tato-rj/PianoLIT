@@ -92,8 +92,7 @@
         gap: 12px;
         flex-wrap: wrap;
     }
-    // Keep the selection ring inside the button, away from scroll clipping and
-    // the shared button focus rule that removes outlines.
+    // Keep the selected color inside the button so scroll containers do not clip it.
     .escore-swatch {
         width: 45px;
         height: 45px;
@@ -289,7 +288,6 @@
     }
     .escore-thumbnail.active img {
         border-color: var(--color-primary);
-        outline: 1px solid var(--color-primary);
     }
     .escore-footer {
         display: grid;

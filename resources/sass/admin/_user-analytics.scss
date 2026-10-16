@@ -9,14 +9,6 @@
     a:hover {
         text-decoration: underline;
     }
-    a:focus-visible,
-    button:focus-visible,
-    summary:focus-visible,
-    input:focus-visible,
-    select:focus-visible {
-        outline: 2px solid #43764c;
-        outline-offset: 4px;
-    }
     h2 {
         font-size: var(--font-size-h4);
         font-weight: 600;
@@ -267,8 +259,6 @@
         scrollbar-width: thin;
     }
     .ua-chart-scroll:focus-visible {
-        outline: 2px solid #43764c;
-        outline-offset: 4px;
         border-radius: 4px;
     }
     .ua-chart-canvas {

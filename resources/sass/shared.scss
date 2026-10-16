@@ -13,3 +13,6 @@
 @import 'components/icons';
 @import 'components/form-fields';
 @import 'components/dropdown';
+
+// Cancel native/vendor outlines after every shared control and utility.
+@import 'shared/focus';

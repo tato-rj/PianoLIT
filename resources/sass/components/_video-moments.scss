@@ -157,19 +157,10 @@
     &__popover[hidden] {
         display: none !important;
     }
-    &__row:focus-visible,
-    &__about:focus-visible,
-    &__close:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
-    }
 }
 // Keep listening-guide rows outside the embedded player's existing height cap.
 #tabs-container .piece-moments-player .plyr--video:not(.plyr--fullscreen-fallback) {
     height: auto;
-}
-.plyr__progress__marker:focus-visible {
-    outline: 2px solid var(--color-primary);
 }
 
 @media (max-width: 480px) {

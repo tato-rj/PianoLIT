@@ -7,7 +7,7 @@
     {{-- @include('webapp.membership.steps', ['step' => 1]) --}}
     <header class="membership-heading">
         <span class="membership-eyebrow">PianoLIT Premium</span>
-        <h1>Find your next piece.</h1>
+        <h1>Choose your plan</h1>
         <p>Explore piano music with scores, videos, and recordings, all in one place.</p>
     </header>
 

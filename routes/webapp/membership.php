@@ -20,6 +20,7 @@ Route::namespace('WebApp')->prefix('membership')->name('membership.')->group(fun
 	Route::post('plan/update', 'MembershipsController@updatePlan')->name('update.plan');
 
 	Route::post('card/update', 'MembershipsController@updateCard')->name('update.card');
+    Route::post('card/remove', 'MembershipsController@removeCard')->middleware('throttle:20,1')->name('remove.card');
 
 	Route::post('status/update', 'MembershipsController@updateBillingStatus')->name('update.billing-status');
 

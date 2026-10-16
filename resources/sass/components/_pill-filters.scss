@@ -19,10 +19,6 @@
         &:hover:not(:disabled) {
             border-color: #0055fe;
         }
-        &:focus-visible {
-            outline: 3px solid #0055fe;
-            outline-offset: 5px;
-        }
         &:disabled {
             opacity: 0.5;
             cursor: default;

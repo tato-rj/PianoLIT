@@ -31,11 +31,6 @@
             line-height: $btn-line-height;
         }
     }
-
-    &:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
-    }
 }
 
 .btn-primary {
@@ -92,14 +87,6 @@
     &.dropdown-toggle[aria-expanded='true'] {
         background-color: #eaf0ff;
         border-color: #d4e1ff;
-    }
-
-    &:focus,
-    &.focus,
-    &:not(:disabled):not(.disabled):active:focus,
-    &:not(:disabled):not(.disabled).active:focus,
-    &.dropdown-toggle[aria-expanded='true']:focus {
-        box-shadow: 0 0 0 0.2rem var(--color-primary-soft);
     }
 
     &:disabled,

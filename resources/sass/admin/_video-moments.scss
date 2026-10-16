@@ -109,11 +109,6 @@
             color: #c83243;
         }
     }
-    &__step:focus-visible,
-    &__delete:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: -2px;
-    }
     &__actions {
         display: flex;
         align-items: center;

@@ -42,12 +42,6 @@ body.admin-shell {
         top: 12px;
     }
 }
-.admin-shell a:focus-visible,
-.admin-shell button:focus-visible,
-.admin-chart-data summary:focus-visible {
-    outline: 3px solid #54a776;
-    outline-offset: 4px;
-}
 .admin-sidebar {
     position: fixed;
     z-index: 1030;

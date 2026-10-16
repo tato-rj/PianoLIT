@@ -27,10 +27,6 @@
         &:hover:not(.active) {
             color: #0055fe;
         }
-        &:focus-visible {
-            outline: 3px solid #0055fe;
-            outline-offset: 3px;
-        }
     }
 }
 
@@ -178,10 +174,6 @@
             visibility: visible;
         }
     }
-    input:focus-visible + .folder-color-picker__swatch {
-        outline: 3px solid var(--color-primary) !important;
-        outline-offset: 4px;
-    }
     .invalid-feedback {
         display: block;
     }
@@ -236,12 +228,6 @@
     }
     &:focus-within {
         z-index: 2;
-    }
-    // Override the legacy global outline reset for keyboard navigation.
-    a:focus-visible,
-    button:focus-visible {
-        outline: 3px solid var(--color-primary) !important;
-        outline-offset: 3px;
     }
     &__heading {
         display: flex;
@@ -422,10 +408,6 @@
         &:hover {
             background: var(--pastel-sky-surface);
             border-color: var(--pastel-sky-accent);
-        }
-        &:focus-visible {
-            outline: 3px solid var(--color-primary) !important;
-            outline-offset: 3px;
         }
     }
     &__create-icon {

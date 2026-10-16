@@ -6,6 +6,36 @@ use App\Billing\Stripe\Gateway;
 
 class StripeGatewayTest extends ReviewTestCase
 {
+    public function test_card_removal_uses_account_scoped_modern_and_customer_source_sdk_endpoints()
+    {
+        config(['services.stripe.us_secret' => 'sk_test_us_review', 'services.stripe.swiss_secret' => 'sk_test_swiss_review']);
+        $client = new class implements \Stripe\HttpClient\ClientInterface {
+            public $calls = [];
+            public function request($method, $url, $headers, $parameters, $hasFile, $apiMode = 'v1', $maxNetworkRetries = null) {
+                $this->calls[] = compact('method', 'url', 'headers', 'parameters');
+                return [json_encode(strpos($url, 'payment_methods') !== false
+                    ? ['id' => 'pm_review', 'object' => 'payment_method', 'type' => 'card', 'customer' => null]
+                    : ['id' => 'card_review', 'object' => 'card', 'customer' => $method === 'get' ? 'cus_review' : null, 'deleted' => $method === 'delete']), 200, []];
+            }
+        };
+        $key = \Stripe\Stripe::getApiKey(); $version = \Stripe\Stripe::getApiVersion();
+        \Stripe\ApiRequestor::setHttpClient($client);
+        try {
+            $gateway = app(Gateway::class);
+            $gateway->call('us', 'paymentMethods', 'detach', [], 'pm_review', 'remove-review:detach');
+            $gateway->customerSource('swiss', 'cus_review', 'card_review');
+            $gateway->customerSource('swiss', 'cus_review', 'card_review', true, 'remove-review:delete');
+            $this->assertSame(['post', 'get', 'delete'], array_column($client->calls, 'method'));
+            $this->assertStringEndsWith('/v1/payment_methods/pm_review/detach', $client->calls[0]['url']);
+            $this->assertStringEndsWith('/v1/customers/cus_review/sources/card_review', $client->calls[2]['url']);
+            $this->assertStringContainsString('Authorization: Bearer sk_test_us_review', implode('\n', $client->calls[0]['headers']));
+            $this->assertStringContainsString('Authorization: Bearer sk_test_swiss_review', implode('\n', $client->calls[2]['headers']));
+            $this->assertStringContainsString('Stripe-Version: 2025-03-31.basil', implode('\n', $client->calls[2]['headers']));
+            $this->assertStringContainsString('Idempotency-Key: pianolit:remove-review:detach', implode('\n', $client->calls[0]['headers']));
+            $this->assertSame($key, \Stripe\Stripe::getApiKey()); $this->assertSame($version, \Stripe\Stripe::getApiVersion());
+        } finally { \Stripe\ApiRequestor::setHttpClient(null); }
+    }
+
     public function test_modern_sdk_uses_account_scoped_credentials_version_and_idempotency_without_global_mutation()
     {
         config(['services.stripe.us_secret' => 'sk_test_us_review', 'services.stripe.swiss_secret' => 'sk_test_swiss_review']);

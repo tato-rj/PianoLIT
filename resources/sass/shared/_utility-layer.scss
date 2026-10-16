@@ -6,7 +6,7 @@
 @import 'effects';
 @import '../components/palette-alerts';
 
-// Preserve the existing focus reset; accessible outlines are component-owned.
+// Retain the existing shadow reset on standard controls. Outline policy is shared/focus.
 select:focus,
 textarea:focus,
 input:focus,

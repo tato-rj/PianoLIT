@@ -2,12 +2,13 @@
     <div class="membership-overview-grid">
         <section class="card border-0" aria-labelledby="membership-current-plan">
             <div class="card-body p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+                <div class="mb-3">
                     <div>
-                        <p class="text-muted small mb-1">PianoLIT Premium</p>
+                        <div class="mb-1">
+                            <span class="badge rounded-pill alert-{{ $overview['tone'] }}">{{ $overview['status'] }}</span>
+                        </div>
                         <h2 class="h4 mb-0" id="membership-current-plan">{{ $source->plan_name }} membership</h2>
                     </div>
-                    <span class="badge rounded-pill alert-{{ $overview['tone'] }}">{{ $overview['status'] }}</span>
                 </div>
                 <p class="text-muted mb-4">{{ $overview['note'] }}</p>
                 <dl class="membership-overview-details mb-4">
@@ -22,7 +23,7 @@
                 </dl>
             </div>
         </section>
-        <section class="card rounded" aria-labelledby="membership-payment-method">
+        <section class="card rounded-sm" aria-labelledby="membership-payment-method">
             <div class="card-body p-4 d-flex flex-column">
                 <h2 class="h6 mb-4" id="membership-payment-method">Payment method</h2>
                 <div class="d-flex align-items-center gap-3 mb-3">

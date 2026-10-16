@@ -89,9 +89,3 @@
     font-size: var(--font-size-xs);
     margin: 0.5rem 0 0;
 }
-
-// Selection is shared by plan pickers; the purchase cards have no selected state.
-.membership-plan[data-selected="true"] {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 3px;
-}

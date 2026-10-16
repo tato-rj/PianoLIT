@@ -170,7 +170,6 @@
     cursor: pointer;
 
     &:hover { border-color: var(--color-text-muted); }
-    &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; }
     &[aria-expanded='true'] { border-style: solid; }
 }
 
@@ -191,4 +190,16 @@
 
 @media (max-width: 767px) {
     .payment-card-form-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.payment-card-option--selectable {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
 }

@@ -87,14 +87,60 @@ class MembershipBilling
         return $customer['id'];
     }
 
-    public function prepare(User $user, string $id, string $kind, ?Plan $plan = null, ?string $coupon = null): array
+    /** Web-only display data and a stale-selection guard; provider IDs stay server-side. */
+    public function savedCard(User $user): ?array
+    {
+        $source = $this->source($user, false);
+        if (!$source || !$source->hasCard()) return null;
+        return ['brand' => $source->card_brand, 'last4' => $source->card_last_four,
+            'reference' => hash('sha256', json_encode([$user->id, $this->accounts->forSource($source), $source->stripe_id,
+                $source->payment_method_id, $source->card_brand, $source->card_last_four]))];
+    }
+
+    private function savedPaymentMethod(User $user, $operation, ?string $reference): string
+    {
+        $source = $this->source($user);
+        $card = $this->savedCard($user);
+        if (!$card || !is_string($reference) || !hash_equals($card['reference'], $reference)
+            || $source->stripe_id !== $operation->customer_id || $this->accounts->forSource($source) !== $operation->billing_account) {
+            throw new BillingException('Your saved card has changed. Reload checkout or add a new card.');
+        }
+        $id = $source->payment_method_id;
+        if (!$id) {
+            // Legacy display records may predate our saved PaymentMethod bookkeeping.
+            $customer = $this->gateway->call($operation->billing_account, 'customers', 'retrieve', [], $operation->customer_id);
+            $id = SubscriptionState::id(data_get($customer, 'invoice_settings.default_payment_method'));
+        }
+        if (!is_string($id) || !preg_match('/^pm_[A-Za-z0-9]+$/D', $id)) {
+            throw new BillingException('This saved card needs to be entered again. Please add a new card.');
+        }
+        $method = $this->gateway->call($operation->billing_account, 'paymentMethods', 'retrieve', [], $id);
+        $brand = static function ($value) {
+            $value = preg_replace('/[^a-z]/', '', strtolower((string) $value));
+            return ['americanexpress' => 'amex', 'dinersclub' => 'diners'][$value] ?? $value;
+        };
+        if (($method['type'] ?? null) !== 'card' || SubscriptionState::id($method['customer'] ?? null) !== $operation->customer_id
+            || (string) data_get($method, 'card.last4') !== (string) $source->card_last_four
+            || $brand(data_get($method, 'card.brand')) !== $brand($source->card_brand)) {
+            throw new BillingException('Your saved card is no longer available. Please add a new card.');
+        }
+        return $id;
+    }
+
+    public function prepare(User $user, string $id, string $kind, ?Plan $plan = null, ?string $coupon = null, bool $useSavedCard = false, ?string $savedCardReference = null): array
     {
         $account = $this->account($user);
+        if ($useSavedCard && $kind === 'purchase') {
+            $card = $this->savedCard($user);
+            if (!$card || !is_string($savedCardReference) || !hash_equals($card['reference'], $savedCardReference)) {
+                throw new BillingException('Your saved card has changed. Reload checkout or add a new card.');
+            }
+        }
         $coupon = $coupon ? strtoupper(trim($coupon)) : null;
         if ($kind === 'card') $this->source($user);
         $operation = $this->operations->begin($user, $id, $kind, $account, $plan ? $plan->name : null, $coupon);
         $profile = $this->profile($user, $account);
-        return $this->operations->locked($user, function () use ($user, $operation, $profile, $plan) {
+        return $this->operations->locked($user, function () use ($user, $operation, $profile, $plan, $useSavedCard, $savedCardReference) {
             $operation = $this->operations->owned($user, $operation->id, $operation->kind);
             if ($operation->subscription_id && $operation->kind === 'purchase') {
                 return $this->paymentResult($this->subscription($user), $operation);
@@ -107,6 +153,11 @@ class MembershipBilling
             }
             $customer = $this->customer($user, $profile);
             $this->operations->update($operation->id, ['customer_id' => $customer]);
+            if ($useSavedCard && $operation->kind === 'purchase') {
+                $operation = $this->operations->owned($user, $operation->id, 'purchase');
+                $this->savedPaymentMethod($user, $operation, $savedCardReference);
+                return ['operation_id' => $operation->id, 'saved_card' => true];
+            }
             $intent = $operation->setup_intent_id
                 ? $this->gateway->call($operation->billing_account, 'setupIntents', 'retrieve', [], $operation->setup_intent_id)
                 : $this->gateway->call($operation->billing_account, 'setupIntents', 'create', [
@@ -165,14 +216,16 @@ class MembershipBilling
         return $intent;
     }
 
-    public function purchase(User $user, Plan $plan, string $id, string $setup): array
+    public function purchase(User $user, Plan $plan, string $id, ?string $setup = null, bool $useSavedCard = false, ?string $savedCardReference = null): array
     {
-        return $this->operations->locked($user, function () use ($user, $plan, $id, $setup) {
+        return $this->operations->locked($user, function () use ($user, $plan, $id, $setup, $useSavedCard, $savedCardReference) {
             $operation = $this->operations->owned($user, $id, 'purchase');
             if ($operation->plan !== $plan->name) throw new BillingException('The selected plan does not match this checkout.');
             if ($operation->subscription_id) return $this->paymentResult($this->subscription($user), $operation);
             $this->availableToPurchase($user);
-            $intent = $this->verifiedSetup($operation, $setup);
+            if (!$useSavedCard && !$setup) throw new BillingException('Please finish confirming your card before continuing.');
+            $method = $useSavedCard ? $this->savedPaymentMethod($user, $operation, $savedCardReference)
+                : SubscriptionState::id($this->verifiedSetup($operation, $setup)['payment_method']);
             $price = $this->price($plan, $operation->billing_account);
             $existing = $this->subscriptions($operation->billing_account, $operation->customer_id);
             $subscription = null;
@@ -184,7 +237,7 @@ class MembershipBilling
                 if (carbon($operation->created_at)->lt(now()->subHours(23))) throw new BillingException('This checkout needs a billing review before it can be retried. Please contact contact@pianolit.com.');
                 $parameters = [
                     'customer' => $operation->customer_id, 'items' => [['price' => $price['id']]],
-                    'default_payment_method' => SubscriptionState::id($intent['payment_method']),
+                    'default_payment_method' => $method,
                     'payment_behavior' => 'default_incomplete',
                     'payment_settings' => ['save_default_payment_method' => 'on_subscription', 'payment_method_types' => ['card']],
                     'metadata' => ['pianolit_operation' => $id],
@@ -354,10 +407,11 @@ class MembershipBilling
         if ($id) {
             $method = $this->gateway->call($account, 'paymentMethods', 'retrieve', [], $id);
             if (SubscriptionState::id($method['customer'] ?? null) === $source->stripe_id) $card = $method['card'] ?? null;
+            else $id = null;
         } else {
             $customer = $this->gateway->call($account, 'customers', 'retrieve', ['expand' => ['invoice_settings.default_payment_method', 'default_source']], $source->stripe_id);
             $method = data_get($customer, 'invoice_settings.default_payment_method');
-            if (is_array($method)) { $id = $method['id']; $card = $method['card'] ?? null; }
+            if (is_array($method) && SubscriptionState::id($method['customer'] ?? null) === $source->stripe_id) { $id = $method['id']; $card = $method['card'] ?? null; }
             elseif (is_array($customer['default_source'] ?? null)) $card = $customer['default_source'];
         }
         $source->update(['payment_method_id' => $id, 'card_brand' => $card['brand'] ?? null, 'card_last_four' => $card['last4'] ?? null]);

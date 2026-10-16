@@ -17,11 +17,6 @@
     background: #fff;
     color: #212529;
 
-    button:focus-visible {
-        outline: 3px solid #0055fe;
-        outline-offset: 3px;
-    }
-
     &__header {
         display: flex;
         align-items: flex-start;

@@ -96,11 +96,6 @@
     button {
         -webkit-tap-highlight-color: transparent;
     }
-    button:focus-visible,
-    textarea:focus-visible {
-        outline: 2px solid currentColor;
-        outline-offset: 5px;
-    }
     .feedback-form {
         display: flex;
         flex-direction: column;
@@ -232,10 +227,6 @@
     }
     .feedback-slider input:active {
         cursor: grabbing;
-    }
-    .feedback-slider:focus-within .feedback-slider-thumb {
-        outline: 2px solid currentColor;
-        outline-offset: 4px;
     }
     .feedback-picker-labels {
         display: flex;

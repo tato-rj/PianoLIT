@@ -1,10 +1,30 @@
 <form action="{{ route('webapp.membership.purchase', $plan) }}" method="POST" id="payment-form" class="membership-payment-form"
-    data-checkout-payment data-membership-payment data-purpose="purchase" data-key="{{ $stripeKey }}" data-operation="{{ $operationId }}" data-split-card
+    @if($savedCard) data-saved-card-reference="{{ $savedCard['reference'] }}" @endif data-checkout-payment data-membership-payment data-purpose="purchase" data-key="{{ $stripeKey }}" data-operation="{{ $operationId }}" data-split-card
     data-prepare="{{ route('webapp.membership.prepare', $plan) }}" data-complete="{{ route('webapp.membership.complete') }}">
     @csrf
     <div class="checkout-card-and-fields">
-        @include('components.payment-card-preview')
-    @include('components.payment-card-fields', ['prefix' => 'checkout', 'cardholder' => auth('web')->user()->full_name])
+        @if($savedCard)
+        <div class="d-grid gap-3">
+            @include('components.payment-card-preview', ['saved' => $savedCard, 'selectable' => true])
+            @include('components.payment-card-preview', ['add' => true, 'controlsId' => 'checkout-new-card-fields'])
+            <div data-checkout-new-preview hidden>
+                @include('components.payment-card-preview', ['saved' => null, 'add' => false])
+            </div>
+        </div>
+        <div>
+            <div data-checkout-saved-details>
+                <h2 class="h5 mb-3">Pay with your saved card</h2>
+                <p class="text-muted">Use the card on file for your new membership, or add a different card.</p>
+                <p class="text-muted small mb-0">Your card will be charged when you confirm your membership.</p>
+            </div>
+            <fieldset class="border-0 p-0 m-0" id="checkout-new-card-fields" data-checkout-new-fields hidden disabled>
+                @include('components.payment-card-fields', ['prefix' => 'checkout', 'cardholder' => auth('web')->user()->full_name])
+            </fieldset>
+        </div>
+        @else
+            @include('components.payment-card-preview')
+            @include('components.payment-card-fields', ['prefix' => 'checkout', 'cardholder' => auth('web')->user()->full_name])
+        @endif
     </div>
     <div data-card-status class="membership-card-status" role="status" aria-live="polite">Loading secure card fields…</div>
     <div id="card-errors" role="alert" aria-live="polite" class="membership-card-errors" tabindex="-1"></div>

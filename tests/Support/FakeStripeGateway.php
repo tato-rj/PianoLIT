@@ -6,7 +6,7 @@ use App\Billing\Stripe\Gateway;
 
 class FakeStripeGateway extends Gateway
 {
-    public $calls = [], $customers = [], $intents = [], $subscriptions = [], $schedules = [], $invoices = [], $prices = [], $coupons = [];
+    public $calls = [], $customers = [], $intents = [], $subscriptions = [], $schedules = [], $invoices = [], $prices = [], $coupons = [], $paymentMethods = [], $sources = [];
     public $nextSubscription, $failure, $intercept;
     private $keys = [];
 
@@ -42,7 +42,25 @@ class FakeStripeGateway extends Gateway
             if (!isset($this->intents[$id])) throw new \RuntimeException('Unknown test setup intent');
             return $this->intents[$id];
         }
-        if ($resource === 'paymentMethods') return ['id' => $id, 'customer' => $this->nextSubscription['customer'] ?? 'cus_review', 'type' => 'card', 'card' => ['brand' => 'visa', 'last4' => '4444']];
+        if ($resource === 'paymentMethods') {
+            $card = $this->paymentMethods[$id] ?? ['id' => $id, 'customer' => $this->nextSubscription['customer'] ?? 'cus_review', 'type' => 'card', 'card' => ['brand' => 'visa', 'last4' => '4444']];
+            if ($method === 'detach') {
+                $card['customer'] = null;
+                $this->paymentMethods[$id] = $card;
+            }
+            return $card;
+        }
+        if ($resource === 'customerSources') {
+            $source = $this->sources[$id] ?? null;
+            if (!$source || ($source['customer'] ?? null) !== $p['customer']) throw \Stripe\Exception\InvalidRequestException::factory('Missing test source', 404, null, null, null, 'resource_missing');
+            if ($method === 'delete') {
+                unset($this->sources[$id]);
+                if (\App\Billing\Stripe\SubscriptionState::id($this->customers[$p['customer']]['default_source'] ?? null) === $id) $this->customers[$p['customer']]['default_source'] = null;
+                if (($source['object'] ?? null) === 'source') return $this->sources[$id] = array_replace($source, ['status' => 'consumed']);
+                return ['id' => $id, 'deleted' => true];
+            }
+            return $source;
+        }
         if ($resource === 'subscriptions') {
             if ($method === 'all') {
                 $rows = array_values(array_filter($this->subscriptions, function ($s) use ($p) { return $s['customer'] === $p['customer']; }));
@@ -92,7 +110,7 @@ class FakeStripeGateway extends Gateway
         if ($resource === 'invoices') {
             if ($method === 'createPreview') return ['currency' => 'usd', 'amount_due' => 799, 'period_end' => now()->addMonth()->timestamp];
             $items = array_values(array_filter($this->invoices, function ($item) use ($p) {
-                return (!isset($p['status']) || $item['status'] === $p['status']) && (!isset($item['customer']) || $item['customer'] === $p['customer']);
+                return (!isset($p['subscription']) || !isset($item['subscription']) || $item['subscription'] === $p['subscription']) && (!isset($p['status']) || $item['status'] === $p['status']) && (!isset($item['customer']) || $item['customer'] === $p['customer']);
             }));
             return ['data' => $items, 'has_more' => false];
         }
@@ -104,6 +122,11 @@ class FakeStripeGateway extends Gateway
     {
         $this->intents[$id]['status'] = 'succeeded';
         $this->intents[$id]['payment_method'] = 'pm_review';
+    }
+
+    public function customerSource(string $account, string $customer, string $source, bool $delete = false, ?string $key = null): array
+    {
+        return $this->call($account, 'customerSources', $delete ? 'delete' : 'retrieve', ['customer' => $customer], $source, $key);
     }
 
     public function callsTo($resource, $method): array

@@ -41,7 +41,11 @@ class MembershipsController extends Controller
         $plans = Plan::all()->reverse();
         $cardOperation = (string) Str::uuid();
         $overview = \App\Support\MembershipOverview::forSource($source);
-        return view('webapp.membership.edit.index', compact('plans', 'source', 'stripeKey', 'cardOperation', 'overview'));
+        $savedCard = $billing->savedCard($user);
+        $selected = request()->query('checkout');
+        $checkoutPlan = $overview['ended'] && is_string($selected) ? $plans->firstWhere('name', $selected) : null;
+        $checkoutUrl = $checkoutPlan ? route('webapp.membership.checkout', $checkoutPlan) : null;
+        return view('webapp.membership.edit.index', compact('plans', 'source', 'stripeKey', 'cardOperation', 'overview', 'checkoutUrl', 'savedCard'));
     }
 
     public function checkout(Plan $plan, Request $request, MembershipBilling $billing)
@@ -57,7 +61,8 @@ class MembershipsController extends Controller
         $activeCoupon = $active ? $active->coupon : null;
         $trialDays = $billing->trialDays($request->user('web'), $plan);
         \App\Activity\Actions::record($request, 'checkout_started', [], 'plan', $plan->id);
-        $data = compact('plan', 'stripeKey', 'operationId', 'trialDays', 'activeCoupon');
+        $savedCard = $billing->savedCard($request->user('web'));
+        $data = compact('plan', 'stripeKey', 'operationId', 'trialDays', 'activeCoupon', 'savedCard');
         if ($request->expectsJson()) {
             return response()->json(['html' => view('webapp.membership.checkout.modal', $data)->render()])
                 ->header('Cache-Control', 'private, no-store');
@@ -67,8 +72,9 @@ class MembershipsController extends Controller
 
     public function prepare(Request $request, Plan $plan, MembershipBilling $billing)
     {
-        $data = $request->validate(['operation_id' => 'required|uuid', 'coupon' => 'nullable|string|max:80']);
-        try { return response()->json($billing->prepare($request->user('web'), $data['operation_id'], 'purchase', $plan, $data['coupon'] ?? null)); }
+        $data = $request->validate(['operation_id' => 'required|uuid', 'coupon' => 'nullable|string|max:80',
+            'use_saved_card' => 'sometimes|boolean', 'saved_card_reference' => ['nullable', 'string', 'regex:/^[a-f0-9]{64}$/D']]);
+        try { return response()->json($billing->prepare($request->user('web'), $data['operation_id'], 'purchase', $plan, $data['coupon'] ?? null, $request->boolean('use_saved_card'), $data['saved_card_reference'] ?? null)); }
         catch (\Throwable $exception) { return $this->failure($request, $exception); }
     }
 
@@ -81,7 +87,7 @@ class MembershipsController extends Controller
 
     public function purchase(StripeMembershipForm $request, Plan $plan, MembershipBilling $billing)
     {
-        try { return response()->json($billing->purchase($request->user('web'), $plan, $request->operation_id, $request->setup_intent)); }
+        try { return response()->json($billing->purchase($request->user('web'), $plan, $request->operation_id, $request->setup_intent, $request->boolean('use_saved_card'), $request->input('saved_card_reference'))); }
         catch (\Throwable $exception) { return $this->failure($request, $exception); }
     }
 
@@ -115,6 +121,9 @@ class MembershipsController extends Controller
         }
         $request->session()->flash('membership-confirmation', [
             'user_id' => $user->id, 'operation_id' => $data['operation_id'], 'email_queued' => $emailQueued,
+            // Use this verified subscription's dates, including when an old member subscribes again.
+            'subscription_id' => $subscription->id, 'purchased_at' => $subscription->created ?? now()->timestamp,
+            'trial_ends_at' => $subscription->trial_end ?? null,
         ]);
         return response()->json(['redirect' => route('webapp.discover')]);
     }
@@ -147,6 +156,17 @@ class MembershipsController extends Controller
     {
         $data = $request->validate(['operation_id' => 'required|uuid', 'paused' => 'required|boolean']);
         return $this->change($request, $management, $data['paused'] ? 'pause' : 'unpause', $data['paused'] ? 'Your billing is paused.' : 'Your billing has resumed.');
+    }
+
+    public function removeCard(Request $request, \App\Billing\Stripe\CardRemoval $removal)
+    {
+        $data = $request->validate(['operation_id' => 'required|uuid', 'saved_card_reference' => ['required', 'string', 'regex:/^[a-f0-9]{64}$/D']]);
+        try { $removal->remove($request->user('web'), $data['operation_id'], $data['saved_card_reference']); }
+        catch (\Throwable $exception) {
+            $response = $this->failure($request, $exception, 'webapp.membership.edit');
+            return $request->expectsJson() ? $response : $response->setTargetUrl(route('webapp.membership.edit').'#update-card-tab');
+        }
+        return redirect()->to(route('webapp.membership.edit').'#update-card-tab')->with('status', 'Your saved card has been removed.');
     }
 
     public function cancel(Request $request, MembershipManagement $management)

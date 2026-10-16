@@ -7,11 +7,6 @@
     a {
         text-decoration: none;
     }
-    a:focus-visible,
-    button:focus-visible {
-        outline: 3px solid #0055fe;
-        outline-offset: 5px;
-    }
     h1,
     h2,
     h3 {
@@ -156,10 +151,6 @@
     padding: 2px 2px 12px;
     scrollbar-width: thin;
     scrollbar-color: #c7d2e3 #f2f5f9;
-    &:focus-visible {
-        outline: 3px solid #0055fe;
-        outline-offset: 4px;
-    }
     .collections-book {
         flex: 0 0 31%;
         min-width: 0;

@@ -25,7 +25,9 @@ class StripeMembershipForm extends FormRequest
     {
         return [
             'operation_id' => 'required|uuid',
-            'setup_intent' => ['required', 'string', 'max:255', 'regex:/^seti_[A-Za-z0-9]+$/D'],
+            'use_saved_card' => 'sometimes|boolean',
+            'saved_card_reference' => ['nullable', 'string', 'regex:/^[a-f0-9]{64}$/D'],
+            'setup_intent' => [$this->routeIs('webapp.membership.purchase') && $this->boolean('use_saved_card') ? 'nullable' : 'required', 'string', 'max:255', 'regex:/^seti_[A-Za-z0-9]+$/D'],
         ];
     }
 }

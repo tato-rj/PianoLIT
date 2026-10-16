@@ -8,21 +8,10 @@
 @section('content')
 @include('webapp.layouts.header', ['title' => 'My Membership', 'subtitle' => 'Your plan, payments, and billing details, all in one place.'])
 <div class="membership-management">
-@if($overview['ended'])
-    <div class="alert alert-warning">Your membership has ended. <a href="{{ route('webapp.membership.pricing') }}">Choose a plan to subscribe again</a>. Your invoices remain available below.</div>
-@elseif(in_array($source->status, ['past_due', 'unpaid', 'incomplete'], true))
-    <div class="alert alert-warning" role="status">Your membership needs a payment. Update your card in Billing, then complete the open invoice in Invoices.
-        @if($source->payment_url)<a href="{{ $source->payment_url }}" target="_blank" rel="noopener noreferrer">Complete payment</a>@endif
-    </div>
-@endif
-@if($source->pending_plan && $source->plan_changes_at)
-    <div class="alert alert-info">Your {{ ucfirst($source->pending_plan) }} plan starts on {{ $source->plan_changes_at->toFormattedDateString() }}. Your current plan remains in effect until then.</div>
-@endif
-
 <section class="mb-5">
-    @component('components.tab-navigation', ['id' => 'membership-tabs', 'label' => 'Membership sections', 'variant' => 'segmented', 'class' => 'mx-auto mb-5', 'items' => [
+    @component('components.tab-navigation', ['id' => 'membership-tabs', 'label' => 'Membership sections', 'variant' => 'segmented', 'class' => 'mx-auto mb-4', 'items' => [
         ['target' => 'overview-tab', 'label' => 'Overview'],
-        ['target' => 'update-plan-tab', 'label' => 'Change plan'],
+        ['target' => 'update-plan-tab', 'label' => $overview['ended'] ? 'Choose plan' : 'Change plan'],
         ['target' => 'update-card-tab', 'label' => 'Billing'],
         ['target' => 'invoices-tab', 'label' => 'Invoices'],
     ]])

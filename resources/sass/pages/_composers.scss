@@ -34,10 +34,6 @@
             background: rgba(var(--color-primary-rgb), 0.04);
             color: var(--color-text);
         }
-        &:focus-visible {
-            outline: 2px solid var(--color-primary);
-            outline-offset: 3px;
-        }
     }
     .composer-portrait {
         width: 104px;
@@ -229,7 +225,6 @@
     .composer-globe-canvas {
         position: absolute;
         inset: 0;
-        outline-offset: -4px;
     }
     .composer-globe-canvas canvas {
         display: block;
@@ -657,13 +652,6 @@
         line-height: 1.6;
         color: #9eb8c9;
     }
-    button:focus-visible,
-    select:focus-visible,
-    a:focus-visible,
-    .composer-globe-canvas:focus-visible {
-        outline: 2px solid #e7c88b;
-        outline-offset: 3px;
-    }
 
     @media (max-width: 899.98px) {
         .fullscreen-modal-header {
@@ -987,12 +975,6 @@
     }
     .composer-globe-footnote {
         color: #6c8290;
-    }
-    button:focus-visible,
-    select:focus-visible,
-    a:focus-visible,
-    .composer-globe-canvas:focus-visible {
-        outline-color: var(--color-primary);
     }
     .composer-globe-tooltip {
         background: rgba(255, 255, 255, 0.97);

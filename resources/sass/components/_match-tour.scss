@@ -486,7 +486,7 @@
     }
     .match-primary:focus,
     .match-primary.focus {
-        box-shadow: 0 0 0 3px var(--match-accent) !important;
+        box-shadow: none !important;
     }
     .match-primary:not(:disabled):not(.disabled):active,
     .match-primary:not(:disabled):not(.disabled).active {
@@ -507,11 +507,6 @@
         padding: 8px 0;
         font-size: 14px;
         color: var(--match-ink);
-    }
-    button:focus-visible,
-    a:focus-visible {
-        outline: 3px solid var(--color-primary);
-        outline-offset: 4px;
     }
     button:disabled {
         cursor: default;
@@ -755,11 +750,6 @@
         transform: translate(-50%, -50%);
         width: 84px;
         height: 84px;
-    }
-    .match-card--reward .match-play:focus-visible,
-    .match-artwork video:focus-visible {
-        outline: 3px solid var(--color-primary);
-        outline-offset: -4px;
     }
     .match-card--reward.has-played.is-playing .match-artwork.has-video .match-play {
         visibility: hidden;

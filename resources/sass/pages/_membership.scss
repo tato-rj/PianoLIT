@@ -6,12 +6,6 @@
         color: var(--color-primary);
     }
 
-    a:focus-visible,
-    summary:focus-visible {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 5px;
-    }
-
     .app-icon {
         flex-shrink: 0;
     }
