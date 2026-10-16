@@ -374,12 +374,119 @@ class StripeMembershipBillingTest extends ReviewTestCase
     {
         $this->purchase(); $this->gateway->calls = [];
         $response = $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('data-membership-payment', false)->assertSee('data-membership-invoices', false);
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame(0, $xpath->query('//*[@id="overview-tab"]//*[contains(@class,"membership-plan-panel")]')->length);
+        $this->assertSame(2, $xpath->query('//*[@id="update-plan-tab"]//*[@data-plan-card]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-tabs"]//*[@aria-selected="true"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-tabs" and @data-tab-navigation]')->length);
+        $frame = $xpath->query('//*[@data-tab-navigation-frame][.//*[@id="membership-tabs"]]')->item(0);
+        $this->assertNotNull($frame);
+        $this->assertSame(4, $xpath->query('.//*[@role="tabpanel"]', $frame)->length);
+        $this->assertSame('overview-tab', $xpath->query('//*[@id="membership-tabs"]')->item(0)->getAttribute('data-tab-default'));
+        $html = $response->getContent();
+        $this->assertLessThan(strpos($html, 'id="membership-tabs"'), strpos($html, 'PianoLITTabNavigation.prepare('));
+        $this->assertGreaterThan(strpos($html, 'id="invoices-tab"'), strpos($html, 'PianoLITTabNavigation.initial('));
+        $this->assertLessThan(strpos($html, 'src="'.mix('js/app.js').'"'), strpos($html, 'PianoLITTabNavigation.initial('));
+        $this->assertSame(1, $xpath->query('//*[@id="overview-tab"]//a[@href="#update-card-tab" and @data-membership-tab]')->length);
+        $this->assertSame(1, $xpath->query('//button[@name="plan" and @data-name="monthly" and @disabled]')->length);
+        $this->assertSame(1, $xpath->query('//button[@name="plan" and @data-name="yearly" and not(@disabled)]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="update-plan-action"]//form[@method="POST"]//input[@name="operation_id"]')->length);
         if ($directory = getenv('STRIPE_BILLING_PREVIEW')) file_put_contents($directory.'/membership.html', $response->getContent());
         $this->assertCount(0, $this->gateway->calls);
         $this->source()->update(['status' => 'canceled', 'ended_at' => now()]);
         $this->user->unsetRelation('membership');
         $ended = $this->get(route('webapp.membership.edit'))->assertOk()->assertDontSee('data-membership-payment', false)->assertSee('Your membership has ended');
         if ($directory = getenv('STRIPE_BILLING_PREVIEW')) file_put_contents($directory.'/ended.html', $ended->getContent());
+    }
+
+    public function test_billing_shows_saved_card_add_editor_and_cancellation_without_inner_tabs_or_a_pause_offer()
+    {
+        $this->purchase(); $this->gateway->calls = [];
+        $response = $this->get(route('webapp.membership.edit'))->assertOk();
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertSame(1, $xpath->query('//*[@id="update-card-tab"]//*[@data-saved-card]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="update-card-tab"]//button[@data-payment-card-add and @aria-controls="membership-card-editor"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-card-editor" and @hidden]//form[@data-deferred-card and @data-split-card]')->length);
+        $this->assertSame(3, $xpath->query('//*[@id="update-card-form"]//*[@data-stripe-field]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="update-card-form"]//*[@data-card-preview]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="update-card-form"]//input[@name="cardholder" and @autocomplete="cc-name" and contains(@class,"pianolit-input")]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="update-card-tab"]//*[@data-bs-toggle="list"]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="update-card-tab"]//input[@name="paused" and @value="1"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-cancel-confirmation" and contains(@class,"modal")]//form[@id="cancel-membership-form" and @method="POST"]//input[@name="operation_id"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="update-card-tab"]//button[@type="button" and @data-bs-toggle="modal" and @data-bs-target="#membership-cancel-confirmation"]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="update-card-tab"]//*[@id="cancel-membership-form"]')->length, 'The confirmation lives outside the tab/page container.');
+        $this->assertSame(1, $xpath->query('//*[@id="membership-cancel-confirmation" and @tabindex="-1" and @aria-labelledby="membership-cancel-confirmation-title" and @aria-describedby="membership-cancel-description"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-cancel-confirmation"]//button[@type="button" and @data-bs-dismiss="modal" and contains(., "Keep membership")]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-cancel-confirmation"]//form[@action="'.route('webapp.membership.cancel').'"]//input[@name="_token"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="membership-cancel-confirmation"]//button[@type="submit" and contains(., "Confirm cancellation")]')->length);
+        $this->assertCount(0, $this->gateway->calls);
+
+        $this->source()->update(['paused_at' => now()]); $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('Resume billing')->assertDontSee('Pause my membership')->assertSee('value="0"', false);
+        $this->source()->update(['paused_at' => null, 'canceled_at' => now(), 'membership_ends_at' => now()->addDays(5)]); $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('Your membership is ending')->assertSee('Keep my membership')->assertDontSee('Confirm cancellation');
+        $this->source()->update(['card_brand' => null, 'card_last_four' => null]); $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('No card on file')->assertDontSee('data-saved-card', false)->assertSee('Add new card');
+        $this->assertCount(0, $this->gateway->calls);
+    }
+
+    public function test_renewal_summary_and_cancel_modal_show_saved_dates_without_promising_unpaid_access()
+    {
+        $this->purchase();
+        $renewal = now()->addMonth()->startOfDay();
+        $this->source()->update(['status' => 'active', 'renews_at' => $renewal]);
+        $this->user->unsetRelation('membership');
+        $this->gateway->calls = [];
+        $response = $this->get(route('webapp.membership.edit'))->assertOk();
+        $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $summary = $xpath->query('//section[@aria-labelledby="membership-renewal-heading"]')->item(0)->textContent;
+        $this->assertStringContainsString('Auto-renew on', $summary);
+        $this->assertStringContainsString('Monthly Premium', $summary);
+        $this->assertStringContainsString('Next renewal', $summary);
+        $this->assertStringContainsString($renewal->toFormattedDateString(), $summary);
+        $dialog = $xpath->query('//*[@id="membership-cancel-confirmation"]')->item(0)->textContent;
+        $this->assertStringContainsString('You’ll keep full access until your current billing period ends.', $dialog);
+        $this->assertStringContainsString($renewal->toFormattedDateString(), $dialog);
+        $this->assertSame('body', $xpath->query('//*[@id="membership-cancel-confirmation"]')->item(0)->parentNode->nodeName);
+
+        $this->source()->update(['status' => 'trialing']); $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('First payment')->assertSee('Trial access ends')->assertSee('You’ll keep full access until your trial ends.');
+        foreach (['incomplete', 'past_due', 'unpaid'] as $status) {
+            $this->source()->update(['status' => $status]); $this->user->unsetRelation('membership');
+            $response = $this->get(route('webapp.membership.edit'))->assertOk()->assertDontSee('Auto-renew on')->assertDontSee('You’ll keep full access');
+            if ($status === 'incomplete') $response->assertSee('Your unpaid checkout will be canceled immediately.');
+            else $response->assertSee('Any outstanding invoices remain available in Invoices.');
+        }
+        $this->source()->update(['status' => 'active', 'renews_at' => now()->subDay()]); $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertDontSee('Auto-renew on')->assertDontSee('You’ll keep full access');
+        $this->source()->update(['renews_at' => $renewal, 'paused_at' => now()]); $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('Billing paused')->assertSee('Resume billing')->assertDontSee('Auto-renew on')->assertDontSee('You’ll keep full access');
+        $this->source()->update(['paused_at' => null, 'canceled_at' => now(), 'membership_ends_at' => now()->addDays(2)]); $this->user->unsetRelation('membership');
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('Renewal off')->assertDontSee('id="membership-cancel-confirmation"', false);
+        $this->assertCount(0, $this->gateway->calls, 'The summary and dialog only use saved billing state.');
+    }
+
+    public function test_billing_actions_return_to_billing_after_cancellation_or_resuming()
+    {
+        $this->purchase();
+        foreach (['webapp.membership.cancel', 'webapp.membership.resume'] as $route) {
+            $this->post(route($route), ['operation_id' => (string) Str::uuid()])->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+        }
+        app(MembershipManagement::class)->change($this->user, (string) Str::uuid(), 'pause');
+        $this->post(route('webapp.membership.update.billing-status'), ['operation_id' => (string) Str::uuid(), 'paused' => '0'])
+            ->assertRedirect(route('webapp.membership.edit').'#update-card-tab');
+    }
+
+    public function test_edit_page_respects_an_expired_access_end_with_a_stale_future_renewal()
+    {
+        $this->purchase();
+        $this->source()->update(['status' => 'active', 'membership_ends_at' => now()->subDay(), 'renews_at' => now()->addMonth()]);
+        $this->user->unsetRelation('membership');
+        $this->gateway->calls = [];
+        $this->get(route('webapp.membership.edit'))->assertOk()->assertSee('Your membership has ended')->assertSee('Membership ended')->assertDontSee('data-membership-payment', false);
+        $this->assertCount(0, $this->gateway->calls);
     }
 
     public function test_checkout_uses_exact_trial_length_and_returning_member_wording()

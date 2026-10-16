@@ -54,6 +54,7 @@ async function main() {
     await require('./favorites')();
     require('./build-icons')();
     require('./history-back')();
+    require('./tab-navigation')();
     require('./fullscreen-modals')();
     await require('./score-editor')();
     await require('./webapp-search')();

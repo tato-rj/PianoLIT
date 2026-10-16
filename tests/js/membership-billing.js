@@ -8,23 +8,27 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 function element(attributes = {}) {
     return {attributes, events: {}, disabled: false, textContent: '', style: {}, hidden: true,
         getAttribute(name) {return this.attributes[name];}, setAttribute(name, value) {this.attributes[name] = value;},
-        addEventListener(name, callback) {this.events[name] = callback;}};
+        addEventListener(name, callback) {this.events[name] = callback;}, focus() {this.focused = true;}, classList: {contains() {return false;}}};
 }
-function fixture(purpose = 'purchase', invoiceMode = false, split = false, managed = false) {
+function fixture(purpose = 'purchase', invoiceMode = false, split = false, managed = false, invoiceActive = false, deferred = false) {
     const requests = [], redirects = [], confirmations = [], replies = [];
     const button = element(), errors = element(), coupon = element({'data-coupon-url': '/coupon'}), feedback = element(); coupon.value = '';
     const total = element({'data-base-price': '799'}), mount = element();
     const due = element(), renewal = element(), consent = element({'data-trial-days': '0', 'data-interval': 'month'}), charge = element();
     const label = element(), status = element(), apply = element(), name = element(), postal = element();
     const preview = element(), cardName = element(), brandLabel = element();
+    const opener = element(), cancel = element(), editor = {hidden: true, querySelector() {return form;}};
+    const section = {querySelector(selector) {return selector === '[data-payment-card-add]' ? opener : editor;}};
     const documentEvents = {}, signals = [];
-    label.textContent = 'Subscribe for $7.99'; name.value = 'Review Pianist'; postal.value = '10001';
+    label.textContent = purpose === 'card' ? 'Save card' : 'Subscribe for $7.99'; name.value = 'Review Pianist'; postal.value = '10001';
     const mounts = ['cardNumber', 'cardExpiry', 'cardCvc'].map(type => element({'data-stripe-field': type}));
+    mounts[0].focus = () => {document.activeElement = mounts[0];};
     const form = element({'data-operation': 'operation-review', 'data-purpose': purpose, 'data-key': 'pk_review', 'data-prepare': '/prepare', 'data-complete': '/complete'});
     form.action = '/submit';
     form.closest = selector => managed && selector === '[data-checkout-modal]' ? {} : null;
     form.dispatchEvent = event => signals.push(event.type);
-    form.hasAttribute = attribute => split && attribute === 'data-split-card';
+    form.hasAttribute = attribute => (split && attribute === 'data-split-card') || (deferred && attribute === 'data-deferred-card');
+    form.reset = () => {name.value = 'Review Pianist'; postal.value = '';};
     form.querySelectorAll = () => mounts;
     form.querySelector = selector => ({'button[type="submit"]': button, '#card-errors': errors, '#card-element': mount,
         'input[name="coupon"]': purpose === 'purchase' ? coupon : null, '[data-coupon-feedback]': feedback,
@@ -32,12 +36,14 @@ function fixture(purpose = 'purchase', invoiceMode = false, split = false, manag
         '[data-submit-label]': split ? label : null, '[data-card-status]': split ? status : null,
         '[data-apply-coupon]': split ? apply : null, '[name="cardholder"]': split ? name : null,
         '[name="postal_code"]': split ? postal : null, '[data-card-preview]': split ? preview : null,
-        '[data-card-name]': split ? cardName : null, '[data-card-brand-label]': split ? brandLabel : null}[selector]);
+        '[data-card-name]': split ? cardName : null, '[data-card-brand-label]': split ? brandLabel : null,
+        '[data-stripe-field="cardNumber"]': split ? mounts[0] : null,
+        '[data-payment-card-cancel]': deferred ? cancel : null}[selector]);
     const card = {mount() {}, on(name, callback) { this.change = callback; }};
     const hosted = {};
     const stripe = {elements() {return {create(type, options) {
         if (!split) return card;
-        const field = {events: {}, options, destroyed: false, destroy() {this.destroyed = true;}, mount() {}, update(options) {this.disabled = options.disabled;}, on(event, callback) {this.events[event] = callback;}};
+        const field = {events: {}, options, destroyed: false, focus() {this.focused = true;}, destroy() {this.destroyed = true;}, clear() {this.cleared = true; this.events.change({complete: false});}, mount() {}, update(options) {this.disabled = options.disabled;}, on(event, callback) {this.events[event] = callback;}};
         hosted[type] = field; return field;
     }};},
         async confirmCardSetup(secret, details) { confirmations.push(['setup', secret, details]); return stripe.setupResult || {setupIntent: {id: 'seti_review'}}; },
@@ -54,18 +60,102 @@ function fixture(purpose = 'purchase', invoiceMode = false, split = false, manag
     const invoiceContent = {querySelector() {return invoiceBody;}};
     Object.defineProperty(invoiceContent, 'innerHTML', {set(value) {invoiceBody.innerHTML = value;}, get() {return invoiceBody.innerHTML;}});
     const invoiceRoot = element({'data-url': '/invoices'});
+    invoiceRoot.classList.contains = name => name === 'active' && invoiceActive;
     invoiceRoot.querySelector = selector => ({'[data-invoice-status]': invoiceStatus, '[data-invoice-more]': invoiceMore, '[data-invoice-retry]': invoiceRetry, '[data-invoice-content]': invoiceContent}[selector]);
     let shown;
     const jquery = selector => ({on(events, callback) {if (selector.includes('a[')) shown = callback; return this;}});
     const DOMParser = class {parseFromString(html) {return {querySelector() {return {innerHTML: html};}};}};
-    const document = {addEventListener(name, handler) {documentEvents[name] = handler;}, querySelector(selector) {return {'meta[name="csrf-token"]': {content: 'csrf-review'}, '[data-membership-payment]': purpose === 'none' ? null : form, '[data-membership-total]': total, '[data-membership-due]': split ? due : null, '[data-membership-renewal]': split ? renewal : null, '[data-membership-invoices]': invoiceMode ? invoiceRoot : null}[selector] || null;}, querySelectorAll() {return [];}};
+    const document = {addEventListener(name, handler) {documentEvents[name] = handler;}, querySelector(selector) {return {'meta[name="csrf-token"]': {content: 'csrf-review'}, '[data-membership-payment]': purpose === 'none' ? null : form, '[data-membership-total]': total, '[data-membership-due]': split ? due : null, '[data-membership-renewal]': split ? renewal : null, '[data-membership-invoices]': invoiceMode ? invoiceRoot : null}[selector] || null;}, querySelectorAll(selector) {return deferred && selector === '[data-payment-methods]' ? [section] : [];}};
+    if (invoiceActive) replies.push({html: 'restored invoice rows', after: null});
     vm.runInNewContext(source, {document, DOMParser, Stripe: () => stripe, fetch, window: {CustomEvent: class {constructor(type) {this.type = type;}}, getComputedStyle() {return {color: '#273244', fontFamily: 'system-ui', fontSize: '16px', lineHeight: '24px', getPropertyValue() {return '#697386';}};}, jQuery: invoiceMode ? jquery : null, location: {hash: '', assign(url) { redirects.push(url); }, reload() { redirects.push('reload'); }}}});
     return {form, button, errors, coupon, invoiceStatus, invoiceMore, invoiceRetry, invoiceBody, openInvoices() {shown({target:{getAttribute() {return '#invoices-tab';}}});}, feedback, total, stripe, card, requests, redirects, confirmations, replies,
-        due, renewal, consent, charge, label, status, name, postal, hosted, preview, cardName, brandLabel, documentEvents, signals,
+        due, renewal, consent, charge, label, status, name, postal, hosted, preview, cardName, brandLabel, documentEvents, signals, opener, editor, cancel,
         ready() {Object.values(hosted).forEach(field => field.events.ready());},
         submit() {return form.events.submit({preventDefault() {}});}};
 }
+function managementFixture() {
+    const monthly = element({'data-name': 'monthly', 'data-confirmation': 'Keep your current plan.'});
+    const yearly = element({'data-name': 'yearly', 'data-confirmation': 'Yearly billing starts at renewal.'});
+    const cards = [element(), element()], input = element(), confirmation = element(), description = element();
+    [monthly, yearly].forEach((button, i) => { button.closest = () => cards[i]; });
+    const form = {style: {display: 'none'}, querySelector(selector) {return selector === 'input[name="plan"]' ? input : confirmation;}};
+    const link = element({'href': '#invoices-tab'}), trigger = element(), shown = [];
+    trigger.focus = () => {trigger.focused = true;};
+    const document = {
+        addEventListener() {},
+        querySelectorAll(selector) {return selector === 'button[name="plan"]' ? [monthly, yearly] : selector === '[data-membership-tab]' ? [link] : [];},
+        querySelector(selector) {return {'#update-plan-action form': form, '#update-plan-action > p': description, '#membership-tabs a[href="#invoices-tab"]': trigger}[selector] || null;}
+    };
+    vm.runInNewContext(source, {document, window: {location: {hash: ''}, bootstrap: {Tab: {getOrCreateInstance(target) {return {show() {shown.push(target);}};}}}}});
+    return {monthly, yearly, cards, input, confirmation, form, description, link, trigger, shown};
+}
 module.exports = async function () {
+    const failedEditor = fixture('card', false, true, false, false, true);
+    failedEditor.stripe.elements = () => {throw new Error('Secure fields unavailable');};
+    failedEditor.opener.events.click();
+    assert(failedEditor.errors.textContent.includes('reload'));
+    failedEditor.cancel.events.click(); failedEditor.opener.events.click();
+    assert(failedEditor.errors.textContent.includes('reload'), 'A failed secure-field load keeps its recovery instruction when the editor reopens.');
+    assert.strictEqual(failedEditor.button.disabled, true);
+    assert.strictEqual(failedEditor.requests.length, 0);
+
+    const editor = fixture('card', false, true, false, false, true);
+    assert.deepStrictEqual(Object.keys(editor.hosted), [], 'Billing does not load secure fields before Add new card is requested.');
+    editor.opener.events.click();
+    assert.strictEqual(editor.editor.hidden, false);
+    assert.strictEqual(editor.opener.attributes['aria-expanded'], 'true');
+    editor.ready();
+    assert.strictEqual(editor.hosted.cardNumber.focused, true, 'The secure card number field receives focus once ready.');
+    const originalFields = Object.values(editor.hosted);
+    editor.hosted.cardNumber.events.change({brand: 'visa', complete: true});
+    editor.name.value = 'Another name';
+    editor.cancel.events.click();
+    assert.strictEqual(editor.editor.hidden, true);
+    assert(originalFields.every(field => field.cleared));
+    assert.strictEqual(editor.preview.attributes['data-card-brand'], 'unknown');
+    assert.strictEqual(editor.name.value, 'Review Pianist');
+    assert.strictEqual(editor.opener.focused, true);
+    editor.opener.events.click();
+    assert.strictEqual(editor.hosted.cardNumber, originalFields[0], 'Reopening reuses cleared fields without duplicating submit listeners.');
+    let releaseSetup;
+    editor.replies.push(() => new Promise(resolve => {releaseSetup = resolve;}), {redirect: '/membership/edit#update-card-tab'});
+    const saving = editor.submit();
+    assert.strictEqual(editor.label.textContent, 'Saving your card…');
+    assert.strictEqual(editor.cancel.disabled, true);
+    editor.cancel.events.click();
+    assert.strictEqual(editor.editor.hidden, false, 'A card verification in progress cannot be dismissed.');
+    releaseSetup({ok: true, json: async () => ({operation_id: 'card-op', setup_secret: 'card-secret'})});
+    await saving;
+    assert.strictEqual(editor.requests.length, 2, 'One prepare and one update run after close/reopen.');
+    assert.strictEqual(editor.cancel.disabled, false);
+    assert.strictEqual(editor.label.textContent, 'Save card');
+    assert.deepStrictEqual(editor.redirects, ['/membership/edit#update-card-tab']);
+
+    const restoredInvoices = fixture('none', true, false, false, true);
+    await flush();
+    assert.strictEqual(restoredInvoices.invoiceBody.innerHTML, 'restored invoice rows', 'Invoices also load if the shared menu restored them before the page script initialized.');
+    assert.strictEqual(restoredInvoices.requests.length, 1);
+    const management = managementFixture();
+    management.monthly.disabled = true;
+    management.monthly.events.click();
+    assert.strictEqual(management.form.style.display, 'none', 'An unavailable plan cannot open the confirmation form.');
+    management.yearly.events.click();
+    assert.strictEqual(management.input.value, 'yearly');
+    assert.strictEqual(management.confirmation.textContent, 'Yearly billing starts at renewal.');
+    assert.strictEqual(management.form.style.display, '');
+    assert.strictEqual(management.yearly.attributes['aria-pressed'], 'true');
+    assert.strictEqual(management.cards[1].attributes['data-selected'], 'true');
+    management.monthly.disabled = false;
+    management.monthly.events.click();
+    assert.strictEqual(management.input.value, 'monthly', 'Keeping the current plan can remove a pending change.');
+    assert.strictEqual(management.yearly.attributes['aria-pressed'], 'false');
+    assert.strictEqual(management.cards[1].attributes['data-selected'], 'false');
+    let prevented = false;
+    management.link.events.click({preventDefault() {prevented = true;}});
+    assert(prevented);
+    assert.deepStrictEqual(management.shown, [management.trigger], 'Overview links activate the real navigation trigger.');
+    assert(management.trigger.focused, 'Keyboard focus follows the selected section.');
+
     let managed = fixture('purchase', false, true, true);
     assert.deepStrictEqual(Object.keys(managed.hosted), [], 'A managed checkout waits for the launcher, so parallel script downloads cannot mount Stripe too early.');
     managed.documentEvents['checkout:ready']({type: 'checkout:ready', target: {querySelector() {return managed.form;}}});

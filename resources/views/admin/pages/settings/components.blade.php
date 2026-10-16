@@ -4,6 +4,25 @@
     @component('admin.pages.settings.sample', ['label' => 'Content card', 'usage' => '.card .rounded .shadow-light', 'properties' => 'padding,border,border-radius,box-shadow'])
       <div class="card rounded shadow-light" data-ds-preview><div class="card-body"><h3 class="h5">Discover your next piece</h3><p>Thoughtfully chosen repertoire for every stage of your piano journey.</p><button type="button" class="btn btn-primary btn-sm">Explore pieces</button></div></div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Membership plan card', 'usage' => 'components.membership-plan-card', 'properties' => 'padding,background-color,border-radius,box-shadow'])
+      @component('components.membership-plan-card', ['plan' => (object) ['name' => 'yearly', 'price' => 8999], 'monthlyPlan' => (object) ['name' => 'monthly', 'price' => 999], 'headingId' => 'ds-membership-plan', 'preview' => true])
+        @slot('action')<button type="button" class="btn btn-primary">Choose Yearly @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>@endslot
+      @endcomponent
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Saved payment card', 'usage' => 'components.payment-card-preview · saved', 'properties' => 'padding,color,background-color,border-radius,box-shadow'])
+      @include('components.payment-card-preview', ['saved' => ['brand' => 'visa', 'last4' => '4242'], 'preview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Add payment card', 'usage' => 'components.payment-card-preview · add', 'properties' => 'padding,color,background-color,border,border-radius'])
+      @include('components.payment-card-preview', ['add' => true, 'controlsId' => 'ds-card-editor-example', 'preview' => true])
+      <p id="ds-card-editor-example" class="small text-muted mt-3 mb-0">Sample only. Opens the secure card editor in Billing.</p>
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Segmented tabs', 'usage' => 'components.tab-navigation · variant: segmented', 'properties' => 'font-size,padding,color,border,border-radius'])
+      @component('components.tab-navigation', ['id' => 'ds-account-tabs', 'label' => 'Sample account sections', 'variant' => 'segmented', 'preview' => true, 'items' => [
+        ['target' => 'ds-account-overview', 'label' => 'Overview'], ['target' => 'ds-account-billing', 'label' => 'Billing'],
+      ]])
+      <div class="tab-content pt-3"><div class="tab-pane fade show active" id="ds-account-overview" role="tabpanel" aria-labelledby="ds-account-tabs-ds-account-overview" tabindex="0">Your plan and renewal details.</div><div class="tab-pane fade" id="ds-account-billing" role="tabpanel" aria-labelledby="ds-account-tabs-ds-account-billing" tabindex="0">Your payment method and billing preferences.</div></div>
+      @endcomponent
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Pastel feature card · website / web app', 'usage' => '.pastel-card [data-pastel-color=mint]', 'properties' => 'color,background-color,border,border-radius'])
       <div class="pastel-card rounded p-4" data-pastel-color="mint" data-ds-preview><span class="pastel-card__tag">YOUR COLLECTION</span><h3 class="h5 mt-3">A little music, every day.</h3><p>A softer surface for folders and featured content.</p><button type="button" class="btn pastel-card__action">Open collection @icon('arrow-right', ['mr' => 0])</button></div>
     @endcomponent
@@ -71,6 +90,11 @@
   </div>
 </section>
 
-<div class="modal fade" id="ds-example-modal" tabindex="-1" aria-labelledby="ds-modal-title" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h2 class="modal-title h5" id="ds-modal-title">Sample dialog</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body">This is a preview of PianoLIT’s existing modal. Try closing it with the button, the backdrop or Escape.</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close preview</button></div></div></div>
-</div>
+@component('components.modal', ['id' => 'ds-example-modal', 'header' => 'Sample dialog', 'centered' => true, 'options' => ['body' => ['padding' => 3]]])
+    @slot('body')
+        This is a preview of PianoLIT’s shared modal. Try closing it with the button, the backdrop or Escape.
+    @endslot
+    @slot('footer')
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close preview</button>
+    @endslot
+@endcomponent

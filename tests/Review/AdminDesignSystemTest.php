@@ -19,6 +19,14 @@ class AdminDesignSystemTest extends ReviewTestCase
         $dom = new \DOMDocument;
         @$dom->loadHTML($response->getContent());
         $xpath = new \DOMXPath($dom);
+        $this->assertSame(1, $xpath->query('//*[@id="ds-account-tabs" and @data-tab-navigation]')->length);
+        $frame = $xpath->query('//*[@data-tab-navigation-frame][.//*[@id="ds-account-tabs"]]')->item(0);
+        $this->assertNotNull($frame, 'The shared component encloses its menu and panes for atomic first render.');
+        $this->assertSame(2, $xpath->query('.//*[@role="tabpanel"]', $frame)->length);
+        $html = $response->getContent();
+        $this->assertLessThan(strpos($html, 'id="ds-account-tabs"'), strpos($html, 'PianoLITTabNavigation.prepare('));
+        $this->assertGreaterThan(strpos($html, 'id="ds-account-billing"'), strpos($html, 'PianoLITTabNavigation.initial('));
+        $this->assertLessThan(strpos($html, 'src="'.mix('js/admin.js').'"'), strpos($html, 'PianoLITTabNavigation.initial('));
         $this->assertSame(1, $xpath->query('//a[@href="'.route('admin.design-system.index').'" and @aria-current="page"]')->length);
         $this->assertSame(1, $xpath->query('//ul[@id="settings" and contains(@class, "show")]')->length);
         $this->assertSame(0, $xpath->query('//*[@data-ds-sample]//form')->length);
@@ -31,6 +39,8 @@ class AdminDesignSystemTest extends ReviewTestCase
             $this->assertSame(1, $xpath->query('.//*[@data-ds-preview]', $sample)->length);
             $this->assertSame(1, $xpath->query('.//*[@data-ds-specs]', $sample)->length);
         }
+        $this->assertSame(1, $xpath->query('//*[@id="ds-example-modal" and @aria-labelledby="ds-example-modal-title"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="ds-example-modal"]//button[@aria-label="Close" and @data-bs-dismiss="modal"]')->length);
         $ids = [];
         foreach ($xpath->query('//*[@id]') as $element) $ids[] = $element->getAttribute('id');
         $this->assertCount(count(array_unique($ids)), $ids, 'Gallery IDs must be unique for tabs, modals and labels.');

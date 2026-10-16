@@ -1,0 +1,194 @@
+.checkout-card-preview {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    aspect-ratio: 1.58;
+    width: 100%;
+    max-width: 260px;
+    border-radius: var(--radius-sm);
+    padding: 18px;
+    color: #263155;
+    background: #dce2fb;
+    box-shadow: 0 12px 26px rgba(39, 50, 68, 0.12);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: background-color 0.25s ease;
+
+    &[data-card-brand='visa'] {
+        background: #f9d0aa;
+        color: #563c2b;
+    }
+
+    &[data-card-brand='mastercard'] {
+        background: #d5dcfc;
+    }
+
+    &[data-card-brand='amex'] {
+        background: #cbe2b6;
+        color: #2e4932;
+    }
+
+    &[data-card-brand='discover'] {
+        background: #f7dec0;
+        color: #563c2b;
+    }
+}
+
+.checkout-card-art {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.18;
+    overflow: hidden;
+
+    span {
+        position: absolute;
+        width: 130px;
+        height: 130px;
+        border: 18px solid currentColor;
+        border-radius: 50%;
+        left: -40px;
+        top: -50px;
+    }
+
+    span:nth-child(2) {
+        width: 80px;
+        height: 80px;
+        border-width: 10px;
+        left: -15px;
+        top: -25px;
+    }
+
+    span:nth-child(3) {
+        left: auto;
+        right: -65px;
+        top: auto;
+        bottom: -75px;
+        width: 190px;
+        height: 190px;
+        border-width: 28px;
+    }
+}
+
+.checkout-card-top,
+.checkout-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.checkout-card-top [data-card-brand-label] {
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.checkout-card-chip {
+    width: 28px;
+    height: 21px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.15));
+}
+
+.checkout-card-mask {
+    font-size: clamp(0.7rem, 1.2vw, 1rem);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.checkout-card-bottom [data-card-name] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.checkout-card-network {
+    display: none;
+    flex-shrink: 0;
+    width: 28px;
+    height: 18px;
+    position: relative;
+
+    [data-card-brand='mastercard'] & {
+        display: block;
+    }
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #e44a39;
+    }
+
+    &::after {
+        right: 0;
+        background: #f5ae36;
+        opacity: 0.9;
+    }
+}
+
+
+.payment-card-option {
+    position: relative;
+    width: 100%;
+    max-width: 260px;
+}
+
+.payment-card-check {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 3px solid var(--color-surface);
+    border-radius: var(--radius-circle);
+    background: var(--color-green);
+    color: var(--color-white);
+    font-size: 12px;
+}
+
+.checkout-card-preview--add {
+    justify-content: flex-end;
+    align-items: flex-end;
+    border: 1px dashed var(--color-border);
+    background: var(--color-surface-subtle);
+    color: var(--color-text-muted);
+    box-shadow: none;
+    font-family: inherit;
+    cursor: pointer;
+
+    &:hover { border-color: var(--color-text-muted); }
+    &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; }
+    &[aria-expanded='true'] { border-style: solid; }
+}
+
+.checkout-card-add-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.payment-card-form-layout {
+    display: grid;
+    grid-template-columns: minmax(160px, 0.8fr) minmax(0, 1.35fr);
+    gap: 28px;
+    align-items: start;
+}
+
+@media (max-width: 767px) {
+    .payment-card-form-layout { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,5 +1,5 @@
 @if($if ?? true)
-<div class="modal fade {{isset($show) ? 'autoshow' : null}}" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}"
+<div class="modal fade {{isset($show) ? 'autoshow' : null}}" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}" tabindex="-1" aria-hidden="true" @isset($header) aria-labelledby="{{ $id }}-title" @endisset @isset($descriptionId) aria-describedby="{{ $descriptionId }}" @endisset
 
   @isset($data)
   @foreach($data as $attr => $value)
@@ -7,7 +7,7 @@
   @endforeach
   @endisset
 >
-  <div class="modal-dialog modal-{{array_find($options ?? null, ['size'])}}">
+  <div class="modal-dialog {{ ($centered ?? false) ? 'modal-dialog-centered' : '' }} modal-{{array_find($options ?? null, ['size'])}}">
     <div class="modal-content border-0" style="border-radius: var(--radius-modal)">
       <div class="modal-header
         bg-{{array_find($options ?? null, ['header', 'background'])}}
@@ -15,12 +15,12 @@
         {{array_find($options ?? null, ['header', 'border']) == true ? null : 'border-0'}}" style="{{array_find($options ?? null, ['header', 'show']) === false ? 'display:none' : null}}">
         @isset($header)
           @if(array_find($options ?? null, ['header', 'raw']))
-          <div class="w-100">{!! $header !!}</div>
+          <div class="w-100" id="{{ $id }}-title">{!! $header !!}</div>
           @else
-          <h5 class="modal-title clamp-1">{!! $header !!}</h5>
+          <h5 class="modal-title clamp-1" id="{{ $id }}-title">{!! $header !!}</h5>
           @endif
         @endisset
-      <button class="close text-{{array_find($options ?? null, ['header', 'close', 'color'])}} {{array_find($options ?? null, ['header', 'close', 'position'])}}" type="button" data-bs-dismiss="modal">
+      <button class="close text-{{array_find($options ?? null, ['header', 'close', 'color'])}} {{array_find($options ?? null, ['header', 'close', 'position'])}}" type="button" data-bs-dismiss="modal" aria-label="Close">
           @icon('close', ['mr' => 0])
         </button>
       </div>

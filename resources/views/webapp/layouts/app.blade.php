@@ -97,6 +97,8 @@
         @endif
     </div>
 
+    @stack('page-modals')
+
     @include('components.popups.whatsnew', ['tabscount' => 1])
 
     @unless(request()->routeIs('webapp.membership.checkout'))

@@ -25,6 +25,7 @@ require('./components/audio');
 require('./components/admin-text-improver');
 require('./components/admin-date-range');
 require('./components/admin-back-to-top');
+require('./components/tab-navigation')(window);
 
 require('./startup');
 

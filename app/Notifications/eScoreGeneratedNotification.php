@@ -47,7 +47,7 @@ class eScoreGeneratedNotification extends Notification
         return [
             'title' => 'eScore generated',
             'message' => '<strong>' . $this->user->first_name . '</strong> generated an eScore from folder ' . $this->folder->name . '.',
-            'url' => route('admin.users.show', auth()->user())
+            'url' => route('admin.users.show', $this->user)
         ];
     }
 }

@@ -40,7 +40,8 @@ class MembershipsController extends Controller
         } catch (\Throwable $exception) { return $this->failure(request(), $exception, 'webapp.discover'); }
         $plans = Plan::all()->reverse();
         $cardOperation = (string) Str::uuid();
-        return view('webapp.membership.edit.index', compact('plans', 'source', 'stripeKey', 'cardOperation'));
+        $overview = \App\Support\MembershipOverview::forSource($source);
+        return view('webapp.membership.edit.index', compact('plans', 'source', 'stripeKey', 'cardOperation', 'overview'));
     }
 
     public function checkout(Plan $plan, Request $request, MembershipBilling $billing)
@@ -165,6 +166,9 @@ class MembershipsController extends Controller
         catch (\Throwable $exception) { return $this->failure($request, $exception); }
         if ($action === 'cancel') \App\Activity\Actions::record($request, 'subscription_canceled');
         if ($action === 'cancel' && optional(optional($request->user('web')->fresh()->membership)->source)->isEnded()) $message = 'Your checkout has been canceled.';
+        if (in_array($action, ['cancel', 'resume', 'unpause'], true)) {
+            return redirect()->to(route('webapp.membership.edit').'#update-card-tab')->with('status', $message);
+        }
         return back()->with('status', $message);
     }
 

@@ -1,0 +1,53 @@
+.membership-card-fields {
+    min-width: 0;
+
+    legend {
+        float: none;
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+}
+
+.membership-field {
+    margin-bottom: 1rem;
+    min-width: 0;
+
+    label {
+        display: block;
+        margin-bottom: 0.45rem;
+    }
+
+    .membership-stripe-field {
+        height: auto;
+        line-height: 1.5;
+        cursor: text;
+    }
+}
+
+.membership-card-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.membership-card-status,
+.membership-card-errors {
+    font-size: var(--font-size-xs);
+    margin-bottom: 1rem;
+
+    &:empty {
+        display: none;
+    }
+}
+
+.membership-card-status {
+    color: var(--color-text-muted);
+}
+
+.membership-card-errors {
+    color: var(--color-danger);
+}
+
+
+.membership-card-fields .form-group { margin-bottom: 0; }

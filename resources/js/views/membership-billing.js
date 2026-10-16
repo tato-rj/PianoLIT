@@ -39,11 +39,14 @@
         const consent = form.querySelector('[data-membership-consent]');
         const charge = form.querySelector('[data-membership-charge]');
         const label = form.querySelector('[data-submit-label]');
+        const cancel = form.querySelector('[data-payment-card-cancel]');
         const status = form.querySelector('[data-card-status]');
         const apply = form.querySelector('[data-apply-coupon]');
         const name = form.querySelector('[name="cardholder"]');
         const postal = form.querySelector('[name="postal_code"]');
         const splitCard = form.hasAttribute ? form.hasAttribute('data-split-card') : false;
+        const numberMount = form.querySelector('[data-stripe-field="cardNumber"]');
+        let focusRequested = false;
         const fields = [], completeFields = {}, fieldErrors = {};
         let cardReady = !splitCard, announcedReady = false;
         let couponValid = !coupon || !coupon.value.trim();
@@ -76,10 +79,18 @@
             if (apply) apply.disabled = busy || couponPending;
             if (name) name.disabled = busy;
             if (postal) postal.disabled = busy;
+            if (cancel) cancel.disabled = busy;
             fields.forEach(function (field) { if (field.update) field.update({disabled: busy}); });
-            if (label) label.textContent = busy ? 'Confirming your membership…' : label.getAttribute('data-idle-label') || idleLabel;
+            if (label) label.textContent = busy ? (purpose === 'card' ? 'Saving your card…' : 'Confirming your membership…') : label.getAttribute('data-idle-label') || idleLabel;
             if (status) status.textContent = busy ? 'Please keep this page open. Your bank may ask you to confirm your card.' : (cardReady || !stripe ? '' : 'Loading secure card fields…');
             if (stripe && cardReady && !announcedReady) { announcedReady = true; signal('checkout:loaded'); }
+            focusCardWhenReady();
+        }
+        function focusCardWhenReady() {
+            if (!focusRequested || !cardReady) return;
+            focusRequested = false;
+            // Do not move focus if the user chose another field while Stripe loaded.
+            if (document.activeElement === numberMount && card && card.focus) card.focus();
         }
         function paymentMethod() {
             const details = {};
@@ -210,7 +221,19 @@
                 if (current === couponRequest) { couponPending = false; controls(); }
             }
         }
-        mounted.set(form, {destroy() {
+        mounted.set(form, {focus() { focusRequested = true; focusCardWhenReady(); }, reset() {
+            if (busy) return;
+            focusRequested = false;
+            if (form.reset) form.reset();
+            fields.forEach(function (field) { if (field.clear) field.clear(); });
+            if (!splitCard && card && card.clear) card.clear();
+            cardComplete = false;
+            Object.keys(completeFields).forEach(key => { completeFields[key] = false; });
+            Object.keys(fieldErrors).forEach(key => { delete fieldErrors[key]; });
+            brand('unknown'); holder();
+            if (stripe) message('');
+            controls();
+        }, destroy() {
             disposed = true; couponRequest += 1;
             fields.forEach(function (field) { if (field.destroy) field.destroy(); });
             if (!splitCard && card && card.destroy) card.destroy();
@@ -222,12 +245,36 @@
     function mountCurrent(event) {
         const root = event && event.type === 'checkout:ready' ? event.target : document;
         const form = root.querySelector('[data-membership-payment]');
+        if (form && form.hasAttribute && form.hasAttribute('data-deferred-card')) return;
         // The checkout launcher owns mounting after both secure scripts are ready.
         // Ordinary My Membership forms keep their existing automatic setup.
         if (root === document && form && form.closest && form.closest('[data-checkout-modal]')) return;
         mount(form);
     }
     mountCurrent();
+
+    document.querySelectorAll('[data-payment-methods]').forEach(function (section) {
+        const opener = section.querySelector('[data-payment-card-add]');
+        const editor = section.querySelector('[data-payment-card-editor]');
+        if (!opener || !editor) return;
+        const form = editor.querySelector('[data-membership-payment]');
+        const cancel = form.querySelector('[data-payment-card-cancel]');
+        opener.addEventListener('click', function () {
+            if (form.getAttribute('aria-busy') === 'true') return;
+            editor.hidden = false;
+            opener.setAttribute('aria-expanded', 'true');
+            form.querySelector('[data-stripe-field="cardNumber"]').focus();
+            mount(form);
+            mounted.get(form).focus();
+        });
+        cancel.addEventListener('click', function () {
+            if (form.getAttribute('aria-busy') === 'true') return;
+            if (mounted.has(form)) mounted.get(form).reset();
+            editor.hidden = true;
+            opener.setAttribute('aria-expanded', 'false');
+            opener.focus();
+        });
+    });
     if (document.addEventListener) {
         document.addEventListener('checkout:ready', mountCurrent);
         document.addEventListener('checkout:dispose', function (event) {
@@ -238,16 +285,29 @@
 
     document.querySelectorAll('button[name="plan"]').forEach(function (button) {
         button.addEventListener('click', function () {
-            document.querySelectorAll('button[name="plan"]').forEach(function (other) { other.classList.remove('selected-plan'); });
-            button.classList.add('selected-plan');
-            const check = document.getElementById('plan-check');
-            if (check) button.appendChild(check);
+            if (button.disabled) return;
             const action = document.querySelector('#update-plan-action form');
             if (!action) return;
+            document.querySelectorAll('button[name="plan"]').forEach(function (other) {
+                other.setAttribute('aria-pressed', other === button ? 'true' : 'false');
+                other.closest('[data-plan-card]').setAttribute('data-selected', other === button ? 'true' : 'false');
+            });
             action.querySelector('input[name="plan"]').value = button.getAttribute('data-name');
+            action.querySelector('[data-plan-confirmation]').textContent = button.getAttribute('data-confirmation');
             action.style.display = '';
             const description = document.querySelector('#update-plan-action > p');
             if (description) description.style.display = 'none';
+        });
+    });
+
+    // Summary links activate the real tab trigger, preserving tab and invoice behavior.
+    document.querySelectorAll('[data-membership-tab]').forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            const target = document.querySelector('#membership-tabs a[href="' + link.getAttribute('href') + '"]');
+            if (!target || !window.bootstrap) return;
+            event.preventDefault();
+            window.bootstrap.Tab.getOrCreateInstance(target).show();
+            target.focus();
         });
     });
 
@@ -288,8 +348,6 @@
         invoices.querySelector('[data-invoice-more]').addEventListener('click', function () { loadInvoices(true); });
         invoices.querySelector('[data-invoice-retry]').addEventListener('click', function () { loadInvoices(invoicesLoaded && !!after); });
     }
-    if (window.location.hash) {
-        const target = document.querySelector('a[data-bs-toggle="tab"][href="' + (['#update-card-tab', '#invoices-tab', '#update-plan-tab'].includes(window.location.hash) ? window.location.hash : '#overview-tab') + '"]');
-        if (target && window.bootstrap) window.bootstrap.Tab.getOrCreateInstance(target).show();
-    }
+    // Also handle a tab restored before this deferred page script was loaded.
+    if (invoices && invoices.classList.contains('active')) loadInvoices();
 }());

@@ -4,31 +4,7 @@
     @csrf
     <div class="checkout-card-and-fields">
         @include('components.payment-card-preview')
-    <fieldset class="membership-card-fields">
-        <legend>@icon('credit-card') Credit or debit card</legend>
-        <div class="membership-field">
-            <label for="card-number">Card number</label>
-            <div id="card-number" class="form-control membership-stripe-field" data-stripe-field="cardNumber"></div>
-        </div>
-        <div class="membership-field">
-            <label for="membership-card-name">Name on card</label>
-            <input id="membership-card-name" type="text" class="form-control" name="cardholder" autocomplete="cc-name" maxlength="255" value="{{ auth('web')->user()->full_name }}" required>
-        </div>
-        <div class="membership-card-row">
-            <div class="membership-field">
-                <label for="card-expiry">Expiration date</label>
-                <div id="card-expiry" class="form-control membership-stripe-field" data-stripe-field="cardExpiry"></div>
-            </div>
-            <div class="membership-field">
-                <label for="card-cvc">Security code</label>
-                <div id="card-cvc" class="form-control membership-stripe-field" data-stripe-field="cardCvc"></div>
-            </div>
-        </div>
-        <div class="membership-field">
-            <label for="membership-postal-code">Billing ZIP / postal code <span class="text-muted">(optional)</span></label>
-            <input id="membership-postal-code" class="form-control" name="postal_code" type="text" autocomplete="billing postal-code" maxlength="20" placeholder="ZIP / postal code">
-        </div>
-    </fieldset>
+    @include('components.payment-card-fields', ['prefix' => 'checkout', 'cardholder' => auth('web')->user()->full_name])
     </div>
     <div data-card-status class="membership-card-status" role="status" aria-live="polite">Loading secure card fields…</div>
     <div id="card-errors" role="alert" aria-live="polite" class="membership-card-errors" tabindex="-1"></div>

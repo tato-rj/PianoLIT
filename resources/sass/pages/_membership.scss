@@ -110,98 +110,6 @@
     margin: 0 auto;
 }
 
-.membership-plan {
-    display: flex;
-    flex-direction: column;
-    padding: 0.875rem;
-    border-radius: var(--radius);
-    background: var(--color-surface);
-    box-shadow: 0 18px 42px rgba(27, 35, 53, 0.14), 0 3px 8px rgba(27, 35, 53, 0.04);
-
-    .membership-plan-top h2 {
-        margin: 0;
-        padding: 0.35rem 0.8rem;
-        border-radius: var(--radius-pill);
-        background: rgba(41, 44, 52, 0.62);
-        color: var(--color-white);
-        font-size: var(--font-size-sm);
-        line-height: 1.5;
-    }
-
-    .btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: auto;
-    }
-}
-
-.membership-plan-panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 220px;
-    padding: 1.25rem;
-    border-radius: var(--radius);
-    background: linear-gradient(145deg, #e5e5e5, #f0f0f0 55%, #e1e1e1);
-
-    .membership-plan--featured & {
-        background: radial-gradient(ellipse at 15% 0, #f0d9fb, transparent 70%),
-            linear-gradient(135deg, #e4dff9, #cfe8fc);
-    }
-}
-
-.membership-plan-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-}
-
-.membership-plan-saving {
-    color: var(--color-text-dark);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.membership-plan-benefits {
-    display: grid;
-    gap: 0.4rem;
-    padding-left: 1.75rem;
-    padding-right: 0.5rem;
-    margin: 1.5rem 0;
-    font-size: var(--font-size-sm);
-
-    li {
-        padding-left: 0.2rem;
-        list-style-type: none;
-    }
-}
-
-.membership-price {
-    display: flex;
-    gap: 0.5rem;
-    align-items: baseline;
-
-    strong {
-        font-family: var(--font-family-heading);
-        font-size: 2.75rem;
-        line-height: 1.2;
-        letter-spacing: -0.05em;
-    }
-
-    span {
-        color: var(--color-text-muted);
-        font-size: var(--font-size-sm);
-    }
-}
-
-.membership-billing-line {
-    font-size: var(--font-size-xs);
-    margin: 0.5rem 0 0;
-}
-
 .membership-reassurance {
     display: flex;
     justify-content: center;
@@ -472,59 +380,6 @@
     }
 }
 
-.membership-card-fields {
-    min-width: 0;
-
-    legend {
-        float: none;
-        font-size: var(--font-size-sm);
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-}
-
-.membership-field {
-    margin-bottom: 1rem;
-    min-width: 0;
-
-    label {
-        display: block;
-        font-size: var(--font-size-xs);
-        font-weight: 600;
-        margin-bottom: 0.45rem;
-    }
-
-    .membership-stripe-field {
-        height: auto;
-        line-height: 1.5;
-        cursor: text;
-    }
-}
-
-.membership-card-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-}
-
-.membership-card-status,
-.membership-card-errors {
-    font-size: var(--font-size-xs);
-    margin-bottom: 1rem;
-
-    &:empty {
-        display: none;
-    }
-}
-
-.membership-card-status {
-    color: var(--color-text-muted);
-}
-
-.membership-card-errors {
-    color: var(--color-danger);
-}
-
 .membership-coupon {
     border-top: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
@@ -788,4 +643,55 @@
     .membership .membership-next-card {
         transition: none;
     }
+}
+
+// Account management uses ordinary content cards; pricing cards live in Change plan.
+.membership-management {
+    max-width: 1040px;
+    margin-inline: auto;
+}
+
+.membership-overview-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 1.5rem;
+}
+
+.membership-overview-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+
+    dt {
+        font-weight: 400;
+        color: var(--color-text-muted);
+        font-size: var(--font-size-sm);
+        margin-bottom: 0.35rem;
+    }
+
+    dd { margin: 0; }
+}
+
+@media (max-width: 767px) {
+    .membership-overview-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 359px) {
+    .membership-overview-details { grid-template-columns: minmax(0, 1fr); }
+}
+
+.membership-saved-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 260px));
+    align-items: start;
+    gap: 24px;
+    padding-top: 8px;
+}
+
+.membership-card-editor {
+    max-width: 840px;
+}
+
+@media (max-width: 575px) {
+    .membership-saved-cards { grid-template-columns: minmax(0, 260px); }
 }
