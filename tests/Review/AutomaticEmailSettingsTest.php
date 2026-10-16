@@ -3,7 +3,7 @@
 namespace Tests\Review;
 
 use App\{Admin, Composer, Performance, Piece, TutorialRequest, User};
-use App\Mail\{AccountWelcome, AutomaticEmailSettings, SharePieceEmail};
+use App\Mail\{AccountWelcome, AutomaticEmailSettings, IosAccountWelcome, SharePieceEmail};
 use App\Mail\Admin\EmailPreview;
 use App\Mail\Memberships\MembershipConfirmed;
 use App\Mail\Performances\{PerformanceApprovedEmail, PerformanceSubmittedEmail};
@@ -48,6 +48,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $admin = create(Admin::class);
         $this->actingAs($admin, 'admin');
         $this->assertFalse($this->settings()->enabled('account-welcome'));
+        $this->assertFalse($this->settings()->enabled('account-welcome-ios'));
         $this->assertTrue($this->settings()->enabled('reset-password'));
         $this->assertDatabaseCount('automatic_email_settings', 0);
         $url = route('admin.emails.sending', 'reset-password');
@@ -62,7 +63,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $dom = new \DOMDocument; @$dom->loadHTML($page->getContent());
         $xpath = new \DOMXPath($dom);
         $this->assertCount(1, $xpath->query('//button[@role="switch" and @aria-label="Automatic sending: Reset password" and @aria-checked="false"]'));
-        $this->assertCount(15, $xpath->query('//button[@role="switch"]/ancestor::form/input[@name="_token"]'));
+        $this->assertCount(16, $xpath->query('//button[@role="switch"]/ancestor::form/input[@name="_token"]'));
         Mail::assertNothingSent(); Mail::assertNothingQueued();
     }
 
@@ -88,7 +89,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         [$user, $piece, $request] = $this->fixtures();
         $purchase = new ConfirmPurchase((object) ['title' => 'Practice Companion']); $purchase->user = $user;
         $mails = [
-            'account-welcome' => new AccountWelcome('Jamie'), 'purchase-confirmation' => $purchase,
+            'account-welcome' => new AccountWelcome('Jamie'), 'account-welcome-ios' => new IosAccountWelcome('Jamie'), 'purchase-confirmation' => $purchase,
             'membership-confirmation' => new MembershipConfirmed('Jamie', 'monthly', true, null),
             'tutorial-request' => new NewRequestEmail($request), 'tutorial-published' => new RequestPublishedEmail($request),
             'performance-submitted' => new PerformanceSubmittedEmail($piece), 'performance-approved' => new PerformanceApprovedEmail($piece),
@@ -197,6 +198,7 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
     {
         [$user] = $this->fixtures();
         $listener = new \App\Listeners\Users\SendAccountWelcome;
+        $user->origin = 'webapp';
         $listener->handle(new Registered($user));
         Mail::assertNothingQueued();
         $this->settings()->setEnabled('account-welcome', true, null);
@@ -204,5 +206,76 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         Mail::assertQueued(AccountWelcome::class, function ($mail) use ($user) { return $mail->hasTo($user->email) && $mail->firstName === 'Jamie'; });
         $this->assertDatabaseCount('subscriptions', 0);
         $this->assertContains(\App\Listeners\Users\SendAccountWelcome::class, \Illuminate\Support\Arr::flatten($this->app->getProvider(\App\Providers\EventServiceProvider::class)->listens()));
+    }
+
+    public function test_welcome_variants_have_the_same_copy_and_only_the_web_email_has_a_button()
+    {
+        $catalog = app(\App\Services\Admin\AutomaticEmails::class);
+        $web = $catalog->render('account-welcome');
+        $ios = $catalog->render('account-welcome-ios');
+        $this->assertSame($web['subject'], $ios['subject']);
+        $bodyText = [];
+        foreach (['web' => $web, 'ios' => $ios] as $origin => $sample) {
+            $dom = new \DOMDocument; @$dom->loadHTML($sample['html']);
+            $xpath = new \DOMXPath($dom);
+            $buttons = $xpath->query('//button | //a[contains(concat(" ", normalize-space(@class), " "), " button ")]');
+            $this->assertCount($origin === 'web' ? 1 : 0, $buttons);
+            if ($origin === 'web') $this->assertSame(route('webapp.discover'), $buttons[0]->getAttribute('href'));
+            $bodyText[$origin] = trim(preg_replace('/\s+/u', ' ', str_replace('Explore PianoLIT', '', $xpath->query('//body')[0]->textContent)));
+        }
+        $this->assertSame($bodyText['web'], $bodyText['ios']);
+        $this->assertStringNotContainsString('Explore PianoLIT', $ios['text']);
+        $this->assertStringNotContainsString(route('webapp.discover'), $ios['text']);
+        $this->assertStringNotContainsString('my.localhost', $ios['html']);
+    }
+
+    public function test_welcome_routing_uses_signup_origin_and_each_sending_switch_independently()
+    {
+        [$user] = $this->fixtures();
+        $listener = new \App\Listeners\Users\SendAccountWelcome;
+        foreach ([[false, false], [true, false], [false, true], [true, true]] as [$webEnabled, $iosEnabled]) {
+            $this->settings()->setEnabled('account-welcome', $webEnabled, null);
+            $this->settings()->setEnabled('account-welcome-ios', $iosEnabled, null);
+            foreach (['web', 'webapp', 'ios', 'android', null] as $origin) {
+                Mail::fake();
+                $user->origin = $origin;
+                request()->merge(['origin' => $origin === 'ios' ? 'webapp' : 'ios']);
+                $listener->handle(new Registered($user));
+                $expectedClass = $origin === 'ios' && $iosEnabled ? IosAccountWelcome::class
+                    : (in_array($origin, ['web', 'webapp'], true) && $webEnabled ? AccountWelcome::class : null);
+                if ($expectedClass) {
+                    Mail::assertQueued($expectedClass, function ($mail) use ($user, $expectedClass) {
+                        return get_class($mail) === $expectedClass && $mail->hasTo($user->email);
+                    });
+                    Mail::assertQueued($expectedClass, 1);
+                    $otherClass = $expectedClass === AccountWelcome::class ? IosAccountWelcome::class : AccountWelcome::class;
+                    Mail::assertNotQueued($otherClass, function ($mail) use ($otherClass) { return get_class($mail) === $otherClass; });
+                } else {
+                    Mail::assertNothingQueued();
+                }
+            }
+        }
+    }
+
+    public function test_ios_api_signup_queues_its_own_welcome_without_changing_the_mobile_response()
+    {
+        config(['activity.enabled' => false, 'attribution.enabled' => false]);
+        Notification::fake();
+        $this->settings()->setEnabled('account-welcome', true, null);
+        $this->settings()->setEnabled('account-welcome-ios', true, null);
+        $response = $this->postJson(route('api.users.store'), [
+            'first_name' => 'Mobile', 'last_name' => 'Pianist', 'email' => 'mobile@example.com',
+            'password' => 'mobile-password', 'password_confirmation' => 'mobile-password', 'origin' => 'ios',
+        ])->assertCreated();
+        $user = User::where('email', 'mobile@example.com')->firstOrFail();
+        $this->assertSame('ios', $user->origin);
+        $response->assertExactJson(\Illuminate\Support\Arr::only($user->fresh()->toArray(), [
+            'first_name', 'last_name', 'email', 'locale', 'origin', 'updated_at', 'created_at', 'id', 'full_name', 'last_active_at', 'logs_count',
+        ]));
+        Mail::assertQueued(IosAccountWelcome::class, function ($mail) use ($user) {
+            return $mail->hasTo($user->email) && $mail->firstName === 'Mobile';
+        });
+        Mail::assertQueued(IosAccountWelcome::class, 1);
+        Mail::assertNotQueued(AccountWelcome::class, function ($mail) { return get_class($mail) === AccountWelcome::class; });
     }
 }

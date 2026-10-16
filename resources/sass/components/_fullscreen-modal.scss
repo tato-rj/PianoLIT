@@ -38,6 +38,13 @@
         place-items: center;
         flex-shrink: 0;
     }
+    .fullscreen-modal-close--floating {
+        position: absolute;
+        top: 32px;
+        right: 4vw;
+        z-index: 4;
+        pointer-events: auto;
+    }
     [hidden] {
         display: none !important;
     }
@@ -46,11 +53,13 @@
             padding-top: 22px;
             padding-bottom: 14px;
         }
+        .fullscreen-modal-close--floating { top: 22px; }
     }
     @media (max-width: 1099px) {
         .fullscreen-modal-header {
             padding: 24px;
         }
+        .fullscreen-modal-close--floating { top: 24px; right: 24px; }
     }
     @media (max-width: 699px) {
         .fullscreen-modal-header {
@@ -66,5 +75,6 @@
             width: 38px;
             height: 38px;
         }
+        .fullscreen-modal-close--floating { top: 20px; right: 18px; }
     }
 }

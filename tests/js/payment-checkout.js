@@ -8,11 +8,12 @@ function fixture(options = {}) {
     let timerId = 0, focused = 0, trapped = 0;
     const status = {textContent: ''}, retry = {hidden: true}, heading = {setAttribute() {}, focus() {focused++;}};
     function node(extra = {}) { return {attributes: {}, inert: true, setAttribute(key, value) {this.attributes[key] = value;}, removeAttribute(key) {delete this.attributes[key];}, ...extra}; }
-    const loading = node({outerHTML: 'loading-shell'}), stage = node(), background = {inert: false};
+    const loading = node({outerHTML: 'loading-shell'}), stage = node(), background = {inert: false}, close = {disabled: false};
     const content = {innerHTML: 'loading-shell', insertAdjacentHTML(position, html) {this.innerHTML += html;}};
     const modal = {id: 'payment-checkout-modal', dataset: {checkoutCancelUrl: '/membership/pricing'}, busy: false,
         querySelector(selector) {
             if (selector === '.modal-content') return content;
+            if (selector === '.fullscreen-modal-close') return close;
             if (selector === '[data-checkout-loading]') return loading;
             if (selector === '[data-checkout-stage]') return content.innerHTML.includes('form-') ? stage : null;
             if (selector.includes('aria-busy')) return this.busy ? {} : null;
@@ -55,7 +56,7 @@ function fixture(options = {}) {
     if (options.cold) delete win.Stripe;
     const api = initialize(win);
     const launcher = new api.Launcher(modal);
-    return {win, api, launcher, events, content, modal, dialog, calls, replies, navigations, status, retry, dispatched, timers, background, stage, loading, scriptNodes,
+    return {win, api, launcher, events, content, modal, dialog, calls, replies, navigations, status, retry, dispatched, timers, background, stage, loading, scriptNodes, close,
         response(plan) {return {ok: true, status: 200, json: async () => ({html: plan})};},
         finishShow() {dialog.transitioning = false; events['shown.bs.modal']();},
         focused() {return focused;}, trapped() {return trapped;}};
@@ -101,7 +102,9 @@ module.exports = async function () {
     f.modal.busy = true; let prevented = false;
     f.events['hide.bs.modal']({preventDefault() {prevented = true;}}); assert(prevented);
     f.events['checkout:busy'](); assert.strictEqual(f.trapped(), -1, 'Stripe bank authentication may receive focus outside the Bootstrap dialog.');
+    assert.strictEqual(f.close.disabled, true, 'The shared close button locks while payment confirmation is active.');
     f.modal.busy = false; f.events['checkout:busy'](); assert.strictEqual(f.trapped(), 0);
+    assert.strictEqual(f.close.disabled, false);
     f.dialog.hide(); assert.strictEqual(new URL(f.win.location.href).searchParams.get('checkout'), null);
     assert.strictEqual(f.background.inert, false);
     f = fixture(); f.win.location.href += '&modal=payment-checkout-modal';

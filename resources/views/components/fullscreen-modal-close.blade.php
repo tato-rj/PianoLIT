@@ -1,0 +1,1 @@
+<button class="btn btn-secondary fullscreen-modal-close {{ $closeClasses ?? '' }}" type="button" data-bs-dismiss="modal" aria-label="{{ $closeLabel ?? 'Close' }}" @foreach($closeData ?? [] as $key => $value) data-{{ $key }}="{{ $value }}" @endforeach>@icon('x', ['mr' => 0])</button>

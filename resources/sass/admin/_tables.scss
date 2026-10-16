@@ -14,7 +14,7 @@
         color: #253e30;
         text-decoration: none;
     }
-    a:hover {
+    a:not(.btn):hover {
         text-decoration: underline;
     }
     a:focus-visible,

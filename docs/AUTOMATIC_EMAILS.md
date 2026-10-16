@@ -5,9 +5,17 @@ switches. These switches apply globally, independently of newsletter subscriptio
 Browser and test-send previews remain available when automatic sending is off.
 Stripe/Apple provider receipts and internal admin reports are outside this catalog.
 
-Existing email types default to on. The separate account welcome starts off;
-enabling it sends `AccountWelcome` after future `Registered` events. It does not
-send retrospectively, join a newsletter or replace email verification.
+Existing email types default to on. **Web app welcome** and **iOS app welcome**
+have independent switches and default to off. The web welcome keeps the existing
+`account-welcome` setting and `AccountWelcome` class, preserving its saved state.
+`account-welcome-ios` controls `IosAccountWelcome` separately. Both use the same
+content; only the web email has the Explore PianoLIT button.
+
+The welcome listener uses the new account's saved signup `origin`: `web`/`webapp`
+select the web email and `ios` selects the iOS email. Other/unknown origins do not
+receive either welcome. Browser/device headers and the current request's fields
+do not override that choice. Welcomes follow future `Registered` events only;
+they do not send retrospectively, join a newsletter or replace verification.
 
 ## Deployment
 

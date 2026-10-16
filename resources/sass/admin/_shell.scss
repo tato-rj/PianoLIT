@@ -10,6 +10,9 @@ body.admin-shell {
     background: #181e22;
     letter-spacing: 0;
 }
+.admin-shell a.btn:hover {
+    text-decoration: none;
+}
 .admin-shell .admin-main {
     margin: 0 0 0 260px;
     min-width: 0;

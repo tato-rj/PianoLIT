@@ -3,10 +3,9 @@
     'checkout-state' => 'loading',
     'checkout-key' => $checkoutKey ?? '', 'checkout-controller' => $checkoutController ?? '',
     'checkout-auto-url' => $checkoutUrl ?? '', 'checkout-cancel-url' => $cancelUrl
-]])
+], 'floatingClose' => true, 'closeLabel' => 'Close checkout', 'closeData' => ['checkout-cancel' => 'true']])
     @include('components.checkout-loading')
     <div class="checkout-stage" data-checkout-stage aria-hidden="true" inert>
-    <button type="button" class="checkout-cancel checkout-top-cancel" data-checkout-cancel aria-label="Close checkout">@icon('x', ['mr' => 0])</button>
     <div class="checkout-scroll" data-checkout-surface>
         <div class="checkout-layout">
             <section class="checkout-payment" aria-labelledby="checkout-heading">
@@ -18,7 +17,6 @@
                         <h1 id="checkout-heading">{{ $checkoutTitle ?? 'Payment details' }}</h1>
                         {{ $account ?? '' }}
                     </div>
-                    <span class="checkout-security">@icon('lock', ['mr' => 0])<span><strong>Secure card payment</strong><small>Processed by Stripe</small></span></span>
                 </div>
                 {{ $payment }}
             </section>

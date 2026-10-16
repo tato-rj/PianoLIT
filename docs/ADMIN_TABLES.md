@@ -1,11 +1,12 @@
 # Admin table standard
 
 On 2026-10-15 the user chose the membership directory design and a reusable
-Laravel Blade component as the standard. Users, Feedback and the membership
-directory now use `admin.components.table`. Use this component for new tables
-and migrate existing tables when their pages are updated within the requested
-scope. Preserve each page’s columns, filters, route names, session permissions,
-row actions and bulk behavior.
+Laravel Blade component as the standard. Always reuse `admin.components.table`
+for admin tables, including small fixed lists such as Emails; do not create a
+page-specific table implementation. Users, Feedback, Emails and the membership
+directory use this component. Migrate existing legacy tables when their pages
+are updated within the requested scope. Preserve each page’s columns, filters,
+route names, session permissions, row actions and bulk behavior.
 
 Omit `title` when the table is the page’s sole purpose, as on Users and Feedback;
 the page heading already identifies it. Pass `label` for its accessible name.
@@ -111,6 +112,8 @@ Shared styling lives in `resources/sass/admin/_tables.scss` and uses PianoLIT
 font tokens and the membership directory’s colors, rounded filters, subtle row
 separators and spacing. Page-specific badges and cells retain their meaning.
 Wide tables scroll within the card; do not shrink text to fit a phone.
+Button links (`a.btn`) keep their button appearance on hover without a text
+underline; ordinary table links retain their link-hover styling.
 
 Rebuild the tracked admin CSS and its Mix manifest hash when shared styles
 change. Visually verify desktop/phone layouts, empty results, search, every

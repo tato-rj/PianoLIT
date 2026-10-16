@@ -7,7 +7,7 @@ use App\Mail\Performances\{PerformanceApprovedEmail, PerformanceSubmittedEmail};
 use App\Mail\Shop\ConfirmPurchase;
 use App\Mail\Memberships\MembershipConfirmed;
 use App\Mail\SharePieceEmail;
-use App\Mail\AccountWelcome;
+use App\Mail\{AccountWelcome, IosAccountWelcome};
 use App\Mail\Tutorials\{NewRequestEmail, RequestPublishedEmail};
 use App\Notifications\User\ConfirmGoogleAccount;
 use Illuminate\Auth\Notifications\{ResetPassword, VerifyEmail};
@@ -22,7 +22,8 @@ class AutomaticEmails
     public function all()
     {
         return collect([
-            'account-welcome' => ['name' => 'Account welcome', 'category' => 'Account', 'trigger' => 'After a new PianoLIT account is created.', 'default_enabled' => false],
+            'account-welcome' => ['name' => 'Web app welcome', 'category' => 'Account', 'trigger' => 'After a new account is created on the website or web app.', 'default_enabled' => false],
+            'account-welcome-ios' => ['name' => 'iOS app welcome', 'category' => 'Account', 'trigger' => 'After a new account is created from the iOS app.', 'default_enabled' => false],
             'verify-email' => ['name' => 'Signup · verify email', 'category' => 'Account', 'trigger' => 'After password signup, or when email verification is requested again.'],
             'reset-password' => ['name' => 'Reset password', 'category' => 'Account', 'trigger' => 'When someone requests a password reset.'],
             'google-link' => ['name' => 'Connect Google · confirm account', 'category' => 'Account', 'trigger' => 'When confirming an existing account before connecting Google.'],
@@ -85,6 +86,7 @@ class AutomaticEmails
 
         switch ($key) {
             case 'account-welcome': return new AccountWelcome('Jamie');
+            case 'account-welcome-ios': return new IosAccountWelcome('Jamie');
             case 'verify-email':
                 $notification = new class extends VerifyEmail {
                     protected function verificationUrl($notifiable) { return '#email-preview'; }

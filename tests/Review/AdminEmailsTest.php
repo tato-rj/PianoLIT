@@ -42,15 +42,17 @@ class AdminEmailsTest extends ReviewTestCase
         $admin = $this->admin();
         $response = $this->get(route('admin.emails.index'))->assertOk()->assertDontSee('Not currently sent')->assertSee('Membership confirmation')->assertSee('Sending');
         $xpath = $this->xpath($response);
-        $this->assertCount(15, $xpath->query('//table[@id="automatic-emails"]/tbody/tr'));
+        $this->assertCount(16, $xpath->query('//table[@id="automatic-emails"]/tbody/tr'));
         $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.emails.index').'" and @aria-current="page"]'));
         $this->assertCount(1, $xpath->query('//ul[@id="settings" and contains(@class, "show")]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="email" and @value="'.$admin->email.'"]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="_token"]'));
-        $this->assertCount(15, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
-        $this->assertCount(15, $xpath->query('//table[@id="automatic-emails"]//a[@target="_blank" and @rel="noopener noreferrer"]'));
+        $this->assertCount(16, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
+        $this->assertCount(16, $xpath->query('//table[@id="automatic-emails"]//a[@target="_blank" and @rel="noopener noreferrer"]'));
         $this->assertCount(14, $xpath->query('//button[@role="switch" and @aria-checked="true" and @value="0"]'));
-        $this->assertCount(1, $xpath->query('//button[@role="switch" and @aria-checked="false" and @value="1" and @aria-label="Automatic sending: Account welcome"]'));
+        foreach (['Web app welcome', 'iOS app welcome'] as $name) {
+            $this->assertCount(1, $xpath->query('//button[@role="switch" and @aria-checked="false" and @value="1" and @aria-label="Automatic sending: '.$name.'"]'));
+        }
         $response->assertDontSee('data-admin-datatable')->assertHeader('Cache-Control', 'no-store, private');
         Mail::assertNothingSent();
     }

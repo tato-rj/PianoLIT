@@ -558,6 +558,29 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->get(route('webapp.membership.pricing', ['checkout' => ['monthly']]))->assertOk()->assertViewHas('checkoutUrl', null);
     }
 
+    public function test_checkout_keeps_one_shared_fullscreen_close_outside_the_loading_and_payment_content()
+    {
+        $pages = [
+            $this->get(route('webapp.membership.pricing'))->assertOk()->getContent(),
+            $this->get(route('webapp.membership.checkout', $this->plan))->assertOk()->getContent(),
+            $this->getJson(route('webapp.membership.checkout', $this->plan))->assertOk()->json('html'),
+        ];
+        foreach ($pages as $html) {
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($html);
+            $xpath = new \DOMXPath($dom);
+            $buttons = $xpath->query('//*[@id="payment-checkout-modal"]//button[@aria-label="Close checkout"]');
+            $this->assertCount(1, $buttons);
+            $close = $buttons->item(0);
+            $this->assertStringContainsString('btn btn-secondary fullscreen-modal-close', $close->getAttribute('class'));
+            $this->assertStringContainsString('modal-dialog', $close->parentNode->getAttribute('class'));
+            $this->assertSame('modal', $close->getAttribute('data-bs-dismiss'));
+            $this->assertSame('true', $close->getAttribute('data-checkout-cancel'));
+            $this->assertStringNotContainsString('checkout-top-cancel', $html);
+        }
+        $this->assertCount(0, $this->gateway->calls);
+    }
+
     public function test_browser_billing_mutations_require_csrf_even_for_authenticated_accounts()
     {
         $this->withExceptionHandling(); $this->app['env'] = 'review-csrf';

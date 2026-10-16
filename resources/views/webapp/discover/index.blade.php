@@ -27,7 +27,7 @@
 
 @include('webapp.tour.modal')
 @include('webapp.discover.composers.modal')
-@if($membershipConfirmation)
+@if($membershipConfirmation ?? null)
     @include('webapp.membership.confirmation')
 @endif
 @endsection

@@ -27,8 +27,8 @@
                 </form>
             </td>
             <td><div class="admin-emails__actions">
-                <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.emails.preview', $key) }}" target="_blank" rel="noopener noreferrer" aria-label="Preview {{ $email['name'] }} in browser (opens a new tab)">Preview in browser</a>
-                <button class="btn btn-sm btn-primary" type="submit" form="email-preview-send" name="email_key" value="{{ $key }}" aria-label="Send preview of {{ $email['name'] }}">Send preview</button>
+                <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.emails.preview', $key) }}" target="_blank" rel="noopener noreferrer" aria-label="Preview {{ $email['name'] }} in browser (opens a new tab)">@icon('eye')Preview</a>
+                <button class="btn btn-sm btn-primary" type="submit" form="email-preview-send" name="email_key" value="{{ $key }}" aria-label="Send preview of {{ $email['name'] }}">@icon('mail')Preview</button>
             </div></td>
         </tr>
         @endforeach

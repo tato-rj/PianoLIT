@@ -59,6 +59,8 @@ module.exports = function (win) {
                 if (this.opener && this.opener.isConnected) this.opener.focus({preventScroll: true});
             });
             modal.addEventListener('checkout:busy', () => {
+                const close = modal.querySelector('.fullscreen-modal-close');
+                if (close) close.disabled = this.busy();
                 // Stripe's bank challenge lives outside Bootstrap's dialog. Let Stripe own
                 // focus during confirmation, then restore the dialog trap after an error.
                 const trap = this.dialog._focustrap;

@@ -1,5 +1,4 @@
 <div class="checkout-loading" data-checkout-loading>
-    <button type="button" class="checkout-cancel checkout-top-cancel" data-checkout-cancel aria-label="Close checkout">@icon('x', ['mr' => 0])</button>
     <div class="checkout-scroll">
         <div class="checkout-layout">
             <section class="checkout-payment" aria-labelledby="checkout-loading-heading">
