@@ -111,7 +111,11 @@ requirements are unchanged by this table migration.
 Shared styling lives in `resources/sass/admin/_tables.scss` and uses PianoLIT
 font tokens and the membership directory’s colors, rounded filters, subtle row
 separators and spacing. Page-specific badges and cells retain their meaning.
-Wide tables scroll within the card; do not shrink text to fit a phone.
+Wide tables scroll horizontally within the card; do not shrink text to fit a
+phone. Tables expand to fit every row and use the page for vertical scrolling.
+Never add a fixed/max-height table viewport or independent vertical scrollbar.
+The table's accessible name uses `aria-label`; a negatively margined hidden
+caption creates vertical overflow inside the horizontal scrolling region.
 Button links (`a.btn`) keep their button appearance on hover without a text
 underline; ordinary table links retain their link-hover styling.
 

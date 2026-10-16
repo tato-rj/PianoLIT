@@ -20,10 +20,11 @@
                 <form method="POST" action="{{ route('admin.emails.sending', $key) }}">
                     @csrf
                     @method('PATCH')
-                    <button class="admin-emails__switch" type="submit" role="switch" aria-checked="{{ $sending[$key] ? 'true' : 'false' }}" aria-label="Automatic sending: {{ $email['name'] }}" name="enabled" value="{{ $sending[$key] ? '0' : '1' }}">
-                        <span class="admin-emails__switch-track" aria-hidden="true"></span>
-                        <span>{{ $sending[$key] ? 'On' : 'Off' }}</span>
-                    </button>
+                    <input type="hidden" name="enabled" value="0">
+                    <div class="d-flex align-items-center">
+                        @toggle(['toggle' => $sending[$key], 'autoToggle' => false, 'name' => 'enabled', 'inputValue' => '1', 'ariaLabel' => 'Automatic sending: '.$email['name'], 'submitOnChange' => true])
+                    </div>
+                    <noscript><button class="btn btn-sm btn-outline-secondary" type="submit">Save</button></noscript>
                 </form>
             </td>
             <td><div class="admin-emails__actions">

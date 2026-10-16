@@ -33,9 +33,8 @@
   <header class="design-system__section-heading"><span class="design-system__eyebrow">06 / FORMS</span><h2 id="ds-inputs-title">Inputs & selection</h2><p>Shared form fields with their real focus, validation and disabled styles. Values stay on this page.</p></header>
   <div class="design-system__grid">
     @foreach(['sm' => 'Small', '' => 'Default', 'lg' => 'Large'] as $size => $label)
-      @component('admin.pages.settings.sample', ['label' => $label.' input', 'usage' => '.form-control'.($size ? ' .form-control-'.$size : '')])
-        <label for="ds-input-{{ $size ?: 'default' }}">Piece title</label>
-        <input id="ds-input-{{ $size ?: 'default' }}" class="form-control {{ $size ? 'form-control-'.$size : '' }}" type="text" placeholder="Search the repertoire" autocomplete="off" data-ds-preview>
+      @component('admin.pages.settings.sample', ['label' => $label.' input', 'usage' => '@input · components.form.input'.($size ? ' · .form-control-'.$size : '')])
+        @input(['bag' => 'default', 'id' => 'ds-input-'.($size ?: 'default'), 'name' => 'ds_piece_title_'.($size ?: 'default'), 'label' => 'Piece title', 'classes' => $size ? 'form-control-'.$size : '', 'value' => '', 'placeholder' => 'Search the repertoire', 'required' => false, 'autocomplete' => 'off', 'designSystemPreview' => true])
       @endcomponent
     @endforeach
     @component('admin.pages.settings.sample', ['label' => 'Select', 'usage' => '.form-select'])
@@ -67,8 +66,8 @@
       <div class="form-check"><input id="ds-radio-one" class="form-check-input" type="radio" name="ds-format" checked data-ds-preview><label class="form-check-label" for="ds-radio-one">Audio</label></div>
       <div class="form-check"><input id="ds-radio-two" class="form-check-input" type="radio" name="ds-format"><label class="form-check-label" for="ds-radio-two">Video</label></div>
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Switch', 'usage' => '.switch + .slider.round', 'properties' => 'width,height,border-radius,background-color'])
-      <div class="design-system__row"><label class="switch"><input type="checkbox" checked aria-label="Enable practice reminders"><span class="slider round" data-ds-preview></span></label><span>Practice reminders</span></div>
+    @component('admin.pages.settings.sample', ['label' => 'Switch', 'usage' => '@toggle · components.form.toggle', 'properties' => 'width,height,border-radius,background-color'])
+      <div class="design-system__row">@toggle(['toggle' => true, 'autoToggle' => false, 'ariaLabel' => 'Enable practice reminders', 'designSystemPreview' => true])<span>Practice reminders</span></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Range', 'usage' => '.form-range', 'properties' => 'width,height'])
       <label for="ds-range">Volume</label><input id="ds-range" type="range" class="form-range" min="0" max="100" value="60" data-ds-preview>

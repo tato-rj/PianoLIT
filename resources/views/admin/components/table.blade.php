@@ -49,8 +49,7 @@
     {{ $toolbar ?? '' }}
     <p class="admin-table__scroll-hint">Scroll sideways to see all columns.</p>
     <div class="admin-table__scroll" tabindex="0" role="region" aria-label="{{ $label ?? $title ?? 'Table' }} results">
-        <table id="{{ $id }}" class="admin-table__table {{ $tableClass ?? '' }}">
-            <caption class="visually-hidden">{{ $label ?? $title ?? 'Results' }}</caption>
+        <table id="{{ $id }}" class="admin-table__table {{ $tableClass ?? '' }}" aria-label="{{ $label ?? $title ?? 'Results' }}">
             <thead><tr>
                 @foreach($columns as $column)
                 @php

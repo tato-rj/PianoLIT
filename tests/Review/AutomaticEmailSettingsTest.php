@@ -62,8 +62,8 @@ class AutomaticEmailSettingsTest extends ReviewTestCase
         $page = $this->get(route('admin.emails.index'))->assertOk();
         $dom = new \DOMDocument; @$dom->loadHTML($page->getContent());
         $xpath = new \DOMXPath($dom);
-        $this->assertCount(1, $xpath->query('//button[@role="switch" and @aria-label="Automatic sending: Reset password" and @aria-checked="false"]'));
-        $this->assertCount(16, $xpath->query('//button[@role="switch"]/ancestor::form/input[@name="_token"]'));
+        $this->assertCount(1, $xpath->query('//input[@role="switch" and @aria-label="Automatic sending: Reset password" and not(@checked)]'));
+        $this->assertCount(16, $xpath->query('//input[@role="switch"]/ancestor::form/input[@name="_token"]'));
         Mail::assertNothingSent(); Mail::assertNothingQueued();
     }
 

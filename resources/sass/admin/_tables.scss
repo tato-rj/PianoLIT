@@ -19,8 +19,8 @@
     }
     a:focus-visible,
     button:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
+    input:not(.form-control):not(.pianolit-input):focus-visible,
+    select:not(.form-control):not(.form-select):focus-visible,
     summary:focus-visible,
     [tabindex]:focus-visible {
         outline: 2px solid #43764c;
@@ -112,6 +112,7 @@
     .admin-table__scroll {
         width: 100%;
         overflow-x: auto;
+        overflow-y: hidden;
     }
     .admin-table__table {
         width: 100%;

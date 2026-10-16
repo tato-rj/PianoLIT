@@ -4,6 +4,12 @@ The admin **Settings → Design System** page previews the shared UI and display
 its computed dimensions and colors. See [SCSS_GUIDE.md](SCSS_GUIDE.md) for the
 source map, readable formatting conventions and final stylesheet order.
 
+Always check this page before adding or redesigning a UI element. Reuse its shared
+Blade components, classes and tokens instead of copying the appearance into a
+page-specific control. This rule applies across the public website, web app and
+admin. When a common element has no component, extract one before using it. Design
+system specimens should render the same components used by application pages.
+
 Edit `resources/sass/shared/_tokens.scss`, then run `npm run production`.
 It contains the existing Sass palette and the CSS custom properties used by the
 public website, web app and admin. Commit the rebuilt CSS and Mix manifest together.
@@ -26,6 +32,13 @@ shapes, email templates and standalone policy documents keep their own layouts.
 
 ## Form controls
 
+Use `@input` (`components.form.input`) for standard text/email fields, including
+labels and validation feedback. Supply `id` to associate its label, `autocomplete`
+for browser completion and `describedBy` for help text. The component preserves
+scalar old input and safely ignores malformed array values. Avoid field-specific
+colors, padding, corners and focus outlines; table wrappers must respect the
+shared form-control focus style.
+
 Standard `.form-control`, `.form-select`, shared input/textarea components, file
 uploads and input-group labels use the same `--radius-input` and `--field-*`
 tokens. The default finish is a `#f8f9fb` background, `#dfe5ed` border, `#273244`
@@ -38,6 +51,18 @@ outside edges. Avoid local field colors, heights, corner utilities or padding ov
 keep page-specific widths, layout and room for icons local.
 
 Checkboxes, radios, switches and ranges use the shared brand and field colors.
+
+Switches use `@toggle` (`components.form.toggle`) and the shared `.switch` /
+`.slider.round` classes. Supply `toggle` and `ariaLabel` for the state and accessible
+name. Switches have no visible On/Off label by default; add visible labels only
+when explicitly needed. Always retain an accessible name. `autoToggle: true`
+retains the existing endpoint-toggle AJAX behavior. For
+a normal form, set `autoToggle: false`, `name` and optional `inputValue`;
+`submitOnChange: true` submits the containing form on change. Include a preceding
+hidden input with the same name and value `0` when the server requires an explicit
+off state, plus a no-JavaScript submit button. Keep labels and layout outside the
+shared switch rather than restyling it.
+
 TinyMCE and Dropzone containers and hosted Stripe card-field containers use the
 same border treatment. Third-party iframe contents are still managed by their
 respective editors/payment libraries; field styling does not change their behavior.

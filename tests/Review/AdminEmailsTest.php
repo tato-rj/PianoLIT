@@ -46,12 +46,16 @@ class AdminEmailsTest extends ReviewTestCase
         $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.emails.index').'" and @aria-current="page"]'));
         $this->assertCount(1, $xpath->query('//ul[@id="settings" and contains(@class, "show")]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="email" and @value="'.$admin->email.'"]'));
+        $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@id="preview-recipient" and contains(@class,"form-control") and @type="email" and @required and @maxlength="254" and @autocomplete="email" and @aria-describedby="preview-send-help"]'));
+        $this->assertCount(1, $xpath->query('//label[@for="preview-recipient"]'));
         $this->assertCount(1, $xpath->query('//form[@id="email-preview-send"]//input[@name="_token"]'));
         $this->assertCount(16, $xpath->query('//button[@form="email-preview-send" and @name="email_key"]'));
         $this->assertCount(16, $xpath->query('//table[@id="automatic-emails"]//a[@target="_blank" and @rel="noopener noreferrer"]'));
-        $this->assertCount(14, $xpath->query('//button[@role="switch" and @aria-checked="true" and @value="0"]'));
+        $this->assertCount(14, $xpath->query('//input[@role="switch" and @checked and @value="1"]'));
+        $this->assertCount(16, $xpath->query('//label[contains(@class,"switch")]/input[@name="enabled" and not(contains(@class,"status-toggle"))]/following-sibling::span[contains(@class,"slider")]'));
+        $this->assertCount(16, $xpath->query('//input[@role="switch"]/ancestor::form/input[@type="hidden" and @name="enabled" and @value="0"]'));
         foreach (['Web app welcome', 'iOS app welcome'] as $name) {
-            $this->assertCount(1, $xpath->query('//button[@role="switch" and @aria-checked="false" and @value="1" and @aria-label="Automatic sending: '.$name.'"]'));
+            $this->assertCount(1, $xpath->query('//input[@role="switch" and not(@checked) and @value="1" and @aria-label="Automatic sending: '.$name.'"]'));
         }
         $response->assertDontSee('data-admin-datatable')->assertHeader('Cache-Control', 'no-store, private');
         Mail::assertNothingSent();
@@ -159,6 +163,18 @@ class AdminEmailsTest extends ReviewTestCase
         $this->post(route('admin.emails.send'), ['email_key' => 'reset-password', 'email' => 'chosen@example.com'])
             ->assertRedirect(route('admin.emails.index'))->assertSessionHas('error')->assertSessionMissing('status')->assertSessionHas('_old_input.email', 'chosen@example.com');
         $this->get(route('admin.emails.index'))->assertOk()->assertSee('chosen@example.com');
+    }
+
+    public function test_recipient_validation_uses_the_shared_input_feedback_and_keeps_the_entered_value()
+    {
+        $this->admin(); $this->withExceptionHandling();
+        $this->from(route('admin.emails.index'))->post(route('admin.emails.send'), ['email_key' => 'verify-email', 'email' => 'invalid-address'])
+            ->assertRedirect(route('admin.emails.index'))->assertSessionHasErrors('email');
+        $page = $this->get(route('admin.emails.index'))->assertOk();
+        $xpath = $this->xpath($page);
+        $this->assertCount(1, $xpath->query('//input[@id="preview-recipient" and @value="invalid-address" and @aria-invalid="true" and contains(@class,"is-invalid")]'));
+        $this->assertCount(1, $xpath->query('//input[@id="preview-recipient"]/following-sibling::span[contains(@class,"invalid-feedback") and @role="alert"]'));
+        Mail::assertNothingSent();
     }
 
     public function test_preview_sends_are_rate_limited_and_malformed_old_input_is_safe()
