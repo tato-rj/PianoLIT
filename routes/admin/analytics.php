@@ -1,6 +1,7 @@
 <?php
 
 Route::prefix('analytics')->name('analytics.')->group(function() {
+    Route::get('campaigns', 'Admin\AnalyticsController@campaigns')->name('campaigns');
 
 	Route::get('users', 'Admin\UserAnalyticsController@index')->name('users');
     Route::prefix('users')->name('users.')->group(function () {

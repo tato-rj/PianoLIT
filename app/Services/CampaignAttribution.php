@@ -16,9 +16,10 @@ class CampaignAttribution
     public function available(Request $request)
     {
         return config('attribution.enabled')
-            && ! \App\Activity\ExcludedAccounts::request($request)
-            && $request->getHost() === 'my.'.config('app.short_url')
-            && ! auth('admin')->check() && ! $request->session()->get('impersonator');
+            && $request->hasSession()
+            && in_array($request->getHost(), [config('app.short_url'), 'www.'.config('app.short_url'), 'my.'.config('app.short_url')], true)
+            && ! auth('admin')->check() && ! $request->session()->get('impersonator')
+            && ! \App\Activity\ExcludedAccounts::request($request);
     }
 
     public function consent(Request $request)
@@ -32,27 +33,29 @@ class CampaignAttribution
 
     public function landingToken(Request $request)
     {
-        if (! $this->available($request) || ! $request->isMethod('GET') || ! $request->routeIs('webapp.pieces.show')) return null;
-        $piece = $request->route('piece');
-        $pieceId = is_object($piece) ? $piece->getKey() : $piece;
-        foreach (config('attribution.campaigns', []) as $key => $campaign) {
-            if ((string) $pieceId !== (string) $campaign['piece_id']) continue;
-            foreach (['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'] as $field) {
-                if ($request->query($field) !== $campaign[$field]) continue 2;
-            }
-            // A signed/encrypted, short-lived acknowledgement of the rendered page.
-            return Crypt::encryptString(json_encode(['campaign' => $key, 'visit_id' => (string) Str::uuid(), 'issued_at' => now()->timestamp]));
-        }
-        return null;
+        if (! $this->available($request) || ! $request->isMethod('GET')) return null;
+        $parameters = CampaignParameters::fromQuery($request->query());
+        if (! $parameters) return null;
+        return Crypt::encryptString(json_encode([
+            'parameters' => $parameters, 'visit_id' => (string) Str::uuid(), 'issued_at' => now()->timestamp,
+            'context' => $this->context($request),
+        ]));
     }
 
     public function campaignFromToken($token)
     {
         try { $data = json_decode(Crypt::decryptString($token), true); }
         catch (\Exception $exception) { return null; }
-        if (! is_array($data) || ! is_string($data['campaign'] ?? null) || ! is_int($data['issued_at'] ?? null) || ! is_string($data['visit_id'] ?? null) || ! Str::isUuid($data['visit_id'])) return null;
+        if (! is_array($data) || ! is_array($data['parameters'] ?? null) || ! is_int($data['issued_at'] ?? null) || ! is_string($data['visit_id'] ?? null) || ! Str::isUuid($data['visit_id'])) return null;
+        $parameters = CampaignParameters::fromQuery($data['parameters']);
+        if (! $parameters || $parameters !== $data['parameters'] || ($data['context'] ?? null) !== $this->context(request())) return null;
         $age = now()->timestamp - $data['issued_at'];
-        return $age >= 0 && $age <= 600 && array_key_exists($data['campaign'], config('attribution.campaigns', [])) ? $data : null;
+        return $age >= 0 && $age <= 600 ? $data : null;
+    }
+
+    private function context(Request $request)
+    {
+        return hash('sha256', $request->getHost().'|'.$request->session()->getId());
     }
 
     public function visit(Request $request, $requireFresh = true)
@@ -97,11 +100,11 @@ class CampaignAttribution
         $visit = $this->visit($request);
         if (! $visit) {
             $id = $touch['visit_id'];
-            DB::table('campaign_visits')->insertOrIgnore([
-                'id' => $id, 'campaign' => $touch['campaign'], 'user_id' => auth('web')->id(),
+            DB::table('campaign_visits')->insertOrIgnore(array_merge($touch['parameters'], [
+                'id' => $id, 'campaign' => CampaignParameters::key($touch['parameters']), 'user_id' => auth('web')->id(),
                 'consented_at' => now(), 'created_at' => now(),
                 'expires_at' => now()->addDays(config('attribution.touch_days')),
-            ]);
+            ]));
             $this->queueCookie($request, self::VISIT_COOKIE, $id);
             $request->cookies->set(self::VISIT_COOKIE, $id);
         }

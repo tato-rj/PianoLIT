@@ -450,6 +450,7 @@ module.exports = async function () {
     assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3');
     assert.strictEqual(piecePage.style['--playlist-menu-height'], '80px', 'Piece band accounts for persistent navigation');
     assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '80px', 'Score toolbar receives the band height');
+    assert.strictEqual(pieceMain.style.marginBottom, 'calc(24px + 80px)', 'Opening audio adds only the band height to existing page spacing');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'true');
     assertListenToggle(true);
     assert.strictEqual(videoPauses, 1, 'Listen pauses piece videos');

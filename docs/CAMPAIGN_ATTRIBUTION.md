@@ -1,22 +1,34 @@
-# Video campaign attribution
+# Campaign attribution
 
-Prepared locally on 2026-10-07. Disabled by default. Nothing in this change sets up Google Analytics or deploys tracking.
+Expanded on 2026-10-17. Campaign measurement is enabled by default in application configuration. An explicit `CAMPAIGN_ATTRIBUTION_ENABLED=false` still disables collection. This is PianoLIT's own SQL report; it does not set up or export to Google Analytics. Deployment is separate from local implementation.
 
-## Measurement and consent
+## Links and measurement
 
-The supported description link is:
+Any rendered public website or `my.*` web page can recognize a tagged arrival. `utm_source` is the only required parameter; sources do not need to be registered in code, configuration or admin first. For example:
 
-https://my.pianolit.com/pieces/174?utm_source=youtube&utm_medium=organic_video&utm_campaign=respighi_notturno&utm_content=description
+```text
+https://my.pianolit.com/pieces/174?utm_source=youtube.com
+https://my.pianolit.com/pieces/175?utm_source=chatgpt.com
+https://my.pianolit.com/?utm_source=reddit.com&utm_campaign=autumn_repertoire&utm_content=post
+```
 
-Use literal `&` in the YouTube description, not HTML `&amp;`.
+Use `?` for the first parameter and `&` for later parameters. Use literal `&` in a YouTube description, not HTML `&amp;`. The public `/pieces/{piece}` redirect preserves the four supported UTM fields on its way to the web app. Other redirect destinations must preserve tags to measure their final rendered page; a redirect response itself does not record an arrival.
 
-`config/attribution.php` allowlists the exact four UTM values and piece ID. The component only creates a short-lived encrypted acknowledgement on that rendered guest/authenticated piece page. JavaScript posts it after explicit opt-in, or after the visitor previously allowed this measurement. No record is made merely from a GET, trial button click or successful-account signup. Forged, expired and other-piece campaign tokens are rejected. The token has a random visit identity so acknowledgement retries are idempotent.
+`App\Services\CampaignParameters` validates four optional/required fields: `utm_source` (required), `utm_medium`, `utm_campaign` and `utm_content`. Each label is at most 100 characters, starts with a letter or number and uses ASCII letters, numbers, spaces, dots, underscores or hyphens. Sources cannot contain spaces. Blank optional fields are stored as empty strings. Arrays, HTML, URL syntax, email addresses and overlong fields cause the tagged arrival to be ignored; the page still opens normally. Use descriptive campaign labels, never personal information.
 
-One first eligible touch is kept for a 30-day cookie window. Refreshes, pricing navigation and direct traffic do not replace it. Host-only encrypted HttpOnly SameSite=Lax cookies survive Laravel's signup/login session regeneration. The first authenticated web account claims the visit; another account cannot claim it. Logout clears both cookies. Attribution expires after 30 days for new checkout linkage; an already attributed subscription's later successful payment remains linked.
+The report trims and lowercases labels and removes leading `www.` from sources. For compatibility, `youtube`/`youtube.com`, `chatgpt`/`chatgpt.com` and `reddit`/`reddit.com` each share the domain-style source. These aliases do not restrict other sources: `newsletter` or `new-site.example` work immediately. Other names and domains remain distinct. `.com` is a consistent naming choice, not a requirement of UTM tracking. These values describe the supplied link labels; they do not authenticate the referring site.
 
-The small “Video link measurement” control lets a visitor allow, decline or withdraw. Withdrawal deletes the current visit and its subscription attribution links (plus earlier links owned by the signed-in account), without changing the account, membership or accounting payments. If a visitor allows measurement later from an untagged page, they must reopen the tagged link to establish an arrival. This is intentionally a separate choice for first-party campaign linkage: existing GTM/Meta behavior is unchanged, and this control does not claim to control every existing tracker. Review that distinction and the wording before activation. This is a conservative product design, not a legal-compliance certification.
+Only the four normalized labels, a random visit UUID, timestamps, account binding and the existing subscription/payment identities enter campaign storage. No raw URLs, unrelated query parameters, arbitrary referrers, names, emails, IP addresses, browser profiles or payment-card fields are added. A SHA-256 campaign key keeps the existing storage contract; reports group by the four readable labels. The expansion migration backfills original Notturno visits as `youtube.com` / `organic_video` / `respighi_notturno` / `description`, preserving their visit and subscription identities.
 
-The analytics records store only a fixed campaign key, random visit UUID, timestamps, internal account binding and the attributed Stripe subscription/customer/account/plan. No names, emails, IPs, arbitrary referrers, URLs, query strings, browser profiles or payment-card fields are added. Account deletion cascades campaign links. Only the authenticated web guard controls ownership; posted `user_id` is ignored. Admin/impersonation traffic is excluded.
+## Visitor choice and ownership
+
+The shared “Campaign link measurement” control offers allow, decline and withdrawal. A GET only renders an encrypted acknowledgement; no campaign record is written until JavaScript posts it after explicit opt-in or previously granted measurement. The acknowledgement expires in ten minutes and is bound to the arrival host and browser session. Forged, expired and other-host/session tokens are rejected. Retries of the same acknowledgement are idempotent. Both website and web app endpoints use the current host, session CSRF protection and throttling; posted account IDs are ignored.
+
+One first eligible touch is kept for a 30-day cookie window. Refreshes, direct traffic and subsequent campaigns do not replace it. Host-only encrypted HttpOnly SameSite=Lax cookies survive signup/login session regeneration. The authenticated web guard claims the visit; another account cannot claim it. Logout clears the cookies. The cookies remain on the arrival host: moving from the public website to `my.*` does not carry attribution. For membership campaigns, link directly to `my.pianolit.com` to retain the complete arrival-to-membership flow. Cross-device attribution is not provided.
+
+Withdrawal removes the current visit and its subscription attribution links, plus earlier links owned by the authenticated account. It does not change accounts, access or accounting payments. Allowing measurement later on an untagged page does not invent an arrival: the visitor must reopen the tagged link. Attribution expires after 30 days for new checkout linkage; successful payments of an already attributed subscription remain linked until retention removes the campaign cohort.
+
+`App\Activity\ExcludedAccounts` excludes Arthur, Elena, the legacy Arthur email spelling and recognized opted-out browsers from collection. Reports also filter owned excluded-account visits. Admin, impersonation, mobile/API and shop traffic do not create campaign arrivals. Account deletion cascades campaign links. Existing activity analytics and GTM/Meta behavior are unchanged; this control covers only first-party campaign linkage.
 
 ## Billing correctness
 
@@ -30,20 +42,22 @@ Financial receipt storage is separate from optional campaign consent, matching t
 
 ## Reporting
 
-After activation:
+Open **Analytics → Campaigns** on `admin.*` (`admin.analytics.campaigns`, `/analytics/campaigns`). It uses the admin session guard and shared server-rendered table, with 12 rows by default. SQL search covers all four labels; sorting and pagination apply to complete grouped results. Arrival periods are the last 7, 30 or 90 calendar days (including today), or all retained arrivals. No source allowlist or code update is necessary for new rows.
+
+Each source/medium/campaign/placement combination shows consented arrivals, provider-confirmed trials, first paid subscriptions, first-payment gross revenue by currency and the latest arrival. An arrival is a consented first eligible touch in a cookie window, not every click or a unique person. A source-only link needs no campaign name. First payment means a positive subscription payment, not necessarily a first-ever customer. Filters select the arrival cohort: a later trial/payment still belongs to that earlier arrival. Renewals, zero payments, unrelated customers, denied measurement, blocked scripts, opted-out accounts, expired/deleted cohorts and unmeasured cross-device visits are outside the report. Fees/refunds are not deducted; currencies are never added together.
+
+The read-only CLI discovers the same dynamic groups:
 
 ```sh
-php artisan attribution:report --since=2026-10-07
+php artisan attribution:report --since=2026-10-17
 ```
 
-This read-only report groups consented arrivals, confirmed trials, first paid subscriptions and initial gross revenue by the fixed campaign. `--since` filters ARRIVAL cohorts; a payment received later belongs to that earlier cohort. Denied cookies, blockers, visits without opt-in, deleted/expired data and cross-device visits without the original cookie are not counted. It is neither all YouTube clicks nor unique people. Revenue excludes renewals and is gross before refunds and fees. Currency amounts are never added across currencies; unsupported formatting currencies display exact minor units. No GA4 export is included or required.
+The daily `attribution:prune` scheduler retains 90 days of campaign links and removes aged unmatched invoice receipts. Billing payments and charge retry markers remain intact. Reports display retained data even when new collection is disabled.
 
-## Activation / deployment checklist
+## Deployment and verification
 
-1. Approve the first-party opt-in wording, 30-day attribution window, 90-day retention and separate financial receipt handling. Review the pre-existing GTM/Meta consent behavior independently. Keep `CAMPAIGN_ATTRIBUTION_ENABLED=false` until the database is ready.
-2. Deploy PHP, Blade, JavaScript and Mix manifest together; apply `2026_10_07_030000_create_campaign_attribution_tables.php` using the normal production release process. Do not run this migration against production as a local test.
-3. Verify the deployed Stripe endpoint signing secret, both US/Swiss billing accounts and which endpoint(s) deliver their events. Keep raw-body signature verification. Ensure each relevant endpoint includes `invoice.payment_succeeded` and the existing `charge.succeeded` events. The installed API version may use invoice `subscription`, while newer versions use `parent.subscription_details.subscription`; both are accepted. Do not change endpoint API versions casually.
-4. In a disposable Stripe sandbox and database, validate the complete opt-in → signup/login → web checkout → 7-day trial → positive invoice flow, duplicate/concurrent retries, an invoice before local linkage, both billing accounts and no duplicate `payments` rows. SQLite regressions do not prove concurrent MySQL behavior or real Stripe delivery. Use no live purchases.
-5. Enable `CAMPAIGN_ATTRIBUTION_ENABLED=true` through the approved deployment/configuration process; refresh Laravel's deployed configuration cache as appropriate. Confirm consent denial writes no campaign record, opt-in records one arrival, privacy withdrawal works, and scheduler pruning runs. Only then put the tagged link in the description and validate the report with the deployed site.
-
-GA4 can later mirror these verified server events using the existing PianoLIT property and explicit campaign dimensions. Audit GTM first to avoid duplicates. A seven-day-later payment must retain the stored campaign and be timestamped when paid, rather than relying on the original browser session or backdating to the trial. Any GA4 export requires separate verification and server-only credentials; none were created here.
+1. Deploy the original `2026_10_07_030000_create_campaign_attribution_tables.php` and new `2026_10_17_160000_expand_campaign_attribution_sources.php` migrations **before** serving the new application code. Deploy PHP, Blade, `public/js/views/campaign-attribution.js` and its Mix manifest entry together.
+2. The application now defaults to enabled as requested. If a deployed environment explicitly sets `CAMPAIGN_ATTRIBUTION_ENABLED=false`, change that setting through the normal deployment configuration process and refresh the deployed configuration cache. Local work does not edit `.env`, deploy or migrate the normal environment.
+3. Verify the deployed Stripe endpoint signing secrets, US/Swiss account routing, `invoice.payment_succeeded` delivery and the normal scheduler. Keep raw-body signature verification. Do not change provider API versions or use live purchases for verification. See `docs/STRIPE_MEMBERSHIPS.md` for the modern billing deployment checks.
+4. In a disposable sandbox, validate tagged arrival → opt-in → signup/login → web checkout → trial → first positive invoice, retry handling, out-of-order invoices and separate currencies. Isolated SQLite tests do not prove concurrent MySQL behavior or actual Stripe delivery.
+5. Smoke-check a source-only YouTube link and an entirely new source on the deployed site. Verify the admin row, refusal/withdrawal behavior and preserved account exclusions. Use `my.*` links when measuring membership conversions. Review pre-existing GTM/Meta measurement separately; no GA4 integration is introduced here.

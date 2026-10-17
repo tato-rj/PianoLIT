@@ -61,7 +61,11 @@
         page.style.setProperty('--playlist-menu-height', menuHeight + 'px');
         var height = player.hidden ? 0 : player.getBoundingClientRect().height;
         if (piecePage) doc.documentElement.style.setProperty('--piece-player-height', height + 'px');
-        if (main) main.style.marginBottom = piecePage && player.hidden ? originalMargin : (menuHeight + height + 32) + 'px';
+        if (main) {
+            // Piece pages keep their existing spacing and reserve the audio band once.
+            if (piecePage) main.style.marginBottom = height ? 'calc(' + (originalMargin || '0px') + ' + ' + height + 'px)' : originalMargin;
+            else main.style.marginBottom = (menuHeight + height + 32) + 'px';
+        }
     }
     function syncVolume() {
         var useDevice = !!deviceVolume && deviceVolume.matches;

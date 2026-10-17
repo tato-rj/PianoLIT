@@ -15,7 +15,7 @@ class CampaignAttributionController extends Controller
         $campaign = null;
         if ($data['choice'] === 'granted' && ! empty($data['token'])) {
             $campaign = $attribution->campaignFromToken($data['token']);
-            abort_unless($campaign, 422, 'Please reload the video link before allowing measurement.');
+            abort_unless($campaign, 422, 'Please reload the campaign link before allowing measurement.');
         }
         $attribution->choose($request, $data['choice'], $campaign);
         return response()->json(['choice' => $data['choice']]);

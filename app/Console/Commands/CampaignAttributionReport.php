@@ -8,7 +8,7 @@ use App\Services\CampaignAttributionReport as Report;
 class CampaignAttributionReport extends Command
 {
     protected $signature = 'attribution:report {--since= : Arrival cohort start date, YYYY-MM-DD}';
-    protected $description = 'Read consented video arrivals, web trials and first successful subscription payments';
+    protected $description = 'Read consented campaign arrivals, web trials and first successful subscription payments';
 
     public function handle(Report $report)
     {
@@ -18,8 +18,8 @@ class CampaignAttributionReport extends Command
             $this->error('Use a valid YYYY-MM-DD date.'); return 1;
         }
         $this->line('Consented arrivals since '.$since.'; conversions belong to that arrival cohort.');
-        $this->table(['Campaign', 'Source', 'Placement', 'Arrivals', 'Trials', 'First paid subscriptions', 'First payment revenue'], $report->rows($since));
-        $this->line('Not all YouTube clicks; excludes denied/unmeasured visits. Revenue excludes renewals and is gross, before fees/refunds.');
+        $this->table(['Campaign', 'Source', 'Medium', 'Placement', 'Arrivals', 'Trials', 'First paid subscriptions', 'First payment revenue'], $report->rows($since));
+        $this->line('Excludes denied/unmeasured visits. Revenue excludes renewals and is gross, before fees/refunds.');
         return 0;
     }
 }

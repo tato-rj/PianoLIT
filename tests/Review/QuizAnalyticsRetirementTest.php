@@ -30,7 +30,8 @@ class QuizAnalyticsRetirementTest extends ReviewTestCase
         $this->assertNull(app('router')->getRoutes()->getByName('admin.analytics.quizzes'));
         $response = $this->get(route('admin.analytics.composers'))->assertOk();
         $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
-        $this->assertSame(5, $xpath->query('//ul[@id="analytics"]//a')->length);
+        $this->assertSame(6, $xpath->query('//ul[@id="analytics"]//a')->length);
+        $this->assertSame(1, $xpath->query('//ul[@id="analytics"]//a[@href="'.route('admin.analytics.campaigns').'"]')->length);
         $this->assertSame(0, $xpath->query('//ul[@id="analytics"]//a[contains(@href, "/analytics/quizzes")]')->length);
         $this->assertSame(1, $xpath->query('//ul[@id="quizzes"]//a[@href="'.route('admin.quizzes.index').'"]')->length);
         $this->get(route('admin.quizzes.edit', $this->quiz()->slug))->assertOk()->assertSee('Published music quiz');

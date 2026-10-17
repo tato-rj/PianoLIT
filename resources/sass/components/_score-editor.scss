@@ -6,7 +6,7 @@
     width: 100%;
     max-width: 1100px;
     // margin-left: -550px;
-    padding-bottom: calc(var(--score-menu-height) + var(--piece-player-height, 0px));
+    padding-bottom: var(--score-menu-height);
     color: #172033;
 
     [hidden] {
@@ -432,9 +432,10 @@
         }
     }
     @media (max-width: 767px) {
-        padding-bottom: calc(126px + var(--score-menu-height) + var(--piece-player-height, 0px));
+        padding-bottom: calc(126px + var(--score-menu-height));
         &.is-fullscreen {
             --score-toolbar-height: 36px;
+            padding-bottom: calc(126px + var(--piece-player-height, 0px));
         }
         // width: calc(100vw - 20px);
         // margin-left: calc(-50vw + 10px);

@@ -29,7 +29,7 @@
             root.setAttribute('data-consent', data.choice);
             panel.hidden = true;
             settings.setAttribute('aria-expanded', 'false');
-            status.textContent = data.choice === 'granted' ? 'Video link measurement allowed.' : 'Video link measurement is off.';
+            status.textContent = data.choice === 'granted' ? 'Campaign link measurement allowed.' : 'Campaign link measurement is off.';
             token = null; // Reopening settings cannot reuse an old landing token.
         }).catch(function () {
             panel.hidden = false;

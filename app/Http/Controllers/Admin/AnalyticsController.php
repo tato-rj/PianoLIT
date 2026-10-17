@@ -13,6 +13,11 @@ use App\Http\Controllers\Controller;
 
 class AnalyticsController extends Controller
 {
+    public function campaigns(Request $request, \App\Services\CampaignAttributionReport $report)
+    {
+        return view('admin.pages.analytics.campaigns.index', $report->admin($request));
+    }
+
     public function users()
     {
         if (request()->ajax())

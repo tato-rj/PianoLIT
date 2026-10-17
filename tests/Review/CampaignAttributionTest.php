@@ -6,7 +6,7 @@ use App\{Piece, Tag, User};
 use App\Billing\{Payment, Plan};
 use App\Billing\Factories\StripeFactory;
 use App\Billing\Webhooks\StripeWebhooks;
-use App\Services\{CampaignAttribution, CampaignAttributionReport, StripePaymentReceipts};
+use App\Services\{CampaignAttribution, CampaignAttributionReport, CampaignParameters, StripePaymentReceipts};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Cache, Cookie, DB, Event, Notification, Redis};
 
@@ -50,6 +50,7 @@ class CampaignAttributionTest extends ReviewTestCase
     private function grant()
     {
         $token = $this->token($this->landing());
+        $this->withCookie(config('session.cookie'), session()->getId());
         $response = $this->post(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $token])->assertOk();
         $visit = DB::table('campaign_visits')->first();
         $this->withCookies([CampaignAttribution::CONSENT_COOKIE => 'v1:granted', CampaignAttribution::VISIT_COOKIE => $visit->id]);
@@ -97,19 +98,21 @@ class CampaignAttributionTest extends ReviewTestCase
 
     private function report()
     {
-        return (new CampaignAttributionReport)->rows(now()->subDay()->toDateString())[0];
+        return (new CampaignAttributionReport)->rows(now()->subDay()->toDateString())[0] ?? [
+            'arrivals' => 0, 'trials' => 0, 'first_paid_subscriptions' => 0, 'first_payment_revenue' => '',
+        ];
     }
 
-    public function test_guest_arrival_requires_opt_in_and_strict_campaign_and_piece_match()
+    public function test_guest_arrival_requires_opt_in_and_valid_campaign_labels()
     {
         $page = $this->landing()->assertDontSee('GTM-KJW7XGP')->assertSee('Allow measurement');
         $this->assertNotEmpty($this->token($page));
         if ($path = getenv('CAMPAIGN_ATTRIBUTION_PREVIEW')) {
             preg_match('/<aside class="container my-3"[\s\S]*?<\/aside>/', $page->getContent(), $match);
-            file_put_contents($path, '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"></head><body><main class="container py-4"><h2>Notturno</h2><p>Optional campaign measurement preview</p></main>'.($match[0] ?? '').'<script src="/js/views/campaign-attribution.js"></script></body></html>');
+            file_put_contents($path, '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"></head><body><main class="container py-4"><h2>Notturno</h2><p>Optional campaign measurement preview</p></main>'.($match[0] ?? '').'<script src="/js/views/campaign-attribution.js"></script></body></html>');
         }
         $this->assertDatabaseCount('campaign_visits', 0);
-        foreach (['utm_source' => 'someone@example.com', 'utm_campaign' => 'other', 'utm_content' => ['description']] as $field => $value) {
+        foreach (['utm_source' => 'someone@example.com', 'utm_campaign' => '<script>alert(1)</script>', 'utm_content' => ['description']] as $field => $value) {
             $this->assertSame('', $this->token($this->landing([$field => $value])));
         }
         $this->assertNull($this->attribution->campaignFromToken('forged'));
@@ -126,7 +129,7 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->assertDatabaseCount('campaign_visits', 0);
         [$visit, $token, $response] = $this->grant();
         // Duplicate acknowledgement, including a retry before the cookie arrives.
-        $this->defaultCookies = [];
+        $this->defaultCookies = [config('session.cookie') => session()->getId()];
         $this->post(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $token])->assertOk();
         $this->withCookies([CampaignAttribution::CONSENT_COOKIE => 'v1:granted', CampaignAttribution::VISIT_COOKIE => $visit->id]);
         $this->landing();
@@ -140,6 +143,110 @@ class CampaignAttributionTest extends ReviewTestCase
                 $this->assertNotSame($visit->id, $cookie->getValue());
             }
         }
+    }
+
+    public function test_source_only_links_work_for_any_piece_and_new_sources_without_configuration()
+    {
+        $this->withCredentials();
+        $other = Model::withoutEvents(function () { return create(Piece::class, ['id' => 175]); });
+        $other->tags()->sync($this->piece->tags->modelKeys());
+        foreach (['youtube.com', 'chatgpt.com', 'reddit.com', 'new-source.example', 'newsletter'] as $source) {
+            $page = $this->get(route('webapp.pieces.show', ['piece' => $other->id, 'utm_source' => $source]))->assertOk();
+            $token = $this->token($page);
+            $this->assertNotEmpty($token);
+            $this->assertDatabaseCount('campaign_visits', 0);
+            $this->withCookie(config('session.cookie'), session()->getId());
+            $this->postJson(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $token, 'user_id' => $this->user->id])->assertOk();
+            $this->assertDatabaseHas('campaign_visits', ['utm_source' => $source, 'utm_medium' => '', 'utm_campaign' => '', 'utm_content' => '', 'user_id' => null]);
+            DB::table('campaign_visits')->delete();
+            $this->defaultCookies = [];
+        }
+    }
+
+    public function test_sources_normalize_and_malformed_parameters_never_get_a_landing_token()
+    {
+        foreach (['youtube' => 'youtube.com', 'www.YouTube.COM' => 'youtube.com', 'CHATGPT' => 'chatgpt.com', 'Reddit' => 'reddit.com', 'New-Site.Example' => 'new-site.example'] as $source => $expected) {
+            $parameters = CampaignParameters::fromQuery(['utm_source' => $source, 'utm_campaign' => 'New Piece']);
+            $this->assertSame($expected, $parameters['utm_source']);
+            $this->assertSame('new piece', $parameters['utm_campaign']);
+        }
+        foreach ([[], ['utm_source' => ''], ['utm_source' => 'www.'], ['utm_source' => 'https://youtube.com'], ['utm_source' => ['youtube.com']],
+            ['utm_source' => 'someone@example.com'], ['utm_source' => 'two sources'], ['utm_source' => str_repeat('a', 101)],
+            ['utm_source' => 'valid.com', 'utm_medium' => ['video']], ['utm_source' => 'valid.com', 'utm_content' => '<script>'],
+        ] as $parameters) {
+            $this->assertNull(CampaignParameters::fromQuery($parameters));
+            $this->assertSame('', $this->token($this->get(route('webapp.pieces.show', ['piece' => $this->piece->id] + $parameters))->assertOk()));
+        }
+        $this->assertDatabaseCount('campaign_visits', 0);
+    }
+
+    public function test_public_website_links_are_measured_on_their_own_host_and_session()
+    {
+        $this->withCredentials();
+        $this->withoutMiddleware(\App\Http\Middleware\Logs\RecordWebLog::class);
+        $page = $this->get(route('terms', ['utm_source' => 'reddit.com']))->assertOk()->assertSee('Campaign link measurement');
+        $token = $this->token($page);
+        $this->assertNotEmpty($token);
+        $this->assertStringContainsString('data-url="/attribution/consent"', $page->getContent());
+        $this->withCookie(config('session.cookie'), session()->getId());
+        // Even a genuine token from the public host cannot be replayed on my.*.
+        $this->withExceptionHandling()->postJson(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $token])->assertStatus(422);
+        $this->postJson(config('app.url').route('attribution.consent', [], false), ['choice' => 'granted', 'token' => $token])->assertOk();
+        $this->assertDatabaseHas('campaign_visits', ['utm_source' => 'reddit.com', 'user_id' => null]);
+    }
+
+    public function test_public_piece_redirects_preserve_campaign_tags_for_the_web_app_landing()
+    {
+        $this->withoutMiddleware(\App\Http\Middleware\Logs\RecordWebLog::class);
+        $parameters = ['piece' => $this->piece->id, 'utm_source' => 'youtube.com', 'utm_campaign' => 'any_piece', 'utm_content' => 'description'];
+        $this->get(route('pieces.show', $parameters))->assertRedirect(route('webapp.pieces.show', $parameters));
+        $this->assertDatabaseCount('campaign_visits', 0);
+    }
+
+    public function test_a_signed_token_cannot_be_replayed_from_another_browser_session()
+    {
+        $this->withCredentials();
+        $token = $this->token($this->landing());
+        session()->invalidate();
+        $this->withCookie(config('session.cookie'), session()->getId());
+        $this->withExceptionHandling()->postJson(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $token])->assertStatus(422);
+        $this->assertDatabaseCount('campaign_visits', 0);
+    }
+
+    public function test_requests_without_a_web_session_do_not_offer_campaign_measurement()
+    {
+        $request = \Illuminate\Http\Request::create(route('webapp.pieces.show', ['piece' => $this->piece->id, 'utm_source' => 'youtube.com']));
+        $this->assertFalse($this->attribution->available($request));
+        $this->assertNull($this->attribution->landingToken($request));
+    }
+
+    public function test_first_eligible_source_is_retained_instead_of_replaced_by_later_campaigns()
+    {
+        $this->withCredentials();
+        [$visit] = $this->grant();
+        $page = $this->landing(['utm_source' => 'reddit.com', 'utm_campaign' => 'another_campaign']);
+        $this->postJson(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $this->token($page)])->assertOk();
+        $this->assertDatabaseCount('campaign_visits', 1);
+        $this->assertDatabaseHas('campaign_visits', ['id' => $visit->id, 'utm_source' => 'youtube.com', 'utm_campaign' => 'respighi_notturno']);
+    }
+
+    public function test_consent_endpoints_keep_real_csrf_and_excluded_accounts_never_get_campaign_tokens()
+    {
+        foreach (['arthurvillar@gmail.com', 'elena.dare@gmail.com', 'arthurvilar@gmail.com'] as $email) {
+            $this->user->email = $email;
+            $this->actingAs($this->user, 'web');
+            $this->landing(['utm_source' => 'new-source.example'])->assertDontSee('data-campaign-measurement', false);
+            $this->withExceptionHandling()->postJson(route('webapp.attribution.consent'), ['choice' => 'granted'])->assertNotFound();
+        }
+        auth('web')->logout();
+        $this->app->bind(\App\Http\Middleware\VerifyCsrfToken::class, function ($app) {
+            return new class($app, $app['encrypter']) extends \App\Http\Middleware\VerifyCsrfToken {
+                protected function runningUnitTests() { return false; }
+            };
+        });
+        $this->postJson(route('webapp.attribution.consent'), ['choice' => 'granted'])->assertStatus(419);
+        $this->postJson(route('attribution.consent'), ['choice' => 'granted'])->assertStatus(419);
+        $this->assertDatabaseCount('campaign_visits', 0);
     }
 
     public function test_signup_claims_guest_touch_and_preserves_it_through_session_regeneration()

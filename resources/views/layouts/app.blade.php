@@ -97,6 +97,7 @@
 
     <script src="{{ mix('js/app.js') }}"></script>
     @include('components.activity')
+    @include('webapp.components.campaign-attribution')
 
     <script type="text/javascript">
 
