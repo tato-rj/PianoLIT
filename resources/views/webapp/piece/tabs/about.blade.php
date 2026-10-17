@@ -1,5 +1,5 @@
 @php($hasMoments = $piece->media['performance'] && ! $piece->media['performance']->moments->isEmpty())
-<div class="tab-pane fade show active mb-4" id="tab-about">
+<div class="tab-pane fade show active mb-5" id="tab-about">
 	<div class="row">
 		@if($piece->media['performance'])
 		<div class="{{$hasMoments ? 'col-lg-12' : 'col-lg-6 mx-auto piece-about-video'}} col-12 rounded-video video-container" style="margin-bottom: 2rem;">

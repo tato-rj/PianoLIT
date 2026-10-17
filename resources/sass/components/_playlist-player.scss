@@ -628,12 +628,12 @@
     }
 }
 
-// The piece page has no bottom navigation. Keep the band available in score fullscreen.
+// Stack the piece band above navigation; fullscreen covers the navigation.
 [data-piece-player-page] [hidden] {
     display: none !important;
 }
 .playlist-player--piece {
-    bottom: 0;
+    bottom: var(--webapp-menu-height, 82px);
     z-index: 1051;
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
     .playlist-player__close {
@@ -655,5 +655,6 @@
     }
 }
 body.score-editor-fullscreen-open .playlist-player--piece {
+    bottom: 0;
     z-index: 2010;
 }

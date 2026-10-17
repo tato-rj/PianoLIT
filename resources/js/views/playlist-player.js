@@ -54,7 +54,7 @@
     }
     function layout() {
         syncVolume();
-        var menu = piecePage ? null : doc.getElementById('menu');
+        var menu = doc.getElementById('menu');
         var menuHeight = menu ? menu.getBoundingClientRect().height : 0;
         page.style.setProperty('--playlist-menu-height', menuHeight + 'px');
         var height = player.hidden ? 0 : player.getBoundingClientRect().height;
@@ -422,7 +422,7 @@
         else if (deviceVolume.addListener) deviceVolume.addListener(layout);
     }
     win.addEventListener('pagehide', function () { finishDrag(true); stopMetadata(); if (audio) audio.pause(); });
-    if (win.ResizeObserver) { var resize = new win.ResizeObserver(layout); resize.observe(player); var menu = piecePage ? null : doc.getElementById('menu'); if (menu) resize.observe(menu); }
+    if (win.ResizeObserver) { var resize = new win.ResizeObserver(layout); resize.observe(player); var menu = doc.getElementById('menu'); if (menu) resize.observe(menu); }
     doc.addEventListener('show.bs.offcanvas', closePlayer);
     // Media events do not bubble; capture also covers videos loaded later.
     doc.addEventListener('play', function (event) {

@@ -67,9 +67,7 @@
 
                 @include('webapp.layouts.footer')
 
-                {{-- @unless(request()->routeIs('webapp.pieces.show')) --}}
                 @include('webapp.layouts.menu')
-                {{-- @endunless --}}
                 </div>
 
                 @auth('web')
@@ -149,6 +147,19 @@
     <script type="text/javascript">
     // ADJUST THE BOTTOM MARGIN OF THE PAGE ACCORDING TO THE HEIGHT OF THE MENU ON THE WEBAPP
     $('main').css('margin-bottom', $('#menu').height() + 20);
+    (function () {
+        var menu = document.getElementById('menu');
+        if (!menu) return;
+        function syncMenuHeight() {
+            document.documentElement.style.setProperty('--webapp-menu-height', menu.getBoundingClientRect().height + 'px');
+        }
+        syncMenuHeight();
+        if (window.ResizeObserver) {
+            new ResizeObserver(syncMenuHeight).observe(menu);
+        } else {
+            window.addEventListener('resize', syncMenuHeight);
+        }
+    }());
     </script>
 
     <script type="text/javascript">

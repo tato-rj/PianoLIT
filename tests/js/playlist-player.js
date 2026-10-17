@@ -440,7 +440,7 @@ module.exports = async function () {
     const pieceAudio = recordings[beforePiece];
     assert(!pieceBand.hidden); assert(!pieceAudio.paused);
     assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3');
-    assert.strictEqual(piecePage.style['--playlist-menu-height'], '0px', 'Piece band has no menu offset');
+    assert.strictEqual(piecePage.style['--playlist-menu-height'], '80px', 'Piece band accounts for persistent navigation');
     assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '80px', 'Score toolbar receives the band height');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'true');
     assert.strictEqual(videoPauses, 1, 'Listen pauses piece videos');
