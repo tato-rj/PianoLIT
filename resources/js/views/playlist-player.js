@@ -111,7 +111,10 @@
         var target = current && current.getAttribute('data-access-prompt');
         var modal = target ? doc.querySelector(target) : doc.getElementById(player.getAttribute('data-preview-modal'));
         if (modal && modal.id === 'access-unavailable-modal') message('This feature is currently unavailable for your account.');
-        if (modal) win.bootstrap.Modal.getOrCreateInstance(modal).show();
+        if (modal) {
+            if (win.PianoLITAccessPrompts) win.PianoLITAccessPrompts.show(modal, 'audio');
+            else win.bootstrap.Modal.getOrCreateInstance(modal).show();
+        }
     }
     function audioBlocked() {
         // data-preview=0 remains unlimited for existing full-access recordings.

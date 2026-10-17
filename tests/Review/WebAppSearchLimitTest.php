@@ -31,7 +31,7 @@ class WebAppSearchLimitTest extends ReviewTestCase
     {
         foreach ([[], ['lazy-load' => '', 'page' => 1], ['page' => 0], ['count' => 1, 'user_id' => 123]] as $extra) {
             $response = $this->getJson(route('webapp.search.results', array_merge(['search' => 'happy'], $extra)))
-                ->assertOk()->assertSee('Sign up to see more.')->assertSee(route('register'), false);
+                ->assertOk()->assertSee('Sign up free to see more.')->assertSee(route('register'), false);
             $this->assertSame(3, substr_count($response->getContent(), 'data-sort-name='));
             foreach ($this->pieces->take(3) as $piece) $response->assertSee($piece->name);
             $response->assertDontSee($this->pieces[3]->name);

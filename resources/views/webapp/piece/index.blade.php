@@ -112,9 +112,9 @@ if (scoreEditorElement) {
 PieceAccess.installPreviewGuards(document, function (kind, media) {
     document.querySelectorAll('audio, video').forEach(function (media) { media.pause(); });
     @guest('web')
-    $(kind === 'audio' ? '#signup-audio-modal' : '#signup-video-modal').modal('show');
+    PianoLITAccessPrompts.show(kind === 'audio' ? '#signup-audio-modal' : '#signup-video-modal', kind);
     @else
-    $(media.getAttribute('data-access-prompt') || '{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user()) }}').modal('show');
+    PianoLITAccessPrompts.show(media.getAttribute('data-access-prompt') || '{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user()) }}', kind);
     @endguest
 });
 const scorePreview = document.getElementById('score-preview');

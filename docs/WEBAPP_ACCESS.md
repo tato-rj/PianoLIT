@@ -38,7 +38,7 @@ These triggers follow the saved status. Guests see signup; registered nonmembers
 
 | Moment | Guest | Registered user |
 | --- | --- | --- |
-| Open the Score tab | Signup card over the blurred score | Regular piece: subscription message and **Go Premium** button; free pick: no prompt |
+| Open the Score tab | Friendly text and **Sign up free** over the blurred score | Regular piece: friendly text and **Go Premium**; free pick: no prompt |
 | Click the score overlay's main button | **Sign up free** opens registration directly | **Go Premium** opens the membership dialog |
 | Click score page, zoom or fullscreen controls | Score signup dialog | Regular piece: Premium dialog; free pick: works |
 | Click any annotation tool, including color, thickness, undo, redo or clear | Annotation signup dialog | Regular piece: Premium dialog; free pick: works |
@@ -55,6 +55,8 @@ These triggers follow the saved status. Guests see signup; registered nonmembers
 | Add a folder or save a piece at a folder/piece cap | Signup required | Premium dialog; no partial save |
 
 The defaults make signup unlock full free-pick media, its score and annotations, favorites, full search and a preview of each collection. Downloads, printing and full regular-piece access require membership. Guest copy follows the saved policy when these defaults change.
+
+All signup/Premium dialogs share a concise body title, user/crown icon and a green-check list of at most six actual upgrades from the saved matrix. Signup always says **Sign up free**, emphasizes that the account is free, and prioritizes search, favorites, the weekly free pick and its annotations. Premium highlights full regular-piece media/scores/annotations, download/print, complete collections and eScores; expanded favorite limits appear when membership actually increases them. Features already included in the current tier are not advertised as new upgrades. A Premium title matches the triggering action, including watching/listening, score tools, exports and favorite limits. The blurred score itself uses only a friendly sentence and one button, without an embedded card or checklist. Its guest button opens registration directly; its Premium button opens the score upgrade dialog.
 
 Blocked collection URLs return to the Collections directory and open the matching modal. Collection totals always count the full playable list (pieces with tutorials), matching directory counts; limited views separately show **Showing 3 of 12 pieces**, for example.
 

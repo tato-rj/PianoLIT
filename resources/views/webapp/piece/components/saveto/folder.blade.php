@@ -2,7 +2,7 @@
 @php($is_favorited = $folder->piece_favorites_count > 0)
 <button type="button" class="save-to-folder{{ $is_favorited ? ' is-saved' : '' }}"
     @if(!$canAddPiece && !$is_favorited)
-    data-bs-toggle="modal" data-bs-target="{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'favorites') }}"
+    data-access-action="favorites" data-bs-toggle="modal" data-bs-target="{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'favorites') }}"
     @else
     data-submit="favorite" data-url="{{ route('webapp.users.favorites.update', ['piece' => $piece, 'folder_id' => $folder->id]) }}"
     @endif

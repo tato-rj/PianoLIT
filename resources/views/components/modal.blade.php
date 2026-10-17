@@ -1,5 +1,5 @@
 @if($if ?? true)
-<div class="modal fade {{isset($show) ? 'autoshow' : null}}" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}" tabindex="-1" aria-hidden="true" @isset($header) aria-labelledby="{{ $id }}-title" @endisset @isset($descriptionId) aria-describedby="{{ $descriptionId }}" @endisset
+<div class="modal fade {{isset($show) ? 'autoshow' : null}}" id="{{$id}}" data-cookie="p-{{$cookie ?? null}}" tabindex="-1" aria-hidden="true" @if(isset($titleId) || isset($header)) aria-labelledby="{{ $titleId ?? $id.'-title' }}" @endif @isset($descriptionId) aria-describedby="{{ $descriptionId }}" @endisset
 
   @isset($data)
   @foreach($data as $attr => $value)
@@ -24,7 +24,7 @@
           @icon('close', ['mr' => 0])
         </button>
       </div>
-      <div class="{{array_find($options ?? null, ['body', 'raw']) == true ? 'w-100' : 'modal-body'}} p-{{array_find($options ?? null, ['body', 'padding'], ' pt-0')}}">
+      <div class="{{array_find($options ?? null, ['body', 'raw']) == true ? 'w-100' : 'modal-body'}} {{ array_find($options ?? null, ['body', 'padding']) !== null ? 'p-'.array_find($options, ['body', 'padding']) : 'px-4 pb-4 pt-0' }}">
       {!! $body !!}
       </div>
       @isset($footer)

@@ -5,13 +5,15 @@
       <div class="card rounded shadow-light" data-ds-preview><div class="card-body"><h3 class="h5">Discover your next piece</h3><p>Thoughtfully chosen repertoire for every stage of your piano journey.</p><button type="button" class="btn btn-primary btn-sm">Explore pieces</button></div></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Signup card', 'usage' => 'components.signup-card', 'properties' => 'padding,color,background-color,border,border-radius,box-shadow'])
-      @include('components.signup-card', [
-        'headingId' => 'ds-signup-card-title', 'title' => 'Unlock the full score',
-        'description' => 'Create a free account to explore the complete score, add your markings, and continue your musical journey with PianoLIT.',
-        'benefits' => [['icon' => 'file-text', 'label' => 'Full score access'], ['icon' => 'pencil', 'label' => 'Save your markings'], ['icon' => 'heart', 'label' => 'Build your library']],
-        'preview' => true,
+      @include('components.signup-card', app(\App\Services\WebApp\AccessPrompts::class)->prompt('favorites') + [
+        'headingId' => 'ds-signup-card-title', 'preview' => true, 'actionUrl' => '#',
       ])
     @endcomponent
+    @foreach(['signup' => 'Free signup modal', 'premium' => 'Premium modal'] as $kind => $label)
+      @component('admin.pages.settings.sample', ['label' => $label, 'usage' => 'components.access-modal', 'properties' => 'padding,color,background-color,border-radius'])
+        <button type="button" class="btn btn-secondary" data-ds-preview data-bs-toggle="modal" data-bs-target="#ds-{{ $kind }}-prompt">Open {{ $label }}</button>
+      @endcomponent
+    @endforeach
     @component('admin.pages.settings.sample', ['label' => 'Membership plan card', 'usage' => 'components.membership-plan-card', 'properties' => 'padding,background-color,border-radius,box-shadow'])
       @component('components.membership-plan-card', ['plan' => (object) ['name' => 'yearly', 'price' => 8999], 'monthlyPlan' => (object) ['name' => 'monthly', 'price' => 999], 'headingId' => 'ds-membership-plan', 'preview' => true])
         @slot('action')<button type="button" class="btn btn-primary">Choose Yearly @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>@endslot
@@ -118,3 +120,7 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close preview</button>
     @endslot
 @endcomponent
+
+@foreach(['signup', 'premium'] as $kind)
+    @include('components.access-modal', app(\App\Services\WebApp\AccessPrompts::class)->prompt('favorites', $kind) + ['id' => 'ds-'.$kind.'-prompt', 'preview' => true, 'actionUrl' => '#'])
+@endforeach

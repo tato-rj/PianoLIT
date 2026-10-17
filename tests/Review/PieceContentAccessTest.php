@@ -77,19 +77,19 @@ class PieceContentAccessTest extends ReviewTestCase
         }
         $upgrade = $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-preview-upgrade")]')->item(0);
         $this->assertSame(auth('web')->guest() ? 0 : 1, $xpath->query('.//button', $upgrade)->length);
+        $this->assertSame(0, $xpath->query('.//*[contains(@class, "signup-card")]', $upgrade)->length);
+        $this->assertSame(1, $xpath->query('.//p', $upgrade)->length);
         if (auth('web')->guest()) {
-            $card = $xpath->query('.//section[@aria-labelledby="score-signup-title"]', $upgrade)->item(0);
-            $this->assertNotNull($card);
-            $this->assertSame('Unlock the full score', $xpath->query('.//*[@id="score-signup-title"]', $card)->item(0)->textContent);
-            $signup = $xpath->query('.//a[contains(@class, "btn-primary")]', $card)->item(0);
+            $signup = $xpath->query('.//a[contains(@class, "btn-primary")]', $upgrade)->item(0);
             $this->assertSame('Sign up free', trim($signup->textContent));
             $this->assertSame(route('register'), $signup->getAttribute('href'));
-            $this->assertFalse($signup->hasAttribute('data-bs-toggle'), 'The inline card goes straight to signup without a second dialog.');
-            $this->assertSame(1, $xpath->query('.//a[@href="'.route('login').'"]', $card)->length);
-            $this->assertSame(3, $xpath->query('.//ul[@aria-label="Free account benefits"]/li', $card)->length);
-            $this->assertStringContainsString('Explore scores', $card->textContent);
+            $this->assertFalse($signup->hasAttribute('data-bs-toggle'), 'The score invitation goes straight to signup.');
+            $this->assertSame(0, $xpath->query('.//ul', $upgrade)->length);
+            $this->assertStringContainsString($this->piece->is_free ? 'This score is ready to explore' : 'this week’s score', $upgrade->textContent);
+        } else {
+            $this->assertStringContainsString('The full score is waiting for you', $upgrade->textContent);
         }
-        $this->assertSame(auth('web')->guest() ? 2 : 0, $xpath->query('//*[@id="score-preview"]//a')->length);
+        $this->assertSame(auth('web')->guest() ? 1 : 0, $xpath->query('//*[@id="score-preview"]//a')->length);
         $this->assertSame($videoLimit > 0 ? 1 : 0, $xpath->query('//*[@id="score-preview"]//*[@id="launch-audio"]')->length);
         $this->assertSame('', $xpath->query('//*[@id="score-preview"]')->item(0)->getAttribute('data-annotations-url'));
         $response->assertDontSee('/js/views/score-editor.js?id=', false);
@@ -157,8 +157,8 @@ class PieceContentAccessTest extends ReviewTestCase
     public function test_guests_get_action_specific_signup_prompts_and_members_keep_the_premium_prompt()
     {
         $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
-            ->assertSee('Unlock the full score')
-            ->assertSee('Membership lets you explore the complete score')
+            ->assertSee('Explore more scores')
+            ->assertSee('Premium lets you read the full score')
             ->assertSee('data-bs-target="#signup-favorites-modal"', false)
             ->assertSee('data-preview-modal="signup-audio-modal"', false)
             ->assertDontSee('GO PREMIUM')->assertDontSee('Subscribe to read')
@@ -170,7 +170,7 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertSame(1, $headerFavorite->length);
         $this->assertSame(0, $xpath->query('ancestor::*[contains(@class, "d-none")]', $headerFavorite->item(0))->length);
         foreach (['data-url', 'data-submit', 'data-manage'] as $attribute) $this->assertFalse($headerFavorite->item(0)->hasAttribute($attribute));
-        foreach (['video' => 'watch the full video', 'audio' => 'listen to the full recording', 'score' => 'read the full score', 'annotations' => 'add your own markings and save them', 'score-export' => 'download and print scores', 'favorites' => 'save your favorite pieces', 'escore' => 'practice book'] as $action => $benefit) {
+        foreach (['video' => '10-second media previews', 'audio' => '10-second media previews', 'score' => 'read the full score', 'annotations' => 'add and save your markings', 'score-export' => 'download and print scores', 'favorites' => 'save your favorite pieces', 'escore' => 'practice book'] as $action => $benefit) {
             $id = 'signup-'.$action.'-modal';
             $this->assertSame(1, $xpath->query('//*[@id="'.$id.'"]')->length);
             $modal = $xpath->query('//*[@id="'.$id.'"]')->item(0);
@@ -179,14 +179,14 @@ class PieceContentAccessTest extends ReviewTestCase
             $this->assertSame(1, $xpath->query('//*[@id="'.$modal->getAttribute('aria-describedby').'"]')->length);
             $signup = $xpath->query('.//a[contains(@class, "btn-primary")]', $modal);
             $this->assertSame(1, $signup->length);
-            $this->assertSame('SIGN UP', trim($signup->item(0)->textContent));
+            $this->assertSame('Sign up free', trim($signup->item(0)->textContent));
             $this->assertSame(route('register'), $signup->item(0)->getAttribute('href'));
             $this->assertSame(1, $xpath->query('.//a[@href="'.route('login').'"]', $modal)->length);
         }
         if ($directory = getenv('GUEST_SIGNUP_PREVIEW_DIR')) file_put_contents($directory.'/guest-piece.html', $response->getContent());
         $this->actingAs($this->userWithSubscription(), 'web');
         $member = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
-            ->assertSee('GO PREMIUM')->assertSee('Subscribe to read')
+            ->assertSee('Go Premium')->assertSee('The full score is waiting for you')
             ->assertSee('data-bs-target="#piece-upgrade-modal"', false)
             ->assertSee('data-preview-modal="piece-upgrade-modal"', false)
             ->assertDontSee('id="signup-score-modal"', false);
@@ -322,7 +322,7 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->piece->updateQuietly(['is_free' => true]);
         $guestFreePick = $this->assertRestricted()->assertDontSee('data-manage="save-to"', false)
             ->assertSee('data-annotations-url=""', false)
-            ->assertSee('Create a free PianoLIT account to explore the complete score and continue your musical journey.')
+            ->assertSee('This score is ready to explore')->assertSee('read the full score.')
             ->assertDontSee('Sign up to read, mark and download');
         $document = new \DOMDocument();
         $document->loadHTML($guestFreePick->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);

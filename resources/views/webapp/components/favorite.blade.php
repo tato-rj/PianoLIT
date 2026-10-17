@@ -6,7 +6,7 @@
 <button class="btn-raw t-2 {{ $favoriteClasses ?? '' }}" id="flag-{{$piece->id}}"
     data-favorite-piece="{{ $piece->id }}" data-favorited="{{ $is_favorited ? 'true' : 'false' }}" aria-pressed="{{ $is_favorited ? 'true' : 'false' }}" aria-label="Favorite {{ $piece->medium_name }}"
     @if($favoritesLocked && !$is_favorited)
-    data-bs-toggle="modal" data-bs-target="{{ $favoritePolicy->promptTarget(auth('web')->user(), 'favorites') }}"
+    data-access-action="favorites" data-bs-toggle="modal" data-bs-target="{{ $favoritePolicy->promptTarget(auth('web')->user(), 'favorites') }}"
     @else
     data-bs-toggle="offcanvas" data-bs-target="#save-to-offcanvas" aria-controls="save-to-offcanvas" data-manage="save-to" data-url="{{route('webapp.pieces.save-to', $piece)}}"
     @endif
@@ -15,7 +15,7 @@
 </button>
 @else
 <button class="btn-raw t-2 {{ $favoriteClasses ?? '' }}" type="button" style="{{ $favoriteStyle ?? 'font-size: 120%' }}"
-    data-bs-toggle="modal" data-bs-target="#signup-favorites-modal" aria-label="Sign up to favorite {{ $piece->medium_name }}">
+    data-access-action="favorites" data-bs-toggle="modal" data-bs-target="#signup-favorites-modal" aria-label="Sign up to favorite {{ $piece->medium_name }}">
     @icon('heart', ['color' => $favoriteColor ?? 'red', 'mr' => $favoriteIconMargin ?? 2])
 </button>
 @endauth

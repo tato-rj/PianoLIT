@@ -69,7 +69,7 @@ class PlaylistPlayerTest extends ReviewTestCase
         $response->assertSee('data-bs-target="#signup-escore-modal"', false)
             ->assertSee('data-bs-target="#signup-favorites-modal"', false)
             ->assertSee('data-preview-modal="signup-audio-modal"', false)
-            ->assertSee('Sign up to explore recordings.')
+            ->assertSee('Sign up free to explore recordings.')
             ->assertDontSee('id="piece-upgrade-modal"', false)->assertDontSee('GO PREMIUM')
             ->assertDontSee('data-escore-form', false);
         $this->assertSame(8, substr_count($response->getContent(), 'data-track data-id='));

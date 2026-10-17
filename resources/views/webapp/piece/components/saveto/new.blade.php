@@ -1,6 +1,6 @@
 @php($canCreateFolder = app(\App\Services\WebApp\FavoriteAccess::class)->canCreate(auth('web')->user(), $folders->count()))
 <div class="save-to-panel__create">
-    <button type="button" class="save-to-panel__create-button {{ $canCreateFolder ? 'new-folder' : '' }}" data-target="#new-folder-container-{{ $piece->id }}" id="new-folder-button-{{ $piece->id }}" @if(!$canCreateFolder) data-bs-toggle="modal" data-bs-target="{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'folders') }}" @endif>
+    <button type="button" class="save-to-panel__create-button {{ $canCreateFolder ? 'new-folder' : '' }}" data-target="#new-folder-container-{{ $piece->id }}" id="new-folder-button-{{ $piece->id }}" @if(!$canCreateFolder) data-access-action="folders" data-bs-toggle="modal" data-bs-target="{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'folders') }}" @endif>
         <span class="save-to-panel__create-icon" aria-hidden="true">@icon('plus', ['mr' => 0])</span>
         <span>Create a new folder</span>
         @icon('chevron-right', ['mr' => 0, 'classes' => 'save-to-panel__create-arrow'])

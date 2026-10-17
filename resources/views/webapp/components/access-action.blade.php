@@ -1,6 +1,6 @@
 @php($nextMemberState = isset($accessFeature) ? (app(\App\Services\WebApp\AccessPolicy::class)->snapshot()['rules']['account'][$accessFeature]['member'] ?? 'blocked') : 'available')
 @guest('web')
-    <a href="{{ route('register') }}" class="btn btn-primary me-2">Sign up</a>
+    <a href="{{ route('register') }}" class="btn btn-primary me-2">Sign up free</a>
     <a href="{{ route('login') }}" class="btn btn-secondary">Sign in</a>
 @else
     @if(!auth('web')->user()->hasActiveSubscription() && $nextMemberState === 'available')

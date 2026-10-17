@@ -165,7 +165,7 @@ $pastel-palette: (
         --radius-circle: 50%;
         --radius-button: 0.75rem;
         --radius-input: 0.75rem;
-        --radius-modal: var(--radius);
+        --radius-modal: var(--radius-sm);
         --radius-dropdown: 9px;
 
         // Shared form controls, including selects, uploads and grouped fields.

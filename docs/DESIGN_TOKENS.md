@@ -24,7 +24,7 @@ This updates `.rounded`, directional `.rounded-top/bottom/left/right`, the media
 player, the shared modal, pricing badges, admin overview corners, buttons, and unstyled form fields.
 Images and divs opt into these rules through their existing rounded classes.
 `--radius-button` and `--radius-input` have independent .75rem defaults;
-`--radius-modal` inherits `--radius`.
+`--radius-modal` inherits `--radius-sm`.
 
 `--radius-sm` controls `.rounded-sm` and its directional variants. Existing pill/circle and
 square utility precedence is retained. Custom score tools, Match cards, decorative
@@ -169,6 +169,10 @@ stylesheet precedence. Page templates request only their main bundle.
 ## Standard confirmation dialogs
 
 Use `components.modal` for ordinary dialogs and confirmations. Its `header`, `body` and `footer` slots retain shared typography, button classes and `--radius-modal`. Pass `centered: true` for a centered confirmation and `descriptionId` for the ID of its explanatory text. The component supplies a focusable dialog root, a title association when a header is present, and an accessible Close button. Bootstrap handles the backdrop, Escape, focus trap and return to the opener. Keep destructive actions behind an explicit submit button, with a separate dismiss button. Web app views can push markup into `page-modals` to render it at body level, outside tab panes and other stacking containers. Settings → Design System’s interactive modal uses this same component.
+
+Signup and Premium invitations use `components.access-modal`, with `kind`, `id`, `title`, `description` and a string array of up to six `benefits`. It composes the shared modal, `access-prompt-icon`, `access-prompt-body` and green-check `access-benefits` list. Signup uses a user icon, emphasizes **free** in the description and **Sign up free** action, and includes a login link. Premium uses a crown and **Go Premium**. Titles belong in the body; the modal's optional `titleId` points its accessible label there. Default body spacing is `px-4 pb-4 pt-0`; an explicit numeric `options.body.padding` still produces `p-N`.
+
+`App\Services\WebApp\AccessPrompts` supplies concise action copy and benefits derived from the saved Access Limits matrix. Lists describe actual improvements to the next account tier, respect annotation/score dependencies and limited caps, and never promise a paid feature for free. The shared `components/access-prompts.js` updates Premium titles from server-rendered action copy for native modal triggers (`data-access-action`) and media/favorite callbacks (`PianoLITAccessPrompts.show`). Both modal kinds and the reusable `components.signup-card` specimen are demonstrated in Settings → Design System. The live blurred-score overlay stays lightweight: one friendly sentence and the shared Sign up free / Go Premium button, without an embedded card.
 
 
 ## Focus appearance

@@ -144,13 +144,21 @@ class AccessPolicy
     {
         $scope = $piece ? ($piece->is_free ? 'free_pick' : 'regular') : 'account';
         $rules = $this->snapshot()['rules'][$scope][$feature] ?? [];
-        if (!$rules && !$piece) return 'Create your free PianoLIT account to explore more music. Full media access depends on the piece and your membership.';
-        if ($feature === 'collections' && ($rules['registered'] ?? 'blocked') === 'limited') {
-            return 'Create a free PianoLIT account to preview the first 3 pieces in each collection.'.(($rules['member'] ?? 'blocked') === 'available' ? ' Membership unlocks every piece.' : '');
+        if ($feature === 'annotations' && $piece) {
+            foreach (['registered', 'member'] as $role) {
+                if ($this->snapshot()['rules'][$scope]['score'][$role] !== 'available') $rules[$role] = 'blocked';
+            }
         }
-        if (($rules['registered'] ?? 'blocked') === 'available') return 'Create a free PianoLIT account to '.$action.'.';
-        if (($rules['registered'] ?? 'blocked') === 'limited' && in_array($feature, ['folders', 'folder_pieces', 'collections', 'search'], true)) return 'Create a free PianoLIT account to '.$action.' within your account limits. Membership gives you more room to explore.';
-        if (($rules['member'] ?? 'blocked') === 'available') return 'Create your free PianoLIT account to get started. Membership lets you '.$action.'.';
-        return 'Create your free PianoLIT account to explore the repertoire. This feature is currently unavailable.';
+        if (!$rules && !$piece) return 'Create your free PianoLIT account to explore more piano music.';
+        if ($feature === 'collections' && ($rules['registered'] ?? 'blocked') === 'limited') {
+            return 'Create your free PianoLIT account to preview 3 pieces in each collection.';
+        }
+        if (($rules['registered'] ?? 'blocked') === 'available') return 'Create your free PianoLIT account to '.$action.'.';
+        if (($rules['registered'] ?? 'blocked') === 'limited') {
+            if (in_array($feature, ['performance', 'synthesia', 'audio'], true)) return 'Create your free PianoLIT account to enjoy 10-second media previews.';
+            return 'Create your free PianoLIT account to '.$action.' within your account limits.';
+        }
+        if (($rules['member'] ?? 'blocked') === 'available') return 'Create your free PianoLIT account first; Premium lets you '.$action.'.';
+        return 'Create your free PianoLIT account to explore more piano music.';
     }
 }

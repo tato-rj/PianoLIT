@@ -2,10 +2,10 @@
     $scorePreview = isset($hasMediaAccess) && ! $hasMediaAccess;
     $accessPolicy = app(\App\Services\WebApp\AccessPolicy::class);
     $scorePromptTarget = $accessPolicy->promptTarget(auth('web')->user(), 'score', $piece);
-    $scoreUpgradeAttributes = 'data-bs-toggle="modal" data-bs-target="'.$scorePromptTarget.'"';
-    $scoreExportAttributes = 'data-bs-toggle="modal" data-bs-target="'.$accessPolicy->promptTarget(auth('web')->user(), 'score-export', $piece).'"';
+    $scoreUpgradeAttributes = 'data-access-action="score" data-bs-toggle="modal" data-bs-target="'.$scorePromptTarget.'"';
+    $scoreExportAttributes = 'data-access-action="score-export" data-bs-toggle="modal" data-bs-target="'.$accessPolicy->promptTarget(auth('web')->user(), 'score-export', $piece).'"';
     $scoreButtonAttributes = $scorePreview ? $scoreUpgradeAttributes : 'disabled';
-    $scoreAnnotationAttributes = !$hasAnnotationAccess ? 'data-bs-toggle="modal" data-bs-target="'.$accessPolicy->promptTarget(auth('web')->user(), 'annotations', $piece).'"' : 'disabled';
+    $scoreAnnotationAttributes = !$hasAnnotationAccess ? 'data-access-action="annotations" data-bs-toggle="modal" data-bs-target="'.$accessPolicy->promptTarget(auth('web')->user(), 'annotations', $piece).'"' : 'disabled';
     $scoreDropdownAttributes = !$hasAnnotationAccess ? $scoreAnnotationAttributes : 'data-bs-toggle="dropdown" disabled';
 @endphp
 <div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }} mb-4" data-pdf-url="{{ storage($piece->score_path) }}"
@@ -61,25 +61,23 @@
     <div class="score-status-row"><span data-score-status class="score-save-status {{ $scorePreview ? 'score-preview-status' : '' }}" role="status" aria-live="polite">Loading score…</span></div>
 
     <div class="score-scroll">
-        <div class="score-sheet {{ $scorePreview && auth('web')->guest() ? 'score-sheet--signup' : '' }}">
+        <div class="score-sheet">
             @if($scorePreview)
                 <div class="score-preview-pages" aria-hidden="true"></div>
-                <div class="score-preview-upgrade {{ auth('web')->guest() ? 'score-preview-upgrade--signup' : '' }} text-center">
+                <div class="score-preview-upgrade text-center">
                     @guest('web')
-                        @include('components.signup-card', [
-                            'headingId' => 'score-signup-title',
-                            'title' => 'Unlock the full score',
-                            'description' => $accessPolicy->signupDescription('score', $piece, 'explore the complete score and continue your musical journey'),
-                            'benefits' => [
-                                ['icon' => 'file-text', 'label' => 'Explore scores'],
-                                ['icon' => 'pencil', 'label' => $accessPolicy->snapshot()['rules']['free_pick']['annotations']['registered'] === 'available' ? 'Save your markings' : 'Practice inspiration'],
-                                ['icon' => 'heart', 'label' => $accessPolicy->snapshot()['rules']['account']['folder_pieces']['registered'] !== 'blocked' ? 'Build your library' : 'Explore repertoire'],
-                            ],
-                        ])
+                        @if($accessPolicy->snapshot()['rules'][$piece->is_free ? 'free_pick' : 'regular']['score']['registered'] === 'available')
+                            <p>This score is ready to explore with a <strong>free</strong> PianoLIT account.</p>
+                        @elseif($accessPolicy->snapshot()['rules']['free_pick']['score']['registered'] === 'available')
+                            <p>A <strong>free</strong> account brings you this week’s score and more to explore.</p>
+                        @else
+                            <p>There’s more music to explore with a <strong>free</strong> PianoLIT account.</p>
+                        @endif
+                        <a href="{{ route('register') }}" class="btn btn-primary">@icon('user')Sign up <strong>free</strong></a>
                     @else
                         @if($scorePromptTarget === '#piece-upgrade-modal')
-                            <p>Subscribe to read, mark and download the full score.</p>
-                            <button type="button" {!! $scoreButtonAttributes !!} class="btn btn-primary">@icon('crown')GO PREMIUM</button>
+                            <p>The full score is waiting for you with PianoLIT Premium.</p>
+                            <button type="button" {!! $scoreButtonAttributes !!} class="btn btn-primary">@icon('crown')Go Premium</button>
                         @else
                             <p>This score is currently locked.</p>
                         @endif
@@ -111,7 +109,7 @@
         </div>
         <div class="score-footer-actions">
             @if($piece->hasAudio())
-                <button type="button" @if($audioPreviewSeconds === 0) data-bs-toggle="modal" data-bs-target="{{ $accessPolicy->promptTarget(auth('web')->user(), 'audio', $piece) }}" @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif class="score-listen-button">@icon('play', ['mr' => 0])<span>Listen</span></button>
+                <button type="button" @if($audioPreviewSeconds === 0) data-bs-toggle="modal" data-bs-target="{{ $accessPolicy->promptTarget(auth('web')->user(), 'audio', $piece) }}" @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif data-access-action="audio" class="score-listen-button">@icon('play', ['mr' => 0])<span>Listen</span></button>
             @endif
             @if(! $hasScoreExportAccess)
                 <button type="button" {!! $scoreExportAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></button>

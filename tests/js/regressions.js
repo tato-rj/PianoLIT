@@ -26,6 +26,7 @@ function element(value = '') {
 }
 
 async function main() {
+    require('./access-prompts')();
     await require('./explore')();
     await require('./explore-transitions')();
     require('./explore-moods')();

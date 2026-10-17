@@ -385,20 +385,6 @@
                 flex: 0 0 auto;
             }
         }
-        // Let the card establish the sheet height while the PDF loads or fails.
-        .score-sheet--signup {
-            display: grid;
-            .score-preview-pages,
-            .score-preview-upgrade--signup {
-                grid-area: 1 / 1;
-                min-width: 0;
-            }
-        }
-        .score-preview-upgrade--signup {
-            position: relative;
-            inset: auto;
-            padding: 24px 16px;
-        }
         @media (max-width: 767px) {
             .score-sheet {
                 width: 100%;
@@ -408,9 +394,6 @@
             }
             .score-preview-upgrade > p {
                 font-size: 14px;
-            }
-            .score-preview-upgrade--signup {
-                padding: 20px 8px;
             }
         }
     }

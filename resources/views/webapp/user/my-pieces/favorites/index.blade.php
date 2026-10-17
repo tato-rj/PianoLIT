@@ -13,7 +13,7 @@
                 @icon('search', ['mr' => 0])
                 <input type="search" id="folder-search" placeholder="Search folders or pieces…" aria-controls="folder-grid" autocomplete="off">
             </label>
-            <button type="button" data-bs-toggle="modal" data-bs-target="{{ $folderTarget }}" class="btn btn-secondary">
+            <button type="button" data-access-action="folders" data-bs-toggle="modal" data-bs-target="{{ $folderTarget }}" class="btn btn-secondary">
                 @icon('plus')New folder
             </button>
         </div>
@@ -42,7 +42,7 @@
             @include('webapp.user.my-pieces.favorites.delete')
             @include('webapp.user.my-pieces.favorites.edit')
         @endforeach
-        <button type="button" class="my-pieces-folder my-pieces-folder--create" data-bs-toggle="modal" data-bs-target="{{ $folderTarget }}">
+        <button type="button" class="my-pieces-folder my-pieces-folder--create" data-access-action="folders" data-bs-toggle="modal" data-bs-target="{{ $folderTarget }}">
             <span class="my-pieces-folder__create-icon" aria-hidden="true">@icon('plus', ['mr' => 0])</span>
             <strong>New folder</strong>
             <span>Create a folder to organize<br>your pieces</span>

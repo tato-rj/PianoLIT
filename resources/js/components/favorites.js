@@ -2,7 +2,8 @@ function showFavoriteAccessPrompt(error) {
     const target = error.response && error.response.data && error.response.data.access_prompt;
     const modal = target && document.querySelector(target);
     if (!modal) return false;
-    window.bootstrap.Modal.getOrCreateInstance(modal).show();
+    if (window.PianoLITAccessPrompts) window.PianoLITAccessPrompts.show(modal, 'favorites');
+    else window.bootstrap.Modal.getOrCreateInstance(modal).show();
     return true;
 }
 
