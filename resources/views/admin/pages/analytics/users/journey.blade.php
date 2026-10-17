@@ -2,10 +2,13 @@
 @section('content')
 <div class="content-wrapper"><div class="container-fluid ua">
     @include('admin.components.page.title', ['title' => 'Visit journey', 'subtitle' => 'Recorded pages and actions for this visit.'])
-    <nav class="ua-breadcrumbs" aria-label="Breadcrumb"><a href="{{ route('admin.analytics.users') }}">User analytics</a><span>/</span>
-        @if($visit->account_id && $visit->first_name)<a href="{{ route('admin.analytics.users.profile', $visit->account_id) }}">{{ \App\Activity\Presentation::name($visit) }}</a><span>/</span>@endif
-        <span aria-current="page">Visit journey</span>
-    </nav>
+    <div class="d-flex align-items-start justify-content-between gap-3">
+        <nav class="ua-breadcrumbs" aria-label="Breadcrumb"><a href="{{ route('admin.analytics.users') }}">User analytics</a><span>/</span>
+            @if($visit->account_id && $visit->first_name)<a href="{{ route('admin.analytics.users.profile', $visit->account_id) }}">{{ \App\Activity\Presentation::name($visit) }}</a><span>/</span>@endif
+            <span aria-current="page">Visit journey</span>
+        </nav>
+        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#delete-visit-modal" aria-label="Delete visit" title="Delete visit">@icon('trash-2', ['mr' => 0])</button>
+    </div>
     <section class="ua-card ua-summary"><h2 class="ua-eyebrow">Visit summary</h2>@include('admin.pages.analytics.users.summary', ['summaryVisit' => $visit])<p>Last recorded activity: {{ \App\Activity\Time::date($visit, 'last_activity_at')->format('M j, g:i:s A') }}. No further activity recorded.</p></section>
     <section class="ua-card ua-identity">
         <span class="ua-avatar ua-avatar-lg" aria-hidden="true">{{ mb_substr(\App\Activity\Presentation::name($visit), 0, 1) }}</span>
@@ -52,4 +55,18 @@
     {{ $pages->links() }}
     @if($unplaced->total()){{ $unplaced->links() }}@endif
 </div></div>
+@component('components.modal', ['id' => 'delete-visit-modal', 'header' => 'Delete this visit?', 'centered' => true, 'descriptionId' => 'delete-visit-description', 'options' => ['body' => ['padding' => 3]]])
+    @slot('body')
+        <p>{{ \App\Activity\Presentation::name($visit) }} · {{ \App\Activity\Time::date($visit, 'started_at')->format('M j, Y, g:i A') }}</p>
+        <p id="delete-visit-description" class="mb-0">Permanently delete this visit and all its recorded pages and actions. This cannot be undone.</p>
+    @endslot
+    @slot('footer')
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="{{ route('admin.analytics.users.visits.destroy', $visit->id) }}" class="m-0">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger">Delete visit</button>
+        </form>
+    @endslot
+@endcomponent
 @endsection

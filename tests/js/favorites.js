@@ -16,6 +16,7 @@ module.exports = async function () {
     const accessModal = {};
     let shownModal = null;
     const document = {
+        dispatchEvent(event) { assert.strictEqual(event.type, 'pianolit:favorite-updated'); favoriteEvents.push(event.detail); },
         getElementById(id) { assert.strictEqual(id, 'save-to-offcanvas'); return sheet; },
         addEventListener(name, handler) { overlayEvents[name] = handler; },
         querySelectorAll(selector) {
@@ -33,6 +34,7 @@ module.exports = async function () {
     let scroll = 72;
     let disabled = false;
     let postRequests = 0;
+    const favoriteEvents = [];
     const hearts = [0, 1, 2].map(() => ({
         attributes: {}, filled: false,
         setAttribute(name, value) { this.attributes[name] = value; },
@@ -93,7 +95,7 @@ module.exports = async function () {
         if (value === '#save-to-offcanvas-content') return sheetBody;
         throw new Error('Unexpected selector: ' + value);
     };
-    const context = vm.createContext({document, $, window: {bootstrap: {Modal: {getOrCreateInstance(element) { return {show() {shownModal = element;}}; }}, Offcanvas: {getOrCreateInstance(element) {
+    const context = vm.createContext({document, $, window: {CustomEvent: function(type, options) { this.type = type; this.detail = options.detail; }, bootstrap: {Modal: {getOrCreateInstance(element) { return {show() {shownModal = element;}}; }}, Offcanvas: {getOrCreateInstance(element) {
                 if (element === options) return options;
                 assert.strictEqual(element, sheet);
                 return {show(trigger) {
@@ -143,6 +145,7 @@ module.exports = async function () {
     assert.strictEqual(content, 'removed', 'The folder state updates as soon as the request succeeds');
     assert.strictEqual(scroll, 72, 'The folder list keeps its scroll position');
     assertHearts(true);
+    assert.strictEqual(favoriteEvents.length, 1, 'Successful panel selections notify folder tracks');
 
     toggle.call(button);
     resolvePost({data: {status: true, favorite: {piece_id: 1, is_favorited: true}, html: {list: 'saved'}}});

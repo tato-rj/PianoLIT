@@ -187,6 +187,9 @@ class PlaylistPlayerTest extends ReviewTestCase
         $this->assertSame(1, substr_count($response->getContent(), 'data-favorited="false"'));
         Favorite::create(['user_id' => $this->user->id, 'piece_id' => $this->pieces[0]->id]);
         $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk();
+        $this->assertSame(1, substr_count($response->getContent(), 'data-favorited="false"'), 'Legacy unfiled favorites do not imply a selected folder.');
+        Favorite::create(['user_id' => $this->user->id, 'piece_id' => $this->pieces[0]->id, 'favorite_folder_id' => $this->folder->id]);
+        $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk();
         $this->assertSame(8, substr_count($response->getContent(), 'data-favorited="true"'));
     }
 
@@ -198,8 +201,10 @@ class PlaylistPlayerTest extends ReviewTestCase
         $otherFolder = FavoriteFolder::create(['user_id' => $this->user->id, 'name' => 'Recital']);
         Favorite::create(['user_id' => 999, 'piece_id' => $piece->id]);
         $state = ['piece_id' => $piece->id, 'is_favorited' => true];
-        $this->postJson($url, ['folder_id' => $otherFolder->id])->assertOk()->assertJson(['status' => true, 'favorite' => $state]);
-        $this->postJson($url, ['folder_id' => $this->folder->id])->assertOk()->assertJson(['status' => false, 'favorite' => $state]);
+        $this->postJson($url, ['folder_id' => $otherFolder->id])->assertOk()->assertJson(['status' => true, 'favorite' => $state])
+            ->assertJsonPath('favorite.folder_favorite_id', Favorite::retrieve($this->user, $piece, $otherFolder)->value('id'));
+        $this->postJson($url, ['folder_id' => $this->folder->id])->assertOk()->assertJson(['status' => false, 'favorite' => $state])
+            ->assertJsonPath('favorite.folder_id', $this->folder->id)->assertJsonPath('favorite.is_saved_in_folder', false);
         $this->postJson($url)->assertOk()->assertJson(['status' => true, 'favorite' => $state]);
         $this->postJson($url)->assertOk()->assertJson(['status' => false, 'favorite' => $state]);
         $this->postJson($url, ['folder_id' => $otherFolder->id])->assertOk()->assertJson([
@@ -208,20 +213,55 @@ class PlaylistPlayerTest extends ReviewTestCase
         $this->assertDatabaseHas('favorites', ['user_id' => 999, 'piece_id' => $piece->id]);
     }
 
+    public function test_collection_and_folder_hearts_open_the_picker_without_changing_saves()
+    {
+        $this->openCollectionPolicy();
+        $this->actingAs($this->user, 'web');
+        $count = Favorite::count();
+        foreach ([route('webapp.playlists.show', $this->playlist), route('webapp.users.favorites.folders.show', $this->folder)] as $url) {
+            $response = $this->get($url)->assertOk()->assertDontSee('data-playlist-favorite', false);
+            foreach ($this->pieces as $piece) $this->assertPieceHearts($response->getContent(), $piece, true, 1);
+        }
+        $this->get(route('webapp.pieces.save-to', $this->pieces[0]))->assertOk()->assertSee('Book 3');
+        $this->assertSame($count, Favorite::count());
+        $this->assertFalse(Favorite::whereNull('favorite_folder_id')->exists());
+    }
+
+    public function test_blocked_folders_never_turn_hearts_into_unfiled_quick_saves()
+    {
+        $this->actingAs($this->user, 'web');
+        $policy = app(\App\Services\WebApp\AccessPolicy::class);
+        $rules = $policy->snapshot()['rules'];
+        $rules['account']['folders']['registered'] = 'blocked';
+        $policy->save($rules, $policy->snapshot()['revision'], 1);
+        $html = view('webapp.components.favorite', ['piece' => $this->pieces[0], 'directToggle' => true])->render();
+        $this->assertPieceHearts($html, $this->pieces[0], true, 1);
+        $this->withExceptionHandling()->getJson(route('webapp.pieces.save-to', $this->pieces[0]))->assertForbidden();
+        $this->assertFalse(Favorite::whereNull('favorite_folder_id')->exists());
+    }
+
     public function test_creating_a_folder_with_a_piece_returns_saved_state_and_fills_every_piece_heart()
     {
         $this->actingAs($this->user, 'web');
         $piece = $this->pieces[0];
         Favorite::where('user_id', $this->user->id)->where('piece_id', $piece->id)->delete();
+        Favorite::create(['user_id' => $this->user->id, 'piece_id' => $piece->id]);
         $before = $this->get(route('webapp.pieces.show', $piece))->assertOk();
         $this->assertPieceHearts($before->getContent(), $piece, false, 2);
         $panel = $this->get(route('webapp.pieces.save-to', $piece))->assertOk();
+        if ($destination = getenv('FAVORITE_HEART_PREVIEW_DIR')) {
+            file_put_contents($destination.'/collection-before.html', $this->previewHtml($this->get(route('webapp.playlists.show', $this->playlist))->assertOk()->getContent()));
+            $url = route('webapp.users.favorites.update', $piece);
+            file_put_contents($destination.'/choose-existing.json', $this->postJson($url, ['folder_id' => $this->folder->id])->assertOk()->getContent());
+            file_put_contents($destination.'/unchoose-existing.json', $this->postJson($url, ['folder_id' => $this->folder->id])->assertOk()->getContent());
+        }
         $other = Model::withoutEvents(function () { return create(User::class); });
         $created = $this->postJson(route('webapp.users.favorites.folders.store'), ['name' => 'Recital', 'piece_id' => $piece->id, 'user_id' => $other->id])->assertOk()
             ->assertJsonPath('favorite.piece_id', $piece->id)->assertJsonPath('favorite.is_favorited', true);
         $this->assertDatabaseHas('favorites', ['user_id' => $this->user->id, 'piece_id' => $piece->id, 'favorite_folder_id' => FavoriteFolder::where('name', 'Recital')->firstOrFail()->id]);
         $after = $this->get(route('webapp.pieces.show', $piece))->assertOk();
         $this->assertPieceHearts($after->getContent(), $piece, true, 2);
+        $this->assertDatabaseHas('favorites', ['user_id' => $this->user->id, 'piece_id' => $piece->id, 'favorite_folder_id' => null]);
         $collection = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk();
         $this->assertPieceHearts($collection->getContent(), $piece, true, 1);
         $browseUrl = route('webapp.search.results', ['catalogue' => 1]);
@@ -234,12 +274,16 @@ class PlaylistPlayerTest extends ReviewTestCase
                 file_put_contents($destination.'/'.$name.'.html', $this->previewHtml($response->getContent()));
             }
             file_put_contents($destination.'/panel.html', $panel->getContent());
+            file_put_contents($destination.'/panel-saved.html', $this->get(route('webapp.pieces.save-to', $piece))->assertOk()->getContent());
             file_put_contents($destination.'/create.json', $created->getContent());
             file_put_contents($destination.'/piece-id.txt', $piece->id);
             file_put_contents($destination.'/results.html', $results->getContent());
             $url = route('webapp.users.favorites.update', $piece);
             $folder = FavoriteFolder::where('name', 'Recital')->firstOrFail();
             file_put_contents($destination.'/folder.html', $this->previewHtml($this->get(route('webapp.users.favorites.folders.show', $folder))->assertOk()->getContent()));
+            foreach (['remove-only-recital', 'readd-only-recital'] as $name) {
+                file_put_contents($destination.'/'.$name.'.json', $this->postJson($url, ['folder_id' => $folder->id])->assertOk()->getContent());
+            }
             foreach (['add-second' => $this->folder->id, 'quick-add' => null, 'quick-remove' => null, 'remove-first' => $folder->id, 'remove-last' => $this->folder->id, 'save-loose' => null, 'remove-loose' => null] as $name => $folderId) {
                 file_put_contents($destination.'/'.$name.'.json', $this->postJson($url, ['folder_id' => $folderId])->assertOk()->getContent());
             }
@@ -256,6 +300,10 @@ class PlaylistPlayerTest extends ReviewTestCase
         foreach ($buttons as $button) {
             $this->assertSame($saved ? 'true' : 'false', $button->getAttribute('aria-pressed'));
             $this->assertSame($saved ? 'true' : 'false', $button->getAttribute('data-favorited'));
+            $this->assertSame('offcanvas', $button->getAttribute('data-bs-toggle'));
+            $this->assertSame('#save-to-offcanvas', $button->getAttribute('data-bs-target'));
+            $this->assertSame(route('webapp.pieces.save-to', $piece), $button->getAttribute('data-url'));
+            $this->assertFalse($button->hasAttribute('data-submit'), 'A heart only opens the folder picker.');
             $this->assertSame($saved ? 1 : 0, $xpath->query('.//i[contains(@class, "icon-filled")]', $button)->length);
         }
     }

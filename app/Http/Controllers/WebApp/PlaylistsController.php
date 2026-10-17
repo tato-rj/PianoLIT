@@ -24,7 +24,7 @@ class PlaylistsController extends Controller
 
         if (auth('web')->check()) {
             $query->withExists(['favorites as webapp_is_favorited' => function ($query) {
-                $query->where('user_id', auth('web')->id());
+                $query->where('user_id', auth('web')->id())->whereNotNull('favorite_folder_id');
             }]);
         }
 

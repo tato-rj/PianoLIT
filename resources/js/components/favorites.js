@@ -9,10 +9,12 @@ function showFavoriteAccessPrompt(error) {
 const Offcanvas = window.bootstrap.Offcanvas;
 let favoritePending = false;
 
-// A heart means saved anywhere, even when this mutation only changed one folder.
+// A heart means saved in any folder, even when this mutation changed only one.
 window.PianoFavorites = {
     update(favorite) {
         if (!favorite || !Number.isInteger(favorite.piece_id) || typeof favorite.is_favorited !== 'boolean') return;
+        // Reconcile folder rows first, including a piece re-added from this panel.
+        document.dispatchEvent(new window.CustomEvent('pianolit:favorite-updated', {detail: favorite}));
         document.querySelectorAll('[data-favorite-piece="' + favorite.piece_id + '"]').forEach(function(button) {
             button.setAttribute('aria-pressed', favorite.is_favorited ? 'true' : 'false');
             button.setAttribute('data-favorited', favorite.is_favorited ? 'true' : 'false');

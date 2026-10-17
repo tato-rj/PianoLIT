@@ -33,10 +33,10 @@ module.exports = async function () {
         load() {}
     }
     function sourceUrl(media) { return media.playlistSource.getAttribute('src') || ''; }
-    const recordings = [], patches = [], posts = [], favoriteUpdates = [];
+    const recordings = [], patches = [], posts = [];
     let upgrades = 0;
     let promptedModal;
-    const page = new Element(), list = new Element({'data-url-reorder': '/folders/1/reorder'}), player = new Element({'data-preview-modal': 'piece-upgrade-modal', 'data-preview-message': 'Your preview has ended. Go Premium to hear the full piece.'});
+    const page = new Element(), list = new Element({'data-folder-id': '1', 'data-url-reorder': '/folders/1/reorder'}), player = new Element({'data-preview-modal': 'piece-upgrade-modal', 'data-preview-message': 'Your preview has ended. Go Premium to hear the full piece.'});
     list.items = [0, 1, 2].map(index => new Element({'data-id': String(index + 1), 'data-title': 'Piece ' + index, 'data-composer': 'Composer', 'data-audio': index === 2 ? '' : index === 0 ? '/legacy.MPGA?version=1' : '/recording.mp4', 'data-preview': index === 1 ? '10' : '0', 'data-artwork': '/art.jpg'}));
     const tracks = list.items.slice();
     list.querySelectorAll = () => list.items.filter(item => item.getAttribute('data-id'));
@@ -44,6 +44,7 @@ module.exports = async function () {
     list.appendChild = row => { const index = list.items.indexOf(row); if (index >= 0) list.items.splice(index, 1); list.items.push(row); };
     list.insertBefore = (row, before) => { const previousIndex = list.items.indexOf(row); if (previousIndex >= 0) list.items.splice(previousIndex, 1); const index = list.items.indexOf(before); list.items.splice(index < 0 ? list.items.length : index, 0, row); };
     tracks.forEach(row => {
+        row.setAttribute('data-piece-id', row.getAttribute('data-id'));
         row.children['[data-playlist-favorite]'] = new Element({'data-url': '/favorite/' + row.getAttribute('data-id')});
     });
     page.children['[data-playlist-tracks]'] = list;
@@ -54,7 +55,6 @@ module.exports = async function () {
         patch(url, data) { return new Promise((resolve, reject) => patches.push({url, data, resolve, reject})); },
         post(url) { return new Promise((resolve, reject) => posts.push({url, resolve, reject})); }
     }};
-    win.PianoFavorites = {update(state) { favoriteUpdates.push(state); }};
     async function settle() { await new Promise(resolve => setImmediate(resolve)); }
     const result = initialize(doc, win);
     assert.strictEqual(result.time(154), '2:34');
@@ -220,13 +220,22 @@ module.exports = async function () {
         restored.resolve({data: ''}); await settle();
     }
     const favorite = tracks[0].querySelector('[data-playlist-favorite]');
-    favorite.fire('click'); assert(favorite.disabled);
-    posts[0].reject(new Error('Save failed')); await settle();
-    assert(!favorite.disabled); assert.strictEqual(list.items.length, 3);
-    favorite.fire('click'); posts[1].resolve({data: {status: false, favorite: {piece_id: 1, is_favorited: true}}}); await settle();
-    assert.deepStrictEqual(favoriteUpdates, [{piece_id: 1, is_favorited: true}], 'Removing a folder entry publishes the aggregate saved state');
+    favorite.fire('click');
+    assert.strictEqual(posts.length, 0, 'The playlist player must never quick-save a heart click');
+    assert.strictEqual(list.items.length, 3, 'Opening the folder picker cannot remove a row');
+    doc.fire('pianolit:favorite-updated', {detail: {piece_id: 1, folder_id: 2, is_saved_in_folder: false}});
+    assert.strictEqual(list.items.length, 3, 'Removing from another folder leaves this folder intact');
+    doc.fire('pianolit:favorite-updated', {detail: {piece_id: 1, folder_id: 1, is_saved_in_folder: true}});
+    assert.strictEqual(list.items.length, 3);
+    doc.fire('pianolit:favorite-updated', {detail: {piece_id: 1, folder_id: 1, is_saved_in_folder: false, is_favorited: true}});
     assert.strictEqual(list.items.length, 2);
     assert.strictEqual(page.querySelector('[data-playlist-count]').textContent, '2 pieces');
+    doc.fire('pianolit:favorite-updated', {detail: {piece_id: 1, folder_id: 1, is_saved_in_folder: true, folder_favorite_id: 42}});
+    assert.strictEqual(list.items.length, 3, 'Re-selecting the folder restores its track immediately');
+    assert.strictEqual(list.items[2], tracks[0], 'Re-added favorites follow the server append order');
+    assert.strictEqual(tracks[0].getAttribute('data-id'), 42, 'Reordering uses the new saved record identity');
+    doc.fire('pianolit:favorite-updated', {detail: {piece_id: 1, folder_id: 1, is_saved_in_folder: false}});
+    assert.strictEqual(list.items.length, 2);
     recordings.forEach(recording => recording.pause());
     initialize(doc, win);
     assert.strictEqual(player.hidden, true, 'A fresh page starts with the player hidden');

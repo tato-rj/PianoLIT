@@ -5,7 +5,7 @@
     <button class="btn btn-secondary" type="button" data-loop aria-pressed="false" disabled>@icon('repeat', ['mr' => 0])<span>Loop: Off</span></button>
 </div>
 <p class="playlist-status small text-muted" role="status" aria-live="polite" data-playlist-status></p>
-<div class="playlist-tracks border-top {{$canReorder ? '' : 'playlist-tracks--readonly'}}" data-playlist-tracks @if($canReorder) data-url-reorder="{{route('webapp.users.favorites.folders.reorder', $folder)}}" @endif>
+<div class="playlist-tracks border-top {{$canReorder ? '' : 'playlist-tracks--readonly'}}" data-playlist-tracks @if($canReorder) data-folder-id="{{ $folder->id }}" data-url-reorder="{{route('webapp.users.favorites.folders.reorder', $folder)}}" @endif>
     @forelse($pieces as $piece)
     @php($hasTrackAccess = $piece->hasWebMediaAccess(auth('web')->user(), 'audio'))
     @php($trackLimit = app(\App\Services\WebApp\AccessPolicy::class)->mediaLimit('audio', auth('web')->user(), $piece))
@@ -24,15 +24,7 @@
         <span class="playlist-track__level bg-{{$piece->level_name}}-raw" title="{{ucfirst($piece->level_name ?: 'Unknown')}} level"></span>
         <div class="playlist-track__identity"><span class="playlist-track__title" title="{{$piece->short_name}}">{{$piece->short_name}}</span><span class="playlist-track__composer text-muted">{{$piece->composer->short_name}}</span></div>
         <span class="playlist-track__duration text-muted" data-track-duration aria-label="Duration">—</span>
-        @auth('web')
-        <button class="btn-raw text-danger playlist-track__favorite" type="button" data-playlist-favorite data-favorite-piece="{{ $piece->id }}" data-favorited="{{isset($folder) || ($piece->webapp_is_favorited ?? 0) ? 'true' : 'false'}}"
-            data-url="{{route('webapp.users.favorites.update', array_filter(['piece' => $piece->id, 'folder_id' => isset($folder) ? $folder->id : null]))}}"
-            aria-pressed="{{isset($folder) || ($piece->webapp_is_favorited ?? 0) ? 'true' : 'false'}}" aria-label="{{isset($folder) ? 'Remove from folder' : 'Favorite'}} {{$piece->short_name}}">
-            @icon('heart', ['mr' => 0, 'filled' => isset($folder) || ($piece->webapp_is_favorited ?? 0) > 0])
-        </button>
-        @else
-        <button class="btn-raw text-danger playlist-track__favorite" type="button" data-bs-toggle="modal" data-bs-target="#signup-favorites-modal" aria-label="Sign up to favorite {{$piece->short_name}}">@icon('heart', ['mr' => 0])</button>
-        @endauth
+        @include('webapp.components.favorite', ['favoriteClasses' => 'text-danger playlist-track__favorite', 'favoriteStyle' => '', 'favoriteIconMargin' => 0, 'favoriteColor' => 'danger', 'favoriteSaved' => isset($folder) ? true : ($piece->webapp_is_favorited ?? false)])
         <a class="btn btn-secondary btn-sm playlist-track__go" href="{{route('webapp.pieces.show', $piece)}}" data-activity-label="{{ $piece->medium_name_with_composer }}">Go @icon('arrow-right', ['mr' => 0])</a>
         @if($canReorder)
         <button class="btn-raw text-muted playlist-track__handle" type="button" data-track-handle aria-label="Reorder {{$piece->short_name}}; use up and down arrow keys" title="Drag to reorder; use arrow keys with keyboard">@icon('grip-vertical', ['mr' => 0])</button>

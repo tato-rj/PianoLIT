@@ -249,10 +249,12 @@
         if (!url) return;
         renumber();
         busy = true;
+        var hearts = rows().map(function (row) { return row.querySelector('[data-favorite-piece]'); }).filter(Boolean);
+        hearts.forEach(function (heart) { heart.disabled = true; });
         win.axios.patch(url, {ids: rows().map(function (row) { return Number(row.getAttribute('data-id')); })})
             .then(function () { message('Folder order saved.'); })
             .catch(function () { restore(snapshot); message('The order could not be saved. Your previous order has been restored.'); })
-            .then(function () { busy = false; });
+            .then(function () { busy = false; hearts.forEach(function (heart) { heart.disabled = false; }); });
     }
     var activeDrag = null, dragFrame = null;
     function positionDrop() {
@@ -319,37 +321,40 @@
     doc.addEventListener('pointercancel', function (event) { if (activeDrag && event.pointerId === activeDrag.id) finishDrag(true); }, true);
     doc.addEventListener('keydown', function (event) { if (activeDrag && event.key === 'Escape') { event.preventDefault(); finishDrag(true); } }, true);
     win.addEventListener('blur', function () { finishDrag(true); });
+    // Folder membership changes only after a selection in the shared Save to panel.
+    var removedFolderRows = {}, emptyFolderMessage = null;
+    doc.addEventListener('pianolit:favorite-updated', function (event) {
+        var favorite = event.detail;
+        var folderId = list.getAttribute('data-folder-id');
+        if (!favorite || !folderId || String(favorite.folder_id) !== folderId) return;
+        if (favorite.is_saved_in_folder === true && removedFolderRows[favorite.piece_id] && Number.isInteger(favorite.folder_favorite_id)) {
+            var restored = removedFolderRows[favorite.piece_id];
+            restored.setAttribute('data-id', favorite.folder_favorite_id);
+            list.appendChild(restored);
+            delete removedFolderRows[favorite.piece_id];
+            if (emptyFolderMessage) { emptyFolderMessage.remove(); emptyFolderMessage = null; }
+            renumber();
+            message('Piece saved to this folder.');
+        }
+        if (favorite.is_saved_in_folder !== false) return;
+        rows().filter(function (row) { return Number(row.getAttribute('data-piece-id')) === favorite.piece_id; }).forEach(function (row) {
+            var wasCurrent = row === current;
+            var next = queue[queue.indexOf(row) + 1] || queue[0];
+            var wasPlaying = !!audio && !audio.paused;
+            if (wasCurrent && audio) audio.pause();
+            removedFolderRows[favorite.piece_id] = row;
+            row.remove(); renumber();
+            if (wasCurrent && queue.length) select(next === row ? queue[0] : next, wasPlaying);
+            message('Piece removed from this folder.');
+            if (!rows().length) {
+                emptyFolderMessage = doc.createElement('p'); emptyFolderMessage.className = 'playlist-empty'; emptyFolderMessage.textContent = 'No pieces here yet.'; list.appendChild(emptyFolderMessage);
+            }
+        });
+    });
     rows().forEach(function (row) {
         var trackPlay = row.querySelector('[data-track-play]');
         if (trackPlay) trackPlay.addEventListener('click', function () {
             if (row === current && audio) toggle(); else select(row, true);
-        });
-        var favorite = row.querySelector('[data-playlist-favorite]');
-        if (favorite) favorite.addEventListener('click', function () {
-            if (busy) return;
-            busy = true; favorite.disabled = true;
-            win.axios.post(favorite.getAttribute('data-url')).then(function (response) {
-                var saved = !!response.data.status;
-                win.PianoFavorites.update(response.data.favorite);
-                if (list.getAttribute('data-url-reorder') && !saved) {
-                    var wasCurrent = row === current;
-                    var next = queue[queue.indexOf(row) + 1] || queue[0];
-                    var wasPlaying = !!audio && !audio.paused;
-                    if (wasCurrent && audio) audio.pause();
-                    row.remove(); renumber();
-                    if (wasCurrent && queue.length) select(next === row ? queue[0] : next, wasPlaying);
-                    message('Piece removed from this folder.');
-                    if (!rows().length) {
-                        var empty = doc.createElement('p'); empty.className = 'playlist-empty'; empty.textContent = 'No pieces here yet.'; list.appendChild(empty);
-                    }
-                } else message(saved ? 'Piece saved to My favorites.' : response.data.favorite.is_favorited ? 'Piece removed from My favorites. It is still saved in a folder.' : 'Piece removed from My favorites.');
-            }).catch(function (error) {
-                var target = error && error.response && error.response.data && error.response.data.access_prompt;
-                var modal = target && doc.querySelector(target);
-                if (modal) win.bootstrap.Modal.getOrCreateInstance(modal).show();
-                message(error && error.response && error.response.data && error.response.data.message || 'Your favorite could not be updated. Please try again.');
-            })
-                .then(function () { busy = false; favorite.disabled = false; });
         });
         var handle = row.querySelector('[data-track-handle]');
         if (!handle || !list.getAttribute('data-url-reorder')) return;

@@ -31,7 +31,10 @@ class FavoritesController extends Controller
         	'status' => $status,
             'favorite' => [
                 'piece_id' => $piece->id,
-                'is_favorited' => $piece->favorites()->where('user_id', $user->id)->exists(),
+                'is_favorited' => $piece->favorites()->where('user_id', $user->id)->whereNotNull('favorite_folder_id')->exists(),
+                'folder_id' => optional($folder)->id,
+                'is_saved_in_folder' => $folder ? $status : null,
+                'folder_favorite_id' => $folder && $status ? Favorite::retrieve($user, $piece, $folder)->value('id') : null,
             ],
             'html' => [
                 'list' => view('webapp.piece.components.saveto.content', compact(['piece', 'folders']))->render(),

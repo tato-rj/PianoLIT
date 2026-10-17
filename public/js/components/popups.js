@@ -14,22 +14,3 @@ $(document).on('click', function(event) {
     if ($close.length) $close.trigger('click');
     else $popup.fadeOut('fast');
 });
-
-$(document).on('click', 'button[data-manage="favorite"]', function(event) {
-    event.preventDefault();
-    let $button = $(this);
-    let $heart = $button.find('i');
-
-    $button.disable().addClass('opacity-6');
-
-    axios.post($button.attr('data-url-toggle'))
-        .then(function(response) {
-            $heart.toggleClass('icon-filled');
-        })
-        .catch(function(error) {
-            alert('Sorry, we couldn\'t update your favorite at this time.');
-        })
-        .then(function() {
-            $button.enable().removeClass('opacity-6');
-        });
-});

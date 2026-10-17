@@ -20,6 +20,11 @@ class PiecesController extends Controller
         $timelinePeriod = $timelineService->periodForPiece($piece);
         $timeline = $timelineService->forPiece($piece);
         $piece->loadMissing(['tags', 'tutorials.moments']);
+        if (auth('web')->check()) {
+            $piece->loadExists(['favorites as webapp_is_favorited' => function ($query) {
+                $query->where('user_id', auth('web')->id())->whereNotNull('favorite_folder_id');
+            }]);
+        }
         $recommendationRows = $recommendations->rows($piece);
         $sentences = ['Tuning the piano', 'Arranging rows of comfy seats', 'Adjusting the bench', 'Warming up fingers', 'Greeting the eager audience', 'Dimming the lights', 'Wrapping up'];
 

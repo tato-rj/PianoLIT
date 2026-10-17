@@ -22,7 +22,7 @@ class PieceCards
         ];
         if ($favorites && auth('web')->check()) {
             $relations['favorites as webapp_is_favorited'] = function ($query) {
-                $query->where('user_id', auth('web')->id());
+                $query->where('user_id', auth('web')->id())->whereNotNull('favorite_folder_id');
             };
         }
         $pieces->loadExists($relations);

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Activity\{Filters, Insights, Journey, People, Queries, VisitSort};
+use App\Activity\{Filters, Insights, Journey, People, Queries, VisitRemoval, VisitSort};
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Support\AdminPagination;
@@ -53,5 +53,12 @@ class UserAnalyticsController extends Controller
     public function journey($visit, Journey $journey)
     {
         return view('admin.pages.analytics.users.journey', $journey->get($visit));
+    }
+
+    public function destroyVisit($visit, VisitRemoval $removal)
+    {
+        $removal->delete($visit);
+
+        return redirect()->route('admin.analytics.users')->with('status', 'Visit deleted.');
     }
 }
