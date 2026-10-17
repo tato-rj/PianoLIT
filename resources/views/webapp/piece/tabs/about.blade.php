@@ -82,7 +82,7 @@
 
 		@foreach($recommendationRows as $recommendationRow)
 		@php($featuredRecommendations = $loop->first)
-		<section class="{{$featuredRecommendations ? 'discover-latest' : 'discover-for-you discover-panel rounded'}} mb-4" aria-labelledby="piece-recommendations-{{$loop->index}}">
+		<section class="{{$featuredRecommendations ? 'discover-latest' : 'discover-for-you'}} mb-4" aria-labelledby="piece-recommendations-{{$loop->index}}">
 			<div class="d-flex d-apart gap-3 mb-3">
 				<h5 id="piece-recommendations-{{$loop->index}}" class="m-0">{{$recommendationRow['title']}}</h5>
 				<a href="{{$recommendationRow['url']}}" class="btn-raw link-primary" aria-label="View all: {{$recommendationRow['title']}}">View all</a>
