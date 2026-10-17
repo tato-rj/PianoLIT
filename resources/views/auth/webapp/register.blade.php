@@ -9,7 +9,7 @@
 
         <div class="form-group text-center">
             @include('auth.fields.register-button')
-            <h6><a class="link-none" href="{{ route('login') }}">Already have an account?</a></h6>
+            <p class="text-muted mb-0">Already have an account? <a class="fw-semibold text-decoration-underline text-nowrap" href="{{ route('login') }}">Log in</a></p>
         </div>
     </form>
     @include('auth.google.button')

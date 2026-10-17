@@ -24,7 +24,7 @@ class MembershipsController extends Controller
     {
         $plans = Plan::all()->reverse();
         $selected = request()->query('checkout');
-        $checkoutPlan = is_string($selected) ? $plans->firstWhere('name', $selected) : null;
+        $checkoutPlan = auth('web')->check() && is_string($selected) ? $plans->firstWhere('name', $selected) : null;
         $checkoutUrl = $checkoutPlan ? route('webapp.membership.checkout', $checkoutPlan) : null;
         return view('webapp.membership.pricing.index', compact('plans', 'checkoutUrl'));
     }

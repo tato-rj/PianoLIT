@@ -136,7 +136,8 @@ class AccessPolicy
         $feature = ['video' => 'performance', 'score-export' => 'exports', 'favorites' => 'folder_pieces', 'escore' => 'escores'][$guestAction] ?? $guestAction;
         $scope = $piece ? ($piece->is_free ? 'free_pick' : 'regular') : 'account';
         $member = $this->snapshot()['rules'][$scope][$feature]['member'] ?? null;
-        return $member !== null && $member !== 'available' ? '#access-unavailable-modal' : '#piece-upgrade-modal';
+        if ($member !== null && $member !== 'available') return '#access-unavailable-modal';
+        return $feature === 'collections' ? '#collection-upgrade-modal' : '#piece-upgrade-modal';
     }
 
     public function signupDescription(string $feature, ?Piece $piece, string $action)
@@ -144,6 +145,9 @@ class AccessPolicy
         $scope = $piece ? ($piece->is_free ? 'free_pick' : 'regular') : 'account';
         $rules = $this->snapshot()['rules'][$scope][$feature] ?? [];
         if (!$rules && !$piece) return 'Create your free PianoLIT account to explore more music. Full media access depends on the piece and your membership.';
+        if ($feature === 'collections' && ($rules['registered'] ?? 'blocked') === 'limited') {
+            return 'Create a free PianoLIT account to preview the first 3 pieces in each collection.'.(($rules['member'] ?? 'blocked') === 'available' ? ' Membership unlocks every piece.' : '');
+        }
         if (($rules['registered'] ?? 'blocked') === 'available') return 'Create a free PianoLIT account to '.$action.'.';
         if (($rules['registered'] ?? 'blocked') === 'limited' && in_array($feature, ['folders', 'folder_pieces', 'collections', 'search'], true)) return 'Create a free PianoLIT account to '.$action.' within your account limits. Membership gives you more room to explore.';
         if (($rules['member'] ?? 'blocked') === 'available') return 'Create your free PianoLIT account to get started. Membership lets you '.$action.'.';

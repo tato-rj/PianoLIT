@@ -1,23 +1,32 @@
 #save-to-offcanvas.offcanvas.offcanvas-bottom {
-    max-height: calc(100vh - 24px);
-    max-height: calc(100dvh - 24px);
+    // Let the fixed heading and create form fit beyond the shared 45vh cap.
+    max-height: calc(100vh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
     // border-radius: 20px 20px 0 0;
     box-shadow: 0 -12px 40px rgba(20, 29, 44, 0.12);
     .offcanvas-body {
+        display: flex;
+        min-height: 0;
         width: 100%;
         max-width: 1040px;
         margin: 0 auto;
         padding: 0 0 env(safe-area-inset-bottom);
+        overflow: hidden;
     }
 }
 
 .save-to-panel {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
     overflow: hidden;
     // border-radius: 16px;
     background: #fff;
     color: #212529;
 
     &__header {
+        flex-shrink: 0;
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
@@ -38,6 +47,7 @@
         }
     }
     &__create {
+        flex-shrink: 0;
         padding: 12px 20px 8px;
     }
     &__create-button {
@@ -106,9 +116,11 @@
         }
     }
     &__list {
+        min-height: 0;
         max-height: 280px;
         overflow-x: hidden;
         overflow-y: auto;
+        overscroll-behavior-y: contain;
         padding: 4px 20px 14px;
         scrollbar-width: thin;
         scrollbar-color: #c7d2e3 transparent;

@@ -19,7 +19,7 @@ module.exports = function () {
             }}; }}}
         };
         function modal(id, fullscreen = true) {
-            return modals[id] = {id, matches(selector) { assert.strictEqual(selector, '.fullscreen-modal'); return fullscreen; }};
+            return modals[id] = {id, hasAttribute() { return false; }, matches(selector) { assert.strictEqual(selector, '.fullscreen-modal'); return fullscreen; }};
         }
         initialize(win);
         return {win, events, options, shown, modal, setActive(modal) { active = modal; }, params: () => new URL(win.location.href).searchParams,
@@ -77,6 +77,11 @@ module.exports = function () {
     assert.deepStrictEqual(late.shown, ['composer-globe-modal'], 'Also supports scripts initialized after DOM ready');
     late.win.history.replaceState = () => { throw new Error('Blocked'); };
     assert.doesNotThrow(() => late.events['hidden.bs.modal']({target: late.modal('composer-globe-modal')}));
+
+    const checkout = page('https://my.pianolit.com/membership/pricing?checkout=monthly&modal=payment-checkout-modal');
+    checkout.modal('payment-checkout-modal').hasAttribute = name => name === 'data-checkout-modal';
+    checkout.ready(); checkout.flush();
+    assert.deepStrictEqual(checkout.shown, [], 'Checkout restoration belongs to the authenticated plan launcher, never the generic modal restorer.');
 
     const gestures = page('https://my.pianolit.com/composers');
     let clicks = 0;

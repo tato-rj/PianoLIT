@@ -4,7 +4,7 @@
 @component('webapp.layouts.header', ['title' => 'Collections', 'subtitle' => 'Find something beautiful to play.'])
 @endcomponent
 
-<div class="collections-page" id="collections-page">
+<div class="collections-page" id="collections-page" @if(session('collection_access_prompt')) data-access-prompt="{{ session('collection_access_prompt') }}" @endif>
     @if(count($books))
     <a class="collections-intro pastel-card" data-pastel-color="sky" href="#pianolit-path">
         <span class="collections-intro__art" aria-hidden="true">
@@ -27,7 +27,7 @@
             <h1 id="featured-heading">{{ $featured['playlist']->name }}</h1>
             <p>{{ $featured['playlist']->subtitle ?: 'Discover something beautiful in the piano repertoire.' }}</p>
             <span class="collections-meta">{{ $featured['playlist']->pieces_count }} pieces</span>
-            <a class="btn pastel-card__action" href="{{ route('webapp.playlists.show', $featured['playlist']) }}">Explore collection @icon('arrow-right', ['mr' => 0])</a>
+            <a class="btn pastel-card__action" @include('webapp.playlists.link-attributes', ['playlist' => $featured['playlist']])>Explore collection @icon('arrow-right', ['mr' => 0])</a>
         </div>
         <img class="collections-feature__art" src="{{ $featured['image'] }}" alt="" width="1200" height="800" fetchpriority="high" data-collection-image data-fallback="{{ asset('images/webapp/collections/featured.webp') }}">
     </section>

@@ -47,14 +47,14 @@ class WebAppGuestAccessTest extends ReviewTestCase
         $this->assertDatabaseCount('locations', 0);
     }
 
-    public function test_visitors_can_read_premium_pieces_and_nonfeatured_playlists()
+    public function test_visitors_can_read_piece_pages_and_blocked_collections_return_to_the_directory()
     {
         $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
             ->assertSee('Guest repertoire test')
             ->assertDontSee('data-manage="save-to"', false)
             ->assertDontSee('function startRequest()', false)
             ->assertDontSee('id="synthesia-request-form"', false);
-        $this->get(route('webapp.playlists.show', $this->playlist))->assertOk();
+        $this->get(route('webapp.playlists.show', $this->playlist))->assertRedirect(route('webapp.playlists'))->assertSessionHas('collection_access_prompt', '#signup-collections-modal');
         $this->get(route('webapp.composers.show', $this->piece->composer))->assertOk();
         $this->get(route('webapp.blog.show', $this->post))->assertOk();
 
@@ -125,6 +125,10 @@ class WebAppGuestAccessTest extends ReviewTestCase
 
     public function test_piece_and_playlist_share_the_artwork_header_with_playlist_controls()
     {
+        $policy = app(\App\Services\WebApp\AccessPolicy::class);
+        $rules = $policy->snapshot()['rules'];
+        $rules['account']['collections']['guest'] = 'available';
+        $policy->save($rules, $policy->snapshot()['revision'], 1);
         Model::withoutEvents(function () {
             $this->playlist->update([
                 'name' => 'Lullabies',

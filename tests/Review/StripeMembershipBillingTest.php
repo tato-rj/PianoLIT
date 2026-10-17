@@ -1063,6 +1063,33 @@ class StripeMembershipBillingTest extends ReviewTestCase
         $this->get(route('webapp.membership.edit', ['checkout' => 'monthly']))->assertOk()->assertViewHas('checkoutUrl', null);
     }
 
+    public function test_guest_plan_selection_never_renders_or_restores_checkout()
+    {
+        $authenticated = $this->get(route('webapp.membership.pricing'))->assertOk()
+            ->assertSee('id="payment-checkout-modal"', false)->assertSee('data-checkout-open', false)->getContent();
+        $fragment = $this->getJson(route('webapp.membership.checkout', $this->plan))->assertOk()->json('html');
+        auth('web')->logout();
+        $this->withExceptionHandling();
+        foreach ([[], ['checkout' => 'monthly', 'modal' => 'payment-checkout-modal'], ['modal' => 'payment-checkout-modal']] as $query) {
+            $response = $this->get(route('webapp.membership.pricing', $query))->assertOk()->assertViewHas('checkoutUrl', null)
+                ->assertDontSee('id="payment-checkout-modal"', false)->assertDontSee('data-checkout-open', false);
+            $dom = new \DOMDocument; @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+            foreach (['monthly', 'yearly'] as $plan) {
+                $url = route('webapp.membership.checkout', $plan);
+                $this->assertSame(1, $xpath->query('//a[@href="'.$url.'"]')->length, 'Guest plan links keep their authenticated destination for login continuation.');
+                $this->get($url)->assertRedirect(route('login'))->assertSessionHas('url.intended', $url);
+            }
+        }
+        $this->getJson(route('webapp.membership.checkout', $this->plan))->assertUnauthorized();
+        $this->assertCount(0, $this->gateway->calls);
+        $this->assertDatabaseCount('stripe_billing_operations', 0);
+        if ($directory = getenv('CHECKOUT_AUTH_PREVIEW_DIR')) {
+            file_put_contents($directory.'/guest.html', $response->getContent());
+            file_put_contents($directory.'/authenticated.html', $authenticated);
+            file_put_contents($directory.'/fragment.html', $fragment);
+        }
+    }
+
     public function test_checkout_keeps_one_shared_fullscreen_close_outside_the_loading_and_payment_content()
     {
         $pages = [

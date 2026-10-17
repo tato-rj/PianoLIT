@@ -50,10 +50,13 @@ These triggers follow the saved status. Guests see signup; registered nonmembers
 | Click a favorite heart or Save to favorites, including collection tracks and mobile options | Favorites signup dialog | Saves / opens folder controls |
 | Click Create eScore | Collection: eScore signup dialog; personal folders require login | Premium dialog in collections and folders |
 | View limited or blocked search results | Signup invitation below the results / lock message | Premium invitation if membership gives full results |
-| Open a collection | Signup invitation; no pieces | First 3 pieces, followed by a Premium invitation |
+| Click a blocked collection | Collections signup modal; stay on the current page | Collections Premium / unavailable modal; stay on the current page |
+| Open a limited collection | If enabled: first 3 pieces | First 3 pieces, with the full collection total and a Premium invitation when more pieces exist |
 | Add a folder or save a piece at a folder/piece cap | Signup required | Premium dialog; no partial save |
 
 The defaults make signup unlock full free-pick media, its score and annotations, favorites, full search and a preview of each collection. Downloads, printing and full regular-piece access require membership. Guest copy follows the saved policy when these defaults change.
+
+Blocked collection URLs return to the Collections directory and open the matching modal. Collection totals always count the full playable list (pieces with tutorials), matching directory counts; limited views separately show **Showing 3 of 12 pieces**, for example.
 
 These describe the web interface. Existing public file URLs and iOS behavior are unchanged.
 

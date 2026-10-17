@@ -8,10 +8,11 @@
     'score-export' => ['title' => 'Download and print scores'],
     'favorites' => ['title' => 'Sign up to save your favorites'],
     'escore' => ['title' => 'Sign up to create an eScore'],
+    'collections' => ['title' => 'Sign up to explore collections'],
 ] as $action => $prompt)
     @php($feature = ['video' => 'performance', 'score-export' => 'exports', 'favorites' => 'folder_pieces', 'escore' => 'escores'][$action] ?? $action)
-    @php($actionText = ['video' => 'watch the full video', 'audio' => 'listen to the full recording', 'score' => 'read the full score', 'annotations' => 'add your own markings and save them', 'score-export' => 'download and print scores', 'favorites' => 'save your favorite pieces', 'escore' => 'create a practice book from scores'][$action])
-    @php($actionPiece = in_array($action, ['favorites', 'escore'], true) ? null : ($piece ?? null))
+    @php($actionText = ['video' => 'watch the full video', 'audio' => 'listen to the full recording', 'score' => 'read the full score', 'annotations' => 'add your own markings and save them', 'score-export' => 'download and print scores', 'favorites' => 'save your favorite pieces', 'escore' => 'create a practice book from scores', 'collections' => 'explore collections'][$action])
+    @php($actionPiece = in_array($action, ['favorites', 'escore', 'collections'], true) ? null : ($piece ?? null))
     @php($prompt['description'] = $signupPolicy->signupDescription($feature, $actionPiece, $actionText))
     @component('components.modal', [
         'id' => 'signup-'.$action.'-modal',

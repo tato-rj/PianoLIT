@@ -25,10 +25,10 @@
         <div class="playlist-track__identity"><span class="playlist-track__title" title="{{$piece->short_name}}">{{$piece->short_name}}</span><span class="playlist-track__composer text-muted">{{$piece->composer->short_name}}</span></div>
         <span class="playlist-track__duration text-muted" data-track-duration aria-label="Duration">—</span>
         @auth('web')
-        <button class="btn-raw text-danger playlist-track__favorite" type="button" data-playlist-favorite data-favorited="{{isset($folder) || ($piece->webapp_playlist_favorited ?? 0) ? 'true' : 'false'}}"
+        <button class="btn-raw text-danger playlist-track__favorite" type="button" data-playlist-favorite data-favorite-piece="{{ $piece->id }}" data-favorited="{{isset($folder) || ($piece->webapp_is_favorited ?? 0) ? 'true' : 'false'}}"
             data-url="{{route('webapp.users.favorites.update', array_filter(['piece' => $piece->id, 'folder_id' => isset($folder) ? $folder->id : null]))}}"
-            aria-pressed="{{isset($folder) || ($piece->webapp_playlist_favorited ?? 0) ? 'true' : 'false'}}" aria-label="{{isset($folder) ? 'Remove from folder' : 'Favorite'}} {{$piece->short_name}}">
-            @icon('heart', ['mr' => 0, 'filled' => isset($folder) || ($piece->webapp_playlist_favorited ?? 0) > 0])
+            aria-pressed="{{isset($folder) || ($piece->webapp_is_favorited ?? 0) ? 'true' : 'false'}}" aria-label="{{isset($folder) ? 'Remove from folder' : 'Favorite'}} {{$piece->short_name}}">
+            @icon('heart', ['mr' => 0, 'filled' => isset($folder) || ($piece->webapp_is_favorited ?? 0) > 0])
         </button>
         @else
         <button class="btn-raw text-danger playlist-track__favorite" type="button" data-bs-toggle="modal" data-bs-target="#signup-favorites-modal" aria-label="Sign up to favorite {{$piece->short_name}}">@icon('heart', ['mr' => 0])</button>

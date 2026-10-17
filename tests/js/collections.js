@@ -42,6 +42,12 @@ module.exports = function () {
     assert.strictEqual(image.attributes.src, 'fallback.webp');
     initialize({getElementById() { return null; }});
 
+    let shownPrompt = null;
+    const accessModal = {};
+    const redirectedPage = {getAttribute(name) { assert.strictEqual(name, 'data-access-prompt'); return '#signup-collections-modal'; }, querySelector() { return null; }, querySelectorAll() { return []; }};
+    initialize({getElementById() { return redirectedPage; }, querySelector(selector) { assert.strictEqual(selector, '#signup-collections-modal'); return accessModal; }, defaultView: {bootstrap: {Modal: {getOrCreateInstance(element) { return {show() { shownPrompt = element; }}; }}}}});
+    assert.strictEqual(shownPrompt, accessModal, 'A direct blocked URL returns to Collections and opens the matching dialog');
+
     const rail = Object.assign(node({}), {
         scrollLeft: 0, scrollWidth: 2560, clientWidth: 1000,
         querySelectorAll() { return [{offsetLeft: 0}, {offsetLeft: 320}]; },

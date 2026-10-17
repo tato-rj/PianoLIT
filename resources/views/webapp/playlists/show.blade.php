@@ -10,15 +10,16 @@
 </div>
 <section class="playlist-page playlist-page--collection" data-playlist-page>
     <div class="text-center">
-        <span class="badge rounded-pill alert-blue">{{$pieces->count()}} {{str_plural('piece', $pieces->count())}}</span>
+        <span class="badge rounded-pill alert-blue" data-collection-count>{{$totalPieceCount}} {{str_plural('piece', $totalPieceCount)}}</span>
+        @if($collectionCap !== null && $totalPieceCount > $pieces->count())
+            <p class="small text-muted mt-2 mb-0" data-collection-preview-count>Showing {{ $pieces->count() }} of {{ $totalPieceCount }} pieces</p>
+        @endif
     </div>
-    @if($collectionCap !== 0)
     @include('webapp.playlist.escore', ['escorePieces' => $pieces, 'escoreName' => $playlist->name, 'escoreUrl' => route('webapp.playlists.pdf', $playlist)])
     @include('webapp.playlist.tracks')
-    @endif
-    @if($collectionCap !== null)
+    @if($collectionCap !== null && $totalPieceCount > $pieces->count())
         <div class="text-center py-4" data-collection-limit>
-            <p>{{ $collectionCap === 0 ? (auth('web')->guest() ? 'Sign up to explore collections.' : 'Collections are currently locked.') : 'You can view the first 3 pieces in this collection.' }}</p>
+            <p>You can view the first {{ $collectionCap }} pieces in this collection.</p>
             @include('webapp.components.access-action', ['accessFeature' => 'collections'])
         </div>
     @endif

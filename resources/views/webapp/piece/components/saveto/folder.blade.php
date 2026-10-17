@@ -4,7 +4,7 @@
     @if(!$canAddPiece && !$is_favorited)
     data-bs-toggle="modal" data-bs-target="{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'favorites') }}"
     @else
-    data-submit="favorite" data-target="#flag-{{ $piece->id }}" data-url="{{ route('webapp.users.favorites.update', ['piece' => $piece, 'folder_id' => $folder->id]) }}"
+    data-submit="favorite" data-url="{{ route('webapp.users.favorites.update', ['piece' => $piece, 'folder_id' => $folder->id]) }}"
     @endif
     aria-label="{{ $is_favorited ? 'Remove from' : 'Save to' }} {{ $folder->name }}" aria-pressed="{{ $is_favorited ? 'true' : 'false' }}">
     <span class="save-to-folder__icon" aria-hidden="true">@icon('folder-open', ['mr' => 0])</span>

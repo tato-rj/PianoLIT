@@ -29,6 +29,10 @@ class FavoritesController extends Controller
 
         return response()->json([
         	'status' => $status,
+            'favorite' => [
+                'piece_id' => $piece->id,
+                'is_favorited' => $piece->favorites()->where('user_id', $user->id)->exists(),
+            ],
             'html' => [
                 'list' => view('webapp.piece.components.saveto.content', compact(['piece', 'folders']))->render(),
                 'flex' => null

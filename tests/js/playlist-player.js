@@ -33,7 +33,7 @@ module.exports = async function () {
         load() {}
     }
     function sourceUrl(media) { return media.playlistSource.getAttribute('src') || ''; }
-    const recordings = [], patches = [], posts = [];
+    const recordings = [], patches = [], posts = [], favoriteUpdates = [];
     let upgrades = 0;
     let promptedModal;
     const page = new Element(), list = new Element({'data-url-reorder': '/folders/1/reorder'}), player = new Element({'data-preview-modal': 'piece-upgrade-modal', 'data-preview-message': 'Your preview has ended. Go Premium to hear the full piece.'});
@@ -54,6 +54,7 @@ module.exports = async function () {
         patch(url, data) { return new Promise((resolve, reject) => patches.push({url, data, resolve, reject})); },
         post(url) { return new Promise((resolve, reject) => posts.push({url, resolve, reject})); }
     }};
+    win.PianoFavorites = {update(state) { favoriteUpdates.push(state); }};
     async function settle() { await new Promise(resolve => setImmediate(resolve)); }
     const result = initialize(doc, win);
     assert.strictEqual(result.time(154), '2:34');
@@ -222,7 +223,8 @@ module.exports = async function () {
     favorite.fire('click'); assert(favorite.disabled);
     posts[0].reject(new Error('Save failed')); await settle();
     assert(!favorite.disabled); assert.strictEqual(list.items.length, 3);
-    favorite.fire('click'); posts[1].resolve({data: {status: false}}); await settle();
+    favorite.fire('click'); posts[1].resolve({data: {status: false, favorite: {piece_id: 1, is_favorited: true}}}); await settle();
+    assert.deepStrictEqual(favoriteUpdates, [{piece_id: 1, is_favorited: true}], 'Removing a folder entry publishes the aggregate saved state');
     assert.strictEqual(list.items.length, 2);
     assert.strictEqual(page.querySelector('[data-playlist-count]').textContent, '2 pieces');
     recordings.forEach(recording => recording.pause());

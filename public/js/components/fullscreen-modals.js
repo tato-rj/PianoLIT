@@ -77,6 +77,9 @@ module.exports = function (win) {
         // fetch markup from the URL, including for unavailable premium content.
         var modal = doc.getElementById(id);
         if (!isFullscreen(modal)) { write(null); return; }
+        // Checkout validates its plan and session through its own launcher.
+        // The generic URL restorer must never open its empty loading shell.
+        if (modal.hasAttribute('data-checkout-modal')) return;
         win.bootstrap.Modal.getOrCreateInstance(modal).show();
     }
     function ready() {

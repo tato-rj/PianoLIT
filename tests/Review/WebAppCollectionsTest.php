@@ -2,7 +2,7 @@
 
 namespace Tests\Review;
 
-use App\{Admin, Piece, Playlist, Tag, Tutorial};
+use App\{Admin, Piece, Playlist, Tag, Tutorial, User};
 use App\Services\WebApp\Collections;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\{Cache, DB, Redis};
@@ -48,7 +48,8 @@ class WebAppCollectionsTest extends ReviewTestCase
             ->assertSee('What would you like to play next?')->assertSee('Coming soon')
             ->assertSee('6 pieces')->assertDontSee('7 pieces')->assertDontSee('YOUR PATH')
             ->assertDontSee('Continue')->assertDontSee('THIS WEEK')
-            ->assertSee(route('webapp.playlists.show', $featured), false);
+            ->assertSee('data-bs-target="#signup-collections-modal"', false)
+            ->assertDontSee('href="'.route('webapp.playlists.show', $featured).'"', false);
         $this->assertGuest('web');
         $this->assertSame(8, substr_count($response->getContent(), 'collections-coming-soon'));
         $response->assertSeeInOrder(array_map(function ($number) {
@@ -75,6 +76,91 @@ class WebAppCollectionsTest extends ReviewTestCase
             $html = str_replace(['href="/css/', 'src="/js/'], ['href="http://my.pianolit.test/css/', 'src="http://my.pianolit.test/js/'], $html);
             file_put_contents($destination, $html);
         }
+    }
+
+    private function setCollectionAccess($role, $state)
+    {
+        $policy = app(\App\Services\WebApp\AccessPolicy::class);
+        $rules = $policy->snapshot()['rules'];
+        $rules['account']['collections'][$role] = $state;
+        $this->assertTrue($policy->save($rules, $policy->snapshot()['revision'], 1));
+    }
+
+    private function exportCollectionPreview($name, $response)
+    {
+        if ($path = getenv('COLLECTION_ACCESS_PREVIEW_DIR')) file_put_contents($path.'/'.$name.'.html', $response->getContent());
+    }
+
+    public function test_blocked_cards_and_direct_urls_open_the_matching_access_modal()
+    {
+        $playlist = $this->playlist('A collection to explore');
+        $url = route('webapp.playlists.show', $playlist);
+        foreach (['guest' => '#signup-collections-modal', 'registered' => '#collection-upgrade-modal', 'member' => '#access-unavailable-modal'] as $role => $target) {
+            if ($role === 'registered') {
+                $user = Model::withoutEvents(function () { return create(User::class, ['super_user' => false]); });
+                $this->actingAs($user, 'web');
+                $this->setCollectionAccess($role, 'blocked');
+            }
+            if ($role === 'member') {
+                Model::withoutEvents(function () use ($user) {
+                    $source = create(\App\Billing\Sources\Stripe::class, ['created_at' => now()->subMonth(), 'renews_at' => now()->addMonth()]);
+                    \App\Billing\Membership::create(['user_id' => $user->id, 'source_type' => get_class($source), 'source_id' => $source->id]);
+                });
+                $user->unsetRelation('membership');
+                $this->assertTrue($user->hasActiveSubscription());
+                $this->setCollectionAccess($role, 'blocked');
+            }
+            $response = $this->get(route('webapp.playlists'))->assertOk()
+                ->assertDontSee('href="'.$url.'"', false)->assertSee('id="'.ltrim($target, '#').'"', false);
+            $dom = new \DOMDocument(); @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+            $links = $xpath->query('//a[@data-collection-blocked]');
+            $this->assertSame(3, $links->length, 'Featured, inspiration and browse links all use the same guard.');
+            foreach ($links as $link) {
+                $this->assertSame($target, $link->getAttribute('href'));
+                $this->assertSame($target, $link->getAttribute('data-bs-target'));
+                $this->assertSame('modal', $link->getAttribute('data-bs-toggle'));
+            }
+            $this->exportCollectionPreview($role.'-blocked-index', $response);
+            $this->get($url)->assertRedirect(route('webapp.playlists'))->assertSessionHas('collection_access_prompt', $target);
+            $redirected = $this->get(route('webapp.playlists'))->assertOk()->assertSee('data-access-prompt="'.$target.'"', false);
+            $this->exportCollectionPreview($role.'-redirected-index', $redirected);
+        }
+    }
+
+    /** @dataProvider collectionCounts */
+    public function test_limited_and_full_collection_views_keep_the_real_total($count)
+    {
+        // An attached piece without a tutorial is excluded on both the directory
+        // and detail page, preserving the existing playable-piece definition.
+        $playlist = $this->playlist('A collection of '.$count.' pieces', $count + 1, $count);
+        $user = Model::withoutEvents(function () { return create(User::class, ['super_user' => false]); });
+        $this->actingAs($user, 'web');
+        $url = route('webapp.playlists.show', $playlist);
+        $directory = $this->get(route('webapp.playlists'))->assertOk()->assertSee('href="'.$url.'"', false)->assertDontSee('data-collection-blocked', false);
+        $this->exportCollectionPreview('limited-index-'.$count, $directory);
+        $response = $this->get($url)->assertOk()->assertViewHas('totalPieceCount', $count)->assertViewHas('pieces', function ($pieces) { return $pieces->count() === 3; });
+        $dom = new \DOMDocument(); @$dom->loadHTML($response->getContent()); $xpath = new \DOMXPath($dom);
+        $this->assertSame($count.' pieces', trim($xpath->query('//*[@data-collection-count]')->item(0)->textContent));
+        $response->assertSee('Showing 3 of '.$count.' pieces');
+        $this->exportCollectionPreview('limited-detail-'.$count, $response);
+        $user->update(['super_user' => true]);
+        $full = $this->get($url)->assertOk()->assertViewHas('totalPieceCount', $count)->assertViewHas('pieces', function ($pieces) use ($count) { return $pieces->count() === $count; })
+            ->assertDontSee('data-collection-preview-count', false)->assertDontSee('data-collection-limit', false);
+        $this->exportCollectionPreview('full-detail-'.$count, $full);
+    }
+
+    public static function collectionCounts()
+    {
+        return [[10], [12]];
+    }
+
+    public function test_small_limited_collections_do_not_claim_hidden_pieces()
+    {
+        $playlist = $this->playlist('Two pieces', 2, 2);
+        $this->actingAs(Model::withoutEvents(function () { return create(User::class, ['super_user' => false]); }), 'web');
+        $this->get(route('webapp.playlists.show', $playlist))->assertOk()->assertViewHas('totalPieceCount', 2)
+            ->assertViewHas('pieces', function ($pieces) { return $pieces->count() === 2; })
+            ->assertDontSee('data-collection-preview-count', false)->assertDontSee('data-collection-limit', false);
     }
 
     public function test_web_read_does_not_write_order_or_mutate_mobile_payloads()
@@ -358,7 +444,7 @@ class WebAppCollectionsTest extends ReviewTestCase
         $this->assertNotNull($playlist->fresh()->published_at);
         $this->get(route('admin.playlists.index'))->assertOk()->assertSee('Unpublish</button>', false);
         $this->get(route('webapp.playlists'))->assertOk()->assertSee('Editorial release');
-        $this->get(route('webapp.playlists.show', $playlist))->assertOk();
+        $this->get(route('webapp.playlists.show', $playlist))->assertRedirect(route('webapp.playlists'));
 
         $this->patch(route('admin.playlists.publication', $playlist))
             ->assertRedirect()->assertSessionHas('status', 'The playlist has been unpublished.');

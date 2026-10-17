@@ -330,9 +330,7 @@
             busy = true; favorite.disabled = true;
             win.axios.post(favorite.getAttribute('data-url')).then(function (response) {
                 var saved = !!response.data.status;
-                favorite.setAttribute('aria-pressed', saved ? 'true' : 'false');
-                favorite.setAttribute('data-favorited', saved ? 'true' : 'false');
-                favorite.querySelector('i').classList.toggle('icon-filled', saved);
+                win.PianoFavorites.update(response.data.favorite);
                 if (list.getAttribute('data-url-reorder') && !saved) {
                     var wasCurrent = row === current;
                     var next = queue[queue.indexOf(row) + 1] || queue[0];
@@ -344,7 +342,7 @@
                     if (!rows().length) {
                         var empty = doc.createElement('p'); empty.className = 'playlist-empty'; empty.textContent = 'No pieces here yet.'; list.appendChild(empty);
                     }
-                } else message(saved ? 'Piece saved to My favorites.' : 'Piece removed from My favorites.');
+                } else message(saved ? 'Piece saved to My favorites.' : response.data.favorite.is_favorited ? 'Piece removed from My favorites. It is still saved in a folder.' : 'Piece removed from My favorites.');
             }).catch(function (error) {
                 var target = error && error.response && error.response.data && error.response.data.access_prompt;
                 var modal = target && doc.querySelector(target);

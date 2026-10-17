@@ -37,6 +37,7 @@ module.exports = function (win) {
             // Keep the fullscreen overlay outside page containers and their stacking contexts.
             doc.body.appendChild(modal);
             modal.addEventListener('show.bs.modal', () => {
+                this.opened = true;
                 this.visible = false;
                 this.background = doc.getElementById('webapp');
                 if (this.background) { this.previousInert = this.background.inert; this.background.inert = true; }
@@ -52,8 +53,10 @@ module.exports = function (win) {
                 this.dispose();
             });
             modal.addEventListener('hidden.bs.modal', () => {
+                this.opened = false;
                 if (this.background) this.background.inert = this.previousInert;
                 this.urlState(null);
+                if (this.authRedirect) { win.location.assign(this.authRedirect); return; }
                 if (this.direct) { win.location.assign(this.cancelUrl); return; }
                 this.loading();
                 if (this.opener && this.opener.isConnected) this.opener.focus({preventScroll: true});
@@ -87,7 +90,10 @@ module.exports = function (win) {
         urlState(key) {
             const url = new URL(win.location.href);
             if (key && !this.direct) url.searchParams.set('checkout', key);
-            else url.searchParams.delete('checkout');
+            else {
+                url.searchParams.delete('checkout');
+                if (url.searchParams.get('modal') === this.modal.id) url.searchParams.delete('modal');
+            }
             if (url.href !== win.location.href) win.history.replaceState(win.history.state, '', url.href);
         }
         dispose() {
@@ -107,8 +113,8 @@ module.exports = function (win) {
             this.state('loading');
         }
         stripeScript() {
-            // Start alongside the HTML request. Handle rejection immediately even if
-            // the dialog closes before the server responds.
+            // Handle rejection immediately even if the dialog closes while
+            // the secure payment scripts are still loading.
             return (win.Stripe ? Promise.resolve() : script('https://js.stripe.com/v3/'))
                 .then(() => null, error => error);
         }
@@ -159,15 +165,16 @@ module.exports = function (win) {
             this.dispose(); this.loading(); this.state('error');
             this.modal.querySelector('[data-checkout-load-status]').textContent = error.message === 'The secure payment form could not load. Please try again.' ? error.message : 'Checkout could not open. Please check your connection and try again.';
             this.modal.querySelector('[data-checkout-retry]').hidden = false;
+            this.dialog.show(this.opener);
         }
         async open(url, opener) {
             if (this.busy()) return;
             try { url = sameOrigin(url); } catch (error) { return; }
             this.dispose();
             this.closeRequested = false;
+            this.authRedirect = null;
             this.url = url; this.opener = opener || this.opener;
-            this.loading(); this.dialog.show(opener);
-            const stripeReady = this.stripeScript();
+            this.loading();
             const generation = this.generation;
             const abort = this.abort = new win.AbortController();
             const timer = win.setTimeout(() => abort.abort(), 20000);
@@ -175,7 +182,16 @@ module.exports = function (win) {
                 const response = await win.fetch(url, {credentials: 'same-origin', signal: abort.signal,
                     headers: {Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest'}, cache: 'no-store'});
                 if (generation !== this.generation) return;
-                if (response.status === 401) { win.location.assign(url); return; }
+                if (response.status === 401) {
+                    // A session can expire after the page rendered. Close before
+                    // navigating so Back cannot restore an orphaned checkout.
+                    this.authRedirect = url;
+                    this.closeRequested = true;
+                    this.dispose(); this.urlState(null);
+                    if (this.opened) this.dialog.hide();
+                    else win.location.assign(url);
+                    return;
+                }
                 const result = await response.json();
                 if (!response.ok) throw new Error(result.message || 'Checkout could not open. Please try again.');
                 if (generation !== this.generation) return;
@@ -187,7 +203,10 @@ module.exports = function (win) {
                 this.content.insertAdjacentHTML('beforeend', stage.outerHTML);
                 this.modal.dataset.checkoutController = incoming.dataset.checkoutController;
                 this.urlState(incoming.dataset.checkoutKey);
-                await this.ready(generation, stripeReady);
+                // Only an authenticated, valid checkout response may open the
+                // payment shell or start loading Stripe's hosted fields.
+                this.dialog.show(opener);
+                await this.ready(generation);
             } catch (error) {
                 this.failure(error, generation);
             } finally { win.clearTimeout(timer); }

@@ -12,20 +12,26 @@ class PlaylistsController extends Controller
     {
         abort_unless($playlist->published_at && $playlist->published_at->lte(now()), 404);
 
+        $policy = app(\App\Services\WebApp\AccessPolicy::class);
+        $collectionCap = $policy->cap('collections', auth('web')->user());
+        if ($collectionCap === 0) {
+            return redirect()->route('webapp.playlists')->with('collection_access_prompt', $policy->promptTarget(auth('web')->user(), 'collections'));
+        }
+
         $query = $playlist->pieces()->has('tutorials')->with(['tutorials' => function ($query) {
             $query->where('type', 'Performance')->orderBy('id')->with('moments');
         }]);
 
         if (auth('web')->check()) {
-            $query->withExists(['favorites as webapp_playlist_favorited' => function ($query) {
-                $query->where('user_id', auth('web')->id())->whereNull('favorite_folder_id');
+            $query->withExists(['favorites as webapp_is_favorited' => function ($query) {
+                $query->where('user_id', auth('web')->id());
             }]);
         }
 
-        $collectionCap = app(\App\Services\WebApp\AccessPolicy::class)->cap('collections', auth('web')->user());
-        $pieces = $collectionCap === 0 ? collect() : ($collectionCap !== null ? $query->limit($collectionCap)->get() : $query->get());
+        $totalPieceCount = (clone $query)->count();
+        $pieces = $collectionCap !== null ? $query->limit($collectionCap)->get() : $query->get();
 
-        return view('webapp.playlists.show', compact('playlist', 'pieces', 'collectionCap'));
+        return view('webapp.playlists.show', compact('playlist', 'pieces', 'collectionCap', 'totalPieceCount'));
     }
 
     public function pdf(Request $request, Playlist $playlist)

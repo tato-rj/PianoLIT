@@ -5,6 +5,10 @@
     'use strict';
     var page = doc.getElementById('collections-page');
     if (!page) return;
+    var win = doc.defaultView;
+    var promptTarget = page.getAttribute && page.getAttribute('data-access-prompt');
+    var prompt = promptTarget && doc.querySelector(promptTarget);
+    if (prompt && win && win.bootstrap) win.bootstrap.Modal.getOrCreateInstance(prompt).show();
     var filters = page.querySelector('.collections-filters');
     var cards = Array.prototype.slice.call(page.querySelectorAll('[data-collection-category]'));
     var rail = page.querySelector('.collections-books');
@@ -12,7 +16,6 @@
     if (rail && controls) {
         var previous = controls.querySelector('[data-book-previous]');
         var next = controls.querySelector('[data-book-next]');
-        var win = doc.defaultView;
         function updateBooks() {
             var maximum = rail.scrollWidth - rail.clientWidth;
             controls.hidden = maximum <= 1;

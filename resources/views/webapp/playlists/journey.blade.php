@@ -2,7 +2,7 @@
 @slot('body')
 @foreach($journey as $playlist)
 <div class="text-center mb-4">
-	<a href="{{route('webapp.playlists.show', $playlist)}}" class="link-none">
+	<a @include('webapp.playlists.link-attributes', ['playlist' => $playlist]) class="link-none">
 		<img src="{{asset('images/webapp/icons/journey/'.$loop->index.'.svg')}}" style="width: 70px" class="mb-3 shadow rounded-circle">
 		<h5 class="mb-1">{{$playlist->name}}</h5>
 		<p class="mb-2">{{$playlist->subtitle}}</p>

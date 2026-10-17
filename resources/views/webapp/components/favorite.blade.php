@@ -5,10 +5,11 @@
 @php($is_favorited = ($piece->webapp_is_favorited ?? $piece->isFavorited(auth()->id())) > 0)
 
 <button class="btn-raw t-2 {{ $favoriteClasses ?? '' }}" id="{{ !empty($directToggle) ? 'match-' : '' }}flag-{{$piece->id}}"
+    data-favorite-piece="{{ $piece->id }}" data-favorited="{{ $is_favorited ? 'true' : 'false' }}" aria-pressed="{{ $is_favorited ? 'true' : 'false' }}" aria-label="Favorite {{ $piece->medium_name }}"
     @if($favoritesLocked && !$is_favorited)
     data-bs-toggle="modal" data-bs-target="{{ $favoritePolicy->promptTarget(auth('web')->user(), 'favorites') }}"
     @elseif(!empty($directToggle))
-    data-submit="favorite" data-target="#match-flag-{{ $piece->id }}" data-url="{{ route('webapp.users.favorites.update', $piece) }}" aria-pressed="{{ $is_favorited ? 'true' : 'false' }}" aria-label="Favorite {{ $piece->medium_name }}"
+    data-submit="favorite" data-url="{{ route('webapp.users.favorites.update', $piece) }}"
     @else
     data-bs-toggle="offcanvas" data-bs-target="#save-to-offcanvas" aria-controls="save-to-offcanvas" data-manage="save-to" data-url="{{route('webapp.pieces.save-to', $piece)}}"
     @endif

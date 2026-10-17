@@ -1,4 +1,4 @@
-<a class="collection-card {{ $expanded ? 'collection-card--expanded pastel-card' : '' }}" href="{{ route('webapp.playlists.show', $card['playlist']) }}" @if($expanded) data-pastel-color="{{ $pastelColor ?? 'mint' }}" @else data-collection-category="{{ $card['category'] }}" @endif>
+<a class="collection-card {{ $expanded ? 'collection-card--expanded pastel-card' : '' }}" @include('webapp.playlists.link-attributes', ['playlist' => $card['playlist']]) @if($expanded) data-pastel-color="{{ $pastelColor ?? 'mint' }}" @else data-collection-category="{{ $card['category'] }}" @endif>
     <div class="collection-card__art {{ $card['illustrated'] ? 'collection-card__art--illustrated' : '' }}">
         <img src="{{ $card['image'] }}" alt="" width="900" height="600" loading="lazy" data-collection-image data-fallback="{{ asset('images/webapp/collections/featured.webp') }}">
         @if($card['illustrated'])

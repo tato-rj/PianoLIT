@@ -99,7 +99,9 @@
 
     @stack('page-modals')
     @include('webapp.piece.components.upgrade')
+    @include('webapp.playlists.upgrade')
     @auth('web')
+        @include('webapp.piece.components.saveto.offcanvas')
         @component('components.modal', ['id' => 'access-unavailable-modal', 'header' => 'Feature unavailable', 'centered' => true])
             @slot('body')<p class="mb-0">This feature is currently unavailable for your account. Your saved items are still here.</p>@endslot
         @endcomponent
@@ -111,9 +113,9 @@
 
     @include('components.popups.whatsnew', ['tabscount' => 1])
 
-    @unless(request()->routeIs('webapp.membership.checkout'))
+    @if(auth('web')->check() && !request()->routeIs('webapp.membership.checkout'))
         @include('components.checkout-host', ['checkoutUrl' => $checkoutUrl ?? null])
-    @endunless
+    @endif
 
     @include('webapp.components.campaign-attribution')
 

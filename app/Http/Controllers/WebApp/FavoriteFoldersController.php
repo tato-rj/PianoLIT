@@ -106,6 +106,10 @@ class FavoriteFoldersController extends Controller
 
         if ($request->wantsJson())
         	return response()->json([
+                'favorite' => $piece ? [
+                    'piece_id' => $piece->id,
+                    'is_favorited' => $piece->favorites()->where('user_id', auth('web')->id())->exists(),
+                ] : null,
                 'html' => [
                     'list' => $piece ? view('webapp.piece.components.saveto.content', compact(['piece', 'folders']))->render() : null,
                     'flex' => null

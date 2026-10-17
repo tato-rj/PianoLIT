@@ -84,15 +84,35 @@ module.exports = async function () {
     assert.strictEqual(f.content.innerHTML, 'loading-shellform-yearly', 'A stale monthly request cannot replace the latest yearly form.');
     assert(f.calls[0].options.signal.aborted);
 
-    f = fixture(); f.replies.push(() => new Promise(resolve => {release = resolve;}));
+    f = fixture({autoReady: false}); f.replies.push(f.response('monthly'));
     const closed = f.launcher.open('/membership/monthly/checkout');
-    f.dialog.hide(); release(f.response('monthly')); await closed;
+    await tick(); f.dialog.hide(); await closed;
     assert(!f.content.innerHTML.includes('form-monthly'));
     assert(f.calls[0].options.signal.aborted);
 
-    f = fixture(); f.replies.push({status: 401}); await f.launcher.open('/membership/monthly/checkout');
+    f = fixture(); f.win.location.href += '&checkout=monthly&modal=payment-checkout-modal';
+    f.replies.push({status: 401}); await f.launcher.open('/membership/monthly/checkout');
     assert.deepStrictEqual(f.navigations, ['https://my.pianolit.test/membership/monthly/checkout']);
+    assert.strictEqual(f.dialog.shown, 0, 'An expired session never opens checkout before leaving for login.');
+    assert.strictEqual(f.scriptNodes.length, 0, 'Unauthenticated checkout never loads Stripe or its form controller.');
+    assert.strictEqual(f.background.inert, false);
+    assert.strictEqual(new URL(f.win.location.href).searchParams.get('checkout'), null);
+    assert.strictEqual(new URL(f.win.location.href).searchParams.get('modal'), null);
+    assert(f.calls[0].options.signal.aborted);
     assert.throws(() => f.api.sameOrigin('https://example.test/pay'), /PianoLIT/);
+    f.replies.push(f.response('yearly')); await f.launcher.open('/membership/yearly/checkout');
+    f.dialog.hide();
+    assert.deepStrictEqual(f.navigations, ['https://my.pianolit.test/membership/monthly/checkout'], 'A fresh checkout after returning from login must not retain the previous authentication redirect.');
+
+    f = fixture({autoShown: false}); f.replies.push(f.response('monthly'));
+    await f.launcher.open('/membership/monthly/checkout');
+    f.replies.push({status: 401}); await f.launcher.open('/membership/yearly/checkout');
+    assert.deepStrictEqual(f.navigations, [], 'Authentication redirects wait for an opening modal to finish closing.');
+    assert(f.launcher.closeRequested);
+    f.finishShow();
+    assert.strictEqual(f.dialog.opened, false);
+    assert.strictEqual(f.background.inert, false);
+    assert.deepStrictEqual(f.navigations, ['https://my.pianolit.test/membership/yearly/checkout']);
 
     f = fixture(); f.replies.push({ok: false, status: 503, json: async () => ({message: 'Unavailable'})});
     await f.launcher.open('/membership/monthly/checkout'); assert.strictEqual(f.retry.hidden, false);
@@ -115,10 +135,12 @@ module.exports = async function () {
     f = fixture({cold: true, autoScripts: false, autoReady: false, autoShown: false});
     f.replies.push(() => new Promise(resolve => {release = resolve;}));
     const coldOpen = f.launcher.open('/membership/monthly/checkout');
-    assert.strictEqual(f.dialog.shown, 1, 'The existing shell opens immediately, before the first response.');
-    assert.strictEqual(f.scriptNodes[0].src, 'https://js.stripe.com/v3/', 'Stripe starts alongside the private fragment request.');
+    assert.strictEqual(f.dialog.shown, 0, 'Checkout waits for the server to confirm an authenticated, valid order.');
+    assert.strictEqual(f.scriptNodes.length, 0, 'Stripe does not load before the authenticated checkout response.');
     assert.strictEqual(f.content.innerHTML, 'loading-shell');
     release(f.response('monthly')); await tick();
+    assert.strictEqual(f.dialog.shown, 1, 'The loading shell opens after authentication while hosted fields initialize.');
+    assert.strictEqual(f.scriptNodes[0].src, 'https://js.stripe.com/v3/');
     assert.strictEqual(f.scriptNodes.length, 2, 'The controller downloads while Stripe is still pending.');
     assert.strictEqual(f.modal.dataset.checkoutState, 'loading');
     assert.strictEqual(f.stage.inert, true);
@@ -133,11 +155,12 @@ module.exports = async function () {
     assert.strictEqual(f.focused(), 1);
 
     f = fixture({autoShown: false});
-    f.replies.push(() => new Promise(resolve => {release = resolve;}));
+    f.replies.push(f.response('monthly'));
     const interruptedOpening = f.launcher.open('/membership/monthly/checkout');
+    await tick();
     f.events.click({preventDefault() {}, target: {closest(selector) {return selector === '[data-checkout-cancel]' ? {} : null;}}});
     assert(f.calls[0].options.signal.aborted, 'Cancel stops the request even during Bootstrap’s opening transition.');
-    f.finishShow(); release(f.response('monthly')); await interruptedOpening;
+    f.finishShow(); await interruptedOpening;
     assert.strictEqual(f.dialog.opened, false);
     assert.strictEqual(f.background.inert, false);
     assert.strictEqual(f.content.innerHTML, 'loading-shell');

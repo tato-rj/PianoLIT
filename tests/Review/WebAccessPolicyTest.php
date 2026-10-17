@@ -88,17 +88,18 @@ class WebAccessPolicyTest extends ReviewTestCase
     public function test_collection_defaults_and_saved_overrides_limit_the_actual_track_list()
     {
         $url = route('webapp.playlists.show', $this->playlist);
-        $guest = $this->get($url)->assertOk()->assertDontSee('data-track data-id=', false)->assertSee('Sign up to explore collections.');
-        $this->preview('guest-collection', $guest);
+        $this->get($url)->assertRedirect(route('webapp.playlists'))->assertSessionHas('collection_access_prompt', '#signup-collections-modal');
+        $this->preview('guest-collection', $this->get(route('webapp.playlists'))->assertOk());
         $response = $this->actingAs($this->user, 'web')->get($url)->assertOk()->assertSee('first 3 pieces');
         $this->preview('registered-collection', $response);
         $this->assertSame(3, substr_count($response->getContent(), 'data-track data-id='));
+        $response->assertViewHas('totalPieceCount', 6)->assertSee('Showing 3 of 6 pieces');
         $this->save(['account' => ['collections' => ['registered' => 'available']]]);
         $response = $this->get($url)->assertOk()->assertDontSee('data-collection-limit', false);
         $this->preview('registered-open-collection', $response);
         $this->assertSame(6, substr_count($response->getContent(), 'data-track data-id='));
         $this->save(['account' => ['collections' => ['registered' => 'blocked']]]);
-        $this->get($url)->assertOk()->assertDontSee('data-track data-id=', false);
+        $this->get($url)->assertRedirect(route('webapp.playlists'))->assertSessionHas('collection_access_prompt', '#collection-upgrade-modal');
     }
 
     public function test_folder_and_piece_caps_are_enforced_on_direct_writes_and_allow_removal()
