@@ -41,7 +41,7 @@ class Api extends Factory
         });
         
         $collection = clone $collection;
-        if ($this->for !== 'webapp' || auth('web')->check()) {
+        if ($this->for !== 'webapp' || app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())) {
             $collection->splice(3, 0, [$this->order(3)->suggestions('For you')]);
         }
 

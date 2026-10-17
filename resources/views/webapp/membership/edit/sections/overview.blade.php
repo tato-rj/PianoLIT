@@ -13,12 +13,12 @@
                 <p class="text-muted mb-4">{{ $overview['note'] }}</p>
                 <dl class="membership-overview-details mb-4">
                     <div>
-                        <dt>{{ $overview['dateLabel'] }}</dt>
-                        <dd>{{ $overview['date'] ? $overview['date']->toFormattedDateString() : ($overview['dateText'] ?? 'Not available') }}</dd>
+                        <dt>@icon('calendar')Membership started</dt>
+                        <dd>{{ $source->created_at->toFormattedDateString() }}</dd>
                     </div>
                     <div>
-                        <dt>Membership started</dt>
-                        <dd>{{ $source->created_at->toFormattedDateString() }}</dd>
+                        <dt>@icon('calendar'){{ $overview['dateLabel'] }}</dt>
+                        <dd>{{ $overview['date'] ? $overview['date']->toFormattedDateString() : ($overview['dateText'] ?? 'Not available') }}</dd>
                     </div>
                 </dl>
             </div>
@@ -27,7 +27,7 @@
             <div class="card-body p-4 d-flex flex-column">
                 <h2 class="h6 mb-4" id="membership-payment-method">Payment method</h2>
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <span class="badge alert-grey p-3 rounded">@icon('credit-card', ['size' => 'lg', 'mr' => 0])</span>
+                    <span class="badge alert-blue p-3 rounded">@icon('credit-card', ['size' => 'lg', 'mr' => 0])</span>
                     <div>
                         <p class="mb-0 font-weight-bold">
                             @if($source->hasCard())

@@ -8,7 +8,8 @@
 				'id' => 'piece-performance',
                 'splitMoments' => true,
                 'moments' => $piece->media['performance']->listeningMoments(),
-	            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
+	            'accessPrompt' => app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'performance', $piece),
+            'previewSeconds' => $hasPerformanceAccess ? null : $videoPreviewSeconds,
 				'thumbnail' => asset('images/webapp/piano-thumbnail.jpg'),
 				'url' => $piece->media['performance']->video_url])
 		</div>

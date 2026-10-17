@@ -49,22 +49,47 @@ class PlaylistPlayerTest extends ReviewTestCase
         });
     }
 
-    public function test_guest_collection_has_player_previews_and_sign_in_favorites()
+    private function openCollectionPolicy()
     {
+        $policy = app(\App\Services\WebApp\AccessPolicy::class);
+        $rules = $policy->snapshot()['rules'];
+        $rules['account']['collections']['guest'] = $rules['account']['collections']['registered'] = 'available';
+        $policy->save($rules, $policy->snapshot()['revision'], 1);
+    }
+
+    public function test_guest_collection_has_player_previews_and_action_specific_signup_prompts()
+    {
+        $this->openCollectionPolicy();
         $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()
             ->assertSee('data-playlist-page', false)->assertSee('Create eScore')
-            ->assertSee('data-preview="0"', false)->assertSee('data-preview="10"', false)
+            ->assertSee('data-preview="0"', false)->assertSee('data-audio-blocked="true"', false)->assertSee('data-preview="10"', false)
             ->assertSee('data-speed="0.75"', false)->assertSee('Audio unavailable')
-            ->assertSee('Sign in to favorite')->assertDontSee('data-playlist-favorite', false)
+            ->assertSee('Sign up to favorite')->assertDontSee('data-playlist-favorite', false)
             ->assertDontSee('data-track-handle', false)->assertDontSee('data-url-reorder', false);
-        $response->assertSee('data-bs-target="#piece-upgrade-modal"', false)->assertDontSee('data-escore-form', false);
+        $response->assertSee('data-bs-target="#signup-escore-modal"', false)
+            ->assertSee('data-bs-target="#signup-favorites-modal"', false)
+            ->assertSee('data-preview-modal="signup-audio-modal"', false)
+            ->assertSee('Sign up to explore recordings.')
+            ->assertDontSee('id="piece-upgrade-modal"', false)->assertDontSee('GO PREMIUM')
+            ->assertDontSee('data-escore-form', false);
         $this->assertSame(8, substr_count($response->getContent(), 'data-track data-id='));
-        $this->assertSame(7, substr_count($response->getContent(), 'data-preview="10"'));
+        $this->assertSame(7, substr_count($response->getContent(), 'data-preview="0"'));
+        $this->assertSame(1, substr_count($response->getContent(), 'data-preview="10"'));
+        $this->assertSame(7, substr_count($response->getContent(), 'data-audio-blocked="true"'));
         $this->assertSame(0, substr_count($response->getContent(), 'piece-result'));
         if ($destination = getenv('PLAYLIST_PREVIEW_DIR')) {
             file_put_contents($destination.'/collection.html', $this->previewHtml($response->getContent()));
         }
         if ($destination = getenv('ESCORE_PREMIUM_PREVIEW_DIR')) file_put_contents($destination.'/guest-collection.html', $this->previewHtml($response->getContent()));
+        $this->actingAs($this->user, 'web');
+        $registered = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()
+            ->assertDontSee('data-audio-blocked="true"', false);
+        $this->assertSame(7, substr_count($registered->getContent(), 'data-preview="10"'));
+        if ($destination = getenv('PLAYLIST_PREVIEW_DIR')) file_put_contents($destination.'/registered-collection.html', $this->previewHtml($registered->getContent()));
+        $this->user->update(['super_user' => true]);
+        $member = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()
+            ->assertDontSee('data-audio-blocked="true"', false)->assertDontSee('data-preview="10"', false);
+        if ($destination = getenv('PLAYLIST_PREVIEW_DIR')) file_put_contents($destination.'/member-collection.html', $this->previewHtml($member->getContent()));
     }
 
     public function test_folder_player_preserves_account_order_and_super_user_access()
@@ -72,7 +97,7 @@ class PlaylistPlayerTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         $response = $this->get(route('webapp.users.favorites.folders.show', $this->folder))->assertOk()
             ->assertSee('data-url-reorder=', false)->assertSee('data-track-handle', false)->assertSee('Edit folder')->assertSee('Delete folder')
-            ->assertSee('data-preview="10"', false);
+            ->assertSee('data-preview="10"', false)->assertDontSee('data-audio-blocked="true"', false);
         $response->assertSeeInOrder($this->pieces->map(function ($piece) { return 'data-piece-id="'.$piece->id.'"'; })->all(), false);
         $this->user->update(['super_user' => true]);
         $response = $this->get(route('webapp.users.favorites.folders.show', $this->folder))->assertOk()->assertDontSee('data-preview="10"', false);
@@ -91,6 +116,7 @@ class PlaylistPlayerTest extends ReviewTestCase
 
     public function test_audio_uses_only_normal_performance_moments_and_escapes_the_payload()
     {
+        $this->openCollectionPolicy();
         $piece = $this->pieces[0];
         $video = $piece->tutorials()->where('type', 'Performance')->first();
         $unsafeTitle = '<img src=x onerror=alert(1)> "Theme"';
@@ -119,9 +145,11 @@ class PlaylistPlayerTest extends ReviewTestCase
 
     public function test_audio_guide_query_counts_do_not_grow_with_track_count()
     {
+        $this->openCollectionPolicy();
         $counts = [];
         foreach ([2, 8] as $size) {
             $this->playlist->pieces()->sync($this->pieces->take($size)->pluck('id')->all());
+            app()->forgetInstance(\App\Services\WebApp\AccessPolicy::class);
             \DB::enableQueryLog(); \DB::flushQueryLog();
             $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk();
             $queries = \DB::getQueryLog(); \DB::disableQueryLog();
@@ -149,6 +177,7 @@ class PlaylistPlayerTest extends ReviewTestCase
 
     public function test_collection_hearts_reflect_the_default_folder_only()
     {
+        $this->openCollectionPolicy();
         $this->actingAs($this->user, 'web');
         $response = $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()->assertDontSee('data-track-handle', false)->assertDontSee('data-url-reorder', false);
         $this->assertSame(8, substr_count($response->getContent(), 'data-favorited="false"'));
@@ -228,6 +257,7 @@ class PlaylistPlayerTest extends ReviewTestCase
 
     public function test_empty_collection_and_invalid_escore_input_are_safe()
     {
+        $this->openCollectionPolicy();
         $this->playlist->pieces()->detach();
         $this->get(route('webapp.playlists.show', $this->playlist))->assertOk()->assertSee('No pieces here yet.');
         $this->actingAs($this->user, 'web');

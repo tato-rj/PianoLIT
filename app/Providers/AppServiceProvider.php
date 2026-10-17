@@ -18,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->scoped(\App\Services\WebApp\AccessPolicy::class);
         \View::composer('*', function($view) {
             $view->with(['full' => ! request()->has('bodyonly')]);
         });
@@ -48,9 +49,24 @@ class AppServiceProvider extends ServiceProvider
             'webapp.piece.components.score-editor',
         ], function ($view) {
             $piece = $view->getData()['piece'];
-            $view->with('hasMediaAccess', $piece->hasWebMediaAccess(auth('web')->user()));
-            $view->with('hasScoreExportAccess', auth('web')->check() && auth('web')->user()->hasActiveSubscription());
-            $view->with('previewSeconds', config('webapp.media_preview_seconds'));
+            $user = auth('web')->user();
+            $policy = app(\App\Services\WebApp\AccessPolicy::class);
+            $view->with('hasMediaAccess', $piece->hasWebMediaAccess($user));
+            $view->with('hasPerformanceAccess', $piece->hasWebMediaAccess($user, 'performance'));
+            $view->with('hasSynthesiaAccess', $piece->hasWebMediaAccess($user, 'synthesia'));
+            $view->with('hasAudioAccess', $piece->hasWebMediaAccess($user, 'audio'));
+            if (isset($view->getData()['tutorial'])) {
+                $tutorial = $view->getData()['tutorial'];
+                $content = stripos($tutorial->type, 'performance') !== false ? 'performance'
+                    : (stripos($tutorial->type, 'synthesia') !== false ? 'synthesia' : 'tutorial');
+                $view->with('hasVideoAccess', $piece->hasWebMediaAccess($user, $content));
+            }
+            $view->with('hasScoreExportAccess', $policy->available('exports', $user, $piece));
+            $view->with('hasAnnotationAccess', $policy->available('annotations', $user, $piece));
+            $view->with('previewSeconds', \App\Services\WebApp\AccessPolicy::MEDIA_SECONDS);
+            $view->with('synthesiaPreviewSeconds', $policy->mediaLimit('synthesia', $user, $piece));
+            $view->with('audioPreviewSeconds', $policy->mediaLimit('audio', $user, $piece));
+            $view->with('videoPreviewSeconds', $policy->mediaLimit($content ?? 'performance', $user, $piece));
         });
 
         \View::composer('components.display.ads', function($view) {

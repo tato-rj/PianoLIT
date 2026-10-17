@@ -3,7 +3,7 @@
 	@include('webapp.components.back')
 
 	<div class="d-flex px-4">
-		<div class="piece-header w-100">
+		<div class="piece-header w-100 @guest('web') me-5 me-md-0 @endguest">
 			<a href="{{route('webapp.search.results', ['search' => $piece->extended_level_name])}}">
 				@include('webapp.components.piece.level')
 			</a>
@@ -17,7 +17,7 @@
 	</div>
 
 	<div class="position-absolute d-flex align-items-center" style="right: 0; bottom: 50%; transform: translateY(50%);">
-		<div class="d-none d-md-block">
+		<div class="{{ auth('web')->check() ? 'd-none d-md-block' : '' }}">
 		@include('webapp.components.favorite')
 	</div>
 	<button class="btn-raw text-body ms-2" type="button" aria-label="More options"

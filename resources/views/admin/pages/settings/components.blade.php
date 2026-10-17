@@ -4,6 +4,14 @@
     @component('admin.pages.settings.sample', ['label' => 'Content card', 'usage' => '.card .rounded .shadow-light', 'properties' => 'padding,border,border-radius,box-shadow'])
       <div class="card rounded shadow-light" data-ds-preview><div class="card-body"><h3 class="h5">Discover your next piece</h3><p>Thoughtfully chosen repertoire for every stage of your piano journey.</p><button type="button" class="btn btn-primary btn-sm">Explore pieces</button></div></div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Signup card', 'usage' => 'components.signup-card', 'properties' => 'padding,color,background-color,border,border-radius,box-shadow'])
+      @include('components.signup-card', [
+        'headingId' => 'ds-signup-card-title', 'title' => 'Unlock the full score',
+        'description' => 'Create a free account to explore the complete score, add your markings, and continue your musical journey with PianoLIT.',
+        'benefits' => [['icon' => 'file-text', 'label' => 'Full score access'], ['icon' => 'pencil', 'label' => 'Save your markings'], ['icon' => 'heart', 'label' => 'Build your library']],
+        'preview' => true,
+      ])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Membership plan card', 'usage' => 'components.membership-plan-card', 'properties' => 'padding,background-color,border-radius,box-shadow'])
       @component('components.membership-plan-card', ['plan' => (object) ['name' => 'yearly', 'price' => 8999], 'monthlyPlan' => (object) ['name' => 'monthly', 'price' => 999], 'headingId' => 'ds-membership-plan', 'preview' => true])
         @slot('action')<button type="button" class="btn btn-primary">Choose Yearly @icon('arrow-right', ['mr' => 0, 'ml' => 2])</button>@endslot
@@ -57,7 +65,11 @@
       @component('admin.components.table', ['id' => 'ds-example-table', 'label' => 'Design system sample accounts', 'title' => 'Membership directory', 'description' => 'Sample content', 'items' => collect(['member', 'trial', 'ended']), 'columns' => ['Account', 'Plan', 'Status']])
         <tr><td><span class="admin-table__primary">Sample member</span><small>member@example.com</small></td><td>Annual</td><td><span class="admin-table__badge admin-table__badge--green">Active</span></td></tr>
         <tr><td><span class="admin-table__primary">Sample trial</span><small>trial@example.com</small></td><td>Monthly</td><td><span class="admin-table__badge admin-table__badge--blue">Trial</span></td></tr>
-        <tr><td><span class="admin-table__primary">Sample account</span><small>account@example.com</small></td><td>Monthly</td><td><span class="admin-table__badge admin-table__badge--red">Ended</span></td></tr>
+        <tr><td><span class="admin-table__primary">Access selection</span><small>Native status menu</small></td><td>Reusable control</td><td>@include('components.status-select', ['name' => 'ds-access-status', 'value' => 'limited', 'label' => 'Sample access status', 'options' => ['available', 'limited', 'blocked']])</td></tr>
+        <tr><td><span class="admin-table__primary">Account required</span><small>Guest account features</small></td><td>Locked control</td><td>@include('components.status-select', ['name' => 'ds-account-required', 'value' => 'blocked', 'label' => 'Sample account-required status', 'selectedLabel' => 'Account required', 'tone' => 'muted', 'options' => ['available', 'blocked'], 'disabled' => true])</td></tr>
+      @endcomponent
+      @component('admin.components.table-save-actions', ['status' => 'Unsaved changes'])
+        <button type="button" class="btn btn-primary">@icon('check')Save changes</button>
       @endcomponent
     </div>
     <dl class="design-system__specs" data-ds-specs></dl>

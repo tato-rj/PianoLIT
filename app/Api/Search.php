@@ -106,6 +106,8 @@ class Search
     // Browser rendering needs only card data; keep the mobile get() contract intact.
     public function forWebApp()
     {
+        $cap = app(\App\Services\WebApp\AccessPolicy::class)->cap('search', auth('web')->user());
+        if ($cap === 0) return collect();
         if (! $this->query) {
             if ($this->request->boolean('include_total')) $this->request->attributes->set('webapp_search_total', 0);
             return collect();
@@ -118,15 +120,15 @@ class Search
         if ($this->query instanceof \Laravel\Scout\Builder && $this->request->boolean('include_total') && $this->options) {
             // Scout already returns total hits with a paginated search response.
             // Reuse that metadata instead of making a separate count request.
-            $page = auth('web')->guest() ? 1 : max(1, (int) $this->request->input('page', 1));
-            $batch = $this->query->paginate(auth('web')->guest() ? 3 : 10, 'page', $page);
+            $page = $cap !== null ? 1 : max(1, (int) $this->request->input('page', 1));
+            $batch = $this->query->paginate($cap ?? 10, 'page', $page);
             if ($page === 1) $this->request->attributes->set('webapp_search_total', $batch->total());
             return \App\Services\WebApp\PieceCards::load($batch->getCollection());
         }
         $controls->recordTotal($this->query);
 
-        $guest = ! auth('web')->check();
-        if ($guest && $this->lateFilter) {
+        $limited = $cap !== null;
+        if ($limited && $this->lateFilter) {
             // Filters run after Scout hydration. Scan in relevance order until the
             // first three matching results are found, even across backend pages.
             $pieces = new \Illuminate\Database\Eloquent\Collection;
@@ -134,10 +136,10 @@ class Search
             do {
                 $batch = $this->query->paginate(50, 'page', $page++);
                 $matches = $batch->getCollection()->loadMissing('tags');
-                $pieces = $pieces->merge($this->filterWebPieces($matches))->take(3);
-            } while ($pieces->count() < 3 && $batch->hasMorePages());
+                $pieces = $pieces->merge($this->filterWebPieces($matches))->take($cap);
+            } while ($pieces->count() < $cap && $batch->hasMorePages());
         } else {
-            $pieces = $guest ? $this->query->take(3)->get()
+            $pieces = $limited ? $this->query->take($cap)->get()
                 : ($this->options ? $this->query->simplePaginate(10)->getCollection() : $this->query->get());
             if ($this->lateFilter) {
                 $pieces = $this->filterWebPieces($pieces->loadMissing('tags'));

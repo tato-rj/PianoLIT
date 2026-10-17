@@ -8,8 +8,12 @@
             const media = event.target;
             if (!media || !/^(AUDIO|VIDEO)$/.test(media.tagName)) return;
 
-            const limit = Number(media.getAttribute('data-media-preview'));
-            if (!Number.isFinite(limit) || limit <= 0) return;
+            const preview = media.getAttribute('data-media-preview');
+            if (preview === null || preview === '') return;
+            const limit = Number(preview);
+            if (!Number.isFinite(limit) || limit < 0) return;
+            // A zero-second gate opens only on playback/seeking, never page-load events.
+            if (limit === 0 && !stopped.has(media) && media.currentTime === 0 && event.type !== 'play' && event.type !== 'playing') return;
             if (!stopped.has(media) && media.currentTime < limit && event.type !== 'ended') return;
 
             const firstStop = !stopped.has(media);
@@ -25,7 +29,7 @@
                     const exit = document.exitFullscreen();
                     if (exit && exit.catch) exit.catch(function () {});
                 }
-                showUpgrade();
+                showUpgrade(media.tagName === 'AUDIO' ? 'audio' : 'video', media);
             }
         }
 

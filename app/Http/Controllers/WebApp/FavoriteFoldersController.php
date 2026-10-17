@@ -24,6 +24,7 @@ class FavoriteFoldersController extends Controller
             'ids.*' => ['required', 'integer', 'distinct', Rule::exists('favorites', 'id')->where('favorite_folder_id', $folder->id)],
         ]);
 
+        if (app(\App\Services\WebApp\AccessPolicy::class)->cap('folders', auth('web')->user()) === 0 || app(\App\Services\WebApp\AccessPolicy::class)->cap('folder_pieces', auth('web')->user()) === 0) app(\App\Services\WebApp\FavoriteAccess::class)->deny('Favorites are currently locked.');
         $folder->sort($request->ids);
 
         return view('components.alert', [
@@ -39,12 +40,14 @@ class FavoriteFoldersController extends Controller
     {
         abort_unless($folder->user_id == auth()->id(), 403);
         $user = auth('web')->user();
-        abort_unless($user && $user->hasActiveSubscription(), 403, 'Go Premium to create eScores.');
+        abort_unless(app(\App\Services\WebApp\AccessPolicy::class)->available('escores', $user), 403, 'Go Premium to create eScores.');
 
+        $policy = app(\App\Services\WebApp\AccessPolicy::class);
+        abort_if($policy->cap('folders', $user) === 0 || $policy->cap('folder_pieces', $user) === 0, 403, 'Favorites are currently locked.');
         $options = \App\PDF\EscoreOptions::validate($request);
         $options['comment'] = $options['comment'] ?? ($folder->description ?: 'for piano');
         $pieces = $folder->favorites->pluck('piece')->filter(function ($piece) {
-            return $piece && $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user());
+            return $piece && $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user(), 'exports');
         });
         $pieces = \App\PDF\EscoreOptions::selectPieces($pieces, $options);
         abort_if($pieces->isEmpty(), 403, 'No eligible scores are available in this folder.');
@@ -75,25 +78,27 @@ class FavoriteFoldersController extends Controller
 
     public function store(Request $request, FavoriteFoldersForm $form)
     {
-        $folder = DB::transaction(function () use ($form) {
+        $piece = Piece::find($form->piece_id);
+        $folder = DB::transaction(function () use ($form, $piece) {
+            $access = app(\App\Services\WebApp\FavoriteAccess::class);
+            $access->lock(auth('web')->user());
+            $access->assertCreate(auth('web')->user());
             $colors = FolderPalette::preserveExisting(auth()->id());
 
-            return FavoriteFolder::create([
+            $folder = FavoriteFolder::create([
                 'user_id' => auth()->id(),
                 'name' => $form->name,
                 'web_color' => $form->color ?? FolderPalette::suggest($colors),
             ]);
+            if ($piece) {
+                $access->assertAdd(auth('web')->user(), $folder);
+                Favorite::toggle(auth('web')->user(), $piece, $folder);
+            }
+            return $folder;
         });
         \App\Activity\Actions::record($request, 'folder_created', [], 'folder', $folder->id);
 
-        if ($piece = Piece::find($form->piece_id)) {
-            Favorite::toggle(
-                auth()->user(), 
-                $piece, 
-                $folder
-            );
-            \App\Activity\Actions::record($request, 'favorite_changed', ['result' => true, 'folder_id' => $folder->id], 'piece', $piece->id);
-        }
+        if ($piece) \App\Activity\Actions::record($request, 'favorite_changed', ['result' => true, 'folder_id' => $folder->id], 'piece', $piece->id);
 
         $folders = auth()->user()->favoriteFolders()->withCount(['favorites as piece_favorites_count' => function ($query) use ($piece) {
             $query->where('piece_id', optional($piece)->id);
@@ -112,6 +117,7 @@ class FavoriteFoldersController extends Controller
 
     public function update(Request $request, FavoriteFoldersForm $form, FavoriteFolder $folder)
     {
+        if (app(\App\Services\WebApp\AccessPolicy::class)->cap('folders', auth('web')->user()) === 0) app(\App\Services\WebApp\FavoriteAccess::class)->deny('Favorite folders are currently locked.', 'folders');
         $renamed = $folder->name !== $request->name;
         $attributes = [
     		'name' => $request->name,

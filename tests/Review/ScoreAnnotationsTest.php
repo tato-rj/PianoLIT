@@ -93,6 +93,19 @@ class ScoreAnnotationsTest extends ReviewTestCase
         $this->piece->updateQuietly(['is_free' => false]);
         $this->getJson($this->url(null, $this->payload([])))->assertForbidden();
         $this->putJson($this->url(), $this->payload([], 1))->assertForbidden();
+        $this->assertDatabaseCount('score_annotations', 1);
+        $this->assertDatabaseHas('score_annotations', ['user_id' => $this->user->id, 'piece_id' => $this->piece->id, 'revision' => 1]);
+
+        // Becoming a member restores the same score identity and saved markings.
+        Model::withoutEvents(function () {
+            $source = create(Stripe::class, ['status' => 'active', 'renews_at' => now()->addMonth()]);
+            Membership::create(['user_id' => $this->user->id, 'source_type' => Stripe::class, 'source_id' => $source->id]);
+        });
+        $this->user->unsetRelation('membership');
+        $this->getJson($this->url(null, $this->payload([])))->assertOk()
+            ->assertJsonPath('revision', 1)->assertJsonPath('marks', $this->payload()['marks']);
+        $this->putJson($this->url(), $this->payload(null, 1))->assertOk()->assertJsonPath('revision', 2);
+        $this->assertDatabaseCount('score_annotations', 1);
     }
 
     public function test_pdf_replacements_and_other_fingerprints_do_not_reuse_markings()

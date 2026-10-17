@@ -57,7 +57,7 @@ function loadResults() {
         .then(function(response) {
             if (requestId !== window.searchRequestId) return;
             const empty = response.data.trim() === '';
-            window.done = empty || {{ auth('web')->guest() ? 'true' : 'false' }};
+            window.done = empty || {{ app(\App\Services\WebApp\AccessPolicy::class)->cap('search', auth('web')->user()) !== null ? 'true' : 'false' }};
             $('#search-feedback').hide();
             const total = response.headers && response.headers['x-search-total'];
             if (total !== undefined && /^\d+$/.test(String(total))) showResultCount(Number(total));

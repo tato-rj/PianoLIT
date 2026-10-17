@@ -1,4 +1,7 @@
-<div class="playlist-player border-top border-bottom bg-white {{ !empty($piecePlayer) ? 'playlist-player--piece' : '' }}" data-playlist-player hidden aria-label="{{ !empty($piecePlayer) ? 'Piece audio player' : 'Playlist audio player' }}">
+<div class="playlist-player border-top border-bottom bg-white {{ !empty($piecePlayer) ? 'playlist-player--piece' : '' }}" data-playlist-player hidden aria-label="{{ !empty($piecePlayer) ? 'Piece audio player' : 'Playlist audio player' }}"
+    data-preview-modal="{{ ltrim(app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'audio'), '#') }}"
+    data-blocked-message="{{ auth('web')->guest() ? 'Sign up to explore recordings.' : 'This recording is currently locked.' }}"
+    data-preview-message="{{ auth('web')->guest() ? 'Your preview has ended. Sign up to explore more recordings.' : (auth('web')->user()->hasActiveSubscription() ? 'Your audio preview has ended.' : 'Your preview has ended. Go Premium to explore more recordings.') }}">
     <div class="playlist-player__inner">
         <div class="playlist-player__identity"><img class="rounded-sm" data-player-artwork src="{{asset('images/webapp/thumbnail.jpg')}}" alt=""><div><span data-player-title>Select a piece</span><span class="text-muted" data-player-composer></span>
             </div>

@@ -10,10 +10,16 @@ class FavoritesController extends Controller
 {
     public function update(Request $request, Piece $piece)
     {
-        $status = Favorite::toggle(
-        	auth()->user(), 
-        	$piece, 
-        	FavoriteFolder::find($request->folder_id));
+        $request->validate(['folder_id' => 'nullable|integer']);
+        $user = auth('web')->user();
+        $folder = $request->filled('folder_id') ? $user->favoriteFolders()->findOrFail($request->folder_id) : null;
+        $access = app(\App\Services\WebApp\FavoriteAccess::class);
+        $status = \Illuminate\Support\Facades\DB::transaction(function () use ($user, $piece, $folder, $access) {
+            $access->lock($user);
+            // Removing a saved favorite always remains possible, even above a cap.
+            if (!Favorite::retrieve($user, $piece, $folder)->exists()) $access->assertAdd($user, $folder);
+            return Favorite::toggle($user, $piece, $folder);
+        });
 
         $request->attributes->set('activity.action', ['type' => 'favorite_changed', 'metadata' => ['result' => $status, 'folder_id' => $request->folder_id]]);
 

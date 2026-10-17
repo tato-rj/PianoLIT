@@ -13,14 +13,17 @@ module.exports = async function () {
         hide() { this.hiding = true; }
     };
     let openPanels = [options];
+    const accessModal = {};
+    let shownModal = null;
     const document = {
         getElementById(id) { assert.strictEqual(id, 'save-to-offcanvas'); return sheet; },
         addEventListener(name, handler) { overlayEvents[name] = handler; },
-        querySelectorAll() { return openPanels; }
+        querySelectorAll() { return openPanels; },
+        querySelector(selector) { assert.strictEqual(selector, '#piece-upgrade-modal'); return accessModal; }
     };
     let getRequests = 0;
-    let resolvePost;
-    let resolveGet;
+    let resolvePost, rejectPost;
+    let resolveGet, rejectGet;
     let content = 'before';
     let sheetContent = '';
     let opened = false;
@@ -53,7 +56,7 @@ module.exports = async function () {
         enable() { this.disabled = false; return this; }
     };
     const sheetBody = {html(value) { sheetContent = value; }};
-    const flag = {find() { return {toggleClass() { flagFilled = !flagFilled; }}; }};
+    const flag = {is() { return false; }, find() { return {toggleClass() { flagFilled = !flagFilled; }}; }};
     const $ = value => {
         if (value === document) return {on(event, selector, handler) { handlers[selector] = handler; }};
         if (value === button) return button;
@@ -62,7 +65,7 @@ module.exports = async function () {
         if (value === '#save-to-offcanvas-content') return sheetBody;
         throw new Error('Unexpected selector: ' + value);
     };
-    const context = vm.createContext({document, $, window: {bootstrap: {Offcanvas: {getOrCreateInstance(element) {
+    const context = vm.createContext({document, $, window: {bootstrap: {Modal: {getOrCreateInstance(element) { return {show() {shownModal = element;}}; }}, Offcanvas: {getOrCreateInstance(element) {
                 if (element === options) return options;
                 assert.strictEqual(element, sheet);
                 return {show(trigger) {
@@ -76,8 +79,8 @@ module.exports = async function () {
                     }
                 }};
             }}}}, axios: {
-            get() { getRequests++; return new Promise(resolve => { resolveGet = resolve; }); },
-            post() { return new Promise(resolve => { resolvePost = resolve; }); }
+            get() { getRequests++; return new Promise((resolve, reject) => { resolveGet = resolve; rejectGet = reject; }); },
+            post() { return new Promise((resolve, reject) => { resolvePost = resolve; rejectPost = reject; }); }
         },
             setTimeout() { throw new Error('A successful save must not wait for a timer'); }});
     for (const name of ['offcanvas', 'favorites']) {
@@ -114,4 +117,18 @@ module.exports = async function () {
     await new Promise(resolve => setImmediate(resolve));
     assert.strictEqual(content, 'saved');
     assert.strictEqual(flagFilled, false);
+    assert.strictEqual(disabled, false);
+    toggle.call(button);
+    rejectPost({response: {data: {access_prompt: '#piece-upgrade-modal'}}});
+    await new Promise(resolve => setImmediate(resolve));
+    assert.strictEqual(shownModal, accessModal, 'The cap response opens the supplied Premium dialog');
+    assert.strictEqual(disabled, false, 'A capped favorite restores its controls');
+    assert.strictEqual(content, 'saved', 'A rejected addition leaves the saved folder list intact');
+    assert.strictEqual(flagFilled, false);
+    shownModal = null;
+    panelEvents['show.bs.offcanvas']({relatedTarget: openButton, preventDefault() {}});
+    rejectGet({response: {data: {access_prompt: '#piece-upgrade-modal'}}});
+    await new Promise(resolve => setImmediate(resolve));
+    assert.strictEqual(shownModal, accessModal, 'Blocked folder access opens the supplied dialog');
+    assert.strictEqual(openButton.disabled, false);
 };

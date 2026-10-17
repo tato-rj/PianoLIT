@@ -180,6 +180,10 @@
         color: #795e25;
         background: #f5e8c2;
     }
+    .admin-table__badge--muted {
+        color: var(--color-text-muted);
+        background: var(--bs-gray-200);
+    }
     .admin-table__empty {
         padding: 28px 0;
     }

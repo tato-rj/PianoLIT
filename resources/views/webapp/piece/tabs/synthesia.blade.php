@@ -6,7 +6,8 @@
 			'classes' => 'w-100',
 			'id' => 'piece-synthesia',
             'moments' => $piece->media['synthesia']->listeningMoments(),
-            'previewSeconds' => $hasMediaAccess ? null : $previewSeconds,
+            'accessPrompt' => app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'synthesia', $piece),
+            'previewSeconds' => $hasSynthesiaAccess ? null : $synthesiaPreviewSeconds,
 			'thumbnail' => asset('images/webapp/synthesia-thumbnail.gif'),
 			'url' => $piece->media['synthesia']->video_url])
 	</div>

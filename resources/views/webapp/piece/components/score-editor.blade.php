@@ -1,19 +1,23 @@
 @php
     $scorePreview = isset($hasMediaAccess) && ! $hasMediaAccess;
-    $scoreUpgradeAttributes = 'data-bs-toggle="modal" data-bs-target="#piece-upgrade-modal"';
+    $accessPolicy = app(\App\Services\WebApp\AccessPolicy::class);
+    $scorePromptTarget = $accessPolicy->promptTarget(auth('web')->user(), 'score', $piece);
+    $scoreUpgradeAttributes = 'data-bs-toggle="modal" data-bs-target="'.$scorePromptTarget.'"';
+    $scoreExportAttributes = 'data-bs-toggle="modal" data-bs-target="'.$accessPolicy->promptTarget(auth('web')->user(), 'score-export', $piece).'"';
     $scoreButtonAttributes = $scorePreview ? $scoreUpgradeAttributes : 'disabled';
-    $scoreDropdownAttributes = $scorePreview ? $scoreButtonAttributes : 'data-bs-toggle="dropdown" disabled';
+    $scoreAnnotationAttributes = !$hasAnnotationAccess ? 'data-bs-toggle="modal" data-bs-target="'.$accessPolicy->promptTarget(auth('web')->user(), 'annotations', $piece).'"' : 'disabled';
+    $scoreDropdownAttributes = !$hasAnnotationAccess ? $scoreAnnotationAttributes : 'data-bs-toggle="dropdown" disabled';
 @endphp
 <div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }} mb-4" data-pdf-url="{{ storage($piece->score_path) }}"
     data-score-export-access="{{ $hasScoreExportAccess ? '1' : '0' }}"
     data-score-version="{{ hash('sha256', $piece->score_path) }}"
-    data-annotations-url="{{ ! $scorePreview && auth('web')->check() ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
-    <div class="score-toolbar @if(! $scorePreview && auth('web')->guest()) d-none @endif" role="toolbar" aria-label="Score annotation tools">
+    data-annotations-url="{{ $hasAnnotationAccess ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
+    <div class="score-toolbar" role="toolbar" aria-label="Score annotation tools">
         <div class="score-tools" role="group" aria-label="Drawing tools">
-            <button type="button" data-tool="pen" data-edit-control class="score-icon-button" aria-label="Pen" title="Pen" aria-pressed="false" {!! $scoreButtonAttributes !!}>@icon('pencil', ['mr' => 0])</button>
-            <button type="button" data-tool="text" data-edit-control class="score-icon-button" aria-label="Text" title="Text" aria-pressed="false" {!! $scoreButtonAttributes !!}>@icon('text-cursor', ['mr' => 0])</button>
-            <button type="button" data-tool="erase" data-edit-control class="score-icon-button" aria-label="Eraser" title="Eraser" aria-pressed="false" {!! $scoreButtonAttributes !!}>@icon('eraser', ['mr' => 0])</button>
-            <button type="button" data-tool="highlight" data-edit-control class="score-icon-button" aria-label="Highlighter" title="Highlighter" aria-pressed="false" {!! $scoreButtonAttributes !!}>@icon('highlighter', ['mr' => 0])</button>
+            <button type="button" data-tool="pen" data-edit-control class="score-icon-button" aria-label="Pen" title="Pen" aria-pressed="false" {!! $scoreAnnotationAttributes !!}>@icon('pencil', ['mr' => 0])</button>
+            <button type="button" data-tool="text" data-edit-control class="score-icon-button" aria-label="Text" title="Text" aria-pressed="false" {!! $scoreAnnotationAttributes !!}>@icon('text-cursor', ['mr' => 0])</button>
+            <button type="button" data-tool="erase" data-edit-control class="score-icon-button" aria-label="Eraser" title="Eraser" aria-pressed="false" {!! $scoreAnnotationAttributes !!}>@icon('eraser', ['mr' => 0])</button>
+            <button type="button" data-tool="highlight" data-edit-control class="score-icon-button" aria-label="Highlighter" title="Highlighter" aria-pressed="false" {!! $scoreAnnotationAttributes !!}>@icon('highlighter', ['mr' => 0])</button>
             <div class="dropdown score-color-control">
                 <button type="button" id="score-color-picker" data-edit-control class="score-color-button score-icon-button" data-bs-auto-close="outside" aria-label="Annotation color" aria-haspopup="true" aria-expanded="false" title="Annotation color" {!! $scoreDropdownAttributes !!}>@icon('palette', ['mr' => 0])</button>
                 <div class="dropdown-menu score-color-menu" aria-labelledby="score-color-picker">
@@ -49,20 +53,37 @@
             </div>
         </div>
         <div class="score-history" role="group" aria-label="Marking history">
-            <button type="button" data-undo class="score-icon-button" aria-label="Undo" title="Undo" {!! $scoreButtonAttributes !!}>@icon('undo-2', ['mr' => 0])</button>
-            <button type="button" data-redo class="score-icon-button" aria-label="Redo" title="Redo" {!! $scoreButtonAttributes !!}>@icon('rotate-cw', ['mr' => 0])</button>
-            <button type="button" data-clear-all data-edit-control class="score-clear-button" aria-label="Clear all markings" title="Clear all markings" {!! $scoreButtonAttributes !!}>@icon('trash-2', ['mr' => 0])<span>Clear all</span></button>
+            <button type="button" data-undo class="score-icon-button" aria-label="Undo" title="Undo" {!! $scoreAnnotationAttributes !!}>@icon('undo-2', ['mr' => 0])</button>
+            <button type="button" data-redo class="score-icon-button" aria-label="Redo" title="Redo" {!! $scoreAnnotationAttributes !!}>@icon('rotate-cw', ['mr' => 0])</button>
+            <button type="button" data-clear-all data-edit-control class="score-clear-button" aria-label="Clear all markings" title="Clear all markings" {!! $scoreAnnotationAttributes !!}>@icon('trash-2', ['mr' => 0])<span>Clear all</span></button>
         </div>
     </div>
     <div class="score-status-row"><span data-score-status class="score-save-status {{ $scorePreview ? 'score-preview-status' : '' }}" role="status" aria-live="polite">Loading score…</span></div>
 
     <div class="score-scroll">
-        <div class="score-sheet">
+        <div class="score-sheet {{ $scorePreview && auth('web')->guest() ? 'score-sheet--signup' : '' }}">
             @if($scorePreview)
                 <div class="score-preview-pages" aria-hidden="true"></div>
-                <div class="score-preview-upgrade text-center">
-                    <p>Subscribe to read, mark and download the full score.</p>
-                    <button type="button" {!! $scoreButtonAttributes !!} class="btn btn-primary">@icon('crown')GO PREMIUM</button>
+                <div class="score-preview-upgrade {{ auth('web')->guest() ? 'score-preview-upgrade--signup' : '' }} text-center">
+                    @guest('web')
+                        @include('components.signup-card', [
+                            'headingId' => 'score-signup-title',
+                            'title' => 'Unlock the full score',
+                            'description' => $accessPolicy->signupDescription('score', $piece, 'explore the complete score and continue your musical journey'),
+                            'benefits' => [
+                                ['icon' => 'file-text', 'label' => 'Explore scores'],
+                                ['icon' => 'pencil', 'label' => $accessPolicy->snapshot()['rules']['free_pick']['annotations']['registered'] === 'available' ? 'Save your markings' : 'Practice inspiration'],
+                                ['icon' => 'heart', 'label' => $accessPolicy->snapshot()['rules']['account']['folder_pieces']['registered'] !== 'blocked' ? 'Build your library' : 'Explore repertoire'],
+                            ],
+                        ])
+                    @else
+                        @if($scorePromptTarget === '#piece-upgrade-modal')
+                            <p>Subscribe to read, mark and download the full score.</p>
+                            <button type="button" {!! $scoreButtonAttributes !!} class="btn btn-primary">@icon('crown')GO PREMIUM</button>
+                        @else
+                            <p>This score is currently locked.</p>
+                        @endif
+                    @endguest
                 </div>
             @else
             <canvas id="score-pdf" aria-label="Score PDF page"></canvas>
@@ -90,14 +111,14 @@
         </div>
         <div class="score-footer-actions">
             @if($piece->hasAudio())
-                <button type="button" @if($scorePreview) {!! $scoreButtonAttributes !!} @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif class="score-listen-button">@icon('play', ['mr' => 0])<span>Listen</span></button>
+                <button type="button" @if($audioPreviewSeconds === 0) data-bs-toggle="modal" data-bs-target="{{ $accessPolicy->promptTarget(auth('web')->user(), 'audio', $piece) }}" @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif class="score-listen-button">@icon('play', ['mr' => 0])<span>Listen</span></button>
             @endif
             @if(! $hasScoreExportAccess)
-                <button type="button" {!! $scoreUpgradeAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></button>
+                <button type="button" {!! $scoreExportAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></button>
             @else
             <a href="{{ storage($piece->score_path) }}" target="_blank" rel="noopener" class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></a>
             @endif
-            <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if(! $hasScoreExportAccess) {!! $scoreUpgradeAttributes !!} @endif>@icon('printer', ['mr' => 0])<span>Print</span></button>
+            <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if(! $hasScoreExportAccess) {!! $scoreExportAttributes !!} @endif>@icon('printer', ['mr' => 0])<span>Print</span></button>
         </div>
     </div>
     <div class="score-messages">

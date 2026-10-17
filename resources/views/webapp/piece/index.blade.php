@@ -73,9 +73,7 @@ video::-webkit-media-controls-enclosure {
 @if($piece->hasAudio())
 @include('webapp.piece.components.audio-band')
 @endif
-@if(! $hasMediaAccess || (! $hasScoreExportAccess && $piece->score_path && $piece->isPublicDomain))
-    @include('webapp.piece.components.upgrade')
-@endif
+
 {{-- @include('webapp.piece.performances.overlay') --}}
 @endsection
 
@@ -89,9 +87,13 @@ video::-webkit-media-controls-enclosure {
 <script src="{{ mix('js/views/playlist-player.js') }}"></script>
 @endif
 <script src="{{ mix('js/views/piece-description.js') }}"></script>
-@if($hasMediaAccess && $piece->score_path && $piece->isPublicDomain)
+@if(($hasMediaAccess || $hasScoreExportAccess) && $piece->score_path && $piece->isPublicDomain)
 <script src="{{ mix('js/views/score-editor.js') }}"></script>
 <script>
+const printablePreview = document.getElementById('score-preview');
+if (printablePreview && printablePreview.getAttribute('data-score-export-access') === '1') {
+    printablePreview.querySelector('[data-print]').addEventListener('click', function () { ScoreEditor.printOriginal(printablePreview, pdfjsLib); });
+}
 const scoreEditorElement = document.getElementById('score-editor');
 if (scoreEditorElement) {
     let scoreEditor = null;
@@ -108,16 +110,20 @@ if (scoreEditorElement) {
 }
 </script>
 @endif
-@unless($hasMediaAccess)
+@if(! $hasMediaAccess || ! $hasPerformanceAccess || ! $hasSynthesiaAccess || ! $hasAudioAccess)
 <script>
-PieceAccess.installPreviewGuards(document, function () {
+PieceAccess.installPreviewGuards(document, function (kind, media) {
     document.querySelectorAll('audio, video').forEach(function (media) { media.pause(); });
-    $('#piece-upgrade-modal').modal('show');
+    @guest('web')
+    $(kind === 'audio' ? '#signup-audio-modal' : '#signup-video-modal').modal('show');
+    @else
+    $(media.getAttribute('data-access-prompt') || '{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user()) }}').modal('show');
+    @endguest
 });
 const scorePreview = document.getElementById('score-preview');
 if (scorePreview) PieceAccess.renderScorePreview(scorePreview, pdfjsLib);
 </script>
-@endunless
+@endif
 
 {{-- START OF PERFORMANCE SCRIPTS --}}
 

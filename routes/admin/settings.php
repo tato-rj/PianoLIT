@@ -1,5 +1,8 @@
 <?php
 
+Route::get('access-limits', 'Admin\AccessLimitsController@index')->name('access-limits.index');
+Route::put('access-limits', 'Admin\AccessLimitsController@update')->name('access-limits.update');
+
 Route::prefix('emails')->name('emails.')->group(function () {
     Route::get('', 'Admin\EmailsController@index')->name('index');
     Route::post('send-preview', 'Admin\EmailsController@send')->middleware('throttle:10,1,admin-email-preview:')->name('send');

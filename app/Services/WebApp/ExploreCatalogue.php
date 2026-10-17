@@ -288,7 +288,8 @@ class ExploreCatalogue
         $controls = new SearchOptions($request);
         $controls->sortQuery($controls->filterQuery($query));
         $controls->recordTotal($query);
-        $pieces = auth('web')->guest() ? $query->limit(3)->get() : $query->simplePaginate(10)->getCollection();
+        $cap = app(\App\Services\WebApp\AccessPolicy::class)->cap('search', auth('web')->user());
+        $pieces = $cap === 0 ? collect() : ($cap !== null ? $query->limit($cap)->get() : $query->simplePaginate(10)->getCollection());
         return PieceCards::load($pieces);
     }
 }

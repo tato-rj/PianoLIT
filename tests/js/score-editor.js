@@ -72,7 +72,7 @@ module.exports = async function () {
     guest.store.state = 'unsaved';
     Editor.prototype.changed.call(guest);
     assert.strictEqual(guest.saveTimer, undefined, 'Guest changes must never schedule account saves');
-    assert(guestMessage.includes('Sign in'));
+    assert.strictEqual(guestMessage, '', 'Guests see the annotation toolbar instead of a sign-in status message');
 
     const a = {id: 'a', page: 1, type: 'text', text: '1 2 3'};
     const b = {id: 'b', page: 2, type: 'stroke', points: [{x: .3, y: .4}]};
@@ -633,6 +633,16 @@ module.exports = async function () {
     assert.strictEqual(printCalls, 1, 'A missing PDF page must not print an incomplete document');
     assert.strictEqual(body.children.length, 0);
     assert(printMessages.pop().includes('Could not prepare every score page'));
+
+    const previewButton = {disabled: false}, previewStatus = {};
+    const previewContainer = {getAttribute: key => key === 'data-score-export-access' ? '1' : '/original.pdf', querySelector: key => key === '[data-print]' ? previewButton : previewStatus};
+    const originalPages = [];
+    await window.ScoreEditor.printOriginal(previewContainer, {getDocument: () => ({promise: Promise.resolve({numPages: 2, getPage: async number => ({getViewport: ({scale}) => ({width: 612 * scale, height: 792 * scale}), render: () => { originalPages.push(number); return {promise: Promise.resolve()}; }})})})});
+    assert.deepStrictEqual(originalPages, [1, 2], 'An Available export can print the original while on a blocked-score preview');
+    assert.strictEqual(previewButton.disabled, false);
+    afterPrint();
+    previewContainer.getAttribute = () => '0';
+    await window.ScoreEditor.printOriginal(previewContainer, {getDocument: () => {throw new Error('Blocked exports must not fetch the PDF');}});
 
     const touchEditor = Object.create(Editor.prototype);
     let blockedTouches = 0;

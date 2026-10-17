@@ -1,3 +1,11 @@
+function showFavoriteAccessPrompt(error) {
+    const target = error.response && error.response.data && error.response.data.access_prompt;
+    const modal = target && document.querySelector(target);
+    if (!modal) return false;
+    window.bootstrap.Modal.getOrCreateInstance(modal).show();
+    return true;
+}
+
 const Offcanvas = window.bootstrap.Offcanvas;
 
     const saveToPanel = document.getElementById('save-to-offcanvas');
@@ -20,7 +28,7 @@ const Offcanvas = window.bootstrap.Offcanvas;
                     Offcanvas.getOrCreateInstance(saveToPanel).show(trigger);
                 })
                 .catch(function(error) {
-                    console.log(error);
+                    if (!showFavoriteAccessPrompt(error)) alert('Favorites could not be loaded. Please try again.');
                 })
                 .then(function() {
                     $btn.enable();
@@ -47,8 +55,7 @@ const Offcanvas = window.bootstrap.Offcanvas;
                 updateFlag($btn.data('target'));
             })
             .catch(function(error) {
-                alert('Something went wrong...');
-                console.log(error);
+                if (!showFavoriteAccessPrompt(error)) alert('Your favorite could not be updated. Please try again.');
             })
             .then(function() {
                 $btns.enable();
@@ -71,7 +78,8 @@ const Offcanvas = window.bootstrap.Offcanvas;
             .catch(function(error) {
                 $btn.enable().removeLoader();
                 $btn.siblings('button').show();
-                let feedback = objFirst(error.response.data.errors)[0];
+                if (showFavoriteAccessPrompt(error)) return;
+                let feedback = error.response && error.response.data.errors ? objFirst(error.response.data.errors)[0] : 'The folder could not be created. Please try again.';
                 $container.find('.invalid-feedback').text(feedback).show();
             })
             .then(function() {

@@ -49,7 +49,7 @@ class WebAppSearchLimitTest extends ReviewTestCase
             DB::flushQueryLog();
             $response = $this->getJson(route('webapp.search.results', ['search' => 'happy', 'page' => $page]))->assertOk();
             $this->assertSame('', $response->getContent());
-            $this->assertCount(0, DB::getQueryLog());
+            $this->assertSame(0, collect(DB::getQueryLog())->filter(function ($query) { return strpos($query['query'], 'from "pieces"') !== false; })->count());
             DB::disableQueryLog();
         }
     }

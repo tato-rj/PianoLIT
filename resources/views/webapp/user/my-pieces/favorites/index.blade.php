@@ -1,3 +1,5 @@
+@php($canCreateFolder = app(\App\Services\WebApp\FavoriteAccess::class)->canCreate(auth('web')->user(), $folders->count()))
+@php($folderTarget = $canCreateFolder ? '#new-folder-modal' : app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'folders'))
 @php($folderColors = \App\Support\FolderPalette::colorsFor($folders))
 <section class="my-pieces-favorites" id="folders-list" aria-labelledby="favorites-heading">
     <div class="my-pieces-favorites__heading">
@@ -11,7 +13,7 @@
                 @icon('search', ['mr' => 0])
                 <input type="search" id="folder-search" placeholder="Search folders or pieces…" aria-controls="folder-grid" autocomplete="off">
             </label>
-            <button type="button" data-bs-toggle="modal" data-bs-target="#new-folder-modal" class="btn btn-secondary">
+            <button type="button" data-bs-toggle="modal" data-bs-target="{{ $folderTarget }}" class="btn btn-secondary">
                 @icon('plus')New folder
             </button>
         </div>
@@ -30,6 +32,9 @@
 
     <p class="my-pieces-favorites__search-status" data-folder-status role="status" aria-live="polite"></p>
     <p class="my-pieces-favorites__no-results" data-folder-no-results hidden>No folders match your search. Try another folder, piece or composer.</p>
+    @if(app(\App\Services\WebApp\AccessPolicy::class)->cap('folders', auth('web')->user()) === 0)
+        <div class="text-center py-4"><p>Favorite folders are currently locked.</p>@include('webapp.components.access-action', ['accessFeature' => 'folders'])</div>
+    @endif
     <div class="my-pieces-folders" id="folder-grid">
         @foreach($folders as $folder)
             @php($folderColor = $folderColors->get($folder->id))
@@ -37,7 +42,7 @@
             @include('webapp.user.my-pieces.favorites.delete')
             @include('webapp.user.my-pieces.favorites.edit')
         @endforeach
-        <button type="button" class="my-pieces-folder my-pieces-folder--create" data-bs-toggle="modal" data-bs-target="#new-folder-modal">
+        <button type="button" class="my-pieces-folder my-pieces-folder--create" data-bs-toggle="modal" data-bs-target="{{ $folderTarget }}">
             <span class="my-pieces-folder__create-icon" aria-hidden="true">@icon('plus', ['mr' => 0])</span>
             <strong>New folder</strong>
             <span>Create a folder to organize<br>your pieces</span>

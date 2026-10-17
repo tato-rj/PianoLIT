@@ -35,7 +35,8 @@ module.exports = async function () {
     function sourceUrl(media) { return media.playlistSource.getAttribute('src') || ''; }
     const recordings = [], patches = [], posts = [];
     let upgrades = 0;
-    const page = new Element(), list = new Element({'data-url-reorder': '/folders/1/reorder'}), player = new Element();
+    let promptedModal;
+    const page = new Element(), list = new Element({'data-url-reorder': '/folders/1/reorder'}), player = new Element({'data-preview-modal': 'piece-upgrade-modal', 'data-preview-message': 'Your preview has ended. Go Premium to hear the full piece.'});
     list.items = [0, 1, 2].map(index => new Element({'data-id': String(index + 1), 'data-title': 'Piece ' + index, 'data-composer': 'Composer', 'data-audio': index === 2 ? '' : index === 0 ? '/legacy.MPGA?version=1' : '/recording.mp4', 'data-preview': index === 1 ? '10' : '0', 'data-artwork': '/art.jpg'}));
     const tracks = list.items.slice();
     list.querySelectorAll = () => list.items.filter(item => item.getAttribute('data-id'));
@@ -48,7 +49,7 @@ module.exports = async function () {
     page.children['[data-playlist-tracks]'] = list;
     page.children['[data-playlist-player]'] = player;
     player.children['[data-speed]'] = [.5, .75, 1, 1.25, 1.5, 2].map(speed => new Element({'data-speed': String(speed)}));
-    const doc = new Element(); doc.querySelector = selector => selector === '[data-playlist-page]' ? page : null; doc.getElementById = () => new Element(); doc.createElement = () => new Element();
+    const doc = new Element(); doc.querySelector = selector => selector === '[data-playlist-page]' ? page : null; doc.getElementById = id => { promptedModal = id; return new Element(); }; doc.createElement = () => new Element();
     const win = {Audio, bootstrap: {Modal: {getOrCreateInstance: () => ({show() { upgrades++; }})}}, innerHeight: 800, requestAnimationFrame() { return 1; }, cancelAnimationFrame() {}, scrollBy() {}, addEventListener() {}, axios: {
         patch(url, data) { return new Promise((resolve, reject) => patches.push({url, data, resolve, reject})); },
         post(url) { return new Promise((resolve, reject) => posts.push({url, resolve, reject})); }
@@ -108,11 +109,49 @@ module.exports = async function () {
     assert(second.paused);
     assert.strictEqual(second.currentTime, 10);
     assert.strictEqual(upgrades, 1);
+    assert.strictEqual(promptedModal, 'piece-upgrade-modal');
+    assert.strictEqual(status.textContent, 'Your preview has ended. Go Premium to hear the full piece.');
+    second.reject(new Error('Preview intentionally stopped'));
+    await settle();
+    assert.strictEqual(status.textContent, 'Your preview has ended. Go Premium to hear the full piece.', 'A cutoff-induced play rejection must preserve the access prompt');
     second.fire('timeupdate');
     assert.strictEqual(upgrades, 1, 'Preview stop prompts only once');
     player.querySelector('[data-player-toggle]').fire('click');
     assert.strictEqual(second.currentTime, 0, 'A user can replay the preview');
     assert(!second.paused);
+    player.setAttribute('data-preview-modal', 'signup-audio-modal');
+    player.setAttribute('data-preview-message', 'Your preview has ended. Sign up to continue listening.');
+    second.currentTime = 10; second.fire('timeupdate');
+    assert.strictEqual(promptedModal, 'signup-audio-modal', 'Guest audio opens the signup dialog');
+    assert.strictEqual(status.textContent, 'Your preview has ended. Sign up to continue listening.');
+    // Regular guest tracks must never call play(), even though zero still means
+    // unlimited for unmarked free-pick/member tracks.
+    tracks[1].setAttribute('data-preview', '0');
+    tracks[1].setAttribute('data-audio-blocked', 'true');
+    player.setAttribute('data-blocked-message', 'Sign up to explore recordings. Membership unlocks this piece.');
+    const normalPlay = second.play;
+    let blockedPlayCalls = 0;
+    second.play = function () { blockedPlayCalls++; return normalPlay.call(this); };
+    const beforeImmediate = upgrades;
+    player.querySelector('[data-player-toggle]').fire('click');
+    assert(second.paused); assert.strictEqual(second.currentTime, 0);
+    assert.strictEqual(blockedPlayCalls, 0, 'A guest cannot start regular collection audio');
+    assert.strictEqual(upgrades, beforeImmediate + 1);
+    assert.strictEqual(promptedModal, 'signup-audio-modal');
+    assert.strictEqual(status.textContent, 'Sign up to explore recordings. Membership unlocks this piece.');
+    assert.strictEqual(player.querySelector('[data-seek]').disabled, true);
+    assert.strictEqual(player.querySelector('[data-seek]').max, 0);
+    second.currentTime = 40; second.fire('seeking'); second.fire('timeupdate');
+    assert.strictEqual(second.currentTime, 0);
+    assert.strictEqual(upgrades, beforeImmediate + 1, 'Queued seek events do not reopen signup');
+    tracks[1].querySelector('[data-track-play]').fire('click');
+    assert.strictEqual(upgrades, beforeImmediate + 2, 'An explicit retry opens signup again');
+    assert.strictEqual(blockedPlayCalls, 0);
+    tracks[1].removeAttribute('data-audio-blocked');
+    tracks[1].setAttribute('data-preview', '10');
+    second.play = normalPlay;
+    player.removeAttribute('data-blocked-message');
+    player.querySelector('[data-player-toggle]').fire('click');
     second.reject(new Error('Playback unavailable'));
     await settle();
     assert(status.textContent.includes('could not start'));
@@ -297,6 +336,11 @@ module.exports = async function () {
     assert(sectionAudio.paused); assert.strictEqual(sectionAudio.currentTime, 10);
     assert.strictEqual(upgrades, previousUpgrades + 1, 'Sections obey the preview cutoff');
     assert.deepStrictEqual(sectionSelections, [tracks[0], tracks[1]]);
+    tracks[1].setAttribute('data-audio-blocked', 'true');
+    sectionAudio.currentTime = 0;
+    sectionCallbacks.seek(47, true);
+    assert(sectionAudio.paused); assert.strictEqual(sectionAudio.currentTime, 0, 'Blocked guest section controls cannot start or seek audio');
+    tracks[1].removeAttribute('data-audio-blocked');
     delete win.PlaylistMoments; delete win.VideoMoments;
 
     let volumeChange;
@@ -354,7 +398,7 @@ module.exports = async function () {
 
     tracks.forEach((row, index) => { row.querySelector = originalSelectors[index]; });
     // Piece pages reuse the band without playlist action buttons or visible rows.
-    const piecePage = new Element(), pieceList = new Element(), pieceBand = new Element(), launch = new Element();
+    const piecePage = new Element(), pieceList = new Element(), pieceBand = new Element({'data-preview-modal': 'signup-audio-modal', 'data-preview-message': 'Your preview has ended. Sign up to continue listening.'}), launch = new Element();
     const pieceMain = new Element(); pieceMain.style.marginBottom = '24px';
     piecePage.closest = () => pieceMain;
     piecePage.style.setProperty = function (name, value) { this[name] = value; };
@@ -433,5 +477,21 @@ module.exports = async function () {
     launch.fire('click');
     assert(!pieceBand.hidden && !pieceAudio.paused, 'Listen reopens after video playback');
     pieceBand.querySelector('[data-player-close]').fire('click');
+    pieceTracks.forEach(row => row.setAttribute('data-audio-blocked', 'true'));
+    const piecePlay = pieceAudio.play;
+    let piecePlayCalls = 0;
+    pieceAudio.play = function () { piecePlayCalls++; return piecePlay.call(this); };
+    pieceBand.setAttribute('data-preview-message', 'Sign up to explore recordings. Membership unlocks this piece.');
+    launch.fire('click');
+    assert(pieceAudio.paused); assert.strictEqual(pieceAudio.currentTime, 0);
+    assert.strictEqual(piecePlayCalls, 0, 'Guest Listen does not start regular-piece audio');
+    assert.strictEqual(pieceStatus.textContent, 'Sign up to explore recordings. Membership unlocks this piece.');
+    pieceAudio.currentTime = 35; pieceAudio.fire('seeking');
+    assert.strictEqual(pieceAudio.currentTime, 0);
+    pieceTracks.forEach(row => row.removeAttribute('data-audio-blocked'));
+    launch.fire('click');
+    assert.strictEqual(piecePlayCalls, 1, 'Unmarked zero-preview tracks retain full playback');
+    pieceAudio.currentTime = 35; pieceAudio.fire('timeupdate');
+    assert(!pieceAudio.paused);
     console.log('Passed: performance/Synthesia/dynamic video dismissal, captured media events and audio exclusion; offcanvas dismissal across folder, collection and piece players; piece Listen/Close, score spacing, main recording, full playback and previews; typed MPGA/MP3/MP4/M4A sources, playlist visibility, device-only mobile volume, shared playback element, delayed metadata, loader cancellation/timeouts, preview boundaries, stale events, speed, loop, mouse/touch drag lifecycle, cancellation, reorder rollback and favorite failures.');
 };

@@ -45,10 +45,13 @@ class PieceContentAccessTest extends ReviewTestCase
 
     protected function assertRestricted()
     {
+        $prompt = auth('web')->guest() ? 'signup-score-modal' : 'piece-upgrade-modal';
+        $guestFreePick = auth('web')->guest() && $this->piece->is_free;
+        $videoLimit = auth('web')->guest() && ! $this->piece->is_free ? 0 : 10;
         $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
             ->assertSee('id="piece-performance"', false)->assertSee('id="piece-synthesia"', false)
             ->assertSee('id="score-preview"', false)->assertSee('score-preview-pages', false)
-            ->assertSee('id="piece-upgrade-modal"', false)
+            ->assertSee('id="'.$prompt.'"', false)
             ->assertSee('/js/views/piece-access.js?id=', false)
             ->assertSee('Download score')->assertDontSee('<embed', false)
             ->assertDontSee('id="score-editor"', false);
@@ -61,21 +64,49 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertSame(17, $controls->length);
         foreach ($controls as $control) {
             $this->assertFalse($control->hasAttribute('disabled'));
+            if (strpos($control->getAttribute('class'), 'score-listen-button') !== false && $videoLimit > 0) {
+                $this->assertSame('launch-audio', $control->getAttribute('id'));
+                $this->assertFalse($control->hasAttribute('data-bs-toggle'));
+                continue;
+            }
             $this->assertSame('modal', $control->getAttribute('data-bs-toggle'));
-            $this->assertSame('#piece-upgrade-modal', $control->getAttribute('data-bs-target'));
+            $target = auth('web')->guest() && strpos($control->getAttribute('class'), 'score-listen-button') !== false ? 'signup-audio-modal' : $prompt;
+            if (auth('web')->guest() && $xpath->query('ancestor::*[contains(@class, "score-toolbar")]', $control)->length) $target = 'signup-annotations-modal';
+            if (auth('web')->guest() && ($control->hasAttribute('data-print') || $control->getAttribute('aria-label') === 'Download score')) $target = 'signup-score-export-modal';
+            $this->assertSame('#'.$target, $control->getAttribute('data-bs-target'));
         }
-        $this->assertSame(1, $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-sheet")]//*[contains(@class, "score-preview-upgrade")]//button')->length);
-        $this->assertSame(0, $xpath->query('//*[@id="score-preview"]//a | //*[@id="score-preview"]//*[@id="launch-audio"]')->length);
+        $upgrade = $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-preview-upgrade")]')->item(0);
+        $this->assertSame(auth('web')->guest() ? 0 : 1, $xpath->query('.//button', $upgrade)->length);
+        if (auth('web')->guest()) {
+            $card = $xpath->query('.//section[@aria-labelledby="score-signup-title"]', $upgrade)->item(0);
+            $this->assertNotNull($card);
+            $this->assertSame('Unlock the full score', $xpath->query('.//*[@id="score-signup-title"]', $card)->item(0)->textContent);
+            $signup = $xpath->query('.//a[contains(@class, "btn-primary")]', $card)->item(0);
+            $this->assertSame('Sign up free', trim($signup->textContent));
+            $this->assertSame(route('register'), $signup->getAttribute('href'));
+            $this->assertFalse($signup->hasAttribute('data-bs-toggle'), 'The inline card goes straight to signup without a second dialog.');
+            $this->assertSame(1, $xpath->query('.//a[@href="'.route('login').'"]', $card)->length);
+            $this->assertSame(3, $xpath->query('.//ul[@aria-label="Free account benefits"]/li', $card)->length);
+            $this->assertStringContainsString('Explore scores', $card->textContent);
+        }
+        $this->assertSame(auth('web')->guest() ? 2 : 0, $xpath->query('//*[@id="score-preview"]//a')->length);
+        $this->assertSame($videoLimit > 0 ? 1 : 0, $xpath->query('//*[@id="score-preview"]//*[@id="launch-audio"]')->length);
         $this->assertSame('', $xpath->query('//*[@id="score-preview"]')->item(0)->getAttribute('data-annotations-url'));
         $response->assertDontSee('/js/views/score-editor.js?id=', false);
         $this->assertScoreExportControls($response, false);
-        $this->assertSame(2, substr_count($response->getContent(), 'data-media-preview="10"'));
-        $this->assertSame(1, substr_count($response->getContent(), 'data-preview="10"'));
+        $this->assertSame((string) $videoLimit, $xpath->query('//*[@id="piece-performance"]')->item(0)->getAttribute('data-media-preview'));
+        $this->assertSame((string) $videoLimit, $xpath->query('//*[@id="piece-synthesia"]')->item(0)->getAttribute('data-media-preview'));
+        $this->assertSame(1, substr_count($response->getContent(), 'data-preview="'.$videoLimit.'"'));
+        $this->assertSame(auth('web')->guest() && ! $this->piece->is_free ? 1 : 0, substr_count($response->getContent(), 'data-audio-blocked="true"'));
         $response->assertSee('data-piece-player-page', false)->assertSee('data-player-close', false);
         $audio = $this->get(route('webapp.pieces.audio', $this->piece))->assertOk();
-        $this->assertSame(3, substr_count($audio->getContent(), 'data-media-preview="10"'));
-        $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk()->assertSee('data-media-preview="10"', false);
+        $this->assertSame(3, substr_count($audio->getContent(), 'data-media-preview="'.$videoLimit.'"'));
+        $tutorial = $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk();
+        $this->assertSame(1, substr_count($tutorial->getContent(), 'data-media-preview="'.$videoLimit.'"'));
+        $synthesia = $this->piece->tutorials()->where('type', 'synthesia')->firstOrFail();
+        $this->get(route('webapp.pieces.tutorial', [$this->piece, $synthesia]))->assertOk()->assertSee('data-media-preview="'.$videoLimit.'"', false);
         $this->withExceptionHandling()->get(route('webapp.pieces.score', $this->piece))->assertForbidden();
+        $this->exportAccessPreview($response);
         return $response;
     }
 
@@ -90,15 +121,15 @@ class PieceContentAccessTest extends ReviewTestCase
             ->assertSee('data-player-close', false)->assertSee('data-speed="0.75"', false)
             ->assertSee('/js/views/playlist-player.js?id=', false)->assertSee('/js/views/playlist-moments.js?id=', false)
             ->assertSee('Audio theme')
-            ->assertDontSee('piece-audio-popup', false)->assertSee('id="piece-upgrade-modal"', false);
+            ->assertDontSee('piece-audio-popup', false)->assertSee('id="signup-audio-modal"', false);
         preg_match_all('/data-audio-moments="([^"]*)"/', $response->getContent(), $matches);
         $moments = array_map(function ($json) { return json_decode(html_entity_decode($json, ENT_QUOTES), true); }, $matches[1]);
         $this->assertCount(1, $moments);
         $this->assertSame('Audio theme', $moments[0][0]['title']);
         $this->assertArrayNotHasKey('comment', $moments[0][0]);
         $this->assertSame(1, substr_count($response->getContent(), 'data-playlist-player hidden'));
-        $this->assertSame(1, substr_count($response->getContent(), 'data-preview="0"'));
-        $response->assertDontSee('score-preview-upgrade', false)->assertDontSee('score-editor--preview', false);
+        $this->assertSame(1, substr_count($response->getContent(), 'data-preview="10"'));
+        $response->assertSee('score-preview-upgrade', false)->assertSee('score-editor--preview', false);
         if ($destination = getenv('PIECE_PLAYER_PREVIEW_DIR')) {
             $html = $response->getContent();
             $html = preg_replace('~(?:https?://[^/]+)?(/(?:css|js|images|fonts)/)~', '$1', $html);
@@ -121,6 +152,45 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->get(route('webapp.my-pieces'))->assertOk()->assertSee('SUGGESTIONS');
         $this->postJson(route('webapp.users.favorites.update', $this->piece))->assertOk();
         $this->assertDatabaseCount('favorites', 1);
+    }
+
+    public function test_guests_get_action_specific_signup_prompts_and_members_keep_the_premium_prompt()
+    {
+        $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+            ->assertSee('Unlock the full score')
+            ->assertSee('Membership lets you explore the complete score')
+            ->assertSee('data-bs-target="#signup-favorites-modal"', false)
+            ->assertSee('data-preview-modal="signup-audio-modal"', false)
+            ->assertDontSee('GO PREMIUM')->assertDontSee('Subscribe to read')
+            ->assertDontSee('id="piece-upgrade-modal"', false);
+        $document = new \DOMDocument();
+        $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new \DOMXPath($document);
+        $headerFavorite = $xpath->query('//section[.//*[contains(@class, "piece-header")]]//button[@data-bs-target="#signup-favorites-modal"]');
+        $this->assertSame(1, $headerFavorite->length);
+        $this->assertSame(0, $xpath->query('ancestor::*[contains(@class, "d-none")]', $headerFavorite->item(0))->length);
+        foreach (['data-url', 'data-submit', 'data-manage'] as $attribute) $this->assertFalse($headerFavorite->item(0)->hasAttribute($attribute));
+        foreach (['video' => 'watch the full video', 'audio' => 'listen to the full recording', 'score' => 'read the full score', 'annotations' => 'add your own markings and save them', 'score-export' => 'download and print scores', 'favorites' => 'save your favorite pieces', 'escore' => 'practice book'] as $action => $benefit) {
+            $id = 'signup-'.$action.'-modal';
+            $this->assertSame(1, $xpath->query('//*[@id="'.$id.'"]')->length);
+            $modal = $xpath->query('//*[@id="'.$id.'"]')->item(0);
+            $this->assertStringContainsString($benefit, $modal->textContent);
+            $this->assertSame(1, $xpath->query('//*[@id="'.$modal->getAttribute('aria-labelledby').'"]')->length);
+            $this->assertSame(1, $xpath->query('//*[@id="'.$modal->getAttribute('aria-describedby').'"]')->length);
+            $signup = $xpath->query('.//a[contains(@class, "btn-primary")]', $modal);
+            $this->assertSame(1, $signup->length);
+            $this->assertSame('SIGN UP', trim($signup->item(0)->textContent));
+            $this->assertSame(route('register'), $signup->item(0)->getAttribute('href'));
+            $this->assertSame(1, $xpath->query('.//a[@href="'.route('login').'"]', $modal)->length);
+        }
+        if ($directory = getenv('GUEST_SIGNUP_PREVIEW_DIR')) file_put_contents($directory.'/guest-piece.html', $response->getContent());
+        $this->actingAs($this->userWithSubscription(), 'web');
+        $member = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
+            ->assertSee('GO PREMIUM')->assertSee('Subscribe to read')
+            ->assertSee('data-bs-target="#piece-upgrade-modal"', false)
+            ->assertSee('data-preview-modal="piece-upgrade-modal"', false)
+            ->assertDontSee('id="signup-score-modal"', false);
+        if ($directory = getenv('GUEST_SIGNUP_PREVIEW_DIR')) file_put_contents($directory.'/member-piece.html', $member->getContent());
     }
 
     public function test_active_stripe_and_apple_subscribers_and_trials_keep_full_content()
@@ -151,10 +221,10 @@ class PieceContentAccessTest extends ReviewTestCase
         foreach ([$download->item(0), $print->item(0)] as $control) {
             $this->assertFalse($control->hasAttribute('disabled'));
             $this->assertSame($allowed ? '' : 'modal', $control->getAttribute('data-bs-toggle'));
-            $this->assertSame($allowed ? '' : '#piece-upgrade-modal', $control->getAttribute('data-bs-target'));
+            $this->assertSame($allowed ? '' : (auth('web')->guest() ? '#signup-score-export-modal' : '#piece-upgrade-modal'), $control->getAttribute('data-bs-target'));
         }
         $this->assertSame($allowed ? '1' : '0', $xpath->query('//*[@data-score-export-access]')->item(0)->getAttribute('data-score-export-access'));
-        $this->assertSame($allowed ? 0 : 1, $xpath->query('//*[@id="piece-upgrade-modal"]')->length);
+        $this->assertSame($allowed || auth('web')->guest() ? 0 : 1, $xpath->query('//*[@id="piece-upgrade-modal"]')->length);
     }
 
     protected function assertFullContent($canExport = true)
@@ -163,14 +233,27 @@ class PieceContentAccessTest extends ReviewTestCase
             ->assertDontSee('data-media-preview=', false)->assertDontSee('id="score-preview"', false)
             ->assertSee('Download score')->assertSee('id="score-pdf"', false)
             ->assertSee('id="score-editor"', false)->assertSee('data-tool="pen"', false)
+            ->assertDontSee('data-audio-blocked="true"', false)
             ->assertSee('id="launch-audio"', false)->assertSee('data-piece-player-page', false)
-            ->assertSee('playlist-player--piece', false)->assertDontSee('piece-audio-popup', false);
+            ->assertSee('playlist-player--piece', false)->assertDontSee('piece-audio-popup', false)
+            ->assertDontSee('score-signup-title', false);
         $this->assertSame(1, substr_count($response->getContent(), 'data-preview="0"'));
         $this->get(route('webapp.pieces.audio', $this->piece))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->tutorial]))->assertOk()->assertDontSee('data-media-preview=', false);
+        $synthesia = $this->piece->tutorials()->where('type', 'synthesia')->firstOrFail();
+        $this->get(route('webapp.pieces.tutorial', [$this->piece, $synthesia]))->assertOk()->assertDontSee('data-media-preview=', false);
         $this->assertScoreExportControls($response, $canExport);
         $this->withExceptionHandling()->get(route('webapp.pieces.score', $this->piece))->assertStatus($canExport ? 200 : 403);
+        $this->exportAccessPreview($response);
         return $response;
+    }
+
+    protected function exportAccessPreview($response)
+    {
+        if (! $directory = getenv('MEDIA_FORMAT_PREVIEW_DIR')) return;
+        $user = auth('web')->user();
+        $account = ! $user ? 'guest' : ($user->hasActiveSubscription() ? 'member' : 'registered');
+        file_put_contents($directory.'/'.$account.'-'.($this->piece->is_free ? 'free' : 'regular').'.html', $response->getContent());
     }
 
     public function test_super_users_keep_full_content_regardless_of_subscription_state()
@@ -234,11 +317,30 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertRestricted();
     }
 
-    public function test_free_pick_keeps_full_viewing_without_exports_and_restricts_again_after_rotation()
+    public function test_free_pick_previews_unlock_full_media_scores_and_annotations_after_signup()
     {
         $this->piece->updateQuietly(['is_free' => true]);
-        $this->assertFullContent(false)->assertDontSee('data-manage="save-to"', false)
-            ->assertSee('data-annotations-url=""', false);
+        $guestFreePick = $this->assertRestricted()->assertDontSee('data-manage="save-to"', false)
+            ->assertSee('data-annotations-url=""', false)
+            ->assertSee('Create a free PianoLIT account to explore the complete score and continue your musical journey.')
+            ->assertDontSee('Sign up to read, mark and download');
+        $document = new \DOMDocument();
+        $document->loadHTML($guestFreePick->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+        $xpath = new \DOMXPath($document);
+        $this->assertSame(0, $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-toolbar") and contains(@class, "d-none")]')->length);
+        $annotationControls = $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-toolbar")]//button[not(ancestor::*[contains(@class, "dropdown-menu")])]');
+        $this->assertSame(9, $annotationControls->length);
+        foreach ($annotationControls as $control) {
+            $this->assertFalse($control->hasAttribute('disabled'));
+            if (strpos($control->getAttribute('class'), 'score-listen-button') !== false && $videoLimit > 0) {
+                $this->assertSame('launch-audio', $control->getAttribute('id'));
+                $this->assertFalse($control->hasAttribute('data-bs-toggle'));
+                continue;
+            }
+            $this->assertSame('modal', $control->getAttribute('data-bs-toggle'));
+            $this->assertSame('#signup-annotations-modal', $control->getAttribute('data-bs-target'));
+        }
+        if ($directory = getenv('GUEST_SIGNUP_PREVIEW_DIR')) file_put_contents($directory.'/guest-free-pick.html', $guestFreePick->getContent());
         $this->assertDatabaseCount('recently_viewed_pieces', 0);
         $this->withExceptionHandling()->postJson(route('webapp.users.favorites.update', $this->piece))->assertUnauthorized();
         $this->getJson(route('webapp.pieces.score.annotations.show', $this->piece))->assertUnauthorized();
@@ -250,10 +352,11 @@ class PieceContentAccessTest extends ReviewTestCase
 
         $this->actingAs($this->userWithSubscription(), 'web');
         $this->piece->updateQuietly(['is_free' => true]);
-        $this->assertFullContent(false)->assertSee('data-manage="save-to"', false)
+        $memberFreePick = $this->assertFullContent(false)->assertSee('data-manage="save-to"', false)
             ->assertSee('data-bs-toggle="offcanvas"', false)
             ->assertSee('id="save-to-offcanvas"', false)
             ->assertDontSee('data-annotations-url=""', false);
+        if ($directory = getenv('GUEST_SIGNUP_PREVIEW_DIR')) file_put_contents($directory.'/member-free-pick.html', $memberFreePick->getContent());
         $this->postJson(route('webapp.users.favorites.update', $this->piece))->assertOk();
         $this->piece->updateQuietly(['is_free' => false]);
         $this->assertRestricted();
@@ -277,11 +380,31 @@ class PieceContentAccessTest extends ReviewTestCase
         }
     }
 
+    public function test_members_keep_every_free_pick_media_and_score_export()
+    {
+        $this->piece->updateQuietly(['is_free' => true]);
+        foreach ([
+            [Stripe::class, [], false],
+            [Apple::class, [], false],
+            [Stripe::class, ['status' => 'trialing', 'renews_at' => now()->addDays(7)], false],
+            [Stripe::class, ['membership_ends_at' => now()->addDays(3), 'status' => 'canceled'], false],
+            [null, [], true],
+            [Stripe::class, ['ended_at' => now()], true],
+        ] as [$source, $attributes, $superUser]) {
+            $user = $this->userWithSubscription($source, $attributes);
+            $user->updateQuietly(['super_user' => $superUser]);
+            $this->actingAs($user, 'web');
+            $this->assertFullContent();
+        }
+    }
+
     public function test_supplied_user_ids_do_not_bypass_normal_piece_content_rules()
     {
         $subscriber = $this->userWithSubscription(Stripe::class);
         $this->get(route('webapp.pieces.show', [$this->piece, 'user_id' => $subscriber->id]))
-            ->assertOk()->assertSee('data-media-preview="10"', false);
+            ->assertOk()->assertSee('data-media-preview="0"', false)->assertSee('data-audio-blocked="true"', false);
+        $audio = $this->get(route('webapp.pieces.audio', [$this->piece, 'user_id' => $subscriber->id]))->assertOk();
+        $this->assertSame(3, substr_count($audio->getContent(), 'data-media-preview="0"'));
         $this->assertRestricted();
     }
 

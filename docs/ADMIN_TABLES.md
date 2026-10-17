@@ -114,6 +114,7 @@ separators and spacing. Page-specific badges and cells retain their meaning.
 Wide tables scroll horizontally within the card; do not shrink text to fit a
 phone. Tables expand to fit every row and use the page for vertical scrolling.
 Never add a fixed/max-height table viewport or independent vertical scrollbar.
+Editable tables use `admin.components.table-save-actions` beneath the table: save status on the left, the Save changes button on the right. Keep the button in the component slot and use the shared primary button with a check icon.
 The table's accessible name uses `aria-label`; a negatively margined hidden
 caption creates vertical overflow inside the horizontal scrolling region.
 Button links (`a.btn`) keep their button appearance on hover without a text

@@ -4,6 +4,73 @@
     const point = (event, bounds) => ({x: clamp((event.clientX - bounds.left) / bounds.width), y: clamp((event.clientY - bounds.top) / bounds.height)});
     const roundPoint = p => ({x: Math.round(p.x * 100000) / 100000, y: Math.round(p.y * 100000) / 100000});
 
+    let activePrintPages = null, activePrintStyle = null;
+    async function printPdf(pdf, marks, paintMarks, message, changed) {
+        if (activePrintPages) activePrintPages.remove();
+        if (activePrintStyle) activePrintStyle.remove();
+        const pages = document.createElement('div');
+        pages.className = 'score-print-pages';
+        activePrintPages = pages;
+        let pageStyle;
+        let paper;
+        try {
+            for (let number = 1; number <= pdf.numPages; number++) {
+                message('Preparing page ' + number + ' of ' + pdf.numPages + ' for print\u2026');
+                const page = await pdf.getPage(number);
+                const original = page.getViewport({scale: 1});
+                if (number === 1) paper = original;
+                const ratio = original.height / original.width;
+                const scale = Math.min(1200 / original.width, Math.sqrt(2200000 / (original.width * original.height)));
+                const viewport = page.getViewport({scale});
+                const sheet = document.createElement('div');
+                sheet.className = 'score-print-page';
+                sheet.style.width = '98%'; sheet.style.aspectRatio = original.width + ' / ' + original.height;
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
+                canvas.style.width = '100%'; canvas.style.height = '100%';
+                await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('viewBox', '0 0 1000 ' + (1000 * ratio));
+                svg.style.width = '100%'; svg.style.height = '100%';
+                paintMarks(svg, number, ratio, marks);
+                sheet.appendChild(canvas); sheet.appendChild(svg); pages.appendChild(sheet);
+            }
+            if (!paper) throw new Error('PDF has no printable pages');
+            pageStyle = document.createElement('style');
+            pageStyle.textContent = '@page { size: ' + paper.width + 'pt ' + paper.height + 'pt; margin: 0; }';
+            document.head.appendChild(pageStyle);
+            activePrintStyle = pageStyle;
+            document.body.appendChild(pages);
+            document.body.classList.add('score-printing');
+            root.addEventListener('afterprint', () => {
+                if (activePrintPages !== pages) return;
+                pages.remove(); activePrintPages = null;
+                pageStyle.remove(); activePrintStyle = null;
+                document.body.classList.remove('score-printing');
+                changed();
+            }, {once: true});
+            root.print();
+            changed();
+        } catch (error) {
+            pages.remove(); activePrintPages = null;
+            if (pageStyle) pageStyle.remove();
+            activePrintStyle = null;
+            document.body.classList.remove('score-printing');
+            message('Could not prepare every score page for printing. Please try again.', true);
+        }
+    }
+    async function printOriginal(container, pdfjs) {
+        const button = container.querySelector('[data-print]');
+        if (container.getAttribute('data-score-export-access') !== '1' || button.disabled) return;
+        button.disabled = true;
+        const message = text => { container.querySelector('[data-score-status]').textContent = text; };
+        try {
+            const pdf = await pdfjs.getDocument({url: container.getAttribute('data-pdf-url')}).promise;
+            await printPdf(pdf, [], function () {}, message, function () {});
+        } catch (error) { message('Could not load the score for printing. Please try again.'); }
+        finally { button.disabled = false; }
+    }
+
     class Markings {
         constructor(save, changed) {
             this.save = save;
@@ -110,7 +177,7 @@
         changed() {
             this.paint(); this.controls();
             const labels = {loading: 'Loading your markings\u2026', saved: 'All markings saved', unsaved: 'Unsaved changes\u2026', saving: 'Saving\u2026', error: 'Could not save. Your changes are still here. Retry before leaving.', conflict: 'The score or markings changed elsewhere. Reload to continue; your changes have not been saved.'};
-            this.message(this.url ? labels[this.store.state] : 'Sign in to add and save markings.', ['error', 'conflict'].includes(this.store.state));
+            this.message(this.url ? labels[this.store.state] : '', ['error', 'conflict'].includes(this.store.state));
             this.find('[data-retry-save]').hidden = this.store.state !== 'error';
             this.find('[data-reload-score]').hidden = !this.store.conflict;
             clearTimeout(this.saveTimer);
@@ -124,6 +191,10 @@
             this.find('[data-undo]').disabled = !editing || !this.store.undoStack.length;
             this.find('[data-redo]').disabled = !editing || !this.store.redoStack.length;
             this.find('[data-clear-all]').disabled = !editing || !this.store.marks.length;
+            // Guest annotation controls open signup even while the PDF is loading.
+            this.all('.score-toolbar [data-bs-toggle="modal"]').forEach(el => {
+                el.disabled = false; el.classList.remove('disabled');
+            });
             this.find('[data-prev]').disabled = !this.pdf || this.rendering || this.page <= 1;
             this.find('[data-next]').disabled = !this.pdf || this.rendering || this.page >= this.pdf.numPages;
             this.find('[data-print]').disabled = this.canExport !== false && (!this.ready || this.rendering || this.printing);
@@ -419,7 +490,7 @@
                 this.selectColor(el.getAttribute('data-color-option'));
                 root.bootstrap.Dropdown.getOrCreateInstance(this.find('#score-color-picker')).hide();
             }));
-            this.all('button[data-tool]').forEach(el => el.addEventListener('click', () => this.selectTool(el.getAttribute('data-tool'))));
+            this.all('button[data-tool]:not([data-bs-toggle="modal"])').forEach(el => el.addEventListener('click', () => this.selectTool(el.getAttribute('data-tool'))));
             this.all('[data-width-option]').forEach(el => el.addEventListener('click', () => this.selectWidth(el.getAttribute('data-width-option'))));
             this.all('.score-color-control, .score-width-control').forEach(control => control.addEventListener('keydown', event => {
                 if (event.key !== 'Escape' || !control.querySelector('.dropdown-menu').classList.contains('show')) return;
@@ -440,12 +511,12 @@
                 if (thickness && this.root.contains(thickness)) return;
                 this.selectTool('read');
             }, true);
-            this.find('[data-undo]').addEventListener('click', () => { this.finishText(); this.store.undo(); });
-            this.find('[data-redo]').addEventListener('click', () => { this.finishText(); this.store.redo(); });
-            this.find('[data-clear-all]').addEventListener('click', () => this.clearAll());
+            this.all('[data-undo]:not([data-bs-toggle="modal"])').forEach(el => el.addEventListener('click', () => { this.finishText(); this.store.undo(); }));
+            this.all('[data-redo]:not([data-bs-toggle="modal"])').forEach(el => el.addEventListener('click', () => { this.finishText(); this.store.redo(); }));
+            this.all('[data-clear-all]:not([data-bs-toggle="modal"])').forEach(el => el.addEventListener('click', () => this.clearAll()));
             this.find('[data-fullscreen]').addEventListener('click', () => this.toggleFullscreen());
             this.find('[data-print]').addEventListener('click', () => this.printScore());
-            this.all('[data-bs-target="#piece-upgrade-modal"]').forEach(button => button.addEventListener('click', () => {
+            this.all('[data-bs-toggle="modal"]').forEach(button => button.addEventListener('click', () => {
                 // The full-screen score sits above Bootstrap dialogs.
                 if (this.root.classList.contains('is-fullscreen')) this.toggleFullscreen();
             }));
@@ -532,62 +603,13 @@
             if (this.canExport === false || !this.ready || this.rendering || this.printing) return;
             this.finishTextDrag(); this.finishStroke(); this.finishText();
             this.printing = true; this.controls();
-            if (this.printPages) this.printPages.remove();
-            if (this.printPageStyle) this.printPageStyle.remove();
-            const pages = document.createElement('div');
-            pages.className = 'score-print-pages';
-            this.printPages = pages;
-            const marks = this.store.marks.slice();
-            let pageStyle;
-            let paper;
             try {
-                for (let number = 1; number <= this.pdf.numPages; number++) {
-                    this.message('Preparing page ' + number + ' of ' + this.pdf.numPages + ' for print\u2026');
-                    const page = await this.pdf.getPage(number);
-                    const original = page.getViewport({scale: 1});
-                    if (number === 1) paper = original;
-                    const ratio = original.height / original.width;
-                    const scale = Math.min(1200 / original.width, Math.sqrt(2200000 / (original.width * original.height)));
-                    const viewport = page.getViewport({scale});
-                    const sheet = document.createElement('div');
-                    sheet.className = 'score-print-page';
-                    sheet.style.width = '98%'; sheet.style.aspectRatio = original.width + ' / ' + original.height;
-                    const canvas = document.createElement('canvas');
-                    canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
-                    canvas.style.width = '100%'; canvas.style.height = '100%';
-                    await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
-                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                    svg.setAttribute('viewBox', '0 0 1000 ' + (1000 * ratio));
-                    svg.style.width = '100%'; svg.style.height = '100%';
-                    this.paintMarks(svg, number, ratio, marks);
-                    sheet.appendChild(canvas); sheet.appendChild(svg); pages.appendChild(sheet);
-                }
-                if (!paper) throw new Error('PDF has no printable pages');
-                pageStyle = document.createElement('style');
-                pageStyle.textContent = '@page { size: ' + paper.width + 'pt ' + paper.height + 'pt; margin: 0; }';
-                document.head.appendChild(pageStyle);
-                this.printPageStyle = pageStyle;
-                document.body.appendChild(pages);
-                document.body.classList.add('score-printing');
-                root.addEventListener('afterprint', () => {
-                    if (this.printPages !== pages) return;
-                    pages.remove(); this.printPages = null;
-                    pageStyle.remove(); this.printPageStyle = null;
-                    document.body.classList.remove('score-printing');
-                    this.changed();
-                }, {once: true});
-                root.print();
-                this.changed();
-            } catch (error) {
-                pages.remove(); this.printPages = null;
-                if (pageStyle) pageStyle.remove();
-                this.printPageStyle = null;
-                document.body.classList.remove('score-printing');
-                this.message('Could not prepare every score page for printing. Please try again.', true);
+                await printPdf(this.pdf, this.store.marks.slice(), this.paintMarks.bind(this), this.message.bind(this), this.changed.bind(this));
             } finally {
                 this.printing = false; this.controls();
             }
         }
+
         paint() {
             while (this.svg.firstChild) this.svg.removeChild(this.svg.firstChild);
             if (!this.ratio) return;
@@ -759,5 +781,5 @@
             this.store.replace(marks);
         }
     }
-    root.ScoreEditor = {Markings, Editor, point, roundPoint};
+    root.ScoreEditor = {Markings, Editor, point, roundPoint, printOriginal};
 })(window);

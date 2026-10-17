@@ -36,12 +36,12 @@
                 <div class="escore-section-heading"><div><h2 class="h5 mb-1">Include pieces</h2><p class="small text-muted mb-0">Choose, reorder, and customize the table of contents.</p></div><span class="small text-muted" data-escore-selection-count>{{ $scoreCount }} of {{ $escorePieces->count() }} selected</span></div>
                 <div class="escore-piece-list border rounded" data-escore-piece-list>
                     @foreach($escorePieces as $piece)
-                    @php($eligible = $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user()))
+                    @php($eligible = $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user(), 'exports'))
                     <article class="escore-piece-row {{ $eligible ? 'selected' : 'unavailable' }}" data-escore-piece="{{ $piece->id }}" data-eligible="{{ $eligible ? 'true' : 'false' }}">
                         <input class="form-check-input" type="checkbox" data-escore-select aria-label="Include {{ $piece->medium_name }}" @if($eligible) checked @else disabled @endif>
                         <button class="btn-raw text-muted escore-drag" type="button" data-escore-drag aria-label="Reorder {{ $piece->medium_name }}; use up and down arrow keys" @unless($eligible) disabled @endunless>@icon('grip-vertical', ['mr' => 0])</button>
                         <span class="small text-muted" data-escore-row-number>{{ $loop->iteration }}</span>
-                        <div class="escore-piece-identity"><span data-escore-piece-title>{{ $piece->medium_name }}</span><span class="text-muted" data-escore-piece-composer> · {{ $piece->composer->short_name }}</span>@unless($eligible)<small class="text-muted d-block">{{ !$piece->score_path ? 'Score unavailable' : (!$piece->is_public_domain ? 'Public-domain score required' : 'Subscription required') }}</small>@endunless</div>
+                        <div class="escore-piece-identity"><span data-escore-piece-title>{{ $piece->medium_name }}</span><span class="text-muted" data-escore-piece-composer> · {{ $piece->composer->short_name }}</span>@unless($eligible)<small class="text-muted d-block">{{ !$piece->score_path ? 'Score unavailable' : (!$piece->is_public_domain ? 'Public-domain score required' : 'Score exports unavailable') }}</small>@endunless</div>
                         <span class="small text-muted escore-piece-duration" data-escore-duration>—</span>
                     </article>
                     @endforeach

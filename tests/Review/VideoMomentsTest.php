@@ -54,12 +54,15 @@ class VideoMomentsTest extends ReviewTestCase
         $this->moment($this->otherVideo, ['title' => 'Synthesia only', 'end_time' => null]);
         $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
             ->assertSee('Opening theme')->assertSee('Synthesia only')->assertSee('0:12')
-            ->assertSee('data-media-preview="10"', false);
+            ->assertSee('data-media-preview="0"', false);
         $this->assertSame(2, substr_count($response->getContent(), 'data-video-moments='));
         $this->get(route('webapp.pieces.tutorial', [$this->piece, $this->video]))->assertOk()
             ->assertSee('Opening theme')->assertDontSee('Synthesia only');
         $this->piece->updateQuietly(['is_free' => true]);
-        $this->get(route('webapp.pieces.show', $this->piece))->assertOk()->assertDontSee('data-media-preview=', false);
+        $freePick = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()->assertSee('data-media-preview="10"', false);
+        $this->assertSame(2, substr_count($freePick->getContent(), 'data-media-preview="10"'));
+        $user = Model::withoutEvents(function () { return create(User::class, ['super_user' => false]); });
+        $this->actingAs($user, 'web')->get(route('webapp.pieces.show', $this->piece))->assertOk()->assertDontSee('data-media-preview=', false);
     }
 
     public function test_piece_and_admin_videos_request_inline_playback_with_and_without_moments()

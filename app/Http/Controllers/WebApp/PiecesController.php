@@ -25,7 +25,7 @@ class PiecesController extends Controller
 
         $response = response()->view('webapp.piece.index', compact(['piece', 'timeline', 'timelinePeriod', 'sentences', 'recommendationRows']));
 
-        if (request()->isMethod('GET') && auth('web')->check()) {
+        if (request()->isMethod('GET') && app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())) {
             $recentlyViewed->record(auth('web')->user(), $piece);
         }
 
@@ -80,6 +80,7 @@ class PiecesController extends Controller
 
     public function saveTo(Piece $piece)
     {
+        if (app(\App\Services\WebApp\AccessPolicy::class)->cap('folders', auth('web')->user()) === 0) app(\App\Services\WebApp\FavoriteAccess::class)->deny('Favorite folders are currently locked.', 'folders');
         $folders = auth()->user()->favoriteFolders()->withCount(['favorites as piece_favorites_count' => function ($query) use ($piece) {
             $query->where('piece_id', $piece->id);
         }])->lastUpdated()->get();
@@ -98,7 +99,7 @@ class PiecesController extends Controller
 
     public function score(Piece $piece)
     {
-        abort_unless(auth('web')->check() && auth('web')->user()->hasActiveSubscription(), 403);
+        abort_unless($piece->score_path && $piece->isPublicDomain && $piece->hasWebMediaAccess(auth('web')->user(), 'exports'), 403);
 
         $storage = \Storage::disk('public');
 

@@ -30,7 +30,7 @@ class TabsController extends Controller
             return $row;
         });
 
-        if (auth('web')->check()) {
+        if (app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', auth('web')->user())) {
             $pieces = $recentlyViewed->forUser(auth('web')->user());
             if ($pieces->isNotEmpty()) {
                 $api->order(2)->withAttributes($pieces, ['type' => 'piece', 'source' => route('api.pieces.find')]);
@@ -169,7 +169,7 @@ class TabsController extends Controller
     public function myPieces()
     {
         $user = auth('web')->user();
-        $folders = $user ? $user->favoriteFolders()->alphabetical('name')->get() : collect();
+        $folders = $user && app(\App\Services\WebApp\AccessPolicy::class)->cap('folders', $user) !== 0 ? $user->favoriteFolders()->alphabetical('name')->get() : collect();
         $folderPreviews = collect();
         $folderSearch = collect();
         if ($user) {
@@ -190,7 +190,11 @@ class TabsController extends Controller
                 })->implode(' ');
             });
         }
-        $suggestions = $user ? PieceCards::load($user->suggestions(20)->shuffle()->take(10)) : collect();
+        if (app(\App\Services\WebApp\AccessPolicy::class)->cap('folder_pieces', $user) === 0) {
+            $folderPreviews = collect();
+            $folderSearch = collect();
+        }
+        $suggestions = app(\App\Services\WebApp\AccessPolicy::class)->available('personalization', $user) ? PieceCards::load($user->suggestions(20)->shuffle()->take(10)) : collect();
 
         return view('webapp.user.my-pieces.index', compact('folders', 'folderPreviews', 'folderSearch', 'suggestions'));
     }

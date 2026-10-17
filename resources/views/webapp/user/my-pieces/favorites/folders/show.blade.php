@@ -17,7 +17,11 @@
         </div>
     </header>
     @include('webapp.user.my-pieces.favorites.folders.pdf', ['classes' => 'playlist-escore'])
+    @if(app(\App\Services\WebApp\AccessPolicy::class)->cap('folder_pieces', auth('web')->user()) === 0)
+        <div class="text-center py-4"><p>Pieces in favorite folders are currently locked. Your saved pieces are still here.</p>@include('webapp.components.access-action', ['accessFeature' => 'folder_pieces'])</div>
+    @else
     @include('webapp.playlist.tracks', ['pieces' => $folder->favorites->pluck('piece'), 'favorites' => $folder->favorites])
+    @endif
 </section>
 @include('webapp.user.my-pieces.favorites.edit')
 @include('webapp.user.my-pieces.favorites.delete')

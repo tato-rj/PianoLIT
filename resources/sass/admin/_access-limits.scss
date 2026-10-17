@@ -1,0 +1,27 @@
+// Page layout only; table surfaces, badges and typography use the shared table.
+.admin-access-limits {
+    &__matrix {
+        min-width: 800px;
+        table-layout: fixed;
+
+        th:first-child {
+            width: 31%;
+        }
+    }
+    &__prompts {
+        min-width: 850px;
+        table-layout: fixed;
+
+        th:first-child {
+            width: 38%;
+        }
+    }
+    .admin-table__heading h2 {
+        scroll-margin-top: 24px;
+    }
+    @media (max-width: 1230px) {
+        .admin-table__scroll-hint {
+            display: block;
+        }
+    }
+}

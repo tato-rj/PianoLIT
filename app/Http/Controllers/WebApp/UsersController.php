@@ -19,6 +19,8 @@ class UsersController extends Controller
     {
         abort_unless($folder->user_id == auth()->id(), 403);
 
+        $policy = app(\App\Services\WebApp\AccessPolicy::class);
+        if ($policy->cap('folders', auth('web')->user()) === 0) return redirect()->route('webapp.my-pieces')->with('error', 'Favorite folders are currently locked.');
         $folder->loadMissing('favorites.piece.tags');
         $folder->loadMissing(['favorites.piece.tutorials' => function ($query) {
             $query->where('type', 'Performance')->orderBy('id')->with('moments');

@@ -95,8 +95,8 @@
     function timeline() {
         var duration = audio && Number.isFinite(audio.duration) ? audio.duration : 0;
         var limit = current ? Number(current.getAttribute('data-preview')) : 0;
-        seek.max = limit > 0 ? Math.min(limit, duration) : duration;
-        seek.disabled = !duration;
+        seek.max = audioBlocked() ? 0 : (limit > 0 ? Math.min(limit, duration) : duration);
+        seek.disabled = audioBlocked() || !duration;
         seek.value = audio ? Math.min(audio.currentTime || 0, Number(seek.max)) : 0;
         player.querySelector('[data-elapsed]').textContent = time(audio ? audio.currentTime : 0);
         player.querySelector('[data-duration]').textContent = time(duration);
@@ -106,13 +106,22 @@
         if (sections) sections.synchronize(audio);
     }
     function upgrade() {
-        message('Your preview has ended. Go Premium to hear the full piece.');
-        win.bootstrap.Modal.getOrCreateInstance(doc.getElementById('piece-upgrade-modal')).show();
+        var blockedMessage = audioBlocked() ? player.getAttribute('data-blocked-message') : null;
+        message(blockedMessage || player.getAttribute('data-preview-message'));
+        var target = current && current.getAttribute('data-access-prompt');
+        var modal = target ? doc.querySelector(target) : doc.getElementById(player.getAttribute('data-preview-modal'));
+        if (modal && modal.id === 'access-unavailable-modal') message('This feature is currently unavailable for your account.');
+        if (modal) win.bootstrap.Modal.getOrCreateInstance(modal).show();
+    }
+    function audioBlocked() {
+        // data-preview=0 remains unlimited for existing full-access recordings.
+        return !!current && current.getAttribute('data-audio-blocked') === 'true';
     }
     function enforcePreview() {
         if (!audio || !current) return false;
-        var limit = Number(current.getAttribute('data-preview'));
-        if (limit <= 0 || (!previewStopped && audio.currentTime < limit)) return false;
+        var blocked = audioBlocked();
+        var limit = blocked ? 0 : Number(current.getAttribute('data-preview'));
+        if (!blocked && (limit <= 0 || (!previewStopped && audio.currentTime < limit))) return false;
         var first = !previewStopped;
         previewStopped = true;
         audio.pause();
@@ -126,13 +135,15 @@
         if (!audio) { select(current, true); return; }
         if (player.hidden) { player.hidden = false; layout(); }
         started = true;
+        if (audioBlocked()) { previewStopped = false; enforcePreview(); return; }
         if (piecePage) Array.prototype.forEach.call(doc.querySelectorAll('video'), function (media) { media.pause(); });
         if (previewStopped || audio.ended) { previewStopped = false; audio.currentTime = 0; }
         var target = audio, request = selection;
         message(Number(current.getAttribute('data-preview')) > 0 ? 'Listen to a ' + current.getAttribute('data-preview') + '-second preview.' : '');
         var promise = target.play();
         if (promise && promise.catch) promise.catch(function () {
-            if (target !== audio || request !== selection) return;
+            // The preview cutoff can intentionally abort a pending play promise.
+            if (target !== audio || request !== selection || previewStopped) return;
             target.pause(); paint();
             message(piecePage ? 'Audio could not start. Press play to try again.' : 'Audio could not start. Press play to try again, or open the piece with Go.');
         });
@@ -140,6 +151,7 @@
     }
     function seekSection(seconds, autoplay) {
         if (!audio) return;
+        if (audioBlocked()) { previewStopped = false; enforcePreview(); return; }
         if (!Number.isFinite(audio.duration) || !audio.duration) {
             pendingSection = {seconds: seconds, autoplay: autoplay};
             if (autoplay) play();
@@ -333,7 +345,12 @@
                         var empty = doc.createElement('p'); empty.className = 'playlist-empty'; empty.textContent = 'No pieces here yet.'; list.appendChild(empty);
                     }
                 } else message(saved ? 'Piece saved to My favorites.' : 'Piece removed from My favorites.');
-            }).catch(function () { message('Your favorite could not be updated. Please try again.'); })
+            }).catch(function (error) {
+                var target = error && error.response && error.response.data && error.response.data.access_prompt;
+                var modal = target && doc.querySelector(target);
+                if (modal) win.bootstrap.Modal.getOrCreateInstance(modal).show();
+                message(error && error.response && error.response.data && error.response.data.message || 'Your favorite could not be updated. Please try again.');
+            })
                 .then(function () { busy = false; favorite.disabled = false; });
         });
         var handle = row.querySelector('[data-track-handle]');

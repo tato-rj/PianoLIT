@@ -98,6 +98,16 @@
     </div>
 
     @stack('page-modals')
+    @include('webapp.piece.components.upgrade')
+    @auth('web')
+        @component('components.modal', ['id' => 'access-unavailable-modal', 'header' => 'Feature unavailable', 'centered' => true])
+            @slot('body')<p class="mb-0">This feature is currently unavailable for your account. Your saved items are still here.</p>@endslot
+        @endcomponent
+    @endauth
+
+    @guest('web')
+        @include('webapp.components.signup-prompts')
+    @endguest
 
     @include('components.popups.whatsnew', ['tabscount' => 1])
 

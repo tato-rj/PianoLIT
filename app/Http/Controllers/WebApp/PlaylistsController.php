@@ -22,20 +22,25 @@ class PlaylistsController extends Controller
             }]);
         }
 
-        $pieces = $query->get();
+        $collectionCap = app(\App\Services\WebApp\AccessPolicy::class)->cap('collections', auth('web')->user());
+        $pieces = $collectionCap === 0 ? collect() : ($collectionCap !== null ? $query->limit($collectionCap)->get() : $query->get());
 
-        return view('webapp.playlists.show', compact('playlist', 'pieces'));
+        return view('webapp.playlists.show', compact('playlist', 'pieces', 'collectionCap'));
     }
 
     public function pdf(Request $request, Playlist $playlist)
     {
         abort_unless($playlist->published_at && $playlist->published_at->lte(now()), 404);
         $user = auth('web')->user();
-        abort_unless($user && $user->hasActiveSubscription(), 403, 'Go Premium to create eScores.');
+        abort_unless(app(\App\Services\WebApp\AccessPolicy::class)->available('escores', $user), 403, 'Go Premium to create eScores.');
         $options = \App\PDF\EscoreOptions::validate($request);
 
-        $pieces = $playlist->pieces()->has('tutorials')->get()->filter(function ($piece) {
-            return $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user());
+        $collectionCap = app(\App\Services\WebApp\AccessPolicy::class)->cap('collections', $user);
+        abort_if($collectionCap === 0, 403, 'Collections are currently locked.');
+        $query = $playlist->pieces()->has('tutorials');
+        if ($collectionCap !== null) $query->limit($collectionCap);
+        $pieces = $query->get()->filter(function ($piece) {
+            return $piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user(), 'exports');
         });
         $pieces = \App\PDF\EscoreOptions::selectPieces($pieces, $options);
         abort_if($pieces->isEmpty(), 403, 'No eligible scores are available in this collection.');

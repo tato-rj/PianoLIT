@@ -7,8 +7,8 @@
             @include('components.payment-card-preview', ['saved' => ['brand' => $source->card_brand, 'last4' => $source->card_last_four]])
             <button type="button" class="btn btn-link text-danger mt-3" data-bs-toggle="modal" data-bs-target="#membership-remove-card-confirmation">@icon('trash')Remove card</button>
         </div>
-        @else
-            <p class="text-muted mb-0">No card on file.</p>
+{{--         @else
+            <p class="text-muted mb-0">No card on file.</p> --}}
         @endif
         @unless($overview['ended'])
             @include('components.payment-card-preview', ['add' => true, 'modalId' => 'membership-card-editor'])

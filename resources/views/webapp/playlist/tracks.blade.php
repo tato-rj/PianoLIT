@@ -7,13 +7,16 @@
 <p class="playlist-status small text-muted" role="status" aria-live="polite" data-playlist-status></p>
 <div class="playlist-tracks border-top {{$canReorder ? '' : 'playlist-tracks--readonly'}}" data-playlist-tracks @if($canReorder) data-url-reorder="{{route('webapp.users.favorites.folders.reorder', $folder)}}" @endif>
     @forelse($pieces as $piece)
-    @php($hasTrackAccess = $piece->hasWebMediaAccess(auth('web')->user()))
+    @php($hasTrackAccess = $piece->hasWebMediaAccess(auth('web')->user(), 'audio'))
+    @php($trackLimit = app(\App\Services\WebApp\AccessPolicy::class)->mediaLimit('audio', auth('web')->user(), $piece))
+    @php($audioBlocked = $trackLimit === 0)
     @php($audioMoments = collect(optional($piece->tutorials->first())->listeningMoments() ?: [])->map(function ($moment) { return \Illuminate\Support\Arr::except($moment, ['comment']); })->all())
     <article class="playlist-track border-bottom" data-track data-id="{{isset($favorites) ? $favorites->values()->get($loop->index)->id : $piece->id}}"
-        data-has-score="{{$piece->score_path && $piece->is_public_domain && $hasTrackAccess ? 'true' : 'false'}}" data-piece-id="{{$piece->id}}" data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
-        data-audio="{{$piece->audio_path ? $piece->audio : ''}}" data-preview="{{$hasTrackAccess ? 0 : config('webapp.media_preview_seconds')}}"
+        data-has-score="{{$piece->score_path && $piece->is_public_domain && $piece->hasWebMediaAccess(auth('web')->user()) ? 'true' : 'false'}}" data-piece-id="{{$piece->id}}" data-title="{{$piece->short_name}}" data-composer="{{$piece->composer->short_name}}"
+        data-audio="{{$piece->audio_path ? $piece->audio : ''}}" data-preview="{{$hasTrackAccess || $audioBlocked ? 0 : $trackLimit}}"
+        @if($audioBlocked) data-audio-blocked="true" @endif
         data-audio-moments="{{json_encode($audioMoments)}}"
-        data-artwork="{{$piece->web_image_background}}">
+        data-access-prompt="{{ app(\App\Services\WebApp\AccessPolicy::class)->promptTarget(auth('web')->user(), 'audio', $piece) }}" data-artwork="{{$piece->web_image_background}}">
         <span class="playlist-track__number text-muted" data-track-number>{{$loop->iteration}}</span>
         <button class="btn btn-secondary btn-sm playlist-track__play" type="button" data-track-play aria-label="Play {{$piece->short_name}}" @unless($piece->audio_path) disabled title="Audio unavailable" @endunless>
             <span data-play-icon>@icon('play', ['mr' => 0, 'filled' => true])</span><span data-pause-icon hidden>@icon('pause', ['mr' => 0, 'filled' => true])</span>
@@ -28,7 +31,7 @@
             @icon('heart', ['mr' => 0, 'filled' => isset($folder) || ($piece->webapp_playlist_favorited ?? 0) > 0])
         </button>
         @else
-        <a class="btn-raw text-danger playlist-track__favorite" href="{{route('login')}}" aria-label="Sign in to favorite {{$piece->short_name}}">@icon('heart', ['mr' => 0])</a>
+        <button class="btn-raw text-danger playlist-track__favorite" type="button" data-bs-toggle="modal" data-bs-target="#signup-favorites-modal" aria-label="Sign up to favorite {{$piece->short_name}}">@icon('heart', ['mr' => 0])</button>
         @endauth
         <a class="btn btn-secondary btn-sm playlist-track__go" href="{{route('webapp.pieces.show', $piece)}}" data-activity-label="{{ $piece->medium_name_with_composer }}">Go @icon('arrow-right', ['mr' => 0])</a>
         @if($canReorder)
@@ -40,4 +43,3 @@
     @endforelse
 </div>
 @include('webapp.playlist.player')
-@include('webapp.piece.components.upgrade')

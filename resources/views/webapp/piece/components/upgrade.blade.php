@@ -1,3 +1,4 @@
+@if(auth('web')->check() && !auth('web')->user()->hasActiveSubscription())
 <div class="modal fade" id="piece-upgrade-modal" tabindex="-1" role="dialog" aria-labelledby="piece-upgrade-title" aria-describedby="piece-upgrade-description" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content border-0">
@@ -42,3 +43,4 @@
         </div>
     </div>
 </div>
+@endif

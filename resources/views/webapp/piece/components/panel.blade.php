@@ -27,6 +27,11 @@
                     @icon('heart', ['color' => 'red']) Manage favorites
                 </button>
             </div>
+            @else
+            <div class="dropdown-divider"></div>
+            <button type="button" class="btn-raw text-start link-none mb-3 px-3 d-block d-md-none" data-bs-toggle="modal" data-bs-target="#signup-favorites-modal">
+                @icon('heart', ['color' => 'red']) Save to favorites
+            </button>
             @endauth
         </div>
     </div>
