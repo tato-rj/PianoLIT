@@ -67,9 +67,9 @@
 
                 @include('webapp.layouts.footer')
 
-                @unless(request()->routeIs('webapp.pieces.show'))
+                {{-- @unless(request()->routeIs('webapp.pieces.show')) --}}
                 @include('webapp.layouts.menu')
-                @endunless
+                {{-- @endunless --}}
                 </div>
 
                 @auth('web')
