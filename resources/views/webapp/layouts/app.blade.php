@@ -146,7 +146,7 @@
     </script>
     <script type="text/javascript">
     // ADJUST THE BOTTOM MARGIN OF THE PAGE ACCORDING TO THE HEIGHT OF THE MENU ON THE WEBAPP
-    $('main').css('margin-bottom', $('#menu').height() + 20);
+    $('main').css('margin-bottom', $('#menu').height() / 2);
     (function () {
         var menu = document.getElementById('menu');
         if (!menu) return;
