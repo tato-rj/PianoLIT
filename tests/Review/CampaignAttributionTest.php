@@ -163,6 +163,29 @@ class CampaignAttributionTest extends ReviewTestCase
         }
     }
 
+    public function test_source_medium_and_campaign_can_each_be_used_alone_or_in_any_combination()
+    {
+        $this->withCredentials();
+        $fields = ['utm_source' => 'youtube.com', 'utm_medium' => 'video', 'utm_campaign' => 'autumn_repertoire'];
+        for ($combination = 1; $combination < 8; $combination++) {
+            $parameters = [];
+            foreach (array_keys($fields) as $index => $field) {
+                if ($combination & (1 << $index)) $parameters[$field] = $fields[$field];
+            }
+            $page = $this->get(route('webapp.pieces.show', ['piece' => $this->piece->id] + $parameters))->assertOk();
+            $token = $this->token($page);
+            $this->assertNotEmpty($token, json_encode($parameters));
+            $this->assertDatabaseCount('campaign_visits', 0);
+            $this->withCookie(config('session.cookie'), session()->getId());
+            $this->postJson(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $token])->assertOk();
+            $expected = $parameters + array_fill_keys(CampaignParameters::FIELDS, '');
+            $this->assertDatabaseHas('campaign_visits', $expected + ['user_id' => null]);
+            $this->assertDatabaseCount('campaign_visits', 1);
+            DB::table('campaign_visits')->delete();
+            $this->defaultCookies = [];
+        }
+    }
+
     public function test_sources_normalize_and_malformed_parameters_never_get_a_landing_token()
     {
         foreach (['youtube' => 'youtube.com', 'www.YouTube.COM' => 'youtube.com', 'CHATGPT' => 'chatgpt.com', 'Reddit' => 'reddit.com', 'New-Site.Example' => 'new-site.example'] as $source => $expected) {
@@ -170,7 +193,7 @@ class CampaignAttributionTest extends ReviewTestCase
             $this->assertSame($expected, $parameters['utm_source']);
             $this->assertSame('new piece', $parameters['utm_campaign']);
         }
-        foreach ([[], ['utm_source' => ''], ['utm_source' => 'www.'], ['utm_source' => 'https://youtube.com'], ['utm_source' => ['youtube.com']],
+        foreach ([[], ['utm_source' => ''], ['utm_content' => 'description'], ['utm_source' => 'www.'], ['utm_source' => 'https://youtube.com'], ['utm_source' => ['youtube.com']],
             ['utm_source' => 'someone@example.com'], ['utm_source' => 'two sources'], ['utm_source' => str_repeat('a', 101)],
             ['utm_source' => 'valid.com', 'utm_medium' => ['video']], ['utm_source' => 'valid.com', 'utm_content' => '<script>'],
         ] as $parameters) {
@@ -198,8 +221,12 @@ class CampaignAttributionTest extends ReviewTestCase
     public function test_public_piece_redirects_preserve_campaign_tags_for_the_web_app_landing()
     {
         $this->withoutMiddleware(\App\Http\Middleware\Logs\RecordWebLog::class);
-        $parameters = ['piece' => $this->piece->id, 'utm_source' => 'youtube.com', 'utm_campaign' => 'any_piece', 'utm_content' => 'description'];
-        $this->get(route('pieces.show', $parameters))->assertRedirect(route('webapp.pieces.show', $parameters));
+        foreach ([['utm_source' => 'youtube.com'], ['utm_medium' => 'video'], ['utm_campaign' => 'any_piece'],
+            ['utm_source' => 'youtube.com', 'utm_medium' => 'video', 'utm_campaign' => 'any_piece', 'utm_content' => 'description'],
+        ] as $tags) {
+            $parameters = ['piece' => $this->piece->id] + $tags;
+            $this->get(route('pieces.show', $parameters))->assertRedirect(route('webapp.pieces.show', $parameters));
+        }
         $this->assertDatabaseCount('campaign_visits', 0);
     }
 

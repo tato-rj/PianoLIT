@@ -44,7 +44,7 @@ class CampaignAttributionReport
         foreach ($rows->chunk(96) as $chunk) $this->withRevenue($chunk, $since);
         return $rows->map(function ($row) {
             return [
-                'campaign' => $row->utm_campaign !== '' ? $row->utm_campaign : '(source only)', 'source' => $row->utm_source,
+                'campaign' => $row->utm_campaign !== '' ? $row->utm_campaign : '(not specified)', 'source' => $row->utm_source,
                 'medium' => $row->utm_medium, 'content' => $row->utm_content,
                 'arrivals' => (int) $row->arrivals, 'trials' => (int) $row->trials,
                 'first_paid_subscriptions' => (int) $row->first_paid_subscriptions,
@@ -55,7 +55,9 @@ class CampaignAttributionReport
 
     private function visits($since, $search = '')
     {
-        $query = ExcludedAccounts::owned(DB::table('campaign_visits as v'), 'v.user_id')->where('v.utm_source', '<>', '');
+        $query = ExcludedAccounts::owned(DB::table('campaign_visits as v'), 'v.user_id')->where(function ($query) {
+            $query->where('v.utm_source', '<>', '')->orWhere('v.utm_medium', '<>', '')->orWhere('v.utm_campaign', '<>', '');
+        });
         if ($since) $query->where('v.created_at', '>=', $since);
         if ($search !== '') {
             // A portable literal substring match (including underscores in UTMs).

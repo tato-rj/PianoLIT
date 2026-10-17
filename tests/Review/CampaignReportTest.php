@@ -145,6 +145,41 @@ class CampaignReportTest extends ReviewTestCase
         $this->assertSame('USD 9.99', $row['first_payment_revenue']);
     }
 
+    public function test_reports_include_campaign_only_and_medium_only_arrivals_without_inventing_missing_fields()
+    {
+        $campaign = $this->visit('', ['utm_campaign' => 'autumn_repertoire']);
+        $this->visit('', ['utm_campaign' => 'autumn_repertoire']);
+        $this->visit('', ['utm_medium' => 'newsletter']);
+        $this->visit('', ['utm_medium' => 'video', 'utm_campaign' => 'autumn_repertoire']);
+        $this->visit('youtube.com', ['utm_medium' => 'video', 'utm_campaign' => 'autumn_repertoire']);
+        $this->paid($campaign, 'campaignonly');
+        // Historical rows with no attribution labels must still stay out.
+        DB::table('campaign_visits')->insert([
+            'id' => (string) Str::uuid(), 'campaign' => 'unlabeled', 'consented_at' => now(),
+            'created_at' => now(), 'expires_at' => now()->addDays(30),
+        ]);
+        $this->admin();
+        $page = $this->get(route('admin.analytics.campaigns'))->assertOk()
+            ->assertSee('No source specified')->assertSee('No campaign specified')->assertSee('newsletter')->assertSee('USD 9.99');
+        $rows = $page->viewData('campaigns');
+        $this->assertSame(4, $rows->total());
+        $this->assertSame('', $rows[0]->utm_source);
+        $this->assertSame('', $rows[0]->utm_medium);
+        $this->assertSame('autumn_repertoire', $rows[0]->utm_campaign);
+        $this->assertSame(2, $rows[0]->arrivals);
+        $this->assertSame(1, $rows[0]->trials);
+        $this->assertSame(1, $rows[0]->first_paid_subscriptions);
+        $this->assertSame('USD 9.99', $rows[0]->first_payment_revenue);
+        $this->assertSame(3, $this->get(route('admin.analytics.campaigns', ['search' => 'autumn_repertoire']))->viewData('campaigns')->total());
+        $this->assertSame(1, $this->get(route('admin.analytics.campaigns', ['search' => 'newsletter']))->viewData('campaigns')->total());
+        $report = (new CampaignAttributionReport)->rows(now()->subDay());
+        $this->assertCount(4, $report);
+        $this->assertSame('', $report[0]['source']);
+        $this->assertSame('autumn_repertoire', $report[0]['campaign']);
+        $this->assertSame(2, $report[0]['arrivals']);
+        if ($directory = getenv('CAMPAIGN_REPORT_PREVIEW_DIR')) file_put_contents($directory.'/campaigns-partial.html', $page->getContent());
+    }
+
     public function test_empty_and_disabled_reports_remain_useful_and_cli_discovers_new_sources()
     {
         $this->admin();
@@ -153,7 +188,7 @@ class CampaignReportTest extends ReviewTestCase
         $this->visit('future-source.example');
         $this->artisan('attribution:report')->expectsTable(
             ['Campaign', 'Source', 'Medium', 'Placement', 'Arrivals', 'Trials', 'First paid subscriptions', 'First payment revenue'],
-            [['(source only)', 'future-source.example', '', '', 1, 0, 0, '']]
+            [['(not specified)', 'future-source.example', '', '', 1, 0, 0, '']]
         )->assertExitCode(0);
         config(['attribution.enabled' => false]);
         $this->get(route('admin.analytics.campaigns'))->assertOk()->assertSee('Campaign tracking is disabled')->assertSee('future-source.example');

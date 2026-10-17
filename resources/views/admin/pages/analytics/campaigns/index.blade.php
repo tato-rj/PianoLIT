@@ -6,11 +6,12 @@
 
     <section class="ua-card" aria-label="Campaign tracking">
         <h2>{{ $enabled ? 'Campaign tracking is enabled' : 'Campaign tracking is disabled' }}</h2>
-        <p>{{ $enabled ? 'New sources appear automatically after a visitor allows measurement.' : 'Saved results are shown below. Enable CAMPAIGN_ATTRIBUTION_ENABLED in the server configuration to record new arrivals.' }}</p>
+        <p>{{ $enabled ? 'New sources, mediums and campaigns appear automatically after a visitor allows measurement.' : 'Saved results are shown below. Enable CAMPAIGN_ATTRIBUTION_ENABLED in the server configuration to record new arrivals.' }}</p>
         <details><summary>How to tag a link</summary>
-            <p class="mt-3">Add <code>?utm_source=youtube.com</code> to any public website or web app link. Use <code>&amp;utm_source=youtube.com</code> when the link already has a query string.</p>
+            <p class="mt-3">Add any of <code>utm_source</code>, <code>utm_medium</code> or <code>utm_campaign</code> to a public website or web app link. Each works on its own, or you can combine them. For example, <code>?utm_campaign=autumn_repertoire</code> tracks that campaign without a source or medium.</p>
+            <p>To record all three, use <code>?utm_source=youtube.com&amp;utm_medium=video&amp;utm_campaign=autumn_repertoire</code>. Start with <code>&amp;</code> when the link already has a query string.</p>
             <p>Other sources, including <code>chatgpt.com</code>, <code>reddit.com</code> or your own campaign labels, work without setup. YouTube, ChatGPT and Reddit names with or without <code>.com</code> are grouped together.</p>
-            <p>Optionally add <code>utm_medium</code>, <code>utm_campaign</code> and <code>utm_content</code> to distinguish campaigns and placements. Labels are limited to 100 characters; use letters, numbers, spaces, dots, hyphens or underscores. Sources cannot contain spaces. Avoid personal information.</p>
+            <p>Optionally add <code>utm_content</code> to distinguish placements. Missing fields appear as not specified. Labels are limited to 100 characters; use letters, numbers, spaces, dots, hyphens or underscores. Sources cannot contain spaces. Avoid personal information.</p>
         </details>
     </section>
 
@@ -31,8 +32,8 @@
     ])
         @foreach($campaigns as $campaign)
         <tr>
-            <td><span class="admin-table__primary">{{ $campaign->utm_source }}</span><small>{{ $campaign->utm_medium !== '' ? $campaign->utm_medium : 'No medium specified' }}</small></td>
-            <td><span class="admin-table__primary">{{ $campaign->utm_campaign !== '' ? $campaign->utm_campaign : 'Source only' }}</span><small>{{ $campaign->utm_content !== '' ? $campaign->utm_content : 'No placement specified' }}</small></td>
+            <td><span class="admin-table__primary">{{ $campaign->utm_source !== '' ? $campaign->utm_source : 'No source specified' }}</span><small>{{ $campaign->utm_medium !== '' ? $campaign->utm_medium : 'No medium specified' }}</small></td>
+            <td><span class="admin-table__primary">{{ $campaign->utm_campaign !== '' ? $campaign->utm_campaign : 'No campaign specified' }}</span><small>{{ $campaign->utm_content !== '' ? $campaign->utm_content : 'No placement specified' }}</small></td>
             <td>{{ number_format($campaign->arrivals) }}</td>
             <td>{{ number_format($campaign->trials) }}</td>
             <td>{{ number_format($campaign->first_paid_subscriptions) }}</td>

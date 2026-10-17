@@ -17,11 +17,14 @@ class CampaignParameters
             if ($value !== '' && ! preg_match('/^[a-z0-9][a-z0-9 ._-]*$/D', $value)) return null;
             $parameters[$field] = $value;
         }
-        if ($parameters['utm_source'] === '' || strpos($parameters['utm_source'], ' ') !== false) return null;
-        $source = preg_replace('/^(?:www\.)+/', '', $parameters['utm_source']);
-        if ($source === '') return null;
-        // Compatibility aliases only: every other valid source works unchanged.
-        $parameters['utm_source'] = ['youtube' => 'youtube.com', 'chatgpt' => 'chatgpt.com', 'reddit' => 'reddit.com'][$source] ?? $source;
+        if ($parameters['utm_source'] === '' && $parameters['utm_medium'] === '' && $parameters['utm_campaign'] === '') return null;
+        if ($parameters['utm_source'] !== '') {
+            if (strpos($parameters['utm_source'], ' ') !== false) return null;
+            $source = preg_replace('/^(?:www\.)+/', '', $parameters['utm_source']);
+            if ($source === '') return null;
+            // Compatibility aliases only: every other valid source works unchanged.
+            $parameters['utm_source'] = ['youtube' => 'youtube.com', 'chatgpt' => 'chatgpt.com', 'reddit' => 'reddit.com'][$source] ?? $source;
+        }
         return $parameters;
     }
 

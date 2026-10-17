@@ -4,17 +4,18 @@ Expanded on 2026-10-17. Campaign measurement is enabled by default in applicatio
 
 ## Links and measurement
 
-Any rendered public website or `my.*` web page can recognize a tagged arrival. `utm_source` is the only required parameter; sources do not need to be registered in code, configuration or admin first. For example:
+Any rendered public website or `my.*` web page can recognize a tagged arrival. Supply any combination of `utm_source`, `utm_medium` and `utm_campaign`: each works independently, including a campaign or medium without a source. Values do not need to be registered in code, configuration or admin first. For example:
 
 ```text
 https://my.pianolit.com/pieces/174?utm_source=youtube.com
-https://my.pianolit.com/pieces/175?utm_source=chatgpt.com
-https://my.pianolit.com/?utm_source=reddit.com&utm_campaign=autumn_repertoire&utm_content=post
+https://my.pianolit.com/pieces/175?utm_campaign=autumn_repertoire
+https://my.pianolit.com/?utm_medium=newsletter
+https://my.pianolit.com/?utm_source=reddit.com&utm_medium=social&utm_campaign=autumn_repertoire&utm_content=post
 ```
 
 Use `?` for the first parameter and `&` for later parameters. Use literal `&` in a YouTube description, not HTML `&amp;`. The public `/pieces/{piece}` redirect preserves the four supported UTM fields on its way to the web app. Other redirect destinations must preserve tags to measure their final rendered page; a redirect response itself does not record an arrival.
 
-`App\Services\CampaignParameters` validates four optional/required fields: `utm_source` (required), `utm_medium`, `utm_campaign` and `utm_content`. Each label is at most 100 characters, starts with a letter or number and uses ASCII letters, numbers, spaces, dots, underscores or hyphens. Sources cannot contain spaces. Blank optional fields are stored as empty strings. Arrays, HTML, URL syntax, email addresses and overlong fields cause the tagged arrival to be ignored; the page still opens normally. Use descriptive campaign labels, never personal information.
+`App\Services\CampaignParameters` validates four fields: `utm_source`, `utm_medium`, `utm_campaign` and the optional placement `utm_content`. At least one of source, medium or campaign must be nonblank; `utm_content` alone does not establish an arrival. Each label is at most 100 characters, starts with a letter or number and uses ASCII letters, numbers, spaces, dots, underscores or hyphens. Sources cannot contain spaces. Omitted fields are stored as empty strings, displayed as not specified, and never inferred from another field. Arrays, HTML, URL syntax, email addresses and overlong fields cause the tagged arrival to be ignored; the page still opens normally. Use descriptive campaign labels, never personal information.
 
 The report trims and lowercases labels and removes leading `www.` from sources. For compatibility, `youtube`/`youtube.com`, `chatgpt`/`chatgpt.com` and `reddit`/`reddit.com` each share the domain-style source. These aliases do not restrict other sources: `newsletter` or `new-site.example` work immediately. Other names and domains remain distinct. `.com` is a consistent naming choice, not a requirement of UTM tracking. These values describe the supplied link labels; they do not authenticate the referring site.
 
@@ -44,7 +45,7 @@ Financial receipt storage is separate from optional campaign consent, matching t
 
 Open **Analytics → Campaigns** on `admin.*` (`admin.analytics.campaigns`, `/analytics/campaigns`). It uses the admin session guard and shared server-rendered table, with 12 rows by default. SQL search covers all four labels; sorting and pagination apply to complete grouped results. Arrival periods are the last 7, 30 or 90 calendar days (including today), or all retained arrivals. No source allowlist or code update is necessary for new rows.
 
-Each source/medium/campaign/placement combination shows consented arrivals, provider-confirmed trials, first paid subscriptions, first-payment gross revenue by currency and the latest arrival. An arrival is a consented first eligible touch in a cookie window, not every click or a unique person. A source-only link needs no campaign name. First payment means a positive subscription payment, not necessarily a first-ever customer. Filters select the arrival cohort: a later trial/payment still belongs to that earlier arrival. Renewals, zero payments, unrelated customers, denied measurement, blocked scripts, opted-out accounts, expired/deleted cohorts and unmeasured cross-device visits are outside the report. Fees/refunds are not deducted; currencies are never added together.
+Each source/medium/campaign/placement combination shows consented arrivals, provider-confirmed trials, first paid subscriptions, first-payment gross revenue by currency and the latest arrival. Campaign-only and medium-only links appear in the same admin and CLI reports, with omitted fields left unspecified. Different combinations remain separate groups even when the campaign name matches. An arrival is a consented first eligible touch in a cookie window, not every click or a unique person. First payment means a positive subscription payment, not necessarily a first-ever customer. Filters select the arrival cohort: a later trial/payment still belongs to that earlier arrival. Renewals, zero payments, unrelated customers, denied measurement, blocked scripts, opted-out accounts, expired/deleted cohorts and unmeasured cross-device visits are outside the report. Fees/refunds are not deducted; currencies are never added together.
 
 The read-only CLI discovers the same dynamic groups:
 
