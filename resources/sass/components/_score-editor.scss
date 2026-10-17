@@ -6,7 +6,7 @@
     width: 100%;
     max-width: 1100px;
     // margin-left: -550px;
-    padding-bottom: calc(94px + var(--score-menu-height) + var(--piece-player-height, 0px));
+    padding-bottom: calc(var(--score-menu-height) + var(--piece-player-height, 0px));
     color: #172033;
 
     [hidden] {

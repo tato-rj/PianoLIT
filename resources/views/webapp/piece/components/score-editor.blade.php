@@ -8,7 +8,7 @@
     $scoreAnnotationAttributes = !$hasAnnotationAccess ? 'data-access-action="annotations" data-bs-toggle="modal" data-bs-target="'.$accessPolicy->promptTarget(auth('web')->user(), 'annotations', $piece).'"' : 'disabled';
     $scoreDropdownAttributes = !$hasAnnotationAccess ? $scoreAnnotationAttributes : 'data-bs-toggle="dropdown" disabled';
 @endphp
-<div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }} mb-4" data-pdf-url="{{ storage($piece->score_path) }}"
+<div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }}" data-pdf-url="{{ storage($piece->score_path) }}"
     data-score-export-access="{{ $hasScoreExportAccess ? '1' : '0' }}"
     data-score-version="{{ hash('sha256', $piece->score_path) }}"
     data-annotations-url="{{ $hasAnnotationAccess ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
@@ -109,7 +109,7 @@
         </div>
         <div class="score-footer-actions">
             @if($piece->hasAudio())
-                <button type="button" @if($audioPreviewSeconds === 0) data-bs-toggle="modal" data-bs-target="{{ $accessPolicy->promptTarget(auth('web')->user(), 'audio', $piece) }}" @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif data-access-action="audio" class="score-listen-button">@icon('play', ['mr' => 0])<span>Listen</span></button>
+                <button type="button" @if($audioPreviewSeconds === 0) data-bs-toggle="modal" data-bs-target="{{ $accessPolicy->promptTarget(auth('web')->user(), 'audio', $piece) }}" @else id="launch-audio" data-url="{{ route('webapp.pieces.audio', $piece) }}" @endif data-access-action="audio" class="score-listen-button">@include('webapp.piece.components.listen-button-content')</button>
             @endif
             @if(! $hasScoreExportAccess)
                 <button type="button" {!! $scoreExportAttributes !!} class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></button>

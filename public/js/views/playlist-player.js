@@ -18,6 +18,8 @@
     var main = page.closest('main');
     var originalMargin = main ? main.style.marginBottom : '';
     var launch = piecePage ? doc.getElementById('launch-audio') : null;
+    var launchLabel = launch ? launch.querySelector('[data-listen-label]') : null;
+    var launchText = launchLabel ? launchLabel.textContent : '';
     var pendingSection = null;
     var sections = win.PlaylistMoments && win.VideoMoments ? win.PlaylistMoments.create(doc, player, win.VideoMoments, {seek: seekSection, layout: layout}) : null;
     function rows() { return Array.prototype.slice.call(list.querySelectorAll('[data-track]')); }
@@ -90,7 +92,14 @@
         icons(toggle, playing);
         var playAll = page.querySelector('[data-play-all]');
         if (playAll) playAll.setAttribute('aria-label', 'Play playlist');
-        if (launch) launch.setAttribute('aria-expanded', player.hidden ? 'false' : 'true');
+        if (launch) {
+            launch.setAttribute('aria-expanded', player.hidden ? 'false' : 'true');
+            if (launchLabel) launchLabel.textContent = player.hidden ? launchText : 'Close';
+            var playIcon = launch.querySelector('[data-listen-play-icon]');
+            var closeIcon = launch.querySelector('[data-listen-close-icon]');
+            if (playIcon) playIcon.hidden = !player.hidden;
+            if (closeIcon) closeIcon.hidden = player.hidden;
+        }
     }
     function timeline() {
         var duration = audio && Number.isFinite(audio.duration) ? audio.duration : 0;
@@ -433,6 +442,7 @@
         if (launch) {
             launch.setAttribute('aria-expanded', 'false');
             launch.addEventListener('click', function () {
+                if (!player.hidden) { closePlayer(); return; }
                 if (current) { player.hidden = false; layout(); play(); }
                 else select(playable()[0], true);
             });

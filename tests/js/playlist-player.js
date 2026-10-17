@@ -410,6 +410,13 @@ module.exports = async function () {
     tracks.forEach((row, index) => { row.querySelector = originalSelectors[index]; });
     // Piece pages reuse the band without playlist action buttons or visible rows.
     const piecePage = new Element(), pieceList = new Element(), pieceBand = new Element({'data-preview-modal': 'signup-audio-modal', 'data-preview-message': 'Your preview has ended. Sign up to continue listening.'}), launch = new Element();
+    launch.querySelector('[data-listen-label]').textContent = 'Listen';
+    function assertListenToggle(open) {
+        assert.strictEqual(launch.getAttribute('aria-expanded'), String(open));
+        assert.strictEqual(launch.querySelector('[data-listen-label]').textContent, open ? 'Close' : 'Listen');
+        assert.strictEqual(launch.querySelector('[data-listen-play-icon]').hidden, open);
+        assert.strictEqual(launch.querySelector('[data-listen-close-icon]').hidden, !open);
+    }
     const pieceMain = new Element(); pieceMain.style.marginBottom = '24px';
     piecePage.closest = () => pieceMain;
     piecePage.style.setProperty = function (name, value) { this[name] = value; };
@@ -434,6 +441,7 @@ module.exports = async function () {
     const beforePiece = recordings.length;
     initialize(pieceDoc, pieceWin);
     assert(pieceBand.hidden);
+    assertListenToggle(false);
     assert.strictEqual(recordings.length, beforePiece, 'Piece recordings remain unloaded before Listen');
     assert.strictEqual(pieceMain.style.marginBottom, '24px', 'Hidden band preserves the original page spacing');
     launch.fire('click');
@@ -443,38 +451,59 @@ module.exports = async function () {
     assert.strictEqual(piecePage.style['--playlist-menu-height'], '80px', 'Piece band accounts for persistent navigation');
     assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '80px', 'Score toolbar receives the band height');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'true');
+    assertListenToggle(true);
     assert.strictEqual(videoPauses, 1, 'Listen pauses piece videos');
+    pieceAudio.currentTime = 4;
+    launch.fire('click');
+    assert(pieceBand.hidden && pieceAudio.paused, 'The score Close button hides and pauses the player');
+    assertListenToggle(false);
+    assert.strictEqual(pieceAudio.currentTime, 4, 'Closing preserves the playback position');
+    assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px');
+    launch.fire('click');
+    assert(!pieceBand.hidden && !pieceAudio.paused, 'The score Listen button reopens and resumes the player');
+    assertListenToggle(true);
+    assert.strictEqual(pieceAudio.currentTime, 4);
+    assert.strictEqual(recordings.length, beforePiece + 1, 'Reopening reuses the recording');
     pieceDoc.fire('show.bs.offcanvas', {target: new Element({'id': 'save-to-offcanvas'})});
     assert(pieceBand.hidden && pieceAudio.paused, 'Piece players close and pause when an offcanvas opens');
     assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px', 'Panel opening releases the score toolbar offset');
     assert.strictEqual(pieceMain.style.marginBottom, '24px');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
+    assertListenToggle(false);
     launch.fire('click');
     assert(!pieceBand.hidden && !pieceAudio.paused, 'Listen reopens the player after panel dismissal');
 
     pieceBand.querySelector('[data-speed]');
     pieceBand.querySelector('[data-player-toggle]').fire('click'); assert(pieceAudio.paused);
+    assertListenToggle(true);
+    launch.fire('click'); assert(pieceBand.hidden && pieceAudio.paused);
+    assertListenToggle(false);
     launch.fire('click'); assert(!pieceAudio.paused);
     pieceAudio.currentTime = 14; pieceAudio.fire('timeupdate');
     assert(pieceAudio.paused); assert.strictEqual(pieceAudio.currentTime, 10);
     assert(pieceStatus.textContent.includes('preview has ended'));
+    assertListenToggle(true);
+    launch.fire('click'); assert(pieceBand.hidden);
     launch.fire('click'); assert.strictEqual(pieceAudio.currentTime, 0); assert(!pieceAudio.paused);
     pieceBand.querySelector('[data-player-close]').fire('click');
     assert(pieceAudio.paused); assert(pieceBand.hidden);
     assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px');
     assert.strictEqual(pieceMain.style.marginBottom, '24px');
     assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
+    assertListenToggle(false);
     launch.fire('click'); assert(!pieceBand.hidden); assert(!pieceAudio.paused);
     pieceWin.PieceAudioPlayer.pause(); assert(pieceAudio.paused, 'Visibility lifecycle pauses the retained recording');
     pieceAudio.reject(new Error('Playback blocked')); await settle();
     assert(pieceStatus.textContent.includes('could not start'));
+    assertListenToggle(true);
     pieceTracks.forEach(row => row.setAttribute('data-preview', '0'));
-    launch.fire('click');
+    pieceBand.querySelector('[data-player-toggle]').fire('click');
     pieceAudio.currentTime = 25; pieceAudio.fire('timeupdate');
     assert(!pieceAudio.paused, 'Full-access recordings continue beyond the preview limit');
     pieceAudio.currentTime = 154; pieceAudio.paused = true; pieceAudio.ended = true; pieceAudio.fire('ended');
     assert.strictEqual(sourceUrl(pieceAudio), '/full.mp3', 'Ending a piece retains its main recording');
-    launch.fire('click'); assert.strictEqual(pieceAudio.currentTime, 0); assert(!pieceAudio.paused);
+    assertListenToggle(true);
+    pieceBand.querySelector('[data-player-toggle]').fire('click'); assert.strictEqual(pieceAudio.currentTime, 0); assert(!pieceAudio.paused);
     pieceBand.querySelector('[data-player-close]').fire('click');
     assert.strictEqual(pieceDoc.listenerOptions.play, true);
     for (const videoId of ['piece-performance', 'piece-synthesia', 'piece-video-42']) {
@@ -484,6 +513,7 @@ module.exports = async function () {
         assert(pieceBand.hidden && pieceAudio.paused, videoId + ' playback hides and pauses audio');
         assert.strictEqual(pieceDoc.documentElement.style['--piece-player-height'], '0px');
         assert.strictEqual(launch.getAttribute('aria-expanded'), 'false');
+        assertListenToggle(false);
     }
     launch.fire('click');
     assert(!pieceBand.hidden && !pieceAudio.paused, 'Listen reopens after video playback');
@@ -500,7 +530,7 @@ module.exports = async function () {
     pieceAudio.currentTime = 35; pieceAudio.fire('seeking');
     assert.strictEqual(pieceAudio.currentTime, 0);
     pieceTracks.forEach(row => row.removeAttribute('data-audio-blocked'));
-    launch.fire('click');
+    pieceBand.querySelector('[data-player-toggle]').fire('click');
     assert.strictEqual(piecePlayCalls, 1, 'Unmarked zero-preview tracks retain full playback');
     pieceAudio.currentTime = 35; pieceAudio.fire('timeupdate');
     assert(!pieceAudio.paused);
