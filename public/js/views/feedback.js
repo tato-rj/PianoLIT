@@ -256,7 +256,7 @@
             if (this.mobile.matches && field && field.matches('textarea, select, input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]), [contenteditable]:not([contenteditable="false"])')) return true;
             const viewport = this.win.visualViewport;
             if (viewport && viewport.scale === 1 && this.win.innerHeight - viewport.height > 120) return true;
-            return Array.from(this.doc.querySelectorAll('.modal.show, .modal.showing, .modal-backdrop, .offcanvas.show, .offcanvas.showing, .offcanvas-backdrop, .plyr--fullscreen-fallback, .plyr--fullscreen-active, .screen-lock-overlay, #subscribe-overlay, #bottom-popup, [data-feedback-blocking-overlay]'))
+            return Array.from(this.doc.querySelectorAll('.modal.show, .modal.showing, .modal-backdrop, .offcanvas.show, .offcanvas.showing, .offcanvas-backdrop, .plyr--fullscreen-fallback, .plyr--fullscreen-active, .screen-lock-overlay, #subscribe-overlay, #bottom-popup, [data-feedback-blocking-overlay], .score-footer, [data-playlist-player]'))
                 .some(element => this.visible(element));
         }
         schedule() {
@@ -266,7 +266,7 @@
         update() {
             let blocked = this.blocked(), bottom = 0;
             if (!blocked) {
-                Array.from(this.doc.querySelectorAll('#menu, [data-playlist-player], .score-footer')).forEach(element => {
+                Array.from(this.doc.querySelectorAll('#menu')).forEach(element => {
                     if (this.resize && !this.observed.has(element)) { this.observed.add(element); this.resize.observe(element); }
                     if (!this.visible(element)) return;
                     const position = this.win.getComputedStyle(element).position;

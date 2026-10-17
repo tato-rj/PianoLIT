@@ -58,6 +58,7 @@ async function main() {
     require('./tab-navigation')();
     require('./fullscreen-modals')();
     await require('./score-editor')();
+    await require('./score-metronome')();
     await require('./webapp-search')();
     require('./search-controls')();
     await require('./activity')();

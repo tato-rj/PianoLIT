@@ -268,6 +268,13 @@
         height: 1.2em;
         caret-color: currentColor;
     }
+    .score-footer,
+    .score-metronome-panel {
+        border: 1px solid #e4eaf3;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 12px 32px rgba(43, 66, 107, 0.16);
+    }
     .score-footer {
         position: fixed;
         // Keep page controls below Bootstrap's offcanvas panel and backdrop.
@@ -283,10 +290,42 @@
         width: calc(100vw - 32px);
         max-width: 1068px;
         padding: 12px 16px;
-        border: 1px solid #e4eaf3;
-        border-radius: 20px;
-        background: rgba(255, 255, 255, 0.97);
-        box-shadow: 0 12px 32px rgba(43, 66, 107, 0.16);
+    }
+    .score-metronome-panel {
+        position: absolute;
+        // Account for the footer's border to leave a visible 4px gap.
+        bottom: calc(100% + 5px);
+        left: -1px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: calc(100% + 2px);
+        padding: 4px 12px 4px 16px;
+        border-radius: inherit;
+        .form-range {
+            flex: 1 1 0;
+            min-width: 0;
+            margin: 0;
+        }
+    }
+    .score-metronome-tempo {
+        flex: 0 0 auto;
+        min-width: 66px;
+        white-space: nowrap;
+        text-align: right;
+        font-size: 14px;
+        font-variant-numeric: tabular-nums;
+    }
+    .score-metronome-close {
+        flex: 0 0 32px;
+        width: 32px;
+        height: 32px;
+        min-height: 32px;
+    }
+    .score-metronome-button[aria-expanded='true'] {
+        background: #e9f0ff;
+        border-color: #d4e1ff;
+        color: #1555dc;
     }
     .score-control-group {
         display: flex;
@@ -333,6 +372,11 @@
             color: #172033;
             text-decoration: none;
         }
+    }
+    .score-metronome-button {
+        font-size: 14px;
+        flex-grow: inherit;
+        min-width: 38px;
     }
     .score-listen-button {
         border-color: #1555e9;

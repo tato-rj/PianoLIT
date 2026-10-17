@@ -84,6 +84,9 @@ video::-webkit-media-controls-enclosure {
 <script src="{{ mix('js/views/playlist-player.js') }}"></script>
 @endif
 <script src="{{ mix('js/views/piece-description.js') }}"></script>
+@if($piece->score_path && $piece->isPublicDomain)
+<script src="{{ mix('js/components/score-metronome.js') }}"></script>
+@endif
 @if(($hasMediaAccess || $hasScoreExportAccess) && $piece->score_path && $piece->isPublicDomain)
 <script src="{{ mix('js/views/score-editor.js') }}"></script>
 <script>

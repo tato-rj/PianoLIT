@@ -61,9 +61,13 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('//*[@id="score-preview" and contains(@class, "score-editor")]')->length);
         $this->assertSame(0, $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-toolbar") and contains(@class, "d-none")]')->length);
         $controls = $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-toolbar") or contains(@class, "score-footer")]//button[not(ancestor::*[contains(@class, "dropdown-menu")])]');
-        $this->assertSame(17, $controls->length);
+        $this->assertSame(19, $controls->length);
         foreach ($controls as $control) {
             $this->assertFalse($control->hasAttribute('disabled'));
+            if ($control->getAttribute('aria-controls') === 'score-metronome-panel' || $control->hasAttribute('data-metronome-close')) {
+                $this->assertFalse($control->hasAttribute('data-bs-toggle'), 'The standalone metronome does not grant access to restricted score or media.');
+                continue;
+            }
             if (strpos($control->getAttribute('class'), 'score-listen-button') !== false && $videoLimit > 0) {
                 $this->assertSame('launch-audio', $control->getAttribute('id'));
                 $this->assertFalse($control->hasAttribute('data-bs-toggle'));
@@ -93,6 +97,9 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertSame($videoLimit > 0 ? 1 : 0, $xpath->query('//*[@id="score-preview"]//*[@id="launch-audio"]')->length);
         $this->assertSame('', $xpath->query('//*[@id="score-preview"]')->item(0)->getAttribute('data-annotations-url'));
         $response->assertDontSee('/js/views/score-editor.js?id=', false);
+        $response->assertSee('/js/components/score-metronome.js?id=', false);
+        $this->assertSame(1, $xpath->query('//*[@id="score-metronome-panel" and @hidden]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-metronome-tempo and @min="20" and @max="200" and @value="60"]')->length);
         $this->assertScoreExportControls($response, false);
         $this->assertSame((string) $videoLimit, $xpath->query('//*[@id="piece-performance"]')->item(0)->getAttribute('data-media-preview'));
         $this->assertSame((string) $videoLimit, $xpath->query('//*[@id="piece-synthesia"]')->item(0)->getAttribute('data-media-preview'));

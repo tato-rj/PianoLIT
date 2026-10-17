@@ -118,7 +118,7 @@ module.exports = async function () {
     f.pending[4].reject({response: {status: 429}}); await rejected;
     assert.strictEqual(c.error.textContent, 'Please wait a minute before sending more feedback.');
     floatingChecks();
-    console.log('Passed: feedback ratings/notes/context, close-and-confirm success, retry/race handling, floating scroll hysteresis, overlays, keyboard/fullscreen suppression and navigation/player spacing.');
+    console.log('Passed: feedback ratings/notes/context, close-and-confirm success, retry/race handling, floating scroll hysteresis, panel/overlay suppression, keyboard/fullscreen suppression and navigation spacing.');
 };
 
 function floatingChecks() {
@@ -128,10 +128,13 @@ function floatingChecks() {
     confirmation.hidden = true;
     root.querySelector = selector => selector === '[data-feedback-launcher]' ? button : confirmation;
     const body = new Element();
-    const obstacles = [], overlays = [];
+    const obstacles = [], overlays = [], panels = [];
     const doc = {body, documentElement: {scrollHeight: 3000}, activeElement: null,
         addEventListener(name, handler) { docEvents[name] = handler; },
-        querySelectorAll(selector) { return selector.startsWith('#menu,') ? obstacles : overlays; }};
+        querySelectorAll(selector) {
+            if (selector.startsWith('#menu')) return obstacles;
+            return overlays.concat(panels.filter(panel => panel.matches(selector)));
+        }};
     const win = {document: doc, innerWidth: 390, innerHeight: 844, scrollY: 0,
         visualViewport: Object.assign(new Element(), {height: 844, scale: 1}),
         matchMedia: () => mobile, addEventListener(name, handler) { events[name] = handler; },
@@ -172,9 +175,32 @@ function floatingChecks() {
     doc.activeElement = null; docEvents.focusout(); flush(); assert(!button.hidden);
     win.visualViewport.height = 500; win.visualViewport.fire('resize'); flush(); assert(button.hidden, 'A keyboard can shrink the visual viewport without a focus event');
     win.visualViewport.height = 844; win.visualViewport.fire('resize'); flush(); assert(!button.hidden);
-    const player = new Element(); player.getBoundingClientRect = () => ({width: 390, height: 100, top: 620, bottom: 720});
-    obstacles.push(player); floating.update(); assert.strictEqual(root.style['--feedback-bottom'], '224px', 'Stay above the whole player band');
-    player.hidden = true; floating.update(); assert.strictEqual(root.style['--feedback-bottom'], '82px');
+    const score = new Element();
+    let scoreTabActive = false;
+    score.matches = selector => selector.includes('.score-footer');
+    score.getBoundingClientRect = () => scoreTabActive ? {width: 360, height: 100, top: 620, bottom: 720} : {width: 0, height: 0, top: 0, bottom: 0};
+    panels.push(score);
+    floating.update(); assert(!button.hidden, 'An inactive score tab must not hide feedback');
+    for (const isMobile of [false, true]) {
+        mobile.matches = isMobile;
+        scoreTabActive = true; docEvents['shown.bs.tab'](); flush();
+        assert(button.hidden, 'The visible floating score controls hide feedback on desktop and mobile');
+        scoreTabActive = false; docEvents['shown.bs.tab'](); flush();
+        assert(!button.hidden, 'Leaving the score tab restores feedback');
+    }
+    const player = new Element();
+    player.matches = selector => selector.includes('[data-playlist-player]');
+    player.getBoundingClientRect = () => ({width: 390, height: 100, top: 620, bottom: 720});
+    panels.push(player);
+    floating.observer.callback([{type: 'childList'}]); flush(); assert(button.hidden, 'Opening a floating audio player hides feedback');
+    player.hidden = true;
+    floating.observer.callback([{type: 'attributes', target: player}]); flush(); assert(!button.hidden, 'Closing the player restores feedback');
+    player.hidden = false; player.computed = {display: 'none', visibility: 'visible'};
+    floating.update(); assert(!button.hidden, 'A player hidden by its styles must not hide feedback');
+    player.computed = {display: 'block', visibility: 'visible'};
+    floating.update(); assert(button.hidden);
+    panels.pop(); floating.observer.callback([{type: 'childList'}]); flush(); assert(!button.hidden, 'Removing the player restores feedback');
+    assert.strictEqual(root.style['--feedback-bottom'], '82px', 'Feedback retains its normal navigation spacing');
     scroll(500); assert(button.classList.contains('is-scrolled-away'));
     docEvents['feedback:submitted'](); assert(!button.hidden); assert(!button.classList.contains('is-scrolled-away'));
     assert.strictEqual(confirmation.textContent, 'Thank you for your feedback!'); assert(!confirmation.hidden);

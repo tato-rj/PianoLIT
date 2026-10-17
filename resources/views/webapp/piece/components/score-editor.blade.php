@@ -117,9 +117,17 @@
             <a href="{{ storage($piece->score_path) }}" target="_blank" rel="noopener" class="score-action-button" aria-label="Download score" title="Download the original score without markings">@icon('download', ['mr' => 0])<span>Download</span></a>
             @endif
             <button type="button" data-print class="score-action-button" title="Print all score pages with markings" @if(! $hasScoreExportAccess) {!! $scoreExportAttributes !!} @endif>@icon('printer', ['mr' => 0])<span>Print</span></button>
+            <button type="button" class="score-action-button score-metronome-button" aria-label="Metronome" title="Metronome" aria-expanded="false" aria-controls="score-metronome-panel">@icon('metronome', ['mr' => 0])</button>
+        </div>
+        <div id="score-metronome-panel" class="score-metronome-panel animate__animated animate__bounceInUp" role="group" aria-label="Metronome" hidden>
+            <input id="score-metronome-tempo" data-metronome-tempo class="form-range" type="range" min="20" max="200" step="1" value="60" aria-label="Metronome speed" aria-valuetext="60 beats per minute">
+            <output for="score-metronome-tempo" class="score-metronome-tempo"><span data-metronome-value>60</span> <span>BPM</span></output>
+            <button class="btn-raw text-muted">@icon('settings', ['mr' => 0])</button>
+            <button type="button" data-metronome-close class="btn-raw text-muted score-metronome-close" aria-label="Close metronome">@icon('x', ['mr' => 0])</button>
         </div>
     </div>
     <div class="score-messages">
+        <span data-metronome-error class="text-danger" role="alert" hidden></span>
         <button type="button" data-retry-load class="btn btn-sm btn-light" hidden>Retry loading</button>
         <button type="button" data-retry-save class="btn btn-sm btn-light" hidden>Retry saving</button>
         <button type="button" data-reload-score class="btn btn-sm btn-light" hidden>Reload saved score</button>
