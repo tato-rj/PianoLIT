@@ -50,6 +50,7 @@ for (const [source, destination] of [
     ['resources/js/components', 'js/components'],
     ['resources/js/tinyeditor', 'js/tinyeditor'],
     ['resources/images', 'images'],
+    ['resources/audio/metronome', 'audio/metronome'],
     ['node_modules/flag-icon-css/flags', 'css/vendor/flags'],
 ]) {
     const directory = path.join(root, source);

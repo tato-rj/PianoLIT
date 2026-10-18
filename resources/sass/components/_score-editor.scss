@@ -316,7 +316,9 @@
         font-size: 14px;
         font-variant-numeric: tabular-nums;
     }
-    .score-metronome-close {
+    .score-metronome-close,
+    .score-metronome-pause-button,
+    .score-metronome-settings-button {
         flex: 0 0 32px;
         width: 32px;
         height: 32px;

@@ -26070,7 +26070,9 @@ select.form-transparent:-webkit-autofill:focus {
   font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
-.score-editor .score-metronome-close {
+.score-editor .score-metronome-close,
+.score-editor .score-metronome-pause-button,
+.score-editor .score-metronome-settings-button {
   flex: 0 0 32px;
   width: 32px;
   height: 32px;

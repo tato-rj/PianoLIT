@@ -1,0 +1,37 @@
+Spoken counting samples: count-one-v1.wav through count-four-v1.wav
+and count-one-v2.wav through count-four-v2.wav
+
+Source: "A One, A Two" by davidbain, published 2011-11-22.
+https://freesound.org/people/davidbain/sounds/135648/
+Preview source: https://cdn.freesound.org/previews/135/135648_2207512-hq.mp3
+License: CC0 1.0 Universal (public-domain dedication).
+https://creativecommons.org/publicdomain/zero/1.0/
+Verified on 2026-10-17 against the original Freesound page.
+
+PianoLIT modifications: isolated the final four spoken numbers, trimmed leading
+fillers/silence, mixed to mono 24 kHz PCM WAV, normalized and faded clip edges.
+No synthetic speech service or third-party request is used during playback.
+
+Version 2 adds a 180 Hz high-pass, a 5 dB cut around 350 Hz, a 3 dB presence
+boost around 2.6 kHz, and a 9% pitch/speed lift for a brighter, more energetic
+count. Peaks are normalized with short edge fades. Version 1 files are retained
+for already loaded pages.
+
+Female voice samples: count-female-one-v1.wav through count-female-four-v1.wav
+
+Title: Counting_1_to_10.wav
+Creator and voice performer: TyLean Tuijl (Freesound username: TyLean).
+Published: 2017-04-30.
+Source: https://freesound.org/people/TyLean/sounds/390514/
+License: Creative Commons Attribution 3.0 Unported (CC BY 3.0).
+https://creativecommons.org/licenses/by/3.0/
+License terms: https://creativecommons.org/licenses/by/3.0/legalcode
+Verified on 2026-10-17 against the original performer's Freesound page.
+Preview source: https://cdn.freesound.org/previews/390/390514_6307793-hq.mp3
+
+PianoLIT modifications: isolated the first four spoken numbers, removed silence,
+mixed to mono 24 kHz PCM WAV, applied a light 100 Hz high-pass, compressed word
+duration with pitch-preserving tempo adjustment, normalized peaks and faded
+clip edges. The female performance is a separate original recording; the male
+v1/v2 clips are unchanged. Visible credit, source and license links are provided
+on the web app Terms of service page under Audio credits.

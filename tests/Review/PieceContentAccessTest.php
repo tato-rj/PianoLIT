@@ -61,10 +61,15 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertSame(1, $xpath->query('//*[@id="score-preview" and contains(@class, "score-editor")]')->length);
         $this->assertSame(0, $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-toolbar") and contains(@class, "d-none")]')->length);
         $controls = $xpath->query('//*[@id="score-preview"]//*[contains(@class, "score-toolbar") or contains(@class, "score-footer")]//button[not(ancestor::*[contains(@class, "dropdown-menu")])]');
-        $this->assertSame(19, $controls->length);
+        $this->assertSame(21, $controls->length);
         foreach ($controls as $control) {
             $this->assertFalse($control->hasAttribute('disabled'));
-            if ($control->getAttribute('aria-controls') === 'score-metronome-panel' || $control->hasAttribute('data-metronome-close')) {
+            if ($control->hasAttribute('data-metronome-settings')) {
+                $this->assertSame('modal', $control->getAttribute('data-bs-toggle'));
+                $this->assertSame('#score-metronome-settings', $control->getAttribute('data-bs-target'));
+                continue;
+            }
+            if ($control->getAttribute('aria-controls') === 'score-metronome-panel' || $control->hasAttribute('data-metronome-close') || $control->hasAttribute('data-metronome-pause')) {
                 $this->assertFalse($control->hasAttribute('data-bs-toggle'), 'The standalone metronome does not grant access to restricted score or media.');
                 continue;
             }
@@ -99,7 +104,23 @@ class PieceContentAccessTest extends ReviewTestCase
         $response->assertDontSee('/js/views/score-editor.js?id=', false);
         $response->assertSee('/js/components/score-metronome.js?id=', false);
         $this->assertSame(1, $xpath->query('//*[@id="score-metronome-panel" and @hidden]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-metronome-settings]/following-sibling::*[1][@data-metronome-pause and @aria-pressed="false"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-metronome-pause]/following-sibling::*[1][@data-metronome-close]')->length);
         $this->assertSame(1, $xpath->query('//*[@data-metronome-tempo and @min="20" and @max="200" and @value="60"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="score-metronome-settings" and contains(@class, "modal")]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="score-metronome-settings"]/ancestor::*[contains(@class, "score-editor") or @id="tab-score"]')->length);
+        $this->assertSame(4, $xpath->query('//*[@id="score-metronome-settings"]//*[@data-metronome-beats]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-metronome-beats="1" and @aria-pressed="true"]')->length);
+        $this->assertSame(6, $xpath->query('//*[@data-metronome-sound]/option')->length);
+        $this->assertStringEndsWith('/audio/metronome/count-one-v2.wav', $xpath->query('//*[@data-metronome-sound]')->item(0)->getAttribute('data-count-url-1'));
+        $this->assertStringEndsWith('/audio/metronome/count-female-one-v1.wav', $xpath->query('//*[@data-metronome-sound]')->item(0)->getAttribute('data-female-count-url-1'));
+        $this->assertSame('Male counting', $xpath->query('//*[@data-metronome-sound]/option[@value="voice"]')->item(0)->textContent);
+        $this->assertSame('Female counting', $xpath->query('//*[@data-metronome-sound]/option[@value="female-voice"]')->item(0)->textContent);
+        $this->assertSame(0, $xpath->query('//*[@data-metronome-sound]/following-sibling::*')->length);
+        $this->assertSame(0, $xpath->query('//*[@data-metronome-female-credit or @data-metronome-reference]')->length);
+        $editor = $xpath->query('//*[@id="score-preview"]')->item(0);
+        $this->assertSame(['tempo' => 60, 'beats' => 1, 'sound' => 'woodblock'], json_decode($editor->getAttribute('data-metronome-preferences'), true));
+        $this->assertSame(auth('web')->check(), $editor->hasAttribute('data-metronome-preferences-url'));
         $this->assertScoreExportControls($response, false);
         $this->assertSame((string) $videoLimit, $xpath->query('//*[@id="piece-performance"]')->item(0)->getAttribute('data-media-preview'));
         $this->assertSame((string) $videoLimit, $xpath->query('//*[@id="piece-synthesia"]')->item(0)->getAttribute('data-media-preview'));
@@ -115,6 +136,21 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->withExceptionHandling()->get(route('webapp.pieces.score', $this->piece))->assertForbidden();
         $this->exportAccessPreview($response);
         return $response;
+    }
+
+    public function test_score_pages_restore_only_the_current_web_accounts_metronome_preferences()
+    {
+        $user = $this->userWithSubscription();
+        $this->actingAs($user, 'web');
+        $this->patchJson(route('webapp.metronome.preferences.update'), ['preferences' => ['tempo' => 174, 'beats' => 4, 'sound' => 'female-voice']])->assertOk();
+        $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk();
+        $document = new \DOMDocument();
+        $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+        $editor = (new \DOMXPath($document))->query('//*[@id="score-preview"]')->item(0);
+        $this->assertSame(['tempo' => 174, 'beats' => 4, 'sound' => 'female-voice'], json_decode($editor->getAttribute('data-metronome-preferences'), true));
+        $this->assertSame(route('webapp.metronome.preferences.update'), $editor->getAttribute('data-metronome-preferences-url'));
+        $this->actingAs($this->userWithSubscription(), 'web');
+        $this->assertRestricted();
     }
 
     public function test_piece_audio_band_has_shared_controls_and_only_the_main_recording()

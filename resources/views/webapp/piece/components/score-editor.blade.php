@@ -7,9 +7,12 @@
     $scoreButtonAttributes = $scorePreview ? $scoreUpgradeAttributes : 'disabled';
     $scoreAnnotationAttributes = !$hasAnnotationAccess ? 'data-access-action="annotations" data-bs-toggle="modal" data-bs-target="'.$accessPolicy->promptTarget(auth('web')->user(), 'annotations', $piece).'"' : 'disabled';
     $scoreDropdownAttributes = !$hasAnnotationAccess ? $scoreAnnotationAttributes : 'data-bs-toggle="dropdown" disabled';
+    $metronomePreferences = app(\App\Services\WebApp\MetronomePreferences::class)->forUser(auth('web')->user());
 @endphp
 <div id="{{ $scorePreview ? 'score-preview' : 'score-editor' }}" class="score-editor {{ $scorePreview ? 'score-editor--preview' : '' }}" data-pdf-url="{{ storage($piece->score_path) }}"
     data-score-export-access="{{ $hasScoreExportAccess ? '1' : '0' }}"
+    data-metronome-preferences='@json($metronomePreferences)'
+    @auth('web') data-metronome-preferences-url="{{ route('webapp.metronome.preferences.update') }}" @endauth
     data-score-version="{{ hash('sha256', $piece->score_path) }}"
     data-annotations-url="{{ $hasAnnotationAccess ? route('webapp.pieces.score.annotations.show', $piece) : '' }}">
     <div class="score-toolbar" role="toolbar" aria-label="Score annotation tools">
@@ -122,7 +125,8 @@
         <div id="score-metronome-panel" class="score-metronome-panel animate__animated animate__bounceInUp" role="group" aria-label="Metronome" hidden>
             <input id="score-metronome-tempo" data-metronome-tempo class="form-range" type="range" min="20" max="200" step="1" value="60" aria-label="Metronome speed" aria-valuetext="60 beats per minute">
             <output for="score-metronome-tempo" class="score-metronome-tempo"><span data-metronome-value>60</span> <span>BPM</span></output>
-            <button class="btn-raw text-muted">@icon('settings', ['mr' => 0])</button>
+            <button type="button" data-metronome-settings class="btn-raw text-muted score-metronome-settings-button" data-bs-toggle="modal" data-bs-target="#score-metronome-settings" aria-controls="score-metronome-settings" aria-label="Metronome settings" title="Metronome settings">@icon('settings', ['mr' => 0])</button>
+            <button type="button" data-metronome-pause class="btn-raw text-muted score-metronome-pause-button" aria-label="Pause metronome" title="Pause metronome" aria-pressed="false"><span data-metronome-pause-icon>@icon('pause', ['mr' => 0])</span><span data-metronome-play-icon hidden>@icon('play', ['mr' => 0])</span></button>
             <button type="button" data-metronome-close class="btn-raw text-muted score-metronome-close" aria-label="Close metronome">@icon('x', ['mr' => 0])</button>
         </div>
     </div>
@@ -133,3 +137,7 @@
         <button type="button" data-reload-score class="btn btn-sm btn-light" hidden>Reload saved score</button>
     </div>
 </div>
+
+@push('page-modals')
+    @include('webapp.piece.components.metronome-settings')
+@endpush
