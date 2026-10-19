@@ -25,6 +25,7 @@ require('./components/triggers');
 require('./components/audio');
 require('./components/admin-text-improver');
 require('./components/admin-date-range');
+require('./components/admin-daily-activity-chart');
 require('./components/checkbox-menu');
 require('./components/admin-back-to-top');
 require('./components/tab-navigation')(window);

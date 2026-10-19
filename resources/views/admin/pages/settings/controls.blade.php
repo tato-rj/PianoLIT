@@ -44,7 +44,7 @@
       @include('admin.components.filters.select', ['label' => 'Period', 'name' => 'ds-period', 'options' => \App\Support\AdminDateRanges::LABELS, 'value' => '7', 'designSystemPreview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Date filter', 'usage' => 'admin.components.filters.date-range · .admin-filter-select'])
-      @include('admin.components.filters.date-range', ['label' => 'Custom range', 'showLabel' => true, 'designSystemPreview' => true])
+      @include('admin.components.filters.date-range', ['label' => 'Custom range', 'fieldLabel' => 'Dates', 'showLabel' => true, 'designSystemPreview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Textarea', 'usage' => 'textarea.form-control'])
       <label for="ds-textarea">Notes</label><textarea id="ds-textarea" class="form-control" rows="3" placeholder="Add a practice note" data-text-improver="off" data-ds-preview></textarea>

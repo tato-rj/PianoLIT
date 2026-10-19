@@ -164,7 +164,7 @@ class Queries
         return $days;
     }
 
-    public function appRequests(Filters $filters)
+    public function appRequests(Filters $filters = null)
     {
         // Existing mobile requests and imported requests have no visit context.
         // Count the recorded attempts without asserting visits or action success.

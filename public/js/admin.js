@@ -1691,6 +1691,47 @@ module.exports = function (win) {
 
 /***/ },
 
+/***/ "./resources/js/components/admin-daily-activity-chart.js"
+/*!***************************************************************!*\
+  !*** ./resources/js/components/admin-daily-activity-chart.js ***!
+  \***************************************************************/
+(module) {
+
+(function () {
+  'use strict';
+
+  function install(doc, view) {
+    var charts = Array.prototype.slice.call(doc.querySelectorAll('[data-daily-activity-scroll]'));
+    if (!charts.length) return;
+    var smallScreen = view.matchMedia('(max-width: 700px)');
+    function showLatest() {
+      if (!smallScreen.matches) return;
+      charts.forEach(function (chart) {
+        if (chart.dataset.latestDatesShown || !chart.clientWidth) return;
+        chart.scrollLeft = Math.max(0, chart.scrollWidth - chart.clientWidth);
+        chart.dataset.latestDatesShown = 'true';
+      });
+    }
+    if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', showLatest, {
+      once: true
+    });else showLatest();
+    if (smallScreen.addEventListener) smallScreen.addEventListener('change', showLatest);else smallScreen.addListener(showLatest);
+    view.addEventListener('pageshow', function (event) {
+      if (!event.persisted) return;
+      charts.forEach(function (chart) {
+        delete chart.dataset.latestDatesShown;
+      });
+      view.requestAnimationFrame(showLatest);
+    });
+  }
+  if (true) module.exports = {
+    install: install
+  };
+  if (typeof document !== 'undefined') install(document, window);
+})();
+
+/***/ },
+
 /***/ "./resources/js/components/admin-date-range.js"
 /*!*****************************************************!*\
   !*** ./resources/js/components/admin-date-range.js ***!
@@ -101097,6 +101138,7 @@ __webpack_require__(/*! ./components/triggers */ "./resources/js/components/trig
 __webpack_require__(/*! ./components/audio */ "./resources/js/components/audio.js");
 __webpack_require__(/*! ./components/admin-text-improver */ "./resources/js/components/admin-text-improver.js");
 __webpack_require__(/*! ./components/admin-date-range */ "./resources/js/components/admin-date-range.js");
+__webpack_require__(/*! ./components/admin-daily-activity-chart */ "./resources/js/components/admin-daily-activity-chart.js");
 __webpack_require__(/*! ./components/checkbox-menu */ "./resources/js/components/checkbox-menu.js");
 __webpack_require__(/*! ./components/admin-back-to-top */ "./resources/js/components/admin-back-to-top.js");
 __webpack_require__(/*! ./components/tab-navigation */ "./resources/js/components/tab-navigation.js")(window);

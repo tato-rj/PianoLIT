@@ -4,6 +4,7 @@
     $dateFrom = $from ?? '';
     $dateTo = $to ?? '';
     $dateLabel = $label ?? 'Custom range';
+    $dateFieldLabel = $fieldLabel ?? $dateLabel;
     $datePlaceholder = $placeholder ?? 'Custom range';
     $dateSelected = isset($selectedPreset) ? (string) $selectedPreset : ($dateFrom || $dateTo ? 'custom' : 'all');
     if (empty($periodName) && $dateFrom && $dateTo) {
@@ -11,9 +12,9 @@
     }
     $dateSummary = (empty($periodName) || $dateSelected === 'all') && $dateSelected && $dateSelected !== 'custom' ? $datePresets[$dateSelected]['label'] : ($dateSelected === 'custom' ? 'Custom range' : $datePlaceholder);
 @endphp
-<details class="admin-date-range" data-admin-date-range data-period-name="{{ $periodName ?? '' }}" data-current-preset="{{ $dateSelected }}" data-default-preset="{{ $defaultPreset ?? (empty($periodName) ? 'all' : '') }}" data-required="{{ !empty($requireBoth) ? 'true' : 'false' }}" data-placeholder="{{ $datePlaceholder }}" data-label="{{ $dateLabel }}">
-    @if(!empty($showLabel))<span class="admin-filter-label admin-date-range-label">{{ $dateLabel }}</span>@endif
-    <summary class="admin-filter-select" aria-haspopup="dialog" aria-controls="{{ $dateId }}" aria-expanded="false" aria-label="{{ $dateLabel }}: {{ $dateSummary }}" @if(!empty($designSystemPreview)) data-ds-preview @endif>
+<details class="admin-date-range" data-admin-date-range data-period-name="{{ $periodName ?? '' }}" data-current-preset="{{ $dateSelected }}" data-default-preset="{{ $defaultPreset ?? (empty($periodName) ? 'all' : '') }}" data-required="{{ !empty($requireBoth) ? 'true' : 'false' }}" data-placeholder="{{ $datePlaceholder }}" data-label="{{ $dateFieldLabel }}">
+    @if(!empty($showLabel))<span class="admin-filter-label admin-date-range-label">{{ $dateFieldLabel }}</span>@endif
+    <summary class="admin-filter-select" aria-haspopup="dialog" aria-controls="{{ $dateId }}" aria-expanded="false" aria-label="{{ $dateFieldLabel }}: {{ $dateSummary }}" @if(!empty($designSystemPreview)) data-ds-preview @endif>
         <span data-date-range-summary>{{ $dateSummary }}</span>
     </summary>
     <input type="hidden" name="{{ $fromName ?? 'from' }}" value="{{ $dateFrom }}" data-date-range-from>

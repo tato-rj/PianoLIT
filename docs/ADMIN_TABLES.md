@@ -3,7 +3,7 @@
 On 2026-10-15 the user chose the membership directory design and a reusable
 Laravel Blade component as the standard. Always reuse `admin.components.table`
 for admin tables, including small fixed lists such as Emails; do not create a
-page-specific table implementation. Users, Feedback, Emails and the membership
+page-specific table implementation. Users, Feedback, Emails, analytics People and the membership
 directory use this component. Migrate existing legacy tables when their pages
 are updated within the requested scope. Preserve each page’s columns, filters,
 route names, session permissions, row actions and bulk behavior.

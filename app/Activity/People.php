@@ -31,29 +31,35 @@ class People
         ]);
         $queries = new Queries;
         $visits = $queries->visits()->whereRaw(Queries::account().' IS NOT NULL')->selectRaw(Queries::account().' as account_id, COUNT(*) as visits_count, MAX(v.last_activity_at) as last_activity')->groupByRaw(Queries::account());
+        $ios = $queries->appRequests()->whereNotNull('user_id')->select('user_id as account_id')
+            ->selectRaw('COUNT(*) as ios_requests_count, MAX(occurred_at) as last_ios_activity')->groupBy('user_id');
+        // Portable null-safe maximum: imported requests keep their occurrence
+        // date, and an unverified account association never becomes a visit.
+        $lastActivity = 'CASE WHEN a.last_activity IS NULL THEN i.last_ios_activity WHEN i.last_ios_activity IS NULL THEN a.last_activity
+            WHEN i.last_ios_activity > a.last_activity THEN i.last_ios_activity ELSE a.last_activity END';
         $opens = $queries->pieceOpens(ExcludedAccounts::events(DB::table('activity_events as e')->join('activity_visits as v', 'v.id', '=', 'e.visit_id')->leftJoin('activity_visit_links as l', 'l.visit_id', '=', 'v.id'), 'e'))
             ->whereRaw(Queries::account().' IS NOT NULL')->selectRaw(Queries::account().' as account_id, COUNT(*) as pieces_count')->groupByRaw(Queries::account());
-        $query = ExcludedAccounts::users(DB::table('users'))->leftJoinSub($visits, 'a', 'a.account_id', '=', 'users.id')->leftJoinSub($opens, 'o', 'o.account_id', '=', 'users.id')
+        $query = ExcludedAccounts::users(DB::table('users'))->leftJoinSub($visits, 'a', 'a.account_id', '=', 'users.id')->leftJoinSub($ios, 'i', 'i.account_id', '=', 'users.id')->leftJoinSub($opens, 'o', 'o.account_id', '=', 'users.id')
             ->leftJoin('locations as location', 'location.user_id', '=', 'users.id')
             ->leftJoinSub(DB::table('memberships')->select('user_id')->selectRaw('MIN(id) as membership_id')->groupBy('user_id'), 'member', 'member.user_id', '=', 'users.id')
             ->leftJoin('memberships as m', 'm.id', '=', 'member.membership_id')
             ->leftJoin('stripe_memberships as sm', function ($join) { $join->on('sm.id', '=', 'm.source_id')->where('m.source_type', 'App\\Billing\\Sources\\Stripe'); })
             ->leftJoin('apple_memberships as am', function ($join) { $join->on('am.id', '=', 'm.source_id')->where('m.source_type', 'App\\Billing\\Sources\\Apple'); })
-            ->select('users.id', 'users.first_name', 'users.last_name', 'users.email', 'users.origin', 'users.created_at', 'a.last_activity', 'location.countryName')
-            ->selectRaw('COALESCE(a.visits_count, 0) as visits_count, COALESCE(o.pieces_count, 0) as pieces_count')
+            ->select('users.id', 'users.first_name', 'users.last_name', 'users.email', 'users.origin', 'users.created_at', 'a.last_activity as last_visit_activity', 'i.last_ios_activity', 'location.countryName')
+            ->selectRaw($lastActivity.' as last_activity, COALESCE(a.visits_count, 0) as visits_count, COALESCE(i.ios_requests_count, 0) as ios_requests_count, COALESCE(o.pieces_count, 0) as pieces_count')
             ->selectRaw(self::membershipCase().' as membership_status', array_fill(0, 4, now()));
         if (!empty($input['search'])) $query->where(function ($q) use ($input) { $value = '%'.$input['search'].'%'; $q->where('users.first_name', 'like', $value)->orWhere('users.last_name', 'like', $value)->orWhere('users.email', 'like', $value); });
         if (!empty($input['origin'])) $query->where('users.origin', $input['origin']);
         if (!empty($input['country'])) $query->where('location.countryCode', strtoupper($input['country']));
         if (!empty($input['status'])) $query->whereRaw('('.self::membershipCase().') = ?', array_merge(array_fill(0, 4, now()), [$input['status']]));
-        foreach (['registered' => 'users.created_at', 'active' => 'a.last_activity'] as $key => $column) {
+        foreach (['registered' => 'users.created_at', 'active' => DB::raw($lastActivity)] as $key => $column) {
             if (!empty($input[$key.'_from'])) $query->where($column, '>=', $input[$key.'_from']);
             if (!empty($input[$key.'_to'])) $query->where($column, '<', carbon($input[$key.'_to'])->addDay());
         }
-        if (($input['activity'] ?? '') === 'none') $query->whereNull('a.account_id');
+        if (($input['activity'] ?? '') === 'none') $query->whereNull('a.account_id')->whereNull('i.account_id');
         if (($input['activity'] ?? '') === 'one') $query->where('a.visits_count', 1);
         if (($input['activity'] ?? '') === 'repeat') $query->where('a.visits_count', '>', 1);
-        $sort = ['registered' => 'users.created_at', 'last_active' => 'a.last_activity', 'engagement' => 'pieces_count'][$input['sort'] ?? 'last_active'];
+        $sort = ['registered' => 'users.created_at', 'last_active' => DB::raw($lastActivity), 'engagement' => 'pieces_count'][$input['sort'] ?? 'last_active'];
         return $query->orderByDesc($sort)->orderByDesc('users.id')->paginate(AdminPagination::PER_PAGE)->withQueryString();
     }
 

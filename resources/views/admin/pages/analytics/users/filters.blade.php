@@ -5,7 +5,7 @@
     @unless(!empty($profileFilters))
     @include('admin.components.filters.select', ['label' => 'Audience', 'name' => 'audience', 'options' => ['all' => 'Everyone', 'registered' => 'Registered', 'anonymous' => 'Anonymous'], 'value' => $filters->values['audience']])
     @endunless
-    @include('admin.components.filters.date-range', ['label' => 'Custom range', 'periodName' => 'range', 'selectedPreset' => $filters->values['range'], 'from' => $filters->values['from'] ?? '', 'to' => $filters->values['to'] ?? '', 'defaultPreset' => '7', 'requireBoth' => true])
+    @include('admin.components.filters.date-range', ['label' => 'Custom range', 'fieldLabel' => 'Dates', 'showLabel' => true, 'periodName' => 'range', 'selectedPreset' => $filters->values['range'], 'from' => $filters->values['from'] ?? '', 'to' => $filters->values['to'] ?? '', 'defaultPreset' => '7', 'requireBoth' => true])
     <button class="ua-button" type="submit">Apply filters</button>
     <span class="ua-filter-period">@if($filters->start){{ $filters->start->format('M j, Y') }} – {{ $filters->end->copy()->subDay()->format('M j, Y') }}@else All history @endif<small>{{ config('app.timezone') }}</small></span>
 </form>

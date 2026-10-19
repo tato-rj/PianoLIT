@@ -36,6 +36,7 @@ async function main() {
     require('./composer-biography-admin')();
     require('./admin-text-improver')();
     require('./admin-date-range')();
+    require('./admin-daily-activity-chart')();
     require('./admin-design-system')();
     await require('./admin-table-loading')();
     require('./admin-user-profile')();
