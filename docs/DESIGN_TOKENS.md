@@ -52,9 +52,19 @@ keep page-specific widths, layout and room for icons local.
 
 Checkboxes, radios, switches and ranges use the shared brand and field colors.
 
+Admin analytics filters use `admin.components.filters.select` with a `label`,
+`name`, value/label `options` map and selected `value`. Its reusable
+`.admin-filter-select` style is the Period control's white border, translucent
+background, 16 px corners, 41 px height and slim chevron. The checkbox-menu button
+and date-range summary use the same class, including typography, padding, labels
+and focus border. The Custom range trigger uses the same text-and-arrow layout.
+Filter select, Checkbox menu and Date filter specimens render these components
+in the Design System. Keep their appearance in `admin/_filter-controls.scss`;
+component styles should contain only their menu/panel layout.
+
 Multiple-choice filter menus use `components.form.checkbox-menu`. Pass a field
 `name`, accessible `label`, an `options` value/label map, the `selected` array and
-an optional `allLabel`. The shared form-select trigger, Bootstrap dropdown and
+an optional `allLabel`. The shared admin filter trigger, Bootstrap dropdown and
 native checkbox styles stay in sync with the Design System's Checkbox menu
 specimen (`designSystemPreview: true`). The menu stays open while checking
 options, offers Select all, and updates its summary. Escape returns focus to the

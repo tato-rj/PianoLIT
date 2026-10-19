@@ -1,42 +1,14 @@
 .admin-date-range {
     position: relative;
-    min-width: 0;
-    color: #242b27;
-    font-size: var(--font-size-base);
+    min-width: max-content;
     .admin-date-range-label {
-        display: block;
-        color: #5c665e;
-        font-size: var(--font-size-sm);
         margin-bottom: 5px;
     }
     > summary {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        min-height: 44px;
-        padding: 6px 13px;
-        border: 1px solid #c1cddf;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.8);
-        cursor: pointer;
         list-style: none;
     }
     > summary::-webkit-details-marker {
         display: none;
-    }
-    > summary > .app-icon:last-child {
-        margin-left: auto;
-        font-size: var(--font-size-sm);
-    }
-    .admin-date-range-calendar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        flex-shrink: 0;
-        border-radius: 50%;
-        background: #f1f3f4;
     }
     .admin-date-range-panel {
         position: absolute;

@@ -40,6 +40,12 @@
     @component('admin.pages.settings.sample', ['label' => 'Select', 'usage' => '.form-select'])
       <label for="ds-select">Level</label><select id="ds-select" class="form-select" data-ds-preview><option>All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Filter select', 'usage' => 'admin.components.filters.select · .admin-filter-select'])
+      @include('admin.components.filters.select', ['label' => 'Period', 'name' => 'ds-period', 'options' => \App\Support\AdminDateRanges::LABELS, 'value' => '7', 'designSystemPreview' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Date filter', 'usage' => 'admin.components.filters.date-range · .admin-filter-select'])
+      @include('admin.components.filters.date-range', ['label' => 'Custom range', 'showLabel' => true, 'designSystemPreview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Textarea', 'usage' => 'textarea.form-control'])
       <label for="ds-textarea">Notes</label><textarea id="ds-textarea" class="form-control" rows="3" placeholder="Add a practice note" data-text-improver="off" data-ds-preview></textarea>
     @endcomponent

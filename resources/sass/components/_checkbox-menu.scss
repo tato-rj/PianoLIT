@@ -1,12 +1,10 @@
 .checkbox-menu {
     min-width: 0;
     max-width: 100%;
-    .form-label {
-        display: block;
+    .admin-filter-label {
         margin-bottom: 5px;
-        font-size: var(--font-size-sm);
     }
-    .form-select {
+    .admin-filter-select {
         min-width: 180px;
     }
     .dropdown-menu {
