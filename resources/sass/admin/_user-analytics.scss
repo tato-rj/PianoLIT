@@ -63,7 +63,7 @@
         gap: 12px;
         margin-bottom: 24px;
     }
-    .ua-filters label {
+    .ua-filters > label {
         display: flex;
         flex-direction: column;
         gap: 5px;
@@ -71,7 +71,7 @@
         color: #5c665e;
         margin: 0;
     }
-    .ua-filters input,
+    .ua-filters input:not([type='checkbox']),
     .ua-filters select {
         min-height: 41px;
         padding: 9px 13px;

@@ -20,8 +20,8 @@ class UserAnalyticsController extends Controller
     {
         $filters = new Filters($request);
         $visitSort = new VisitSort($request);
-        $iosOnly = $filters->values['platform'] === 'app';
-        $appActivity = in_array($filters->values['platform'], ['all', 'app'], true) ? $queries->appRequestSummary($filters) : null;
+        $iosOnly = $filters->platforms === ['app'];
+        $appActivity = $filters->includesPlatform('app') ? $queries->appRequestSummary($filters) : null;
         $metrics = $iosOnly ? ['iOS requests' => $appActivity->requests, 'Reported accounts' => $appActivity->reported_accounts, 'Days with requests' => $appActivity->active_days] : $queries->metrics($filters);
         if (!$iosOnly && $appActivity) $metrics['iOS requests'] = $appActivity->requests;
         $series = $iosOnly ? [] : ['total' => ['Visits', 'visits'], 'pieces' => ['Pieces opened', 'pieces'], 'media_starts' => ['Media starts', 'media']];

@@ -146,7 +146,7 @@ class Queries
         $rows = $this->visits($filters)->selectRaw('DATE(v.started_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
         $pieces = $this->pieceOpens($this->events($filters))->selectRaw('DATE(e.occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
         $media = $this->events($filters)->where('e.type', 'media_play')->selectRaw('DATE(e.occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day');
-        $app = in_array($filters->values['platform'], ['all', 'app'], true)
+        $app = $filters->includesPlatform('app')
             ? $this->appRequests($filters)->selectRaw('DATE(occurred_at) as day, COUNT(*) as total')->groupBy('day')->get()->keyBy('day') : collect();
         $start = $filters->start;
         if (!$start) {

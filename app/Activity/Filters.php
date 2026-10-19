@@ -9,19 +9,29 @@ use App\Support\AdminDateRanges;
 
 class Filters
 {
+    const PLATFORMS = ['web' => 'Website', 'webapp' => 'Webapp', 'app' => 'iOS'];
+
     public $start;
     public $end;
     public $values;
+    public $platforms;
 
     public function __construct(Request $request)
     {
         $this->values = $request->validate([
             'range' => 'nullable|string|in:'.implode(',', array_merge(array_keys(AdminDateRanges::LABELS), ['30'])),
             'from' => 'nullable|date_format:Y-m-d', 'to' => 'nullable|date_format:Y-m-d|after_or_equal:from',
-            'platform' => 'nullable|in:all,web,webapp,app',
+            'platform' => is_array($request->input('platform')) ? 'array|min:1|max:4' : 'nullable|string|in:all,web,webapp,app',
+            'platform.*' => 'nullable|string|in:web,webapp,app|distinct',
             'audience' => 'nullable|in:all,registered,anonymous',
         ]);
         $this->values = array_merge(['range' => '7', 'platform' => 'all', 'audience' => 'registered'], array_filter($this->values, function ($value) { return $value !== null; }));
+        // Accept existing scalar URLs and the checkbox menu's array (including
+        // its empty sentinel so an unchecked menu cannot silently mean All).
+        $selected = $this->values['platform'];
+        $this->platforms = $selected === 'all' ? array_keys(self::PLATFORMS) : array_values(array_intersect(array_keys(self::PLATFORMS), (array) $selected));
+        if (!$this->platforms) throw ValidationException::withMessages(['platform' => 'Choose at least one platform.']);
+        if (is_array($selected)) $this->values['platform'] = $this->platforms;
         $today = now()->startOfDay();
         // Preserve saved Last 30 days links as a custom range without offering
         // the retired preset in either date selector.
@@ -46,7 +56,12 @@ class Filters
     {
         if ($this->start) $query->where($column, '>=', $this->start);
         $query->where($column, '<', $this->end);
-        if ($this->values['platform'] !== 'all') $query->where($platform, $this->values['platform']);
+        if (count($this->platforms) < count(self::PLATFORMS)) $query->whereIn($platform, $this->platforms);
         return $query;
+    }
+
+    public function includesPlatform($platform)
+    {
+        return in_array($platform, $this->platforms, true);
     }
 }

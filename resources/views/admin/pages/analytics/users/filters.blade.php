@@ -5,11 +5,7 @@
         <option value="{{ $value }}" @if($filters->values['range'] == $value) selected @endif>{{ $label }}</option>
         @endforeach
     </select></label>
-    <label>Platform<select name="platform">
-        @foreach(['all' => 'All platforms', 'web' => 'Website', 'webapp' => 'Webapp', 'app' => 'iOS'] as $value => $label)
-        <option value="{{ $value }}" @if($filters->values['platform'] === $value) selected @endif>{{ $label }}</option>
-        @endforeach
-    </select></label>
+    @include('components.form.checkbox-menu', ['name' => 'platform', 'label' => 'Platform', 'options' => \App\Activity\Filters::PLATFORMS, 'selected' => $filters->platforms, 'allLabel' => 'All platforms'])
     @unless(!empty($profileFilters))
     <label>Audience<select name="audience">
         @foreach(['all' => 'Everyone', 'registered' => 'Registered', 'anonymous' => 'Anonymous'] as $value => $label)

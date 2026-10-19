@@ -1,0 +1,19 @@
+.checkbox-menu {
+    min-width: 0;
+    max-width: 100%;
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: var(--font-size-sm);
+    }
+    .form-select {
+        min-width: 180px;
+    }
+    .dropdown-menu {
+        min-width: 100%;
+        max-width: calc(100vw - 32px);
+    }
+    .dropdown-item {
+        white-space: normal;
+    }
+}

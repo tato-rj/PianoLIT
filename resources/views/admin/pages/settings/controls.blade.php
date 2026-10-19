@@ -66,6 +66,9 @@
       <div class="form-check"><input id="ds-radio-one" class="form-check-input" type="radio" name="ds-format" checked data-ds-preview><label class="form-check-label" for="ds-radio-one">Audio</label></div>
       <div class="form-check"><input id="ds-radio-two" class="form-check-input" type="radio" name="ds-format"><label class="form-check-label" for="ds-radio-two">Video</label></div>
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Checkbox menu', 'usage' => 'components.form.checkbox-menu'])
+      @include('components.form.checkbox-menu', ['name' => 'ds-platform', 'label' => 'Platform', 'options' => \App\Activity\Filters::PLATFORMS, 'selected' => ['webapp', 'app'], 'allLabel' => 'All platforms', 'designSystemPreview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Switch', 'usage' => '@toggle · components.form.toggle', 'properties' => 'width,height,border-radius,background-color'])
       <div class="design-system__row">@toggle(['toggle' => true, 'autoToggle' => false, 'ariaLabel' => 'Enable practice reminders', 'designSystemPreview' => true])<span>Practice reminders</span></div>
     @endcomponent

@@ -20469,7 +20469,7 @@ body.admin-dashboard-page .admin-main {
   gap: 12px;
   margin-bottom: 24px;
 }
-.ua .ua-filters label {
+.ua .ua-filters > label {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -20477,7 +20477,7 @@ body.admin-dashboard-page .admin-main {
   color: #5c665e;
   margin: 0;
 }
-.ua .ua-filters input,
+.ua .ua-filters input:not([type=checkbox]),
 .ua .ua-filters select {
   min-height: 41px;
   padding: 9px 13px;
@@ -25651,6 +25651,26 @@ body.admin-dashboard-page .admin-main {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.checkbox-menu {
+  min-width: 0;
+  max-width: 100%;
+}
+.checkbox-menu .form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: var(--font-size-sm);
+}
+.checkbox-menu .form-select {
+  min-width: 180px;
+}
+.checkbox-menu .dropdown-menu {
+  min-width: 100%;
+  max-width: calc(100vw - 32px);
+}
+.checkbox-menu .dropdown-item {
+  white-space: normal;
+}
+
 .design-system .design-system__intro {
   display: flex;
   align-items: flex-start;

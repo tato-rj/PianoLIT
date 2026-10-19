@@ -52,6 +52,17 @@ keep page-specific widths, layout and room for icons local.
 
 Checkboxes, radios, switches and ranges use the shared brand and field colors.
 
+Multiple-choice filter menus use `components.form.checkbox-menu`. Pass a field
+`name`, accessible `label`, an `options` value/label map, the `selected` array and
+an optional `allLabel`. The shared form-select trigger, Bootstrap dropdown and
+native checkbox styles stay in sync with the Design System's Checkbox menu
+specimen (`designSystemPreview: true`). The menu stays open while checking
+options, offers Select all, and updates its summary. Escape returns focus to the
+trigger; outside clicks and Tab leaving the menu dismiss it. Choices submit with
+the containing form's Apply action; at least one is required. The component sends
+an empty array sentinel so an unchecked menu can be rejected on the server.
+Consumers must validate allowed values and discard the sentinel before querying.
+
 Small, mutually exclusive choices use `components.segmented-control`: pass a
 unique `id` and radio `name`, an accessible `label`, an `options` value/label map
 and the selected `value`. The shared component fills its container with equal
