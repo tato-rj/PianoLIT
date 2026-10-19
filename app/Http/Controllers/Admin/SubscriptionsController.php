@@ -6,14 +6,17 @@ use App\{Subscription, EmailList, User};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Exports\Subscriptions\SubscriptionExport;
+use App\Services\Admin\SubscriptionsTable;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SubscriptionsController extends Controller
 {
     public function store(Request $request)
     {
         $request->validate([
-            'emails' => 'required',
-            'origin_url' => 'required',
+            'emails' => 'required|string',
+            'origin_url' => 'required|string|max:255',
         ]);
 
     	$emails = $this->clean($request->emails);
@@ -38,7 +41,7 @@ class SubscriptionsController extends Controller
 
     public function export(Request $request)
     {
-        $request->validate(['type' => 'required']);
+        $request->validate(['type' => 'required|string|in:members,fans']);
 
         $emails = (new SubscriptionExport)->for($request->type)->get();
 
@@ -60,17 +63,35 @@ class SubscriptionsController extends Controller
 
     public function destroyMany(Request $request)
     {
-        foreach($request->ids as $id) {
-            Subscription::find($id)->delete();
-        }
+        $table = app(SubscriptionsTable::class);
+        $filters = $table->filters($request);
+        $data = $request->validate([
+            'ids' => 'required|array|min:1|max:96',
+            'ids.*' => 'required|integer|min:1|distinct',
+        ]);
+        $count = DB::transaction(function () use ($data) {
+            $subscriptions = Subscription::whereIn('id', $data['ids'])->orderBy('id')->lockForUpdate()->get();
+            if ($subscriptions->count() !== count($data['ids'])) {
+                throw ValidationException::withMessages(['ids' => 'Some selected subscribers no longer exist. Refresh the page and try again.']);
+            }
+            // Preserve list-detachment events and roll back the entire selection
+            // if either detachment or deletion fails.
+            foreach ($subscriptions as $subscription) $subscription->delete();
 
-        return redirect()->back()->with('status', count($request->ids) . ' emails has been removed.');
+            return $subscriptions->count();
+        });
+
+        return $table->redirectAfterDeletion($filters)->with('status', $count.' '.str_plural('email', $count).' removed.');
     }
 
-    public function destroy(Subscription $subscription)
+    public function destroy(Subscription $subscription, Request $request)
     {
-        $subscription->delete();
+        $table = app(SubscriptionsTable::class);
+        $filters = $table->filters($request);
+        DB::transaction(function () use ($subscription) {
+            $subscription->delete();
+        });
 
-        return redirect()->back()->with('status', 'The email has been removed.');
+        return $table->redirectAfterDeletion($filters)->with('status', 'The email has been removed.');
     }
 }

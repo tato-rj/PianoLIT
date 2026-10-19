@@ -105,7 +105,7 @@
   @include('admin.pages.home.user-countries')
 
   <section class="admin-library-section" aria-labelledby="admin-library-title">
-    <div class="admin-section-heading"><h2 id="admin-library-title">Site content</h2><a href="{{route('admin.users.locations.index')}}">User locations @icon('arrow-up-right', ['mr' => 0])</a></div>
+    <div class="admin-section-heading"><h2 id="admin-library-title">Site content</h2></div>
     <div class="admin-library-grid">
       @foreach($dashboard['library'] as $item)
       <a class="admin-library-card" href="{{$item['url']}}">@icon($item['icon'], ['mr' => 0])<span>{{$item['label']}}<small>Published</small></span><strong>{{number_format($item['total'])}}</strong>@icon('chevron-right', ['mr' => 0])</a>

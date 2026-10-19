@@ -2,13 +2,12 @@
 
 namespace App\Analytics;
 
-use App\Analytics\Factories\{UserAnalytics, PieceAnalytics, LogAnalytics};
+use App\Analytics\Factories\{UserAnalytics, PieceAnalytics};
 
 class Analytics {
 	protected $factory;
 	protected $factories = [
 		'users' => UserAnalytics::class,
-		'logs' => LogAnalytics::class,
 		'pieces' => PieceAnalytics::class,
 	];
 

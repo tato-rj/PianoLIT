@@ -12,7 +12,7 @@
         'id' => 'users-table', 'label' => 'Users', 'items' => $users,
         'description' => number_format($users->total()).' matching accounts.',
         'action' => route('admin.users.index'), 'state' => $filters,
-        'search' => ['label' => 'Find an account', 'placeholder' => 'Name, email or user ID'],
+        'search' => ['label' => 'Find an account', 'placeholder' => 'Name, email, ID, country, region or city'],
         'sorts' => \App\Services\Admin\UsersTable::SORTS,
         'columns' => [
             ['label' => 'Date', 'sort' => ['asc' => 'date_asc', 'desc' => 'date_desc']],

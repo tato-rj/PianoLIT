@@ -1,147 +1,46 @@
 @extends('admin.layouts.app')
 
-@section('head')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
-@endsection
-
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
-    @include('admin.components.page.title', [
-      'icon' => 'mail',
-      'title' => 'Subscriptions',
-      'subtitle' => 'Manage all email subscriptions.',
-      'action' => ['label' => 'Add new emails', 'modal' => 'add-modal']
+<div class="content-wrapper"><div class="container-fluid">
+    @component('admin.components.page.title', [
+        'icon' => 'mail', 'title' => 'Subscribers', 'subtitle' => 'Manage email subscriptions.',
+        'action' => ['label' => 'Add new emails', 'modal' => 'add-modal'],
     ])
+        @foreach(['members' => 'Export members', 'fans' => 'Export fans'] as $type => $label)
+        <a class="btn btn-sm btn-light" href="{{ route('admin.subscriptions.export', ['type' => $type]) }}" target="_blank" rel="noopener noreferrer">@icon('file-text', ['mr' => 2]){{ $label }}</a>
+        @endforeach
+    @endcomponent
 
-    <div class="row">
-      <div class="col-12 mb-4">
-        <div class="mb-4">
-        @include('admin.pages.subscriptions.create')
-        </div>
-        <div class="d-flex">
-          <div class="me-2">
-            <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
-              @csrf
-              <input type="hidden" name="type" value="members">
-              <button type="submit" class="btn btn-light">@icon('file-text', ['mr' => 2])Export members</button>
-            </form>
-          </div>
-          <div class="me-2">
-            <form method="GET" action="{{route('admin.subscriptions.export')}}" target="_blank" id="export-form">
-              @csrf
-              <input type="hidden" name="type" value="fans">
-              <button type="submit" class="btn btn-light">@icon('file-text', ['mr' => 2])Export fans</button>
-            </form>
-          </div>
-          <button class="btn btn-danger" id="delete-all-btn" style="display: none;" data-action="{{route('admin.subscriptions.destroy-many')}}" data-bs-toggle="modal" data-bs-target="#delete-modal">Delete all selected</button>
-        </div>
-      </div>
-    </div>
-
-    @datatable(['table' => 'subscriptions', 'columns' => ['checkbox', 'Date', 'id', 'Email', 'Origin', 'Form ID', '']])
-
-  </div>
-</div>
-
+    @component('admin.components.table', [
+        'id' => 'subscriptions-table', 'label' => 'Subscribers', 'items' => $subscriptions,
+        'description' => number_format($subscriptions->total()).' matching subscribers.',
+        'action' => route('admin.subscriptions.index'), 'state' => $filters,
+        'search' => ['label' => 'Find a subscriber', 'placeholder' => 'Email, origin, form or subscriber ID'],
+        'sorts' => \App\Services\Admin\SubscriptionsTable::SORTS,
+        'columns' => [
+            ['label' => 'Select', 'hidden' => true],
+            ['label' => 'Date', 'sort' => ['asc' => 'date_asc', 'desc' => 'date_desc']],
+            ['label' => 'ID', 'sort' => ['asc' => 'id_asc', 'desc' => 'id_desc']],
+            ['label' => 'Email', 'sort' => ['asc' => 'email_asc', 'desc' => 'email_desc']],
+            ['label' => 'Origin', 'sort' => ['asc' => 'origin_asc', 'desc' => 'origin_desc']],
+            ['label' => 'Form ID', 'sort' => ['asc' => 'form_asc', 'desc' => 'form_desc']],
+            ['label' => 'Actions', 'hidden' => true],
+        ],
+        'emptyTitle' => $filters['search'] ? 'No matching subscribers' : 'No subscribers yet.',
+        'emptyDescription' => $filters['search'] ? 'Try another email, origin, form or subscriber ID.' : 'Email subscribers will appear here when they sign up.',
+    ])
+        @slot('toolbar')
+            @if($subscriptions->count())
+                @include('admin.components.table-bulk-delete', ['id' => 'subscriptions-selection', 'tableId' => 'subscriptions-table', 'action' => route('admin.subscriptions.destroy-many', $returnFilters), 'label' => 'subscribers'])
+            @endif
+        @endslot
+        @include('admin.pages.subscriptions.rows')
+    @endcomponent
+</div></div>
+@include('admin.pages.subscriptions.create')
 @include('admin.components.modals.delete')
-
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
-
-<script type="text/javascript">
-(new DataTable('#subscriptions-table')).columns([
-  {data: 'checkbox', orderable: false, searchable: false},
-  {data: 'created_at', class: 'text-nowrap', sort: true},
-  {data: 'id', name: 'subscriptions.id', class: 'text-nowrap', sort: false},
-  {data: 'email', name: 'subscriptions.email', class: 'dataTables_main_column'},
-  {data: 'origin_url', name: 'subscriptions.origin_url'},
-  {data: 'form_id', name: 'subscriptions.form_id'},
-  {data: 'action', orderable: false, searchable: false},
-]).create();
-</script>
-
-<script type="text/javascript">
-$('#check-all-datatable').change(function() {
-  $('.check-datatable').prop('checked', $(this).is(':checked'));
-  getIds();
-});
-
-$(document).on('change', '.check-datatable', function() {
-  if ($(this).is(':checked'))
-    findUser($(this).data('id'));
-
-  getIds();
-});
-
-function getIds()
-{
-  let ids = $('.check-datatable:checked').map(function() {
-    return $(this).attr('data-id');
-  }).toArray();
-
-  if (ids.length) {
-    $('#delete-all-btn').show();
-  } else {
-    $('#delete-all-btn').hide();
-  }
-
-  $('form#export-form input[name="ids"]').val(JSON.stringify(ids));
-}
-
-$('#delete-all-btn').click(function() {
-    removeSelectedIds();
-    addSelectedIds();
-});
-
-function addSelectedIds()
-{
-  let ids = $('.check-datatable:checked').map(function() {
-    return $(this).attr('data-id');
-  }).toArray();
-
-  let inputs = `<div id="selected-ids">`;
-
-  for (i=0; i<ids.length; i++) {
-    inputs += `<input type="hidden" name="ids[]" value="`+ids[i]+`">`;
-  }
-
-  inputs += `</div>`;
-
-  $('#delete-modal form').append(inputs);
-
-  $('#delete-modal form').attr('action', $('#delete-all-btn').data('action'));
-}
-
-function findUser(id)
-{
-  let $table = $('#subscriptions-table');
-  let $cell = $table.find('input[data-id="'+id+'"]').closest('td').next('td').next('td');
-  $cell.find('span').remove();
-  $cell.append('<span class="text-warning ms-2"><i>searching for user...</span>');
-
-  axios.get("{{route('admin.subscriptions.find-user')}}", {params: {id: id}})
-      .then(function(response) {
-        $cell.find('span').remove();
-        $cell.append(response.data);
-      })
-      .catch(function(error) {
-          console.log(error);
-      });
-}
-
-function removeSelectedIds()
-{
-  $('#delete-modal form').attr('action', null);
-  $('#delete-modal form div#selected-ids').remove();
-  console.log('Selected ids removed');
-}
-
-$('#delete-modal').on('hidden.bs.modal', function (e) {
-  removeSelectedIds();
-})
-</script>
+    <script src="{{ asset('js/components/admin-table-bulk-delete.js') }}" defer></script>
 @endsection

@@ -42,6 +42,10 @@ scalar old input and safely ignores malformed array values. Avoid field-specific
 colors, padding, corners and focus outlines; table wrappers must respect the
 shared form-control focus style.
 
+`@textarea` also accepts `id` for its label and preserves scalar old input while
+ignoring malformed array values. Pass `textImprover: false` for structured data
+such as subscriber email lists, where the prose-improvement action is unsuitable.
+
 Admin table search fields use `@input` and their filter/sort/page-size fields use
 `@select` (`components.form.select`), with the same default field dimensions and
 states as the Design System. `@select` accepts a `choices` value/label map and
@@ -51,6 +55,13 @@ unique `id` for the shared label. Table wrappers contain layout/width rules only
 Legacy DataTables use the same default field classes through the admin-only
 `admin-table-fields.js` adapter; keep their initialization skeleton dimensions in
 sync without introducing table-specific field styles.
+
+Table filter buttons and fields share `field-control-sizing` from
+`shared/_field-sizing.scss`, applied centrally by `admin/_table-controls.scss`.
+Their height, vertical padding, type and line height follow the field tokens:
+45px at the default desktop size and 48px with 16px touch text. Keep filter
+actions aligned with their fields, including analytics selects, custom triggers
+and date-panel actions. Do not add independent button heights to table pages.
 
 Standard `.form-control`, `.form-select`, shared input/textarea components, file
 uploads and input-group labels use the same `--radius-input` and `--field-*`
@@ -68,7 +79,7 @@ Checkboxes, radios, switches and ranges use the shared brand and field colors.
 Admin analytics filters use `admin.components.filters.select` with a `label`,
 `name`, value/label `options` map and selected `value`. Its reusable
 `.admin-filter-select` style is the Period control's white border, translucent
-background, 16 px corners, 41 px height and slim chevron. The checkbox-menu button
+background, 16 px corners and slim chevron, with shared field sizing. The checkbox-menu button
 and date-range summary use the same class, including typography, padding, labels
 and focus border. The Custom range trigger uses the same text-and-arrow layout.
 Filter select, Checkbox menu and Date filter specimens render these components

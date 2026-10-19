@@ -120,7 +120,7 @@ class AdminDashboardTest extends ReviewTestCase
         foreach (['api', 'analytics', 'users', 'subscriptions', 'repertoire', 'shop', 'blog', 'quizzes', 'infographics', 'crash-courses'] as $id) {
             $response->assertSee('id="'.$id.'" data-bs-parent="#navbarResponsive"', false);
         }
-        foreach (['admin.pieces.index', 'admin.timeline-events.index', 'admin.analytics.memberships', 'admin.users.logs', 'admin.memberships.logs', 'admin.subscriptions.lists.index', 'admin.escores.topics.index', 'admin.posts.gifts.index', 'admin.quizzes.media.images', 'admin.crashcourses.subscriptions.index', 'admin.clips.index'] as $route) {
+        foreach (['admin.pieces.index', 'admin.timeline-events.index', 'admin.analytics.memberships', 'admin.subscriptions.lists.index', 'admin.escores.topics.index', 'admin.posts.gifts.index', 'admin.quizzes.media.images', 'admin.crashcourses.subscriptions.index', 'admin.clips.index'] as $route) {
             $response->assertSee(route($route), false);
         }
         $this->assertDatabaseCount('activity_events', 0);

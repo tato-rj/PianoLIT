@@ -26584,6 +26584,51 @@ body.admin-dashboard-page .admin-main {
   }
 }
 
+.admin-table .admin-table__button,
+.ua .ua-filters > .ua-button,
+.ua .ua-filters input:not([type=hidden]):not([type=checkbox]):not([type=radio]),
+.ua .ua-filters select,
+.ua .ua-filters select:not(.admin-filter-select):not(.form-control):not(.form-select),
+.admin-filter-select,
+.admin-date-range .admin-date-range-panel input,
+.admin-date-range .admin-date-range-footer button,
+.composer-analytics .ca-filters input,
+.composer-analytics .ca-filters select,
+.composer-analytics .ca-filters > .ca-button,
+.folder-analytics .fa-filters input,
+.folder-analytics .fa-filters select,
+.folder-analytics .fa-filters > .fa-button,
+.piece-analytics .pa-growth-filter select,
+.piece-analytics .pa-growth-filter button {
+  box-sizing: border-box;
+  min-height: max(var(--field-min-height), 1.5 * var(--field-font-size) + 2 * var(--field-padding-y) + 2px);
+  padding-top: var(--field-padding-y);
+  padding-bottom: var(--field-padding-y);
+  font-family: var(--font-family-body);
+  font-size: var(--field-font-size);
+  line-height: 1.5;
+}
+@media (max-width: 575px) {
+  .admin-table .admin-table__button,
+  .ua .ua-filters > .ua-button,
+  .ua .ua-filters input:not([type=hidden]):not([type=checkbox]):not([type=radio]),
+  .ua .ua-filters select,
+  .ua .ua-filters select:not(.admin-filter-select):not(.form-control):not(.form-select),
+  .admin-filter-select,
+  .admin-date-range .admin-date-range-panel input,
+  .admin-date-range .admin-date-range-footer button,
+  .composer-analytics .ca-filters input,
+  .composer-analytics .ca-filters select,
+  .composer-analytics .ca-filters > .ca-button,
+  .folder-analytics .fa-filters input,
+  .folder-analytics .fa-filters select,
+  .folder-analytics .fa-filters > .fa-button,
+  .piece-analytics .pa-growth-filter select,
+  .piece-analytics .pa-growth-filter button {
+    --field-font-size: 16px;
+  }
+}
+
 .mt-6,
 .my-6,
 .m-6 {

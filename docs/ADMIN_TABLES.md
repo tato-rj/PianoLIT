@@ -3,7 +3,7 @@
 On 2026-10-15 the user chose the membership directory design and a reusable
 Laravel Blade component as the standard. Always reuse `admin.components.table`
 for admin tables, including small fixed lists such as Emails; do not create a
-page-specific table implementation. Users, Feedback, Emails, analytics People and the membership
+page-specific table implementation. Users, Subscribers, Feedback, Emails, analytics People and the membership
 directory use this component. Migrate existing legacy tables when their pages
 are updated within the requested scope. Preserve each page’s columns, filters,
 route names, session permissions, row actions and bulk behavior.
@@ -100,8 +100,36 @@ Delete forms retain CSRF and route-bound ownership. Users retains Edit and
 impersonation; Super status is managed inside Edit user. Its directory has no
 bulk-selection checkbox or super-user toggle.
 
+Subscribers uses `App\Services\Admin\SubscriptionsTable` for SQL search, fixed
+sorts and pagination. Its two directory queries select only displayed fields
+and resolve each displayed email's account ID through the indexed Users email
+lookup, without serializing users or querying their activity/favorites/billing.
+Keep `2026_10_19_180000_add_admin_subscriber_directory_index.php` in deployment
+for newest-first date/ID ordering. Email exports retain their existing audiences.
+Both single and bulk deletion validate return filters before changing records,
+preserve the filtered URL and clamp to its last remaining page. Bulk deletion
+validates the complete selection, locks rows in ID order and transactionally
+keeps the existing list-detachment events; a missing row or database failure
+cannot leave a partially deleted selection.
+
+Use `admin.components.table-bulk-delete` for page-scoped bulk deletion controls,
+with the shared checkboxes, buttons and confirmation modal. Pass `id`, `tableId`,
+`action` and a trusted plural `label`; associate row checkboxes with
+`form="{id}-form"`, `name="ids[]"` and a descriptive accessible name. Load
+`js/components/admin-table-bulk-delete.js` once. Select this page never selects
+other result pages, and individual deletion never reuses bulk selection. The
+Design System uses the same component with `preview: true`, which renders no
+submittable form and performs no deletion.
+
 The Users query selects only required account fields and batches location and
 billing status, preserving super-user overrides without loading their billing.
+Its existing search also matches saved country names/codes, region names/codes
+and cities. Terms can span account and location fields (for example, a name plus
+Denver); every term must match. SQL `EXISTS` keeps ownership and pagination
+intact, escapes literal LIKE wildcards, and does not require an account to have a
+location. Each account cell shows its saved city, region and country with escaped
+text and no repeated identical place names. The separate Locations directory and
+legacy log pages were removed on 2026-10-19; current Analytics pages remain.
 Keep `2026_10_15_010000_add_admin_user_directory_indexes.php` in deployment: it
 supports the default date/ID ordering and membership lookup. Existing index
 requirements are unchanged by this table migration.
@@ -114,6 +142,9 @@ spacing. Search and select filters compose the shared `@input` / `@select`
 components and default Design System field styles, including borders, size,
 focus, disabled and validation states. Keep only width/layout rules in table
 styles. Page-specific badges and cells retain their meaning.
+Filter action buttons use that same field sizing through the shared
+`field-control-sizing` mixin, including responsive touch sizing. Other analytics
+filter rows follow it too; keep their inputs and buttons equal in height.
 Wide tables scroll horizontally within the card; do not shrink text to fit a
 phone. Tables expand to fit every row and use the page for vertical scrolling.
 Never add a fixed/max-height table viewport or independent vertical scrollbar.

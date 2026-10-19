@@ -3,6 +3,7 @@
 @import '~bootstrap/scss/bootstrap';
 @import 'components/fontawesome-brands';
 @import 'shared/tokens';
+@import 'shared/field-sizing';
 
 // Admin editors and reusable controls. Keep their existing cascade positions.
 @import 'admin/datatables';
@@ -59,3 +60,4 @@ $body-bg: #e9ecef;
 @import 'components/checkbox-menu';
 @import 'admin/filter-controls';
 @import 'admin/design-system';
+@import 'admin/table-controls';

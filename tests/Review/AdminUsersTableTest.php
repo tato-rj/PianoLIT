@@ -48,6 +48,60 @@ class AdminUsersTableTest extends ReviewTestCase
         return new \DOMXPath($dom);
     }
 
+    public function test_search_matches_saved_countries_regions_and_cities_without_requiring_a_location()
+    {
+        $users = $this->accounts(4);
+        Location::query()->update(['countryName' => 'Elsewhere', 'countryCode' => 'ZZ',
+            'regionName' => 'Other region', 'regionCode' => 'XX', 'cityName' => 'Other city']);
+        $users[0]->location()->update(['countryName' => 'United States', 'countryCode' => 'US',
+            'regionName' => 'Colorado', 'regionCode' => 'ZQ', 'cityName' => 'Denver']);
+        $users[1]->location()->update(['countryName' => 'Albania', 'countryCode' => 'AL',
+            'regionName' => 'Vlorë', 'cityName' => 'Vlorë']);
+        $users[2]->location()->delete();
+        $users[3]->location()->update(['cityName' => '100%_! <script>Town</script>']);
+        $this->actingAs(create(Admin::class), 'admin');
+
+        foreach (['denVER', 'Colorado', 'United States', 'US', 'ZQ', 'Denver Colorado', 'Account 00 Denver'] as $search) {
+            $page = $this->table(compact('search'))->assertOk()->viewData('users');
+            $this->assertSame([$users[0]->id], $page->pluck('id')->all(), $search);
+        }
+        $this->assertSame([$users[1]->id], $this->table(['search' => 'Vlorë Albania'])->assertOk()->viewData('users')->pluck('id')->all());
+        $this->assertSame(0, $this->table(['search' => 'Colorado Albania'])->assertOk()->viewData('users')->total());
+        $this->assertSame([$users[2]->id], $this->table(['search' => $users[2]->email])->assertOk()->viewData('users')->pluck('id')->all());
+        foreach (['%', '_', '!', '%_!'] as $search) {
+            $response = $this->table(compact('search'))->assertOk();
+            $this->assertSame([$users[3]->id], $response->viewData('users')->pluck('id')->all());
+            $response->assertSee('100%_! &lt;script&gt;Town&lt;/script&gt;', false)->assertDontSee('<script>Town</script>', false);
+        }
+        $this->table(['search' => 'Denver'])->assertOk()->assertSee('Denver, Colorado, United States');
+        $this->table(['search' => 'Vlorë'])->assertOk()->assertSee('Vlorë, Albania')->assertDontSee('Vlorë, Vlorë');
+        $this->table()->assertOk()->assertSee('Name, email, ID, country, region or city');
+    }
+
+    public function test_location_search_keeps_sql_pagination_sorting_and_bounded_queries()
+    {
+        $users = $this->accounts(30);
+        Location::query()->update(['countryName' => 'Elsewhere', 'countryCode' => 'ZZ', 'cityName' => null]);
+        Location::whereIn('user_id', $users->take(25)->pluck('id'))->update(['cityName' => 'Denver']);
+        $this->actingAs(create(Admin::class), 'admin');
+        $first = $this->table(['search' => 'Denver', 'sort' => 'id_asc', 'per_page' => 24])->assertOk()->viewData('users');
+        $next = $this->table(['search' => 'Denver', 'sort' => 'id_asc', 'per_page' => 24, 'page' => 2])->assertOk()->viewData('users');
+        $this->assertSame(25, $first->total());
+        $this->assertSame($users->take(24)->pluck('id')->all(), $first->pluck('id')->all());
+        $this->assertSame([$users[24]->id], $next->pluck('id')->all());
+        parse_str(parse_url($next->url(1), PHP_URL_QUERY), $query);
+        $this->assertSame(['search' => 'Denver', 'sort' => 'id_asc', 'per_page' => '24', 'page' => '1'], $query);
+        foreach ([12, 24] as $perPage) {
+            DB::enableQueryLog(); DB::flushQueryLog();
+            $data = (new UsersTable)->get(Request::create('/users', 'GET', ['search' => 'Denver', 'per_page' => $perPage]));
+            view('admin.pages.users.table.rows', $data)->render();
+            $queries = DB::getQueryLog(); DB::disableQueryLog();
+            $this->assertCount(6, $queries);
+            $this->assertStringContainsString('exists', strtolower($queries[0]['query']));
+            $this->assertCount($perPage, $data['users']);
+        }
+    }
+
     public function test_the_initial_page_contains_twelve_complete_rows_without_datatables()
     {
         $users = $this->accounts();

@@ -227,8 +227,8 @@ class ActivityHistoryTest extends ReviewTestCase
         $route = Route::getRoutes()->getByName('activity.store');
         $this->assertContains('web', $route->gatherMiddleware());
         $this->assertNotContains('api', $route->gatherMiddleware());
-        $this->assertContains('auth:admin', Route::getRoutes()->getByName('admin.activity.index')->gatherMiddleware());
-        $this->assertContains('auth:admin', Route::getRoutes()->getByName('admin.activity.show')->gatherMiddleware());
+        $this->assertContains('auth:admin', Route::getRoutes()->getByName('admin.analytics.users')->gatherMiddleware());
+        $this->assertContains('auth:admin', Route::getRoutes()->getByName('admin.analytics.users.journey')->gatherMiddleware());
         $this->assertFalse((new Recorder)->eligible(\Illuminate\Http\Request::create('http://admin.'.config('app.short_url').'/activity')));
     }
 
@@ -248,8 +248,9 @@ class ActivityHistoryTest extends ReviewTestCase
     {
         $page = $this->open();
         $this->actingAs(create(\App\Admin::class), 'admin');
-        $this->get(route('admin.activity.index'))->assertOk()->assertSee('Anonymous')->assertSee('Open timeline');
-        $this->get(route('admin.activity.show', $page->visit_id))->assertOk()->assertSee('Visit journey')->assertSee('/review/activity-page', false);
+        $response = $this->get(route('admin.analytics.users', ['audience' => 'all']))->assertOk()->assertSee('View journey');
+        $this->assertSame(1, $response->viewData('visits')->total());
+        $this->get(route('admin.analytics.users.journey', $page->visit_id))->assertOk()->assertSee('Visit journey')->assertSee('/review/activity-page', false);
     }
 
     public function test_favorite_events_record_the_confirmed_add_and_remove_result()
@@ -270,12 +271,13 @@ class ActivityHistoryTest extends ReviewTestCase
         $this->assertSame((string) $piece->id, $events[0]->resource_id);
     }
 
-    public function test_admin_activity_overview_orders_and_counts_using_sql()
+    public function test_admin_activity_analytics_counts_visits_using_sql()
     {
         $user = $this->user(); $this->actingAs($user, 'web'); $this->open();
         $this->actingAs(create(\App\Admin::class), 'admin');
-        $url = route('admin.users.logs').'?'.http_build_query(['draw' => 1, 'order' => [['column' => 3, 'dir' => 'desc']], 'columns' => [3 => ['data' => 'visits']]]);
-        $this->getJson($url, ['X-Requested-With' => 'XMLHttpRequest'])->assertOk()->assertJsonPath('data.0.visits', 1)->assertJsonPath('data.0.id', $user->id);
+        $response = $this->get(route('admin.analytics.users'))->assertOk();
+        $this->assertSame(1, $response->viewData('metrics')['Visits']);
+        $this->assertSame([$user->id], $response->viewData('visits')->pluck('user_id')->all());
     }
 
     public function test_web_and_api_account_activity_attributes_use_sql_with_the_same_response_fields()

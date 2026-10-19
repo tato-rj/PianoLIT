@@ -76,7 +76,7 @@ class MobileActivityTest extends ReviewTestCase
         $this->artisan('redis:refresh-daily-logs')->assertExitCode(0);
     }
 
-    public function test_admin_app_rows_and_pagination_read_sql_including_imported_history()
+    public function test_admin_analytics_and_log_factory_read_sql_including_imported_history()
     {
         $user = $this->user();
         $this->getJson(route('api.users.favorites.show', ['user_id' => $user->id]))->assertOk();
@@ -88,10 +88,13 @@ class MobileActivityTest extends ReviewTestCase
         $copy['legacy_payload'] = '<script>legacy</script>';
         DB::table('activity_events')->insert($copy);
         $this->actingAs(create(\App\Admin::class), 'admin');
-        $this->get(route('admin.users.show', $user))->assertOk()->assertSee('Open logs & analytics', false)
+        $this->get(route('admin.users.show', $user))->assertOk()->assertSee('Logs & analytics', false)
             ->assertDontSee('App Logs (')->assertDontSee('legacy_user_id');
-        $this->get(route('admin.users.load-logs', ['user' => $user->id, 'type' => 'app', 'start_at' => 1]))
-            ->assertOk()->assertSee('Unknown time')->assertSee('&lt;script&gt;legacy&lt;/script&gt;', false)->assertDontSee('<script>legacy</script>', false);
+        $response = $this->get(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits', 'range' => 'all', 'platform' => 'app']))
+            ->assertOk()->assertSee('Ungrouped activity')->assertDontSee('<script>legacy</script>', false);
+        $this->assertSame(2, $response->viewData('stats')->ungrouped);
+        $this->assertSame(1, $response->viewData('history')->total(), 'Undated raw imports stay out of dated analytics lists.');
+        $this->assertDatabaseHas('activity_events', ['source' => 'redis', 'legacy_payload' => '<script>legacy</script>', 'occurred_at' => null]);
         $this->assertSame(2, (new LogFactory)->total());
         $this->assertCount(2, (new LogFactory)->get($user->id, 'app'));
     }

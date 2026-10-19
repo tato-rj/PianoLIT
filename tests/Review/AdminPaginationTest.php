@@ -43,11 +43,6 @@ class AdminPaginationTest extends ReviewTestCase
                 $this->assertCount(12, $response->viewData('accountEvents'));
             }
         }
-        $activity = $this->get(route('admin.activity.index'))->assertOk();
-        foreach (['visits', 'legacy'] as $key) {
-            $this->assertSame(12, $activity->viewData($key)->perPage());
-            $this->assertCount(12, $activity->viewData($key));
-        }
         Model::withoutEvents(function () { create(User::class, [], 12); });
         $people = $this->get(route('admin.analytics.users.people'))->assertOk()->viewData('people');
         $this->assertSame(12, $people->perPage()); $this->assertCount(12, $people);

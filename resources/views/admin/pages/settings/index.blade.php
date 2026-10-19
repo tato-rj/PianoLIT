@@ -46,6 +46,7 @@
 @endsection
 
 @section('scripts')
+  <script src="{{ asset('js/components/admin-table-bulk-delete.js') }}" defer></script>
   <script src="{{ mix('js/views/admin-design-system.js') }}" defer></script>
   <script src="{{ mix('js/views/admin-access-limits.js') }}" defer></script>
 @endsection

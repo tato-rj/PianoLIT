@@ -42,11 +42,4 @@ class Location extends PianoLit
         return $query->where('countryName', $country);
     }
 
-    public function scopeDatatable($query)
-    {
-        return datatable($query)->withBlade([
-            'user' => view('admin.pages.users.locations.table.user'),
-            'action' => view('admin.pages.users.locations.table.actions')
-        ])->make();
-    }
 }

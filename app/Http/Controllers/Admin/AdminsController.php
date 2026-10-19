@@ -87,11 +87,8 @@ class AdminsController extends Controller
     /**
      * Display the subscriptions index page.
      */
-    public function subscriptions()
+    public function subscriptions(Request $request, \App\Services\Admin\SubscriptionsTable $table)
     {
-        if (request()->ajax())
-            return Subscription::datatable();
-
-        return view('admin.pages.subscriptions.index');
+        return view('admin.pages.subscriptions.index', $table->get($request));
     }
 }

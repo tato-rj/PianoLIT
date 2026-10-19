@@ -12,8 +12,6 @@ Route::prefix('analytics')->name('analytics.')->group(function() {
         Route::get('{user}/{tab?}', 'Admin\UserAnalyticsController@profile')->whereNumber('user')->where('tab', 'overview|visits|music|account')->name('profile');
     });
 
-	Route::get('logs', 'Admin\AnalyticsController@logs')->name('logs');
-	
 	Route::get('memberships', 'Admin\AnalyticsController@memberships')->name('memberships');
 
 	Route::get('pieces', 'Admin\AnalyticsController@pieces')->name('pieces');

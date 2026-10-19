@@ -1,0 +1,15 @@
+// Match the shared form field's content, padding and one-pixel borders.
+// Keep this reusable for action buttons alongside native or custom fields.
+@mixin field-control-sizing {
+    box-sizing: border-box;
+    min-height: max(var(--field-min-height), calc(1.5 * var(--field-font-size) + 2 * var(--field-padding-y) + 2px));
+    padding-top: var(--field-padding-y);
+    padding-bottom: var(--field-padding-y);
+    font-family: var(--font-family-body);
+    font-size: var(--field-font-size);
+    line-height: 1.5;
+
+    @media (max-width: 575px) {
+        --field-font-size: 16px;
+    }
+}

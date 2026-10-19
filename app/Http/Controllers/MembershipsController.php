@@ -118,11 +118,6 @@ class MembershipsController extends Controller
         return response()->json(['status' => $user->fullName . '\'s super status has been updated.']);
     }
 
-    public function logs()
-    {
-        return \App\MembershipLog::latest()->get();
-    }
-    
     /**
      * Remove a user's membership record (local environment only)
      * @param  User   $user 

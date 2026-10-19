@@ -33,12 +33,19 @@ class UsersTable
                 foreach (['created_at', 'id', 'first_name', 'last_name', 'email', 'origin'] as $column) {
                     $query->orWhereRaw("LOWER(users.{$column}) LIKE ? ESCAPE '!'", [$like]);
                 }
+                $query->orWhereHas('location', function ($location) use ($like) {
+                    $location->where(function ($location) use ($like) {
+                        foreach (['countryName', 'countryCode', 'regionName', 'regionCode', 'cityName'] as $column) {
+                            $location->orWhereRaw("LOWER(locations.{$column}) LIKE ? ESCAPE '!'", [$like]);
+                        }
+                    });
+                });
             });
         }
         [$sort, $direction] = explode('_', $filters['sort']);
         $sorts = ['date' => 'created_at', 'id' => 'id', 'name' => 'first_name', 'origin' => 'origin'];
         $users = $query->orderBy($sorts[$sort], $direction)->orderByDesc('id')
-            ->with('location:id,user_id,countryCode')
+            ->with('location:id,user_id,countryCode,countryName,regionName,cityName')
             ->paginate($filters['per_page'], ['*'], 'page', $filters['page'] ?? 1)
             ->appends(AdminTableFilters::query(array_diff_key($filters, ['page' => true])));
 

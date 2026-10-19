@@ -74,11 +74,12 @@ class AdminUserProfileTest extends ReviewTestCase
         $user->membership()->create(['source_type' => Apple::class, 'source_id' => $source->id]);
         $response = $this->actingAs(create(Admin::class), 'admin')->get(route('admin.users.show', $user))->assertOk()
             ->assertSee('Super user')->assertSee('Full media access')->assertSee('Apple App Store')->assertSee('original-123')
-            ->assertSee('excluded from activity tracking')->assertSee('Account removal is blocked')
+            ->assertSee('Account removal is blocked')
             ->assertDontSee('secret-receipt')->assertDontSee('secret-shared-password')
             ->assertDontSee(route('admin.analytics.users.profile', ['user' => $user->id]), false);
         $this->assertNull($response->viewData('source')->getRawOriginal('latest_receipt'));
         $this->assertNull($response->viewData('source')->getRawOriginal('password'));
+        $this->assertTrue($response->viewData('analyticsExcluded'));
         Http::assertNothingSent();
     }
 

@@ -1,1 +1,0 @@
-{{$item->user->full_name}}

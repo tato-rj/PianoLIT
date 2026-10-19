@@ -6,14 +6,6 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	Route::get('', 'Admin\UsersController@index')->name('index');
 
-	Route::prefix('locations')->name('locations.')->group(function() {
-
-		Route::get('', 'Admin\LocationsController@index')->name('index');
-
-		Route::get('load-map', 'Admin\LocationsController@loadMap')->name('load-map');
-	
-	});
-
 	Route::prefix('performances')->name('performances.')->group(function() {
 
 		Route::patch('{performance}', 'Admin\PerformancesController@update')->name('update');
@@ -24,11 +16,7 @@ Route::prefix('users')->name('users.')->group(function() {
 
 	});
 
-	Route::get('logs', 'Admin\UsersController@logs')->name('logs');
-
-	Route::get('{user}', 'Admin\UsersController@show')->name('show');
-
-	Route::get('{user}/load-logs', 'Admin\UsersController@loadLogs')->name('load-logs');
+	Route::get('{user}', 'Admin\UsersController@show')->whereNumber('user')->name('show');
 
 	Route::get('{user}/load-favorites', 'Admin\UsersController@loadFavorites')->name('load-favorites');
 

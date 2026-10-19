@@ -126,10 +126,9 @@ class ExcludedActivityTest extends ReviewTestCase
         $superUsers = (new MembershipReport)->get(Request::create('/', 'GET', ['provider' => 'super_user']));
         $this->assertSame(1, $superUsers['memberships']->total());
         $this->get(route('admin.analytics.users.people'))->assertOk()->assertDontSee('Arthur')->assertDontSee('Elena');
-        $this->getJson(route('admin.users.logs'), ['X-Requested-With' => 'XMLHttpRequest'])->assertOk()->assertJsonPath('recordsTotal', 1);
+        $this->get(route('admin.analytics.users', ['range' => 'all', 'history' => 1]))->assertOk()->assertViewHas('ungroupedCount', 1);
         $this->withExceptionHandling()->get(route('admin.analytics.users.journey', $linked))->assertNotFound();
         $this->get(route('admin.analytics.users.profile', $arthur))->assertNotFound();
-        $this->get(route('admin.users.load-logs', ['user' => $arthur->id, 'type' => 'webapp']))->assertOk()->assertDontSee('Open timeline');
     }
 
     public static function excludedEmails()

@@ -26,14 +26,6 @@ class AnalyticsController extends Controller
         return view('admin.pages.analytics.users.index');
     }
 
-    public function logs()
-    {
-        if (request()->ajax())
-            return (new Analytics)->for('logs')->query(request('type'), request()->except('type'))->get();
-
-        return view('admin.pages.analytics.logs.index');
-    }
-
     public function pieces(Request $request, PieceReport $report)
     {
         if (request()->ajax())

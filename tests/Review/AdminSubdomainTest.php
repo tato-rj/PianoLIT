@@ -69,7 +69,7 @@ class AdminSubdomainTest extends ReviewTestCase
             $this->assertSame($domain, $route->getDomain(), $route->getName());
             $this->assertFalse(strpos($route->uri(), 'admin/') === 0, $route->getName());
             $parameters = array_fill_keys($route->parameterNames(), '1');
-            if ($route->getName() === 'admin.analytics.users.journey') $parameters['visit'] = '00000000-0000-4000-8000-000000000001';
+            if (isset($parameters['visit'])) $parameters['visit'] = '00000000-0000-4000-8000-000000000001';
             if ($route->getName() === 'admin.analytics.users.profile') $parameters['tab'] = 'overview';
             $url = route($route->getName(), $parameters);
             $this->assertSame($domain, parse_url($url, PHP_URL_HOST));

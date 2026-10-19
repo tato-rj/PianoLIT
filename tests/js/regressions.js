@@ -40,6 +40,7 @@ async function main() {
     await require('./admin-page-loading')();
     require('./admin-design-system')();
     await require('./admin-table-loading')();
+    require('./admin-table-bulk-delete')();
     require('./admin-user-profile')();
     await require('./escore-wizard')();
     await require('./feedback')();
