@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Mail\Newsletter\Welcome;
 use App\Notifications\Subscriptions\NewSubscriber;
 
 class Subscription extends PianoLit
@@ -94,8 +93,8 @@ class Subscription extends PianoLit
         if ($joinAll)
             $subscriber->joinAll();
 
-        if ($notifyUser)
-            \Mail::to($form->email)->send(new Welcome($subscriber));
+        // Keep the legacy argument for existing registration/course callers.
+        // The retired newsletter welcome is no longer sent.
         
         Admin::notifyAll(new NewSubscriber($subscriber));
 

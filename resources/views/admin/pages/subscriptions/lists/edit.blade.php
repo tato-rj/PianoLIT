@@ -1,87 +1,53 @@
 @extends('admin.layouts.app')
 
-@section('head')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.19/integration/font-awesome/dataTables.fontAwesome.css">
-@endsection
-
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
+<div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [
-      'theme' => 'edit',
-      'title' => $list->name,
-      'subtitle' => 'Use this page to edit the list '.$list->name.'.',
-      'back' => ['view all lists' => route('admin.subscriptions.lists.index')]
+        'title' => $list->name, 'subtitle' => number_format($list->subscribers_count).' '.str_plural('subscriber', $list->subscribers_count).' on this list.',
+        'back' => ['Email lists' => route('admin.subscriptions.lists.index')],
     ])
 
-    <div class="row mb-2">
-      <div class="col-12">
-        <div class="alert alert-warning text-center">@icon('users', ['mr' => 0]) This list has a total of <strong>{{$list->subscribers_count}}</strong> {{str_plural('subscriber', $list->subscribers_count)}}</div>
-      </div>
-    </div>
+    <form method="POST" action="{{ route('admin.subscriptions.lists.update', $list) }}">
+        @csrf
+        @method('PATCH')
+        <input type="hidden" name="name" value="{{ $list->name }}">
+        @textarea(['bag' => 'default', 'id' => 'list-description', 'name' => 'description', 'label' => 'List description', 'value' => $list->description, 'rows' => 3, 'limit' => 2000])
+        @component('admin.components.table-save-actions', ['status' => 'Save the description after editing.'])
+            <button type="submit" class="btn btn-primary">@icon('check')Save changes</button>
+        @endcomponent
+    </form>
 
-    <div class="row mb-4">
-      <div class="col-12">
-        <form method="POST" action="{{route('admin.subscriptions.lists.update', $list)}}" class="row g-2">
-          @csrf
-          @method('PATCH')
-          <div class="col-lg-3 col-md-6 col-12">
-            <div class="form-group">
-              <input type="text" class="form-control" name="name" placeholder="List name" required value="{{$list->name}}">
-            </div>
-            <button type="submit" class="btn btn-default d-block w-100">Update list</button>
-          </div>
-          <div class="col-lg-9 col-md-6 col-12">
-            <div class="form-group h-100">
-              <textarea class="form-control h-100" name="description" required placeholder="Describe the list here">{{$list->description}}</textarea>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    @datatable(['table' => 'subscriptions', 'columns' => ['Date', 'Email', 'Origin', 'Status']])
-
-  </div>
-</div>
-
-@include('admin.components.modals.delete')
-
-@endsection
-
-@section('scripts')
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
-
-<script type="text/javascript">
-
-(new DataTable('#subscriptions-table')).columns([
-  {data: 'created_at', class: 'text-nowrap', sort: true},
-  {data: 'email', name: 'subscriptions.email'},
-  {data: 'origin_url', name: 'subscriptions.origin_url'},
-  {data: 'status'}
-]).create();
-</script>
-
-<script type="text/javascript">
-$('#check-all-datatable').change(function() {
-  $('.check-datatable').prop('checked', $(this).is(':checked'));
-  getIds();
-});
-
-$('.check-datatable').on('change', function() {
-  getIds();
-});
-
-function getIds()
-{
-  let ids = $('.check-datatable:checked').map(function() {
-    return $(this).attr('data-id');
-  }).toArray();
-  console.log(ids);
-
-  $('form#export-form input[name="ids"]').val(JSON.stringify(ids));
-}
-</script>
+    @component('admin.components.table', [
+        'id' => 'list-subscribers', 'label' => 'List subscribers', 'items' => $subscriptions,
+        'action' => route('admin.subscriptions.lists.edit', $list), 'state' => $filters,
+        'search' => ['label' => 'Find a subscriber', 'placeholder' => 'Email, origin, form or subscriber ID'],
+        'filters' => [['name' => 'status', 'label' => 'Subscription', 'options' => \App\Services\Admin\EmailListSubscribersTable::STATUSES]],
+        'sorts' => \App\Services\Admin\SubscriptionsTable::SORTS,
+        'columns' => [
+            ['label' => 'Date', 'sort' => ['asc' => 'date_asc', 'desc' => 'date_desc']],
+            ['label' => 'Email', 'sort' => ['asc' => 'email_asc', 'desc' => 'email_desc']],
+            ['label' => 'Origin', 'sort' => ['asc' => 'origin_asc', 'desc' => 'origin_desc']],
+            'On this list',
+        ],
+        'emptyTitle' => 'No matching subscribers', 'emptyDescription' => 'Try another search or subscription filter.',
+    ])
+        @foreach($subscriptions as $item)
+        <tr>
+            <td class="text-nowrap">@if($item->created_at)<time datetime="{{ $item->created_at->toIso8601String() }}">{{ $item->created_at->toFormattedDateString() }}</time>@endif</td>
+            <td><span class="admin-table__primary">{{ $item->email }}</span></td>
+            <td class="admin-table__account">{{ $item->origin_url ?: '—' }}</td>
+            <td>
+                <form method="POST" action="{{ route('admin.subscriptions.lists.status', $list) }}">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="subscriberId" value="{{ $item->id }}">
+                    <input type="hidden" name="enabled" value="0">
+                    @toggle(['toggle' => (bool) $item->list_subscribed, 'autoToggle' => false, 'name' => 'enabled', 'inputValue' => '1', 'ariaLabel' => 'Subscribe '.$item->email.' to '.$list->name, 'submitOnChange' => true])
+                    <noscript><button type="submit" class="btn btn-sm btn-outline-secondary">Save</button></noscript>
+                </form>
+            </td>
+        </tr>
+        @endforeach
+    @endcomponent
+</div></div>
 @endsection

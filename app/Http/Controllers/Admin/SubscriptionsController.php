@@ -41,9 +41,14 @@ class SubscriptionsController extends Controller
 
     public function export(Request $request)
     {
-        $request->validate(['type' => 'required|string|in:members,fans']);
+        $request->validate([
+            'type' => 'required|string|in:members,fans,txt',
+            'list_id' => 'required_if:type,txt|integer|min:1|exists:email_lists,id',
+        ]);
 
-        $emails = (new SubscriptionExport)->for($request->type)->get();
+        $emails = $request->type === 'txt'
+            ? EmailList::findOrFail($request->list_id)->subscribers()->orderBy('email')->pluck('email')->all()
+            : (new SubscriptionExport)->for($request->type)->get();
 
         return view('admin.pages.subscriptions.exports.txt', compact('emails'));
     }

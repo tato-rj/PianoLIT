@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Tests\AppTest;
 use App\{EmailCampaignReport, EmailList, EmailLog, Subscription, Piece};
-use App\Mail\{FreePickEmail, NewsletterEmail};
+use App\Mail\FreePickEmail;
 use App\Notifications\Emails\EmailListSentNotification;
 use App\Jobs\{SendMassEmails, SendEmail};
 
@@ -21,16 +21,12 @@ class EmailListTest extends AppTest
         
         $this->subscriber1 = create(Subscription::class);
         $this->subscriber2 = create(Subscription::class);
-        $this->subscriber3 = create(Subscription::class);
-        $this->subscriber4 = create(Subscription::class);
 
     	$this->freePickList = create(EmailList::class, ['name' => 'Free Pick']);
     	$this->freePickList->subscribers()->attach($this->subscriber1);
     	$this->freePickList->subscribers()->attach($this->subscriber2);
 
-        $this->newsletterList = create(EmailList::class, ['name' => 'Newsletter']);
-        $this->newsletterList->subscribers()->attach($this->subscriber3);
-        $this->newsletterList->subscribers()->attach($this->subscriber4);
+
     }
 
     /** @test */
@@ -40,7 +36,7 @@ class EmailListTest extends AppTest
 
         $this->signIn();
 
-    	$this->get(route('admin.subscriptions.lists.send', $this->freePickList));
+        $this->post(route('admin.subscriptions.lists.send', $this->freePickList));
 
 		\Queue::assertPushed(SendMassEmails::class, 1);
 
@@ -88,31 +84,9 @@ class EmailListTest extends AppTest
 
     	\Mail::fake();
 
-    	$this->get(route('admin.subscriptions.lists.send-to', ['list' => $this->freePickList, 'email' => 'test@email.com']));
+        $this->post(route('admin.subscriptions.lists.send-to', ['list' => $this->freePickList, 'email' => 'test@email.com']));
 
         \Mail::assertQueued(FreePickEmail::class, 1);
-    }
-
-    /** @test */
-    public function admins_can_send_out_a_newsletter_with_a_custom_subject_line()
-    {
-        $this->signIn();
-
-        \Mail::fake();
-
-        $this->get(route('admin.subscriptions.lists.send-to', ['list' => $this->newsletterList, 'email' => 'test@email.com', 'subject' => 'foo']));
-         
-        \Mail::assertQueued(NewsletterEmail::class, function($mail) {
-            return $mail->subject == 'foo';
-        });
-
-        \Queue::fake();
-
-        $this->get(route('admin.subscriptions.lists.send', ['list' => $this->newsletterList, 'subject' => 'bar']));
-
-        \Queue::assertPushed(SendMassEmails::class, function($job) {
-            return $job->subject == 'bar';
-        });
     }
 
     /** @test */

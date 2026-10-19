@@ -1,20 +1,25 @@
-// Table filter actions use the same dimensions as PianoLIT inputs. Apply the
-// same sizing to older filter fields so their local styles cannot diverge.
-.admin-table .admin-table__button,
-.ua .ua-filters > .ua-button,
-.ua .ua-filters input:not([type='hidden']):not([type='checkbox']):not([type='radio']),
-.ua .ua-filters select,
-.ua .ua-filters select:not(.admin-filter-select):not(.form-control):not(.form-select),
-.admin-filter-select,
-.admin-date-range .admin-date-range-panel input,
-.admin-date-range .admin-date-range-footer button,
-.composer-analytics .ca-filters input,
-.composer-analytics .ca-filters select,
-.composer-analytics .ca-filters > .ca-button,
-.folder-analytics .fa-filters input,
-.folder-analytics .fa-filters select,
-.folder-analytics .fa-filters > .fa-button,
-.piece-analytics .pa-growth-filter select,
-.piece-analytics .pa-growth-filter button {
-    @include field-control-sizing;
+// DataTables retains its native search/length handlers while its shared Blade
+// filter form owns layout. Override only the vendor wrapper layout.
+.dataTables_wrapper .admin-filter-form {
+    .dataTables_filter,
+    .dataTables_length {
+        float: none;
+        text-align: left;
+        margin: 0;
+    }
+    .dataTables_filter {
+        input {
+            margin: 0;
+            width: 100%;
+            display: block;
+        }
+    }
+    .dataTables_length select {
+        width: 100%;
+    }
+    .dataTables_length {
+        // The old mobile theme hides this feature. Shared forms retain the
+        // same page-size choice on phones as every server-rendered directory.
+        display: block !important;
+    }
 }

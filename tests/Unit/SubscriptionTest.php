@@ -12,14 +12,13 @@ class SubscriptionTest extends AppTest
         parent::setUp();
 
 		$this->subscription = create(Subscription::class);
-		create(EmailList::class, ['name' => 'Newsletter']);
-		create(EmailList::class, ['name' => 'Free Pick']);
+		create(EmailList::class, ['name' => 'Other updates']);
     }
 
 	/** @test */
 	public function it_belongs_to_many_lists()
 	{
-		$this->subscription->join(EmailList::newsletter());
+		$this->subscription->join(EmailList::byName('Other updates'));
 
 		$this->assertInstanceOf(EmailList::class, $this->subscription->lists()->first());
 	}
@@ -27,7 +26,7 @@ class SubscriptionTest extends AppTest
 	/** @test */
 	public function it_knows_how_to_join_or_leave_an_email_list()
 	{
-		$this->subscription->join(EmailList::newsletter());
+		$this->subscription->join(EmailList::byName('Other updates'));
 
 		$this->assertCount(1, $this->subscription->lists()->get());
 		
@@ -35,7 +34,7 @@ class SubscriptionTest extends AppTest
 
 		$this->assertCount(2, $this->subscription->lists()->get());
 
-		$this->subscription->leave(EmailList::newsletter());
+		$this->subscription->leave(EmailList::byName('Other updates'));
 		
 		$this->assertCount(1, $this->subscription->lists()->get());
 		
@@ -47,10 +46,10 @@ class SubscriptionTest extends AppTest
 	/** @test */
 	public function it_knows_if_it_is_in_a_given_list()
 	{
-		$this->assertFalse($this->subscription->in(EmailList::newsletter()));
+		$this->assertFalse($this->subscription->in(EmailList::byName('Other updates')));
 	
-		$this->subscription->join(EmailList::newsletter());
+		$this->subscription->join(EmailList::byName('Other updates'));
 
-		$this->assertTrue($this->subscription->in(EmailList::newsletter()));		 
+		$this->assertTrue($this->subscription->in(EmailList::byName('Other updates')));
 	}
 }

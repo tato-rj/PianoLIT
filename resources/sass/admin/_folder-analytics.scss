@@ -351,51 +351,6 @@
         font-size: var(--font-size-sm);
         color: #626d65;
     }
-    .fa-filters {
-        display: flex;
-        align-items: flex-end;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 22px;
-    }
-    .fa-filters > div {
-        flex: 0 1 180px;
-        min-width: 0;
-    }
-    .fa-filters .fa-search {
-        flex: 1 1 250px;
-    }
-    .fa-filters label {
-        display: block;
-        font-size: var(--font-size-sm);
-        color: #626d65;
-        margin-bottom: 8px;
-    }
-    .fa-search > div {
-        position: relative;
-    }
-    .fa-search .app-icon {
-        position: absolute;
-        top: 14px;
-        left: 14px;
-        width: 18px;
-        height: 18px;
-        color: #78837a;
-    }
-    .fa-filters input,
-    .fa-filters select {
-        width: 100%;
-        min-height: 46px;
-        border: 1px solid #fff;
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.72);
-        color: inherit;
-        padding: 10px 12px;
-        font: inherit;
-    }
-    .fa-filters input {
-        padding-left: 42px;
-    }
     .fa-button {
         display: inline-flex;
         align-items: center;
@@ -413,14 +368,6 @@
     .fa-button .app-icon {
         width: 18px;
         height: 18px;
-    }
-    .fa-button--dark {
-        background: #263b2f;
-        border-color: #263b2f;
-        color: #fff;
-    }
-    .fa-reset {
-        padding: 12px;
     }
     .fa-folder-grid {
         display: grid;
@@ -647,10 +594,6 @@
             grid-template-columns: 88px minmax(10px, 1fr) 28px 44px;
             gap: 6px;
             padding: 10px 0;
-        }
-        .fa-filters > div,
-        .fa-filters .fa-search {
-            flex: 1 1 100%;
         }
         .fa-ranking li {
             grid-template-columns: 18px minmax(0, 1fr);

@@ -5,10 +5,10 @@
 @endonce
 <div class="admin-datatable" data-admin-datatable>
     <div class="admin-datatable__placeholder admin-datatable__placeholder--top dataTables_wrapper" aria-hidden="true">
-        <div class="row">
-            <div class="col-sm-12 col-md-6"><div class="dataTables_length"><label>Show <select class="form-select" disabled tabindex="-1"><option>{{ \App\Support\AdminPagination::PER_PAGE }}</option></select> entries</label></div></div>
-            <div class="col-sm-12 col-md-6"><div class="dataTables_filter"><label>Search:<input type="search" class="form-control" disabled tabindex="-1"></label></div></div>
-        </div>
+        @include('admin.components.filters.form', ['id' => $tableId.'-placeholder-filters', 'label' => 'Loading table filters', 'preview' => true, 'slot' => null, 'note' => null, 'resetUrl' => null, 'state' => [], 'fields' => [
+            ['type' => 'search', 'name' => 'search', 'label' => 'Search', 'disabled' => true, 'class' => 'dataTables_filter'],
+            ['name' => 'per_page', 'label' => 'Per page', 'options' => [\App\Support\AdminPagination::PER_PAGE => \App\Support\AdminPagination::PER_PAGE], 'disabled' => true, 'class' => 'dataTables_length'],
+        ], 'buttons' => [['label' => 'Apply filters', 'disabled' => true]]])
     </div>
     {{ $slot }}
     <div class="admin-datatable__placeholder admin-datatable__placeholder--bottom dataTables_wrapper" aria-hidden="true">

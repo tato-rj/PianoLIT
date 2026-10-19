@@ -15,7 +15,7 @@ such as Membership directory inside Membership analytics.
 
 ## Component usage
 
-The component owns the rounded card, heading, filter form, table headers,
+The component owns the rounded card, heading, shared filter form, table headers,
 scrolling region, empty state, result summary and pagination. The default slot
 contains only trusted Blade-rendered `<tr>` rows. Cell values use escaped Blade
 expressions; do not pass submitted HTML as the slot.
@@ -65,11 +65,47 @@ Optional parameters:
   Changing filters or sorting resets this list’s page parameter; paginator
   links retain applied filters. Sort links preserve other query parameters.
 - `showReset` and `resetUrl`: override automatic reset visibility/destination.
+- `filterAction`: an optional form action with a section fragment, for a directory
+  inside a report. Keep `action` without a fragment for sortable header URLs.
+- `emptyAction`: an optional trusted `url` / `label` map for the shared empty-state
+  button, such as First page or Show all composers.
 - `tableClass` and `class`: page-specific table/card hooks. Keep special cell
   sizing in scoped Sass rather than duplicating the shared structure.
 - `label`: accessible table/filter/scroll-region name, defaulting to the title.
 - Named `toolbar` slot: optional bulk actions or supporting content inside the
   card and outside the GET filter form. Keep POST forms out of the GET form.
+
+## One shared filter form
+
+Every admin table/list filter form uses `admin.components.filters.form`. The
+shared table delegates to it; standalone analytics, People, visit sorting,
+folder directories and catalogue growth use it directly. The composer directory
+also uses the shared table. Retained legacy filter partials delegate to this
+same form; the alternate membership template delegates to the current view.
+
+Pass a unique `id`, accessible `label`, optional GET `action`, `state`, and
+`fields`. Each field has `name`, `label`, and either `options` (a value/label map)
+or `type: search` / `type: text`; search fields may set `placeholder` and
+`maxlength`. Optional `buttons` definitions use the shared `filters.button`;
+the default is Apply filters. A submit button can retain `name` and `value`
+(for example, visit order). `secondary: true` is the consistent Reverse/Clear
+variant. Use `resetUrl` for the shared Reset link, the default slot for advanced
+widgets, and the `note` slot for supporting copy. Avoid page-specific classes
+that redefine fields or buttons. `preview: true` renders a non-submitting div
+and type=button actions for Design System specimens.
+
+`filters.hidden` recursively preserves scalar and array query values with
+escaped names/values. Drop only the relevant list's page key before passing
+`hidden`. Visit sorting preserves multi-platform selections, dates, tab and
+other list pages; only the clicked submitter sends `visit_order`, so Apply and
+Reverse cannot conflict with a hidden order value. Standard checkbox/radio
+filter choices use `components.form.checkbox`, also shown in the Design System.
+
+The shared form owns wrapping, spacing, labels, search width and responsive
+layout in `admin/_filter-controls.scss`. `@input`, `@select` and `.form-control`
+own field appearance; custom date/multiple-choice triggers use the same native
+select arrow mixin and field tokens. All Apply actions share the same button
+component and sizing. Remove old local filter styles when migrating consumers.
 
 ## Queries and navigation
 
@@ -142,9 +178,9 @@ spacing. Search and select filters compose the shared `@input` / `@select`
 components and default Design System field styles, including borders, size,
 focus, disabled and validation states. Keep only width/layout rules in table
 styles. Page-specific badges and cells retain their meaning.
-Filter action buttons use that same field sizing through the shared
-`field-control-sizing` mixin, including responsive touch sizing. Other analytics
-filter rows follow it too; keep their inputs and buttons equal in height.
+Filter action buttons use `admin.components.filters.button` and the shared
+`field-control-sizing` mixin, including responsive touch sizing. Do not copy a
+filter form or action button into a page; configure the common components.
 Wide tables scroll horizontally within the card; do not shrink text to fit a
 phone. Tables expand to fit every row and use the page for vertical scrolling.
 Never add a fixed/max-height table viewport or independent vertical scrollbar.
@@ -161,6 +197,17 @@ isolated SQLite fixtures and fake services as described in `AGENTS.md`; never
 perform destructive verification against real accounts.
 
 ## DataTables awaiting migration
+
+Legacy DataTables search/page-size forms also come from the common form. The
+`filters.datatable` partial supplies an inert Blade template for every
+`@datatable` / `@datatableRaw`; `admin-table-fields.js` moves the original feature
+nodes and input/select elements into that template before the first draw. This
+retains DataTables handlers, search, state, requests and vendor row structure,
+while using the same labels, fields and Apply button. The standard default and
+menu use `AdminPagination`; explicit settings and restored sizes are preserved,
+including pages loading a later Bootstrap/DataTables adapter. The initialization
+skeleton uses the same form with disabled fields. Keep the adapter shared;
+never add per-page filter-generation JavaScript.
 
 Other pages retain the legacy `admin.components.table-card`, standard
 `@datatable` layout and `admin.components.datatable-frame`. Keep preloaded first

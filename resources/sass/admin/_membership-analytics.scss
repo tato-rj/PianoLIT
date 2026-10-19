@@ -216,20 +216,10 @@
         color: #626b64;
         line-height: 1.5;
     }
-    .ma-reset {
-        padding: 10px 5px;
-        font-size: var(--font-size-sm);
-    }
     .ma-scroll-hint {
         display: none;
         color: #626b64;
         font-size: var(--font-size-sm);
-    }
-    .ua-filters {
-        gap: 12px;
-    }
-    .ua-filters > label:not(.ua-search) {
-        min-width: 130px;
     }
     @media (max-width: 1400px) {
         .ma-summary-grid {
@@ -266,13 +256,6 @@
         }
         .ma-metric:last-child {
             grid-column: 1 / -1;
-        }
-        .ua-filters > label {
-            flex: 1 1 140px;
-            min-width: 0;
-        }
-        .ua-filters > .ua-search {
-            flex-basis: 100%;
         }
     }
 }

@@ -160,29 +160,6 @@
     .pa-section > .pa-note {
         margin-top: 18px;
     }
-    .pa-growth-filter {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        font-size: var(--font-size-sm);
-    }
-    .pa-growth-filter select,
-    .pa-growth-filter button {
-        font: inherit;
-        font-size: var(--font-size-base);
-        padding: 8px 12px;
-        min-height: 42px;
-        border: 1px solid #dddfe1;
-        border-radius: 12px;
-        background: #fff;
-        color: inherit;
-    }
-    .pa-growth-filter button {
-        background: #e7e0ef;
-        border-color: #e7e0ef;
-        cursor: pointer;
-    }
     .pa-growth-total {
         display: flex;
         align-items: baseline;
@@ -681,9 +658,6 @@
         }
         .pa-issues > div:last-child {
             grid-column: 1 / -1;
-        }
-        .pa-growth-filter label {
-            flex-basis: 100%;
         }
         .admin-country-card {
             padding: 0;

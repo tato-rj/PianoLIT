@@ -35,6 +35,6 @@
         @endforeach
     @endcomponent
 
-    <p class="admin-emails__note">Newsletter, free-pick, birthday and course emails belong to subscriptions and are outside this automatic-email catalog. This page covers user-facing messages; internal admin reports are separate. Stripe and Apple receipts follow their provider settings.</p>
+    <p class="admin-emails__note">Free-pick, birthday and course emails belong to subscriptions and are outside this automatic-email catalog. This page covers user-facing messages; internal admin reports are separate. Stripe and Apple receipts follow their provider settings.</p>
 </div></div>
 @endsection

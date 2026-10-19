@@ -30,7 +30,6 @@ class AppTest extends TestCase
 
         $this->redisPrefix = config('database.redis.prefix');
 
-        create(EmailList::class, ['name' => 'Newsletter']);
         create(EmailList::class, ['name' => 'Free Pick']);
 
         $this->admin = create(Admin::class);

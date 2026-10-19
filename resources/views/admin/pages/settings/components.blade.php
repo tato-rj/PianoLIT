@@ -88,8 +88,11 @@
   </div>
   <p class="design-system__note">Table card values are measured from the shared component. Filters and pagination use the same styles on live directory pages.</p>
   <div class="design-system__grid">
-    @component('admin.pages.settings.sample', ['label' => 'Admin filter', 'usage' => '.admin-table__filters', 'properties' => 'font-size,padding,border,border-radius,background-color'])
-      <div class="admin-table p-0 border-0"><div class="admin-table__filters mb-0">@input(['bag' => 'default', 'id' => 'ds-table-search', 'name' => 'ds_table_search', 'type' => 'search', 'label' => 'Search accounts', 'placeholder' => 'Name or email', 'required' => false, 'grid' => 'admin-table__search', 'designSystemPreview' => true])<button type="button" class="admin-table__button">Apply filters</button></div></div>
+    @component('admin.pages.settings.sample', ['label' => 'Admin filter', 'usage' => 'admin.components.filters.form · fields · button', 'properties' => 'font-size,padding,border,border-radius,background-color'])
+      @include('admin.components.filters.form', [
+        'id' => 'ds-table-filters', 'label' => 'Sample table filters', 'preview' => true, 'fields' => [['type' => 'search', 'name' => 'ds_table_search', 'label' => 'Search accounts', 'placeholder' => 'Name or email', 'designSystemPreview' => true]],
+        'buttons' => [['label' => 'Apply filters'], ['label' => 'Reverse order', 'secondary' => true, 'icon' => 'arrow-down']],
+      ])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Pagination', 'usage' => '.pagination + .page-link', 'properties' => 'font-size,padding,border,border-radius,background-color'])
       <div class="admin-table p-0 border-0"><nav aria-label="Sample pagination"><ul class="pagination"><li class="page-item disabled"><span class="page-link" aria-label="Previous page">@icon('chevron-left', ['mr' => 0])</span></li><li class="page-item active" aria-current="page"><span class="page-link" data-ds-preview>1</span></li><li class="page-item"><button class="page-link" type="button">2</button></li><li class="page-item"><button class="page-link" type="button" aria-label="Next page">@icon('chevron-right', ['mr' => 0])</button></li></ul></nav></div>

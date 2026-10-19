@@ -3,11 +3,10 @@
 <div class="content-wrapper"><div class="container-fluid ua">
     @include('admin.components.page.title', ['title' => 'User analytics', 'subtitle' => 'Registered accounts and recorded activity.'])
     @include('admin.pages.analytics.users.nav', ['active' => 'people'])
-    <form class="ua-filters ua-directory-filters" method="GET" aria-label="People filters">
-        @input(['bag' => 'default', 'id' => 'people-search', 'name' => 'search', 'type' => 'search', 'label' => 'Find someone', 'placeholder' => 'Name or email', 'value' => request('search'), 'limit' => 160, 'required' => false, 'grid' => 'ua-search'])
+    @component('admin.components.filters.form', ['id' => 'people-filters', 'label' => 'People filters'])
+        @input(['bag' => 'default', 'id' => 'people-search', 'name' => 'search', 'type' => 'search', 'label' => 'Find someone', 'placeholder' => 'Name or email', 'value' => request('search'), 'limit' => 160, 'required' => false, 'grid' => 'admin-filter-search'])
         @select(['bag' => 'default', 'id' => 'people-sort', 'name' => 'sort', 'label' => 'Sort by', 'choices' => ['last_active' => 'Last activity', 'registered' => 'Registration date', 'engagement' => 'Pieces opened'], 'value' => request('sort', 'last_active'), 'required' => false])
-        <button class="ua-button" type="submit">Search people</button>
-        <details class="ua-directory-options" @if(request()->hasAny(['origin', 'country', 'status', 'activity', 'registered_from', 'registered_to', 'active_from', 'active_to'])) open @endif><summary>More filters</summary><div class="ua-filters">
+        <details class="admin-filter-options" @if(request()->hasAny(['origin', 'country', 'status', 'activity', 'registered_from', 'registered_to', 'active_from', 'active_to'])) open @endif><summary>More filters</summary><div class="admin-filter-fields">
             @select(['bag' => 'default', 'id' => 'people-origin', 'name' => 'origin', 'label' => 'Signup platform', 'choices' => ['' => 'Any platform', 'web' => 'Website', 'webapp' => 'Webapp', 'ios' => 'iOS', 'android' => 'Android'], 'value' => request('origin'), 'required' => false])
             @input(['bag' => 'default', 'id' => 'people-country', 'name' => 'country', 'label' => 'Country code', 'limit' => 2, 'placeholder' => 'US', 'value' => request('country'), 'required' => false])
             @select(['bag' => 'default', 'id' => 'people-status', 'name' => 'status', 'label' => 'Membership', 'choices' => ['' => 'All statuses'] + array_combine(['Active', 'Trial', 'Grace period', 'Super user', 'Expired or inactive', 'No membership'], ['Active', 'Trial', 'Grace period', 'Super user', 'Expired or inactive', 'No membership']), 'value' => request('status'), 'required' => false])
@@ -15,7 +14,7 @@
             @include('admin.components.filters.date-range', ['label' => 'Registration dates', 'showLabel' => true, 'placeholder' => 'Any date', 'fromName' => 'registered_from', 'toName' => 'registered_to', 'from' => request('registered_from', ''), 'to' => request('registered_to', '')])
             @include('admin.components.filters.date-range', ['label' => 'Activity dates', 'showLabel' => true, 'placeholder' => 'Any date', 'fromName' => 'active_from', 'toName' => 'active_to', 'from' => request('active_from', ''), 'to' => request('active_to', '')])
         </div></details>
-    </form>
+    @endcomponent
     @component('admin.components.table', [
         'id' => 'analytics-people', 'title' => 'Registered users', 'label' => 'Registered users', 'items' => $people, 'pageSizes' => [],
         'description' => number_format($people->total()).' registered accounts · Includes browser activity and legacy iOS requests. iOS account associations are unverified; visit and piece counts describe browser activity.',

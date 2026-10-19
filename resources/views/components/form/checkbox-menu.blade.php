@@ -6,8 +6,8 @@
     $menuError = $errors->first($name);
 @endphp
 <div class="checkbox-menu dropdown" data-checkbox-menu data-all-label="{{ $menuAllLabel }}">
-    <span class="admin-filter-label" id="{{ $menuId }}-label">{{ $label }}</span>
-    <button type="button" class="admin-filter-select" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-controls="{{ $menuId }}-options" aria-labelledby="{{ $menuId }}-label {{ $menuId }}-summary" @if(!empty($designSystemPreview)) data-ds-preview @endif>
+    @include('components.form.label', ['labelTag' => 'span', 'labelId' => $menuId.'-label'])
+    <button type="button" class="form-control admin-filter-select" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-controls="{{ $menuId }}-options" aria-labelledby="{{ $menuId }}-label {{ $menuId }}-summary" @if(!empty($designSystemPreview)) data-ds-preview @endif>
         <span id="{{ $menuId }}-summary" data-checkbox-menu-summary>{{ $menuSummary ?: 'Choose options' }}</span>
     </button>
     <div class="dropdown-menu p-2" id="{{ $menuId }}-options" role="group" aria-labelledby="{{ $menuId }}-label">

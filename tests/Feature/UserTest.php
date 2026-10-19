@@ -55,7 +55,6 @@ class UserTest extends AppTest
 
         $this->assertDatabaseHas('subscriptions', ['email' => auth()->user()->email]);
 
-        $this->assertTrue(EmailList::newsletter()->has(auth()->user()->email));
         $this->assertTrue(EmailList::freepick()->has(auth()->user()->email));
     }
 

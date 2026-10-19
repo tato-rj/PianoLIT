@@ -20,9 +20,9 @@ Route::prefix('subscriptions')->name('subscriptions.')->group(function() {
 
 		Route::get('preview/{list}', 'Admin\EmailListsController@preview')->name('preview');
 
-		Route::get('send/{list}/to', 'Admin\EmailListsController@sendTo')->name('send-to');
+		Route::post('send/{list}/to', 'Admin\EmailListsController@sendTo')->name('send-to');
 
-		Route::get('send/{list}', 'Admin\EmailListsController@send')->name('send');
+		Route::post('send/{list}', 'Admin\EmailListsController@send')->name('send');
 
 		Route::get('{list}/edit', 'Admin\EmailListsController@edit')->name('edit');
 

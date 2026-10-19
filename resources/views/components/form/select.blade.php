@@ -7,6 +7,8 @@
 		style="{{$styles ?? null}}" 
 		@if($designSystemPreview ?? false) data-ds-preview @endif
 		{{$required ?? 'required'}} 
+		@if($disabled ?? false) disabled @endif
+		@if($submitOnChange ?? false) onchange="this.form.submit()" @endif
 		name="{{$name}}">
 
 		@isset($placeholder)

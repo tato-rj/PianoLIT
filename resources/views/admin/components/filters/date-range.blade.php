@@ -13,8 +13,8 @@
     $dateSummary = (empty($periodName) || $dateSelected === 'all') && $dateSelected && $dateSelected !== 'custom' ? $datePresets[$dateSelected]['label'] : ($dateSelected === 'custom' ? 'Custom range' : $datePlaceholder);
 @endphp
 <details class="admin-date-range" data-admin-date-range data-period-name="{{ $periodName ?? '' }}" data-current-preset="{{ $dateSelected }}" data-default-preset="{{ $defaultPreset ?? (empty($periodName) ? 'all' : '') }}" data-required="{{ !empty($requireBoth) ? 'true' : 'false' }}" data-placeholder="{{ $datePlaceholder }}" data-label="{{ $dateFieldLabel }}">
-    @if(!empty($showLabel))<span class="admin-filter-label admin-date-range-label">{{ $dateFieldLabel }}</span>@endif
-    <summary class="admin-filter-select" aria-haspopup="dialog" aria-controls="{{ $dateId }}" aria-expanded="false" aria-label="{{ $dateFieldLabel }}: {{ $dateSummary }}" @if(!empty($designSystemPreview)) data-ds-preview @endif>
+    @if(!empty($showLabel))@include('components.form.label', ['label' => $dateFieldLabel, 'labelTag' => 'span', 'labelId' => $dateId.'-field-label'])@endif
+    <summary class="form-control admin-filter-select" aria-haspopup="dialog" aria-controls="{{ $dateId }}" aria-expanded="false" aria-label="{{ $dateFieldLabel }}: {{ $dateSummary }}" @if(!empty($designSystemPreview)) data-ds-preview @endif>
         <span data-date-range-summary>{{ $dateSummary }}</span>
     </summary>
     <input type="hidden" name="{{ $fromName ?? 'from' }}" value="{{ $dateFrom }}" data-date-range-from>
@@ -29,13 +29,13 @@
         <div class="admin-date-range-editor">
             <h3 id="{{ $dateId }}-title">{{ $dateLabel }}</h3>
             <div class="admin-date-range-fields">
-                <label for="{{ $dateId }}-from">From<input type="date" id="{{ $dateId }}-from" value="{{ $dateFrom }}" data-date-draft-from></label>
-                <label for="{{ $dateId }}-to">To<input type="date" id="{{ $dateId }}-to" value="{{ $dateTo }}" data-date-draft-to></label>
+                <label for="{{ $dateId }}-from">From<input class="form-control" type="date" id="{{ $dateId }}-from" value="{{ $dateFrom }}" data-date-draft-from></label>
+                <label for="{{ $dateId }}-to">To<input class="form-control" type="date" id="{{ $dateId }}-to" value="{{ $dateTo }}" data-date-draft-to></label>
             </div>
             <p class="admin-date-range-error" data-date-range-error role="alert" hidden></p>
             <div class="admin-date-range-footer">
-                <button type="button" class="admin-date-range-clear" data-date-range-clear>Clear</button>
-                <button type="button" class="admin-date-range-apply" data-date-range-apply>Apply</button>
+                @include('admin.components.filters.button', ['button' => ['type' => 'button', 'label' => 'Clear', 'secondary' => true, 'data' => ['date-range-clear' => '']]])
+                @include('admin.components.filters.button', ['button' => ['type' => 'button', 'label' => 'Apply', 'data' => ['date-range-apply' => '']]])
             </div>
         </div>
     </div>

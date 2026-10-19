@@ -40,7 +40,8 @@ class SubscriptionsController extends Controller
      */
     public function store(Request $request, SubscriptionForm $form)
     {
-        if (EmailList::newsletter()->has($form->email) && ! $request->gift_url)
+        $list = EmailList::where('name', EmailList::FREE_PICK)->first();
+        if ($list && $list->has($form->email) && ! $request->gift_url)
             return redirect()->back()->with('error', 'We already have this email in our subscription list.');
 
         $subscriber = Subscription::createOrActivate($form);

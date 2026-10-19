@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\{Admin, Subscription, User, EmailList};
 use Tests\AppTest;
-use App\Mail\Newsletter\Welcome as WelcomeToNewsletter;
 
 class AdminTest extends AppTest
 {
@@ -115,9 +114,9 @@ class AdminTest extends AppTest
 
         $this->assertEquals(3, Subscription::count());
 
-        $this->assertTrue(EmailList::newsletter()->has('test1@email.com'));
+        $this->assertTrue(EmailList::freepick()->has('test1@email.com'));
 
-        \Mail::assertNotQueued(WelcomeToNewsletter::class);
+        \Mail::assertNothingSent();
     }
 
     /** @test */

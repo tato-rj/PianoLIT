@@ -7,6 +7,8 @@ use App\Jobs\SendMassEmails;
 
 class EmailList extends PianoLit
 {
+    const FREE_PICK = 'Free Pick';
+
 	protected $dates = ['last_sent_at'];
     protected $casts = ['previewable' => 'boolean'];
 	protected $withCount = ['subscribers'];
@@ -38,12 +40,9 @@ class EmailList extends PianoLit
 
 	public function mailable($list_id, $subscription = null)
 	{
-		$model = '\App\Mail\\' . str_replace(' ', '', $this->name) . 'Email';
+        abort_unless($this->name === self::FREE_PICK, 404);
 
-		if (class_exists($model))
-			return new $model($list_id, $subscription);
-
-		abort(404, "The mail class {$model} does not exist");
+        return new \App\Mail\FreePickEmail($list_id, $subscription);
 	}
 
     public function subscribers()
@@ -56,24 +55,14 @@ class EmailList extends PianoLit
         return $query->where('name', ucwords($name))->first();
     }
 
-    public function scopeNewsletter($query)
-    {
-        return $query->where('name', 'Newsletter')->first();
-    }
-
     public function scopeFreepick($query)
     {
-        return $query->where('name', 'Free Pick')->first();
+        return $query->where('name', self::FREE_PICK)->first();
     }
 
     public function scopeBirthdays($query)
     {
         return $query->where('name', 'Birthdays')->first();
-    }
-
-    public function scopeTutorials($query)
-    {
-        return $query->where('name', 'Latest Tutorials')->first();
     }
 
     public function scopeTest($query)
@@ -84,14 +73,6 @@ class EmailList extends PianoLit
     public function listId()
     {
         return  str_slug($this->name) . '.' . now()->timestamp;
-    }
-
-    public function scopeDatatable($query, EmailList $list)
-    {
-        return datatable(Subscription::query())->withDate()->withBlade([
-            'status' => view('admin.pages.subscriptions.toggles.status', compact('list')),
-            'action' => view('admin.pages.subscriptions.actions')
-        ])->checkable()->make();
     }
 
     public function has($email)
@@ -121,8 +102,4 @@ class EmailList extends PianoLit
                 $this->add($subscription);
     }
 
-    public function getActionsViewAttribute()
-    {
-        return 'admin.pages.subscriptions.lists.actions.' . str_slug($this->name);
-    }
 }

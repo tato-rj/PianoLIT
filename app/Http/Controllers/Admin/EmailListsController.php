@@ -4,16 +4,20 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\{EmailCampaignReport, EmailList, Subscription, EmailLog};
-use App\Events\Emails\Unsubscribed;
+use App\{EmailCampaignReport, EmailList, Subscription, EmailLog, Piece};
+use App\Services\Admin\EmailListSubscribersTable;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class EmailListsController extends Controller
 {
     public function index()
     {
-        $lists = EmailList::all();
+        $lists = EmailList::where('name', EmailList::FREE_PICK)->orderBy('id')->get();
+        $hasFreePick = Piece::free()->exists();
+        $recipient = auth('admin')->user()->email;
 
-        return view('admin.pages.subscriptions.lists.index', compact('lists'));
+        return view('admin.pages.subscriptions.lists.index', compact('lists', 'hasFreePick', 'recipient'));
     }
 
     public function reports()
@@ -99,68 +103,87 @@ class EmailListsController extends Controller
 
     public function send(Request $request, EmailList $list)
     {
+        $this->assertFreePick($list);
+        if (! Piece::free()->exists())
+            return back()->with('error', 'Choose a current free pick before sending this list.');
+
         if ($list->last_sent_at && $list->last_sent_at->gt(now()->subDay()))
             return back()->with('status', 'This list has recently been sent');
 
-        $list->send($request->subject);
+        $list->send();
 
         return back()->with('status', 'The list email has been queued and will be sent to all subscribers in the background.');
     }
-    
+
     public function sendTo(Request $request, EmailList $list)
     {
-        \Mail::to($request->email)->queue($list->mailable($list->listId(), Subscription::byEmail($request->email)->first()));
+        $this->assertFreePick($list);
+        $data = $request->validate(['email' => 'required|string|email|max:254']);
+        if (! Piece::free()->exists())
+            return back()->withInput()->with('error', 'Choose a current free pick before sending a preview.');
 
-    	return back()->with('status', 'A preview was sent to ' . $request->email);
+        try {
+            \Mail::to($data['email'])->queue($list->mailable('preview'));
+        } catch (\Throwable $exception) {
+            report($exception);
+            return back()->withInput()->with('error', 'The preview could not be queued. Please try again.');
+        }
+
+        return back()->with('status', 'A preview was queued for ' . $data['email']);
     }
 
     public function preview(EmailList $list)
     {
-    	return $list->mailable('preview');
+        $this->assertFreePick($list);
+        abort_unless(Piece::free()->exists(), 422, 'Choose a current free pick before previewing this email.');
+
+        return $list->mailable('preview');
     }
 
     public function store(Request $request)
     {
-        EmailList::create([
-            'name' => $request->name,
-            'description' => $request->description
-        ]);
+        $data = $this->listData($request);
+        $request->validate(['name' => Rule::unique('email_lists', 'name')]);
+        EmailList::create($data);
 
         return back()->with('status', 'The list has been created.');
     }
 
-    public function edit(EmailList $list)
+    public function edit(Request $request, EmailList $list, EmailListSubscribersTable $table)
     {
-        if (request()->ajax())
-            return EmailList::datatable($list);
+        $this->assertFreePick($list);
 
-        return view('admin.pages.subscriptions.lists.edit', compact('list'));
+        return view('admin.pages.subscriptions.lists.edit', ['list' => $list] + $table->get($request, $list));
     }
 
     public function update(Request $request, EmailList $list)
     {
-        $list->update([
-            'name' => $request->name,
-            'description' => $request->description
-        ]);
-        
+        $this->assertFreePick($list);
+        $list->update($this->listData($request));
+
         return back()->with('status', 'This list has been updated.');
     }
 
     public function status(Request $request, EmailList $list)
     {
-        if ($list->subscribers->contains($request->subscriberId)) {
-            $list->remove(Subscription::find($request->subscriberId));
+        $this->assertFreePick($list);
+        $data = $request->validate(['subscriberId' => 'required|integer|min:1|exists:subscriptions,id', 'enabled' => 'sometimes|required|boolean']);
+        $subscriber = Subscription::findOrFail($data['subscriberId']);
+        $enabled = array_key_exists('enabled', $data) ? (bool) $data['enabled'] : ! $list->has($subscriber->email);
+        if ($enabled) {
+            $list->add($subscriber);
         } else {
-            $list->add(Subscription::find($request->subscriberId));     
+            $list->remove($subscriber);
         }
-        
-        return response()->json(['status' => 'This subscription has been updated.']);
+
+        return $request->expectsJson()
+            ? response()->json(['status' => 'This subscription has been updated.'])
+            : back()->with('status', 'This subscription has been updated.');
     }
 
     public function destroy(EmailList $list)
     {
-        $list->delete();
+        DB::transaction(function () use ($list) { $list->delete(); });
 
         return back()->with('status', 'The list has been deleted');
     }
@@ -179,5 +202,18 @@ class EmailListsController extends Controller
         EmailCampaignReport::whereIn('list_id', $request->ids)->delete();
 
         return redirect(route('admin.subscriptions.reports.index'))->with('status', 'The lists have been deleted');
+    }
+
+    private function assertFreePick(EmailList $list)
+    {
+        abort_unless($list->name === EmailList::FREE_PICK, 404);
+    }
+
+    private function listData(Request $request)
+    {
+        return $request->validate([
+            'name' => ['required', 'string', Rule::in([EmailList::FREE_PICK])],
+            'description' => 'required|string|max:2000',
+        ]);
     }
 }

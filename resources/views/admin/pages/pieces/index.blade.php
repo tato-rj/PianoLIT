@@ -27,10 +27,7 @@ small .form-check-label::before, small .form-check-label::after {
       <legend class="float-none w-auto px-2 fs-6">Filters</legend>
       <div class="d-flex flex-wrap gap-4">
         @foreach(['without_videos' => 'Missing video', 'without_moments' => 'Missing moments', 'without_synthesia' => 'Missing synthesia'] as $filter => $label)
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="filter-{{$filter}}" name="{{$filter}}" {{request()->boolean($filter) ? 'checked' : ''}}>
-          <label class="form-check-label" for="filter-{{$filter}}">{{$label}}</label>
-        </div>
+        @include('components.form.checkbox', ['id' => 'filter-'.$filter, 'name' => $filter, 'value' => 'on', 'label' => $label, 'checked' => request()->boolean($filter)])
         @endforeach
       </div>
       <p class="small text-muted mb-0 mt-2">Results match all checked filters. Uncheck all to show every piece.</p>

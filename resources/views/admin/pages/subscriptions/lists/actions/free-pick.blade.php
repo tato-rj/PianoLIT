@@ -1,1 +1,0 @@
-@include('admin.pages.subscriptions.lists.actions.action', ['list' => $list])

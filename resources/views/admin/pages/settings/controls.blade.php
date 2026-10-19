@@ -40,7 +40,7 @@
     @component('admin.pages.settings.sample', ['label' => 'Select', 'usage' => '@select · components.form.select'])
       @select(['bag' => 'default', 'id' => 'ds-select', 'name' => 'ds_level', 'label' => 'Level', 'choices' => ['' => 'All levels', 'beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'], 'value' => '', 'required' => false, 'designSystemPreview' => true])
     @endcomponent
-    @component('admin.pages.settings.sample', ['label' => 'Filter select', 'usage' => 'admin.components.filters.select · .admin-filter-select'])
+    @component('admin.pages.settings.sample', ['label' => 'Filter select', 'usage' => 'admin.components.filters.select · @select'])
       @include('admin.components.filters.select', ['label' => 'Period', 'name' => 'ds-period', 'options' => \App\Support\AdminDateRanges::LABELS, 'value' => '7', 'designSystemPreview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Date filter', 'usage' => 'admin.components.filters.date-range · .admin-filter-select'])
@@ -65,8 +65,8 @@
       <label for="ds-upload">Choose a local file</label><input id="ds-upload" type="file" class="form-control" aria-describedby="ds-upload-note" data-ds-preview><small id="ds-upload-note">Sample only. No file is uploaded.</small>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Checkboxes', 'usage' => '.form-check-input', 'properties' => 'width,height,border,border-radius,background-color'])
-      <div class="form-check"><input id="ds-checkbox" class="form-check-input" type="checkbox" checked data-ds-preview><label class="form-check-label" for="ds-checkbox">Save to favorites</label></div>
-      <div class="form-check"><input id="ds-checkbox-disabled" class="form-check-input" type="checkbox" disabled><label class="form-check-label" for="ds-checkbox-disabled">Disabled option</label></div>
+      @include('components.form.checkbox', ['id' => 'ds-checkbox', 'name' => 'ds_checkbox', 'label' => 'Save to favorites', 'checked' => true, 'designSystemPreview' => true])
+      @include('components.form.checkbox', ['id' => 'ds-checkbox-disabled', 'name' => 'ds_checkbox_disabled', 'label' => 'Disabled option', 'disabled' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Radio buttons', 'usage' => '.form-check-input [type=radio]', 'properties' => 'width,height,border,border-radius,background-color'])
       <div class="form-check"><input id="ds-radio-one" class="form-check-input" type="radio" name="ds-format" checked data-ds-preview><label class="form-check-label" for="ds-radio-one">Audio</label></div>

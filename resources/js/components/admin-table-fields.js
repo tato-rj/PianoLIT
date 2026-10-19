@@ -1,18 +1,69 @@
-// Applied after DataTables loads, before any admin table is initialized.
-// Native search/select controls share the default PianoLIT field classes.
+// Render legacy DataTables controls through the same Blade form as native lists.
+// Move the original feature nodes/inputs so DataTables keeps all event handlers,
+// state restoration, server-side request contracts and redraw/error behavior.
 (function ($) {
-    $.extend($.fn.dataTable.ext.classes, {
-        sFilterInput: 'form-control',
-        sLengthSelect: 'form-select'
+    'use strict';
+    var defaults = document.querySelector('[data-admin-table-filter-template]');
+    if (defaults) $.extend($.fn.dataTable.defaults, {
+        pageLength: Number(defaults.dataset.pageSize),
+        lengthMenu: JSON.parse(defaults.dataset.pageSizes)
     });
-    // Some pages load a legacy Bootstrap adapter after the admin bundle. Apply
-    // the shared classes before its first draw too, without replacing handlers.
+    $.extend($.fn.dataTable.ext.classes, {
+        sFilterInput: 'form-control pianolit-input',
+        sLengthSelect: 'form-control'
+    });
+
     $(document).on('preInit.dt.pianolitFields', function (event, settings) {
-        var $container = $(settings.nTableWrapper);
-        $container.find('.dataTables_filter input')
-            .removeClass('form-control-sm').addClass('form-control');
-        $container.find('.dataTables_length select')
-            .removeClass('custom-select custom-select-sm form-control form-control-sm')
-            .addClass('form-select');
+        var wrapper = settings.nTableWrapper;
+        var template = document.getElementById(settings.nTable.id + '-filter-template');
+        if (!wrapper || !template || wrapper.querySelector('[data-admin-filter-form]')) return;
+        var form = template.content.firstElementChild.cloneNode(true);
+        var $wrapper = $(wrapper);
+        var api = new $.fn.dataTable.Api(settings);
+        var initial = settings.oInit;
+        var pageSizes = JSON.parse(template.dataset.pageSizes);
+        var useSharedSizes = initial.lengthMenu === undefined && initial.aLengthMenu === undefined;
+        if (useSharedSizes) settings.aLengthMenu = pageSizes;
+        // A page may load a second legacy Bootstrap/DataTables build after the
+        // main bundle. Establish the admin default before its first request too.
+        if (!settings.oLoadedState && initial.pageLength === undefined && initial.iDisplayLength === undefined) {
+            api.page.len(Number(template.dataset.pageSize));
+        }
+        function moveFeature(featureSelector, fieldName, inputSelector) {
+            var $feature = $wrapper.find(featureSelector).first();
+            var placeholder = form.querySelector('[name="' + fieldName + '"]');
+            var field = placeholder.closest('.form-group');
+            if (!$feature.length) { field.remove(); return null; }
+            var $input = $feature.find(inputSelector).detach();
+            var input = $input[0];
+            input.id = placeholder.id;
+            input.name = placeholder.name;
+            $input.removeClass('form-control-sm custom-select custom-select-sm form-select').addClass('form-control');
+            if (fieldName === 'search') {
+                $input.addClass('pianolit-input').attr('placeholder', placeholder.placeholder).attr('maxlength', placeholder.maxLength);
+            } else {
+                if (useSharedSizes) $input.empty().append($(placeholder).children());
+                if (!$input.find('option').filter(function () { return Number(this.value) === api.page.len(); }).length) {
+                    $input.append(new Option(api.page.len(), api.page.len()));
+                }
+                input.value = api.page.len();
+            }
+            placeholder.replaceWith(input);
+            $feature.empty().append($(field).contents()).attr('class', field.className + ' ' + featureSelector.slice(1));
+            field.replaceWith($feature[0]);
+            return input;
+        }
+        var search = moveFeature('.dataTables_filter', 'search', 'input');
+        var length = moveFeature('.dataTables_length', 'per_page', 'select');
+        if (!search && !length) return;
+        // Retain vendor rows: the existing responsive table frame uses their
+        // order for horizontal scrolling and loading placeholders.
+        wrapper.prepend(form);
+        form.addEventListener('submit', function (submitEvent) {
+            submitEvent.preventDefault();
+            if (search) api.search(search.value);
+            if (length) api.page.len(Number(length.value));
+            api.draw();
+        });
     });
 })(window.jQuery);

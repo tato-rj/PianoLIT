@@ -1,7 +1,1 @@
-<label class="admin-filter-label">{{ $label }}
-    <select class="admin-filter-select" name="{{ $name }}" @if(!empty($designSystemPreview)) data-ds-preview @endif>
-        @foreach($options as $optionValue => $optionLabel)
-        <option value="{{ $optionValue }}" @if((string) $value === (string) $optionValue) selected @endif>{{ $optionLabel }}</option>
-        @endforeach
-    </select>
-</label>
+@select(['bag' => 'default', 'id' => $id ?? 'admin-filter-'.\Illuminate\Support\Str::uuid(), 'name' => $name, 'label' => $label, 'choices' => $options, 'value' => $value ?? '', 'required' => false, 'designSystemPreview' => $designSystemPreview ?? false])

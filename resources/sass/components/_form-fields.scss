@@ -70,17 +70,11 @@ textarea.form-control {
     resize: vertical;
 }
 
-// Use the same chevron for legacy .form-control and Bootstrap 5 .form-select.
 // Multiple/size selects remain list boxes and keep their native row count.
 select.form-control,
 select.form-select,
 .admin-text-improve-options select {
-    appearance: none;
-    padding-right: 40px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23697386' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right var(--field-padding-x) center;
-    background-size: 16px 16px;
+    @include pianolit-select-arrow;
 
     &:not([multiple]):not([size]),
     &[size='1'] {

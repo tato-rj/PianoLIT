@@ -1,42 +1,10 @@
-<div class="d-flex flex-wrap justify-content-end">
-  <div class="d-flex hide-on-sm">
-    <button class="btn btn-light m-1 btn-sm" data-bs-toggle="modal" data-bs-target="#abrsm-modal"><strong>ABRSM</strong></button>
-    <button class="btn btn-light m-1 btn-sm" data-bs-toggle="modal" data-bs-target="#rcm-modal"><strong>RCM</strong></button>
-  </div>
-  <form method="GET" action="{{\URL::current()}}" class="form-inline">
-    <div class="btn-group btn-group-toggle m-1" title="Show only pieces created by me">
-      <label class="btn btn-light {{(request('creator_id') == auth()->guard('admin')->user()->id) ? 'active' : ''}}">
-        <input type="checkbox" name="creator_id" autocomplete="off" value="{{auth()->guard('admin')->user()->id}}" onchange="this.form.submit()" {{(request('creator_id') == auth()->guard('admin')->user()->id) ? 'checked' : ''}}>@icon('user', ['mr' => 0])
-      </label>
-    </div>
-    <div class="btn-group btn-group-toggle m-1" title="Pieces missing itunes links">
-      <label class="btn btn-light {{request('itunes') ? 'active' : ''}}">
-        <input type="checkbox" name="itunes" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('itunes') ? 'checked' : ''}}>@icon('brand-itunes', ['mr' => 0])</i>
-      </label>
-    </div>
-    <div class="btn-group btn-group-toggle m-1" title="Pieces missing videos">
-      <label class="btn btn-light {{request('videos') ? 'active' : ''}}">
-        <input type="checkbox" name="videos" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('videos') ? 'checked' : ''}}>@icon('brand-youtube', ['mr' => 0])</i>
-      </label>
-    </div>
-    <div class="btn-group btn-group-toggle m-1" title="Pieces missing audio recordings">
-      <label class="btn btn-light {{request('audio_path') ? 'active' : ''}}">
-        <input type="checkbox" name="audio_path" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('audio_path') ? 'checked' : ''}}>@icon('volume-x', ['mr' => 0])</i>
-      </label>
-    </div>
-    <div class="btn-group btn-group-toggle m-1" title="Pieces missing the score">
-      <label class="btn btn-light {{request('score_path') ? 'active' : ''}}">
-        <input type="checkbox" name="score_path" autocomplete="off" value="missing" onchange="this.form.submit()" {{request('score_path') ? 'checked' : ''}}>@icon('file-text', ['mr' => 0])</i>
-      </label>
-    </div>
-
-    <div class="btn-group btn-group-toggle m-1" title="Pieces in the Public Domain">
-      <label class="btn btn-light {{request('is_free') ? 'active' : ''}}">
-        <input type="checkbox" name="is_free" autocomplete="off" value="false" onchange="this.form.submit()" {{request('is_free') ? 'checked' : ''}}>@icon('brand-creative-commons-pd-alt', ['mr' => 0])</i>
-      </label>
-    </div>
-  </form>
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <button class="btn btn-light btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#abrsm-modal">ABRSM</button>
+    <button class="btn btn-light btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#rcm-modal">RCM</button>
 </div>
-<div class="text-end">
-  <a href="{{url()->current()}}" class="text-muted float-end"><small>reset filters</small></a>
-</div>
+@component('admin.components.filters.form', ['id' => 'piece-directory-filters', 'label' => 'Piece filters', 'resetUrl' => request()->url()])
+    @include('components.form.checkbox', ['id' => 'piece-filter-creator', 'name' => 'creator_id', 'value' => auth('admin')->id(), 'label' => 'Created by me', 'checked' => request('creator_id') == auth('admin')->id(), 'submitOnChange' => true])
+    @foreach(['itunes' => 'Missing iTunes links', 'videos' => 'Missing videos', 'audio_path' => 'Missing audio', 'score_path' => 'Missing score', 'is_free' => 'Public domain'] as $name => $label)
+        @include('components.form.checkbox', ['id' => 'piece-filter-'.$name, 'name' => $name, 'value' => $name === 'is_free' ? 'false' : 'missing', 'label' => $label, 'checked' => (bool) request($name), 'submitOnChange' => true])
+    @endforeach
+@endcomponent

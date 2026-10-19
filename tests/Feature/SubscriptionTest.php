@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\{Subscription, EmailList};
 use Tests\Traits\ManageDatabase;
 use Tests\AppTest;
-use App\Mail\Newsletter\Welcome as WelcomeToNewsletter;
 use App\Notifications\Emails\UnsubscribedNotification;
 
 class SubscriptionTest extends AppTest
@@ -13,7 +12,7 @@ class SubscriptionTest extends AppTest
     use ManageDatabase;
 
     /** @test */
-    public function a_guest_can_subscribe_to_the_newsletter()
+    public function a_guest_can_subscribe_to_freepick()
     {
         $email = make(Subscription::class)->email;
 
@@ -21,7 +20,7 @@ class SubscriptionTest extends AppTest
 
         $this->assertDatabaseHas('subscriptions', ['email' => $email]);
 
-        $this->assertTrue(EmailList::newsletter()->subscribers()->byEmail($email)->exists());
+        $this->assertTrue(EmailList::freepick()->subscribers()->byEmail($email)->exists());
     }
 
     /** @test */
@@ -35,17 +34,17 @@ class SubscriptionTest extends AppTest
 
         $this->assertDatabaseMissing('subscriptions', ['email' => $email]);
 
-        $this->assertFalse(EmailList::newsletter()->subscribers()->byEmail($email)->exists());
+        $this->assertFalse(EmailList::freepick()->subscribers()->byEmail($email)->exists());
     }
 
     /** @test */
-    public function guests_receive_an_email_upon_subscription()
+    public function subscribing_does_not_send_the_retired_welcome_email()
     {
         \Mail::fake();
 
         $this->subscribe();
         
-        \Mail::assertQueued(WelcomeToNewsletter::class);
+        \Mail::assertNothingSent();
     }
 
     /** @test */
@@ -53,11 +52,11 @@ class SubscriptionTest extends AppTest
     {
         $unsubscribedSubscription = create(Subscription::class);
 
-        $this->assertFalse($unsubscribedSubscription->in(EmailList::newsletter()));
+        $this->assertFalse($unsubscribedSubscription->in(EmailList::freepick()));
 
         $this->subscribe($unsubscribedSubscription->email);
 
-        $this->assertTrue($unsubscribedSubscription->in(EmailList::newsletter()));
+        $this->assertTrue($unsubscribedSubscription->in(EmailList::freepick()));
 
         $this->assertCount(1, Subscription::all());
 
@@ -67,19 +66,19 @@ class SubscriptionTest extends AppTest
     }
 
     /** @test */
-    public function guests_can_unsubscribe_from_the_newsletter()
+    public function guests_can_unsubscribe_from_freepick()
     {
         $subscription = create(Subscription::class);
 
-        $subscription->join(EmailList::newsletter());
+        $subscription->join(EmailList::freepick());
 
-        $this->assertTrue($subscription->in(EmailList::newsletter()));
+        $this->assertTrue($subscription->in(EmailList::freepick()));
 
-        $this->get(route('subscriptions.unsubscribe', [$subscription, EmailList::newsletter()]));
+        $this->get(route('subscriptions.unsubscribe', [$subscription, EmailList::freepick()]));
 
         $this->assertDatabaseHas('subscriptions', ['email' => $subscription->email]);
 
-        $this->assertFalse($subscription->in(EmailList::newsletter()));
+        $this->assertFalse($subscription->in(EmailList::freepick()));
     }
 
     /** @test */
@@ -89,9 +88,9 @@ class SubscriptionTest extends AppTest
 
         $subscription = create(Subscription::class);
 
-        $subscription->join(EmailList::newsletter());
+        $subscription->join(EmailList::freepick());
 
-        $this->get(route('subscriptions.unsubscribe', [$subscription, EmailList::newsletter()]));
+        $this->get(route('subscriptions.unsubscribe', [$subscription, EmailList::freepick()]));
 
         \Notification::assertSentTo($this->admin, UnsubscribedNotification::class);
     }
@@ -111,11 +110,11 @@ class SubscriptionTest extends AppTest
     {
         $this->register();
 
-        $this->assertTrue(EmailList::newsletter()->has(auth()->user()->email));
+        $this->assertTrue(EmailList::freepick()->has(auth()->user()->email));
 
-        $this->patch(route('users.subscriptions.update-list', EmailList::newsletter()));
+        $this->patch(route('users.subscriptions.update-list', EmailList::freepick()));
 
-        $this->assertFalse(EmailList::newsletter()->has(auth()->user()->email));
+        $this->assertFalse(EmailList::freepick()->has(auth()->user()->email));
     }
 
     /** @test */
@@ -125,7 +124,7 @@ class SubscriptionTest extends AppTest
 
         $this->register();
 
-        $this->patch(route('users.subscriptions.update-list', EmailList::newsletter()));
+        $this->patch(route('users.subscriptions.update-list', EmailList::freepick()));
 
         \Notification::assertSentTo($this->admin, UnsubscribedNotification::class);
     }
@@ -138,19 +137,19 @@ class SubscriptionTest extends AppTest
         $subscription1 = create(Subscription::class);
         $subscription2 = create(Subscription::class);
 
-        $this->assertFalse(EmailList::newsletter()->has($subscription1->email));
-        $this->assertFalse(EmailList::newsletter()->has($subscription2->email));
+        $this->assertFalse(EmailList::freepick()->has($subscription1->email));
+        $this->assertFalse(EmailList::freepick()->has($subscription2->email));
 
-        $this->patch(route('admin.subscriptions.lists.status', ['list' => EmailList::newsletter()->id, 'subscriberId' => $subscription1->id]));
+        $this->patch(route('admin.subscriptions.lists.status', ['list' => EmailList::freepick()->id, 'subscriberId' => $subscription1->id]));
 
-        $this->assertTrue(EmailList::newsletter()->has($subscription1->email));
-        $this->assertFalse(EmailList::newsletter()->has($subscription2->email));
+        $this->assertTrue(EmailList::freepick()->has($subscription1->email));
+        $this->assertFalse(EmailList::freepick()->has($subscription2->email));
 
-        $this->patch(route('admin.subscriptions.lists.status', ['list' => EmailList::newsletter()->id, 'subscriberId' => $subscription1->id]));
-        $this->patch(route('admin.subscriptions.lists.status', ['list' => EmailList::newsletter()->id, 'subscriberId' => $subscription2->id]));
+        $this->patch(route('admin.subscriptions.lists.status', ['list' => EmailList::freepick()->id, 'subscriberId' => $subscription1->id]));
+        $this->patch(route('admin.subscriptions.lists.status', ['list' => EmailList::freepick()->id, 'subscriberId' => $subscription2->id]));
 
-        $this->assertFalse(EmailList::newsletter()->has($subscription1->email));
-        $this->assertTrue(EmailList::newsletter()->has($subscription2->email));
+        $this->assertFalse(EmailList::freepick()->has($subscription1->email));
+        $this->assertTrue(EmailList::freepick()->has($subscription2->email));
     }
 
     /** @test */
@@ -158,11 +157,11 @@ class SubscriptionTest extends AppTest
     {
         $subscription = create(Subscription::class);
 
-        $subscription->join(EmailList::newsletter());
+        $subscription->join(EmailList::freepick());
 
         $this->assertDatabaseHas('subscriptions', ['email' => $subscription->email]);
 
-        $this->assertTrue(EmailList::newsletter()->has($subscription->email));
+        $this->assertTrue(EmailList::freepick()->has($subscription->email));
 
         $this->signIn();
 
@@ -170,7 +169,7 @@ class SubscriptionTest extends AppTest
 
         $this->assertDatabaseMissing('subscriptions', ['email' => $subscription->email]);
 
-        $this->assertFalse(EmailList::newsletter()->has($subscription->email));
+        $this->assertFalse(EmailList::freepick()->has($subscription->email));
     }
 
     /** @test */
@@ -179,14 +178,14 @@ class SubscriptionTest extends AppTest
         $subscription1 = create(Subscription::class);
         $subscription2 = create(Subscription::class);
 
-        $subscription1->join(EmailList::newsletter());
-        $subscription2->join(EmailList::newsletter());
+        $subscription1->join(EmailList::freepick());
+        $subscription2->join(EmailList::freepick());
 
         $this->assertDatabaseHas('subscriptions', ['email' => $subscription1->email]);
         $this->assertDatabaseHas('subscriptions', ['email' => $subscription2->email]);
 
-        $this->assertTrue(EmailList::newsletter()->has($subscription1->email));
-        $this->assertTrue(EmailList::newsletter()->has($subscription2->email));
+        $this->assertTrue(EmailList::freepick()->has($subscription1->email));
+        $this->assertTrue(EmailList::freepick()->has($subscription2->email));
 
         $this->signIn();
 
@@ -195,7 +194,7 @@ class SubscriptionTest extends AppTest
         $this->assertDatabaseMissing('subscriptions', ['email' => $subscription1->email]);
         $this->assertDatabaseMissing('subscriptions', ['email' => $subscription2->email]);
 
-        $this->assertFalse(EmailList::newsletter()->has($subscription1->email));
-        $this->assertFalse(EmailList::newsletter()->has($subscription2->email));
+        $this->assertFalse(EmailList::freepick()->has($subscription1->email));
+        $this->assertFalse(EmailList::freepick()->has($subscription2->email));
     }
 }

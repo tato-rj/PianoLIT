@@ -8,9 +8,7 @@
     $line = implode(' ', $points);
 @endphp
 <article class="pa-card pa-growth"><div class="pa-card-heading"><div><h3>Catalogue growth</h3><p>Running total of retained pieces, by date added.</p></div></div>
-    <form class="pa-growth-filter" action="{{ route('admin.analytics.pieces') }}" method="GET"><label for="pa-growth-months">Growth range</label><select name="months" id="pa-growth-months">
-@foreach([12, 24, 36] as $months)<option value="{{ $months }}" {{ $months === $report['months'] ? 'selected' : '' }}>{{ $months }} months</option>
-@endforeach</select><button type="submit">Apply</button></form>
+    @include('admin.components.filters.form', ['id' => 'catalogue-growth-filters', 'label' => 'Catalogue growth filters', 'action' => route('admin.analytics.pieces'), 'fields' => [['name' => 'months', 'label' => 'Growth range', 'options' => [12 => '12 months', 24 => '24 months', 36 => '36 months']]], 'state' => ['months' => $report['months']]])
     <div class="pa-growth-total"><strong>{{ number_format(end($trend)['total']) }}</strong><span>pieces added through {{ end($trend)['label'] }}</span></div>
     <div class="pa-line-scroll" tabindex="0" role="region" aria-label="Catalogue growth chart. Scroll to see all months."><svg class="pa-line-chart" viewBox="0 0 780 285" role="img" aria-label="Catalogue grew from {{ $trend[0]['total'] }} to {{ end($trend)['total'] }} retained pieces across {{ count($trend) }} months. Exact monthly totals are in the table below.">
         <defs><linearGradient id="pa-growth-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a692ce" stop-opacity=".35"/><stop offset="100%" stop-color="#a692ce" stop-opacity="0"/></linearGradient></defs>

@@ -19,8 +19,8 @@
         <div class="ua-visit-facts"><strong>{{ \App\Activity\Time::visitDuration($visit) }}</strong><span>Observed span · {{ $visit->pages_count }} pages</span></div>
     </section>
     <nav class="ua-visit-navigation" aria-label="Adjacent visits">
-        @if($previous)<a class="ua-button ua-button-secondary" href="{{ route('admin.analytics.users.journey', $previous) }}">← Previous visit</a>@endif
-        @if($next)<a class="ua-button ua-button-secondary" href="{{ route('admin.analytics.users.journey', $next) }}">Next visit →</a>@endif
+        @if($previous)<a class="btn btn-light" href="{{ route('admin.analytics.users.journey', $previous) }}">← Previous visit</a>@endif
+        @if($next)<a class="btn btn-light" href="{{ route('admin.analytics.users.journey', $next) }}">Next visit →</a>@endif
     </nav>
     <p class="ua-note">Foreground visibility does not prove attention. The final timestamp is the last recorded activity, rather than a browser close time.</p>
     @if($unplaced->total())<p class="ua-note">Actions without a recorded page appear at their recorded times below. They are not assigned to a page by guesswork.</p>@endif

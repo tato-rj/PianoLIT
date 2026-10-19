@@ -44,6 +44,8 @@ Existing DataTables on pages not yet migrated retain `admin.components.table-car
 
 Editable admin tables use `admin.components.table-save-actions` for their footer: save status on the left, Save changes on the right, with the shared primary button and check icon. Keep this arrangement in the Design System specimen and future editable tables.
 
+All admin table/list filter forms, including visit sorting, analytics, directory cards and legacy DataTables, use `admin.components.filters.form`, its `filters.fields` renderer and `filters.button` actions. Pass page-specific field definitions, state and submitter values; never copy filter markup or define local button/field finishes. Apply filters is the shared dark action; Reverse order/Clear use its secondary option. Native selects, date and checkbox-menu triggers share the standard field tokens and select-arrow mixin. Preserve array-valued query filters (especially platforms), reset only the relevant list page, and let only the clicked button submit visit order. Legacy DataTables renders the common Blade template through the single `admin-table-fields.js` adapter, preserving original input nodes, handlers and request contracts. Keep the Design System on these same components. See `docs/ADMIN_TABLES.md`.
+
 - PHP application: `app/`; shared helpers: `support/helpers.php`.
 - Route registration and domain/middleware boundaries: `app/Providers/RouteServiceProvider.php`, `app/Http/Kernel.php`, and `routes/`.
 - Shared app feeds/search: `app/Api/`; billing: `app/Billing/`; integrations: `app/Services/` and webhook controllers.

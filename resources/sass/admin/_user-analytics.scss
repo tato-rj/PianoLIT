@@ -2,11 +2,11 @@
     color: #181e22;
     font-size: var(--font-size-base);
     line-height: var(--line-height-body);
-    a {
+    a:not(.btn) {
         color: #253e30;
         text-decoration: none;
     }
-    a:hover {
+    a:not(.btn):hover {
         text-decoration: underline;
     }
     h2 {
@@ -55,71 +55,6 @@
     .ua-tabs a[aria-current] {
         background: #181e22;
         color: #fff;
-    }
-    .ua-filters {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: end;
-        gap: 12px;
-        margin-bottom: 24px;
-    }
-    .ua-filters > label:not(.admin-filter-label) {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        font-size: var(--font-size-sm);
-        color: #5c665e;
-        margin: 0;
-    }
-    .ua-filters input:not([type='checkbox']):not(.form-control),
-    .ua-filters select:not(.admin-filter-select):not(.form-control):not(.form-select) {
-        min-height: 41px;
-        padding: 9px 13px;
-        border: 1px solid #fff;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.65);
-        color: #242b27;
-        font: inherit;
-        font-size: var(--font-size-base);
-        max-width: 100%;
-    }
-    .ua-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #181e22;
-        padding: 10px 18px;
-        border-radius: 24px;
-        background: #181e22;
-        color: #fff;
-        font: inherit;
-        font-size: var(--font-size-base);
-        cursor: pointer;
-        text-align: center;
-    }
-    .ua-button:hover {
-        color: #fff;
-        background: #354139;
-    }
-    .ua-button-secondary {
-        color: #242b27;
-        border-color: #fff;
-        background: rgba(255, 255, 255, 0.65);
-    }
-    .ua-button-secondary:hover {
-        color: #242b27;
-        background: #fff;
-    }
-    .ua-filter-period {
-        margin-left: auto;
-        color: #687169;
-        font-size: var(--font-size-sm);
-    }
-    .ua-filter-period small {
-        display: block;
-    }
-    .ua-directory-options summary {
-        cursor: pointer;
     }
     .ua-metrics {
         display: grid;
@@ -495,25 +430,6 @@
         margin: 18px 0 8px;
         font-weight: 500;
     }
-    .ua-visit-sort {
-        margin-bottom: 16px;
-    }
-    .ua-visit-sort > label {
-        flex: 0 1 230px;
-        min-width: 0;
-    }
-    .ua-visit-sort select {
-        width: 100%;
-    }
-    .ua-order-toggle {
-        gap: 7px;
-        white-space: nowrap;
-    }
-    .ua-sort-help {
-        font-size: var(--font-size-sm);
-        color: #626b64;
-        align-self: center;
-    }
     .ua-empty {
         padding: 35px 15px;
         text-align: center;
@@ -779,21 +695,6 @@
     .ua-technical dd {
         margin: 0;
     }
-    .ua-directory-options {
-        flex-basis: 100%;
-        font-size: var(--font-size-sm);
-        color: #626b64;
-    }
-    .ua-directory-options > .ua-filters {
-        margin: 14px 0 0;
-    }
-    .ua-directory-filters .form-group {
-        margin-bottom: 0;
-    }
-    .ua-search {
-        flex: 1;
-        min-width: 200px;
-    }
     .ua-table-scroll {
         width: 100%;
         overflow-x: auto;
@@ -995,16 +896,6 @@
             flex: 1;
             text-align: center;
             padding: 10px 12px;
-        }
-        .ua-filters > label {
-            flex: 1 1 40%;
-            min-width: 0;
-        }
-        .ua-filters > button {
-            flex: 1 1 40%;
-        }
-        .ua-visit-sort > label {
-            flex: 1 1 200px;
         }
         .ua-visit {
             flex-wrap: wrap;

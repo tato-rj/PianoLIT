@@ -56,12 +56,15 @@ Legacy DataTables use the same default field classes through the admin-only
 `admin-table-fields.js` adapter; keep their initialization skeleton dimensions in
 sync without introducing table-specific field styles.
 
-Table filter buttons and fields share `field-control-sizing` from
-`shared/_field-sizing.scss`, applied centrally by `admin/_table-controls.scss`.
-Their height, vertical padding, type and line height follow the field tokens:
-45px at the default desktop size and 48px with 16px touch text. Keep filter
-actions aligned with their fields, including analytics selects, custom triggers
-and date-panel actions. Do not add independent button heights to table pages.
+All admin table and directory filters use `admin.components.filters.form`,
+`filters.fields` and `filters.button`, including visit sorting, analytics,
+composer/folder directories and the shared table component. Use a dark **Apply
+filters** action; Reverse order and Clear use the component's secondary option.
+Do not define page-specific filter markup or button/field finishes. The form
+composes `@input` / `@select`, optional custom widgets and shared actions.
+`field-control-sizing` from `shared/_field-sizing.scss` aligns actions with fields:
+45px on desktop and 48px with 16px touch text. The Design System's Admin filter
+specimen renders this same form in safe preview mode.
 
 Standard `.form-control`, `.form-select`, shared input/textarea components, file
 uploads and input-group labels use the same `--radius-input` and `--field-*`
@@ -76,15 +79,12 @@ keep page-specific widths, layout and room for icons local.
 
 Checkboxes, radios, switches and ranges use the shared brand and field colors.
 
-Admin analytics filters use `admin.components.filters.select` with a `label`,
-`name`, value/label `options` map and selected `value`. Its reusable
-`.admin-filter-select` style is the Period control's white border, translucent
-background, 16 px corners and slim chevron, with shared field sizing. The checkbox-menu button
-and date-range summary use the same class, including typography, padding, labels
-and focus border. The Custom range trigger uses the same text-and-arrow layout.
-Filter select, Checkbox menu and Date filter specimens render these components
-in the Design System. Keep their appearance in `admin/_filter-controls.scss`;
-component styles should contain only their menu/panel layout.
+Native analytics selects use `admin.components.filters.select`, which delegates
+to `@select`. Date-range and checkbox-menu triggers use the same `.form-control`
+field finish, shared label component and `pianolit-select-arrow` mixin as native
+selects. Their colors, 12px corners, chevrons, padding, focus treatment and touch
+text stay aligned. Keep only panel/menu layout in their component styles; no
+white/translucent filter-control variant remains.
 
 Multiple-choice filter menus use `components.form.checkbox-menu`. Pass a field
 `name`, accessible `label`, an `options` value/label map, the `selected` array and

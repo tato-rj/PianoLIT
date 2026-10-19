@@ -13,6 +13,7 @@
 		@endisset
 		style="{{$styles ?? null}}" 
 		{{$required ?? 'required'}} 
+		@if($disabled ?? false) disabled @endif
 		type="{{$type ?? 'text'}}" 
 		@if(! empty($type) && $type == 'number')
 		min="{{$min ?? 0}}"

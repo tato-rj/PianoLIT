@@ -1,3 +1,4 @@
+@include('admin.components.filters.datatable', ['tableId' => $model.'-table'])
 <table class="table table-hover w-100" id="{{$model}}-table">
   <thead>
     <tr>

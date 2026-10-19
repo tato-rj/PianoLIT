@@ -1,5 +1,6 @@
 @if(! empty($label))
-<label class="text-muted ml-2" @isset($id) for="{{$id}}" @endisset>
+@php($formLabelTag = ($labelTag ?? 'label') === 'span' ? 'span' : 'label')
+<{{ $formLabelTag }} class="text-muted ml-2" @isset($labelId) id="{{ $labelId }}" @endisset @if($formLabelTag === 'label' && isset($id)) for="{{$id}}" @endif>
 	<small>{{$label}}<span class="text-red">{{empty($asterisk) ? null : '*'}}</span></small>
-</label>
+</{{ $formLabelTag }}>
 @endif

@@ -34,12 +34,15 @@
 
     <section id="folder-directory" class="fa-directory" aria-labelledby="fa-directory-title">
         <div class="fa-heading"><div><h2 id="fa-directory-title">Explore folders</h2><p>Find a collection, see its pieces, or open the owner’s account.</p></div><span class="fa-results">{{ number_format($folders->total()) }} {{ $folders->total() == 1 ? 'folder' : 'folders' }}{{ isset($filters['search']) || !empty($filters['size']) ? ' match' : ' total' }}</span></div>
-        <form class="fa-filters" method="GET" action="{{ route('admin.analytics.favorites') }}#folder-directory">
-            <div class="fa-search"><label for="fa-search">Search folders or users</label><div>@icon('search', ['mr' => 0])<input id="fa-search" name="search" type="search" maxlength="160" value="{{ $filters['search'] ?? '' }}" placeholder="Folder, name or email"></div></div>
-            <div><label for="fa-size">Folder size</label><select id="fa-size" name="size"><option value="">All sizes</option>@foreach(\App\Analytics\FolderReport::SIZES as $key => $label)<option value="{{ $key }}" {{ ($filters['size'] ?? '') === $key ? 'selected' : '' }}>{{ $label }}</option>@endforeach</select></div>
-            <div><label for="fa-sort">Sort by</label><select id="fa-sort" name="sort">@foreach(['newest' => 'Newest folders', 'oldest' => 'Oldest folders', 'largest' => 'Most pieces', 'saved' => 'Latest saved piece', 'name' => 'Folder name', 'owner' => 'User name'] as $key => $label)<option value="{{ $key }}" {{ ($filters['sort'] ?? 'newest') === $key ? 'selected' : '' }}>{{ $label }}</option>@endforeach</select></div>
-            <button type="submit" class="fa-button fa-button--dark">Apply</button>@if(isset($filters['search']) || !empty($filters['size']) || isset($filters['sort']))<a class="fa-reset" href="{{ route('admin.analytics.favorites') }}#folder-directory">Reset</a>@endif
-        </form>
+        @include('admin.components.filters.form', [
+            'id' => 'folder-filters', 'label' => 'Folder filters', 'action' => route('admin.analytics.favorites').'#folder-directory', 'state' => $filters,
+            'fields' => [
+                ['type' => 'search', 'name' => 'search', 'label' => 'Search folders or users', 'placeholder' => 'Folder, name or email', 'maxlength' => 160],
+                ['name' => 'size', 'label' => 'Folder size', 'options' => ['' => 'All sizes'] + \App\Analytics\FolderReport::SIZES],
+                ['name' => 'sort', 'label' => 'Sort by', 'value' => 'newest', 'options' => ['newest' => 'Newest folders', 'oldest' => 'Oldest folders', 'largest' => 'Most pieces', 'saved' => 'Latest saved piece', 'name' => 'Folder name', 'owner' => 'User name']],
+            ],
+            'resetUrl' => (isset($filters['search']) || !empty($filters['size']) || isset($filters['sort'])) ? route('admin.analytics.favorites').'#folder-directory' : null,
+        ])
 
         @if($selected) @include('admin.pages.analytics.favorites.detail') @endif
 

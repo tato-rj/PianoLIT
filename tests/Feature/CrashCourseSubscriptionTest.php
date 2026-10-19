@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use Tests\AppTest;
 use App\Subscription;
 use App\CrashCourse\{CrashCourse, CrashCourseLesson, CrashCourseSubscription};
-use App\Mail\Newsletter\Welcome as NewsletterWelcomeEmail;
 use App\Mail\{CrashCourseEmail, CrashCourseFeedbackEmail};
 use App\Notifications\CrashCourse\{CrashCourseSignUpNotification, CrashCourseCancelledNotification};
 
@@ -53,7 +52,7 @@ class CrashCourseSubscriptionTest extends AppTest
 
         $this->signUpToCrashCourse($this->crashcourse);
 
-        \Mail::assertNotQueued(NewsletterWelcomeEmail::class);
+        \Mail::assertNotQueued(\App\Mail\FreePickEmail::class);
     }
 
     /** @test */
@@ -169,7 +168,7 @@ class CrashCourseSubscriptionTest extends AppTest
     }
 
     /** @test */
-    public function at_the_end_of_a_crash_course_the_subscriber_joins_all_newsletter_lists()
+    public function at_the_end_of_a_crash_course_the_subscriber_joins_the_email_lists()
     {
         $this->signUpToCrashCourse($this->crashcourse);
 

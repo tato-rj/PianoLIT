@@ -1,9 +1,6 @@
 .admin-date-range {
     position: relative;
     min-width: max-content;
-    .admin-date-range-label {
-        margin-bottom: 5px;
-    }
     > summary {
         list-style: none;
     }
@@ -81,18 +78,6 @@
         color: #687169;
         font-size: var(--font-size-sm);
     }
-    .admin-date-range-panel input {
-        width: 100%;
-        min-width: 0;
-        min-height: 42px;
-        padding: 9px 10px;
-        border: 1px solid #dfe4ea;
-        border-radius: 12px;
-        background: #fff;
-        color: #242b27;
-        font: inherit;
-        font-size: var(--font-size-base);
-    }
     .admin-date-range-error {
         margin: 0;
         color: #a53c35;
@@ -107,33 +92,9 @@
         padding-top: 18px;
         border-top: 1px solid #e8ecef;
     }
-    .admin-date-range-footer button {
-        font: inherit;
-        font-size: var(--font-size-base);
-        cursor: pointer;
-    }
-    .admin-date-range-clear {
-        border: 0;
-        background: transparent;
-        color: #687169;
-        padding: 10px 4px;
-    }
-    .admin-date-range-apply {
-        min-width: 90px;
-        padding: 10px 18px;
-        border: 1px solid #181e22;
-        border-radius: 24px;
-        background: #181e22;
-        color: #fff;
-    }
-    .admin-date-range-apply:hover {
-        background: #354139;
-    }
+
 }
 @media (max-width: 700px) {
-    .ua .ua-filters > .admin-date-range {
-        flex: 1 1 40%;
-    }
     .admin-date-range .admin-date-range-panel {
         grid-template-columns: minmax(0, 1fr);
         gap: 16px;
