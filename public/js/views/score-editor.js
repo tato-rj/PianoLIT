@@ -353,8 +353,14 @@
             button.click();
         }
         swipeWheel(event) {
+            const unit = event.deltaMode === 1 ? 16 : (event.deltaMode === 2 ? this.scroller.clientWidth : 1);
+            const x = event.deltaX * unit, y = event.deltaY * unit;
             let swipe = this.wheelSwipe;
-            if (swipe && event.timeStamp - swipe.time > 250) swipe = this.wheelSwipe = null;
+            // Momentum can keep emitting tiny deltas between separate physical swipes.
+            // Recognize renewed movement or a deliberate reversal without requiring pointer movement.
+            const fresh = swipe && swipe.turned && !this.rendering && event.timeStamp - swipe.turnedAt >= 180 &&
+                Math.abs(x) >= 12 && (swipe.settled || Math.sign(x) !== swipe.direction);
+            if (swipe && (fresh || event.timeStamp - swipe.time > 250)) swipe = this.wheelSwipe = null;
             // Keep consuming the momentum of a completed turn while its page renders.
             if (event.shiftKey || event.metaKey || this.tool !== 'read' || this.printing || this.canPanScore() ||
                 (!this.canSwipeScore() && !(swipe && swipe.turned && this.rendering)) ||
@@ -364,8 +370,8 @@
             }
             if (!swipe) swipe = this.wheelSwipe = {x: 0, y: 0, page: this.page, axis: null, turned: false};
             swipe.time = event.timeStamp;
-            const unit = event.deltaMode === 1 ? 16 : (event.deltaMode === 2 ? this.scroller.clientWidth : 1);
-            swipe.x += event.deltaX * unit; swipe.y += Math.abs(event.deltaY * unit);
+            if (swipe.turned && Math.hypot(x, y) < 4) swipe.settled = true;
+            swipe.x += x; swipe.y += Math.abs(y);
             if (!swipe.axis && Math.max(Math.abs(swipe.x), swipe.y) > 12) {
                 swipe.axis = Math.abs(swipe.x) > swipe.y * 1.5 ? 'x' : 'y';
             }
@@ -374,7 +380,7 @@
             // Cancel horizontal browser navigation from the first horizontal wheel event.
             event.preventDefault();
             if (swipe.turned || this.page !== swipe.page || Math.abs(swipe.x) < 50) return true;
-            swipe.turned = true;
+            swipe.turned = true; swipe.turnedAt = event.timeStamp; swipe.direction = Math.sign(swipe.x);
             const button = this.find(swipe.x > 0 ? '[data-next]' : '[data-prev]');
             if (!button.disabled) button.click();
             return true;

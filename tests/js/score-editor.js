@@ -622,6 +622,23 @@ module.exports = async function () {
     wheelTime += 300; trackpadScroll(-70);
     assert.strictEqual(swiping.page, 2, 'The reverse trackpad gesture turns to the previous page');
     assert.deepStrictEqual(turnedPages, [2, 3, 2]);
+    newWheelGesture(); swiping.page = 1;
+    trackpadScroll(70);
+    for (let i = 0; i < 20; i++) trackpadScroll(.5);
+    assert.strictEqual(swiping.page, 2, 'A long low-energy momentum tail never turns an extra page');
+    trackpadScroll(70);
+    assert.strictEqual(swiping.page, 3, 'A fresh swipe at the same pointer position works without waiting for momentum events to stop');
+    wheelTime += 180; trackpadScroll(-70);
+    assert.strictEqual(swiping.page, 2, 'A deliberate reverse swipe works without moving the pointer or waiting for an idle gap');
+    newWheelGesture(); swiping.page = 1;
+    trackpadScroll(70);
+    for (let i = 0; i < 20; i++) trackpadScroll(.5);
+    for (const x of [2, 4, 8, 12, 20, 20]) trackpadScroll(x);
+    assert.strictEqual(swiping.page, 3, 'A new swipe can build gradually after the previous momentum tail');
+    newWheelGesture(); swiping.page = 1;
+    trackpadScroll(70);
+    for (const x of [100, 80, 60, 40, 20, 10, 5, 2, .5, -.5, -3]) trackpadScroll(x);
+    assert.strictEqual(swiping.page, 2, 'Acceleration, deceleration and tiny rebound within one flick still turn only one page');
     assert.strictEqual(trackpadScroll(0, 100).defaultPrevented, false, 'Vertical scrolling remains native immediately after a horizontal swipe');
     for (const [page, x] of [[1, -70], [3, 70]]) {
         newWheelGesture(); swiping.page = page; trackpadScroll(x);
