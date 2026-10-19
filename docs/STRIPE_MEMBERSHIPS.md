@@ -147,6 +147,20 @@ The user then supplied fresh provider reads for all seven existing-owner custome
 
 Read-only Bugsnag inspection on 2026-10-19 confirmed that error group `6ad27481dbd69358a80799e4` contains 365 reports from ordinary scheduled reconciliation, including seven at 14:00:43 UTC (10:00:43 America/New_York). The sampled latest event has no command options, custom membership/customer identity or SQL bindings; its breadcrumbs retain SQL placeholders only. This supports repeated hourly reconciliation as the trigger but cannot retrospectively prove which of the seven reviewed sources produced each report. Use the enhanced local audit and subsequent historical diagnostic lines for that confirmation, rather than marking the whole error group ignored.
 
+The user subsequently ran the enhanced `stripe:reconcile --audit` on production and supplied the following seven existing-owner mappings. This confirms the updated command is available on that server and the current local rows match the earlier provider review; the audit makes no provider requests and does not itself exercise reconciliation.
+
+| Source | Resolved account | Customer | Local status | Owner ID |
+| --- | --- | --- | --- | --- |
+| 5 | swiss | cus_HP6cv0NZBl6UgF | canceled | 1017 |
+| 23 | swiss | cus_KW7uCXRZ5XdBl6 | canceled | 2256 |
+| 34 | swiss | cus_LhUb08OSnSf84F | canceled | 2514 |
+| 43 | swiss | cus_MpqEfThnviRK7M | canceled | 2750 |
+| 64 | swiss | cus_NzL8tBx0bMfIKL | canceled | 3054 |
+| 66 | swiss | cus_O4Vh5WUtLJDB8X | incomplete_expired | 2914 |
+| 115 | us | cus_SuC5nZfqJax16C | incomplete_expired | 3505 |
+
+The six other unlinked sources are retained canceled histories for missing accounts: source **2 → 928**, **11 → 1817**, **59 → 2778**, **77 → 3296**, **78 → 3298**, and **111 → 4248**. The audit still reports **13** unlinked sources, the **one** previously preserved duplicate owner, **zero** duplicate charge identities, **zero** pending webhooks and **zero** old unfinished checkouts. Keep these histories unlinked. A successful ordinary reconciliation should now print the applicable historical diagnostic lines and zero items needing retry/review, provided fresh provider state and local dates still meet the historical criteria; confirm that output or the next scheduled run before declaring the recurring alerts resolved.
+
 The active subscription means the Swiss account is still needed. A replacement Swiss endpoint is now verified: the user's 2026-10-15 Dashboard screenshot shows the destination active, a manually replayed `customer.subscription.updated` delivery at 18:26:22 America/New_York, **2025-03-31.basil**, **Delivered / Recovered**, and **HTTP 200** with `Webhook received`. This completes the signed Swiss delivery check for that event. Keep that replacement active; no further endpoint creation is needed. Disable any older Swiss destination only after its outstanding delivery failures have been addressed.
 
 For a future required replacement, `php artisan stripe:webhook --account=swiss --create` enables a new destination with the configured application URL, Basil version and all canonical events. Each replacement has its own signing secret: obtain it from the **Swiss** Dashboard, set `STRIPE_SWISS_WEBHOOK_SECRET` on the server, refresh cached configuration and verify actual delivery before retiring the older endpoint. The US endpoint and signing secret are separate. Keep Swiss API credentials, signing configuration and account access until its active subscriptions and future return-checkout/reconciliation paths have been deliberately addressed; this repair does not migrate or cancel subscriptions across accounts.
