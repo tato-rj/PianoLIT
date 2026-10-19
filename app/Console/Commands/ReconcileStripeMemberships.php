@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Billing\Membership;
 use App\Billing\Sources\Stripe;
-use App\Billing\Stripe\{BillingException, MembershipBilling, Operations, WebhookProcessor};
+use App\Billing\Stripe\{Accounts, BillingException, MembershipBilling, Operations, SubscriptionResolutionException, WebhookProcessor};
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +29,19 @@ class ReconcileStripeMemberships extends Command
             $this->line('Stripe memberships awaiting subscription linkage: '.Stripe::whereNull('subscription_id')->count());
             $this->line('Pending webhook events: '.DB::table('stripe_webhook_events')->whereNull('processed_at')->count());
             $this->line('Unfinished checkouts older than 23 hours: '.DB::table('stripe_billing_operations')->whereNotNull('active_key')->where('created_at', '<', now()->subHours(23))->count());
+            $unlinked = DB::table('stripe_memberships as s')->leftJoin('memberships as m', function ($join) {
+                $join->on('m.source_id', '=', 's.id')->where('m.source_type', '=', Stripe::class);
+            })->leftJoin('users as u', 'u.id', '=', 'm.user_id')->whereNull('s.subscription_id')
+                ->orderBy('s.id')->orderBy('m.id')->limit($limit)
+                ->get(['s.id', 's.stripe_id', 's.billing_account', 's.status', 'm.user_id', 'u.id as existing_user_id']);
+            if ($unlinked->isNotEmpty()) {
+                $this->line('Unlinked Stripe sources (local state only; showing up to '.$limit.' associations):');
+                $this->table(['Source', 'Resolved account', 'Customer', 'Local status', 'Owner'], $unlinked->map(function ($row) {
+                    $source = new Stripe(['stripe_id' => $row->stripe_id, 'billing_account' => $row->billing_account]);
+                    $owner = $row->existing_user_id ?: ($row->user_id ? 'missing account '.$row->user_id : 'no association');
+                    return [$row->id, app(Accounts::class)->forSource($source), $row->stripe_id, $row->status, $owner];
+                })->all());
+            }
             return 0;
         }
         $failures = 0;
@@ -73,6 +86,13 @@ class ReconcileStripeMemberships extends Command
                 // Advance the rotation even when an account needs manual review.
                 // A targeted repair has no rotation to advance on failure.
                 if ($sourceId === null) $source->update(['synced_at' => now()]);
+                if ($exception instanceof SubscriptionResolutionException) {
+                    if ($sourceId === null && $exception->isEndedHistory()) {
+                        $this->line('Historical membership left unlinked: '.$exception->diagnostic().'.');
+                        continue;
+                    }
+                    $this->error('Stripe membership needs review: '.$exception->diagnostic().'.');
+                }
                 report($exception); $failures++;
             }
         }

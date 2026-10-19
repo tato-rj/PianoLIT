@@ -284,7 +284,7 @@ class MembershipBilling
             $all = $this->subscriptions($account, $source->stripe_id);
             $live = array_values(array_filter($all, function ($item) { return !in_array($item['status'], ['canceled', 'incomplete_expired'], true); }));
             $candidates = count($live) ? $live : $all;
-            if (count($candidates) !== 1) throw new BillingException('Your subscription needs a billing review. Please contact contact@pianolit.com.');
+            if (count($candidates) !== 1) throw new SubscriptionResolutionException($source, $account, $all);
             $id = $candidates[0]['id'];
         }
         $subscription = $this->gateway->call($account, 'subscriptions', 'retrieve', [
