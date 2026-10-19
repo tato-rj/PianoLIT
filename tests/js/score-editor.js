@@ -375,7 +375,7 @@ module.exports = async function () {
     pinch.finishText = () => {}; pinch.paint = () => {};
     pinch.render = () => { pinchRenders++; return Promise.resolve(); };
     pinch.bindPinchZoom();
-    assert.strictEqual(pinch.scroller.style.touchAction, 'pan-x pan-y', 'Only the score viewport excludes native pinch zoom');
+    assert.strictEqual(pinch.scroller.style.touchAction, 'pan-y', 'The score reserves horizontal swipes while allowing native vertical scrolling');
     for (const {options} of Object.values(pinchListeners)) assert.strictEqual(options.passive, false);
     const pinchEvent = changes => Object.assign({ctrlKey: false, deltaY: -20, deltaMode: 0,
         defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }}, changes);
@@ -533,6 +533,71 @@ module.exports = async function () {
     assert.strictEqual(fittingWheel.defaultPrevented, false, 'Scores that fit retain native page scrolling');
     const fittingTouch = panTouch(200, 200, 100, {type: 'touchstart'}); panning.pinchTouchStart(fittingTouch);
     assert.strictEqual(fittingTouch.defaultPrevented, false);
+
+    const swiping = Object.create(Editor.prototype), swipeListeners = {}, turnedPages = [];
+    swiping.root = {classList: {contains: () => false}};
+    swiping.scroller = {style: {}, scrollWidth: 500, clientWidth: 500, contains: () => true,
+        addEventListener(type, handler) { swipeListeners[type] = handler; }};
+    swiping.pdf = {numPages: 3}; swiping.page = 2; swiping.ready = true; swiping.tool = 'read';
+    swiping.svg = {removeAttribute() {}, hasPointerCapture: () => false};
+    swiping.finishText = swiping.paint = () => {};
+    swiping.find = selector => ({
+        get disabled() { return selector === '[data-next]' ? swiping.page >= 3 : swiping.page <= 1; },
+        click() { swiping.page += selector === '[data-next]' ? 1 : -1; turnedPages.push(swiping.page); }
+    });
+    swiping.bindPinchZoom();
+    const swipeEvent = (type, x, y, time, changes) => panTouch(x, y, time, Object.assign({type,
+        touches: type === 'touchend' || type === 'touchcancel' ? [] : [{identifier: 1, clientX: x, clientY: y}],
+        changedTouches: [{identifier: 1, clientX: x, clientY: y}]}, changes));
+    const swipe = (x, y = 4, changes = {}) => {
+        const start = swipeEvent('touchstart', 200, 200, 0, changes.start);
+        swipeListeners.touchstart(start);
+        const move = swipeEvent('touchmove', 200 + x, 200 + y, 100, changes.move);
+        swipeListeners.touchmove(move);
+        const end = swipeEvent(changes.cancel ? 'touchcancel' : 'touchend', 200 + x, 200 + y, changes.time || 150, changes.end);
+        swipeListeners[end.type](end);
+        return {start, move, end};
+    };
+    const leftSwipe = swipe(-90);
+    assert.strictEqual(swiping.page, 3, 'Swiping left turns to the next score page');
+    assert.strictEqual(leftSwipe.start.defaultPrevented, false, 'Touchstart leaves native vertical scrolling available');
+    assert.strictEqual(leftSwipe.move.defaultPrevented, true, 'A deliberate horizontal swipe suppresses native horizontal scrolling');
+    assert.strictEqual(leftSwipe.end.defaultPrevented, true, 'Turning a page suppresses the synthetic tap');
+    swipe(90); assert.strictEqual(swiping.page, 2, 'Swiping right turns to the previous page');
+    swiping.page = 1; swipe(90); assert.strictEqual(swiping.page, 1, 'The first page never wraps');
+    swiping.page = 3; swipe(-90); assert.strictEqual(swiping.page, 3, 'The last page never wraps');
+    swiping.page = 2;
+    for (const args of [[-20], [-70, 70], [-20, 100], [-90, 4, {time: 1000}], [-90, 4, {cancel: true}],
+        [-90, 4, {end: {changedTouches: [{identifier: 2, clientX: 110, clientY: 204}]}}],
+        [-90, 4, {start: {target: {closest: () => ({})}}}]]) {
+        swipe(...args);
+        assert.strictEqual(swiping.page, 2, 'Taps, diagonal/vertical scrolls, long holds, cancellation, other fingers and annotations never turn pages');
+    }
+    swipeListeners.touchstart(swipeEvent('touchstart', 200, 200, 0));
+    const verticalSwipe = swipeEvent('touchmove', 200, 250, 30); swipeListeners.touchmove(verticalSwipe);
+    swipeListeners.touchend(swipeEvent('touchend', 100, 250, 150));
+    assert.strictEqual(verticalSwipe.defaultPrevented, false);
+    assert.strictEqual(swiping.page, 2, 'A vertical reading scroll cannot become a page turn halfway through');
+    for (const tool of ['pen', 'highlight', 'erase', 'text']) {
+        swiping.tool = tool; swipe(-90);
+        assert.strictEqual(swiping.page, 2, 'Annotation tools retain their one-finger gestures');
+    }
+    swiping.tool = 'read';
+    for (const [key, value] of [['ready', false], ['rendering', true], ['printing', true],
+        ['textDrag', {}], ['stroke', {}], ['touchPinching', true], ['gestureScale', 1]]) {
+        const previous = swiping[key]; swiping[key] = value;
+        swipe(-90); assert.strictEqual(swiping.page, 2, 'Loading, printing and unfinished gestures cannot turn pages');
+        swiping[key] = previous;
+    }
+    swipeListeners.touchstart(swipeEvent('touchstart', 200, 200, 0));
+    swipeListeners.touchstart(pinchEvent({touches: touches(100)}));
+    swipeListeners.touchend(swipeEvent('touchend', 100, 200, 150));
+    assert.strictEqual(swiping.page, 2, 'A two-finger pinch never finishes as a page turn');
+    swipeListeners.touchstart(swipeEvent('touchstart', 200, 200, 0));
+    swipeListeners.touchstart(pinchEvent({touches: [...touches(100), {identifier: 3}]}));
+    swipeListeners.touchend(swipeEvent('touchend', 100, 200, 150));
+    assert.strictEqual(swiping.page, 2, 'Extra fingers cancel a pending page turn');
+    assert.deepStrictEqual(turnedPages, [3, 2], 'Each deliberate swipe activates exactly one existing page control');
     delete window.requestAnimationFrame; delete window.cancelAnimationFrame; delete document.scrollingElement;
 
     const zoomProtection = Object.create(Editor.prototype);

@@ -4,10 +4,11 @@ const path = require('path');
 const vm = require('vm');
 
 module.exports = async function () {
-    const element = (extra = {}) => Object.assign({events: {}, attributes: {}, hidden: false,
+    const element = (extra = {}) => { const classes = new Set(); return Object.assign({events: {}, attributes: {}, style: {}, hidden: false,
         addEventListener(name, callback) { this.events[name] = callback; },
         setAttribute(name, value) { this.attributes[name] = value; },
-        classList: {toggle() {}}, focus() { this.focused = true; }, getAttribute(name) { return this.attributes[name]; }}, extra);
+        classList: {toggle() {}, contains: name => classes.has(name), add: name => classes.add(name), remove: name => classes.delete(name)},
+        focus() { this.focused = true; }, getAttribute(name) { return this.attributes[name]; }}, extra); };
     const button = element(), panel = element({hidden: true}), slider = element({value: '60'});
     const value = element(), close = element(), error = element({hidden: true});
     const pauseIcon = element(), playIcon = element({hidden: true});
@@ -18,7 +19,8 @@ module.exports = async function () {
     const settings = element({querySelector: selector => ({'[data-metronome-sound]': sound,
         '[data-metronome-settings-status]': status, '[data-metronome-save-status]': saveStatus,
         '[data-metronome-save-retry]': saveRetry})[selector], querySelectorAll: () => beats});
-    const settingsButton = element({attributes: {'aria-controls': 'score-metronome-settings'}});
+    let settingsTop = 240;
+    const settingsButton = element({attributes: {'aria-controls': 'score-metronome-settings'}, getBoundingClientRect: () => ({top: settingsTop})});
     for (let number=1; number<=4; number++) {
         sound.attributes['data-count-url-'+number] = '/count-'+number+'.wav';
         sound.attributes['data-female-count-url-'+number] = '/female-count-'+number+'.wav';
@@ -55,9 +57,17 @@ module.exports = async function () {
     const window = element({AudioContext, setInterval(callback) { timers.set(++timerId, callback); return timerId; },
         clearInterval(id) { timers.delete(id); },
         setTimeout(callback) { timeouts.set(++timerId, callback); return timerId; },
-        clearTimeout(id) { timeouts.delete(id); }, app: {csrfToken: 'test-csrf'}});
+        clearTimeout(id) { timeouts.delete(id); }, app: {csrfToken: 'test-csrf'},
+        bootstrap: {Dropdown: {getOrCreateInstance() {}, getInstance: () => ({hide() {
+            if (!settings.classList.contains('show')) return;
+            settings.classList.remove('show'); settingsButton.setAttribute('aria-expanded', 'false');
+            settingsButton.events['hidden.bs.dropdown']();
+        }})}}});
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/components/score-metronome.js'), 'utf8'), {window, document});
     const metronome = new window.ScoreMetronome(container);
+    let nativeArrow = false;
+    window.events.keydown({target: sound, key: 'ArrowDown', stopPropagation() { nativeArrow = true; }, preventDefault() { assert.fail('Native selection must remain enabled'); }});
+    assert(nativeArrow, 'Sound selection keeps native arrow keys before Bootstrap menu navigation');
     assert(panel.hidden && !contexts.length, 'Loading a score must not start audio');
     await button.events.click();
     const context = contexts[0];
@@ -66,6 +76,16 @@ module.exports = async function () {
     assert.strictEqual(timers.size, 1);
     assert.strictEqual(context.sources.length, 1, 'Opening starts the first beat');
     assert.strictEqual(context.sources[0].time, 0.01);
+    settings.classList.add('show'); settingsButton.setAttribute('aria-expanded', 'true');
+    settingsButton.events['show.bs.dropdown']();
+    assert.strictEqual(settings.style.maxHeight, '224px');
+    settingsTop = 120; window.events.resize();
+    assert.strictEqual(settings.style.maxHeight, '104px', 'An open settings box stays above its button on short screens');
+    let settingsEscapePrevented = false;
+    panel.events.keydown({key: 'Escape', preventDefault() { settingsEscapePrevented = true; }, stopPropagation() {}});
+    assert(settingsEscapePrevented && !settings.classList.contains('show') && settingsButton.focused, 'Escape dismisses settings and restores gear focus');
+    assert(!panel.hidden && context.state === 'running' && timers.size === 1, 'Dismissing settings keeps the metronome playing');
+    assert.strictEqual(settingsButton.attributes['aria-expanded'], 'false');
     context.currentTime = 0.95; [...timers.values()][0]();
     assert.strictEqual(context.sources[1].time, 1.01, 'Default 60 BPM schedules one beat per second');
     context.currentTime = 1.1;
@@ -82,7 +102,9 @@ module.exports = async function () {
     slider.value = '200'; slider.events.input();
     context.currentTime = 4.2; [...timers.values()][0]();
     assert(Math.abs(context.sources.at(-1).time - 4.26) < 0.00001, '200 BPM uses a 0.3-second interval');
+    settings.classList.add('show');
     close.events.click();
+    assert(!settings.classList.contains('show'), 'Panel dismissal also hides its settings');
     assert(panel.hidden && button.focused);
     assert.strictEqual(button.attributes['aria-expanded'], 'false');
     assert.strictEqual(context.state, 'closed');
@@ -114,7 +136,7 @@ module.exports = async function () {
     pause.events.click();
     metronome.setTempo(200); metronome.setBeatCount(4); await metronome.setSound('claves');
     const beforeSettings = pausedAudio.sources.length;
-    settings.events['hide.bs.modal']();
+    settingsButton.events['hidden.bs.dropdown']();
     assert(metronome.paused, 'Closing settings preserves an explicit count pause');
     assert.strictEqual(pausedAudio.sources.length, beforeSettings, 'Settings, tempo and sound changes do not unpause the count');
     pause.events.click();
@@ -271,7 +293,7 @@ module.exports = async function () {
     await saveRetry.events.click();
     assert.deepStrictEqual(JSON.parse(requests.at(-1).body), {preferences: {tempo: 170}});
     assert(saveStatus.hidden && saveRetry.hidden);
-    signedIn.setBeatCount(4); await settings.events['hide.bs.modal']();
+    signedIn.setBeatCount(4); await settingsButton.events['hidden.bs.dropdown']();
     assert.deepStrictEqual(JSON.parse(requests.at(-1).body), {preferences: {beats: 4}}, 'Dismissing settings flushes the last edit');
     signedIn.setTempo(180); close.events.click(); await signedIn.preferenceRequest;
     assert.deepStrictEqual(JSON.parse(requests.at(-1).body), {preferences: {tempo: 180}}, 'Panel close flushes pending tempo');

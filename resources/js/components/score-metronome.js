@@ -12,7 +12,13 @@
             this.value = container.querySelector('[data-metronome-value]');
             this.error = container.querySelector('[data-metronome-error]');
             this.pauseButton = container.querySelector('[data-metronome-pause]');
-            this.settings = document.getElementById(container.querySelector('[data-metronome-settings]').getAttribute('aria-controls'));
+            this.settingsButton = container.querySelector('[data-metronome-settings]');
+            this.settings = document.getElementById(this.settingsButton.getAttribute('aria-controls'));
+            root.bootstrap.Dropdown.getOrCreateInstance(this.settingsButton, {
+                popperConfig: config => Object.assign({}, config, {
+                    modifiers: config.modifiers.concat({name: 'preventOverflow', options: {padding: 16}})
+                })
+            });
             this.soundSelect = this.settings.querySelector('[data-metronome-sound]');
             this.settingsStatus = this.settings.querySelector('[data-metronome-settings-status]');
             this.saveStatus = this.settings.querySelector('[data-metronome-save-status]');
@@ -39,10 +45,18 @@
             this.beatButtons.forEach(button => button.addEventListener('click', () => this.setBeatCount(Number(button.getAttribute('data-metronome-beats')))));
             this.soundSelect.addEventListener('change', () => this.setSound(this.soundSelect.value));
             this.saveRetry.addEventListener('click', () => this.flushPreferences());
-            this.settings.addEventListener('hide.bs.modal', () => this.flushPreferences());
+            this.settingsButton.addEventListener('show.bs.dropdown', () => this.sizeSettings());
+            this.settingsButton.addEventListener('hidden.bs.dropdown', () => this.flushPreferences());
+            root.addEventListener('resize', () => { if (this.settings.classList.contains('show')) this.sizeSettings(); });
+            // Bootstrap captures menu arrow keys on document; keep the select's native navigation.
+            root.addEventListener('keydown', event => {
+                if (event.target === this.soundSelect && ['ArrowUp', 'ArrowDown'].includes(event.key)) event.stopPropagation();
+            }, true);
             this.panel.addEventListener('keydown', event => {
                 if (event.key !== 'Escape') return;
-                event.preventDefault(); event.stopPropagation(); this.close(true);
+                event.preventDefault(); event.stopPropagation();
+                if (this.settings.classList.contains('show')) this.hideSettings(true);
+                else this.close(true);
             });
             document.addEventListener('hidden.bs.tab', () => {
                 if (!this.root.getClientRects().length) this.close();
@@ -285,7 +299,17 @@
         cancelTick(tick) {
             tick.source.stop(); tick.source.disconnect(); tick.gain.disconnect(); this.ticks.delete(tick);
         }
+        sizeSettings() {
+            // Keep the box above its button, with scrolling on short landscape screens.
+            this.settings.style.maxHeight = Math.max(0, Math.floor(this.settingsButton.getBoundingClientRect().top - 16)) + 'px';
+        }
+        hideSettings(focusButton = false) {
+            const dropdown = root.bootstrap && root.bootstrap.Dropdown.getInstance(this.settingsButton);
+            if (dropdown) dropdown.hide();
+            if (focusButton) this.settingsButton.focus();
+        }
         close(focusButton = false) {
+            this.hideSettings();
             this.panel.hidden = true;
             this.button.setAttribute('aria-expanded', 'false');
             root.clearInterval(this.timer);

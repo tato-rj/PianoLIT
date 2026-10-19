@@ -203,8 +203,8 @@
                 el.disabled = !this.pdf || this.rendering || (step < 0 && this.zoom <= 0.5) || (step > 0 && this.zoom >= 2.5);
             });
             const canPan = this.canPanScore();
-            this.scroller.style.touchAction = canPan ? 'none' : 'pan-x pan-y';
-            const touchAction = this.tool === 'read' && !canPan ? 'pan-x pan-y' : 'none';
+            this.scroller.style.touchAction = canPan ? 'none' : 'pan-y';
+            const touchAction = this.tool === 'read' && !canPan ? 'pan-y' : 'none';
             this.sheet.style.touchAction = touchAction;
             this.svg.style.touchAction = touchAction;
             this.svg.setAttribute('data-tool', this.tool);
@@ -313,7 +313,43 @@
         }
         stopPan() {
             if (this.panFrame) root.cancelAnimationFrame(this.panFrame);
-            this.panFrame = null; this.touchPan = null;
+            this.panFrame = null; this.touchPan = null; this.touchSwipe = null;
+        }
+        canSwipeScore() {
+            return this.ready && !!this.pdf && this.pdf.numPages > 1 && !this.rendering && !this.printing &&
+                this.tool === 'read' && !this.textDrag && !this.stroke && !this.touchPinching &&
+                this.gestureScale === undefined && !this.canPanScore();
+        }
+        swipeTouchStart(event) {
+            if (!this.canSwipeScore() || event.touches.length !== 1 ||
+                event.target.closest('input, textarea, select, button, a, [contenteditable], [data-mark-id]')) return;
+            const touch = event.touches[0];
+            this.touchSwipe = {id: touch.identifier, x: touch.clientX, y: touch.clientY, time: event.timeStamp, page: this.page};
+        }
+        swipeTouchMove(event) {
+            const swipe = this.touchSwipe;
+            if (!swipe) return;
+            if (!this.canSwipeScore() || event.touches.length !== 1) { this.touchSwipe = null; return; }
+            const touch = Array.from(event.touches).find(touch => touch.identifier === swipe.id);
+            if (!touch) { this.touchSwipe = null; return; }
+            const x = Math.abs(touch.clientX - swipe.x), y = Math.abs(touch.clientY - swipe.y);
+            // Let vertical reading scrolls remain native, even if the finger later veers sideways.
+            if (y > 12 && y >= x) this.touchSwipe = null;
+            else if (x > 12 && x > y * 1.5) event.preventDefault();
+        }
+        swipeTouchEnd(event) {
+            const swipe = this.touchSwipe;
+            this.touchSwipe = null;
+            if (!swipe || event.type === 'touchcancel' || event.touches.length || !this.canSwipeScore() ||
+                this.page !== swipe.page || event.timeStamp - swipe.time > 800) return;
+            const touch = Array.from(event.changedTouches).find(touch => touch.identifier === swipe.id);
+            if (!touch) return;
+            const x = touch.clientX - swipe.x, y = touch.clientY - swipe.y;
+            if (Math.abs(x) < 50 || Math.abs(x) <= Math.abs(y) * 1.5) return;
+            const button = this.find(x < 0 ? '[data-next]' : '[data-prev]');
+            if (button.disabled) return;
+            event.preventDefault();
+            button.click();
         }
         panWheel(event) {
             if (!this.canPanScore() || event.shiftKey) return;
@@ -371,7 +407,8 @@
             this.pinchZoom(-event.deltaY * unit * 0.01);
         }
         pinchTouchStart(event) {
-            if (event.touches.length === 1) { this.panTouchStart(event); return; }
+            if (event.touches.length === 1) { this.panTouchStart(event); this.swipeTouchStart(event); return; }
+            this.touchSwipe = null;
             if (event.touches.length !== 2 || !Array.from(event.touches).every(touch => this.scroller.contains(touch.target))) return;
             event.preventDefault();
             this.touchPinching = true; this.gestureScale = undefined; this.pinchAmount = 0; this.pinchWheelTime = 0;
@@ -391,7 +428,7 @@
             return Math.hypot(pair[0].clientX - pair[1].clientX, pair[0].clientY - pair[1].clientY);
         }
         pinchTouchMove(event) {
-            if (!this.touchPinching) { this.panTouchMove(event); return; }
+            if (!this.touchPinching) { this.panTouchMove(event); this.swipeTouchMove(event); return; }
             event.preventDefault();
             if (!this.touchPinch || event.touches.length !== 2) return;
             const distance = this.pinchDistance(event.touches);
@@ -401,7 +438,7 @@
             this.touchDistance = distance; this.touchCenter = center;
         }
         pinchTouchEnd(event) {
-            if (!this.touchPinching) { this.panTouchEnd(event); return; }
+            if (!this.touchPinching) { this.panTouchEnd(event); this.swipeTouchEnd(event); return; }
             event.preventDefault();
             if (event.touches.length < 2) this.touchPinch = null;
             // A remaining finger must not resume drawing or scrolling midway through a pinch.
@@ -419,7 +456,7 @@
             }
         }
         bindPinchZoom() {
-            this.scroller.style.touchAction = 'pan-x pan-y';
+            this.scroller.style.touchAction = 'pan-y';
             this.scroller.addEventListener('wheel', event => this.pinchWheel(event), {passive: false});
             const options = {passive: false, capture: true};
             this.scroller.addEventListener('touchstart', event => this.pinchTouchStart(event), options);

@@ -125,7 +125,10 @@
         <div id="score-metronome-panel" class="score-metronome-panel animate__animated animate__bounceInUp" role="group" aria-label="Metronome" hidden>
             <input id="score-metronome-tempo" data-metronome-tempo class="form-range" type="range" min="20" max="200" step="1" value="60" aria-label="Metronome speed" aria-valuetext="60 beats per minute">
             <output for="score-metronome-tempo" class="score-metronome-tempo"><span data-metronome-value>60</span> <span>BPM</span></output>
-            <button type="button" data-metronome-settings class="btn-raw text-muted score-metronome-settings-button" data-bs-toggle="modal" data-bs-target="#score-metronome-settings" aria-controls="score-metronome-settings" aria-label="Metronome settings" title="Metronome settings">@icon('settings', ['mr' => 0])</button>
+            <div class="dropup d-flex flex-shrink-0">
+                <button type="button" id="score-metronome-settings-toggle" data-metronome-settings class="btn-raw text-muted score-metronome-settings-button" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-offset="0,8" aria-expanded="false" aria-controls="score-metronome-settings" aria-label="Metronome settings" title="Metronome settings">@icon('settings', ['mr' => 0])</button>
+                @include('webapp.piece.components.metronome-settings')
+            </div>
             <button type="button" data-metronome-pause class="btn-raw text-muted score-metronome-pause-button" aria-label="Pause metronome" title="Pause metronome" aria-pressed="false"><span data-metronome-pause-icon>@icon('pause', ['mr' => 0])</span><span data-metronome-play-icon hidden>@icon('play', ['mr' => 0])</span></button>
             <button type="button" data-metronome-close class="btn-raw text-muted score-metronome-close" aria-label="Close metronome">@icon('x', ['mr' => 0])</button>
         </div>
@@ -137,7 +140,3 @@
         <button type="button" data-reload-score class="btn btn-sm btn-light" hidden>Reload saved score</button>
     </div>
 </div>
-
-@push('page-modals')
-    @include('webapp.piece.components.metronome-settings')
-@endpush

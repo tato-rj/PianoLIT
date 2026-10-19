@@ -65,8 +65,10 @@ class PieceContentAccessTest extends ReviewTestCase
         foreach ($controls as $control) {
             $this->assertFalse($control->hasAttribute('disabled'));
             if ($control->hasAttribute('data-metronome-settings')) {
-                $this->assertSame('modal', $control->getAttribute('data-bs-toggle'));
-                $this->assertSame('#score-metronome-settings', $control->getAttribute('data-bs-target'));
+                $this->assertSame('dropdown', $control->getAttribute('data-bs-toggle'));
+                $this->assertSame('outside', $control->getAttribute('data-bs-auto-close'));
+                $this->assertSame('false', $control->getAttribute('aria-expanded'));
+                $this->assertFalse($control->hasAttribute('data-bs-target'));
                 continue;
             }
             if ($control->getAttribute('aria-controls') === 'score-metronome-panel' || $control->hasAttribute('data-metronome-close') || $control->hasAttribute('data-metronome-pause')) {
@@ -104,11 +106,13 @@ class PieceContentAccessTest extends ReviewTestCase
         $response->assertDontSee('/js/views/score-editor.js?id=', false);
         $response->assertSee('/js/components/score-metronome.js?id=', false);
         $this->assertSame(1, $xpath->query('//*[@id="score-metronome-panel" and @hidden]')->length);
-        $this->assertSame(1, $xpath->query('//*[@data-metronome-settings]/following-sibling::*[1][@data-metronome-pause and @aria-pressed="false"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@data-metronome-settings]/parent::*/following-sibling::*[1][@data-metronome-pause and @aria-pressed="false"]')->length);
         $this->assertSame(1, $xpath->query('//*[@data-metronome-pause]/following-sibling::*[1][@data-metronome-close]')->length);
         $this->assertSame(1, $xpath->query('//*[@data-metronome-tempo and @min="20" and @max="200" and @value="60"]')->length);
-        $this->assertSame(1, $xpath->query('//*[@id="score-metronome-settings" and contains(@class, "modal")]')->length);
-        $this->assertSame(0, $xpath->query('//*[@id="score-metronome-settings"]/ancestor::*[contains(@class, "score-editor") or @id="tab-score"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="score-metronome-settings" and contains(@class, "dropdown-menu") and @aria-labelledby="score-metronome-settings-toggle"]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="score-metronome-settings"]/parent::*[contains(@class, "dropup")]/parent::*[@id="score-metronome-panel"]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="score-metronome-settings" and contains(@class, "modal")]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="score-metronome-settings"]//*[@data-bs-dismiss="modal"]')->length);
         $this->assertSame(4, $xpath->query('//*[@id="score-metronome-settings"]//*[@data-metronome-beats]')->length);
         $this->assertSame(1, $xpath->query('//*[@data-metronome-beats="1" and @aria-pressed="true"]')->length);
         $this->assertSame(6, $xpath->query('//*[@data-metronome-sound]/option')->length);
