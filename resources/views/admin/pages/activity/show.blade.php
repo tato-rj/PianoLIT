@@ -6,7 +6,7 @@
     <p><a href="{{ $user ? route('admin.users.activity', $user) : route('admin.activity.index') }}">Back to visits</a></p>
     @php($startedAt = carbon($visit->started_at))
     @php($lastActivity = carbon($visit->last_activity_at))
-    <p>{{ $startedAt->format('l, F j, Y') }} · {{ $startedAt->format('g:i:s A') }} → {{ $lastActivity->format($startedAt->isSameDay($lastActivity) ? 'g:i:s A' : 'l, F j, Y · g:i:s A') }} <span class="text-muted">({{ config('app.timezone') }})</span></p>
+    <p>{{ $startedAt->format('l, F j, Y') }} · {{ $startedAt->format('g:i:s A') }} → {{ $lastActivity->format($startedAt->isSameDay($lastActivity) ? 'g:i:s A' : 'l, F j, Y · g:i:s A') }}</p>
     <div class="card mb-4"><div class="card-body">
         <h4>Pages opened</h4>
         <div class="table-responsive"><table class="table"><thead><tr><th>Opened</th><th>Page</th><th>Observed time</th><th>Visible time</th></tr></thead>

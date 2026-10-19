@@ -32,6 +32,9 @@ shapes, email templates and standalone policy documents keep their own layouts.
 
 ## Form controls
 
+Date and time displays omit timezone names and explanatory timezone captions.
+Use the configured application timezone for formatting and calculations.
+
 Use `@input` (`components.form.input`) for standard text/email fields, including
 labels and validation feedback. Supply `id` to associate its label, `autocomplete`
 for browser completion and `describedBy` for help text. The component preserves

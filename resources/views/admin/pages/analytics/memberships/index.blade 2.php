@@ -44,7 +44,7 @@
             @elseif(!$lastRun)
                 <p>Waiting for the first scheduled check. Existing Apple memberships remain unverified here until Apple responds.</p>
             @else
-                <p class="ma-run-time">Last run <strong>{{carbon($lastRun->started_at)->format('M j, g:i A')}}</strong> <small>{{config('app.timezone')}}</small></p>
+                <p class="ma-run-time">Last run <strong>{{carbon($lastRun->started_at)->format('M j, g:i A')}}</strong></p>
                 <div class="ma-run-counts"><span><strong>{{$lastRun->checked}}</strong> checked</span><span><strong>{{$lastRun->verified}}</strong> verified</span><span><strong>{{$lastRun->failed}}</strong> failed</span></div>
                 @if($overdue)<p class="ma-source-note">The scheduled check is overdue. Check the server scheduler.</p>@endif
             @endif
@@ -54,7 +54,7 @@
     </div>
 
     <section class="ua-card ma-directory" aria-labelledby="ma-directory-title">
-        <div class="ua-section-heading"><div><h2 id="ma-directory-title">Membership directory</h2><p>{{number_format($memberships->total())}} matching accounts · One row per account · Dates shown in {{config('app.timezone')}}.</p></div></div>
+        <div class="ua-section-heading"><div><h2 id="ma-directory-title">Membership directory</h2><p>{{number_format($memberships->total())}} matching accounts · One row per account.</p></div></div>
         <form class="ua-filters" method="GET" action="{{route('admin.analytics.memberships')}}" aria-label="Membership filters">
             <label class="ua-search">Find an account<input type="search" name="search" value="{{$filters['search'] ?? ''}}" placeholder="Name, email or user ID" maxlength="160"></label>
             <label>Provider<select name="provider"><option value="">All providers</option>@foreach(['billing' => 'Stripe + Apple', 'stripe' => 'Stripe · Webapp', 'apple' => 'Apple · iOS', 'super_user' => 'Super User'] as $key => $label)<option value="{{$key}}" @if(($filters['provider'] ?? '') === $key) selected @endif>{{$label}}</option>@endforeach</select></label>

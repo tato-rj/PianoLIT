@@ -5,7 +5,7 @@
     @include('admin.components.page.title', ['icon' => 'message-circle-more', 'title' => 'Feedback', 'subtitle' => 'What visitors and members think of their PianoLIT experience.'])
     @component('admin.components.table', [
         'id' => 'feedback-table', 'label' => 'Feedback', 'items' => $submissions,
-        'description' => number_format($submissions->total()).' matching submissions · Times shown in '.config('app.timezone').'.',
+        'description' => number_format($submissions->total()).' matching submissions.',
         'action' => route('admin.feedback.index'), 'state' => $filters,
         'search' => ['label' => 'Find feedback', 'placeholder' => 'Message, rating or sender'],
         'filters' => [['name' => 'rating', 'label' => 'Rating', 'options' => ['' => 'All ratings'] + \App\FeedbackSubmission::RATINGS]],

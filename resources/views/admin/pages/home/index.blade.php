@@ -84,7 +84,7 @@
         <a class="admin-card-footer-link" href="{{route('admin.users.index')}}">View all users @icon('arrow-right', ['mr' => 0])</a>
       </article>
     </div>
-    <p class="admin-activity-note">Page views, actions and app requests. Timer updates excluded. iOS identity is unverified and excluded from user rankings. Times in {{config('app.timezone')}}.</p>
+    <p class="admin-activity-note">Page views, actions and app requests. Timer updates excluded. iOS identity is unverified and excluded from user rankings.</p>
   </section>
 
   <section class="admin-metrics-section" aria-labelledby="admin-metrics-title">

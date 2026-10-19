@@ -30,7 +30,6 @@
                 @include('admin.pages.users.show.fact', ['label' => 'Age range', 'value' => $user->age_range])
                 @include('admin.pages.users.show.fact', ['label' => 'Gender', 'value' => ucfirst($user->gender ?: '')])
             </dl>
-            <p class="up-note">Dates shown in {{ config('app.timezone') }}.</p>
         </section>
         <section class="up-card" aria-labelledby="up-signin-title">
             <div class="up-section-title"><span class="up-icon up-icon--lavender">@icon('lock', ['mr' => 0])</span><div><h2 id="up-signin-title">Sign-in & email</h2><p>Connected sign-in methods and mailing preferences.</p></div></div>

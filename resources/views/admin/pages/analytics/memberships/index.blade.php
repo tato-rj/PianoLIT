@@ -44,7 +44,7 @@
             @elseif(!$lastRun)
                 <p>Waiting for the first scheduled check. Existing Apple memberships remain unverified here until Apple responds.</p>
             @else
-                <p class="ma-run-time">Last run <strong>{{carbon($lastRun->started_at)->format('M j, g:i A')}}</strong> <small>{{config('app.timezone')}}</small></p>
+                <p class="ma-run-time">Last run <strong>{{carbon($lastRun->started_at)->format('M j, g:i A')}}</strong></p>
                 <div class="ma-run-counts"><span><strong>{{$lastRun->checked}}</strong> checked</span><span><strong>{{$lastRun->verified}}</strong> verified</span><span><strong>{{$lastRun->failed}}</strong> failed</span></div>
                 @if($overdue)<p class="ma-source-note">The scheduled check is overdue. Check the server scheduler.</p>@endif
             @endif
@@ -56,7 +56,7 @@
     @component('admin.components.table', [
         'id' => 'ma-directory', 'title' => 'Membership directory', 'class' => 'ma-directory',
         'items' => $memberships, 'pageSizes' => [], 'tableClass' => 'ma-table',
-        'description' => number_format($memberships->total()).' matching accounts · One row per account · Dates shown in '.config('app.timezone').'.',
+        'description' => number_format($memberships->total()).' matching accounts · One row per account.',
         'action' => route('admin.analytics.memberships'), 'state' => array_merge(['sort' => 'date_asc'], $filters),
         'search' => ['label' => 'Find an account', 'placeholder' => 'Name, email or user ID', 'maxlength' => 160],
         'filters' => [

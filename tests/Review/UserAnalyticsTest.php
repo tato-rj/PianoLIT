@@ -69,7 +69,7 @@ class UserAnalyticsTest extends ReviewTestCase
             }
         }
         foreach (['overview', 'visits', 'music', 'account'] as $tab) $this->get(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => $tab]))->assertOk()->assertSee('Maria Rossi');
-        $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('Clair de lune')->assertSee('80% unique content played')->assertSee('America/New_York')->assertDontSee('closed the browser');
+        $this->get(route('admin.analytics.users.journey', $visit))->assertOk()->assertSee('Clair de lune')->assertSee('80% unique content played')->assertDontSee('America/New_York')->assertDontSee('closed the browser');
         $this->assertDatabaseCount('activity_imports', 0);
     }
 

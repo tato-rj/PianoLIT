@@ -13,7 +13,7 @@
     <section class="ua-card ua-identity">
         <span class="ua-avatar ua-avatar-lg" aria-hidden="true">{{ mb_substr(\App\Activity\Presentation::name($visit), 0, 1) }}</span>
         <div><h2>{{ \App\Activity\Presentation::name($visit) }}</h2><p>{{ \App\Activity\Time::date($visit, 'started_at')->format('l, F j, Y') }} · {{ \App\Activity\Presentation::platform($visit->platform) }}</p>
-            <p class="ua-meta">{{ \App\Activity\Time::date($visit, 'started_at')->format('g:i:s A') }} to {{ \App\Activity\Time::date($visit, 'last_activity_at')->format('g:i:s A') }} · {{ config('app.timezone') }}</p>
+            <p class="ua-meta">{{ \App\Activity\Time::date($visit, 'started_at')->format('g:i:s A') }} to {{ \App\Activity\Time::date($visit, 'last_activity_at')->format('g:i:s A') }}</p>
             @if($visit->association_reason)<span class="ua-badge">Anonymous visit linked by confirmed authentication</span>@endif
         </div>
         <div class="ua-visit-facts"><strong>{{ \App\Activity\Time::visitDuration($visit) }}</strong><span>Observed span · {{ $visit->pages_count }} pages</span></div>
@@ -22,7 +22,7 @@
         @if($previous)<a class="ua-button ua-button-secondary" href="{{ route('admin.analytics.users.journey', $previous) }}">← Previous visit</a>@endif
         @if($next)<a class="ua-button ua-button-secondary" href="{{ route('admin.analytics.users.journey', $next) }}">Next visit →</a>@endif
     </nav>
-    <p class="ua-note">Times are shown in {{ config('app.timezone') }}. Foreground visibility does not prove attention. The final timestamp is the last recorded activity, rather than a browser close time.</p>
+    <p class="ua-note">Foreground visibility does not prove attention. The final timestamp is the last recorded activity, rather than a browser close time.</p>
     @if($unplaced->total())<p class="ua-note">Actions without a recorded page appear at their recorded times below. They are not assigned to a page by guesswork.</p>@endif
     @if($detailCount > 2000)<p class="ua-note">This part of the visit contains {{ number_format($detailCount) }} events. The earliest 2,000 are shown; later page groups remain available through pagination. Details are incomplete.</p>@endif
     <ol class="ua-timeline">

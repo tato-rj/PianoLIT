@@ -10,7 +10,7 @@
     @include('admin.components.page.title', ['icon' => 'users', 'title' => 'Users', 'subtitle' => 'Use this page to view and manage the profile of our users.'])
     @component('admin.components.table', [
         'id' => 'users-table', 'label' => 'Users', 'items' => $users,
-        'description' => number_format($users->total()).' matching accounts · Dates shown in '.config('app.timezone').'.',
+        'description' => number_format($users->total()).' matching accounts.',
         'action' => route('admin.users.index'), 'state' => $filters,
         'search' => ['label' => 'Find an account', 'placeholder' => 'Name, email or user ID'],
         'sorts' => \App\Services\Admin\UsersTable::SORTS,

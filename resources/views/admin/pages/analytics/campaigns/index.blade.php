@@ -17,7 +17,7 @@
 
     @component('admin.components.table', [
         'id' => 'campaigns-table', 'label' => 'Campaigns', 'items' => $campaigns,
-        'description' => 'Grouped by source, medium, campaign and placement · Dates shown in '.config('app.timezone').'.',
+        'description' => 'Grouped by source, medium, campaign and placement.',
         'action' => route('admin.analytics.campaigns'), 'state' => $filters,
         'search' => ['label' => 'Find a source or campaign', 'placeholder' => 'YouTube, Reddit, campaign or placement'],
         'filters' => [['name' => 'period', 'label' => 'Arrival period', 'options' => \App\Services\CampaignAttributionReport::PERIODS]],

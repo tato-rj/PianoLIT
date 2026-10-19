@@ -4,7 +4,6 @@
 <div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', ['icon' => 'users', 'title' => $user ? $user->full_name.' · Activity' : 'Visit timelines', 'subtitle' => 'Website and web app activity, grouped by visit.'])
     <p><a href="{{ route('admin.users.logs') }}">Activity overview</a> · <a href="{{ route('admin.activity.index') }}">All visits</a> · <a href="{{ route('admin.activity.index', ['guests' => 1]) }}">Anonymous visits</a></p>
-    <p class="text-muted small">Times shown in {{ config('app.timezone') }}.</p>
     <div class="card mb-4"><div class="card-body">
         <h4>Visits</h4>
         <div class="table-responsive"><table class="table"><thead><tr><th>Started</th><th>Visitor</th><th>Platform</th><th>Last activity</th><th>Events</th><th></th></tr></thead>
