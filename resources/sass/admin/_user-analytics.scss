@@ -71,8 +71,8 @@
         color: #5c665e;
         margin: 0;
     }
-    .ua-filters input:not([type='checkbox']),
-    .ua-filters select:not(.admin-filter-select) {
+    .ua-filters input:not([type='checkbox']):not(.form-control),
+    .ua-filters select:not(.admin-filter-select):not(.form-control):not(.form-select) {
         min-height: 41px;
         padding: 9px 13px;
         border: 1px solid #fff;
@@ -786,6 +786,9 @@
     }
     .ua-directory-options > .ua-filters {
         margin: 14px 0 0;
+    }
+    .ua-directory-filters .form-group {
+        margin-bottom: 0;
     }
     .ua-search {
         flex: 1;

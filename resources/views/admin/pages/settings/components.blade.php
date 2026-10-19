@@ -1,6 +1,10 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">07 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Page loading', 'usage' => 'admin.components.page-loading', 'properties' => 'height,background-color'])
+      @include('admin.components.page-loading', ['preview' => true])
+      <p class="text-muted mt-3 mb-0">The top bar advances while an admin page opens, then completes and fades after loading.</p>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Content card', 'usage' => '.card .rounded .shadow-light', 'properties' => 'padding,border,border-radius,box-shadow'])
       <div class="card rounded shadow-light" data-ds-preview><div class="card-body"><h3 class="h5">Discover your next piece</h3><p>Thoughtfully chosen repertoire for every stage of your piano journey.</p><button type="button" class="btn btn-primary btn-sm">Explore pieces</button></div></div>
     @endcomponent
@@ -82,7 +86,7 @@
   <p class="design-system__note">Table card values are measured from the shared component. Filters and pagination use the same styles on live directory pages.</p>
   <div class="design-system__grid">
     @component('admin.pages.settings.sample', ['label' => 'Admin filter', 'usage' => '.admin-table__filters', 'properties' => 'font-size,padding,border,border-radius,background-color'])
-      <div class="admin-table p-0 border-0"><div class="admin-table__filters mb-0"><label>Search accounts<input type="search" placeholder="Name or email" data-ds-preview></label><button type="button" class="admin-table__button">Apply filters</button></div></div>
+      <div class="admin-table p-0 border-0"><div class="admin-table__filters mb-0">@input(['bag' => 'default', 'id' => 'ds-table-search', 'name' => 'ds_table_search', 'type' => 'search', 'label' => 'Search accounts', 'placeholder' => 'Name or email', 'required' => false, 'grid' => 'admin-table__search', 'designSystemPreview' => true])<button type="button" class="admin-table__button">Apply filters</button></div></div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Pagination', 'usage' => '.pagination + .page-link', 'properties' => 'font-size,padding,border,border-radius,background-color'])
       <div class="admin-table p-0 border-0"><nav aria-label="Sample pagination"><ul class="pagination"><li class="page-item disabled"><span class="page-link" aria-label="Previous page">@icon('chevron-left', ['mr' => 0])</span></li><li class="page-item active" aria-current="page"><span class="page-link" data-ds-preview>1</span></li><li class="page-item"><button class="page-link" type="button">2</button></li><li class="page-item"><button class="page-link" type="button" aria-label="Next page">@icon('chevron-right', ['mr' => 0])</button></li></ul></nav></div>

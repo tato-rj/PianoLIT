@@ -5,6 +5,7 @@
 		id="{{$id}}"
 		@endisset
 		style="{{$styles ?? null}}" 
+		@if($designSystemPreview ?? false) data-ds-preview @endif
 		{{$required ?? 'required'}} 
 		name="{{$name}}">
 
@@ -12,6 +13,12 @@
 		<option selected disabled>{{$placeholder}}</option>
 		@endisset
 
+		@isset($choices)
+		@php($selectedValue = is_scalar(old($name)) ? old($name) : ($value ?? null))
+		@foreach($choices as $optionValue => $optionLabel)
+		<option value="{{$optionValue}}" @if((string) $selectedValue === (string) $optionValue) selected @endif>{{$optionLabel}}</option>
+		@endforeach
+		@else
 		@isset($options)
 		@foreach($options as $label => $value)
 		<option value="{{$value}}" 
@@ -34,6 +41,7 @@
 			@endforeach
 		</optgroup>
 		@endforeach
+		@endisset
 		@endisset
 	</select>
 	@include('components.form.error', ['bag' => $bag, 'field' => $name])

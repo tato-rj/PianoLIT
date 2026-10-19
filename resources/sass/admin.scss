@@ -38,6 +38,7 @@ $body-bg: #e9ecef;
 // Older templates, followed by the shared shell and individual admin pages.
 @import 'admin/template-compat';
 @import 'admin/shell';
+@import 'admin/page-loading';
 @import 'admin/back-to-top';
 @import 'admin/dashboard';
 @import 'admin/country-map';

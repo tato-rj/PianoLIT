@@ -37,6 +37,7 @@ async function main() {
     require('./admin-text-improver')();
     require('./admin-date-range')();
     require('./admin-daily-activity-chart')();
+    await require('./admin-page-loading')();
     require('./admin-design-system')();
     await require('./admin-table-loading')();
     require('./admin-user-profile')();

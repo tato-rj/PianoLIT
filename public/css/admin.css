@@ -18807,6 +18807,47 @@ body.admin-shell {
     transition: none;
   }
 }
+.admin-page-loading {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100001;
+  height: 3px;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+.admin-page-loading[hidden] {
+  display: none;
+}
+.admin-page-loading.is-complete {
+  opacity: 0;
+}
+.admin-page-loading__bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-primary);
+  transform: scaleX(0.08);
+  transform-origin: left;
+  transition: transform 180ms ease-out;
+}
+.admin-page-loading--preview {
+  position: relative;
+  z-index: auto;
+}
+.admin-page-loading--preview .admin-page-loading__bar {
+  transform: scaleX(0.65);
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-page-loading {
+    transition: none;
+  }
+  .admin-page-loading__bar {
+    transition: none;
+  }
+}
+
 .admin-back-to-top {
   position: fixed;
   right: calc(24px + env(safe-area-inset-right, 0px));
@@ -20477,8 +20518,8 @@ body.admin-dashboard-page .admin-main {
   color: #5c665e;
   margin: 0;
 }
-.ua .ua-filters input:not([type=checkbox]),
-.ua .ua-filters select:not(.admin-filter-select) {
+.ua .ua-filters input:not([type=checkbox]):not(.form-control),
+.ua .ua-filters select:not(.admin-filter-select):not(.form-control):not(.form-select) {
   min-height: 41px;
   padding: 9px 13px;
   border: 1px solid #fff;
@@ -21193,6 +21234,9 @@ body.admin-dashboard-page .admin-main {
 }
 .ua .ua-directory-options > .ua-filters {
   margin: 14px 0 0;
+}
+.ua .ua-directory-filters .form-group {
+  margin-bottom: 0;
 }
 .ua .ua-search {
   flex: 1;
@@ -24373,27 +24417,16 @@ body.admin-dashboard-page .admin-main {
   gap: 12px;
   margin-bottom: 24px;
 }
-.admin-table .admin-table__filters label {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: var(--font-size-sm);
-  color: #5c665e;
+.admin-table .admin-table__filters > .form-group {
   margin: 0;
   min-width: 110px;
 }
-.admin-table .admin-table__filters input,
-.admin-table .admin-table__filters select {
+.admin-table .admin-table__filters .form-control {
   width: 100%;
-  min-height: 41px;
-  padding: 9px 13px;
-  border: 1px solid #fff;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.65);
-  color: #242b27;
-  font: inherit;
-  font-size: var(--font-size-base);
   max-width: 100%;
+}
+.admin-table .admin-table__filters label small, .admin-table .admin-table__filters label .small {
+  margin-top: 0;
 }
 .admin-table .admin-table__filters .admin-table__search {
   flex: 1;
@@ -24551,7 +24584,7 @@ body.admin-dashboard-page .admin-main {
     padding: 20px;
     border-radius: 22px;
   }
-  .admin-table .admin-table__filters > label {
+  .admin-table .admin-table__filters > .form-group {
     flex: 1 1 140px;
     min-width: 0;
   }

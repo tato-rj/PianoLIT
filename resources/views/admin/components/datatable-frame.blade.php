@@ -6,8 +6,8 @@
 <div class="admin-datatable" data-admin-datatable>
     <div class="admin-datatable__placeholder admin-datatable__placeholder--top dataTables_wrapper" aria-hidden="true">
         <div class="row">
-            <div class="col-sm-12 col-md-6"><div class="dataTables_length"><label>Show <select class="custom-select custom-select-sm form-control form-control-sm" disabled tabindex="-1"><option>{{ \App\Support\AdminPagination::PER_PAGE }}</option></select> entries</label></div></div>
-            <div class="col-sm-12 col-md-6"><div class="dataTables_filter"><label>Search:<input type="search" class="form-control form-control-sm" disabled tabindex="-1"></label></div></div>
+            <div class="col-sm-12 col-md-6"><div class="dataTables_length"><label>Show <select class="form-select" disabled tabindex="-1"><option>{{ \App\Support\AdminPagination::PER_PAGE }}</option></select> entries</label></div></div>
+            <div class="col-sm-12 col-md-6"><div class="dataTables_filter"><label>Search:<input type="search" class="form-control" disabled tabindex="-1"></label></div></div>
         </div>
     </div>
     {{ $slot }}

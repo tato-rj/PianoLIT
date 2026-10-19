@@ -18,6 +18,7 @@
   </head>
 
   <body class="admin-shell @yield('body-class')" id="page-top">
+    @include('admin.components.page-loading')
     <a href="#admin-main" class="admin-skip-link">Skip to content</a>
     @include('admin.layouts.header.bar')
 

@@ -37,8 +37,8 @@
         @input(['bag' => 'default', 'id' => 'ds-input-'.($size ?: 'default'), 'name' => 'ds_piece_title_'.($size ?: 'default'), 'label' => 'Piece title', 'classes' => $size ? 'form-control-'.$size : '', 'value' => '', 'placeholder' => 'Search the repertoire', 'required' => false, 'autocomplete' => 'off', 'designSystemPreview' => true])
       @endcomponent
     @endforeach
-    @component('admin.pages.settings.sample', ['label' => 'Select', 'usage' => '.form-select'])
-      <label for="ds-select">Level</label><select id="ds-select" class="form-select" data-ds-preview><option>All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+    @component('admin.pages.settings.sample', ['label' => 'Select', 'usage' => '@select · components.form.select'])
+      @select(['bag' => 'default', 'id' => 'ds-select', 'name' => 'ds_level', 'label' => 'Level', 'choices' => ['' => 'All levels', 'beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'], 'value' => '', 'required' => false, 'designSystemPreview' => true])
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Filter select', 'usage' => 'admin.components.filters.select · .admin-filter-select'])
       @include('admin.components.filters.select', ['label' => 'Period', 'name' => 'ds-period', 'options' => \App\Support\AdminDateRanges::LABELS, 'value' => '7', 'designSystemPreview' => true])

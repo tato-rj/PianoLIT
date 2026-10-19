@@ -42,6 +42,16 @@ scalar old input and safely ignores malformed array values. Avoid field-specific
 colors, padding, corners and focus outlines; table wrappers must respect the
 shared form-control focus style.
 
+Admin table search fields use `@input` and their filter/sort/page-size fields use
+`@select` (`components.form.select`), with the same default field dimensions and
+states as the Design System. `@select` accepts a `choices` value/label map and
+selected `value`; its existing `options`, `select` and grouped-option API remains
+available for older forms. Pass `required: false` for optional GET filters and a
+unique `id` for the shared label. Table wrappers contain layout/width rules only.
+Legacy DataTables use the same default field classes through the admin-only
+`admin-table-fields.js` adapter; keep their initialization skeleton dimensions in
+sync without introducing table-specific field styles.
+
 Standard `.form-control`, `.form-select`, shared input/textarea components, file
 uploads and input-group labels use the same `--radius-input` and `--field-*`
 tokens. The default finish is a `#f8f9fb` background, `#dfe5ed` border, `#273244`
@@ -196,6 +206,10 @@ stylesheet precedence. Page templates request only their main bundle.
 
 `components.payment-card-fields` supplies the three Stripe-hosted mounts and native cardholder/postal fields. Pass a unique `prefix` and the initial `cardholder` value. Native fields use `@input` and shared labels; field layout lives in `components/_payment-card-fields.scss`. Checkout and Billing use this same component. Billing's editor uses `components.modal` at body level; its `data-deferred-card` form mounts after the modal is shown, focuses the card number once ready without overriding another user-selected field, and clears its draft after any dismissal while reusing the hosted fields on reopen. The dialog blocks dismissal during verification and temporarily releases its focus trap for Stripe's bank challenge, restoring it on failure. The existing verified SetupIntent flow remains responsible for saving the card.
 
+
+## Admin page loading
+
+The admin layout embeds `admin.components.page-loading` first in the body so its small standalone controller runs before the page content and main bundle. The shared 3px bar uses `--color-primary`, advances below completion while loading, then fills and fades on the native window load event. Native navigation observation covers links, forms, refresh and history without intercepting them, ignores same-document changes/downloads, and resets on cancellation/failure or cached-page restoration. Older browsers use `beforeunload`, preserving unsaved-change prompts, with Escape to reset a stopped departure. This is estimated activity, not a byte percentage or a tracker for background AJAX work. Reduced-motion settings remove transitions; without JavaScript the bar remains hidden. The Design System Components specimen renders this same Blade component with `preview: true` in normal flow.
 
 ## Standard confirmation dialogs
 

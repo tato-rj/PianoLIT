@@ -21,26 +21,16 @@
     <form class="admin-table__filters" method="GET" action="{{ $action }}" aria-label="{{ $label ?? $title ?? 'Results' }} filters">
         @foreach($hidden ?? [] as $name => $value)<input type="hidden" name="{{ $name }}" value="{{ $value }}">@endforeach
         @if(isset($search))
-        <label class="admin-table__search">{{ $search['label'] ?? 'Search' }}
-            <input type="search" name="search" value="{{ $state['search'] ?? '' }}" placeholder="{{ $search['placeholder'] ?? 'Search results' }}" maxlength="{{ $search['maxlength'] ?? 255 }}">
-        </label>
+        @input(['bag' => 'default', 'id' => $id.'-search', 'name' => 'search', 'type' => 'search', 'label' => $search['label'] ?? 'Search', 'value' => $state['search'] ?? '', 'placeholder' => $search['placeholder'] ?? 'Search results', 'limit' => $search['maxlength'] ?? 255, 'required' => false, 'grid' => 'admin-table__search'])
         @endif
         @foreach($filters as $filter)
-        <label>{{ $filter['label'] }}
-            <select name="{{ $filter['name'] }}">
-                @foreach($filter['options'] as $value => $text)<option value="{{ $value }}" @if((string) ($state[$filter['name']] ?? '') === (string) $value) selected @endif>{{ $text }}</option>@endforeach
-            </select>
-        </label>
+        @select(['bag' => 'default', 'id' => $id.'-'.$filter['name'], 'name' => $filter['name'], 'label' => $filter['label'], 'choices' => $filter['options'], 'value' => $state[$filter['name']] ?? '', 'required' => false])
         @endforeach
         @if(count($sorts))
-        <label>Sort by<select name="sort">
-            @foreach($sorts as $value => $text)<option value="{{ $value }}" @if(($state['sort'] ?? '') === $value) selected @endif>{{ $text }}</option>@endforeach
-        </select></label>
+        @select(['bag' => 'default', 'id' => $id.'-sort', 'name' => 'sort', 'label' => 'Sort by', 'choices' => $sorts, 'value' => $state['sort'] ?? '', 'required' => false])
         @endif
         @if($showPageSize)
-        <label>Per page<select name="per_page">
-            @foreach($pageSizes as $size)<option value="{{ $size }}" @if($items->perPage() === $size) selected @endif>{{ $size }}</option>@endforeach
-        </select></label>
+        @select(['bag' => 'default', 'id' => $id.'-per-page', 'name' => 'per_page', 'label' => 'Per page', 'choices' => array_combine($pageSizes, $pageSizes), 'value' => $items->perPage(), 'required' => false])
         @endif
         <button class="admin-table__button" type="submit">Apply filters</button>
         @if($showReset)<a class="admin-table__reset" href="{{ $resetUrl ?? $action }}">Reset</a>@endif

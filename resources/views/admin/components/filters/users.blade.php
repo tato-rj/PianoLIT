@@ -2,7 +2,7 @@
 
   @if(!empty($filters))
   @foreach($filters as $filter)
-  <select class="form-control form-control-sm me-2" name="{{str_singular($filter)}}" onchange="this.form.submit()">
+  <select class="form-control me-2" name="{{str_singular($filter)}}" onchange="this.form.submit()">
     <option selected disabled>{{ucfirst(str_singular($filter))}}</option>
     @if($filter == 'composers')
       @foreach(\App\Composer::all() as $composer)

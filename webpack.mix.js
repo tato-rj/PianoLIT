@@ -58,6 +58,7 @@ mix.js('resources/js/app.js', 'public/.mix/js')
       'public/.mix/js/admin.js',
       'resources/js/vendor/Chart.min.js',
       'resources/js/vendor/jquery.dataTables.js',
+      'resources/js/components/admin-table-fields.js',
       'resources/js/vendor/jquery.easing.min.js',
       'resources/js/vendor/tables.min.js',
       'resources/js/vendor/theme.min.js'

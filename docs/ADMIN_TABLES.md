@@ -109,8 +109,11 @@ requirements are unchanged by this table migration.
 ## Appearance and verification
 
 Shared styling lives in `resources/sass/admin/_tables.scss` and uses PianoLIT
-font tokens and the membership directory’s colors, rounded filters, subtle row
-separators and spacing. Page-specific badges and cells retain their meaning.
+font tokens and the membership directory’s colors, subtle row separators and
+spacing. Search and select filters compose the shared `@input` / `@select`
+components and default Design System field styles, including borders, size,
+focus, disabled and validation states. Keep only width/layout rules in table
+styles. Page-specific badges and cells retain their meaning.
 Wide tables scroll horizontally within the card; do not shrink text to fit a
 phone. Tables expand to fit every row and use the page for vertical scrolling.
 Never add a fixed/max-height table viewport or independent vertical scrollbar.
