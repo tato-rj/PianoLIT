@@ -25,6 +25,9 @@
     @component('admin.pages.settings.sample', ['label' => 'Add payment card', 'usage' => 'components.payment-card-preview · add', 'properties' => 'padding,color,background-color,border,border-radius'])
       @include('components.payment-card-preview', ['add' => true, 'modalId' => 'ds-card-editor-example', 'preview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Segmented selection', 'usage' => 'components.segmented-control', 'properties' => 'font-size,padding,color,border,border-radius'])
+      @include('components.segmented-control', ['id' => 'ds-beat-count', 'name' => 'ds-beat-count', 'label' => 'Sample beat count', 'options' => [1 => '1', 2 => '2', 3 => '3', 4 => '4'], 'value' => 1, 'preview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Segmented tabs', 'usage' => 'components.tab-navigation · variant: segmented', 'properties' => 'font-size,padding,color,border,border-radius'])
       @component('components.tab-navigation', ['id' => 'ds-account-tabs', 'label' => 'Sample account sections', 'variant' => 'segmented', 'preview' => true, 'items' => [
         ['target' => 'ds-account-overview', 'label' => 'Overview'], ['target' => 'ds-account-billing', 'label' => 'Billing'],

@@ -114,7 +114,9 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->assertSame(0, $xpath->query('//*[@id="score-metronome-settings" and contains(@class, "modal")]')->length);
         $this->assertSame(0, $xpath->query('//*[@id="score-metronome-settings"]//*[@data-bs-dismiss="modal"]')->length);
         $this->assertSame(4, $xpath->query('//*[@id="score-metronome-settings"]//*[@data-metronome-beats]')->length);
-        $this->assertSame(1, $xpath->query('//*[@data-metronome-beats="1" and @aria-pressed="true"]')->length);
+        $this->assertSame(1, $xpath->query('//input[@data-metronome-beats="1" and @type="radio" and @checked]')->length);
+        $this->assertSame(1, $xpath->query('//*[@id="score-metronome-settings"]//*[@role="radiogroup" and contains(@class, "segmented-control")]')->length);
+        $this->assertSame(4, $xpath->query('//*[@id="score-metronome-settings"]//label[contains(@class, "segmented-control__option")]')->length);
         $this->assertSame(6, $xpath->query('//*[@data-metronome-sound]/option')->length);
         $this->assertStringEndsWith('/audio/metronome/count-one-v2.wav', $xpath->query('//*[@data-metronome-sound]')->item(0)->getAttribute('data-count-url-1'));
         $this->assertStringEndsWith('/audio/metronome/count-female-one-v1.wav', $xpath->query('//*[@data-metronome-sound]')->item(0)->getAttribute('data-female-count-url-1'));

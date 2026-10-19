@@ -598,6 +598,73 @@ module.exports = async function () {
     swipeListeners.touchend(swipeEvent('touchend', 100, 200, 150));
     assert.strictEqual(swiping.page, 2, 'Extra fingers cancel a pending page turn');
     assert.deepStrictEqual(turnedPages, [3, 2], 'Each deliberate swipe activates exactly one existing page control');
+
+    let wheelTime = 0;
+    const trackpadScroll = (x, y = 0, changes = {}) => {
+        const event = pinchEvent(Object.assign({deltaX: x, deltaY: y, timeStamp: wheelTime += 20,
+            target: {closest: () => null}}, changes));
+        swipeListeners.wheel(event);
+        return event;
+    };
+    const newWheelGesture = () => { wheelTime += 300; swiping.wheelSwipe = null; swiping.page = 2; };
+    turnedPages.length = 0; swiping.page = 1;
+    trackpadScroll(12); trackpadScroll(18);
+    assert.strictEqual(swiping.page, 1, 'Small trackpad deltas accumulate before turning a page');
+    assert.strictEqual(trackpadScroll(25).defaultPrevented, true);
+    assert.strictEqual(swiping.page, 2, 'A leftward trackpad swipe advances the score');
+    swiping.rendering = true;
+    assert.strictEqual(trackpadScroll(100).defaultPrevented, true, 'Momentum stays consumed during page rendering');
+    swiping.rendering = false;
+    for (const x of [90, 60, 40, 20, 5, -3]) trackpadScroll(x);
+    assert.strictEqual(swiping.page, 2, 'Momentum and a small rebound cannot skip more pages');
+    wheelTime += 300; trackpadScroll(70);
+    assert.strictEqual(swiping.page, 3, 'A fresh trackpad gesture can turn another page');
+    wheelTime += 300; trackpadScroll(-70);
+    assert.strictEqual(swiping.page, 2, 'The reverse trackpad gesture turns to the previous page');
+    assert.deepStrictEqual(turnedPages, [2, 3, 2]);
+    assert.strictEqual(trackpadScroll(0, 100).defaultPrevented, false, 'Vertical scrolling remains native immediately after a horizontal swipe');
+    for (const [page, x] of [[1, -70], [3, 70]]) {
+        newWheelGesture(); swiping.page = page; trackpadScroll(x);
+        assert.strictEqual(swiping.page, page, 'Trackpad gestures do not wrap past the score boundaries');
+    }
+    newWheelGesture();
+    assert.strictEqual(trackpadScroll(1).defaultPrevented, true, 'The first horizontal event suppresses browser history navigation');
+    trackpadScroll(20); assert.strictEqual(swiping.page, 2, 'A tiny gesture never turns the page');
+    newWheelGesture();
+    assert.strictEqual(trackpadScroll(5, 60).defaultPrevented, false);
+    assert.strictEqual(trackpadScroll(120).defaultPrevented, false);
+    assert.strictEqual(swiping.page, 2, 'A vertical scroll cannot become a page turn halfway through');
+    newWheelGesture();
+    assert.strictEqual(trackpadScroll(60, 50).defaultPrevented, false, 'Diagonal scrolling stays native');
+    assert.strictEqual(swiping.page, 2);
+    for (const changes of [{shiftKey: true}, {metaKey: true}, {target: {closest: () => ({})}}]) {
+        newWheelGesture();
+        assert.strictEqual(trackpadScroll(70, 0, changes).defaultPrevented, false);
+        assert.strictEqual(swiping.page, 2, 'Modified scrolling and text controls do not turn pages');
+    }
+    for (const [key, value] of [['ready', false], ['rendering', true], ['printing', true], ['tool', 'pen'],
+        ['tool', 'highlight'], ['tool', 'text'], ['tool', 'erase'], ['textDrag', {}], ['stroke', {}],
+        ['touchPinching', true], ['gestureScale', 1]]) {
+        newWheelGesture();
+        const previous = swiping[key]; swiping[key] = value;
+        assert.strictEqual(trackpadScroll(70).defaultPrevented, false);
+        assert.strictEqual(swiping.page, 2, 'Blocked editors and annotation gestures cannot turn pages with the trackpad');
+        swiping[key] = previous;
+    }
+    newWheelGesture(); swiping.scroller.scrollWidth = 1000; swiping.scroller.scrollLeft = 0;
+    trackpadScroll(70);
+    assert.strictEqual(swiping.page, 2, 'Zoomed scores keep horizontal trackpad panning');
+    assert.strictEqual(swiping.scroller.scrollLeft, 70);
+    swiping.scroller.scrollWidth = 500;
+    for (const deltaMode of [1, 2]) {
+        newWheelGesture(); trackpadScroll(deltaMode === 1 ? 4 : 1, 0, {deltaMode});
+        assert.strictEqual(swiping.page, 3, 'Line/page wheel units use the same page-turn threshold');
+    }
+    newWheelGesture(); trackpadScroll(20);
+    swiping.pinchZoom = () => {};
+    trackpadScroll(0, -20, {ctrlKey: true});
+    assert.strictEqual(swiping.wheelSwipe, null, 'Trackpad pinch zoom discards an unfinished horizontal gesture');
+    assert.strictEqual(swiping.page, 2);
     delete window.requestAnimationFrame; delete window.cancelAnimationFrame; delete document.scrollingElement;
 
     const zoomProtection = Object.create(Editor.prototype);

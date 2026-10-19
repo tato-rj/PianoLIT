@@ -1,11 +1,7 @@
 <div id="score-metronome-settings" class="dropdown-menu dropdown-menu-end score-metronome-settings-menu p-3 overflow-auto" role="group" aria-labelledby="score-metronome-settings-toggle">
     <fieldset class="mb-3">
         <legend class="h6 mb-2">Beat count</legend>
-        <div class="d-flex gap-2" role="group" aria-label="Beat count">
-            @foreach([1, 2, 3, 4] as $count)
-                <button type="button" data-metronome-beats="{{ $count }}" class="btn btn-outline-primary flex-fill {{ $count === 1 ? 'active' : '' }}" aria-pressed="{{ $count === 1 ? 'true' : 'false' }}">{{ $count }}</button>
-            @endforeach
-        </div>
+        @include('components.segmented-control', ['id' => 'score-metronome-beats', 'name' => 'metronome-beats', 'label' => 'Beat count', 'options' => [1 => '1', 2 => '2', 3 => '3', 4 => '4'], 'value' => 1, 'dataAttribute' => 'metronome-beats'])
     </fieldset>
     <div>
         <label for="score-metronome-sound" class="h6 mb-2">Sound</label>

@@ -15,7 +15,7 @@ module.exports = async function () {
     const pause = element({querySelector: selector => selector === '[data-metronome-pause-icon]' ? pauseIcon : playIcon});
     const sound = element({value: 'woodblock'}), status = element();
     const saveStatus = element({hidden: true}), saveRetry = element({hidden: true});
-    const beats = [1,2,3,4].map(count => element({attributes: {'data-metronome-beats': String(count)}}));
+    const beats = [1,2,3,4].map(count => element({value: String(count), checked: false, attributes: {'data-metronome-beats': String(count)}}));
     const settings = element({querySelector: selector => ({'[data-metronome-sound]': sound,
         '[data-metronome-settings-status]': status, '[data-metronome-save-status]': saveStatus,
         '[data-metronome-save-retry]': saveRetry})[selector], querySelectorAll: () => beats});
@@ -69,6 +69,10 @@ module.exports = async function () {
     window.events.keydown({target: sound, key: 'ArrowDown', stopPropagation() { nativeArrow = true; }, preventDefault() { assert.fail('Native selection must remain enabled'); }});
     assert(nativeArrow, 'Sound selection keeps native arrow keys before Bootstrap menu navigation');
     assert(panel.hidden && !contexts.length, 'Loading a score must not start audio');
+    beats[2].checked = true; beats[2].events.change();
+    assert.strictEqual(metronome.beatCount, 3);
+    assert.strictEqual(beats.filter(input=>input.checked).length, 1, 'Native radio changes retain one selected beat');
+    metronome.setBeatCount(1);
     await button.events.click();
     const context = contexts[0];
     assert.strictEqual(panel.hidden, false);
@@ -179,8 +183,8 @@ module.exports = async function () {
             for(let beat=1; beat<8; beat++) { audio.currentTime=beat-0.05; [...timers.values()][0](); }
             assert.strictEqual(audio.sources.length,8);
             assert.deepStrictEqual(audio.sources.map(source=>source.playbackRate.value),Array.from({length:8},(_,beat)=>beat%count===0?1:0.75),kind+' grouping '+count);
-            assert.strictEqual(beats.filter(button=>button.attributes['aria-pressed']==='true').length,1);
-            assert.strictEqual(beats[count-1].attributes['aria-pressed'],'true');
+            assert.strictEqual(beats.filter(input=>input.checked).length,1);
+            assert.strictEqual(beats[count-1].checked,true);
             await button.events.click();
         }
     }
@@ -250,7 +254,7 @@ module.exports = async function () {
     const signedIn = new window.ScoreMetronome(container);
     assert.strictEqual(slider.value, '174');
     assert.strictEqual(value.textContent, '174');
-    assert.strictEqual(beats[3].attributes['aria-pressed'], 'true');
+    assert.strictEqual(beats[3].checked, true);
     assert.strictEqual(sound.value, 'female-voice');
     assert.strictEqual(contexts.length, beforeRestore);
     assert.strictEqual(audioFetches.length, 0, 'Restoring a voice does not fetch/play audio before opening');
@@ -282,7 +286,7 @@ module.exports = async function () {
     assert.strictEqual(requests.length, 3);
     assert.deepStrictEqual(JSON.parse(requests[2].body), {preferences: {tempo: 150, beats: 3}});
     assert.strictEqual(slider.value, '150');
-    assert.strictEqual(beats[2].attributes['aria-pressed'], 'true');
+    assert.strictEqual(beats[2].checked, true);
 
     saveResponse = async () => ({ok: false, status: 500});
     signedIn.setTempo(160); await signedIn.flushPreferences();
@@ -313,7 +317,7 @@ module.exports = async function () {
     const guest = new window.ScoreMetronome(container);
     assert.strictEqual(slider.value, '60');
     assert.strictEqual(sound.value, 'woodblock');
-    assert.strictEqual(beats[0].attributes['aria-pressed'], 'true');
+    assert.strictEqual(beats[0].checked, true);
     guest.setTempo(100); guest.setBeatCount(2); await guest.setSound('hi-hat');
     guest.close(); await guest.flushPreferences();
     assert.strictEqual(requests.length, afterExpiry, 'A guest never persists earlier or new account choices');

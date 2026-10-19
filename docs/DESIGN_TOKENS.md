@@ -52,6 +52,13 @@ keep page-specific widths, layout and room for icons local.
 
 Checkboxes, radios, switches and ranges use the shared brand and field colors.
 
+Small, mutually exclusive choices use `components.segmented-control`: pass a
+unique `id` and radio `name`, an accessible `label`, an `options` value/label map
+and the selected `value`. The shared component fills its container with equal
+segments and uses native radios for a single selection and arrow-key navigation.
+Its neutral tray, selected surface and focus border use the shared tokens. The
+Design System's Segmented selection specimen renders this same component.
+
 Switches use `@toggle` (`components.form.toggle`) and the shared `.switch` /
 `.slider.round` classes. Supply `toggle` and `ariaLabel` for the state and accessible
 name. Switches have no visible On/Off label by default; add visible labels only

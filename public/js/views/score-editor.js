@@ -285,6 +285,7 @@
         }
         cancelPinchMarking() {
             this.stopPan();
+            this.wheelSwipe = null;
             const pointer = this.pointerId;
             this.stroke = null; this.textDrag = null; this.pointerId = null;
             this.svg.removeAttribute('data-dragging-text');
@@ -351,6 +352,33 @@
             event.preventDefault();
             button.click();
         }
+        swipeWheel(event) {
+            let swipe = this.wheelSwipe;
+            if (swipe && event.timeStamp - swipe.time > 250) swipe = this.wheelSwipe = null;
+            // Keep consuming the momentum of a completed turn while its page renders.
+            if (event.shiftKey || event.metaKey || this.tool !== 'read' || this.printing || this.canPanScore() ||
+                (!this.canSwipeScore() && !(swipe && swipe.turned && this.rendering)) ||
+                event.target.closest('input, textarea, select, button, a, [contenteditable], [data-mark-id]')) {
+                this.wheelSwipe = null;
+                return false;
+            }
+            if (!swipe) swipe = this.wheelSwipe = {x: 0, y: 0, page: this.page, axis: null, turned: false};
+            swipe.time = event.timeStamp;
+            const unit = event.deltaMode === 1 ? 16 : (event.deltaMode === 2 ? this.scroller.clientWidth : 1);
+            swipe.x += event.deltaX * unit; swipe.y += Math.abs(event.deltaY * unit);
+            if (!swipe.axis && Math.max(Math.abs(swipe.x), swipe.y) > 12) {
+                swipe.axis = Math.abs(swipe.x) > swipe.y * 1.5 ? 'x' : 'y';
+            }
+            if (swipe.axis === 'y' || Math.abs(event.deltaX) <= Math.abs(event.deltaY) * 1.5 ||
+                Math.abs(swipe.x) <= swipe.y * 1.5) return false;
+            // Cancel horizontal browser navigation from the first horizontal wheel event.
+            event.preventDefault();
+            if (swipe.turned || this.page !== swipe.page || Math.abs(swipe.x) < 50) return true;
+            swipe.turned = true;
+            const button = this.find(swipe.x > 0 ? '[data-next]' : '[data-prev]');
+            if (!button.disabled) button.click();
+            return true;
+        }
         panWheel(event) {
             if (!this.canPanScore() || event.shiftKey) return;
             event.preventDefault(); this.stopPan();
@@ -395,7 +423,8 @@
             if (Math.hypot(pan.vx, pan.vy) > 0.02) this.panFrame = root.requestAnimationFrame(glide);
         }
         pinchWheel(event) {
-            if (!event.ctrlKey) { this.panWheel(event); return; }
+            if (!event.ctrlKey) { if (!this.swipeWheel(event)) this.panWheel(event); return; }
+            this.wheelSwipe = null;
             event.preventDefault();
             if (this.touchPinching || this.gestureScale !== undefined) return;
             const now = Date.now();

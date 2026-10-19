@@ -23,7 +23,7 @@
             this.settingsStatus = this.settings.querySelector('[data-metronome-settings-status]');
             this.saveStatus = this.settings.querySelector('[data-metronome-save-status]');
             this.saveRetry = this.settings.querySelector('[data-metronome-save-retry]');
-            this.beatButtons = this.settings.querySelectorAll('[data-metronome-beats]');
+            this.beatInputs = this.settings.querySelectorAll('[data-metronome-beats]');
             this.bpm = 60;
             this.beatCount = 1;
             this.sound = 'woodblock';
@@ -42,7 +42,9 @@
             container.querySelector('[data-metronome-close]').addEventListener('click', () => this.close(true));
             this.pauseButton.addEventListener('click', () => this.setPaused(!this.paused));
             this.slider.addEventListener('input', () => this.setTempo(this.slider.value));
-            this.beatButtons.forEach(button => button.addEventListener('click', () => this.setBeatCount(Number(button.getAttribute('data-metronome-beats')))));
+            this.beatInputs.forEach(input => input.addEventListener('change', () => {
+                if (input.checked) this.setBeatCount(Number(input.value));
+            }));
             this.soundSelect.addEventListener('change', () => this.setSound(this.soundSelect.value));
             this.saveRetry.addEventListener('click', () => this.flushPreferences());
             this.settingsButton.addEventListener('show.bs.dropdown', () => this.sizeSettings());
@@ -140,11 +142,7 @@
             if (!Number.isInteger(count) || count < 1 || count > 4) return;
             const previous = this.beatCount;
             this.beatCount = count;
-            this.beatButtons.forEach(button => {
-                const selected = Number(button.getAttribute('data-metronome-beats')) === count;
-                button.setAttribute('aria-pressed', String(selected));
-                button.classList.toggle('active', selected);
-            });
+            this.beatInputs.forEach(input => { input.checked = Number(input.value) === count; });
             this.reschedule(true);
             if (persist && count !== previous) this.queuePreferences({beats: count});
         }

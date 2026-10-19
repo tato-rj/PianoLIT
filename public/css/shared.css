@@ -2374,6 +2374,47 @@ input[type=range] {
   box-shadow: var(--bs-dropdown-box-shadow);
 }
 
+.segmented-control {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  width: 100%;
+  padding: 4px;
+  gap: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-surface-subtle);
+}
+.segmented-control__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 40px;
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius-input) - 4px);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  line-height: 1.25;
+  cursor: pointer;
+}
+.segmented-control__option:hover {
+  color: var(--color-text);
+}
+.segmented-control__input:checked + .segmented-control__option {
+  border-color: var(--color-border);
+  color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-light);
+}
+.segmented-control__input:focus-visible + .segmented-control__option {
+  border-color: var(--color-primary);
+}
+
 /* PianoLIT uses existing border/background states, without an extra outline or halo.
    Keep this partial plain CSS: standalone error views embed this same reset. */
 *,
