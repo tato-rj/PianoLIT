@@ -30,6 +30,58 @@ class IosActivityAnalyticsTest extends ReviewTestCase
         ]);
     }
 
+    public function test_ios_history_resolves_reported_accounts_for_current_and_imported_requests_without_verifying_them()
+    {
+        $this->travelTo(carbon('2026-10-13 22:58:00'));
+        $user = $this->account(['first_name' => 'Alex', 'last_name' => 'Rivera', 'email' => 'alex@example.com']);
+        $current = $this->event($user->id, '2026-10-13 12:00:00', ['metadata' => '{"identity_verified":false}']);
+        $imported = $this->event($user->id, '2026-10-12 12:00:00', ['type' => 'legacy_request', 'source' => 'redis']);
+        $this->actingAs(create(Admin::class), 'admin');
+        foreach ([['platform' => 'app'], ['platform' => 'all', 'history' => 1]] as $filters) {
+            $response = $this->get(route('admin.analytics.users', $filters + ['range' => '30']))->assertOk()
+                ->assertSee('Alex Rivera')->assertSee('alex@example.com')
+                ->assertSee(route('admin.analytics.users.profile', $user->id))
+                ->assertSee('association unverified');
+            $this->assertSame([$current, $imported], $response->viewData('history')->pluck('id')->all());
+        }
+        $this->assertDatabaseHas('activity_events', ['id' => $current, 'user_id' => $user->id, 'visit_id' => null, 'metadata' => '{"identity_verified":false}']);
+        $this->assertDatabaseCount('activity_visits', 0);
+        $this->assertDatabaseCount('activity_visit_links', 0);
+        $this->get(route('admin.analytics.users.profile', ['user' => $user->id, 'tab' => 'visits', 'range' => '30', 'platform' => 'app']))
+            ->assertOk()->assertSee('Ungrouped activity')->assertSee('2 records in this period');
+    }
+
+    public function test_ios_history_keeps_missing_and_unknown_accounts_unlinked_and_escapes_account_names()
+    {
+        $this->travelTo(carbon('2026-10-13 22:58:00'));
+        $user = $this->account(['first_name' => '<script>alert(1)</script>', 'last_name' => 'Rivera', 'email' => 'safe@example.com']);
+        $this->event($user->id, '2026-10-13 12:00:00');
+        $this->event(999999, '2026-10-13 12:01:00');
+        $this->event(null, '2026-10-13 12:02:00');
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get(route('admin.analytics.users', ['range' => '30', 'platform' => 'app', 'audience' => 'all']))->assertOk()
+            ->assertSee('&lt;script&gt;alert(1)&lt;/script&gt; Rivera', false)->assertDontSee('<script>alert(1)</script>', false)
+            ->assertSee('Reported account #999999')->assertSee('Account unknown')
+            ->assertDontSee(route('admin.analytics.users.profile', 999999));
+    }
+
+    public function test_reported_account_details_remain_admin_only_and_respect_analytics_exclusions()
+    {
+        $this->travelTo(carbon('2026-10-13 22:58:00'));
+        $user = $this->account(['email' => 'ordinary@example.com']);
+        $excluded = $this->account(['first_name' => 'Excluded', 'last_name' => 'Account', 'email' => ' Elena.Dare@Gmail.com ']);
+        $this->event($user->id, '2026-10-13 12:00:00');
+        $this->event($excluded->id, '2026-10-13 12:01:00');
+        $url = route('admin.analytics.users', ['range' => '30', 'platform' => 'app']);
+        $this->withExceptionHandling()->get($url)->assertRedirect();
+        $this->actingAs($user, 'web')->get($url)->assertRedirect();
+        $this->actingAs(create(Admin::class), 'admin');
+        $response = $this->get($url)->assertOk()->assertSee('ordinary@example.com')
+            ->assertDontSee('Excluded Account')->assertDontSee('Elena.Dare@Gmail.com')
+            ->assertDontSee(route('admin.analytics.users.profile', $excluded->id));
+        $this->assertSame(1, $response->viewData('history')->total());
+    }
+
     public function test_existing_mobile_get_post_and_failed_requests_are_saved_and_appear_in_the_ios_chart()
     {
         $this->travelTo(carbon('2026-10-13 22:58:00'));

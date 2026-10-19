@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Activity\{Filters, Insights, Journey, People, Queries, VisitRemoval, VisitSort};
+use App\Activity\{ExcludedAccounts, Filters, Insights, Journey, People, Queries, VisitRemoval, VisitSort};
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Support\AdminPagination;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserAnalyticsController extends Controller
 {
@@ -30,7 +31,11 @@ class UserAnalyticsController extends Controller
         $ungroupedCount = $queries->ungrouped($filters)->count();
         $historyQuery = $iosOnly ? $queries->appRequests($filters) : $queries->ungrouped($filters);
         $history = $iosOnly || $request->boolean('history') ? $historyQuery->orderByDesc('occurred_at')->orderByDesc('id')->paginate(AdminPagination::PER_PAGE, ['id', 'user_id', 'platform', 'type', 'source', 'occurred_at', 'occurred_at_utc', 'received_at', 'received_at_utc', 'route_name', 'url'], 'history_page')->withQueryString() : null;
-        return view('admin.pages.analytics.users.activity', compact('filters', 'visitSort', 'metrics', 'series', 'iosOnly', 'appActivity', 'trend', 'visits', 'ungroupedCount', 'history'));
+        // Resolve display details only for this page; a submitted legacy ID
+        // remains an unverified association, never an authenticated identity.
+        $historyUsers = $history ? ExcludedAccounts::users(DB::table('users'))->whereIn('id', $history->pluck('user_id')->filter()->unique())
+            ->get(['id', 'first_name', 'last_name', 'email'])->keyBy('id') : collect();
+        return view('admin.pages.analytics.users.activity', compact('filters', 'visitSort', 'metrics', 'series', 'iosOnly', 'appActivity', 'trend', 'visits', 'ungroupedCount', 'history', 'historyUsers'));
     }
 
     public function people(Request $request, People $people)

@@ -32,7 +32,17 @@
     </aside>
     @if($history)
     <section class="ua-card"><h2>{{ $iosOnly ? 'Recent iOS requests' : 'Ungrouped history' }}</h2><p class="ua-meta">Submitted legacy account associations are unverified. Imported daily counters are not added to these records.</p>
-        @forelse($history as $event)<div class="ua-history-row"><time>{{ \App\Activity\Time::event($event)->format('M j, Y · g:i:s A') }}</time><span>{{ \App\Activity\Presentation::platform($event->platform) }} · {{ \App\Activity\Presentation::page($event) }}</span><small>{{ $event->user_id ? 'Reported account #'.$event->user_id.' · association unverified' : 'Account unknown' }}</small></div>@empty<p>No dated {{ $iosOnly ? 'iOS requests' : 'ungrouped records' }} in this period.</p>@endforelse
+        @forelse($history as $event)
+        @php($reportedAccount = $historyUsers[$event->user_id] ?? null)
+        <div class="ua-history-row">
+            <time>{{ \App\Activity\Time::event($event)->format('M j, Y · g:i:s A') }}</time>
+            <span>{{ \App\Activity\Presentation::platform($event->platform) }} · {{ \App\Activity\Presentation::page($event) }}</span>
+            <small>@if($reportedAccount)
+                Reported account: <a href="{{ route('admin.analytics.users.profile', $reportedAccount->id) }}">{{ trim($reportedAccount->first_name.' '.$reportedAccount->last_name) ?: 'Account #'.$reportedAccount->id }}</a> · {{ $reportedAccount->email }} · association unverified
+                @else{{ $event->user_id ? 'Reported account #'.$event->user_id.' · association unverified' : 'Account unknown' }}@endif
+            </small>
+        </div>
+        @empty<p>No dated {{ $iosOnly ? 'iOS requests' : 'ungrouped records' }} in this period.</p>@endforelse
         {{ $history->links() }}
     </section>
     @endif
