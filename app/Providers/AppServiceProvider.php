@@ -101,6 +101,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        \Algolia\AlgoliaSearch\Algolia::setHttpClient(new \App\Services\Search\AlgoliaHttpClient);
+
         // Laravel 8's send event has view data but no mailable instance. Attach
         // only our fixed delivery key; preview and marketing mail remain independent.
         \Illuminate\Mail\Mailable::buildViewDataUsing(function ($mail) {
