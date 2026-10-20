@@ -21,7 +21,18 @@ class AdminDesignSystemTest extends ReviewTestCase
         $xpath = new \DOMXPath($dom);
         $this->assertSame('ds-brand', $xpath->query('//section[contains(@class, "design-system__section")]')->item(0)->getAttribute('id'));
         $this->assertSame('#ds-brand', $xpath->query('//nav[@aria-label="Design system sections"]/a')->item(0)->getAttribute('href'));
-        $this->assertSame(8, $xpath->query('//*[@id="ds-brand"]//*[@data-ds-sample]')->length);
+        $this->assertSame(2, $xpath->query('//*[@id="ds-brand"]//article[contains(@class, "design-system__sample")]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="ds-brand"]//*[@data-ds-sample or @data-ds-specs]')->length);
+        $this->assertSame(0, $xpath->query('//*[@id="ds-brand"]//article//a[@download]')->length);
+        $this->assertSame(2, $xpath->query('//*[@id="ds-brand"]//article//button[@type="button" and @data-bs-toggle="modal"]')->length);
+        foreach (['user' => 13, 'admin' => 10] as $variant => $downloadCount) {
+            $id = 'ds-brand-'.$variant.'-downloads';
+            $this->assertSame(1, $xpath->query('//*[@id="'.$id.'" and @aria-labelledby="'.$id.'-title" and @aria-describedby="'.$id.'-description"]')->length);
+            $this->assertSame($downloadCount, $xpath->query('//*[@id="'.$id.'"]//a[@download]')->length);
+            $this->assertSame(1, $xpath->query('//button[@data-bs-target="#'.$id.'" and @aria-controls="'.$id.'"]')->length);
+        }
+        $this->assertStringContainsString('1238 × 1200 px', $response->getContent());
+        $this->assertStringContainsString('1024 × 1024 px', $response->getContent());
         foreach (['app-icon.svg', 'admin-icon.svg', 'app-icon-ios-1024.png', 'icon-rounded.png', 'icon-rounded-margin.png'] as $file) {
             $this->assertSame(1, $xpath->query('//*[@id="ds-brand"]//a[@download and @href="'.asset(mix('images/brand/'.$file)).'"]')->length);
         }

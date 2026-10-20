@@ -91,6 +91,11 @@
   </div>
   <p class="design-system__note">Table card values are measured from the shared component. Filters and pagination use the same styles on live directory pages.</p>
   <div class="design-system__grid">
+    @component('admin.pages.settings.sample', ['label' => 'Composer label', 'usage' => 'components.composer-label', 'properties' => 'font-size,gap'])
+      <div data-ds-preview>
+        @include('components.composer-label', ['composer' => new \App\Composer(['name' => 'Sample composer'])])
+      </div>
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Table actions', 'usage' => 'admin.components.table-action', 'properties' => 'font-size,padding,color,background-color,border,border-radius'])
       <div class="d-flex flex-wrap align-items-center gap-2" data-ds-preview>
         @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit']])

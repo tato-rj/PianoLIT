@@ -1,6 +1,6 @@
-<article class="design-system__sample" data-ds-sample data-ds-properties="{{ $properties ?? 'font-size,line-height,height,min-height,padding,border,border-radius,box-shadow' }}">
+<article class="design-system__sample" @if($editable ?? true) data-ds-sample data-ds-properties="{{ $properties ?? 'font-size,line-height,height,min-height,padding,border,border-radius,box-shadow' }}" @endif>
     <div class="design-system__sample-label">{{ $label }}</div>
-    <code class="design-system__usage">{{ $usage }}</code>
+    @isset($usage)<code class="design-system__usage">{{ $usage }}</code>@endisset
     <div class="design-system__preview">{{ $slot }}</div>
-    <dl class="design-system__specs" data-ds-specs></dl>
+    @if($editable ?? true)<dl class="design-system__specs" data-ds-specs></dl>@endif
 </article>

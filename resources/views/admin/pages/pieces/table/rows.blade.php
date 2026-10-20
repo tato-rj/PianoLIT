@@ -7,8 +7,15 @@
         <small><a href="{{ youtube($item->long_name.' by '.optional($item->composer)->name) }}" target="_blank" rel="noopener noreferrer">Find a recording @icon('external-link', ['mr' => 0, 'classes' => 'icon-size-xs'])</a></small>
         @endif
     </td>
-    <td class="text-nowrap">{{ optional($item->composer)->name ?? 'Unknown composer' }}</td>
-    <td class="text-nowrap">{{ ucfirst(optional($item->extendedLevel)->name ?? 'Not set') }}</td>
+    <td class="text-nowrap">@include('components.composer-label', ['composer' => $item->composer])</td>
+    <td class="text-nowrap">
+        <span class="d-inline-flex align-items-center">
+            @if($item->level_name)
+                @icon('circle', ['mr' => 2, 'classes' => 'color-'.$item->level_name, 'filled' => true])
+            @endif
+            <span>{{ ucfirst(optional($item->extendedLevel)->name ?? 'Not set') }}</span>
+        </span>
+    </td>
     <td class="text-nowrap">
         @if($item->is_free)
             <span class="admin-table__badge admin-table__badge--green">Current Freepick</span>

@@ -19,7 +19,10 @@ public website, web app and admin. Commit the rebuilt CSS and Mix manifest toget
 The first Design System section, **PianoLIT icons**, previews and downloads the
 approved blue user and white admin artwork, browser icons, Apple/Android
 home-screen icons, Windows tiles, Safari masks, rounded/QR artwork and the iOS
-export. UI previews use the shared `@brandIcon` component and the actual exports.
+export. Only the two main icon cards appear on the page, each with a centered
+Download button. Each opens the shared modal with its formats, actual file
+dimensions, specifications and download links; brand cards have no CSS dimension
+editors. UI previews use the shared `@brandIcon` component and the actual exports.
 The two SVG masters live in `resources/images/brand/`; keep their six evenly
 spaced black keys, as explicitly requested by Arthur.
 

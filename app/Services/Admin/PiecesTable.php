@@ -51,7 +51,7 @@ class PiecesTable
         // Override unrelated model counts; render loaded fields without serializing appends.
         $query = Piece::select('pieces.*')->withCount(['tags', 'favorites' => function ($query) {
             \App\Activity\ExcludedAccounts::owned($query, 'favorites.user_id');
-        }])->with(['tags', 'composer' => function ($query) { $query->select('id', 'name'); }]);
+        }])->with(['tags', 'composer' => function ($query) { $query->select('id', 'name', 'cover_path'); }]);
         foreach (['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'] as $column) {
             if (!isset($filters[$column])) continue;
             if ($filters[$column] === 'missing') $query->whereNull('pieces.'.$column);
