@@ -193,7 +193,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
         $this->actingAs($this->user, 'web');
         $this->get(route('webapp.discover'))->assertOk();
         $this->get(route('webapp.discover'))->assertOk();
-        foreach (Cache::get('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX) as $row) {
+        foreach (Cache::get(\App\Api\Api::freePickCacheKey('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX)) as $row) {
             if ($row['type'] !== 'piece') continue;
             foreach ($row['content'] as $piece) {
                 $this->assertArrayNotHasKey('webapp_is_favorited', $piece->getAttributes());
@@ -229,7 +229,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
         $mobileBefore = $colors((new \App\Api\Api)->discover());
         // The uncached mobile suggestion row randomly chooses its card count.
         unset($mobileBefore['For you']);
-        $cachedBefore = $colors(Cache::get('app.discover'));
+        $cachedBefore = $colors(Cache::get(\App\Api\Api::freePickCacheKey('app.discover')));
         foreach (['guest', 'signed-in', 'with-history'] as $state) {
             if ($state !== 'guest') $this->actingAs($this->user, 'web');
             if ($state === 'with-history') {
@@ -253,7 +253,7 @@ class WebAppQueryRegressionTest extends ReviewTestCase
             $response->assertSee('discover-latest-card', false);
             $this->assertSame(1, substr_count($response->getContent(), 'id="discover-levels-heading"'));
             if ($state === 'with-history') $response->assertSee('discover-recent-card', false);
-            $this->assertSame($cachedBefore, $colors(Cache::get('app.discover')));
+            $this->assertSame($cachedBefore, $colors(Cache::get(\App\Api\Api::freePickCacheKey('app.discover'))));
             $mobileAfter = $colors((new \App\Api\Api)->discover());
             $this->assertSame(['orange'], array_values(array_unique($mobileAfter['For you'])));
             unset($mobileAfter['For you']);

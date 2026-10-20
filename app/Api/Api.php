@@ -19,6 +19,7 @@ class Api extends Factory
         // Web ranking must never replace the cached mobile recommendation pool.
         // Retain the existing refresh prefix and daily expiry for both feeds.
         if ($this->for === 'webapp') $key .= self::WEB_DISCOVER_CACHE_SUFFIX;
+        $key = self::freePickCacheKey($key);
 
         $collection = \Cache::remember($key, days(1), function() {
             return collect([
@@ -103,6 +104,7 @@ class Api extends Factory
     public function explore()
     {
         $key = Redis::get('app.explore') ?: 'app.explore';
+        $key = self::freePickCacheKey($key);
 
         $collection = \Cache::remember($key, days(1), function() {
             $categories = Tag::display()->groupBy('type')->forget(['period', 'level', 'season']);
@@ -152,6 +154,12 @@ class Api extends Factory
             ])->shuffle();
 
         return collect(['queries' => $queries]);
+    }
+
+    public static function freePickCacheKey($key)
+    {
+        $pick = app(\App\Services\FreePickSchedule::class)->current();
+        return $pick['id'] ? $key.'.freepick-'.$pick['id'].($pick['activated'] ? '.active' : '.pending') : $key;
     }
 
     public function for($device)

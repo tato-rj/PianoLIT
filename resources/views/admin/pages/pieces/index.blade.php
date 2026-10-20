@@ -43,4 +43,9 @@
 </div></div>
 
 @include('admin.components.modals.delete')
+@include('admin.pages.pieces.schedule')
+@endsection
+
+@section('scripts')
+<script src="{{ mix('js/views/admin-freepick-schedule.js') }}"></script>
 @endsection

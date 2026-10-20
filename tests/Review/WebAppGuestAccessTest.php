@@ -165,7 +165,7 @@ class WebAppGuestAccessTest extends ReviewTestCase
 
     public function test_discover_omits_personal_suggestions_even_if_a_visitor_supplies_a_user_id()
     {
-        Cache::put('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX, collect([['title' => 'Public', 'row' => 'gallery', 'type' => 'piece', 'content' => []]]), 60);
+        Cache::put(\App\Api\Api::freePickCacheKey('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX), collect([['title' => 'Public', 'row' => 'gallery', 'type' => 'piece', 'content' => []]]), 60);
         $this->get(route('webapp.discover', ['user_id' => 123, 'id' => 123]))->assertOk()->assertDontSee('For you');
         $this->assertGuest('web');
         $this->assertDatabaseCount('locations', 0);

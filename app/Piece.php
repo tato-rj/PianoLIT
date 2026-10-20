@@ -18,6 +18,7 @@ class Piece extends PianoLit
     protected $dates = ['highlighted_at'];
     protected $with = ['composer'];
     protected $appends = [
+        'is_free',
         'short_name',
         'medium_name', 
         'long_name', 
@@ -614,7 +615,30 @@ class Piece extends PianoLit
 
     public function scopeFree($query, $bool = true)
     {
-        return $query->where('is_free', $bool);
+        $current = FreePick::current()->select('piece_id')->limit(1);
+        // MySQL does not support LIMIT in an IN subquery. A scalar subquery
+        // also lets the inverse scope include every piece when no pick is due.
+        return $query->whereRaw('pieces.id '.($bool ? '=' : '<>').' COALESCE(('.$current->toSql().'), 0)', $current->getBindings());
+    }
+
+    public function getIsFreeAttribute($value = null)
+    {
+        // Unsaved preview models may provide the same boolean as before.
+        if (!$this->exists) return (bool) ($this->attributes['is_free'] ?? $value);
+        return (int) $this->id === app(\App\Services\FreePickSchedule::class)->current()['piece_id'];
+    }
+
+    public function getHighlightedAtAttribute($value)
+    {
+        if ($this->exists) {
+            $pick = app(\App\Services\FreePickSchedule::class)->current();
+            if ((int) $this->id === $pick['piece_id'] && !$pick['activated']) {
+                // Preserve the existing current-pick timestamp in mobile JSON,
+                // even before the minutely legacy-history task has run.
+                return \Carbon\Carbon::parse($pick['scheduled_at'], 'UTC')->setTimezone(config('app.timezone'));
+            }
+        }
+        return $value ? $this->asDateTime($value) : null;
     }
 
     public function scopeFreepicks($query, $ordered = true)

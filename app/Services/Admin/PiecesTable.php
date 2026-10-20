@@ -52,12 +52,15 @@ class PiecesTable
         $query = Piece::select('pieces.*')->withCount(['tags', 'favorites' => function ($query) {
             \App\Activity\ExcludedAccounts::owned($query, 'favorites.user_id');
         }])->with(['tags', 'composer' => function ($query) { $query->select('id', 'name', 'cover_path'); }]);
-        foreach (['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'] as $column) {
+        $query->selectSub(\App\FreePick::select('scheduled_at')->whereColumn('piece_id', 'pieces.id')
+            ->whereNull('retired_at')->where('scheduled_at', '>', now('UTC'))->orderBy('scheduled_at')->limit(1), 'next_freepick_at');
+        foreach (['creator_id', 'itunes', 'videos', 'score_path', 'audio_path'] as $column) {
             if (!isset($filters[$column])) continue;
             if ($filters[$column] === 'missing') $query->whereNull('pieces.'.$column);
             else $query->where('pieces.'.$column, $filters[$column]);
         }
         $this->applyFilters($query, $filters);
+        if (isset($filters['is_free'])) $query->free(filter_var($filters['is_free'], FILTER_VALIDATE_BOOLEAN));
         [$sort, $direction] = explode('_', $filters['sort']);
         $columns = ['id' => 0, 'name' => 1, 'composer' => 2, 'tags' => 3, 'level' => 4, 'highlight' => 5, 'favorites' => 6];
         if ($sort === 'updated') $query->orderBy('pieces.updated_at', $direction);
@@ -107,7 +110,8 @@ class PiecesTable
             \App\Activity\ExcludedAccounts::owned($query, 'favorites.user_id');
         }])
             ->with(['tags', 'composer' => function ($query) { $query->select('id', 'name'); }])
-            ->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free']);
+            ->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path']);
+        if ($request->filled('is_free')) $query->free($request->boolean('is_free'));
 
         $table = (new EloquentDataTable($query))
             // Hide appends and relations BEFORE serialization, so no media/history

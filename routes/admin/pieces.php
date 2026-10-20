@@ -22,6 +22,7 @@ Route::prefix('pieces')->name('pieces.')->group(function() {
 	Route::patch('{piece}/update-tag', 'Admin\PiecesController@updateTag')->name('update-tag');
 
 	Route::patch('{piece}/highlight', 'Admin\PiecesController@highlight')->name('highlight');
+    Route::post('{piece}/schedule', 'Admin\PiecesController@schedule')->name('schedule');
 
 	Route::patch('{piece}/hijack', 'Admin\PiecesController@hijack')->name('hijack');
 

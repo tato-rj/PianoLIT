@@ -248,12 +248,13 @@ class MatchTourTest extends ReviewTestCase
     {
         Model::withoutEvents(function () {
             foreach ($this->pieces as $piece) {
-                $piece->update(['highlighted_at' => now()->subYear(), 'is_free' => false, 'show_on_tour' => false]);
+                $piece->update(['highlighted_at' => now()->subYear(), 'show_on_tour' => false]);
             }
             foreach ($this->pieces->take(4) as $source) {
                 $decoy = $source->replicate();
                 // Even editorially preferred/currently free entries need free-pick history.
-                $decoy->fill(['highlighted_at' => null, 'is_free' => true, 'show_on_tour' => true])->save();
+                $decoy->fill(['highlighted_at' => null, 'show_on_tour' => true])->save();
+                setFreePick($decoy);
                 $decoy->tags()->attach($source->tags()->pluck('tags.id')->all());
             }
         });
@@ -681,7 +682,10 @@ class MatchTourTest extends ReviewTestCase
         return Model::withoutEvents(function () use ($attributes, $video, $source) {
             $source = $source ?? $this->pieces[0];
             $piece = $source->replicate();
+            $free = $attributes['is_free'] ?? false;
+            unset($attributes['is_free']);
             $piece->fill($attributes)->save();
+            if ($free) setFreePick($piece);
             $piece->tags()->attach($source->tags()->pluck('tags.id')->all());
             create(Tutorial::class, ['piece_id' => $piece->id, 'type' => 'Performance', 'video_url' => $video]);
             return $piece;
@@ -991,7 +995,7 @@ class MatchTourTest extends ReviewTestCase
             $piece->tags()->attach(Tag::name('dreamy')->first());
             $nonPicks->push($piece);
         }
-        $pastPick = $this->copyWithMedia(['highlighted_at' => now()->subYear(), 'is_free' => false, 'show_on_tour' => false]);
+        $pastPick = $this->copyWithMedia(['highlighted_at' => now()->subYear(), 'show_on_tour' => false]);
         $keywords = [$this->pieces[0]->id, 'elementary', 'dreamy'];
         $excluded = $this->pieces->pluck('id')->all();
         $quiz = (new Quiz)->getKeywords($keywords)->exclude($excluded);

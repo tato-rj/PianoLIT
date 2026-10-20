@@ -91,7 +91,6 @@ $factory->define(Piece::class, function (Faker $faker) {
             'collection_name' => ucwords($faker->word),
             'collection_number' => rand(1,10),
             'key' => randval(keys()),
-            'is_free' => false,
             'composed_in' => $faker->year,
             'published_in' => $faker->year,
             'composer_id' => function() {

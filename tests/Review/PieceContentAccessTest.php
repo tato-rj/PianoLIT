@@ -161,7 +161,7 @@ class PieceContentAccessTest extends ReviewTestCase
 
     public function test_piece_audio_band_has_shared_controls_and_only_the_main_recording()
     {
-        $this->piece->updateQuietly(['is_free' => true]);
+        setFreePick($this->piece, true);
         $this->tutorial->moments()->create(['title' => 'Audio theme', 'start_time' => 0, 'sort_order' => 0, 'comment' => 'Audio detail stays out of the band.']);
         $response = $this->get(route('webapp.pieces.show', $this->piece))->assertOk()
             ->assertSee('data-piece-player-page', false)->assertDontSee('data-player-hands', false)
@@ -368,7 +368,7 @@ class PieceContentAccessTest extends ReviewTestCase
 
     public function test_free_pick_previews_unlock_full_media_scores_and_annotations_after_signup()
     {
-        $this->piece->updateQuietly(['is_free' => true]);
+        setFreePick($this->piece, true);
         $guestFreePick = $this->assertRestricted()->assertDontSee('data-manage="save-to"', false)
             ->assertSee('data-annotations-url=""', false)
             ->assertSee('This score is ready to explore')->assertSee('read the full score.')
@@ -396,25 +396,25 @@ class PieceContentAccessTest extends ReviewTestCase
         $this->putJson(route('webapp.pieces.score.annotations.update', $this->piece), [])->assertUnauthorized();
 
         // Turning off the flag restores restrictions on the very next request.
-        $this->piece->updateQuietly(['is_free' => false]);
+        setFreePick($this->piece, false);
         $this->assertRestricted();
 
         $this->actingAs($this->userWithSubscription(), 'web');
-        $this->piece->updateQuietly(['is_free' => true]);
+        setFreePick($this->piece, true);
         $memberFreePick = $this->assertFullContent(false)->assertSee('data-manage="save-to"', false)
             ->assertSee('data-bs-toggle="offcanvas"', false)
             ->assertSee('id="save-to-offcanvas"', false)
             ->assertDontSee('data-annotations-url=""', false);
         if ($directory = getenv('GUEST_SIGNUP_PREVIEW_DIR')) file_put_contents($directory.'/member-free-pick.html', $memberFreePick->getContent());
         $this->postJson(route('webapp.users.favorites.update', $this->piece))->assertOk();
-        $this->piece->updateQuietly(['is_free' => false]);
+        setFreePick($this->piece, false);
         $this->assertRestricted();
     }
 
     public function test_supplied_subscriber_identity_cannot_unlock_free_pick_downloads()
     {
         $subscriber = $this->userWithSubscription(Stripe::class);
-        $this->piece->updateQuietly(['is_free' => true]);
+        setFreePick($this->piece, true);
         $url = route('webapp.pieces.score', [$this->piece, 'user_id' => $subscriber->id]);
         $this->withExceptionHandling()->get($url)->assertForbidden();
         $this->actingAs($this->userWithSubscription(), 'web')->get($url)->assertForbidden();
@@ -422,7 +422,7 @@ class PieceContentAccessTest extends ReviewTestCase
 
     public function test_free_pick_does_not_unlock_exports_for_expired_memberships()
     {
-        $this->piece->updateQuietly(['is_free' => true]);
+        setFreePick($this->piece, true);
         foreach ([Stripe::class, Apple::class] as $source) {
             $this->actingAs($this->userWithSubscription($source, ['renews_at' => now()->subDay()]), 'web');
             $this->assertFullContent(false);
@@ -431,7 +431,7 @@ class PieceContentAccessTest extends ReviewTestCase
 
     public function test_members_keep_every_free_pick_media_and_score_export()
     {
-        $this->piece->updateQuietly(['is_free' => true]);
+        setFreePick($this->piece, true);
         foreach ([
             [Stripe::class, [], false],
             [Apple::class, [], false],

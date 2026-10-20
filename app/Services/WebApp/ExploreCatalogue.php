@@ -263,7 +263,7 @@ class ExploreCatalogue
         if (!empty($params['length'])) $query->whereHas('tags', function ($q) use ($params) {
             $q->where('type', 'length')->where('name', $params['length']);
         });
-        if (!empty($params['past'])) $query->whereNotNull('highlighted_at')->where('is_free', false);
+        if (!empty($params['past'])) $query->whereNotNull('highlighted_at')->free(false);
         return $query;
     }
 

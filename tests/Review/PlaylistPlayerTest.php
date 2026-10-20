@@ -158,7 +158,7 @@ class PlaylistPlayerTest extends ReviewTestCase
             $this->assertCount(1, array_filter($queries, function ($query) { return strpos($query['query'], 'from "video_moments"') !== false; }));
         }
         $this->assertSame($counts[0], $counts[1]);
-        $this->assertLessThanOrEqual(9, $counts[1]);
+        $this->assertLessThanOrEqual(10, $counts[1]); // One request-wide lookup resolves the scheduled Freepick.
     }
 
     public function test_dragged_folder_order_is_saved_only_for_its_owner()

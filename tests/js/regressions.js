@@ -1,4 +1,5 @@
 require('./timeline-events-admin');
+require('./admin-freepick-schedule')();
 require('./google-auth');
 require('./apple-auth');
 const assert = require('assert');

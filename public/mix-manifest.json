@@ -1508,5 +1508,6 @@
     "/css/vendor/flags/4x3/za.svg": "/css/vendor/flags/4x3/za.svg",
     "/css/vendor/flags/4x3/zm.svg": "/css/vendor/flags/4x3/zm.svg",
     "/css/vendor/flags/4x3/zw.svg": "/css/vendor/flags/4x3/zw.svg",
-    "/js/vendor/pdfjs/pdf.js": "/js/vendor/pdfjs/pdf.js?id=750edb2ad9f8b50c22f661b9d20c9b49"
+    "/js/vendor/pdfjs/pdf.js": "/js/vendor/pdfjs/pdf.js?id=750edb2ad9f8b50c22f661b9d20c9b49",
+    "/js/views/admin-freepick-schedule.js": "/js/views/admin-freepick-schedule.js?id=ef9246a9bc046d598b48de35010eb8db"
 }

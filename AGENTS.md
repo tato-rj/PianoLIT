@@ -6,6 +6,8 @@ PianoLIT serves the public website, the `my.*` web app, administration, and mobi
 
 Administration lives at `admin.pianolit.com` (locally `admin.pianolit.test`), with no `/admin` path prefix. Register admin routes before host-independent public routes, preserve `admin.*` names and the admin session guard, and keep non-piece public preview links on the public website. Legacy `/admin/...` GET links redirect permanently to the matching subdomain path with the query string intact. Editor uploads send the session CSRF token.
 
+As of 2026-10-20, Freepick selection uses `free_picks` and UTC schedule instants; `pieces.is_free` is removed. Preserve the computed `Piece::is_free` boolean and all existing iOS response shapes. The Pieces directory's Schedule modal selects immediately or at a future America/New_York date/time. Current access resolves from due rows without a worker; the minutely `freepicks:sync-history` task maintains `pieces.highlighted_at` for legacy history. Selection sends no email. Deploy the schedule migration with the matching code in a coordinated release; see `docs/FREEPICKS.md`.
+
 Admin piece-title and viewing links (including saved/viewed/activity records, rankings and View controls) open `webapp.pieces.show` in a new tab with `target="_blank"` and `rel="noopener noreferrer"`, so administrators see the user-facing piece page. Explicit Edit controls and editor return links retain `admin.pieces.edit`. Activity selections link to the resolved destination piece rather than the piece on the page the user was leaving.
 
 Granting, revoking or re-granting super-user status must never send or queue email to the user. Keep these account-access changes silent while preserving access-period auditing and the admin response.
@@ -46,7 +48,7 @@ As of 2026-10-15, the membership directory is the visual standard for admin tabl
 
 Existing DataTables on pages not yet migrated retain `admin.components.table-card`, the preloaded first page and `admin.components.datatable-frame` skeleton. Keep their loading, accessibility and error behavior working until each page is migrated; do not globally remove their assets. The new server-rendered Blade component needs no initialization skeleton or DataTables scripts.
 
-Admin table row actions use `admin.components.table-action`: yellow Edit with a square-pen icon and label, red Delete with a trash icon, and black for other actions. Match the Users directory and the Design System specimen. Preserve routes, forms, confirmation dialogs, disabled states and accessible names. Keep the Pieces Delete action immediately after Edit. Legacy `components.datatable.actions.*` delegate to this renderer; do not create page-specific button styles.
+Admin table row actions use `admin.components.table-action`: yellow Edit with a square-pen icon and label, red Delete with a trash icon, and black for other actions. Match the Users directory and the Design System specimen. Preserve routes, forms, confirmation dialogs, disabled states and accessible names. Pieces actions are ordered Edit, Schedule, Delete. Legacy `components.datatable.actions.*` delegate to this renderer; do not create page-specific button styles.
 
 Editable admin tables use `admin.components.table-save-actions` for their footer: save status on the left, Save changes on the right, with the shared primary button and check icon. Keep this arrangement in the Design System specimen and future editable tables.
 

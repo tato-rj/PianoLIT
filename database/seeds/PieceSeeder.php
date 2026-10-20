@@ -14,6 +14,8 @@ class PieceSeeder extends Seeder
     {
         $this->arabesque();
         $this->adagio();
+        $piece = Piece::orderByDesc('id')->first();
+        \App\FreePick::create(['piece_id' => $piece->id, 'scheduled_at' => now('UTC'), 'activated_at' => now('UTC')]);
         $this->rondo();
         $this->randomPiece(10);
     }
@@ -58,7 +60,6 @@ class PieceSeeder extends Seeder
             "score_publisher" => "New York: G. Schirmer, 1894",
             "score_copyright" => "Public Domain",
             "cover_path" => "piece/cover_image/pianolit-adagio-patetico-in-c-minor-1941.jpg",
-            "is_free" => false,
             "show_on_tour" => true,
             "is_attributed_to" => false,
             "highlighted_at" => now()->subWeek(),
@@ -114,7 +115,6 @@ class PieceSeeder extends Seeder
             "score_publisher" => "New York: G. Schirmer, 1894",
             "score_copyright" => "Public Domain",
             "cover_path" => "piece/cover_image/pianolit-arabesque-no1-op61-0619.jpg",
-            "is_free" => true,
             "show_on_tour" => false,
             "is_attributed_to" => false,
             "highlighted_at" => now(),
@@ -190,7 +190,6 @@ class PieceSeeder extends Seeder
             "score_publisher" => "New York: G. Schirmer, 1894",
             "score_copyright" => "Public Domain",
             "cover_path" => "piece/cover_image/pianolit-rondo-k-485-4510.jpg",
-            "is_free" => false,
             "show_on_tour" => false,
             "is_attributed_to" => false,
             "highlighted_at" => now()->subWeeks(2),

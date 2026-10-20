@@ -260,6 +260,7 @@ class AdminPiecesTableTest extends ReviewTestCase
         });
         $counts = [];
         foreach ([12, 24] as $size) {
+            app(\App\Services\FreePickSchedule::class)->forgetCurrent();
             DB::enableQueryLog(); DB::flushQueryLog();
             $data = (new \App\Services\Admin\PiecesTable)->get(\Illuminate\Http\Request::create('/pieces', 'GET', ['per_page' => $size]));
             view('admin.pages.pieces.table.rows', $data)->render();
@@ -269,7 +270,7 @@ class AdminPiecesTableTest extends ReviewTestCase
             $this->assertStringNotContainsString('activity_events', implode(' ', array_column($queries, 'query')));
             $this->assertStringNotContainsString('from "tutorials"', implode(' ', array_column($queries, 'query')));
         }
-        $this->assertSame([5, 5], $counts);
+        $this->assertSame([6, 6], $counts);
     }
 
     public function test_quick_edits_validate_types_preserve_other_tags_and_roll_back_level_failures()
@@ -328,7 +329,7 @@ class AdminPiecesTableTest extends ReviewTestCase
             DB::disableQueryLog();
         }
         $this->assertSame($counts[0], $counts[1]);
-        $this->assertLessThanOrEqual(6, $counts[1]);
+        $this->assertLessThanOrEqual(7, $counts[1]); // One shared lookup supplies current-pick dates and flags.
         $normalPiece = Piece::with('tags')->find($this->pieces[0]->id)->toArray();
         $this->assertArrayHasKey('media', $normalPiece);
         $this->assertArrayHasKey('long_name', $normalPiece);

@@ -22,11 +22,15 @@
         @elseif($item->highlighted_at)
             <time class="d-block" datetime="{{ $item->highlighted_at->toIso8601String() }}">@icon('calendar-check', ['color' => 'green']){{ $item->highlighted_at->toFormattedDateString() }}</time>
         @endif
+        @if($item->next_freepick_at)
+            <small class="d-block text-muted mt-1">Scheduled {{ \Carbon\Carbon::parse($item->next_freepick_at, 'UTC')->setTimezone(config('app.timezone'))->format('M j, Y · g:i a') }}</small>
+        @endif
     </td>
     <td>{{ number_format($item->favorites_count) }}</td>
     <td>
         <div class="d-flex flex-nowrap justify-content-end align-items-center gap-2">
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.pieces.edit', $item), 'attributes' => ['aria-label' => 'Edit '.$item->long_name]]])
+            @include('admin.pages.pieces.table.schedule-action')
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'class' => 'delete', 'attributes' => ['data-url' => route('admin.pieces.destroy', ['piece' => $item] + $returnFilters), 'data-bs-toggle' => 'modal', 'data-bs-target' => '#delete-modal', 'title' => 'Delete piece', 'aria-label' => 'Delete '.$item->long_name]]])
         </div>
     </td>

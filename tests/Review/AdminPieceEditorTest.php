@@ -39,7 +39,7 @@ class AdminPieceEditorTest extends ReviewTestCase
     {
         $html = $this->get(route('admin.pieces.edit', $this->piece))->assertOk()->getContent();
         $xpath = $this->xpath($html);
-        foreach (['highlight' => 'Make this the Freepick', 'hijack' => 'Set creation date to today'] as $action => $label) {
+        foreach (['hijack' => 'Set creation date to today'] as $action => $label) {
             $forms = $xpath->query('//form[@action="'.route('admin.pieces.'.$action, $this->piece).'"]');
             $this->assertCount(1, $forms);
             $this->assertCount(0, $xpath->query('ancestor::form', $forms[0]));
@@ -59,7 +59,7 @@ class AdminPieceEditorTest extends ReviewTestCase
         $this->assertCount(count(array_unique($ids)), $ids, 'Labels and cloned video controls have unique IDs.');
         $this->assertStringContainsString(route('admin.pieces.videos.moments.edit', [$this->piece, $this->video]), $html);
         $this->get(route('admin.pieces.index'))->assertOk()->assertDontSee(route('admin.pieces.highlight', $this->piece), false)->assertDontSee(route('admin.pieces.hijack', $this->piece), false);
-        $this->assertStringNotContainsString('calendar-days', view('admin.pages.pieces.table.actions', ['item' => $this->piece])->render());
+        $this->assertStringContainsString('Schedule', view('admin.pages.pieces.table.actions', ['item' => $this->piece])->render());
     }
 
     public function test_validation_return_restores_fields_choices_and_existing_video_identity()
@@ -105,9 +105,9 @@ class AdminPieceEditorTest extends ReviewTestCase
 
     public function test_current_freepick_and_read_only_editor_states_are_preserved()
     {
-        $this->piece->updateQuietly(['is_free' => true]);
+        setFreePick($this->piece, true);
         $xpath = $this->xpath($this->get(route('admin.pieces.edit', $this->piece))->assertOk()->getContent());
-        $this->assertCount(1, $xpath->query('//button[@disabled and contains(.,"Current Freepick")]'));
+        $this->assertCount(0, $xpath->query('//button[contains(.,"Freepick")]'));
         $this->assertCount(0, $xpath->query('//form[@action="'.route('admin.pieces.highlight', $this->piece).'"]'));
         $this->actingAs(create(Admin::class, ['role' => 'editor']), 'admin');
         $xpath = $this->xpath($this->get(route('admin.pieces.edit', $this->piece))->assertOk()->getContent());

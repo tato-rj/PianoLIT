@@ -19,7 +19,11 @@ class PiecesController extends Controller
         if (request()->ajax())
             return app(\App\Services\Admin\PiecesTable::class)->response(request());
 
-        return view('admin.pages.pieces.index', app(\App\Services\Admin\PiecesTable::class)->get(request()));
+        $data = app(\App\Services\Admin\PiecesTable::class)->get(request());
+        $errors = session('errors');
+        $data['failedFreePick'] = $errors && $errors->getBag('freepick')->any()
+            ? Piece::find((int) old('freepick_piece_id')) : null;
+        return view('admin.pages.pieces.index', $data);
     }
 
     public function loadTags(Piece $piece)
@@ -300,12 +304,7 @@ class PiecesController extends Controller
 
     public function highlight(Piece $piece)
     {
-        Piece::free()->update(['is_free' => false]);
-        
-        $piece->update([
-            'is_free' => true,
-            'highlighted_at' => now()
-        ]);
+        app(\App\Services\FreePickSchedule::class)->schedule($piece);
 
         return back()->with(['status' => 'The highlighted piece has been successfully updated!']);
     }
@@ -315,6 +314,24 @@ class PiecesController extends Controller
         $piece->update(['created_at' => now()]);
 
         return back()->with(['status' => 'The piece has been successfully hijacked!']);
+    }
+
+    public function schedule(Request $request, Piece $piece)
+    {
+        $filters = app(\App\Services\Admin\PiecesTable::class)->filters($request);
+        $request->merge(['freepick_piece_id' => $piece->id]);
+        $data = $request->validateWithBag('freepick', [
+            'mode' => 'required|in:now,later',
+            'scheduled_at' => 'exclude_unless:mode,later|required|date_format:Y-m-d\TH:i|after:now',
+        ]);
+        try {
+            app(\App\Services\FreePickSchedule::class)->schedule($piece,
+                $data['mode'] === 'later' ? \Carbon\Carbon::createFromFormat('!Y-m-d\TH:i', $data['scheduled_at'], config('app.timezone')) : null);
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            throw $exception->errorBag('freepick');
+        }
+        return redirect()->route('admin.pieces.index', \App\Support\AdminTableFilters::query($filters, 'updated_desc'))
+            ->with('status', $data['mode'] === 'later' ? 'The Freepick has been scheduled.' : 'The current Freepick has been updated.');
     }
 
     public function destroyFile(Request $request, Piece $piece)

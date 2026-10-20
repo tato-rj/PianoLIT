@@ -107,15 +107,15 @@ class WebAppHighlightsTest extends ReviewTestCase
         $this->assertSame(route('webapp.highlights'), $xpath->query('//section/div/a')->item(0)->getAttribute('href'));
         $this->assertSame(route('webapp.pieces.show', $pieces[1]), $xpath->query('//article/parent::a')->item(0)->getAttribute('href'));
         $this->assertSame(6, $xpath->query('//div[@aria-label="Earlier highlights"]/a')->length);
-        $this->assertNotNull(\Cache::get('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX)->firstWhere('title', 'From black composers'));
-        $this->assertNull(\Cache::get('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX)->firstWhere('title', 'Past highlights'));
+        $this->assertNotNull(\Cache::get(\App\Api\Api::freePickCacheKey('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX))->firstWhere('title', 'From black composers'));
+        $this->assertNull(\Cache::get(\App\Api\Api::freePickCacheKey('app.discover'.\App\Api\Api::WEB_DISCOVER_CACHE_SUFFIX))->firstWhere('title', 'Past highlights'));
         $this->assertFalse($pieces[1]->hasWebMediaAccess());
 
         Piece::where('id', '!=', $pieces[1]->id)->update(['highlighted_at' => null]);
         $single = $this->get(route('webapp.discover'))->assertOk()->viewData('rows')->firstWhere('title', 'Past highlights');
         $this->assertCount(1, $single['content']);
         $this->assertStringNotContainsString('Earlier highlights', view('webapp.discover.rows.gallery', ['row' => $single])->render());
-        $pieces[1]->update(['is_free' => true]);
+        setFreePick($pieces[1], true);
         $this->get(route('webapp.discover'))->assertOk()->assertDontSee('past-highlights-heading');
     }
 }
