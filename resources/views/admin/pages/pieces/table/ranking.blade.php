@@ -1,7 +1,5 @@
 @if($item->highlighted_at)
-<span>{{$item->highlighted_at->toFormattedDateString()}}</span>
-@else
-<span class="text-muted"><i>Never highlighted</i></span>
+<span>@icon('calendar-check', ['color' => 'green']){{$item->highlighted_at->toFormattedDateString()}}</span>
 @endif
 {{-- <div class="d-flex">
 @if($rcm = $item->getRanking('rcm'))

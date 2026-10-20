@@ -14,7 +14,7 @@
     "/js/app.js": "/js/app.js?id=fa77d43052e61807371d544664bd8309",
     "/js/admin.js": "/js/admin.js?id=9e3fa27bd911cf353826e5d796ed48b9",
     "/css/app.css": "/css/app.css?id=cc207d884388b8614cbb0a977caa415c",
-    "/css/admin.css": "/css/admin.css?id=0e0e14fdba361e606258a3fc132b0390",
+    "/css/admin.css": "/css/admin.css?id=bfa3059d0498dba8215fed8261cb8a1c",
     "/js/views/admin-design-system.js": "/js/views/admin-design-system.js?id=68e9d3df1d2fd5df887fe8b1cb232aba",
     "/js/views/admin-access-limits.js": "/js/views/admin-access-limits.js?id=935d8744b7d17c0d8f005c94549c9844",
     "/js/views/membership-billing.js": "/js/views/membership-billing.js?id=51312ce7eede7ddb69b2221c44fb03ff",
@@ -1499,5 +1499,6 @@
     "/browserconfig.xml": "/browserconfig.xml?id=327c90848eab93b00078d08a30ecbc92",
     "/admin.browserconfig.xml": "/admin.browserconfig.xml?id=6a4e4bfcc6686d2c4458d2fcd7163676",
     "/images/brand/admin-icon.png": "/images/brand/admin-icon.png?id=13a44794aea3cda3f8eeb799c4cd3ba2",
-    "/images/brand/app-icon-ios-1024.png": "/images/brand/app-icon-ios-1024.png?id=f70f593c2446d96f8954141f787c6c33"
+    "/images/brand/app-icon-ios-1024.png": "/images/brand/app-icon-ios-1024.png?id=f70f593c2446d96f8954141f787c6c33",
+    "/js/views/admin-piece-editor.js": "/js/views/admin-piece-editor.js?id=243619bfe33fe9694e65b5b588c292d7"
 }
