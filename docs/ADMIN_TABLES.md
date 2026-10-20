@@ -89,7 +89,10 @@ same form; the alternate membership template delegates to the current view.
 Pass a unique `id`, accessible `label`, optional GET `action`, `state`, and
 `fields`. Each field has `name`, `label`, and either `options` (a value/label map)
 or `type: search` / `type: text`; search fields may set `placeholder` and
-`maxlength`. Optional `buttons` definitions use the shared `filters.button`;
+`maxlength`. Numeric fields use `type: number` with optional `min`, `max`, `step`
+and `required`; `max` remains a numeric upper bound rather than a text length.
+Optional `buttons` definitions use the shared `filters.button` and may pass `id`
+for an existing JavaScript binding;
 the default is Apply filters. A submit button can retain `name` and `value`
 (for example, visit order). `secondary: true` is the consistent Reverse/Clear
 variant. Use `resetUrl` for the shared Reset link, the default slot for advanced
@@ -112,6 +115,15 @@ component and sizing. Page-header actions and primary filter actions both use
 `.btn.btn-dark`; secondary filters use `.btn.btn-secondary`. Filter Sass owns
 only layout/field alignment, so hover, keyboard focus, pressed and disabled
 colors all come from the shared button variant. Remove old local filter styles when migrating consumers.
+
+The Timeline events curation library retains its discovery cards and chronological
+decade disclosures. Discovery uses this same filter form and its numeric year
+field; shared editor sections contain discovery and saved records. Event editors
+use shared inputs/textarea, primary Save changes, black source actions and the red
+trash action. The event-specific validation bag restores and opens only the form
+that failed. Discovery cursors, selected types, saved counts, attribution and
+original session-protected request contracts remain intact; this update does not
+turn the grouped curation workflow into a paginated directory.
 
 ## Table action buttons
 

@@ -1,5 +1,5 @@
 @foreach($candidates as $candidate)
-<article class="card timeline-candidate" data-candidate="{{$candidate['source_id']}}" data-year="{{$candidate['year']}}" data-date="{{$candidate['event_date'] ?: sprintf('%04d-01-01', $candidate['year'])}}">
+<article class="card rounded-sm timeline-candidate" data-candidate="{{$candidate['source_id']}}" data-year="{{$candidate['year']}}" data-date="{{$candidate['event_date'] ?: sprintf('%04d-01-01', $candidate['year'])}}">
   @if($candidate['image_url'])
   <img src="{{$candidate['image_url']}}" alt="" loading="lazy" onerror="this.remove();" class="timeline-candidate-image">
   @endif
@@ -15,7 +15,7 @@
       <p class="mt-1 mb-0">{{$candidate['description']}}</p>
     </details>
     <div class="timeline-candidate-actions">
-      <button type="button" class="btn btn-default btn-sm timeline-save">Save event</button>
+      <button type="button" class="btn btn-dark btn-sm timeline-save">Save event</button>
       <span class="timeline-source-links small"><a href="{{$candidate['source_url']}}" target="_blank" rel="noopener noreferrer">Wikipedia</a>
       @if($candidate['image_source_url']) · <a href="{{$candidate['image_source_url']}}" target="_blank" rel="noopener noreferrer" title="{{$candidate['image_license']}}">Image credit</a>@endif</span>
     </div>

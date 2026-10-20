@@ -51,7 +51,7 @@
             var group = saved.querySelector('[data-decade="' + decade + '"]');
             if (!group) {
                 group = document.createElement('details');
-                group.className = 'card timeline-saved-decade';
+                group.className = 'timeline-saved-decade';
                 group.dataset.decade = String(decade);
                 var summary = document.createElement('summary');
                 summary.className = 'timeline-decade-summary';
@@ -217,6 +217,7 @@
         var row = removeForm.closest('[data-event-id]');
         var button = removeForm.querySelector('button[type="submit"]');
         var removeStatus = removeForm.querySelector('.timeline-remove-status');
+        var buttonMarkup = button.innerHTML;
         removeStatus.textContent = '';
         setBusy(true);
         button.textContent = 'Removing…';
@@ -236,7 +237,8 @@
                 });
             }).catch(function () {
                 removeStatus.textContent = 'Could not remove this event. Please try again.';
-                button.textContent = 'Remove event';
+                if (buttonMarkup) button.innerHTML = buttonMarkup;
+                else button.textContent = 'Remove event';
             }).then(function () { setBusy(false); });
     });
 })();

@@ -70,6 +70,7 @@ for its options and compatibility rules.
 
 Admin editors group related fields with `admin.components.editor.section`.
 Pass a unique `id`, `title`, optional `description` and an optional `actions` slot.
+An optional `sectionId` supplies an anchor on the section itself.
 Use `.admin-editor-grid` for a wide main column and narrower sidebar on desktop;
 it stacks on smaller screens. `.admin-editor-stack`, `.admin-editor-options` and
 `.admin-editor-save` supply the shared layout. Controls keep their standard
@@ -77,6 +78,14 @@ components and finishes. The Design System previews the same section component.
 Native file fields use `components.form.upload.file` with `id`, `name`, `label`,
 optional `accept` and `currentUrl` / `currentLabel`. Their IDs and labels remain
 unique; existing files open safely in a new tab.
+
+Collapsible lists use `components.accordion` and `components.accordion-item`,
+with the native Bootstrap accordion styling and behavior. Pass a unique wrapper
+`id`, then each item's unique `id`, `title` and optional `parentId` to keep one
+item open at a time. `open: true` sets the initial expanded state. The wrapper
+defaults to the flat `accordion-flush` variant; `flush: false` keeps the standard
+outer border. The Design System previews these same components. Avoid combining
+rounded card headers with separate card borders inside an accordion.
 
 Date and time displays omit timezone names and explanatory timezone captions.
 Use the configured application timezone for formatting and calculations.
@@ -87,6 +96,12 @@ for browser completion and `describedBy` for help text. The component preserves
 scalar old input and safely ignores malformed array values. Avoid field-specific
 colors, padding, corners and focus outlines; table wrappers must respect the
 shared form-control focus style.
+
+For repeated record forms with identical field names, inputs and textareas accept
+`oldInputKey` to choose the flashed-value key independently of `name`. Use a named
+validation bag for that record; field errors honor the supplied `bag`. Timeline
+event editors use this to restore the submitted record without filling every
+other event with its unsaved values.
 
 `@textarea` also accepts `id` for its label and preserves scalar old input while
 ignoring malformed array values. Pass `textImprover: false` for structured data

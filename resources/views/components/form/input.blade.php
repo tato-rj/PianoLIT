@@ -1,7 +1,7 @@
 @php
     $inputBag = $bag ?? 'default';
     $inputErrors = $errors->getBag($inputBag);
-    $oldInputValue = old($name);
+    $oldInputValue = old($oldInputKey ?? $name);
     $inputValue = is_scalar($oldInputValue) ? $oldInputValue : ($value ?? null);
 @endphp
 <div class="form-group {{$grid ?? null}}">

@@ -14,7 +14,9 @@ class TimelineEventsController extends Controller
     public function index()
     {
         $events = TimelineEvent::chronological()->get();
-        return view('admin.pages.timeline-events.index', compact('events'));
+        $latestDate = \DB::table('composers')->max('date_of_death');
+        $latestYear = $latestDate ? (int) substr($latestDate, 0, 4) : null;
+        return view('admin.pages.timeline-events.index', compact('events', 'latestYear'));
     }
 
     public function discover(Request $request, WikimediaDiscovery $discovery, TimelineDiscoverySession $search)

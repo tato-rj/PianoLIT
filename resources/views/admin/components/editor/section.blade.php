@@ -1,4 +1,4 @@
-<section class="admin-editor-section {{ $class ?? '' }}" aria-labelledby="{{ $id }}-title" @if($preview ?? false) data-ds-preview @endif>
+<section class="admin-editor-section {{ $class ?? '' }}" @isset($sectionId) id="{{ $sectionId }}" @endisset aria-labelledby="{{ $id }}-title" @if($preview ?? false) data-ds-preview @endif>
     <header class="admin-editor-section__heading">
         <div>
             <h2 id="{{ $id }}-title">{{ $title }}</h2>

@@ -1,5 +1,5 @@
 @php
-    $oldTextareaValue = old($name);
+    $oldTextareaValue = old($oldInputKey ?? $name);
     $textareaValue = is_scalar($oldTextareaValue) ? $oldTextareaValue : ($value ?? null);
 @endphp
 <div class="form-group">

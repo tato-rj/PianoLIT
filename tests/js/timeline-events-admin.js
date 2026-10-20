@@ -152,6 +152,7 @@ async function main() {
 
     const removeForm = element();
     const removeButton = element();
+    removeButton.innerHTML = '<svg aria-hidden="true"></svg>Remove event';
     const removeStatus = element();
     const row = element();
     let removed = false;
@@ -173,6 +174,7 @@ async function main() {
     assert.strictEqual(removed, false, 'A failed deletion preserves the event');
     assert.strictEqual(ids['page-heading'].textContent, 'Timeline events');
     assert.strictEqual(removeButton.disabled, false);
+    assert.strictEqual(removeButton.innerHTML, '<svg aria-hidden="true"></svg>Remove event', 'Failure restores the destructive action icon and label.');
     assert.strictEqual(removeStatus.textContent, 'Could not remove this event. Please try again.');
     remove();
     requests[11].resolve({data: {id: 1, source_id: card.dataset.candidate, count: 0}});

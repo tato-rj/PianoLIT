@@ -6,6 +6,12 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class TimelineEventForm extends FormRequest
 {
+    protected function prepareForValidation()
+    {
+        $event = $this->route('event');
+        if ($event instanceof \App\TimelineEvent) $this->errorBag = 'timeline-event-'.$event->id;
+    }
+
     public function authorize()
     {
         return auth('admin')->check();

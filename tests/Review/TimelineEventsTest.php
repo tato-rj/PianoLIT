@@ -72,11 +72,16 @@ class TimelineEventsTest extends ReviewTestCase
         $this->assertFalse(Schema::hasColumn('timeline_events', 'piece_id'));
         $response = $this->get(route('admin.timeline-events.index'))->assertOk()
             ->assertSee('Timeline events')->assertDontSee('Timeline events ·')->assertSee('Shared event library')->assertSee('Saved events');
-        $this->assertMatchesRegularExpression('/<input id="reference-year"[^>]*value=""/', $response->getContent());
+        $document = new \DOMDocument();
+        @$document->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($document);
+        $this->assertSame('', $xpath->query('//input[@id="reference-year"]')[0]->getAttribute('value'));
+        $this->assertCount(1, $xpath->query('//form[@id="timeline-search" and @data-admin-filter-form]'));
         $response->assertSee('id="timeline-events-admin"', false)->assertSee(route('admin.timeline-events.discover'));
         $response->assertDontSee('Edit piece');
         foreach (WikimediaDiscovery::TYPES as $type => $label) {
-            $response->assertSee($label)->assertSee('name="types[]" type="checkbox" value="'.$type.'" checked', false);
+            $response->assertSee($label);
+            $this->assertCount(1, $xpath->query('//input[@name="types[]" and @type="checkbox" and @value="'.$type.'" and @checked]'));
         }
         auth('admin')->logout();
         $this->actingAs(Model::withoutEvents(function () { return create(User::class); }), 'web');
@@ -230,6 +235,30 @@ class TimelineEventsTest extends ReviewTestCase
         $this->delete(route('admin.timeline-events.destroy', $older))->assertRedirect(route('admin.timeline-events.index'));
         $this->assertDatabaseCount('timeline_events', 0);
         $this->saveCandidate($this->candidate(1))->assertOk()->assertJsonPath('count', 1);
+    }
+
+    public function test_validation_restores_and_opens_only_the_submitted_event()
+    {
+        $event = TimelineEvent::create($this->candidate(1));
+        $other = TimelineEvent::create($this->candidate(2, 1810));
+        $this->withExceptionHandling()->from(route('admin.timeline-events.index'))
+            ->patch(route('admin.timeline-events.update', $event), ['year' => -1, 'title' => 'Unsaved title', 'description' => 'Unsaved description'])
+            ->assertRedirect(route('admin.timeline-events.index'))
+            ->assertSessionHasErrors(['year'], null, 'timeline-event-'.$event->id);
+        $html = $this->get(route('admin.timeline-events.index'))->assertOk()->getContent();
+        $document = new \DOMDocument();
+        @$document->loadHTML($html);
+        $xpath = new \DOMXPath($document);
+        $this->assertSame('Unsaved title', $xpath->query('//input[@id="event-title-'.$event->id.'"]')[0]->getAttribute('value'));
+        $this->assertSame($other->title, $xpath->query('//input[@id="event-title-'.$other->id.'"]')[0]->getAttribute('value'));
+        $this->assertSame('Unsaved description', $xpath->query('//textarea[@id="event-description-'.$event->id.'"]')[0]->textContent);
+        $this->assertCount(1, $xpath->query('//*[@data-event-id="'.$event->id.'"]/details[@open]'));
+        $this->assertCount(0, $xpath->query('//*[@data-event-id="'.$other->id.'"]/details[@open]'));
+        $this->assertCount(1, $xpath->query('//*[@data-decade="1800" and @open]'));
+        $this->assertCount(0, $xpath->query('//*[@data-decade="1810" and @open]'));
+        $this->assertCount(1, $xpath->query('//form[@id="timeline-update-'.$event->id.'"]//*[@role="alert"]'));
+        $this->assertCount(0, $xpath->query('//form[@id="timeline-update-'.$other->id.'"]//*[@role="alert"]'));
+        $this->assertDatabaseHas('timeline_events', ['id' => $event->id, 'title' => $event->title]);
     }
 
     public function test_library_supplies_web_timelines_without_changing_mobile_timelines()

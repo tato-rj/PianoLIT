@@ -1,6 +1,16 @@
 <section class="design-system__section" id="ds-components" aria-labelledby="ds-components-title">
   <header class="design-system__section-heading"><span class="design-system__eyebrow">08 / BUILDING BLOCKS</span><h2 id="ds-components-title">Components</h2><p>Common combinations for content, feedback and navigation.</p></header>
   <div class="design-system__grid design-system__grid--wide">
+    @component('admin.pages.settings.sample', ['label' => 'Accordion', 'usage' => 'components.accordion · components.accordion-item', 'properties' => 'padding,border,border-radius,background-color'])
+      @component('components.accordion', ['id' => 'ds-accordion', 'preview' => true])
+        @component('components.accordion-item', ['id' => 'ds-accordion-first', 'parentId' => 'ds-accordion', 'title' => 'Level 1'])
+          <p class="mb-0">Pieces grouped by level.</p>
+        @endcomponent
+        @component('components.accordion-item', ['id' => 'ds-accordion-second', 'parentId' => 'ds-accordion', 'title' => 'Level 2'])
+          <p class="mb-0">Expand one level at a time.</p>
+        @endcomponent
+      @endcomponent
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Editor section', 'usage' => 'admin.components.editor.section', 'properties' => 'padding,background-color,border,border-radius'])
       @component('admin.components.editor.section', ['id' => 'ds-editor-section', 'title' => 'Piece details', 'description' => 'Related fields grouped in one section.', 'preview' => true])
         @input(['bag' => 'default', 'id' => 'ds-editor-name', 'name' => 'ds_editor_name', 'label' => 'Name', 'value' => 'Sonatina', 'required' => false])

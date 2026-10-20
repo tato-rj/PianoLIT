@@ -1,31 +1,23 @@
-<div id="{{$ranking}}-modal" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Highlights from {{strtoupper($ranking)}} Levels (Syllabus {{(new \App\Services\Rankings)->year($ranking)}})</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="accordion" id="accordion-{{$ranking}}">
-          @foreach( (new \App\Services\Rankings)->get($ranking) as $list)
-          <div class="card">
-            <div class="card-header border-0 rounded mb-1 cursor-pointer" data-bs-toggle="collapse" data-bs-target="#{{$ranking}}-collapse-{{$loop->iteration}}">
-              <h6 class="mb-0">Level {{$loop->iteration}}</h6>
-            </div>
-            <div id="{{$ranking}}-collapse-{{$loop->iteration}}" class="collapse mb-2" data-bs-parent="#accordion-{{$ranking}}">
-            @foreach($list as $name => $composer)
-              <div class="px-2 py-1 {{$loop->last ? null : 'border-bottom'}}"><small>
-                <div class="badge bg-light me-1">{{$loop->iteration}}</div>
-                <a target="_blank" href="{{youtube($name . ' by ' . $composer)}}" class="align-middle link-blue"><strong>{{$name}}</strong> by {{$composer}}</small></a>
-              </div>
+@php($rankingService = new \App\Services\Rankings)
+@component('components.modal', ['id' => $ranking.'-modal', 'options' => ['size' => 'lg', 'header' => ['raw' => true], 'body' => ['padding' => 3]]])
+    @slot('header')
+        <h2 class="h5 mb-0">Highlights from {{ strtoupper($ranking) }} Levels</h2>
+        <p class="small text-muted mt-1 mb-0">Syllabus {{ $rankingService->year($ranking) }}</p>
+    @endslot
+    @slot('body')
+        @component('components.accordion', ['id' => 'accordion-'.$ranking])
+            @foreach($rankingService->get($ranking) as $list)
+                @component('components.accordion-item', ['id' => $ranking.'-collapse-'.$loop->iteration, 'parentId' => 'accordion-'.$ranking, 'title' => 'Level '.$loop->iteration])
+                    <ol class="list-unstyled mb-0">
+                        @foreach($list as $name => $composer)
+                        <li class="d-flex align-items-baseline gap-2 py-2 {{ $loop->last ? '' : 'border-bottom' }}">
+                            <span class="badge bg-light text-muted">{{ $loop->iteration }}</span>
+                            <a target="_blank" rel="noopener noreferrer" href="{{ youtube($name.' by '.$composer) }}" class="small link-blue"><strong>{{ $name }}</strong> <span class="text-muted">by {{ $composer }}</span></a>
+                        </li>
+                        @endforeach
+                    </ol>
+                @endcomponent
             @endforeach
-            </div>
-          </div>
-          @endforeach
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+        @endcomponent
+    @endslot
+@endcomponent
