@@ -4,7 +4,7 @@ On 2026-10-15 the user chose the membership directory design and a reusable
 Laravel Blade component as the standard. Always reuse `admin.components.table`
 for admin tables, including small fixed lists such as Emails; do not create a
 page-specific table implementation. Users, Subscribers, Feedback, Emails, analytics People and the membership
-directory use this component. Migrate existing legacy tables when their pages
+directory and Playlists use this component. Migrate existing legacy tables when their pages
 are updated within the requested scope. Preserve each page’s columns, filters,
 route names, session permissions, row actions and bulk behavior.
 
@@ -124,6 +124,16 @@ trash action. The event-specific validation bag restores and opens only the form
 that failed. Discovery cursors, selected types, saved counts, attribution and
 original session-protected request contracts remain intact; this update does not
 turn the grouped curation workflow into a paginated directory.
+
+The Playlists directory uses SQL search, publication filters, validated sorting
+and the shared 12-result pagination. Journey is absent from this directory,
+creation form and ordering screen; retain its records and legacy mobile API.
+Arrange order uses the same table component with the complete regular-playlist
+collection because saving requires a full permutation. Drag handles and labeled
+up/down buttons change the draft order; the shared save footer submits it
+explicitly. The server locks the group and rejects incomplete or stale lists.
+Ordering this collection must never alter Journey or a playlist's piece order.
+New playlists start as drafts and open their existing editor to add pieces.
 
 ## Table action buttons
 

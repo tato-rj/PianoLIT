@@ -1,15 +1,19 @@
-@component('components.modal', ['id' => 'add-modal', 'header' => 'New playlist'])
+@component('components.modal', ['id' => 'add-modal', 'header' => 'Create a playlist', 'show' => $errors->getBag('playlistCreate')->any() ? true : null])
 @slot('body')
-  <form method="POST" action="{{route('admin.playlists.store')}}" enctype="multipart/form-data">
-    @csrf
-      @input(['bag' => 'default', 'name' => 'name', 'placeholder' => 'Name'])
-      @input(['bag' => 'default', 'name' => 'subtitle', 'placeholder' => 'Subtitle', 'limit' => 72])
-      @input(['bag' => 'default', 'name' => 'featured', 'placeholder' => 'Featured tag (optional)', 'limit' => 16, 'required' => false])
-      @file(['bag' => 'default', 'name' => 'cover', 'placeholder' => 'Cover image'])
-      @textarea(['bag' => 'default', 'name' => 'description', 'placeholder' => 'Description', 'rows' => 3])
-      @options(['bag' => 'default', 'required' => false, 'type' => 'checkbox', 'name' => 'is_journey', 'options' => ['Is this playlist part of the "Follow a path"?' => true]])
-
-      @submit(['label' => 'Create playlist', 'block' => true])
-  </form>
+    <p class="text-muted mb-4">Start with the details. Add pieces in the editor, then publish when the playlist is ready.</p>
+    <form method="POST" action="{{ route('admin.playlists.store') }}" enctype="multipart/form-data">
+        @csrf
+        @if($errors->getBag('playlistCreate')->any())<div class="alert alert-red" role="alert">Please check the highlighted fields. Choose the cover file again if needed.</div>@endif
+        @input(['bag' => 'playlistCreate', 'id' => 'playlist-create-name', 'name' => 'name', 'label' => 'Playlist name', 'limit' => 255])
+        @input(['bag' => 'playlistCreate', 'id' => 'playlist-create-subtitle', 'name' => 'subtitle', 'label' => 'Subtitle', 'limit' => 72])
+        @textarea(['bag' => 'playlistCreate', 'id' => 'playlist-create-description', 'name' => 'description', 'label' => 'Description', 'rows' => 3, 'limit' => 255])
+        @input(['bag' => 'playlistCreate', 'id' => 'playlist-create-featured', 'name' => 'featured', 'label' => 'Featured tag (optional)', 'limit' => 16, 'required' => false])
+        @include('components.form.upload.file', ['bag' => 'playlistCreate', 'id' => 'playlist-create-cover', 'name' => 'cover', 'label' => 'Cover image (optional)', 'accept' => 'image/jpeg,image/png,image/gif,image/webp'])
+        <p class="small text-muted">New playlists are saved as drafts.</p>
+        <div class="d-flex justify-content-end flex-wrap gap-2 mt-4">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-dark">@icon('plus')Create playlist</button>
+        </div>
+    </form>
 @endslot
 @endcomponent

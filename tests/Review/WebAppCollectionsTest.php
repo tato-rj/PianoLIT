@@ -173,6 +173,9 @@ class WebAppCollectionsTest extends ReviewTestCase
         $journeyBefore = $this->getJson(route('api.playlists.index', ['group' => 'journey']))->assertOk()->json();
         $piecesUrl = route('api.playlists.show', $playlist);
         $piecesBefore = $this->getJson($piecesUrl)->assertOk()->json();
+        $this->actingAs(create(Admin::class), 'admin');
+        $this->get(route('admin.playlists.index'))->assertOk()->assertDontSee('Basic 1');
+        $this->get(route('admin.playlists.order'))->assertOk()->assertDontSee('Basic 1');
         Cache::forget('app.playlists.order');
         DB::enableQueryLog();
         DB::flushQueryLog();
