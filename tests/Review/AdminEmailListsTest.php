@@ -48,20 +48,26 @@ class AdminEmailListsTest extends ReviewTestCase
         $xpath = $this->xpath($page);
         $this->assertCount(1, $xpath->query('//section[contains(@class,"admin-table")]//table[@id="email-lists"]/tbody/tr'));
         $this->assertCount(0, $xpath->query('//section[contains(@class,"admin-table")]//h2'));
+        $this->assertSame(['List', 'Subscribers', 'Last sent', 'Actions'], array_map(function ($heading) { return trim($heading->textContent); }, iterator_to_array($xpath->query('//table[@id="email-lists"]/thead/tr/th'))));
+        $this->assertCount(4, $xpath->query('//table[@id="email-lists"]/tbody/tr/td'));
+        $this->assertCount(0, $xpath->query('//table[@id="email-lists"]//small | //table[@id="email-lists"]//*[@data-url] | //table[@id="email-lists"]//a[@target="_blank"]'));
+        $this->assertCount(1, $xpath->query('//table[@id="email-lists"]/tbody/tr/td[last()]/div/a[normalize-space(.)="Edit"]/following-sibling::button[normalize-space(.)="Send email"]'));
         foreach (['send', 'send-to'] as $action) {
             $this->assertCount(1, $xpath->query('//form[@action="'.route('admin.subscriptions.lists.'.$action, $list).'" and @method="POST"]/input[@name="_token"]'));
         }
         $this->assertCount(1, $xpath->query('//input[@type="email" and @value="admin@example.test" and @autocomplete="email"]'));
         $this->assertCount(1, $xpath->query('//a[@href="'.route('admin.subscriptions.lists.preview', $list).'" and @target="_blank" and @rel="noopener noreferrer"]'));
         $this->assertCount(1, $xpath->query('//*[@id="list-send-'.$list->id.'" and not(ancestor::table)]'));
+        $this->assertCount(1, $xpath->query('//*[@id="list-send-'.$list->id.'"]//a[@href="'.route('admin.subscriptions.lists.preview', $list).'"]'));
         Mail::assertNothingSent();
     }
 
     public function test_missing_piece_and_empty_list_states_render_without_broken_actions()
     {
         $this->admin(); $list = $this->list(); Queue::fake();
-        $page = $this->get(route('admin.subscriptions.lists.index'))->assertOk()->assertSee('Needs a free pick');
+        $page = $this->get(route('admin.subscriptions.lists.index'))->assertOk()->assertSee('Choose a current free pick');
         $this->assertCount(0, $this->xpath($page)->query('//button[contains(@data-bs-target,"list-send")]'));
+        $this->assertCount(1, $this->xpath($page)->query('//table[@id="email-lists"]//button[@disabled and normalize-space(.)="Send email"]'));
         $this->post(route('admin.subscriptions.lists.send', $list))->assertSessionHas('error');
         $this->post(route('admin.subscriptions.lists.send-to', $list), ['email' => 'reader@example.test'])->assertSessionHas('error');
         Queue::assertNothingPushed(); Mail::assertNothingSent();
@@ -81,6 +87,9 @@ class AdminEmailListsTest extends ReviewTestCase
         $this->assertCount(12, $this->xpath($page)->query('//table[@id="list-subscribers"]/tbody/tr'));
         $this->assertCount(12, $this->xpath($page)->query('//input[@role="switch" and @name="enabled" and @onchange="this.form.requestSubmit()"]'));
         $this->assertCount(1, $this->xpath($page)->query('//label[@for="list-description"]'));
+        $this->assertCount(1, $this->xpath($page)->query('//header//a[@href="'.route('admin.subscriptions.export', ['type' => 'txt', 'list_id' => $list->id]).'" and @target="_blank" and @rel="noopener noreferrer"]'));
+        $this->assertCount(1, $this->xpath($page)->query('//header//button[@data-url="'.route('admin.subscriptions.lists.destroy', $list).'"]'));
+        $this->assertCount(1, $this->xpath($page)->query('//*[@id="delete-modal"]//input[@name="_method" and @value="DELETE"]'));
         $first = $page->viewData('subscriptions');
         $second = $this->get($route.'?page=2')->assertOk()->viewData('subscriptions');
         $this->assertCount(0, $first->pluck('id')->intersect($second->pluck('id')));
@@ -218,7 +227,7 @@ class AdminEmailListsTest extends ReviewTestCase
         }
         $this->assertTrue($list->has($subscriber->email));
         DB::unprepared('DROP TRIGGER fail_list_delete');
-        $this->delete(route('admin.subscriptions.lists.destroy', $list))->assertRedirect();
+        $this->from(route('admin.subscriptions.lists.edit', $list))->delete(route('admin.subscriptions.lists.destroy', $list))->assertRedirect(route('admin.subscriptions.lists.index'));
         $this->assertDatabaseCount('email_lists', 0); $this->assertDatabaseCount('email_list_subscription', 0);
         $this->assertDatabaseCount('subscriptions', 1);
     }

@@ -185,7 +185,7 @@ class EmailListsController extends Controller
     {
         DB::transaction(function () use ($list) { $list->delete(); });
 
-        return back()->with('status', 'The list has been deleted');
+        return redirect()->route('admin.subscriptions.lists.index')->with('status', 'The list has been deleted');
     }
 
     public function destroyReport($list_id)

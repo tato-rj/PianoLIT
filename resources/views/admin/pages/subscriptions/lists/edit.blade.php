@@ -2,10 +2,13 @@
 
 @section('content')
 <div class="content-wrapper"><div class="container-fluid">
-    @include('admin.components.page.title', [
+    @component('admin.components.page.title', [
         'title' => $list->name, 'subtitle' => number_format($list->subscribers_count).' '.str_plural('subscriber', $list->subscribers_count).' on this list.',
         'back' => ['Email lists' => route('admin.subscriptions.lists.index')],
     ])
+        <a class="btn btn-sm btn-outline-secondary" href="{{ route('admin.subscriptions.export', ['type' => 'txt', 'list_id' => $list->id]) }}" target="_blank" rel="noopener noreferrer">@icon('file-text')Export emails</a>
+        <button type="button" class="btn btn-sm btn-outline-danger" data-url="{{ route('admin.subscriptions.lists.destroy', $list) }}" data-bs-toggle="modal" data-bs-target="#delete-modal">@icon('trash-2')Delete list</button>
+    @endcomponent
 
     <form method="POST" action="{{ route('admin.subscriptions.lists.update', $list) }}">
         @csrf
@@ -50,4 +53,5 @@
         @endforeach
     @endcomponent
 </div></div>
+@include('admin.components.modals.delete')
 @endsection

@@ -1,9 +1,10 @@
 @component('components.modal', ['id' => 'list-send-'.$list->id, 'header' => 'Send '.$list->name.' email', 'centered' => true, 'show' => ($errors->has('email') || old('email') !== null) ? true : null])
     @slot('body')
+        <a class="btn btn-outline-secondary mb-4" href="{{ route('admin.subscriptions.lists.preview', $list) }}" target="_blank" rel="noopener noreferrer">@icon('eye')Preview in the browser</a>
         <form method="POST" action="{{ route('admin.subscriptions.lists.send-to', $list) }}" disable-on-submit>
             @csrf
             @input(['bag' => 'default', 'id' => 'list-recipient-'.$list->id, 'type' => 'email', 'name' => 'email', 'label' => 'Send a preview to', 'value' => $recipient, 'limit' => 254, 'autocomplete' => 'email'])
-            <button type="submit" class="btn btn-outline-secondary">@icon('mail')Send preview</button>
+            <button type="submit" class="btn btn-outline-secondary">@icon('mail')Send preview email</button>
         </form>
         <hr class="my-4">
         <p>The current free pick will be sent to <strong>{{ number_format($list->subscribers_count) }} {{ str_plural('subscriber', $list->subscribers_count) }}</strong>.</p>
