@@ -42,7 +42,7 @@ if not shutil.which('magick'):
 (PUBLIC / 'splash').mkdir(parents=True, exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='pianolit-splash-') as directory:
     temporary = Path(directory) / 'splash.svg'
-    for variant, color in [('app', '#0055fe'), ('admin', '#ffffff')]:
+    for variant, color in [('app', '#ffffff'), ('admin', '#181e22')]:
         icon = (BRAND / f'{variant}-icon.svg').read_text()
         source = BRAND / f'{variant}-splash.svg'
         source.write_text(artwork(icon, color, 390, 844))

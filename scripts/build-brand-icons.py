@@ -96,7 +96,7 @@ with tempfile.TemporaryDirectory(prefix='pianolit-brand-') as directory:
         for size in (192, 512):
             path = f'{prefix}android-chrome-{size}x{size}.png'
             icons.append({'src': '/' + path + '?v=' + digest(path), 'sizes': f'{size}x{size}', 'type': 'image/png', 'purpose': 'any'})
-        manifest = {'name': name, 'short_name': name, 'description': 'Find music that inspires you.' if variant == 'app' else 'PianoLIT administration.', 'icons': icons, 'theme_color': color, 'background_color': color, 'display': 'standalone'}
+        manifest = {'name': name, 'short_name': name, 'description': 'Find music that inspires you.' if variant == 'app' else 'PianoLIT administration.', 'icons': icons, 'theme_color': color, 'background_color': '#181e22' if variant == 'admin' else '#ffffff', 'display': 'standalone'}
         manifest_name = 'site.webmanifest' if variant == 'app' else 'admin.site.webmanifest'
         (PUBLIC / manifest_name).write_text(json.dumps(manifest, indent=4) + '\n')
         tile_path = f'{prefix}mstile-150x150.png'

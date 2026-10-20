@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
   <title>PianoLIT home-screen splash</title>
-  <path fill="#0055fe" d="M0 0h390v844H0z"/>
+  <path fill="#ffffff" d="M0 0h390v844H0z"/>
   <defs><clipPath id="tile"><rect width="512" height="512" rx="102.4"/></clipPath></defs>
   <g transform="translate(123 350) scale(0.28125)">
     <g clip-path="url(#tile)">  <path fill="#0055fe" d="M0 0h512v512H0z"/>
@@ -39,6 +39,6 @@
     <path d="M421 376h36v79q0 9-9 9h-18q-9 0-9-9z"/>
   </g>
 </g>
-    <rect x=".5" y=".5" width="511" height="511" rx="102" fill="none" stroke="#0055fe" stroke-width="1"/>
+    <rect x=".5" y=".5" width="511" height="511" rx="102" fill="none" stroke="#e6e8ee" stroke-width="1"/>
   </g>
 </svg>

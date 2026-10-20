@@ -42,14 +42,16 @@ because its icon refresh is controlled by the device.
 
 ### Home-screen splash screens
 
-The public website/web app uses a blue launch background; administration uses
-white. Both center the approved icon. `components.brand-splash` supplies
+The public website/web app uses a white launch background; administration uses
+`#181e22`. Both center the approved icon. `components.brand-splash` supplies
 content-versioned iOS/iPadOS startup-image links from the shared
 `resources/data/brand-splash-screens.json` catalog: 23 screen profiles with both
 portrait and landscape files. The shared brand head also declares standalone
 capability and the appropriate installed-app name. Android uses the existing
-manifest name, icon and matching background/theme colors to generate its own
-launch screen; custom startup PNGs apply to Apple web apps.
+manifest name, icon and launch background color to generate its own launch
+screen; custom startup PNGs apply to Apple web apps. Browser theme colors stay
+independent of launch backgrounds: blue for the website/web app and white for
+administration.
 
 Run `npm run brand:splashes` to regenerate just the splash artwork, or
 `npm run brand:icons` to regenerate icons and splashes together. ImageMagick 7

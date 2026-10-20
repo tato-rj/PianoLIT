@@ -38,6 +38,7 @@ module.exports = function (root, manifest) {
         const app = JSON.parse(read(filename));
         assert.strictEqual(app.name, prefix ? 'PianoLIT Admin' : 'PianoLIT');
         assert.strictEqual(app.theme_color, prefix ? '#ffffff' : '#0055fe');
+        assert.strictEqual(app.background_color, prefix ? '#181e22' : '#ffffff');
         assert.strictEqual(app.icons.length, 2);
         for (const icon of app.icons) {
             const size = Number(icon.sizes.split('x')[0]);
