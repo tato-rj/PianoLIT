@@ -14,14 +14,19 @@ ROOT = Path(__file__).resolve().parents[1]
 BRAND = ROOT / 'resources/images/brand'
 PUBLIC = ROOT / 'public/images/brand'
 PROFILES = json.loads((ROOT / 'resources/data/brand-splash-screens.json').read_text())
+ICON_CSS_SIZE = 120
 
 
 def artwork(icon, color, width, height, scale=1):
-    # A constant 144 CSS-pixel mark stays centered and comfortably inside the
+    # A constant 120 CSS-pixel mark stays centered and comfortably inside the
     # safe area in either orientation, including smaller phones and tablets.
-    size = 144 * scale
+    size = ICON_CSS_SIZE * scale
     x = (width - size) / 2
     y = (height - size) / 2
+    # Keep the blue icon's outline one CSS pixel wide at every device scale.
+    border_width = 512 / ICON_CSS_SIZE if color == '#ffffff' else 1
+    border_inset = border_width / 2
+    border_color = '#dee2e6' if color == '#ffffff' else color
     body = icon[icon.index('  <path'):icon.rindex('</svg>')]
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
   <title>PianoLIT home-screen splash</title>
@@ -29,7 +34,7 @@ def artwork(icon, color, width, height, scale=1):
   <defs><clipPath id="tile"><rect width="512" height="512" rx="102.4"/></clipPath></defs>
   <g transform="translate({x:g} {y:g}) scale({size / 512:g})">
     <g clip-path="url(#tile)">{body}</g>
-    <rect x=".5" y=".5" width="511" height="511" rx="102" fill="none" stroke="{color if color != '#ffffff' else '#e6e8ee'}" stroke-width="1"/>
+    <rect x="{border_inset:g}" y="{border_inset:g}" width="{512 - border_width:g}" height="{512 - border_width:g}" rx="{102.4 - border_inset:g}" fill="none" stroke="{border_color}" stroke-width="{border_width:g}" stroke-opacity="1"/>
   </g>
 </svg>
 '''

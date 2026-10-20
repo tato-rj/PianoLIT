@@ -2,7 +2,7 @@
   <title>PianoLIT home-screen splash</title>
   <path fill="#181e22" d="M0 0h390v844H0z"/>
   <defs><clipPath id="tile"><rect width="512" height="512" rx="102.4"/></clipPath></defs>
-  <g transform="translate(123 350) scale(0.28125)">
+  <g transform="translate(135 362) scale(0.234375)">
     <g clip-path="url(#tile)">  <path fill="#fff" d="M0 0h512v512H0z"/>
   <!-- The open score and keyboard share the same geometry in both variants. -->
   <g fill="#303a59">
@@ -39,6 +39,6 @@
     <path d="M421 376h36v79q0 9-9 9h-18q-9 0-9-9z"/>
   </g>
 </g>
-    <rect x=".5" y=".5" width="511" height="511" rx="102" fill="none" stroke="#181e22" stroke-width="1"/>
+    <rect x="0.5" y="0.5" width="511" height="511" rx="101.9" fill="none" stroke="#181e22" stroke-width="1" stroke-opacity="1"/>
   </g>
 </svg>
