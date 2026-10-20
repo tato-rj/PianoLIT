@@ -10,8 +10,13 @@
     <td class="text-nowrap">{{ optional($item->composer)->name ?? 'Unknown composer' }}</td>
     <td class="text-nowrap">{{ ucfirst(optional($item->extendedLevel)->name ?? 'Not set') }}</td>
     <td class="text-nowrap">
-        @if($item->is_free)<span class="admin-table__badge admin-table__badge--green">Current Freepick</span>@endif
-        @if($item->highlighted_at)<time class="d-block" datetime="{{ $item->highlighted_at->toIso8601String() }}">{{ $item->highlighted_at->toFormattedDateString() }}</time>@else<span class="text-muted">Never highlighted</span>@endif
+        @if($item->is_free)
+            <span class="admin-table__badge admin-table__badge--green">Current Freepick</span>
+        @elseif($item->highlighted_at)
+            <time class="d-block" datetime="{{ $item->highlighted_at->toIso8601String() }}">{{ $item->highlighted_at->toFormattedDateString() }}</time>
+        @else
+            <span class="text-muted">Never highlighted</span>
+        @endif
     </td>
     <td>{{ number_format($item->favorites_count) }}</td>
     <td>
