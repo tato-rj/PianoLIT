@@ -228,6 +228,11 @@ creator/media URL filters remain supported and survive form submissions. Literal
 LIKE wildcards are escaped. The former Rankings column displays highlight dates
 and is now labeled Highlighted. Favorite counts retain analytics exclusions.
 Piece titles open the web app in a new tab, while Edit keeps the admin editor.
+Composer cells use `components.composer-label` for a 28px round portrait and name,
+with a neutral fallback for missing images. The directory loads `cover_path` in
+its existing composer batch. Level labels retain the full early/late wording and
+use the existing filled-circle icon with the base level color; missing levels
+show Not set without a dot.
 
 Piece titles use the shared `clamp-2` utility with the full title available on
 hover. The Tags column and its visible sort choices were removed on October 19;
