@@ -25,7 +25,7 @@ class AdminDesignSystemTest extends ReviewTestCase
         $this->assertSame(0, $xpath->query('//*[@id="ds-brand"]//*[@data-ds-sample or @data-ds-specs]')->length);
         $this->assertSame(0, $xpath->query('//*[@id="ds-brand"]//article//a[@download]')->length);
         $this->assertSame(2, $xpath->query('//*[@id="ds-brand"]//article//button[@type="button" and @data-bs-toggle="modal"]')->length);
-        foreach (['user' => 13, 'admin' => 10] as $variant => $downloadCount) {
+        foreach (['user' => 16, 'admin' => 13] as $variant => $downloadCount) {
             $id = 'ds-brand-'.$variant.'-downloads';
             $this->assertSame(1, $xpath->query('//*[@id="'.$id.'" and @aria-labelledby="'.$id.'-title" and @aria-describedby="'.$id.'-description"]')->length);
             $this->assertSame($downloadCount, $xpath->query('//*[@id="'.$id.'"]//a[@download]')->length);
@@ -75,6 +75,23 @@ class AdminDesignSystemTest extends ReviewTestCase
         foreach ([false, true] as $admin) {
             $html = view('components.brand-theme', compact('admin'))->render();
             $prefix = $admin ? 'admin-' : '';
+            $this->assertStringContainsString('name="apple-mobile-web-app-capable" content="yes"', $html);
+            $this->assertStringContainsString('name="mobile-web-app-capable" content="yes"', $html);
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($html);
+            $xpath = new \DOMXPath($dom);
+            $profiles = json_decode(file_get_contents(resource_path('data/brand-splash-screens.json')), true);
+            $this->assertSame(count($profiles) * 2, $xpath->query('//link[@rel="apple-touch-startup-image"]')->length);
+            foreach ($profiles as $profile) {
+                foreach (['portrait', 'landscape'] as $orientation) {
+                    $w = $profile['width'] * $profile['scale'];
+                    $h = $profile['height'] * $profile['scale'];
+                    $size = $orientation === 'portrait' ? $w.'x'.$h : $h.'x'.$w;
+                    $path = 'images/brand/splash/'.($admin ? 'admin' : 'app').'-'.$size.'.png';
+                    $media = 'screen and (device-width: '.$profile['width'].'px) and (device-height: '.$profile['height'].'px) and (-webkit-device-pixel-ratio: '.$profile['scale'].') and (orientation: '.$orientation.')';
+                    $this->assertSame(1, $xpath->query('//link[@rel="apple-touch-startup-image" and @href="'.asset(mix($path)).'" and @media="'.$media.'"]')->length);
+                }
+            }
             foreach (['favicon.ico', 'favicon-32x32.png', 'favicon-16x16.png', 'apple-touch-icon.png', 'safari-pinned-tab.svg'] as $file) {
                 $this->assertStringContainsString(asset(mix($prefix.$file)), $html);
                 $this->assertStringContainsString('?id=', (string) mix($prefix.$file));

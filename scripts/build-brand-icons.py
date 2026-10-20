@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import xml.etree.ElementTree as ET
 
@@ -111,3 +112,4 @@ with tempfile.TemporaryDirectory(prefix='pianolit-brand-') as directory:
 </browserconfig>
 ''')
 print('Built both brand variants, browser/install assets and the opaque 1024 × 1024 iOS export.')
+subprocess.run([sys.executable, str(ROOT / 'scripts/build-brand-splashes.py')], check=True)

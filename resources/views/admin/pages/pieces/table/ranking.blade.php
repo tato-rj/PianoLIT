@@ -1,6 +1,7 @@
 @if($item->highlighted_at)
 <span>@icon('calendar-check', ['color' => 'green']){{$item->highlighted_at->toFormattedDateString()}}</span>
 @endif
+@include('admin.pages.pieces.table.scheduled-date')
 {{-- <div class="d-flex">
 @if($rcm = $item->getRanking('rcm'))
 <div class="me-1 badge rounded-pill alert-blue"><strong>RCM {{$rcm}}</strong></div>

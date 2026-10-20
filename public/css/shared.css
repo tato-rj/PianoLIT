@@ -2362,6 +2362,63 @@ input[type=range] {
     transition: none;
   }
 }
+.pianolit-date-picker .ui-datepicker {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-input);
+  color: var(--field-text);
+  background: var(--field-background);
+}
+.pianolit-date-picker .ui-datepicker-header {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 36px;
+  margin-bottom: 8px;
+}
+.pianolit-date-picker .ui-datepicker-title {
+  margin: 0 38px;
+  text-align: center;
+  font-weight: 600;
+}
+.pianolit-date-picker .ui-datepicker-prev,
+.pianolit-date-picker .ui-datepicker-next {
+  position: absolute;
+  top: 0;
+  min-width: 32px;
+}
+.pianolit-date-picker .ui-datepicker-prev {
+  left: 0;
+}
+.pianolit-date-picker .ui-datepicker-next {
+  right: 0;
+}
+.pianolit-date-picker table {
+  width: 100%;
+  table-layout: fixed;
+}
+.pianolit-date-picker th {
+  padding: 5px 0;
+  text-align: center;
+  color: var(--field-muted);
+  font-weight: 500;
+}
+.pianolit-date-picker td {
+  padding: 2px;
+  text-align: center;
+}
+.pianolit-date-picker td .btn {
+  display: block;
+  width: 100%;
+  padding-right: 0;
+  padding-left: 0;
+}
+.pianolit-date-picker .ui-datepicker-unselectable {
+  cursor: not-allowed;
+}
+
 .dropdown-menu {
   --bs-dropdown-bg: var(--color-surface);
   --bs-dropdown-border-width: 1px;

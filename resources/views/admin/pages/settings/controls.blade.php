@@ -40,6 +40,9 @@
     @component('admin.pages.settings.sample', ['label' => 'Select', 'usage' => '@select · components.form.select'])
       @select(['bag' => 'default', 'id' => 'ds-select', 'name' => 'ds_level', 'label' => 'Level', 'choices' => ['' => 'All levels', 'beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'], 'value' => '', 'required' => false, 'designSystemPreview' => true])
     @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Calendar with unavailable dates', 'usage' => 'components.form.date-picker · shared field and button styles'])
+      @include('components.form.date-picker', ['bag' => 'default', 'id' => 'ds-calendar', 'name' => 'ds_calendar', 'label' => 'Date', 'value' => '', 'minDate' => now()->toDateString(), 'blockedDates' => [now()->addDay()->toDateString()], 'required' => false, 'designSystemPreview' => true])
+    @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Filter select', 'usage' => 'admin.components.filters.select · @select'])
       @include('admin.components.filters.select', ['label' => 'Period', 'name' => 'ds-period', 'options' => \App\Support\AdminDateRanges::LABELS, 'value' => '7', 'designSystemPreview' => true])
     @endcomponent

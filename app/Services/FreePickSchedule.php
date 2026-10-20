@@ -37,7 +37,7 @@ class FreePickSchedule
         request()->attributes->remove('pianolit.freepick');
     }
 
-    public function schedule(Piece $piece, ?Carbon $at = null)
+    public function schedule(Piece $piece, ?Carbon $at = null, bool $refreshDiscover = false, bool $sendEmail = false)
     {
         if (!$piece->hasImage()) {
             throw ValidationException::withMessages(['mode' => 'Save a cover image before scheduling this piece as the Freepick.']);
@@ -47,24 +47,55 @@ class FreePickSchedule
         if ($future && $at->lessThanOrEqualTo(now())) {
             throw ValidationException::withMessages(['scheduled_at' => 'Choose a date and time in the future.']);
         }
+        $day = $at->copy()->setTimezone(config('app.timezone'))->startOfDay();
+        $reservation = $day->copy()->utc();
+        $nextDay = $day->copy()->addDay()->utc();
         try {
-            return DB::transaction(function () use ($piece, $at, $future) {
-                // Unique reservations prevent two administrators booking the same instant.
-                // Immediate selections use their deterministic date/ID order instead.
+            $pick = DB::transaction(function () use ($piece, $at, $future, $reservation, $nextDay, $refreshDiscover, $sendEmail) {
+                // Include existing reservations made before reservations became day-based.
+                if ($future && FreePick::whereNull('retired_at')->whereNotNull('reserved_at')
+                    ->where('scheduled_at', '>=', $reservation)->where('scheduled_at', '<', $nextDay)->exists()) {
+                    throw ValidationException::withMessages(['scheduled_at' => 'Another Freepick is already scheduled for this date. Choose a different date.']);
+                }
+                // The unique UTC start-of-local-day reservation also arbitrates concurrent
+                // bookings at different hours, without changing older scheduled instants.
                 $pick = FreePick::create([
                     'piece_id' => $piece->id, 'scheduled_at' => $at,
-                    'reserved_at' => $future ? $at : null,
+                    'reserved_at' => $future ? $reservation : null,
+                    'refresh_discover' => $refreshDiscover, 'send_email' => $refreshDiscover && $sendEmail,
                 ]);
                 if (!$future) $this->syncHistory();
                 return $pick;
             });
         } catch (QueryException $exception) {
             $this->forgetCurrent();
-            if ($future && FreePick::where('reserved_at', $at)->exists()) {
-                throw ValidationException::withMessages(['scheduled_at' => 'Another Freepick is already scheduled for this date and time. Choose a different time.']);
+            if ($future && FreePick::where('reserved_at', $reservation)->exists()) {
+                throw ValidationException::withMessages(['scheduled_at' => 'Another Freepick is already scheduled for this date. Choose a different date.']);
             }
             throw $exception;
         }
+        if (!$future && $refreshDiscover) {
+            try {
+                app(FreePickRelease::class)->release($pick->id);
+            } catch (\Throwable $exception) {
+                // Selection has committed. The scheduler retries its pending actions.
+                report($exception);
+            }
+        }
+        return $pick;
+    }
+
+    public function options()
+    {
+        $now = now(config('app.timezone'));
+        return [
+            'now' => $now->toIso8601String(), 'timezone' => config('app.timezone'),
+            'blockedDates' => FreePick::whereNull('retired_at')->whereNotNull('reserved_at')
+                ->where('scheduled_at', '>=', $now->copy()->startOfDay()->utc())
+                ->orderBy('scheduled_at')->pluck('scheduled_at')
+                ->map(function ($at) { return $at->copy()->setTimezone(config('app.timezone'))->toDateString(); })
+                ->unique()->values()->all(),
+        ];
     }
 
     public function syncHistory()

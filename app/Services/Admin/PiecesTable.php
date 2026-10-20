@@ -111,6 +111,8 @@ class PiecesTable
         }])
             ->with(['tags', 'composer' => function ($query) { $query->select('id', 'name'); }])
             ->filters(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path']);
+        $query->selectSub(\App\FreePick::select('scheduled_at')->whereColumn('piece_id', 'pieces.id')
+            ->whereNull('retired_at')->where('scheduled_at', '>', now('UTC'))->orderBy('scheduled_at')->limit(1), 'next_freepick_at');
         if ($request->filled('is_free')) $query->free($request->boolean('is_free'));
 
         $table = (new EloquentDataTable($query))

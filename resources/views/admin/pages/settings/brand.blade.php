@@ -1,6 +1,8 @@
 @php
   $brandVariants = [];
+  $splashProfileCount = count(json_decode(file_get_contents(resource_path('data/brand-splash-screens.json')), true));
   foreach ([false => 'Website & web app', true => 'Administration'] as $admin => $label) {
+    $splashVariant = $admin ? 'admin' : 'app';
     $variantPath = 'images/brand/'.($admin ? 'admin' : 'app').'-icon';
     $prefix = $admin ? 'admin-' : '';
     $artwork = [
@@ -14,6 +16,11 @@
     }
     $brandVariants[] = ['admin' => (bool) $admin, 'label' => $label, 'modalId' => 'ds-brand-'.($admin ? 'admin' : 'user').'-downloads', 'groups' => [
       'Artwork' => $artwork,
+      'Splash screens' => [
+        ['images/brand/'.$splashVariant.'-splash.svg', 'Splash artwork', 'SVG', '390 × 844 viewBox', 'Scalable portrait artwork · centered icon · brand background'],
+        ['images/brand/splash/'.$splashVariant.'-1170x2532.png', 'Phone splash preview', 'PNG', '1170 × 2532 px', 'RGB · no transparency · portrait'],
+        ['images/brand/'.$splashVariant.'-splash-screens.zip', 'All iPhone & iPad splash sizes', 'ZIP', ($splashProfileCount * 2).' PNG images', $splashProfileCount.' screen profiles · portrait and landscape · full dimensions in the included README'],
+      ],
       'Browser tabs' => [
         [$prefix.'favicon-16x16.png', 'Small favicon', 'PNG', '16 × 16 px', 'Rounded corners · transparency'],
         [$prefix.'favicon-32x32.png', 'Large favicon', 'PNG', '32 × 32 px', 'Rounded corners · transparency'],

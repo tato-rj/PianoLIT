@@ -23,6 +23,7 @@ class PiecesController extends Controller
         $errors = session('errors');
         $data['failedFreePick'] = $errors && $errors->getBag('freepick')->any()
             ? Piece::find((int) old('freepick_piece_id')) : null;
+        $data['freePickScheduleOptions'] = app(\App\Services\FreePickSchedule::class)->options();
         return view('admin.pages.pieces.index', $data);
     }
 
@@ -322,11 +323,18 @@ class PiecesController extends Controller
         $request->merge(['freepick_piece_id' => $piece->id]);
         $data = $request->validateWithBag('freepick', [
             'mode' => 'required|in:now,later',
-            'scheduled_at' => 'exclude_unless:mode,later|required|date_format:Y-m-d\TH:i|after:now',
+            'send_email' => 'sometimes|boolean',
+            'scheduled_at' => ['exclude_unless:mode,later', 'required', 'date_format:Y-m-d\TH:i', 'after:now',
+                function ($attribute, $value, $fail) {
+                    if (!is_string($value) || !preg_match('/T(?:[01][0-9]|2[0-3]):00$/D', $value)) {
+                        $fail('Choose a whole hour, such as 8am or 9am.');
+                    }
+                }],
         ]);
         try {
             app(\App\Services\FreePickSchedule::class)->schedule($piece,
-                $data['mode'] === 'later' ? \Carbon\Carbon::createFromFormat('!Y-m-d\TH:i', $data['scheduled_at'], config('app.timezone')) : null);
+                $data['mode'] === 'later' ? \Carbon\Carbon::createFromFormat('!Y-m-d\TH:i', $data['scheduled_at'], config('app.timezone')) : null,
+                true, $request->boolean('send_email'));
         } catch (\Illuminate\Validation\ValidationException $exception) {
             throw $exception->errorBag('freepick');
         }

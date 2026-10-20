@@ -40,6 +40,35 @@ Regenerate and deploy the images, metadata, views and Mix manifest together.
 An existing installed home-screen shortcut may require removal and re-adding
 because its icon refresh is controlled by the device.
 
+### Home-screen splash screens
+
+The public website/web app uses a blue launch background; administration uses
+white. Both center the approved icon. `components.brand-splash` supplies
+content-versioned iOS/iPadOS startup-image links from the shared
+`resources/data/brand-splash-screens.json` catalog: 23 screen profiles with both
+portrait and landscape files. The shared brand head also declares standalone
+capability and the appropriate installed-app name. Android uses the existing
+manifest name, icon and matching background/theme colors to generate its own
+launch screen; custom startup PNGs apply to Apple web apps.
+
+Run `npm run brand:splashes` to regenerate just the splash artwork, or
+`npm run brand:icons` to regenerate icons and splashes together. ImageMagick 7
+is required only for manual generation. Outputs live in
+`resources/images/brand/splash/` and matching public copies. Each main icon's
+Download modal includes a scalable splash SVG, a phone PNG preview and a ZIP
+with all 46 opaque RGB PNGs plus a README of exact sizes and media profiles.
+There are still only two main cards; no extra size boxes or CSS editors.
+
+Deploy the catalog, shared head/partial, generated assets and Mix manifest
+together. Existing installed shortcuts can retain cached launch artwork and
+may need to be removed and re-added. Unlisted screen/zoom profiles use the
+browser's normal launch fallback. These assets do not change the native iOS
+application or its APIs. Physical-device cold launch remains a release check.
+
+Platform references: [Apple startup-image and standalone configuration](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html),
+[Android manifest launch screens](https://web.dev/learn/pwa/web-app-manifest),
+[iOS/iPadOS startup-image media queries](https://web.dev/learn/pwa/enhancements).
+
 ## Change standard rounded corners
 
 ```scss
@@ -323,3 +352,15 @@ By user preference, PianoLIT has no extra outline or focus halo in any state, ac
 ### Access status select
 
 `components.status-select` reuses the admin table's green/warning/red badges as a native select. Its reusable styles are in `components/_status-select.scss`; the shared script in `views/admin-access-limits.js` updates the selected tone and optional helper note. The Design System table includes the same control. Limited options are supplied by the policy's feature definition. Locked account-owned guest cells show Account required inside a muted/light grey disabled pill, with no repeated note beneath it. Its hidden submitted value remains Blocked. The shared component accepts `selectedLabel` and `tone` for this display without adding another access state.
+## Calendar fields
+
+`components.form.date-picker` is the reusable inline calendar for forms that must
+disable individual dates. It wraps the shared `@input` field and the already
+installed jQuery UI calendar. Pass `name`, `id`, `label`, `bag`, `value`,
+`minDate` (`YYYY-MM-DD`) and `blockedDates` (date strings). Its input is read-only;
+selection happens through available calendar days. Navigation and day controls
+use the shared button classes. Styles live in `components/_date-picker.scss`,
+emitted by the shared stylesheet, and the component includes its versioned
+`js/components/date-picker.js` once. The Design System's calendar specimen uses
+this same component. Server-side validation remains authoritative when another
+administrator changes availability after a page was loaded.

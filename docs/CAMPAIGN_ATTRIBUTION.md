@@ -25,6 +25,12 @@ Only the four normalized labels, a random visit UUID, timestamps, account bindin
 
 The shared “Campaign link measurement” control offers allow, decline and withdrawal. A GET only renders an encrypted acknowledgement; no campaign record is written until JavaScript posts it after explicit opt-in or previously granted measurement. The acknowledgement expires in ten minutes and is bound to the arrival host and browser session. Forged, expired and other-host/session tokens are rejected. Retries of the same acknowledgement are idempotent. Both website and web app endpoints use the current host, session CSRF protection and throttling; posted account IDs are ignored.
 
+Ordinary web-app search pages omit the control and its script from the initial
+HTML so the link cannot appear while results load. A tagged search still offers
+the initial opt-in choice when none is saved. Tagged searches with a saved choice
+keep the controls hidden while retaining the script's existing acknowledgement
+behavior. Other pages retain the shared control for changing or withdrawing a choice.
+
 One first eligible touch is kept for a 30-day cookie window. Refreshes, direct traffic and subsequent campaigns do not replace it. Host-only encrypted HttpOnly SameSite=Lax cookies survive signup/login session regeneration. The authenticated web guard claims the visit; another account cannot claim it. Logout clears the cookies. The cookies remain on the arrival host: moving from the public website to `my.*` does not carry attribution. For membership campaigns, link directly to `my.pianolit.com` to retain the complete arrival-to-membership flow. Cross-device attribution is not provided.
 
 Withdrawal removes the current visit and its subscription attribution links, plus earlier links owned by the authenticated account. It does not change accounts, access or accounting payments. Allowing measurement later on an untagged page does not invent an arrival: the visitor must reopen the tagged link. Attribution expires after 30 days for new checkout linkage; successful payments of an already attributed subscription remain linked until retention removes the campaign cohort.

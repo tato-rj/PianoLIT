@@ -14,6 +14,18 @@ module.exports = function (root, manifest) {
         if (opaque) assert.strictEqual(bytes[25], 2, file + ': install artwork must be RGB with no alpha channel');
     }
     png('images/brand/app-icon-ios-1024.png', 1024, 1024, true);
+    const splashProfiles = require('../../resources/data/brand-splash-screens.json');
+    const splashKeys = new Set();
+    for (const {width, height, scale} of splashProfiles) {
+        const key = `${width}:${height}:${scale}`;
+        assert(!splashKeys.has(key), 'Ambiguous splash-screen media profile: ' + key);
+        splashKeys.add(key);
+        for (const variant of ['app', 'admin']) {
+            const w = width * scale, h = height * scale;
+            png(`images/brand/splash/${variant}-${w}x${h}.png`, w, h, true);
+            png(`images/brand/splash/${variant}-${h}x${w}.png`, h, w, true);
+        }
+    }
     for (const prefix of ['', 'admin-']) {
         for (const size of [16, 32]) png(prefix + `favicon-${size}x${size}.png`, size, size);
         png(prefix + 'apple-touch-icon.png', 180, 180, true);
@@ -43,5 +55,5 @@ module.exports = function (root, manifest) {
         const key = file.replace(/^public/, '');
         assert(manifest[key] && manifest[key].includes('?id='), 'Unversioned brand asset: ' + key);
     }
-    console.log('Passed: iOS/install icon sizes and opacity, ICO fallbacks, current manifest/Windows artwork URLs and versioned brand assets.');
+    console.log('Passed: iOS/install icon and splash sizes/opacity, ICO fallbacks, current manifest/Windows artwork URLs and versioned brand assets.');
 };

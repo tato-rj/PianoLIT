@@ -22,9 +22,7 @@
         @elseif($item->highlighted_at)
             <time class="d-block" datetime="{{ $item->highlighted_at->toIso8601String() }}">@icon('calendar-check', ['color' => 'green']){{ $item->highlighted_at->toFormattedDateString() }}</time>
         @endif
-        @if($item->next_freepick_at)
-            <small class="d-block text-muted mt-1">Scheduled {{ \Carbon\Carbon::parse($item->next_freepick_at, 'UTC')->setTimezone(config('app.timezone'))->format('M j, Y · g:i a') }}</small>
-        @endif
+        @include('admin.pages.pieces.table.scheduled-date')
     </td>
     <td>{{ number_format($item->favorites_count) }}</td>
     <td>

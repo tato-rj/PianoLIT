@@ -8,6 +8,12 @@ class FreePick extends Model
 {
     protected $guarded = [];
     protected $dates = ['scheduled_at', 'activated_at', 'retired_at'];
+    protected $casts = ['refresh_discover' => 'boolean', 'send_email' => 'boolean'];
+
+    public function campaignId()
+    {
+        return 'free-pick.'.$this->scheduled_at->timestamp.'.'.$this->id;
+    }
 
     protected static function booted()
     {

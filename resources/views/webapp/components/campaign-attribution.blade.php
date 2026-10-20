@@ -2,7 +2,10 @@
 @if($campaignAttribution->available(request()))
     @php($campaignToken = $campaignAttribution->landingToken(request()))
     @php($campaignConsent = $campaignAttribution->consent(request()))
+    @php($campaignSearchPage = request()->routeIs('webapp.search.*'))
+    @if(!$campaignSearchPage || $campaignToken)
     <aside class="container my-3" data-campaign-measurement
+        @if($campaignSearchPage && $campaignConsent) hidden @endif
         data-url="{{ route('attribution.consent', [], false) }}" data-csrf="{{ csrf_token() }}"
         data-token="{{ $campaignToken }}" data-consent="{{ $campaignConsent }}">
         <button type="button" class="btn btn-link btn-sm" data-campaign-settings aria-expanded="{{ $campaignToken && !$campaignConsent ? 'true' : 'false' }}" aria-controls="campaign-measurement-choice">Campaign link measurement</button>
@@ -15,4 +18,5 @@
         <p class="small mb-0" role="status" aria-live="polite" data-campaign-status></p>
     </aside>
     <script src="{{ mix('js/views/campaign-attribution.js') }}" defer></script>
+    @endif
 @endif

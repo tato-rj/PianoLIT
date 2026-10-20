@@ -14,6 +14,7 @@
 		style="{{$styles ?? null}}" 
 		{{$required ?? 'required'}} 
 		@if($disabled ?? false) disabled @endif
+		@if($readonly ?? false) readonly @endif
 		type="{{$type ?? 'text'}}" 
 		@if(! empty($type) && $type == 'number')
 		min="{{$min ?? 0}}"

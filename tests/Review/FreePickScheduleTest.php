@@ -39,6 +39,7 @@ class FreePickScheduleTest extends ReviewTestCase
         parent::setUp();
         $this->travelTo(carbon('2026-10-20 09:00:00'));
         Redis::shouldReceive('get')->andReturn(null);
+        Redis::shouldReceive('set')->andReturn(true);
         Model::withoutEvents(function () {
             $this->first = create(Piece::class, ['cover_path' => 'covers/first.jpg', 'highlighted_at' => now()->subWeek()]);
             $this->second = create(Piece::class, ['cover_path' => 'covers/second.jpg', 'highlighted_at' => null]);
@@ -57,25 +58,25 @@ class FreePickScheduleTest extends ReviewTestCase
         $this->assertSame(2, Piece::free(false)->count());
         $this->post(route('admin.pieces.schedule', $this->first), ['mode' => 'now'])->assertRedirect(route('admin.pieces.index'));
         $firstKey = Api::freePickCacheKey('app.discover');
-        $this->post(route('admin.pieces.schedule', $this->second), ['mode' => 'later', 'scheduled_at' => '2026-10-21T10:30'])->assertSessionHasNoErrors();
+        $this->post(route('admin.pieces.schedule', $this->second), ['mode' => 'later', 'scheduled_at' => '2026-10-21T10:00'])->assertSessionHasNoErrors();
         $this->assertTrue($this->first->fresh()->is_free);
         $this->assertFalse($this->second->fresh()->is_free);
         $this->assertNull($this->second->fresh()->highlighted_at);
         $this->assertSame([$this->first->id], Piece::free()->pluck('id')->all());
         $this->assertSame([$this->second->id], Piece::free(false)->pluck('id')->all());
-        $this->travelTo(carbon('2026-10-21 10:29:59'));
+        $this->travelTo(carbon('2026-10-21 09:59:59'));
         $this->assertTrue($this->first->is_free);
-        $this->travelTo(carbon('2026-10-21 10:30:00'));
+        $this->travelTo(carbon('2026-10-21 10:00:00'));
         $this->assertFalse($this->first->is_free);
         $this->assertTrue($this->second->is_free);
-        $this->assertSame('2026-10-21 10:30:00', $this->second->fresh()->highlighted_at->toDateTimeString());
+        $this->assertSame('2026-10-21 10:00:00', $this->second->fresh()->highlighted_at->toDateTimeString());
         $this->assertNull(DB::table('pieces')->where('id', $this->second->id)->value('highlighted_at'), 'The current JSON timestamp does not need a history write.');
         $this->assertSame([$this->second->id], Piece::free()->pluck('id')->all());
         $this->assertNotSame($firstKey, Api::freePickCacheKey('app.discover'));
         $this->assertNotSame($firstKey, Api::freePickCacheKey('app.discover'.Api::WEB_DISCOVER_CACHE_SUFFIX));
         $this->assertSame(1, app(FreePickSchedule::class)->syncHistory());
         $this->assertSame(0, app(FreePickSchedule::class)->syncHistory());
-        $this->assertSame('2026-10-21 10:30:00', $this->second->fresh()->highlighted_at->toDateTimeString());
+        $this->assertSame('2026-10-21 10:00:00', $this->second->fresh()->highlighted_at->toDateTimeString());
         Mail::assertNothingSent();
         Mail::assertNothingQueued();
     }
@@ -83,7 +84,7 @@ class FreePickScheduleTest extends ReviewTestCase
     public function test_scheduling_validates_cover_time_shape_and_conflicting_reservations_without_mutation()
     {
         $this->withExceptionHandling();
-        foreach ([[], ['mode' => ['later']], ['mode' => 'bad'], ['mode' => 'later'], ['mode' => 'later', 'scheduled_at' => '2026-10-19T09:00'], ['mode' => 'later', 'scheduled_at' => ['bad']]] as $data) {
+        foreach ([[], ['mode' => ['later']], ['mode' => 'bad'], ['mode' => 'later'], ['mode' => 'later', 'scheduled_at' => '2026-10-19T09:00'], ['mode' => 'later', 'scheduled_at' => '2026-10-20T08:00'], ['mode' => 'later', 'scheduled_at' => '2026-10-20T09:00'], ['mode' => 'later', 'scheduled_at' => '2026-10-22T09:30'], ['mode' => 'later', 'scheduled_at' => ['bad']]] as $data) {
             $this->postJson(route('admin.pieces.schedule', $this->first), $data)->assertUnprocessable();
         }
         $this->assertSame(0, FreePick::count());
@@ -96,7 +97,61 @@ class FreePickScheduleTest extends ReviewTestCase
         $this->assertSame(1, FreePick::count());
         // The database also prevents a conflicting booking, independently of validation.
         $this->expectException(\Illuminate\Database\QueryException::class);
-        FreePick::create(['piece_id' => $this->first->id, 'scheduled_at' => '2026-10-22 13:00:00', 'reserved_at' => '2026-10-22 13:00:00']);
+        FreePick::create(['piece_id' => $this->first->id, 'scheduled_at' => '2026-10-22 18:00:00', 'reserved_at' => '2026-10-22 04:00:00']);
+    }
+
+    public function test_a_reserved_new_york_date_blocks_every_hour_and_older_reservation_formats()
+    {
+        $this->withExceptionHandling();
+        // An existing minute-based reservation is retained, and blocks its full local date.
+        FreePick::create(['piece_id' => $this->first->id, 'scheduled_at' => '2026-10-23 03:30:00', 'reserved_at' => '2026-10-23 03:30:00']);
+        $this->postJson(route('admin.pieces.schedule', $this->second), ['mode' => 'later', 'scheduled_at' => '2026-10-22T08:00'])
+            ->assertUnprocessable()->assertJsonValidationErrors('scheduled_at');
+        $this->assertSame(['2026-10-22'], app(FreePickSchedule::class)->options()['blockedDates']);
+        $this->post(route('admin.pieces.schedule', $this->second), ['mode' => 'later', 'scheduled_at' => '2026-10-23T08:00'])->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('free_picks', ['piece_id' => $this->second->id, 'scheduled_at' => '2026-10-23 12:00:00', 'reserved_at' => '2026-10-23 04:00:00']);
+        $this->postJson(route('admin.pieces.schedule', $this->first), ['mode' => 'later', 'scheduled_at' => '2026-10-23T16:00'])
+            ->assertUnprocessable()->assertJsonValidationErrors('scheduled_at');
+        $this->assertSame(2, FreePick::count());
+    }
+
+    public function test_picker_defaults_to_eight_and_displays_scheduled_dates_with_the_shared_icon()
+    {
+        app(FreePickSchedule::class)->schedule($this->second, carbon('2026-10-23 09:00:00'));
+        $page = $this->get(route('admin.pieces.index'))->assertOk();
+        if ($preview = getenv('FREEPICK_SCHEDULE_PREVIEW')) file_put_contents($preview, $page->getContent());
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($page->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertSame(1, $xpath->query('//select[@name="scheduled_hour"]/option[@selected and @value="08:00"]')->length);
+        $this->assertSame(24, $xpath->query('//select[@name="scheduled_hour"]/option')->length);
+        $this->assertSame(0, $xpath->query('//input[@type="datetime-local"]')->length);
+        $this->assertSame(1, $xpath->query('//input[@id="freepick-send-email" and @checked and @value="1"]')->length);
+        $calendar = $xpath->query('//*[@data-date-picker]')->item(0);
+        $this->assertSame(['2026-10-23'], json_decode($calendar->getAttribute('data-blocked-dates'), true));
+        $this->assertSame('2026-10-20', $calendar->getAttribute('data-min-date'));
+        $time = $xpath->query('//time[.//*[@data-lucide-name="calendar-clock"]]')->item(0);
+        $this->assertNotNull($time);
+        $this->assertSame('Oct 23, 2026', trim($xpath->query('./span/span', $time)->item(0)->textContent));
+        $this->assertSame('9am', trim($xpath->query('./span/small', $time)->item(0)->textContent));
+        $this->assertStringNotContainsString('text-warning', $time->getAttribute('class'));
+        $this->assertSame(1, $xpath->query('.//*[@data-lucide-name="calendar-clock"]', $time)->length);
+        $this->assertSame(1, $xpath->query('.//i[contains(@class,"text-warning") and .//*[@data-lucide-name="calendar-clock"]]', $time)->length);
+        $this->assertSame(0, $xpath->query('.//span[contains(@class,"text-warning")]|.//small[contains(@class,"text-warning")]', $time)->length);
+    }
+
+    public function test_day_reservations_cover_the_full_daylight_saving_date_and_leave_the_next_date_available()
+    {
+        app(FreePickSchedule::class)->schedule($this->first, carbon('2026-11-01 00:00:00'));
+        try {
+            app(FreePickSchedule::class)->schedule($this->second, carbon('2026-11-01 23:00:00'));
+            $this->fail('The last hour of the same 25-hour local date must be blocked.');
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            $this->assertArrayHasKey('scheduled_at', $exception->errors());
+        }
+        app(FreePickSchedule::class)->schedule($this->second, carbon('2026-11-02 00:00:00'));
+        $this->assertSame(['2026-11-01 04:00:00', '2026-11-02 05:00:00'], DB::table('free_picks')->orderBy('id')->pluck('reserved_at')->all());
+        $this->assertSame(['2026-11-01', '2026-11-02'], app(FreePickSchedule::class)->options()['blockedDates']);
     }
 
     public function test_failed_history_update_rolls_back_the_immediate_selection()
@@ -130,12 +185,15 @@ class FreePickScheduleTest extends ReviewTestCase
     public function test_migration_preserves_legacy_ios_piece_json_and_explicit_current_selection()
     {
         app(FreePickSchedule::class)->schedule($this->first);
+        $actions = new \AddFreePickReleaseActions;
+        $actions->down();
         $migration = new \CreateFreePicksTable;
         $migration->down();
         // A newer historical date must not replace the old explicitly selected pick.
         DB::table('pieces')->where('id', $this->second->id)->update(['highlighted_at' => now()->addDay()]);
         $before = LegacyFreePickPiece::with(['tags', 'favorites', 'tutorials'])->find($this->first->id)->toArray();
         $migration->up();
+        $actions->up();
         app(FreePickSchedule::class)->forgetCurrent();
         $after = Piece::with(['tags', 'favorites', 'tutorials'])->find($this->first->id)->toArray();
         $this->assertEquals($before, $after, 'All existing mobile piece keys, values, types, and relationships are retained.');
@@ -145,9 +203,11 @@ class FreePickScheduleTest extends ReviewTestCase
         foreach (['free_picks', 'scheduled_at', 'reserved_at', 'activated_at', 'retired_at'] as $key) $this->assertArrayNotHasKey($key, $after);
         $this->assertSame(2, FreePick::count(), 'Migration retains the existing selections without inventing a duplicate cutover selection.');
         $this->assertSame([$this->first->id], Piece::free()->pluck('id')->all());
+        $actions->down();
         $migration->down();
         $this->assertTrue((bool) DB::table('pieces')->where('id', $this->first->id)->value('is_free'));
         $migration->up();
+        $actions->up();
     }
 
     public function test_existing_ios_freepick_row_and_history_pagination_keep_the_same_contract()

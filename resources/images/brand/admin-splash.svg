@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <title>PianoLIT home-screen splash</title>
+  <path fill="#ffffff" d="M0 0h390v844H0z"/>
+  <defs><clipPath id="tile"><rect width="512" height="512" rx="102.4"/></clipPath></defs>
+  <g transform="translate(123 350) scale(0.28125)">
+    <g clip-path="url(#tile)">  <path fill="#fff" d="M0 0h512v512H0z"/>
+  <!-- The open score and keyboard share the same geometry in both variants. -->
+  <g fill="#303a59">
+    <rect x="104" y="112" width="304" height="216" rx="24"/>
+    <path d="M0 286h512v82H0z"/>
+  </g>
+  <path fill="#1e2638" d="M0 344h512v40H0z"/>
+  <path fill="#d8e8ff" d="M128 158q64-24 128 2 64-26 128-2v142q0 10-10 7-59-18-118 7-59-25-118-7-10 3-10-7z"/>
+  <path fill="#fff" d="M128 148q0-7 7-9 61-20 121 5v152q-60-25-121-5-7 2-7-6z"/>
+  <path fill="#eaf2ff" d="M256 144q60-25 121-5 7 2 7 9v137q0 8-7 6-61-20-121 5z"/>
+  <g fill="#303a59">
+    <path d="M155 168q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z"/>
+    <path d="M155 206q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z"/>
+    <path d="M155 244q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z"/>
+    <path d="M283 168q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z"/>
+    <path d="M283 206q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z"/>
+    <path d="M283 244q37-10 74 0a4 4 0 0 1-2 8q-35-9-70 0a4 4 0 0 1-2-8z"/>
+  </g>
+  <path fill="#fff" d="M0 376h512v136H0z"/>
+  <g fill="#d8e8ff">
+    <path d="M72 376h3v136h-3z"/>
+    <path d="M145 376h3v136h-3z"/>
+    <path d="M218 376h3v136h-3z"/>
+    <path d="M292 376h3v136h-3z"/>
+    <path d="M365 376h3v136h-3z"/>
+    <path d="M438 376h3v136h-3z"/>
+  </g>
+  <g fill="#1e2638">
+    <path d="M55 376h36v79q0 9-9 9H64q-9 0-9-9z"/>
+    <path d="M128 376h36v79q0 9-9 9h-18q-9 0-9-9z"/>
+    <path d="M201 376h36v79q0 9-9 9h-18q-9 0-9-9z"/>
+    <path d="M275 376h36v79q0 9-9 9h-18q-9 0-9-9z"/>
+    <path d="M348 376h36v79q0 9-9 9h-18q-9 0-9-9z"/>
+    <path d="M421 376h36v79q0 9-9 9h-18q-9 0-9-9z"/>
+  </g>
+</g>
+    <rect x=".5" y=".5" width="511" height="511" rx="102" fill="none" stroke="#e6e8ee" stroke-width="1"/>
+  </g>
+</svg>

@@ -123,6 +123,54 @@ class CampaignAttributionTest extends ReviewTestCase
         $this->assertDatabaseCount('campaign_visits', 0);
     }
 
+    public function test_ordinary_search_has_no_campaign_control_in_its_initial_html()
+    {
+        foreach ([null, $this->user] as $user) {
+            if ($user) $this->actingAs($user, 'web');
+            $this->get(route('webapp.search.results', ['search' => 'notturno']))->assertOk()
+                ->assertSee('id="pieces-list"', false)
+                ->assertDontSee('data-campaign-measurement', false)
+                ->assertDontSee('Campaign link measurement')
+                ->assertDontSee('js/views/campaign-attribution.js');
+        }
+        $this->assertDatabaseCount('campaign_visits', 0);
+    }
+
+    public function test_tagged_search_keeps_the_visible_opt_in_choice()
+    {
+        $page = $this->get(route('webapp.search.results', [
+            'search' => 'notturno', 'utm_source' => 'youtube.com',
+        ]))->assertOk()->assertSee('Allow measurement');
+        $token = $this->token($page);
+        $this->assertNotEmpty($token);
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($page->getContent());
+        $xpath = new \DOMXPath($dom);
+        $this->assertFalse($xpath->query('//*[@data-campaign-measurement]')->item(0)->hasAttribute('hidden'));
+        $this->assertFalse($xpath->query('//*[@id="campaign-measurement-choice"]')->item(0)->hasAttribute('hidden'));
+        $this->assertDatabaseCount('campaign_visits', 0);
+        $this->withCookie(config('session.cookie'), session()->getId());
+        $this->post(route('webapp.attribution.consent'), ['choice' => 'granted', 'token' => $token])->assertOk();
+        $this->assertDatabaseCount('campaign_visits', 1);
+    }
+
+    public function test_tagged_search_with_a_saved_choice_keeps_controls_hidden()
+    {
+        foreach (['granted', 'denied'] as $choice) {
+            $this->withCookie(CampaignAttribution::CONSENT_COOKIE, 'v1:'.$choice);
+            $page = $this->get(route('webapp.search.results', [
+                'search' => 'notturno', 'utm_source' => 'youtube.com',
+            ]))->assertOk()->assertSee('js/views/campaign-attribution.js');
+            $this->assertNotEmpty($this->token($page));
+            $dom = new \DOMDocument;
+            @$dom->loadHTML($page->getContent());
+            $root = (new \DOMXPath($dom))->query('//*[@data-campaign-measurement]')->item(0);
+            $this->assertTrue($root->hasAttribute('hidden'));
+            $this->assertSame($choice, $root->getAttribute('data-consent'));
+        }
+        $this->assertDatabaseCount('campaign_visits', 0);
+    }
+
     public function test_refusal_refresh_and_direct_navigation_do_not_add_arrivals()
     {
         $this->post(route('webapp.attribution.consent'), ['choice' => 'denied'])->assertOk();
