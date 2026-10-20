@@ -72,6 +72,9 @@ Optional parameters:
 - `tableClass` and `class`: page-specific table/card hooks. Keep special cell
   sizing in scoped Sass rather than duplicating the shared structure.
 - `label`: accessible table/filter/scroll-region name, defaulting to the title.
+- Named `filterFields` and `filterNote` slots: optional advanced controls and
+  supporting copy inside the same shared GET filter form. Use the shared form
+  components for those controls.
 - Named `toolbar` slot: optional bulk actions or supporting content inside the
   card and outside the GET filter form. Keep POST forms out of the GET form.
 
@@ -188,6 +191,25 @@ legacy log pages were removed on 2026-10-19; current Analytics pages remain.
 Keep `2026_10_15_010000_add_admin_user_directory_indexes.php` in deployment: it
 supports the default date/ID ordering and membership lookup. Existing index
 requirements are unchanged by this table migration.
+
+The Pieces directory uses `PiecesTable` for SQL search, fixed sorts and native
+12-row pagination. Missing-video/moments/Synthesia filters combine with AND;
+missing moments requires a performance video without any saved moments. Existing
+creator/media URL filters remain supported and survive form submissions. Literal
+LIKE wildcards are escaped. The former Rankings column displays highlight dates
+and is now labeled Highlighted. Favorite counts retain analytics exclusions.
+Piece titles open the web app in a new tab, while Edit keeps the admin editor.
+
+Tag/level buttons open the shared modal with shared checkbox/radio controls.
+The browser discards stale loads, provides load retry, serializes saves and
+restores controls/selections after errors. Level replacement validates tag types,
+locks the piece and checks the submitted prior level, then detaches/attaches in a
+transaction. A stale prior level returns 409. Ordinary tag edits cannot remove
+core level/period/length tags. Freepick, creation-date and confirmed deletion
+actions remain available. Deletion validates return filters and clamps the page.
+The prior authenticated admin-only Ajax response remains available for existing
+callers; the redesigned page loads no DataTables assets or initialization.
+Public/mobile serialization and media delivery remain unchanged.
 
 ## Appearance and verification
 

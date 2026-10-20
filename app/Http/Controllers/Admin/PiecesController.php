@@ -19,12 +19,12 @@ class PiecesController extends Controller
         if (request()->ajax())
             return app(\App\Services\Admin\PiecesTable::class)->response(request());
 
-        return view('admin.pages.pieces.index');
+        return view('admin.pages.pieces.index', app(\App\Services\Admin\PiecesTable::class)->get(request()));
     }
 
     public function loadTags(Piece $piece)
     {
-        $tags = Tag::byTypes($except = ['levels', 'periods', 'lengths']);
+        $tags = Tag::byTypes($except = ['level', 'period', 'length']);
 
         return view('admin.pages.pieces.popups.tags', ['piece' => $piece, 'tagsByType' => $tags])->render();
     }
@@ -263,20 +263,33 @@ class PiecesController extends Controller
 
     public function updateLevel(Request $request, Piece $piece)
     {
-        $piece->tags()->detach($request->old_level_id);
-        $piece->tags()->attach($request->new_level_id);
-
+        $request->validate([
+            'old_level_id' => 'nullable|integer',
+            'new_level_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('tags', 'id')->where('type', 'level')],
+        ]);
+        \DB::transaction(function () use ($request, $piece) {
+            Piece::whereKey($piece->id)->lockForUpdate()->firstOrFail();
+            $current = $piece->tags()->where('type', 'level')->pluck('tags.id');
+            abort_unless((string) $current->first() === (string) $request->old_level_id, 409, 'The level has changed. Reopen the editor.');
+            $piece->tags()->detach($current);
+            $piece->tags()->attach($request->new_level_id);
+        });
+        $piece = $piece->fresh(['tags']);
         $piece->searchable();
 
-        return response()->json(['level_name' => ucfirst($piece->level->name), 'level_id' => $piece->level->id]);
+        return response()->json(['level_name' => ucfirst($piece->level->name), 'level_id' => $piece->level->id,
+            'extended_level_name' => ucfirst($piece->extendedLevel->name)]);
     }
 
     public function updateTag(Request $request, Piece $piece)
     {
-        $piece->tags()->toggle($request->id);
-
+        $request->validate(['id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('tags', 'id')->whereNotIn('type', ['level', 'period', 'length'])]]);
+        \DB::transaction(function () use ($request, $piece) {
+            Piece::whereKey($piece->id)->lockForUpdate()->firstOrFail();
+            $piece->tags()->toggle($request->id);
+        });
         $piece->searchable();
-        
+
         return response()->json(['count' => $piece->fresh()->tags_count]);
     }
 
@@ -322,8 +335,10 @@ class PiecesController extends Controller
     {
         $this->authorize('update', $piece);
         
+        $table = app(\App\Services\Admin\PiecesTable::class);
+        $filters = $table->filters(request());
         $piece->delete();
 
-        return redirect()->back()->with('status', "The piece has been successfully deleted!");
+        return $table->redirectAfterDeletion($filters)->with('status', "The piece has been successfully deleted!");
     }
 }

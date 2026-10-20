@@ -64,7 +64,11 @@ class AdminPiecesTableTest extends ReviewTestCase
         $html = $this->get(route('admin.pieces.index'))->assertOk()->getContent();
         preg_match('/<table[^>]*id="pieces-table".*?<\/table>/s', $html, $table);
         preg_match_all('/<th\b[^>]*>(.*?)<\/th>/s', $table[0], $headers);
-        $this->assertSame(['ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', ''], array_map('trim', $headers[1]));
+        foreach (['ID', 'Piece', 'Composer', 'Tags', 'Level', 'Highlighted', 'Favorited', 'Actions'] as $i => $label) {
+            $this->assertStringContainsString($label, strip_tags($headers[1][$i]));
+        }
+        $this->assertStringNotContainsString('cdn.datatables.net', $html);
+        $this->assertStringContainsString('class="admin-table__table admin-pieces-table"', $html);
         foreach (['without_videos', 'without_moments', 'without_synthesia'] as $filter) {
             preg_match('/<input[^>]*name="'.$filter.'"[^>]*>/', $html, $input);
             $this->assertNotEmpty($input);
@@ -175,6 +179,135 @@ class AdminPiecesTableTest extends ReviewTestCase
         $this->assertCount(4, $this->ids(['columns' => [['data' => 'arbitrary', 'name' => 'malicious.column', 'searchable' => true, 'search' => ['value' => 'bad']]]]));
         auth()->guard('admin')->logout();
         $this->table()->assertUnauthorized();
+    }
+
+    protected function directory(array $parameters = [])
+    {
+        return $this->get(route('admin.pieces.index', $parameters));
+    }
+
+    public function test_directory_filters_sorts_and_paginates_the_complete_query()
+    {
+        foreach (['id', 'name', 'composer', 'tags', 'level', 'highlight', 'favorites', 'updated'] as $column) {
+            foreach (['asc', 'desc'] as $direction) {
+                $parameters = ['sort' => $column.'_'.$direction];
+                $page = $this->directory($parameters)->assertOk()->viewData('pieces');
+                $this->assertCount(4, $page);
+                if ($column === 'updated') {
+                    $expected = $this->pieces->pluck('id')->all();
+                    if ($direction === 'desc') $expected = array_reverse($expected);
+                } else {
+                    $legacyColumn = array_search($column, ['id', 'name', 'composer', 'tags', 'level', 'highlight', 'favorites']);
+                    $expected = $this->ids(['order' => [['column' => $legacyColumn, 'dir' => $direction]]]);
+                }
+                $this->assertSame($expected, $page->pluck('id')->all());
+            }
+        }
+        $this->pieces[1]->tutorials->first()->moments()->delete();
+        for ($mask = 0; $mask < 8; $mask++) {
+            $filters = ['without_videos' => (int) (bool) ($mask & 1), 'without_moments' => (int) (bool) ($mask & 2), 'without_synthesia' => (int) (bool) ($mask & 4)];
+            $this->assertSame($this->ids($filters), $this->directory($filters)->assertOk()->viewData('pieces')->pluck('id')->all());
+        }
+        $this->assertSame([$this->pieces[2]->id], $this->directory(['search' => 'Zara Bravo'])->assertOk()->viewData('pieces')->pluck('id')->all());
+        $this->pieces[0]->updateQuietly(['name' => '100% _unique!']);
+        foreach (['%' => 1, '_unique!' => 1, '_absent' => 0] as $search => $total) {
+            $this->assertSame($total, $this->directory(compact('search'))->assertOk()->viewData('pieces')->total());
+        }
+        Model::withoutEvents(function () {
+            for ($i = 0; $i < 25; $i++) {
+                $piece = create(Piece::class, ['name' => sprintf('Directory %02d', $i), 'composer_id' => $this->pieces[0]->composer_id]);
+                $piece->tags()->attach($this->pieces[0]->tags->pluck('id'));
+            }
+        });
+        $filters = ['search' => 'Directory', 'sort' => 'name_asc', 'per_page' => 12, 'without_synthesia' => 1, 'page' => 2];
+        $response = $this->directory($filters)->assertOk()->assertSee('Showing 13–24 of 25 results');
+        $this->assertSame('Directory 12', $response->viewData('pieces')->first()->name);
+        $this->assertStringContainsString('without_synthesia=1', $response->viewData('pieces')->url(3));
+        $this->assertSame(12, $this->directory()->viewData('pieces')->perPage());
+        foreach ([24, 48, 96] as $size) $this->assertSame($size, $this->directory(['per_page' => $size])->viewData('pieces')->perPage());
+    }
+
+    public function test_directory_links_empty_states_and_validation()
+    {
+        $piece = $this->pieces[0];
+        $piece->updateQuietly(['name' => '<script>alert(1)</script>']);
+        $piece->tags()->detach();
+        $response = $this->directory()->assertOk()->assertSee('&lt;script&gt;', false)->assertDontSee('<script>alert(1)</script>', false)->assertSee('Not set');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($response->getContent());
+        $xpath = new \DOMXPath($dom);
+        $link = $xpath->query('//table[@id="pieces-table"]//a[@href="'.route('webapp.pieces.show', $piece).'"]')->item(0);
+        $this->assertSame('_blank', $link->getAttribute('target'));
+        $this->assertSame('noopener noreferrer', $link->getAttribute('rel'));
+        $this->assertSame(1, $xpath->query('//form[@id="pieces-table-filters"]//input[@name="without_moments"]')->length);
+        $this->assertSame(1, $xpath->query('//table[@id="pieces-table"]//a[@href="'.route('admin.pieces.edit', $piece).'"]')->length);
+        $this->directory(['search' => 'does-not-exist'])->assertOk()->assertSee('No matching pieces');
+        $this->withExceptionHandling();
+        foreach ([['search' => ['bad']], ['without_videos' => ['bad']], ['sort' => 'password_asc'], ['page' => -1], ['per_page' => 1000]] as $invalid) {
+            $this->getJson(route('admin.pieces.index', $invalid))->assertUnprocessable();
+        }
+        auth()->guard('admin')->logout();
+        $this->directory()->assertRedirect(route('admin.login.show'));
+    }
+
+    public function test_directory_query_count_stays_constant_without_media_or_activity_serialization()
+    {
+        Model::withoutEvents(function () {
+            for ($i = 0; $i < 25; $i++) {
+                $piece = create(Piece::class, ['composer_id' => $this->pieces[0]->composer_id]);
+                $piece->tags()->attach($this->pieces[0]->tags->pluck('id'));
+            }
+        });
+        $counts = [];
+        foreach ([12, 24] as $size) {
+            DB::enableQueryLog(); DB::flushQueryLog();
+            $data = (new \App\Services\Admin\PiecesTable)->get(\Illuminate\Http\Request::create('/pieces', 'GET', ['per_page' => $size]));
+            view('admin.pages.pieces.table.rows', $data)->render();
+            $queries = DB::getQueryLog(); DB::disableQueryLog();
+            $counts[] = count($queries);
+            $this->assertCount($size, $data['pieces']);
+            $this->assertStringNotContainsString('activity_events', implode(' ', array_column($queries, 'query')));
+            $this->assertStringNotContainsString('from "tutorials"', implode(' ', array_column($queries, 'query')));
+        }
+        $this->assertSame([5, 5], $counts);
+    }
+
+    public function test_quick_edits_validate_types_preserve_other_tags_and_roll_back_level_failures()
+    {
+        $piece = $this->pieces[0];
+        $old = $piece->level->id;
+        $new = $this->pieces[1]->level->id;
+        $mood = Model::withoutEvents(function () { return create(Tag::class, ['type' => 'mood', 'name' => 'Serene']); });
+        $this->get(route('admin.pieces.load-tags', $piece))->assertOk()->assertDontSee('name="level', false)->assertSee('Serene');
+        $this->patchJson(route('admin.pieces.update-level', $piece), ['old_level_id' => $old, 'new_level_id' => $new])->assertOk()->assertJsonPath('level_id', $new);
+        $this->assertSame($new, $piece->fresh()->level->id);
+        $this->assertTrue($piece->fresh()->tags->contains('type', 'period'));
+        $this->withExceptionHandling();
+        $this->patchJson(route('admin.pieces.update-level', $piece), ['old_level_id' => $old, 'new_level_id' => $new])->assertStatus(409);
+        $this->patchJson(route('admin.pieces.update-level', $piece), ['old_level_id' => $new, 'new_level_id' => $mood->id])->assertUnprocessable();
+        $this->patchJson(route('admin.pieces.update-tag', $piece), ['id' => $new])->assertUnprocessable();
+        $this->patchJson(route('admin.pieces.update-tag', $piece), ['id' => $mood->id])->assertOk()->assertJsonPath('count', 1);
+        $this->patchJson(route('admin.pieces.update-tag', $piece), ['id' => $mood->id])->assertOk()->assertJsonPath('count', 0);
+        $trigger = 'CREATE TRIGGER reject_piece_level BEFORE INSERT ON piece_tag WHEN NEW.tag_id = '.$old." BEGIN SELECT RAISE(ABORT, 'fixture failure'); END";
+        DB::unprepared($trigger);
+        try {
+            $this->patchJson(route('admin.pieces.update-level', $piece), ['old_level_id' => $new, 'new_level_id' => $old])->assertStatus(500);
+            $this->assertSame($new, $piece->fresh()->level->id, 'Failed replacement restores the original level.');
+        } finally { DB::unprepared('DROP TRIGGER reject_piece_level'); }
+    }
+
+    public function test_deletion_preserves_directory_filters_and_clamps_the_page()
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        Model::withoutEvents(function () {
+            for ($i = 0; $i < 13; $i++) create(Piece::class, ['name' => 'Delete fixture', 'composer_id' => $this->pieces[0]->composer_id]);
+        });
+        $filters = ['search' => 'Delete fixture', 'sort' => 'id_asc', 'without_videos' => 1, 'page' => 2];
+        $target = $this->directory($filters)->viewData('pieces')->first();
+        $this->withExceptionHandling()->deleteJson(route('admin.pieces.destroy', $target), ['sort' => 'invalid'])->assertUnprocessable();
+        $this->assertDatabaseHas('pieces', ['id' => $target->id]);
+        $this->delete(route('admin.pieces.destroy', ['piece' => $target] + $filters))->assertRedirect(route('admin.pieces.index', array_diff_key($filters, ['page' => true])));
+        $this->assertDatabaseMissing('pieces', ['id' => $target->id]);
     }
 
     public function test_query_count_is_bounded_when_page_size_grows()

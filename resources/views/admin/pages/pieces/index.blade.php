@@ -1,155 +1,61 @@
 @extends('admin.layouts.app')
 
-@section('head')
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.css"/>
-<style type="text/css">
-small .form-check-label::before, small .form-check-label::after {
-    top: 0.10rem;
-    left: -1.34rem;
-}
-
-</style>
-@endsection
-
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
+<div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [
-      'icon' => 'music',
-      'title' => 'Pieces',
-      'subtitle' =>
-      'Manage all the pieces available on the app.',
-      'action' => ['label' => 'Add a new piece', 'url' => route('admin.pieces.create')]
+        'icon' => 'music', 'title' => 'Pieces',
+        'subtitle' => 'Manage the repertoire, tags and featured pieces.',
+        'action' => ['label' => 'Add a new piece', 'url' => route('admin.pieces.create')],
     ])
+    @component('admin.components.table', [
+        'id' => 'pieces-table', 'label' => 'Pieces', 'items' => $pieces,
+        'description' => number_format($pieces->total()).' matching pieces.',
+        'action' => route('admin.pieces.index'), 'state' => $filters,
+        'hidden' => array_intersect_key($filters, array_flip(['creator_id', 'itunes', 'videos', 'score_path', 'audio_path', 'is_free'])),
+        'search' => ['label' => 'Find a piece', 'placeholder' => 'Piece, composer, catalogue, tag or ID'],
+        'sorts' => \App\Services\Admin\PiecesTable::SORTS,
+        'columns' => [
+            ['label' => 'ID', 'sort' => ['asc' => 'id_asc', 'desc' => 'id_desc']],
+            ['label' => 'Piece', 'sort' => ['asc' => 'name_asc', 'desc' => 'name_desc']],
+            ['label' => 'Composer', 'sort' => ['asc' => 'composer_asc', 'desc' => 'composer_desc']],
+            ['label' => 'Tags', 'sort' => ['asc' => 'tags_asc', 'desc' => 'tags_desc']],
+            ['label' => 'Level', 'sort' => ['asc' => 'level_asc', 'desc' => 'level_desc']],
+            ['label' => 'Highlighted', 'sort' => ['asc' => 'highlight_asc', 'desc' => 'highlight_desc']],
+            ['label' => 'Favorited', 'sort' => ['asc' => 'favorites_asc', 'desc' => 'favorites_desc']],
+            ['label' => 'Actions', 'hidden' => true],
+        ],
+        'tableClass' => 'admin-pieces-table',
+        'emptyTitle' => 'No matching pieces',
+        'emptyDescription' => 'Try another search or remove a missing-content filter.',
+    ])
+        @slot('filterFields')
+            <fieldset class="w-100 mb-0">
+                <legend class="fs-6 mb-2">Missing content</legend>
+                <div class="d-flex flex-wrap gap-3">
+                    @foreach(['without_videos' => 'Missing video', 'without_moments' => 'Missing moments', 'without_synthesia' => 'Missing synthesia'] as $filter => $label)
+                    @include('components.form.checkbox', ['id' => 'pieces-filter-'.$filter, 'name' => $filter, 'value' => '1', 'label' => $label, 'checked' => !empty($filters[$filter])])
+                    @endforeach
+                </div>
+                <p class="small text-muted mt-2 mb-0">Results match all checked filters. Missing moments applies to performance videos.</p>
+            </fieldset>
+        @endslot
+        @include('admin.pages.pieces.table.rows')
+    @endcomponent
+</div></div>
 
-    <fieldset class="border rounded p-3 mb-3" data-piece-table-filters>
-      <legend class="float-none w-auto px-2 fs-6">Filters</legend>
-      <div class="d-flex flex-wrap gap-4">
-        @foreach(['without_videos' => 'Missing video', 'without_moments' => 'Missing moments', 'without_synthesia' => 'Missing synthesia'] as $filter => $label)
-        @include('components.form.checkbox', ['id' => 'filter-'.$filter, 'name' => $filter, 'value' => 'on', 'label' => $label, 'checked' => request()->boolean($filter)])
-        @endforeach
-      </div>
-      <p class="small text-muted mb-0 mt-2">Results match all checked filters. Uncheck all to show every piece.</p>
-    </fieldset>
-    <div class="alert alert-danger" role="alert" data-piece-table-error hidden>
-      The pieces could not be loaded. Please try again.
-      <button type="button" class="btn btn-sm btn-outline-danger ms-2" data-piece-table-retry>Retry</button>
-    </div>
-
-    @datatable(['table' => 'pieces', 'columns' => ['ID', 'Piece', 'Composer', 'Tags', 'Level', 'Rankings', 'Favorited', '']])
-
-  </div>
-</div>
-
+@component('components.modal', ['id' => 'piece-quick-edit', 'header' => 'Edit piece', 'options' => ['size' => 'lg']])
+    @slot('body')
+        <p class="text-muted" data-piece-edit-status role="status" aria-live="polite"></p>
+        <div data-piece-edit-content></div>
+        <button type="button" class="btn btn-secondary mt-3" data-piece-edit-retry hidden>Retry</button>
+    @endslot
+    @slot('footer')
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
+    @endslot
+@endcomponent
 @include('admin.components.modals.delete')
-@include('admin.pages.pieces.rankings', ['ranking' => 'abrsm'])
-@include('admin.pages.pieces.rankings', ['ranking' => 'rcm'])
-
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
-<script src="{{mix('js/views/admin-pieces.js')}}"></script>
-<script type="text/javascript">
-$('button#missing-image').on('click', function(e) {
-  e.preventDefault();
-  alert('This piece has no cover image.');
-});
-
-</script>
-
-<script type="text/javascript">
-
-$(window).click(function(e) {
-  if(e.target.class == "input-tag")
-    return;
-
-  if($(e.target).closest('.tags-quick-edit').length)
-    return;
-
-  $('.popup').hide();
-});
-
-$('.popup').on('click', function(event) {
-  event.stopPropagation();
-});
-
-$(document).on('click', '.badge-popup', function(event) {
-  let $popup = $(this).next('div');
-  let url = $popup.attr('data-url');
-  event.stopPropagation();
-  $('.popup').hide();
-  $popup.show();
-
-  if ($popup.find('.spinner').is(':visible')) {
-    $.get(url, function(view) {
-      $popup.find('.spinner').hide();
-      $popup.find('.content').html(view);
-    }).fail(function() {
-      alert('We couldn\'t load the content...');
-    });
-  }
-});
-
-$(document).on('change', '.input-level', function() {
-  let $level = $(this);
-
-  if (! $level.is(':disabled')) {
-    let $badge = $($level.attr('data-badge'));
-    let url = $level.attr('data-url');
-    let originalClass = $badge.attr('data-original-class');
-    let oldLevel = $badge.attr('data-original-id');
-    let newLevel = $level.val();
-
-    $('.input-level').toggleAttr('disabled');
-
-    $.ajax({
-      url: url,
-      type: 'PATCH',
-      data: {old_level_id: oldLevel, new_level_id: newLevel}
-    })
-    .done(function(response) {
-      $badge.removeClass(originalClass)
-            .addClass('bg-'+response.level_name.toLowerCase())
-            .text(response.level_name)
-            .attr('data-original-id', response.level_id)
-            .attr('data-original-class', 'bg-'+response.level_name.toLowerCase());
-
-      $('.input-level').toggleAttr('disabled');
-    })
-    .fail(function(response) {
-      alert('Something went wrong...');
-    });
-  }
-});
-
-$(document).on('change', '.input-tag', function() {
-  let $tag = $(this);
-
-  if (! $tag.is(':disabled')) {
-    let $badge = $($tag.attr('data-badge'));
-    let url = $tag.attr('data-url');
-    let id = $tag.val();
-
-    $tag.toggleAttr('disabled');
-
-    $.ajax({
-      url: url,
-      type: 'PATCH',
-      data: {id: id}
-    })
-    .done(function(response) {
-      console.log(response.count);
-      console.log($badge);
-      $badge.text(response.count);
-      $tag.toggleAttr('disabled');
-    })
-    .fail(function(response) {
-      alert('Something went wrong...');
-    });
-  }
-});
-
-</script>
+<script src="{{ mix('js/views/admin-pieces.js') }}" defer></script>
 @endsection

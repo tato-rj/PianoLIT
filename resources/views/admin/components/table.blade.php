@@ -23,7 +23,7 @@
     </div>
     @endif
     @if(isset($search) || count($filters) || count($sorts) || $showPageSize)
-    @include('admin.components.filters.form', ['id' => $id.'-filters', 'label' => ($label ?? $title ?? 'Results').' filters', 'class' => 'admin-table__filters', 'action' => $filterAction ?? $action, 'fields' => $tableFilterFields, 'state' => $state, 'hidden' => $hidden ?? [], 'buttons' => [['label' => 'Apply filters']], 'resetUrl' => $showReset ? ($resetUrl ?? $action) : null, 'slot' => null, 'note' => null])
+    @include('admin.components.filters.form', ['id' => $id.'-filters', 'label' => ($label ?? $title ?? 'Results').' filters', 'class' => 'admin-table__filters', 'action' => $filterAction ?? $action, 'fields' => $tableFilterFields, 'state' => $state, 'hidden' => $hidden ?? [], 'buttons' => [['label' => 'Apply filters']], 'resetUrl' => $showReset ? ($resetUrl ?? $action) : null, 'slot' => $filterFields ?? null, 'note' => $filterNote ?? null])
     @endif
     {{ $toolbar ?? '' }}
     <p class="admin-table__scroll-hint">Scroll sideways to see all columns.</p>
