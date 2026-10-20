@@ -3,7 +3,8 @@
 @push('header')
 <link href="{{ asset('css/vendor/flag-icon/flag-icon.min.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.min.js"></script>
+<script src="{{ mix('js/vendor/pdfjs/pdf.js') }}"></script>
+<script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.3.200/build/pdf.worker.min.js';</script>
 <style type="text/css">
 
 video::-webkit-media-controls {

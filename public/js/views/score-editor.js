@@ -639,6 +639,7 @@
             if (number !== this.page) this.finishText();
             this.rendering = true; this.controls();
             const id = ++this.renderId;
+            let canvas;
             try {
                 const page = await this.pdf.getPage(number);
                 const original = page.getViewport({scale: 1});
@@ -647,7 +648,7 @@
                 // Cap canvas pixels for mobile Safari; the vector ink stays sharp at every zoom.
                 const density = Math.min(root.devicePixelRatio || 1, 2, Math.sqrt(7000000 / (width * width * ratio)));
                 const viewport = page.getViewport({scale: width / original.width * density});
-                const canvas = document.createElement('canvas');
+                canvas = document.createElement('canvas');
                 canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
                 await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
                 if (id !== this.renderId) return;
@@ -664,6 +665,9 @@
                 this.find('[data-zoom-label]').textContent = Math.round(this.zoom * 100) + '%';
                 this.paint(); this.positionText();
             } finally {
+                // Safari retains canvas backing stores after detached elements
+                // become unreachable; release the render buffer after copying.
+                if (canvas) canvas.width = canvas.height = 0;
                 this.rendering = false; this.controls();
                 if (this.queuedPage) {
                     const next = this.queuedPage; this.queuedPage = null;

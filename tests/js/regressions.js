@@ -60,6 +60,7 @@ async function main() {
     require('./history-back')();
     require('./tab-navigation')();
     require('./fullscreen-modals')();
+    require('./score-pdf-images')();
     await require('./score-editor')();
     await require('./score-metronome')();
     await require('./webapp-search')();

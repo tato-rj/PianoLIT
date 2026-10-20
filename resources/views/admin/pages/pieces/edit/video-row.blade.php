@@ -3,7 +3,7 @@
     if (!empty($video['category']) && !isset($categories[$video['category']])) $categories[$video['category']] = $video['type'] ?? $video['category'];
     $savedTutorial = isset($video['id']) ? $piece->tutorials->firstWhere('id', $video['id']) : null;
 @endphp
-<div class="admin-editor-video" data-video-row data-video-index="{{ $index }}">
+<div class="admin-editor-video bg-white rounded-sm shadow p-3 border-0" data-video-row data-video-index="{{ $index }}">
     @if($savedTutorial)<input type="hidden" name="videos[{{ $index }}][id]" value="{{ $savedTutorial->id }}">@endif
     <input type="hidden" name="videos[{{ $index }}][type]" value="{{ $video['type'] ?? '' }}" data-video-type>
     <div class="row g-3">

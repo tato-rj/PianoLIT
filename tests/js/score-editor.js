@@ -5,14 +5,19 @@ const vm = require('vm');
 
 module.exports = async function () {
     const window = {};
+    const renderBuffers = [];
     const bodyClasses = new Set();
     const body = {children: [], classList: {add: name => bodyClasses.add(name), remove: name => bodyClasses.delete(name)},
         appendChild(element) { this.children.push(element); element.parent = this; }};
-    const element = tag => ({tag, style: {}, children: [], attributes: {},
+    const element = tag => {
+        const node = {tag, style: {}, children: [], attributes: {},
         appendChild(child) { this.children.push(child); child.parent = this; },
         remove() { if (this.parent) this.parent.children.splice(this.parent.children.indexOf(this), 1); },
         setAttribute(name, value) { this.attributes[name] = String(value); },
-        getContext: () => ({})});
+        getContext: () => ({})};
+        if (tag === 'canvas') renderBuffers.push(node);
+        return node;
+    };
     const head = {children: [], appendChild(child) { this.children.push(child); child.parent = this; }};
     const document = {body, head, createElement: element, createElementNS: (namespace, tag) => element(tag)};
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../resources/js/views/score-editor.js'), 'utf8'), {window, document, setTimeout, clearTimeout, Blob: class { constructor(parts) { this.size = Buffer.byteLength(parts.join("")); } }});
@@ -441,7 +446,7 @@ module.exports = async function () {
     const queuedZoom = Object.create(Editor.prototype), pdfRenders = [], zoomLabels = {};
     queuedZoom.pdf = {numPages: 1, getPage: async () => ({
         getViewport: ({scale}) => ({width: 612 * scale, height: 792 * scale}),
-        render: ({viewport}) => ({promise: new Promise(resolve => pdfRenders.push({viewport, resolve}))})
+        render: ({viewport}) => ({promise: new Promise((resolve, reject) => pdfRenders.push({viewport, resolve, reject}))})
     })};
     queuedZoom.page = 1; queuedZoom.zoom = .75; queuedZoom.renderId = 0;
     queuedZoom.scroller = {clientWidth: 680}; queuedZoom.sheet = {style: {}};
@@ -452,9 +457,12 @@ module.exports = async function () {
     queuedZoom.renderError = () => { throw new Error('Pinch render failed'); };
     const initialRender = queuedZoom.render(1);
     for (let i = 0; i < 5; i++) await Promise.resolve();
+    const firstBuffer = renderBuffers[renderBuffers.length - 1];
     queuedZoom.pinchZoom(.2);
     assert.strictEqual(queuedZoom.zoom, .8, 'Pinch can accumulate while PDF rendering is busy');
     pdfRenders[0].resolve(); await initialRender;
+    assert.strictEqual(firstBuffer.width, 0, 'Completed renders release their temporary Safari backing store');
+    assert.strictEqual(firstBuffer.height, 0);
     for (let i = 0; i < 5; i++) await Promise.resolve();
     assert.strictEqual(pdfRenders.length, 2, 'The latest zoom receives a queued PDF render');
     pdfRenders[1].resolve();
@@ -462,6 +470,14 @@ module.exports = async function () {
     assert(Math.abs(parseFloat(queuedZoom.sheet.style.width) - 524.8) < .00001);
     assert.strictEqual(zoomLabels['[data-zoom-label]'].textContent, '80%');
     assert.strictEqual(queuedZoom.rendering, false);
+    const failedRender = assert.rejects(queuedZoom.render(1), /PDF page failed/);
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    const failedBuffer = renderBuffers[renderBuffers.length - 1];
+    pdfRenders[2].reject(new Error('PDF page failed'));
+    await failedRender;
+    assert.strictEqual(failedBuffer.width, 0, 'Failed renders also release temporary canvas memory');
+    assert.strictEqual(failedBuffer.height, 0);
+    assert.strictEqual(queuedZoom.rendering, false, 'A failed page restores the viewer controls');
 
     const panning = Object.create(Editor.prototype), panFrames = new Map();
     let nextPanFrame = 0, panFullscreen = false;
