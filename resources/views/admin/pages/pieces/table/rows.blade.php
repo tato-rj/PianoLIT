@@ -20,9 +20,7 @@
         @if($item->is_free)
             <span class="admin-table__badge admin-table__badge--green">Current Freepick</span>
         @elseif($item->highlighted_at)
-            <time class="d-block" datetime="{{ $item->highlighted_at->toIso8601String() }}">{{ $item->highlighted_at->toFormattedDateString() }}</time>
-        @else
-            <span class="text-muted">Never highlighted</span>
+            <time class="d-block" datetime="{{ $item->highlighted_at->toIso8601String() }}">@icon('calendar-check', ['color' => 'green']){{ $item->highlighted_at->toFormattedDateString() }}</time>
         @endif
     </td>
     <td>{{ number_format($item->favorites_count) }}</td>
