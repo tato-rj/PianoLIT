@@ -9,7 +9,7 @@
       </div>
       @endif
 
-      <img class="w-100 border rounded-bottom" id="image" src="{{$image}}">
+      <img class="w-100 border rounded-bottom" id="image" src="{{$image}}" alt="{{ $alt ?? '' }}">
 
       <div class="controls d-flex justify-content-between mt-2">
         <button type="button" id="upload-button" class="btn btn-sm btn-warning">

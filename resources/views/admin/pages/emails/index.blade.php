@@ -28,8 +28,8 @@
                 </form>
             </td>
             <td><div class="admin-emails__actions">
-                @include('admin.components.table-action', ['tableAction' => ['url' => route('admin.emails.preview', $key), 'label' => 'Preview', 'icon' => 'eye', 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer', 'aria-label' => 'Preview '.$email['name'].' in browser (opens a new tab)']]])
-                @include('admin.components.table-action', ['tableAction' => ['type' => 'submit', 'label' => 'Preview', 'icon' => 'mail', 'attributes' => ['form' => 'email-preview-send', 'name' => 'email_key', 'value' => $key, 'aria-label' => 'Send preview of '.$email['name']]]])
+                @include('admin.components.table-action', ['tableAction' => ['url' => route('admin.emails.preview', $key), 'label' => 'Browser', 'icon' => 'eye', 'attributes' => ['target' => '_blank', 'rel' => 'noopener noreferrer', 'aria-label' => 'Preview '.$email['name'].' in browser (opens a new tab)']]])
+                @include('admin.components.table-action', ['tableAction' => ['type' => 'submit', 'label' => 'Email', 'icon' => 'mail', 'attributes' => ['form' => 'email-preview-send', 'name' => 'email_key', 'value' => $key, 'aria-label' => 'Send preview of '.$email['name']]]])
             </div></td>
         </tr>
         @endforeach

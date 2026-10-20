@@ -30,18 +30,6 @@
         <div class="d-flex flex-nowrap justify-content-end align-items-center gap-2">
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'edit', 'url' => route('admin.pieces.edit', $item), 'attributes' => ['aria-label' => 'Edit '.$item->long_name]]])
             @include('admin.components.table-action', ['tableAction' => ['kind' => 'delete', 'class' => 'delete', 'attributes' => ['data-url' => route('admin.pieces.destroy', ['piece' => $item] + $returnFilters), 'data-bs-toggle' => 'modal', 'data-bs-target' => '#delete-modal', 'title' => 'Delete piece', 'aria-label' => 'Delete '.$item->long_name]]])
-            @if(!$item->is_free && $item->hasImage())
-            <form method="POST" action="{{ route('admin.pieces.highlight', $item) }}" class="m-0">
-                @csrf
-                @method('PATCH')
-                @include('admin.components.table-action', ['tableAction' => ['type' => 'submit', 'label' => 'Make this the Freepick', 'icon' => 'award', 'iconOnly' => true, 'attributes' => ['aria-label' => 'Make '.$item->long_name.' the Freepick']]])
-            </form>
-            @endif
-            <form method="POST" action="{{ route('admin.pieces.hijack', $item) }}" class="m-0">
-                @csrf
-                @method('PATCH')
-                @include('admin.components.table-action', ['tableAction' => ['type' => 'submit', 'label' => 'Change creation date to today', 'icon' => 'calendar-days', 'iconOnly' => true, 'attributes' => ['aria-label' => 'Change creation date to today for '.$item->long_name]]])
-            </form>
         </div>
     </td>
 </tr>

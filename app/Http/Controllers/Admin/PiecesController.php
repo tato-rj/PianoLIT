@@ -169,12 +169,17 @@ class PiecesController extends Controller
      */
     public function edit(Piece $piece)
     {
-        // return $piece->tutorials->first();
+        $piece->load(['tags', 'tutorials', 'creator']);
         $composers = Composer::orderBy('name')->get();
-
         $types = Tag::byTypes($except = ['level', 'period', 'length']);
+        $classifications = [];
+        foreach (['period', 'length', 'level'] as $type) {
+            $classifications[$type] = Tag::where('type', $type)->get()
+                ->mapWithKeys(function ($tag) { return [$tag->id => ucfirst($tag->name)]; })->all();
+        }
+        $specialTags = Tag::special()->get()->implode('name', ', ');
 
-        return view('admin.pages.pieces.edit', compact(['composers', 'piece', 'types']));
+        return view('admin.pages.pieces.edit', compact('composers', 'piece', 'types', 'classifications', 'specialTags'));
     }
 
     public function testEscore(Piece $piece)

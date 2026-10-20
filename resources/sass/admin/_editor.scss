@@ -1,0 +1,83 @@
+// Reusable editor sections; controls retain their shared Design System styles.
+.admin-editor-section {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid var(--color-white);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, .63);
+
+    &__heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+
+        h2 {
+            margin: 0;
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+        }
+        p {
+            margin: 6px 0 0;
+            color: var(--color-text-muted);
+            font-size: var(--font-size-sm);
+        }
+    }
+    .form-group {
+        min-width: 0;
+        margin-bottom: 16px;
+    }
+    .image-container canvas {
+        width: 100% !important;
+    }
+}
+.admin-editor-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+
+    @media (min-width: 1200px) {
+        grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    }
+}
+.admin-editor-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+.admin-editor-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+
+    form { margin: 0; }
+}
+.admin-editor-video {
+    min-width: 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-border);
+    margin-top: 20px;
+}
+.admin-editor-save {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    margin-top: 24px;
+    border: 1px solid var(--color-white);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, .63);
+}
+@media (max-width: 575px) {
+    .admin-editor-section { padding: 18px; }
+    .admin-editor-options > form,
+    .admin-editor-options > .btn,
+    .admin-editor-options > form > .btn { width: 100%; }
+}

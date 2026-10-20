@@ -223,7 +223,10 @@ requirements are unchanged by this table migration.
 
 The Pieces directory uses `PiecesTable` for SQL search, fixed sorts and native
 12-row pagination. Missing-video/moments/Synthesia filters combine with AND;
-missing moments requires a performance video without any saved moments. Existing
+missing moments requires a performance video without any saved moments. The
+missing-content controls are temporary maintenance filters, rendered compactly
+with the shared checkbox component and `.small.text-muted` typography utilities.
+They remain visible and use the same Apply filters action and query names. Existing
 creator/media URL filters remain supported and survive form submissions. Literal
 LIKE wildcards are escaped. The former Rankings column displays highlight dates
 and is now labeled Highlighted. Favorite counts retain analytics exclusions.

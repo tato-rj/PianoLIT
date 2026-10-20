@@ -62,11 +62,17 @@
       <label for="ds-disabled">Unavailable field</label><input id="ds-disabled" class="form-control" value="Disabled input" disabled data-ds-preview>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'File upload', 'usage' => '.form-control [type=file]'])
-      <label for="ds-upload">Choose a local file</label><input id="ds-upload" type="file" class="form-control" aria-describedby="ds-upload-note" data-ds-preview><small id="ds-upload-note">Sample only. No file is uploaded.</small>
+      @include('components.form.upload.file', ['id' => 'ds-upload', 'name' => 'ds_upload', 'label' => 'Choose a local file', 'designSystemPreview' => true])
+      <small>Sample only. No file is uploaded.</small>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Checkboxes', 'usage' => '.form-check-input', 'properties' => 'width,height,border,border-radius,background-color'])
       @include('components.form.checkbox', ['id' => 'ds-checkbox', 'name' => 'ds_checkbox', 'label' => 'Save to favorites', 'checked' => true, 'designSystemPreview' => true])
       @include('components.form.checkbox', ['id' => 'ds-checkbox-disabled', 'name' => 'ds_checkbox_disabled', 'label' => 'Disabled option', 'disabled' => true])
+    @endcomponent
+    @component('admin.pages.settings.sample', ['label' => 'Compact checkboxes', 'usage' => 'components.form.checkbox · .small .text-muted'])
+      <div class="small text-muted">
+        @include('components.form.checkbox', ['id' => 'ds-checkbox-compact', 'name' => 'ds_checkbox_compact', 'label' => 'Missing video', 'classes' => 'mb-0', 'designSystemPreview' => true])
+      </div>
     @endcomponent
     @component('admin.pages.settings.sample', ['label' => 'Radio buttons', 'usage' => '.form-check-input [type=radio]', 'properties' => 'width,height,border,border-radius,background-color'])
       <div class="form-check"><input id="ds-radio-one" class="form-check-input" type="radio" name="ds-format" checked data-ds-preview><label class="form-check-label" for="ds-radio-one">Audio</label></div>

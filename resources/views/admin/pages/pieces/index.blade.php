@@ -29,13 +29,13 @@
     ])
         @slot('filterFields')
             <fieldset class="w-100 mb-0">
-                <legend class="fs-6 mb-2">Missing content</legend>
-                <div class="d-flex flex-wrap gap-3">
+                <legend class="small text-muted mb-1">Missing content (temporary)</legend>
+                <div class="d-flex flex-wrap gap-3 small text-muted">
                     @foreach(['without_videos' => 'Missing video', 'without_moments' => 'Missing moments', 'without_synthesia' => 'Missing synthesia'] as $filter => $label)
-                    @include('components.form.checkbox', ['id' => 'pieces-filter-'.$filter, 'name' => $filter, 'value' => '1', 'label' => $label, 'checked' => !empty($filters[$filter])])
+                    @include('components.form.checkbox', ['id' => 'pieces-filter-'.$filter, 'name' => $filter, 'value' => '1', 'label' => $label, 'checked' => !empty($filters[$filter]), 'classes' => 'mb-0'])
                     @endforeach
                 </div>
-                <p class="small text-muted mt-2 mb-0">Results match all checked filters. Missing moments applies to performance videos.</p>
+                <p class="small text-muted mt-1 mb-0">Matches all checked options. Moments apply to performance videos only.</p>
             </fieldset>
         @endslot
         @include('admin.pages.pieces.table.rows')

@@ -1,444 +1,81 @@
 @extends('admin.layouts.app')
 
 @section('head')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.css">
-<style type="text/css">
-.image-container canvas { width: 100% !important; }
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.css">
 @endsection
 
 @section('content')
-
-<div class="content-wrapper">
-  <div class="container-fluid">
+@php
+    $hasOldInput = session()->hasOldInput();
+    $isPublic = (bool) old('is_public', $hasOldInput ? false : $piece->is_public_domain);
+    $selectedTags = old('tags', $hasOldInput ? [] : $piece->tags->pluck('id')->all());
+    $selectedTags = is_array($selectedTags) ? $selectedTags : [];
+@endphp
+<div class="content-wrapper"><div class="container-fluid">
     @include('admin.components.page.title', [
-      'theme' => 'edit',
-      'title' => 'Edit ' . $piece->name,
-      'subtitle' => 'Use this page to edit this piece.',
-      'breadcrumbs' => [['label' => 'Pieces', 'url' => route('admin.pieces.index')]]
+        'title' => 'Edit '.$piece->name,
+        'subtitle' => 'Manage piece details, artwork and media.',
+        'breadcrumbs' => [['label' => 'Pieces', 'url' => route('admin.pieces.index')]],
     ])
-    <div class="row mb-3">
-      <div class="col-12 text-end">
-        <button class="btn btn-light me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#abrsm-modal"><strong>ABRSM</strong></button>
-        <button class="btn btn-light me-2 btn-sm" data-bs-toggle="modal" data-bs-target="#rcm-modal"><strong>RCM</strong></button>
-      </div>
-    </div>
 
-    <form id="edit-form" method="POST" action="{{route('admin.pieces.update', $piece->id)}}" enctype="multipart/form-data">
-      @csrf
-      @method('PATCH')
-      <div class="row">
-        <div class="col-lg-6 col-sm-10 col-12 mx-auto">
-          <div class="px-3 py-2 rounded mb-4 bg-light">
-            @icon('eye', ['mr' => 2, 'classes' => 'text-brand'])<small class="text-muted">{{$piece->views_count}} {{str_plural('view', $piece->views_count) }}</small>
-          </div>
+    @include('admin.pages.pieces.edit.options')
 
-          {{-- Name --}}
-          <div class="form-group row g-2">
-            <div class="col">
-              <label class="text-brand"><small>Name</small></label>
-              <input type="text" class="form-control" name="name" placeholder="Piece name" value="{{$piece->name}}" >
-            </div>
-            <div class="col">
-              <label class="text-brand"><small>Nickname</small></label>
-              <input type="text" class="form-control" name="nickname" placeholder="Nickname" value="{{$piece->nickname}}" >
-            </div>
-          </div>
-          <div class="form-group row g-2">
-            <div class="col">
-              <label class="text-brand"><small>Collection name</small></label>
-              <input type="text" class="form-control" name="collection_name" placeholder="Collection name" value="{{$piece->collection_name}}">
-            </div>
-            <div class="col d-flex">
-              <div class="flex-grow">
-                <label class="text-brand"><small>Composer</small></label>
-                <select class="form-control" name="composer_id">
-                  <option selected disabled>Composer</option>
-                  @foreach($composers as $composer)
-                  <option value="{{$composer->id}}" {{($piece->composer_id == $composer->id) ? 'selected' : ''}}>{{$composer->short_name}}</option>
-                  @endforeach
-                </select>
-              </div>
-              <div class="ps-2 d-flex flex-column">
-                <label class="text-brand"><small>Attributed</small></label>
-                <div class="d-flex flex-center flex-grow">
-                  <label class="switch cursor-pointer">
-                    <input name="is_attributed_to" type="checkbox" {{$piece->is_attributed_to ? 'checked' : null}}>
-                    <span class="slider round"></span>
-                  </label>
+    <form id="edit-form" method="POST" action="{{ route('admin.pieces.update', $piece) }}" enctype="multipart/form-data" data-piece-editor data-description-url="{{ route('admin.pieces.description-auto-complete') }}" data-piece-id="{{ $piece->id }}">
+        @csrf
+        @method('PATCH')
+        <fieldset @cannot('update', $piece) disabled @endcannot>
+            <legend class="visually-hidden">Piece editor</legend>
+            <div class="admin-editor-grid">
+                <div class="admin-editor-stack">
+                    @include('admin.pages.pieces.edit.details')
+                    @include('admin.pages.pieces.edit.classification')
+                    @component('admin.components.editor.section', ['id' => 'piece-description', 'title' => 'Description'])
+                        @slot('actions')
+                            <button type="button" class="btn btn-sm btn-dark" data-sample-description>@icon('wand-sparkles')Use a sample</button>
+                        @endslot
+                        @textarea(['bag' => 'default', 'id' => 'piece-description-input', 'name' => 'description', 'label' => 'About this piece', 'value' => $piece->description, 'rows' => 5, 'required' => false, 'placeholder' => 'Enter a description'])
+                        <p class="small text-danger mb-0" role="status" data-description-error hidden></p>
+                    @endcomponent
+                    @manager
+                        @include('admin.pages.pieces.edit.score')
+                        @include('admin.pages.pieces.edit.videos')
+                    @endmanager
                 </div>
-              </div>
-            </div>
-          </div>
-          {{-- Catalogue and number --}}
-          <div class="row g-2 form-group">
-            <div class="col">
-              <label class="text-brand"><small>Collection number
-                @include('admin.components.info', ['message' => 'This number will appear after the name of the piece. Ex: <i>Piece Name Op.1</i> <u>No.1</u>'])
-              </small></label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">No.</div>
-                </div>
-                <input type="text" class="form-control" name="collection_number" placeholder="Number" value="{{$piece->collection_number}}">
-              </div>
-            </div>
-            <div class="col">
-              <label class="text-brand"><small>Movement number
-                @include('admin.components.info', ['message' => 'This number will appear before the name of the piece: <u>1.</u> <i>Piece Name</i>'])
-              </small></label>
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">Mov.</div>
-                </div>
-                <input type="text" class="form-control" name="movement_number" placeholder="Number" value="{{$piece->movement_number}}">
-              </div>
-            </div>
-            <div class="col">
-              <label class="text-brand"><small>Catalogue</small></label>
-              <div class="input-group">
-                <div class="input-group-prepend" style="width: 40%">
-                  <select class="form-control" name="catalogue_name" >
-                    <option selected disabled>Catalogue</option>
-                    @foreach(catalogues() as $catalogue)
-                    <option value="{{$catalogue}}" {{($piece->catalogue_name == $catalogue) ? 'selected' : ''}}>{{$catalogue}}</option>
-                    @endforeach
-                    <option value="">None</option>
-                  </select>
-                </div>
-                <input type="text" class="form-control" name="catalogue_number" placeholder="Catalogue number" value="{{$piece->catalogue_number}}">
-              </div>
-            </div>
-          </div>
-          {{-- Key and Composer --}}
-          <div class="row g-2 form-group">
-            <div class="col">
-              <label class="text-brand"><small>Composed in</small></label>
-              <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="composed_in" placeholder="Composed in" value="{{$piece->composed_in}}">
-            </div>
-            <div class="col">
-              <label class="text-brand"><small>Published in</small></label>
-              <input type="number" min="1600" max="{{now()->year}}" class="form-control" name="published_in" placeholder="Published in" value="{{$piece->published_in}}">
-            </div>
-            <div class="col">
-              <label class="text-brand"><small>Key</small></label>
-              <select class="form-control" name="key">
-                <option selected disabled>Key</option>
-                <optgroup label="Tonal">
-                  @foreach(keys() as $key)
-                  <option value="{{$key}}" {{($piece->key == $key) ? 'selected' : ''}}>{{$key}}</option>
-                  @endforeach
-                </optgroup>
-                <optgroup label="Non-tonal">
-                  <option value="Atonal" {{($piece->key == 'Atonal') ? 'selected' : ''}}>Atonal</option>
-                  <option value="Modal" {{($piece->key == 'Modal') ? 'selected' : ''}}>Modal</option>
-                  <option value="Serial" {{($piece->key == 'Serial') ? 'selected' : ''}}>Serial</option>
-                  <option value="Chromatic" {{($piece->key == 'Chromatic') ? 'selected' : ''}}>Chromatic</option>
-                  <option value="Experimental" {{ $piece->key == 'Experimental' ? 'selected' : ''}}>Experimental</option>
-                </optgroup>
-              </select>
-            </div>
-          </div>
-          {{-- Period, Length and Level --}}
-          <div class="row g-2 form-group">
-            <div class="col">
-              <label class="text-brand"><small>Period</small></label>
-              <select class="form-control" name="period[]" >
-                <option selected disabled>Period</option>
-                @foreach(\App\Tag::periods()->get() as $period)
-                <option value="{{$period->id}}" {{($piece->period->name == $period->name) ? 'selected' : ''}}>{{ucfirst($period->name)}}</option>
-                @endforeach
-              </select>
-            </div>
-            <div class="col">
-              <label class="text-brand"><small>Length</small></label>
-              <select class="form-control" name="length[]" >
-                <option selected disabled>Length</option>
-                @foreach(\App\Tag::lengths()->get() as $length)
-                <option value="{{$length->id}}" {{($piece->length->name == $length->name) ? 'selected' : ''}}>{{ucfirst($length->name)}}</option>
-                @endforeach
-              </select>
-            </div>
-            <div class="col">
-              <label class="text-brand"><small>Level</small></label>
-              <select class="form-control" name="level[]" >
-                <option selected disabled>Level</option>
-                @foreach(\App\Tag::levels()->get() as $level)
-                <option value="{{$level->id}}" {{($piece->level->name == $level->name) ? 'selected' : ''}}>{{ucfirst($level->name)}}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-          {{-- Did you know? --}}
-          <div class="form-group">
-            <div class="d-flex d-apart">
-              <label class="text-brand"><small>Description</small></label>
-              <label class="text-brand cursor-pointer" data-piece-id="{{$piece->id}}" id="description-auto-complete">@icon('wand-sparkles')</label>
-            </div>
-            <textarea class="form-control" rows="5" name="description" placeholder="Enter a description here">{{ $piece->description }}</textarea>
-          </div>
-          @manager
-          {{-- Score Info --}}
-          <div class="bg-light rounded px-3 py-2">
-            <div class="d-flex justify-content-between">
-              <div>Is this piece in public domain?</div>
-              <label class="switch cursor-pointer">
-                <input class="status-toggle" name="is_public" type="checkbox" {{$piece->is_public_domain ? 'checked' : null}}>
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div class="is-public mt-3" style="display: {{$piece->is_public_domain ? 'block' : 'none'}}">
-              <div class="form-group">
-                <label class="text-brand"><small>Score editor</small></label>
-                <input type="text" class="form-control" name="score_editor" placeholder="Score editor" value="{{$piece->score_editor == $piece->missing_info ? null : $piece->score_editor}}" >
-              </div>
-              <div class="form-group">
-                  <label class="text-brand"><small>Score publisher</small></label>
-                  <input type="text" class="form-control" name="score_publisher" placeholder="Score publisher" value="{{$piece->score_publisher == $piece->missing_info ? null : $piece->score_publisher}}">
-              </div>
-            </div>
-            <div class="form-group non-public mt-3" style="display: {{$piece->is_public_domain ? 'none' : 'block'}}">
-                <label class="text-brand"><small>Score url</small></label>
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <a class="input-group-text no-underline {{$piece->lookup('score_url')}}" href="{{$piece->score_url}}" target="_blank">@icon('globe', ['mr' => 0])</a>
-                  </div>
-                  <input type="text" class="form-control" maxlength="255" name="score_url" placeholder="Score url" value="{{$piece->score_url}}">
+                <div class="admin-editor-stack">
+                    @component('admin.components.editor.section', ['id' => 'piece-artwork', 'title' => 'Cover image'])
+                        @image(['name' => '', 'image' => $piece->cover_image() ?? asset('images/misc/placeholder-image-wide.png'), 'empty' => false, 'alt' => 'Cover image for '.$piece->name])
+                    @endcomponent
+                    @include('admin.pages.pieces.edit.tags')
                 </div>
             </div>
-          </div>
-          {{-- Files --}}
-          <label class="text-brand"><small>Uploads</small></label>
-          <div class="row g-2 form-group">
-            <div class="col-12 col-sm input-group mb-2 mb-sm-0">
-              <div class="input-group-prepend">
-
-                <a class="input-group-text no-underline {{$piece->lookup('audio_path')}}" href="{{storage($piece->audio_path)}}" target="_blank">@icon('mic', ['mr' => 0])</a>
-              </div>
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" name="audio" id="customFile">
-                <label class="custom-file-label truncate" for="customFile">Both hands</label>
-              </div>
-            </div>
-
-            <div class="col-12 col-sm input-group">
-              <div class="input-group-prepend">
-                <a class="input-group-text no-underline {{$piece->lookup('score_path')}}" href="{{storage($piece->score_path)}}" target="_blank">@icon('file-text', ['mr' => 0])</a>
-              </div>
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" name="score" id="customFile">
-                <label class="custom-file-label truncate" for="customFile">Score</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-light px-3 py-2 text-muted form-group rounded d-flex d-apart">
-            <div class="me-1">Should this piece show up in the <u>tour</u>?</div>
-            @toggle(['toggle' => $piece->show_on_tour, 'name' => 'show_on_tour', 'autoToggle' => false])
-          </div>
-
-            {{-- Videos --}}
-            @component('admin.pages.pieces.videos.layout')
-              @if($piece->tutorials()->exists())
-              @foreach($piece->tutorials as $tutorial)
-                @include('admin.pages.pieces.videos.input')
-              @endforeach
-              @endif
-            @endcomponent
-            @endmanager
+        </fieldset>
+        @can('update', $piece)
+        <div class="admin-editor-save">
+            <span class="small text-muted" role="status" aria-live="polite" data-editor-save-status>All changes saved</span>
+            <button type="submit" class="btn btn-primary" data-save-piece>@icon('check')Save changes</button>
         </div>
-
-        <div class="col-lg-6 col-sm-10 col-12 mx-auto">
-
-            @image(['name' => null, 'image' => $piece->cover_image() ?? asset('images/misc/placeholder-image-wide.png'), 'empty' => true])
-
-            {{-- Tags --}}
-            <div class="rounded bg-light px-3 py-2 mb-3">
-              <p class="text-brand border-bottom pb-1 mb-1"><strong>TAGS</strong></p>
-              <div class="d-flex flex-wrap">
-                @foreach($types as $type => $tags)
-                <label class="p-2 mb-1 text-center w-100"><strong>{{ucfirst($type)}}</strong></label>
-                  @foreach($tags as $tag)
-                  <div class="form-check mx-2 mb-2">
-                    <input type="checkbox" class="form-check-input" name="tags[]" value="{{$tag->id}}" id="{{$tag->name}}" {{($piece->tags->contains($tag->id)) ? 'checked' : ''}}>
-                    <label class="form-check-label" for="{{$tag->name}}">{{$tag->name}}</label>
-                  </div>
-                  @endforeach
-                @endforeach
-              </div>
-              <div class="mb-1 mt-4 ms-2 text-muted">
-                <small>Special tags are: {{\App\Tag::special()->get()->implode('name', ', ')}}</small>
-              </div>
-            </div>
-        </div>
-
-        <div class="col-12 text-end">
-            @can('update', $piece)
-            <div class="">
-              <button type="submit" class="btn btn-default">Save changes</button>
-            </div>
-
-            @endcan
-
-            @include('admin.components.creator', ['model' => $piece, 'type' => 'piece'])
-        </div>
-      </div>
+        @else
+        <p class="small text-muted">You can view this piece. Editing is available to its creator and managers.</p>
+        @endcan
     </form>
-
-    <div class="text-end">
-      <form method="POST" action="{{route('admin.pieces.destroy-file', $piece)}}">
+    @manager
+    @can('update', $piece)
+    @if($piece->score_path)
+    <form id="delete-score-form" method="POST" action="{{ route('admin.pieces.destroy-file', $piece) }}">
         @csrf
         @method('DELETE')
         <input type="hidden" name="method" value="deleteScore">
-        <button type="submit" class="btn btn-red">@icon('trash-2', ['mr' => 0]) Delete score</button>
-      </form>
-    </div>
-  </div>
-</div>
-
+    </form>
+    @endif
+    @endcan
+    @endmanager
+    @include('admin.components.creator', ['model' => $piece, 'type' => 'piece'])
+</div></div>
 @include('admin.pages.pieces.rankings', ['ranking' => 'abrsm'])
 @include('admin.pages.pieces.rankings', ['ranking' => 'rcm'])
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.js"></script>
-
-<script type="text/javascript">
-(new SimpleCropper({
-  ratio: 25/13,
-  imageInput: 'input#image-input',
-  uploadButton: '#upload-button',
-  confirmButton: '#confirm-button',
-  cancelButton: '#cancel-button',
-  submitButton: 'button[type="submit"]'
-})).create();
-
-$('#image-input').on('change', function() {
-  $(this).attr('name', 'cover_image');
-});
-</script>
-<script type="text/javascript">
-// $(document).on('click', '.youtube-to-mp3', function(event) {
-//   event.preventDefault();
-//   let $modal = $('#modal-youtube-to-mp3');
-//   let id = $(this).parent().siblings('input').val();
-//   if (id) {
-//     window.open("https://www.yt-download.org/@api/button/mp3/"+id, "_blank");
-//   } else {
-//     alert('You forgot to include the ID!');
-//   }
-// });
-</script>
-@cannot('update', $piece)
-<script type="text/javascript">
-$('#edit-form input, #edit-form select, #edit-form textarea').attr('disabled', true);
-$('.add-new-field, .remove-field').remove();
-</script>
-@endcannot
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
-<script type="text/javascript">
-
-$('.status-toggle').on('change', function() {
-  if ($(this).is(':checked')) {
-    $('.is-public').show();
-    $('.non-public').hide();
-  } else {
-    $('.is-public').hide();
-    $('.non-public').show();
-  }
-});
-function showTooltip(element) {
-    $(element).tooltip('show');
-
-    setTimeout(function(){
-        $(element).tooltip('hide');
-    },1000);
-}
-
-$('[data-bs-toggle="tooltip"]').tooltip();
-
-var clipboard = new ClipboardJS('.clip');
-
-clipboard.on('success', function(e) {
-    showTooltip(e.trigger);
-    e.clearSelection();
-});
-
-</script>
-
-<script type="text/javascript">
-/////////////////
-// ADD NEW TIP //
-/////////////////
-$('a.add-new-field').on('click', function() {
-  $button = $(this);
-  $clone = $button.siblings('.original-type').clone();
-
-  number = $('.videos-form:not(.original-type)').length;
-  inputs = $clone.find('input');
-  $(inputs[0]).attr('name',  'videos['+number+'][type]');
-  $(inputs[1]).attr('name',  'videos['+number+'][category]');
-  $(inputs[2]).attr('name',  'videos['+number+'][description]');
-  $(inputs[3]).attr('name',  'videos['+number+'][filename]');
-  if ($('.videos-form:not(.original-type)').length == 0) {
-    $clone.find('.default-performance').show();
-  }
-  $clone.removeClass('original-type').insertBefore($button).show();
-});
-
-// $(document).on('click', '.default-performance', function() {
-//   let $button = $(this);
-//   $button.closest('.quick-fill').siblings('.video-type').val($button.attr('data-type'));
-//   $button.closest('.quick-fill').siblings('.video-description').val($button.attr('data-description'));
-// });
-
-$(document).on('change', 'select[data-name="type"]', function() {
-  let $option = $(this);
-
-  $option.siblings('.video-type').val($option.parent().find(':selected').attr('data-type'));
-  $option.siblings('.video-category').val($option.parent().find(':selected').attr('data-category'));
-  $option.siblings('.video-description').val($option.parent().find(':selected').attr('data-description'));
-});
-
-////////////////
-// REMOVE TIP //
-////////////////
-$(document).on('click', 'a.remove-field', function() {
-  $(this).parent().remove();
-  $('.videos-form:not(.original-type)').first().find('.default-performance').show();
-});
-
-/////////////////////////////
-// HIGHLIGHT UPLOADED FILE //
-/////////////////////////////
-$('input[type="file"]').on('change', function(e) {
-  $input = $(this);
-  $label = $input.siblings('label');
-  filename = e.target.files[0].name;
-
-  $icon = $input.parent().siblings().find('i').addClass('text-success');
-  $label.text(filename);
-});
-</script>
-
-<script type="text/javascript">
-$('#description-auto-complete').click(function() {
-  let $textarea = $('textarea[name="description"]');
-  if (! $textarea.is(':disabled')) {
-    $textarea.disable();
-
-    axios.get("{{route('admin.pieces.description-auto-complete')}}", {params: {piece_id: $(this).data('piece-id')}})
-         .then(function(response) {
-          $('textarea[name="description"]').val(response.data);
-         })
-         .catch(function(response) {
-          console.log(response.data);
-          alert('Sorry, something went wrong...');
-         })
-         .then(function() {
-          $textarea.enable();
-         });
-     }
-});
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.3/cropper.min.js"></script>
+<script src="{{ mix('js/views/admin-piece-editor.js') }}"></script>
 @endsection
