@@ -21,8 +21,13 @@
             cancelButton: '#cancel-button',
             submitButton: '#edit-form [data-save-piece]'
         }).create();
-        form.querySelector('#image-input').addEventListener('change', function () {
+        var imageInput = form.querySelector('#image-input');
+        imageInput.addEventListener('change', function () {
             this.name = 'cover_image';
+        });
+        form.querySelector('#cancel-button').addEventListener('click', function () {
+            imageInput.value = '';
+            imageInput.name = '';
         });
     }
 

@@ -24,6 +24,11 @@ Neither build requires `--openssl-legacy-provider`. Remove an old shell-level wo
 
 The existing six public entry points are unchanged: `public/js/{app,admin,tone}.js` and `public/css/{app,admin,shared}.css`. Blade still uses the same `mix()` paths. Concatenation preserves the vendor/shared ordering and all image, font, GeoJSON, flag, editor and standalone-script copies.
 
+The piece editor uses the installed Cropper.js dependency through versioned local
+copies at `js/vendor/cropper.min.js` and `css/vendor/cropper/cropper.min.css`.
+Build validation checks both copies against the installed package. Other existing
+cropper consumers retain their current includes.
+
 Mix 6 excludes the destination of `styles()`/`scripts()` from their input list. The app/admin compilation therefore uses ignored `public/.mix/` intermediates before producing the original final filenames. Hot mode writes these intermediates to disk so concatenation also works on a fresh build.
 
 `scripts/version-assets.js` registers a small Mix extension that reuses Mix's explicit-file version tasks and watchers. Unlike Mix 6's global `version()`, it leaves copied design binaries unversioned: hashing the 97 MB carousel PSD as a UTF-8 string caused an invalid-string-length failure. The extension refreshes the selected hashes after final concatenation/minification, while retaining standalone-file version updates during watch. PNG/ICO and other binary assets use hashes of their actual bytes; Mix's default UTF-8 file reader would give those exports a different hash. The brand list in `scripts/brand-assets.js` versions artwork and browser metadata without adding the large design binaries. It intentionally depends on Mix 6's version component; recheck this extension during a future Mix upgrade.

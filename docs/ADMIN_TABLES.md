@@ -242,8 +242,10 @@ hover. The Tags column and its visible sort choices were removed on October 19;
 levels display their names as plain text and retain difficulty sorting. The
 index no longer renders or loads quick-edit dialogs/scripts. Existing admin
 quick-edit routes and the prior authenticated admin-only Ajax response remain
-available for compatibility. Freepick, creation-date and confirmed deletion
-actions remain available. Deletion validates return filters and clamps the page.
+available for compatibility. The directory's row actions are Edit and confirmed
+Delete. Freepick and creation-date actions now live in the piece editor's labeled
+Options row, with their existing PATCH routes and CSRF protection. Deletion
+validates return filters and clamps the page.
 Public/mobile serialization and media delivery remain unchanged.
 
 ## Appearance and verification

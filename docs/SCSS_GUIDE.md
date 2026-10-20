@@ -43,6 +43,7 @@ Measurements follow the browser's actual styles. Its sample content is fictional
 | Floating admin back-to-top button | `admin/_back-to-top.scss` |
 | Admin Overview charts, metrics and rankings | `admin/_dashboard.scss` |
 | Shared admin table | `admin/_tables.scss` |
+| Shared admin editor sections and column layouts | `admin/_editor.scss` |
 | Admin editor tools, uploads and event/video editors | `admin/_text-improver.scss`, `_uploads.scss`, `_timeline-events.scss`, `_video-moments.scss` |
 | Older admin template compatibility | `admin/_template-compat.scss` |
 | Design System gallery and sample bindings | `admin/_design-system.scss`, `admin/_design-system-specimens.scss` |

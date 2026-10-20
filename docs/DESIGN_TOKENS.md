@@ -68,6 +68,16 @@ for its options and compatibility rules.
 
 ## Form controls
 
+Admin editors group related fields with `admin.components.editor.section`.
+Pass a unique `id`, `title`, optional `description` and an optional `actions` slot.
+Use `.admin-editor-grid` for a wide main column and narrower sidebar on desktop;
+it stacks on smaller screens. `.admin-editor-stack`, `.admin-editor-options` and
+`.admin-editor-save` supply the shared layout. Controls keep their standard
+components and finishes. The Design System previews the same section component.
+Native file fields use `components.form.upload.file` with `id`, `name`, `label`,
+optional `accept` and `currentUrl` / `currentLabel`. Their IDs and labels remain
+unique; existing files open safely in a new tab.
+
 Date and time displays omit timezone names and explanatory timezone captions.
 Use the configured application timezone for formatting and calculations.
 
